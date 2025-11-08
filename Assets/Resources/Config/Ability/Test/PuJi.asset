@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cd3033003a7463458674d0637b01b36, type: 3}
+  m_Name: PuJi
+  m_EditorClassIdentifier: 
+  Id: PuJi
+  TypeTag: 0
+  Concurrency: 0
+  Phases:
+  - PhaseName: Prepare
+    DurationValue:
+      ValType: 3
+      RawVal: 0.5
+      ReferName: 
+    AnimTag: 
+    InterruptType: 0
+    WithProgress: 0
+    LockMovement: 1
+    LockRotation: 1
+    Events: []
+  - PhaseName: Execute
+    DurationValue:
+      ValType: 3
+      RawVal: 0.3
+      ReferName: 
+    AnimTag: 
+    InterruptType: 0
+    WithProgress: 0
+    LockMovement: 1
+    LockRotation: 1
+    Events:
+    - Kind: 0
+      TimeOffset: 0
+      Effect:
+        rid: 69777308777185285
+      Repeat: 0
+      RepeatInterval: 0
+  OnStartEffects: []
+  OnCompleteEffects: []
+  OnCancelEffects: []
+  DesiredUseAngle: 10
+  DesiredUseDistance: 0.8
+  IsPassive: 0
+  PassiveBuffId: 
+  references:
+    version: 2
+    RefIds:
+    - rid: 69777308777185285
+      type: {class: MapAbilityEffectHitBoxCfg, ns: Unit.Ability.Effect, asm: Assembly-CSharp}
+      data:
+        EffectType: 5
+        Shape: 1
+        Width: 1.4
+        Length: 0.9
+        Radius: 0
+        TargetEntityType: 0
+        IncludeEnmity: 0
+        IncludeFriendly: 0
+        HitVal: 0
+        OnHitEffects:
+        - rid: 69777308777185287
+    - rid: 69777308777185287
+      type: {class: MapAbilitySpecDamageEffectCfg, ns: Unit.Ability.Effect, asm: Assembly-CSharp}
+      data:
+        EffectType: 2
+        DamageValName:
+          ValType: 3
+          RawVal: 9
+          ReferName: 

@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cd3033003a7463458674d0637b01b36, type: 3}
+  m_Name: Ability1
+  m_EditorClassIdentifier: 
+  Id: 
+  TypeTag: 0
+  Concurrency: 2
+  RequiredItemId: 
+  RequiredWeaponTag: 
+  Phases: []
+  OnStartEffects:
+  - rid: 69777307361083402
+  - rid: 69777307361083400
+  OnCompleteEffects:
+  - rid: 69777307361083404
+  - rid: 69777308777185281
+  - rid: 69777308777185282
+  OnCancelEffects: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 69777307361083400
+      type: {class: BaseAbilityEffectDrawer/NoneEffectCfg, ns: , asm: Assembly-CSharp-Editor}
+      data:
+        EffectType: 0
+        note: Select an Effect Type
+    - rid: 69777307361083402
+      type: {class: MapAbilityEffectAddBuffCfg, ns: Unit.Ability.Effect, asm: Assembly-CSharp}
+      data:
+        EffectType: 0
+        BuffId: 
+        Layer: 0
+        Duration: 0
+        TargetType: 0
+    - rid: 69777307361083404
+      type: {class: MapAbilityEffectDashStartCfg, ns: Unit.Ability.Effect, asm: Assembly-CSharp}
+      data:
+        EffectType: 3
+        IsTimeMode: 0
+        DashDuration: 0
+        DashSpeed: 0
+    - rid: 69777308777185281
+      type: {class: MapAbilitySpecDamageEffectCfg, ns: Unit.Ability.Effect, asm: Assembly-CSharp}
+      data:
+        EffectType: 2
+        DamageValName:
+          ValType: 0
+          RawVal: 
+          ReferName: 
+    - rid: 69777308777185282
+      type: {class: MapAbilityEffectDashEndCfg, ns: Unit.Ability.Effect, asm: Assembly-CSharp}
+      data:
+        EffectType: 4
