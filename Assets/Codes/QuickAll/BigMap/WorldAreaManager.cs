@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Map.Scene.Fov;
 
 public class WorldAreaManager : MonoBehaviour
 {
@@ -20,10 +21,15 @@ public class WorldAreaManager : MonoBehaviour
     public event Action<WorldAreaInfo> OnWorldUnloaded;
     public event Action<string, float> OnLoadingProgress; // 子场景名，进度0-1
 
+    public ObstacleSegmentProvider SegmentProvider;
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+
+        SegmentProvider = GetComponent<ObstacleSegmentProvider>();
+
         DontDestroyOnLoad(gameObject);
     }
 
@@ -109,6 +115,9 @@ public class WorldAreaManager : MonoBehaviour
 
         OnWorldLoaded?.Invoke(areaInfo);
         Debug.Log($"SubSceneManager: World '{areaInfo.worldName}' loaded with {loadedSubScenes.Count} sub-scenes.");
+
+        SegmentProvider.OnAreaEnter();
+        MainGameManager.Instance.FovGenerator.OnAreaEnter();
 
         SceneAOIManager.Instance.InitArea(areaInfo.worldName);
         MainGameManager.Instance.SceneFadeManager.OnEnterArea(onlyRoot);

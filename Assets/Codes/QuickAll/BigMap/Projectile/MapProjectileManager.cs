@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unit.Ability.Effect;
 using UnityEngine;
 
 
@@ -26,6 +27,8 @@ public class ProjectileData
 
     public EMotionType motiontype;
     public MotionDataBase motionData;    // 指向具体运动SO（Linear/Parabola/Homing）
+
+    public List<MapFightEffectCfg> OnHitEffects;
 }
 
 

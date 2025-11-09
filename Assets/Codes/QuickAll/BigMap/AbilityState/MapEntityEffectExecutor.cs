@@ -12,7 +12,7 @@ namespace Map.Entity
 
     public abstract  class AbilityEffectExecutor
     {
-        public virtual void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public virtual void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
 
 
@@ -21,7 +21,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4UnlockLootPoint : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             if(ctx.Target is LootPointLogicEntity lootPoint)
             {
@@ -36,7 +36,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4UseLootPoint : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             if (ctx.Target is LootPointLogicEntity lootPoint)
             {
@@ -53,7 +53,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4SpawnBullet : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectSpawnBulletCfg;
             if(realCfg == null)
@@ -90,7 +90,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4UseItem : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg useItemCfg, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg useItemCfg, LogicFightEffectContext ctx)
         {
             MapAbilityEffectUseItemCfg realCfg = useItemCfg as MapAbilityEffectUseItemCfg;
             if(realCfg == null)
@@ -104,7 +104,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4UseWeapon : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectUseWeaponCfg;
             if (realCfg == null)
@@ -115,14 +115,14 @@ namespace Map.Entity
 
             if(ctx.Actor is BaseUnitLogicEntity unitEntity)
             {
-                unitEntity.abilityController.ApplyUseWeaponHitBox(realCfg.WeaponName, realCfg.Duration);
+                unitEntity.abilityController.ApplyUseWeaponHitBox(realCfg.WeaponName, realCfg.Duration, realCfg.OnHitEffects);
             }
         }
     }
 
     public class AbilityEffectExecutor4DashStart : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectDashStartCfg;
             if (realCfg == null)
@@ -140,7 +140,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4AddBuff : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectAddBuffCfg;
             if (realCfg == null)
@@ -149,26 +149,28 @@ namespace Map.Entity
                 return;
             }
 
-            if(ctx.Target is not BaseUnitLogicEntity unitEntity)
+            long? srcBuffId = null;
+            if (ctx.SourceKey != null && ctx.SourceKey.Value.buffId != 0)
             {
-                Debug.LogError($"AbilityEffectExecutor4AddBuff target err :{ctx.Target?.Id ?? 0}");
-                return;
+                srcBuffId = ctx.SourceKey.Value.buffId;
             }
 
-            if(realCfg.TargetType == 0)
+            // 当目标type为0时 在正常语境下 就是给目标使用
+            if (realCfg.TargetType == 0)
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(unitEntity.Id, realCfg.BuffId, realCfg.Layer, ctx.SourceKey);
+                
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.Target.Id, realCfg.BuffId, realCfg.Layer, casterId:ctx.SourceKey?.entityId ?? 0, srcBuffId : srcBuffId);
             }
             else
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.Actor.Id, realCfg.BuffId, realCfg.Layer, ctx.SourceKey);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.Actor.Id, realCfg.BuffId, realCfg.Layer, casterId: ctx.SourceKey?.entityId ?? 0, srcBuffId: srcBuffId);
             }
         }
     }
 
     public class AbilityEffectExecutor4HitBox : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectHitBoxCfg;
             if (realCfg == null)
@@ -224,7 +226,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4RemoveBuff : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectRemoveBuffCfg;
             if (realCfg == null)
@@ -245,7 +247,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4IfBranch : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectIfBranchCfg;
             if (realCfg == null)
@@ -308,7 +310,7 @@ namespace Map.Entity
 
     public class AbilityEffectExecutor4AddResource : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectAddResourceCfg;
             if (realCfg == null)
@@ -323,13 +325,22 @@ namespace Map.Entity
                 return;
             }
 
-            ctx.Target.ApplyResourceChange(realCfg.ResourceId, realCfg.AddValue, false, ctx.SourceKey);
+            Dictionary<string, long> extraAttrs = null;
+            if (realCfg.ExtraAttrInfos != null)
+            {
+                extraAttrs = new();
+                foreach(var pair in realCfg.ExtraAttrInfos)
+                {
+                    extraAttrs[pair.AttrId] = pair.Val;
+                }
+            }
+            ctx.Target.ApplyResourceChange(realCfg.ResourceId, realCfg.AddValue, false, ctx.SourceKey, extraAttrs);
         }
     }
 
     public class AbilityEffectExecutor4CostResource : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectCostResourceCfg;
 
@@ -345,13 +356,23 @@ namespace Map.Entity
                 return;
             }
 
-            ctx.Target.ApplyResourceChange(realCfg.ResourceId, -realCfg.CostValue, false, ctx.SourceKey);
+            Dictionary<string, long> extraAttrs = null;
+            if (realCfg.ExtraAttrInfos != null)
+            {
+                extraAttrs = new();
+                foreach (var pair in realCfg.ExtraAttrInfos)
+                {
+                    extraAttrs[pair.AttrId] = pair.Val;
+                }
+            }
+
+            ctx.Target.ApplyResourceChange(realCfg.ResourceId, -realCfg.CostValue, realCfg.Flags > 0, ctx.SourceKey, extraAttrs);
         }
     }
 
     public class AbilityEffectExecutor4ThrowStart : AbilityEffectExecutor
     {
-        public override void Apply(MapAbilityEffectCfg effectConf, LogicFightEffectContext ctx)
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
             var realCfg = effectConf as MapAbilityEffectThrowStartCfg;
 

@@ -9,6 +9,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class PlayerScenePresenter : SceneUnitPresenter
 {
+   
     protected override void Awake()
     {
         base.Awake();

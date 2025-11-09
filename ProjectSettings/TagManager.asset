@@ -23,6 +23,7 @@ TagManager:
   - Wall
   - Trigger
   - MapRoom
+  - MapViewObc
   - 
   - 
   - 
@@ -35,8 +36,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - FOV Layer
   m_SortingLayers:
   - name: Default
     uniqueID: 0

@@ -1,6 +1,7 @@
 using Map.Entity;
 using Map.Logic.Chunk;
 using Map.Scene;
+using Map.Scene.Fov;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -53,6 +54,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         }
 
         VisionSenser2D = new();
+        VisionSenser2D.ObstacleMask = 1 << LayerMask.NameToLayer("MapViewObc");
 
         interactSystem = new();
 
@@ -89,6 +91,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public MapSceneDropManager sceneDropManager;
 
+    public MapFovMeshGenerator FovGenerator;
+
     void Start()
     {
         MainUIManager.Instance.InitGameLogicEventListener();
@@ -121,12 +125,12 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         if(Input.GetKeyDown(KeyCode.F))
         {
-            gameLogicManager.AreaManager.RegisterEntityRecord(new LogicEntityRecord()
-            {
+            //gameLogicManager.AreaManager.RegisterEntityRecord(new LogicEntityRecord()
+            //{
 
 
 
-            });
+            //});
         }
 
         
@@ -176,6 +180,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             WorldAreaManager.Instance.LoadWorld(areaInfo, setActive: true);
         else
             Debug.LogWarning("WorldBootstrap: initialGroup not set.");
+
     }
 
     public void OnLogicEntitySpawned(ILogicEntity entity)

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectThrowStartCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectThrowStartCfg : MapFightEffectCfg
     {
         public int Priority;
         public float Duration;

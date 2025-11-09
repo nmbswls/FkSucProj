@@ -6,6 +6,7 @@ using Bag;
 using Config.Map;
 using System.Collections.Generic;
 using System;
+using static UnityEditor.Progress;
 
 
 namespace Map.Entity
@@ -13,21 +14,48 @@ namespace Map.Entity
     public class LootPointLogicEntity : LogicEntityBase, ILootableObj
     {
         public MapLootPointConfig cacheConfig;
+
+        public string DropId;
         public LootPointLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             cacheConfig = MapLootPointConfigLoader.Get(cfgId);
+
+            var realRec = (LogicEntityRecord4LootPoint)bindingRecord;
+            DropId = realRec.DynamicDropId;
+            if(string.IsNullOrEmpty(DropId))
+            {
+                DropId = cacheConfig.DefaultDropId;
+            }
         }
 
         public override EEntityType Type => EEntityType.LootPoint;
 
 
         public bool LootInialized = false;
-        public bool IsLocked = true;
+        public bool IsLocked = false;
 
         public Dictionary<int, float> ItemSearchProgress = new();
 
         private List<ItemStack> containItems = new List<ItemStack>();
-        public List<ItemStack> LootItems { get { return containItems; } }
+        public List<ItemStack> LootItems { get {
+
+                if (!LootInialized)
+                {
+                    LootInialized = true;
+
+                    var items = LogicManager.DropTable.GetBundleDropItems(DropId);
+                    foreach (var item in items)
+                    {
+                        containItems.Add(new ItemStack()
+                        {
+                            ItemID = item.Item1,
+                            Count = item.Item2
+                        });
+                    }
+                }
+                return containItems; 
+            
+            } }
 
         public event Action<LootPointLogicEntity> EventOnLootPointUnlock;
         public event Action<LootPointLogicEntity> EventOnLootPointUsed;
@@ -84,6 +112,8 @@ namespace Map.Entity
                 LogicManager.viewer.ShowFakeFxEffect("ห๘มห", Pos);
                 return;
             }
+
+            
 
             if (cacheConfig.LootRequiment != null)
             {

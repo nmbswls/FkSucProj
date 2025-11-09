@@ -7,12 +7,12 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectUnlockLootPoint : MapAbilityEffectCfg
+    public class MapAbilityEffectUnlockLootPoint : MapFightEffectCfg
     {
     }
 
     [Serializable]
-    public class MapAbilityEffectUseLootPoint : MapAbilityEffectCfg
+    public class MapAbilityEffectUseLootPoint : MapFightEffectCfg
     {
     }
 }

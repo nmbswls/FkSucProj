@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectDashEndCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectDashEndCfg : MapFightEffectCfg
     {
     }
 }

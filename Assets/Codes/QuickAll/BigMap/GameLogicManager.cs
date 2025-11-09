@@ -1,4 +1,5 @@
 using Bag;
+using Config;
 using Map.Drop;
 using Map.Entity;
 using Map.Entity.Attr;
@@ -33,7 +34,7 @@ public enum EEntityCampId
 public interface ILogicEntityFactory
 {
     // 根据Record创建运行时实例
-    ILogicEntity CreateEntity(LogicEntityRecord record);
+    ILogicEntity CreateEntityByRecord(LogicEntityRecord record);
     // 可选对象池：回收实例
     void RecycleEntity(ILogicEntity entity);
 }
@@ -67,6 +68,8 @@ public class GameLogicManager : ILogicEntityFactory
 
     public PlayerDataManager playerDataManager;
 
+    public GlobalDropTable DropTable;
+
     public void OnGameInit()
     {
         LogicEventBus = new();
@@ -89,6 +92,8 @@ public class GameLogicManager : ILogicEntityFactory
 
         playerDataManager = new(this);
         playerDataManager.InitPlayer();
+
+        DropTable = Resources.Load<GlobalDropTable>("Config/DropTable");
     }
 
 
@@ -151,12 +156,17 @@ public class GameLogicManager : ILogicEntityFactory
         AreaManager.Tick(now, dt);
     }
 
+    public void CreateNewEntityRecord(LogicEntityRecord record)
+    {
+        pendingNewEntities.Add(record);
+    }
+
     
 
     public ProjectileHolder projectileHolder;
 
     // 根据Record创建运行时实例
-    public ILogicEntity CreateEntity(LogicEntityRecord record)
+    public ILogicEntity CreateEntityByRecord(LogicEntityRecord record)
     {
         LogicEntityBase newEntity = null;
         switch (record.EntityType)
@@ -266,7 +276,7 @@ public class GameLogicManager : ILogicEntityFactory
     }
 
     private Dictionary<Type, AbilityEffectExecutor> EffectExecutors = new(); // executor
-    private AbilityEffectExecutor GetLogicFightEffectExecutor(MapAbilityEffectCfg effectType)
+    private AbilityEffectExecutor GetLogicFightEffectExecutor(MapFightEffectCfg effectType)
     {
         if (!EffectExecutors.TryGetValue(effectType.GetType(), out var executor))
         {
@@ -355,6 +365,7 @@ public class GameLogicManager : ILogicEntityFactory
         public LogicFightEffectContext(GameLogicManager env, SourceKey? sourceKey)
         {
             this.Env = env;
+            this.SourceKey = sourceKey;
         }
 
         public SourceKey? SourceKey; // 
@@ -395,7 +406,7 @@ public class GameLogicManager : ILogicEntityFactory
         }
     }
 
-    public void HandleLogicFightEffect(MapAbilityEffectCfg effectConf, LogicFightEffectContext effectCtx)
+    public void HandleLogicFightEffect(MapFightEffectCfg effectConf, LogicFightEffectContext effectCtx)
     {
         var executor = GetLogicFightEffectExecutor(effectConf);
         executor?.Apply(effectConf, effectCtx);

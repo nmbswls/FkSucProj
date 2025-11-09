@@ -16,8 +16,6 @@ namespace Config
         [Serializable]
         public class OneDropData
         {
-            public string DropGroupId;
-
             public List<string> ItemIds;// n
             public List<int> DropNums; // 2*n
 

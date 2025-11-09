@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Map.Scene.Fov;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using static ChunkMapExportDatabase;
 
 public class StaticItemExporterWindow : EditorWindow
@@ -37,10 +39,13 @@ public class StaticItemExporterWindow : EditorWindow
         new Dictionary<(int x, int y), List<ChunkMapExportDatabase.StaticItem>>();
 
     // 扫描结果缓存
-    private Dictionary<(int x, int y), List<DynamicEntityExportGenerator>> chunkDynamicGenerator =
-        new Dictionary<(int x, int y), List<DynamicEntityExportGenerator>>();
+    private List<DynamicEntityExportGenerator> dynamicGenerator =
+        new();
 
     private Dictionary<string, Transform> namedPointCache = new();
+
+    private Dictionary<(int x, int y), List<Map.Scene.Fov.Segment2D>> chunkSegments =
+        new Dictionary<(int x, int y), List<Map.Scene.Fov.Segment2D>>();
 
     [MenuItem("Window/Static Item Exporter")]
     public static void Open()
@@ -92,7 +97,8 @@ public class StaticItemExporterWindow : EditorWindow
         EditorGUILayout.LabelField("Result Preview", EditorStyles.boldLabel);
         EditorGUILayout.LabelField($"Buckets: {chunkBuckets.Count}");
 
-        EditorGUILayout.LabelField($"Geenetor:{chunkDynamicGenerator.Count}");
+        EditorGUILayout.LabelField($"Geenetor:{dynamicGenerator.Count}");
+        
     }
 
     private void DrawRootsList()
@@ -104,7 +110,9 @@ public class StaticItemExporterWindow : EditorWindow
     private void ScanScene()
     {
         chunkBuckets.Clear();
-        chunkDynamicGenerator.Clear();
+        dynamicGenerator.Clear();
+        chunkSegments.Clear();
+
         namedPointCache.Clear();
 
         if (sceneRoot == null)
@@ -177,12 +185,7 @@ public class StaticItemExporterWindow : EditorWindow
                 {
                     var ck = WorldToChunk(generator.transform.position);
                     var key = (ck.x, ck.y);
-                    if (!chunkDynamicGenerator.TryGetValue(key, out var list))
-                    {
-                        list = new List<DynamicEntityExportGenerator>();
-                        chunkDynamicGenerator[key] = list;
-                    }
-                    list.Add(generator);
+                    dynamicGenerator.Add(generator);
                     continue;
                 }
 
@@ -197,6 +200,77 @@ public class StaticItemExporterWindow : EditorWindow
         {
             var t = namedPoint.GetChild(i);
             namedPointCache[t.name] = t; 
+        }
+
+        {
+
+            var fovObstacleRoot = sceneRoot.transform.Find("StaticRoot");
+            var fovObcLayer = LayerMask.NameToLayer("MapViewObc");
+            int segmentIdx = 0;
+
+
+            var stack = new Stack<Transform>();
+            stack.Push(fovObstacleRoot);
+
+            while (stack.Count > 0)
+            {
+                var t = stack.Pop();
+
+                // 过滤
+                if (!includeInactive && !t.gameObject.activeInHierarchy) continue;
+
+                // 对于指定层的碰撞体生成视线数据
+                if (t.gameObject.layer == fovObcLayer)
+                {
+                    var cols = t.GetComponentsInChildren<Collider2D>();
+                    List<Segment2D> outList = new();
+                    foreach (var col in cols)
+                    {
+                        switch (col)
+                        {
+                            case BoxCollider2D box:
+                                GetBoxWorldCorners(box, out var p0, out var p1, out var p2, out var p3);
+                                outList.Add(new Segment2D(++segmentIdx, p0, p1));
+                                outList.Add(new Segment2D(++segmentIdx, p1, p2));
+                                outList.Add(new Segment2D(++segmentIdx, p2, p3));
+                                outList.Add(new Segment2D(++segmentIdx, p3, p0));
+                                count += 4;
+                                break;
+
+                            case CircleCollider2D circle:
+                                GenerateCircleSegments(circle, 1e-1f, outList, ref segmentIdx);
+                                break;
+
+                            case PolygonCollider2D poly:
+                                GeneratePolygonSegments(poly, outList, ref segmentIdx);
+                                break;
+
+                            case CompositeCollider2D comp:
+                                GenerateCompositeSegments(comp, outList, ref segmentIdx);
+                                break;
+                        }
+                    }
+
+                    var ck = WorldToChunk(t.position);
+                    var key = (ck.x, ck.y);
+                    if (!chunkSegments.TryGetValue(key, out var list))
+                    {
+                        list = new();
+                        chunkSegments[key] = list;
+                    }
+
+                    list.AddRange(outList);
+                }
+
+                // 遍历子节点
+                for (int i = 0; i < t.childCount; i++)
+                    stack.Push(t.GetChild(i));
+            }
+        }
+
+        foreach (var chunk1 in chunkSegments)
+        {
+            Debug.Log($"Geenetor: segment:{chunk1.Key} count:{chunk1.Value.Count}");
         }
     }
 
@@ -304,7 +378,7 @@ public class StaticItemExporterWindow : EditorWindow
             chunkItems.StaticItems = kv.Value;
         }
 
-        foreach(var kv in chunkDynamicGenerator)
+        foreach (var kv in chunkSegments)
         {
             if (!infos1.TryGetValue(kv.Key, out var chunkItems))
             {
@@ -314,46 +388,49 @@ public class StaticItemExporterWindow : EditorWindow
                 };
                 infos1.Add(kv.Key, chunkItems);
             }
-            int unitId = 100;
-            foreach(var dynamicGen in kv.Value)
+
+            chunkItems.FovStaticSegments = kv.Value;
+        }
+
+        int unitId = 100;
+
+        foreach (var dynamicGen in dynamicGenerator)
+        {
+            var refreshInfo = new DynamicEntityRefreshInfo()
             {
-                var refreshInfo = new DynamicEntityRefreshInfo()
-                {
-                    UniqId = unitId++,
-                    EntityType = dynamicGen.EntityType,
-                    CfgId = dynamicGen.CfgId,
-                    Position = dynamicGen.transform.position,
-                    FaceDir = dynamicGen.transform.right,
+                UniqId = unitId++,
+                EntityType = dynamicGen.EntityType,
+                CfgId = dynamicGen.CfgId,
+                Position = dynamicGen.transform.position,
+                FaceDir = dynamicGen.transform.right,
 
 
-                    BindRoomId = dynamicGen.BindRoomId,
-                    AppearCond = dynamicGen.AppearCond,
-                };
+                BindRoomId = dynamicGen.BindRoomId,
+                AppearCond = dynamicGen.AppearCond,
+            };
 
-                if (dynamicGen is DynamicNpcExportGenerator unitEntity)
-                {
-                    var initInfo = new DynamicEntityInitInfo4Unit();
-                    initInfo.EnmityMode = unitEntity.EnmityMode;
-                    initInfo.MoveMode = unitEntity.MoveMode;
-                    initInfo.IsPeace = unitEntity.IsPeace;
+            if (dynamicGen is DynamicNpcExportGenerator unitEntity)
+            {
+                var initInfo = new DynamicEntityInitInfo4Unit();
+                initInfo.EnmityMode = unitEntity.EnmityMode;
+                initInfo.MoveMode = unitEntity.MoveMode;
+                initInfo.IsPeace = unitEntity.IsPeace;
 
-                    refreshInfo.InitInfo = initInfo;
-                }
-                else if(dynamicGen is DynamicPatrolGroupExportGenerator patrolGroupGen)
-                {
-                    var initInfo = new DynamicEntityInitInfo4PatrolGroup();
-
-                    initInfo.MoveSpeed = patrolGroupGen.MoveSpeed;
-                    initInfo.Waypoints.AddRange(patrolGroupGen.Waypoints);
-                    initInfo.LoopMode = patrolGroupGen.LoopMode;
-                    initInfo.GroupUnits = patrolGroupGen.GroupUnits;
-
-                    refreshInfo.InitInfo = initInfo;
-                }
-
-                chunkItems.EntityRefreshInfo.Add(refreshInfo);
-
+                refreshInfo.InitInfo = initInfo;
             }
+            else if (dynamicGen is DynamicPatrolGroupExportGenerator patrolGroupGen)
+            {
+                var initInfo = new DynamicEntityInitInfo4PatrolGroup();
+
+                initInfo.MoveSpeed = patrolGroupGen.MoveSpeed;
+                initInfo.Waypoints.AddRange(patrolGroupGen.Waypoints);
+                initInfo.LoopMode = patrolGroupGen.LoopMode;
+                initInfo.GroupUnits = patrolGroupGen.GroupUnits;
+
+                refreshInfo.InitInfo = initInfo;
+            }
+
+            asset.EntityRefreshInfo.Add(refreshInfo);
         }
 
         foreach(var info in infos1)
@@ -376,4 +453,96 @@ public class StaticItemExporterWindow : EditorWindow
         EditorGUIUtility.PingObject(asset);
         Debug.Log($"Exported ChunkStaticDatabase: {asset.Buckets.Count} buckets -> {path}");
     }
+
+    #region 线段提取
+
+    private static void GetBoxWorldCorners(BoxCollider2D box, out Vector2 p0, out Vector2 p1, out Vector2 p2, out Vector2 p3)
+    {
+        var tf = box.transform;
+        var size = Vector2.Scale(box.size, tf.lossyScale);
+        var offset = box.offset;
+        var cx = tf.TransformPoint((Vector3)offset);
+        var right = tf.right * (size.x * 0.5f);
+        var up = tf.up * (size.y * 0.5f);
+        Vector3 v0 = cx - right - up;
+        Vector3 v1 = cx + right - up;
+        Vector3 v2 = cx + right + up;
+        Vector3 v3 = cx - right + up;
+        p0 = v0; p1 = v1; p2 = v2; p3 = v3;
+    }
+
+    public static int CalcCircleSides(float radius, float maxWorldError, int minN = 12, int maxN = 64)
+    {
+        radius = Mathf.Max(radius, 1e-4f);
+        maxWorldError = Mathf.Max(maxWorldError, 1e-6f);
+        float nApprox = Mathf.PI * Mathf.Sqrt(radius / (2f * maxWorldError));
+        int N = Mathf.CeilToInt(nApprox);
+        N = Mathf.Clamp(N, minN, maxN);
+        if ((N & 1) == 1) N += 1;
+        return N;
+    }
+
+    private static void GenerateCircleSegments(CircleCollider2D circle, float maxError, List<Segment2D> outList, ref int segIdx)
+    {
+        var tf = circle.transform;
+        float r = Mathf.Abs(circle.radius) * Mathf.Max(Mathf.Abs(tf.lossyScale.x), Mathf.Abs(tf.lossyScale.y));
+        int sides = CalcCircleSides(r, Mathf.Max(1e-4f, maxError), 12, 64);
+
+        Vector2 center = tf.TransformPoint(circle.offset);
+        float angleStep = Mathf.PI * 2f / sides;
+
+        Vector2 prev = center + new Vector2(r, 0f);
+        for (int i = 1; i <= sides; i++)
+        {
+            float ang = i * angleStep;
+            Vector2 cur = center + new Vector2(Mathf.Cos(ang) * r, Mathf.Sin(ang) * r);
+            outList.Add(new Segment2D(++segIdx, prev, cur));
+            prev = cur;
+        }
+    }
+
+    private static void GeneratePolygonSegments(PolygonCollider2D poly, List<Segment2D> outList, ref int segIdx)
+    {
+        var tf = poly.transform;
+        int pathCount = poly.pathCount;
+        for (int p = 0; p < pathCount; p++)
+        {
+            var path = poly.GetPath(p);
+            int n = path.Length;
+            if (n < 2) continue;
+            Vector2 prev = tf.TransformPoint(path[0] + poly.offset);
+            for (int i = 1; i < n; i++)
+            {
+                Vector2 cur = tf.TransformPoint(path[i] + poly.offset);
+                outList.Add(new Segment2D(++segIdx, prev, cur));
+                prev = cur;
+            }
+            Vector2 first = tf.TransformPoint(path[0] + poly.offset);
+            outList.Add(new Segment2D(++segIdx, prev, first));
+        }
+    }
+
+    private static void GenerateCompositeSegments(CompositeCollider2D comp, List<Segment2D> outList, ref int segIdx)
+    {
+        var tf = comp.transform;
+        int pathCount = comp.pathCount;
+        for (int p = 0; p < pathCount; p++)
+        {
+            int pointCount = comp.GetPathPointCount(p);
+            if (pointCount < 2) continue;
+            var pts = new Vector2[pointCount];
+            comp.GetPath(p, pts);
+            Vector2 prev = tf.TransformPoint((Vector3)pts[0]);
+            for (int i = 1; i < pointCount; i++)
+            {
+                Vector2 cur = tf.TransformPoint((Vector3)pts[i]);
+                outList.Add(new Segment2D(++segIdx, prev, cur));
+                prev = cur;
+            }
+            Vector2 first = tf.TransformPoint((Vector3)pts[0]);
+            outList.Add(new Segment2D(++segIdx, prev, first));
+        }
+    }
+
+    #endregion
 }

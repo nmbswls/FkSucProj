@@ -120,7 +120,7 @@ public class FakeHintTextManager : MonoBehaviour
     public void TickAll(float dt)
     {
         _toRemove.Clear();
-        for (int i = 0; i < _items.Count; i++)
+        for (int i = _items.Count - 1; i >= 0; i--)
         {
             var item = _items[i];
             item.elapsed += dt;
@@ -142,7 +142,8 @@ public class FakeHintTextManager : MonoBehaviour
             if (item.elapsed >= item.lifetime)
             {
                 if (item.go) Destroy(item.go);
-                _toRemove.Enqueue(i);
+                _items.RemoveAt(i);
+                //_toRemove.Enqueue(i);
             }
             else
             {
@@ -150,17 +151,17 @@ public class FakeHintTextManager : MonoBehaviour
             }
         }
 
-        // 从后往前删除，避免索引错乱
-        while (_toRemove.Count > 0)
-        {
-            int idx = _toRemove.Dequeue();
-            if (idx >= 0 && idx < _items.Count)
-            {
-                _items.RemoveAt(idx);
-                // 注意：移除后索引变化，本轮我们只记录将要删除的索引并逐个处理，
-                // 如果担心索引错乱，可改为倒序遍历或记录对象引用再统一清理。
-            }
-        }
+        //// 从后往前删除，避免索引错乱
+        //while (_toRemove.Count > 0)
+        //{
+        //    int idx = _toRemove.Dequeue();
+        //    if (idx >= 0 && idx < _items.Count)
+        //    {
+        //        _items.RemoveAt(idx);
+        //        // 注意：移除后索引变化，本轮我们只记录将要删除的索引并逐个处理，
+        //        // 如果担心索引错乱，可改为倒序遍历或记录对象引用再统一清理。
+        //    }
+        //}
     }
 
     // 飘字数据结构（非 MonoBehaviour，纯数据，由管理器驱动）

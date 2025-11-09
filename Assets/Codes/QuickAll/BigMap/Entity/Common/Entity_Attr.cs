@@ -9,16 +9,18 @@ using UnityEngine;
 namespace Map.Entity.Attr
 {
     public enum SourceType
-    { 
-        Buff, 
-        Skill, 
+    {
+        AbilityActive,
+        Buff,
+        BuffTrigger,
+        BuffEffect,
         Item, 
-        Talent, 
         Env,
         Aura,
         AreaEffect,
-
+        Bullet,
         Mechanism,
+        Throw,
     }
 
     public enum EAttrType
@@ -67,12 +69,17 @@ namespace Map.Entity.Attr
 
     public  struct SourceKey : IEquatable<SourceKey>
     {
-        public  long entityId;
-        public  SourceType type;
-        public  string sourceId;  
-        public  long instanceId;   // 运行时实例
-        public bool Equals(SourceKey other) => entityId == other.entityId && type == other.type && sourceId == other.sourceId && instanceId == other.instanceId;
-        public override int GetHashCode() => HashCode.Combine(entityId, (int)type, sourceId, instanceId);
+        public SourceType type;
+
+        public long entityId;
+        public long buffId;
+        public string buffName;
+        public string abilityName;
+        public string sourceId;
+        public long bulletId;
+
+        public bool Equals(SourceKey other) => type == other.type && entityId == other.entityId && buffId == other.buffId && buffName == other.buffName && abilityName == other.abilityName && sourceId == other.sourceId;
+        public override int GetHashCode() => HashCode.Combine((int)type, entityId, buffId, buffName, abilityName, sourceId, bulletId);
     }
 
     public sealed class Modifier
@@ -133,6 +140,9 @@ namespace Map.Entity.Attr
         public long delta;
         public SourceKey? srcKey;
         public int deltaFlags;
+        public Dictionary<string, long> extraAttrs = null;
+
+        public long finalDelta;
     }
 
     public sealed class AttrCalcContext
@@ -394,6 +404,8 @@ namespace Map.Entity.Attr
                 final = (baseComputed + e.addSum) * e.mulProduct;
             }
 
+            Debug.Log($"entity {Owner.Id} RecomputeNumeric {attrId} update {final}");
+
 
             if (Math.Abs(final - e.finalValue) > epsilon)
             {
@@ -409,7 +421,7 @@ namespace Map.Entity.Attr
 
 
         // 3) 聚合资源变化
-        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source)
+        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source, Dictionary<string, long> extraAttrs = null)
         {
             if (!resources.TryGetValue(resourceId, out var r)) return;
 
@@ -417,7 +429,8 @@ namespace Map.Entity.Attr
             {
                 delta = delta,
                 srcKey = source,
-                deltaFlags = isDamage ? 1 : 0
+                deltaFlags = isDamage ? 1 : 0,
+                extraAttrs = extraAttrs,
             });
         }
 
@@ -431,7 +444,10 @@ namespace Map.Entity.Attr
                 foreach(var pending in r.pendingDelta)
                 {
                     long before = r.current;
-                    r.current += pending.delta;
+
+                    var delta = Owner.CalculateResourceCostAmount(pending);
+                    pending.finalDelta = delta;
+                    r.current += delta;
 
                     EvOnResourceAttrChanged?.Invoke(r.resourceId, before, r.current, pending);
                     r.version++;

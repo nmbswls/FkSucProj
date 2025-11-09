@@ -5,7 +5,7 @@ using Unit.Ability.Effect;
 using UnityEditor;
 using UnityEngine;
 
-[CustomPropertyDrawer(typeof(MapAbilityEffectCfg), true)]
+[CustomPropertyDrawer(typeof(MapFightEffectCfg), true)]
 public class BaseAbilityEffectDrawer : PropertyDrawer
 {
     public static readonly Dictionary<EAbilityEffectType, Type> TypeMap = new()
@@ -27,7 +27,7 @@ public class BaseAbilityEffectDrawer : PropertyDrawer
 
     // 占位类型
     [Serializable]
-    private class NoneEffectCfg : MapAbilityEffectCfg
+    private class NoneEffectCfg : MapFightEffectCfg
     {
         public string note = "Select an Effect Type";
 
@@ -161,7 +161,7 @@ public class BaseAbilityEffectDrawer : PropertyDrawer
         var targetType = TypeMap[newType] ?? TypeMap[EAbilityEffectType.None];
         try
         {
-            var instance = Activator.CreateInstance(targetType) as MapAbilityEffectCfg;
+            var instance = Activator.CreateInstance(targetType) as MapFightEffectCfg;
             instance.EffectType = newType;
             property.managedReferenceValue = instance;
             property.serializedObject?.ApplyModifiedProperties();

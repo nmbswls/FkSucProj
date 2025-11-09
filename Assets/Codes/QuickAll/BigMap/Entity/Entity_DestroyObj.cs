@@ -24,7 +24,6 @@ namespace Map.Entity
 
         protected override void InitAttribute()
         {
-            attributeStore = new(this);
             attributeStore.RegisterNumeric("HP.Max", initialBase: 100);
             attributeStore.RegisterResource("HP", "HP.Max", 100);
 

@@ -31,6 +31,8 @@ namespace Map.Entity.Attr
         public const string UnitEnterHVal = "UnitEnterHVal";
         public const string StatUnstoppable = "StatUnstoppable";
 
+        public const string DamageXiXue = "DamageXiXue";
+
         #region ÌØÊâ×´Ì¬¡¢ÊÓ¾õµÈ
 
         public const string HidingMask = "HidingMask";
@@ -38,6 +40,13 @@ namespace Map.Entity.Attr
 
         #endregion
     }
+
+    public struct AttrKvPair
+    {
+        public string AttrId;
+        public long Val;
+    }
+
 
     public static class UnitAttrSystemUnits
     {

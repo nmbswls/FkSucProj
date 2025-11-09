@@ -26,6 +26,8 @@ public class AnyContainerItemCell : MonoBehaviour, IPointerClickHandler, IBeginD
 
     public EContainerType ContainerType;
 
+    public Transform ValTr;
+
     public void Bind(Bag.ItemStack stack, int index, EContainerType containerType, System.Action<int> onChangedCb)
     {
         boundStack = stack;
@@ -37,13 +39,34 @@ public class AnyContainerItemCell : MonoBehaviour, IPointerClickHandler, IBeginD
         bool hasItem = stack != null && stack.Count > 0;
         //emptyOverlay?.SetActive(!hasItem);
         icon.enabled = hasItem;
+
+        
+
         countText.enabled = hasItem;
 
         if (hasItem)
         {
             icon.sprite = FakeItemDatabase.GetIcon(stack.ItemID);
-            countText.text = stack.Count > 1 ? stack.Count.ToString() : "";
+            countText.text = stack.Count.ToString();
+
+            if (stack.MaxStack > 1)
+            {
+                ValTr.gameObject.SetActive(true);
+            }
+            else
+            {
+                ValTr.gameObject.SetActive(false);
+            }
         }
+    }
+
+    public void ClearEmpty(int index, EContainerType containerType)
+    {
+        boundStack = null;
+        icon.enabled = false;
+
+        Index = index;
+        ContainerType = containerType;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -62,6 +85,7 @@ public class AnyContainerItemCell : MonoBehaviour, IPointerClickHandler, IBeginD
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (boundStack == null || boundStack.Count == 0) return;
+        ItemPopupMenu.Instance.Close();
         ItemDragDropController.Instance.BeginDrag(boundStack, ContainerType, Index);
     }
 
@@ -73,6 +97,7 @@ public class AnyContainerItemCell : MonoBehaviour, IPointerClickHandler, IBeginD
     public void OnEndDrag(PointerEventData eventData)
     {
         ItemDragDropController.Instance.EndDrag();
+        ItemPopupMenu.Instance.Close();
     }
 
     /// <summary>

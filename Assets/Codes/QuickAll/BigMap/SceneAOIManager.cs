@@ -397,6 +397,7 @@ public class SceneAOIManager : MonoBehaviour
         entry.pres.Bind(entry.entity);
         entry.pres.SetVisible(true);
         entry.entity.OnEnterAOI();
+
     }
 
     private void HideAndRecyclePresentation(AOIEntry entry) // === 修改: 使用 entry 版本 ===
@@ -668,6 +669,9 @@ public class SceneAOIManager : MonoBehaviour
         rec.loadState = LoadState.Loaded;
         rec.lastBecameLoaded = Time.time;
         _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
+
+        var segments = ExportDb.GetChunkSegments(rec.coord.X, rec.coord.Y);
+        WorldAreaManager.Instance.SegmentProvider.AddSegments(rec.coord.ToString(), segments);
     }
 
     private async Task<int> InstantiateBatch(List<ChunkMapExportDatabase.StaticItem> items, List<GameObject> instances, int objCountSinceYield)
@@ -746,6 +750,8 @@ public class SceneAOIManager : MonoBehaviour
             rec.loadState = LoadState.Unloaded;
             rec.lastBecameUndesired = 0f; // 退出窗口计时完成，重置
         }
+
+        WorldAreaManager.Instance.SegmentProvider.RemoveSource(rec.coord.ToString());
     }
 
     private async Task ReleaseSlice(List<GameObject> slice)

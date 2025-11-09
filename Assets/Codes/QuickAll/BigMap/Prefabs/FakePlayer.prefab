@@ -300,7 +300,7 @@ Transform:
   m_GameObject: {fileID: 6956381704089079146}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.051, y: 0.21, z: 0}
+  m_LocalPosition: {x: 0, y: 0.2, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -469,7 +469,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.15
 --- !u!114 &7180204486320806212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,14 +482,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 947dbff28bb3d4f4ca32b275cc55fbf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  icon: {fileID: 1056535552178087710}
   highlightFx: {fileID: 0}
+  faceIndicator: {fileID: 0}
   WeaponRoot: {fileID: 467929022752859511}
   WeaponCtrl: {fileID: 8553735297119162253}
   navAgent: {fileID: 0}
   rb: {fileID: 0}
   mainCol: {fileID: 0}
   freeMoveDir: {x: 0, y: 0}
+  maxTurnSpeedDegPerSec: 720
+  smoothTime: 0.12
   selfRadius: 0.5
   queryRadius: 1.2
   maxNeighbors: 12

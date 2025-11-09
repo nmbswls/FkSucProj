@@ -28,7 +28,6 @@ namespace Map.Entity
             var cacheCfg = MapNpcConfigLoader.Get(CfgId);
             moveSpeed = cacheCfg.MoveSpeed;
 
-            attributeStore = new(this);
             // ÊýÖµÀà
             attributeStore.RegisterNumeric("Attack", initialBase: 100);
             attributeStore.RegisterNumeric("Strength", initialBase: 10);

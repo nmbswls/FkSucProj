@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectHitBoxCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectHitBoxCfg : MapFightEffectCfg
     {
         public enum EShape
         {
@@ -31,7 +31,7 @@ namespace Unit.Ability.Effect
         public float HitVal;
 
         [SerializeReference]
-        public List<MapAbilityEffectCfg> OnHitEffects = new();
+        public List<MapFightEffectCfg> OnHitEffects = new();
     }
 }
 

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectDashStartCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectDashStartCfg : MapFightEffectCfg
     {
         public bool IsTimeMode;
         public float DashDuration;

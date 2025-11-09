@@ -5,7 +5,6 @@ using Config.Unit;
 using DG.Tweening;
 using Map.Entity;
 using Map.Entity.AI;
-using Map.Entity.AI.Stategy;
 using Map.Logic.Chunk;
 using Map.Logic.Events;
 using SuperScrollView;
@@ -71,7 +70,6 @@ namespace Map.Entity
         {
             moveSpeed = cacheCfg.MoveSpeed;
 
-            attributeStore = new(this);
             // ÊýÖµÀà
             attributeStore.RegisterNumeric("Attack", initialBase: 100);
             attributeStore.RegisterNumeric("Strength", initialBase: 10);

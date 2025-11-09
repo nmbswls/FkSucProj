@@ -22,8 +22,8 @@ MonoBehaviour:
       Position: {x: -3.44, y: 6.46, z: -0.5}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
-    EntityRefreshInfo: []
     RoomExportInfos: []
+    FovStaticSegments: []
   - Chunk:
       X: 0
       Y: -1
@@ -32,164 +32,293 @@ MonoBehaviour:
       Position: {x: 5.99, y: 5.27, z: -0.5}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
-    EntityRefreshInfo: []
     RoomExportInfos: []
+    FovStaticSegments: []
   - Chunk:
       X: -1
       Y: 0
-    StaticItems: []
-    EntityRefreshInfo:
-    - UniqId: 100
-      EntityType: 8
-      CfgId: patrol_01
-      Position: {x: -6.09, y: 5.01}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: 69777392211853755
-    - UniqId: 101
-      EntityType: 7
-      CfgId: obj_01
-      Position: {x: -1.034, y: 0.554}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: -2
-    - UniqId: 102
-      EntityType: 7
-      CfgId: obj_01
-      Position: {x: -1.605, y: 0.409}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: -2
-    - UniqId: 103
-      EntityType: 7
-      CfgId: obj_01
-      Position: {x: -1.034, y: 0}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: -2
-    - UniqId: 104
-      EntityType: 3
-      CfgId: civil
-      Position: {x: -5.66, y: 0.39}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: 69777392211853756
-    - UniqId: 105
-      EntityType: 4
-      CfgId: dig_01
-      Position: {x: -2.42, y: 2.51}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: -2
+    StaticItems:
+    - Key: P1
+      Position: {x: -4.28, y: -0.09, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 2, y: 4, z: 1}
     RoomExportInfos: []
+    FovStaticSegments:
+    - segmentId: 5
+      a: {x: -5.28, y: -2.09}
+      b: {x: -3.2800002, y: -2.09}
+      bounds:
+        m_Center: {x: -4.28, y: -2.09, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 6
+      a: {x: -3.2800002, y: -2.09}
+      b: {x: -3.2800002, y: 1.91}
+      bounds:
+        m_Center: {x: -3.2800002, y: -0.089999974, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 7
+      a: {x: -3.2800002, y: 1.91}
+      b: {x: -5.28, y: 1.91}
+      bounds:
+        m_Center: {x: -4.28, y: 1.91, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 8
+      a: {x: -5.28, y: 1.91}
+      b: {x: -5.28, y: -2.09}
+      bounds:
+        m_Center: {x: -5.28, y: -0.089999974, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 9
+      a: {x: -1.9300001, y: 5.95}
+      b: {x: -2.0639746, y: 6.45}
+      bounds:
+        m_Center: {x: -1.9969873, y: 6.2, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 10
+      a: {x: -2.0639746, y: 6.45}
+      b: {x: -2.43, y: 6.8160253}
+      bounds:
+        m_Center: {x: -2.2469873, y: 6.633013, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 11
+      a: {x: -2.43, y: 6.8160253}
+      b: {x: -2.93, y: 6.95}
+      bounds:
+        m_Center: {x: -2.68, y: 6.883013, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 12
+      a: {x: -2.93, y: 6.95}
+      b: {x: -3.43, y: 6.8160253}
+      bounds:
+        m_Center: {x: -3.18, y: 6.883013, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 13
+      a: {x: -3.43, y: 6.8160253}
+      b: {x: -3.7960255, y: 6.45}
+      bounds:
+        m_Center: {x: -3.6130128, y: 6.633013, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 14
+      a: {x: -3.7960255, y: 6.45}
+      b: {x: -3.93, y: 5.95}
+      bounds:
+        m_Center: {x: -3.8630128, y: 6.2, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 15
+      a: {x: -3.93, y: 5.95}
+      b: {x: -3.7960253, y: 5.45}
+      bounds:
+        m_Center: {x: -3.8630128, y: 5.7, z: 0}
+        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
+    - segmentId: 16
+      a: {x: -3.7960253, y: 5.45}
+      b: {x: -3.43, y: 5.0839744}
+      bounds:
+        m_Center: {x: -3.6130128, y: 5.266987, z: 0}
+        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
+    - segmentId: 17
+      a: {x: -3.43, y: 5.0839744}
+      b: {x: -2.93, y: 4.95}
+      bounds:
+        m_Center: {x: -3.18, y: 5.016987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 18
+      a: {x: -2.93, y: 4.95}
+      b: {x: -2.43, y: 5.0839744}
+      bounds:
+        m_Center: {x: -2.68, y: 5.016987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 19
+      a: {x: -2.43, y: 5.0839744}
+      b: {x: -2.0639744, y: 5.45}
+      bounds:
+        m_Center: {x: -2.2469873, y: 5.266987, z: 0}
+        m_Extent: {x: 0.18301284, y: 0.18301272, z: 0}
+    - segmentId: 20
+      a: {x: -2.0639744, y: 5.45}
+      b: {x: -1.9300001, y: 5.95}
+      bounds:
+        m_Center: {x: -1.9969872, y: 5.7, z: 0}
+        m_Extent: {x: 0.06698716, y: 0.25, z: 0}
   - Chunk:
       X: 0
       Y: 0
-    StaticItems: []
-    EntityRefreshInfo:
-    - UniqId: 100
-      EntityType: 6
-      CfgId: bush_default
-      Position: {x: 0, y: 0}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: -2
-    - UniqId: 101
-      EntityType: 3
-      CfgId: hunhun
-      Position: {x: 5.04, y: 1.94}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: 69777392211853757
-    - UniqId: 102
-      EntityType: 3
-      CfgId: civil
-      Position: {x: 0.49, y: 4.67}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: 69777392211853758
-    - UniqId: 103
-      EntityType: 3
-      CfgId: civil
-      Position: {x: 0.76, y: -2.34}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: 69777392211853759
-    - UniqId: 104
-      EntityType: 4
-      CfgId: box_01
-      Position: {x: 5.07, y: -3.09}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: -2
-    - UniqId: 105
-      EntityType: 4
-      CfgId: box_01
-      Position: {x: 4.99, y: 5.56}
-      FaceDir: {x: 1, y: 0}
-      BindRoomId: 
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-      InitInfo:
-        rid: -2
+    StaticItems:
+    - Key: P2
+      Position: {x: 3.94, y: 0.56, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 2, y: 4, z: 1}
     RoomExportInfos: []
+    FovStaticSegments:
+    - segmentId: 1
+      a: {x: 2.94, y: -1.44}
+      b: {x: 4.94, y: -1.44}
+      bounds:
+        m_Center: {x: 3.94, y: -1.44, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 2
+      a: {x: 4.94, y: -1.44}
+      b: {x: 4.94, y: 2.56}
+      bounds:
+        m_Center: {x: 4.94, y: 0.55999994, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 3
+      a: {x: 4.94, y: 2.56}
+      b: {x: 2.94, y: 2.56}
+      bounds:
+        m_Center: {x: 3.94, y: 2.56, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 4
+      a: {x: 2.94, y: 2.56}
+      b: {x: 2.94, y: -1.44}
+      bounds:
+        m_Center: {x: 2.94, y: 0.55999994, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+  EntityRefreshInfo:
+  - UniqId: 100
+    EntityType: 8
+    CfgId: patrol_01
+    Position: {x: -6.09, y: 5.01}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: 9166155861324726387
+  - UniqId: 101
+    EntityType: 7
+    CfgId: obj_01
+    Position: {x: -1.034, y: 0.554}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: -2
+  - UniqId: 102
+    EntityType: 7
+    CfgId: obj_01
+    Position: {x: -1.605, y: 0.409}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: -2
+  - UniqId: 103
+    EntityType: 7
+    CfgId: obj_01
+    Position: {x: -1.034, y: 0}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: -2
+  - UniqId: 104
+    EntityType: 6
+    CfgId: bush_default
+    Position: {x: 0, y: 0}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: -2
+  - UniqId: 105
+    EntityType: 3
+    CfgId: hunhun
+    Position: {x: 5.04, y: 1.94}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: 9166155861324726388
+  - UniqId: 106
+    EntityType: 3
+    CfgId: civil
+    Position: {x: 0.49, y: 4.67}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: 9166155861324726389
+  - UniqId: 107
+    EntityType: 3
+    CfgId: civil
+    Position: {x: -5.66, y: 0.39}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: 9166155861324726390
+  - UniqId: 108
+    EntityType: 3
+    CfgId: civil
+    Position: {x: 0.76, y: -2.34}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: 9166155861324726391
+  - UniqId: 109
+    EntityType: 4
+    CfgId: box_01
+    Position: {x: 5.07, y: -3.09}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: -2
+  - UniqId: 110
+    EntityType: 4
+    CfgId: box_01
+    Position: {x: 4.99, y: 5.56}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: -2
+  - UniqId: 111
+    EntityType: 4
+    CfgId: dig_01
+    Position: {x: -2.42, y: 2.51}
+    FaceDir: {x: 1, y: 0}
+    BindRoomId: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+    InitInfo:
+      rid: -2
   NamedPoints:
   - Name: 1
     Position: {x: 2.42, y: 6.73, z: 0}
@@ -216,7 +345,7 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 69777392211853755
+    - rid: 9166155861324726387
       type: {class: ChunkMapExportDatabase/DynamicEntityInitInfo4PatrolGroup, ns: , asm: Assembly-CSharp}
       data:
         MoveSpeed: 0.2
@@ -236,25 +365,25 @@ MonoBehaviour:
         - EntityType: 3
           CfgId: hunhun
           RelativePos: {x: 0, y: 0.2}
-    - rid: 69777392211853756
-      type: {class: ChunkMapExportDatabase/DynamicEntityInitInfo4Unit, ns: , asm: Assembly-CSharp}
-      data:
-        EnmityMode: 0
-        MoveMode: 0
-        IsPeace: 1
-    - rid: 69777392211853757
+    - rid: 9166155861324726388
       type: {class: ChunkMapExportDatabase/DynamicEntityInitInfo4Unit, ns: , asm: Assembly-CSharp}
       data:
         EnmityMode: 2
         MoveMode: 0
         IsPeace: 0
-    - rid: 69777392211853758
+    - rid: 9166155861324726389
       type: {class: ChunkMapExportDatabase/DynamicEntityInitInfo4Unit, ns: , asm: Assembly-CSharp}
       data:
         EnmityMode: 0
         MoveMode: 0
         IsPeace: 1
-    - rid: 69777392211853759
+    - rid: 9166155861324726390
+      type: {class: ChunkMapExportDatabase/DynamicEntityInitInfo4Unit, ns: , asm: Assembly-CSharp}
+      data:
+        EnmityMode: 0
+        MoveMode: 0
+        IsPeace: 1
+    - rid: 9166155861324726391
       type: {class: ChunkMapExportDatabase/DynamicEntityInitInfo4Unit, ns: , asm: Assembly-CSharp}
       data:
         EnmityMode: 0

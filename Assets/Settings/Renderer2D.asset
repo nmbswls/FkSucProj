@@ -14,9 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
-  m_RendererFeatures: []
-  m_RendererFeatureMap: 
+    hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
+  m_RendererFeatures:
+  - {fileID: 7161275607166290003}
+  m_RendererFeatureMap: 5308d1ff38f66163
   m_UseNativeRenderPass: 0
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_TransparencySortMode: 0
   m_TransparencySortAxis: {x: 0, y: 1, z: 0}
   m_HDREmulationScale: 1
@@ -45,6 +50,8 @@ MonoBehaviour:
   m_PointLightShader: {fileID: 4800000, guid: e35a31e1679aeff489e202f5cc4853d5, type: 3}
   m_PointLightVolumeShader: {fileID: 4800000, guid: c7d04ca57e5449d49ad9cee1c604bc26, type: 3}
   m_CoreBlitShader: {fileID: 4800000, guid: 93446b5c5339d4f00b85c159e1159b7c, type: 3}
+  m_BlitHDROverlay: {fileID: 4800000, guid: a89bee29cffa951418fc1e2da94d1959, type: 3}
+  m_CoreBlitColorAndDepthPS: {fileID: 4800000, guid: d104b2fc1ca6445babb8e90b0758136b, type: 3}
   m_SamplingShader: {fileID: 4800000, guid: 04c410c9937594faa893a11dceb85f7e, type: 3}
   m_ProjectedShadowShader: {fileID: 4800000, guid: ce09d4a80b88c5a4eb9768fab4f1ee00, type: 3}
   m_SpriteShadowShader: {fileID: 4800000, guid: 44fc62292b65ab04eabcf310e799ccf6, type: 3}
@@ -58,3 +65,26 @@ MonoBehaviour:
   m_DefaultLitMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_DefaultUnlitMaterial: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_DefaultMaskMaterial: {fileID: 2100000, guid: 15d0c3709176029428a0da2f8cecf0b5, type: 2}
+--- !u!114 &7161275607166290003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9025c9ff21d63c149b94e1516e5db0ef, type: 3}
+  m_Name: MaskBlurRendererFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    injectionPoint: 500
+    blurMaterial: {fileID: 2100000, guid: dcb18b49b56658a4db228a23cfd3c5cd, type: 2}
+    sourceMaskRT: {fileID: 8400000, guid: ccf047611ca83404a82bbfc3afabe3ea, type: 2}
+    screenMaskMaterial: {fileID: 2100000, guid: 465fee0865b48fe44b4395743d816dfd, type: 2}
+    maskTexturePropertyName: _LightMask
+    blurRadius: 0
+    blurSigma: 0
+    filterMode: 1
+    outputFormat: 0

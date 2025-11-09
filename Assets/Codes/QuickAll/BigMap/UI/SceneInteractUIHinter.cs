@@ -14,16 +14,7 @@ public class SceneInteractUIHinter : MonoBehaviour
     public int SelectIdx = 0;
 
     //public GameObject SelectItemPrefab;
-    public class SelectItemWrapper
-    {
-        public int SelectIdx;
-        public string Selection;
-        public RectTransform Root;
-        public TextMeshProUGUI Content;
-        public Button ClickArea;
-    }
-
-
+    public Transform ShowRoot;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +26,15 @@ public class SceneInteractUIHinter : MonoBehaviour
         if(BindInteractPoint == null)
         {
             return;
+        }
+
+        if(BindInteractPoint.CanInteractEnable())
+        {
+            ShowRoot.gameObject.SetActive(true);
+        }
+        else
+        {
+            ShowRoot.gameObject.SetActive(false);
         }
 
         var hintPos = BindInteractPoint.GetHintAnchorPosition();
@@ -93,8 +93,8 @@ public class SceneInteractUIHinter : MonoBehaviour
         //}
     }
 
-    public void OnSelectClicked(SelectItemWrapper wrapper)
-    {
-        //BindInteractPoint.TriggerInteract(wrapper.Selection);
-    }
+    //public void OnSelectClicked(SelectItemWrapper wrapper)
+    //{
+    //    //BindInteractPoint.TriggerInteract(wrapper.Selection);
+    //}
 }

@@ -3,13 +3,11 @@ using Config;
 using Map.Logic.Chunk;
 using UnityEngine;
 using Map.Logic.Events;
-using static MapEntityAbilityController;
 using System;
 using Map.Entity.AI;
 using Map.Entity.Attr;
 using System.Collections.Generic;
 using Map.Entity.Throw;
-using Map.Entity.AI.Stategy;
 
 
 namespace Map.Entity
@@ -18,7 +16,8 @@ namespace Map.Entity
     public abstract class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget
     {
         public MapEntityAbilityController abilityController;
-
+        public float viewRadius = 8f;
+        public float fovDegrees = 90f;
         public LogicEntityRecord4UnitBase UnitBaseRecord { get { return (LogicEntityRecord4UnitBase)BindingRecord; } }
 
         public enum EUnitEnmityMode
@@ -51,8 +50,7 @@ namespace Map.Entity
 
         public event Action EventOnHpChanged;
 
-        private float _aiBrainTimer;
-        public float AIBrainInteval = 0.25f;
+        
 
 
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -97,16 +95,7 @@ namespace Map.Entity
                 }
             }
 
-            if (_aiBrainTimer > 0)
-            {
-                _aiBrainTimer -= dt;
-            }
-
-            if (_aiBrainTimer <= 0)
-            {
-                _aiBrainTimer = AIBrainInteval;
-                AIBrain?.Tick(dt);
-            }
+            //AIBrain?.Tick(now, dt);
 
 
             if (attributeStore.GetAttr(AttrIdConsts.LockFace) == 0 && targettedMoveIntent != null && targettedMoveIntent.targettedDesireDir != null)
@@ -120,6 +109,36 @@ namespace Map.Entity
             attributeStore.Commit();
         }
 
+        public override void OnEntityDie(ResourceDeltaIntent lastIntent)
+        {
+            base.OnEntityDie(lastIntent);
+
+            if(lastIntent.srcKey != null)
+            {
+                var logicEntity = LogicManager.GetLogicEntity(lastIntent.srcKey.Value.entityId);
+
+                var diff = logicEntity.Pos - this.Pos;
+                var impluse = -(diff.normalized);
+
+                CreateKnockBackIntent(impluse, 5f);
+            }
+
+
+            if(!string.IsNullOrEmpty(unitCfg.DropId))
+            {
+                Debug.Log("entity die generate drop spoil." + Id);
+
+                LogicEntityRecord rec = new LogicEntityRecord4LootPoint()
+                {
+                    Id = GameLogicManager.LogicEntityIdInst++,
+                    EntityType = EEntityType.LootPoint,
+                    CfgId = "spoil_small",
+                    Position = this.Pos,
+                    DynamicDropId = unitCfg.DropId,
+                };
+                LogicManager.CreateNewEntityRecord(rec);
+            }
+        }
 
 
         #region 移动控制
@@ -179,6 +198,8 @@ namespace Map.Entity
             intent.dashDuration = dashTime;
             externalVel = intent.dashDir.normalized * intent.dashSpeed;
             //onNewDashIntent?.Invoke(intent);
+
+            dashIntent = intent;
         }
 
 
@@ -201,13 +222,19 @@ namespace Map.Entity
         }
 
 
-        public void CreateKnockBackIntent()
+        public void CreateKnockBackIntent(Vector2 dir, float power)
         {
             KnockBackIntent intent = new();
 
+            intent.knockbackTimeLeft = 0.3f;
+            intent.knockbackMinEndSpeed = 0.1f;
+            intent.knockbackDuration = 0.3f;
+            intent.knockDuration = 0.3f;
+            intent.knockDir = dir;
 
             externalVel = intent.knockDir.normalized * intent.knockDuration;
             //onNewKnockBackIntent?.Invoke(intent);
+            knockBackIntent = intent;
         }
 
         public class TargettedMoveIntent
@@ -251,7 +278,6 @@ namespace Map.Entity
 
         protected override void InitAttribute()
         {
-            attributeStore = new(this);
             // 数值类
             attributeStore.RegisterNumeric("Attack", initialBase: 100);
             attributeStore.RegisterNumeric("Strength", initialBase: 10);
@@ -273,7 +299,7 @@ namespace Map.Entity
         /// <param name="src"></param>
         public void OnHit(long damage, ILogicEntity? src, int damageFlag = 0)
         {
-            SourceKey? srcKey = src == null ? null : new SourceKey() { type = SourceType.Skill };
+            SourceKey? srcKey = src == null ? null : new SourceKey() { type = SourceType.AbilityActive };
             attributeStore.ApplyResourceChange(AttrIdConsts.HP, -damage, true, srcKey);
             //attributeStore.CostResource(AttrIdConsts.HP, damage);
             //if(attributeStore.GetAttr(AttrIdConsts.HP) <= 0)
@@ -318,89 +344,88 @@ namespace Map.Entity
             //var cacheCfg = MapMonsterConfigLoader.Get(CfgId);
             AIBrain.Initilaize(this, LogicManager.visionSenser, Pos);
 
-            AIBrain.BrainStateMachine.Reset();
+            //AIBrain.BrainStateMachine.Reset();
 
-            // 装备移动状态
-            string initState = string.Empty;
+            //// 装备移动状态
+            //string initState = string.Empty;
 
-            switch (UnitBaseRecord.ActMode)
-            {
-                case EUnitMoveActMode.NoMove:
-                    {
-                        AIBrain.BrainStateMachine.Register(new IdleBrainState(AIBrain));
-                        initState = "Idle";
-                        break;
-                    }
-                case EUnitMoveActMode.Hunting:
-                    {
-                        AIBrain.BrainStateMachine.Register(new HuntingBrainState(AIBrain));
-                        initState = "Hunting";
-                        break;
-                    }
-                case EUnitMoveActMode.PatrolFollow:
-                    {
-                        AIBrain.BrainStateMachine.Register(new FollowPatrolGroupBrainState(AIBrain));
-                        initState = "FollowPatrolGroup";
-                        break;
-                    }
-            }
+            //switch (UnitBaseRecord.ActMode)
+            //{
+            //    case EUnitMoveActMode.NoMove:
+            //        {
+            //            AIBrain.BrainStateMachine.Register(new IdleBrainState(AIBrain));
+            //            initState = "Idle";
+            //            break;
+            //        }
+            //    case EUnitMoveActMode.Hunting:
+            //        {
+            //            AIBrain.BrainStateMachine.Register(new HuntingBrainState(AIBrain));
+            //            initState = "Hunting";
+            //            break;
+            //        }
+            //    case EUnitMoveActMode.PatrolFollow:
+            //        {
+            //            AIBrain.BrainStateMachine.Register(new FollowPatrolGroupBrainState(AIBrain));
+            //            initState = "FollowPatrolGroup";
+            //            break;
+            //        }
+            //}
 
-            // 对于有H模式的单位 赋予状态
-            if (unitCfg.HasHMode)
-            {
-                AIBrain.BrainStateMachine.Register(new HModeChaseBrainState(AIBrain));
-            }
+            //// 对于有H模式的单位 赋予状态
+            //if (unitCfg.HasHMode)
+            //{
+            //    AIBrain.BrainStateMachine.Register(new HModeChaseBrainState(AIBrain));
+            //}
 
-            if (!unitCfg.IsPeace)
-            {
-                var combatState = new CombatChaseBrainState(AIBrain);
-                combatState.Initialize();
+            //if (!unitCfg.IsPeace)
+            //{
+            //    var combatState = new CombatChaseBrainState(AIBrain);
 
-                switch (unitCfg.AITemplateMode)
-                {
-                    case "Warrior":
-                        {
-                            var template = Resources.Load<DefaultAIParamTemplate4Warrior>($"AITemplate/{unitCfg.AITemplateName}");
+            //    switch (unitCfg.AITemplateMode)
+            //    {
+            //        case "Warrior":
+            //            {
+            //                var template = Resources.Load<DefaultAIParamTemplate4Warrior>($"AITemplate/{unitCfg.AITemplateName}");
 
-                            var standOffStrategy = new DistanceControlStrategy(template.KeepDistance * 0.001f);
-                            combatState.RegisterStrategy(standOffStrategy);
+            //                var standOffStrategy = new DistanceControlStrategy(template.KeepDistance * 0.001f);
+            //                combatState.RegisterStrategy(standOffStrategy);
 
-                            var mainFightStrategy = new PrimaryUseSkillStrategy(1f);
-                            combatState.RegisterStrategy(mainFightStrategy);
-                        }
-                        break;
-                    case "Shooter":
-                        {
-                            var template = Resources.Load<DefaultAIParamTemplate4Shooter>($"AITemplate/{unitCfg.AITemplateName}");
+            //                var mainFightStrategy = new PrimaryUseSkillStrategy(1f);
+            //                combatState.RegisterStrategy(mainFightStrategy);
+            //            }
+            //            break;
+            //        case "Shooter":
+            //            {
+            //                var template = Resources.Load<DefaultAIParamTemplate4Shooter>($"AITemplate/{unitCfg.AITemplateName}");
 
-                            var standOffStrategy = new DistanceControlStrategy(template.KeepDistance * 0.001f);
-                            combatState.RegisterStrategy(standOffStrategy);
+            //                var standOffStrategy = new DistanceControlStrategy(template.KeepDistance * 0.001f);
+            //                combatState.RegisterStrategy(standOffStrategy);
 
-                            var mainFightStrategy = new PrimaryUseSkillStrategy(1f);
-                            combatState.RegisterStrategy(mainFightStrategy);
-                        }
-                        break;
-                }
+            //                var mainFightStrategy = new PrimaryUseSkillStrategy(1f);
+            //                combatState.RegisterStrategy(mainFightStrategy);
+            //            }
+            //            break;
+            //    }
 
-                AIBrain.BrainStateMachine.Register(combatState);
-            }
-            else
-            {
-                var fleeState = new FleeAwayBrainState(AIBrain, 10, 5f);
-                AIBrain.BrainStateMachine.Register(fleeState);
-            }
+            //    AIBrain.BrainStateMachine.Register(combatState);
+            //}
+            //else
+            //{
+            //    var fleeState = new FleeAwayBrainState(AIBrain, 10, 5f);
+            //    AIBrain.BrainStateMachine.Register(fleeState);
+            //}
 
-            AIBrain.BrainStateMachine.Register(new ReturnBrainState(AIBrain));
-            // 你可以注册 Idle/Patrol/Return 等状态，这里示例聚焦 CombatChase。
+            //AIBrain.BrainStateMachine.Register(new ReturnBrainState(AIBrain));
+            //// 你可以注册 Idle/Patrol/Return 等状态，这里示例聚焦 CombatChase。
 
-            if (!string.IsNullOrEmpty(initState))
-            {
-                AIBrain.BrainStateMachine.Change(initState);
-            }
-            else
-            {
-                Debug.LogError("AIBrain.BrainStateMachine no init ");
-            }
+            //if (!string.IsNullOrEmpty(initState))
+            //{
+            //    AIBrain.BrainStateMachine.Change(initState);
+            //}
+            //else
+            //{
+            //    Debug.LogError("AIBrain.BrainStateMachine no init ");
+            //}
         }
 
         public void OnThrownInterrupt()

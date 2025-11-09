@@ -43,7 +43,7 @@ public class AbilityHitWindow
     public int HitParam0;
     public int HitParam1;
 
-    public MapAbilityEffectUseWeaponCfg SrcWeaponEffect; // 原始数据 还是生成hitwindow专用数据放入？
+    public List<MapFightEffectCfg> OnHitEffects; // 原始数据 还是生成hitwindow专用数据放入？
 
     // 来源是weapon 还是 技能？
 }
@@ -407,7 +407,7 @@ public class MapEntityAbilityController
         var ctx = new LogicFightEffectContext(EntityOwner.LogicManager, new SourceKey()
         {
             entityId = EntityOwner.Id,
-            type = SourceType.Skill,
+            type = SourceType.AbilityActive,
             sourceId = this.CurrentCtx.AbilityConfig.Id,
         });
         ctx.Actor = this.CurrentCtx.Actor;
@@ -540,7 +540,7 @@ public class MapEntityAbilityController
         //if (mover) mover.LockMovement = false;
     }
 
-    public void ApplyUseWeaponHitBox(string weaponName, float openTime)
+    public void ApplyUseWeaponHitBox(string weaponName, float openTime, List<MapFightEffectCfg> hitCfgs)
     {
         // 统一为hitwindow处理
         long hitId = ++HitWiindowIdCounter;
@@ -549,7 +549,8 @@ public class MapEntityAbilityController
         {
             hitId = hitId,
             openTime = Time.realtimeSinceStartup,
-            durationTime = openTime
+            durationTime = openTime,
+            OnHitEffects = hitCfgs,
         };
         CurrentCtx.phaseHitWindows.Add(hitId, hitWin);
 
@@ -571,15 +572,15 @@ public class MapEntityAbilityController
             window.HitRecord.Add(hitEntityId);
             Debug.Log("OnWeaponHitCallback " + "hittttttttttttttttttttttttttttttttttttttttttttttttttttttt " + hitEntityId);
 
-            if (window.SrcWeaponEffect != null)
+            if (window.OnHitEffects != null)
             {
                 var hitEntity = EntityOwner.LogicManager.AreaManager.GetLogicEntiy(hitEntityId);
                 //MainGameManager.Instance.gameLogicManager.logicEntityDict.TryGetValue(hitEntityId, out var hitEntity);
                 if (hitEntity != null)
                 {
-                    foreach(var hitEffect in window.SrcWeaponEffect.OnHitEffects)
+                    foreach(var hitEffect in window.OnHitEffects)
                     {
-                        LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, new SourceKey() { entityId = EntityOwner.Id, type = SourceType.Skill});
+                        LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, new SourceKey() { entityId = EntityOwner.Id, type = SourceType.AbilityActive});
 
                         newCtx.Actor = EntityOwner;
                         newCtx.CastDir = hitEntity.Pos - EntityOwner.Pos;

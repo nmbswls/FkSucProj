@@ -167,7 +167,7 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
             if (_hitCD.TryGetValue(entityId, out float next) && _time < next) return false;
             //_hitCD[id] = _time + PD.hitCooldown;
 
-            ProjectileUtil.ApplyDamage(unitPresent, PD.damage);
+            ProjectileUtil.ApplyDamage(unitPresent, PD.damage, ownerProj.bindingProjInfo.ownerEntity.Id);
 
             _penetrationLeft--;
             if (_penetrationLeft <= 0) return true;
@@ -262,7 +262,7 @@ public class MapProjectileParabolaMotion : IMapProjectileMotion
                 //    return false;
                 long entityId = unitPresent.Id;
                 //_hitCD[id] = _time + PD.hitCooldown;
-                ProjectileUtil.ApplyDamage(unitPresent, PD.damage);
+                ProjectileUtil.ApplyDamage(unitPresent, PD.damage, Owner.bindingProjInfo.ownerEntity.Id);
 
                 //if (!PD.friendlyFire && _ctx.owner != null && c.transform.root == _ctx.owner.root)
                 //    continue;

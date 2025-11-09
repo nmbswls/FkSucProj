@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectUseItemCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectUseItemCfg : MapFightEffectCfg
     {
         public OneVariaty UseItemId;
     }

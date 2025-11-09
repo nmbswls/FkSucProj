@@ -25,6 +25,12 @@ namespace Map.Logic.Chunk
         public bool AlwaysActive;
     }
 
+    [Serializable]
+    public class LogicEntityRecord4LootPoint : LogicEntityRecord
+    {
+        public string DynamicDropId;
+    }
+
     // 逻辑实体的轻量描述（可存持久化）
     [Serializable]
     public class LogicEntityRecord4UnitBase : LogicEntityRecord
@@ -60,6 +66,11 @@ namespace Map.Logic.Chunk
         public int X;
         public int Y;
         public ChunkCoord(int x, int y) { X = x; Y = y; }
+
+        public override string ToString()
+        {
+            return X.ToString() + "," + Y.ToString();
+        }
     }
 
     //public static class ChunkConfig
@@ -255,12 +266,9 @@ namespace Map.Logic.Chunk
                 Repo = new();
                 // fake repo
                 //  goujian 房间列表
-                foreach (var chunk in cacheDatabase.Buckets)
+                foreach (var refreshInfo in cacheDatabase.EntityRefreshInfo)
                 {
-                    foreach(var refreshInfo in chunk.EntityRefreshInfo)
-                    {
-                        HandleOneRefreshInfo(refreshInfo);
-                    }
+                    HandleOneRefreshInfo(refreshInfo);
                 }
             }
 
@@ -282,7 +290,7 @@ namespace Map.Logic.Chunk
 
 
         private float checkRefreshTimer;
-        private int chunkIdx = 0; 
+        private int tickDynamicObjIdx = 0; 
 
         protected bool CheckRefreshAppearCond(DynamicEntityAppearCond cond)
         {
@@ -296,17 +304,13 @@ namespace Map.Logic.Chunk
                 return;
             }
 
-            int tickCnt = 3;
+            int tickCnt = 100;
             while(tickCnt-- > 0)
             {
-                chunkIdx += 1;
-                chunkIdx = chunkIdx % cacheDatabase.Buckets.Count;
+                tickDynamicObjIdx += 1;
+                tickDynamicObjIdx = tickDynamicObjIdx % cacheDatabase.EntityRefreshInfo.Count;
 
-                var chunk = cacheDatabase.Buckets[chunkIdx];
-                foreach (var refreshInfo in chunk.EntityRefreshInfo)
-                {
-                    HandleOneRefreshInfo(refreshInfo);
-                }
+                HandleOneRefreshInfo(cacheDatabase.EntityRefreshInfo[tickDynamicObjIdx]);
             }
             
         }
@@ -411,7 +415,7 @@ namespace Map.Logic.Chunk
             // 长生命周期对象
             if(rec.AlwaysActive)
             {
-                var ent = factory.CreateEntity(rec);
+                var ent = factory.CreateEntityByRecord(rec);
                 ent.OnSpawn(rec);
                 Repo.Loaded[rec.Id] = ent;
 
@@ -610,7 +614,7 @@ namespace Map.Logic.Chunk
                 if (!Repo.IsLoaded(st.Id))
                 {
                     // 直接创建避免队列延迟，或使用优先队列
-                    var ent = factory.CreateEntity(rec);
+                    var ent = factory.CreateEntityByRecord(rec);
                     ent.OnSpawn(rec);
                     Repo.Loaded[st.Id] = ent;
                 }
@@ -770,7 +774,7 @@ namespace Map.Logic.Chunk
             while (despawnEntityQ.Count > 0 && n-- > 0)
             {
                 var id = despawnEntityQ.Dequeue();
-                DespawnEntity(id, 0);
+                DespawnEntity(id, false);
             }
 
             // Spawn：对长生命周期可给“优先队列”或即时创建（你已在 StepStateMachine 中处理 AlwaysActive）
@@ -781,7 +785,7 @@ namespace Map.Logic.Chunk
                 if (Repo.IsLoaded(id)) continue;
                 if (!Repo.Records.TryGetValue(id, out var rec)) continue;
 
-                var ent = factory.CreateEntity(rec);
+                var ent = factory.CreateEntityByRecord(rec);
                 ent.OnSpawn(rec);
                 Repo.Loaded[id] = ent;
 
@@ -841,13 +845,7 @@ namespace Map.Logic.Chunk
                 {
                 }
 
-                if (Repo.IsLoaded(id))
-                {
-                    var ent = Repo.GetLoaded(id);
-                    ent.OnDespawn(out var snap);
-                    Repo.Loaded.Remove(id);
-                    if (snap != null) Repo.Records[id] = snap;
-                }
+                DespawnEntity(id, true);
 
                 // 从 AOI 移除（如果之前没移除）
                 UnitGridIndex.Remove(id); 
@@ -855,11 +853,13 @@ namespace Map.Logic.Chunk
                 st.State = LogicLifeState.NotLoaded;
                 st.Timer = 0;
 
+                //EnqueueDespawn(id);
+
                 runtimeStates.Remove(id);
             }
         }
 
-        public void DespawnEntity(long id, int reason)
+        public void DespawnEntity(long id, bool isDead)
         {
             if (!Repo.IsLoaded(id)) return;
             if (Repo.Records.TryGetValue(id, out var rec) && rec.AlwaysActive)
@@ -873,6 +873,13 @@ namespace Map.Logic.Chunk
             if (snap != null) Repo.Records[id] = snap;
 
             factory.RecycleEntity(ent);
+
+            // 因死亡而移除
+            if(isDead)
+            {
+                UnitGridIndex.Remove(id);
+                runtimeStates.Remove(id);
+            }
         }
 
         // 异步请求：下一帧/本帧队列处理
@@ -904,7 +911,7 @@ namespace Map.Logic.Chunk
                 runtimeStates[id] = st;
             }
             st.IsDeadRuntime = true;
-            st.DeathRemainTimer = 3.0f;
+            st.DeathRemainTimer = 0.5f;
 
             // 4) 死亡后立即退出活跃：可先 Sleep，随后走尸体清理流程
             if (st.DeathRemainTimer > 0f)
@@ -917,10 +924,7 @@ namespace Map.Logic.Chunk
             else
             {
                 // 立即卸载
-                EnqueueDespawn(id);
-                st.State = LogicLifeState.NotLoaded;
-                // 移除空间管理
-                UnitGridIndex.Remove(id);
+                DespawnEntity(id, true);
             }
             return true;
         }
@@ -937,7 +941,7 @@ namespace Map.Logic.Chunk
             if (Repo.IsLoaded(id)) return Repo.GetLoaded(id);
 
             // 创建实例
-            var ent = factory.CreateEntity(rec);
+            var ent = factory.CreateEntityByRecord(rec);
             if (ent == null) return null;
 
             // OnSpawn

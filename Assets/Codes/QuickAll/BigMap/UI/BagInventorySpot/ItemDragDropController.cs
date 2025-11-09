@@ -122,13 +122,17 @@ public class ItemDragDropController : MonoBehaviour
                 if(LootPointUIController.Instance.Loot != null)
                 {
                     LootPointUIController.Instance.Loot.RemoveFromIndex(payload.SourceIndex, moved);
+                    LootPointUIController.Instance.RefreshContent();
+                    InventoryUIController.Instance.RefreshContent();
                 }
             }
             else
             {
                 // 无法堆叠到目标格，尝试背包通道添加
-                moved = InventoryUIController.Instance.BindingInventory.TryAdd(payload.Stack);
-                LootPointUIController.Instance.Loot.RemoveFromIndex(payload.SourceIndex, moved);
+                //moved = InventoryUIController.Instance.BindingInventory.TryAdd(payload.Stack);
+                //LootPointUIController.Instance.Loot.RemoveFromIndex(payload.SourceIndex, moved);
+                //LootPointUIController.Instance.RefreshContent();
+                //InventoryUIController.Instance.RefreshContent();
             }
             //UIBus.RaiseInventoryAllChanged();
             //UIBus.RaiseLootAllChanged();
@@ -139,6 +143,7 @@ public class ItemDragDropController : MonoBehaviour
             bool ok = InventoryUIController.Instance.BindingInventory.TryMove(payload.SourceIndex, dstIndex);
             if (ok)
             {
+                InventoryUIController.Instance.RefreshContent();
                 //UIBus.RaiseInventoryAllChanged();
             }
         }

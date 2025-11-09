@@ -41,9 +41,12 @@ namespace Map.Entity
 
     public interface IEntityAttributeOwner
     {
+        long Id { get; }
         long GetAttr(string attrId);
 
-        void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source);
+        void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source, Dictionary<string, long> extraAttrs = null);
+
+        long CalculateResourceCostAmount(ResourceDeltaIntent intent);
         /// <summary>
         /// 增加modifier
         /// </summary>
@@ -138,16 +141,17 @@ namespace Map.Entity
 
         public virtual void Initialize()
         {
+            attributeStore = new(this);
+
+
+            attributeStore.EvOnStatusAttrChanged += OnStatusAttriChanged;
+            attributeStore.EvOnResourceAttrChanged += OnResourceAttriChanged;
+
             InitAttribute();
         }
 
         protected virtual void InitAttribute()
         {
-
-            attributeStore = new(this);
-
-            attributeStore.EvOnStatusAttrChanged += OnStatusAttriChanged;
-            attributeStore.EvOnResourceAttrChanged += OnResourceAttriChanged;
             // 数值类
             attributeStore.RegisterNumeric("Attack", initialBase: 100);
             attributeStore.RegisterNumeric("Strength", initialBase: 10);
@@ -171,9 +175,9 @@ namespace Map.Entity
             return attributeStore.GetAttr(attrId);
         }
 
-        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source)
+        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source, Dictionary<string, long> extraAttrs = null)
         {
-            attributeStore.ApplyResourceChange(resourceId, delta, isDamage, source);
+            attributeStore.ApplyResourceChange(resourceId, delta, isDamage, source, extraAttrs);
         }
 
 
@@ -181,6 +185,12 @@ namespace Map.Entity
         {
 
         }
+        
+        public virtual long CalculateResourceCostAmount(ResourceDeltaIntent intent)
+        {
+            return intent.delta;
+        }
+
 
         /// <summary>
         /// 属性变化回调
@@ -197,9 +207,32 @@ namespace Map.Entity
             {
                 case AttrIdConsts.HP:
                     {
-                        if (before > 0 && after <= 0 && intent.deltaFlags > 0)
+                        if(intent.deltaFlags > 0)
                         {
-                            OnEntityDie();
+                            if (intent.srcKey != null && intent.srcKey.Value.entityId != 0)
+                            {
+                                var dmg = -intent.finalDelta;
+                                var entity = LogicManager.GetLogicEntity(intent.srcKey.Value.entityId);
+                                var xixue = entity.GetAttr(AttrIdConsts.DamageXiXue);
+
+                                if(intent.extraAttrs != null)
+                                {
+                                    intent.extraAttrs.TryGetValue(AttrIdConsts.DamageXiXue, out var extraVal);
+                                    xixue += extraVal;
+                                }
+
+                                if(xixue > 0)
+                                {
+                                    Debug.Log("吸血 回血 OnResourceAttriChanged");
+                                    var xixueVal = (long)(dmg * (double)(xixue / 10000));
+                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false, new SourceKey() { type = SourceType.Mechanism, entityId = entity.Id});
+                                }
+                            }
+                        }
+
+                        if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
+                        {
+                            OnEntityDie(intent);
                             break;
                         }
                     }
@@ -224,7 +257,7 @@ namespace Map.Entity
         }
 
 
-        public virtual void OnEntityDie()
+        public virtual void OnEntityDie(ResourceDeltaIntent lastIntent)
         {
             LogicManager.AreaManager.RequestEntityDie(this.Id);
 

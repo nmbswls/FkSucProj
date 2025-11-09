@@ -263,22 +263,32 @@ public static class AbilityLibrary
             PhaseName = "Executing",
             LockRotation = true,
             LockMovement = true,
-            WithProgress = true,
             DurationValue = new()
             {
                 ValType = EOneVariatyType.Float,
-                ReferName = "ExecutingTime"
+                RawVal = "0.3"
             },
         };
 
-        var newEffectGive = new MapAbilityEffectAddBuffCfg()
+        //var newEffectGive = new MapAbilityEffectAddBuffCfg()
+        //{
+        //    BuffId = "beizha",
+        //    Layer = 1,
+        //    Duration = -1,
+        //    TargetType = 0,
+        //};
+        //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffectGive, Kind = PhaseEventKind.OnEnter });
+
+
         {
-            BuffId = "beizha",
-            Layer = 1,
-            Duration = -1,
-            TargetType = 0,
-        };
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffectGive, Kind = PhaseEventKind.OnEnter });
+            var throwCfg = new MapAbilityEffectThrowStartCfg()
+            {
+                Priority = 999,
+                Duration = 2.0f,
+                ThrowMainBuffId = "beizha",
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = throwCfg, Kind = PhaseEventKind.OnEnter });
+        }
 
 
         //var newEffectSelf = new MapAbilityEffectAddBuffCfg()
@@ -291,13 +301,13 @@ public static class AbilityLibrary
         //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 
 
-        var effectRemoveZha = new MapAbilityEffectRemoveBuffCfg()
-        {
-            BuffId = "beizha",
-            Layer = 1,
-            TargetType = 0,
-        };
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effectRemoveZha, Kind = PhaseEventKind.OnExit });
+        //var effectRemoveZha = new MapAbilityEffectRemoveBuffCfg()
+        //{
+        //    BuffId = "beizha",
+        //    Layer = 1,
+        //    TargetType = 0,
+        //};
+        //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effectRemoveZha, Kind = PhaseEventKind.OnExit });
 
         spec.Phases.Add(mainPhase);
         return spec;
@@ -383,6 +393,7 @@ public static class AbilityLibrary
             var trueEffect = new MapAbilityEffectCostResourceCfg();
             trueEffect.ResourceId = AttrIdConsts.HP;
             trueEffect.CostValue = 5;
+            trueEffect.Flags = 1;
 
             ifBranch.TrueBranchEffects.Add(trueEffect);
 

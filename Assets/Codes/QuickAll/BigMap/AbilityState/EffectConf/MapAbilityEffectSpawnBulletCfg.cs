@@ -8,7 +8,7 @@ namespace Unit.Ability.Effect
 {
 
     [Serializable]
-    public class MapAbilityEffectSpawnBulletCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectSpawnBulletCfg : MapFightEffectCfg
     {
         public enum ETargetType
         {

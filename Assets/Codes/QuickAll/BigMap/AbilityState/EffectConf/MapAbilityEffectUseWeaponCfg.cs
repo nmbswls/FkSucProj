@@ -8,12 +8,12 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectUseWeaponCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectUseWeaponCfg : MapFightEffectCfg
     {
         public string WeaponName;
         public float Duration;
 
         [SerializeReference]
-        public List<MapAbilityEffectCfg> OnHitEffects;
+        public List<MapFightEffectCfg> OnHitEffects;
     }
 }

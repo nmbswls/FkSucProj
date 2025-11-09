@@ -34,7 +34,12 @@ public class LootPointUIController : MonoBehaviour
     public void InitializeContent(ILootableObj bindingObj)
     {
         this.Loot = bindingObj;
-        GridView.SetListItemCount(Loot.LootItems.Count);
+        GridView.SetListItemCount(bindingObj.LootItems.Count + 1);
+    }
+
+    public void RefreshContent()
+    {
+        GridView.RefreshAllShownItem();
     }
 
     LoopGridViewItem OnGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
@@ -49,11 +54,12 @@ public class LootPointUIController : MonoBehaviour
         {
             var stack = Loot.LootItems[slotIndex];
             item.gameObject.SetActive(true);
-            cell.Bind(stack, slotIndex, EContainerType.Inventory, null);
+            cell.Bind(stack, slotIndex, EContainerType.LootPoint, null);
         }
         else
         {
-            item.gameObject.SetActive(false);
+            cell.ClearEmpty(slotIndex, EContainerType.LootPoint);
+            //item.gameObject.SetActive(false);
         }
 
         return item;

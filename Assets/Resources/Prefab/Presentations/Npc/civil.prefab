@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: 5981833247523422262}
   - component: {fileID: 6462304013100160239}
   - component: {fileID: 8125375396503032286}
+  - component: {fileID: 9135152516629807139}
   m_Layer: 12
   m_Name: civil
   m_TagString: Untagged
@@ -263,7 +264,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6716341979371502919}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -296,6 +297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 2190805339782641006}
   highlightFx: {fileID: 0}
+  ViewPoint: {fileID: 0}
   faceIndicator: {fileID: 8933406555717738629}
   WeaponRoot: {fileID: 7921256209700466238}
   WeaponCtrl: {fileID: 637426610165199311}
@@ -357,7 +359,26 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.2
+  m_Radius: 0.1
+--- !u!114 &9135152516629807139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716341979371502919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4323e88b6a4a5fd4bbcc6661912a6709, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 4096
+  skin: 0.02
+  maxSlideIterations: 3
+  minMove: 0.0005
+  unitPresenter: {fileID: 0}
 --- !u!1 &8366468597654593165
 GameObject:
   m_ObjectHideFlags: 0

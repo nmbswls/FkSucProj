@@ -20,6 +20,8 @@ public class InventoryUIController : MonoBehaviour
     public PlayerInventoryModel BindingInventory { get { return MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel; } }
     public static InventoryUIController Instance;
 
+
+    private bool markDirty = false;
     private void Awake()
     {
         Instance = this;
@@ -30,10 +32,25 @@ public class InventoryUIController : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        if(markDirty)
+        {
+            GridView.RefreshAllShownItem();
+            markDirty = false;
+        }
+    }
+
     public void InitilaizeView()
     {
         GridView.SetListItemCount(BindingInventory.Slots.Count);
     }
+
+    public void RefreshContent()
+    {
+        markDirty = true;
+    }
+
 
     void OnDestroy()
     {
@@ -67,8 +84,8 @@ public class InventoryUIController : MonoBehaviour
         }
         else
         {
-            // 超范围：隐藏或者用空数据绑定
-            item.gameObject.SetActive(false);
+            //item.gameObject.SetActive(false);
+            cell.ClearEmpty(itemIndex, EContainerType.Inventory);
         }
         return item;
     }

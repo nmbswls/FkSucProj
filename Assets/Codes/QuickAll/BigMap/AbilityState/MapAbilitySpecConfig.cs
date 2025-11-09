@@ -43,7 +43,7 @@ namespace Map.Entity
         public PhaseEventKind Kind = PhaseEventKind.Timed;
         public float TimeOffset = 0f;         // 仅当 Kind==Timed 生效（相对阶段开始）
         [SerializeReference]
-        public MapAbilityEffectCfg Effect;                // 具体效果
+        public MapFightEffectCfg Effect;                // 具体效果
         public int Repeat = 0;                // 可选：重复次数
         public float RepeatInterval = 0f;     // 可选：重复间隔（适合持续伤害/持续采样）
     }
@@ -90,11 +90,11 @@ namespace Map.Entity
 
         // 效果
         [SerializeReference]
-        public List<MapAbilityEffectCfg> OnStartEffects = new();
+        public List<MapFightEffectCfg> OnStartEffects = new();
         [SerializeReference]
-        public List<MapAbilityEffectCfg> OnCompleteEffects = new();
+        public List<MapFightEffectCfg> OnCompleteEffects = new();
         [SerializeReference]
-        public List<MapAbilityEffectCfg> OnCancelEffects = new();
+        public List<MapFightEffectCfg> OnCancelEffects = new();
 
         // 变量集合
         public Dictionary<string, string> Variables = new();

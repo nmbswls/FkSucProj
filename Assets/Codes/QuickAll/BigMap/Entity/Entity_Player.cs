@@ -18,6 +18,8 @@ namespace Map.Entity
 
         }
 
+        
+
         public override EEntityType Type => EEntityType.Player;
 
         public bool IsEnabled { get; private set; } = true;

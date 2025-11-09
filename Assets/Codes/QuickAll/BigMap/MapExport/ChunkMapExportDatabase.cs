@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using Map.Logic.Chunk;
 using Map.Entity;
+using Map.Scene.Fov;
 
 [CreateAssetMenu(fileName = "ChunkStaticDatabase", menuName = "MapExport/Chunk Static Database")]
 public class ChunkMapExportDatabase : ScriptableObject
@@ -101,9 +102,9 @@ public class ChunkMapExportDatabase : ScriptableObject
         public ChunkKey Chunk;
         public List<StaticItem> StaticItems = new List<StaticItem>();
 
-        public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
-
         public List<RoomExportInfo> RoomExportInfos = new();
+
+        public List<Segment2D> FovStaticSegments = new();
     }
 
     // area id
@@ -112,11 +113,15 @@ public class ChunkMapExportDatabase : ScriptableObject
     // 以列表形式序列化，兼容 Unity 序列化
     public List<ChunkItems> Buckets = new List<ChunkItems>();
 
+    public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
+
 
     public List<NamedPoint> NamedPoints = new List<NamedPoint>();
 
     // 运行时便捷查询（可选）
     private Dictionary<(int x, int y), List<StaticItem>> _prefabMap;
+
+    private Dictionary<(int x, int y), List<Segment2D>> _segmentMap;
 
     // 
     private Dictionary<string, NamedPoint> _namedPointMap;
@@ -153,6 +158,13 @@ public class ChunkMapExportDatabase : ScriptableObject
             var key = (b.Chunk.X, b.Chunk.Y);
             _roomMap[key] = b.RoomExportInfos;
         }
+
+        _segmentMap = new Dictionary<(int x, int y), List<Segment2D>>();
+        foreach (var b in Buckets)
+        {
+            var key = (b.Chunk.X, b.Chunk.Y);
+            _segmentMap[key] = b.FovStaticSegments;
+        }
     }
 
     public IEnumerable<StaticItem> GetChunkStaticItems(int x, int y)
@@ -160,6 +172,13 @@ public class ChunkMapExportDatabase : ScriptableObject
         if (_prefabMap == null) BuildRuntimeMap();
         if (_prefabMap.TryGetValue((x, y), out var list)) return list;
         return Array.Empty<StaticItem>();
+    }
+
+    public IEnumerable<Segment2D> GetChunkSegments(int x, int y)
+    {
+        if (_segmentMap == null) BuildRuntimeMap();
+        if (_segmentMap.TryGetValue((x, y), out var list)) return list;
+        return Array.Empty<Segment2D>();
     }
 
     private Dictionary<(int x, int y), List<RoomExportInfo>> _roomMap;

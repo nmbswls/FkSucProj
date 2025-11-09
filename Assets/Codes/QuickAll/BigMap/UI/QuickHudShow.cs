@@ -14,6 +14,8 @@ public class QuickHudShow : MonoBehaviour
         TopCanvas = GetComponentInParent<Canvas>();
     }
 
+    public TextMeshProUGUI PlayerHpText;
+
 
     public GameObject HpValPrefab;
     public class HpBarStruct
@@ -28,7 +30,10 @@ public class QuickHudShow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        foreach(var k in hpBars.Keys.ToList())
+
+        PlayerHpText.text = MainGameManager.Instance.playerScenePresenter.PlayerEntity.GetAttr(AttrIdConsts.HP).ToString();
+
+        foreach (var k in hpBars.Keys.ToList())
         {
             if(hpBars[k].bindingUnit == null || !hpBars[k].bindingUnit.CheckValid())
             {

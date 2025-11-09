@@ -5,10 +5,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unit.Ability.Effect;
 using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static GameLogicManager;
 
 
 
@@ -27,26 +29,28 @@ namespace Map.Entity.Buffs
         public int TriggerParam2;
         public int TriggerParam3;
 
-        public List<BuffEffectCfg> OutputEffects; 
+        public List<MapFightEffectCfg> OutputFightEffects;
     }
 
     public enum EBuffEffectType
     {
         None,
-        CauseDamage,
+        CostResource,
         AddBuff,
         RemoveBuff,
 
         ShowFx,
     }
-    public class BuffEffectCfg
-    {
-        public EBuffEffectType EffectType;
-        public int Param0;
-        public int Param1;
-        public int Param2;
-        public int Param3;
-    }
+    //public class BuffEffectCfg
+    //{
+    //    public EBuffEffectType EffectType;
+    //    public int Param0;
+    //    public int Param1;
+    //    public int Param2;
+    //    public int Param3;
+
+    //    public List<AttrKvPair> ExtraAttrs;
+    //}
 
     public enum EBuffLayerOverrideType
     {
@@ -77,14 +81,14 @@ namespace Map.Entity.Buffs
                 _library["lock_move"] = new BuffDefinition()
                 {
                     BuffId = "lock_move",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 } },
                     DefaultDuration = -1,
                 };
                 _library["lock_face"] = new BuffDefinition()
                 {
                     BuffId = "lock_face",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 } },
                     DefaultDuration = -1,
                 };
@@ -108,11 +112,21 @@ namespace Map.Entity.Buffs
                         {
                             TriggerType = TriggerType.Tick,
                             TriggerParam1 = 200, // 每0.2秒一次
-                            OutputEffects = new()
+                            //OutputEffects = new()
+                            //{
+                            //    new BuffEffectCfg()
+                            //    {
+                            //        EffectType = EBuffEffectType.ShowFx,
+                            //    },
+                            //},
+                            OutputFightEffects = new()
                             {
-                                new BuffEffectCfg()
+                                new MapAbilityEffectCostResourceCfg()
                                 {
-                                    EffectType = EBuffEffectType.ShowFx,
+                                    ResourceId = AttrIdConsts.HP,
+                                    CostValue = 5,
+                                    Flags = 1,
+                                    ExtraAttrInfos = new List<AttrKvPair>(){new(){ AttrId  = AttrIdConsts.DamageXiXue, Val = 2000} }
                                 }
                             }
                         }
@@ -194,6 +208,9 @@ namespace Map.Entity.Buffs
 
         public List<OneModPair> ModifierAttrs = new();
 
+        public List<MapFightEffectCfg> OnAttachEffects = null;
+        public List<MapFightEffectCfg> OnDetachEffects = null;
+
         public BuffDurationEffet DurationEffect;
 
         public List<BuffTriggerRuleConfig> TriggerList = new();
@@ -262,7 +279,7 @@ namespace Map.Entity.Buffs
 
 
         // 请求队列（避免评估阶段直接改表）
-        private readonly List<(ILogicEntity target, string buffId, SourceKey? sourceKey, int layer, float overrideDuration)> _addRequests = new();
+        private readonly List<(ILogicEntity target, string buffId, int layer, float overrideDuration, long? casterId, long? srcBuffId)> _addRequests = new();
         private readonly List<(ILogicEntity target, long buffInstId)> _removeRequests = new();
 
         public GlobalBuffManager(GameLogicManager logicManager)
@@ -274,17 +291,17 @@ namespace Map.Entity.Buffs
             TickLifetime(now, dt);
         }
 
-        public void ExecuteBuffTriggerEffect(BuffInstance buffInst, BuffEffectCfg cfg)
-        {
-            switch(cfg.EffectType)
-            {
-                case EBuffEffectType.ShowFx:
-                    {
-                        logicManager.viewer.ShowFakeFxEffect("effect", buffInst.BuffOwner.Pos);
-                    }
-                    break;
-            }
-        }
+        //public void ExecuteBuffTriggerEffect(BuffInstance buffInst, BuffEffectCfg cfg)
+        //{
+        //    switch(cfg.EffectType)
+        //    {
+        //        case EBuffEffectType.ShowFx:
+        //            {
+        //                logicManager.viewer.ShowFakeFxEffect("effect", buffInst.BuffOwner.Pos);
+        //            }
+        //            break;
+        //    }
+        //}
 
 
         private void HandleOnLogicEvent(IMapLogicEvent ev, float now)
@@ -372,7 +389,7 @@ namespace Map.Entity.Buffs
             _frameEvents.Clear();
         }
 
-        public long AddBuff(long entityId, string buffId, int layer = 1, SourceKey? sourceKey = null, float overrideDuration = -1)
+        public long AddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
             var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId);
             if (targetEntity == null)
@@ -380,12 +397,12 @@ namespace Map.Entity.Buffs
                 Debug.Log($"RemoveAllBuffById not found {entityId} ");
                 return 0;
             }
-            var instance = AddBuffInternal(targetEntity, buffId, sourceKey, layer, overrideDuration);
+            var instance = AddBuffInternal(targetEntity, buffId, layer, overrideDuration, casterId, srcBuffId);
             return instance.InstanceId;
         }
 
         // 外部接口：请求添加 Buff（可在效果中调用）
-        public void RequestAddBuff(long entityId, string buffId, int layer = 1, SourceKey? sourceKey = null, float overrideDuration = -1)
+        public void RequestAddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
             var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId);
             if (targetEntity == null)
@@ -393,7 +410,7 @@ namespace Map.Entity.Buffs
                 Debug.Log($"RemoveAllBuffById not found {entityId} ");
                 return;
             }
-            _addRequests.Add((targetEntity, buffId, sourceKey, layer, overrideDuration));
+            _addRequests.Add((targetEntity, buffId, layer, overrideDuration, casterId, srcBuffId));
         }
 
         public void RequestRemoveBuff(ILogicEntity targetEntity, long buffInstId)
@@ -401,7 +418,7 @@ namespace Map.Entity.Buffs
             _removeRequests.Add((targetEntity, buffInstId));
         }
 
-        public void RemoveAllBuffById(long entityId, string buffId, SourceKey? src = null)
+        public void RemoveAllBuffById(long entityId, string buffId, int layer = 1, long? casterId = null, long? srcBuffId = null)
         {
             var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId);
             if(targetEntity == null)
@@ -417,7 +434,7 @@ namespace Map.Entity.Buffs
                     continue;
                 }
 
-                if(src != null && (buffInst.srcKey != null && !src.Value.Equals(buffInst.srcKey.Value)))
+                if(casterId != null && casterId != buffInst.CasterId)
                 {
                     continue;
                 }
@@ -442,12 +459,12 @@ namespace Map.Entity.Buffs
             // 合并同目标同Buff的多次 Add
             foreach (var addReq in _addRequests)
             {
-                AddBuffInternal(addReq.target, addReq.buffId, addReq.sourceKey,  addReq.layer, addReq.overrideDuration);
+                AddBuffInternal(addReq.target, addReq.buffId, addReq.layer, addReq.overrideDuration, addReq.casterId, addReq.srcBuffId);
             }
             _addRequests.Clear();
         }
 
-        protected BuffInstance AddBuffInternal(ILogicEntity target, string buffId, SourceKey? source, int layer, float overrideDuration)
+        protected BuffInstance AddBuffInternal(ILogicEntity target, string buffId, int layer, float overrideDuration, long? casterId, long? srcBuffId)
         {
             var buffDef = BuffLibrary.GetBuffDefinition(buffId);
 
@@ -478,7 +495,10 @@ namespace Map.Entity.Buffs
                         {
                             int maxLayer = buffDef.MaxStackLayer;
                             existing.Layer += layer;
-                            existing.Layer = Math.Min(maxLayer, existing.Layer);
+                            if(maxLayer > 0)
+                            {
+                                existing.Layer = Math.Min(maxLayer, existing.Layer);
+                            }
                             existing.Lifetime = duration;
                             break;
                         }
@@ -535,13 +555,13 @@ namespace Map.Entity.Buffs
 
             if (needCreate)
             {
-                existing = new BuffInstance(target, ++BuffInstIdCounter, buffId, srcKey: source, lifeTIme: duration);
+                existing = new BuffInstance(target, ++BuffInstIdCounter, buffId, layer, lifeTIme: duration, casterId:casterId, srcBuffId:srcBuffId);
                 existing.OnBuffAddOrUpdate(true);
                 _buffs.Add(existing.InstanceId, existing);
                 var ev = new MLEApplyBuff()
                 {
                     Ctx = new MapLogicEventContext { CorrelationId = Guid.NewGuid(), Reliable = true },
-                    CasterId = source == null ? 0 : source.Value.instanceId,
+                    CasterId = casterId ?? 0,
                     TargetId = target.Id,
                     BuffId = buffId,
                     Layer = layer,
@@ -627,11 +647,20 @@ namespace Map.Entity.Buffs
         public int Layer;
         public float Lifetime;
 
-        public SourceKey? srcKey;
+        public long CasterId;
+        public long SrcBuffId; // 如果是光环等才有绑定关系
+        public IEntityBuffOwner BuffOwner;
+
+
+        /// <summary>
+        /// 对于buff instance来说
+        /// entityId 为施法者
+        /// 
+        /// </summary>
+        //public SourceKey? srcKey;
 
         public BuffDefinition Def;
 
-        public IEntityBuffOwner BuffOwner;
 
         public bool MarkedForRemove;
 
@@ -656,11 +685,13 @@ namespace Map.Entity.Buffs
 
         public AuraRuntimeInfo? auraRuntimeInfo = null;
 
-        public BuffInstance(IEntityBuffOwner owner, long instId, string buffId, SourceKey? srcKey = null, float lifeTIme = -1)
+        public BuffInstance(IEntityBuffOwner owner, long instId, string buffId, int layer, float lifeTIme = -1, long? casterId = null, long? srcBuffId = null)
         {
             this.InstanceId = instId;
             this.BuffId = buffId;
-            this.srcKey = srcKey;
+            this.CasterId = casterId??0;
+            this.SrcBuffId = srcBuffId ?? 0;
+            this.Layer = layer;
 
             BuffOwner = owner;
             Lifetime = lifeTIme;
@@ -704,7 +735,7 @@ namespace Map.Entity.Buffs
                     var srcKey = new SourceKey()
                     {
                         type = SourceType.Buff,
-                        instanceId = InstanceId,
+                        buffId = InstanceId,
                     };
                     var modifier = BuffOwner.AddAttrModifier(srcKey, oneAttr.ModifierAttrId, oneAttr.ModifierValue * Layer);
                     registeredModifiers.Add(modifier);
@@ -755,11 +786,39 @@ namespace Map.Entity.Buffs
 
                     triggerInfo.lastTick = triggerInfo.lastTick + triggerInfo.config.TriggerParam1 * 0.001f;
 
-                    if (triggerInfo.config.OutputEffects != null)
+                    //if (triggerInfo.config.OutputEffects != null)
+                    //{
+                    //    foreach (var effect in triggerInfo.config.OutputEffects)
+                    //    {
+                    //        BuffOwner.BuffManager.ExecuteBuffTriggerEffect(this, effect);
+                    //    }
+                    //}
+
+                    if(triggerInfo.config.OutputFightEffects != null)
                     {
-                        foreach (var effect in triggerInfo.config.OutputEffects)
+                        foreach (var fightEffect in triggerInfo.config.OutputFightEffects)
                         {
-                            BuffOwner.BuffManager.ExecuteBuffTriggerEffect(this, effect);
+                            switch(fightEffect)
+                            {
+                                // buff触发器中 
+                                case MapAbilityEffectCostResourceCfg costResourceCfg:
+                                    {
+                                        long srcEntity = CasterId;
+
+                                        var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, new SourceKey()
+                                        {
+                                            type = SourceType.BuffEffect,
+                                            entityId = srcEntity,
+                                            buffId = InstanceId,
+                                        });
+
+                                        ctx.Target = BuffOwner as ILogicEntity;
+
+                                        BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);
+                                    }
+                                    break;
+                            }
+                            
                         }
                     }
                 }
@@ -790,7 +849,7 @@ namespace Map.Entity.Buffs
                 if (currAffectOnes.Find(item => item.Id == affectedId) == null)
                 {
                     // 移除光环效果
-                    BuffOwner.BuffManager.RemoveAllBuffById(affectedId, Def.AuraBuffId, new SourceKey() { instanceId = InstanceId, type = SourceType.Aura });
+                    BuffOwner.BuffManager.RemoveAllBuffById(affectedId, Def.AuraBuffId, casterId:this.BuffOwner.Id, srcBuffId: this.InstanceId);
                     auraRuntimeInfo.AffectedEntites.Remove(affectedId);
                 }
             }
@@ -801,7 +860,7 @@ namespace Map.Entity.Buffs
                 if (exist == -1)
                 {
                     // 移除光环效果
-                    BuffOwner.BuffManager.RequestAddBuff(currAffectOne.Id, Def.AuraBuffId, 1, new SourceKey() { instanceId = InstanceId, type = SourceType.Aura });
+                    BuffOwner.BuffManager.RequestAddBuff(currAffectOne.Id, Def.AuraBuffId, 1, casterId: this.BuffOwner.Id, srcBuffId: this.InstanceId);
                     auraRuntimeInfo.AffectedEntites.Add(currAffectOne.Id);
                 }
             }

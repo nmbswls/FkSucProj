@@ -26,8 +26,8 @@ public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEn
 
     [SerializeField] protected SpriteRenderer icon;
     [SerializeField] protected GameObject highlightFx;
-
-    [SerializeField] protected GameObject faceIndicator;
+    public Transform ViewPoint;
+    public GameObject faceIndicator;
 
     public Transform WeaponRoot;
     public MapUnitWeaponCtrl WeaponCtrl; // 武器控制器
@@ -74,18 +74,26 @@ public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEn
         }
     }
 
+    private float _tickMoveStateTimer;
+
     public override void Tick(float dt)
     {
+        if (navAgent != null)
+        {
+            navAgent.nextPosition = rb.position;
+        }
         // 同步位置
-        if(UnitEntity != null)
+        if (UnitEntity != null)
         {
             UnitEntity.SetPosition(MainGameManager.Instance.GetLogicPosFromWorldPos(transform.position));
         }
 
         UpdateTargettedMoveState();
 
-        
-        if(UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0)
+        UpdateVisible();
+
+        if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
+            || UnitEntity.dashIntent != null || UnitEntity.knockBackIntent != null)
         {
             UnitEntity.activeMoveVec = Vector2.zero;
         }
@@ -117,7 +125,7 @@ public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEn
         }
 
         // 外力自然衰减（除非在Dash中保持常速）
-        if (UnitEntity.dashIntent == null)
+        if (UnitEntity.dashIntent == null && UnitEntity.knockBackIntent == null)
         {
             UnitEntity.externalVel = Vector2.MoveTowards(UnitEntity.externalVel, Vector2.zero, externalDecay * dt);
         }
@@ -139,6 +147,53 @@ public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEn
 
         UpdateFaceDirIndicator();
     }
+
+
+    private bool _visibleNow = false;
+    private float _updateVisibleTimer = 0;
+    protected void UpdateVisible()
+    {
+        _updateVisibleTimer -= Time.time;
+        if(_updateVisibleTimer > 0)
+        {
+            return;
+        }
+        _updateVisibleTimer = 0.4f;
+        if (MainGameManager.Instance.playerScenePresenter == null)
+        {
+            return;
+        }
+        bool visible = false;
+        var diff = MainGameManager.Instance.playerScenePresenter.transform.position - transform.position;
+        diff.z = 0;
+
+        if (diff.magnitude < 1.0f)
+        {
+            visible = true;
+        }
+        if(!visible)
+        {
+            visible = MainGameManager.Instance.VisionSenser2D.CanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.FaceDir,
+                transform.position, 
+                MainGameManager.Instance.playerScenePresenter.UnitEntity.viewRadius, MainGameManager.Instance.playerScenePresenter.UnitEntity.fovDegrees);
+        }
+        
+        if (visible)
+        {
+            icon.enabled = true;
+            if(faceIndicator != null)
+            {
+                faceIndicator?.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            icon.enabled = false;
+            if (faceIndicator != null)
+                faceIndicator?.gameObject.SetActive(false);
+        }
+    }
+
 
     protected float GetCurrentMoveSpeed()
     {
@@ -162,10 +217,7 @@ public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEn
             //transform.position = MainGameManager.Instance.GetWorldPosFromLogicPos(UnitEntity.Pos);
         }
 
-        if (navAgent != null)
-        {
-            navAgent.nextPosition = rb.position;
-        }
+        
     }
 
 
@@ -289,7 +341,8 @@ public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEn
 
         Vector2 baseVel;
 
-        FixDynamicBlock();
+        //FixDynamicBlock();
+
 
         //// 当前目标速度
         //if (UnitEntity.targettedMoveIntent != null && UnitEntity.targettedMoveIntent.targettedDesireVec != null)
@@ -337,46 +390,147 @@ public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEn
 
     private float skin = 0.02f;
     private RaycastHit2D[] hits = new RaycastHit2D[8];
+    //protected void FixDynamicBlock()
+    //{
+    //    Vector2 totalVel = UnitEntity.activeMoveVec + UnitEntity.externalVel;
+    //    Vector2 delta = totalVel * Time.fixedDeltaTime;
+    //    if (delta == Vector2.zero) return;
+
+    //    // 2) 主方向 Cast
+    //    float allowed = delta.magnitude;
+    //    int count = mainCol.Cast(delta.normalized, hits, allowed, true);
+    //    for (int i = 0; i < count; i++)
+    //    {
+    //        if (((1 << hits[i].collider.gameObject.layer) & (1 << LayerMask.NameToLayer("Units") | 1 << LayerMask.NameToLayer("Wall"))) == 0) continue;
+    //        allowed = Mathf.Min(allowed, Mathf.Max(0f, hits[i].distance - skin));
+    //    }
+    //    Vector2 move = delta.normalized * allowed;
+
+    //    // 3) 切向滑沿（命中时）
+    //    if (allowed + 1e-5f < delta.magnitude)
+    //    {
+    //        // 最近命中法线（示例取第一个；可遍历选最限制你的那一个）
+    //        Vector2 n = hits[0].normal;
+    //        // 切向分量
+    //        Vector2 tangent = delta - Vector2.Dot(delta, n) * n;
+    //        if (tangent.sqrMagnitude > 1e-6f)
+    //        {
+    //            float tangentLen = tangent.magnitude;
+    //            int tCount = mainCol.Cast(tangent.normalized, hits, tangentLen, true);
+    //            float tAllowed = tangentLen;
+    //            for (int i = 0; i < tCount; i++)
+    //            {
+    //                if (((1 << hits[i].collider.gameObject.layer) & (1 << LayerMask.NameToLayer("Units"))) == 0) continue;
+    //                tAllowed = Mathf.Min(tAllowed, Mathf.Max(0f, hits[i].distance - skin));
+    //            }
+    //            move += tangent.normalized * tAllowed;
+    //        }
+    //    }
+
+    //    // 4) 应用位移
+    //    rb.MovePosition(rb.position + move);
+    //}
+
+    protected bool IsWallLayer(int layer)
+    {
+        bool iswall = ((1 << layer) & (1 << LayerMask.NameToLayer("Wall"))) != 0;
+        return iswall;
+    }
+
     protected void FixDynamicBlock()
     {
-        Vector2 totalVel = UnitEntity.activeMoveVec + UnitEntity.externalVel;
-        Vector2 delta = totalVel * Time.fixedDeltaTime;
-        if (delta == Vector2.zero) return;
+        Vector2 v = UnitEntity.activeMoveVec + UnitEntity.externalVel;
+        float dt = Time.fixedDeltaTime;
+        if (v.sqrMagnitude < 1e-8f) return;
 
-        // 2) 主方向 Cast
-        float allowed = delta.magnitude;
-        //int count = mainCol.Cast(delta.normalized, hits, allowed, true);
-        //for (int i = 0; i < count; i++)
+        Vector2 pos = rb.position;
+        const int MaxSlides = 3;
+        float skin = this.skin; // 例如 0.02f
+        pos += v * dt;
+        //for (int iter = 0; iter < MaxSlides; iter++)
         //{
-        //    if (((1 << hits[i].collider.gameObject.layer) & (1 << LayerMask.NameToLayer("Units"))) == 0) continue;
-        //    allowed = Mathf.Min(allowed, Mathf.Max(0f, hits[i].distance - skin));
+        //    float dist = v.magnitude * dt;
+        //    if (dist <= 1e-6f) break;
+
+        //    // Cast沿当前速度方向
+        //    int count = mainCol.Cast(v.normalized, hits, dist + skin, false);
+        //    // 选择最近“墙层”命中
+        //    int hitIndex = -1;
+        //    float bestDist = float.MaxValue;
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        int layer = hits[i].collider.gameObject.layer;
+        //        if (!IsWallLayer(layer)) continue; // 只对墙阻挡
+        //        if (hits[i].distance < bestDist) { bestDist = hits[i].distance; hitIndex = i; }
+        //    }
+
+        //    if (hitIndex < 0)
+        //    {
+        //        // 没有命中墙：直接位移
+        //        pos += v * dt;
+        //        break;
+        //    }
+        //    else
+        //    {
+        //        // 推到命中点前（减skin）
+        //        float allowed = Mathf.Max(0f, bestDist - skin);
+        //        pos += v.normalized * allowed;
+
+        //        // 对速度做“滑动投影”
+        //        Vector2 n = hits[hitIndex].normal; // 法线指向我们（Unity的2D/3D法线方向均为朝向碰撞体外侧）
+        //        float vn = Vector2.Dot(v, n);
+        //        if (vn < 0f)
+        //        {
+        //            v = v - vn * n; // 去除法线分量，保留切向速度
+        //        }
+
+        //        // 如果投影后速度很小，结束
+        //        if (v.sqrMagnitude < 1e-6f)
+        //            break;
+
+        //        // 继续下一轮（可能撞到另一面墙，迭代滑动）
+        //        // 注意：不要再对“单位层”进行阻挡，否则贴墙滑动会被其他单位卡住
+        //    }
         //}
-        Vector2 move = delta.normalized * allowed;
 
-        // 3) 切向滑沿（命中时）
-        if (allowed + 1e-5f < delta.magnitude)
-        {
-            // 最近命中法线（示例取第一个；可遍历选最限制你的那一个）
-            Vector2 n = hits[0].normal;
-            // 切向分量
-            Vector2 tangent = delta - Vector2.Dot(delta, n) * n;
-            if (tangent.sqrMagnitude > 1e-6f)
-            {
-                float tangentLen = tangent.magnitude;
-                int tCount = mainCol.Cast(tangent.normalized, hits, tangentLen, true);
-                float tAllowed = tangentLen;
-                for (int i = 0; i < tCount; i++)
-                {
-                    if (((1 << hits[i].collider.gameObject.layer) & (1 << LayerMask.NameToLayer("Units"))) == 0) continue;
-                    tAllowed = Mathf.Min(tAllowed, Mathf.Max(0f, hits[i].distance - skin));
-                }
-                move += tangent.normalized * tAllowed;
-            }
-        }
-
-        // 4) 应用位移
-        rb.MovePosition(rb.position + move);
+        rb.MovePosition(pos);
     }
+
+    //void ApplySoftInteration(ref Vector2 v, float dt)
+    //{
+    //    var neighbors = Physics2D.OverlapCircleAll(rb.position, neighborRadius, unitsLayerMask);
+    //    foreach (var col in neighbors)
+    //    {
+    //        if (col.attachedRigidbody == rb) continue;
+    //        Vector2 pij = (Vector2)col.attachedRigidbody.position - rb.position;
+    //        float dist = pij.magnitude;
+    //        if (dist < 1e-4f) continue;
+
+    //        Vector2 n = pij / dist;
+    //        Vector2 vj = GetNeighborVelocity(col); // 需要你维护
+    //        Vector2 vr = v - vj;
+
+    //        // 相向度：正值表示逼近
+    //        float approach = Vector2.Dot(vr, n);
+    //        if (approach > 0f)
+    //        {
+    //            // 法向阻尼
+    //            float k = softBlockK; // 0.4f
+    //            v -= k * approach * n;
+
+    //            // 侧向偏移（打破对冲）
+    //            float side = sideGain; // 拥挤时增大
+    //            Vector2 t = new Vector2(-n.y, n.x);
+    //            v += side * t;
+    //        }
+    //    }
+
+    //    // 拥挤时限速
+    //    int density = neighbors.Length;
+    //    float vmax = Mathf.Lerp(vMaxCrowd, vMaxNormal, Mathf.Clamp01(1f - (density - crowdStart) / (crowdPeak - crowdStart)));
+    //    v = Vector2.ClampMagnitude(v, vmax);
+    //}
+
 
     // 分离控制（基于目标分离速度）
     public float selfRadius = 0.5f;

@@ -42,5 +42,7 @@ namespace Config.Unit
         public int Hp = 100;
 
         public List<string> SkillList = new();
+
+        public string DropId;
     }
 }

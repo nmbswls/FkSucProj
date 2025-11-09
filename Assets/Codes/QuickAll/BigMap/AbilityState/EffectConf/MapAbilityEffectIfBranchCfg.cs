@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectIfBranchCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectIfBranchCfg : MapFightEffectCfg
     {
         public enum ECheckType
         {
@@ -22,10 +22,10 @@ namespace Unit.Ability.Effect
 
 
         [SerializeReference]
-        public List<MapAbilityEffectCfg> TrueBranchEffects = new();
+        public List<MapFightEffectCfg> TrueBranchEffects = new();
 
         [SerializeReference]
-        public List<MapAbilityEffectCfg> FalseBranchEffects = new();
+        public List<MapFightEffectCfg> FalseBranchEffects = new();
     }
 }
 

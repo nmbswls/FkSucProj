@@ -1,3 +1,4 @@
+using Map.Entity.Attr;
 using Map.Logic.Events;
 using System;
 using System.Collections;
@@ -54,7 +55,7 @@ namespace Map.Entity.Throw
             public float throwDuration;
             public int Priority;
             public EAbilityInterruptMask InterruptMask;
-            public List<long> throwBuffIds;
+            public List<long> throwBuffIds = new();
         }
 
         private Dictionary<long, ThrowContext> ContextContainer = new();
@@ -86,7 +87,7 @@ namespace Map.Entity.Throw
                 logicManager.viewer.ShowFakeFxEffect("fcking", ctx.throwLauncher.Pos);
                 if (now > ctx.throwStartTime + ctx.throwDuration)
                 {
-                    ContextContainer.Remove(ctxKey);
+                    CleanOneThrowContext(ctx);
                 }
             }
         }
@@ -144,11 +145,13 @@ namespace Map.Entity.Throw
 
             var id1 = logicManager.globalBuffManager.AddBuff(launcher.Id, "lock_move");
             var id2 = logicManager.globalBuffManager.AddBuff(target.Id, "lock_move");
-            var id3 = logicManager.globalBuffManager.AddBuff(target.Id, efffectBuffId);
+            var id3 = logicManager.globalBuffManager.AddBuff(target.Id, efffectBuffId, casterId: launcher.Id);
 
             newCtx.throwBuffIds.Add(id1);
             newCtx.throwBuffIds.Add(id2);
             newCtx.throwBuffIds.Add(id3);
+
+            ContextContainer[newCtx.CtxId] = newCtx;
 
             return true;
         }

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static MapUnitWeaponCtrl;
 using UnityEngine.InputSystem.HID;
 
 public class MapUnitWeaponOne : MonoBehaviour
@@ -9,16 +8,19 @@ public class MapUnitWeaponOne : MonoBehaviour
     public Animator weaponAnim;
     public MapUnitWeaponCtrl WeaponCtrl;
 
+    public long HitId = 0;
+
     public void OnTriggerEnter2D(Collider2D other)
     {
         var unitComp = other.GetComponentInParent<SceneUnitPresenter>();
         if (unitComp == null) return;
 
-        WeaponCtrl.OnWeaponTriggerHit(unitComp.GetLogicEntity().Id);
+        WeaponCtrl.OnWeaponTriggerHit(HitId, unitComp.GetLogicEntity().Id);
     }
 
-    public void ShowWeapon(float duration)
+    public void ShowWeapon(long hitId, float duration)
     {
+        this.HitId = hitId;
         gameObject.SetActive(true);
 
         // 先尝试获取 clip 长度（简单版：按 clip 名匹配）
@@ -47,5 +49,6 @@ public class MapUnitWeaponOne : MonoBehaviour
     public void ClearWeapon()
     {
         gameObject.SetActive(false);
+        HitId = 0;
     }
 }

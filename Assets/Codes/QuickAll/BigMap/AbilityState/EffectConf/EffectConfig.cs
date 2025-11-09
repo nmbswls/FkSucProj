@@ -22,7 +22,7 @@ using UnityEngine;
     }
 
     [Serializable]
-    public abstract class MapAbilityEffectCfg
+    public abstract class MapFightEffectCfg
     {
         public EAbilityEffectType EffectType;
     }

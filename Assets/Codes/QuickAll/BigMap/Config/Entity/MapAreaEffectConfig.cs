@@ -27,7 +27,7 @@ namespace Config.Map
         public float Length;
         public float Radius;
         [SerializeReference]
-        public List<MapAbilityEffectCfg> TriggerEffects;
+        public List<MapFightEffectCfg> TriggerEffects;
 
         public string BindingBuffId;
 

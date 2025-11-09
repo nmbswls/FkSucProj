@@ -19,8 +19,13 @@ public class PlayerAbilityController : MapEntityAbilityController
     public PlayerAbilityController(BaseUnitLogicEntity owner) : base(owner)
     {
         {
-            var _openDoor = AbilityLibrary.CreateDefaultUnlockLootPoint();
-            RegisterAbility(_openDoor);
+            var unlockLootPoint = AbilityLibrary.CreateDefaultUnlockLootPoint();
+            RegisterAbility(unlockLootPoint);
+        }
+
+        {
+            var useLootPoint = AbilityLibrary.CreateDefaultUseLootPoint();
+            RegisterAbility(useLootPoint);
         }
 
         {

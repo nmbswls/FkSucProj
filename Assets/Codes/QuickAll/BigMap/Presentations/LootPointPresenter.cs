@@ -23,14 +23,9 @@ public class LootPointPresenter : ScenePresentationBase<LootPointLogicEntity>, I
         }
     }
 
-    public void SetInteractExpandStatus(bool expanded)
-    {
-        EventOnInteractStateChanged?.Invoke(expanded);
-    }
-
     public Vector3 GetHintAnchorPosition()
     {
-        return GetWorldPosition();
+        return GetWorldPosition() + new Vector3(0, 0.1f, 0);
     }
 
     /// <summary>

@@ -12,15 +12,6 @@ public class MapUnitWeaponCtrl : MonoBehaviour
 
     public MapUnitWeaponOne WeaponOne;
 
-    public class WeaponHitCtx
-    { 
-        public long hitId;
-        public string weaponName;
-        public float hitDuration;
-    }
-
-    public WeaponHitCtx? CurrentHitCtx = null;
-
     public void Awake()
     {
         UnitPresenter = GetComponentInParent<SceneUnitPresenter>();
@@ -34,15 +25,6 @@ public class MapUnitWeaponCtrl : MonoBehaviour
 
     void Update()
     {
-        if(CurrentHitCtx != null)
-        {
-            CurrentHitCtx.hitDuration -= Time.deltaTime;
-            if(CurrentHitCtx.hitDuration <= 0)
-            {
-                //Debug.Log("MapUnitWeaponCtrl clsoe hit window " + CurrentHitCtx.hitId);
-                OnHitWindowClear(CurrentHitCtx.hitId);
-            }
-        }
     }
 
     /// <summary>
@@ -52,40 +34,21 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     /// <param name="hitId"></param>
     public void ApplyUseWeapon(string weaponName, long hitId, float duration)
     {
-        //Debug.Log("ApplyActiveUseWeapon " + weaponName + " " + hitId + " " + duration);
-        CurrentHitCtx = new WeaponHitCtx()
-        {
-            hitId = hitId,
-            weaponName = weaponName,
-            hitDuration = duration,
-        };
-
-        WeaponOne.ShowWeapon(duration);
+        WeaponOne.ShowWeapon(hitId, duration);
     }
 
     public void OnHitWindowClear(long hitId)
     {
-        if(CurrentHitCtx != null)
-        {
-            if(CurrentHitCtx.hitId == hitId)
-            {
-                WeaponOne.ClearWeapon();
-                CurrentHitCtx = null;
-            }
-        }
+        WeaponOne.ClearWeapon();
     }
 
-    public void OnWeaponTriggerHit(long entityId)
+    public void OnWeaponTriggerHit(long hitId, long entityId)
     {
-        if (CurrentHitCtx == null)
-        {
-            return;
-        }
         if(entityId == UnitPresenter.UnitEntity.Id)
         {
             return;
         }
         Debug.Log("OnWeaponTriggerHit hit with id " + entityId);
-        UnitPresenter.OnWeaponHitCallback(CurrentHitCtx.hitId, entityId);
+        UnitPresenter.OnWeaponHitCallback(hitId, entityId);
     }
 }

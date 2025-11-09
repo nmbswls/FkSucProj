@@ -1,10 +1,11 @@
+using Map.Entity.Attr;
 using UnityEngine;
 
 public static class ProjectileUtil
 {
-    public static void ApplyDamage(SceneUnitPresenter unitPresenter, float damage)
+    public static void ApplyDamage(SceneUnitPresenter unitPresenter, float damage, long entityId)
     {
-        unitPresenter.UnitEntity.OnHit(10, null);
+        unitPresenter.UnitEntity.ApplyResourceChange(AttrIdConsts.HP, -40, true, new SourceKey() {type = SourceType.Bullet, entityId = entityId });
     }
 
     public static void PlayFX(SceneUnitPresenter unitPresenter, Vector2 pos, Vector2 normal)

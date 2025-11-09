@@ -37,19 +37,45 @@ public class SceneNpcPresenter : SceneUnitPresenter, ISceneInteractable
 
     public bool CanInteractEnable()
     {
-        if(NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) > 0)
+        if(NpcEntity.IsInBattle)
         {
-            return true;
+            return false;
         }
 
-        return false;
+        var diff = transform.position - MainGameManager.Instance.playerScenePresenter.transform.position;
+        if(diff.magnitude > 2f)
+        {
+            return false;
+        }
+
+        if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
+        {
+            return false;
+        }
+
+        //if(NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) > 0)
+        //{
+        //    return true;
+        //}
+
+        return true;
     }
 
     public void TriggerInteract(string interactSelection)
     {
-        if (NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) == 0)
+        if (NpcEntity.IsInBattle)
         {
             return;
+        }
+
+        if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
+        {
+            return;
+        }
+
+        if (NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) == 0)
+        {
+            //return;
         }
 
         // ÏÔÊ¾²ãÊÂ¼þ
@@ -58,11 +84,13 @@ public class SceneNpcPresenter : SceneUnitPresenter, ISceneInteractable
             Name = "AbsorbDizzy",
             Param3 = this.Id,
         });
+
+        MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target:NpcEntity);
     }
 
     public Vector3 GetHintAnchorPosition()
     {
-        return transform.position;
+        return transform.position + new Vector3(0, 0.25f, 0);
     }
 
     public List<string> GetInteractSelections()

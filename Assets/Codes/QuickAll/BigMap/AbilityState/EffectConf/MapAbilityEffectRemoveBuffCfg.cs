@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Unit.Ability.Effect
 {
     [Serializable]
-    public class MapAbilityEffectRemoveBuffCfg : MapAbilityEffectCfg
+    public class MapAbilityEffectRemoveBuffCfg : MapFightEffectCfg
     {
         public string BuffId;
         public int Layer;

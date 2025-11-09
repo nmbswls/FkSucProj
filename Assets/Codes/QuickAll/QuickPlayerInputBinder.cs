@@ -38,12 +38,22 @@ public class QuickPlayerInputBinder : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext ctx)
     {
+        if(MainUIManager.Instance.IsLootingMode)
+        {
+            return;
+        }
+
         playerPresenter.freeMoveDir = ctx.ReadValue<Vector2>();
         playerPresenter.freeMoveDir = Vector2.ClampMagnitude(playerPresenter.freeMoveDir, 1f);
     }
 
     public void OnDash(InputAction.CallbackContext ctx)
     {
+        if (MainUIManager.Instance.IsLootingMode)
+        {
+            return;
+        }
+
         if (ctx.performed)
         {
 
