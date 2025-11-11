@@ -1,15 +1,14 @@
 using Config;
-using Map.Entity.Attr;
-using Map.Entity.Buffs;
-using Map.Logic.Chunk;
 using Map.Logic.Events;
+using My.Map.Entity;
+using My.Map.Logic.Chunk;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Map.Entity
+namespace My.Map
 {
     public enum EEntityType
     {
@@ -37,6 +36,8 @@ namespace Map.Entity
         List<ILogicEntity> FindEntityInRange(Vector2 pos, float radius);
 
         GlobalBuffManager BuffManager { get; }
+
+        bool CheckHasBuff(string buffId);
     }
 
     public interface IEntityAttributeOwner
@@ -78,7 +79,7 @@ namespace Map.Entity
         void OnDespawn(out LogicEntityRecord? snapshot); // 输出快照，供下次重建
         void OnWake();   // 从Sleep进入Active，开启AI、感知、昂贵系统
         void OnSleep();  // 从Active降级为Sleep，关闭昂贵系统，保留轻量逻辑
-        void Tick(float now, float dt);
+        void Tick(float dt);
 
         void OnEnterAOI();
 
@@ -152,16 +153,16 @@ namespace Map.Entity
 
         protected virtual void InitAttribute()
         {
-            // 数值类
-            attributeStore.RegisterNumeric("Attack", initialBase: 100);
-            attributeStore.RegisterNumeric("Strength", initialBase: 10);
-            attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
-            attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
+            //// 数值类
+            //attributeStore.RegisterNumeric("Attack", initialBase: 100);
+            //attributeStore.RegisterNumeric("Strength", initialBase: 10);
+            //attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
+            //attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
-            // 资源类
-            attributeStore.RegisterResource("HP", "HP.Max", 100);
+            //// 资源类
+            //attributeStore.RegisterResource("HP", "HP.Max", 100);
 
-            attributeStore.Commit();
+            //attributeStore.Commit();
         }
 
 
@@ -285,7 +286,7 @@ namespace Map.Entity
         }
 
 
-        public virtual void Tick(float now, float dt) { }
+        public virtual void Tick(float dt) { }
 
         protected void NotifyStateChanged(object payload)
         {
@@ -340,6 +341,15 @@ namespace Map.Entity
                 ret.Add(entity);
             }
             return ret;
+        }
+
+        public bool CheckHasBuff(string buffId)
+        {
+            foreach(var buff in BuffContainer)
+            {
+                if(buff.Value.BuffId == buffId) return true;
+            }
+            return false;
         }
 
         public Dictionary<long, BuffInstance> BuffContainer { get; protected set; } = new();

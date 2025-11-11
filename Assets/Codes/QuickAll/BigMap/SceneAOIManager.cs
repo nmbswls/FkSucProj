@@ -1,5 +1,6 @@
-using Map.Entity;
-using Map.Logic.Chunk;
+using My.Map;
+using My.Map.Entity;
+using My.Map.Logic.Chunk;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -110,7 +111,7 @@ public class SceneAOIManager : MonoBehaviour
         if (string.IsNullOrEmpty(AreaId)) return;
 
         // 1) 动态实体 AOI 刷新（网格桶 + 半径范围）
-        RefreshDynamicAOI(player.position, Time.deltaTime);
+        RefreshDynamicAOI(player.position, LogicTime.deltaTime);
 
         // 2) 静态 Chunk AOI 刷新（九宫格/环）
         RefreshStaticChunks(player.position);
@@ -513,14 +514,14 @@ public class SceneAOIManager : MonoBehaviour
         foreach (var c in keys)
         {
             var rec = _chunks[c];
-            TickChunkUnload(rec, Time.time, ref startedUnloadsThisFrame);
+            TickChunkUnload(rec, LogicTime.time, ref startedUnloadsThisFrame);
         }
 
         // 2.2 加载推进
         foreach (var c in keys)
         {
             var rec = _chunks[c];
-            TickChunkLoad(rec, Time.time, ref startedLoadsThisFrame);
+            TickChunkLoad(rec, LogicTime.time, ref startedLoadsThisFrame);
         }
     }
 
@@ -667,7 +668,7 @@ public class SceneAOIManager : MonoBehaviour
 
         rec.instances = instances;
         rec.loadState = LoadState.Loaded;
-        rec.lastBecameLoaded = Time.time;
+        rec.lastBecameLoaded = LogicTime.time;
         _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
 
         var segments = ExportDb.GetChunkSegments(rec.coord.X, rec.coord.Y);

@@ -1,4 +1,5 @@
-using Map.Entity.Attr;
+
+using Map.Logic;
 using Map.Logic.Events;
 using System;
 using System.Collections;
@@ -8,11 +9,10 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static MapEntityAbilityController;
 
 
 
-namespace Map.Entity.Throw
+namespace My.Map.Entity
 {
     public interface IThrowTarget
     {
@@ -68,14 +68,14 @@ namespace Map.Entity.Throw
             this.logicManager = logicManager;
         }
 
-        public void Tick(float now, float dt)
+        public void Tick(float dt)
         {
-            TickRunningCtx(now, dt);
+            TickRunningCtx(dt);
         }
 
         private float tickTimer;
 
-        public void TickRunningCtx(float now, float dt)
+        public void TickRunningCtx(float dt)
         {
             tickTimer -= dt;
             if (tickTimer > 0) return;
@@ -85,7 +85,7 @@ namespace Map.Entity.Throw
                 var ctx = ContextContainer[ctxKey];
                 logicManager.viewer.ShowFakeFxEffect("fcked", ctx.throwTarget.Pos);
                 logicManager.viewer.ShowFakeFxEffect("fcking", ctx.throwLauncher.Pos);
-                if (now > ctx.throwStartTime + ctx.throwDuration)
+                if (LogicTime.time > ctx.throwStartTime + ctx.throwDuration)
                 {
                     CleanOneThrowContext(ctx);
                 }
@@ -136,7 +136,7 @@ namespace Map.Entity.Throw
 
             newCtx.srcAbilityId = srcAbilityId;
             newCtx.Priority = priority;
-            newCtx.throwStartTime = Time.time;
+            newCtx.throwStartTime = LogicTime.time;
             newCtx.throwDuration = 2f;
 
             // Ôö¼Ó

@@ -1,15 +1,15 @@
 using Config.Unit;
 using Config;
-using Map.Logic.Chunk;
 using UnityEngine;
-using Bag;
 using Config.Map;
 using System.Collections.Generic;
 using System;
 using static UnityEditor.Progress;
+using My.Player.Bag;
+using My.Map.Logic.Chunk;
 
 
-namespace Map.Entity
+namespace My.Map
 {
     public class LootPointLogicEntity : LogicEntityBase, ILootableObj
     {

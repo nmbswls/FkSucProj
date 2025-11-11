@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Unit.Ability.Effect;
 using UnityEngine;
 
 
 
-namespace Map.Entity
+namespace My.Map.Entity
 {
     // ===== 基础标签与枚举 =====
     public enum AbilityTypeTag { Combat, Interaction, ItemUse, Crafting }

@@ -158,4 +158,10 @@ public interface ISceneAbilityViewer
     void ShowFakeFxEffect(string hintText, Vector2 logicPos);
 
     void ShowNoiseEffect(float intensity, Vector2 logicPos);
+
+    void ShowClickkkWindow(string windowType, Vector2 showPos, float duration);
+
+    void CloseClickkkWindow(string windowType, bool isInterrupt);
+
+    void DoDeepZhaquSmallGame(long targetUnitId, object extraParam);
 }

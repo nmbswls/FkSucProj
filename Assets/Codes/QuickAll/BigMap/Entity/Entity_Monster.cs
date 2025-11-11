@@ -1,23 +1,14 @@
-using Bag;
 using Config;
 using Config.Map;
 using Config.Unit;
 using DG.Tweening;
-using Map.Entity;
-using Map.Entity.AI;
-using Map.Logic.Chunk;
 using Map.Logic.Events;
-using SuperScrollView;
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Unity.VisualScripting.FullSerializer;
-using UnityEditor.Experimental.GraphView;
+using My.Map.Entity;
+using My.Map.Logic.Chunk;
 using UnityEngine;
 using static GameLogicManager;
-using static MapEntityAbilityController;
 
-namespace Map.Entity
+namespace My.Map
 {
     public class MonsterUnitLogicEntity : BaseUnitLogicEntity
     {
@@ -41,9 +32,9 @@ namespace Map.Entity
         public override EEntityType Type => EEntityType.Monster;
 
 
-        public override void Tick(float now, float dt)
+        public override void Tick(float dt)
         {
-            base.Tick(now, dt);
+            base.Tick(dt);
 
             if (!MarkDead && LifeTime > 0)
             {
@@ -68,18 +59,8 @@ namespace Map.Entity
 
         protected override void InitAttribute()
         {
+            base.InitAttribute();
             moveSpeed = cacheCfg.MoveSpeed;
-
-            // 数值类
-            attributeStore.RegisterNumeric("Attack", initialBase: 100);
-            attributeStore.RegisterNumeric("Strength", initialBase: 10);
-            attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
-            attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
-
-            // 资源类
-            attributeStore.RegisterResource("HP", "HP.Max", 100);
-
-            attributeStore.Commit();
         }
 
         protected override void InitAiBrain()

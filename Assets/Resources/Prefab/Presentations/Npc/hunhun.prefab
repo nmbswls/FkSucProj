@@ -148,7 +148,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6716341979371502919}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -258,11 +258,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collisionMask:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 0
   skin: 0.02
   maxSlideIterations: 3
   minMove: 0.0005
   unitPresenter: {fileID: 0}
+  neighborFilter:
+    useTriggers: 0
+    useLayerMask: 0
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 0
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
+  separationRadius: 0.4
+  separationStrength: 1
+  separationMaxPerStep: 0.15
+  stationaryEpsilon: 0.0005
 --- !u!1 &6957938098442146527
 GameObject:
   m_ObjectHideFlags: 0

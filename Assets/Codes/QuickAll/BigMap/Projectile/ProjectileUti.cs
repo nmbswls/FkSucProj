@@ -1,4 +1,6 @@
-using Map.Entity.Attr;
+using My.Map;
+using My.Map.Entity;
+using My.Map.Scene;
 using UnityEngine;
 
 public static class ProjectileUtil

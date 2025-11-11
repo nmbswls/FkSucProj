@@ -1,217 +1,218 @@
 using Map.Entity;
-using Map.Entity.Attr;
+using My.Map.Entity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unit.Ability.Effect;
 using UnityEngine;
 
 
-public static class AbilityLibrary
+namespace My.Map.Entity
 {
-    public static MapAbilitySpecConfig CreateDefaultUnlockLootPoint()
+    public static class AbilityLibrary
     {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-
-        spec.Id = "unlock_loot_point";
-        spec.TypeTag = AbilityTypeTag.Interaction;
-
-        var mainPhase = new MapAbilityPhase()
+        public static MapAbilitySpecConfig CreateDefaultUnlockLootPoint()
         {
-            PhaseName = "Executing",
-            WithProgress = true,
-            LockMovement = true,
-            LockRotation = true,
-            DurationValue = new()
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "unlock_loot_point";
+            spec.TypeTag = AbilityTypeTag.Interaction;
+
+            var mainPhase = new MapAbilityPhase()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.5"
-            },
-        };
+                PhaseName = "Executing",
+                WithProgress = true,
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            };
 
-        var newEffect = new MapAbilityEffectUnlockLootPoint();
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
+            var newEffect = new MapAbilityEffectUnlockLootPoint();
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
 
-        spec.Phases.Add(mainPhase);
-        return spec;
-    }
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
 
-    public static MapAbilitySpecConfig CreateDefaultUseLootPoint()
-    {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-
-        spec.Id = "use_loot_point";
-        spec.TypeTag = AbilityTypeTag.Interaction;
-
-        var mainPhase = new MapAbilityPhase()
+        public static MapAbilitySpecConfig CreateDefaultUseLootPoint()
         {
-            PhaseName = "Executing",
-            WithProgress = true,
-            DurationValue = new()
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "use_loot_point";
+            spec.TypeTag = AbilityTypeTag.Interaction;
+
+            var mainPhase = new MapAbilityPhase()
             {
-                ValType = EOneVariatyType.Float,
-                ReferName = "PhaseExecutingTime"
-            },
-        };
+                PhaseName = "Executing",
+                WithProgress = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    ReferName = "PhaseExecutingTime"
+                },
+            };
 
-        var newEffect = new MapAbilityEffectUseLootPoint();
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
+            var newEffect = new MapAbilityEffectUseLootPoint();
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
 
-        spec.Phases.Add(mainPhase);
-        return spec;
-    }
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
 
-    public static MapAbilitySpecConfig CreateDefaultUseItem()
-    {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-        spec.Id = "use_item";
-        spec.TypeTag = AbilityTypeTag.Interaction;
-
-
-        var mainPhase = new MapAbilityPhase()
+        public static MapAbilitySpecConfig CreateDefaultUseItem()
         {
-            PhaseName = "Executing",
-            WithProgress = true,
-            DurationValue = new()
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+            spec.Id = "use_item";
+            spec.TypeTag = AbilityTypeTag.Interaction;
+
+
+            var mainPhase = new MapAbilityPhase()
             {
-                ValType = EOneVariatyType.Float,
-                ReferName = "PhaseExecutingTime"
-            },
-        };
+                PhaseName = "Executing",
+                WithProgress = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    ReferName = "PhaseExecutingTime"
+                },
+            };
 
-        var newEffect = new MapAbilityEffectUseItemCfg()
-        {
-            UseItemId = new()
+            var newEffect = new MapAbilityEffectUseItemCfg()
             {
-                ValType = EOneVariatyType.String,
-                ReferName = "ItemId"
-            }
-        };
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
+                UseItemId = new()
+                {
+                    ValType = EOneVariatyType.String,
+                    ReferName = "ItemId"
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
 
-        spec.Phases.Add(mainPhase);
-        return spec;
-    }
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
 
-    public static MapAbilitySpecConfig CreateDefaultDash()
-    {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-        spec.Id = "default_dash";
-        spec.TypeTag = AbilityTypeTag.Combat;
-
-        var mainPhase = new MapAbilityPhase()
+        public static MapAbilitySpecConfig CreateDefaultDash()
         {
-            PhaseName = "Executing",
-            DurationValue = new()
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+            spec.Id = "default_dash";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            var mainPhase = new MapAbilityPhase()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.3"
-            },
-        };
+                PhaseName = "Executing",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
 
-        var newEffect = new MapAbilityEffectDashStartCfg()
-        {
-            IsTimeMode = true,
-            DashDuration = 0.3f,
-            DashSpeed = 8f,
-        };
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
-
-        spec.Phases.Add(mainPhase);
-        return spec;
-    }
-    
-
-
-    public static MapAbilitySpecConfig CreateDefaultShootAbility()
-    {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-
-        spec.Id = "player_shoot";
-        spec.TypeTag = AbilityTypeTag.Combat;
-        
-        spec.Phases.Add(new MapAbilityPhase()
-        {
-            PhaseName = "Pre",
-            LockMovement = true,
-            LockRotation = true,
-            DurationValue = new()
+            var newEffect = new MapAbilityEffectDashStartCfg()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.2"
-            },
-        });
+                IsTimeMode = true,
+                DashDuration = 0.3f,
+                DashSpeed = 8f,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 
-        var mainPhase = new MapAbilityPhase()
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+
+
+        public static MapAbilitySpecConfig CreateDefaultShootAbility()
         {
-            PhaseName = "Executing",
-            LockMovement = true,
-            DurationValue = new()
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_shoot";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.2"
-            },
-        };
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            });
 
-        var newEffect = new MapAbilityEffectSpawnBulletCfg()
-        {
-            targetType = MapAbilityEffectSpawnBulletCfg.ETargetType.Dir,
-            motionType = EMotionType.Linear,
-            lifeTime = 0.6f,
-            speed = 9f,
-        };
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
-
-        //spec.Phases.Add(new MapAbilityPhase()
-        //{
-        //    PhaseName = "Post",
-        //    DurationValue = new()
-        //    {
-        //        ValType = EOneVariatyType.Float,
-        //        RawVal = "0.1"
-        //    },
-        //});
-
-        spec.Phases.Add(mainPhase);
-        return spec;
-    }
-
-    public static MapAbilitySpecConfig CreateDefaultUseWeaponAbility()
-    {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-
-        spec.Id = "player_weapon";
-        spec.TypeTag = AbilityTypeTag.Combat;
-
-        spec.Phases.Add(new MapAbilityPhase()
-        {
-            PhaseName = "Pre",
-            LockMovement = true,
-            LockRotation = true,
-            DurationValue = new()
+            var mainPhase = new MapAbilityPhase()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.1"
-            },
-        });
+                PhaseName = "Executing",
+                LockMovement = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
 
-        var mainPhase = new MapAbilityPhase()
-        {
-            PhaseName = "Executing",
-            LockMovement = true,
-            LockRotation = true,
-            DurationValue = new()
+            var newEffect = new MapAbilityEffectSpawnBulletCfg()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.2"
-            },
-        };
+                targetType = MapAbilityEffectSpawnBulletCfg.ETargetType.Dir,
+                motionType = EMotionType.Linear,
+                lifeTime = 0.6f,
+                speed = 9f,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 
-        var newEffect = new MapAbilityEffectUseWeaponCfg()
+            //spec.Phases.Add(new MapAbilityPhase()
+            //{
+            //    PhaseName = "Post",
+            //    DurationValue = new()
+            //    {
+            //        ValType = EOneVariatyType.Float,
+            //        RawVal = "0.1"
+            //    },
+            //});
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        public static MapAbilitySpecConfig CreateDefaultUseWeaponAbility()
         {
-            WeaponName = "Weapon01",
-            Duration = 0.3f,
-            OnHitEffects = new()
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_weapon";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = "Weapon01",
+                Duration = 0.3f,
+                OnHitEffects = new()
             {
                 new MapAbilityEffectCostResourceCfg()
                 {
@@ -220,199 +221,232 @@ public static class AbilityLibrary
                     Flags = 1,
                 }
             }
-        };
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
-
-
-        //spec.Phases.Add(new MapAbilityPhase()
-        //{
-        //    PhaseName = "Post",
-        //    DurationValue = new()
-        //    {
-        //        ValType = EOneVariatyType.Float,
-        //        RawVal = "0.1"
-        //    },
-        //});
-
-        spec.Phases.Add(mainPhase);
-        return spec;
-    }
-
-
-    public static MapAbilitySpecConfig CreateOrRefreshZhaQu()
-    {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-
-        spec.Id = "zhaqu";
-        spec.TypeTag = AbilityTypeTag.Combat;
-
-        spec.Phases.Add(new MapAbilityPhase()
-        {
-            PhaseName = "Pre",
-            LockMovement = true,
-            LockRotation = true,
-            DurationValue = new()
-            {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.1"
-            },
-        });
-
-        var mainPhase = new MapAbilityPhase()
-        {
-            PhaseName = "Executing",
-            LockRotation = true,
-            LockMovement = true,
-            DurationValue = new()
-            {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.3"
-            },
-        };
-
-        //var newEffectGive = new MapAbilityEffectAddBuffCfg()
-        //{
-        //    BuffId = "beizha",
-        //    Layer = 1,
-        //    Duration = -1,
-        //    TargetType = 0,
-        //};
-        //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffectGive, Kind = PhaseEventKind.OnEnter });
-
-
-        {
-            var throwCfg = new MapAbilityEffectThrowStartCfg()
-            {
-                Priority = 999,
-                Duration = 2.0f,
-                ThrowMainBuffId = "beizha",
             };
-            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = throwCfg, Kind = PhaseEventKind.OnEnter });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+
+            //spec.Phases.Add(new MapAbilityPhase()
+            //{
+            //    PhaseName = "Post",
+            //    DurationValue = new()
+            //    {
+            //        ValType = EOneVariatyType.Float,
+            //        RawVal = "0.1"
+            //    },
+            //});
+
+            spec.Phases.Add(mainPhase);
+            return spec;
         }
 
 
-        //var newEffectSelf = new MapAbilityEffectAddBuffCfg()
-        //{
-        //    targetType = MapAbilityEffectSpawnBulletCfg.ETargetType.Dir,
-        //    motionType = EMotionType.Linear,
-        //    lifeTime = 0.6f,
-        //    speed = 9f,
-        //};
-        //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
-
-
-        //var effectRemoveZha = new MapAbilityEffectRemoveBuffCfg()
-        //{
-        //    BuffId = "beizha",
-        //    Layer = 1,
-        //    TargetType = 0,
-        //};
-        //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effectRemoveZha, Kind = PhaseEventKind.OnExit });
-
-        spec.Phases.Add(mainPhase);
-        return spec;
-    }
-
-
-    public static MapAbilitySpecConfig CreateDefaultMonsterAttack()
-    {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-
-        spec.Id = "attack";
-        spec.TypeTag = AbilityTypeTag.Combat;
-
-        spec.Phases.Add(new MapAbilityPhase()
+        public static MapAbilitySpecConfig CreateOrRefreshZhaQu()
         {
-            PhaseName = "Pre",
-            LockMovement = true,
-            LockRotation = true,
-            DurationValue = new()
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "zhaqu";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.4"
-            },
-        });
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            });
 
-        var mainPhase = new MapAbilityPhase()
-        {
-            PhaseName = "Executing",
-            LockMovement = true,
-            LockRotation = true,
-            DurationValue = new()
+            var mainPhase = new MapAbilityPhase()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.3"
-            },
-        };
+                PhaseName = "Executing",
+                LockRotation = true,
+                LockMovement = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
 
-        var newEffect = new MapAbilityEffectHitBoxCfg()
-        {
-            TargetEntityType = EEntityType.Player,
-            Width = 3,
-            Length = 1,
-        };
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
-
-        spec.Phases.Add(mainPhase);
-        return spec;
-    }
+            //var newEffectGive = new MapAbilityEffectAddBuffCfg()
+            //{
+            //    BuffId = "beizha",
+            //    Layer = 1,
+            //    Duration = -1,
+            //    TargetType = 0,
+            //};
+            //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffectGive, Kind = PhaseEventKind.OnEnter });
 
 
-    public static MapAbilitySpecConfig CreateDefaultEnemyQinfan()
-    {
-        var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-
-        spec.Id = "default_enemy_qinfan";
-        spec.TypeTag = AbilityTypeTag.Combat;
-
-        var mainPhase = new MapAbilityPhase()
-        {
-            PhaseName = "Executing",
-            EnterDebugString = "准备抓取",
-
-            DurationValue = new()
             {
-                ValType = EOneVariatyType.Float,
-                RawVal = "0.5"
-            },
-        };
-
-        var hitCfg = new MapAbilityEffectHitBoxCfg();
-        hitCfg.EffectType = EAbilityEffectType.HitBox;
-        hitCfg.Shape = MapAbilityEffectHitBoxCfg.EShape.Square;
-        hitCfg.Width = 0.5f;
-        hitCfg.Length = 0.5f;
-
-        {
-            var ifBranch = new MapAbilityEffectIfBranchCfg();
-            ifBranch.CheckType = MapAbilityEffectIfBranchCfg.ECheckType.AttrGreater;
-            ifBranch.Param1 = AttrIdConsts.NoSelect;
-            ifBranch.Param3 = 0;
-
-            ifBranch.TrueBranchEffects = new();
-            var trueEffect = new MapAbilityEffectCostResourceCfg();
-            trueEffect.ResourceId = AttrIdConsts.HP;
-            trueEffect.CostValue = 5;
-            trueEffect.Flags = 1;
-
-            ifBranch.TrueBranchEffects.Add(trueEffect);
-
-            ifBranch.FalseBranchEffects = new();
-            var falseEffect = new MapAbilityEffectThrowStartCfg();
-
-            falseEffect.ThrowMainBuffId = "qinfaning";
-            falseEffect.Priority = 1;
-            falseEffect.Duration = 2.0f;
-
-            ifBranch.FalseBranchEffects.Add(falseEffect);
+                var throwCfg = new MapAbilityEffectThrowStartCfg()
+                {
+                    Priority = 999,
+                    Duration = 2.0f,
+                    ThrowMainBuffId = "beizha",
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = throwCfg, Kind = PhaseEventKind.OnEnter });
+            }
 
 
-            hitCfg.OnHitEffects = new() { ifBranch };
+            //var newEffectSelf = new MapAbilityEffectAddBuffCfg()
+            //{
+            //    targetType = MapAbilityEffectSpawnBulletCfg.ETargetType.Dir,
+            //    motionType = EMotionType.Linear,
+            //    lifeTime = 0.6f,
+            //    speed = 9f,
+            //};
+            //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+
+            //var effectRemoveZha = new MapAbilityEffectRemoveBuffCfg()
+            //{
+            //    BuffId = "beizha",
+            //    Layer = 1,
+            //    TargetType = 0,
+            //};
+            //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effectRemoveZha, Kind = PhaseEventKind.OnExit });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
         }
 
-        mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnEnter });
+        public static MapAbilitySpecConfig CreateDeepZhaQu()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
-        spec.Phases.Add(mainPhase);
-        return spec;
+            spec.Id = "deep_zhaqu";
+            spec.TypeTag = AbilityTypeTag.Interaction;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Preparing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            };
+
+            {
+                var deepZhaquCfg = new MapAbilityEffectDeepZhaquCfg()
+                {
+
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = deepZhaquCfg, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+
+        public static MapAbilitySpecConfig CreateDefaultMonsterAttack()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "attack";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.4"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectHitBoxCfg()
+            {
+                TargetEntityType = EEntityType.Player,
+                Width = 3,
+                Length = 1,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+
+        public static MapAbilitySpecConfig CreateDefaultEnemyQinfan()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "default_enemy_qinfan";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                EnterDebugString = "准备抓取",
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            };
+
+            var hitCfg = new MapAbilityEffectHitBoxCfg();
+            hitCfg.EffectType = EAbilityEffectType.HitBox;
+            hitCfg.Shape = MapAbilityEffectHitBoxCfg.EShape.Square;
+            hitCfg.Width = 0.5f;
+            hitCfg.Length = 0.5f;
+
+            {
+                var ifBranch = new MapAbilityEffectIfBranchCfg();
+                ifBranch.CheckType = MapAbilityEffectIfBranchCfg.ECheckType.AttrGreater;
+                ifBranch.Param1 = AttrIdConsts.NoSelect;
+                ifBranch.Param3 = 0;
+
+                ifBranch.TrueBranchEffects = new();
+                var trueEffect = new MapAbilityEffectCostResourceCfg();
+                trueEffect.ResourceId = AttrIdConsts.HP;
+                trueEffect.CostValue = 5;
+                trueEffect.Flags = 1;
+
+                ifBranch.TrueBranchEffects.Add(trueEffect);
+
+                ifBranch.FalseBranchEffects = new();
+                var falseEffect = new MapAbilityEffectThrowStartCfg();
+
+                falseEffect.ThrowMainBuffId = "qinfaning";
+                falseEffect.Priority = 1;
+                falseEffect.Duration = 2.0f;
+
+                ifBranch.FalseBranchEffects.Add(falseEffect);
+
+
+                hitCfg.OnHitEffects = new() { ifBranch };
+            }
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
     }
+
 }

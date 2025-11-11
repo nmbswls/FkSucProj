@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using My.UI;
 using UnityEngine;
 
 public interface ISceneInteractable
@@ -78,7 +79,7 @@ public class SceneInteractSystem
             currInteractPoints.Add(one.interactable);
         }
 
-        MainUIManager.Instance.SceneInteractMenu.RefreshInteractObjs(currInteractPoints);
+        SceneInteractMenuPanel.Instance?.RefreshInteractObjs(currInteractPoints); 
     }
 
 

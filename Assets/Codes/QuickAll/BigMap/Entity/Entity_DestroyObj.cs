@@ -1,10 +1,10 @@
 using Config.Unit;
 using Config;
-using Map.Logic.Chunk;
 using UnityEngine;
+using My.Map.Logic.Chunk;
 
 
-namespace Map.Entity
+namespace My.Map.Entity
 {
     public class DestroyObjLogicEntity : LogicEntityBase
     {

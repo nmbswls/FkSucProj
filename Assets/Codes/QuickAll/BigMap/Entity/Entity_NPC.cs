@@ -1,10 +1,10 @@
 using Config.Unit;
 using Config;
-using Map.Logic.Chunk;
 using UnityEngine;
+using My.Map.Logic.Chunk;
 
 
-namespace Map.Entity
+namespace My.Map
 {
     public class NpcUnitLogicEntity : BaseUnitLogicEntity
     {
@@ -14,6 +14,8 @@ namespace Map.Entity
         {
             cacheCfg = MapNpcConfigLoader.Get(CfgId);
             this.unitCfg = cacheCfg;
+
+            
         }
 
         public override EEntityType Type => EEntityType.Npc;
@@ -23,21 +25,23 @@ namespace Map.Entity
             abilityController = new DefaultNpcAbilityController(this);
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            if (UnitBaseRecord.Unsensored)
+            {
+                LogicManager.globalBuffManager.RequestAddBuff(Id, "unsensored");
+            }
+        }
+
         protected override void InitAttribute()
         {
             var cacheCfg = MapNpcConfigLoader.Get(CfgId);
             moveSpeed = cacheCfg.MoveSpeed;
 
-            // 数值类
-            attributeStore.RegisterNumeric("Attack", initialBase: 100);
-            attributeStore.RegisterNumeric("Strength", initialBase: 10);
-            attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
-            attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
+            base.InitAttribute();
 
-            // 资源类
-            attributeStore.RegisterResource("HP", "HP.Max", 100);
-
-            attributeStore.Commit();
         }
 
         protected override void InitAiBrain()

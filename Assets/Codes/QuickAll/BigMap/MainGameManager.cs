@@ -1,9 +1,17 @@
 using Map.Entity;
-using Map.Logic.Chunk;
+using Map.Logic;
 using Map.Scene;
-using Map.Scene.Fov;
+using Map.Scene.UI;
+using Map.SmallGame.Zha;
+using My.Input;
+using My.Map;
+using My.Map.Entity;
+using My.Map.Scene;
+using My.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -44,40 +52,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 {
     public static MainGameManager Instance;
 
-    private void Awake()
-    {
-        Instance = this;
-
-        if(!SceneFadeManager)
-        {
-            SceneFadeManager = GetComponent<MapSceneFadeAlphaManager>();
-        }
-
-        VisionSenser2D = new();
-        VisionSenser2D.ObstacleMask = 1 << LayerMask.NameToLayer("MapViewObc");
-
-        interactSystem = new();
-
-        gameLogicManager = new();
-        gameLogicManager.viewer = this;
-        gameLogicManager.visionSenser = VisionSenser2D;
-        gameLogicManager.EventOnLogicEntitySpawned += OnLogicEntitySpawned;
-        gameLogicManager.EventOnLogicEntityDespawned += OnLogicEntityDespawned;
-
-
-        gameLogicManager.EventOnPlayerEnterArea += OnPlayerEnterArea;
-
-        gameLogicManager.OnGameInit();
-
-        gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>
-        {
-            MapProjectileManager.Instance.Spawn(pInfo);
-        };
-
-        // 
-    }
-
-    public GameLogicManager gameLogicManager;
 
     public PlayerScenePresenter playerScenePresenter;
 
@@ -93,15 +67,88 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public MapFovMeshGenerator FovGenerator;
 
-    void Start()
+    public LogicTimeManager TimerManager;
+
+    public GameLogicManager gameLogicManager;
+
+    public QuickPlayerInputBinder inputBinder;
+
+    private void Awake()
     {
-        MainUIManager.Instance.InitGameLogicEventListener();
+        Instance = this;
+
+        if(!SceneFadeManager)
+        {
+            SceneFadeManager = GetComponent<MapSceneFadeAlphaManager>();
+        }
+
+        VisionSenser2D = new();
+        VisionSenser2D.ObstacleMask = 1 << LayerMask.NameToLayer("MapViewObc");
+
+        interactSystem = new();
+    }
+
+    public void InitStartGame(string startParams, Action? onComplete)
+    {
+        gameLogicManager = new();
+        gameLogicManager.viewer = this;
+        gameLogicManager.visionSenser = VisionSenser2D;
+        gameLogicManager.EventOnLogicEntitySpawned += OnLogicEntitySpawned;
+        gameLogicManager.EventOnLogicEntityDespawned += OnLogicEntityDespawned;
+
+        gameLogicManager.EventOnPlayerSwitchArea += OnPlayerSwitchArea;
+
+        gameLogicManager.OnGameInit();
+
+        gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>
+        {
+            MapProjectileManager.Instance.Spawn(pInfo);
+        };
+
+        // 
+        _ = LoadGameMain();
+    }
+
+
+    protected async Task LoadGameMain()
+    {
+        UIManager.Instance.ShowLoading("starting");
+
+        string initMap = "1";
+        var areaInfo = Resources.Load<WorldAreaInfo>(initMap);
+
+        // 逻辑上将玩家放入场景
+        await gameLogicManager.PlayerEnterArea(initMap);
+
+        bool loaded = false;
+        WorldAreaManager.Instance.LoadWorld(areaInfo, onComplete: (w) => { loaded = true; });
+
+        // 等待场景加载
+        while(!loaded)
+        {
+            await Task.Yield();
+        }
+
+        playerScenePresenter.Bind(gameLogicManager.playerLogicEntity);
+
+        FovGenerator.OnAreaEnter();
+        SceneAOIManager.Instance.InitArea(areaInfo.worldName);
+        SceneFadeManager.OnEnterArea(WorldAreaManager.Instance.currentRoot.gameObject);
+
+        UIOrchestrator.Instance.InitGameLogicEventListener();
+
+        inputBinder.ApplyInputMode(QuickPlayerInputBinder.InputMode.Menu);
+
+        await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld, null);
+
+        gameLogicManager.Initialized = true;
+        UIManager.Instance.HideLoading();
     }
 
     void Update()
     {
-        interactSystem.Tick(Time.deltaTime);
-        gameLogicManager.Tick(Time.time, Time.deltaTime);
+        interactSystem.Tick(LogicTime.deltaTime);
+        gameLogicManager.Tick(LogicTime.deltaTime);
 
         if(!IsMouseOnUIOrBlock())
         {
@@ -136,6 +183,9 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         
     }
 
+
+
+
     public bool IsMouseOnUIOrBlock()
     {
         if (EventSystem.current.IsPointerOverGameObject()) return true;
@@ -166,20 +216,21 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
 
-    public void OnPlayerEnterArea(string? oldArea, string? newArea)
+    public void OnPlayerSwitchArea(string? oldArea, string? newArea)
     {
-        var areaInfo = Resources.Load<WorldAreaInfo>("1");
+        //var areaInfo = Resources.Load<WorldAreaInfo>("1");
 
-        gameLogicManager.playerLogicEntity.SetPosition(new Vector2(3, 3));
-        if (playerScenePresenter != null)
-        {
-            playerScenePresenter.Bind(gameLogicManager.playerLogicEntity);
-        }
+        //gameLogicManager.playerLogicEntity.SetPosition(new Vector2(3, 3));
+        //if (playerScenePresenter != null)
+        //{
+        //    playerScenePresenter.Bind(gameLogicManager.playerLogicEntity);
+        //}
 
-        if (newArea != null)
-            WorldAreaManager.Instance.LoadWorld(areaInfo, setActive: true);
-        else
-            Debug.LogWarning("WorldBootstrap: initialGroup not set.");
+        //if (newArea != null)
+        //    WorldAreaManager.Instance.LoadWorld(areaInfo, setActive: true);
+        //else
+        //    Debug.LogWarning("WorldBootstrap: initialGroup not set.");
+
 
     }
 
@@ -212,12 +263,12 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     /// <param name="progressTime"></param>
     public long ShowBottomProgress(string hintText, float progressTime)
     {
-        return MainUIManager.Instance.ShowBottomProgress(hintText, progressTime);
+        return OverworldHUDPanel.Instance?.ShowBottomProgress(hintText, progressTime) ?? 0;
     }
 
     public void TryCancelButtomProgress(long showId)
     {
-        MainUIManager.Instance.TryCancelProgressComplete(showId);
+        OverworldHUDPanel.Instance?.TryCancelProgressComplete(showId);
     }
 
     public void ShowFakeFxEffect(string hintText, Vector2 logicPos)
@@ -230,5 +281,43 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         var worldPos = GetWorldPosFromLogicPos(logicPos);
         mapGlobalNoiseEmitter.EmitNoiseFixed(intensity, worldPos);
+    }
+
+    public void ShowClickkkWindow(string windowType, Vector2 showPos, float duration)
+    {
+        ShowClickkkUI.Instance.OpenClickkkHint(windowType, showPos, duration);
+    }
+
+    public void CloseClickkkWindow(string windowType, bool isInterrupt)
+    {
+        ShowClickkkUI.Instance.CloseClickkkWindow(windowType, isInterrupt);
+    }
+
+    public void DoDeepZhaquSmallGame(long targetUnitId, object extraParam)
+    {
+        LogicTime.ReleasePause("deep");
+        DeepZhaQuSmallGameManager.Instance.InitializeGame(targetUnitId, 0.2f, 4f);
+    }
+
+    public void OnSmallGameFinish(long targetUnitId, bool success, object resultInfo)
+    {
+        LogicTime.ReleasePause("deep");
+        if(success)
+        {
+            Debug.Log("OnSmallGameFinish " + targetUnitId + " success.");
+
+            var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(targetUnitId);
+            if (entity != null && entity is BaseUnitLogicEntity unitEntity)
+            {
+                unitEntity.ApplyResourceChange(AttrIdConsts.DeepZhaChance, -1, true, null);
+                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(0.3f, 0.3f), true);
+                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.3f, 0.1f), true);
+                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.1f, 0.6f), true);
+            }
+        }
+        else
+        {
+
+        }
     }
 }

@@ -1,11 +1,11 @@
 using Config.Map;
 using Config;
-using Map.Logic.Chunk;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using My.Map.Logic.Chunk;
 
-namespace Map.Entity
+namespace My.Map
 {
     public class PatrolGroupLogicEntity: LogicEntityBase
     {
@@ -56,7 +56,7 @@ namespace Map.Entity
         private Vector2? currMoveDir;
         private float? currMoveDist;
 
-        public override void Tick(float now, float dt)
+        public override void Tick(float dt)
         {
             foreach(var uid in PatrolUnitIds)
             {

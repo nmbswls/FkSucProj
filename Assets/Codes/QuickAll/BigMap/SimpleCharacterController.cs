@@ -8,107 +8,261 @@ namespace Map.Scene
 
     public class SimpleCharacterController : MonoBehaviour
     {
+        [Header("Agent")]
+        public float moveSpeed = 5f;
+        public float maxAccel = 20f;
+        public float damping = 0f;              // 线性阻尼（可选）
+
+        [Header("Soft Separation (for Enemy)")]
+        public bool enableSeparation = true;    // 玩家可关，敌人开
+        public float separationRadius = 1.0f;
+        public float separationStrength = 7f;
+        public float separationDeadZone = 0.12f;
+        public LayerMask separationQueryMask;        // 用于分离的“敌人层”（即其他敌人）
+        public string separationTag;
+
+        [Header("Dynamic Non-Penetration")]
+        public LayerMask dynamicBlockQueryMask;   
+        public float nonPenPadding = 0.05f;     // 最小间隙，减一点避免抖动
+        public float dynamicQueryExtra = 1.0f;  // 查询半径冗余
 
         private Rigidbody2D rb;
-        private Collider2D col;
-        private ContactFilter2D contactFilter;
+        private CircleCollider2D circleCollider;
+        private Vector2 velocity;               // 平滑速度
+        private static Collider2D[] overlapBuf = new Collider2D[32]; // 复用缓冲
 
-        [Header("Collision")]
-        public LayerMask collisionMask;       // 静态障碍层
-        public float skin = 0.02f;            // 与墙保持的安全距离
-        public int maxSlideIterations = 3;    // 碰撞迭代次数
-        public float minMove = 0.0005f;       // 终止阈值
+        private float radius;
 
-        public SceneUnitPresenter unitPresenter;
-        private RaycastHit2D[] castHits = new RaycastHit2D[18];
+        public Vector2 DesiredVel { get; set; } = Vector2.zero;
+
 
         void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
-            col = GetComponent<Collider2D>();
-
-            rb.bodyType = RigidbodyType2D.Kinematic; // 关键：运动学刚体
-            rb.useFullKinematicContacts = true;      // 让接触事件更准确（可选）
+            rb.gravityScale = 0f;
             rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rb.freezeRotation = true;
 
-            // 设定碰撞过滤
-            contactFilter = new ContactFilter2D
-            {
-                useLayerMask = true,
-                layerMask = collisionMask,
-                useTriggers = false
-            };
+            circleCollider = GetComponent<CircleCollider2D>();
+            radius = circleCollider.radius;
 
-            unitPresenter = GetComponent<SceneUnitPresenter>();
+            separationRadius = radius * 1.5f;
         }
+
 
         void FixedUpdate()
         {
-            var velocity = unitPresenter.UnitEntity.activeMoveVec + unitPresenter.UnitEntity.externalVel;
-            Vector2 delta = velocity * Time.fixedDeltaTime;
-            if (delta.sqrMagnitude < minMove)
+            var finalDesiredVel = DesiredVel;
+
+            // 2) 敌人间软性散开（玩家可关闭）
+            if (enableSeparation && separationStrength > 0f && separationRadius > 0f)
             {
-                rb.MovePosition(rb.position); // 保持插值
-                return;
+                Vector2 sepVel = ComputeSeparationVelocity();
+                finalDesiredVel += sepVel;
+                if (finalDesiredVel.magnitude > moveSpeed)
+                    finalDesiredVel = finalDesiredVel.normalized * moveSpeed;
             }
 
-            Vector2 newPos = KinematicMove(rb.position, delta);
-            rb.MovePosition(newPos);
+            // 3) 加速度限制与阻尼
+            Vector2 accel = (finalDesiredVel - velocity) / Time.fixedDeltaTime;
+            float maxA = Mathf.Max(1e-4f, maxAccel);
+            if (accel.magnitude > maxA) accel = accel.normalized * maxA;
+            velocity += accel * Time.fixedDeltaTime;
+            if (damping > 0f) velocity *= Mathf.Clamp01(1f - damping * Time.fixedDeltaTime);
+
+            // 4) 预估目标位置
+            Vector2 targetPos = rb.position + velocity * Time.fixedDeltaTime;
+
+            // 5) 对动态单位做“无推挤”的非穿透位置约束
+            // 玩家约束敌人；敌人约束玩家（你也可以双向都约束，效果更饱满）
+            targetPos = ProjectAgainstDynamics(targetPos, radius, dynamicBlockQueryMask);
+
+            //TryMoveWithStaticSkin();
+
+            rb.MovePosition(targetPos);
         }
 
-        Vector2 KinematicMove(Vector2 startPos, Vector2 delta)
+        Vector2 ComputeSeparationVelocity()
         {
-            Vector2 pos = startPos;
-            Vector2 remaining = delta;
+            int count = Physics2D.OverlapCircleNonAlloc(rb.position, separationRadius, overlapBuf, separationQueryMask);
+            if (count <= 0) return Vector2.zero;
 
-            for (int i = 0; i < maxSlideIterations; i++)
-            {
-                if (remaining.sqrMagnitude < minMove) break;
-
-                // 3) 使用 Collider2D.Cast 进行扫掠，检测前方是否有障碍
-                int hitCount = col.Cast(remaining.normalized, contactFilter, castHits, remaining.magnitude + skin);
-                if (hitCount == 0)
-                {
-                    // 无碰撞，直接移动
-                    pos += remaining;
-                    break;
-                }
-
-                // 取最近的命中
-                RaycastHit2D hit = ClosestHit(castHits, hitCount);
-
-                // 4) 将位移截断至碰撞点前，留出 skin
-                float travel = Mathf.Max(0f, hit.distance - skin);
-                Vector2 move = Vector2.ClampMagnitude(remaining, travel);
-                pos += move;
-
-                // 5) 计算滑动方向：将剩余位移沿法线切线分量继续
-                remaining -= move;
-                Vector2 n = hit.normal.normalized;
-                // 将 remaining 投影到碰撞面的切线方向：r' = r - dot(r, n)*n
-                remaining = remaining - Vector2.Dot(remaining, n) * n;
-
-                // 6) 防止数值抖动
-                if (remaining.sqrMagnitude < minMove) break;
-            }
-
-            return pos;
-        }
-
-        RaycastHit2D ClosestHit(RaycastHit2D[] hits, int count)
-        {
-            int idx = -1;
-            float minDist = float.PositiveInfinity;
+            Vector2 sum = Vector2.zero;
+            int used = 0;
             for (int i = 0; i < count; i++)
             {
-                if (hits[i].collider == null) continue;
-                if (hits[i].distance < minDist)
-                {
-                    minDist = hits[i].distance;
-                    idx = i;
-                }
+                var col = overlapBuf[i];
+                if (!col) continue;
+                var other = col.attachedRigidbody;
+                if (!other || other == rb) continue;
+                if (other.tag != separationTag) continue;
+
+                Vector2 dir = rb.position - other.position;
+                float dist = dir.magnitude;
+                if (dist < separationDeadZone || dist < 1e-4f) continue;
+
+                float w = Mathf.Clamp01(1f - dist / separationRadius);
+                sum += dir / dist * w; // 归一化后按权重
+                used++;
             }
-            return idx >= 0 ? hits[idx] : default;
+            if (used == 0) return Vector2.zero;
+
+            Vector2 sepDir = (sum / used).normalized;
+            return sepDir * separationStrength;
+        }
+
+        //Vector2 ProjectAgainstDynamics(Vector2 tgt, float selfR, LayerMask mask)
+        //{
+        //    float queryR = selfR + dynamicQueryExtra;
+        //    int count = Physics2D.OverlapCircleNonAlloc(tgt, queryR, overlapBuf, mask);
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        var col = overlapBuf[i];
+        //        if (!col) continue;
+        //        var otherRb = col.attachedRigidbody;
+        //        if (!otherRb || otherRb == rb) continue;
+
+        //        float otherR = GetApproxRadius(col);
+        //        Vector2 to = tgt - otherRb.position;
+        //        float dist = to.magnitude;
+        //        float minDist = selfR + otherR - Mathf.Max(0f, nonPenPadding);
+
+        //        if (dist < minDist && dist > 1e-4f)
+        //        {
+        //            Vector2 dir = to / dist;
+        //            tgt = otherRb.position + dir * minDist;
+        //        }
+        //        else if (dist <= 1e-4f)
+        //        {
+        //            // 完全重合时，用当前移动方向或固定方向
+        //            Vector2 dir = (tgt - rb.position);
+        //            if (dir.sqrMagnitude < 1e-6f) dir = Vector2.right;
+        //            dir.Normalize();
+        //            tgt = otherRb.position + dir * minDist;
+        //        }
+        //    }
+        //    return tgt;
+        //}
+
+        Vector2 ProjectAgainstDynamics(Vector2 tgt, float selfR, LayerMask mask)
+        {
+            float queryR = selfR + dynamicQueryExtra;
+            int count = Physics2D.OverlapCircleNonAlloc(tgt, queryR, overlapBuf, mask);
+            if (count <= 0) return tgt;
+
+            // 原始（未修正）目标方向，用于重合时的首选方向
+            Vector2 origDir = tgt - rb.position;
+            float origDirLen = origDir.magnitude;
+            if (origDirLen > 1e-6f) origDir /= origDirLen; else origDir = Vector2.zero;
+
+            Vector2 totalCorrection = Vector2.zero;
+
+            // 限制每帧最大修正（可调参数，建议公开为 maxCorrectionPerStep）
+            float maxCorrection = Mathf.Max(0.05f, 0.5f * moveSpeed * Time.fixedDeltaTime);
+
+            // 迭代次数（1~2次即可）
+            const int iters = 1;
+            for (int k = 0; k < iters; k++)
+            {
+                bool anyOverlap = false;
+
+                for (int i = 0; i < count; i++)
+                {
+                    var col = overlapBuf[i];
+                    if (!col) continue;
+                    var otherRb = col.attachedRigidbody;
+                    if (!otherRb || otherRb == rb) continue;
+
+                    float otherR = GetApproxRadius(col);
+
+                    // 注意用“当前迭代中的临时目标”来测量与对方的距离
+                    Vector2 curTgt = tgt + totalCorrection;
+                    Vector2 to = curTgt - otherRb.position;
+                    float dist = to.magnitude;
+                    float minDist = selfR + otherR - Mathf.Max(0f, nonPenPadding);
+
+                    if (dist < minDist)
+                    {
+                        anyOverlap = true;
+
+                        Vector2 dir;
+                        if (dist > 1e-4f)
+                        {
+                            dir = to / dist;
+                        }
+                        else
+                        {
+                            // 重合：优先用本帧原始移动方向；若无，则用当前位置与对方位置的方向；再不行随机微扰
+                            dir = origDir;
+                            if (dir.sqrMagnitude < 1e-6f)
+                            {
+                                Vector2 alt = ((Vector2)transform.position - otherRb.position);
+                                if (alt.sqrMagnitude > 1e-6f) dir = alt.normalized;
+                                else dir = new Vector2(1f, 0f); // 最后兜底
+                            }
+                        }
+
+                        float push = (minDist - dist);
+                        // 只做最小必要修正的增量投影
+                        Vector2 corr = dir * push;
+
+                        // 累计修正，但限制最大幅度
+                        Vector2 newTotal = totalCorrection + corr;
+                        if (newTotal.magnitude > maxCorrection)
+                        {
+                            newTotal = newTotal.normalized * maxCorrection;
+                            totalCorrection = newTotal;
+                            // 达到上限就提前退出，避免大跳和振荡
+                            break;
+                        }
+                        else
+                        {
+                            totalCorrection = newTotal;
+                        }
+                    }
+                }
+
+                // 若本轮没有任何重叠，提前结束
+                if (!anyOverlap) break;
+            }
+
+            return tgt + totalCorrection;
+        }
+
+
+        float GetApproxRadius(Collider2D col)
+        {
+            // 估算对方的等效圆半径，可改为读取对方 TopDownAgent.radius
+            if (col is CircleCollider2D cc)
+                return cc.radius * Mathf.Max(col.transform.lossyScale.x, col.transform.lossyScale.y);
+            if (col is CapsuleCollider2D cap)
+                return Mathf.Max(cap.size.x, cap.size.y) * 0.5f;
+            if (col is BoxCollider2D bc)
+                return Mathf.Max(bc.size.x, bc.size.y) * 0.5f;
+            return radius;
+        }
+
+        bool TryMoveWithStaticSkin(Vector2 currentPos, Vector2 desiredDelta, float skinStatic, LayerMask staticMask, float agentRadius, out Vector2 finalPos)
+        {
+            finalPos = currentPos;
+            Vector2 dir = desiredDelta.normalized;
+            float dist = desiredDelta.magnitude;
+            if (dist <= 1e-5f) return true;
+
+            // 使用 CircleCast 预测是否会撞静态障碍
+            RaycastHit2D hit = Physics2D.CircleCast(currentPos, agentRadius, dir, dist, staticMask);
+            if (hit.collider)
+            {
+                float move = Mathf.Max(0f, hit.distance - skinStatic);
+                finalPos = currentPos + dir * move;
+                return false; // 被阻挡（但已平滑停在皮肤前）
+            }
+            else
+            {
+                finalPos = currentPos + desiredDelta;
+                return true; // 未阻挡
+            }
         }
     }
 }

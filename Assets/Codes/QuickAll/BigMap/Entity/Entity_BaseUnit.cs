@@ -1,16 +1,16 @@
 using Config.Unit;
 using Config;
-using Map.Logic.Chunk;
 using UnityEngine;
 using Map.Logic.Events;
 using System;
 using Map.Entity.AI;
-using Map.Entity.Attr;
 using System.Collections.Generic;
-using Map.Entity.Throw;
+using My.Map.Logic.Chunk;
+using My.Map.Entity.AI;
+using My.Map.Entity;
 
 
-namespace Map.Entity
+namespace My.Map
 {
     
     public abstract class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget
@@ -71,9 +71,9 @@ namespace Map.Entity
             InitAiBrain();
         }
 
-        public override void Tick(float now, float dt)
+        public override void Tick(float dt)
         {
-            base.Tick(now, dt);
+            base.Tick(dt);
             // 计时、条件检查、冷却等
             abilityController?.Tick(dt);
 
@@ -95,14 +95,15 @@ namespace Map.Entity
                 }
             }
 
-            //AIBrain?.Tick(now, dt);
+            AIBrain?.Tick(dt);
 
 
             if (attributeStore.GetAttr(AttrIdConsts.LockFace) == 0 && targettedMoveIntent != null && targettedMoveIntent.targettedDesireDir != null)
             {
-                if (targettedMoveIntent.targettedDesireDir.magnitude > 1e-2)
+                var diff = targettedMoveIntent.MoveTarget - this.Pos;
+                if (diff.magnitude > 1e-2)
                 {
-                    FaceDir = targettedMoveIntent.targettedDesireDir;
+                    FaceDir = diff;
                 }
             }
 
@@ -284,55 +285,18 @@ namespace Map.Entity
             attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
-            //attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
-            //attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, 100);
+            attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
+
+            // 资源类
+            attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 0);
+            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 3);
 
             attributeStore.Commit();
         }
 
-        /// <summary>
-        /// hit回调
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="src"></param>
-        public void OnHit(long damage, ILogicEntity? src, int damageFlag = 0)
-        {
-            SourceKey? srcKey = src == null ? null : new SourceKey() { type = SourceType.AbilityActive };
-            attributeStore.ApplyResourceChange(AttrIdConsts.HP, -damage, true, srcKey);
-            //attributeStore.CostResource(AttrIdConsts.HP, damage);
-            //if(attributeStore.GetAttr(AttrIdConsts.HP) <= 0)
-            //{
-            //    // 濒死
-            //    this.MarkDestroy = true;
-
-            //    Debug.Log("Unit Entity OnHit dead " + Id);
-
-            //    LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
-            //    {
-            //        Name = "Death",
-            //        Param3 = this.Id,
-            //        Param4 = src != null ? src.Id : 0,
-            //    });
-
-
-            //    EventOnDeath?.Invoke();
-            //    return;
-            //}
-
-            Debug.Log("Unit Entity OnHit left hp " + attributeStore.GetAttr(AttrIdConsts.HP) + " unit " + Id);
-            LogicManager.LogicEventBus.Publish(new MLEUnitOnHit()
-            {
-                //SrcKey = src
-                OnHitId = this.Id,
-                Damage = damage,
-                Flags = damageFlag,
-            });
-
-
-            //EventOnHpChanged?.Invoke();
-        }
 
 
         public MapUnitAIBrain? AIBrain;
@@ -342,7 +306,7 @@ namespace Map.Entity
         {
             AIBrain = new();
             //var cacheCfg = MapMonsterConfigLoader.Get(CfgId);
-            AIBrain.Initilaize(this, LogicManager.visionSenser, Pos);
+            AIBrain.InitilaizeAll(this, LogicManager.visionSenser, Pos);
 
             //AIBrain.BrainStateMachine.Reset();
 

@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Bag
+namespace My.Player.Bag
 {
 
     public static class FakeItemDatabase

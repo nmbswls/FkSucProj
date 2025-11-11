@@ -1,39 +1,44 @@
 using Map.Entity;
+using My.Map.Entity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class InteractPointPresenter : ScenePresentationBase<InteractPointLogic>, ISceneInteractable
+namespace My.Map.Scene
 {
-    [SerializeField] private SpriteRenderer icon;
-    [SerializeField] private GameObject highlightFx;
-
-    public event Action<bool> EventOnInteractStateChanged;
-
-    public Vector3 GetHintAnchorPosition()
+    public class InteractPointPresenter : ScenePresentationBase<InteractPointLogic>, ISceneInteractable
     {
-        return GetWorldPosition();
-    }
+        [SerializeField] private SpriteRenderer icon;
+        [SerializeField] private GameObject highlightFx;
 
-    public void SetInteractExpandStatus(bool expanded)
-    {
-        EventOnInteractStateChanged?.Invoke(expanded);
-    }
+        public event Action<bool> EventOnInteractStateChanged;
 
-    public void TriggerInteract(string interactSelection)
-    {
-        throw new System.NotImplementedException();
-    }
+        public Vector3 GetHintAnchorPosition()
+        {
+            return GetWorldPosition();
+        }
 
-    public List<string> GetInteractSelections()
-    {
-        return new() { "Int" };
-    }
+        public void SetInteractExpandStatus(bool expanded)
+        {
+            EventOnInteractStateChanged?.Invoke(expanded);
+        }
 
-    public bool CanInteractEnable()
-    {
-        return true;
+        public void TriggerInteract(string interactSelection)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public List<string> GetInteractSelections()
+        {
+            return new() { "Int" };
+        }
+
+        public bool CanInteractEnable()
+        {
+            return true;
+        }
     }
 }
+

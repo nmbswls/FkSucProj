@@ -1,12 +1,12 @@
 using Config;
 using Config.Map;
-using Map.Logic.Chunk;
+using My.Map.Logic.Chunk;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Map.Entity
+namespace My.Map.Entity
 {
 
     
@@ -41,7 +41,7 @@ namespace Map.Entity
 
 
 
-        public override void Tick(float now, float dt)
+        public override void Tick(float dt)
         {
 
         }

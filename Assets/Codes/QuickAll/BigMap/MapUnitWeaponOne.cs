@@ -3,52 +3,58 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
 
-public class MapUnitWeaponOne : MonoBehaviour
+namespace My.Map.Scene
 {
-    public Animator weaponAnim;
-    public MapUnitWeaponCtrl WeaponCtrl;
-
-    public long HitId = 0;
-
-    public void OnTriggerEnter2D(Collider2D other)
+    public class MapUnitWeaponOne : MonoBehaviour
     {
-        var unitComp = other.GetComponentInParent<SceneUnitPresenter>();
-        if (unitComp == null) return;
+        public Animator weaponAnim;
+        public MapUnitWeaponCtrl WeaponCtrl;
 
-        WeaponCtrl.OnWeaponTriggerHit(HitId, unitComp.GetLogicEntity().Id);
-    }
+        public long HitId = 0;
 
-    public void ShowWeapon(long hitId, float duration)
-    {
-        this.HitId = hitId;
-        gameObject.SetActive(true);
-
-        // 先尝试获取 clip 长度（简单版：按 clip 名匹配）
-        float clipLenSec = -1f;
-        var rac = weaponAnim.runtimeAnimatorController;
-        if (rac != null)
+        public void OnTriggerEnter2D(Collider2D other)
         {
-            foreach (var clip in rac.animationClips)
+            var unitComp = other.GetComponentInParent<SceneUnitPresenter>();
+            if (unitComp == null) return;
+
+            WeaponCtrl.OnWeaponTriggerHit(HitId, unitComp.GetLogicEntity().Id);
+        }
+
+        public void ShowWeapon(long hitId, float duration)
+        {
+            this.HitId = hitId;
+            gameObject.SetActive(true);
+
+            // 先尝试获取 clip 长度（简单版：按 clip 名匹配）
+            float clipLenSec = -1f;
+            var rac = weaponAnim.runtimeAnimatorController;
+            if (rac != null)
             {
-                if (clip != null && clip.name == "Attack")
+                foreach (var clip in rac.animationClips)
                 {
-                    clipLenSec = clip.length;
-                    break;
+                    if (clip != null && clip.name == "Attack")
+                    {
+                        clipLenSec = clip.length;
+                        break;
+                    }
                 }
             }
+            weaponAnim.speed = 1.0f;
+            if (clipLenSec != -1)
+            {
+                var speed = clipLenSec / duration;
+                weaponAnim.speed = speed;
+            }
+            weaponAnim.Play("Attack", 0, 0f);
         }
-        weaponAnim.speed = 1.0f;
-        if (clipLenSec != -1)
-        {
-            var speed = clipLenSec / duration;
-            weaponAnim.speed = speed;
-        }
-        weaponAnim.Play("Attack", 0, 0f);
-    }
 
-    public void ClearWeapon()
-    {
-        gameObject.SetActive(false);
-        HitId = 0;
+        public void ClearWeapon()
+        {
+            gameObject.SetActive(false);
+            HitId = 0;
+        }
     }
 }
+
+
+

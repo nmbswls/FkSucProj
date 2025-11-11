@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Map.Logic.Chunk;
 using Unity.VisualScripting;
 using UnityEngine;
 using static SceneAOIManager;
 using static UnityEngine.Rendering.HableCurve;
 
-namespace Map.Scene.Fov
+namespace My.Map.Scene
 {
     [Serializable]
     public struct Segment2D
@@ -281,7 +280,6 @@ namespace Map.Scene.Fov
         {
             segentGridIndex.Clear();
             sourceMap.Clear();
-
         }
 
         public Segment2D GetSegment(int idx)

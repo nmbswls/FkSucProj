@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unit.Ability.Effect;
+using My.Map.Entity;
 using UnityEditor;
 using UnityEngine;
 

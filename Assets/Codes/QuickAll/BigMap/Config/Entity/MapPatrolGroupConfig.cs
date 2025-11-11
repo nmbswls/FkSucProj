@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using TMPro;
-using Unit.Ability.Effect;
 using UnityEngine;
 
 namespace Config.Map

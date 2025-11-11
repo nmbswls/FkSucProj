@@ -1,12 +1,14 @@
 using Map.Entity;
+using My.Map.Entity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using static ChunkMapExportDatabase;
 
-namespace Map.Logic.Chunk
+namespace My.Map.Logic.Chunk
 {
 
     // 逻辑实体的轻量描述（可存持久化）
@@ -44,6 +46,9 @@ namespace Map.Logic.Chunk
 
         public long PatrolFollowId;
         public Vector2 PatrolGroupRelativePos;
+
+        // 仅保存特殊状态 buff丢弃
+        public bool Unsensored;
     }
 
 
@@ -242,7 +247,7 @@ namespace Map.Logic.Chunk
         /// <summary>
         /// 初始化地区
         /// </summary>
-        public void InitilizeArea(string areaId)
+        public async Task InitilizeArea(string areaId)
         {
             this.AreaId = areaId;
 
@@ -266,9 +271,17 @@ namespace Map.Logic.Chunk
                 Repo = new();
                 // fake repo
                 //  goujian 房间列表
+                int cnt = 0;
                 foreach (var refreshInfo in cacheDatabase.EntityRefreshInfo)
                 {
+                    cnt++;
                     HandleOneRefreshInfo(refreshInfo);
+
+                    if(cnt > 100)
+                    {
+                        cnt = 0;
+                        await Task.Yield();
+                    }
                 }
             }
 
@@ -297,9 +310,9 @@ namespace Map.Logic.Chunk
             return false;
         }
 
-        public void CheckRefreshAppearAndDisappear(float now, float dt)
+        public void CheckRefreshAppearAndDisappear(float dt)
         {
-            if(now < checkRefreshTimer + 1)
+            if(LogicTime.time < checkRefreshTimer + 1)
             {
                 return;
             }
@@ -382,6 +395,7 @@ namespace Map.Logic.Chunk
                         unitRecord.IsPeace = initInfo.IsPeace;
                         unitRecord.ActMode = initInfo.MoveMode;
                         unitRecord.EnmityMode = initInfo.EnmityMode;
+                        unitRecord.Unsensored = initInfo.InitUnsensored;
 
                         record = unitRecord;
                         break;
@@ -535,10 +549,10 @@ namespace Map.Logic.Chunk
         }
 
         // 外部驱动：每帧调用
-        public void Tick(float now, float dt)
+        public void Tick(float dt)
         {
             // 检查刷新
-            CheckRefreshAppearAndDisappear(now, dt);
+            CheckRefreshAppearAndDisappear(dt);
 
             // 1) 重新评估AOI：计算每个实体与兴趣点关系（按区域近似）
             // 做法：对每个兴趣点查询 Warmup/Active 两种半径并合并标记，避免O(N*M)
@@ -579,20 +593,20 @@ namespace Map.Logic.Chunk
                 st.NearAnyWarmup = inWarm;
                 st.InterestRefCount = inActive ? 1 : 0;
 
-                StepStateMachine(st, now, dt);
+                StepStateMachine(st, dt);
             }
 
             // 处理死亡状态
             ProcessDieQueue();
 
             // 处理其他加载卸载等
-            ProcessQueues(now, dt);
+            ProcessQueues(dt);
 
             // 处理尸体回收
-            ProcessCorpse(now, dt);
+            ProcessCorpse(dt);
         }
 
-        private void StepStateMachine(OneEntityRuntimeState st, float now, float dt)
+        private void StepStateMachine(OneEntityRuntimeState st, float dt)
         {
             if (st.IsDeadRuntime)
             {
@@ -600,7 +614,7 @@ namespace Map.Logic.Chunk
                 return;
             }
 
-            if(st.ForceActiveUntil != 0 && now < st.ForceActiveUntil)
+            if(st.ForceActiveUntil != 0 && LogicTime.time < st.ForceActiveUntil)
             {
                 return;
             }
@@ -765,7 +779,7 @@ namespace Map.Logic.Chunk
             if (!sleepEntityQ.Contains(id)) sleepEntityQ.Enqueue(id);
         }
 
-        private void ProcessQueues(float now, float dt)
+        private void ProcessQueues( float dt)
         {
             int n;
 
@@ -823,7 +837,7 @@ namespace Map.Logic.Chunk
             }
         }
 
-        private void ProcessCorpse(float now, float dt)
+        private void ProcessCorpse(float dt)
         {
             int n = 32; // 每帧检查上限
             int count = Math.Min(n, corpseCleanupQ.Count);

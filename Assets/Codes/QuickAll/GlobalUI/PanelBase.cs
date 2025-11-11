@@ -2,35 +2,75 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UI
+namespace My.UI
 {
-    // IPanel.cs
+    public enum UILayer { Scene = 0, HUD = 1, Popup = 2, Overlay = 3, System = 4 }
+
     public interface IPanel
     {
-        bool Modal { get; }
-        bool ConsumeScrollWhenOpen { get; }
-        Rect? HotRect { get; } // 屏幕坐标Rect，左下为(0,0)
-        bool IsAlive { get; }
-        void OnOpen();
-        void OnClose();
-        void OnInputScroll(float delta);
-        void OnInputCancel();
+        void Setup(object data = null);
+        void Show();
+        void Hide();
+        void Teardown();
+        bool IsVisible { get; }
+        string PanelId { get; }
+        int Layer { get; }
     }
 
-    // PanelBase.cs
-    public abstract class PanelBase : MonoBehaviour, IPanel
-    {
-        [SerializeField] protected bool modal = false;
-        [SerializeField] protected bool consumeScrollWhenOpen = true;
-        public bool Modal => modal;
-        public bool ConsumeScrollWhenOpen => consumeScrollWhenOpen;
-        public virtual Rect? HotRect => null; // ScreenPanel/WorldPanel去实现
-        public bool IsAlive { get; protected set; } = true;
+    public interface IRefreshable { void Refresh(); }
 
-        public virtual void OnOpen() { IsAlive = true; gameObject.SetActive(true); }
-        public virtual void OnClose() { IsAlive = false; gameObject.SetActive(false); }
-        public abstract void OnInputScroll(float delta);
-        public abstract void OnInputCancel();
+    public interface IInputConsumer
+    {
+        bool OnConfirm();
+        bool OnCancel();
+        bool OnNavigate(Vector2 dir);
+        bool OnHotkey(int index);
+
+        bool OnScroll(float deltaY);
+    }
+
+    public interface IFocusable
+    {
+        bool CanFocus { get; }
+        int FocusPriority { get; }
+    }
+
+    public abstract class PanelBase : MonoBehaviour, IPanel, IFocusable
+    {
+        [SerializeField] protected string panelId;
+        [SerializeField] protected UILayer layer = UILayer.HUD;
+        [SerializeField] protected CanvasGroup canvasGroup;
+
+        public string PanelId => panelId;
+        public int Layer => (int)layer;
+        public virtual bool IsVisible { get; protected set; }
+        public virtual bool CanFocus => IsVisible;
+        public virtual int FocusPriority => 0;
+
+        public virtual void Setup(object data = null) { }
+        public virtual void Show()
+        {
+            IsVisible = true;
+            if (canvasGroup)
+            {
+                canvasGroup.alpha = 1f;
+                canvasGroup.interactable = true;
+                canvasGroup.blocksRaycasts = true;
+            }
+            gameObject.SetActive(true);
+        }
+        public virtual void Hide()
+        {
+            IsVisible = false;
+            if (canvasGroup)
+            {
+                canvasGroup.alpha = 0f;
+                canvasGroup.interactable = false;
+                canvasGroup.blocksRaycasts = false;
+            }
+            gameObject.SetActive(false);
+        }
+        public virtual void Teardown() { }
     }
 
 }

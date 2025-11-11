@@ -1,12 +1,11 @@
-using Map.Entity.Attr;
-using Map.Logic.Chunk;
 using System.Collections;
 using System.Collections.Generic;
-using Unit.Ability.Effect;
+using My.Map.Entity;
+using My.Map.Logic.Chunk;
 using UnityEngine;
 
 
-namespace Map.Entity
+namespace My.Map
 {
     public class PlayerLogicEntity : BaseUnitLogicEntity
     {
@@ -17,7 +16,6 @@ namespace Map.Entity
         {
 
         }
-
         
 
         public override EEntityType Type => EEntityType.Player;
@@ -28,9 +26,9 @@ namespace Map.Entity
         {
         }
 
-        public override void Tick(float now, float dt)
+        public override void Tick(float dt)
         {
-            base.Tick(now, dt);
+            base.Tick(dt);
 
             //扣减值
             TickResourceCost();
@@ -118,13 +116,7 @@ namespace Map.Entity
         /// </summary>
         protected void TickRefreshSpiritMonster()
         {
-            //LogicManager.Spawn
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                //var hSprite = LogicManager.CreateNewEntity(EEntityType.Monster, "h_sprite", Pos + Vector2.left * 3, 100);
-            }
-
-            //  管理起来 到时候需要一次性清理
+            
         }
 
         /// <summary>

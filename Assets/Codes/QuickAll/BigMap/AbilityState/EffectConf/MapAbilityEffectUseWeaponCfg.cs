@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Unit.Ability.Effect
+namespace My.Map.Entity
 {
     [Serializable]
     public class MapAbilityEffectUseWeaponCfg : MapFightEffectCfg

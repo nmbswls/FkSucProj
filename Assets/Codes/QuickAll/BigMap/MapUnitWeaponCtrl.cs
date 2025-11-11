@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using My.Map.Scene;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
 

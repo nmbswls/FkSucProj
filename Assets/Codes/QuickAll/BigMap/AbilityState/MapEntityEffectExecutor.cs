@@ -1,13 +1,11 @@
-using Map.Entity.Throw;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unit.Ability.Effect;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
 using static GameLogicManager;
 
-namespace Map.Entity
+namespace My.Map.Entity
 {
 
     public abstract  class AbilityEffectExecutor
@@ -306,6 +304,50 @@ namespace Map.Entity
             }
         }
     }
+
+    public class AbilityEffectExecutor4OpenClickWindow : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectOpenClickWindowCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ClickkkWindow cfg error");
+                return;
+            }
+
+            if(ctx.Actor is not BaseUnitLogicEntity unitEntity)
+            {
+                Debug.LogError("AbilityEffectExecutor4ClickkkWindow cfg error");
+                return;
+            }
+
+            //unitEntity.
+            ctx.Env.viewer.ShowClickkkWindow(realCfg.WindowType, ctx.Actor.Pos, realCfg.Duration);
+        }
+    }
+
+    public class AbilityEffectExecutor4DeepZhaqu : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectDeepZhaquCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4DeepZhaqu cfg error");
+                return;
+            }
+
+            if (ctx.Actor is not PlayerLogicEntity player)
+            {
+                Debug.LogError("AbilityEffectExecutor4DeepZhaqu cfg error");
+                return;
+            }
+
+            ctx.Env.viewer.DoDeepZhaquSmallGame(1, null);
+        }
+    }
+    
 
 
     public class AbilityEffectExecutor4AddResource : AbilityEffectExecutor

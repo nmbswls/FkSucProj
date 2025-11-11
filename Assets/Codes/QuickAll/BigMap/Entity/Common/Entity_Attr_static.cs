@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Map.Entity.Attr
+namespace My.Map.Entity
 {
     public static class AttrIdConsts
     {
@@ -39,6 +39,8 @@ namespace Map.Entity.Attr
         public const string UnitDizzy = "UnitDizzy";
 
         #endregion
+
+        public const string DeepZhaChance = "DeepZhaChance";
     }
 
     public struct AttrKvPair

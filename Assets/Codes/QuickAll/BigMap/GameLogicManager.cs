@@ -1,19 +1,18 @@
-using Bag;
+
 using Config;
 using Map.Drop;
-using Map.Entity;
-using Map.Entity.Attr;
-using Map.Entity.Buffs;
-using Map.Entity.Throw;
-using Map.Logic.Chunk;
 using Map.Logic.Events;
-using Player;
+using My.Map;
+using My.Map.Entity;
+using My.Map.Logic.Chunk;
+using My.Player;
+using My.UI;
 using SuperScrollView;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using Unit.Ability.Effect;
+using System.Threading.Tasks;
 using UnityEngine;
-using static Map.Logic.Chunk.GameLogicAreaManager;
 
 public static class GameConsts
 {
@@ -43,6 +42,8 @@ public class GameLogicManager : ILogicEntityFactory
 {
     public static long LogicEntityIdInst = 100;
 
+    public bool Initialized { get; set; }
+
     public PlayerLogicEntity playerLogicEntity;
 
     private List<LogicEntityRecord> pendingNewEntities = new();
@@ -50,7 +51,10 @@ public class GameLogicManager : ILogicEntityFactory
     public event Action<ILogicEntity> EventOnLogicEntitySpawned;
     public event Action<ILogicEntity> EventOnLogicEntityDespawned;
 
-    public event Action<string?, string?> EventOnPlayerEnterArea;
+    /// <summary>
+    /// 通知上层玩家需要切换场景
+    /// </summary>
+    public event Action<string?, string?> EventOnPlayerSwitchArea;
 
     public ISceneAbilityViewer? viewer; // 表现层接口
     public IVisionSenser2D? visionSenser;
@@ -102,7 +106,11 @@ public class GameLogicManager : ILogicEntityFactory
         return AreaManager.GetLogicEntiy(instId);
     }
 
-    public void OnPlayerEnterArea(string areaName)
+    /// <summary>
+    /// 玩家进入/切换场景
+    /// </summary>
+    /// <param name="areaName"></param>
+    public async Task PlayerEnterArea(string areaName)
     {
         var playerRecord = new LogicEntityRecord4UnitBase()
         {
@@ -112,12 +120,10 @@ public class GameLogicManager : ILogicEntityFactory
 
             AlwaysActive = true,
         };
-        
 
-        AreaManager.InitilizeArea(areaName);
+        await AreaManager.InitilizeArea(areaName);
+
         AreaManager.RegisterEntityRecord(playerRecord);
-
-        EventOnPlayerEnterArea?.Invoke(null, areaName);
 
         AreaManager.AddInterestPoint(new InterestPoint
         {
@@ -128,17 +134,29 @@ public class GameLogicManager : ILogicEntityFactory
         });
     }
 
-
-
-    public void Tick(float now, float dt)
+    /// <summary>
+    /// 玩家进入/切换场景
+    /// </summary>
+    /// <param name="areaName"></param>
+    public void PlayerSwitchArea(string areaName)
     {
-        globalBuffManager.Tick(now, dt);
-        globalThrowManager.Tick(now, dt);
+        EventOnPlayerSwitchArea?.Invoke(null, areaName);
+    }
+
+    public void Tick(float dt)
+    {
+        if(!Initialized)
+        {
+            return;
+        }
+
+        globalBuffManager.Tick(dt);
+        globalThrowManager.Tick(dt);
 
 
         foreach (var entity in AreaManager.Repo.Loaded.Values)
         {
-            entity.Tick(now, dt);
+            entity.Tick(dt);
             if(entity.MarkDead)
             {
             }
@@ -153,7 +171,7 @@ public class GameLogicManager : ILogicEntityFactory
             pendingNewEntities.Clear();
         }
 
-        AreaManager.Tick(now, dt);
+        AreaManager.Tick(dt);
     }
 
     public void CreateNewEntityRecord(LogicEntityRecord record)
@@ -201,7 +219,7 @@ public class GameLogicManager : ILogicEntityFactory
                     newLoot.EventOnLootPointUsed += (lootPoint) =>
                     {
                         // 是否进入模式
-                        MainUIManager.Instance.TryEnterLootDetailMode(newLoot);
+                        UIOrchestrator.Instance.TryEnterLootDetailMode(newLoot);
                     };
                     
                     newEntity = newLoot;
@@ -348,6 +366,17 @@ public class GameLogicManager : ILogicEntityFactory
                         executor = new AbilityEffectExecutor4IfBranch();
                     }
                     break;
+                case MapAbilityEffectOpenClickWindowCfg:
+                    {
+                        executor = new AbilityEffectExecutor4OpenClickWindow();
+                    }
+                    break;
+                case MapAbilityEffectDeepZhaquCfg:
+                    {
+                        executor = new AbilityEffectExecutor4DeepZhaqu();
+                    }
+                    break;
+                    
             }
 
             if (executor != null)
@@ -410,6 +439,11 @@ public class GameLogicManager : ILogicEntityFactory
     {
         var executor = GetLogicFightEffectExecutor(effectConf);
         executor?.Apply(effectConf, effectCtx);
+    }
+
+    public void OnLogicUpdate(float logicDeltaTime)
+    {
+        Tick(logicDeltaTime);
     }
 }
 

@@ -1,22 +1,27 @@
 using Map.Entity;
+using My.Map.Entity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class SceneDestroyObjPresenter : ScenePresentationBase<DestroyObjLogicEntity>
+namespace My.Map.Scene
 {
-    [SerializeField] private SpriteRenderer icon;
-    [SerializeField] private GameObject highlightFx;
-
-
-    public DestroyObjLogicEntity DestroyObjEntity { get { return (DestroyObjLogicEntity)_logic; } }
-
-
-    public override void Tick(float dt)
+    public class SceneDestroyObjPresenter : ScenePresentationBase<DestroyObjLogicEntity>
     {
-        base.Tick(dt);
+        [SerializeField] private SpriteRenderer icon;
+        [SerializeField] private GameObject highlightFx;
+
+
+        public DestroyObjLogicEntity DestroyObjEntity { get { return (DestroyObjLogicEntity)_logic; } }
+
+
+        public override void Tick(float dt)
+        {
+            base.Tick(dt);
+        }
+
     }
-    
 }
+

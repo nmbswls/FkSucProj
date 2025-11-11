@@ -1,9 +1,10 @@
-using Bag;
+
 using System.Collections;
 using System.Collections.Generic;
+using My.Player.Bag;
 using UnityEngine;
 
-namespace Player
+namespace My.Player
 {
     public class PlayerDataManager
     {

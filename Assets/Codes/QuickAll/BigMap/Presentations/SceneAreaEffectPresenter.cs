@@ -1,119 +1,124 @@
 using Map.Entity;
+using My.Map.Entity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class SceneAreaEffectPresenter : ScenePresentationBase<AreaEffectLogicEntity>, ISceneInteractable
+namespace My.Map.Scene
 {
-    [SerializeField] private SpriteRenderer icon;
-    [SerializeField] private GameObject highlightFx;
-
-    public event Action<bool> EventOnInteractStateChanged;
-
-    public AreaEffectLogicEntity AreaEffectEntity { get { return (AreaEffectLogicEntity)_logic; } }
-
-
-    public override void Tick(float dt)
+    public class SceneAreaEffectPresenter : ScenePresentationBase<AreaEffectLogicEntity>, ISceneInteractable
     {
-        base.Tick(dt);
+        [SerializeField] private SpriteRenderer icon;
+        [SerializeField] private GameObject highlightFx;
 
-        TryTriggerActivate(dt);
-    }
+        public event Action<bool> EventOnInteractStateChanged;
 
-    private float _checkTriggerTimer;
-    private Collider2D[] hits = new Collider2D[16];
+        public AreaEffectLogicEntity AreaEffectEntity { get { return (AreaEffectLogicEntity)_logic; } }
 
-    public void TryTriggerActivate(float dt)
-    {
-        if(!AreaEffectEntity.cacheCfg.HastriggerArea)
+
+        public override void Tick(float dt)
         {
-            return;
+            base.Tick(dt);
+
+            TryTriggerActivate(dt);
         }
 
-        if(_checkTriggerTimer > 0)
-        {
-            _checkTriggerTimer -= dt;
-        }
+        private float _checkTriggerTimer;
+        private Collider2D[] hits = new Collider2D[16];
 
-        if(_checkTriggerTimer > 0)
+        public void TryTriggerActivate(float dt)
         {
-            return;
-        }
+            if (!AreaEffectEntity.cacheCfg.HastriggerArea)
+            {
+                return;
+            }
 
-        ILogicEntity activator = null;
+            if (_checkTriggerTimer > 0)
+            {
+                _checkTriggerTimer -= dt;
+            }
 
-        switch(AreaEffectEntity.cacheCfg.Shape)
-        {
-            case Config.Map.MapAreaEffectConfig.EShape.Square:
-                {
-                    int count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.Radius, AreaEffectEntity.cacheCfg.Radius), 0, hits, 1 << LayerMask.NameToLayer("Units"));
-                    // 遍历命中，筛选实现了接口的对象
-                    for (int i = 0; i < count; i++)
+            if (_checkTriggerTimer > 0)
+            {
+                return;
+            }
+
+            ILogicEntity activator = null;
+
+            switch (AreaEffectEntity.cacheCfg.Shape)
+            {
+                case Config.Map.MapAreaEffectConfig.EShape.Square:
                     {
-                        var col = hits[i];
-                        if (col == null) continue;
+                        int count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.Radius, AreaEffectEntity.cacheCfg.Radius), 0, hits, 1 << LayerMask.NameToLayer("Units"));
+                        // 遍历命中，筛选实现了接口的对象
+                        for (int i = 0; i < count; i++)
+                        {
+                            var col = hits[i];
+                            if (col == null) continue;
 
-                        var scenePresenter = col.GetComponentInParent<IScenePresentation>();
-                        if (scenePresenter == null) continue;
+                            var scenePresenter = col.GetComponentInParent<IScenePresentation>();
+                            if (scenePresenter == null) continue;
 
-                        // chek
-                        activator = scenePresenter.GetLogicEntity();
+                            // chek
+                            activator = scenePresenter.GetLogicEntity();
+                        }
                     }
-                }
-                break;
-            case Config.Map.MapAreaEffectConfig.EShape.Circle:
-                {
-                    int count = Physics2D.OverlapCircleNonAlloc(transform.position, AreaEffectEntity.cacheCfg.Radius, hits, 1 << LayerMask.NameToLayer("Units"));
-
-                    // 遍历命中，筛选实现了接口的对象
-                    for (int i = 0; i < count; i++)
+                    break;
+                case Config.Map.MapAreaEffectConfig.EShape.Circle:
                     {
-                        var col = hits[i];
-                        if (col == null) continue;
+                        int count = Physics2D.OverlapCircleNonAlloc(transform.position, AreaEffectEntity.cacheCfg.Radius, hits, 1 << LayerMask.NameToLayer("Units"));
 
-                        var scenePresenter = col.GetComponentInParent<IScenePresentation>();
-                        if (scenePresenter == null) continue;
+                        // 遍历命中，筛选实现了接口的对象
+                        for (int i = 0; i < count; i++)
+                        {
+                            var col = hits[i];
+                            if (col == null) continue;
 
-                        // chek
-                        activator = scenePresenter.GetLogicEntity();
+                            var scenePresenter = col.GetComponentInParent<IScenePresentation>();
+                            if (scenePresenter == null) continue;
+
+                            // chek
+                            activator = scenePresenter.GetLogicEntity();
+                        }
                     }
-                }
-                break;
+                    break;
+            }
+
+            if (activator != null)
+            {
+                AreaEffectEntity.OnTriggerAreaTriggered(activator);
+            }
         }
 
-        if(activator != null)
+
+
+
+        public Vector3 GetHintAnchorPosition()
         {
-            AreaEffectEntity.OnTriggerAreaTriggered(activator);
+            return GetWorldPosition();
+        }
+
+        public bool CanInteractEnable()
+        {
+            return false;
+        }
+
+        public void SetInteractExpandStatus(bool expanded)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void TriggerInteract(string interactSelection)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public List<string> GetInteractSelections()
+        {
+            return new() { "Int" };
         }
     }
 
-
-
-
-    public Vector3 GetHintAnchorPosition()
-    {
-        return GetWorldPosition();
-    }
-
-    public bool CanInteractEnable()
-    {
-        return false;
-    }
-
-    public void SetInteractExpandStatus(bool expanded)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void TriggerInteract(string interactSelection)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public List<string> GetInteractSelections()
-    {
-        return new() { "Int" };
-    }
 }

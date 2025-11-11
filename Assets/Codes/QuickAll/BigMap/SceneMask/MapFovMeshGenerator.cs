@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace Map.Scene.Fov
+namespace My.Map.Scene
 {
     //[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class MapFovMeshGenerator : MonoBehaviour

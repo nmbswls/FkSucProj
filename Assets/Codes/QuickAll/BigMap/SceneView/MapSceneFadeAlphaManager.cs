@@ -61,8 +61,6 @@ public class MapSceneFadeAlphaManager : MonoBehaviour
         }
     }
 
-
-
     public void OnLeaveArea()
     {
         SceneRoomCeilDict.Clear();

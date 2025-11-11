@@ -9,12 +9,15 @@ public class WorldBootstrap : MonoBehaviour
 
     void Start()
     {
-        InitializeWorldArea();
+        InitializeGame();
     }
 
 
-    public void InitializeWorldArea()
+    public void InitializeGame()
     {
-        MainGameManager.Instance.gameLogicManager.OnPlayerEnterArea("1");
+         MainGameManager.Instance.InitStartGame("a", () =>
+        {
+            Debug.Log("InitializeGame finished");
+        });
     }
 }

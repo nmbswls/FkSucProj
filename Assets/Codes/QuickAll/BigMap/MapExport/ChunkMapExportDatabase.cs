@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using Map.Logic.Chunk;
-using Map.Entity;
-using Map.Scene.Fov;
+using My.Map.Scene;
+using My.Map;
 
 [CreateAssetMenu(fileName = "ChunkStaticDatabase", menuName = "MapExport/Chunk Static Database")]
 public class ChunkMapExportDatabase : ScriptableObject
@@ -77,6 +76,8 @@ public class ChunkMapExportDatabase : ScriptableObject
         public BaseUnitLogicEntity.EUnitMoveActMode MoveMode;
 
         public bool IsPeace;
+
+        public bool InitUnsensored;
     }
 
 

@@ -1,5 +1,6 @@
 using Map.Drop;
-using Map.Logic.Chunk;
+using Map.Logic;
+using My.Map.Logic.Chunk;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,14 +8,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.Progress;
 
 
 
 
 
-namespace Map.Scene
+namespace My.Map.Scene
 {
     
     public class MapSceneDropManager : MonoBehaviour
@@ -45,7 +44,7 @@ namespace Map.Scene
 
         public void Update()
         {
-            if(Input.GetKeyDown(KeyCode.M))
+            if(UnityEngine.Input.GetKeyDown(KeyCode.M))
             {
                 MainGameManager.Instance.gameLogicManager.globalDropCollection.CreateDrop("1", 2, UnityEngine.Random.insideUnitCircle * 3f, true);
             }

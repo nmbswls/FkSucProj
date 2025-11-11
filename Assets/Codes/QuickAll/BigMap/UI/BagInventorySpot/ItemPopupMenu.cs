@@ -1,91 +1,106 @@
-using Bag;
+using My.Player.Bag;
+using My.UI.Bag;
 using SuperScrollView;
 using UnityEngine;
 using UnityEngine.UI;
-using static AnyContainerItemCell;
+using static My.UI.AnyContainerItemCell;
 
-public class ItemPopupMenu : MonoBehaviour
+
+namespace My.UI
 {
-    public static ItemPopupMenu Instance;
 
-    public RectTransform Panel;
-    public Button UseBtn;
-    public Button SplitBtn;
-    public Button DropBtn;
-    public Button CloseBtn;
 
-    private AnyContainerItemCell currentCell;
-    private ItemStack currentStack;
-    private int currentIndex;
-
-    void Awake()
+    public class ItemPopupMenu : PanelBase
     {
-        Instance = this;
-        Panel.gameObject.SetActive(false);
-
-        UseBtn.onClick.AddListener(OnClickUse);
-        SplitBtn.onClick.AddListener(OnClickSplit);
-        //DropBtn.onClick.AddListener(OnClickDrop);
-        //CloseBtn.onClick.AddListener(Close);
-    }
-
-    public void Show(AnyContainerItemCell cell, ItemStack stack, int index, Vector2 screenPos)
-    {
-        currentCell = cell;
-        currentStack = stack;
-        currentIndex = index;
-
-        Panel.gameObject.SetActive(true);
-
-        var canvas = Panel.GetComponentInParent<Canvas>();
-        if (canvas != null)
+        public static void Show(AnyContainerItemCell cell, ItemStack stack, int index, Vector2 screenPos)
         {
-            Vector2 local;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, screenPos, canvas.worldCamera, out local);
-            Panel.anchoredPosition = local;
+
+            var panel = UIManager.Instance.ShowPanel("ItemPopup", null) as ItemPopupMenu;
+
+            panel.currentCell = cell;
+            panel.currentStack = stack;
+            panel.currentIndex = index;
+
+            panel.gameObject.SetActive(true);
+
+            var canvas = panel.GetComponentInParent<Canvas>();
+            if (canvas != null)
+            {
+                Vector2 local;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, screenPos, canvas.worldCamera, out local);
+                panel.transform.localPosition = local;
+            }
+
+            // 根据物品可用性禁用按钮
+            //bool canUse = currentIsInventory && FakeItemDatabase.CanUse(stack.ItemID);
+            //UseBtn.interactable = canUse;
+
+            //SplitBtn.interactable = currentIsInventory && stack.Count > 1;
+            //DropBtn.interactable = currentIsInventory;
         }
 
-        // 根据物品可用性禁用按钮
-        //bool canUse = currentIsInventory && FakeItemDatabase.CanUse(stack.ItemID);
-        //UseBtn.interactable = canUse;
-
-        //SplitBtn.interactable = currentIsInventory && stack.Count > 1;
-        //DropBtn.interactable = currentIsInventory;
-    }
-
-    private void OnClickUse()
-    {
-        if (currentCell.ContainerType == EContainerType.Inventory)
+        public static void Close()
         {
-            InventoryUIController.Instance.UseItem(currentIndex);
+            UIManager.Instance.HidePanel("ItemPopup");
         }
-        Close();
-    }
 
-    private void OnClickSplit()
-    {
-        if (currentCell.ContainerType != EContainerType.Inventory)  { Close(); return; }
-        // 简化：固定拆分数量为一半，实际可弹窗输入
-        int half = currentStack.Count / 2;
-        if (half > 0)
+
+        public RectTransform Panel;
+        public Button UseBtn;
+        public Button SplitBtn;
+        public Button DropBtn;
+        public Button CloseBtn;
+
+        private AnyContainerItemCell currentCell;
+        private ItemStack currentStack;
+        private int currentIndex;
+
+        void Awake()
         {
-            InventoryUIController.Instance.SplitItem(currentIndex, half);
+            //Panel.gameObject.SetActive(false);
+
+            UseBtn.onClick.AddListener(OnClickUse);
+            SplitBtn.onClick.AddListener(OnClickSplit);
+            //DropBtn.onClick.AddListener(OnClickDrop);
+            //CloseBtn.onClick.AddListener(Close);
         }
-        Close();
-    }
 
-    private void OnClickDrop()
-    {
-        if (currentCell.ContainerType != EContainerType.Inventory) { Close(); return; }
-        // 简化：全部丢弃
-        InventoryUIController.Instance.DropItemToGround(currentIndex, currentStack.Count);
-        Close();
-    }
 
-    public void Close()
-    {
-        Panel.gameObject.SetActive(false);
-        currentCell = null;
-        currentStack = null;
+        private void OnClickUse()
+        {
+            if (currentCell.ContainerType == EContainerType.Inventory)
+            {
+                PlayerBagUIPanel.Instance?.UseItem(currentIndex);
+            }
+            Close();
+        }
+
+        private void OnClickSplit()
+        {
+            if (currentCell.ContainerType != EContainerType.Inventory) { Close(); return; }
+            // 简化：固定拆分数量为一半，实际可弹窗输入
+            int half = currentStack.Count / 2;
+            if (half > 0)
+            {
+                PlayerBagUIPanel.Instance?.SplitItem(currentIndex, half);
+            }
+            Close();
+        }
+
+        private void OnClickDrop()
+        {
+            if (currentCell.ContainerType != EContainerType.Inventory) { Close(); return; }
+            // 简化：全部丢弃
+            PlayerBagUIPanel.Instance?.DropItemToGround(currentIndex, currentStack.Count);
+            Close();
+        }
+
+        public override void Hide()
+        {
+            base.Hide();
+
+            currentCell = null;
+            currentStack = null;
+        }
     }
 }

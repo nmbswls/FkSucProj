@@ -1,12 +1,11 @@
-using Map.Entity;
-using Map.Entity.Attr;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using My.Map.Entity;
 using UnityEngine;
 
 
-namespace Unit.Ability.Effect
+namespace My.Map.Entity
 {
     [Serializable]
     public class MapAbilityEffectAddResourceCfg : MapFightEffectCfg

@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using My.Map.Entity;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-namespace Map.Entity.Attr
+namespace My.Map
 {
     public enum SourceType
     {
@@ -196,23 +197,31 @@ namespace Map.Entity.Attr
         }
 
         // 注册资源（绑定 Max 到某个数值属性，例如 "HP.Max"）
-        public ResourceEntry RegisterResource(string resourceId, string maxAttrId, long initialCurrent = 0, MaxChangePolicy policy = MaxChangePolicy.KeepRatio)
+        public ResourceEntry RegisterResource(string resourceId, string maxAttrId = null, long initialCurrent = 0, MaxChangePolicy policy = MaxChangePolicy.KeepRatio)
         {
             if (resources.ContainsKey(resourceId))
                 throw new InvalidOperationException($"Resource already registered: {resourceId}");
 
-            // 确保 Max 数值属性已注册
-            var maxEntry = numerics.TryGetValue(maxAttrId, out var e)
-                ? e
-                : RegisterNumeric(maxAttrId, initialBase: 0); // 或抛异常，按你的设计选择
+            NumericEntry maxEntry;
+            if (string.IsNullOrEmpty(maxAttrId))
+            {
+                maxEntry = null;
+            }
+            else
+            {
+                // 确保 Max 数值属性已注册
+                maxEntry = numerics.TryGetValue(maxAttrId, out var e)
+                    ? e
+                    : RegisterNumeric(maxAttrId, initialBase: 0); // 或抛异常，按你的设计选择
+            }
 
             var r = new ResourceEntry
             {
                 resourceId = resourceId,
-                current = Math.Min(initialCurrent, maxEntry.finalValue),
+                current = Math.Min(initialCurrent, maxEntry?.finalValue ?? initialCurrent),
                 max = maxEntry,
                 onMaxChange = policy,
-                cacheMaxVal = maxEntry.finalValue,
+                cacheMaxVal = maxEntry?.finalValue ?? 0,
                 dirty = true
             };
             resources[resourceId] = r;
@@ -423,7 +432,11 @@ namespace Map.Entity.Attr
         // 3) 聚合资源变化
         public void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source, Dictionary<string, long> extraAttrs = null)
         {
-            if (!resources.TryGetValue(resourceId, out var r)) return;
+            if (!resources.TryGetValue(resourceId, out var r)) 
+            {
+                Debug.LogError("ApplyResourceChange not find " + resourceId);
+                return; 
+            }
 
             r.pendingDelta.Add(new ResourceDeltaIntent()
             {
@@ -457,7 +470,10 @@ namespace Map.Entity.Attr
 
                 // 4.4 最终钳制到 [0, newMax]
                 if (r.current < 0f) r.current = 0;
-                if (r.current > r.cacheMaxVal) r.current = r.cacheMaxVal;
+                if(r.max != null)
+                {
+                    if (r.current > r.cacheMaxVal) r.current = r.cacheMaxVal;
+                }
             }
         }
 
@@ -487,6 +503,10 @@ namespace Map.Entity.Attr
 
         private void AdjustCurrentOnMaxChange(ResourceEntry r)
         {
+            if (r.max == null)
+            {
+                return;
+            }
             //float oldMax = r.max.finalValue;
             long oldMax = r.cacheMaxVal;
             long newMax = r.max.finalValue;
@@ -544,6 +564,8 @@ namespace Map.Entity.Attr
                 case AttrIdConsts.PlayerNaiLi:
                 case AttrIdConsts.PlayerYinNeng:
                 case AttrIdConsts.PlayerClothes:
+                case AttrIdConsts.UnitEnterHVal:
+                case AttrIdConsts.DeepZhaChance:
                     {
                         return GetResourceCurrent(attrId);
                     }

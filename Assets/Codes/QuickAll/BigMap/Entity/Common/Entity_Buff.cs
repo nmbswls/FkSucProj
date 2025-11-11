@@ -1,11 +1,10 @@
 using Map.Entity;
-using Map.Entity.Attr;
+using Map.Logic;
 using Map.Logic.Events;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unit.Ability.Effect;
 using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.Experimental.GraphView;
@@ -14,7 +13,7 @@ using static GameLogicManager;
 
 
 
-namespace Map.Entity.Buffs
+namespace My.Map.Entity
 {
     public enum TriggerType
     {
@@ -162,7 +161,12 @@ namespace Map.Entity.Buffs
                     //    new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HidingMask, ModifierValue = 1 } ,
                     //},
                 };
-                
+
+                _library["unsensored"] = new BuffDefinition()
+                {
+                    BuffId = "unsensored",
+                    DefaultDuration = -1,
+                };
             }
 
             _library.TryGetValue(buffId, out BuffDefinition def);
@@ -279,16 +283,16 @@ namespace Map.Entity.Buffs
 
 
         // 请求队列（避免评估阶段直接改表）
-        private readonly List<(ILogicEntity target, string buffId, int layer, float overrideDuration, long? casterId, long? srcBuffId)> _addRequests = new();
-        private readonly List<(ILogicEntity target, long buffInstId)> _removeRequests = new();
+        private readonly List<(long target, string buffId, int layer, float overrideDuration, long? casterId, long? srcBuffId)> _addRequests = new();
+        private readonly List<(long target, long buffInstId)> _removeRequests = new();
 
         public GlobalBuffManager(GameLogicManager logicManager)
         {
             this.logicManager = logicManager;
         }
-        public void Tick(float now, float dt)
+        public void Tick(float dt)
         {
-            TickLifetime(now, dt);
+            TickLifetime(dt);
         }
 
         //public void ExecuteBuffTriggerEffect(BuffInstance buffInst, BuffEffectCfg cfg)
@@ -304,7 +308,7 @@ namespace Map.Entity.Buffs
         //}
 
 
-        private void HandleOnLogicEvent(IMapLogicEvent ev, float now)
+        private void HandleOnLogicEvent(IMapLogicEvent ev)
         {
             switch (ev)
             {
@@ -315,7 +319,7 @@ namespace Map.Entity.Buffs
                         {
                             foreach(var buff in targetEntity.BuffContainer.Values)
                             {
-                                if (!buff.CanTrigger(now)) continue;
+                                if (!buff.CanTrigger(LogicTime.time)) continue;
 
                                 foreach (var rule in buff.Def.TriggerList)
                                 {
@@ -328,7 +332,7 @@ namespace Map.Entity.Buffs
                                     // 执行
                                     // OnTrigger()
 
-                                    buff.LastTriggerTime = now;
+                                    buff.LastTriggerTime = LogicTime.time;
                                 }
                             }
                         }
@@ -337,7 +341,7 @@ namespace Map.Entity.Buffs
             }
         }
 
-        private void TickLifetime(float now, float dt)
+        private void TickLifetime(float dt)
         {
             // 1) 收集外部事件（其它系统可直接向 EventBus.Enqueue）
             _frameEvents.AddRange(BuffEventBus.Drain());
@@ -345,7 +349,7 @@ namespace Map.Entity.Buffs
             // 2) 推进定时器，产生 Tick/Expire 事件
             foreach (var buffInst in _buffs.Values)
             {
-                buffInst.Tick(now, dt);
+                buffInst.Tick(dt);
                 if(buffInst.Lifetime != -1)
                 {
                     buffInst.Lifetime -= dt;
@@ -362,13 +366,13 @@ namespace Map.Entity.Buffs
             {
                 if (consumed >= MaxTriggerDepthPerFrame) break;
 
-                HandleOnLogicEvent(ev, now);
+                HandleOnLogicEvent(ev);
                 
                 consumed++;
             }
 
             // 6) 处理Add/Remove请求（合并/堆叠/刷新）
-            FlushBuffAddRemoveRequests(now);
+            FlushBuffAddRemoveRequests();
 
             // 7) 清理
             List<long> toRemove = new();
@@ -404,18 +408,12 @@ namespace Map.Entity.Buffs
         // 外部接口：请求添加 Buff（可在效果中调用）
         public void RequestAddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
-            var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId);
-            if (targetEntity == null)
-            {
-                Debug.Log($"RemoveAllBuffById not found {entityId} ");
-                return;
-            }
-            _addRequests.Add((targetEntity, buffId, layer, overrideDuration, casterId, srcBuffId));
+            _addRequests.Add((entityId, buffId, layer, overrideDuration, casterId, srcBuffId));
         }
 
         public void RequestRemoveBuff(ILogicEntity targetEntity, long buffInstId)
         {
-            _removeRequests.Add((targetEntity, buffInstId));
+            _removeRequests.Add((0, buffInstId));
         }
 
         public void RemoveAllBuffById(long entityId, string buffId, int layer = 1, long? casterId = null, long? srcBuffId = null)
@@ -443,7 +441,7 @@ namespace Map.Entity.Buffs
             }
         }
 
-        private void FlushBuffAddRemoveRequests(float now)
+        private void FlushBuffAddRemoveRequests()
         {
             // 先执行移除
             foreach (var r in _removeRequests)
@@ -459,7 +457,13 @@ namespace Map.Entity.Buffs
             // 合并同目标同Buff的多次 Add
             foreach (var addReq in _addRequests)
             {
-                AddBuffInternal(addReq.target, addReq.buffId, addReq.layer, addReq.overrideDuration, addReq.casterId, addReq.srcBuffId);
+                var targetEntity = logicManager.AreaManager.GetLogicEntiy(addReq.target);
+                if (targetEntity == null)
+                {
+                    Debug.Log($"RemoveAllBuffById not found {addReq.target} ");
+                    continue;
+                }
+                AddBuffInternal(targetEntity, addReq.buffId, addReq.layer, addReq.overrideDuration, addReq.casterId, addReq.srcBuffId);
             }
             _addRequests.Clear();
         }
@@ -767,7 +771,7 @@ namespace Map.Entity.Buffs
             return new();
         }
 
-        public void Tick(float now, float dt)
+        public void Tick(float dt)
         {
             if (tickTriggers != null)
             {
@@ -775,11 +779,11 @@ namespace Map.Entity.Buffs
                 {
                     if (triggerInfo.lastTick == 0)
                     {
-                        triggerInfo.lastTick = now;
+                        triggerInfo.lastTick = LogicTime.time;
                         continue;
                     }
 
-                    if (now - triggerInfo.lastTick < triggerInfo.config.TriggerParam1 * 0.001f)
+                    if (LogicTime.time - triggerInfo.lastTick < triggerInfo.config.TriggerParam1 * 0.001f)
                     {
                         continue;
                     }
@@ -826,22 +830,22 @@ namespace Map.Entity.Buffs
 
             if (Def.IsAura)
             {
-                TickAuraEffect(now);
+                TickAuraEffect();
             }
         }
 
-        protected void TickAuraEffect(float now)
+        protected void TickAuraEffect()
         {
             if (!Def.IsAura)
             {
                 return;
             }
 
-            if (now - auraRuntimeInfo.lastAuraTick < 1.0f)
+            if (LogicTime.time - auraRuntimeInfo.lastAuraTick < 1.0f)
             {
                 return;
             }
-            auraRuntimeInfo.lastAuraTick = now;
+            auraRuntimeInfo.lastAuraTick = LogicTime.time;
             var currAffectOnes = BuffOwner.FindEntityInRange(BuffOwner.Pos, Def.AuraRange);
             foreach (var affectedId in auraRuntimeInfo.AffectedEntites.ToList())
             {

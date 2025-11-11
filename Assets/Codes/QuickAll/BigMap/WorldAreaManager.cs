@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using Map.Scene.Fov;
+using My.Map.Scene;
 
 public class WorldAreaManager : MonoBehaviour
 {
@@ -35,9 +35,9 @@ public class WorldAreaManager : MonoBehaviour
 
     public bool IsWorldLoaded => currentWorld != null;
 
-    public void LoadWorld(WorldAreaInfo areaInfo, bool setActive = true)
+    public void LoadWorld(WorldAreaInfo areaInfo, bool setActive = true, Action<WorldAreaInfo>? onComplete = null)
     {
-        StartCoroutine(CoLoadWorld(areaInfo, setActive));
+        StartCoroutine(CoLoadWorld(areaInfo, setActive, onComplete));
     }
 
     public void UnloadCurrentWorld()
@@ -54,7 +54,7 @@ public class WorldAreaManager : MonoBehaviour
         LoadWorld(currentWorld);
     }
 
-    private IEnumerator CoLoadWorld(WorldAreaInfo areaInfo, bool setActive)
+    private IEnumerator CoLoadWorld(WorldAreaInfo areaInfo, bool setActive, Action<WorldAreaInfo>? onComplete)
     {
         // ÏÈÐ¶ÔØ¾ÉµÄ
         if (currentWorld != null)
@@ -117,10 +117,7 @@ public class WorldAreaManager : MonoBehaviour
         Debug.Log($"SubSceneManager: World '{areaInfo.worldName}' loaded with {loadedSubScenes.Count} sub-scenes.");
 
         SegmentProvider.OnAreaEnter();
-        MainGameManager.Instance.FovGenerator.OnAreaEnter();
-
-        SceneAOIManager.Instance.InitArea(areaInfo.worldName);
-        MainGameManager.Instance.SceneFadeManager.OnEnterArea(onlyRoot);
+        onComplete?.Invoke(areaInfo);
     }
 
     private IEnumerator CoUnloadWorld()

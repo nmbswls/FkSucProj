@@ -1,15 +1,14 @@
 using Config.Unit;
 using Config;
-using Map.Logic.Chunk;
 using UnityEngine;
-using Bag;
 using Config.Map;
 using System.Collections.Generic;
 using System;
-using Map.Entity.Attr;
+using Map.Logic;
+using My.Map.Logic.Chunk;
 
 
-namespace Map.Entity
+namespace My.Map
 {
     public class AreaEffectLogicEntity : LogicEntityBase
     {
@@ -56,7 +55,7 @@ namespace Map.Entity
             }
 
             runtimeInfo.lastTriggerTimeDict.TryGetValue(triggerOne.Id, out float lastTime);
-            if (lastTime != 0 && Time.time < lastTime + 1.0f)
+            if (lastTime != 0 && LogicTime.time < lastTime + 1.0f)
             {
                 return;
             }

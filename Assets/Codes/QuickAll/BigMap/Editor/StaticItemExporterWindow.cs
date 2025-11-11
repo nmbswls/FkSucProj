@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Map.Scene.Fov;
+using My.Map.Scene;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -44,8 +44,8 @@ public class StaticItemExporterWindow : EditorWindow
 
     private Dictionary<string, Transform> namedPointCache = new();
 
-    private Dictionary<(int x, int y), List<Map.Scene.Fov.Segment2D>> chunkSegments =
-        new Dictionary<(int x, int y), List<Map.Scene.Fov.Segment2D>>();
+    private Dictionary<(int x, int y), List<Segment2D>> chunkSegments =
+        new Dictionary<(int x, int y), List<Segment2D>>();
 
     [MenuItem("Window/Static Item Exporter")]
     public static void Open()
@@ -415,6 +415,7 @@ public class StaticItemExporterWindow : EditorWindow
                 initInfo.EnmityMode = unitEntity.EnmityMode;
                 initInfo.MoveMode = unitEntity.MoveMode;
                 initInfo.IsPeace = unitEntity.IsPeace;
+                initInfo.InitUnsensored = unitEntity.IsPeace;
 
                 refreshInfo.InitInfo = initInfo;
             }

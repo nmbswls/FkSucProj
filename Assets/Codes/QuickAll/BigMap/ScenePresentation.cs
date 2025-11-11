@@ -1,4 +1,8 @@
 using Map.Entity;
+using Map.Logic;
+using My.Map;
+using My.Map.Entity;
+using My.UI;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -32,10 +36,6 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     { 
     }
 
-    public void Update()
-    {
-        Tick(Time.deltaTime);
-    }
 
     public virtual void Bind(ILogicEntity logic)
     {
@@ -46,14 +46,14 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
         transform.localPosition = MainGameManager.Instance.GetWorldPosFromLogicPos(_logic.Pos);
         _logic.EventOnEntityMove += OnEntityMove;
 
-        MainUIManager.Instance.OnScenePresentationBinded(this);
+        UIOrchestrator.Instance.OnScenePresentationBinded(this);
     }
 
     public virtual void Unbind()
     {
         _logic.EventOnEntityMove -= OnEntityMove;
 
-        MainUIManager.Instance.OnScenePresentationUbbind(this);
+        UIOrchestrator.Instance.OnScenePresentationUbbind(this);
 
         _logic = null;
     }
@@ -99,5 +99,11 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     public bool CheckValid()
     {
         return _logic != null;
+    }
+
+
+    public void OnLogicUpdate(float logicDeltaTime)
+    {
+        Tick(logicDeltaTime);
     }
 }

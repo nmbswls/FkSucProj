@@ -1,3 +1,5 @@
+using Map.Logic;
+using My.Map;
 using UnityEngine;
 
 public class FlyToPlayerMover : MonoBehaviour
@@ -27,7 +29,7 @@ public class FlyToPlayerMover : MonoBehaviour
             return;
         }
 
-        Vector3 step = dir.normalized * speed * Time.deltaTime;
+        Vector3 step = dir.normalized * speed * LogicTime.deltaTime;
         // 简单匀速追踪；需要更丝滑可用插值或加速曲线
         transform.position += step;
     }
