@@ -6,7 +6,7 @@ using My.Map.Scene;
 using TMPro;
 using UnityEngine;
 
-public class QuickHudShow : MonoBehaviour
+public class QuickDebugShow : MonoBehaviour
 {
     public Canvas TopCanvas;
     // Start is called before the first frame update
@@ -14,9 +14,6 @@ public class QuickHudShow : MonoBehaviour
     {
         TopCanvas = GetComponentInParent<Canvas>();
     }
-
-    public TextMeshProUGUI PlayerHpText;
-
 
     public GameObject HpValPrefab;
     public class HpBarStruct
@@ -32,7 +29,6 @@ public class QuickHudShow : MonoBehaviour
     void Update()
     {
 
-        PlayerHpText.text = MainGameManager.Instance.playerScenePresenter.PlayerEntity.GetAttr(AttrIdConsts.HP).ToString();
 
         foreach (var k in hpBars.Keys.ToList())
         {

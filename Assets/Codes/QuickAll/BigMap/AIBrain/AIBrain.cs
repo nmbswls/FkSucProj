@@ -1,5 +1,6 @@
 using Map.Entity.AI.Action;
 using Map.Logic;
+using My.Map.Entity.AI.Action;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,13 +32,13 @@ namespace My.Map.Entity.AI
         public bool InBoundary = true;
         public float BoundaryRadius = 14f;
 
-        public float DeltaTime;
-        public float Time;
         public Vector2? LastLeaveMoveModePos;
 
         public bool LastPeriodSee; // 看见或不久前看见
 
         public bool IsInHMode;
+
+        public string? CurrIntentAbility = null;
     }
 
     /// <summary>
@@ -111,9 +112,36 @@ namespace My.Map.Entity.AI
             this.blackboard.SpawnPos = spawnPos;
             this.PlayerEntity = unitEntity.LogicManager.playerLogicEntity;
 
-            var idleState = new AIBrainState(this);
+            var idleState = new AIBrainState(this) { StateName = "Idle" };
+            States.Add(idleState);
+            var moveState = new AIBrainState(this) { StateName = "FollowPatrolGroup" };
+            {
+                var action1 = new AIActionFollowPatrolGroup()
+                {
 
+                };
+                action1.Initialization(this);
+                moveState.Actions.Add(action1);
+            }
+            States.Add(moveState);
 
+            var huntingState = new AIBrainState(this) { StateName = "Hunting" };
+            States.Add(huntingState);
+
+            {
+                var huntingAction = new AIActionHuntingPlayer();
+                huntingAction.Initialization(this);
+                huntingState.Actions.Add(huntingAction);
+
+                var attackingAction = new AIActionTryUseSkill();
+                attackingAction.Initialization(this);
+                huntingState.Actions.Add(attackingAction);
+
+                var distanceControl = new AIActionDistanceControl();
+                distanceControl.goodDistance = 0.8f;
+                distanceControl.Initialization(this);
+                huntingState.Actions.Add(distanceControl);
+            }
             //var idleState = new IdleBrainState(this);
             //idleState.RegisterAIAction(new AIActionChangeFace(this));
 
@@ -138,25 +166,30 @@ namespace My.Map.Entity.AI
 
             //var unitCfg = unitEntity.unitCfg;
 
-            //if (unitEntity.MoveActMode == BaseUnitLogicEntity.EUnitMoveActMode.PatrolFollow)
-            //{
-            //    ChangeState("FollowPatrolGroup");
-            //}
-            //else
-            //{
-            //    ChangeState("Idle");
-            //}
+            if (unitEntity.MoveActMode == BaseUnitLogicEntity.EUnitMoveActMode.PatrolFollow)
+            {
+                TransitionToState("FollowPatrolGroup");
+            }
+            else if(unitEntity.MoveActMode == BaseUnitLogicEntity.EUnitMoveActMode.Hunting)
+            {
+                TransitionToState("Hunting");
+            }
+            else
+            {
+                TransitionToState("Idle");
+            }
         }
 
         /// <summary>
 		/// Stores the last known position of the target
 		/// </summary>
-		protected virtual void UpdateBlackboardData(float dt)
+		protected virtual void UpdateBlackboardData()
         {
             blackboard.Distance = Vector2.Distance(UnitEntity.Pos, PlayerEntity.Pos);
             blackboard.AngleToPlayer = Vector2.SignedAngle(UnitEntity.FaceDir, (PlayerEntity.Pos - UnitEntity.Pos));
             blackboard.CanSee = Vision.CanSee(UnitEntity.Pos, UnitEntity.FaceDir, PlayerEntity.Pos, blackboard.VisionRange, blackboard.VisionFOV);
 
+            // 有问题 会丢事件
             if (blackboard.CanSee)
             {
                 blackboard.LoseTargetTimer = blackboard.LoseTargetGrace;
@@ -167,7 +200,7 @@ namespace My.Map.Entity.AI
             }
             else
             {
-                blackboard.LoseTargetTimer = Mathf.Max(0, blackboard.LoseTargetTimer - dt);
+                blackboard.LoseTargetTimer = Mathf.Max(0, blackboard.LoseTargetTimer - LogicTime.deltaTime);
             }
 
             if (blackboard.LastPeriodSee && blackboard.LoseTargetTimer <= 0)
@@ -313,7 +346,7 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            UpdateBlackboardData(dt);
+            UpdateBlackboardData();
 
 
             if (LogicTime.time - _lastActionsUpdate > ActionsFrequency)

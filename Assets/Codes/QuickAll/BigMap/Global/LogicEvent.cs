@@ -1,31 +1,56 @@
 using System.Collections.Generic;
 using System;
+using UnityEngine;
+using My.Map;
 
 namespace Map.Logic.Events
 {
-    public interface IMapLogicEvent { MapLogicEventContext Ctx { get; set; } }
+    public interface IMapLogicEvent 
+    {
+        EMapLogicEventType Type { get; }
+        MapLogicEventContext Ctx { get;  }
+    }
+
+    public enum EMapLogicEventType
+    { 
+        Invalid,
+        Common,
+        AddBuff,
+        OnHit,
+    }
+
 
     public struct MapLogicEventContext
     {
         public int FrameId;
         public Guid CorrelationId;
-        public long SourceId;
+        public ILogicEntity SourceEntity;
         public bool Reliable;
+        public Vector2 HappenPos;
+        public long TargetId;
     }
 
     //public enum Delivery { Immediate, QueuedFrame, Deferred }
 
-    public interface IMapLogicEventHandler<T> where T : IMapLogicEvent
+    public interface IMapLogicEventHandler
     {
-        void Handle(in T evt);
+
+        void Handle(in IMapLogicEvent evt);
+    }
+
+    public class MapLogicEventAdapter : IMapLogicEventHandler
+    {
+        private readonly Action<IMapLogicEvent> _fn;
+        public MapLogicEventAdapter(Action<IMapLogicEvent> fn) { _fn = fn; }
+        public void Handle(in IMapLogicEvent evt) => _fn(evt);
     }
 
     public sealed class MapLogicSubscription
     {
-        public readonly Type EventType;
+        public readonly EMapLogicEventType EventType;
         public readonly int Priority;
-        public readonly Delegate Handler;
-        public MapLogicSubscription(Type type, int priority, Delegate handler)
+        public readonly IMapLogicEventHandler Handler;
+        public MapLogicSubscription(EMapLogicEventType type, int priority, IMapLogicEventHandler handler)
         {
             EventType = type; Priority = priority; Handler = handler;
         }
@@ -33,15 +58,15 @@ namespace Map.Logic.Events
 
     public sealed class MapLogicEventBus
     {
-        private readonly Dictionary<Type, List<MapLogicSubscription>> subs = new();
+
+        private readonly Dictionary<EMapLogicEventType, List<MapLogicSubscription>> subs = new();
         private readonly Queue<object> frameQueue = new();
         private readonly List<(object evt, int framesLeft)> deferred = new();
 
-        public MapLogicSubscription Subscribe<T>(IMapLogicEventHandler<T> handler, int priority = 0) where T : struct, IMapLogicEvent
+        public MapLogicSubscription Subscribe(EMapLogicEventType type, IMapLogicEventHandler handler, int priority = 0)
         {
-            Action<T> del = e => handler.Handle(e); //   ≈‰ in
-            var sub = new MapLogicSubscription(typeof(T), priority, del);
-            if (!subs.TryGetValue(typeof(T), out var list)) { list = new List<MapLogicSubscription>(); subs[typeof(T)] = list; }
+            var sub = new MapLogicSubscription(type, priority, handler);
+            if (!subs.TryGetValue(type, out var list)) { list = new List<MapLogicSubscription>(); subs[type] = list; }
             list.Add(sub);
             list.Sort((a, b) => b.Priority.CompareTo(a.Priority));
             return sub;
@@ -52,18 +77,19 @@ namespace Map.Logic.Events
             if (subs.TryGetValue(s.EventType, out var list)) list.Remove(s);
         }
 
-        public void Publish<T>(in T evt) where T : struct, IMapLogicEvent
+        public void Publish(in IMapLogicEvent evt) 
         {
             Dispatch(evt);
         }
 
-        private void Dispatch<T>(in T evt) where T : struct, IMapLogicEvent
+        private void Dispatch(in IMapLogicEvent evt)
         {
-            if (!subs.TryGetValue(typeof(T), out var list)) return;
+            if (!subs.TryGetValue(evt.Type, out var list)) return;
             foreach (var s in list)
             {
-                if (s.Handler is Action<T> a) a(evt);
+                s.Handler.Handle(evt);
             }
         }
+
     }
 }

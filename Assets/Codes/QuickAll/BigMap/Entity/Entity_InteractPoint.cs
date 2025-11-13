@@ -1,6 +1,6 @@
 using Config;
 using Config.Map;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 using System;
 using System.Collections;
 using System.Collections.Generic;

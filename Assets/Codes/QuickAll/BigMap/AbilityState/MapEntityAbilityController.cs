@@ -3,11 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 using Unity.Burst.Intrinsics;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.UIElements;
+using static My.Map.Entity.MapEntityAbilityController;
 using static Unity.VisualScripting.Member;
 using static UnityEditor.Progress;
 using static UnityEngine.Rendering.VolumeComponent;
@@ -139,7 +142,7 @@ namespace My.Map.Entity
         {
             public string AbilityName;
             public float lastUseTime;
-            public float lastUseCd;
+            public float cooldown;
 
             public MapAbilitySpecConfig cacheConfig;
         }
@@ -173,6 +176,86 @@ namespace My.Map.Entity
             this.EntityOwner = owner;
         }
 
+        /// <summary>
+        /// 获取当前准备好的主动技能
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckAnyReadyAbility()
+        {
+            foreach (var abName in AbilityStateInfos.Keys)
+            {
+                if (!IsAbilityReady(abName))
+                {
+                    continue;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 获取当前准备好的主动技能
+        /// </summary>
+        /// <returns></returns>
+        public List<AbilityState> GetAllReadyAbilities()
+        {
+            List<AbilityState> ret = new();
+            foreach (var abName in AbilityStateInfos.Keys)
+            {
+                if(!IsAbilityReady(abName))
+                {
+                    continue;
+                }
+
+                ret.Add(AbilityStateInfos[abName]);
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 获取当前准备好的主动技能
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAbilityReady(string abilityName)
+        {
+
+            AbilityStateInfos.TryGetValue(abilityName, out var abState);
+            if(abState == null)
+            {
+                return false;
+            }
+
+            if (abState.cacheConfig.IsPassive)
+            {
+                return false;
+            }
+
+            if (abState.cooldown > 0)
+            {
+                return false;
+            }
+
+            if (abState.cacheConfig.TypeTag == AbilityTypeTag.Combat)
+            {
+                if (EntityOwner.IsHMode)
+                {
+                    return false;
+                }
+            }
+            else if (abState.cacheConfig.TypeTag == AbilityTypeTag.HMode)
+            {
+                if (!EntityOwner.IsHMode)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
 
         public bool RegisterAbility(MapAbilitySpecConfig abilityCfg)
         {
@@ -199,12 +282,24 @@ namespace My.Map.Entity
                 return;
             }
 
+            if(!IsAbilityReady(abilityName))
+            {
+                return;
+            }
 
-            TryStart(abilityState.cacheConfig, castDir: castDir, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims);
+            TryStart(abilityState, castDir: castDir, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims);
         }
 
         public void Tick(float dt)
         {
+            foreach(var abState in AbilityStateInfos.Values)
+            {
+                if(abState.cooldown > 0)
+                {
+                    abState.cooldown -= dt;
+                }
+            }
+
             if (!_running) return;
             TickIntern(dt);
         }
@@ -212,22 +307,8 @@ namespace My.Map.Entity
 
 
 
-        protected bool TryStart(MapAbilitySpecConfig config, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null)
+        protected bool TryStart(AbilityState abState, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null)
         {
-            //if (_running)
-            //{
-            //    switch (spec.Concurrency)
-            //    {
-            //        case ConcurrencyPolicy.Reject:
-            //            return false;
-            //        case ConcurrencyPolicy.Replace:
-            //            Cancel("ConcurrencyReplace");
-            //            break;
-            //        case ConcurrencyPolicy.Stack:
-            //            // 简化：本例不实现堆叠
-            //            return false;
-            //    }
-            //}
             if (_running) return false;
 
             CurrentCtx = new AbilityRunningContext
@@ -237,21 +318,28 @@ namespace My.Map.Entity
                 AbilityTime = 0f,
                 PhaseIndex = 0,
                 PhaseElapsed = 0f,
-                AbilityConfig = config,
+                AbilityConfig = abState.cacheConfig,
                 viewer = EntityOwner.viewer,
                 RunningVariables = runningOverrides,
                 CastDir = castDir,
+                Position = EntityOwner.Pos,
 
                 PhaseOverrideAnims = phaseOverrideAnims,
             };
-            foreach (var e in config.OnStartEffects)
+            foreach (var e in abState.cacheConfig.OnStartEffects)
             {
-
                 var effectCtx = GenerateEfffectContextByAbility();
                 EntityOwner.LogicManager.HandleLogicFightEffect(e, effectCtx);
             }
             EnterPhase(0);
             _running = true;
+
+            if(abState.cacheConfig.CoolDown > 0)
+            {
+                abState.cooldown = abState.cacheConfig.CoolDown;
+            }
+            abState.lastUseTime = LogicTime.time;
+
             return true;
         }
 
@@ -315,6 +403,14 @@ namespace My.Map.Entity
             }
 
             // 世家buff
+            if(phase.PhaseBuff != null)
+            {
+                foreach(var buffId in phase.PhaseBuff)
+                {
+                    var instId = EntityOwner.BuffManager.AddBuff(EntityOwner.Id, buffId);
+                    CurrentCtx.PhaseBindBuffs.Add(instId);
+                }
+            }
 
             if (phase.LockMovement)
             {
@@ -592,6 +688,7 @@ namespace My.Map.Entity
                             newCtx.Actor = EntityOwner;
                             newCtx.CastDir = hitEntity.Pos - EntityOwner.Pos;
                             newCtx.Target = hitEntity;
+                            newCtx.Position = hitEntity.Pos;
 
                             EntityOwner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
                         }

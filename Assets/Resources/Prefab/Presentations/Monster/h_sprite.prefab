@@ -261,6 +261,7 @@ GameObject:
   - component: {fileID: 5981833247523422262}
   - component: {fileID: 8125375396503032286}
   - component: {fileID: 6397431487169124009}
+  - component: {fileID: -8185054516667358998}
   m_Layer: 12
   m_Name: h_sprite
   m_TagString: Untagged
@@ -321,7 +322,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6716341979371502919}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -363,6 +364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 2190805339782641006}
   highlightFx: {fileID: 0}
+  ViewPoint: {fileID: 0}
   faceIndicator: {fileID: 764601762911792348}
   WeaponRoot: {fileID: 7921256209700466238}
   WeaponCtrl: {fileID: 0}
@@ -370,6 +372,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   mainCol: {fileID: 0}
   freeMoveDir: {x: 0, y: 0}
+  CharacterController: {fileID: 0}
   maxTurnSpeedDegPerSec: 720
   smoothTime: 0.12
   selfRadius: 0.5
@@ -390,6 +393,34 @@ MonoBehaviour:
   wallsLayer:
     serializedVersion: 2
     m_Bits: 0
+--- !u!114 &-8185054516667358998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716341979371502919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4323e88b6a4a5fd4bbcc6661912a6709, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxMoveSpeed: 5
+  maxAccel: 20
+  damping: 0
+  enableSeparation: 1
+  separationRadius: 1
+  separationStrength: 7
+  separationDeadZone: 0.12
+  separationQueryMask:
+    serializedVersion: 2
+    m_Bits: 4096
+  separationTag: 
+  dynamicBlockQueryMask:
+    serializedVersion: 2
+    m_Bits: 0
+  nonPenPadding: 0.05
+  dynamicQueryExtra: 1
 --- !u!1 &7113165256381354715
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,8 +575,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1764243111
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: dcea51d6065d64246aeec467afeff684, type: 3}
   m_Color: {r: 1, g: 0, b: 0.6459122, a: 1}

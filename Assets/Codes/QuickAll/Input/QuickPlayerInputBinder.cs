@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Map.Logic;
 using My.Map;
+using My.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.Rendering.DebugManager;
@@ -17,6 +18,8 @@ namespace My.Input
         bool DispatchScroll(float deltaY);
 
         bool DispatchHotkey(int index);
+
+        bool DispatchSpace();
     }
 
     //public interface ISceneRouter
@@ -33,7 +36,7 @@ namespace My.Input
     {
         private MyInput actions;
 
-        private IUiRouter uiRouter;       
+        public IUiRouter uiRouter;       
 
         [SerializeField] private string overworldMapName = "OverworldMap";
         [SerializeField] private string battleMapName = "BattleMap";
@@ -50,6 +53,11 @@ namespace My.Input
             //uiRouter = FindObjectOfType<UIManagerFacade>(); // 示例：一个实现 IUiRouter 的组件/服务
             //sceneRouter = FindObjectOfType<PlayerInputAdapter>(); // 示例：把玩家操作转为场景行为
             ApplyInputMode(InputMode.Menu);
+        }
+
+        private void Start()
+        {
+            uiRouter = UIManager.Instance;
         }
 
 
@@ -84,12 +92,16 @@ namespace My.Input
             actions.OverworldMap.Move.performed += OnMove;
             actions.OverworldMap.Move.canceled += OnMove;
 
-            actions.OverworldMap.Dash.performed += OnDash;
+            actions.OverworldMap.Space.performed += OnSpace;
 
             actions.OverworldMap.Confirm.performed += OnConfirm;
             actions.OverworldMap.Cancel.performed += OnCancel;
 
             actions.OverworldMap.Scroll.performed += OnMouseScroll;
+
+
+            actions.OverworldMap.HotKey1.performed += OnHotKey1;
+            actions.OverworldMap.HotKey2.performed += OnHotKey2;
         }
 
         private void OnDisable()
@@ -97,13 +109,16 @@ namespace My.Input
             actions.OverworldMap.Move.performed -= OnMove;
             actions.OverworldMap.Move.canceled -= OnMove;
 
-            actions.OverworldMap.Dash.performed -= OnDash;
+            actions.OverworldMap.Space.performed -= OnSpace;
 
 
             actions.OverworldMap.Confirm.performed += OnConfirm;
             actions.OverworldMap.Cancel.performed += OnCancel;
 
             actions.OverworldMap.Scroll.performed -= OnMouseScroll;
+
+            actions.OverworldMap.HotKey1.performed -= OnHotKey1;
+            actions.OverworldMap.HotKey2.performed -= OnHotKey2;
 
             actions.OverworldMap.Disable();
             actions.BattleMap.Disable();
@@ -142,6 +157,26 @@ namespace My.Input
             }
         }
 
+        public void OnHotKey1(InputAction.CallbackContext ctx)
+        {
+            if (ctx.performed)
+            {
+                if (uiRouter == null || !uiRouter.DispatchHotkey(1))
+                {
+                }
+            }
+        }
+
+        public void OnHotKey2(InputAction.CallbackContext ctx)
+        {
+            if (ctx.performed)
+            {
+                if (uiRouter == null || !uiRouter.DispatchHotkey(2))
+                {
+                }
+            }
+        }
+
         public void OnCancel(InputAction.CallbackContext ctx)
         {
             if (ctx.performed)
@@ -171,24 +206,26 @@ namespace My.Input
         }
 
 
-        public void OnDash(InputAction.CallbackContext ctx)
+        public void OnSpace(InputAction.CallbackContext ctx)
         {
-
             if (ctx.performed)
             {
-                if (MainGameManager.Instance.playerScenePresenter != null)
+                if (uiRouter == null || !uiRouter.DispatchCancel())
                 {
-                    Vector2 dir = Vector2.one;
-                    if (MainGameManager.Instance.playerScenePresenter.freeMoveDir.magnitude < 0.01f)
+                    if (MainGameManager.Instance.playerScenePresenter != null)
                     {
-                        dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FaceDir;
-                    }
-                    else
-                    {
-                        dir = MainGameManager.Instance.playerScenePresenter.freeMoveDir;
-                    }
+                        Vector2 dir = Vector2.one;
+                        if (MainGameManager.Instance.playerScenePresenter.freeMoveDir.magnitude < 0.01f)
+                        {
+                            dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FaceDir;
+                        }
+                        else
+                        {
+                            dir = MainGameManager.Instance.playerScenePresenter.freeMoveDir;
+                        }
 
-                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.PlayerAbilityController.TryDash(dir);
+                        MainGameManager.Instance.playerScenePresenter.PlayerEntity.PlayerAbilityController.TryDash(dir);
+                    }
                 }
             }
         }

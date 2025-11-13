@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using My.Map.Scene;
 using My.Map;
+using My.Map.Entity;
 
 [CreateAssetMenu(fileName = "ChunkStaticDatabase", menuName = "MapExport/Chunk Static Database")]
 public class ChunkMapExportDatabase : ScriptableObject
@@ -45,6 +46,7 @@ public class ChunkMapExportDatabase : ScriptableObject
         public Vector2 FaceDir;
 
         public string BindRoomId;
+        public EFactionId OrgFactionId;
 
         public DynamicEntityAppearCond? AppearCond;
 
@@ -137,6 +139,25 @@ public class ChunkMapExportDatabase : ScriptableObject
         _namedPointMap.TryGetValue(name, out var point);
         return point;
     }
+
+    public IEnumerable<NamedPoint> GetAllDigPoints()
+    {
+        if (_namedPointMap == null)
+        {
+            BuildRuntimeMap();
+        }
+
+        foreach (var kv in _namedPointMap)
+        {
+            if(kv.Value.Name.StartsWith("dig_"))
+            {
+                continue;
+            }
+            yield return kv.Value;
+        }
+    }
+
+
     public void BuildRuntimeMap()
     {
         _prefabMap = new Dictionary<(int x, int y), List<StaticItem>>();

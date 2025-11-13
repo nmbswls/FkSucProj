@@ -167,6 +167,50 @@ namespace My.Map.Entity
                     BuffId = "unsensored",
                     DefaultDuration = -1,
                 };
+
+                _library["be_fcked"] = new BuffDefinition()
+                {
+                    BuffId = "be_fcked",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    ModifierAttrs = new() {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 } ,
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
+                    },
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.AnimOverride,
+                        ParamStr = "test",
+                    },
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = TriggerType.Tick,
+                            TriggerParam1 = 200, // Ã¿0.2ÃëÒ»´Î
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddResourceCfg()
+                                {
+                                    ResourceId = AttrIdConsts.PlayerKnockDown,
+                                    AddValue = 2,
+                                    Flags = 1,
+                                }
+                            }
+                        }
+                    },
+                    DefaultDuration = -1,
+                };
+
+                _library["jian_su_self"] = new BuffDefinition()
+                {
+                    BuffId = "jian_su_self",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.JianSu, ModifierValue = 8000 } },
+                    DefaultDuration = -1,
+                };
+
             }
 
             _library.TryGetValue(buffId, out BuffDefinition def);
@@ -586,33 +630,27 @@ namespace My.Map.Entity
         //public void Emit(GameEvent ev) => BuffEventBus.Enqueue(ev);
 
         private List<MapLogicSubscription> logicSubs = new();
+
+        private MapLogicEventAdapter adapter;
+        private List<MapLogicSubscription> subs = new();
+
         public void InitEventListening()
         {
+            if(adapter == null)
             {
-                var sub = logicManager.LogicEventBus.Subscribe(new ApplyBuffAdapter((ev) =>
+                adapter = new((ev) =>
                 {
                     BuffEventBus.Enqueue(ev);
-                }));
-
-                logicSubs.Add(sub);
+                });
             }
 
+            if(logicSubs.Count > 0)
             {
-                var sub = logicManager.LogicEventBus.Subscribe(new CommonGameEventAdapter((ev) =>
+                foreach(var sub in logicSubs)
                 {
-                    BuffEventBus.Enqueue(ev);
-                }));
-
-                logicSubs.Add(sub);
-            }
-
-            {
-                var sub = logicManager.LogicEventBus.Subscribe(new MLEUnitOnHitAdapter((ev) =>
-                {
-                    BuffEventBus.Enqueue(ev);
-                }));
-
-                logicSubs.Add(sub);
+                    logicManager.LogicEventBus.Unsubscribe(sub);
+                }
+                logicSubs.Clear();
             }
         }
 

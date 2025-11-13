@@ -1,7 +1,7 @@
 using Config;
 using Map.Logic.Events;
 using My.Map.Entity;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -70,7 +70,7 @@ namespace My.Map
         string CfgId { get; }
         EEntityType Type { get; }
 
-        EEntityCampId CampId { get; }
+        EFactionId FactionId { get; }
         bool IsActive { get; }
         Vector2 Pos { get; }
 
@@ -114,7 +114,7 @@ namespace My.Map
         public string CfgId { get; protected set; }
         public abstract EEntityType Type { get; }
 
-        public EEntityCampId CampId { get; set; }
+        public EFactionId FactionId { get; set; }
 
         public bool IsActive { get; protected set; } = true;
 
@@ -127,6 +127,8 @@ namespace My.Map
 
         public ISceneAbilityViewer? viewer; // 表现层接口
 
+        public string BelongRoomId { get; set; } = string.Empty;
+
         public LogicEntityBase(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord)
         {
             this.LogicManager = logicManager;
@@ -134,6 +136,7 @@ namespace My.Map
             this.CfgId = cfgId;
             this.Pos = orgPos;
             this.FaceDir = bindingRecord.FaceDir;
+            this.BelongRoomId = bindingRecord.BelongRoomId;
 
             BindingRecord = bindingRecord;
         }
@@ -143,7 +146,6 @@ namespace My.Map
         public virtual void Initialize()
         {
             attributeStore = new(this);
-
 
             attributeStore.EvOnStatusAttrChanged += OnStatusAttriChanged;
             attributeStore.EvOnResourceAttrChanged += OnResourceAttriChanged;
@@ -266,6 +268,11 @@ namespace My.Map
 
             LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
             {
+                Ctx = new()
+                {
+                    SourceEntity = this,
+                    HappenPos = this.Pos,
+                },
                 Name = "Death",
                 Param3 = this.Id,
                 //Param4 = src != null ? src.Id : 0,
@@ -352,9 +359,11 @@ namespace My.Map
             return false;
         }
 
+        public virtual void OnMapLogicEvent(in IMapLogicEvent evt)
+        {
+        }
+
         public Dictionary<long, BuffInstance> BuffContainer { get; protected set; } = new();
-
-
     }
 
 }

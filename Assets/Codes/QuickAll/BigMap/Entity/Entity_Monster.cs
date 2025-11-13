@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using Config;
 using Config.Map;
 using Config.Unit;
 using DG.Tweening;
 using Map.Logic.Events;
 using My.Map.Entity;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 using UnityEngine;
 using static GameLogicManager;
 
@@ -71,9 +72,18 @@ namespace My.Map
         protected override void InitAbilityController()
         {
             abilityController = new(this);
-            var fakeAbility = Resources.Load<MapAbilitySpecConfig>($"Config/Ability/Test/PuJi");
-            //var fakeAbility = AbilityLibrary.CreateDefaultMonsterAttack();
-            abilityController.RegisterAbility(fakeAbility);
+
+
+            List<string> defaultSkillList = new List<string>()
+            {
+                "default_enemy_qinfan",
+            };
+
+            foreach (var skill in defaultSkillList)
+            {
+                var conf = AbilityLibrary.GetAbilityConfig(skill);
+                abilityController.RegisterAbility(conf);
+            }
         }
     }
 }

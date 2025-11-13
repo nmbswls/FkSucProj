@@ -1,6 +1,6 @@
 using My.Map;
 using My.Map.Entity;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

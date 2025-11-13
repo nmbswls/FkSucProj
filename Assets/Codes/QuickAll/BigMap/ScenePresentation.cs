@@ -46,14 +46,15 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
         transform.localPosition = MainGameManager.Instance.GetWorldPosFromLogicPos(_logic.Pos);
         _logic.EventOnEntityMove += OnEntityMove;
 
-        UIOrchestrator.Instance.OnScenePresentationBinded(this);
+        // vieweventbus
+        SceneSmallIconLayerPanel.Instance?.OnScenePresentationBinded(this);
     }
 
     public virtual void Unbind()
     {
         _logic.EventOnEntityMove -= OnEntityMove;
 
-        UIOrchestrator.Instance.OnScenePresentationUbbind(this);
+        SceneSmallIconLayerPanel.Instance?.OnScenePresentationUbbind(this);
 
         _logic = null;
     }
@@ -93,17 +94,10 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
 
     protected virtual void LateUpdate()
     {
-
     }
 
     public bool CheckValid()
     {
         return _logic != null;
-    }
-
-
-    public void OnLogicUpdate(float logicDeltaTime)
-    {
-        Tick(logicDeltaTime);
     }
 }

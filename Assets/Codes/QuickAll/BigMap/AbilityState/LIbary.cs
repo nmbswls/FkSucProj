@@ -10,7 +10,67 @@ namespace My.Map.Entity
 {
     public static class AbilityLibrary
     {
-        public static MapAbilitySpecConfig CreateDefaultUnlockLootPoint()
+
+        public static Dictionary<string, MapAbilitySpecConfig> _abilityDict = null;
+
+        public static MapAbilitySpecConfig GetAbilityConfig(string abilityName)
+        {
+            if(_abilityDict == null)
+            {
+                _abilityDict = new();
+
+                {
+                    var ab = CreateDefaultUnlockLootPoint();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultUseLootPoint();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultUseItem();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultDash();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultShootAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultUseWeaponAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateOrRefreshZhaQu();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDeepZhaQu();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultMonsterAttack();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultEnemyQinfan();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateFixClothesAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+            }
+
+            _abilityDict.TryGetValue(abilityName, out var abConfig);
+            return abConfig;
+        }
+
+
+        private static MapAbilitySpecConfig CreateDefaultUnlockLootPoint()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
@@ -37,7 +97,7 @@ namespace My.Map.Entity
             return spec;
         }
 
-        public static MapAbilitySpecConfig CreateDefaultUseLootPoint()
+        private static MapAbilitySpecConfig CreateDefaultUseLootPoint()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
@@ -62,7 +122,7 @@ namespace My.Map.Entity
             return spec;
         }
 
-        public static MapAbilitySpecConfig CreateDefaultUseItem()
+        private static MapAbilitySpecConfig CreateDefaultUseItem()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
             spec.Id = "use_item";
@@ -94,7 +154,7 @@ namespace My.Map.Entity
             return spec;
         }
 
-        public static MapAbilitySpecConfig CreateDefaultDash()
+        private static MapAbilitySpecConfig CreateDefaultDash()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
             spec.Id = "default_dash";
@@ -122,9 +182,7 @@ namespace My.Map.Entity
             return spec;
         }
 
-
-
-        public static MapAbilitySpecConfig CreateDefaultShootAbility()
+        private static MapAbilitySpecConfig CreateDefaultShootAbility()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
@@ -177,7 +235,7 @@ namespace My.Map.Entity
             return spec;
         }
 
-        public static MapAbilitySpecConfig CreateDefaultUseWeaponAbility()
+        private static MapAbilitySpecConfig CreateDefaultUseWeaponAbility()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
@@ -240,7 +298,7 @@ namespace My.Map.Entity
         }
 
 
-        public static MapAbilitySpecConfig CreateOrRefreshZhaQu()
+        private static MapAbilitySpecConfig CreateOrRefreshZhaQu()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
@@ -314,7 +372,7 @@ namespace My.Map.Entity
             return spec;
         }
 
-        public static MapAbilitySpecConfig CreateDeepZhaQu()
+        private static MapAbilitySpecConfig CreateDeepZhaQu()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
@@ -346,12 +404,15 @@ namespace My.Map.Entity
         }
 
 
-        public static MapAbilitySpecConfig CreateDefaultMonsterAttack()
+        private static MapAbilitySpecConfig CreateDefaultMonsterAttack()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
             spec.Id = "attack";
             spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DesiredUseDistance = 0.5f;
+
+            spec.CoolDown = 2.0f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -380,8 +441,18 @@ namespace My.Map.Entity
             var newEffect = new MapAbilityEffectHitBoxCfg()
             {
                 TargetEntityType = EEntityType.Player,
-                Width = 3,
-                Length = 1,
+                Width = 1.2f,
+                Length = 1f,
+
+                OnHitEffects = new()
+                {
+                    new MapAbilityEffectCostResourceCfg()
+                    {
+                        ResourceId  = AttrIdConsts.HP,
+                        CostValue = 5,
+                        Flags = 1,
+                    }
+                }
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 
@@ -390,12 +461,15 @@ namespace My.Map.Entity
         }
 
 
-        public static MapAbilitySpecConfig CreateDefaultEnemyQinfan()
+        private static MapAbilitySpecConfig CreateDefaultEnemyQinfan()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
             spec.Id = "default_enemy_qinfan";
-            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.TypeTag = AbilityTypeTag.HMode;
+            spec.CoolDown = 6.0f;
+            spec.DesiredUseDistance = 0.8f;
+            spec.Priority = 100;
 
             var mainPhase = new MapAbilityPhase()
             {
@@ -412,37 +486,61 @@ namespace My.Map.Entity
             var hitCfg = new MapAbilityEffectHitBoxCfg();
             hitCfg.EffectType = EAbilityEffectType.HitBox;
             hitCfg.Shape = MapAbilityEffectHitBoxCfg.EShape.Square;
-            hitCfg.Width = 0.5f;
-            hitCfg.Length = 0.5f;
+            hitCfg.Width = 2f;
+            hitCfg.Length = 2f;
+            hitCfg.TargetEntityType = EEntityType.Player;
 
             {
-                var ifBranch = new MapAbilityEffectIfBranchCfg();
-                ifBranch.CheckType = MapAbilityEffectIfBranchCfg.ECheckType.AttrGreater;
-                ifBranch.Param1 = AttrIdConsts.NoSelect;
-                ifBranch.Param3 = 0;
 
-                ifBranch.TrueBranchEffects = new();
-                var trueEffect = new MapAbilityEffectCostResourceCfg();
-                trueEffect.ResourceId = AttrIdConsts.HP;
-                trueEffect.CostValue = 5;
-                trueEffect.Flags = 1;
+                var failEffect = new MapAbilityEffectCostResourceCfg();
+                failEffect.ResourceId = AttrIdConsts.HP;
+                failEffect.CostValue = 5;
+                failEffect.Flags = 1;
 
-                ifBranch.TrueBranchEffects.Add(trueEffect);
+                var throwEffect = new MapAbilityEffectThrowStartCfg();
 
-                ifBranch.FalseBranchEffects = new();
-                var falseEffect = new MapAbilityEffectThrowStartCfg();
-
-                falseEffect.ThrowMainBuffId = "qinfaning";
-                falseEffect.Priority = 1;
-                falseEffect.Duration = 2.0f;
-
-                ifBranch.FalseBranchEffects.Add(falseEffect);
+                throwEffect.ThrowMainBuffId = "be_fcked";
+                throwEffect.Priority = 1;
+                throwEffect.Duration = 2.0f;
+                throwEffect.ThrowFailEffect = failEffect;
 
 
-                hitCfg.OnHitEffects = new() { ifBranch };
+                hitCfg.OnHitEffects = new() { throwEffect };
             }
 
-            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnEnter });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnExit });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateFixClothesAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "fix_clothes";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "2"
+                },
+            };
+
+
+            var effect = new MapAbilityEffectAddResourceCfg()
+            {
+                ResourceId = AttrIdConsts.PlayerClothes,
+                AddValue = 80000,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
 
             spec.Phases.Add(mainPhase);
             return spec;

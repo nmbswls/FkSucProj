@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Map.Entity;
 using Map.Scene;
+using My.Map.Scene;
 using UnityEngine;
 
 public class TestPlayer : MonoBehaviour

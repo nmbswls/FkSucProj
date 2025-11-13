@@ -13,11 +13,42 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
-        public void InitFromDrop(long dropId/*, System.Action<int, GameObject> onPicked*/)
+        public Vector2? SrcPos;
+        public Vector2 DropPos;
+        public bool IsFlying;
+
+        public void InitFromDrop(long dropId, Vector2 dropPos,  Vector3? srcPos/*, System.Action<int, GameObject> onPicked*/)
         {
             this.DropId = dropId;
+            this.DropPos = dropPos;
+            this.SrcPos = srcPos;
+
+            if (srcPos != null)
+            {
+                IsFlying = true;
+                transform.position = srcPos.Value;
+            }
+            else
+            {
+                IsFlying = false;
+            }
+
             //_particleIndex = particleIndex;
             //_onPicked = onPicked;
+        }
+
+        public void Update()
+        {
+            if(IsFlying && SrcPos != null)
+            {
+                transform.position = Vector2.Lerp(transform.position, DropPos, 0.5f * Time.deltaTime);
+                Vector2 pos2 = transform.position;
+
+                if ((DropPos - pos2).magnitude < 0.01f)
+                {
+                    IsFlying = false;
+                }
+            }
         }
 
 
@@ -43,6 +74,10 @@ namespace My.Map.Scene
 
         public bool CanInteractEnable()
         {
+            if (IsFlying)
+            {
+                return false;
+            }
             return true;
         }
     }

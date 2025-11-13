@@ -38,9 +38,10 @@ namespace My.Map.Scene
         public Collider2D mainCol;
 
         public Vector2 freeMoveDir;
-        private float acceleration = 20.0f;
+        private float acceleration = 99.0f;
         private float externalDecay = 30f;          // 外力自然衰减（每秒）
 
+        public SimpleCharacterController CharacterController;
 
         public BaseUnitLogicEntity UnitEntity
         {
@@ -62,6 +63,7 @@ namespace My.Map.Scene
                 rb = GetComponent<Rigidbody2D>();
             }
 
+
             rb.gravityScale = 0f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             rb.interpolation = RigidbodyInterpolation2D.Interpolate;
@@ -79,12 +81,19 @@ namespace My.Map.Scene
                 navAgent.updatePosition = false;
                 navAgent.updateRotation = false;
             }
+
+            if(!CharacterController)
+            {
+                CharacterController = GetComponent<SimpleCharacterController>();
+            }
         }
 
         private float _tickMoveStateTimer;
 
         public override void Tick(float dt)
         {
+            if (_logic == null) return;
+
             if (navAgent != null)
             {
                 navAgent.nextPosition = rb.position;
@@ -111,7 +120,14 @@ namespace My.Map.Scene
                 // 优先让受控移动生效
                 if (UnitEntity.targettedMoveIntent != null && UnitEntity.targettedMoveIntent.targettedDesireDir != null)
                 {
-                    targetMoveVel = UnitEntity.targettedMoveIntent.targettedDesireDir * currMoveSpeed;
+                    if((UnitEntity.targettedMoveIntent.MoveTarget - UnitEntity.Pos).magnitude < 0.05f)
+                    {
+                        targetMoveVel = Vector2.zero;
+                    }
+                    else
+                    {
+                        targetMoveVel = UnitEntity.targettedMoveIntent.targettedDesireDir * currMoveSpeed;
+                    }
                 }
                 else
                 {
@@ -153,6 +169,11 @@ namespace My.Map.Scene
             }
 
             UpdateFaceDirIndicator();
+
+            if(CharacterController)
+            {
+                CharacterController.DesiredVel = UnitEntity.activeMoveVec + UnitEntity.externalVel;
+            }
         }
 
 
@@ -165,7 +186,7 @@ namespace My.Map.Scene
             {
                 return;
             }
-            _updateVisibleTimer = 0.4f;
+            _updateVisibleTimer = 0.2f;
             if (MainGameManager.Instance.playerScenePresenter == null)
             {
                 return;
@@ -209,11 +230,11 @@ namespace My.Map.Scene
                 var followEntity = UnitEntity.LogicManager.AreaManager.GetLogicEntiy(this.UnitEntity.FollowPatrolId) as PatrolGroupLogicEntity;
                 if (followEntity == null)
                 {
-                    return UnitEntity.moveSpeed;
+                    return UnitEntity.GetCurrSpeed();
                 }
                 return followEntity.MoveSpeed;
             }
-            return UnitEntity.moveSpeed;
+            return UnitEntity.GetCurrSpeed();
         }
 
         protected override void LateUpdate()
@@ -348,7 +369,7 @@ namespace My.Map.Scene
             //var clamped = GetClampedMoveVelocity();
             var delta = UnitEntity.activeMoveVec * Time.deltaTime;
             Vector2 pos = rb.position;
-            rb.MovePosition(pos + delta);
+            //rb.MovePosition(pos + delta);
 
             //FixDynamicBlock();
         }

@@ -1,4 +1,6 @@
 
+using My.Map.Entity;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,10 +25,11 @@ namespace My.UI
 
         public BottomProgressPanel bottomProgressPanel;
 
-
+        public TextMeshProUGUI PlayerHpText;
         public override void Setup(object data = null)
         {
             bottomProgressPanel = GetComponentInChildren<BottomProgressPanel>();
+            bottomProgressPanel.gameObject.SetActive(false);
             //BottomProgressPanel.Setup();
         }
 
@@ -36,11 +39,32 @@ namespace My.UI
         public bool OnConfirm() => false;
         public bool OnCancel() => false;
         public bool OnNavigate(Vector2 dir) => false;
-        public bool OnHotkey(int index) => false;
+        public bool OnHotkey(int index)
+        {
+
+            if (index == 1)
+            {
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("fix_clothes");
+            }
+            else if (index == 2)
+            {
+
+            }
+
+            return false;
+        }
 
         public bool OnScroll(float deltaY)
         {
             return false;
+        }
+
+        public void Update()
+        {
+            if(MainGameManager.Instance.playerScenePresenter != null)
+            {
+                PlayerHpText.text = MainGameManager.Instance.playerScenePresenter.PlayerEntity.GetAttr(AttrIdConsts.HP).ToString();
+            }
         }
 
         #region bottom hud
@@ -62,6 +86,10 @@ namespace My.UI
             bottomProgressPanel.TryCancelProgressComplete(showId);
         }
 
+        public bool OnSpace()
+        {
+            return false;
+        }
 
         #endregion
     }

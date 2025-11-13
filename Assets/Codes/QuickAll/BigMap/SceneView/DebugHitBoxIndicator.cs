@@ -7,12 +7,18 @@ public class DebugHitBoxIndicator : MonoBehaviour
     public enum Shape { Rect, Circle, Capsule }
 
     // 统一入口：XY平面，Z=0
-    public static void Draw(Shape shape, Vector2 center, Vector2 size, Color color, float duration = 0.25f, int segments = 20, float angleDeg = 0f)
+    public static void Draw(Shape shape, Vector2 center, Vector2 size, Color color, float duration = 0.25f, int segments = 20, Vector2? dir = null)
     {
         switch (shape)
         {
             case Shape.Rect:
-                DrawRect(center, size, color, duration);
+                // 画矩形（size=宽高）
+                float angleDeg = 0f;
+                if (dir != null)
+                {
+                    angleDeg = Mathf.Atan2(dir.Value.y, dir.Value.x) * Mathf.Rad2Deg;
+                }
+                DrawRect(center, size, color, duration, angleDeg);
                 break;
             case Shape.Circle:
                 DrawCircle(center, size.x, color, duration, segments);
@@ -111,15 +117,16 @@ public class DebugHitBoxIndicator : MonoBehaviour
         var go = new GameObject("[Debug2DLine]");
         var lr = go.AddComponent<LineRenderer>();
         lr.useWorldSpace = true;
-        lr.material = new Material(Shader.Find("Sprites/Default"));
+        lr.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
         lr.startColor = col;
         lr.endColor = col;
-        lr.startWidth = 0.02f;
-        lr.endWidth = 0.02f;
+        lr.startWidth = 0.05f;
+        lr.endWidth = 0.05f;
         lr.numCornerVertices = 2;
         lr.numCapVertices = 2;
         lr.alignment = LineAlignment.View;
         lr.textureMode = LineTextureMode.Stretch;
+        lr.sortingLayerName = "Normal";
         return go;
     }
 

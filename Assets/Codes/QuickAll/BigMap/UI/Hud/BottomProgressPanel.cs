@@ -20,7 +20,7 @@ namespace My.UI
         #region ²ÎÊý
 
         public long playingShowId;
-        public float TargetProgress = 0.3f;
+        public float TargetProgress;
         public string HintText;
 
         #endregion
@@ -35,6 +35,8 @@ namespace My.UI
 
         public void Update()
         {
+
+
             if (isFading)
             {
                 fadingTimer -= Time.deltaTime;
@@ -51,15 +53,19 @@ namespace My.UI
             }
 
 
-            if (TargetProgress < 0)
+            
+            if(isPlaying)
             {
-                return;
-            }
-            valCounter += Time.deltaTime;
-            ProgressBar.fillAmount = valCounter / TargetProgress;
-            if (valCounter >= TargetProgress)
-            {
-                OnProgressComplete();
+                if (TargetProgress < 0)
+                {
+                    return;
+                }
+                valCounter += Time.deltaTime;
+                ProgressBar.fillAmount = valCounter / TargetProgress;
+                if (valCounter >= TargetProgress)
+                {
+                    OnProgressComplete();
+                }
             }
         }
 

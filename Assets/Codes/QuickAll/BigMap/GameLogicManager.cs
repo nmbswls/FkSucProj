@@ -4,7 +4,7 @@ using Map.Drop;
 using Map.Logic.Events;
 using My.Map;
 using My.Map.Entity;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 using My.Player;
 using My.UI;
 using SuperScrollView;
@@ -19,15 +19,6 @@ public static class GameConsts
     public static int ChunkCellSize = 32;
 }
 
-public enum EEntityCampId
-{ 
-    Neutral = 0,
-    Player = 1,
-    Ally = 2,
-    Citizen = 3,
-    Beast = 4,
-    Ghost = 10,
-}
 
 
 public interface ILogicEntityFactory
@@ -101,9 +92,9 @@ public class GameLogicManager : ILogicEntityFactory
     }
 
 
-    public ILogicEntity GetLogicEntity(long instId)
+    public ILogicEntity GetLogicEntity(long instId, bool ensureExist = true)
     {
-        return AreaManager.GetLogicEntiy(instId);
+        return AreaManager.GetLogicEntiy(instId, ensureExist);
     }
 
     /// <summary>
@@ -439,11 +430,6 @@ public class GameLogicManager : ILogicEntityFactory
     {
         var executor = GetLogicFightEffectExecutor(effectConf);
         executor?.Apply(effectConf, effectCtx);
-    }
-
-    public void OnLogicUpdate(float logicDeltaTime)
-    {
-        Tick(logicDeltaTime);
     }
 }
 

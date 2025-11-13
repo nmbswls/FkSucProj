@@ -181,15 +181,9 @@ namespace My.Map.Entity
             // 通过hitbox 找到目标
             if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
             {
-                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(ctx.Actor.Pos, ctx.CastDir.Value, new Vector2(realCfg.Width, realCfg.Length), realCfg.FilterParams);
-
-                // 画矩形（size=宽高）
-                float angleDeg = 0f;
-                if (ctx.CastDir != null)
-                {
-                    angleDeg = Mathf.Atan2(ctx.CastDir.Value.y, ctx.CastDir.Value.x) * Mathf.Rad2Deg;
-                }
-                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, ctx.Position.Value, new Vector2(realCfg.Width, realCfg.Length), Color.red, 0.3f, angleDeg: angleDeg);
+                var realCenter = ctx.Actor.Pos + ctx.CastDir.Value * realCfg.Length * 0.5f;
+                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, ctx.CastDir.Value, new Vector2(realCfg.Width, realCfg.Length), realCfg.FilterParams);
+                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir:ctx.CastDir);
             }
             else if(realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Circle)
             {
@@ -214,7 +208,7 @@ namespace My.Map.Entity
                         newCtx.Actor = ctx.Actor;
                         newCtx.CastDir = ctx.CastDir;
                         newCtx.Target = candidate;
-                        ctx.Env.HandleLogicFightEffect(e, ctx);
+                        ctx.Env.HandleLogicFightEffect(e, newCtx);
                     }
                 }
             }

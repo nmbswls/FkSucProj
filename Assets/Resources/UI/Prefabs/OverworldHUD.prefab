@@ -177,6 +177,7 @@ MonoBehaviour:
   layer: 1
   canvasGroup: {fileID: 2470184966518924316}
   bottomProgressPanel: {fileID: 1694354168929897967}
+  PlayerHpText: {fileID: 8055299105933376148}
 --- !u!225 &2470184966518924316
 CanvasGroup:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ using Config.Map;
 using System.Collections.Generic;
 using System;
 using Map.Logic;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 
 
 namespace My.Map

@@ -11,23 +11,22 @@ namespace My.Map
     public class DefaultNpcAbilityController : MapEntityAbilityController
     {
         // 预设程序生成行为
+        public List<string> DefaultSkillList = new List<string>()
+        {
+            "player_shoot",
+            "player_weapon",
+            "default_enemy_qinfan",
+        };
 
         public DefaultNpcAbilityController(BaseUnitLogicEntity owner) : base(owner)
         {
+            foreach (var skill in DefaultSkillList)
             {
-                var _shoot = AbilityLibrary.CreateDefaultShootAbility();
-                RegisterAbility(_shoot);
-            }
-
-            {
-                var _slash = AbilityLibrary.CreateDefaultUseWeaponAbility();
-                RegisterAbility(_slash);
-            }
-            {
-                var qinfan = AbilityLibrary.CreateDefaultEnemyQinfan();
-                RegisterAbility(qinfan);
+                var conf = AbilityLibrary.GetAbilityConfig(skill);
+                RegisterAbility(conf);
             }
         }
 
     }
+
 }

@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System;
 using static UnityEditor.Progress;
 using My.Player.Bag;
-using My.Map.Logic.Chunk;
+using Map.Logic.Events;
+using My.Map.Logic;
 
 
 namespace My.Map
@@ -140,6 +141,23 @@ namespace My.Map
 
             LogicManager.viewer.ShowFakeFxEffect("搜！", Pos);
             EventOnLootPointUsed?.Invoke(this);
+
+            // 抛出事件
+            if(this.FactionId != Entity.EFactionId.None)
+            {
+                LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+                {
+                    Ctx = new()
+                    {
+                        HappenPos = Pos,
+                        SourceEntity = LogicManager.playerLogicEntity,
+                    },
+                    Name = "Loot",
+                    Param3 = (long)this.FactionId, // 被偷的阵营
+                    Param5 = this.BelongRoomId, // 被偷的房间
+                });
+            }
+            
         }
 
         public void Add(ItemStack s)

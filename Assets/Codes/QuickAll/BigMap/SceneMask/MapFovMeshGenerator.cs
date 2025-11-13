@@ -73,7 +73,6 @@ namespace My.Map.Scene
 
         public GameObject CircleFovShape;
         public MeshFilter FovShapeMesh;
-        public Image SceneMask;
 
         public float viewRadius = 8f;
         public float fovDegrees = 90f;
@@ -101,7 +100,6 @@ namespace My.Map.Scene
 
         private void Update()
         {
-            //transform.position = MainGameManager.Instance.playerScenePresenter.ViewPoint.position;
         }
         public void OnAreaEnter()
         {
@@ -113,6 +111,11 @@ namespace My.Map.Scene
 
         void LateUpdate()
         {
+            if(MainGameManager.Instance.playerScenePresenter.PlayerEntity == null)
+            {
+                return;
+            }
+
             var playerFaceDir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FaceDir;
             float angle = Mathf.Atan2(playerFaceDir.y, playerFaceDir.x) * Mathf.Rad2Deg; // ”Î +X ÷·º–Ω«
             orientationDegrees = angle;
@@ -132,17 +135,6 @@ namespace My.Map.Scene
             if (needUpdate)
             {
                 ComputeAndRender();
-            }
-
-            if(!NeedMask || segmentProvider == null)
-            {
-                SceneMask.gameObject.SetActive(false);
-                //CircleFovShape.SetActive(false);
-            }
-            else
-            {
-                SceneMask.gameObject.SetActive(true);
-                //CircleFovShape.SetActive(true);
             }
         }
 

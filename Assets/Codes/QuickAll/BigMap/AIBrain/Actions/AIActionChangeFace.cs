@@ -12,27 +12,27 @@ namespace My.Map.Entity.AI.Action
         [NonSerialized]
         protected float _lastFaceTickTime;
 
-        public override float RateScore(MapUnitAIBrain aIBrain)
+        public override float RateScore()
         {
             return 1;
         }
 
-        public override void Start(MapUnitAIBrain aIBrain)
+        public override void Start()
         {
-            base.Start(aIBrain);
+            base.Start();
         }
 
-        public override void Tick(MapUnitAIBrain aIBrain)
+        public override void Tick()
         {
-            if(aIBrain.blackboard.Time - _lastFaceTickTime < ChangeFaceInterval)
+            if(LogicTime.time - _lastFaceTickTime < ChangeFaceInterval)
             {
                 return;
             }
 
-            aIBrain.UnitEntity.FaceDir = UnityEngine.Random.insideUnitCircle.normalized;
+            _brain.UnitEntity.FaceDir = UnityEngine.Random.insideUnitCircle.normalized;
         }
 
-        public override void Stop(MapUnitAIBrain aIBrain, AIActionStatus endStatus)
+        public override void Stop(AIActionStatus endStatus)
         {
             if (Status == AIActionStatus.Idle) return;
             Status = endStatus;

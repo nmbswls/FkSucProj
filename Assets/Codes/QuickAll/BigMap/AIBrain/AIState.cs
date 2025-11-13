@@ -73,7 +73,7 @@ namespace My.Map.Entity.AI
             float bestScore = float.NegativeInfinity;
             foreach (var s in Actions)
             {
-                float u = s.RateScore(_brain);
+                float u = s.RateScore();
                 if (u <= 0) continue;
                 float score = u;
                 if (score > bestScore) { bestScore = score; best = s; }
@@ -86,9 +86,9 @@ namespace My.Map.Entity.AI
             for (int i = _running.Count - 1; i >= 0; --i)
             {
                 var a = _running[i];
-                if (a.CanInterrupt(_brain, reason, hard))
+                if (a.CanInterrupt(reason, hard))
                 {
-                    a.Stop(_brain, AIActionStatus.Interrupted);
+                    a.Stop(AIActionStatus.Interrupted);
                     _running.RemoveAt(i);
                 }
             }
@@ -101,7 +101,7 @@ namespace My.Map.Entity.AI
         {
             for (int i = _running.Count - 1; i >= 0; --i)
             {
-                _running[i].Tick(_brain);
+                _running[i].Tick();
             }
 
             for (int i = _running.Count - 1; i >= 0; --i)
@@ -121,7 +121,7 @@ namespace My.Map.Entity.AI
                         TryInterruptAllActions(hard: true, reason: "Exclusive");
                         _running.Clear();
                     }
-                    chosen.Start(_brain);
+                    chosen.Start();
                     _running.Add(chosen);
                 }
             }

@@ -16,7 +16,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Dash",
+                    "name": "Space",
                     "type": "Button",
                     "id": "f133e660-5df9-4900-9863-9f0b398e0a63",
                     "expectedControlType": "",
@@ -46,6 +46,24 @@
                     "name": "Cancel",
                     "type": "Button",
                     "id": "11164e59-4143-4abd-9492-e5c9fb5a4776",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HotKey1",
+                    "type": "Button",
+                    "id": "bebf113c-c49f-49ca-b718-a5f2f6bdc1ef",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HotKey2",
+                    "type": "Button",
+                    "id": "a01678c3-c5ae-4876-9d6a-34a290a99ca0",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -115,7 +133,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Dash",
+                    "action": "Space",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -149,6 +167,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f4cb87ac-c19b-4eb0-8cb6-9b43d9d4ad25",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "22ca282d-02d8-4282-8929-d9e9d63a8800",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey2",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

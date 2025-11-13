@@ -9,6 +9,7 @@ namespace My.Map.Entity
     public static class AttrIdConsts
     {
         public const string Attack = "Attack";
+        public const string JianSu = "JianSu";
 
         public const string HP = "HP";
         public const string HP_MAX = "HP.Max";
@@ -22,6 +23,7 @@ namespace My.Map.Entity
         public const string PlayerYinNeng = "PlayerYinNeng";
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes";
+        public const string PlayerKnockDown = "PlayerKnockDown";
 
         public const string PlayerNaiLi = "PlayerNaiLi";
         public const string PlayerNaiLi_Recovery = "PlayerNaiLi.Recovery";

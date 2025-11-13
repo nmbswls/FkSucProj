@@ -113,6 +113,7 @@ namespace My.UI
         private void ShowDirectInteractMenuOnObj(ISceneInteractable interactObj)
         {
             this.ChooseObjMenu.gameObject.SetActive(false);
+            ChooseInteractMenu.gameObject.SetActive(true);
 
             this.ShowStatus = EShowStatus.ShowInteract;
             this.currBindPoint = interactObj;
@@ -132,7 +133,6 @@ namespace My.UI
             ChooseInteractMenu.transform.localPosition = localPos;
 
             ChooseInteractMenu.SetData(new List<string>(selections));
-            ChooseInteractMenu.gameObject.SetActive(true);
         }
 
 
@@ -275,6 +275,10 @@ namespace My.UI
             //
         }
 
+        public bool OnSpace()
+        {
+            return false;
+        }
     }
 
 }

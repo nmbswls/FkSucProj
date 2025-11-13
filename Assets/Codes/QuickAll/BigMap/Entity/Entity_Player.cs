@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using My.Map.Entity;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 using UnityEngine;
 
 
@@ -39,6 +39,31 @@ namespace My.Map
             TickAddAuraHVal(dt);
         }
 
+        protected override void InitAttribute()
+        {
+            // 数值类
+            attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
+            attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
+
+
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, 100);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100);
+
+            // 资源类
+            attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 0);
+            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 3);
+
+            attributeStore.Commit();
+        }
+
+
+
         public float applyHValTimer;
 
         protected override void InitAbilityController()
@@ -67,7 +92,7 @@ namespace My.Map
                             {
                                 FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
                                 CampFilterType = ECampFilterType.NotSelf,
-                                SelfCampId = EEntityCampId.Player,
+                                SelfCampId = EFactionId.Player,
                             };
 
                             var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 5, filterParam);
@@ -142,7 +167,7 @@ namespace My.Map
             {
                 FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
                 CampFilterType = ECampFilterType.NotSelf,
-                SelfCampId = EEntityCampId.Player,
+                SelfCampId = EFactionId.Player,
             });
 
             var effect = new MapAbilityEffectAddResourceCfg()
@@ -173,6 +198,9 @@ namespace My.Map
         #endregion
 
 
+        protected override void UpdateNoticeInfo()
+        {
+        }
     }
 }
 

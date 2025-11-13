@@ -14,7 +14,7 @@ namespace My.UI
         void Teardown();
         bool IsVisible { get; }
         string PanelId { get; }
-        int Layer { get; }
+        UILayer Layer { get; set; }
     }
 
     public interface IRefreshable { void Refresh(); }
@@ -27,6 +27,8 @@ namespace My.UI
         bool OnHotkey(int index);
 
         bool OnScroll(float deltaY);
+
+        bool OnSpace();
     }
 
     public interface IFocusable
@@ -38,11 +40,11 @@ namespace My.UI
     public abstract class PanelBase : MonoBehaviour, IPanel, IFocusable
     {
         [SerializeField] protected string panelId;
-        [SerializeField] protected UILayer layer = UILayer.HUD;
+        protected UILayer layer = UILayer.HUD;
         [SerializeField] protected CanvasGroup canvasGroup;
 
         public string PanelId => panelId;
-        public int Layer => (int)layer;
+        public UILayer Layer { get { return layer; } set { layer = value; } }
         public virtual bool IsVisible { get; protected set; }
         public virtual bool CanFocus => IsVisible;
         public virtual int FocusPriority => 0;

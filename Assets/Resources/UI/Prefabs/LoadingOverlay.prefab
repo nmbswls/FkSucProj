@@ -92,7 +92,7 @@ MonoBehaviour:
   panelId: LoadingOverlay
   layer: 1
   canvasGroup: {fileID: 0}
-  loadingText: {fileID: 0}
+  loadingText: {fileID: 3061778567489586202}
 --- !u!1 &3134952794837881351
 GameObject:
   m_ObjectHideFlags: 0

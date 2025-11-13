@@ -1,7 +1,7 @@
 using Config.Unit;
 using Config;
 using UnityEngine;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 
 
 namespace My.Map

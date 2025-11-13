@@ -66,7 +66,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
                 {
                     if(filter.Value.CampFilterType == ECampFilterType.NotSelf)
                     {
-                        if(entity.CampId == filter.Value.SelfCampId)
+                        if(entity.FactionId == filter.Value.SelfCampId)
                         {
                             continue;
                         }
@@ -109,7 +109,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
                 {
                     if (filter.Value.CampFilterType == ECampFilterType.NotSelf)
                     {
-                        if (entity.CampId == filter.Value.SelfCampId)
+                        if (entity.FactionId == filter.Value.SelfCampId)
                         {
                             continue;
                         }

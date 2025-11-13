@@ -18,7 +18,12 @@ MonoBehaviour:
   MoveSpeed: 5
   IsPeace: 0
   CombatStretegyTemplateId: 
+  HasHMode: 1
+  AlwaysHMode: 1
   AITemplateMode: Warrior
   AITemplateName: SpriteGhost
+  DefaultFactionId: 6
   Hp: 100
-  SkillList: []
+  SkillList:
+  - default_enemy_qinfan
+  DropId: 

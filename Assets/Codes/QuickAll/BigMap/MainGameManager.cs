@@ -6,6 +6,7 @@ using Map.SmallGame.Zha;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Logic;
 using My.Map.Scene;
 using My.UI;
 using System;
@@ -14,13 +15,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
+using static UnityEngine.UI.ContentSizeFitter;
 
 
 public enum ECampFilterType
 { 
     All,
     NotSelf,
-    OnlyCityzon,
+    OnlySelf,
 }
 
 
@@ -30,7 +33,8 @@ public struct EntityFilterParam
     public List<EEntityType> FilterParamLists;
 
     public ECampFilterType CampFilterType;
-    public EEntityCampId SelfCampId;
+    public EFactionId SelfCampId;
+    public int FactionMask;
 
     public bool NeedEnmity;
     public bool NeedFriendly;
@@ -50,6 +54,8 @@ public interface IVisionSenser2D
 
 public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 {
+    public static float OrderFactor = 100f;
+
     public static MainGameManager Instance;
 
 
@@ -73,6 +79,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public QuickPlayerInputBinder inputBinder;
 
+    public CameraFollow CameraCtrl;
+
     private void Awake()
     {
         Instance = this;
@@ -88,7 +96,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         interactSystem = new();
     }
 
-    public void InitStartGame(string startParams, Action? onComplete)
+    public async Task InitStartGame(string startParams, Action? onComplete)
     {
         gameLogicManager = new();
         gameLogicManager.viewer = this;
@@ -106,7 +114,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         };
 
         // 
-        _ = LoadGameMain();
+        await LoadGameMain();
     }
 
 
@@ -120,6 +128,10 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         // 逻辑上将玩家放入场景
         await gameLogicManager.PlayerEnterArea(initMap);
 
+        var playerGo = Resources.Load<GameObject>("Prefab/Presentations/FakePlayer");
+        var newGo = GameObject.Instantiate(playerGo, transform);
+        playerScenePresenter = newGo.GetComponent<PlayerScenePresenter>();
+
         bool loaded = false;
         WorldAreaManager.Instance.LoadWorld(areaInfo, onComplete: (w) => { loaded = true; });
 
@@ -128,6 +140,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             await Task.Yield();
         }
+
+        await Task.Delay(500);
 
         playerScenePresenter.Bind(gameLogicManager.playerLogicEntity);
 
@@ -141,46 +155,57 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld, null);
 
+        CameraCtrl.Target = this.playerScenePresenter.ViewPoint;
+
         gameLogicManager.Initialized = true;
         UIManager.Instance.HideLoading();
     }
 
     void Update()
     {
-        interactSystem.Tick(LogicTime.deltaTime);
-        gameLogicManager.Tick(LogicTime.deltaTime);
-
-        if(!IsMouseOnUIOrBlock())
+        if(gameLogicManager.Initialized)
         {
-            Vector3 playerScreenPos = Camera.main.WorldToScreenPoint(playerScenePresenter.transform.position);
-            var castDir = (Input.mousePosition - playerScreenPos).normalized;
+            gameLogicManager.Tick(LogicTime.deltaTime);
+            interactSystem.Tick(LogicTime.deltaTime);
 
-            if ((playerScreenPos - Input.mousePosition).magnitude < 1e-1)
+            if (!IsMouseOnUIOrBlock() && !LogicTime.paused)
             {
-                return;
+                Vector3 playerScreenPos = Camera.main.WorldToScreenPoint(playerScenePresenter.transform.position);
+                var castDir = (Input.mousePosition - playerScreenPos).normalized;
+
+                if ((playerScreenPos - Input.mousePosition).magnitude < 1e-1)
+                {
+                    return;
+                }
+                gameLogicManager.playerLogicEntity.FaceDir = castDir;
+                if (Input.GetMouseButtonDown(0))
+                {
+                    gameLogicManager.playerLogicEntity.PlayerAbilityController.TryShoot(castDir);
+                }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    gameLogicManager.playerLogicEntity.PlayerAbilityController.TrySlash(castDir);
+                }
             }
-            gameLogicManager.playerLogicEntity.FaceDir = castDir;
-            if (Input.GetMouseButtonDown(0))
+
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.M))
             {
-                gameLogicManager.playerLogicEntity.PlayerAbilityController.TryShoot(castDir);
-            }
-            else if(Input.GetMouseButtonDown(1))
-            {
-                gameLogicManager.playerLogicEntity.PlayerAbilityController.TrySlash(castDir);
+                gameLogicManager.CreateNewEntityRecord(new LogicEntityRecord4UnitBase()
+                {
+                    Id = ++GameLogicManager.LogicEntityIdInst,
+                    EntityType = EEntityType.Monster,
+                    CfgId = "h_sprite",
+                    Position = playerScenePresenter.transform.position + new Vector3(1, 1, 0),
+                    FactionId = EFactionId.HSprite,
+                    AlwaysActive =  true,
+
+                    IsPeace = false,
+                    ActMode = BaseUnitLogicEntity.EUnitMoveActMode.Hunting,
+                    EnmityMode = BaseUnitLogicEntity.EUnitEnmityMode.Always,
+                });
             }
         }
-
-        if(Input.GetKeyDown(KeyCode.F))
-        {
-            //gameLogicManager.AreaManager.RegisterEntityRecord(new LogicEntityRecord()
-            //{
-
-
-
-            //});
-        }
-
-        
     }
 
 
@@ -296,7 +321,12 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public void DoDeepZhaquSmallGame(long targetUnitId, object extraParam)
     {
         LogicTime.ReleasePause("deep");
-        DeepZhaQuSmallGameManager.Instance.InitializeGame(targetUnitId, 0.2f, 4f);
+
+        var retPanel = UIManager.Instance.ShowPanel("DeepZhaQuMiniGame") as DeepZhaQuMiniGamePanel;
+        if(retPanel != null)
+        {
+            retPanel.InitializeGame(targetUnitId, 0.2f, 4f);
+        }
     }
 
     public void OnSmallGameFinish(long targetUnitId, bool success, object resultInfo)
@@ -310,14 +340,22 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             if (entity != null && entity is BaseUnitLogicEntity unitEntity)
             {
                 unitEntity.ApplyResourceChange(AttrIdConsts.DeepZhaChance, -1, true, null);
-                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(0.3f, 0.3f), true);
-                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.3f, 0.1f), true);
-                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.1f, 0.6f), true);
+                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(0.3f, 0.3f), true, unitEntity.Pos);
+                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.3f, 0.1f), true, unitEntity.Pos);
+                gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.1f, 0.6f), true, unitEntity.Pos);
+
+                if(UnityEngine.Random.Range(0, 10000) < 2000)
+                {
+                    Debug.Log("OnSmallGameFinish deep zha create dig.");
+                    gameLogicManager.AreaManager.CreateOneDig(entity.Pos, "dig_01", "dig_treasure");
+                }
             }
         }
         else
         {
 
         }
+
+        UIManager.Instance.HidePanel("DeepZhaQuMiniGame");
     }
 }

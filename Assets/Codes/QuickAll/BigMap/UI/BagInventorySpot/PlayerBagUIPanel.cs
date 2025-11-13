@@ -37,9 +37,8 @@ namespace My.UI.Bag
         private bool markDirty = false;
         private void Awake()
         {
-            GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
             GridView.InitGridView(0, OnGetItemByIndex);
-
+            GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
             //gameObject.SetActive(false);
         }
 
@@ -157,6 +156,11 @@ namespace My.UI.Bag
         }
 
         public bool OnScroll(float deltaY)
+        {
+            return false;
+        }
+
+        public bool OnSpace()
         {
             return false;
         }

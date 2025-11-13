@@ -305,6 +305,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   mainCol: {fileID: 0}
   freeMoveDir: {x: 0, y: 0}
+  CharacterController: {fileID: 0}
   maxTurnSpeedDegPerSec: 720
   smoothTime: 0.12
   selfRadius: 0.5
@@ -372,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4323e88b6a4a5fd4bbcc6661912a6709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  maxMoveSpeed: 5
   maxAccel: 20
   damping: 0
   enableSeparation: 1
@@ -398,6 +399,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9010000572920847535}
   - component: {fileID: 2190805339782641006}
+  - component: {fileID: 6205218357475561050}
   m_Layer: 12
   m_Name: View
   m_TagString: Untagged
@@ -458,8 +460,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1764243111
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d4a1388a0d4ee9c44bcaa86e463a7b39, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -472,6 +474,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6205218357475561050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8366468597654593165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85c7f7b8e20d1747be4db8cb4f9222e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseOrder: 0
+  pivot: {fileID: 8552881982338698837}
 --- !u!1 &8382057146089460455
 GameObject:
   m_ObjectHideFlags: 0

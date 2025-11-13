@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Map.Scene
+namespace My.Map.Scene
 {
 
     public class SimpleCharacterController : MonoBehaviour
     {
         [Header("Agent")]
-        public float moveSpeed = 5f;
+        public float maxMoveSpeed = 5f;
         public float maxAccel = 20f;
         public float damping = 0f;              // 线性阻尼（可选）
 
@@ -60,8 +60,8 @@ namespace Map.Scene
             {
                 Vector2 sepVel = ComputeSeparationVelocity();
                 finalDesiredVel += sepVel;
-                if (finalDesiredVel.magnitude > moveSpeed)
-                    finalDesiredVel = finalDesiredVel.normalized * moveSpeed;
+                if (finalDesiredVel.magnitude > maxMoveSpeed)
+                    finalDesiredVel = finalDesiredVel.normalized * maxMoveSpeed;
             }
 
             // 3) 加速度限制与阻尼
@@ -159,7 +159,7 @@ namespace Map.Scene
             Vector2 totalCorrection = Vector2.zero;
 
             // 限制每帧最大修正（可调参数，建议公开为 maxCorrectionPerStep）
-            float maxCorrection = Mathf.Max(0.05f, 0.5f * moveSpeed * Time.fixedDeltaTime);
+            float maxCorrection = Mathf.Max(0.05f, 0.5f * maxMoveSpeed * Time.fixedDeltaTime);
 
             // 迭代次数（1~2次即可）
             const int iters = 1;

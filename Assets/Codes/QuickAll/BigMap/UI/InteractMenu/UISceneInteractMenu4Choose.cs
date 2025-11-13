@@ -35,8 +35,6 @@ namespace My.UI
 
         private void Awake()
         {
-            ScrollView = transform as RectTransform;
-
             // 限制只显示5个：设置 viewport 高度
             //if (viewport != null)
             //{
@@ -155,7 +153,7 @@ namespace My.UI
             listView.RefreshAllShownItem();
             ScrollToCenter(currentIndex);
 
-            this.ScrollView.sizeDelta = new(this.ScrollView.sizeDelta.x, data.Count * itemHeight);
+            this.viewport.sizeDelta = new(this.viewport.sizeDelta.x, data.Count * itemHeight);
         }
 
     }

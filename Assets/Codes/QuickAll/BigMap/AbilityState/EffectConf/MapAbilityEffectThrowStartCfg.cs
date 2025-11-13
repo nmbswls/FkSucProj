@@ -11,8 +11,10 @@ namespace My.Map.Entity
     {
         public int Priority;
         public float Duration;
-        public string ThrowSelfBuffId;
         public string ThrowMainBuffId;
+
+        public MapFightEffectCfg ThrowFailEffect;
+
     }
 }
 

@@ -9,7 +9,15 @@ using UnityEngine;
 namespace My.Map.Entity
 {
     // ===== 基础标签与枚举 =====
-    public enum AbilityTypeTag { Combat, Interaction, ItemUse, Crafting }
+    public enum AbilityTypeTag 
+    { 
+        Combat, 
+        Interaction, 
+        ItemUse, 
+        Crafting,
+        HMode,
+        Utility,
+    }
 
     //[Flags]
     //public enum ConcurrencyPolicy { Reject = 01, Replace, Stack }
@@ -74,6 +82,7 @@ namespace My.Map.Entity
         public List<PhaseEffectEvent> Events = new();  // 该阶段内的所有效果与时序
 
         public string EnterDebugString = string.Empty;
+        public List<string> PhaseBuff = new();
     }
 
 
@@ -103,6 +112,12 @@ namespace My.Map.Entity
 
         public bool IsPassive;
         public string PassiveBuffId;
+        public string AbilityTag;
+
+        public float CoolDown = 5.0f;
+        public int StackCount = 0;
+
+        public int Priority = 10;
 
     }
 }

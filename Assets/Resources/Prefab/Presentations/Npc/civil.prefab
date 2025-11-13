@@ -305,6 +305,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   mainCol: {fileID: 0}
   freeMoveDir: {x: 0, y: 0}
+  CharacterController: {fileID: 0}
   maxTurnSpeedDegPerSec: 720
   smoothTime: 0.12
   selfRadius: 0.5
@@ -372,31 +373,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4323e88b6a4a5fd4bbcc6661912a6709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 0
-  skin: 0.02
-  maxSlideIterations: 3
-  minMove: 0.0005
-  unitPresenter: {fileID: 0}
-  neighborFilter:
-    useTriggers: 0
-    useLayerMask: 0
-    useDepth: 0
-    useOutsideDepth: 0
-    useNormalAngle: 0
-    useOutsideNormalAngle: 0
-    layerMask:
-      serializedVersion: 2
-      m_Bits: 0
-    minDepth: 0
-    maxDepth: 0
-    minNormalAngle: 0
-    maxNormalAngle: 0
+  maxMoveSpeed: 5
+  maxAccel: 20
+  damping: 0
+  enableSeparation: 1
   separationRadius: 0.4
   separationStrength: 1
-  separationMaxPerStep: 0.15
-  stationaryEpsilon: 0.0005
+  separationDeadZone: 0.12
+  separationQueryMask:
+    serializedVersion: 2
+    m_Bits: 0
+  separationTag: 
+  dynamicBlockQueryMask:
+    serializedVersion: 2
+    m_Bits: 0
+  nonPenPadding: 0.05
+  dynamicQueryExtra: 1
 --- !u!1 &8366468597654593165
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,6 +399,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9010000572920847535}
   - component: {fileID: 2190805339782641006}
+  - component: {fileID: 916761782552648843}
   m_Layer: 12
   m_Name: View
   m_TagString: Untagged
@@ -467,8 +460,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1764243111
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 9382c856352ae4001b0ec605e74a61de, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -481,6 +474,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &916761782552648843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8366468597654593165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85c7f7b8e20d1747be4db8cb4f9222e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseOrder: 0
+  pivot: {fileID: 8552881982338698837}
 --- !u!1 &8382057146089460455
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,7 +515,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.342, y: 0, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.15, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8530266492118516531}

@@ -18,9 +18,20 @@ namespace My.UI
     /// <summary>
     /// 控制item之间拖动的处理
     /// </summary>
-    public class ItemDragDropController : MonoBehaviour
+    public class ItemDragDropController : PanelBase
     {
-        public static ItemDragDropController Instance;
+        public static ItemDragDropController Instance
+        {
+            get
+            {
+                var panel = UIManager.Instance.GetShowingPanel("ItemDragDrop");
+                if (panel != null && panel is ItemDragDropController itemDragDrop)
+                {
+                    return itemDragDrop;
+                }
+                return null;
+            }
+        }
 
         public GameObject DragGhostGo;
         public Image DragGhostImage;
@@ -33,7 +44,6 @@ namespace My.UI
 
         void Awake()
         {
-            Instance = this;
             if (DragGhostGo != null)
             {
                 DragGhostGo.gameObject.SetActive(false);
@@ -146,6 +156,7 @@ namespace My.UI
                 bool ok = PlayerBagUIPanel.Instance.BindingInventory.TryMove(payload.SourceIndex, dstIndex);
                 if (ok)
                 {
+                    UIManager.Instance.ShowPanel("PlayerBag");
                     PlayerBagUIPanel.Instance.RefreshContent();
                     //UIBus.RaiseInventoryAllChanged();
                 }

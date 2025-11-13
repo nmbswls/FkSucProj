@@ -9,6 +9,8 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.WSA;
+using static My.Map.Entity.MapEntityAbilityController;
 
 
 
@@ -155,6 +157,31 @@ namespace My.Map.Entity
 
             return true;
         }
+
+        public bool TryInterruptThrowByLauncher(IThrowLauncher launcher, InterruptRequest req)
+        {
+            if (!launcher2ContextMap.TryGetValue(launcher.Id, out var launcherCtxId))
+            {
+                Debug.LogError("TryInterruptThrowByLauncher not find throw launcher " + launcher.Id);
+                return false;
+            }
+
+            if (ContextContainer.TryGetValue(launcherCtxId, out var launcherCtx))
+            {
+                Debug.LogError("TryInterruptThrowByLauncher cant throw when throwing " + launcher.Id);
+                return false;
+            }
+            else
+            {
+                Debug.LogError("interrupt status error wrong state");
+                launcher2ContextMap.Remove(launcher.Id);
+            }
+
+            CleanOneThrowContext(launcherCtx);
+
+            return true;
+        }
+
 
         private void CleanOneThrowContext(ThrowContext ctx)
         {

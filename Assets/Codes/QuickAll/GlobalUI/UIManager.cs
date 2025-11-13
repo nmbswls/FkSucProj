@@ -57,7 +57,7 @@ namespace My.UI
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            UIResigter.RegisterPanels();
+            UIRegister.RegisterPanels();
 
             foreach (var pr in panelCatalog) catalogMap[pr.panelId] = pr;
             if (!eventSystem) eventSystem = FindFirstObjectByType<EventSystem>();
@@ -76,7 +76,7 @@ namespace My.UI
 
         public void RegisterPanel(PanelResource rsc)
         {
-
+            panelCatalog.Add(rsc);
         }
 
         private void InitPools()
@@ -170,7 +170,7 @@ namespace My.UI
             var layer = layerOverride ?? res.defaultLayer;
             var panel = GetOrCreatePanel(res, layer);
             if (panel == null) return null;
-
+            panel.Layer = layer;
             panel.Setup(data);
             panel.Show();
             activePanels[panelId] = panel;
@@ -208,17 +208,17 @@ namespace My.UI
 
         private void RegisterPanel(IPanel panel)
         {
-            if (!layerPanels.TryGetValue(panel.Layer, out var list))
+            if (!layerPanels.TryGetValue((int)panel.Layer, out var list))
             {
                 list = new List<IPanel>();
-                layerPanels[panel.Layer] = list;
+                layerPanels[(int)panel.Layer] = list;
             }
             list.Add(panel);
         }
 
         private void UnregisterPanel(IPanel panel)
         {
-            if (layerPanels.TryGetValue(panel.Layer, out var list)) list.Remove(panel);
+            if (layerPanels.TryGetValue((int)panel.Layer, out var list)) list.Remove(panel);
         }
 
 
@@ -295,6 +295,12 @@ namespace My.UI
         public bool DispatchHotkey(int index) 
         { 
             if (TryConsumeByLayers(c => c.OnHotkey(index))) return true;
+            return false;
+        }
+
+        public bool DispatchSpace()
+        {
+            if (TryConsumeByLayers(c => c.OnSpace())) return true;
             return false;
         }
     }

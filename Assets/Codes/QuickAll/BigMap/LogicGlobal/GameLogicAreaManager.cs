@@ -1,4 +1,5 @@
 using Map.Entity;
+using Map.Logic.Events;
 using My.Map.Entity;
 using System;
 using System.Collections;
@@ -8,7 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using static ChunkMapExportDatabase;
 
-namespace My.Map.Logic.Chunk
+namespace My.Map.Logic
 {
 
     // 逻辑实体的轻量描述（可存持久化）
@@ -20,10 +21,12 @@ namespace My.Map.Logic.Chunk
         public string CfgId;     
         public Vector2 Position;
         public Vector2 FaceDir;
-        public EEntityCampId CampId;
+
+        public EFactionId FactionId;
 
         public bool DeadMark;
-        
+
+        public string BelongRoomId;
         public bool AlwaysActive;
     }
 
@@ -211,7 +214,7 @@ namespace My.Map.Logic.Chunk
     /// <summary>
     /// 管理区域
     /// </summary>
-    public class GameLogicAreaManager
+    public partial class GameLogicAreaManager
     {
         //public int ChunkCellSize = 32;  // 静态分块大小
         private readonly Settings settings;
@@ -231,19 +234,36 @@ namespace My.Map.Logic.Chunk
 
         public Dictionary<string, LogicRoomInfo> RuntimeRoomInfos = new();
 
-        private ILogicEntityFactory factory;
+        private GameLogicManager logicManager;
 
-        public GameLogicAreaManager(ILogicEntityFactory factory, Settings settings)
+        public InnerListener innerListener;
+        public GameLogicAreaManager(GameLogicManager logicManager, Settings settings)
         {
             this.settings = settings;
-            this.factory = factory;
+            this.logicManager = logicManager;
 
             UnitGridIndex = new UniformGridIndex<long>(GridCellSize);
             RoomGridIndex = new UniformGridIndex<string>(GridCellSize);
+
+            innerListener = new(this);
         }
 
-        
+        public class InnerListener : IMapLogicEventHandler
+        {
+            private GameLogicAreaManager gameLogicAreaManager;
+            public InnerListener(GameLogicAreaManager gameLogicAreaManager)
+            {
+                this.gameLogicAreaManager = gameLogicAreaManager;
+            }
 
+            public void Handle(in IMapLogicEvent evt)
+            {
+                gameLogicAreaManager.OnMapLogicEvent(evt);
+            }
+        }
+
+
+        private List<MapLogicSubscription> subs = new();
         /// <summary>
         /// 初始化地区
         /// </summary>
@@ -261,6 +281,17 @@ namespace My.Map.Logic.Chunk
             despawnEntityQ.Clear();
             wakeEntityQ.Clear();
             sleepEntityQ.Clear();
+
+            foreach(var sub in subs)
+            {
+                logicManager.LogicEventBus.Unsubscribe(sub);
+            }
+            subs.Clear();
+
+            {
+                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, innerListener);
+                subs.Add(sub);
+            }
 
             // 加载 cacheDatabase
             cacheDatabase = Resources.Load<ChunkMapExportDatabase>($"Area/{areaId}");
@@ -299,11 +330,34 @@ namespace My.Map.Logic.Chunk
             }
 
             BuildIndexFromRecords();
+
+            InitDigPoints();
         }
 
 
         private float checkRefreshTimer;
         private int tickDynamicObjIdx = 0; 
+
+        public void OnMapLogicEvent(IMapLogicEvent ev)
+        {
+            var pos = ev.Ctx.HappenPos;
+            UnitGridIndex.Query(pos, GridCellSize, queryBufInt);
+
+            if(ev.Ctx.TargetId != 0)
+            {
+                queryBufInt.Add(ev.Ctx.TargetId);
+            }
+
+            foreach(var id in queryBufInt)
+            {
+                var entity = GetLogicEntiy(id, false);
+                if(entity != null)
+                {
+
+                }
+            }
+        }
+
 
         protected bool CheckRefreshAppearCond(DynamicEntityAppearCond cond)
         {
@@ -408,6 +462,9 @@ namespace My.Map.Logic.Chunk
                 record.EntityType = refreshInfo.EntityType;
                 record.CfgId = refreshInfo.CfgId;
                 record.Position = refreshInfo.Position;
+                record.BelongRoomId = refreshInfo.BindRoomId;
+                record.FactionId = refreshInfo.OrgFactionId;
+
                 Repo.RegisterRecord(record);
             }
         }
@@ -429,7 +486,7 @@ namespace My.Map.Logic.Chunk
             // 长生命周期对象
             if(rec.AlwaysActive)
             {
-                var ent = factory.CreateEntityByRecord(rec);
+                var ent = logicManager.CreateEntityByRecord(rec);
                 ent.OnSpawn(rec);
                 Repo.Loaded[rec.Id] = ent;
 
@@ -628,7 +685,7 @@ namespace My.Map.Logic.Chunk
                 if (!Repo.IsLoaded(st.Id))
                 {
                     // 直接创建避免队列延迟，或使用优先队列
-                    var ent = factory.CreateEntityByRecord(rec);
+                    var ent = logicManager.CreateEntityByRecord(rec);
                     ent.OnSpawn(rec);
                     Repo.Loaded[st.Id] = ent;
                 }
@@ -799,7 +856,7 @@ namespace My.Map.Logic.Chunk
                 if (Repo.IsLoaded(id)) continue;
                 if (!Repo.Records.TryGetValue(id, out var rec)) continue;
 
-                var ent = factory.CreateEntityByRecord(rec);
+                var ent = logicManager.CreateEntityByRecord(rec);
                 ent.OnSpawn(rec);
                 Repo.Loaded[id] = ent;
 
@@ -886,7 +943,7 @@ namespace My.Map.Logic.Chunk
             Repo.Loaded.Remove(id);
             if (snap != null) Repo.Records[id] = snap;
 
-            factory.RecycleEntity(ent);
+            logicManager.RecycleEntity(ent);
 
             // 因死亡而移除
             if(isDead)
@@ -955,7 +1012,7 @@ namespace My.Map.Logic.Chunk
             if (Repo.IsLoaded(id)) return Repo.GetLoaded(id);
 
             // 创建实例
-            var ent = factory.CreateEntityByRecord(rec);
+            var ent = logicManager.CreateEntityByRecord(rec);
             if (ent == null) return null;
 
             // OnSpawn

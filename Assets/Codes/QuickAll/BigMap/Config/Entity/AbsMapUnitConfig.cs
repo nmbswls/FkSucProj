@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using My.Map.Entity;
 using TMPro;
 using UnityEngine;
 
@@ -31,11 +32,12 @@ namespace Config.Unit
         public string CombatStretegyTemplateId;
 
         public bool HasHMode = true;
+        public bool AlwaysHMode = false;
 
         public string AITemplateMode = string.Empty;
         public string AITemplateName = string.Empty;
 
-
+        public EFactionId DefaultFactionId;
 
         [Header(" Ù–‘ƒ£∞Â")]
 

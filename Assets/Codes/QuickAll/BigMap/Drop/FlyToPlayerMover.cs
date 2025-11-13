@@ -8,6 +8,7 @@ public class FlyToPlayerMover : MonoBehaviour
     public float arriveDistance = 0.2f; // 距离小于此值认为到达
 
     private Transform _target;
+    private Vector3 _fixedPosition;
     private System.Action _onArrived;
 
     public void Init(Transform target, System.Action onArrived = null)

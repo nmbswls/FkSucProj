@@ -102,7 +102,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Dash"",
+                    ""name"": ""Space"",
                     ""type"": ""Button"",
                     ""id"": ""f133e660-5df9-4900-9863-9f0b398e0a63"",
                     ""expectedControlType"": """",
@@ -132,6 +132,24 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""name"": ""Cancel"",
                     ""type"": ""Button"",
                     ""id"": ""11164e59-4143-4abd-9492-e5c9fb5a4776"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HotKey1"",
+                    ""type"": ""Button"",
+                    ""id"": ""bebf113c-c49f-49ca-b718-a5f2f6bdc1ef"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HotKey2"",
+                    ""type"": ""Button"",
+                    ""id"": ""a01678c3-c5ae-4876-9d6a-34a290a99ca0"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -201,7 +219,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Dash"",
+                    ""action"": ""Space"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -235,6 +253,28 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4cb87ac-c19b-4eb0-8cb6-9b43d9d4ad25"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotKey1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""22ca282d-02d8-4282-8929-d9e9d63a8800"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotKey2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -302,10 +342,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         // OverworldMap
         m_OverworldMap = asset.FindActionMap("OverworldMap", throwIfNotFound: true);
         m_OverworldMap_Move = m_OverworldMap.FindAction("Move", throwIfNotFound: true);
-        m_OverworldMap_Dash = m_OverworldMap.FindAction("Dash", throwIfNotFound: true);
+        m_OverworldMap_Space = m_OverworldMap.FindAction("Space", throwIfNotFound: true);
         m_OverworldMap_Scroll = m_OverworldMap.FindAction("Scroll", throwIfNotFound: true);
         m_OverworldMap_Confirm = m_OverworldMap.FindAction("Confirm", throwIfNotFound: true);
         m_OverworldMap_Cancel = m_OverworldMap.FindAction("Cancel", throwIfNotFound: true);
+        m_OverworldMap_HotKey1 = m_OverworldMap.FindAction("HotKey1", throwIfNotFound: true);
+        m_OverworldMap_HotKey2 = m_OverworldMap.FindAction("HotKey2", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -395,10 +437,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_OverworldMap;
     private List<IOverworldMapActions> m_OverworldMapActionsCallbackInterfaces = new List<IOverworldMapActions>();
     private readonly InputAction m_OverworldMap_Move;
-    private readonly InputAction m_OverworldMap_Dash;
+    private readonly InputAction m_OverworldMap_Space;
     private readonly InputAction m_OverworldMap_Scroll;
     private readonly InputAction m_OverworldMap_Confirm;
     private readonly InputAction m_OverworldMap_Cancel;
+    private readonly InputAction m_OverworldMap_HotKey1;
+    private readonly InputAction m_OverworldMap_HotKey2;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -415,9 +459,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Move => m_Wrapper.m_OverworldMap_Move;
         /// <summary>
-        /// Provides access to the underlying input action "OverworldMap/Dash".
+        /// Provides access to the underlying input action "OverworldMap/Space".
         /// </summary>
-        public InputAction @Dash => m_Wrapper.m_OverworldMap_Dash;
+        public InputAction @Space => m_Wrapper.m_OverworldMap_Space;
         /// <summary>
         /// Provides access to the underlying input action "OverworldMap/Scroll".
         /// </summary>
@@ -430,6 +474,14 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "OverworldMap/Cancel".
         /// </summary>
         public InputAction @Cancel => m_Wrapper.m_OverworldMap_Cancel;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/HotKey1".
+        /// </summary>
+        public InputAction @HotKey1 => m_Wrapper.m_OverworldMap_HotKey1;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/HotKey2".
+        /// </summary>
+        public InputAction @HotKey2 => m_Wrapper.m_OverworldMap_HotKey2;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -459,9 +511,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
-            @Dash.started += instance.OnDash;
-            @Dash.performed += instance.OnDash;
-            @Dash.canceled += instance.OnDash;
+            @Space.started += instance.OnSpace;
+            @Space.performed += instance.OnSpace;
+            @Space.canceled += instance.OnSpace;
             @Scroll.started += instance.OnScroll;
             @Scroll.performed += instance.OnScroll;
             @Scroll.canceled += instance.OnScroll;
@@ -471,6 +523,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Cancel.started += instance.OnCancel;
             @Cancel.performed += instance.OnCancel;
             @Cancel.canceled += instance.OnCancel;
+            @HotKey1.started += instance.OnHotKey1;
+            @HotKey1.performed += instance.OnHotKey1;
+            @HotKey1.canceled += instance.OnHotKey1;
+            @HotKey2.started += instance.OnHotKey2;
+            @HotKey2.performed += instance.OnHotKey2;
+            @HotKey2.canceled += instance.OnHotKey2;
         }
 
         /// <summary>
@@ -485,9 +543,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
-            @Dash.started -= instance.OnDash;
-            @Dash.performed -= instance.OnDash;
-            @Dash.canceled -= instance.OnDash;
+            @Space.started -= instance.OnSpace;
+            @Space.performed -= instance.OnSpace;
+            @Space.canceled -= instance.OnSpace;
             @Scroll.started -= instance.OnScroll;
             @Scroll.performed -= instance.OnScroll;
             @Scroll.canceled -= instance.OnScroll;
@@ -497,6 +555,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Cancel.started -= instance.OnCancel;
             @Cancel.performed -= instance.OnCancel;
             @Cancel.canceled -= instance.OnCancel;
+            @HotKey1.started -= instance.OnHotKey1;
+            @HotKey1.performed -= instance.OnHotKey1;
+            @HotKey1.canceled -= instance.OnHotKey1;
+            @HotKey2.started -= instance.OnHotKey2;
+            @HotKey2.performed -= instance.OnHotKey2;
+            @HotKey2.canceled -= instance.OnHotKey2;
         }
 
         /// <summary>
@@ -737,12 +801,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Dash" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Space" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnDash(InputAction.CallbackContext context);
+        void OnSpace(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Scroll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -764,6 +828,20 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCancel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "HotKey1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHotKey1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "HotKey2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHotKey2(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

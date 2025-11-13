@@ -105,7 +105,7 @@ public class SceneInteractSystem
 
             // 在 Collider 或其父节点上寻找接口
             // 注意：GetComponentInParent 会产生少量 GC，若极致无 GC，可预缓存或自定义映射
-            var interactable = col.GetComponentInParent<ISceneInteractable>();
+            var interactable = col.GetComponent<ISceneInteractable>();
             if (interactable == null) continue;
 
             if(!interactable.CanInteractEnable())

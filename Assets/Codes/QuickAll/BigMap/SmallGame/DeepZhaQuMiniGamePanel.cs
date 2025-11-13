@@ -2,14 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using Map.Entity;
 using Map.Logic;
+using My.UI;
+using My.UI.Bag;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Map.SmallGame.Zha
 {
-    public class DeepZhaQuSmallGameManager : MonoBehaviour
+    public class DeepZhaQuMiniGamePanel : PanelBase, IInputConsumer
     {
-        public static DeepZhaQuSmallGameManager Instance;
+        public static DeepZhaQuMiniGamePanel Instance
+        {
+            get
+            {
+                var panel = UIManager.Instance.GetShowingPanel("DeepZhaQuMiniGame");
+                if (panel != null && panel is DeepZhaQuMiniGamePanel panel2)
+                {
+                    return panel2;
+                }
+                return null;
+            }
+        }
 
         public Transform ViewRoot;
         public Image Slider;
@@ -34,18 +47,14 @@ namespace Map.SmallGame.Zha
         private EGoodAreaDir currAreaDir = EGoodAreaDir.None;
         private float currentPos = 0;
         private float goodAreaPos = 0; // 0-1
-        private float currScore = 0;
+        private float currScore = 50;
         private float goodAreaTimer = 0;
 
         private bool finished = false;
         private bool isRunning = false;
 
-        void Awake()
-        {
-            Instance = this;
-            DontDestroyOnLoad(this);
-            ViewRoot.gameObject.SetActive(false);
-        }
+        private float SelfMoveDir = 0;
+
 
         public void Update()
         {
@@ -89,17 +98,28 @@ namespace Map.SmallGame.Zha
         public void InitializeGame(long targetEntityId, float goodAreaSize, float goodAreaMoveSpeed)
         {
             isRunning = true;
+            this.ZhaQuTargetId = targetEntityId;
+            this.GoodAreaSize = goodAreaSize;
+            this.GoodAreaMoveSpeed = goodAreaMoveSpeed;
+            this.goodAreaPos = UnityEngine.Random.Range(2500, 7500) * 0.0001f;
 
             ViewRoot.gameObject.SetActive(true);
+            float yDiff = UpperBound.localPosition.y - BottomBound.localPosition.y;
+
+            float selfAreaY = yDiff * PlayerAreaSize;
+            Slider.rectTransform.sizeDelta = new Vector2(Slider.rectTransform.sizeDelta.x, selfAreaY);
+
+            float enemyAreaY = yDiff * GoodAreaSize;
+            GoodArea.rectTransform.sizeDelta = new Vector2(GoodArea.rectTransform.sizeDelta.x, enemyAreaY);
         }
 
         private void AdjustCurrPos()
         {
-            if(Input.GetKey(KeyCode.W))
+            if (SelfMoveDir > 0)
             {
                 currentPos += Time.deltaTime * 2f;
             }
-            else if(Input.GetKey(KeyCode.S))
+            else if (SelfMoveDir < 0)
             {
                 currentPos -= Time.deltaTime * 2f;
             }
@@ -190,19 +210,59 @@ namespace Map.SmallGame.Zha
                 overlap = Mathf.Abs(ps[1] - ps[2]);
             }
 
-            if(overlap / PlayerAreaSize > 0.9f)
+            if(overlap / GoodAreaSize > 0.9f)
             {
                 currScore += Time.deltaTime * 10f;
             }
-            else if(overlap / PlayerAreaSize < 0.5f)
+            else if(overlap / GoodAreaSize < 0.5f)
             {
-                currScore -= Time.deltaTime * 20f;
+                currScore -= Time.deltaTime * 5f;
             }
         }
 
         public void OnSmallGameFinish(bool success)
         { 
             MainGameManager.Instance.OnSmallGameFinish(ZhaQuTargetId, success, null);
+        }
+
+        public bool OnConfirm()
+        {
+            OnSmallGameFinish(true);
+            return true;
+        }
+
+        public bool OnCancel()
+        {
+            return true;
+        }
+
+        public bool OnNavigate(Vector2 dir)
+        {
+            if (dir.y > 0)
+            {
+                SelfMoveDir = 1;
+            }
+            else if (dir.y < 0)
+            {
+                SelfMoveDir = -1;
+            }
+
+            return true;
+        }
+
+        public bool OnHotkey(int index)
+        {
+            return true;
+        }
+
+        public bool OnScroll(float deltaY)
+        {
+            return true;
+        }
+
+        public bool OnSpace()
+        {
+            return false;
         }
     }
 }

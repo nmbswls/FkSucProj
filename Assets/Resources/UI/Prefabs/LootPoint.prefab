@@ -351,8 +351,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mItemPrefabDataList:
-  - mItemPrefab: {fileID: 0}
-    mInitCreateCount: 0
+  - mItemPrefab: {fileID: 1804481497005064348, guid: 9a20ff507df360746bf790588a07ba5e, type: 3}
+    mInitCreateCount: 5
   mArrangeType: 0
   mFixedRowOrColumnCount: 5
   mPadding:
@@ -418,7 +418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f40fbd7843c04c418144a8bdb4b05a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelId: Looting
+  panelId: LootPoint
   layer: 1
   canvasGroup: {fileID: 0}
   GridView: {fileID: 5051934432602065019}

@@ -5,15 +5,24 @@ using Map.Logic.Events;
 using System;
 using Map.Entity.AI;
 using System.Collections.Generic;
-using My.Map.Logic.Chunk;
 using My.Map.Entity.AI;
 using My.Map.Entity;
+using My.Map.Logic;
+using static My.Map.Entity.MapEntityAbilityController;
 
 
 namespace My.Map
 {
     
-    public abstract class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget
+    public class UnitNoticeInfo
+    {
+        public ILogicEntity TargetId { get; set; }
+        public float LastSeeTime { get; set; }
+
+        public bool HideOnFace { get; set; }
+    }
+
+    public abstract class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity
     {
         public MapEntityAbilityController abilityController;
         public float viewRadius = 8f;
@@ -42,6 +51,7 @@ namespace My.Map
         public Vector2 PatrolGroupRelativePos;
 
         public bool IsInBattle; // 既没有战斗 也没有h attract
+        public bool IsHMode;
 
         public int BindRoomId;
 
@@ -50,25 +60,43 @@ namespace My.Map
 
         public event Action EventOnHpChanged;
 
-        
 
+        public UnitNoticeInfo PlayerNoticeInfo = new();
+        public UnitEnmityComp EnmityComp;
 
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
-            this.CampId = bindingRecord.CampId;
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
             this.MoveActMode = unitRecord.ActMode;
             this.FollowPatrolId = unitRecord.PatrolFollowId;
             this.PatrolGroupRelativePos = unitRecord.PatrolGroupRelativePos;
+
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
             // get meta info
             InitAbilityController();
 
             InitAiBrain();
+
+            // 优先应用覆盖值
+            if(UnitBaseRecord.FactionId != EFactionId.None)
+            {
+                this.FactionId = UnitBaseRecord.FactionId;
+            }
+            else
+            {
+                if (unitCfg != null)
+                {
+                    this.FactionId = unitCfg.DefaultFactionId;
+                }
+            }
+            
+            EnmityComp = new();
+            EnmityComp.Initialize(this);
         }
 
         public override void Tick(float dt)
@@ -98,16 +126,73 @@ namespace My.Map
             AIBrain?.Tick(dt);
 
 
-            if (attributeStore.GetAttr(AttrIdConsts.LockFace) == 0 && targettedMoveIntent != null && targettedMoveIntent.targettedDesireDir != null)
+            if (attributeStore.GetAttr(AttrIdConsts.LockFace) == 0)
             {
-                var diff = targettedMoveIntent.MoveTarget - this.Pos;
-                if (diff.magnitude > 1e-2)
+                if (LogicTime.time - PlayerNoticeInfo.LastSeeTime < 5.0f)
                 {
-                    FaceDir = diff;
+                    var diff = LogicManager.playerLogicEntity.Pos - this.Pos;
+                    if (diff.magnitude > 1e-2)
+                    {
+                        FaceDir = diff;
+                    }
+                }
+                else if (targettedMoveIntent != null && targettedMoveIntent.targettedDesireDir != null)
+                {
+                    var diff = targettedMoveIntent.MoveTarget - this.Pos;
+                    if (diff.magnitude > 1e-2)
+                    {
+                        FaceDir = diff;
+                    }
                 }
             }
 
             attributeStore.Commit();
+
+            UpdateNoticeInfo();
+
+            EnmityComp?.Tick(dt);
+
+            if(EnmityComp != null)
+            {
+                // 见到
+                if(EnmityComp.IsEnmityState && LogicTime.time - PlayerNoticeInfo.LastSeeTime < 1f)
+                {
+                    IsInBattle = true;
+                }
+            }
+
+            if(IsInBattle)
+            {
+
+            }
+
+            UpdateHMode();
+        }
+
+
+        protected virtual void UpdateHMode()
+        {
+            if(Type == EEntityType.Player)
+            {
+                return;
+            }
+
+            if (unitCfg.AlwaysHMode)
+            {
+                IsHMode = true;
+            }
+        }
+
+        protected virtual void UpdateNoticeInfo()
+        {
+            if (LogicManager.visionSenser.CanSee(Pos, FaceDir, LogicManager.playerLogicEntity.Pos, 5.0f, 60f))
+            {
+                // 玩家处于视野内
+                PlayerNoticeInfo.LastSeeTime = LogicTime.time;
+                //PlayerNoticeInfo.HideOnFace = 
+            }
+            
+            
         }
 
         public override void OnEntityDie(ResourceDeltaIntent lastIntent)
@@ -149,11 +234,21 @@ namespace My.Map
         /// 包含方向与速度的当前有效位移 由输入和受控移动共同决定
         /// </summary>
         public Vector2 activeMoveVec;
+
         public Vector2 externalVel;
 
         public float accel = 20f;
 
         public float moveSpeed = 4.0f;
+        public float GetCurrSpeed()
+        {
+            var jiansu = GetAttr(AttrIdConsts.JianSu);
+            if(jiansu > 10000)
+            {
+                jiansu = 9000;
+            }
+            return moveSpeed * (10000 - jiansu) * 0.0001f;
+        }
 
         public class DashIntent
         {
@@ -244,7 +339,7 @@ namespace My.Map
             public float lastUpdateNavTime;
             public bool NeedRecalculatePath;
             public Vector2 targettedDesireDir;
-            public float StopDistance = 1f; // 停止距离
+            //public float StopDistance = 1f; // 停止距离
         }
 
         public TargettedMoveIntent? targettedMoveIntent;
@@ -261,7 +356,6 @@ namespace My.Map
                 targettedMoveIntent = new();
             }
 
-            targettedMoveIntent.StopDistance = stopDistance;
             targettedMoveIntent.MoveTarget = moveToPos;
             targettedMoveIntent.NeedRecalculatePath = true;
         }
@@ -425,6 +519,39 @@ namespace My.Map
 
 
         #region throwed
+        #endregion
+
+        #region 事件
+
+        /// <summary>
+        /// 检查事件 
+        /// </summary>
+        /// <param name="evt"></param>
+        public override void OnMapLogicEvent(in IMapLogicEvent evt)
+        {
+            if(EnmityComp != null)
+            {
+                EnmityComp.OnMapLogicEvent(evt);
+            }
+        }
+
+        public bool CheckIsEmnity()
+        {
+            return EnmityComp.CheckIsEmnity();
+        }
+
+        #endregion
+
+
+        #region interrrupt
+
+        public void TryInterrupt(InterruptRequest req)
+        {
+            abilityController.TryInterrupt(req);
+
+            LogicManager.globalThrowManager.TryInterruptThrowByLauncher(this, req);
+        }
+
         #endregion
     }
 

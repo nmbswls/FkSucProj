@@ -10,46 +10,27 @@ namespace My.Map.Entity
 {
     public class PlayerAbilityController : MapEntityAbilityController
     {
-        // 预设程序生成行为
-        //private MapAbilitySpecConfig _openDoor;
-        //private MapAbilitySpecConfig _useItem;
-        //private MapAbilitySpecConfig _shoot;
-        //private MapAbilitySpecConfig _slash;
-        //private MapAbilitySpecConfig _dash;
+        public List<string> PlayerDefaultSkilld = new()
+        {
+            "unlock_loot_point",
+            "use_loot_point",
+            "use_item",
 
-        //private MapAbilitySpecConfig _zhaqu;
+            "player_shoot",
+            "player_weapon",
+            "default_dash",
+            "fix_clothes",
+
+            "zhaqu",
+            "deep_zhaqu",
+        };
 
         public PlayerAbilityController(BaseUnitLogicEntity owner) : base(owner)
         {
+            foreach(var skill in PlayerDefaultSkilld)
             {
-                var unlockLootPoint = AbilityLibrary.CreateDefaultUnlockLootPoint();
-                RegisterAbility(unlockLootPoint);
-            }
-
-            {
-                var useLootPoint = AbilityLibrary.CreateDefaultUseLootPoint();
-                RegisterAbility(useLootPoint);
-            }
-
-            {
-                var _useItem = AbilityLibrary.CreateDefaultUseItem();
-                RegisterAbility(_useItem);
-            }
-
-            {
-
-                var _shoot = AbilityLibrary.CreateDefaultShootAbility();
-                RegisterAbility(_shoot);
-
-                var _slash = AbilityLibrary.CreateDefaultUseWeaponAbility();
-                RegisterAbility(_slash);
-                var _dash = AbilityLibrary.CreateDefaultDash();
-                RegisterAbility(_dash);
-                var _zhaqu = AbilityLibrary.CreateOrRefreshZhaQu();
-                RegisterAbility(_zhaqu);
-
-                var deepZhaQu = AbilityLibrary.CreateDeepZhaQu();
-                RegisterAbility(deepZhaQu);
+                var conf = AbilityLibrary.GetAbilityConfig(skill);
+                RegisterAbility(conf);
             }
         }
 

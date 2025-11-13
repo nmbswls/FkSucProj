@@ -28,6 +28,11 @@ namespace My.UI
         {
             return true;
         }
+
+        public bool OnSpace()
+        {
+            return false;
+        }
     }
 }
 

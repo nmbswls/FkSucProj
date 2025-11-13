@@ -3,7 +3,7 @@ using Config;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using My.Map.Logic.Chunk;
+using My.Map.Logic;
 
 namespace My.Map
 {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using static My.Input.QuickPlayerInputBinder;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace My.UI
 {
@@ -21,7 +22,7 @@ namespace My.UI
     }
 
 
-    public class UIResigter
+    public class UIRegister
     { 
         public static void RegisterPanels()
         {
@@ -44,6 +45,7 @@ namespace My.UI
                 panelId = "PlayerBag",
                 resourcePath = "UI/Prefabs/PlayerBag",
                 defaultLayer = UILayer.Popup,
+                pooled = false,
             });
 
             UIManager.Instance.RegisterPanel(new PanelResource()
@@ -51,6 +53,7 @@ namespace My.UI
                 panelId = "LootPoint",
                 resourcePath = "UI/Prefabs/LootPoint",
                 defaultLayer = UILayer.Popup,
+                pooled = false,
             });
 
             UIManager.Instance.RegisterPanel(new PanelResource()
@@ -65,6 +68,7 @@ namespace My.UI
                 panelId = "InteractMenu",
                 resourcePath = "UI/Prefabs/InteractMenu",
                 defaultLayer = UILayer.Popup,
+                pooled = false,
             });
 
             UIManager.Instance.RegisterPanel(new PanelResource()
@@ -73,6 +77,38 @@ namespace My.UI
                 resourcePath = "UI/Prefabs/SmallIconLayer",
                 defaultLayer = UILayer.Scene,
             });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "ItemDragDrop",
+                resourcePath = "UI/Prefabs/ItemDragDrop",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "ItemPopup",
+                resourcePath = "UI/Prefabs/ItemPopup",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "DeepZhaQuMiniGame",
+                resourcePath = "UI/Prefabs/DeepZhaQuMiniGame",
+                defaultLayer = UILayer.Overlay,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "BeFckedWindow",
+                resourcePath = "UI/Prefabs/BeFckedWindow",
+                defaultLayer = UILayer.Overlay,
+                pooled = true,
+            });
+
         }
 
         public static void RegisterGroups()
@@ -116,7 +152,7 @@ namespace My.UI
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            UIResigter.RegisterGroups();
+            UIRegister.RegisterGroups();
         }
 
         void Start()
@@ -288,9 +324,11 @@ namespace My.UI
         private async Task EnterOverworldAsync(object ctx)
         {
             // 关闭战斗相关
-            UIManager.Instance.HidePanel("BattleHUD");
-            // 打开世界 HUD
-            UIManager.Instance.ShowPanel("OverworldHUD", ctx, UILayer.HUD);
+            UIManager.Instance.ShowPanel("OverworldHUD");
+            UIManager.Instance.ShowPanel("SceneMask");
+            UIManager.Instance.ShowPanel("SmallIconLayer");
+            UIManager.Instance.ShowPanel("InteractMenu");
+            
             MainGameManager.Instance.inputBinder.ApplyInputMode(InputMode.Overworld);
             await Task.CompletedTask;
         }
@@ -344,7 +382,9 @@ namespace My.UI
 
         public void TryEnterLootDetailMode(ILootableObj lootObj)
         {
-            ShowInGroup("Looting", lootObj);
+            // 打开lootpoint
+            ShowInGroup("LootPoint", lootObj);
+            ShowInGroup("PlayerBag");
             ShowInGroup("PlayerBag");
 
 
@@ -355,85 +395,50 @@ namespace My.UI
             //ItemPopupMenu.Instance.Close();
         }
 
-        public void OnScenePresentationBinded(IScenePresentation scenePresentation)
-        {
-            if (scenePresentation is ISceneInteractable interactPoint)
-            {
-
-                //SceneSmallIconLayerPanel 调用方法
-
-                //SceneInteractUIHinter hint = null;
-                //if (_hintPool.Count > 0)
-                //{
-                //    hint = _hintPool.Dequeue();
-                //}
-                //else
-                //{
-                //    var newHintGo = GameObject.Instantiate(InteractHintPrefab, HintFloatingPanel);
-                //    hint = newHintGo.GetComponent<SceneInteractUIHinter>();
-                //}
-                //hint.InitBind(interactPoint);
-
-                //hint.BindInteractPoint = interactPoint;
-                //hint.gameObject.SetActive(true);
-                //sceneInteractHintDicts[interactPoint.Id] = hint;
-
-                //hint.transform.position = scenePresentation.GetWorldPosition();
-                //hint.transform.localPosition = new Vector3(hint.transform.localPosition.x, hint.transform.localPosition.y, 0);
-            }
-        }
-
-        public void OnScenePresentationUbbind(IScenePresentation scenePresentation)
-        {
-            if (scenePresentation is ISceneInteractable interactPoint)
-            {
-                //sceneInteractHintDicts.TryGetValue(scenePresentation.Id, out var hintItem);
-                //if (hintItem != null)
-                //{
-                //    hintItem.Clear();
-                //    hintItem.gameObject.SetActive(false);
-                //    sceneInteractHintDicts.Remove(scenePresentation.Id);
-
-                //    if (_hintPool.Count < 10)
-                //    {
-                //        _hintPool.Enqueue(hintItem);
-                //    }
-                //    else
-                //    {
-                //        GameObject.Destroy(hintItem.gameObject);
-                //    }
-                //}
-            }
-        }
-
-
 
         #endregion
 
 
+        private MapLogicEventAdapter adapter;
+        private List<MapLogicSubscription> subs = new();
         /// <summary>
         /// 逻辑事件处理
         /// </summary>
         public void InitGameLogicEventListener()
         {
-            MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(new CommonGameEventAdapter((ev) =>
+            if(adapter == null)
             {
-                switch (ev.Name)
+                adapter = new(OnMapLogicEvent);
+            }
+
+            if (subs.Count > 0)
+            {
+                foreach(var sub in subs)
                 {
-                    case "Death":
-                        {
-                            var guy = ev.Param3;
-                            var presenter = SceneAOIManager.Instance.GetActivePresentation(guy);
-                            if (presenter != null)
-                            {
-                                FakeHintTextManager.ShowWorld("imdead", presenter.GetWorldPosition(), Camera.main);
-                            }
-                        }
-                        break;
-
+                    MainGameManager.Instance.gameLogicManager.LogicEventBus.Unsubscribe(sub);
                 }
+                subs.Clear();
+            }
 
-            }));
+            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, adapter));
+            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnHit, adapter));
+            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.AddBuff, adapter));
+        }
+
+        public void OnMapLogicEvent(IMapLogicEvent ev)
+        {
+            switch (ev.Type)
+            {
+                case EMapLogicEventType.AddBuff:
+                    {
+                        var addBuffEv = (MLEApplyBuff)ev;
+                        if(addBuffEv.BuffId == "be_fcked")
+                        {
+                            BeFckedWindowPanel.ShowFckedWindow(addBuffEv.CasterId, 100);
+                        }
+                    }
+                    break;
+            }
         }
     }
 }
