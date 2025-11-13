@@ -210,7 +210,7 @@ namespace My.Input
         {
             if (ctx.performed)
             {
-                if (uiRouter == null || !uiRouter.DispatchCancel())
+                if (uiRouter == null || !uiRouter.DispatchSpace())
                 {
                     if (MainGameManager.Instance.playerScenePresenter != null)
                     {

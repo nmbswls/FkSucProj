@@ -49,14 +49,14 @@ public class TestFollower : MonoBehaviour
 
         UpdateTargettedMoveState();
 
-        if(targettedMoveIntent == null)
-        {
-            CharacterController.DesiredVel = Vector2.zero;
-        }
-        else
-        {
-            CharacterController.DesiredVel = targettedMoveIntent.targettedDesireDir * 0.2f;
-        }
+        //if(targettedMoveIntent == null)
+        //{
+        //    CharacterController.DesiredVel = Vector2.zero;
+        //}
+        //else
+        //{
+        //    CharacterController.DesiredVel = targettedMoveIntent.targettedDesireDir * 0.2f;
+        //}
     }
 
     private Vector2? _lastPos = null;

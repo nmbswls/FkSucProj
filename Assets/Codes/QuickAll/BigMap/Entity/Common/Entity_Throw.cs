@@ -87,7 +87,7 @@ namespace My.Map.Entity
                 var ctx = ContextContainer[ctxKey];
                 logicManager.viewer.ShowFakeFxEffect("fcked", ctx.throwTarget.Pos);
                 logicManager.viewer.ShowFakeFxEffect("fcking", ctx.throwLauncher.Pos);
-                if (LogicTime.time > ctx.throwStartTime + ctx.throwDuration)
+                if (ctx.throwDuration >= 0 && LogicTime.time > ctx.throwStartTime + ctx.throwDuration)
                 {
                     CleanOneThrowContext(ctx);
                 }
@@ -139,19 +139,22 @@ namespace My.Map.Entity
             newCtx.srcAbilityId = srcAbilityId;
             newCtx.Priority = priority;
             newCtx.throwStartTime = LogicTime.time;
-            newCtx.throwDuration = 2f;
+            newCtx.throwDuration = 20.0f;
 
             // Ôö¼Ó
             launcher.OnThrowStart();
             target.OnBeingThrowStart();
 
-            var id1 = logicManager.globalBuffManager.AddBuff(launcher.Id, "lock_move");
-            var id2 = logicManager.globalBuffManager.AddBuff(target.Id, "lock_move");
+            var id1 = logicManager.globalBuffManager.AddBuff(launcher.Id, "throwing");
+            var id2 = logicManager.globalBuffManager.AddBuff(target.Id, "throwing");
             var id3 = logicManager.globalBuffManager.AddBuff(target.Id, efffectBuffId, casterId: launcher.Id);
 
             newCtx.throwBuffIds.Add(id1);
             newCtx.throwBuffIds.Add(id2);
             newCtx.throwBuffIds.Add(id3);
+
+            launcher2ContextMap[launcher.Id] = newCtx.CtxId;
+            target2ContextMap[target.Id] = newCtx.CtxId;
 
             ContextContainer[newCtx.CtxId] = newCtx;
 
@@ -166,15 +169,11 @@ namespace My.Map.Entity
                 return false;
             }
 
-            if (ContextContainer.TryGetValue(launcherCtxId, out var launcherCtx))
-            {
-                Debug.LogError("TryInterruptThrowByLauncher cant throw when throwing " + launcher.Id);
-                return false;
-            }
-            else
+            if (!ContextContainer.TryGetValue(launcherCtxId, out var launcherCtx))
             {
                 Debug.LogError("interrupt status error wrong state");
                 launcher2ContextMap.Remove(launcher.Id);
+                return false;
             }
 
             CleanOneThrowContext(launcherCtx);

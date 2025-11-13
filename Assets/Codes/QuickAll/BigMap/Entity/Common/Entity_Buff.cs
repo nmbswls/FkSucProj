@@ -211,6 +211,19 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["throwing"] = new BuffDefinition()
+                {
+                    BuffId = "throwing",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() 
+                    { 
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidOp, ModifierValue = 1 }
+                    },
+                    DefaultDuration = -1,
+                };
+
             }
 
             _library.TryGetValue(buffId, out BuffDefinition def);

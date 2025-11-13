@@ -475,7 +475,7 @@ namespace My.Map.Entity
             {
                 PhaseName = "Executing",
                 EnterDebugString = "准备抓取",
-
+                PhaseBuff = new() { "jian_su_self" },
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -486,8 +486,8 @@ namespace My.Map.Entity
             var hitCfg = new MapAbilityEffectHitBoxCfg();
             hitCfg.EffectType = EAbilityEffectType.HitBox;
             hitCfg.Shape = MapAbilityEffectHitBoxCfg.EShape.Square;
-            hitCfg.Width = 2f;
-            hitCfg.Length = 2f;
+            hitCfg.Width = 1.2f;
+            hitCfg.Length = 1.5f;
             hitCfg.TargetEntityType = EEntityType.Player;
 
             {

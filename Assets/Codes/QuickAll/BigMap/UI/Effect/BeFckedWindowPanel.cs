@@ -37,12 +37,7 @@ namespace My.UI
         {
             LeftCatchValComp.text = CatchVal.ToString();
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-            {
-                CatchVal -= 3;
-            }
-
-            if(CatchVal < 0)
+            if(FckingUnitId > 0 && CatchVal < 0)
             {
                 OnClickkkSuccess();
             }
@@ -66,6 +61,13 @@ namespace My.UI
                     priority = 999,
                 });
             }
+
+            UIManager.Instance.HidePanel("BeFckedWindow");
+        }
+
+        public override void Hide()
+        {
+            FckingUnitId = 0;
         }
 
         public bool OnCancel()
@@ -100,7 +102,8 @@ namespace My.UI
 
         public bool OnSpace()
         {
-            return false;
+            CatchVal -= 8;
+            return true;
         }
     }
 }

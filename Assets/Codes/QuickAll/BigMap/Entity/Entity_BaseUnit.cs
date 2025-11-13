@@ -60,6 +60,17 @@ namespace My.Map
 
         public event Action EventOnHpChanged;
 
+        /// <summary>
+        /// 吸引源信息
+        /// </summary>
+        public class AttractInfo
+        {
+            public long SrcId;
+            public Vector2 Pos;
+            public float LastTriggerTime;
+        }
+
+        public List<AttractInfo> attractInfos = new();
 
         public UnitNoticeInfo PlayerNoticeInfo = new();
         public UnitEnmityComp EnmityComp;
@@ -136,12 +147,23 @@ namespace My.Map
                         FaceDir = diff;
                     }
                 }
-                else if (targettedMoveIntent != null && targettedMoveIntent.targettedDesireDir != null)
+                else if (targetMoveIntent != null)
                 {
-                    var diff = targettedMoveIntent.MoveTarget - this.Pos;
-                    if (diff.magnitude > 1e-2)
+                    if(targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FollowEntity)
                     {
-                        FaceDir = diff;
+                        var diff = targetMoveIntent.FollowEntity.Pos - this.Pos;
+                        if (diff.magnitude > 1e-2)
+                        {
+                            FaceDir = diff.normalized;
+                        }
+                    }
+                    else if(targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FixPoint)
+                    {
+                        var diff = targetMoveIntent.FixedMoveTarget - this.Pos;
+                        if (diff.magnitude > 1e-2)
+                        {
+                            FaceDir = diff.normalized;
+                        }
                     }
                 }
             }
@@ -333,37 +355,57 @@ namespace My.Map
             knockBackIntent = intent;
         }
 
+
+
         public class TargettedMoveIntent
         {
-            public Vector2 MoveTarget;
-            public float lastUpdateNavTime;
-            public bool NeedRecalculatePath;
+            public enum ETargettedMoveType
+            {
+                FixPoint,
+                FollowEntity,
+                FollowSomething,
+            }
+
+            public ETargettedMoveType MoveType;
+
+            public Vector2 FixedMoveTarget;
+            public ILogicEntity? FollowEntity;
+
+
             public Vector2 targettedDesireDir;
-            //public float StopDistance = 1f; // 停止距离
+            public float ArriveDistance = 1f;
+
+            public bool NeedRecalculatePath;
         }
 
-        public TargettedMoveIntent? targettedMoveIntent;
+        public TargettedMoveIntent? targetMoveIntent;
 
-        public void StartTargettedMove(Vector2 moveToPos, float stopDistance)
+        public void StartTargettedMove(TargettedMoveIntent.ETargettedMoveType moveType, ILogicEntity? followedEntity, Vector2 fixedPoint, float arriveDistance, bool clearNav = false)
         {
-            if (targettedMoveIntent != null && moveToPos == targettedMoveIntent.MoveTarget)
+            if (targetMoveIntent == null)
             {
-                return;
+                targetMoveIntent = new();
             }
 
-            if (targettedMoveIntent == null)
-            {
-                targettedMoveIntent = new();
-            }
+            targetMoveIntent.MoveType = moveType;
 
-            targettedMoveIntent.MoveTarget = moveToPos;
-            targettedMoveIntent.NeedRecalculatePath = true;
+            targetMoveIntent.FollowEntity = followedEntity;
+            targetMoveIntent.FixedMoveTarget = fixedPoint;
+
+            targetMoveIntent.ArriveDistance = arriveDistance;
+            
+            targetMoveIntent.NeedRecalculatePath = true;
+
+            // 是否清理速度
+            if(!clearNav)
+            {
+                targetMoveIntent.targettedDesireDir = Vector2.zero;
+            }
         }
-
 
         public void StopTargetteMove()
         {
-            targettedMoveIntent = null;
+            targetMoveIntent = null;
         }
         #endregion
 
@@ -381,8 +423,9 @@ namespace My.Map
 
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, 100);
-            attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
-            attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
+
+            RegisterCommonStates();
+
 
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 0);
@@ -391,6 +434,12 @@ namespace My.Map
             attributeStore.Commit();
         }
 
+        protected void RegisterCommonStates()
+        {
+            attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.ForbidOp, initialBase: 0);
+        }
 
 
         public MapUnitAIBrain? AIBrain;

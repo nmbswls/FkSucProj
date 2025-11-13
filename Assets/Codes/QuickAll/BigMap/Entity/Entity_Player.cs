@@ -41,13 +41,12 @@ namespace My.Map
 
         protected override void InitAttribute()
         {
+            moveSpeed = 2.0f;
             // ÊýÖµÀà
             attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
-            attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
-            attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
-
+            RegisterCommonStates();
 
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, 100);
             attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100);

@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace My.Map.Scene
@@ -10,7 +10,7 @@ namespace My.Map.Scene
     {
         [Header("Agent")]
         public float maxMoveSpeed = 5f;
-        public float maxAccel = 20f;
+        private float maxAccel = 999f;
         public float damping = 0f;              // 线性阻尼（可选）
 
         [Header("Soft Separation (for Enemy)")]
@@ -33,8 +33,7 @@ namespace My.Map.Scene
 
         private float radius;
 
-        public Vector2 DesiredVel { get; set; } = Vector2.zero;
-
+        public Func<Vector2>? GetDisiredVelFunc { get; set; }
 
         void Awake()
         {
@@ -53,7 +52,11 @@ namespace My.Map.Scene
 
         void FixedUpdate()
         {
-            var finalDesiredVel = DesiredVel;
+            if (GetDisiredVelFunc == null)
+            {
+                return;
+            }
+            var finalDesiredVel = GetDisiredVelFunc();
 
             // 2) 敌人间软性散开（玩家可关闭）
             if (enableSeparation && separationStrength > 0f && separationRadius > 0f)

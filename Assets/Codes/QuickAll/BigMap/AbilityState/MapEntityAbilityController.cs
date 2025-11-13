@@ -458,6 +458,17 @@ namespace My.Map.Entity
 
         public bool TryInterrupt(InterruptRequest req)
         {
+            if(CurrentCtx == null)
+            {
+                return false;
+            }
+
+            if (CurrentCtx.PhaseIndex >= CurrentCtx.AbilityConfig.Phases.Count)
+            {
+                Debug.Log("TryInterrupt satate wrror phase index >= count");
+                return false;
+            }
+
             var phase = CurrentCtx.AbilityConfig.Phases[CurrentCtx.PhaseIndex];
             if (phase == null) return false;
 

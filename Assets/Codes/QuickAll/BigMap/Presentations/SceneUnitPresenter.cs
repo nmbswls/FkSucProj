@@ -4,10 +4,12 @@ using Map.Logic;
 using My.Map.Entity;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem.HID;
+using static UnityEngine.GraphicsBuffer;
 
 
 public interface IMapWeaponHolder
@@ -85,6 +87,7 @@ namespace My.Map.Scene
             if(!CharacterController)
             {
                 CharacterController = GetComponent<SimpleCharacterController>();
+                CharacterController.GetDisiredVelFunc = GetFixedDesiredVel;
             }
         }
 
@@ -108,34 +111,34 @@ namespace My.Map.Scene
 
             UpdateVisible(dt);
 
-            if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
-                || UnitEntity.dashIntent != null || UnitEntity.knockBackIntent != null)
-            {
-                UnitEntity.activeMoveVec = Vector2.zero;
-            }
-            else
-            {
-                float currMoveSpeed = GetCurrentMoveSpeed();
-                Vector2 targetMoveVel;
-                // 优先让受控移动生效
-                if (UnitEntity.targettedMoveIntent != null && UnitEntity.targettedMoveIntent.targettedDesireDir != null)
-                {
-                    if((UnitEntity.targettedMoveIntent.MoveTarget - UnitEntity.Pos).magnitude < 0.05f)
-                    {
-                        targetMoveVel = Vector2.zero;
-                    }
-                    else
-                    {
-                        targetMoveVel = UnitEntity.targettedMoveIntent.targettedDesireDir * currMoveSpeed;
-                    }
-                }
-                else
-                {
-                    targetMoveVel = freeMoveDir * currMoveSpeed;
-                }
+            //if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
+            //    || UnitEntity.dashIntent != null || UnitEntity.knockBackIntent != null)
+            //{
+            //    UnitEntity.activeMoveVec = Vector2.zero;
+            //}
+            //else
+            //{
+            //    float currMoveSpeed = GetCurrentMoveSpeed();
+            //    Vector2 targetMoveVel;
+            //    // 优先让受控移动生效
+            //    if (UnitEntity.targettedMoveIntent != null && UnitEntity.targettedMoveIntent.targettedDesireDir != null)
+            //    {
+            //        if((UnitEntity.targettedMoveIntent.MoveTarget - UnitEntity.Pos).magnitude < 0.05f)
+            //        {
+            //            targetMoveVel = Vector2.zero;
+            //        }
+            //        else
+            //        {
+            //            targetMoveVel = UnitEntity.targettedMoveIntent.targettedDesireDir * currMoveSpeed;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        targetMoveVel = freeMoveDir * currMoveSpeed;
+            //    }
 
-                UnitEntity.activeMoveVec = Vector2.MoveTowards(UnitEntity.activeMoveVec, targetMoveVel, acceleration * dt);
-            }
+            //    UnitEntity.activeMoveVec = Vector2.MoveTowards(UnitEntity.activeMoveVec, targetMoveVel, acceleration * dt);
+            //}
 
             // 不锁面向时 调整
             if (UnitEntity.GetAttr(AttrIdConsts.LockFace) == 0)
@@ -169,13 +172,98 @@ namespace My.Map.Scene
             }
 
             UpdateFaceDirIndicator();
-
-            if(CharacterController)
-            {
-                CharacterController.DesiredVel = UnitEntity.activeMoveVec + UnitEntity.externalVel;
-            }
+            
         }
 
+        private Vector2 smoothedTarget;
+
+        /// <summary>
+        /// 底层物理移动
+        /// </summary>
+        /// <returns></returns>
+        public Vector2 GetFixedDesiredVel()
+        {
+            if(UnitEntity == null) return Vector2.zero;
+            float arriveRaiuds = 0.12f;
+            if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
+                || UnitEntity.dashIntent != null || UnitEntity.knockBackIntent != null)
+            {
+                //UnitEntity.activeMoveVec = Vector2.zero;
+                return UnitEntity.externalVel;
+            }
+            else
+            {
+                Vector2 pos = transform.position;
+                float currMoveSpeed = GetCurrentMoveSpeed();
+                Vector2 targetMoveVel;
+                // 优先让受控移动生效
+                if (UnitEntity.targetMoveIntent != null)
+                {
+                    float slowRadius = 1f;
+
+                    Vector2 movePos = UnitEntity.Pos;
+                    if (UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity)
+                    {
+                        movePos = UnitEntity.targetMoveIntent.FollowEntity.Pos;
+                    }
+                    else if (UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint)
+                    {
+                        movePos = UnitEntity.targetMoveIntent.FixedMoveTarget;
+                    }
+                    float maxSpeed = GetCurrentMoveSpeed();
+
+                    Vector2 toReal = movePos - smoothedTarget;
+                    float maxStep = maxSpeed * Time.fixedDeltaTime;
+                    smoothedTarget += Vector2.ClampMagnitude(toReal, maxStep);
+
+                    Vector2 toTarget = smoothedTarget - UnitEntity.Pos;
+                    float dist = toTarget.magnitude;
+
+                    float targetSpeed = (dist > slowRadius)
+                        ? maxSpeed
+                        : Mathf.Lerp(0f, maxSpeed, Mathf.InverseLerp(UnitEntity.targetMoveIntent.ArriveDistance, slowRadius, dist));
+
+                    Vector3 desired = dist > 1e-3f ? toTarget.normalized * targetSpeed : Vector3.zero;
+
+                    if (dist < UnitEntity.targetMoveIntent.ArriveDistance && desired.magnitude < 0.1f)
+                    {
+                        desired = Vector3.zero;
+                    }
+
+                    //float step = Time.fixedDeltaTime * currMoveSpeed;
+                    //if(UnitEntity.targettedMoveIntent.FixedMoveTarget != null)
+                    //{
+
+                    //}
+                    //else if (UnitEntity.targettedMoveIntent.FollowEntity != null)
+                    //{
+                    //    if ((UnitEntity.targettedMoveIntent.FollowEntity.Pos - pos).magnitude < step)
+                    //    {
+                    //        targetMoveVel = Vector2.zero;
+                    //    }
+                    //    else
+                    //    {
+                    //        targetMoveVel = UnitEntity.targettedMoveIntent.targettedDesireDir * currMoveSpeed;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    targetMoveVel = Vector2.zero;
+                    //}
+                    targetMoveVel = desired;
+                }
+                else
+                {
+                    targetMoveVel = freeMoveDir * currMoveSpeed;
+                }
+                //var clampedPos = WorldAreaManager.Instance.ClampPathToWalkable(transform.position, pos + targetMoveVel * Time.fixedDeltaTime);
+                return targetMoveVel + UnitEntity.externalVel;
+                //UnitEntity.activeMoveVec = Vector2.MoveTowards(UnitEntity.activeMoveVec, targetMoveVel, acceleration * dt);
+            }
+
+
+            //UnitEntity.activeMoveVec + UnitEntity.externalVel
+        }
 
         private bool _visibleNow = false;
         private float _updateVisibleTimer = 0;
@@ -225,15 +313,15 @@ namespace My.Map.Scene
 
         protected float GetCurrentMoveSpeed()
         {
-            if (UnitEntity.MoveActMode == BaseUnitLogicEntity.EUnitMoveActMode.PatrolFollow)
-            {
-                var followEntity = UnitEntity.LogicManager.AreaManager.GetLogicEntiy(this.UnitEntity.FollowPatrolId) as PatrolGroupLogicEntity;
-                if (followEntity == null)
-                {
-                    return UnitEntity.GetCurrSpeed();
-                }
-                return followEntity.MoveSpeed;
-            }
+            //if (UnitEntity.MoveActMode == BaseUnitLogicEntity.EUnitMoveActMode.PatrolFollow)
+            //{
+            //    var followEntity = UnitEntity.LogicManager.AreaManager.GetLogicEntiy(this.UnitEntity.FollowPatrolId) as PatrolGroupLogicEntity;
+            //    if (followEntity == null)
+            //    {
+            //        return UnitEntity.GetCurrSpeed();
+            //    }
+            //    return followEntity.MoveSpeed;
+            //}
             return UnitEntity.GetCurrSpeed();
         }
 
@@ -321,15 +409,33 @@ namespace My.Map.Scene
 
         public void UpdateTargettedMoveState()
         {
-            if (UnitEntity.targettedMoveIntent == null)
+            if (UnitEntity.targetMoveIntent == null)
             {
                 return;
             }
+            Vector2 destNow = navAgent.destination;
+
             // 重算路径
-            if (UnitEntity.targettedMoveIntent.NeedRecalculatePath)
+            if (UnitEntity.targetMoveIntent.NeedRecalculatePath)
             {
-                navAgent.SetDestination(UnitEntity.targettedMoveIntent.MoveTarget);
-                UnitEntity.targettedMoveIntent.NeedRecalculatePath = false;
+                if (UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity)
+                {
+                    navAgent.SetDestination(UnitEntity.targetMoveIntent.FollowEntity.Pos);
+                    UnitEntity.targetMoveIntent.NeedRecalculatePath = false;
+                }
+                else if(UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint)
+                {
+                    navAgent.SetDestination(UnitEntity.targetMoveIntent.FixedMoveTarget);
+                    UnitEntity.targetMoveIntent.NeedRecalculatePath = false;
+                }
+            }
+
+            if(UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity)
+            {
+                if ((destNow - UnitEntity.targetMoveIntent.FollowEntity.Pos).magnitude > 0.1f)
+                {
+                    navAgent.SetDestination(UnitEntity.targetMoveIntent.FollowEntity.Pos);
+                }
             }
 
             // pending中 等待寻找
@@ -340,10 +446,11 @@ namespace My.Map.Scene
 
             Vector2 currPos = transform.position;
 
-            UnitEntity.targettedMoveIntent.targettedDesireDir = Vector2.zero;
+            UnitEntity.targetMoveIntent.targettedDesireDir = Vector2.zero;
 
-            if ((currPos - UnitEntity.targettedMoveIntent.MoveTarget).magnitude < 0.1f)
+            if ((currPos - destNow).magnitude < UnitEntity.targetMoveIntent.ArriveDistance)
             {
+                Debug.Log("noooooooo close");
                 return;
             }
 
@@ -362,49 +469,8 @@ namespace My.Map.Scene
 
         protected void FixedUpdate()
         {
-            if (UnitEntity == null)
-            {
-                return;
-            }
-            //var clamped = GetClampedMoveVelocity();
-            var delta = UnitEntity.activeMoveVec * Time.deltaTime;
-            Vector2 pos = rb.position;
-            //rb.MovePosition(pos + delta);
-
-            //FixDynamicBlock();
+            
         }
-
-        //public Vector2 GetClampedMoveVelocity()
-        //{
-        //    // 你的移动速度（单位：米/秒）
-        //    float moveSpeed = 0.2f;
-        //    float dt = Time.fixedDeltaTime;
-
-        //    // 当前位置与目标位置
-        //    Vector2 pos = rb.position;
-        //    Vector2 target = UnitEntity.targettedMoveIntent.MoveTarget; // 需要有目标点
-        //    Vector2 dir = UnitEntity.targettedMoveIntent.targettedDesireDir; // 已归一化的方向向量（长度≈1）
-
-        //    // 距离与本帧位移
-        //    float dist = Vector2.Distance(pos, target);
-        //    float step = moveSpeed * dt;
-
-        //    // 停止/到达判定阈值，避免抖动
-        //    float arriveThreshold = 0.02f; // 可根据角色体型/速度调整
-
-        //    if (dist <= arriveThreshold)
-        //    {
-        //        return Vector2.zero;
-        //    }
-
-        //    // 裁剪步长：不要超过剩余距离
-        //    float clampedStep = Mathf.Min(step, dist);
-
-        //    // 也可以用指向目标的真实方向，避免旧方向与目标不一致
-        //    Vector2 realDir = (dist > 1e-6f) ? (target - pos).normalized : dir;
-
-        //    return realDir * clampedStep;
-        //}
 
         private float skin = 0.02f;
         private RaycastHit2D[] hits = new RaycastHit2D[8];
@@ -414,100 +480,6 @@ namespace My.Map.Scene
             bool iswall = ((1 << layer) & (1 << LayerMask.NameToLayer("Wall"))) != 0;
             return iswall;
         }
-
-        protected void FixDynamicBlock()
-        {
-            Vector2 v = UnitEntity.activeMoveVec + UnitEntity.externalVel;
-            float dt = Time.fixedDeltaTime;
-            if (v.sqrMagnitude < 1e-8f) return;
-
-            Vector2 pos = rb.position;
-            const int MaxSlides = 3;
-            float skin = this.skin; // 例如 0.02f
-            pos += v * dt;
-            //for (int iter = 0; iter < MaxSlides; iter++)
-            //{
-            //    float dist = v.magnitude * dt;
-            //    if (dist <= 1e-6f) break;
-
-            //    // Cast沿当前速度方向
-            //    int count = mainCol.Cast(v.normalized, hits, dist + skin, false);
-            //    // 选择最近“墙层”命中
-            //    int hitIndex = -1;
-            //    float bestDist = float.MaxValue;
-            //    for (int i = 0; i < count; i++)
-            //    {
-            //        int layer = hits[i].collider.gameObject.layer;
-            //        if (!IsWallLayer(layer)) continue; // 只对墙阻挡
-            //        if (hits[i].distance < bestDist) { bestDist = hits[i].distance; hitIndex = i; }
-            //    }
-
-            //    if (hitIndex < 0)
-            //    {
-            //        // 没有命中墙：直接位移
-            //        pos += v * dt;
-            //        break;
-            //    }
-            //    else
-            //    {
-            //        // 推到命中点前（减skin）
-            //        float allowed = Mathf.Max(0f, bestDist - skin);
-            //        pos += v.normalized * allowed;
-
-            //        // 对速度做“滑动投影”
-            //        Vector2 n = hits[hitIndex].normal; // 法线指向我们（Unity的2D/3D法线方向均为朝向碰撞体外侧）
-            //        float vn = Vector2.Dot(v, n);
-            //        if (vn < 0f)
-            //        {
-            //            v = v - vn * n; // 去除法线分量，保留切向速度
-            //        }
-
-            //        // 如果投影后速度很小，结束
-            //        if (v.sqrMagnitude < 1e-6f)
-            //            break;
-
-            //        // 继续下一轮（可能撞到另一面墙，迭代滑动）
-            //        // 注意：不要再对“单位层”进行阻挡，否则贴墙滑动会被其他单位卡住
-            //    }
-            //}
-
-            rb.MovePosition(pos);
-        }
-
-        //void ApplySoftInteration(ref Vector2 v, float dt)
-        //{
-        //    var neighbors = Physics2D.OverlapCircleAll(rb.position, neighborRadius, unitsLayerMask);
-        //    foreach (var col in neighbors)
-        //    {
-        //        if (col.attachedRigidbody == rb) continue;
-        //        Vector2 pij = (Vector2)col.attachedRigidbody.position - rb.position;
-        //        float dist = pij.magnitude;
-        //        if (dist < 1e-4f) continue;
-
-        //        Vector2 n = pij / dist;
-        //        Vector2 vj = GetNeighborVelocity(col); // 需要你维护
-        //        Vector2 vr = v - vj;
-
-        //        // 相向度：正值表示逼近
-        //        float approach = Vector2.Dot(vr, n);
-        //        if (approach > 0f)
-        //        {
-        //            // 法向阻尼
-        //            float k = softBlockK; // 0.4f
-        //            v -= k * approach * n;
-
-        //            // 侧向偏移（打破对冲）
-        //            float side = sideGain; // 拥挤时增大
-        //            Vector2 t = new Vector2(-n.y, n.x);
-        //            v += side * t;
-        //        }
-        //    }
-
-        //    // 拥挤时限速
-        //    int density = neighbors.Length;
-        //    float vmax = Mathf.Lerp(vMaxCrowd, vMaxNormal, Mathf.Clamp01(1f - (density - crowdStart) / (crowdPeak - crowdStart)));
-        //    v = Vector2.ClampMagnitude(v, vmax);
-        //}
 
 
         // 分离控制（基于目标分离速度）

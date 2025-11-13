@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using My.Map.Scene;
+using UnityEngine.UI;
 
 public class WorldAreaManager : MonoBehaviour
 {
@@ -151,4 +152,95 @@ public class WorldAreaManager : MonoBehaviour
         }
         return false;
     }
+
+
+    #region 可行走分析
+
+
+    // 采样多个点，保证角色体积不会越界
+    public Vector2 ClampPathToWalkable(
+    Vector2 current,
+    Vector2 desired,
+    bool enableSlide = true,
+    float maxStep = 0.2f) // 每次子步最大长度
+    {
+        Vector2 pos = current;
+        Vector2 totalDelta = desired - current;
+        float length = totalDelta.magnitude;
+        if (length <= Mathf.Epsilon)
+            return current;
+
+        Vector2 dir = totalDelta / length;
+        int steps = Mathf.CeilToInt(length / Mathf.Max(maxStep, 1e-4f));
+        float stepLen = length / steps;
+
+        for (int i = 0; i < steps; i++)
+        {
+            Vector2 stepTarget = pos + dir * stepLen;
+
+            if (IsWorldPosWalkable(stepTarget))
+            {
+                pos = stepTarget;
+                continue;
+            }
+
+            if (enableSlide)
+            {
+                Vector2 delta = stepTarget - pos;
+                Vector2 stepX = new Vector2(delta.x, 0f);
+                Vector2 stepY = new Vector2(0f, delta.y);
+
+                if (stepX.sqrMagnitude > 0f && IsWorldPosWalkable(pos + stepX))
+                {
+                    pos = pos + stepX;
+                    continue;
+                }
+                if (stepY.sqrMagnitude > 0f && IsWorldPosWalkable(pos + stepY))
+                {
+                    pos = pos + stepY;
+                    continue;
+                }
+            }
+
+            // 本子步无法前进，则终止，返回已达到的最近合法点
+            break;
+        }
+
+        return pos;
+    }
+
+    // 世界坐标判定入口
+    public bool IsWorldPosWalkable(Vector3 worldPos)
+    {
+        if (currentRoot == null) return false;
+
+        var cell = currentRoot.Grid.WorldToCell(worldPos);
+        return IsCellWalkable(cell);
+    }
+
+    private bool IsCellInBounds(Vector3Int cell)
+    {
+        return currentRoot.TileGround.cellBounds.Contains(cell);
+    }
+
+    private bool IsCellBlockedByTile(Vector3Int cell)
+    {
+        return currentRoot.TileHole != null && currentRoot.TileHole.GetTile(cell) != null;
+    }
+
+    private bool IsCellWalkable(Vector3Int cell)
+    {
+        // 边界外直接不可走
+        if (!IsCellInBounds(cell)) return false;
+        // 不在行走区域
+        if(currentRoot.TileGround.GetTile(cell) == null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+
+    #endregion
+
 }

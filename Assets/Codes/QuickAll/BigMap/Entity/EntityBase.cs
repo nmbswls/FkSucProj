@@ -178,6 +178,10 @@ namespace My.Map
             return attributeStore.GetAttr(attrId);
         }
 
+        public bool CheckHasState(string attrId)
+        {
+            return attributeStore.CheckHasState(attrId);
+        }
         public void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source, Dictionary<string, long> extraAttrs = null)
         {
             attributeStore.ApplyResourceChange(resourceId, delta, isDamage, source, extraAttrs);

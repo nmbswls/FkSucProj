@@ -14,6 +14,6 @@ public class TestPlayer : MonoBehaviour
         var input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         if (input.sqrMagnitude > 1f) input.Normalize();
 
-        CharacterController.DesiredVel = input * 3.0f;
+        //CharacterController.DesiredVel = input * 3.0f;
     }
 }

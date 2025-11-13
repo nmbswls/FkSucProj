@@ -106,7 +106,7 @@ namespace My.UI
                 panelId = "BeFckedWindow",
                 resourcePath = "UI/Prefabs/BeFckedWindow",
                 defaultLayer = UILayer.Overlay,
-                pooled = true,
+                pooled = false,
             });
 
         }
