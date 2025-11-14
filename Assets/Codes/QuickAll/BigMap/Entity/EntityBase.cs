@@ -20,7 +20,8 @@ namespace My.Map
         Monster,
         AreaEffect,
         DestroyObj,
-
+        GatherPoint,
+        AttractPoint,
         PatrolGroup,
     }
 

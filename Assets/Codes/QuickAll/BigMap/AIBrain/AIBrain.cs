@@ -86,8 +86,8 @@ namespace My.Map.Entity.AI
 
         public bool BrainActive = true;
 
-        public float ActionsFrequency = 0.5f;
-        public float DecisionFrequency = 0.5f;
+        public float ActionsFrequency = 0.1f;
+        public float DecisionFrequency = 0.1f;
 
         private List<AIBrainEvent> _pendingBrainEvents = new();
 
@@ -141,6 +141,12 @@ namespace My.Map.Entity.AI
                 distanceControl.goodDistance = 0.8f;
                 distanceControl.Initialization(this);
                 huntingState.Actions.Add(distanceControl);
+
+                //var quickControl = new AIActionQuickMove();
+                //quickControl.goodDistance = 0.8f;
+                //quickControl.Initialization(this);
+                //huntingState.Actions.Add(quickControl);
+                
             }
             //var idleState = new IdleBrainState(this);
             //idleState.RegisterAIAction(new AIActionChangeFace(this));

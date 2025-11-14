@@ -486,8 +486,8 @@ namespace My.Map.Entity
             var hitCfg = new MapAbilityEffectHitBoxCfg();
             hitCfg.EffectType = EAbilityEffectType.HitBox;
             hitCfg.Shape = MapAbilityEffectHitBoxCfg.EShape.Square;
-            hitCfg.Width = 1.2f;
-            hitCfg.Length = 1.5f;
+            hitCfg.Width = 0.9f;
+            hitCfg.Length = 1.2f;
             hitCfg.TargetEntityType = EEntityType.Player;
 
             {
@@ -511,6 +511,21 @@ namespace My.Map.Entity
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnExit });
 
             spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.9"
+                },
+            };
+
+            spec.Phases.Add(postPhase);
+
             return spec;
         }
 

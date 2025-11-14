@@ -220,4 +220,34 @@ namespace Config
             _byId.Clear();
         }
     }
+
+    public static class GatherPointCfgtLoader
+    {
+
+        private static Dictionary<string, MapDestoryObjConfig> _byId = new Dictionary<string, MapDestoryObjConfig>();
+
+        public static MapDestoryObjConfig Get(string cfgId)
+        {
+            if (_byId.TryGetValue(cfgId, out var data))
+                return data;
+
+            var loadOne = Load(cfgId);
+            _byId[cfgId] = loadOne;
+            return loadOne;
+        }
+
+
+        private static MapDestoryObjConfig Load(string cfgId)
+        {
+            var data = Resources.Load<MapDestoryObjConfig>($"Config/Entity/DestoryObj/{cfgId}");
+            if (data == null)
+                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/DestoryObj/{cfgId}");
+            return data;
+        }
+
+        public static void Clear()
+        {
+            _byId.Clear();
+        }
+    }
 }

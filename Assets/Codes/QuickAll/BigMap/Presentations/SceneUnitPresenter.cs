@@ -175,7 +175,7 @@ namespace My.Map.Scene
             
         }
 
-        private Vector2 smoothedTarget;
+        //private Vector2 smoothedTarget;
 
         /// <summary>
         /// 底层物理移动
@@ -199,37 +199,54 @@ namespace My.Map.Scene
                 // 优先让受控移动生效
                 if (UnitEntity.targetMoveIntent != null)
                 {
-                    float slowRadius = 1f;
+                    float slowRadius = UnitEntity.targetMoveIntent.ArriveDistance * 1.2f;
 
-                    Vector2 movePos = UnitEntity.Pos;
+                    Vector2 finishPos = UnitEntity.Pos;
                     if (UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity)
                     {
-                        movePos = UnitEntity.targetMoveIntent.FollowEntity.Pos;
+                        finishPos = UnitEntity.targetMoveIntent.FollowEntity.Pos;
                     }
                     else if (UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint)
                     {
-                        movePos = UnitEntity.targetMoveIntent.FixedMoveTarget;
+                        finishPos = UnitEntity.targetMoveIntent.FixedMoveTarget;
                     }
-                    float maxSpeed = GetCurrentMoveSpeed();
 
-                    Vector2 toReal = movePos - smoothedTarget;
-                    float maxStep = maxSpeed * Time.fixedDeltaTime;
-                    smoothedTarget += Vector2.ClampMagnitude(toReal, maxStep);
-
-                    Vector2 toTarget = smoothedTarget - UnitEntity.Pos;
+                    Vector2 toTarget = finishPos - UnitEntity.Pos;
                     float dist = toTarget.magnitude;
+
+                    float maxSpeed = GetCurrentMoveSpeed();
+                    if(UnitEntity.targetMoveIntent.SpeedType == BaseUnitLogicEntity.TargettedMoveIntent.ESpeedType.Slow)
+                    {
+                        maxSpeed = 1f;
+                    }
 
                     float targetSpeed = (dist > slowRadius)
                         ? maxSpeed
                         : Mathf.Lerp(0f, maxSpeed, Mathf.InverseLerp(UnitEntity.targetMoveIntent.ArriveDistance, slowRadius, dist));
 
+
+                    //UnitEntity.targetMoveIntent.targettedDesireDir
+
+
+                    //Vector2 toReal = movePos - smoothedTarget;
+                    //float maxStep = maxSpeed * Time.fixedDeltaTime;
+                    //smoothedTarget += Vector2.ClampMagnitude(toReal, maxStep);
+
+                    //Vector2 toTarget = smoothedTarget - UnitEntity.Pos;
+                    //float dist = toTarget.magnitude;
+
+                    
+
                     Vector3 desired = dist > 1e-3f ? toTarget.normalized * targetSpeed : Vector3.zero;
 
-                    if (dist < UnitEntity.targetMoveIntent.ArriveDistance && desired.magnitude < 0.1f)
+                    if (dist < UnitEntity.targetMoveIntent.ArriveDistance)
                     {
                         desired = Vector3.zero;
                     }
-
+                    else
+                    {
+                        desired = targetSpeed * UnitEntity.targetMoveIntent.targettedDesireDir;
+                    }
                     //float step = Time.fixedDeltaTime * currMoveSpeed;
                     //if(UnitEntity.targettedMoveIntent.FixedMoveTarget != null)
                     //{
@@ -322,6 +339,14 @@ namespace My.Map.Scene
             //    }
             //    return followEntity.MoveSpeed;
             //}
+            //if (UnitEntity.targetMoveIntent != null && UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity)
+            //{
+            //    if (UnitEntity.targetMoveIntent.FollowEntity is BaseUnitLogicEntity unit)
+            //    {
+            //        return unit.GetCurrSpeed();
+            //    }
+            //}
+
             return UnitEntity.GetCurrSpeed();
         }
 
@@ -450,7 +475,6 @@ namespace My.Map.Scene
 
             if ((currPos - destNow).magnitude < UnitEntity.targetMoveIntent.ArriveDistance)
             {
-                Debug.Log("noooooooo close");
                 return;
             }
 
@@ -463,7 +487,7 @@ namespace My.Map.Scene
             Vector3 desired3 = navAgent.desiredVelocity;
             Vector2 desired = new Vector2(desired3.x, desired3.y);
             desired = desired.normalized;
-            UnitEntity.targettedMoveIntent.targettedDesireDir = desired;
+            UnitEntity.targetMoveIntent.targettedDesireDir = desired;
         }
 
 

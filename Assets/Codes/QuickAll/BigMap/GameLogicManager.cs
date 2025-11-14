@@ -240,6 +240,13 @@ public class GameLogicManager : ILogicEntityFactory
                     newEntity = newDdestroyObj;
                 }
                 break;
+            case EEntityType.AttractPoint:
+                {
+                    var newAttractPoint = new AttractPointLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                    newEntity = newAttractPoint;
+                }
+                break;
+                
             case EEntityType.PatrolGroup:
                 {
                     var patrolGroup = new PatrolGroupLogicEntity(this, record.Id, record.CfgId, record.Position, record);

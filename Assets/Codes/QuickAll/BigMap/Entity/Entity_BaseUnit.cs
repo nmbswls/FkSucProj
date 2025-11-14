@@ -70,7 +70,21 @@ namespace My.Map
             public float LastTriggerTime;
         }
 
-        public List<AttractInfo> attractInfos = new();
+        public Dictionary<long, AttractInfo> attractInfos = new();
+        public void GetAttracted(IAttractSource attractSrc)
+        {
+            if(attractInfos.TryGetValue(attractSrc.Id, out var info))
+            {
+                info = new()
+                {
+                    SrcId = attractSrc.Id,
+                };
+                attractInfos[attractSrc.Id] = info;
+            }
+
+            info.Pos = attractSrc.Pos;
+            info.LastTriggerTime = LogicTime.time;
+        }
 
         public UnitNoticeInfo PlayerNoticeInfo = new();
         public UnitEnmityComp EnmityComp;
@@ -368,6 +382,16 @@ namespace My.Map
 
             public ETargettedMoveType MoveType;
 
+
+            public enum ESpeedType
+            {
+                Normal = 0,
+                Slow,
+                Dash,
+            }
+
+            public ESpeedType SpeedType;
+
             public Vector2 FixedMoveTarget;
             public ILogicEntity? FollowEntity;
 
@@ -378,9 +402,10 @@ namespace My.Map
             public bool NeedRecalculatePath;
         }
 
+
         public TargettedMoveIntent? targetMoveIntent;
 
-        public void StartTargettedMove(TargettedMoveIntent.ETargettedMoveType moveType, ILogicEntity? followedEntity, Vector2 fixedPoint, float arriveDistance, bool clearNav = false)
+        public void StartTargettedMove(TargettedMoveIntent.ETargettedMoveType moveType, ILogicEntity? followedEntity, Vector2 fixedPoint, float arriveDistance, bool clearNav = false, TargettedMoveIntent.ESpeedType speedType = TargettedMoveIntent.ESpeedType.Normal)
         {
             if (targetMoveIntent == null)
             {
@@ -388,6 +413,7 @@ namespace My.Map
             }
 
             targetMoveIntent.MoveType = moveType;
+            targetMoveIntent.SpeedType = speedType;
 
             targetMoveIntent.FollowEntity = followedEntity;
             targetMoveIntent.FixedMoveTarget = fixedPoint;
