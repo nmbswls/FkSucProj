@@ -14,6 +14,7 @@ namespace My.Map.Scene
     public class SceneNpcPresenter : SceneUnitPresenter, ISceneInteractable
     {
 
+        public string ShowName => gameObject.name;
         public NpcUnitLogicEntity NpcEntity
         {
             get
@@ -74,18 +75,18 @@ namespace My.Map.Scene
             return true;
         }
 
-        public void TriggerInteract(string interactSelection)
+        public void TriggerInteract(int selectionId)
         {
             if (NpcEntity.IsInBattle)
             {
                 return;
             }
 
-            if (interactSelection.Equals("深度榨取!"))
+            if (selectionId == 1)
             {
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
             }
-            else
+            else if(selectionId == 2)
             {
                 if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
                 {
@@ -115,16 +116,37 @@ namespace My.Map.Scene
             return transform.position + new Vector3(0, 0.25f, 0);
         }
 
-        public List<string> GetInteractSelections()
+
+        /// <summary>
+        /// 1 shendu
+        /// 2 吸
+        /// </summary>
+        /// <returns></returns>
+        public List<SceneInteractSelection> GetInteractSelections()
         {
+            var ret = new List<SceneInteractSelection>();
+
+
             if (UnitEntity.CheckHasBuff("unsensored"))
             {
-                return new List<string>() { "深度榨取!" };
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 1,
+                    SelectContent = "Int",
+
+                });
             }
             else
             {
-                return new List<string>() { "吸!" };
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 2,
+                    SelectContent = "Int",
+
+                });
             }
+
+            return ret;
         }
     }
 }

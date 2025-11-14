@@ -105,14 +105,14 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
 
         if (D.useCCD)
         {
-            var hitResult = Physics2D.CircleCast(start, D.radius, _dir, delta.magnitude, 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("Units"));
+            var hitResult = Physics2D.CircleCast(start, D.radius, _dir, delta.magnitude, 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("MapTarget"));
             hit = hitResult.collider;
             hitSomething = hitResult.collider != null;
         }
         else
         {
             _pos = end;
-            var col = Physics2D.OverlapCircle(_pos, D.radius, 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("Units"));
+            var col = Physics2D.OverlapCircle(_pos, D.radius, 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("MapTarget"));
             if (col != null)
             {
                 hitSomething = true;
@@ -152,7 +152,7 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
         {
             return true;
         }
-        else if(col.gameObject.layer == LayerMask.NameToLayer("Units"))
+        else if(col.gameObject.layer == LayerMask.NameToLayer("MapTarget"))
         {
             var unitPresent = tgt.GetComponentInParent<SceneUnitPresenter>();
             if (unitPresent == null || !unitPresent.CheckValid()) return false;

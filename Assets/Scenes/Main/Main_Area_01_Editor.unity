@@ -317,7 +317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d1471b91e8c6354baaeae85988e1f15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 8
+  EntityType: 10
   CfgId: patrol_01
   BindRoomId: 
   AppearCond:
@@ -1449,6 +1449,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d609f8caf6d254cb4efc7783791cad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Grid: {fileID: 0}
+  TileGround: {fileID: 0}
+  TileHole: {fileID: 0}
   PlayerBornPos: {fileID: 422780440}
   StaticPrefabRoot: {fileID: 857680099}
 --- !u!1 &1522895670

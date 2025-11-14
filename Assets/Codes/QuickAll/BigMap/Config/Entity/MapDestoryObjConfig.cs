@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Config.Unit
 {
-    [CreateAssetMenu(menuName = "GP/Entity/DestoryObj")]
+    [CreateAssetMenu(menuName = "GP/Config/Entity/DestoryObj")]
     [Serializable]
     public class MapDestoryObjConfig : ScriptableObject
     {

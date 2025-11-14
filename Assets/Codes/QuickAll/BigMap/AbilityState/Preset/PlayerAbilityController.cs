@@ -23,6 +23,8 @@ namespace My.Map.Entity
 
             "zhaqu",
             "deep_zhaqu",
+
+            "spawn_attract"
         };
 
         public PlayerAbilityController(BaseUnitLogicEntity owner) : base(owner)

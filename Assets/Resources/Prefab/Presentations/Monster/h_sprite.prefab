@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2768882411378357333}
-  m_Layer: 12
+  m_Layer: 20
   m_Name: FaceIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5498592981686372390}
   - component: {fileID: 5490873246994604226}
-  m_Layer: 12
+  m_Layer: 20
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7206513549484514200}
-  m_Layer: 12
+  m_Layer: 20
   m_Name: Weapon01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,7 +158,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6487020006799734520}
   - component: {fileID: 4754350832141041876}
-  m_Layer: 12
+  m_Layer: 20
   m_Name: NavAgent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +212,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7921256209700466238}
   - component: {fileID: 637426610165199311}
-  m_Layer: 12
+  m_Layer: 20
   m_Name: WeaponRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 8125375396503032286}
   - component: {fileID: 6397431487169124009}
   - component: {fileID: -8185054516667358998}
-  m_Layer: 12
+  m_Layer: 20
   m_Name: h_sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,6 +283,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9010000572920847535}
+  - {fileID: 5655504048822740051}
   - {fileID: 6487020006799734520}
   - {fileID: 2768882411378357333}
   - {fileID: 7921256209700466238}
@@ -406,7 +407,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxMoveSpeed: 5
-  maxAccel: 20
   damping: 0
   enableSeparation: 1
   separationRadius: 1
@@ -414,13 +414,80 @@ MonoBehaviour:
   separationDeadZone: 0.12
   separationQueryMask:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 1048576
   separationTag: 
   dynamicBlockQueryMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 524288
   nonPenPadding: 0.05
   dynamicQueryExtra: 1
+--- !u!1 &6837034865137548966
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5655504048822740051}
+  - component: {fileID: 4310700889283009870}
+  m_Layer: 12
+  m_Name: Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5655504048822740051
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6837034865137548966}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8552881982338698837}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!70 &4310700889283009870
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6837034865137548966}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.3, y: 0.6}
+  m_Direction: 0
 --- !u!1 &7113165256381354715
 GameObject:
   m_ObjectHideFlags: 0
@@ -431,7 +498,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4737499605935740084}
   - component: {fileID: 6153958473050264797}
-  m_Layer: 12
+  m_Layer: 20
   m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,8 +558,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1150949881
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: b0b13fccedbbc0243acde6180912a042, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -515,7 +582,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9010000572920847535}
   - component: {fileID: 2190805339782641006}
-  m_Layer: 12
+  m_Layer: 20
   m_Name: View
   m_TagString: Untagged
   m_Icon: {fileID: 0}

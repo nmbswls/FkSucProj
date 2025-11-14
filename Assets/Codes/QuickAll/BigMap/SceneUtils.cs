@@ -39,7 +39,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
     {
         List<ILogicEntity> retList = new();
         float angleDeg = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        var hitCount = Physics2D.OverlapBoxNonAlloc(orgPos,size, angleDeg, hits, 1 << LayerMask.NameToLayer("Units"));
+        var hitCount = Physics2D.OverlapBoxNonAlloc(orgPos,size, angleDeg, hits, 1 << LayerMask.NameToLayer("MapTarget"));
         for(int i=0;i< hitCount;i++)
         {
             var trans = hits[i].transform;
@@ -83,7 +83,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
     public List<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius,  EntityFilterParam? filter)
     {
         List<ILogicEntity> retList = new();
-        var hitCount = Physics2D.OverlapCircleNonAlloc(orgPos, radius, hits, 1 << LayerMask.NameToLayer("Units"));
+        var hitCount = Physics2D.OverlapCircleNonAlloc(orgPos, radius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
         for (int i = 0; i < hitCount; i++)
         {
             var trans = hits[i].transform;

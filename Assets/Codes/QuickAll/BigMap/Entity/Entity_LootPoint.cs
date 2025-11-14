@@ -160,6 +160,37 @@ namespace My.Map
             
         }
 
+        public bool CanLoot()
+        {
+            if(cacheConfig.LootRequiment == null)
+            {
+                return true;
+            }
+
+            bool match = true;
+            switch (cacheConfig.LootRequiment.ReqType)
+            {
+                case MapLootPointConfig.ELootReqType.HoldItem:
+                    {
+                        if (!LogicManager.playerDataManager.CheckHaveItem(cacheConfig.LootRequiment.Param3, cacheConfig.LootRequiment.Param1))
+                        {
+                            match = false;
+                        }
+                    }
+                    break;
+            }
+
+
+            if (!match)
+            {
+                LogicManager.viewer.ShowFakeFxEffect("Ìõ¼þ²»×ã", Pos);
+                return false;
+            }
+
+            return true;
+        }
+            
+
         public void Add(ItemStack s)
         {
             if (s != null && !s.IsEmpty)

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Config.Map
 {
 
-    [CreateAssetMenu(menuName = "GP/Entity/LootPoint")]
+    [CreateAssetMenu(menuName = "GP/Config/Entity/LootPoint")]
     [Serializable]
     public  class MapLootPointConfig : ScriptableObject
     {

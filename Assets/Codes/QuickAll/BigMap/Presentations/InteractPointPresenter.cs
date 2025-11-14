@@ -1,3 +1,4 @@
+using Config.Map;
 using Map.Entity;
 using My.Map.Entity;
 using System;
@@ -15,24 +16,38 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
+        public string ShowName => gameObject.name;
+
+        public InteractPointLogic RealLogic { get { return (InteractPointLogic)_logic; } }
+
         public Vector3 GetHintAnchorPosition()
         {
             return GetWorldPosition();
         }
 
-        public void SetInteractExpandStatus(bool expanded)
+
+        public void TriggerInteract(int selectionId)
         {
-            EventOnInteractStateChanged?.Invoke(expanded);
+            RealLogic.DoTriggerInteract(selectionId);
         }
 
-        public void TriggerInteract(string interactSelection)
+        public List<SceneInteractSelection> GetInteractSelections()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public List<string> GetInteractSelections()
-        {
-            return new() { "Int" };
+            var ret = new List<SceneInteractSelection>();
+            string intName = "int";
+            {
+                if (RealLogic.CurrStatusId == 0)
+                {
+                    var stateConf = RealLogic.cacheCfg.MainStatusInfo;
+                    intName = stateConf.InteractName;
+                }
+            }
+            ret.Add(new SceneInteractSelection() { 
+                SelectId = 1,
+                SelectContent = intName,
+                Selectable = true,
+            });
+            return ret;
         }
 
         public bool CanInteractEnable()

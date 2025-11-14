@@ -11,8 +11,7 @@ public class DynamicNpcExportGenerator : DynamicEntityExportGenerator
     public string NpcName;
     public int CampId;
 
-    public BaseUnitLogicEntity.EUnitEnmityMode EnmityMode;
-    public BaseUnitLogicEntity.EUnitMoveActMode MoveMode;
+    public BaseUnitLogicEntity.EMoveBehaveType MoveMode;
 
     public bool IsPeace;
 
@@ -24,5 +23,6 @@ public class DynamicNpcExportGenerator : DynamicEntityExportGenerator
     public string NpcTag = string.Empty;
 
     public bool InitUnsensored = false;
+    public string EnmityConfId;
 
 }

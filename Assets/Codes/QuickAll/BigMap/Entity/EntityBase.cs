@@ -89,6 +89,8 @@ namespace My.Map
         event Action<Vector2, Vector2> EventOnEntityMove;
 
         bool MarkDead { get; set; }
+
+        void OnMapLogicEvent(IMapLogicEvent ev);
     }
 
     public static class LogicEvents
@@ -129,6 +131,8 @@ namespace My.Map
         public ISceneAbilityViewer? viewer; // 表现层接口
 
         public string BelongRoomId { get; set; } = string.Empty;
+
+        public float LifeTime;
 
         public LogicEntityBase(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord)
         {
@@ -298,8 +302,33 @@ namespace My.Map
         }
 
 
-        public virtual void Tick(float dt) { }
+        public virtual void Tick(float dt) 
+        {
+            TickLifeTime(dt);
+        }
 
+
+        protected virtual void TickLifeTime(float dt)
+        {
+            if (!MarkDead && LifeTime > 0)
+            {
+                LifeTime -= dt;
+                if (LifeTime <= 0)
+                {
+                    // 死亡
+                    LogicManager.AreaManager.RequestEntityDie(this.Id);
+
+                    LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+                    {
+                        Name = "Death",
+                        Param3 = this.Id,
+                        Param4 = 3, // 3 时间到期
+                    });
+
+                    //EventOnDeath?.Invoke();
+                }
+            }
+        }
         protected void NotifyStateChanged(object payload)
         {
         }
@@ -364,7 +393,7 @@ namespace My.Map
             return false;
         }
 
-        public virtual void OnMapLogicEvent(in IMapLogicEvent evt)
+        public virtual void OnMapLogicEvent(IMapLogicEvent evt)
         {
         }
 

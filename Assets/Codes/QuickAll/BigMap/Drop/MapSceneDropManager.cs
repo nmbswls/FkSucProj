@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static UnityEditor.PlayerSettings;
 using static UnityEditor.Progress;
 
@@ -51,6 +52,8 @@ namespace My.Map.Scene
             CheckInteractWithDrops();
 
             TickRecycleOutInteract();
+
+            TickRecycleDrops();
         }
 
         private List<long> cacheList = new();
@@ -86,6 +89,10 @@ namespace My.Map.Scene
             foreach ( var item in cacheList)
             {
                 var dropData = MainGameManager.Instance.gameLogicManager.globalDropCollection.FindDrop(item);
+                if (dropData == null)
+                {
+                    continue;
+                }
                 var dropPos = dropData.Position;
                 if (dropData.AutoPick && LogicTime.time - dropData.CreateTime > 1.5f)
                 {
@@ -150,21 +157,30 @@ namespace My.Map.Scene
             Vector2 playerPos = MainGameManager.Instance.playerScenePresenter.GetWorldPosition();
             foreach (var key in _spawnedInteractObjs.Keys.ToList())
             {
-                var dropPos = MainGameManager.Instance.gameLogicManager.globalDropCollection.FindDrop(key).Position;
-                var o = _spawnedInteractObjs[key];
-                float distSqr = (dropPos - playerPos).sqrMagnitude;
-                if (distSqr > activateDistance * activateDistance)
+                var drop = MainGameManager.Instance.gameLogicManager.globalDropCollection.FindDrop(key);
+                bool needRemove = false;
+                if(drop == null)
                 {
-                    _spawnedInteractObjs.Remove(key);
+                    needRemove = true;
+                }
+                else
+                {
+                    var dropPos = drop.Position;
+                    var o = _spawnedInteractObjs[key];
+                    float distSqr = (dropPos - playerPos).sqrMagnitude;
+                    if (distSqr > activateDistance * activateDistance)
+                    {
+                        _spawnedInteractObjs.Remove(key);
 
-                    if(_innerPool.Count < 20)
-                    {
-                        o.gameObject.SetActive(false);
-                        _innerPool.Enqueue(o);
-                    }
-                    else
-                    {
-                        GameObject.Destroy(o.gameObject);
+                        if (_innerPool.Count < 20)
+                        {
+                            o.gameObject.SetActive(false);
+                            _innerPool.Enqueue(o);
+                        }
+                        else
+                        {
+                            GameObject.Destroy(o.gameObject);
+                        }
                     }
                 }
             }
@@ -238,6 +254,20 @@ namespace My.Map.Scene
                     GameObject.Destroy(spawnedInteract.gameObject);
                 }
             }
+        }
+
+        private float _lastRecycleTime;
+        private float _dropIt;
+        public void TickRecycleDrops()
+        {
+            if (LogicTime.time < _lastRecycleTime + 30.0f)
+            {
+                return;
+            }
+
+            _lastRecycleTime = LogicTime.time;
+
+
         }
     }
 }

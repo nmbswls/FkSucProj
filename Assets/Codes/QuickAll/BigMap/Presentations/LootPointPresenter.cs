@@ -15,6 +15,8 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
+        public string ShowName => gameObject.name;
+
         public LootPointLogicEntity LootEntity { get { return (LootPointLogicEntity)_logic; } }
         public override void ApplyState(object state)
         {
@@ -35,10 +37,10 @@ namespace My.Map.Scene
         /// 触发交互
         /// </summary>
         /// <param name="triggerIdx"></param>
-        public void TriggerInteract(string interactSelection)
+        public void TriggerInteract(int selectionId)
         {
             // 只有一个触发点
-            if (interactSelection == "unlock")
+            if (selectionId == 1)
             {
                 // 尝试解锁
                 if (!LootEntity.IsLocked)
@@ -48,7 +50,7 @@ namespace My.Map.Scene
                 }
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("unlock_loot_point", target: LootEntity); ;
             }
-            else if (interactSelection == "loot")
+            else if (selectionId == 2)
             {
                 // 尝试解锁
                 if (LootEntity.IsLocked)
@@ -69,16 +71,33 @@ namespace My.Map.Scene
             }
         }
 
-        public List<string> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections()
         {
+            var ret = new List<SceneInteractSelection>();
+            
             if (LootEntity.IsLocked)
             {
-                return new() { "unlock" };
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 1,
+                    SelectContent = "unlock",
+                });
             }
             else
             {
-                return new() { "loot" };
+
+                bool canLoot = LootEntity.CanLoot();
+
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 2,
+                    SelectContent = "loot",
+                    Selectable = canLoot,
+                });
             }
+
+            return ret;
+
         }
 
         public bool CanInteractEnable()

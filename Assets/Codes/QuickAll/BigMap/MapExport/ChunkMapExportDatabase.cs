@@ -73,9 +73,8 @@ public class ChunkMapExportDatabase : ScriptableObject
     [Serializable]
     public class DynamicEntityInitInfo4Unit : DynamicEntityInitInfo
     {
-        public BaseUnitLogicEntity.EUnitEnmityMode EnmityMode;
-
-        public BaseUnitLogicEntity.EUnitMoveActMode MoveMode;
+        public BaseUnitLogicEntity.EMoveBehaveType MoveMode;
+        public string EnmityConfId;
 
         public bool IsPeace;
 

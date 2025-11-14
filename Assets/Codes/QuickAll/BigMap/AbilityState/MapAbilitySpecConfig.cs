@@ -119,5 +119,14 @@ namespace My.Map.Entity
 
         public int Priority = 10;
 
+        public enum ETargetType
+        {
+            NoTarget,
+            Point,
+            Circle,
+        }
+        public ETargetType TargetType;
+        public float Range1;
+        public float Range2;
     }
 }

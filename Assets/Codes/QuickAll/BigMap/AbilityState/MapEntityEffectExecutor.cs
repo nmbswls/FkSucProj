@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using My.Map.Logic;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
 using static GameLogicManager;
@@ -429,6 +430,52 @@ namespace My.Map.Entity
                 return;
             }
             ctx.Env.globalThrowManager.TryLaunchThrow(throwLauncher, throwTarget, "", realCfg.Duration, realCfg.ThrowMainBuffId, realCfg.Priority);
+        }
+    }
+
+    public class AbilityEffectExecutor4SpawnEntity : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectSpawnEntityCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4SpawnEntity cfg error");
+                return;
+            }
+
+            LogicEntityRecord record = null;
+            switch (realCfg.EntityType)
+            {
+                case EEntityType.Npc:
+                case EEntityType.Monster:
+                    {
+                        record = new LogicEntityRecord4UnitBase();
+                    }
+                    break;
+                default:
+                    {
+                        record = new LogicEntityRecord();
+                    }
+                    break;
+            }
+
+            if(record == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4SpawnEntity record miss");
+                return;
+            }
+
+            if(ctx.CastDir == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4SpawnEntity cast dir invalid");
+                return;
+            }
+
+            record.LifeTime = realCfg.LifeTime;
+            record.Position = ctx.CastDir.Value;
+
+            ctx.Env.CreateEntityByRecord(record);
         }
     }
 }

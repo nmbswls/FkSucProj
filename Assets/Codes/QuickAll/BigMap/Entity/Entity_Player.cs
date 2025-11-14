@@ -196,10 +196,6 @@ namespace My.Map
 
         #endregion
 
-
-        protected override void UpdateNoticeInfo()
-        {
-        }
     }
 }
 

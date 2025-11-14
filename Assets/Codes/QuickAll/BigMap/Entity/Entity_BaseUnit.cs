@@ -9,44 +9,32 @@ using My.Map.Entity.AI;
 using My.Map.Entity;
 using My.Map.Logic;
 using static My.Map.Entity.MapEntityAbilityController;
+using static My.Map.BaseUnitLogicEntity;
 
 
 namespace My.Map
 {
     
-    public class UnitNoticeInfo
-    {
-        public ILogicEntity TargetId { get; set; }
-        public float LastSeeTime { get; set; }
-
-        public bool HideOnFace { get; set; }
-    }
-
-    public abstract class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity
+    public abstract class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity, INoticeRecordComp
     {
         public MapEntityAbilityController abilityController;
         public float viewRadius = 8f;
         public float fovDegrees = 90f;
+
+
         public LogicEntityRecord4UnitBase UnitBaseRecord { get { return (LogicEntityRecord4UnitBase)BindingRecord; } }
 
-        public enum EUnitEnmityMode
-        {
-            Never,
-            LowClothes,
-            Always,
-        }
-        public EUnitEnmityMode EnmityMode;
-
-        public enum EUnitMoveActMode
+        public enum EMoveBehaveType
         {
             NoMove,
             Patrol,
             Spawn,
             Hunting,
-            PatrolFollow,
+            InPatrolGroup,
         }
 
-        public EUnitMoveActMode MoveActMode;
+        public EMoveBehaveType MoveBehaveMode;
+
         public long FollowPatrolId;
         public Vector2 PatrolGroupRelativePos;
 
@@ -65,34 +53,52 @@ namespace My.Map
         /// </summary>
         public class AttractInfo
         {
-            public long SrcId;
+            public float AttractPower;
             public Vector2 Pos;
+            public IAttractSource? AttractSource;
             public float LastTriggerTime;
         }
 
-        public Dictionary<long, AttractInfo> attractInfos = new();
-        public void GetAttracted(IAttractSource attractSrc)
+        public AttractInfo? attractInfo;
+        public void ApplyAttracted(Vector2 pos, float power, IAttractSource? attractSrc)
         {
-            if(attractInfos.TryGetValue(attractSrc.Id, out var info))
+
+            if(attractInfo != null && attractInfo.AttractPower > power && LogicTime.time - attractInfo.LastTriggerTime < 5.0f)
             {
-                info = new()
-                {
-                    SrcId = attractSrc.Id,
-                };
-                attractInfos[attractSrc.Id] = info;
+                Debug.Log("");
+                return;
             }
 
-            info.Pos = attractSrc.Pos;
-            info.LastTriggerTime = LogicTime.time;
+            attractInfo = new();
+            attractInfo.Pos = pos;
+            attractInfo.AttractPower = power;
+            attractInfo.LastTriggerTime = LogicTime.time;
+            attractInfo.AttractSource = attractSrc;
         }
 
-        public UnitNoticeInfo PlayerNoticeInfo = new();
+
+        public bool CheckAttractState()
+        {
+            if(attractInfo == null)
+            {
+                return false;
+            }
+
+            if(LogicTime.time - attractInfo.LastTriggerTime > 5.0f)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public UnitEnmityComp EnmityComp;
+        public UnitNoticeRecordComp NoticeRecordComp;
 
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
-            this.MoveActMode = unitRecord.ActMode;
+            this.MoveBehaveMode = unitRecord.MoveBehaveType;
             this.FollowPatrolId = unitRecord.PatrolFollowId;
             this.PatrolGroupRelativePos = unitRecord.PatrolGroupRelativePos;
 
@@ -120,8 +126,15 @@ namespace My.Map
                 }
             }
             
-            EnmityComp = new();
-            EnmityComp.Initialize(this);
+            
+            if(Type != EEntityType.Player)
+            {
+                NoticeRecordComp = new();
+                NoticeRecordComp.Initialize(this);
+
+                EnmityComp = new();
+                EnmityComp.Initialize(this);
+            }
         }
 
         public override void Tick(float dt)
@@ -151,58 +164,29 @@ namespace My.Map
             AIBrain?.Tick(dt);
 
 
-            if (attributeStore.GetAttr(AttrIdConsts.LockFace) == 0)
-            {
-                if (LogicTime.time - PlayerNoticeInfo.LastSeeTime < 5.0f)
-                {
-                    var diff = LogicManager.playerLogicEntity.Pos - this.Pos;
-                    if (diff.magnitude > 1e-2)
-                    {
-                        FaceDir = diff;
-                    }
-                }
-                else if (targetMoveIntent != null)
-                {
-                    if(targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FollowEntity)
-                    {
-                        var diff = targetMoveIntent.FollowEntity.Pos - this.Pos;
-                        if (diff.magnitude > 1e-2)
-                        {
-                            FaceDir = diff.normalized;
-                        }
-                    }
-                    else if(targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FixPoint)
-                    {
-                        var diff = targetMoveIntent.FixedMoveTarget - this.Pos;
-                        if (diff.magnitude > 1e-2)
-                        {
-                            FaceDir = diff.normalized;
-                        }
-                    }
-                }
-            }
+            UpdateFaceDir();
 
             attributeStore.Commit();
 
-            UpdateNoticeInfo();
-
             EnmityComp?.Tick(dt);
 
-            if(EnmityComp != null)
-            {
-                // 见到
-                if(EnmityComp.IsEnmityState && LogicTime.time - PlayerNoticeInfo.LastSeeTime < 1f)
-                {
-                    IsInBattle = true;
-                }
-            }
+            //if(EnmityComp != null)
+            //{
+            //    // 见到
+            //    if(EnmityComp.IsEnmityState && LogicTime.time - PlayerNoticeInfo.LastSeeTime < 1f)
+            //    {
+            //        IsInBattle = true;
+            //    }
+            //}
 
-            if(IsInBattle)
-            {
+            //if(IsInBattle)
+            //{
 
-            }
+            //}
 
             UpdateHMode();
+
+            NoticeRecordComp?.TryUpdateNoticeList();
         }
 
 
@@ -219,17 +203,48 @@ namespace My.Map
             }
         }
 
-        protected virtual void UpdateNoticeInfo()
+        protected virtual void UpdateFaceDir()
         {
-            if (LogicManager.visionSenser.CanSee(Pos, FaceDir, LogicManager.playerLogicEntity.Pos, 5.0f, 60f))
+
+            if (attributeStore.CheckHasState(AttrIdConsts.LockFace))
             {
-                // 玩家处于视野内
-                PlayerNoticeInfo.LastSeeTime = LogicTime.time;
-                //PlayerNoticeInfo.HideOnFace = 
+                return;
             }
-            
-            
+
+            if (NoticeRecordComp != null)
+            {
+                if (NoticeRecordComp.CheckNoticeEntity(LogicManager.playerLogicEntity.Id))
+                {
+                    var diff = LogicManager.playerLogicEntity.Pos - this.Pos;
+                    if (diff.magnitude > 1e-2)
+                    {
+                        FaceDir = diff;
+                        return;
+                    }
+                }
+            }
+
+            if (targetMoveIntent != null)
+            {
+                if (targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FollowEntity)
+                {
+                    var diff = targetMoveIntent.FollowEntity.Pos - this.Pos;
+                    if (diff.magnitude > 1e-2)
+                    {
+                        FaceDir = diff.normalized;
+                    }
+                }
+                else if (targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FixPoint)
+                {
+                    var diff = targetMoveIntent.FixedMoveTarget - this.Pos;
+                    if (diff.magnitude > 1e-2)
+                    {
+                        FaceDir = diff.normalized;
+                    }
+                }
+            }
         }
+
 
         public override void OnEntityDie(ResourceDeltaIntent lastIntent)
         {
@@ -465,6 +480,8 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.ForbidOp, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.NoSelect, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Ghost, initialBase: 0);
         }
 
 
@@ -602,11 +619,16 @@ namespace My.Map
         /// 检查事件 
         /// </summary>
         /// <param name="evt"></param>
-        public override void OnMapLogicEvent(in IMapLogicEvent evt)
+        public override void OnMapLogicEvent(IMapLogicEvent evt)
         {
             if(EnmityComp != null)
             {
                 EnmityComp.OnMapLogicEvent(evt);
+            }
+
+            if(evt is MLEAttractEvent realEvt)
+            {
+                ApplyAttracted(realEvt.Pos, realEvt.Power, realEvt.AttractSource);
             }
         }
 
@@ -625,6 +647,11 @@ namespace My.Map
             abilityController.TryInterrupt(req);
 
             LogicManager.globalThrowManager.TryInterruptThrowByLauncher(this, req);
+        }
+
+        public bool CheckNoticeEntity(long entityId)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

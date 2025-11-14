@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Config.Unit
 {
-    [CreateAssetMenu(menuName = "GP/Unit/Npc")]
+    [CreateAssetMenu(menuName = "GP/Config/Entity/Npc")]
     [Serializable]
     public class MapNpcConfig : AbsMapUnitConfig
     {

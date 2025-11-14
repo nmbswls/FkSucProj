@@ -118,7 +118,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if(_brain.UnitEntity.MoveActMode != BaseUnitLogicEntity.EUnitMoveActMode.PatrolFollow)
+            if(_brain.UnitEntity.MoveBehaveMode != BaseUnitLogicEntity.EMoveBehaveType.InPatrolGroup)
             {
                 return 0;
             }
@@ -163,7 +163,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.MoveActMode != BaseUnitLogicEntity.EUnitMoveActMode.Hunting)
+            if (_brain.UnitEntity.MoveBehaveMode != BaseUnitLogicEntity.EMoveBehaveType.Hunting)
             {
                 return 0;
             }

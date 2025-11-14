@@ -17,6 +17,7 @@ namespace Map.Logic.Events
         Common,
         AddBuff,
         OnHit,
+        Attract,
     }
 
 

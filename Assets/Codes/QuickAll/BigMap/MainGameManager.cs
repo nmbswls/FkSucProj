@@ -201,8 +201,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
                     AlwaysActive =  true,
 
                     IsPeace = false,
-                    ActMode = BaseUnitLogicEntity.EUnitMoveActMode.Hunting,
-                    EnmityMode = BaseUnitLogicEntity.EUnitEnmityMode.Always,
+                    MoveBehaveType = BaseUnitLogicEntity.EMoveBehaveType.Hunting,
+                    EnmityConfId = "default_monster",
                 });
             }
         }

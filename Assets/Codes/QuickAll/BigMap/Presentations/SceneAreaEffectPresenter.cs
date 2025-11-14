@@ -15,6 +15,8 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
+        public string ShowName => gameObject.name;
+
         public AreaEffectLogicEntity AreaEffectEntity { get { return (AreaEffectLogicEntity)_logic; } }
 
 
@@ -51,7 +53,7 @@ namespace My.Map.Scene
             {
                 case Config.Map.MapAreaEffectConfig.EShape.Square:
                     {
-                        int count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.Radius, AreaEffectEntity.cacheCfg.Radius), 0, hits, 1 << LayerMask.NameToLayer("Units"));
+                        int count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.Radius, AreaEffectEntity.cacheCfg.Radius), 0, hits, 1 << LayerMask.NameToLayer("MapTarget"));
                         // 遍历命中，筛选实现了接口的对象
                         for (int i = 0; i < count; i++)
                         {
@@ -68,7 +70,7 @@ namespace My.Map.Scene
                     break;
                 case Config.Map.MapAreaEffectConfig.EShape.Circle:
                     {
-                        int count = Physics2D.OverlapCircleNonAlloc(transform.position, AreaEffectEntity.cacheCfg.Radius, hits, 1 << LayerMask.NameToLayer("Units"));
+                        int count = Physics2D.OverlapCircleNonAlloc(transform.position, AreaEffectEntity.cacheCfg.Radius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
 
                         // 遍历命中，筛选实现了接口的对象
                         for (int i = 0; i < count; i++)
@@ -110,14 +112,14 @@ namespace My.Map.Scene
             throw new System.NotImplementedException();
         }
 
-        public void TriggerInteract(string interactSelection)
+        public void TriggerInteract(int selectionId)
         {
             throw new System.NotImplementedException();
         }
 
-        public List<string> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections()
         {
-            return new() { "Int" };
+            return new();
         }
     }
 

@@ -102,7 +102,13 @@ namespace My.UI
             this.ChooseInteractMenu.gameObject.SetActive(false);
 
             ChooseObjMenu.gameObject.SetActive(true);
-            ChooseObjMenu.SetData(CurrInteractPoint.Select(item => { return item.Id.ToString(); }).ToList());
+            var innerList = new List<(long, string, bool)>();
+
+            foreach (var one in CurrInteractPoint)
+            {
+                innerList.Add(new(one.Id, one.ShowName, true));
+            }
+            ChooseObjMenu.SetData(innerList);
 
         }
 
@@ -132,7 +138,12 @@ namespace My.UI
             );
             ChooseInteractMenu.transform.localPosition = localPos;
 
-            ChooseInteractMenu.SetData(new List<string>(selections));
+            var innerList = new List<(long, string, bool)>();
+            foreach(var one in selections)
+            {
+                innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));
+            }
+            ChooseInteractMenu.SetData(innerList);
         }
 
 
@@ -206,7 +217,7 @@ namespace My.UI
                     Debug.LogError("nooooo bind interact");
                     return false;
                 }
-                var content = ChooseInteractMenu.data[idx];
+                int content =(int) ChooseInteractMenu.data[idx].Item1;
                 currBindPoint.TriggerInteract(content);
             }
             return false;

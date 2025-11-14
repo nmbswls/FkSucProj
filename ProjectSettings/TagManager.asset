@@ -18,15 +18,15 @@ TagManager:
   - 
   - Basic
   - Tile
-  - Units
+  - MapTarget
   - MapHitBox
   - MapBullet
   - Wall
   - Trigger
   - MapRoom
   - MapViewObc
-  - 
-  - 
+  - UnitsPlayer
+  - UnitsOther
   - 
   - 
   - 

@@ -27,7 +27,6 @@ namespace My.Map
 
         // summon info
         public long SummonerId;
-        public float LifeTime;
 
 
         public override EEntityType Type => EEntityType.Monster;
@@ -37,25 +36,7 @@ namespace My.Map
         {
             base.Tick(dt);
 
-            if (!MarkDead && LifeTime > 0)
-            {
-                LifeTime -= dt;
-                if (LifeTime <= 0)
-                {
-                    // 死亡
-                    LogicManager.AreaManager.RequestEntityDie(this.Id);
-
-                    LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
-                    {
-                        Name = "Death",
-                        Param3 = this.Id,
-                        Param4 = 3, // 3 时间到期
-                    });
-
-
-                    //EventOnDeath?.Invoke();
-                }
-            }
+            
         }
 
         protected override void InitAttribute()

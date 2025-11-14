@@ -25,6 +25,7 @@ namespace My.Map.Logic
         public EFactionId FactionId;
 
         public bool DeadMark;
+        public float LifeTime;
 
         public string BelongRoomId;
         public bool AlwaysActive;
@@ -42,9 +43,9 @@ namespace My.Map.Logic
     {
         public bool IsPeace;
 
-        public BaseUnitLogicEntity.EUnitMoveActMode ActMode;
+        public BaseUnitLogicEntity.EMoveBehaveType MoveBehaveType;
 
-        public BaseUnitLogicEntity.EUnitEnmityMode EnmityMode;
+        public string EnmityConfId;
         public List<string> MoveWayPoints;
 
         public long PatrolFollowId;
@@ -292,6 +293,10 @@ namespace My.Map.Logic
                 var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, innerListener);
                 subs.Add(sub);
             }
+            {
+                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Attract, innerListener);
+                subs.Add(sub);
+            }
 
             // ╪сть cacheDatabase
             cacheDatabase = Resources.Load<ChunkMapExportDatabase>($"Area/{areaId}");
@@ -353,7 +358,7 @@ namespace My.Map.Logic
                 var entity = GetLogicEntiy(id, false);
                 if(entity != null)
                 {
-
+                    entity.OnMapLogicEvent(ev);
                 }
             }
         }
@@ -427,7 +432,7 @@ namespace My.Map.Logic
 
 
 
-                            oneRecrord.ActMode = BaseUnitLogicEntity.EUnitMoveActMode.PatrolFollow;
+                            oneRecrord.MoveBehaveType = BaseUnitLogicEntity.EMoveBehaveType.InPatrolGroup;
                             oneRecrord.PatrolFollowId = id;
                             oneRecrord.PatrolGroupRelativePos = one.RelativePos;
 
@@ -447,8 +452,8 @@ namespace My.Map.Logic
                         var initInfo = (DynamicEntityInitInfo4Unit)refreshInfo.InitInfo;
 
                         unitRecord.IsPeace = initInfo.IsPeace;
-                        unitRecord.ActMode = initInfo.MoveMode;
-                        unitRecord.EnmityMode = initInfo.EnmityMode;
+                        unitRecord.MoveBehaveType = initInfo.MoveMode;
+                        unitRecord.EnmityConfId = initInfo.EnmityConfId;
                         unitRecord.Unsensored = initInfo.InitUnsensored;
 
                         record = unitRecord;

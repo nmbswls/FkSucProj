@@ -61,6 +61,9 @@ namespace My.Map
             ApplyAttract();
         }
 
+        /// <summary>
+        /// Ö´ÐÐÎüÒýÁ¦
+        /// </summary>
         protected void ApplyAttract()
         {
             if(_lastAttrctTime == 0 || (LogicTime.time - _lastAttrctTime) > AttractInterval)
@@ -80,9 +83,10 @@ namespace My.Map
                     var unit = surround as BaseUnitLogicEntity;
                     if (unit != null)
                     {
-                        unit.GetAttracted(this);
+                        unit.ApplyAttracted(Pos, AttractPower, this);
                     }
                 }
+
             }
         }
     }

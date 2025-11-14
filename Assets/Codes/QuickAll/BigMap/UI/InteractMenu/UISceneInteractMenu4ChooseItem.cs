@@ -22,7 +22,7 @@ namespace My.UI
         public Color textNormal = Color.white;
         public Color textSelected = Color.yellow;
 
-        public void Bind(string title, bool isCurrent, bool isSelected)
+        public void Bind(string title, bool isCurrent, bool isSelected, bool selectable)
         {
             titleText.text = title;
 

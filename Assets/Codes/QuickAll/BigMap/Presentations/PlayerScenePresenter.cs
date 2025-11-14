@@ -14,6 +14,8 @@ namespace My.Map.Scene
     public class PlayerScenePresenter : SceneUnitPresenter
     {
 
+        public GhostTrailSpawner MoveTrailSpawner;
+
         protected override void Awake()
         {
             base.Awake();
@@ -34,9 +36,20 @@ namespace My.Map.Scene
         {
             base.Tick(dt);
 
+            if (_logic == null) return;
+
             TryUpdateInRoomStatus(dt);
 
             TickMoveNoiseEffect(LogicTime.time, dt);
+
+            if(PlayerEntity.dashIntent != null)
+            {
+                MoveTrailSpawner.IsShowing = true;
+            }
+            else
+            {
+                MoveTrailSpawner.IsShowing = false;
+            }
         }
 
 

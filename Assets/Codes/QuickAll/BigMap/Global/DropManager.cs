@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using My.Map;
+using System.Linq;
 
 namespace Map.Drop
 {
@@ -13,10 +14,32 @@ namespace Map.Drop
         public event Action<DropData, Vector2?> EvOnDropAdd;
         public event Action<long> EvOnDropRemove;
 
+        public Dictionary<string, long> LostItems = new Dictionary<string, long>();
+
         public GlobalMapDropCollection(GameLogicManager logicManager)
         {
+            _lastRecycleTime = LogicTime.time;
         }
 
+        private float _lastRecycleTime;
+        private float _dropIt;
+        public void Tick(float dt)
+        {
+            if(LogicTime.time < _lastRecycleTime + 60.0f)
+            {
+                return;
+            }
+
+            _lastRecycleTime = LogicTime.time;
+
+            foreach(var k in _drops.Keys.ToList())
+            {
+                if (_drops[k].CreateTime + 10 * 60f < LogicTime.time )
+                {
+                    RemoveDrop(k, true);
+                }
+            }
+        }
 
         public void CreateDrop(string itemId, int amount, Vector2 position, bool autoPick, Vector2? sourcePos)
         {
@@ -25,7 +48,7 @@ namespace Map.Drop
             EvOnDropAdd?.Invoke(dropData, sourcePos);
         }
 
-        public void RemoveDrop(long id)
+        public void RemoveDrop(long id, bool isRecycle)
         {
             _drops.Remove(id);
             EvOnDropRemove?.Invoke(id);

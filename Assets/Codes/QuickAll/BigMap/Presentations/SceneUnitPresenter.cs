@@ -55,6 +55,8 @@ namespace My.Map.Scene
 
         public void Update()
         {
+            if (_logic == null) return;
+
             Tick(LogicTime.deltaTime);
         }
 
@@ -88,6 +90,15 @@ namespace My.Map.Scene
             {
                 CharacterController = GetComponent<SimpleCharacterController>();
                 CharacterController.GetDisiredVelFunc = GetFixedDesiredVel;
+                CharacterController.ClampValidPos = (desired) =>
+                {
+                    return WorldAreaManager.Instance.ClampPathToWalkable(transform.position, desired);
+                };
+                CharacterController.IsGhoseMove = () =>
+                {
+                    if (UnitEntity == null) return false;
+                    return UnitEntity.CheckHasState(AttrIdConsts.Ghost);
+                };
             }
         }
 
@@ -95,7 +106,6 @@ namespace My.Map.Scene
 
         public override void Tick(float dt)
         {
-            if (_logic == null) return;
 
             if (navAgent != null)
             {
@@ -224,19 +234,6 @@ namespace My.Map.Scene
                         ? maxSpeed
                         : Mathf.Lerp(0f, maxSpeed, Mathf.InverseLerp(UnitEntity.targetMoveIntent.ArriveDistance, slowRadius, dist));
 
-
-                    //UnitEntity.targetMoveIntent.targettedDesireDir
-
-
-                    //Vector2 toReal = movePos - smoothedTarget;
-                    //float maxStep = maxSpeed * Time.fixedDeltaTime;
-                    //smoothedTarget += Vector2.ClampMagnitude(toReal, maxStep);
-
-                    //Vector2 toTarget = smoothedTarget - UnitEntity.Pos;
-                    //float dist = toTarget.magnitude;
-
-                    
-
                     Vector3 desired = dist > 1e-3f ? toTarget.normalized * targetSpeed : Vector3.zero;
 
                     if (dist < UnitEntity.targetMoveIntent.ArriveDistance)
@@ -247,6 +244,7 @@ namespace My.Map.Scene
                     {
                         desired = targetSpeed * UnitEntity.targetMoveIntent.targettedDesireDir;
                     }
+
                     //float step = Time.fixedDeltaTime * currMoveSpeed;
                     //if(UnitEntity.targettedMoveIntent.FixedMoveTarget != null)
                     //{

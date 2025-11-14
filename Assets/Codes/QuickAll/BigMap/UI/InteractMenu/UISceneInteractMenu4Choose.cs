@@ -21,7 +21,7 @@ namespace My.UI
         public string itemPrefabName = "TabItem"; // 在 SuperScrollView 的 ItemPrefabMgr 里注册的名字
 
         [Header("Data")]
-        public List<string> data = new List<string>();
+        public List<(long, string, bool)> data = new List<(long, string, bool)>();
 
 
         public RectTransform ScrollView;
@@ -98,7 +98,7 @@ namespace My.UI
 
             bool isCurrent = (index == currentIndex);
             bool isSelected = (index == selectedIndex);
-            viewComp.Bind(data[index], isCurrent, isSelected);
+            viewComp.Bind(data[index].Item2, isCurrent, isSelected, data[index].Item3);
 
             // 固定高度（与 itemHeight 保持一致）
             var rt = item.GetComponent<RectTransform>();
@@ -122,7 +122,7 @@ namespace My.UI
 
                 bool isCurrent = (idx == currentIndex);
                 bool isSelected = (idx == selectedIndex);
-                viewComp.Bind(data[idx], isCurrent, isSelected);
+                viewComp.Bind(data[idx].Item2, isCurrent, isSelected, data[idx].Item3);
             }
         }
 
@@ -144,9 +144,9 @@ namespace My.UI
         public int SelectedIndex => selectedIndex;
 
         // 动态设置数据并重建
-        public void SetData(List<string> newData, int initialIndex = 0)
+        public void SetData(List<(long, string, bool)> newData, int initialIndex = 0)
         {
-            data = newData ?? new List<string>();
+            data = newData ?? new List<(long, string, bool)>();
             currentIndex = Mathf.Clamp(initialIndex, 0, Mathf.Max(0, data.Count - 1));
             selectedIndex = -1;
             listView.SetListItemCount(data.Count, false);

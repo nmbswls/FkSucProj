@@ -34,7 +34,9 @@ namespace My.Map.Scene
         private float radius;
 
         public Func<Vector2>? GetDisiredVelFunc { get; set; }
+        public Func<Vector2, Vector2>? ClampValidPos { get; set; }
 
+        public Func<bool> IsGhoseMove { get; set; }
         void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
@@ -57,6 +59,11 @@ namespace My.Map.Scene
                 return;
             }
             var finalDesiredVel = GetDisiredVelFunc();
+            bool ghost = false;
+            if(IsGhoseMove != null)
+            {
+                ghost = IsGhoseMove();
+            }
 
             // 2) 敌人间软性散开（玩家可关闭）
             if (enableSeparation && separationStrength > 0f && separationRadius > 0f)
@@ -79,7 +86,15 @@ namespace My.Map.Scene
 
             // 5) 对动态单位做“无推挤”的非穿透位置约束
             // 玩家约束敌人；敌人约束玩家（你也可以双向都约束，效果更饱满）
-            targetPos = ProjectAgainstDynamics(targetPos, radius, dynamicBlockQueryMask);
+            if(!ghost)
+            {
+                targetPos = ProjectAgainstDynamics(targetPos, radius, dynamicBlockQueryMask);
+            }
+
+            if(ClampValidPos != null)
+            {
+                targetPos = ClampValidPos(targetPos);
+            }
 
             //TryMoveWithStaticSkin();
 

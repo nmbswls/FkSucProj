@@ -19,6 +19,7 @@ namespace My.Map.Entity
         public const string Stun = "Stun";
         public const string ForbidOp = "ForbidOp";
         public const string NoSelect = "NoSelect";
+        public const string Ghost = "Ghost";
 
         public const string PlayerYinNeng = "PlayerYinNeng";
         public const string PlayerHunger = "PlayerHunger";

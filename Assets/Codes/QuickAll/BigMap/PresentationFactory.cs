@@ -37,6 +37,8 @@ public static class PresentationConfig
             case EEntityType.AreaEffect: return $"Prefab/Presentations/AreaEffect/{cfgId}";
             case EEntityType.DestroyObj:
                 return $"Prefab/Presentations/DestroyObj/{cfgId}";
+            case EEntityType.GatherPoint:
+                return $"Prefab/Presentations/GatherPoint/{cfgId}";
             case EEntityType.AttractPoint:
                 return $"Prefab/Presentations/AttractPoint/{cfgId}";
             case EEntityType.PatrolGroup:

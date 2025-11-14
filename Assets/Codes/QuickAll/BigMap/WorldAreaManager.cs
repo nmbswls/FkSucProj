@@ -157,12 +157,10 @@ public class WorldAreaManager : MonoBehaviour
     #region 可行走分析
 
 
-    // 采样多个点，保证角色体积不会越界
     public Vector2 ClampPathToWalkable(
-    Vector2 current,
-    Vector2 desired,
-    bool enableSlide = true,
-    float maxStep = 0.2f) // 每次子步最大长度
+        Vector2 current,
+        Vector2 desired,
+        float maxStep = 0.2f) // 每次子步最大长度
     {
         Vector2 pos = current;
         Vector2 totalDelta = desired - current;
@@ -184,22 +182,19 @@ public class WorldAreaManager : MonoBehaviour
                 continue;
             }
 
-            if (enableSlide)
-            {
-                Vector2 delta = stepTarget - pos;
-                Vector2 stepX = new Vector2(delta.x, 0f);
-                Vector2 stepY = new Vector2(0f, delta.y);
+            Vector2 delta = stepTarget - pos;
+            Vector2 stepX = new Vector2(delta.x, 0f);
+            Vector2 stepY = new Vector2(0f, delta.y);
 
-                if (stepX.sqrMagnitude > 0f && IsWorldPosWalkable(pos + stepX))
-                {
-                    pos = pos + stepX;
-                    continue;
-                }
-                if (stepY.sqrMagnitude > 0f && IsWorldPosWalkable(pos + stepY))
-                {
-                    pos = pos + stepY;
-                    continue;
-                }
+            if (stepX.sqrMagnitude > 0f && IsWorldPosWalkable(pos + stepX))
+            {
+                pos = pos + stepX;
+                continue;
+            }
+            if (stepY.sqrMagnitude > 0f && IsWorldPosWalkable(pos + stepY))
+            {
+                pos = pos + stepY;
+                continue;
             }
 
             // 本子步无法前进，则终止，返回已达到的最近合法点

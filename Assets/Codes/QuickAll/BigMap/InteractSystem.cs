@@ -9,14 +9,23 @@ public interface ISceneInteractable
 {
     long Id { get; }
 
+    string ShowName { get; }
+
     bool CanInteractEnable();
-    void TriggerInteract(string interactSelection);
+    void TriggerInteract(int selectionId);
 
     Vector3 GetHintAnchorPosition();
 
     //event Action<bool> EventOnInteractStateChanged;
 
-    List<string> GetInteractSelections();
+    List<SceneInteractSelection> GetInteractSelections();
+}
+
+public class SceneInteractSelection
+{
+    public int SelectId;
+    public string SelectContent;
+    public bool Selectable = true;
 }
 
 public class SceneInteractSystem

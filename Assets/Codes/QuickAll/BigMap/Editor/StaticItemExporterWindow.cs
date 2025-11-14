@@ -412,7 +412,7 @@ public class StaticItemExporterWindow : EditorWindow
             if (dynamicGen is DynamicNpcExportGenerator unitEntity)
             {
                 var initInfo = new DynamicEntityInitInfo4Unit();
-                initInfo.EnmityMode = unitEntity.EnmityMode;
+                initInfo.EnmityConfId = unitEntity.EnmityConfId;
                 initInfo.MoveMode = unitEntity.MoveMode;
                 initInfo.IsPeace = unitEntity.IsPeace;
                 initInfo.InitUnsensored = unitEntity.IsPeace;

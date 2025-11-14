@@ -57,7 +57,7 @@ namespace Config
         // 传入名称，如 "Fireball"；路径相对 Resources 根（不含扩展名）
         private static MapNpcConfig Load(string cfgId)
         {
-            var data = Resources.Load<MapNpcConfig>($"Config/Npc/{cfgId}");
+            var data = Resources.Load<MapNpcConfig>($"Config/Entity/Npc/{cfgId}");
             if (data == null)
                 Debug.LogError($"MapNpcConfigLoader not found at Resources/Config/Npc/{cfgId}");
             return data;
@@ -88,7 +88,7 @@ namespace Config
         // 传入名称，如 "Fireball"；路径相对 Resources 根（不含扩展名）
         private static MapMonsterConfig Load(string cfgId)
         {
-            var data = Resources.Load<MapMonsterConfig>($"Config/Monster/{cfgId}");
+            var data = Resources.Load<MapMonsterConfig>($"Config/Entity/Monster/{cfgId}");
             if (data == null)
                 Debug.LogError($"MapNpcConfigLoader not found at Resources/Config/Monster/{cfgId}");
             return data;
@@ -224,9 +224,9 @@ namespace Config
     public static class GatherPointCfgtLoader
     {
 
-        private static Dictionary<string, MapDestoryObjConfig> _byId = new Dictionary<string, MapDestoryObjConfig>();
+        private static Dictionary<string, GatherPointConfig> _byId = new Dictionary<string, GatherPointConfig>();
 
-        public static MapDestoryObjConfig Get(string cfgId)
+        public static GatherPointConfig Get(string cfgId)
         {
             if (_byId.TryGetValue(cfgId, out var data))
                 return data;
@@ -237,11 +237,11 @@ namespace Config
         }
 
 
-        private static MapDestoryObjConfig Load(string cfgId)
+        private static GatherPointConfig Load(string cfgId)
         {
-            var data = Resources.Load<MapDestoryObjConfig>($"Config/Entity/DestoryObj/{cfgId}");
+            var data = Resources.Load<GatherPointConfig>($"Config/Entity/GatherPoint/{cfgId}");
             if (data == null)
-                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/DestoryObj/{cfgId}");
+                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/GatherPoint/{cfgId}");
             return data;
         }
 

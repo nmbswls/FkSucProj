@@ -148,35 +148,13 @@ namespace My.Map.Entity.AI
                 //huntingState.Actions.Add(quickControl);
                 
             }
-            //var idleState = new IdleBrainState(this);
-            //idleState.RegisterAIAction(new AIActionChangeFace(this));
+            
 
-            //RegisterState(idleState);
-
-            //var followState = new FollowPatrolGroupBrainState(this);
-            //followState.RegisterAIAction(new AIActionFollower(this));
-            //RegisterState(followState);
-
-            //var hModeState = new HModeChaseBrainState(this);
-            //hModeState.RegisterAIAction(new AIActionDistanceControl(this, 0.4f));
-            //RegisterState(hModeState);
-
-            //var combatState = new CombatChaseBrainState(this);
-            //combatState.RegisterAIAction(new AIActionDistanceControl(this, 0.4f));
-            //combatState.RegisterAIAction(new PrimaryUseSkillStrategy(this, 0.4f));
-            //RegisterState(hModeState);
-
-            //var returnState = new ReturnBrainState(this);
-            //returnState.RegisterAIAction(new AIActionMoveToReturnPos(this));
-            //RegisterState(returnState);
-
-            //var unitCfg = unitEntity.unitCfg;
-
-            if (unitEntity.MoveActMode == BaseUnitLogicEntity.EUnitMoveActMode.PatrolFollow)
+            if (unitEntity.MoveBehaveMode == BaseUnitLogicEntity.EMoveBehaveType.InPatrolGroup)
             {
                 TransitionToState("FollowPatrolGroup");
             }
-            else if(unitEntity.MoveActMode == BaseUnitLogicEntity.EUnitMoveActMode.Hunting)
+            else if(unitEntity.MoveBehaveMode == BaseUnitLogicEntity.EMoveBehaveType.Hunting)
             {
                 TransitionToState("Hunting");
             }

@@ -163,6 +163,8 @@ public class GameLogicManager : ILogicEntityFactory
         }
 
         AreaManager.Tick(dt);
+
+        globalDropCollection?.Tick(dt);
     }
 
     public void CreateNewEntityRecord(LogicEntityRecord record)
@@ -238,6 +240,12 @@ public class GameLogicManager : ILogicEntityFactory
                 {
                     var newDdestroyObj = new DestroyObjLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                     newEntity = newDdestroyObj;
+                }
+                break;
+            case EEntityType.GatherPoint:
+                {
+                    var newGatherPoint = new GatherPointLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                    newEntity = newGatherPoint;
                 }
                 break;
             case EEntityType.AttractPoint:
@@ -374,7 +382,14 @@ public class GameLogicManager : ILogicEntityFactory
                         executor = new AbilityEffectExecutor4DeepZhaqu();
                     }
                     break;
-                    
+
+                case MapAbilityEffectSpawnEntityCfg:
+                    {
+                        executor = new AbilityEffectExecutor4SpawnEntity();
+                    }
+                    break;
+
+
             }
 
             if (executor != null)

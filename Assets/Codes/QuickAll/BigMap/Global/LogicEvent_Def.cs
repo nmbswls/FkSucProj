@@ -23,6 +23,16 @@ namespace Map.Logic.Events
         public string Param6;
     }
 
+    public partial struct MLEAttractEvent : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.Common; } }
+
+        public Vector2 Pos;
+        public IAttractSource AttractSource;
+        public float Power;
+    }
+    
 
     #endregion
 

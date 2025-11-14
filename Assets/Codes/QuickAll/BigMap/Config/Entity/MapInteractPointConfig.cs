@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Config.Map
 {
 
-    [CreateAssetMenu(menuName = "GP/Unit/InteractPoint")]
+    [CreateAssetMenu(menuName = "GP/Config/Entity/InteractPoint")]
     [Serializable]
     public  class MapInteractPointConfig : ScriptableObject
     {
@@ -51,13 +51,14 @@ namespace Config.Map
         {
             public int StatusId;
 
+            public string InteractName;
             public InteractCheckCond CheckCond;
             public List<LogicInteractOutput> Outputs = new();
+            public bool HasBlock = false;
         }
 
         public InteractStatusInfo MainStatusInfo;
         public List<InteractStatusInfo> ExtraStatusInfos;
 
-        public bool WithBlock;
     }
 }

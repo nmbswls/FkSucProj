@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Config.Map
 {
 
-    [CreateAssetMenu(menuName = "GP/Unit/MapAreaEffect")]
+    [CreateAssetMenu(menuName = "GP/Config/Entity/MapAreaEffect")]
     [Serializable]
     public  class MapAreaEffectConfig : ScriptableObject
     {

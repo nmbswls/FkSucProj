@@ -11,6 +11,8 @@ namespace My.Map.Scene
         public long Id { get; set; }
         public long DropId { get; set; }
 
+        public string ShowName => gameObject.name;
+
         public event Action<bool> EventOnInteractStateChanged;
 
         public Vector2? SrcPos;
@@ -57,19 +59,26 @@ namespace My.Map.Scene
             return new Vector2(transform.position.x, transform.position.y) + new Vector2(0, 0f);
         }
 
-        public List<string> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections()
         {
-            return new List<string>() { "pick" };
+            var ret = new List<SceneInteractSelection>();
+            ret.Add(new SceneInteractSelection()
+            {
+                SelectId = 1,
+                SelectContent = "pick",
+
+            });
+            return ret;
         }
 
         public void SetInteractExpandStatus(bool expanded)
         {
         }
 
-        public void TriggerInteract(string interactSelection)
+        public void TriggerInteract(int selectionId)
         {
             Debug.Log("手动拾取触发");
-            MainGameManager.Instance.gameLogicManager.globalDropCollection.RemoveDrop(DropId);
+            MainGameManager.Instance.gameLogicManager.globalDropCollection.RemoveDrop(DropId, false);
         }
 
         public bool CanInteractEnable()

@@ -28,8 +28,6 @@ public class QuickDebugShow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-
         foreach (var k in hpBars.Keys.ToList())
         {
             if(hpBars[k].bindingUnit == null || !hpBars[k].bindingUnit.CheckValid())
@@ -40,6 +38,11 @@ public class QuickDebugShow : MonoBehaviour
             }
 
             hpBars[k].Val.text = hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.HP).ToString();
+            var attracted = hpBars[k].bindingUnit.UnitEntity.CheckAttractState();
+            if(attracted)
+            {
+                hpBars[k].Val.text += " a";
+            }
 
             var worldPos = hpBars[k].bindingUnit.GetWorldPosition();
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);

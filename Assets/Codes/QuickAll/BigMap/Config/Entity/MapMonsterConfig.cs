@@ -9,7 +9,7 @@ namespace Config.Unit
 
 
 
-    [CreateAssetMenu(menuName = "GP/Unit/Monster")]
+    [CreateAssetMenu(menuName = "GP/Config/Entity/Monster")]
     [Serializable]
     public class MapMonsterConfig : AbsMapUnitConfig
     {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Config.Unit
 {
-    [CreateAssetMenu(menuName = "GP/Entity/DestoryObj")]
+    [CreateAssetMenu(menuName = "GP/Config/Entity/DestoryObj")]
     [Serializable]
     public class GatherPointConfig : ScriptableObject
     {
@@ -15,7 +15,7 @@ namespace Config.Unit
         public bool CanRefresh = false;
         public float RefreshInterval = 200;
 
-        public int MaxCount = 3;
+        public int MaxCount = 1;
         public float GatherTime = 1.5f;
 
         public string DropBundleId;

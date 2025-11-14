@@ -63,6 +63,12 @@ namespace My.Map.Entity
                     var ab = CreateFixClothesAbility();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                {
+                    var ab = CreateSpawnAttractAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                
             }
 
             _abilityDict.TryGetValue(abilityName, out var abConfig);
@@ -159,10 +165,12 @@ namespace My.Map.Entity
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
             spec.Id = "default_dash";
             spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CoolDown = 1.0f;
 
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Executing",
+                PhaseBuff = new() { "phase_move"},
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -241,6 +249,7 @@ namespace My.Map.Entity
 
             spec.Id = "player_weapon";
             spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CoolDown = 0.5f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -262,7 +271,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "0.3"
                 },
             };
 
@@ -560,6 +569,41 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
         }
+
+        private static MapAbilitySpecConfig CreateSpawnAttractAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "spawn_attract";
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CoolDown = 10.0f;
+            spec.StackCount = 5;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
+
+
+            var effect = new MapAbilityEffectSpawnEntityCfg()
+            {
+                EntityType = EEntityType.AttractPoint,
+                CfgId = "attract_01",
+                LifeTime = 10.0f,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+        
     }
 
 }
