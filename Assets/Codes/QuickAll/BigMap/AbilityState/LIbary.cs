@@ -578,6 +578,8 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.Utility;
             spec.CoolDown = 10.0f;
             spec.StackCount = 5;
+            spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
+            spec.Range1 = 5.0f;
 
             var mainPhase = new MapAbilityPhase()
             {

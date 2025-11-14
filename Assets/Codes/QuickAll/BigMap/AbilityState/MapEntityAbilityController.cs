@@ -514,6 +514,12 @@ namespace My.Map.Entity
                 EntityOwner.LogicManager.viewer.CloseClickkkWindow(CurrentCtx.openClickkkType, isInterrupt);
                 CurrentCtx.openClickkkType = null;
             }
+
+            if(!isInterrupt)
+            {
+                //³¢ÊÔ½øÐÐcancel
+                //EntityOwner.viewer.TryCancelButtomProgress(CurrentCtx.ShowProgressShowId);
+            }
         }
 
         public GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility()

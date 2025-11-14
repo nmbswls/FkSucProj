@@ -203,6 +203,9 @@ namespace My.Map
             }
         }
 
+        /// <summary>
+        /// ¸üÐÂ³¯Ïò
+        /// </summary>
         protected virtual void UpdateFaceDir()
         {
 

@@ -84,6 +84,8 @@ namespace My.UI
                 return;
             }
 
+            this.HudMode = mode;
+
             if(mode == EHudMode.Normal)
             {
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);

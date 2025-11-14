@@ -38,7 +38,7 @@ namespace My.UI
             else if(AbilityConfig.TargetType == MapAbilitySpecConfig.ETargetType.Circle)
             {
                 PreviewCircle.SetActive(true);
-                PreviewCircle.transform.lossyScale = Vector3.one;
+                PreviewCircle.transform.localScale = Vector3.one * 100;
             }
         }
 
@@ -50,6 +50,15 @@ namespace My.UI
                 Vector3 sp = new Vector3(UnityEngine.Input.mousePosition.x, UnityEngine.Input.mousePosition.y, 1);
                 Vector3 wp = Camera.main.ScreenToWorldPoint(sp);
                 wp.z = 0; // 将 z 固定到你的世界平面（例如 0）
+
+                var dist = AbilityConfig.Range1;
+
+                var playerPos = MainGameManager.Instance.playerScenePresenter.transform.position;
+                playerPos.z = 0;
+                if (dist < (wp - playerPos).magnitude)
+                {
+                    wp = playerPos + (wp - playerPos).normalized * dist;
+                }
 
                 PreviewCircle.transform.position = wp;
 

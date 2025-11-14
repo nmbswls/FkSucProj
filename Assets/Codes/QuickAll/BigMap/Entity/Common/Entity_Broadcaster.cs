@@ -120,7 +120,7 @@ namespace My.Map.Entity
 
         public bool CheckNoticeEntity(long entityId)
         {
-            throw new NotImplementedException();
+            return false;
         }
     }
 

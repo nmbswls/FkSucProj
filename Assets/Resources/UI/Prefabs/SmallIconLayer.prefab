@@ -15,7 +15,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4751126722524691119
 RectTransform:
   m_ObjectHideFlags: 0
@@ -887,7 +887,6 @@ MonoBehaviour:
   panelId: SmallIconLayer
   canvasGroup: {fileID: 0}
   DebugIconsShower: {fileID: 6883983599750638273}
-  InteractHinter: {fileID: 4661185509916798222}
   InteractHintPrefab: {fileID: 8844658274879403763}
 --- !u!1 &8844658274879403763
 GameObject:
@@ -905,7 +904,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8031236816429454250
 RectTransform:
   m_ObjectHideFlags: 0

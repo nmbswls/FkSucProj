@@ -77,7 +77,7 @@ namespace My.UI
             this.HintText = hintText;
 
             valCounter = 0;
-            isPlaying = false;
+            isPlaying = true;
             isFading = false;
             fadingTimer = -1;
 
