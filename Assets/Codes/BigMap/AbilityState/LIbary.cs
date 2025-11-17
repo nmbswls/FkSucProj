@@ -510,7 +510,7 @@ namespace My.Map.Entity
 
                 throwEffect.ThrowMainBuffId = "be_fcked";
                 throwEffect.Priority = 1;
-                throwEffect.Duration = 2.0f;
+                throwEffect.Duration = 20f;
                 throwEffect.ThrowFailEffect = failEffect;
 
 

@@ -44,11 +44,6 @@ namespace My.Map.Scene
 
         public void Update()
         {
-            if(UnityEngine.Input.GetKeyDown(KeyCode.M))
-            {
-                MainGameManager.Instance.gameLogicManager.globalDropCollection.CreateDrop("1", 2, UnityEngine.Random.insideUnitCircle * 3f, true, null);
-            }
-
             CheckInteractWithDrops();
 
             TickRecycleOutInteract();

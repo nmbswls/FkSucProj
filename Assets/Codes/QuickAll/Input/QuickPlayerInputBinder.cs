@@ -163,7 +163,7 @@ namespace My.Input
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            OnLeftClick();
+            OnSceneLeftClick();
         }
 
         void OnRightDown(InputAction.CallbackContext ctx)
@@ -176,11 +176,17 @@ namespace My.Input
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            OnRightClick();
+            OnSceneRightClick();
         }
 
         public void OnPointerMove(InputAction.CallbackContext ctx)
         {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+
             LastPos = ctx.ReadValue<Vector2>();
 
             OnScenePointMove();
@@ -283,9 +289,15 @@ namespace My.Input
 
         public void OnScenePointMove()
         {
+            var player = MainGameManager.Instance.playerScenePresenter;
+            if (player == null || !player.CheckValid())
+            {
+                return;
+            }
+
             if (!LogicTime.paused)
             {
-                var player = MainGameManager.Instance.playerScenePresenter;
+                
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
 
@@ -299,7 +311,7 @@ namespace My.Input
 
         // 放入conroller里 不放在binder里
 
-        public void OnLeftClick()
+        public void OnSceneLeftClick()
         {
 
             if (!LogicTime.paused)
@@ -312,7 +324,7 @@ namespace My.Input
             }
         }
 
-        public void OnRightClick()
+        public void OnSceneRightClick()
         {
             if (!LogicTime.paused)
             {
@@ -332,6 +344,12 @@ namespace My.Input
 
         public void OnSpace(InputAction.CallbackContext ctx)
         {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+
             if (ctx.performed)
             {
                 if (uiRouter == null || !uiRouter.DispatchSpace())

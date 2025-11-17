@@ -14,10 +14,7 @@ public class MapGlobalNoiseEmitter : MonoBehaviour
     // Ê¾Àý£º°´¼ü´¥·¢ÔëÒô
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            EmitNoiseFixed(Random.Range(minNoise, maxNoise), Vector2.zero);
-        }
+        
     }
 
     public void EmitNoiseFixed(float noise01, Vector2 worldPos)

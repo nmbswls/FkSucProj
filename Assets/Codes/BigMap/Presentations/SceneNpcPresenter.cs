@@ -46,25 +46,41 @@ namespace My.Map.Scene
                 return false;
             }
 
-            var diff = transform.position - MainGameManager.Instance.playerScenePresenter.transform.position;
-            if (diff.magnitude > 2f)
+            if(MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
-                return false;
-            }
-
-            if (UnitEntity.CheckHasBuff("unsensored"))
-            {
-                if (UnitEntity.GetAttr(AttrIdConsts.DeepZhaChance) == 0)
+                if(NpcEntity.cacheCfg.InteractList.Count > 0)
+                {
+                    return true;
+                }
+                else
                 {
                     return false;
                 }
             }
             else
             {
-                if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
+                var diff = transform.position - MainGameManager.Instance.playerScenePresenter.transform.position;
+                if (diff.magnitude > 2f)
                 {
                     return false;
                 }
+
+                if (UnitEntity.CheckHasBuff("unsensored"))
+                {
+                    if (UnitEntity.GetAttr(AttrIdConsts.DeepZhaChance) == 0)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
 
             //if(NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) > 0)
@@ -72,7 +88,7 @@ namespace My.Map.Scene
             //    return true;
             //}
 
-            return true;
+            return false;
         }
 
         public void TriggerInteract(int selectionId)
@@ -82,32 +98,55 @@ namespace My.Map.Scene
                 return;
             }
 
-            if (selectionId == 1)
+            if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
+                if (selectionId < NpcEntity.cacheCfg.InteractList.Count)
+                {
+                    var selection = NpcEntity.cacheCfg.InteractList[selectionId];
+                    foreach(var output in selection.Outputs)
+                    {
+                        switch(output.OutputType)
+                        {
+                            case Config.LogicInteractOutput.EOutputType.OpenPanel:
+                                {
+                                    if(output.Param1 == 1)
+                                    {
+                                        // 
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
             }
-            else if(selectionId == 2)
+            else
             {
-                if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
+                if (selectionId == 1)
                 {
-                    return;
+                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
                 }
-
-                if (NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) == 0)
+                else if (selectionId == 2)
                 {
-                    //return;
+                    if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
+                    {
+                        return;
+                    }
+
+                    if (NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) == 0)
+                    {
+                        //return;
+                    }
+
+                    // 显示层事件
+                    MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+                    {
+                        Name = "AbsorbDizzy",
+                        Param3 = this.Id,
+                    });
+
+                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
                 }
-
-                // 显示层事件
-                MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
-                {
-                    Name = "AbsorbDizzy",
-                    Param3 = this.Id,
-                });
-
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
             }
-
 
         }
 
@@ -126,24 +165,37 @@ namespace My.Map.Scene
         {
             var ret = new List<SceneInteractSelection>();
 
-
-            if (UnitEntity.CheckHasBuff("unsensored"))
+            if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
-                ret.Add(new SceneInteractSelection()
+                for(int i=0;i< NpcEntity.cacheCfg.InteractList.Count;i++)
                 {
-                    SelectId = 1,
-                    SelectContent = "Int",
-
-                });
+                    ret.Add(new SceneInteractSelection()
+                    {
+                        SelectId = i,
+                        SelectContent = NpcEntity.cacheCfg.InteractList[i].Label,
+                    });
+                }
             }
             else
             {
-                ret.Add(new SceneInteractSelection()
+                if (UnitEntity.CheckHasBuff("unsensored"))
                 {
-                    SelectId = 2,
-                    SelectContent = "Int",
+                    ret.Add(new SceneInteractSelection()
+                    {
+                        SelectId = 1,
+                        SelectContent = "Int",
 
-                });
+                    });
+                }
+                else
+                {
+                    ret.Add(new SceneInteractSelection()
+                    {
+                        SelectId = 2,
+                        SelectContent = "Int",
+
+                    });
+                }
             }
 
             return ret;

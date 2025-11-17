@@ -12,7 +12,7 @@ namespace My
     {
         TaskFinish,
         Variable,
-        HasSwitch,
+        HasVariable,
         HasPlacement,
     }
 
@@ -37,7 +37,7 @@ namespace My
         {
             switch(cond.Type)
             {
-                case ECommonCheckType.HasSwitch:
+                case ECommonCheckType.HasVariable:
                     {
                         if(homeDataManager.CheckHasParam(cond.Param5))
                         {

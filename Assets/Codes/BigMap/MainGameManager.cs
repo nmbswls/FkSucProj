@@ -86,7 +86,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public UnityNavProvider NavProvider;
 
-    public HomeSceneManager homeSceneManager;
 
     private void Awake()
     {
@@ -186,9 +185,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             gameLogicManager.Tick(LogicTime.deltaTime);
             interactSystem.Tick(LogicTime.deltaTime);
-
-            
-
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.M))
             {

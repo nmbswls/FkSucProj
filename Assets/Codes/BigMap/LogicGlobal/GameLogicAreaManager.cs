@@ -6,8 +6,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using static My.MapExport.MapExportDatabase;
 
 namespace My.Map.Logic
 {
@@ -247,10 +249,12 @@ namespace My.Map.Logic
         public MapExportDatabase cacheDatabase;
 
         public Dictionary<string, LogicRoomInfo> RuntimeRoomInfos = new();
+        public Dictionary<int, long> RefreshInfo2Record = new();
 
         private GameLogicManager logicManager;
 
         public InnerListener innerListener;
+        public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
         public GameLogicAreaManager(GameLogicManager logicManager, Settings settings)
         {
             this.settings = settings;
@@ -316,40 +320,40 @@ namespace My.Map.Logic
             // 加载 cacheDatabase
             cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
 
+            EntityRefreshInfo.Clear();
+            EntityRefreshInfo.AddRange(cacheDatabase.EntityRefreshInfo);
             // 加载repo
             if (Repo == null)
             {
                 Repo = new();
-                // fake repo
-                //  goujian 房间列表
-                int cnt = 0;
-                foreach (var refreshInfo in cacheDatabase.EntityRefreshInfo)
-                {
-                    cnt++;
-                    HandleOneRefreshInfo(refreshInfo);
+                //// fake repo
+                ////  goujian 房间列表
+                //int cnt = 0;
+                //foreach (var refreshInfo in cacheDatabase.EntityRefreshInfo)
+                //{
+                //    cnt++;
+                //    HandleOneRefreshInfo(refreshInfo);
 
-                    if(cnt > 100)
-                    {
-                        cnt = 0;
-                        await Task.Yield();
-                    }
-                }
+                //    if(cnt > 100)
+                //    {
+                //        cnt = 0;
+                //        await Task.Yield();
+                //    }
+                //}
             }
 
             if(areaId == "home")
             {
-                var homeRecords = logicManager.homeDataManager.GetAllValidLogicEntites();
-                foreach(var record in homeRecords)
-                {
-                    Repo.RegisterRecord(record);
-                    
-                }
+                var homeRefreshs = logicManager.homeDataManager.GetAllValidLogicEntites();
+                EntityRefreshInfo.AddRange(homeRefreshs);
             }
 
 
             BuildIndexFromRecords();
 
             InitDigPoints();
+
+            checkRefreshTimer = LogicTime.time;
         }
 
 
@@ -379,7 +383,7 @@ namespace My.Map.Logic
 
         public void CheckRefreshAppearAndDisappear(float dt)
         {
-            if(cacheDatabase.EntityRefreshInfo.Count == 0)
+            if(EntityRefreshInfo.Count == 0)
             {
                 return;
             }
@@ -389,19 +393,26 @@ namespace My.Map.Logic
                 return;
             }
 
+            checkRefreshTimer = LogicTime.time;
+
             int tickCnt = 100;
             while(tickCnt-- > 0)
             {
                 tickDynamicObjIdx += 1;
-                tickDynamicObjIdx = tickDynamicObjIdx % cacheDatabase.EntityRefreshInfo.Count;
+                tickDynamicObjIdx = tickDynamicObjIdx % EntityRefreshInfo.Count;
 
-                HandleOneRefreshInfo(cacheDatabase.EntityRefreshInfo[tickDynamicObjIdx]);
+                HandleOneRefreshInfo(EntityRefreshInfo[tickDynamicObjIdx]);
             }
             
         }
 
         public void HandleOneRefreshInfo(MapExportDatabase.DynamicEntityRefreshInfo refreshInfo)
         {
+            if(RefreshInfo2Record.TryGetValue(refreshInfo.UniqId, out var recordId))
+            {
+                return;
+            }
+
             // 检查条件
             if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != 0)
             {
@@ -470,6 +481,11 @@ namespace My.Map.Logic
                         record = unitRecord;
                         break;
                     }
+                default:
+                    {
+                        record = new LogicEntityRecord();
+                    }
+                    break;
             }
 
             if(record != null)
@@ -481,7 +497,8 @@ namespace My.Map.Logic
                 record.BelongRoomId = refreshInfo.BindRoomId;
                 record.FactionId = refreshInfo.OrgFactionId;
 
-                Repo.RegisterRecord(record);
+                RegisterEntityRecord(record);
+                RefreshInfo2Record[refreshInfo.UniqId] = record.Id;
             }
         }
 

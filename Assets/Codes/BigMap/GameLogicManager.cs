@@ -69,6 +69,8 @@ namespace My
 
         public GlobalDropTable DropTable;
 
+        public bool PlayerPeaceMode = false;
+
         public void OnGameInit()
         {
             LogicEventBus = new();
@@ -119,6 +121,15 @@ namespace My
                 {
                     bornPos.Add(p);
                 }
+            }
+
+            if(areaName == "home")
+            {
+                PlayerPeaceMode = true;
+            }
+            else
+            {
+                PlayerPeaceMode = false;
             }
 
             var vec = Vector2.zero;

@@ -139,7 +139,7 @@ namespace My.Map.Entity
             newCtx.srcAbilityId = srcAbilityId;
             newCtx.Priority = priority;
             newCtx.throwStartTime = LogicTime.time;
-            newCtx.throwDuration = 20.0f;
+            newCtx.throwDuration = duration;
 
             // Ôö¼Ó
             launcher.OnThrowStart();

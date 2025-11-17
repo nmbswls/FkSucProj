@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using My;
 
 public class ConsoleGM : MonoBehaviour
 {
@@ -94,16 +95,17 @@ public class ConsoleGM : MonoBehaviour
                 else LogError("参数需为 float");
             });
 
-        Register("give_item", "给予物品（示例）",
-            new[] { new CmdParam("id", "string，物品ID"), new CmdParam("count", "int，数量", true) },
+        Register("set_variable", "设置变量",
+            new[] { new CmdParam("name", "string，变量名") },
             args =>
             {
-                if (args.Count < 1) { LogError("用法：give_item <id> [count]"); return; }
+                if (args.Count < 1) { LogError("用法：set_variable <id>"); return; }
                 var id = args[0];
-                int count = 1;
-                if (args.Count >= 2 && !int.TryParse(args[1], out count))
-                { LogError("count 需为 int"); return; }
-                Log($"给予物品 id={id}, count={count}");
+                
+                Log($"设置变量 id={id}");
+
+                HomeSceneManager.Instance.DataSource.SetVariable(id);
+
             });
     }
 
@@ -117,8 +119,8 @@ public class ConsoleGM : MonoBehaviour
         if (Input.GetKeyDown(toggleKey))
         {
             visible = !visible;
-            if (visible) EnableInput();
-            else DisableInput();
+            if (visible) DisableInput();
+            else EnableInput();
         }
 
         if (!visible) return;
@@ -138,6 +140,20 @@ public class ConsoleGM : MonoBehaviour
     void OnGUI()
     {
         if (!visible) return;
+
+        var e = Event.current;
+        if (e.type == EventType.KeyDown)
+        {
+            if (e.keyCode == toggleKey)
+            {
+                visible = !visible;
+                if (visible) DisableInput(); else EnableInput();
+                e.Use();
+                if (!visible) return; // 关掉后就不再绘制
+            }
+            // 回车保留给输入执行（你已有处理）
+            // 其它编辑键（Backspace/左右箭头）让 IMGUI 正常处理
+        }
 
         EnsureStyles();
 
@@ -200,13 +216,16 @@ public class ConsoleGM : MonoBehaviour
             GUILayout.Space(0);
         }
 
-        // 处理回车
-        var e = Event.current;
-        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Return)
-        {
-            ExecuteInput();
-            e.Use();
-        }
+        //// 处理回车
+        //var e = Event.current;
+        //if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Return)
+        //{
+        //    ExecuteInput();
+        //    e.Use();
+        //}
+
+        
+
         GUILayout.EndArea();
     }
 
@@ -433,13 +452,12 @@ public class ConsoleGM : MonoBehaviour
 
     private void EnableInput()
     {
-        // 可选：暂停游戏输入/锁定鼠标等
+        MainGameManager.Instance.inputBinder.GlobalLock = false;
     }
 
     private void DisableInput()
     {
-        // 可选：恢复输入
-        
+        MainGameManager.Instance.inputBinder.GlobalLock = true;
     }
 
     // =============== 数据结构 ===============

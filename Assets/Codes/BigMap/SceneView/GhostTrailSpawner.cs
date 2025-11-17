@@ -71,7 +71,7 @@ namespace My.Map
         GameObject CreateGhostInstance()
         {
             var ghost = new GameObject("Ghost2D");
-            ghost.transform.SetParent(transform);
+            //ghost.transform.SetParent(transform);
             ghost.transform.localScale = target.transform.localScale;
 
             // ÃÌº”≤¢≈‰÷√ SpriteRenderer

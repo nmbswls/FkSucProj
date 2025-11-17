@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using My.Map;
 using My.Map.Logic;
 using UnityEngine;
+using static My.MapExport.MapExportDatabase;
 
 namespace My.Home
 {
@@ -29,11 +30,20 @@ namespace My.Home
         { }
 
 
-        public Dictionary<string, bool> ParamDict = new();
+        public Dictionary<string, bool> VariableDict = new();
 
         public List<HomePlacementInfo> PlacementInfos = new();
 
         public event Action<HomePlacementInfo> EvOnPlacementUpdate;
+
+
+        public void SetVariable(string id)
+        {
+            VariableDict[id] = true;
+
+            // 变量事件
+
+        }
 
         public bool CheckHasPlacement(string id)
         {
@@ -42,7 +52,7 @@ namespace My.Home
 
         public bool CheckHasParam(string id)
         {
-            ParamDict.TryGetValue(id, out var val);
+            VariableDict.TryGetValue(id, out var val);
             return val;
         }
 
@@ -67,34 +77,45 @@ namespace My.Home
             }
         }
 
-        public List<LogicEntityRecord> GetAllValidLogicEntites()
+        public List<DynamicEntityRefreshInfo> GetAllValidLogicEntites()
         {
-            List<LogicEntityRecord> retList = new();
+            List<DynamicEntityRefreshInfo> retList = new();
 
-
+            int uniqId = 10;
             // home状态 读取信息
             {
-                var record = new LogicEntityRecord4InteractPoint();
-                record.Id = GameLogicManager.LogicEntityIdInst++;
-                record.EntityType = EEntityType.InteractPoint;
-                record.CfgId = "teleport";
-                record.Position = new Vector2(2.0f, 2.0f);
+                var refreshInfo = new DynamicEntityRefreshInfo();
+                refreshInfo.UniqId = uniqId++;
+                refreshInfo.EntityType = EEntityType.InteractPoint;
+                refreshInfo.CfgId = "teleport";
+                refreshInfo.Position = new Vector2(2.0f, 2.0f);
 
-                retList.Add(record);
+
+                retList.Add(refreshInfo);
             }
 
             {
-                var record = new LogicEntityRecord4UnitBase();
-                record.Id = GameLogicManager.LogicEntityIdInst++;
-                record.EntityType = EEntityType.Npc;
-                record.FactionId = Map.Entity.EFactionId.Player;
-                record.CfgId = "home_liki";
-                record.Position = new Vector2(2.0f, 0f);
 
-                record.IsPeace = true;
-                record.MoveBehaveType = BaseUnitLogicEntity.EMoveBehaveType.NoMove;
+                var refreshInfo = new DynamicEntityRefreshInfo();
+                refreshInfo.UniqId = uniqId++;
+                refreshInfo.EntityType = EEntityType.Npc;
+                refreshInfo.CfgId = "home_liki";
+                refreshInfo.Position = new Vector2(2.0f, 0f);
 
-                retList.Add(record);
+                refreshInfo.AppearCond = new CommonCheckCond()
+                {
+                    Type = ECommonCheckType.HasVariable,
+                    Param5 = "liki",
+                };
+
+                var initInfo = new DynamicEntityInitInfo4Unit();
+                refreshInfo.InitInfo = initInfo;
+
+                initInfo.IsPeace = true;
+                initInfo.MoveMode = BaseUnitLogicEntity.EMoveBehaveType.NoMove;
+                
+
+                retList.Add(refreshInfo);
             }
 
             return retList;

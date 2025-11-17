@@ -40,7 +40,7 @@ namespace My.Map.Scene
                 if (RealLogic.CurrStatusId == 0)
                 {
                     var stateConf = RealLogic.cacheCfg.MainStatusInfo;
-                    intName = stateConf.InteractInfo.Label;
+                    intName = stateConf.InteractInfo?.Label?? "int";
                 }
             }
             ret.Add(new SceneInteractSelection() { 
