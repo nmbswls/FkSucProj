@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using My.Input;
+using System.Linq;
 
 namespace My.UI
 {
@@ -100,7 +101,7 @@ namespace My.UI
         {
             return layer switch
             {
-                UILayer.Scene => hudLayerRoot,
+                UILayer.Scene => sceneLayerRoot,
                 UILayer.HUD => hudLayerRoot,
                 UILayer.Popup => popupLayerRoot,
                 UILayer.Overlay => overlayLayerRoot,
@@ -197,6 +198,18 @@ namespace My.UI
                 if (mb) GameObject.Destroy(mb.gameObject);
             }
         }
+
+        public void HideAll(string exceptPanel)
+        {
+            foreach(var p in activePanels.Keys.ToList())
+            {
+                if(p != exceptPanel)
+                {
+                    HidePanel(p);
+                }
+            }
+        }
+
 
         public bool IsPanelVisible(string panelId) => activePanels.TryGetValue(panelId, out var p) && p.IsVisible;
 

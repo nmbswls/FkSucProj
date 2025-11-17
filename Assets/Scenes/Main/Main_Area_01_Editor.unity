@@ -131,7 +131,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 70930984}
-  - component: {fileID: 70930986}
   - component: {fileID: 70930985}
   m_Layer: 0
   m_Name: DestroyObj1 (1)
@@ -175,20 +174,10 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
---- !u!114 &70930986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 70930983}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea23302f5d4159441b111f9d71c79cdb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  icon: {fileID: 1515210981}
-  highlightFx: {fileID: 0}
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1 &119375539
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,6 +313,10 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
   MoveSpeed: 0.2
   Waypoints:
   - patrol_point_01
@@ -445,9 +438,12 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
   NpcName: civil
   CampId: 0
-  EnmityMode: 0
   MoveMode: 0
   IsPeace: 1
   WanderRange: 1
@@ -455,6 +451,7 @@ MonoBehaviour:
   WaypointList: []
   NpcTag: 
   InitUnsensored: 0
+  EnmityConfId: 
 --- !u!1 &231827560
 GameObject:
   m_ObjectHideFlags: 0
@@ -507,6 +504,10 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!212 &231827563
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -611,9 +612,12 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
   NpcName: civil_sleeping
   CampId: 0
-  EnmityMode: 0
   MoveMode: 0
   IsPeace: 1
   WanderRange: 1
@@ -621,6 +625,7 @@ MonoBehaviour:
   WaypointList: []
   NpcTag: 
   InitUnsensored: 1
+  EnmityConfId: 
 --- !u!212 &287812964
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -807,6 +812,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2037182166}
+  - {fileID: 1911048943}
+  - {fileID: 2717822826370884122}
+  - {fileID: 393029648}
+  - {fileID: 2112283209}
   m_Father: {fileID: 1520095625}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &857680100
@@ -990,9 +999,12 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
   NpcName: civil
   CampId: 0
-  EnmityMode: 0
   MoveMode: 0
   IsPeace: 1
   WanderRange: 1
@@ -1000,6 +1012,7 @@ MonoBehaviour:
   WaypointList: []
   NpcTag: 
   InitUnsensored: 0
+  EnmityConfId: 
 --- !u!1 &1179048164
 GameObject:
   m_ObjectHideFlags: 0
@@ -1136,9 +1149,12 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
   NpcName: civil
   CampId: 0
-  EnmityMode: 0
   MoveMode: 0
   IsPeace: 1
   WanderRange: 1
@@ -1146,6 +1162,7 @@ MonoBehaviour:
   WaypointList: []
   NpcTag: 
   InitUnsensored: 0
+  EnmityConfId: 
 --- !u!1 &1460362602
 GameObject:
   m_ObjectHideFlags: 0
@@ -1234,6 +1251,10 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!212 &1470351303
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1569,6 +1590,10 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!212 &1629868180
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1740,9 +1765,12 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
   NpcName: hunhun
   CampId: 0
-  EnmityMode: 2
   MoveMode: 0
   IsPeace: 0
   WanderRange: 1
@@ -1750,6 +1778,7 @@ MonoBehaviour:
   WaypointList: []
   NpcTag: 
   InitUnsensored: 0
+  EnmityConfId: 
 --- !u!212 &1864419129
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1850,7 +1879,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2028724062}
-  - component: {fileID: 2028724064}
   - component: {fileID: 2028724063}
   m_Layer: 0
   m_Name: DestroyObj1 (2)
@@ -1894,20 +1922,10 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
---- !u!114 &2028724064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2028724061}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea23302f5d4159441b111f9d71c79cdb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  icon: {fileID: 119375541}
-  highlightFx: {fileID: 0}
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1 &2037182165
 GameObject:
   m_ObjectHideFlags: 0
@@ -1923,7 +1941,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2037182166
 Transform:
   m_ObjectHideFlags: 0
@@ -1936,11 +1954,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1911048943}
-  - {fileID: 2717822826370884122}
-  - {fileID: 393029648}
-  - {fileID: 2112283209}
+  m_Children: []
   m_Father: {fileID: 857680099}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2112283209 stripped
@@ -1971,7 +1985,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2037182166}
+    m_TransformParent: {fileID: 857680099}
     m_Modifications:
     - target: {fileID: 1330146706687757879, guid: 50e13fa7c2219694cb6240fe6ae6dd8d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1983,7 +1997,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1330146706687757879, guid: 50e13fa7c2219694cb6240fe6ae6dd8d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1330146706687757879, guid: 50e13fa7c2219694cb6240fe6ae6dd8d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1991,15 +2005,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1330146706687757879, guid: 50e13fa7c2219694cb6240fe6ae6dd8d, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1330146706687757879, guid: 50e13fa7c2219694cb6240fe6ae6dd8d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1330146706687757879, guid: 50e13fa7c2219694cb6240fe6ae6dd8d, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1330146706687757879, guid: 50e13fa7c2219694cb6240fe6ae6dd8d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2100,7 +2114,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2037182166}
+    m_TransformParent: {fileID: 857680099}
     m_Modifications:
     - target: {fileID: 1606951229005879032, guid: 80e59c1be4ed99d40841266bb83e115a, type: 3}
       propertyPath: m_Name
@@ -2116,7 +2130,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2439640264587875739, guid: 80e59c1be4ed99d40841266bb83e115a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2439640264587875739, guid: 80e59c1be4ed99d40841266bb83e115a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2170,20 +2184,10 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
---- !u!114 &4129262945988350213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4508686082341419044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea23302f5d4159441b111f9d71c79cdb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  icon: {fileID: 6633541160096458169}
-  highlightFx: {fileID: 0}
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1 &4508686082341419044
 GameObject:
   m_ObjectHideFlags: 0
@@ -2193,7 +2197,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7804806435330056006}
-  - component: {fileID: 4129262945988350213}
   - component: {fileID: 7804806435330056007}
   m_Layer: 0
   m_Name: DestroyObj1
@@ -2208,7 +2211,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2037182166}
+    m_TransformParent: {fileID: 857680099}
     m_Modifications:
     - target: {fileID: 1499496166944384979, guid: 1808566701182ef48bfc5fb2b4af42a9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2220,7 +2223,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1499496166944384979, guid: 1808566701182ef48bfc5fb2b4af42a9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1499496166944384979, guid: 1808566701182ef48bfc5fb2b4af42a9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2317,7 +2320,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2037182166}
+    m_TransformParent: {fileID: 857680099}
     m_Modifications:
     - target: {fileID: 2717822826568321794, guid: 631f90cb7a00c70478c898e3e5d03732, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2329,7 +2332,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2717822826568321794, guid: 631f90cb7a00c70478c898e3e5d03732, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2717822826568321794, guid: 631f90cb7a00c70478c898e3e5d03732, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2337,15 +2340,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2717822826568321794, guid: 631f90cb7a00c70478c898e3e5d03732, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2717822826568321794, guid: 631f90cb7a00c70478c898e3e5d03732, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2717822826568321794, guid: 631f90cb7a00c70478c898e3e5d03732, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2717822826568321794, guid: 631f90cb7a00c70478c898e3e5d03732, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2403,6 +2406,10 @@ MonoBehaviour:
     Type: 0
     Param1: 0
     Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!4 &8167108431821563803
 Transform:
   m_ObjectHideFlags: 0

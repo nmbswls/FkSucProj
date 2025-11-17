@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Map.Logic;
 using My.Map;
+using My.Map.Scene;
 using My.UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using static UnityEngine.Rendering.DebugManager;
 
@@ -44,6 +46,10 @@ namespace My.Input
 
         public enum InputMode { Overworld, Battle, Menu, Dialog }
         private InputMode mode;
+
+        public Vector2 LastPos;
+
+        public bool GlobalLock { get; set; }
 
         private void Awake()
         {
@@ -102,6 +108,10 @@ namespace My.Input
 
             actions.OverworldMap.HotKey1.performed += OnHotKey1;
             actions.OverworldMap.HotKey2.performed += OnHotKey2;
+
+            actions.OverworldMap.Click.started += OnLeftDown;
+            actions.OverworldMap.RightClick.started += OnRightDown;
+            actions.OverworldMap.PointerPos.performed += OnPointerMove;
         }
 
         private void OnDisable()
@@ -120,6 +130,10 @@ namespace My.Input
             actions.OverworldMap.HotKey1.performed -= OnHotKey1;
             actions.OverworldMap.HotKey2.performed -= OnHotKey2;
 
+            actions.OverworldMap.Click.started -= OnLeftDown;
+            actions.OverworldMap.RightClick.started -= OnRightDown;
+            actions.OverworldMap.PointerPos.performed -= OnPointerMove;
+
             actions.OverworldMap.Disable();
             actions.BattleMap.Disable();
             actions.UIMenuMap.Disable();
@@ -127,6 +141,11 @@ namespace My.Input
 
         public void OnMouseScroll(InputAction.CallbackContext ctx)
         {
+            if (GlobalLock)
+            {
+                return;
+            }
+
             var delta = ctx.ReadValue<Vector2>().y; // 鼠标滚轮
             if (uiRouter == null || !uiRouter.DispatchScroll(delta))
             {
@@ -134,9 +153,47 @@ namespace My.Input
             }
         }
 
+        void OnLeftDown(InputAction.CallbackContext ctx)
+        {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            OnLeftClick();
+        }
+
+        void OnRightDown(InputAction.CallbackContext ctx)
+        {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            OnRightClick();
+        }
+
+        public void OnPointerMove(InputAction.CallbackContext ctx)
+        {
+            LastPos = ctx.ReadValue<Vector2>();
+
+            OnScenePointMove();
+        }
 
         public void OnMove(InputAction.CallbackContext ctx)
         {
+
+            if(GlobalLock)
+            {
+                return;
+            }
+
             var dir = ctx.ReadValue<Vector2>();
             if (uiRouter == null || !uiRouter.DispatchNavigate(dir))
             {
@@ -149,6 +206,11 @@ namespace My.Input
 
         public void OnConfirm(InputAction.CallbackContext ctx)
         {
+            if (GlobalLock)
+            {
+                return;
+            }
+
             if (ctx.performed)
             {
                 if (uiRouter == null || !uiRouter.DispatchConfirm())
@@ -159,6 +221,11 @@ namespace My.Input
 
         public void OnHotKey1(InputAction.CallbackContext ctx)
         {
+            if (GlobalLock)
+            {
+                return;
+            }
+
             if (ctx.performed)
             {
                 if (uiRouter == null || !uiRouter.DispatchHotkey(1))
@@ -169,6 +236,11 @@ namespace My.Input
 
         public void OnHotKey2(InputAction.CallbackContext ctx)
         {
+            if (GlobalLock)
+            {
+                return;
+            }
+
             if (ctx.performed)
             {
                 if (uiRouter == null || !uiRouter.DispatchHotkey(2))
@@ -179,6 +251,12 @@ namespace My.Input
 
         public void OnCancel(InputAction.CallbackContext ctx)
         {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+
             if (ctx.performed)
             {
                 if (uiRouter == null || !uiRouter.DispatchCancel())
@@ -194,11 +272,57 @@ namespace My.Input
             {
                 MainGameManager.Instance.playerScenePresenter.freeMoveDir = dir;
                 MainGameManager.Instance.playerScenePresenter.freeMoveDir = Vector2.ClampMagnitude(dir, 1f);
+
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.entityMotorComp.FreeMoveInput = Vector2.ClampMagnitude(dir, 1f);
             }
             
+        
+        
         }
 
 
+        public void OnScenePointMove()
+        {
+            if (!LogicTime.paused)
+            {
+                var player = MainGameManager.Instance.playerScenePresenter;
+                Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
+                var castDir = (LastPos - playerScreenPos).normalized;
+
+                if ((playerScreenPos - LastPos).magnitude < 1e-1)
+                {
+                    return;
+                }
+                player.PlayerEntity.FaceDir = castDir;
+            }
+        }
+
+        // 放入conroller里 不放在binder里
+
+        public void OnLeftClick()
+        {
+
+            if (!LogicTime.paused)
+            {
+                var player = MainGameManager.Instance.playerScenePresenter;
+                Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
+                var castDir = (LastPos - playerScreenPos).normalized;
+
+                player.PlayerEntity.PlayerAbilityController.TryShoot(castDir);
+            }
+        }
+
+        public void OnRightClick()
+        {
+            if (!LogicTime.paused)
+            {
+                var player = MainGameManager.Instance.playerScenePresenter;
+                Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
+                var castDir = (LastPos - playerScreenPos).normalized;
+
+                player.PlayerEntity.PlayerAbilityController.TrySlash(castDir);
+            }
+        }
 
         public void OnMouseScroll(float deltaY)
         {

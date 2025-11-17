@@ -690,7 +690,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &437416405
 Transform:
   m_ObjectHideFlags: 0
@@ -1048,6 +1048,8 @@ MonoBehaviour:
   TimerManager: {fileID: 885418546}
   inputBinder: {fileID: 473413566}
   CameraCtrl: {fileID: 961739754}
+  homeSceneManager: {fileID: 0}
+  SwitchAreaIntent: 
   DynamicRoot: {fileID: 63059760}
 --- !u!4 &885418544
 Transform:
@@ -1296,7 +1298,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 961739749}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
   m_Name: 
@@ -1694,7 +1696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 932d1f5edb73a8746b41548386cba9c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialArea: {fileID: 11400000, guid: bd0e496983359964db29f2aaac22ef04, type: 2}
+  initialArea: {fileID: 0}
 --- !u!4 &1627616275
 Transform:
   m_ObjectHideFlags: 0

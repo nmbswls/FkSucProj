@@ -154,6 +154,33 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""39aa9469-ae43-40ea-b0b1-30739813dca5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""77b93d26-6a11-44df-937a-56e563b7afc1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PointerPos"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""c371d7fe-61a7-4d49-9936-835f6826c354"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -277,6 +304,39 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""action"": ""HotKey2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""45f0a132-1a4f-4a80-8d15-c721a36ccb65"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""843e5d73-262e-41e7-9118-2c71d7a3c3a8"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ba790d60-9c2f-461a-ae57-7beb5db28a99"",
+                    ""path"": ""<Pointer>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PointerPos"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -348,6 +408,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_Cancel = m_OverworldMap.FindAction("Cancel", throwIfNotFound: true);
         m_OverworldMap_HotKey1 = m_OverworldMap.FindAction("HotKey1", throwIfNotFound: true);
         m_OverworldMap_HotKey2 = m_OverworldMap.FindAction("HotKey2", throwIfNotFound: true);
+        m_OverworldMap_Click = m_OverworldMap.FindAction("Click", throwIfNotFound: true);
+        m_OverworldMap_RightClick = m_OverworldMap.FindAction("RightClick", throwIfNotFound: true);
+        m_OverworldMap_PointerPos = m_OverworldMap.FindAction("PointerPos", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -443,6 +506,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_Cancel;
     private readonly InputAction m_OverworldMap_HotKey1;
     private readonly InputAction m_OverworldMap_HotKey2;
+    private readonly InputAction m_OverworldMap_Click;
+    private readonly InputAction m_OverworldMap_RightClick;
+    private readonly InputAction m_OverworldMap_PointerPos;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -482,6 +548,18 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "OverworldMap/HotKey2".
         /// </summary>
         public InputAction @HotKey2 => m_Wrapper.m_OverworldMap_HotKey2;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/Click".
+        /// </summary>
+        public InputAction @Click => m_Wrapper.m_OverworldMap_Click;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/RightClick".
+        /// </summary>
+        public InputAction @RightClick => m_Wrapper.m_OverworldMap_RightClick;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/PointerPos".
+        /// </summary>
+        public InputAction @PointerPos => m_Wrapper.m_OverworldMap_PointerPos;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -529,6 +607,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @HotKey2.started += instance.OnHotKey2;
             @HotKey2.performed += instance.OnHotKey2;
             @HotKey2.canceled += instance.OnHotKey2;
+            @Click.started += instance.OnClick;
+            @Click.performed += instance.OnClick;
+            @Click.canceled += instance.OnClick;
+            @RightClick.started += instance.OnRightClick;
+            @RightClick.performed += instance.OnRightClick;
+            @RightClick.canceled += instance.OnRightClick;
+            @PointerPos.started += instance.OnPointerPos;
+            @PointerPos.performed += instance.OnPointerPos;
+            @PointerPos.canceled += instance.OnPointerPos;
         }
 
         /// <summary>
@@ -561,6 +648,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @HotKey2.started -= instance.OnHotKey2;
             @HotKey2.performed -= instance.OnHotKey2;
             @HotKey2.canceled -= instance.OnHotKey2;
+            @Click.started -= instance.OnClick;
+            @Click.performed -= instance.OnClick;
+            @Click.canceled -= instance.OnClick;
+            @RightClick.started -= instance.OnRightClick;
+            @RightClick.performed -= instance.OnRightClick;
+            @RightClick.canceled -= instance.OnRightClick;
+            @PointerPos.started -= instance.OnPointerPos;
+            @PointerPos.performed -= instance.OnPointerPos;
+            @PointerPos.canceled -= instance.OnPointerPos;
         }
 
         /// <summary>
@@ -842,6 +938,27 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnHotKey2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Click" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RightClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRightClick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PointerPos" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPointerPos(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

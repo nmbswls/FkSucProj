@@ -1,0 +1,729 @@
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using Map.Entity.AI.Action;
+using Unity.VisualScripting.FullSerializer;
+using UnityEngine;
+using static My.Map.BaseUnitLogicEntity;
+using static My.Map.Entity.MapEntityAbilityController;
+
+namespace My.Map.Entity.AI
+{
+
+    public enum EAIActionType
+    {
+        DoNothing,
+        DoOneThing,
+    }
+
+    [Serializable]
+    public abstract class AIAction
+    {
+        public enum InitializationModes { EveryTime, OnlyOnce, }
+        /// whether initialization should happen only once, or every time the brain is reset
+        public InitializationModes InitializationMode;
+        protected bool _initialized { get; set; }
+
+        public abstract string Name { get; }
+        protected MapUnitAIBrain _brain;
+
+        public virtual bool IsExclusive { get { return false; } }
+
+        public AIActionStatus Status { get; set; }
+
+        protected virtual bool ShouldInitialize
+        {
+            get
+            {
+                switch (InitializationMode)
+                {
+                    case InitializationModes.EveryTime:
+                        return true;
+                    case InitializationModes.OnlyOnce:
+                        return _initialized == false;
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
+		/// Initializes the action. Meant to be overridden
+		/// </summary>
+		public virtual void Initialization(MapUnitAIBrain aIBrain)
+        {
+            this._brain = aIBrain;
+            _initialized = true;
+        }
+
+        public virtual float RateScore()
+        {
+            return 0;
+        }
+
+        public virtual void Start()
+        {
+            Status = AIActionStatus.Running;
+        }
+
+        public virtual void Tick()
+        {
+            if (Status != AIActionStatus.Running) return;
+        }
+
+        public virtual void Stop(AIActionStatus endStatus)
+        {
+            if (Status == AIActionStatus.Idle) return;
+            Status = endStatus;
+        }
+
+        /// <summary>
+        /// Describes what happens when the brain enters the state this action is in. Meant to be overridden.
+        /// </summary>
+        public virtual void OnEnterState()
+        {
+            Status = AIActionStatus.Idle;
+        }
+
+        /// <summary>
+        /// Describes what happens when the brain exits the state this action is in. Meant to be overridden.
+        /// </summary>
+        public virtual void OnExitState()
+        {
+        }
+
+        public virtual bool CanInterrupt(string reason, bool hard)
+        {
+            return true;
+        }
+    }
+
+    [Serializable]
+    public class AIActionDoNothing : AIAction
+    {
+
+        public override string Name => "DoNothing";
+
+
+        public string DoNothing;
+
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+
+        }
+    }
+
+    [Serializable]
+    public class AIActionFollowPatrolGroup : AIAction
+    {
+
+        public override string Name => "FollowPatrolGroup";
+
+        private float _followTimer;
+
+        public override float RateScore()
+        {
+            if(_brain.UnitEntity.MoveBehaveMode != BaseUnitLogicEntity.EMoveBehaveType.InPatrolGroup)
+            {
+                return 0;
+            }
+            if (_brain.UnitEntity.IsInBattle)
+            {
+                return 0;
+            }
+            return 1;
+        }
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            if(_brain.UnitEntity.IsInBattle)
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            if (LogicTime.time - _followTimer < 1f)
+            {
+                return;
+            }
+
+            _followTimer = LogicTime.time;
+
+            if(_brain.UnitEntity.entityMotorComp.State != EMotorState.Following)
+            {
+                var followedEntity = _brain.UnitEntity.LogicManager.GetLogicEntity(_brain.UnitEntity.FollowPatrolId);
+                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, _brain.UnitEntity.PatrolGroupRelativePos);
+            }
+
+            //var followPos = followedEntity.Pos + new Vector2(_brain.UnitEntity.PatrolGroupRelativePos.x, _brain.UnitEntity.PatrolGroupRelativePos.y);
+
+            //_brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, _brain.UnitEntity.PatrolGroupRelativePos);
+
+           // _brain.UnitEntity.StartTargettedMove(BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint, null, followPos, 0.1f);
+        }
+    }
+
+    [Serializable]
+    public class AIActionHuntingPlayer : AIAction
+    {
+        public override string Name => "HuntingPlayer";
+
+
+        private float _Timer;
+
+        public override float RateScore()
+        {
+            if (_brain.UnitEntity.MoveBehaveMode != BaseUnitLogicEntity.EMoveBehaveType.Hunting)
+            {
+                return 0;
+            }
+            if (_brain.UnitEntity.IsInBattle)
+            {
+                return 0;
+            }
+            return 1;
+        }
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            if (_brain.UnitEntity.IsInBattle)
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            if (LogicTime.time - _Timer < 1f)
+            {
+                return;
+            }
+
+            _Timer = LogicTime.time;
+
+            var followedEntity = _brain.UnitEntity.LogicManager.playerLogicEntity;
+            var followPos = followedEntity.Pos + new Vector2(0.5f, 0.5f);
+
+            if (_brain.UnitEntity.targetMoveIntent != null)
+            {
+                if(_brain.UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity && _brain.UnitEntity.targetMoveIntent.FollowEntity == followedEntity)
+                {
+                    return;
+                }
+            }
+
+            _brain.UnitEntity.StartTargettedMove(BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity, followedEntity, Vector2.zero, 1f);
+        }
+    }
+
+
+    [Serializable]
+    public class AIActionTryUseSkill : AIAction
+    {
+
+        public override string Name => "TryUseSkill";
+
+        public float OverTimeLimit = 99f;
+        private float _overTimer;
+        private bool hasCastAbility = false;
+        private MapAbilitySpecConfig? _config;
+
+        public override float RateScore()
+        {
+            if(!_brain.UnitEntity.IsInBattle)
+            {
+                return 0;
+            }
+
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidOp))
+            {
+                return 0;
+            }
+
+            // 检查 有任意技能可使用
+            var anyReady = _brain.UnitEntity.abilityController.CheckAnyReadyAbility();
+            if(anyReady)
+            {
+                return 10;
+            }
+            return 0;
+        }
+
+        public override void Start()
+        {
+            Status = AIActionStatus.Running;
+            if(!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            {
+                Debug.LogError("AIActionTryUseSkill confict occur old ability " + _brain.blackboard.CurrIntentAbility);
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            var skills = _brain.UnitEntity.abilityController.GetAllReadyAbilities();
+
+            if(skills.Count == 0)
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+            skills.Sort((itemA, itemB) =>
+            {
+                if (itemA.cacheConfig.Priority != itemB.cacheConfig.Priority)
+                {
+                    return itemB.cacheConfig.Priority.CompareTo(itemA.cacheConfig.Priority);
+                }
+                return itemA.lastUseTime.CompareTo(itemB.lastUseTime);
+            });
+
+            var best = skills[0];
+
+            // 更新状态
+            _brain.blackboard.CurrIntentAbility = best.AbilityName;
+            _overTimer = LogicTime.time + OverTimeLimit;
+            hasCastAbility = false;
+            _config = best.cacheConfig;
+
+            var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, best.cacheConfig.DesiredUseDistance);
+            Debug.Log($"AIActionTryUseSkill move pos {targetPos}");
+            _brain.UnitEntity.StartTargettedMove(BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f);
+        }
+
+        public override void Tick()
+        {
+            if (Status != AIActionStatus.Running) return;
+
+            // 保底中断 避免卡在那里
+            if (LogicTime.time > _overTimer)
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            if (_config == null)
+            {
+                return;
+            }
+
+            // 禁止操作时 跳出
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidOp))
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            // 未使用技能
+            if (!hasCastAbility)
+            {
+                // 距离满足施法条件 使用
+                if (_config.DesiredUseDistance > 0 && _brain.blackboard.Distance < _config.DesiredUseDistance * 1.1f)
+                {
+                    var dir = _brain.PlayerEntity.Pos - _brain.UnitEntity.Pos;
+                    _brain.UnitEntity.abilityController.TryUseAbility(_config.Id, dir);
+                    hasCastAbility = true;
+                    return;
+                }
+                else
+                {
+                    // 玩家位置偏移 需要更新位置
+                    bool needReMove = false;
+                    if (_brain.UnitEntity.targetMoveIntent == null || _brain.UnitEntity.targetMoveIntent.FollowEntity != _brain.PlayerEntity)
+                    {
+                        needReMove = true;
+                    }
+                    else
+                    {
+                        //var dir = _brain.PlayerEntity.Pos - _brain.UnitEntity.targettedMoveIntent.MoveTarget;
+                        //// 如果玩家位置与目标移动位置 大于理想距离了 需要重新调整移动位置
+                        //if (dir.sqrMagnitude > _config.DesiredUseDistance * _config.DesiredUseDistance)
+                        //{
+                        //    needReMove = true;
+                        //}
+                    }
+
+                    if (needReMove)
+                    {
+                        //var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, _config.DesiredUseDistance);
+                        //Debug.Log($"AIActionTryUseSkill remove move pos {targetPos}");
+                        _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FollowEntity, _brain.PlayerEntity, Vector2.zero, _config.DesiredUseDistance * 0.8f);
+                        return;
+                    }
+                }
+            }
+            // 正在使用技能 等待技能结束
+            else
+            {
+                if (!_brain.UnitEntity.abilityController.IsRunning)
+                {
+                    Stop(AIActionStatus.Success);
+                }
+            }
+        }
+
+        public override void Stop(AIActionStatus endStatus)
+        {
+            if (Status == AIActionStatus.Idle) return;
+            Status = endStatus;
+
+            _overTimer = 0;
+            hasCastAbility = false;
+            if(_brain.blackboard.CurrIntentAbility != null && _brain.blackboard.CurrIntentAbility == _config.Id)
+            {
+                _brain.blackboard.CurrIntentAbility = null;
+            }
+            _config = null;
+        }
+
+        public override bool CanInterrupt(string reason, bool hard) => false;
+    }
+
+    [Serializable]
+    public class AIActionDistanceControl : AIAction
+    {
+
+        public override string Name => "DistanceControl";
+
+        // 参数列表
+        public float goodDistance;
+        public float goodDiff;
+
+        private float _Timer;
+        private float _lastSlowTime;
+
+
+        public override float RateScore()
+        {
+            if(!_brain.UnitEntity.IsInBattle)
+            {
+                return 0;
+            }
+
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            {
+                return 0;
+            }
+
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            {
+                return 0;
+            }
+ 
+            return 1;
+        }
+
+        public override void Start()
+        {
+            base.Start();
+
+        }
+
+        public override void Tick()
+        {
+
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            
+            if (LogicTime.time - _Timer < 0.2f)
+            {
+                return;
+            }
+
+            _Timer = LogicTime.time;
+
+            var targetEntity = _brain.UnitEntity.LogicManager.playerLogicEntity;
+
+            //var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, goodDistance);
+            //if (_brain.UnitEntity.targettedMoveIntent != null)
+            //{
+            //    if ((_brain.UnitEntity.targettedMoveIntent.MoveTarget - targetPos).magnitude < 0.2f)
+            //    {
+            //        return;
+            //    }
+            //}
+            //_brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f);
+            if (LogicTime.time - _lastSlowTime > 1.0f)
+            {
+                if (_brain.blackboard.Distance > goodDistance * 1.2f + 1.0f)
+                {
+                    if (LogicTime.time - _lastSlowTime > 1.0f)
+                    {
+                        var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, goodDistance);
+                        _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f, speedType: TargettedMoveIntent.ESpeedType.Normal);
+                        Debug.Log($"AIActionDistanceControl change move pos normal");
+                    }
+                }
+                else
+                {
+                    var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos + UnityEngine.Random.insideUnitCircle * 2, _brain.PlayerEntity.Pos, goodDistance);
+
+                    _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f, speedType: TargettedMoveIntent.ESpeedType.Slow);
+                    Debug.Log($"AIActionDistanceControl change move pos slow");
+
+                    _lastSlowTime = LogicTime.time;
+                }
+            }
+
+            //_brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, goodDistance, speedType: TargettedMoveIntent.ESpeedType.Slow);
+        }
+
+        public override void Stop(AIActionStatus endStatus)
+        {
+            base.Stop(endStatus);
+        }
+
+        public override bool CanInterrupt(string reason, bool hard) => true;
+
+    }
+
+    [Serializable]
+    public class AIActionCombatQuickMove : AIAction
+    {
+
+        public override string Name => "CombatQuickMove";
+
+        // 参数列表
+        public float goodDistance;
+
+        private float _Timer;
+
+
+        public override float RateScore()
+        {
+            if (!_brain.UnitEntity.IsInBattle)
+            {
+                return 0;
+            }
+
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            {
+                return 0;
+            }
+
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            {
+                return 0;
+            }
+
+            if (_brain.blackboard.Distance > goodDistance * 1.5f)
+            {
+                return 10;
+            }
+
+            return 0;
+        }
+
+        public override void Start()
+        {
+            base.Start();
+
+            var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, goodDistance);
+            _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f, speedType: TargettedMoveIntent.ESpeedType.Normal);
+
+            Debug.Log($"AIActionDistanceControl Start move pos {targetPos}");
+        }
+
+        public override void Tick()
+        {
+
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            if (_brain.blackboard.Distance < goodDistance * 1.5f)
+            {
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
+            if (LogicTime.time - _Timer < 0.3f)
+            {
+                return;
+            }
+
+            _Timer = LogicTime.time;
+
+            var targetEntity = _brain.UnitEntity.LogicManager.playerLogicEntity;
+
+            var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, _brain.PlayerEntity.Pos, goodDistance);
+            //var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, goodDistance);
+            //if (_brain.UnitEntity.targettedMoveIntent != null)
+            //{
+            //    if ((_brain.UnitEntity.targettedMoveIntent.MoveTarget - targetPos).magnitude < 0.2f)
+            //    {
+            //        return;
+            //    }
+            //}
+            Debug.Log($"AIActionDistanceControl change move pos ");
+            //_brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f);
+            _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, goodDistance, speedType: TargettedMoveIntent.ESpeedType.Slow);
+        }
+
+        public override void Stop(AIActionStatus endStatus)
+        {
+            base.Stop(endStatus);
+        }
+
+        public override bool CanInterrupt(string reason, bool hard) => true;
+
+    }
+
+    [Serializable]
+    public class AIActionReturnInterrupt : AIAction
+    {
+        public override string Name => "ReturnInterrupt";
+
+
+        private float _timer;
+
+        public override float RateScore()
+        {
+            if (_brain.blackboard.LastInterruptMovePos == null)
+            {
+                return 0;
+            }
+
+            return 1;
+        }
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            if (_brain.blackboard.LastInterruptMovePos == null)
+            {
+                Stop(AIActionStatus.Interrupted);
+                return;
+            }
+
+            var pos = _brain.blackboard.LastInterruptMovePos.Value;
+            _brain.UnitEntity.entityMotorComp.MoveTo(pos);
+
+            if (LogicTime.time - _timer < 1f)
+            {
+                return;
+            }
+
+            _timer = LogicTime.time;
+
+
+            // 检查到达
+            if ((pos - _brain.UnitEntity.Pos).magnitude < 0.1f)
+            {
+                Debug.Log("AIActionReturnInterrupt return interrupt pos");
+                _brain.blackboard.LastInterruptMovePos = null;
+            }
+        }
+    }
+
+
+    [Serializable]
+    public class AIActionAttractedMove : AIAction
+    {
+
+        public override string Name => "AttractedMove";
+
+
+        public float StayDuration = 5.0f;
+        public float WatchDistance = 0.8f;
+
+        private float _lastUpdateAttract;
+        private Vector2 _currAttractePos;
+        private float _attractSrcTime;
+
+
+        public override void OnEnterState()
+        {
+            base.OnEnterState();
+
+            _brain.blackboard.LastInterruptMovePos = _brain.UnitEntity.Pos;
+        }
+        public override float RateScore()
+        {
+            if (_brain.UnitEntity.attractInfo == null)
+            {
+                return 0;
+            }
+
+            if (LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
+            {
+                return 0;
+            }
+
+            return 10;
+        }
+
+
+
+        public override void Start()
+        {
+            base.Start();
+
+        }
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            if (_brain.UnitEntity.attractInfo == null || LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
+            {
+                Stop(AIActionStatus.Interrupted);
+                return;
+            }
+
+            // 
+            if(_attractSrcTime != 0 && LogicTime.time - _attractSrcTime > StayDuration)
+            {
+                //Stop(AIActionStatus.Interrupted);
+                return;
+            }
+
+
+            // 尝试启动首次寻路 或改变目标寻路
+            if(_currAttractePos == null || _brain.UnitEntity.attractInfo.Pos != _currAttractePos)
+            {
+                _currAttractePos = _brain.UnitEntity.attractInfo.Pos;
+                Debug.Log("init or change attracted pos " + _brain.UnitEntity.attractInfo.Pos + (_brain.UnitEntity.attractInfo.AttractSource != null ? _brain.UnitEntity.attractInfo.AttractSource.Id : "0"));
+
+                var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _currAttractePos, WatchDistance);
+                _brain.UnitEntity.entityMotorComp.MoveTo(watchPos);
+                return;
+            }
+
+            // 检查到达
+            if(_attractSrcTime == 0 && (_currAttractePos - _brain.UnitEntity.Pos).magnitude < WatchDistance * 1.1f)
+            {
+                _attractSrcTime = LogicTime.time;
+            }
+
+            _brain.UnitEntity.LogicManager.viewer.ShowFakeFxEffect("被吸引", _brain.UnitEntity.Pos);
+            //_brain.UnitEntity.entityMotorComp.MoveTo(_currAttractePos);
+        }
+    }
+}
+
