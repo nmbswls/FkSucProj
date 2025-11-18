@@ -105,5 +105,10 @@ namespace My.UI
             CatchVal -= 8;
             return true;
         }
+
+        public bool OnClick(int button, Vector2 mousePos)
+        {
+            return true;
+        }
     }
 }

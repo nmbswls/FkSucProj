@@ -22,6 +22,8 @@ namespace My.Input
         bool DispatchHotkey(int index);
 
         bool DispatchSpace();
+
+        bool DispatchClick(int button, Vector2 mousePos);
     }
 
     //public interface ISceneRouter
@@ -163,7 +165,12 @@ namespace My.Input
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            OnSceneLeftClick();
+
+            if (uiRouter == null || !uiRouter.DispatchClick(0, LastPos))
+            {
+                OnSceneLeftClick();
+            }
+            
         }
 
         void OnRightDown(InputAction.CallbackContext ctx)
@@ -176,7 +183,10 @@ namespace My.Input
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            OnSceneRightClick();
+            if (uiRouter == null || !uiRouter.DispatchClick(1, LastPos))
+            {
+                OnSceneRightClick();
+            }
         }
 
         public void OnPointerMove(InputAction.CallbackContext ctx)

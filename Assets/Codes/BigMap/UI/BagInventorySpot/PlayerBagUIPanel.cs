@@ -164,6 +164,11 @@ namespace My.UI.Bag
         {
             return false;
         }
+
+        public bool OnClick(int button, Vector2 mousePos)
+        {
+            return false;
+        }
     }
 
 }

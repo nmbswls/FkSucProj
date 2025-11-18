@@ -29,6 +29,8 @@ namespace My.UI
         bool OnScroll(float deltaY);
 
         bool OnSpace();
+
+        bool OnClick(int button, Vector2 mousePos);
     }
 
     public interface IFocusable

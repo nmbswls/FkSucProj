@@ -33,6 +33,11 @@ namespace My.UI
         {
             return false;
         }
+
+        public bool OnClick(int button, Vector2 mousePos)
+        {
+            return true;
+        }
     }
 }
 

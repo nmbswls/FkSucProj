@@ -62,6 +62,10 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public static MainGameManager Instance;
 
+    public Transform SceneEffectLayer;
+
+
+
     public PlayerScenePresenter playerScenePresenter;
 
     public SceneInteractSystem interactSystem;

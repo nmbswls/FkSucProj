@@ -50,7 +50,9 @@ namespace My.UI
         public EHudMode HudMode = EHudMode.None;
         public Texture2D cursorTexSkill;
 
-        
+        void Awake()
+        {
+        }
 
         public void Update()
         {
@@ -104,7 +106,9 @@ namespace My.UI
                 Cursor.SetCursor(cursorTexSkill, hotspot, CursorMode.Auto);
             }
 
+            overworldSkillPreviewUI.Clear();
             overworldSkillPreviewUI.gameObject.SetActive(false);
+
             homeBuildPanel.gameObject.SetActive(false);
 
             if (mode == EHudMode.PreviewSkill)
@@ -184,7 +188,29 @@ namespace My.UI
             return false;
         }
 
-        
+
+        public bool OnClick(int button, Vector2 mousePos)
+        {
+
+            if(HudMode == EHudMode.PreviewSkill)
+            {
+                Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
+                wp.z = 0; // 将 z 固定到你的世界平面（例如 0）
+
+                // 左键
+                if (button == 0)
+                {
+                    ConfirmSkillCast(overworldSkillPreviewUI.PreviewAbilityName, wp, Vector2.zero);
+
+                }
+                else if(button == 1)
+                {
+                    CancelSkillCast();
+                }
+            }
+
+            return false;
+        }
 
         #endregion
 
@@ -238,6 +264,7 @@ namespace My.UI
             }
             UpdateHudMode(EHudMode.Normal);
         }
+
 
         #endregion
     }

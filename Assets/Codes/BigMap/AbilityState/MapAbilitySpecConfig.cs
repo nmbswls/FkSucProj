@@ -124,6 +124,7 @@ namespace My.Map.Entity
             NoTarget,
             Point,
             Circle,
+            Rect,
         }
         public ETargetType TargetType;
         public float Range1;

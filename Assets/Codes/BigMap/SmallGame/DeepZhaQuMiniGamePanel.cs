@@ -264,6 +264,11 @@ namespace Map.SmallGame.Zha
         {
             return false;
         }
+
+        public bool OnClick(int button, Vector2 mousePos)
+        {
+            return false;
+        }
     }
 }
 

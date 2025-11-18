@@ -316,5 +316,11 @@ namespace My.UI
             if (TryConsumeByLayers(c => c.OnSpace())) return true;
             return false;
         }
+
+        public bool DispatchClick(int button, Vector2 mousePos)
+        {
+            if (TryConsumeByLayers(c => c.OnClick(button, mousePos))) return true;
+            return false;
+        }
     }
 }
