@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using My.UI;
 using UnityEngine;
 
 
@@ -25,7 +26,6 @@ public partial class DialoguePlayer : MonoBehaviour
 
     [Header("Refs")]
     public DialogueUI ui;
-    public PortraitManager portraits;
     public SimpleCameraDirector cam;
     //public AudioBus audioBus;
     public DialogueTimeDriver driver;
@@ -87,18 +87,40 @@ public partial class DialoguePlayer : MonoBehaviour
         InputBlocker.Block(false);
     }
 
+    private void BuildLabelIndex(ScenarioData data)
+    {
+        labelToStep.Clear();
+        for (int i = 0; i < data.steps.Count; i++)
+        {
+            var lab = data.steps[i].label;
+            if (!string.IsNullOrEmpty(lab) && !labelToStep.ContainsKey(lab))
+            {
+                labelToStep.Add(lab, i);
+            }
+            // 兼容命令里的 Label（如果也用）
+            if (data.steps[i].commands != null)
+            {
+                foreach (var c in data.steps[i].commands)
+                {
+                    if (c.type == "Label" && c.s != null && c.s.TryGetValue("label", out var lbl))
+                    {
+                        if (!labelToStep.ContainsKey(lbl)) labelToStep.Add(lbl, i);
+                    }
+                }
+            }
+        }
+    }
+
     // 从外部数据开始播放
     public void PlayFromData(ScenarioData data, DialogueRuntime runtime)
     {
+        runtimeRef = runtime; // 你可以在类里存一个 runtimeRef
         dataRef = data;
-        runtimeRef = runtime;
-
         stepIndex = 0;
         isPlaying = true;
         InputBlocker.Block(true);
-
         BuildLabelIndex(dataRef);
-        StartStep();
+        StartStepFromData();
     }
 
     public void JumpToLabel(string label)
@@ -113,32 +135,9 @@ public partial class DialoguePlayer : MonoBehaviour
         }
     }
 
-    private void BuildLabelIndex(ScenarioData data)
+    private void StartStepFromData()
     {
-        labelToStep.Clear();
-        if (data == null || data.steps == null) return;
-
-        for (int i = 0; i < data.steps.Count; i++)
-        {
-            var step = data.steps[i];
-            if (!string.IsNullOrEmpty(step.label) && !labelToStep.ContainsKey(step.label))
-            {
-                labelToStep.Add(step.label, i);
-            }
-            if (step.commands == null) continue;
-            foreach (var c in step.commands)
-            {
-                if (c.type == "Label" && c.s != null && c.s.TryGetValue("label", out var lbl))
-                {
-                    if (!labelToStep.ContainsKey(lbl)) labelToStep.Add(lbl, i);
-                }
-            }
-        }
-    }
-
-    private void StartStep()
-    {
-        if (dataRef == null || dataRef.steps == null || stepIndex >= dataRef.steps.Count)
+        if (dataRef == null || stepIndex >= dataRef.steps.Count)
         {
             isPlaying = false;
             InputBlocker.Block(false);
@@ -151,17 +150,22 @@ public partial class DialoguePlayer : MonoBehaviour
         var step = dataRef.steps[stepIndex];
         var commands = step.commands ?? new List<CommandData>();
 
+        // 并行执行
         foreach (var cd in commands)
         {
             if (cd.wait) blockingCount++;
             ExecuteDataCommand(cd);
         }
-
         if (blockingCount <= 0) EnterWaitForContinue();
     }
 
     private void ExecuteDataCommand(CommandData cd)
     {
+        // 如果你使用 CommandFactory：
+        // var cmd = CommandFactory.Create(cd, runtimeRef);
+        // cmd.Execute(runtimeRef, () => CommandCompletedFromData(cd));
+
+        // 这里给出与之前 ExecuteCommand 类似的直连实现
         switch (cd.type)
         {
             case "TypeText":
@@ -174,7 +178,7 @@ public partial class DialoguePlayer : MonoBehaviour
                         text = runtimeRef.Localize(textKey);
                     }
                     string voice = TryS(cd, "voice");
-                    ui.StartTypeText(name, text ?? "", voice, SkipMode, () => CommandCompleted(cd));
+                    ui.StartTypeText(name, text ?? "", voice, SkipMode, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "ShowPortrait":
@@ -183,7 +187,7 @@ public partial class DialoguePlayer : MonoBehaviour
                     string charId = TryS(cd, "characterId");
                     string expr = TryS(cd, "expressionId", "default");
                     float fade = TryF(cd, "fade", 0.3f);
-                    portraits.Show(slot, charId, expr, fade, driver, () => CommandCompleted(cd));
+                    ui.portraits.Show(slot, charId, expr, fade, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "ChangeExpression":
@@ -191,53 +195,55 @@ public partial class DialoguePlayer : MonoBehaviour
                     string slot = TryS(cd, "slot", "Left");
                     string expr = TryS(cd, "expressionId", "default");
                     float fade = TryF(cd, "fade", 0.2f);
-                    portraits.ChangeExpression(slot, expr, fade, driver, () => CommandCompleted(cd));
+                    ui.portraits.ChangeExpression(slot, expr, fade, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "HidePortrait":
                 {
                     string slot = TryS(cd, "slot", "Left");
                     float fade = TryF(cd, "fade", 0.3f);
-                    portraits.Hide(slot, fade, driver, () => CommandCompleted(cd));
+                    ui.portraits.Hide(slot, fade, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "CameraMove":
                 {
+                    // pos="x,y,z"
                     string posStr = TryS(cd, "pos", "0,0,-10");
                     Vector3 pos = ParseVec3(posStr);
                     float dur = TryF(cd, "duration", 0.5f);
-                    cam.MoveTo(pos, dur, driver, () => CommandCompleted(cd));
+                    cam.MoveTo(pos, dur, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "CameraZoom":
                 {
                     float fov = TryF(cd, "fov", 60f);
                     float dur = TryF(cd, "duration", 0.5f);
-                    cam.ZoomTo(fov, dur, driver, () => CommandCompleted(cd));
+                    cam.ZoomTo(fov, dur, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "CameraShake":
                 {
                     float amp = TryF(cd, "amplitude", 1f);
                     float dur = TryF(cd, "duration", 0.2f);
-                    cam.Shake(amp, dur, driver, () => CommandCompleted(cd));
+                    cam.Shake(amp, dur, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "PlaySE":
                 {
                     string name = TryS(cd, "name");
                     //audioBus.PlaySE(name);
-                    CommandCompleted(cd);
+                    CommandCompletedFromData(cd);
                     break;
                 }
             case "Wait":
                 {
                     float t = TryF(cd, "time", 0.3f);
-                    driver.Run(t, _ => { }, () => CommandCompleted(cd));
+                    driver.Run(t, _ => { }, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "Choice":
                 {
+                    // 选项 text 或 textKey
                     var options = new List<string>();
                     var jumpLabels = new List<string>();
                     if (cd.listS != null)
@@ -265,7 +271,7 @@ public partial class DialoguePlayer : MonoBehaviour
                                 JumpToLabel(label);
                             }
                         }
-                        CommandCompleted(cd);
+                        CommandCompletedFromData(cd);
                     });
                     break;
                 }
@@ -273,21 +279,52 @@ public partial class DialoguePlayer : MonoBehaviour
                 {
                     string label = TryS(cd, "label");
                     if (!string.IsNullOrEmpty(label)) JumpToLabel(label);
-                    CommandCompleted(cd);
+                    CommandCompletedFromData(cd);
                     break;
                 }
             case "Label":
                 {
-                    CommandCompleted(cd);
+                    // 不执行，仅用于索引
+                    CommandCompletedFromData(cd);
                     break;
                 }
             default:
                 {
                     Debug.LogWarning($"Unknown command type: {cd.type}");
-                    CommandCompleted(cd);
+                    CommandCompletedFromData(cd);
                     break;
                 }
         }
+    }
+
+    private void CommandCompletedFromData(CommandData cd)
+    {
+        if (cd.wait)
+        {
+            blockingCount = Mathf.Max(0, blockingCount - 1);
+            if (blockingCount == 0) EnterWaitForContinue();
+        }
+    }
+
+
+    // 工具：取参数
+    private static string TryS(CommandData c, string key, string def = "")
+    {
+        if (c.s != null && c.s.TryGetValue(key, out var v)) return v;
+        return def;
+    }
+    private static float TryF(CommandData c, string key, float def = 0f)
+    {
+        if (c.f != null && c.f.TryGetValue(key, out var v)) return v;
+        return def;
+    }
+    private static Vector3 ParseVec3(string s)
+    {
+        var p = s.Split(',');
+        float x = p.Length > 0 && float.TryParse(p[0], out var vx) ? vx : 0;
+        float y = p.Length > 1 && float.TryParse(p[1], out var vy) ? vy : 0;
+        float z = p.Length > 2 && float.TryParse(p[2], out var vz) ? vz : 0;
+        return new Vector3(x, y, z);
     }
 
     private void CommandCompleted(CommandData cd)
@@ -315,27 +352,7 @@ public partial class DialoguePlayer : MonoBehaviour
         stepWaitingForContinue = false;
         ui.ShowNextIndicator(false);
         stepIndex++;
-        StartStep();
-    }
-
-    // 工具
-    private static string TryS(CommandData c, string key, string def = "")
-    {
-        if (c.s != null && c.s.TryGetValue(key, out var v)) return v;
-        return def;
-    }
-    private static float TryF(CommandData c, string key, float def = 0f)
-    {
-        if (c.f != null && c.f.TryGetValue(key, out var v)) return v;
-        return def;
-    }
-    private static Vector3 ParseVec3(string s)
-    {
-        var p = s.Split(',');
-        float x = p.Length > 0 && float.TryParse(p[0], out var vx) ? vx : 0;
-        float y = p.Length > 1 && float.TryParse(p[1], out var vy) ? vy : 0;
-        float z = p.Length > 2 && float.TryParse(p[2], out var vz) ? vz : 0;
-        return new Vector3(x, y, z);
+        StartStepFromData();
     }
 }
 

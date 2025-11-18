@@ -94,7 +94,13 @@ namespace My
             playerDataManager = new(this);
             playerDataManager.InitPlayer();
 
-            homeDataManager = new();
+            homeDataManager = new(this);
+            homeDataManager.EvOnPlacementUpdate += (placementInfo) =>
+            {
+                
+
+                //AreaManager.EntityRefreshInfo.Add(refreshInfo);
+            };
 
             DropTable = Resources.Load<GlobalDropTable>("Config/DropTable");
         }
@@ -294,6 +300,13 @@ namespace My
                     {
                         var patrolGroup = new PatrolGroupLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                         newEntity = patrolGroup;
+                    }
+                    break;
+
+                case EEntityType.HomePlacement:
+                    {
+                        var homePlacement = new HomePlacementLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                        newEntity = homePlacement;
                     }
                     break;
             }

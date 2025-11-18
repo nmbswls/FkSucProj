@@ -16,6 +16,8 @@ namespace My.Home
     public class HomeDataManager
     {
 
+        public GameLogicManager LogicManager;
+
         [Serializable]
         public class HomePlacementInfo
         {
@@ -31,6 +33,7 @@ namespace My.Home
         public class HomePlacementDetailInfo
         { }
 
+        public long HomePlacementIdCounter = 100;
 
         public Dictionary<string, bool> VariableDict = new();
 
@@ -38,6 +41,12 @@ namespace My.Home
 
         public event Action<HomePlacementInfo> EvOnPlacementUpdate;
 
+        public Dictionary<long, long> Placement2EntityMap = new();
+
+        public HomeDataManager(GameLogicManager logicManager)
+        {
+            this.LogicManager = logicManager;
+        }
 
         public void SetVariable(string id)
         {
@@ -64,7 +73,46 @@ namespace My.Home
             newInfo.Id = id;
             newInfo.PivotPos = pivorPos;
             newInfo.Rot = rot;
+            newInfo.InstId = HomePlacementIdCounter++;
+
+
             PlacementInfos.Add(newInfo);
+
+            var record = new LogicEntityRecord()
+            {
+                Id = GameLogicManager.LogicEntityIdInst++,
+                EntityType = EEntityType.HomePlacement,
+                CfgId = id,
+                Position = new Vector2(pivorPos.x * 1f, pivorPos.y * 1.0f),
+            };
+
+            Vector2 faceDir = Vector2.right;
+            switch (rot)
+            {
+                case EPlacementRotation.R90:
+                    {
+                        faceDir = new Vector2(0, 1);
+                    }
+                    break;
+                case EPlacementRotation.R180:
+                    {
+                        faceDir = new Vector2(-1, 0);
+                    }
+                    break;
+                case EPlacementRotation.R270:
+                    {
+                        faceDir = new Vector2(0, -1);
+                    }
+                    break;
+            }
+
+            record.FaceDir = faceDir;
+
+            LogicManager.CreateNewEntityRecord(record);
+
+            Placement2EntityMap[newInfo.InstId] = record.Id;
+
+            EvOnPlacementUpdate?.Invoke(newInfo);
         }
 
         public void MovePlacement(string id, Vector3Int pivorPos, EPlacementRotation rot)
@@ -88,11 +136,11 @@ namespace My.Home
                 "small_01",
                 "small_02",
                 "small_03",
-                //"middle_01",
-                //"middle_02",
-                //"big_01",
-                //"big_02",
-                //"big_03",
+                "middle_01",
+                "middle_02",
+                "big_01",
+                "big_02",
+                "big_03",
             };
 
             List<HomePlaceableObject> ret = new();

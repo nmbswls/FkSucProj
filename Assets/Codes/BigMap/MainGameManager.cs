@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
@@ -90,6 +91,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public UnityNavProvider NavProvider;
 
+    public DialoguePlayer dialoguePlayer;
 
     private void Awake()
     {
@@ -138,7 +140,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         var areaInfo = Resources.Load<WorldAreaInfo>($"Area/{initMap}");
 
-        // �߼��Ͻ���ҷ��볡��
+        // 逻辑上将玩家放入场景
         await gameLogicManager.PlayerEnterArea(initMap);
 
         if(playerScenePresenter == null)
@@ -151,7 +153,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         bool loaded = false;
         WorldAreaManager.Instance.LoadWorld(areaInfo, onComplete: (w) => { loaded = true; });
 
-        // �ȴ���������
+        // 等待场景加载
         while(!loaded)
         {
             await Task.Yield();
@@ -161,7 +163,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         playerScenePresenter.Bind(gameLogicManager.playerLogicEntity);
 
-        // ����ְ��
+        // 整理职责
         FovGenerator.OnAreaEnter();
         SceneAOIManager.Instance.InitArea(areaInfo.worldName);
         SceneFadeManager.OnEnterArea(WorldAreaManager.Instance.currentRoot.gameObject);
@@ -172,7 +174,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld, null);
 
-        // �����
+        // 绑定相机
         CameraCtrl.Target = this.playerScenePresenter.ViewPoint;
 
         if(HomeSceneManager.Instance != null)
@@ -204,6 +206,33 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
                     MoveBehaveType = BaseUnitLogicEntity.EMoveBehaveType.Hunting,
                     EnmityConfId = "default_monster",
                 });
+            }
+
+            if(UnityEngine.Input.GetKeyDown(KeyCode.L))
+            {
+                //// 本地化
+                //if (locJson)
+                //{
+                //    Loc.LoadFromText(locJson.text);
+                //}
+                var txt = "# 进入开场镜头\r\nLabel: intro\r\n\r\nCameraMove pos=0,0,-10 duration=0.0\r\nCameraZoom fov=60 duration=0.0\r\nPlaySE name=ui_open\r\nWait time=0.2\r\n\r\n# 显示主角与同伴\r\nShowPortrait slot=Left characterId=hero expressionId=default fade=0.25\r\nShowPortrait slot=Right characterId=companion expressionId=smile fade=0.25\r\nWait time=0.3\r\n\r\n# 对话开始\r\nTypeText name=Hero text=终于到了约定的地点。 voice=hero_line_001 wait=true\r\nTypeText name=Companion text=你比我想象的准时。 voice=comp_line_001 wait=true\r\n\r\n# 改变表情与相机移动\r\nChangeExpression slot=Right expressionId=think fade=0.2\r\nCameraMove pos=0.5,0,-10 duration=0.5\r\nCameraShake amplitude=0.5 duration=0.15\r\nPlaySE name=ui_tick\r\nWait time=0.2\r\n\r\nTypeText name=Hero text=我们先确认一下任务目标，然后再决定行动。 wait=true\r\n\r\n# 分支选择\r\nChoice [\r\n  { text=立刻出发 jumpLabel=branch_go },\r\n  { text=再收集些情报 jumpLabel=branch_info }\r\n]\r\n\r\n# —— 分支：立刻出发\r\nLabel: branch_go\r\nTypeText name=Companion text=好，那就现在行动！ wait=true\r\nChangeExpression slot=Right expressionId=smile fade=0.2\r\nCameraZoom fov=50 duration=0.4\r\nPlaySE name=step_confirm\r\nWait time=0.2\r\nTypeText name=Hero text=跟紧我。 wait=true\r\nJump label=ending\r\n\r\n# —— 分支：收集情报\r\nLabel: branch_info\r\nTypeText name=Hero text=谨慎总是没错的。先打听一下附近的情况。 wait=true\r\nChangeExpression slot=Left expressionId=think fade=0.2\r\nCameraMove pos=-0.3,0,-10 duration=0.4\r\nPlaySE name=ui_select\r\nWait time=0.2\r\nTypeText name=Companion text=那我联系一下线人。 wait=true\r\nJump label=ending\r\n\r\n# —— 结尾（通用）\r\nLabel: ending\r\nHidePortrait slot=Right fade=0.25\r\nChangeExpression slot=Left expressionId=default fade=0.2\r\nTypeText name=Hero text=准备完毕，出发。 wait=true\r\nWait time=0.3\r\nPlaySE name=ui_close";
+
+
+                var data = TxtDialogueScriptParser.Parse(txt: "", "intro_from_txt");
+
+                var dialogPanel = UIManager.Instance.ShowPanel("DialoguePanel") as DialogueUI;
+
+                var runtime = new DialogueRuntime
+                {
+                    ui = dialogPanel,
+                    //cam = cam,
+                    //audio = audio,
+                    driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
+                    //Localize = Loc.Tr,
+                    JumpTo = label => dialoguePlayer.JumpToLabel(label)
+                };
+
+                dialoguePlayer.PlayFromData(data, runtime);
             }
         }
 
@@ -238,17 +267,17 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
     /// <summary>
-    /// todo ��Ҫ���ݷ���ü��ȷ�ʽ ת��Ϊ�߼����� �ռ�������ص���
+    /// todo 需要根据房间裁剪等方式 转换为逻辑坐标 空间可能是重叠的
     /// </summary>
     /// <param name="worldPos"></param>
     /// <returns></returns>
     public Vector2 GetLogicPosFromWorldPos(Vector3 worldPos)
     {
-        // �ȼ���Ƿ�ӳ������������
+        // 先检查是否映射在子区域中
         // 
 
 
-        // ���ݽ�� ����������߼�����
+        // 根据结果 返回区域加逻辑坐标
 
 
         return new Vector2(worldPos.x, worldPos.y);
@@ -314,7 +343,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
     /// <summary>
-    /// ��ʾ������
+    /// 显示进度条
     /// </summary>
     /// <param name="hintText"></param>
     /// <param name="progressTime"></param>
@@ -415,7 +444,7 @@ public class UnityNavProvider : INavProvider
 
     public bool TryGetFollowPoint(ILogicEntity target, float predictionSeconds, Vector2 offset, out Vector3 followPoint)
     {
-        // ���ϲ�ά��һ�����ұ���EntityId => Transform
+        // 由上层维护一个查找表：EntityId => Transform
         if (target == null)
         {
             followPoint = default;
@@ -424,7 +453,7 @@ public class UnityNavProvider : INavProvider
 
 
 
-        // ��Ԥ�⣺Ŀ��λ�� + �ٶ� * Ԥ��ʱ�䣨���ϲ��ṩ�ٶȣ�
+        // 简单预测：目标位置 + 速度 * 预测时间（需上层提供速度）
         //var v = EntityLocator.FindVelocity(targetId);
 
         Vector2 v = Vector2.zero;
@@ -440,7 +469,7 @@ public class UnityNavProvider : INavProvider
 
     public bool Linecast(Vector3 from, Vector3 to, out Vector3 hitPoint)
     {
-        // ����NavMesh.Raycast �� Physics.Raycast
+        // 可用NavMesh.Raycast 或 Physics.Raycast
         NavMeshHit hit;
         bool hitNav = NavMesh.Raycast(from, to, out hit, NavMesh.AllAreas);
         hitPoint = hit.position;

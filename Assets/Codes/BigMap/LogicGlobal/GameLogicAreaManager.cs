@@ -509,6 +509,7 @@ namespace My.Map.Logic
             {
                 case EEntityType.Player:
                 case EEntityType.PatrolGroup:
+                case EEntityType.HomePlacement:
                     {
                         return true;
                     }

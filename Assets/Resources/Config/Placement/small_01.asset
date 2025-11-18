@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: small_01
   name: small_01
-  sprite: {fileID: 21300000, guid: 92a6e63d8da7f3342b5c23c8da734580, type: 3}
+  sprite: {fileID: 21300000, guid: bb816d02c39778e44aa779769ddaa126, type: 3}
   previewSprite: {fileID: 21300000, guid: 92a6e63d8da7f3342b5c23c8da734580, type: 3}
   pivot: {x: 0, y: 0}
   footprintR0:

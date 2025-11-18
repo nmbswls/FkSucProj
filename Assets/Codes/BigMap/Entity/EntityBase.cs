@@ -145,6 +145,8 @@ namespace My.Map
             this.FaceDir = bindingRecord.FaceDir;
             this.BelongRoomId = bindingRecord.BelongRoomId;
 
+            this.LifeTime = bindingRecord.LifeTime;
+
             BindingRecord = bindingRecord;
         }
 

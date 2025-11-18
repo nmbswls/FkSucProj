@@ -252,6 +252,37 @@ namespace Config
         }
     }
 
+    public static class MapHomePlacementEntityCfgtLoader
+    {
+
+        private static Dictionary<string, MapHomePlacementEntityConfig> _byId = new Dictionary<string, MapHomePlacementEntityConfig>();
+
+        public static MapHomePlacementEntityConfig Get(string cfgId)
+        {
+            if (_byId.TryGetValue(cfgId, out var data))
+                return data;
+
+            var loadOne = Load(cfgId);
+            _byId[cfgId] = loadOne;
+            return loadOne;
+        }
+
+
+        private static MapHomePlacementEntityConfig Load(string cfgId)
+        {
+            var data = Resources.Load<MapHomePlacementEntityConfig>($"Config/Entity/HomePlacement/{cfgId}");
+            if (data == null)
+                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/HomePlacement/{cfgId}");
+            return data;
+        }
+
+        public static void Clear()
+        {
+            _byId.Clear();
+        }
+    }
+    
+
 
 
     #region build

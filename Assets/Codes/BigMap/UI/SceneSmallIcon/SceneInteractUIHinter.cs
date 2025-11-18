@@ -40,17 +40,21 @@ namespace My.UI
                 ShowRoot.gameObject.SetActive(false);
             }
 
-            var hintPos = BindInteractPoint.GetHintAnchorPosition();
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
+            if(ShowRoot.gameObject.activeSelf)
+            {
+                var hintPos = BindInteractPoint.GetHintAnchorPosition();
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
 
-            // 如果是 Screen Space - Camera 或 World Space，用 RectTransformUtility：
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                UIManager.Instance.RootCanvas.transform as RectTransform,
-                screenPos,
-                UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
-                out Vector2 localPos
-            );
-            transform.localPosition = localPos;
+                // 如果是 Screen Space - Camera 或 World Space，用 RectTransformUtility：
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    UIManager.Instance.RootCanvas.transform as RectTransform,
+                    screenPos,
+                    UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
+                    out Vector2 localPos
+                );
+                transform.localPosition = localPos;
+            }
+            
         }
 
         public void InitBind(ISceneInteractable sceneInteract)

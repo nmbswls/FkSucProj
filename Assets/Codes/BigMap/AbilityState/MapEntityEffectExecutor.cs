@@ -472,10 +472,13 @@ namespace My.Map.Entity
                 return;
             }
 
+            record.Id = GameLogicManager.LogicEntityIdInst++;
+            record.CfgId = realCfg.CfgId;
+            record.EntityType = realCfg.EntityType;
             record.LifeTime = realCfg.LifeTime;
             record.Position = ctx.CastDir.Value;
 
-            ctx.Env.CreateEntityByRecord(record);
+            ctx.Env.CreateNewEntityRecord(record);
         }
     }
 }

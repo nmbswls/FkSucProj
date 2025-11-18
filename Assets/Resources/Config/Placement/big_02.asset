@@ -16,7 +16,7 @@ MonoBehaviour:
   name: big_02
   sprite: {fileID: 21300000, guid: 85698eafaef50ea4eaace48f5fec1797, type: 3}
   previewSprite: {fileID: 21300000, guid: 85698eafaef50ea4eaace48f5fec1797, type: 3}
-  pivot: {x: 0, y: 0}
+  pivot: {x: 1, y: 1}
   footprintR0:
   - {x: 0, y: 0}
   precomputeRotations: 1

@@ -591,6 +591,8 @@ public class SceneAOIManager : MonoBehaviour
         Unloading
     }
 
+    private float _lastRefreshChunkTime;
+
     private void RefreshStaticChunks(Vector3 playerPos)
     {
         var center = WorldToChunk(playerPos);
@@ -634,9 +636,14 @@ public class SceneAOIManager : MonoBehaviour
             var rec = _chunks[c];
             TickChunkLoad(rec, LogicTime.time, ref startedLoadsThisFrame);
         }
+
+        if (LogicTime.time > _lastRefreshChunkTime + 2.0f)
+        {
+            _lastRefreshChunkTime = LogicTime.time;
+        }
     }
 
-    public async Task ForceUpdateOneChunk(ChunkCoord coord)
+    public void ForceUpdateOneChunk(ChunkCoord coord)
     {
         if(!_chunks.TryGetValue(coord, out var record))
         {
@@ -653,14 +660,8 @@ public class SceneAOIManager : MonoBehaviour
             }
             return;
         }
-        record.loadState = LoadState.Loading;
-        record.cancelAfterLoad = false;
-        record.refreshAfterLoad = false;
-        record.lastBecameUndesired = 0f; // 清理不需要计时
-        _concurrentLoading++;
 
         var instances = new List<MapScenePrefabProvider>();
-        var batchBuffer = new List<MapExportDatabase.StaticPrefabItem>(batchObjectsPerSlice);
         int objCountSinceYield = 0;
 
         // 批次枚举（根据你的配置实现 GetPrefabs）
@@ -674,7 +675,7 @@ public class SceneAOIManager : MonoBehaviour
                 // 已加载 需要卸载
                 if(existObj != null)
                 {
-                    _ =  _assetAsync.ReleaseAsync(existObj.gameObject);
+                    _asset.Release(existObj.gameObject);
                 }
                 continue;
             }
@@ -683,13 +684,27 @@ public class SceneAOIManager : MonoBehaviour
             {
                 if(existObj == null)
                 {
-                    batchBuffer.Add(item);
-                    if (batchBuffer.Count >= batchObjectsPerSlice)
+                    MapScenePrefabProvider prefabProvider = null;
+                    try
                     {
-                        objCountSinceYield = await InstantiateBatch(batchBuffer, instances, objCountSinceYield);
-                        batchBuffer.Clear();
-
-                        // 加载过程中若被标记取消，可继续把已加载的回收处理延后到完成阶段
+                        var go = _asset.Instantiate("Prefab/" + AreaId + "/" + item.Key);
+                        prefabProvider = GetComponent<MapScenePrefabProvider>();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogException(ex);
+                    }
+                    if (prefabProvider != null)
+                    {
+                        var root = MainGameManager.Instance.GetWorldStaticPrefabRoot("1");
+                        if (root != null)
+                        {
+                            prefabProvider.transform.SetParent(root);
+                        }
+                        prefabProvider.transform.SetPositionAndRotation(item.Position, item.Rotation);
+                        prefabProvider.transform.localScale = item.Scale;
+                        prefabProvider.gameObject.SetActive(true);
+                        instances.Add(prefabProvider);
                     }
                 }
                 else
@@ -698,56 +713,12 @@ public class SceneAOIManager : MonoBehaviour
                 }
             }
 
-            //batchBuffer.Add(item);
-            //if (batchBuffer.Count >= batchObjectsPerSlice)
-            //{
-            //    objCountSinceYield = await InstantiateBatch(batchBuffer, instances, objCountSinceYield);
-            //    batchBuffer.Clear();
-
-            //    // 加载过程中若被标记取消，可继续把已加载的回收处理延后到完成阶段
-            //}
-        }
-        // 处理剩余的半批
-        if (batchBuffer.Count > 0)
-        {
-            objCountSinceYield = await InstantiateBatch(batchBuffer, instances, objCountSinceYield);
         }
 
-        // 加载完成，回主线程后核验
-        if (!_chunks.TryGetValue(record.coord, out var cur) || cur != record)
-        {
-            // 记录已被替换，安全释放
-            foreach (var prefabInfo in instances) _ = _assetAsync.ReleaseAsync(prefabInfo.gameObject);
-            _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
-            return;
-        }
 
-        // 若不再需要显示或被标记取消，则直接释放
-        if (record.cancelAfterLoad || !record.desiredVisible)
-        {
-            foreach (var prefabInfo in instances)
-                _ = _assetAsync.ReleaseAsync(prefabInfo.gameObject);
+        //var segments = ExportDb.GetChunkSegments(record.coord.X, record.coord.Y);
+        //WorldAreaManager.Instance.SegmentProvider.AddSegments(record.coord.ToString(), segments);
 
-            record.instances = null;
-            record.loadState = LoadState.Unloaded;
-            _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
-            return;
-        }
-
-        record.instances = instances;
-        record.loadState = LoadState.Loaded;
-        record.lastBecameLoaded = LogicTime.time;
-        _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
-
-        var segments = ExportDb.GetChunkSegments(record.coord.X, record.coord.Y);
-        WorldAreaManager.Instance.SegmentProvider.AddSegments(record.coord.ToString(), segments);
-
-        // 需要刷新
-        if (record.refreshAfterLoad)
-        {
-            _ = ForceUpdateOneChunk(record.coord);
-            return;
-        }
     }
     private void TickChunkLoad(ChunkRecord rec, float now, ref int startedLoadsThisFrame)
     {
@@ -791,6 +762,13 @@ public class SceneAOIManager : MonoBehaviour
                     if (now - rec.lastBecameUndesired < chunkExitDelay) return;
 
                     // 由卸载推进流程处理
+                }
+                else
+                {
+                    if(LogicTime.time > _lastRefreshChunkTime + 2.0f)
+                    {
+                        ForceUpdateOneChunk(rec.coord);
+                    }
                 }
                 break;
 
@@ -906,7 +884,7 @@ public class SceneAOIManager : MonoBehaviour
         // 需要刷新
         if (rec.refreshAfterLoad)
         {
-            _ = ForceUpdateOneChunk(rec.coord);
+            ForceUpdateOneChunk(rec.coord);
             return;
         }
 

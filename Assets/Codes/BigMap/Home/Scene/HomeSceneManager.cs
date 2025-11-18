@@ -133,7 +133,9 @@ namespace My
             foreach (var offset in obj.GetFootprint(rot))
             {
                 var cell = pivotCell + new Vector3Int(offset.x, offset.y, 0);
-                if (!runtime.IsBuildableCell(cell.x, cell.y)) return false;
+                int lx = cell.x - runtime.originX;
+                int ly = cell.y - runtime.originY;
+                if (!runtime.IsBuildableCell(lx, ly)) return false;
                 if (IsOccupied(cell)) return false;
             }
             return true;

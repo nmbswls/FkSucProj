@@ -109,6 +109,14 @@ namespace My.UI
                 pooled = false,
             });
 
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "DialoguePanel",
+                resourcePath = "UI/Prefabs/DialoguePanel",
+                defaultLayer = UILayer.Overlay,
+                pooled = true,
+            });
+
         }
 
         public static void RegisterGroups()

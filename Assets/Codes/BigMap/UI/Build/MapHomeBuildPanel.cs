@@ -138,10 +138,14 @@ namespace My.UI
             Debug.Log($"MapHomeBuildPanel Selection changed: index={index}, data={(data == null ? "null" : data.name)}");
 
             currentPlacement = data;
-            if(!preview.gameObject.activeSelf)
+            if(data != null)
             {
                 preview.Show(true);
-                preview.SetSprite(data.sprite);
+                preview.InitPreview(data);
+            }
+            else
+            {
+                rot = EPlacementRotation.R0;
             }
         }
 
@@ -162,7 +166,22 @@ namespace My.UI
             bool valid = HomeSceneManager.Instance.CanPlace(currentPlacement, rot, cell);
             preview.UpdatePreview(valid, worldPivot);
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.R)) rot = Next(rot);
+            if(HomeSceneManager.Instance != null)
+            {
+                var offsetCelss = currentPlacement.GetFootprint(rot);
+                List<Vector3Int> cells = new();
+                foreach(var offset in offsetCelss)
+                {
+                    cells.Add(new Vector3Int(cell.x + offset.x, cell.y + offset.y, 0));
+                }
+                HomeSceneManager.Instance.previewTilemapController.DrawCells(cells, valid);
+            }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.R)) 
+            { 
+                rot = Next(rot);
+                preview.RefreshRotation(rot);
+            }
 
             if (UnityEngine.Input.GetMouseButtonDown(0))
             {
@@ -183,7 +202,9 @@ namespace My.UI
         public void CancelBuildMode()
         {
             currentPlacement = null;
-            preview.gameObject.SetActive(false);
+            preview.Show(false);
+
+            HomeSceneManager.Instance.previewTilemapController.Clear();
         }
     }
 }

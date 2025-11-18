@@ -1,4 +1,5 @@
 
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace My
@@ -6,24 +7,70 @@ namespace My
     public class BuildPreviewController : MonoBehaviour
     {
         public GameObject ghostPrefab;
+
+        public GameObject ghostGo;
         public SpriteRenderer ghostRenderer;
+
+        public float CellSize = 1;
 
         public void Awake()
         {
-            var go = GameObject.Instantiate(ghostPrefab, MainGameManager.Instance.SceneEffectLayer);
-            ghostRenderer = go.GetComponentInChildren<SpriteRenderer>();
-
-            go.gameObject.SetActive(false);
+            ghostGo = GameObject.Instantiate(ghostPrefab, MainGameManager.Instance.SceneEffectLayer);
+            ghostRenderer = ghostGo.GetComponentInChildren<SpriteRenderer>();
+            ghostGo.gameObject.SetActive(false);
         }
 
-        public void SetSprite(Sprite s)
+        public void InitPreview(HomePlaceableObject obj)
         {
-            if (ghostRenderer != null) ghostRenderer.sprite = s;
+
+            if (ghostRenderer != null)
+            {
+                ghostRenderer.sprite = obj.sprite;
+
+                int sx = obj.pivot.x;
+                int sy = obj.pivot.y;
+
+                Vector3 local = new Vector3((-sx)* CellSize, (-sy) * CellSize, 0);
+                ghostRenderer.transform.localPosition = local;
+            }
+
+            RefreshRotation(EPlacementRotation.R0);
         }
+
+        public void RefreshRotation(EPlacementRotation rot)
+        {
+            if (ghostRenderer != null)
+            {
+                switch (rot)
+                {
+                    case EPlacementRotation.R0:
+                        {
+                            ghostRenderer.transform.localEulerAngles = new Vector3(0, 0, 0);
+                        }
+                        break;
+                    case EPlacementRotation.R90:
+                        {
+                            ghostRenderer.transform.localEulerAngles = new Vector3(0, 0, 90);
+                        }
+                        break;
+                    case EPlacementRotation.R180:
+                        {
+                            ghostRenderer.transform.localEulerAngles = new Vector3(0, 0, 180);
+                        }
+                        break;
+                    case EPlacementRotation.R270:
+                        {
+                            ghostRenderer.transform.localEulerAngles = new Vector3(0, 0, 270);
+                        }
+                        break;
+                }
+            }
+        }
+
 
         public void UpdatePreview(bool valid, Vector3 worldPos)
         {
-            transform.position = worldPos;
+            ghostGo.transform.position = worldPos;
             //if (ghostRenderer != null)
             //{
             //    ghostRenderer.sharedMaterial = valid ? validMat : invalidMat;
@@ -34,7 +81,7 @@ namespace My
 
         public void Show(bool show)
         {
-            gameObject.SetActive(show);
+            ghostGo.gameObject.SetActive(show);
         }
     }
 }
