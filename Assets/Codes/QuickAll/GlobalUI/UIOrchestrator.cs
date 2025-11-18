@@ -117,6 +117,15 @@ namespace My.UI
                 pooled = true,
             });
 
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "EncounterBattleHud",
+                resourcePath = "UI/Prefabs/Battle/EncounterBattleHud",
+                defaultLayer = UILayer.HUD,
+                pooled = false,
+            });
+            
         }
 
         public static void RegisterGroups()
@@ -314,18 +323,24 @@ namespace My.UI
 
             switch (next)
             {
+                case UIAppState.Boot:
+                    {
+                        UIManager.Instance.HideAll("LoadingOverlay");
+                    }
+                    break;
+
                 case UIAppState.Overworld:
                     await EnterOverworldAsync(ctx);
                     break;
-                //case UIAppState.Battle:
-                //    await EnterBattleAsync(ctx);
-                //    break;
-                //case UIAppState.PauseMenu:
-                //    await EnterPauseAsync();
-                //    break;
-                //case UIAppState.Dialog:
-                //    await EnterDialogAsync(ctx);
-                //    break;
+                case UIAppState.Battle:
+                    await EnterBattleAsync(ctx);
+                    break;
+                    //case UIAppState.PauseMenu:
+                    //    await EnterPauseAsync();
+                    //    break;
+                    //case UIAppState.Dialog:
+                    //    await EnterDialogAsync(ctx);
+                    //    break;
             }
         }
 
@@ -341,17 +356,20 @@ namespace My.UI
             await Task.CompletedTask;
         }
 
-        //private async Task EnterBattleAsync(object ctx)
-        //{
-        //    UIManager.Instance.ShowLoading("Entering Battle...");
-        //    // 关闭世界 HUD
-        //    UIManager.Instance.HidePanel("OverworldHUD");
-        //    // 打开战斗 HUD
-        //    UIManager.Instance.ShowPanel("BattleHUD", ctx, UILayer.HUD);
-        //    UIManager.Instance.ApplyInputMode(UIInputMode.Battle);
-        //    UIManager.Instance.HideLoading();
-        //    await Task.CompletedTask;
-        //}
+        private async Task EnterBattleAsync(object ctx)
+        {
+            //UIManager.Instance.ShowLoading("Entering Battle...");
+            //// 关闭世界 HUD
+            //UIManager.Instance.HidePanel("OverworldHUD");
+            //// 打开战斗 HUD
+            UIManager.Instance.ShowPanel("EncounterBattleHud", ctx, UILayer.HUD);
+            //UIManager.Instance.ApplyInputMode(UIInputMode.Battle);
+            //UIManager.Instance.HideLoading();
+            
+
+            MainGameManager.Instance.inputBinder.ApplyInputMode(InputMode.Battle);
+            await Task.CompletedTask;
+        }
 
         //private async Task EnterPauseAsync()
         //{

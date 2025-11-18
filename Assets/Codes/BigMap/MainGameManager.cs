@@ -428,17 +428,46 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         UIManager.Instance.HidePanel("DeepZhaQuMiniGame");
     }
 
+    private bool isSwitchingEncounter = false;
 
     public void EnterEncounter()
     {
+        if(isSwitchingEncounter)
+        {
+            return;
+        }
+
+
+        isSwitchingEncounter = true;
         _ = InnerEnterEncounter().ContinueWith(t =>
         {
             if (t.IsFaulted)
             {
                 Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
             }
+            isSwitchingEncounter = false;
         }, TaskScheduler.FromCurrentSynchronizationContext()); ;
     }
+
+    public void QuitEncounter()
+    {
+        if (isSwitchingEncounter)
+        {
+            return;
+        }
+
+
+        isSwitchingEncounter = true;
+        _ = InnerQuitEncounter().ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+            {
+                Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+            }
+            isSwitchingEncounter = false;
+        }, TaskScheduler.FromCurrentSynchronizationContext()); ;
+    }
+
 
     protected async Task InnerEnterEncounter()
     {
@@ -446,9 +475,24 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         LogicTime.RequestPause("encounter");
 
+        await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
+
         BattleContext ctx = new();
         ctx.BattleId = 1;
         await EncounterBattleLoader.LoadBattleAsync(ctx);
+
+
+        UIManager.Instance.HideLoading();
+    }
+
+    protected async Task InnerQuitEncounter()
+    {
+        UIManager.Instance.ShowLoading("good");
+
+
+        await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
+
+        await EncounterBattleLoader.UnloadBattleAsync();
 
         LogicTime.ReleasePause("encounter");
 
