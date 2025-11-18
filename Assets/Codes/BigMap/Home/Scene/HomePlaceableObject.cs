@@ -13,6 +13,9 @@ namespace My
     {
         [Header("Meta")]
         public string id;
+        public string name;
+
+        public Sprite sprite;
         //public GameObject prefab; // 实际放置的 Prefab
         public Sprite previewSprite; // 预览用图标（可选）
 

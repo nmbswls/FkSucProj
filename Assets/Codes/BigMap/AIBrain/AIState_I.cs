@@ -270,7 +270,7 @@ namespace Map.Entity.AI
     //        //// 策略更新
     //        //_manager.Update(_sc);
 
-    //        //// 触发“玩家靠近”事件（防抖：每帧都发可以，但建议在你的项目中加冷却）
+    //        //// 触发"玩家靠近”事件（防抖：每帧都发可以，但建议在你的项目中加冷却）
     //        //if (_sc.Distance <= 1.2f)
     //        //{
     //        //    Brain.Events.Publish(new MapUnitAIBrainEvents.BrainEvent(MapUnitAIBrainEvents.BrainEventType.PlayerClose));

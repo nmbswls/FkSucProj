@@ -2,6 +2,7 @@
 using My.Map.Entity;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 
 namespace My.UI
@@ -118,48 +119,102 @@ namespace My.UI
             else if (mode == EHudMode.Build)
             {
                 homeBuildPanel.gameObject.SetActive(true);
+                homeBuildPanel.InitShow();
             }
         }
 
 
         public override int FocusPriority => 0;
         public bool OnConfirm() => false;
-        public bool OnCancel() => false;
+        public bool OnCancel()
+        {
+
+            if(HudMode == EHudMode.Build)
+            {
+                QuitBuildMode();
+                return true;
+            }
+
+            return false;
+        }
+
+
         public bool OnNavigate(Vector2 dir) => false;
         public bool OnHotkey(int index)
         {
-            string abilityName = string.Empty;
+            if(HudMode == EHudMode.Normal)
+            {
+                string abilityName = string.Empty;
+
+                if (index == 1)
+                {
+                    abilityName = "fix_clothes";
+                }
+                else if (index == 2)
+                {
+                    abilityName = "spawn_attract";
+                }
+
+                if (string.IsNullOrEmpty(abilityName))
+                {
+                    return false;
+                }
+
+                var abConf = AbilityLibrary.GetAbilityConfig(abilityName);
+                if (abConf.TargetType != MapAbilitySpecConfig.ETargetType.NoTarget)
+                {
+                    EnterSkillPreviewMode(abilityName);
+                }
+                else
+                {
+                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(abilityName);
+                }
+
+                return true;
+            }
             
-            if (index == 1)
-            {
-                abilityName = "fix_clothes";
-            }
-            else if (index == 2)
-            {
-                abilityName = "spawn_attract";
-            }
-
-            if(string.IsNullOrEmpty(abilityName))
-            {
-                return false;
-            }
-
-            var abConf = AbilityLibrary.GetAbilityConfig(abilityName);
-            if(abConf.TargetType != MapAbilitySpecConfig.ETargetType.NoTarget)
-            {
-                EnterSkillPreviewMode(abilityName);
-            }
-            else
-            {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(abilityName);
-            }
-
-
             return false;
         }
 
         public bool OnScroll(float deltaY)
         {
+            return false;
+        }
+
+        public bool OnClick(int button, Vector2 mousePos)
+        {
+
+            if (HudMode == EHudMode.PreviewSkill)
+            {
+                Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
+                wp.z = 0; // 将 z 固定到你的世界平面（例如 0）
+
+                // 左键
+                if (button == 0)
+                {
+                    ConfirmSkillCast(overworldSkillPreviewUI.PreviewAbilityName, wp, Vector2.zero);
+
+                }
+                else if (button == 1)
+                {
+                    CancelSkillCast();
+                }
+            }
+            else if (HudMode == EHudMode.Build)
+            {
+                if(button == 1)
+                {
+                    QuitBuildMode();
+                    return true;
+                }
+                else if(button == 0)
+                {
+                    Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(mousePos);
+                    homeBuildPanel.TryConfirmPlace(mouseWorld);
+                    QuitBuildMode();
+                }
+            }
+
             return false;
         }
 
@@ -189,28 +244,7 @@ namespace My.UI
         }
 
 
-        public bool OnClick(int button, Vector2 mousePos)
-        {
-
-            if(HudMode == EHudMode.PreviewSkill)
-            {
-                Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
-                wp.z = 0; // 将 z 固定到你的世界平面（例如 0）
-
-                // 左键
-                if (button == 0)
-                {
-                    ConfirmSkillCast(overworldSkillPreviewUI.PreviewAbilityName, wp, Vector2.zero);
-
-                }
-                else if(button == 1)
-                {
-                    CancelSkillCast();
-                }
-            }
-
-            return false;
-        }
+        
 
         #endregion
 
@@ -262,6 +296,7 @@ namespace My.UI
             {
                 return;
             }
+            homeBuildPanel.CancelBuildMode();
             UpdateHudMode(EHudMode.Normal);
         }
 

@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using Config;
 using My.Map;
+using My.Map.Entity;
 using My.Map.Logic;
 using UnityEngine;
 using static My.MapExport.MapExportDatabase;
@@ -75,6 +77,33 @@ namespace My.Home
 
                 EvOnPlacementUpdate?.Invoke(findIt);
             }
+        }
+
+
+
+        public List<HomePlaceableObject> GetAllBuilableItems()
+        {
+            List<string> names = new List<string>()
+            {
+                "small_01",
+                "small_02",
+                "small_03",
+                //"middle_01",
+                //"middle_02",
+                //"big_01",
+                //"big_02",
+                //"big_03",
+            };
+
+            List<HomePlaceableObject> ret = new();
+
+            foreach (var name in names)
+            {
+                var conf = HomePlacementCfgtLoader.Get(name);
+                ret.Add(conf);
+            }
+
+            return ret;
         }
 
         public List<DynamicEntityRefreshInfo> GetAllValidLogicEntites()

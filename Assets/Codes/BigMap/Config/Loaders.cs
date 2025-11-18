@@ -1,5 +1,6 @@
 using Config.Map;
 using Config.Unit;
+using My;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -250,4 +251,40 @@ namespace Config
             _byId.Clear();
         }
     }
+
+
+
+    #region build
+
+    public static class HomePlacementCfgtLoader
+    {
+
+        private static Dictionary<string, HomePlaceableObject> _byId = new Dictionary<string, HomePlaceableObject>();
+
+        public static HomePlaceableObject Get(string cfgId)
+        {
+            if (_byId.TryGetValue(cfgId, out var data))
+                return data;
+
+            var loadOne = Load(cfgId);
+            _byId[cfgId] = loadOne;
+            return loadOne;
+        }
+
+
+        private static HomePlaceableObject Load(string cfgId)
+        {
+            var data = Resources.Load<HomePlaceableObject>($"Config/Placement/{cfgId}");
+            if (data == null)
+                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Placement/{cfgId}");
+            return data;
+        }
+
+        public static void Clear()
+        {
+            _byId.Clear();
+        }
+    }
+
+    #endregion
 }

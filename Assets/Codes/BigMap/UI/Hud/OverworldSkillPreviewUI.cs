@@ -68,6 +68,7 @@ namespace My.UI
                 if(AbilityConfig.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
+                    PreviewCastRange.transform.localScale = Vector3.one * AbilityConfig.Range1;
                 }
                 PreviewCircle.gameObject.SetActive(true);
                 PreviewCircle.transform.localScale = Vector3.one * 0.1f;
@@ -77,6 +78,7 @@ namespace My.UI
                 if (AbilityConfig.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
+                    PreviewCastRange.transform.localScale = Vector3.one * AbilityConfig.Range1;
                 }
                 
                 PreviewCircle.gameObject.SetActive(true);

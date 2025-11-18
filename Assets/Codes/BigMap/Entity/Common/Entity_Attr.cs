@@ -378,7 +378,7 @@ namespace My.Map
                 dirtyQueues.Remove(level);
             }
 
-            // 资源类的“上限变化联动”：若 Max 变动，调整 current
+            // 资源类的"上限变化联动”：若 Max 变动，调整 current
             foreach (var r in resources.Values)
             {
                 // max.finalValue 已在上一步更新，比较前后（此处可缓存上次值以对比）
