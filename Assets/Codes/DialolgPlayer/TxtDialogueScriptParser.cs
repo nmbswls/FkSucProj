@@ -1,7 +1,23 @@
 
 namespace My
 {
-
+//    注释：以 # 或 // 开头的行忽略；空行忽略。
+//Step 开始与可选标签：
+//[Step]
+//    开始无标签的 Step
+//[Step labelName] 开始带标签的 Step（用于 Jump/Choice 跳转）
+//对白行：角色名: 文本
+//会转换为 TypeText 命令（name=角色名，text=文本；你也可以习惯写 textKey = xxx，此解析器会优先识别 textKey 标记）
+//内联命令块：在对白或单独行中使用[Command key = value … wait = 0 / 1]
+//多个命令块可出现在同一行，对应“并行命令”。默认 wait = 1；若想非阻塞，写 wait = 0。
+//支持的命令与之前一致：ShowPortrait、ChangeExpression、HidePortrait、CameraMove、CameraZoom、CameraShake、PlaySE、Wait、Jump 等。
+//Choice 区块：
+//[Choice] 开始，随后若干选项行
+//选项文本 -> jumpLabel
+//光标“- ”后是显示给玩家的文本，-> 右侧是跳转到的标签名
+//结束条件：遇到空行、下一个[Step]、或文件结束
+//生成一条 Choice 命令，wait=1
+//允许在对白行后附加命令块作为并行命令，例如摄像机/立绘效果与说话同步
 
     using System;
     using System.Collections.Generic;

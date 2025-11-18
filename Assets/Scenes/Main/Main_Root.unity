@@ -736,6 +736,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b5da6cbe6d120d4e831d27d932ca7c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &771406918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 771406921}
+  - component: {fileID: 771406920}
+  - component: {fileID: 771406919}
+  m_Layer: 0
+  m_Name: DialogueManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &771406919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771406918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d00a43fd036ea584b811364ae9c502f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &771406920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771406918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c189fcde61c624498172d7416e151ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ui: {fileID: 0}
+  cam: {fileID: 0}
+  driver: {fileID: 0}
+  confirmKey: 32
+  AutoMode: 0
+  SkipMode: 0
+--- !u!4 &771406921
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771406918}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &799999187
 GameObject:
   m_ObjectHideFlags: 0
@@ -987,6 +1050,7 @@ MonoBehaviour:
   TimerManager: {fileID: 885418546}
   inputBinder: {fileID: 473413566}
   CameraCtrl: {fileID: 961739754}
+  dialoguePlayer: {fileID: 0}
   SwitchAreaIntent: 
   DynamicRoot: {fileID: 63059760}
 --- !u!4 &885418544
@@ -7150,3 +7214,4 @@ SceneRoots:
   - {fileID: 80834965}
   - {fileID: 473413565}
   - {fileID: 1511734620}
+  - {fileID: 771406921}

@@ -196,8 +196,10 @@ namespace My.Input
                 return;
             }
 
-
             LastPos = ctx.ReadValue<Vector2>();
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
 
             OnScenePointMove();
         }

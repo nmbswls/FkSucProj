@@ -211,21 +211,29 @@ public partial class DialoguePlayer : MonoBehaviour
                     string posStr = TryS(cd, "pos", "0,0,-10");
                     Vector3 pos = ParseVec3(posStr);
                     float dur = TryF(cd, "duration", 0.5f);
-                    cam.MoveTo(pos, dur, driver, () => CommandCompletedFromData(cd));
+
+                    // todo camera
+
+                    //cam.MoveTo(pos, dur, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "CameraZoom":
                 {
                     float fov = TryF(cd, "fov", 60f);
                     float dur = TryF(cd, "duration", 0.5f);
-                    cam.ZoomTo(fov, dur, driver, () => CommandCompletedFromData(cd));
+
+                    // todo camera
+
+                    //cam.ZoomTo(fov, dur, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "CameraShake":
                 {
                     float amp = TryF(cd, "amplitude", 1f);
                     float dur = TryF(cd, "duration", 0.2f);
-                    cam.Shake(amp, dur, driver, () => CommandCompletedFromData(cd));
+
+                    // todo camera
+                    //cam.Shake(amp, dur, driver, () => CommandCompletedFromData(cd));
                     break;
                 }
             case "PlaySE":
