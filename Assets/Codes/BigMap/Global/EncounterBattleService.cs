@@ -18,7 +18,9 @@ namespace Map.Encounter
         }
         public class BattleContext
         {
+            public int BattleId;
 
+            public string EnemyId;
         }
 
         public class BattleResult

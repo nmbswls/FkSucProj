@@ -1,3 +1,4 @@
+using Map.Encounter;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
@@ -21,6 +22,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
+using static Map.Encounter.EncounterBattleService;
 using static UnityEngine.UI.ContentSizeFitter;
 
 
@@ -92,6 +94,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public UnityNavProvider NavProvider;
 
     public DialoguePlayer dialoguePlayer;
+
 
     private void Awake()
     {
@@ -215,7 +218,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
                 //{
                 //    Loc.LoadFromText(locJson.text);
                 //}
-                var txt = "[Step intro]\r\nCameraMove pos=0,0,-10 duration=0\r\nCameraZoom fov=60 duration=0\r\nShowPortrait slot=Left characterId=hero expressionId=default fade=0.25\r\nShowPortrait slot=Right characterId=companion expressionId=smile fade=0.25\r\n\r\nHero: 终于到了约定的地点。\r\nCompanion: 你比我想象的准时。\r\n\r\n[Choice]\r\n- 立刻出发 -> branch_go\r\n- 再收集些情报 -> branch_info\r\n\r\n[Step branch_go]\r\nCompanion: 好，那就现在行动！\r\nChangeExpression slot=Right expressionId=smile fade=0.2\r\nCameraZoom fov=50 duration=0.4\r\nPlaySE name=step_confirm\r\nHero: 跟紧我。\r\nJump label=ending\r\n\r\n[Step branch_info]\r\nHero: 谨慎总是没错的。先打听一下附近的情况。\r\nChangeExpression slot=Left expressionId=think fade=0.2\r\nCameraMove pos=-0.3,0,-10 duration=0.4\r\nPlaySE name=ui_select\r\nCompanion: 那我联系一下线人。\r\nJump label=ending\r\n\r\n[Step ending]\r\nHidePortrait slot=Right fade=0.25\r\nChangeExpression slot=Left expressionId=default fade=0.2\r\nHero: 准备完毕，出发。\r\nPlaySE name=ui_close";
+                var txt = "[Step intro]\r\nCameraMove pos=0,0,-10 duration=0\r\nCameraZoom fov=60 duration=0\r\nShowPortrait slot=Left characterId=hero expressionId=default fade=0.25\r\nShowPortrait slot=Right characterId=companion expressionId=smile fade=0.25\r\n\r\nHero: 终于到了约定的地点。\r\nCompanion: 你比我想象的准时。\r\n\r\n[Choice]\r\n- 立刻出发 -> branch_go\r\n- 再收集些情报 -> branch_info \r\n\r\n[Step branch_go]\r\nGiveItem itemId=Herb amount=1\r\nCompanion: 好，那就现在行动！\r\nChangeExpression slot=Right expressionId=smile fade=0.2\r\nCameraZoom fov=50 duration=0.4\r\nPlaySE name=step_confirm\r\nHero: 跟紧我。\r\nJump label=ending\r\n\r\n[Step branch_info]\r\nHero: 谨慎总是没错的。先打听一下附近的情况。\r\nChangeExpression slot=Left expressionId=think fade=0.2\r\nCameraMove pos=-0.3,0,-10 duration=0.4\r\nPlaySE name=ui_select\r\nCompanion: 那我联系一下线人。\r\nJump label=ending\r\n\r\n[Step ending]\r\nHidePortrait slot=Right fade=0.25\r\nChangeExpression slot=Left expressionId=default fade=0.2\r\nHero: 准备完毕，出发。\r\nEnterEncounter\r\nPlaySE name=ui_close";
 
 
                 var data = TxtDialogueScriptParser.Parse(txt, "intro_from_txt");
@@ -233,7 +236,11 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
                 };
 
                 dialoguePlayer.ui = dialogPanel;
-                dialoguePlayer.PlayFromData(data, runtime);
+                dialoguePlayer.PlayFromData(data, runtime, () =>
+                {
+                    // do dialog finish events;
+                    UIManager.Instance.HidePanel("DialoguePanel");
+                });
             }
         }
 
@@ -422,6 +429,31 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
 
+    public void EnterEncounter()
+    {
+        _ = InnerEnterEncounter().ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+            {
+                Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+            }
+        }, TaskScheduler.FromCurrentSynchronizationContext()); ;
+    }
+
+    protected async Task InnerEnterEncounter()
+    {
+        UIManager.Instance.ShowLoading("good");
+
+        LogicTime.RequestPause("encounter");
+
+        BattleContext ctx = new();
+        ctx.BattleId = 1;
+        await EncounterBattleLoader.LoadBattleAsync(ctx);
+
+        LogicTime.ReleasePause("encounter");
+
+        UIManager.Instance.HideLoading();
+    }
 }
 
 
@@ -476,4 +508,5 @@ public class UnityNavProvider : INavProvider
         hitPoint = hit.position;
         return hitNav;
     }
+
 }

@@ -8,7 +8,7 @@ using My.UI;
 
 namespace Map.Encounter
 {
-    public class EncounterBattleLoader : MonoBehaviour
+    public class EncounterBattleLoader
     {
 
         /// <summary>
@@ -16,7 +16,7 @@ namespace Map.Encounter
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public async Task LoadBattleAsync(BattleContext ctx)
+        public static async Task LoadBattleAsync(BattleContext ctx)
         {
             EncounterBattleService.Instance.PendingContext = ctx;
             // ÏÔÊ¾¹ý¶ÉUI
@@ -34,7 +34,7 @@ namespace Map.Encounter
             UIManager.Instance.HideLoading();
         }
 
-        public async Task UnloadBattleAsync()
+        public static async Task UnloadBattleAsync()
         {
             UIManager.Instance.ShowLoading();
             var op = SceneManager.UnloadSceneAsync("BattleScene");

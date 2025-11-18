@@ -931,6 +931,13 @@ public class SceneAOIManager : MonoBehaviour
         return objCountSinceYield;
     }
 
+    /// <summary>
+    /// 卸载资源
+    /// </summary>
+    public void UnloadAllResource()
+    {
+    }
+
     // 异步卸载：分批释放
     private async void StartChunkUnload(ChunkRecord rec)
     {

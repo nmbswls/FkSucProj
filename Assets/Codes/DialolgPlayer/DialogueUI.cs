@@ -42,6 +42,11 @@ namespace My.UI
 
         public PortraitManager portraits;
 
+        public void Awake()
+        {
+            choiceButtonPrefab.gameObject.SetActive(false);
+        }
+
         private void Update()
         {
             // 打字机推进
@@ -159,6 +164,7 @@ namespace My.UI
             for (int i = 0; i < options.Count; i++)
             {
                 var btn = Instantiate(choiceButtonPrefab, choiceContainer);
+                btn.gameObject.SetActive(true);
                 var tmp = btn.GetComponentInChildren<TextMeshProUGUI>();
                 if (tmp) tmp.text = options[i];
                 int index = i;

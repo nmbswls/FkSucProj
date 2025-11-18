@@ -17,6 +17,25 @@ public class StepData
     public List<CommandData> commands = new List<CommandData>();
 }
 
+
+[Serializable]
+public class ChoiceOption
+{
+    public string id;                 // 用于合并 OR：允许多个同 id 的选项
+    public string text;               // 或使用 textKey
+    public string textKey;
+    public string jumpLabel;
+
+    // AND 条件子句：每个字符串一个子句，全部满足才显示
+    // 形如：condType#p1|p2|p3|p4
+    public class OneClause
+    {
+        public string type;
+        public List<string> ps;
+    }
+    public List<OneClause> condClauses;  // null 或 空列表代表无条件
+}
+
 [Serializable]
 public class CommandData
 {
@@ -26,7 +45,7 @@ public class CommandData
     public SerializableDict<string, string> s; // 字符串参数（id、keys、names）
     public SerializableDict<string, float> f;  // 浮点参数（duration、fade、fov等）
     public SerializableDict<string, int> i;    // 整数参数（索引、计数）
-    public List<SerializableDict<string, string>> listS; // 用于 options 等
+    public List<ChoiceOption> choiceOptions; // Choice 专用
 }
 
 // 简单可序列化字典（JsonUtility 不支持 Dictionary，可用自定义包装）

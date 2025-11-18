@@ -21,8 +21,10 @@ namespace My
 
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using UnityEngine;
+    using static ChoiceOption;
 
     // 将“对话导向剧本语法”的 txt 文本解析为 ScenarioData
     public static class TxtDialogueScriptParser
@@ -136,54 +138,107 @@ namespace My
         private static CommandData ParseChoiceBlock(List<string> lines, ref int idx)
         {
             var cmd = NewCommand("Choice", true);
-            cmd.listS = new List<SerializableDict<string, string>>();
+            cmd.choiceOptions = new List<ChoiceOption>();
 
             // 读取直到空行/下一 Step/下一 Choice/文件结束
             while (idx < lines.Count)
             {
-                string raw = lines[idx];
-                string l = raw.Trim();
+                string l = lines[idx].Trim();
                 if (string.IsNullOrEmpty(l) || IsComment(l) || IsStepHeader(l, out _) || IsChoiceHeader(l)) break;
 
-                // 选项行语法：- 文本 -> jumpLabel
-                // 允许写成：- textKey:choice.left -> go_left
-                if (l.StartsWith("-"))
+                if (!l.StartsWith("-")) break;
+
+                string body = l.Substring(1).Trim();
+                ExtractCommandBlocks(body, out string withoutBlocks); // 可选：移除行内 [ ... ]
+                string choiceMain = withoutBlocks;
+
+                // 文本与跳转
+                string textPart = choiceMain;
+                string extraPart = null;
+                int arrow = choiceMain.IndexOf("->", StringComparison.Ordinal);
+                if (arrow >= 0)
                 {
-                    string body = l.Substring(1).Trim();
-                    string textPart = body;
-                    string jumpPart = null;
+                    textPart = choiceMain.Substring(0, arrow).Trim();
+                    extraPart = choiceMain.Substring(arrow + 2).Trim();
+                }
 
-                    int arrow = body.IndexOf("->", StringComparison.Ordinal);
-                    if (arrow >= 0)
-                    {
-                        textPart = body.Substring(0, arrow).Trim();
-                        jumpPart = body.Substring(arrow + 2).Trim();
-                    }
+                var extras = extraPart.Split(' ');
 
-                    var row = new SerializableDict<string, string>();
-                    if (!string.IsNullOrEmpty(textPart))
+                var option = new ChoiceOption { condClauses = null };
+
+                // 文本段：支持 id=xxx
+                if (!string.IsNullOrEmpty(textPart))
+                {
+                    var textTokens = SplitTokens(textPart);
+                    var rebuilt = new List<string>();
+                    foreach (var tok in textTokens)
                     {
-                        if (textPart.StartsWith("textKey:", StringComparison.OrdinalIgnoreCase))
+                        int eq = tok.IndexOf('=');
+                        if (eq > 0)
                         {
-                            row.Add("textKey", textPart.Substring("textKey:".Length).Trim());
+                            string k = tok.Substring(0, eq).Trim();
+                            string v = Unquote(tok.Substring(eq + 1).Trim());
+                            if (k.Equals("id", StringComparison.OrdinalIgnoreCase))
+                            {
+                                option.id = v;
+                                continue;
+                            }
+                        }
+                        rebuilt.Add(tok);
+                    }
+                    string rebuiltText = string.Join(" ", rebuilt);
+                    if (!string.IsNullOrEmpty(rebuiltText))
+                    {
+                        if (rebuiltText.StartsWith("textKey:", StringComparison.OrdinalIgnoreCase))
+                            option.textKey = rebuiltText.Substring("textKey:".Length).Trim();
+                        else
+                            option.text = rebuiltText;
+                    }
+                }
+
+                option.jumpLabel = string.IsNullOrEmpty(extras[0]) ? null : extraPart;
+
+                if(extras.Length > 1)
+                {
+                    option.condClauses = new();
+                    for (int i=1;i< extras.Length;i++)
+                    {
+                        var condPart = extras[i].Trim();
+                        if(string.IsNullOrEmpty(condPart))
+                        {
+                            continue;
+                        }
+                        OneClause clause = new();
+
+                        var split1 = condPart.IndexOf('#');
+                        if (split1 == -1)
+                        {
+                            clause.type = condPart;
+                            clause.ps = null;
                         }
                         else
                         {
-                            row.Add("text", textPart);
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(jumpPart))
-                    {
-                        row.Add("jumpLabel", jumpPart);
-                    }
-                    cmd.listS.Add(row);
-                }
-                else
-                {
-                    // 非法或结束，跳出
-                    break;
-                }
+                            var typeStr = choiceMain.Substring(0, split1).Trim();
+                            var partOther = choiceMain.Substring(split1 + 1).Trim();
 
+                            var psStrs = partOther.Split('|');
+                            clause.ps = new();
+                            foreach (var pStr in psStrs)
+                            {
+                                if(string.IsNullOrEmpty(pStr))
+                                {
+                                    continue;
+                                }
+
+                                clause.ps.Add(pStr);
+                            }
+                        }
+
+                        option.condClauses.Add(clause);
+                    }
+                }
+                
+                cmd.choiceOptions.Add(option);
                 idx++;
             }
             return cmd;

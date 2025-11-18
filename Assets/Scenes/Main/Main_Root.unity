@@ -780,8 +780,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ui: {fileID: 0}
   cam: {fileID: 0}
-  driver: {fileID: 0}
-  confirmKey: 32
+  driver: {fileID: 771406919}
   AutoMode: 0
   SkipMode: 0
 --- !u!4 &771406921
@@ -1050,7 +1049,7 @@ MonoBehaviour:
   TimerManager: {fileID: 885418546}
   inputBinder: {fileID: 473413566}
   CameraCtrl: {fileID: 961739754}
-  dialoguePlayer: {fileID: 0}
+  dialoguePlayer: {fileID: 771406920}
   SwitchAreaIntent: 
   DynamicRoot: {fileID: 63059760}
 --- !u!4 &885418544
