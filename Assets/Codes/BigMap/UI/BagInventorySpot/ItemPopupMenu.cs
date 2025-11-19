@@ -61,7 +61,7 @@ namespace My.UI
 
             UseBtn.onClick.AddListener(OnClickUse);
             SplitBtn.onClick.AddListener(OnClickSplit);
-            //DropBtn.onClick.AddListener(OnClickDrop);
+            DropBtn.onClick.AddListener(OnClickDrop);
             //CloseBtn.onClick.AddListener(Close);
         }
 
@@ -70,28 +70,41 @@ namespace My.UI
         {
             if (currentCell.ContainerType == EContainerType.Inventory)
             {
-                PlayerBagUIPanel.Instance?.UseItem(currentIndex);
+                PlayerBagUIPanel.Instance?.UseItem(0, currentIndex);
             }
             Close();
         }
 
         private void OnClickSplit()
         {
-            if (currentCell.ContainerType != EContainerType.Inventory) { Close(); return; }
+            if (currentCell.ContainerType != EContainerType.Inventory
+                && currentCell.ContainerType != EContainerType.SpecialInventory) 
+            { 
+                Close(); 
+                return; 
+            }
+
+            int bagId = currentCell.ContainerId;
             // 简化：固定拆分数量为一半，实际可弹窗输入
             int half = currentStack.Count / 2;
             if (half > 0)
             {
-                PlayerBagUIPanel.Instance?.SplitItem(currentIndex, half);
+                PlayerBagUIPanel.Instance?.SplitItem(bagId, currentIndex, half);
             }
             Close();
         }
 
         private void OnClickDrop()
         {
-            if (currentCell.ContainerType != EContainerType.Inventory) { Close(); return; }
+            if (currentCell.ContainerType != EContainerType.Inventory
+                && currentCell.ContainerType != EContainerType.SpecialInventory)
+            {
+                Close();
+                return;
+            }
+
             // 简化：全部丢弃
-            PlayerBagUIPanel.Instance?.DropItemToGround(currentIndex, currentStack.Count);
+            PlayerBagUIPanel.Instance?.DropItemToGround(currentCell.ContainerId, currentIndex, currentStack.Count);
             Close();
         }
 

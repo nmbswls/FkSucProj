@@ -5,6 +5,8 @@ using TMPro;
 using SuperScrollView;
 using Unity.VisualScripting;
 using My.Player.Bag;
+using Config;
+using static UnityEditor.Progress;
 
 
 namespace My.UI
@@ -15,21 +17,39 @@ namespace My.UI
         {
             Inventory,
             LootPoint,
+            SpecialInventory,
+            Shop,
         }
 
+        public Image bg;
         public Image icon;
         public TextMeshProUGUI countText;
         public GameObject emptyOverlay;
+        public Image maskOverlay;
+        public Image lockOverlay;
+
+        public enum EStyleType
+        {
+            Normal,
+            Red,
+            AddIcon,
+            Locked,
+            Masked,
+        }
+        public EStyleType StyleType;
 
         public int Index;           // 在所在列表的索引
         private ItemStack boundStack;
         private System.Action<int> onChanged;
 
         public EContainerType ContainerType;
+        public int ContainerId;
 
         public Transform ValTr;
 
-        public void Bind(ItemStack stack, int index, EContainerType containerType, System.Action<int> onChangedCb)
+        protected FakeItemConf? cacheConf;
+
+        public void Bind(ItemStack stack, int index, EContainerType containerType, int containerId, System.Action<int> onChangedCb, EStyleType style = EStyleType.Normal)
         {
             boundStack = stack;
             Index = index;
@@ -42,15 +62,16 @@ namespace My.UI
             icon.enabled = hasItem;
 
 
-
             countText.enabled = hasItem;
 
             if (hasItem)
             {
-                icon.sprite = FakeItemDatabase.GetIcon(stack.ItemID);
-                countText.text = stack.Count.ToString();
+                cacheConf = FakeItemDatabase.GetItem(stack.ItemID);
 
-                if (stack.MaxStack > 1)
+                //icon.sprite = FakeItemDatabase.GetIcon(stack.ItemID);
+                countText.text = stack.Count.ToString();
+                var maxStack = FakeItemDatabase.GetMaxStackByType(stack.ItemID, ContainerType);
+                if (maxStack > 1)
                 {
                     ValTr.gameObject.SetActive(true);
                 }
@@ -59,15 +80,38 @@ namespace My.UI
                     ValTr.gameObject.SetActive(false);
                 }
             }
+
+            RefreshCellStyle(style);
         }
 
-        public void ClearEmpty(int index, EContainerType containerType)
+
+        public void RefreshCellStyle(EStyleType style)
+        {
+            maskOverlay.gameObject.SetActive(false);
+            lockOverlay.gameObject.SetActive(false);
+
+            if (style == EStyleType.Red)
+            {
+                bg.color = Color.red;
+            }
+            else
+            {
+                bg.color = Color.white;
+            }
+
+            if(style == EStyleType.Masked)
+            {
+                maskOverlay.gameObject.SetActive(true);
+            }
+        }
+
+        public void ClearEmpty()
         {
             boundStack = null;
             icon.enabled = false;
 
-            Index = index;
-            ContainerType = containerType;
+            Index = -1;
+            ContainerType = 0;
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -87,7 +131,7 @@ namespace My.UI
         {
             if (boundStack == null || boundStack.Count == 0) return;
             ItemPopupMenu.Close();
-            ItemDragDropController.Instance.BeginDrag(boundStack, ContainerType, Index);
+            ItemDragDropController.Instance.BeginDrag(boundStack, ContainerType, ContainerId, Index);
         }
 
         public void OnDrag(PointerEventData eventData)

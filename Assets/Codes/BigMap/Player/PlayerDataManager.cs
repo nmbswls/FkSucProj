@@ -22,25 +22,34 @@ namespace My.Player
 
         public void InitBagInfo()
         {
-            inventoryModel = new(60);
+            inventoryModel = new();
 
-            inventoryModel.Slots[0] = new ItemStack() { ItemID = "banana", Count = 2 };
-            inventoryModel.Slots[1] = new ItemStack() { ItemID = "qiezi", Count = 3 };
-            inventoryModel.Slots[2] = new ItemStack() { ItemID = "bangbangtang", Count = 3 };
+            inventoryModel.AddItem(0, 0, "banana",2);
+            inventoryModel.AddItem(0, 1, "qiezi", 3);
+            inventoryModel.AddItem(0, 2, "bangbangtang", 3);
+            inventoryModel.AddItem(0, 6, "chanzi", 2);
 
-            inventoryModel.Slots[6] = new ItemStack() { ItemID = "chanzi", Count = 1 };
+            //inventoryModel.NormalSlots[1] = new ItemStack() { ItemID = "qiezi", Count = 3 };
+            //inventoryModel.NormalSlots[2] = new ItemStack() { ItemID = "bangbangtang", Count = 3 };
+
+            //inventoryModel.NormalSlots[6] = new ItemStack() { ItemID = "chanzi", Count = 1 };
         }
 
         public bool CheckHaveItem(string itemId, int count)
         {
             long totalNum = 0;
-            foreach(var slot in  inventoryModel.Slots)
-            {
-                if (slot == null) continue;
-                if(slot.ItemID != itemId) { continue; }
 
-                totalNum += slot.Count;
-                if(totalNum > count)
+            for(int bagId = 0; bagId <= 4; bagId++)
+            {
+                var bag = inventoryModel.GetBagById(bagId);
+                if (bag == null)
+                {
+                    continue;
+                }
+
+                var bagCount = bag.GetItemCount(itemId);
+                totalNum += bagCount;
+                if(totalNum >= count)
                 {
                     return true;
                 }
@@ -49,42 +58,32 @@ namespace My.Player
             return false;
         }
 
-        public bool CostItem(string itemId, int count)
+        public int CostItem(string itemId, int count)
         {
             if(count <= 0)
             {
-                return false;
+                return 0;
             }
-            foreach (var slot in inventoryModel.Slots)
+
+            int leftCount = count;
+
+            for (int bagId = 0; bagId <= 4; bagId++)
             {
-                if (slot == null) continue;
-                if (slot.ItemID != itemId) { continue; }
-
-                if(slot.Count > count)
+                var bag = inventoryModel.GetBagById(bagId);
+                if (bag == null)
                 {
-                    slot.Count -= count;
-                    count = 0;
-                }
-                else
-                {
-                    count -= slot.Count;
-                    slot.Count = 0;
+                    continue;
                 }
 
-                if(count <= 0)
+                leftCount = bag.TryCostItem(itemId, leftCount);
+
+                if(leftCount <= 0)
                 {
                     break;
                 }
             }
 
-            for (int i=0;i<inventoryModel.Slots.Count;i++)
-            {
-                if (inventoryModel.Slots[i].Count <= 0)
-                {
-                    inventoryModel.Slots[i] = null;
-                }
-            }
-             return true;
+            return leftCount;
         }
     }
 }

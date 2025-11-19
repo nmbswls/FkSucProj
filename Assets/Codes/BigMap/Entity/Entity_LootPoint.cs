@@ -8,6 +8,8 @@ using static UnityEditor.Progress;
 using My.Player.Bag;
 using Map.Logic.Events;
 using My.Map.Logic;
+using My.UI;
+using System.Linq;
 
 
 namespace My.Map
@@ -17,6 +19,8 @@ namespace My.Map
         public MapLootPointConfig cacheConfig;
 
         public string DropId;
+        public int MaxSlots = 12;
+
         public LootPointLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             cacheConfig = MapLootPointConfigLoader.Get(cfgId);
@@ -27,39 +31,79 @@ namespace My.Map
             {
                 DropId = cacheConfig.DefaultDropId;
             }
+
+            lootContainer = new(logicManager, DropId, MaxSlots);
         }
 
         public override EEntityType Type => EEntityType.LootPoint;
 
 
-        public bool LootInialized = false;
         public bool IsLocked = false;
 
-        public Dictionary<int, float> ItemSearchProgress = new();
+        public class LootContainer
+        {
+            public GameLogicManager logicManager;
+            private bool LootInialized = false;
+            private List<ItemStack> containItems = new List<ItemStack>();
+            public string DropId;
+            public int MaxSlots;
 
-        private List<ItemStack> containItems = new List<ItemStack>();
-        public List<ItemStack> LootItems { get {
+            public Dictionary<int, float> ItemSearchProgress = new();
 
-                if (!LootInialized)
+            public LootContainer(GameLogicManager logicManager, string dropId, int maxSlots)
+            {
+                this.logicManager = logicManager;
+                this.DropId = dropId;
+                this.MaxSlots = maxSlots;
+            }
+
+            public List<ItemStack> LootItems
+            {
+                get
                 {
-                    LootInialized = true;
 
-                    var items = LogicManager.DropTable.GetBundleDropItems(DropId);
-                    foreach (var item in items)
+                    if (!LootInialized)
                     {
-                        containItems.Add(new ItemStack()
+                        LootInialized = true;
+
+                        for(int i=0;i< MaxSlots;i++)
                         {
-                            ItemID = item.Item1,
-                            Count = item.Item2
-                        });
+                            containItems.Add(null);
+                        }
+
+                        var items = logicManager.DropTable.GetBundleDropItems(DropId);
+                        for (int i=0;i<items.Count;i++)
+                        {
+                            containItems[i] = (new ItemStack()
+                            {
+                                ItemID = items[i].Item1,
+                                Count = items[i].Item2
+                            });
+
+                            //var itemConf = FakeItemDatabase.GetIcon();
+                            ItemSearchProgress[i] = 1.5f;
+                        }
                     }
+                    return containItems;
+
                 }
-                return containItems; 
-            
-            } }
+            }
+        }
+
+        protected LootContainer lootContainer;
+
+        public List<ItemStack> LootItems 
+        { 
+            get 
+            {
+                return lootContainer.LootItems; 
+            } 
+        }
 
         public event Action<LootPointLogicEntity> EventOnLootPointUnlock;
         public event Action<LootPointLogicEntity> EventOnLootPointUsed;
+        public event Action<int> EnOnUnrealed;
+
         public override void Initialize()
         {
             base.Initialize();
@@ -113,8 +157,6 @@ namespace My.Map
                 LogicManager.viewer.ShowFakeFxEffect("ห๘มห", Pos);
                 return;
             }
-
-            
 
             if (cacheConfig.LootRequiment != null)
             {
@@ -189,26 +231,77 @@ namespace My.Map
 
             return true;
         }
-            
 
-        public void Add(ItemStack s)
+        public void TickUnReveal(float dt)
         {
+            if(lootContainer.ItemSearchProgress.Count == 0)
+            {
+                return;
+            }
+
+            var minKey = lootContainer.ItemSearchProgress.Keys.Min();
+            lootContainer.ItemSearchProgress[minKey] -= dt;
+
+            if(lootContainer.ItemSearchProgress[minKey] <= 0)
+            {
+                lootContainer.ItemSearchProgress.Remove(minKey);
+                EnOnUnrealed?.Invoke(minKey);
+            }
+
+        }
+
+
+        public int GetCurrUnrealed()
+        {
+            if (lootContainer.ItemSearchProgress.Count == 0)
+            {
+                return -1;
+            }
+            var minKey = lootContainer.ItemSearchProgress.Keys.Min();
+            return minKey;
+        }
+
+        public bool IsRevealed(int itemIdx)
+        {
+            lootContainer.ItemSearchProgress.TryGetValue(itemIdx, out var result);
+            return result <= 0;
+        }
+
+        public void Add(ItemStack s, int dstIdx)
+        {
+            if(dstIdx < MaxSlots)
+            {
+                return;
+            }
+
             if (s != null && !s.IsEmpty)
-                containItems.Add(new ItemStack(s.ItemID, s.Count));
+            {
+                if(dstIdx >= lootContainer.LootItems.Count)
+                {
+                    return;
+                }
+
+                if (lootContainer.LootItems[dstIdx] != null)
+                {
+                    return;
+                }
+
+                lootContainer.LootItems[dstIdx] = new ItemStack(s.ItemID, s.Count);
+            }
         }
 
         public void RemoveFromIndex(int index, int count)
         {
-            if (index < 0 || index >= containItems.Count) return;
-            var s = containItems[index];
+            if (index < 0 || index >= lootContainer.LootItems.Count) return;
+            var s = lootContainer.LootItems[index];
             if (s == null) return;
             s.RemoveFromStack(count);
-            if (s.Count <= 0) containItems.RemoveAt(index);
+            if (s.Count <= 0) lootContainer.LootItems[index] = null;
         }
 
-        public void UpdateSearchProgress(int idx, float addTime)
+        public AnyContainerItemCell.EContainerType GetContainerType()
         {
-
+            return AnyContainerItemCell.EContainerType.LootPoint;
         }
     }
 

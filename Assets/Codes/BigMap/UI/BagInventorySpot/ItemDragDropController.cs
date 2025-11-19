@@ -1,3 +1,4 @@
+using Config;
 using My.Player.Bag;
 using My.UI.Bag;
 using TMPro;
@@ -11,7 +12,8 @@ namespace My.UI
     public class DragPayload
     {
         public ItemStack Stack;
-        public My.UI.AnyContainerItemCell.EContainerType SourceType;
+        public EContainerType SourceContainerType;
+        public int SourceContainerId;
         public int SourceIndex;
     }
 
@@ -55,7 +57,7 @@ namespace My.UI
             }
         }
 
-        public bool BeginDrag(ItemStack stack, EContainerType sourceType, int sourceIndex)
+        public bool BeginDrag(ItemStack stack, EContainerType sourceType, int sourceContainerId, int sourceIndex)
         {
             if (IsDragging) return false;
             if (stack == null || stack.IsEmpty) return false;
@@ -63,8 +65,9 @@ namespace My.UI
             Payload = new DragPayload
             {
                 Stack = stack.Clone(), // 拖拽过程使用克隆数据
-                SourceType = sourceType,
-                SourceIndex = sourceIndex
+                SourceContainerType = sourceType,
+                SourceIndex = sourceIndex,
+                SourceContainerId = sourceContainerId,
             };
             IsDragging = true;
 
@@ -117,43 +120,87 @@ namespace My.UI
             {
                 case EContainerType.Inventory:
                     {
-                        OnDropToInventory(payload, dstIndex);
+                        OnDropToInventory(droppedItem.ContainerId, payload, dstIndex);
                         break;
                     }
             }
         }
 
         // 从拖拽落到背包格子
-        public void OnDropToInventory(DragPayload payload, int dstIndex)
+        public void OnDropToInventory(int bagId, DragPayload payload, int dstIndex)
         {
-            if (payload.SourceType == EContainerType.LootPoint)
+            // 从loot点到背包
+            if (payload.SourceContainerType == EContainerType.LootPoint)
             {
+                if(LootPointUIPanel.Instance == null || LootPointUIPanel.Instance.Loot == null)
+                {
+                    Debug.LogError("OnDropToInventory loot point status error");
+                    return;
+                }
+                var srcLoot = LootPointUIPanel.Instance.Loot;
+
                 // 优先尝试放到指定格
-                int moved = PlayerBagUIPanel.Instance.BindingInventory.TryAddToIndexOrStack(payload.Stack, dstIndex);
+                int moved = PlayerBagUIPanel.Instance.BindingInventory.AddItem(bagId, dstIndex, payload.Stack.ItemID, payload.Stack.Count);
+                // 合并成功
                 if (moved > 0)
                 {
-                    if (LootPointUIPanel.Instance.Loot != null)
-                    {
-                        LootPointUIPanel.Instance.Loot.RemoveFromIndex(payload.SourceIndex, moved);
-                        LootPointUIPanel.Instance.RefreshContent();
-                        PlayerBagUIPanel.Instance.RefreshContent();
-                    }
+                    LootPointUIPanel.Instance.Loot.RemoveFromIndex(payload.SourceIndex, moved);
+                    LootPointUIPanel.Instance.RefreshContent();
+                    PlayerBagUIPanel.Instance.RefreshContent();
                 }
+                // 尝试交换
                 else
                 {
-                    // 无法堆叠到目标格，尝试背包通道添加
-                    //moved = InventoryUIController.Instance.BindingInventory.TryAdd(payload.Stack);
-                    //LootPointUIController.Instance.Loot.RemoveFromIndex(payload.SourceIndex, moved);
+                    var dstBag = PlayerBagUIPanel.Instance.BindingInventory.GetBagById(bagId);
+                    if (dstBag == null)
+                    {
+                        return;
+                    }
+
+                    var toSwapBagItem = dstBag.GetItemByIdx(dstIndex);
+                    if(toSwapBagItem == null)
+                    {
+                        Debug.LogError("OnDropToInventory something strange happen");
+                        return;
+                    }
+
+                    var srcLootContainerType = srcLoot.GetContainerType();
+                    int lootMaxStack = FakeItemDatabase.GetMaxStackByType(toSwapBagItem.ItemID, srcLootContainerType);
+                    if(toSwapBagItem.Count > lootMaxStack)
+                    {
+                        Debug.LogError("OnDropToInventory try swap fail loot point cant have so much");
+                        return;
+                    }
+
+                    var bagMaxStack = dstBag.GetMaxStack(payload.Stack.ItemID);
+                    if (payload.Stack.Count > bagMaxStack)
+                    {
+                        Debug.LogError("OnDropToInventory try swap fail bag cant have so much");
+                        return;
+                    }
+
+                    PlayerBagUIPanel.Instance.BindingInventory.AddItem(bagId, dstIndex, payload.Stack.ItemID, payload.Stack.Count);
+                    LootPointUIPanel.Instance.Loot.RemoveFromIndex(payload.SourceIndex, payload.Stack.Count);
+                    LootPointUIPanel.Instance.Loot.Add(toSwapBagItem, payload.SourceIndex);
                     //LootPointUIController.Instance.RefreshContent();
-                    //InventoryUIController.Instance.RefreshContent();
+                    LootPointUIPanel.Instance.RefreshContent();
+                    PlayerBagUIPanel.Instance.RefreshContent();
                 }
                 //UIBus.RaiseInventoryAllChanged();
                 //UIBus.RaiseLootAllChanged();
             }
-            else if (payload.SourceType == EContainerType.Inventory)
+            else if(payload.SourceContainerType == EContainerType.Shop)
             {
+
+
+
+            }
+            else if (payload.SourceContainerType == EContainerType.Inventory)
+            {
+                int fromBag = payload.SourceContainerId;
+                int toBag = bagId;
                 // 背包内部移动/堆叠/交换
-                bool ok = PlayerBagUIPanel.Instance.BindingInventory.TryMove(payload.SourceIndex, dstIndex);
+                bool ok = PlayerBagUIPanel.Instance.BindingInventory.TrySwapOrMove(fromBag, payload.SourceIndex, toBag, dstIndex);
                 if (ok)
                 {
                     UIManager.Instance.ShowPanel("PlayerBag");

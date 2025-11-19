@@ -1,5 +1,7 @@
+using My.Map;
 using My.Player.Bag;
 using SuperScrollView;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,6 +31,7 @@ namespace My.UI
         public LoopGridView GridView;
 
         public Button QuitBtn;
+        public GameObject UnrealvingHintObj;
 
         [Range(1, 10)]
         public int Columns = 5;
@@ -48,12 +51,46 @@ namespace My.UI
 
             ILootableObj bindingObj = (ILootableObj)data;
             this.Loot = bindingObj;
-            GridView.SetListItemCount(bindingObj.LootItems.Count + 1);
+            GridView.SetListItemCount(bindingObj.LootItems.Count);
+
+            Loot.EnOnUnrealed += RemoveItemMask;
+
+            RefreshUnrealingHint();
         }
 
         public void RefreshContent()
         {
             GridView.RefreshAllShownItem();
+
+            RefreshUnrealingHint();
+        }
+
+        public void RemoveItemMask(int itemIndex)
+        {
+            GridView.RefreshItemByItemIndex(itemIndex);
+
+            RefreshUnrealingHint();
+        }
+
+        private void RefreshUnrealingHint()
+        {
+            int unrealIdx = this.Loot.GetCurrUnrealed();
+            if (unrealIdx == -1)
+            {
+                UnrealvingHintObj.SetActive(false);
+            }
+            else
+            {
+                UnrealvingHintObj.SetActive(true);
+
+                var item = GridView.GetShownItemByItemIndex(unrealIdx); // 或 FindItemByItemIndex(index)
+                if (item != null)
+                {
+                    // 该项的 RectTransform
+                    UnrealvingHintObj.transform.position = item.transform.position;
+                    return;
+                }
+            }
         }
 
         LoopGridViewItem OnGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
@@ -68,15 +105,44 @@ namespace My.UI
             {
                 var stack = Loot.LootItems[slotIndex];
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, slotIndex, AnyContainerItemCell.EContainerType.LootPoint, null);
+
+                if(Loot.IsRevealed(itemIndex))
+                {
+                    cell.Bind(stack, slotIndex, AnyContainerItemCell.EContainerType.LootPoint, 0, null);
+                }
+                else
+                {
+                    cell.Bind(stack, slotIndex, AnyContainerItemCell.EContainerType.LootPoint, 0, null, AnyContainerItemCell.EStyleType.Masked);
+                }
             }
             else
             {
-                cell.ClearEmpty(slotIndex, AnyContainerItemCell.EContainerType.LootPoint);
-                //item.gameObject.SetActive(false);
+                //cell.ClearEmpty();
+                item.gameObject.SetActive(false);
             }
 
             return item;
+        }
+
+        public void Update()
+        {
+            var dt = LogicTime.time;
+
+            if(Loot != null)
+            {
+                Loot.TickUnReveal(dt);
+            }
+        }
+
+        public override void Hide()
+        {
+            base.Hide();
+
+            if(Loot != null)
+            {
+                Loot.EnOnUnrealed -= RemoveItemMask;
+                Loot = null;
+            }
         }
     }
 

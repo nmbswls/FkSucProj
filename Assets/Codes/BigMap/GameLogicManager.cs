@@ -66,6 +66,7 @@ namespace My
 
         public PlayerDataManager playerDataManager;
         public HomeDataManager homeDataManager;
+        public ShopDataManager shopDataManager;
 
         public GlobalDropTable DropTable;
 
@@ -93,6 +94,8 @@ namespace My
 
             playerDataManager = new(this);
             playerDataManager.InitPlayer();
+
+            shopDataManager = new(this);
 
             homeDataManager = new(this);
             homeDataManager.EvOnPlacementUpdate += (placementInfo) =>
@@ -164,6 +167,8 @@ namespace My
                 LogicRadius = 80f,
                 WarmupRadius = 120f
             });
+
+            shopDataManager.RefreshOnNightStart();
         }
 
         /// <summary>
