@@ -126,7 +126,7 @@ public class StaticItemExporterWindow : EditorWindow
         int count = 0;
 
         var staticRoot = sceneRoot.transform.Find("StaticRoot");
-
+        int statidId = 100;
         {
 
             var stack = new Stack<Transform>();
@@ -158,6 +158,7 @@ public class StaticItemExporterWindow : EditorWindow
                     }
                     list.Add(new MapExportDatabase.StaticPrefabItem
                     {
+                        ItemId = ++statidId,
                         Key = prefabProvider.Key,
                         Position = prefabProvider.transform.position,
                         Rotation = prefabProvider.transform.rotation,

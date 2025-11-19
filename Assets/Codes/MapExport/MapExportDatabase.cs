@@ -18,6 +18,7 @@ namespace My.MapExport
             Normal,
             BornPos,
             DigPoint,
+            GuardSpawner,
         }
 
 
@@ -34,6 +35,7 @@ namespace My.MapExport
         [Serializable]
         public struct StaticPrefabItem
         {
+            public int ItemId;
             public string Key;
             public Vector3 Position;
             public Quaternion Rotation;

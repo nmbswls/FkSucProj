@@ -407,6 +407,53 @@ namespace My.Map.Entity
         }
     }
 
+
+    public class AbilityEffectExecutor4ApplyDamage : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectApplyDamageCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4CostResource err");
+                return;
+            }
+
+            if (ctx.Target == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4CostResource err");
+                return;
+            }
+
+            //Dictionary<string, long> extraAttrs = null;
+            //if (realCfg.ExtraAttrs != null)
+            //{
+            //    extraAttrs = new();
+            //    foreach (var pair in realCfg.ExtraAttrs)
+            //    {
+            //        extraAttrs[pair.AttrId] = pair.Val;
+            //    }
+            //}
+
+            //ctx.Target.ApplyResourceChange(realCfg.ResourceId, -realCfg.CostValue, realCfg.Flags > 0, ctx.SourceKey, extraAttrs);
+
+            if(realCfg.KnockBackForce > 0 && ctx.Actor != null)
+            {
+                // 对目标击打
+                if(realCfg.TargetType == 0)
+                {
+                    if(ctx.Target is BaseUnitLogicEntity unitEntity)
+                    {
+                        var diff = ctx.Target.Pos - ctx.Actor.Pos;
+                        unitEntity.CreateKnockBackIntent(diff, 5f);
+                    }
+                }
+            }
+        }
+    }
+
+
     public class AbilityEffectExecutor4ThrowStart : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)

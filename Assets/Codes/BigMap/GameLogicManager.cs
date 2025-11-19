@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using static My.MapExport.MapExportDatabase;
+using static UnityEditor.PlayerSettings;
 
 namespace My
 {
@@ -70,6 +71,8 @@ namespace My
 
         public GlobalDropTable DropTable;
 
+        public MapControlEventManager controlEventManager;
+
         public bool PlayerPeaceMode = false;
 
         public void OnGameInit()
@@ -104,6 +107,9 @@ namespace My
 
                 //AreaManager.EntityRefreshInfo.Add(refreshInfo);
             };
+
+            controlEventManager = new(this);
+            controlEventManager.Initialize();
 
             DropTable = Resources.Load<GlobalDropTable>("Config/DropTable");
         }
@@ -374,6 +380,13 @@ namespace My
                             executor = new AbilityEffectExecutor4CostResource();
                         }
                         break;
+
+                    case MapAbilityEffectApplyDamageCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ApplyDamage();
+                        }
+                        break;
+
                     case MapAbilityEffectThrowStartCfg:
                         {
                             executor = new AbilityEffectExecutor4ThrowStart();
@@ -506,6 +519,31 @@ namespace My
             var executor = GetLogicFightEffectExecutor(effectConf);
             executor?.Apply(effectConf, effectCtx);
         }
+
+
+        #region È«¾Ö¾¯½ä
+
+        public int AlertVal = 0;
+        public void AddAlertVal(int addVal)
+        {
+            int oldAlert = this.AlertVal;
+            this.AlertVal += addVal;
+            if (oldAlert < 0 && AlertVal >= 50)
+            {
+                LogicEventBus.Publish(new MLECommonGameEvent()
+                {
+                    Ctx = new()
+                    {
+                        HappenPos = Vector2.zero,
+                        SourceEntity = null,
+                    },
+                    Name = "AlertTrigger",
+                    Param1 = 1,
+                });
+            }
+        }
+
+        #endregion
     }
 
 
@@ -546,6 +584,7 @@ namespace My
                 //pInfo.
             }
         }
+
     }
 }
 

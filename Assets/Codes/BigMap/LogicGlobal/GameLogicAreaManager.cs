@@ -352,6 +352,7 @@ namespace My.Map.Logic
             BuildIndexFromRecords();
 
             InitDigPoints();
+            InitGuardSpawnPoints();
 
             checkRefreshTimer = LogicTime.time;
         }

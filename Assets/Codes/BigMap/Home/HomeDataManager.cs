@@ -181,7 +181,8 @@ namespace My.Home
 
                 refreshInfo.AppearCond = new CommonCheckCond()
                 {
-                    Type = ECommonCheckType.HasVariable,
+                    Type = ECommonCheckType.CheckVariable,
+                    Param1 = 1,
                     Param5 = "liki",
                 };
 

@@ -242,6 +242,11 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
                     UIManager.Instance.HidePanel("DialoguePanel");
                 });
             }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.P))
+            {
+                playerScenePresenter.PlayerEntity.CreateKnockBackIntent(Vector2.right, 5f);
+            }
         }
 
         if(!string.IsNullOrEmpty(SwitchAreaIntent))

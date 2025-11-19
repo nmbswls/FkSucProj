@@ -20,7 +20,6 @@ namespace Config.Map
         {
             public int StatusId;
 
-            [SerializeReference]
             public MapInteractInfo InteractInfo;
 
             public bool HasBlock = false;

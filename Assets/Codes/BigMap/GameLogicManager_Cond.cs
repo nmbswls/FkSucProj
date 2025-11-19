@@ -10,9 +10,9 @@ namespace My
     /// </summary>
     public enum ECommonCheckType
     {
+        None,
         TaskFinish,
-        Variable,
-        HasVariable,
+        CheckVariable,
         HasPlacement,
     }
 
@@ -37,9 +37,23 @@ namespace My
         {
             switch(cond.Type)
             {
-                case ECommonCheckType.HasVariable:
+                case ECommonCheckType.None:
                     {
-                        if(homeDataManager.CheckHasParam(cond.Param5))
+                        return true;
+                    }
+                    break;
+                case ECommonCheckType.CheckVariable:
+                    {
+                        bool checkHas = false;
+                        if(cond.Param1 > 0)
+                        {
+                            checkHas = true;
+                        }
+                        if(checkHas && homeDataManager.CheckHasParam(cond.Param5))
+                        {
+                            return true;
+                        }
+                        if (!checkHas && !homeDataManager.CheckHasParam(cond.Param5))
                         {
                             return true;
                         }

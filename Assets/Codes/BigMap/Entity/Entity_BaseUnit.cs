@@ -389,7 +389,7 @@ namespace My.Map
             intent.knockDuration = 0.3f;
             intent.knockDir = dir;
 
-            externalVel = intent.knockDir.normalized * intent.knockDuration;
+            externalVel = intent.knockDir.normalized * power;
             //onNewKnockBackIntent?.Invoke(intent);
             knockBackIntent = intent;
         }

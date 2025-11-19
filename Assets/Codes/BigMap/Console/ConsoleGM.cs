@@ -107,6 +107,19 @@ public class ConsoleGM : MonoBehaviour
                 HomeSceneManager.Instance.DataSource.SetVariable(id);
 
             });
+
+        Register("add_alert", "加alert",
+            new[] { new CmdParam("val", "int，值") },
+            args =>
+            {
+                if (args.Count < 1) { LogError("用法：set_variable <id>"); return; }
+                var val = int.Parse(args[0]);
+
+                Log($"add_alert val={val}");
+
+                MainGameManager.Instance.gameLogicManager.AddAlertVal(val);
+
+            });
     }
 
     void OnDestroy()

@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using static UnityEditor.Progress;
 using static UnityEngine.Rendering.DebugUI.Table;
 
 
@@ -567,7 +568,7 @@ public class SceneAOIManager : MonoBehaviour
         public bool cancelAfterLoad;
         public bool refreshAfterLoad;
         // 实例
-        public List<MapScenePrefabProvider> instances = new();
+        public List<(GameObject, int)> instances = new();
 
         public ChunkRecord(ChunkCoord c)
         {
@@ -661,34 +662,34 @@ public class SceneAOIManager : MonoBehaviour
             return;
         }
 
-        var instances = new List<MapScenePrefabProvider>();
+        var instances = new List<(GameObject, int)>();
         int objCountSinceYield = 0;
 
         // 批次枚举（根据你的配置实现 GetPrefabs）
         foreach (var item in GetChunkPrefabs(coord))
         {
-            var existObj = record.instances.Find((a) => a.Key == item.Key);
+            var existObjInfo = record.instances.Find((a) => a.Item2 == item.ItemId);
 
             // 不满足出现条件
             if (item.AppearCond != null && !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
             {
                 // 已加载 需要卸载
-                if(existObj != null)
+                if(existObjInfo.Item1 != null)
                 {
-                    _asset.Release(existObj.gameObject);
+                    _asset.Release(existObjInfo.Item1);
                 }
                 continue;
             }
             // 满足出现条件
             else
             {
-                if(existObj == null)
+                if(existObjInfo.Item1 == null)
                 {
                     MapScenePrefabProvider prefabProvider = null;
                     try
                     {
-                        var go = _asset.Instantiate("Prefab/" + AreaId + "/" + item.Key);
-                        prefabProvider = GetComponent<MapScenePrefabProvider>();
+                        var go = _asset.Instantiate("Prefab/" + item.Key);
+                        prefabProvider = go.GetComponent<MapScenePrefabProvider>();
                     }
                     catch (System.Exception ex)
                     {
@@ -703,13 +704,17 @@ public class SceneAOIManager : MonoBehaviour
                         }
                         prefabProvider.transform.SetPositionAndRotation(item.Position, item.Rotation);
                         prefabProvider.transform.localScale = item.Scale;
+
+                        var staticOne = WorldAreaManager.Instance.currentRoot.StaticPrefabRoot;
+                        prefabProvider.transform.SetParent(staticOne);
+
                         prefabProvider.gameObject.SetActive(true);
-                        instances.Add(prefabProvider);
+                        instances.Add((prefabProvider.gameObject, item.ItemId));
                     }
                 }
                 else
                 {
-                    instances.Add(existObj);
+                    instances.Add(existObjInfo);
                 }
             }
 
@@ -826,14 +831,14 @@ public class SceneAOIManager : MonoBehaviour
         rec.lastBecameUndesired = 0f; // 清理不需要计时
         _concurrentLoading++;
 
-        var instances = new List<MapScenePrefabProvider>();
+        var instances = new List<(GameObject, int)>();
         var batchBuffer = new List<MapExportDatabase.StaticPrefabItem>(batchObjectsPerSlice);
         int objCountSinceYield = 0;
 
         // 批次枚举（根据你的配置实现 GetPrefabs）
         foreach (var item in GetChunkPrefabs(rec.coord))
         {
-            if(item.AppearCond != null && !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
+            if(item.AppearCond != null && item.AppearCond.Type != ECommonCheckType.None && !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
             {
                 continue;
             }
@@ -857,7 +862,7 @@ public class SceneAOIManager : MonoBehaviour
         if (!_chunks.TryGetValue(rec.coord, out var cur) || cur != rec)
         {
             // 记录已被替换，安全释放
-            foreach (var prefabInfo in instances) _ = _assetAsync.ReleaseAsync(prefabInfo.gameObject);
+            foreach (var prefabInfo in instances) _ = _assetAsync.ReleaseAsync(prefabInfo.Item1);
             _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
             return;
         }
@@ -866,7 +871,7 @@ public class SceneAOIManager : MonoBehaviour
         if (rec.cancelAfterLoad || !rec.desiredVisible)
         {
             foreach (var prefabInfo in instances)
-                _ = _assetAsync.ReleaseAsync(prefabInfo.gameObject);
+                _ = _assetAsync.ReleaseAsync(prefabInfo.Item1);
 
             rec.instances = null;
             rec.loadState = LoadState.Unloaded;
@@ -892,7 +897,7 @@ public class SceneAOIManager : MonoBehaviour
         WorldAreaManager.Instance.SegmentProvider.AddSegments(rec.coord.ToString(), segments);
     }
 
-    private async Task<int> InstantiateBatch(List<MapExportDatabase.StaticPrefabItem> items, List<MapScenePrefabProvider> instances, int objCountSinceYield)
+    private async Task<int> InstantiateBatch(List<MapExportDatabase.StaticPrefabItem> items, List<(GameObject, int)> instances, int objCountSinceYield)
     {
         for (int i = 0; i < items.Count; i++)
         {
@@ -900,8 +905,8 @@ public class SceneAOIManager : MonoBehaviour
             MapScenePrefabProvider prefabProvider = null;
             try
             {
-                var go = await _assetAsync.InstantiateAsync("Prefab/" + AreaId + "/" +  it.Key);
-                prefabProvider = GetComponent<MapScenePrefabProvider>();
+                var go = await _assetAsync.InstantiateAsync("Prefab/"  +  it.Key);
+                prefabProvider = go.GetComponent<MapScenePrefabProvider>();
             }
             catch (System.Exception ex)
             {
@@ -916,8 +921,12 @@ public class SceneAOIManager : MonoBehaviour
                 }
                 prefabProvider.transform.SetPositionAndRotation(it.Position, it.Rotation);
                 prefabProvider.transform.localScale = it.Scale;
+
+                var staticOne = WorldAreaManager.Instance.currentRoot.StaticPrefabRoot;
+                prefabProvider.transform.SetParent(staticOne);
+
                 prefabProvider.gameObject.SetActive(true);
-                instances.Add(prefabProvider);
+                instances.Add((prefabProvider.gameObject, it.ItemId));
             }
 
             objCountSinceYield++;
@@ -947,11 +956,11 @@ public class SceneAOIManager : MonoBehaviour
         rec.loadState = LoadState.Unloading;
 
         // 取出现有实例并立即清空，防止重复操作
-        var list = rec.instances ?? new List<MapScenePrefabProvider>();
+        var list = rec.instances ?? new List<(GameObject, int)>();
         rec.instances = null;
 
         int count = 0;
-        List<MapScenePrefabProvider> slice = new List<MapScenePrefabProvider>(batchObjectsPerSlice);
+        List<(GameObject, int)> slice = new List<(GameObject, int)>(batchObjectsPerSlice);
 
         // 切片释放
         for (int i = 0; i < list.Count; i++)
@@ -980,12 +989,12 @@ public class SceneAOIManager : MonoBehaviour
         WorldAreaManager.Instance.SegmentProvider.RemoveSource(rec.coord.ToString());
     }
 
-    private async Task ReleaseSlice(List<MapScenePrefabProvider> slice)
+    private async Task ReleaseSlice(List<(GameObject, int)> slice)
     {
         for (int i = 0; i < slice.Count; i++)
         {
             var prefabInfo = slice[i];
-            try { await _assetAsync.ReleaseAsync(prefabInfo.gameObject); }
+            try { await _assetAsync.ReleaseAsync(prefabInfo.Item1); }
             catch (System.Exception ex) { Debug.LogException(ex); }
             if ((i + 1) % yieldEveryNObjects == 0)
                 await Task.Yield();

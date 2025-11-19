@@ -15,14 +15,16 @@ MonoBehaviour:
   CfgId: teleport
   MainStatusInfo:
     StatusId: 0
-    InteractName: "\u4F20\u9001\uFF01"
-    CheckCond:
-      CheckConfType: 0
-    Outputs:
-    - OutputType: 5
-      Param1: 0
-      Param2: 0
-      Param3: 1
-      Param4: 
+    InteractInfo:
+      Label: "\u4F20\u9001"
+      UnLabel: "\u4F20\u9001"
+      HideWhenFail: 0
+      CheckCond: []
+      Outputs:
+      - OutputType: 5
+        Param1: 0
+        Param2: 0
+        Param3: 1
+        Param4: 
     HasBlock: 0
   ExtraStatusInfos: []
