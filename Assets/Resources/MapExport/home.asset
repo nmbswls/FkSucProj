@@ -24,12 +24,12 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
-        Type: 0
-        Param1: 0
+        Type: 2
+        Param1: 1
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: Clear_Ruin_01
         Param6: 
     - ItemId: 102
       Key: P/Ruin_01
@@ -37,12 +37,12 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
-        Type: 0
+        Type: 2
         Param1: 0
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: Clear_Ruin_03
         Param6: 
     - ItemId: 104
       Key: P/Ruin_01
@@ -50,12 +50,12 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
-        Type: 0
+        Type: 2
         Param1: 0
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: Clear_Ruin_01
         Param6: 
     FovStaticSegments: []
   - Chunk:
@@ -68,12 +68,12 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
-        Type: 0
+        Type: 2
         Param1: 0
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: Clear_Ruin_02
         Param6: 
     FovStaticSegments: []
   EntityRefreshInfo: []

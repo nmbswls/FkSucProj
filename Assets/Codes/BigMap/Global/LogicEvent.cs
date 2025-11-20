@@ -18,6 +18,7 @@ namespace Map.Logic.Events
         AddBuff,
         OnHit,
         Attract,
+        VariableChange,
     }
 
 
@@ -26,9 +27,10 @@ namespace Map.Logic.Events
         public int FrameId;
         public Guid CorrelationId;
         public ILogicEntity SourceEntity;
-        public bool Reliable;
         public Vector2 HappenPos;
         public long TargetId;
+
+        public bool IsMapLocal;
     }
 
     //public enum Delivery { Immediate, QueuedFrame, Deferred }

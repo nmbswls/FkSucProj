@@ -10,6 +10,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static My.MapExport.MapExportDatabase;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace My.Map.Logic
 {
@@ -314,7 +315,10 @@ namespace My.Map.Logic
                 var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Attract, innerListener);
                 subs.Add(sub);
             }
-
+            {
+                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.VariableChange, innerListener);
+                subs.Add(sub);
+            }
             Repo = null;
 
             // ╪сть cacheDatabase
@@ -363,24 +367,33 @@ namespace My.Map.Logic
 
         public void OnMapLogicEvent(IMapLogicEvent ev)
         {
-            var pos = ev.Ctx.HappenPos;
-            UnitGridIndex.Query(pos, GridCellSize, queryBufInt);
-
-            if(ev.Ctx.TargetId != 0)
+            if(ev.Ctx.IsMapLocal)
             {
-                queryBufInt.Add(ev.Ctx.TargetId);
-            }
+                var pos = ev.Ctx.HappenPos;
+                UnitGridIndex.Query(pos, GridCellSize, queryBufInt);
 
-            foreach(var id in queryBufInt)
-            {
-                var entity = GetLogicEntiy(id, false);
-                if(entity != null)
+                if (ev.Ctx.TargetId != 0)
                 {
-                    entity.OnMapLogicEvent(ev);
+                    queryBufInt.Add(ev.Ctx.TargetId);
+                }
+
+                foreach (var id in queryBufInt)
+                {
+                    var entity = GetLogicEntiy(id, false);
+                    if (entity != null)
+                    {
+                        entity.OnMapLogicEvent(ev);
+                    }
+                }
+            }
+            else
+            {
+                foreach(var e in Repo.Loaded.Values)
+                {
+                    e.OnMapLogicEvent(ev);
                 }
             }
         }
-
 
         public void CheckRefreshAppearAndDisappear(float dt)
         {
@@ -480,6 +493,20 @@ namespace My.Map.Logic
                         unitRecord.Unsensored = initInfo.InitUnsensored;
 
                         record = unitRecord;
+                        break;
+                    }
+                case EEntityType.InteractPoint:
+                    {
+                        var realRecord = new LogicEntityRecord4InteractPoint();
+                        realRecord.Status = 0;
+
+                        record = realRecord;
+                        break;
+                    }
+                case EEntityType.LootPoint:
+                    {
+                        var realRecord = new LogicEntityRecord4LootPoint();
+                        record = realRecord;
                         break;
                     }
                 default:

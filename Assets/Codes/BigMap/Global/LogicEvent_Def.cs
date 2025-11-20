@@ -83,4 +83,14 @@ namespace Map.Logic.Events
 
 
     #endregion
+
+    public partial struct MLEVariableChangeEvent : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.VariableChange; } }
+
+        public string Name;
+        public int BeforeVal;
+        public int AfterVal;
+    }
 }

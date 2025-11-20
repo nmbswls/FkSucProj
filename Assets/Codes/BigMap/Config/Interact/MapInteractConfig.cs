@@ -35,6 +35,7 @@ namespace My.Config
     public class MapInteractInfo
     {
         // 所有交互放一起
+        public int InteractId;
         public string Label; // 选项
         public string UnLabel; // 灰色选项
         public bool HideWhenFail = false;

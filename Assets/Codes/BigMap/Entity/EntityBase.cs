@@ -296,7 +296,7 @@ namespace My.Map
 
         public event Action EventOnDeath;
 
-        public void OnEnterAOI()
+        public virtual void OnEnterAOI()
         {
         }
 

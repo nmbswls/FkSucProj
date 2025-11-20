@@ -685,31 +685,30 @@ public class SceneAOIManager : MonoBehaviour
             {
                 if(existObjInfo.Item1 == null)
                 {
-                    MapScenePrefabProvider prefabProvider = null;
+                    GameObject go = null;
                     try
                     {
-                        var go = _asset.Instantiate("Prefab/" + item.Key);
-                        prefabProvider = go.GetComponent<MapScenePrefabProvider>();
+                        go = _asset.Instantiate("Prefab/" + item.Key);
                     }
                     catch (System.Exception ex)
                     {
                         Debug.LogException(ex);
                     }
-                    if (prefabProvider != null)
+                    if (go != null)
                     {
                         var root = MainGameManager.Instance.GetWorldStaticPrefabRoot("1");
                         if (root != null)
                         {
-                            prefabProvider.transform.SetParent(root);
+                            go.transform.SetParent(root);
                         }
-                        prefabProvider.transform.SetPositionAndRotation(item.Position, item.Rotation);
-                        prefabProvider.transform.localScale = item.Scale;
+                        go.transform.SetPositionAndRotation(item.Position, item.Rotation);
+                        go.transform.localScale = item.Scale;
 
                         var staticOne = WorldAreaManager.Instance.currentRoot.StaticPrefabRoot;
-                        prefabProvider.transform.SetParent(staticOne);
+                        go.transform.SetParent(staticOne);
 
-                        prefabProvider.gameObject.SetActive(true);
-                        instances.Add((prefabProvider.gameObject, item.ItemId));
+                        go.gameObject.SetActive(true);
+                        instances.Add((go.gameObject, item.ItemId));
                     }
                 }
                 else
@@ -902,31 +901,30 @@ public class SceneAOIManager : MonoBehaviour
         for (int i = 0; i < items.Count; i++)
         {
             var it = items[i];
-            MapScenePrefabProvider prefabProvider = null;
+            GameObject go = null;
             try
             {
-                var go = await _assetAsync.InstantiateAsync("Prefab/"  +  it.Key);
-                prefabProvider = go.GetComponent<MapScenePrefabProvider>();
+                go = await _assetAsync.InstantiateAsync("Prefab/"  +  it.Key);
             }
             catch (System.Exception ex)
             {
                 Debug.LogException(ex);
             }
-            if (prefabProvider != null)
+            if (go != null)
             {
                 var root = MainGameManager.Instance.GetWorldStaticPrefabRoot("1");
                 if(root != null)
                 {
-                    prefabProvider.transform.SetParent(root);
+                    go.transform.SetParent(root);
                 }
-                prefabProvider.transform.SetPositionAndRotation(it.Position, it.Rotation);
-                prefabProvider.transform.localScale = it.Scale;
+                go.transform.SetPositionAndRotation(it.Position, it.Rotation);
+                go.transform.localScale = it.Scale;
 
                 var staticOne = WorldAreaManager.Instance.currentRoot.StaticPrefabRoot;
-                prefabProvider.transform.SetParent(staticOne);
+                go.transform.SetParent(staticOne);
 
-                prefabProvider.gameObject.SetActive(true);
-                instances.Add((prefabProvider.gameObject, it.ItemId));
+                go.gameObject.SetActive(true);
+                instances.Add((go.gameObject, it.ItemId));
             }
 
             objCountSinceYield++;

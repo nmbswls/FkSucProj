@@ -1,10 +1,13 @@
 using Config;
 using Config.Map;
+using Map.Logic.Events;
+using My.Config;
 using My.Map.Logic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Config.Map.MapInteractPointConfig;
 using static UnityEditor.Rendering.CameraUI;
 
 namespace My.Map.Entity
@@ -20,12 +23,26 @@ namespace My.Map.Entity
 
         public MapInteractPointConfig cacheCfg;
 
+        public EntityInteractComp InteractComp;
+
         public event Action OnStatusChange;
 
         public InteractPointLogic(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             cacheCfg = MapInteractPointLoader.Get(CfgId);
-            CurrStatusId = 0;
+
+            var realRecord = (LogicEntityRecord4InteractPoint)bindingRecord;
+            CurrStatusId = realRecord.Status;
+
+            InteractComp = new(this);
+
+            var curState = GetCurrentStatusInfo();
+            if(curState != null)
+            {
+                InteractComp.RegisterInteractInfo(curState.InteractInfos);
+            }
+
+            //InitStatusChangeListner();
         }
 
         public override EEntityType Type => EEntityType.InteractPoint;
@@ -34,67 +51,92 @@ namespace My.Map.Entity
         {
             base.Initialize();
 
+            CheckStatusCondition();
         }
 
 
-        /// <summary>
-        /// 检查出现条件
-        /// </summary>
-        public void CheckInteractCondition()
+        public StatusInfo GetCurrentStatusInfo()
         {
-            if (CurrStatusId == 0)
+            if(CurrStatusId == 0)
             {
-                var stateConf = cacheCfg.MainStatusInfo;
-                //if (stateConf.CheckCond != null)
-                //{
-                //}
+                return cacheCfg.MainStatusInfo;
+            }
 
+            var findIt = cacheCfg.ExtraStatusInfos.Find((item)=>item.StatusId == CurrStatusId);
+            return findIt;
+
+        }
+
+        /// <summary>
+        /// 检查状态切换
+        /// </summary>
+        public void CheckStatusCondition()
+        {
+            foreach(var rule in cacheCfg.StateChangeRules)
+            {
+                if(rule.FromStatus != CurrStatusId)
+                {
+                    continue;
+                }
+
+                var poassed = true;
+                foreach(var cond in rule.Conds)
+                {
+                    if (!LogicManager.CheckCommonCond(cond))
+                    {
+                        poassed = false;
+                        break;
+                    }
+                }
+                
+                if(poassed)
+                {
+                    ChangeSelfStatus(rule.ToStatus);
+                    break;
+                }
             }
         }
 
+        public List<MapInteractInfo> InteractInfos { get { return InteractComp.InteractInfos; } }
 
+        public bool TryTriggerInteract(int interactId)
+        {
+            return InteractComp.TryTriggerInteract(interactId);
+        }
+
+        public bool CheckTriggerInteract(int interactId)
+        {
+            return InteractComp.CheckTriggerInteract(interactId);
+        }
+
+
+        public override void OnMapLogicEvent(IMapLogicEvent evt)
+        {
+            base.OnMapLogicEvent(evt);
+
+            CheckStatusCondition(); 
+        }
 
         public override void Tick(float dt)
         {
 
         }
 
-        public void DoTriggerInteract(int interactId)
-        {
-            if(CurrStatusId == 0)
-            {
-                var stateConf = cacheCfg.MainStatusInfo;
-                var interConf = stateConf.InteractInfo;
-                if (interConf != null && interConf.Outputs != null)
-                {
-                    foreach (var output in interConf.Outputs)
-                    {
-                        switch (output.OutputType)
-                        {
-                            case Config.LogicInteractOutput.EOutputType.ChangeSelfStatus:
-                                {
-                                    ChangeSelfStatus((int)output.Param1);
-                                }
-                                break;
-                            case Config.LogicInteractOutput.EOutputType.Teleport:
-                                {
-                                    LogicManager.PlayerSwitchArea(output.Param3);
-                                }
-                                break;
-                        }
-
-                    }
-                }
-
-            }
-            else
-            {
-                Debug.Log("DoTriggerInteract no result");
-            }
-        }
 
         public void ChangeSelfStatus(int newStatus)
         {
+            int oldStat = CurrStatusId;
+            CurrStatusId = newStatus;
+            var curState = GetCurrentStatusInfo();
+            if (curState != null)
+            {
+                InteractComp.RegisterInteractInfo(curState.InteractInfos);
+            }
+            else
+            {
+                InteractComp.RegisterInteractInfo(new());
+            }
+
             OnStatusChange?.Invoke();
         }
     }

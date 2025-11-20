@@ -525,7 +525,7 @@ namespace My.Map.Entity
             record.LifeTime = realCfg.LifeTime;
             record.Position = ctx.CastDir.Value;
 
-            ctx.Env.CreateNewEntityRecord(record);
+            ctx.Env.AddNewEntityRecord(record);
         }
     }
 }

@@ -128,6 +128,12 @@ namespace My
         {
             await AreaManager.InitilizeArea(areaName);
 
+            if(areaName == "home")
+            {
+                homeDataManager.OnPlayerEnterHome();
+            }
+            
+
             var bornPos = new List<NamedPoint>();
             var ps = AreaManager.cacheDatabase.NamedPoints;
             foreach(var p in ps)
@@ -219,7 +225,7 @@ namespace My
             globalDropCollection?.Tick(dt);
         }
 
-        public void CreateNewEntityRecord(LogicEntityRecord record)
+        public void AddNewEntityRecord(LogicEntityRecord record)
         {
             pendingNewEntities.Add(record);
         }

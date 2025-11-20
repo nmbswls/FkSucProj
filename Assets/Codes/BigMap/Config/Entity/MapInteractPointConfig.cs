@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using My;
 using My.Config;
 using TMPro;
 using UnityEngine;
@@ -16,17 +17,31 @@ namespace Config.Map
         public string CfgId;
 
         [Serializable]
-        public class InteractStatusInfo
+        public class StatusInfo
         {
             public int StatusId;
 
-            public MapInteractInfo InteractInfo;
+            public List<MapInteractInfo> InteractInfos = new();
 
             public bool HasBlock = false;
         }
 
-        public InteractStatusInfo MainStatusInfo;
-        public List<InteractStatusInfo> ExtraStatusInfos;
+        public StatusInfo MainStatusInfo;
+        public List<StatusInfo> ExtraStatusInfos;
 
+        public int InitState;
+
+        [Serializable]
+        public class StateChangeRule
+        {
+            public int FromStatus;
+            public List<CommonCheckCond> Conds = new();
+            public int ToStatus;
+        }
+
+        /// <summary>
+        /// ×´Ì¬ÇÐ»»¹æÔò
+        /// </summary>
+        public List<StateChangeRule> StateChangeRules = new();
     }
 }

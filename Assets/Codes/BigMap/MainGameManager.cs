@@ -197,7 +197,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.M))
             {
-                gameLogicManager.CreateNewEntityRecord(new LogicEntityRecord4UnitBase()
+                gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4UnitBase()
                 {
                     Id = GameLogicManager.LogicEntityIdInst ++,
                     EntityType = EEntityType.Monster,
@@ -245,7 +245,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.P))
             {
-                playerScenePresenter.PlayerEntity.CreateKnockBackIntent(Vector2.right, 5f);
+                playerScenePresenter.PlayerEntity.CreateKnockBackIntent(Vector2.right, 2f);
             }
         }
 

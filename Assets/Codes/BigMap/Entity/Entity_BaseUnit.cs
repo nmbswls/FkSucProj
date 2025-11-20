@@ -10,6 +10,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using static My.Map.Entity.MapEntityAbilityController;
 using static My.Map.BaseUnitLogicEntity;
+using static UnityEngine.Rendering.VolumeComponent;
 
 
 namespace My.Map
@@ -158,13 +159,9 @@ namespace My.Map
                     }
                 }
 
-                if (knockBackIntent != null)
-                {
-                    knockBackIntent.knockbackTimeLeft -= dt;
-                    if (knockBackIntent.knockbackTimeLeft <= 0f)
-                        ClearKnockbackIntent();
-                }
             }
+
+            UpdateKnockback(dt);
 
             AIBrain?.Tick(dt);
 
@@ -196,6 +193,14 @@ namespace My.Map
             entityMotorComp?.Tick(dt);
         }
 
+        public override void OnEnterAOI()
+        {
+            if(MoveBehaveMode == EMoveBehaveType.InPatrolGroup)
+            {
+                var groupEntity = LogicManager.GetLogicEntity(FollowPatrolId);
+                this.SetPosition(groupEntity.Pos + PatrolGroupRelativePos);
+            }
+        }
 
         protected virtual void UpdateHMode()
         {
@@ -283,7 +288,7 @@ namespace My.Map
                     Position = this.Pos,
                     DynamicDropId = unitCfg.DropId,
                 };
-                LogicManager.CreateNewEntityRecord(rec);
+                LogicManager.AddNewEntityRecord(rec);
             }
         }
 
@@ -297,6 +302,8 @@ namespace My.Map
         public Vector2 activeMoveVec;
 
         public Vector2 externalVel;
+        public Vector2 knockVel;              // 当前击退速度(替代 externalVel 或由其驱动)
+        public float knockTimer;
 
         public float accel = 20f;
 
@@ -327,15 +334,38 @@ namespace My.Map
 
         public class KnockBackIntent
         {
-            public float knockbackTimeLeft;
-
             public float knockbackMinEndSpeed;
-
-            public float knockbackDuration;
-            public float knockDuration;
+            public float knockbackPower;
             public Vector2 knockDir;
+            public Action<int>? onKnockEnd;
         }
         public KnockBackIntent? knockBackIntent;
+
+
+        // 推进（建议放 FixedUpdate 或你的角色控制器速度合成前）
+        private void UpdateKnockback(float dt)
+        {
+            if (knockBackIntent == null) return;
+
+            knockTimer -= dt;
+            if (knockTimer <= 0f)
+            {
+                ClearKnockbackInfo(0);
+                return;
+            }
+
+            // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
+            // lambda 越大，减速越快；配合最小末速钳制
+            float lambda = 16f; // 可调 6~16
+            float damping = Mathf.Exp(-lambda * dt);
+            knockVel *= damping;
+
+            // 末端钳制
+            if (knockTimer < 0.08f && knockVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
+            {
+                knockVel = Vector2.zero;
+            }
+        }
 
         public event Action<DashIntent> onNewDashIntent;
         public event Action<KnockBackIntent> onNewKnockBackIntent;
@@ -372,24 +402,31 @@ namespace My.Map
             Debug.Log("end ClearDashIntent");
         }
 
-        private void ClearKnockbackIntent()
+        private void ClearKnockbackInfo(int endReason)
         {
+            knockBackIntent?.onKnockEnd?.Invoke(endReason);
             knockBackIntent = null;
-            externalVel = Vector2.zero;
+            knockVel = Vector2.zero;
+            knockTimer = 0;
         }
 
 
-        public void CreateKnockBackIntent(Vector2 dir, float power)
+        public void CreateKnockBackIntent(Vector2 dir, float power, Action<int>? onKnockEnd = null)
         {
+            ClearDashIntent();
+            ClearKnockbackInfo(2);
+
             KnockBackIntent intent = new();
 
-            intent.knockbackTimeLeft = 0.3f;
             intent.knockbackMinEndSpeed = 0.1f;
-            intent.knockbackDuration = 0.3f;
-            intent.knockDuration = 0.3f;
+            intent.knockbackPower = power;
             intent.knockDir = dir;
 
             externalVel = intent.knockDir.normalized * power;
+
+            knockTimer = 0.15f;
+            knockVel = intent.knockDir * power; // 初速大
+
             //onNewKnockBackIntent?.Invoke(intent);
             knockBackIntent = intent;
         }

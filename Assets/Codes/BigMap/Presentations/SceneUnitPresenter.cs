@@ -203,54 +203,6 @@ namespace My.Map.Scene
             }
             else
             {
-                //Vector2 pos = transform.position;
-                //float currMoveSpeed = GetCurrentMoveSpeed();
-                //Vector2 targetMoveVel;
-                //// 优先让受控移动生效
-                //if (UnitEntity.targetMoveIntent != null)
-                //{
-                //    float slowRadius = UnitEntity.targetMoveIntent.ArriveDistance * 1.2f;
-
-                //    Vector2 finishPos = UnitEntity.Pos;
-                //    if (UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity)
-                //    {
-                //        finishPos = UnitEntity.targetMoveIntent.FollowEntity.Pos;
-                //    }
-                //    else if (UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint)
-                //    {
-                //        finishPos = UnitEntity.targetMoveIntent.FixedMoveTarget;
-                //    }
-
-                //    Vector2 toTarget = finishPos - UnitEntity.Pos;
-                //    float dist = toTarget.magnitude;
-
-                //    float maxSpeed = GetCurrentMoveSpeed();
-                //    if(UnitEntity.targetMoveIntent.SpeedType == BaseUnitLogicEntity.TargettedMoveIntent.ESpeedType.Slow)
-                //    {
-                //        maxSpeed = 1f;
-                //    }
-
-                //    float targetSpeed = (dist > slowRadius)
-                //        ? maxSpeed
-                //        : Mathf.Lerp(0f, maxSpeed, Mathf.InverseLerp(UnitEntity.targetMoveIntent.ArriveDistance, slowRadius, dist));
-
-                //    Vector3 desired = dist > 1e-3f ? toTarget.normalized * targetSpeed : Vector3.zero;
-
-                //    if (dist < UnitEntity.targetMoveIntent.ArriveDistance)
-                //    {
-                //        desired = Vector3.zero;
-                //    }
-                //    else
-                //    {
-                //        desired = targetSpeed * UnitEntity.targetMoveIntent.targettedDesireDir;
-                //    }
-
-                //    targetMoveVel = desired;
-                //}
-                //else
-                //{
-                //    targetMoveVel = freeMoveDir * currMoveSpeed;
-                //}
                 Vector2 targetMoveVel;
                 if (UnitEntity.entityMotorComp.State == EMotorState.Free)
                 {
@@ -261,14 +213,7 @@ namespace My.Map.Scene
                     targetMoveVel = UnitEntity.entityMotorComp.GetDesiredVelocity();
                 }
 
-                //var targetMoveVel = UnitEntity.entityMotorComp.GetDesiredVelocity();
-
-                return targetMoveVel + UnitEntity.externalVel;
-            }
-
-
-            {
-                
+                return targetMoveVel + UnitEntity.externalVel + UnitEntity.knockVel;
             }
 
         }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Config;
+using Map.Logic.Events;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Logic;
@@ -48,12 +49,30 @@ namespace My.Home
             this.LogicManager = logicManager;
         }
 
+
+        public void OnPlayerEnterHome()
+        {
+            {
+                var record = new LogicEntityRecord4InteractPoint();
+                record.Id = GameLogicManager.LogicEntityIdInst++;
+                record.EntityType = EEntityType.InteractPoint;
+                record.CfgId = "teleport";
+                record.Position = new Vector2(2.0f, 2.0f);
+
+                LogicManager.AddNewEntityRecord(record);
+            }
+        }
+
         public void SetVariable(string id)
         {
             VariableDict[id] = true;
 
             // 变量事件
-
+            LogicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()
+            {
+                Name = id,
+                AfterVal = 1,
+            });
         }
 
         public bool CheckHasPlacement(string id)
@@ -108,7 +127,7 @@ namespace My.Home
 
             record.FaceDir = faceDir;
 
-            LogicManager.CreateNewEntityRecord(record);
+            LogicManager.AddNewEntityRecord(record);
 
             Placement2EntityMap[newInfo.InstId] = record.Id;
 
@@ -159,17 +178,17 @@ namespace My.Home
             List<DynamicEntityRefreshInfo> retList = new();
 
             int uniqId = 10;
-            // home状态 读取信息
-            {
-                var refreshInfo = new DynamicEntityRefreshInfo();
-                refreshInfo.UniqId = uniqId++;
-                refreshInfo.EntityType = EEntityType.InteractPoint;
-                refreshInfo.CfgId = "teleport";
-                refreshInfo.Position = new Vector2(2.0f, 2.0f);
+            //// home状态 读取信息
+            //{
+            //    var refreshInfo = new DynamicEntityRefreshInfo();
+            //    refreshInfo.UniqId = uniqId++;
+            //    refreshInfo.EntityType = EEntityType.InteractPoint;
+            //    refreshInfo.CfgId = "teleport";
+            //    refreshInfo.Position = new Vector2(2.0f, 2.0f);
 
 
-                retList.Add(refreshInfo);
-            }
+            //    retList.Add(refreshInfo);
+            //}
 
             {
 

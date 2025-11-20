@@ -52,7 +52,7 @@ namespace My.Map.Logic
             var pName = emptySlots[idx];
 
             var p = cacheDatabase.FindNamedPointByName(pName);
-            logicManager.CreateNewEntityRecord(new LogicEntityRecord4LootPoint()
+            logicManager.AddNewEntityRecord(new LogicEntityRecord4LootPoint()
             {
                 Id = GameLogicManager.LogicEntityIdInst++,
                 EntityType = EEntityType.LootPoint,

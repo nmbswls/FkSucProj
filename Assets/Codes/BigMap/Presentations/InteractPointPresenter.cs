@@ -29,31 +29,55 @@ namespace My.Map.Scene
 
         public void TriggerInteract(int selectionId)
         {
-            RealLogic.DoTriggerInteract(selectionId);
+            RealLogic.TryTriggerInteract(selectionId);
         }
 
         public List<SceneInteractSelection> GetInteractSelections()
         {
             var ret = new List<SceneInteractSelection>();
-            string intName = "int";
+
+            var logicInts = RealLogic.InteractInfos;
+
+            foreach (var i in logicInts)
             {
-                if (RealLogic.CurrStatusId == 0)
+                bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
+                
+                ret.Add(new SceneInteractSelection()
                 {
-                    var stateConf = RealLogic.cacheCfg.MainStatusInfo;
-                    intName = stateConf.InteractInfo?.Label?? "int";
-                }
+                    SelectId = i.InteractId,
+                    SelectContent = canInt ? i.Label : i.UnLabel,
+                    Selectable = canInt,
+                });
             }
-            ret.Add(new SceneInteractSelection() { 
-                SelectId = 1,
-                SelectContent = intName,
-                Selectable = true,
-            });
+            
             return ret;
         }
 
         public bool CanInteractEnable()
         {
-            return true;
+            return RealLogic.InteractInfos.Count > 0;
+        }
+
+        public override void Bind(ILogicEntity logic)
+        {
+            base.Bind(logic);
+
+            RealLogic.OnStatusChange += OnStatusChanged;
+        }
+
+        public override void Unbind()
+        {
+            if(RealLogic != null)
+            {
+                RealLogic.OnStatusChange += OnStatusChanged;
+            }
+
+            base.Unbind();
+        }
+
+        public void OnStatusChanged()
+        {
+            //MainGameManager.Instance.interactSystem.UpdateInteractRangeObjs
         }
     }
 }

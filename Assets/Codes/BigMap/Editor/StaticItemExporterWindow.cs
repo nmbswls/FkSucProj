@@ -163,6 +163,7 @@ public class StaticItemExporterWindow : EditorWindow
                         Position = prefabProvider.transform.position,
                         Rotation = prefabProvider.transform.rotation,
                         Scale = prefabProvider.transform.localScale,
+                        AppearCond = prefabProvider.AppearCond,
                     });
 
                     continue;

@@ -634,7 +634,7 @@ namespace My.Map.Entity
                 _buffs.Add(existing.InstanceId, existing);
                 var ev = new MLEApplyBuff()
                 {
-                    Ctx = new MapLogicEventContext { CorrelationId = Guid.NewGuid(), Reliable = true },
+                    Ctx = new MapLogicEventContext { CorrelationId = Guid.NewGuid() },
                     CasterId = casterId ?? 0,
                     TargetId = target.Id,
                     BuffId = buffId,

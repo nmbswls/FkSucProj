@@ -15,7 +15,12 @@ MonoBehaviour:
   CfgId: teleport
   MainStatusInfo:
     StatusId: 0
-    InteractInfo:
+    InteractInfos: []
+    HasBlock: 0
+  ExtraStatusInfos:
+  - StatusId: 1
+    InteractInfos:
+    - InteractId: 1
       Label: "\u4F20\u9001"
       UnLabel: "\u4F20\u9001"
       HideWhenFail: 0
@@ -27,4 +32,15 @@ MonoBehaviour:
         Param3: 1
         Param4: 
     HasBlock: 0
-  ExtraStatusInfos: []
+  InitState: 0
+  StateChangeRules:
+  - FromStatus: 0
+    Conds:
+    - Type: 2
+      Param1: 1
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: fix_teleport
+      Param6: 
+    ToStatus: 1

@@ -41,7 +41,7 @@ namespace My.MapExport
             public Quaternion Rotation;
             public Vector3 Scale;
 
-            public CommonCheckCond? AppearCond;
+            public CommonCheckCond AppearCond;
         }
 
 

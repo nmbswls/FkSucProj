@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static My.Map.BaseUnitLogicEntity;
 using static UnityEditor.PlayerSettings;
 using static UnityEngine.CullingGroup;
 
@@ -148,6 +149,8 @@ namespace My.Map.Entity
         {
             EnterFree();
         }
+
+
 
 
         public void Tick(float dt)
