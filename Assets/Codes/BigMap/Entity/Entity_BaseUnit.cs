@@ -140,11 +140,11 @@ namespace My.Map
 
                 EnmityComp = new();
                 EnmityComp.Initialize(this);
+
+                combatStateComp = new(this);
             }
 
             entityMotorComp = new(this, LogicManager.navProvider);
-
-            combatStateComp = new(this);
 
             InitFacing();
         }
