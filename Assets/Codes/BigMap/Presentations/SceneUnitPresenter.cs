@@ -117,7 +117,7 @@ namespace My.Map.Scene
                 UnitEntity.SetPosition(MainGameManager.Instance.GetLogicPosFromWorldPos(transform.position));
             }
 
-            UpdateTargettedMoveState();
+            //UpdateTargettedMoveState();
 
             UpdateVisible(dt);
 
@@ -367,64 +367,6 @@ namespace My.Map.Scene
 
         #region 受控移动
 
-
-        public void UpdateTargettedMoveState()
-        {
-            if (UnitEntity.targetMoveIntent == null)
-            {
-                return;
-            }
-            Vector2 destNow = navAgent.destination;
-
-            // 重算路径
-            if (UnitEntity.targetMoveIntent.NeedRecalculatePath)
-            {
-                if (UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity)
-                {
-                    navAgent.SetDestination(UnitEntity.targetMoveIntent.FollowEntity.Pos);
-                    UnitEntity.targetMoveIntent.NeedRecalculatePath = false;
-                }
-                else if(UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint)
-                {
-                    navAgent.SetDestination(UnitEntity.targetMoveIntent.FixedMoveTarget);
-                    UnitEntity.targetMoveIntent.NeedRecalculatePath = false;
-                }
-            }
-
-            if(UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity)
-            {
-                if ((destNow - UnitEntity.targetMoveIntent.FollowEntity.Pos).magnitude > 0.1f)
-                {
-                    navAgent.SetDestination(UnitEntity.targetMoveIntent.FollowEntity.Pos);
-                }
-            }
-
-            // pending中 等待寻找
-            if (!navAgent.hasPath || navAgent.pathPending)
-            {
-                return;
-            }
-
-            Vector2 currPos = transform.position;
-
-            UnitEntity.targetMoveIntent.targettedDesireDir = Vector2.zero;
-
-            if ((currPos - destNow).magnitude < UnitEntity.targetMoveIntent.ArriveDistance)
-            {
-                return;
-            }
-
-            if (UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0)
-            {
-                return;
-            }
-
-            // 从Agent获取期望速度，投影到XY
-            Vector3 desired3 = navAgent.desiredVelocity;
-            Vector2 desired = new Vector2(desired3.x, desired3.y);
-            desired = desired.normalized;
-            UnitEntity.targetMoveIntent.targettedDesireDir = desired;
-        }
 
 
         protected void FixedUpdate()

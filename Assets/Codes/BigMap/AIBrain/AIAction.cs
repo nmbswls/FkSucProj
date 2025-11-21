@@ -211,15 +211,10 @@ namespace My.Map.Entity.AI
             var followedEntity = _brain.UnitEntity.LogicManager.playerLogicEntity;
             var followPos = followedEntity.Pos + new Vector2(0.5f, 0.5f);
 
-            if (_brain.UnitEntity.targetMoveIntent != null)
+            if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Following)
             {
-                if(_brain.UnitEntity.targetMoveIntent.MoveType == BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity && _brain.UnitEntity.targetMoveIntent.FollowEntity == followedEntity)
-                {
-                    return;
-                }
+                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.3f, UnityEngine.Random.insideUnitCircle * 0.5f);
             }
-
-            _brain.UnitEntity.StartTargettedMove(BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FollowEntity, followedEntity, Vector2.zero, 1f);
         }
     }
 
@@ -292,7 +287,7 @@ namespace My.Map.Entity.AI
 
             var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, best.cacheConfig.DesiredUseDistance);
             Debug.Log($"AIActionTryUseSkill move pos {targetPos}");
-            _brain.UnitEntity.StartTargettedMove(BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f);
+            _brain.UnitEntity.entityMotorComp.MoveTo(targetPos);
         }
 
         public override void Tick()
@@ -333,25 +328,14 @@ namespace My.Map.Entity.AI
                 {
                     // 玩家位置偏移 需要更新位置
                     bool needReMove = false;
-                    if (_brain.UnitEntity.targetMoveIntent == null || _brain.UnitEntity.targetMoveIntent.FollowEntity != _brain.PlayerEntity)
+                    if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Following)
                     {
                         needReMove = true;
-                    }
-                    else
-                    {
-                        //var dir = _brain.PlayerEntity.Pos - _brain.UnitEntity.targettedMoveIntent.MoveTarget;
-                        //// 如果玩家位置与目标移动位置 大于理想距离了 需要重新调整移动位置
-                        //if (dir.sqrMagnitude > _config.DesiredUseDistance * _config.DesiredUseDistance)
-                        //{
-                        //    needReMove = true;
-                        //}
                     }
 
                     if (needReMove)
                     {
-                        //var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, _config.DesiredUseDistance);
-                        //Debug.Log($"AIActionTryUseSkill remove move pos {targetPos}");
-                        _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FollowEntity, _brain.PlayerEntity, Vector2.zero, _config.DesiredUseDistance * 0.8f);
+                        _brain.UnitEntity.entityMotorComp.MoveFollow(_brain.PlayerEntity, 0.3f, UnityEngine.Random.insideUnitCircle.normalized * _config.DesiredUseDistance * 0.8f);
                         return;
                     }
                 }
@@ -464,7 +448,7 @@ namespace My.Map.Entity.AI
                     if (LogicTime.time - _lastSlowTime > 1.0f)
                     {
                         var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, goodDistance);
-                        _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f, speedType: TargettedMoveIntent.ESpeedType.Normal);
+                        _brain.UnitEntity.entityMotorComp.MoveTo(targetPos);
                         Debug.Log($"AIActionDistanceControl change move pos normal");
                     }
                 }
@@ -472,7 +456,7 @@ namespace My.Map.Entity.AI
                 {
                     var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos + UnityEngine.Random.insideUnitCircle * 2, _brain.PlayerEntity.Pos, goodDistance);
 
-                    _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f, speedType: TargettedMoveIntent.ESpeedType.Slow);
+                    _brain.UnitEntity.entityMotorComp.MoveTo(targetPos);
                     Debug.Log($"AIActionDistanceControl change move pos slow");
 
                     _lastSlowTime = LogicTime.time;
@@ -533,7 +517,7 @@ namespace My.Map.Entity.AI
             base.Start();
 
             var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, goodDistance);
-            _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f, speedType: TargettedMoveIntent.ESpeedType.Normal);
+            _brain.UnitEntity.entityMotorComp.MoveTo(targetPos);
 
             Debug.Log($"AIActionDistanceControl Start move pos {targetPos}");
         }
@@ -579,7 +563,7 @@ namespace My.Map.Entity.AI
             //}
             Debug.Log($"AIActionDistanceControl change move pos ");
             //_brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, 0.1f);
-            _brain.UnitEntity.StartTargettedMove(TargettedMoveIntent.ETargettedMoveType.FixPoint, null, targetPos, goodDistance, speedType: TargettedMoveIntent.ESpeedType.Slow);
+            _brain.UnitEntity.entityMotorComp.MoveTo(targetPos);
         }
 
         public override void Stop(AIActionStatus endStatus)
