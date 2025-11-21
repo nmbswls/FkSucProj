@@ -16,7 +16,7 @@ using static UnityEngine.Rendering.VolumeComponent;
 namespace My.Map
 {
     
-    public abstract class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity, INoticeRecordComp
+    public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity, INoticeRecordComp
     {
         public MapEntityAbilityController abilityController;
         public float viewRadius = 8f;
@@ -106,6 +106,8 @@ namespace My.Map
             this.FollowPatrolId = unitRecord.PatrolFollowId;
             this.PatrolGroupRelativePos = unitRecord.PatrolGroupRelativePos;
 
+
+            this.FaceDir = bindingRecord.FaceDir;
         }
 
         public override void Initialize()
@@ -141,6 +143,10 @@ namespace My.Map
             }
 
             entityMotorComp = new(this, LogicManager.navProvider);
+
+            combatStateComp = new(this);
+
+            InitFacing();
         }
 
         public override void Tick(float dt)
@@ -166,8 +172,6 @@ namespace My.Map
             AIBrain?.Tick(dt);
 
 
-            UpdateFaceDir();
-
             attributeStore.Commit();
 
             EnmityComp?.Tick(dt);
@@ -185,12 +189,15 @@ namespace My.Map
             //{
 
             //}
+            combatStateComp?.Tick(dt);
 
             UpdateHMode();
 
             NoticeRecordComp?.TryUpdateNoticeList();
 
             entityMotorComp?.Tick(dt);
+
+            UpdateFaceDir();
         }
 
         public override void OnEnterAOI()
@@ -212,51 +219,6 @@ namespace My.Map
             if (unitCfg.AlwaysHMode)
             {
                 IsHMode = true;
-            }
-        }
-
-        /// <summary>
-        /// 更新朝向
-        /// </summary>
-        protected virtual void UpdateFaceDir()
-        {
-
-            if (attributeStore.CheckHasState(AttrIdConsts.LockFace))
-            {
-                return;
-            }
-
-            if (NoticeRecordComp != null)
-            {
-                if (NoticeRecordComp.CheckNoticeEntity(LogicManager.playerLogicEntity.Id))
-                {
-                    var diff = LogicManager.playerLogicEntity.Pos - this.Pos;
-                    if (diff.magnitude > 1e-2)
-                    {
-                        FaceDir = diff;
-                        return;
-                    }
-                }
-            }
-
-            if (targetMoveIntent != null)
-            {
-                if (targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FollowEntity)
-                {
-                    var diff = targetMoveIntent.FollowEntity.Pos - this.Pos;
-                    if (diff.magnitude > 1e-2)
-                    {
-                        FaceDir = diff.normalized;
-                    }
-                }
-                else if (targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FixPoint)
-                {
-                    var diff = targetMoveIntent.FixedMoveTarget - this.Pos;
-                    if (diff.magnitude > 1e-2)
-                    {
-                        FaceDir = diff.normalized;
-                    }
-                }
             }
         }
 
@@ -465,36 +427,36 @@ namespace My.Map
         }
 
 
-        public TargettedMoveIntent? targetMoveIntent;
+        //public TargettedMoveIntent? targetMoveIntent;
 
-        public void StartTargettedMove(TargettedMoveIntent.ETargettedMoveType moveType, ILogicEntity? followedEntity, Vector2 fixedPoint, float arriveDistance, bool clearNav = false, TargettedMoveIntent.ESpeedType speedType = TargettedMoveIntent.ESpeedType.Normal)
-        {
-            if (targetMoveIntent == null)
-            {
-                targetMoveIntent = new();
-            }
+        //public void StartTargettedMove(TargettedMoveIntent.ETargettedMoveType moveType, ILogicEntity? followedEntity, Vector2 fixedPoint, float arriveDistance, bool clearNav = false, TargettedMoveIntent.ESpeedType speedType = TargettedMoveIntent.ESpeedType.Normal)
+        //{
+        //    if (targetMoveIntent == null)
+        //    {
+        //        targetMoveIntent = new();
+        //    }
 
-            targetMoveIntent.MoveType = moveType;
-            targetMoveIntent.SpeedType = speedType;
+        //    targetMoveIntent.MoveType = moveType;
+        //    targetMoveIntent.SpeedType = speedType;
 
-            targetMoveIntent.FollowEntity = followedEntity;
-            targetMoveIntent.FixedMoveTarget = fixedPoint;
+        //    targetMoveIntent.FollowEntity = followedEntity;
+        //    targetMoveIntent.FixedMoveTarget = fixedPoint;
 
-            targetMoveIntent.ArriveDistance = arriveDistance;
+        //    targetMoveIntent.ArriveDistance = arriveDistance;
             
-            targetMoveIntent.NeedRecalculatePath = true;
+        //    targetMoveIntent.NeedRecalculatePath = true;
 
-            // 是否清理速度
-            if(!clearNav)
-            {
-                targetMoveIntent.targettedDesireDir = Vector2.zero;
-            }
-        }
+        //    // 是否清理速度
+        //    if(!clearNav)
+        //    {
+        //        targetMoveIntent.targettedDesireDir = Vector2.zero;
+        //    }
+        //}
 
-        public void StopTargetteMove()
-        {
-            targetMoveIntent = null;
-        }
+        //public void StopTargetteMove()
+        //{
+        //    targetMoveIntent = null;
+        //}
         #endregion
 
 

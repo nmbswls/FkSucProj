@@ -128,7 +128,6 @@ namespace My.Map
         public event Action<Vector2, Vector2> EventOnEntityMove;
 
         public Vector2 Pos { get; protected set; } = Vector2.zero;
-        public Vector2 FaceDir { get; set; } = Vector2.zero;
 
         public ISceneAbilityViewer? viewer; // 表现层接口
 
@@ -142,7 +141,6 @@ namespace My.Map
             this.Id = instId;
             this.CfgId = cfgId;
             this.Pos = orgPos;
-            this.FaceDir = bindingRecord.FaceDir;
             this.BelongRoomId = bindingRecord.BelongRoomId;
 
             this.LifeTime = bindingRecord.LifeTime;

@@ -39,6 +39,14 @@ namespace My.Map
             TickAddAuraHVal(dt);
         }
 
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            this.ControlledFacing = true;
+        }
+
         protected override void InitAttribute()
         {
             moveSpeed = 2.0f;
