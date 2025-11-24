@@ -8,13 +8,14 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.EventSystems.EventTrigger;
+using static UnityEngine.GraphicsBuffer;
 
 namespace My.Map.Entity
 {
 
     public interface INoticeRecordComp
     {
-        bool CheckNoticeEntity(long entityId);
+        bool IsTargetVisible(long targetId);
     }
 
 
@@ -25,17 +26,35 @@ namespace My.Map.Entity
     {
         public BaseUnitLogicEntity UnitEntity;
 
-        public class NoticeRecord
+
+        private float EntryExpireAfter = 2.0f;
+
+        //public class NoticeRecord
+        //{
+        //    public long Id;
+        //    public bool IsEnmity;
+        //    public float LastUpdateTime;
+        //}
+
+        public class VisibilityEntry
         {
-            public long Id;
-            public bool IsEnmity;
-            public float LastUpdateTime;
+            public long TargetId;
+            //public VisibilityStatus Status;
+            public bool IsInView = false;
+            public float Confidence;     // 0..1，越高越确定
+            public float LastSeenTime;   // 最后一次判定为 Visible 的时间
+            public float LastUpdateTime; // 最近一次更新（任何状态）
+            public Vector2 LastKnownPos; // 最近可见时记录的位置
         }
         /// <summary>
         /// 上一次可见，
         /// </summary>
-        public Dictionary<long, NoticeRecord> NoticeRecords = new();
+        //public Dictionary<long, NoticeRecord> NoticeRecords = new();
+        public Dictionary<long, VisibilityEntry> VisibleMap = new(); // TargetId => Entry
 
+        public Dictionary<long, int> ExposeRecord;
+
+        private float _lastUpdateTime;
 
 
         private float _clearInvalidTimer = 0;
@@ -53,10 +72,18 @@ namespace My.Map.Entity
         public void TryUpdateNoticeList()
         {
             // 分针轮询
-            if (UnitEntity.Id % 100 != Time.frameCount % 100)
+            if (UnitEntity.Id % 10 != Time.frameCount % 10)
             {
                 return;
             }
+
+            if (_lastUpdateTime + 0.5f > LogicTime.time)
+            {
+                return;
+            }
+
+            _lastUpdateTime = LogicTime.time;
+
 
             //VisibilityList.Clear();
             /// 维护了NoticeRecords 
@@ -75,53 +102,115 @@ namespace My.Map.Entity
                     continue;
                 }
 
-                if (!UnitEntity.LogicManager.visionSenser.CanSee(UnitEntity.Pos, UnitEntity.FaceDir, otherUnit.Pos, 5.0f, 60))
+                if(!UnitEntity.CheckIsEmnityFaction(otherUnit.FactionId))
+                {
+                    continue;
+                }
+
+                if (!UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, otherUnit.Id))
                 {
                     continue;
                 }
 
                 // 有记录 更新
-                if (!NoticeRecords.TryGetValue(id, out var noticeRecord))
+                if (!VisibleMap.TryGetValue(id, out var noticeRecord))
                 {
                     noticeRecord = new()
                     {
-                        Id = id,
-                        LastUpdateTime = LogicTime.time,
-                        IsEnmity = false
+                        TargetId = id,
+                        LastSeenTime = -999f,
+                        LastUpdateTime = -999f,
+                        LastKnownPos = Vector2.zero
                     };
+                    VisibleMap[noticeRecord.TargetId] = noticeRecord;
                 }
+
+                EvaluateTarget(LogicTime.time, otherUnit, noticeRecord);
             }
 
-            if (_clearInvalidTimer + 10.0f < LogicTime.time)
-            {
-                _clearInvalidTimer = LogicTime.time;
-
-                foreach (var key in NoticeRecords.Keys.ToList())
-                {
-                    if (NoticeRecords[key].LastUpdateTime < LogicTime.time - 10.0f)
-                    {
-                        NoticeRecords.Remove(key);
-                    }
-                }
-            }
+            ExpireEntries(LogicTime.time);
         }
-
 
         /// <summary>
-        /// 个体自身的
+        /// 目标检查
         /// </summary>
-        /// <param name="srcId"></param>
-        /// <param name="power"></param>
-        /// <param name="reason"></param>
-        public void OnFightStatusTrigger(long srcId, float power, int reason)
+        /// <param name="now"></param>
+        /// <param name="target"></param>
+        /// <param name="entry"></param>
+        private void EvaluateTarget(float now, BaseUnitLogicEntity target, VisibilityEntry entry)
         {
+            var targetPos = target.Pos;
+            var dist = (targetPos - UnitEntity.Pos).magnitude;
 
+            var cansee = UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, target.Id);
+            if(!cansee)
+            {
+                MarkHidden(entry, LogicTime.time);
+            }
+            
+
+            // 隐身覆盖（机制级躲藏）
+            var stealth = target.stealthInfo;
+            bool stealthBlocks = false;
+            if (stealth != null && stealth.stealthId != 0)
+            {
+                // 该观察者在隐身获取时的无视窗口
+                bool ignoreStealth =
+                    stealth.SeeUnits != null &&
+                    stealth.SeeUnits.TryGetValue(UnitEntity.Id, out var untilTs) &&
+                    now < untilTs;
+
+                ignoreStealth |= (dist <= 1e-1);
+
+                if (!ignoreStealth)
+                {
+                    stealthBlocks = true;
+                }
+            }
+
+            if (!stealthBlocks && cansee)
+            {
+                MarkVisible(entry, now, targetPos);
+            }
+            else
+            {
+                MarkHidden(entry, now);
+            }
         }
 
-        public bool CheckNoticeEntity(long entityId)
+        // 查询接口
+        public bool IsTargetVisible(long targetId)
         {
-            return false;
+            return VisibleMap.TryGetValue(targetId, out var e) && e.IsInView;
         }
+
+        private void MarkVisible(VisibilityEntry e, float now, Vector2 pos)
+        {
+            e.IsInView = true;
+            e.LastSeenTime = now;
+            e.LastKnownPos = pos;
+            e.LastUpdateTime = now;
+        }
+
+        private void MarkHidden(VisibilityEntry e, float now)
+        {
+            e.IsInView = false;
+            e.LastUpdateTime = now;
+        }
+
+        private void ExpireEntries(float now)
+        {
+            var toRemove = new List<long>();
+            foreach (var kv in VisibleMap)
+            {
+                var e = kv.Value;
+                if (now - e.LastUpdateTime > EntryExpireAfter)
+                    toRemove.Add(kv.Key);
+            }
+            for (int i = 0; i < toRemove.Count; i++)
+                VisibleMap.Remove(toRemove[i]);
+        }
+
     }
 
 

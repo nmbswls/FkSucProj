@@ -20,7 +20,7 @@ namespace My.Map
         public float speedThreshold = 0.05f; // 速度太小不更新面向
         public float deadzoneAngle = 3f;     // 小角度不转动（度）
         public float maxAngularSpeed = 360f; // 每秒最大旋转角度（度/s）
-        public float smoothTime = 0.12f;     // 平滑时间（秒）
+        public float smoothTime = 0.05f;     // 平滑时间（秒）
 
         private Vector2 faceDir = Vector2.zero;
         public Vector2 FaceDir 
@@ -30,10 +30,13 @@ namespace My.Map
             {
                 faceDir = value;
                 _currentAngle = AngleFromDir(faceDir);
+                _targetAngle = _currentAngle;
             }
         }
         // 内部状态
         float _currentAngle;     // 当前朝向角度（度，0=向右）
+        float _targetAngle;
+
         float _angularVel;       // SmoothDampAngle 用
 
         public void InitFacing()
@@ -58,6 +61,25 @@ namespace My.Map
             }
 
             UpdateFacing();
+
+            {
+                // 死区：小角差直接保持，减少抖动
+                float angleDelta = Mathf.DeltaAngle(_currentAngle, _targetAngle);
+                if (Mathf.Abs(angleDelta) < deadzoneAngle)
+                    _currentAngle = _targetAngle;
+
+                // 单次最大角步长（限速）
+                //float maxStep = maxAngularSpeed * Time.deltaTime;
+                float maxStep = 10000;
+                float clampedTarget = MoveTowardsAngle(_currentAngle, _targetAngle, maxStep);
+
+                // 仅保留一次平滑：对限速后的目标做 SmoothDampAngle
+                float newAngle = SmoothDampAngle(_currentAngle, clampedTarget, ref _angularVel, smoothTime);
+
+                // 更新状态与朝向向量
+                _currentAngle = newAngle;
+                faceDir = DirFromAngle(_currentAngle);
+            }
         }
 
 
@@ -66,8 +88,8 @@ namespace My.Map
         {
             // 检查是否需要锁定目标朝向
             Vector2? lootTarget = null;
-            Vector2 lookDir = Vector2.zero;
-            if (combatStateComp != null && combatStateComp.InCombat && combatStateComp.PrimaryTargetId != 0)
+           
+            if (combatStateComp != null && combatStateComp.CombatState == EntityCombatStateComp.ECombatState.InCombat && combatStateComp.PrimaryTargetId != 0)
             {
                 var targt = LogicManager.GetLogicEntity(combatStateComp.PrimaryTargetId, false);
                 if (targt != null)
@@ -84,27 +106,7 @@ namespace My.Map
                 }
             }
 
-
-            //if (targetMoveIntent != null)
-            //{
-            //    if (targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FollowEntity)
-            //    {
-            //        var diff = targetMoveIntent.FollowEntity.Pos - this.Pos;
-            //        if (diff.magnitude > 1e-2)
-            //        {
-            //            FaceDir = diff.normalized;
-            //        }
-            //    }
-            //    else if (targetMoveIntent.MoveType == TargettedMoveIntent.ETargettedMoveType.FixPoint)
-            //    {
-            //        var diff = targetMoveIntent.FixedMoveTarget - this.Pos;
-            //        if (diff.magnitude > 1e-2)
-            //        {
-            //            FaceDir = diff.normalized;
-            //        }
-            //    }
-            //}
-
+            Vector2 lookDir = Vector2.zero;
             if (lootTarget != null)
             {
                 lookDir = (Vector2)(lootTarget - this.Pos);
@@ -121,21 +123,11 @@ namespace My.Map
             }
 
             lookDir.Normalize();
+            // FaceDir = lookDir;
 
-            // 角度计算与死区
-            float targetAngle = AngleFromDir(lookDir);
-            float angleDelta = Mathf.DeltaAngle(_currentAngle, targetAngle);
-            if (Mathf.Abs(angleDelta) < deadzoneAngle)
-                targetAngle = _currentAngle;
+            _targetAngle = AngleFromDir(lookDir);
 
-            // 限速 + 平滑
-            float maxStep = maxAngularSpeed * Time.deltaTime;
-            float clampedTarget = MoveTowardsAngle(_currentAngle, targetAngle, maxStep);
-            float newAngle = SmoothDampAngle(_currentAngle, clampedTarget, ref _angularVel, smoothTime);
-
-            // 应用到旋转（2D：Z 轴旋转；transform.right 对应面向）
-            _currentAngle = newAngle;
-            FaceDir = DirFromAngle(_currentAngle);
+            
         }
 
 

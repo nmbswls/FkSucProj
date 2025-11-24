@@ -41,7 +41,7 @@ namespace My.Map.Scene
 
         public bool CanInteractEnable()
         {
-            if (NpcEntity.IsInBattle)
+            if (NpcEntity.CombatState != EntityCombatStateComp.ECombatState.NotCombat)
             {
                 return false;
             }
@@ -93,7 +93,7 @@ namespace My.Map.Scene
 
         public void TriggerInteract(int selectionId)
         {
-            if (NpcEntity.IsInBattle)
+            if (NpcEntity.CombatState != EntityCombatStateComp.ECombatState.NotCombat)
             {
                 return;
             }

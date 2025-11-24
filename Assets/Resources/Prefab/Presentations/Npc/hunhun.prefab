@@ -139,6 +139,7 @@ Transform:
   - {fileID: 6487020006799734520}
   - {fileID: 6867970446395434528}
   - {fileID: 7921256209700466238}
+  - {fileID: 1352328000936773924}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &5981833247523422262
@@ -184,6 +185,7 @@ MonoBehaviour:
   highlightFx: {fileID: 0}
   ViewPoint: {fileID: 0}
   faceIndicator: {fileID: 8013608194804928167}
+  EyePos: {fileID: 1352328000936773924}
   WeaponRoot: {fileID: 7921256209700466238}
   WeaponCtrl: {fileID: 637426610165199311}
   navAgent: {fileID: 4754350832141041876}
@@ -191,6 +193,7 @@ MonoBehaviour:
   mainCol: {fileID: 0}
   freeMoveDir: {x: 0, y: 0}
   CharacterController: {fileID: 0}
+  targetCol: {fileID: 0}
   maxTurnSpeedDegPerSec: 720
   smoothTime: 0.12
   selfRadius: 0.5
@@ -632,6 +635,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseOrder: 0
   pivot: {fileID: 8552881982338698837}
+--- !u!1 &8735852839482421652
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1352328000936773924}
+  m_Layer: 20
+  m_Name: Eye
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1352328000936773924
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8735852839482421652}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.355, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8552881982338698837}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8827776686763438421
 GameObject:
   m_ObjectHideFlags: 0

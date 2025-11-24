@@ -72,6 +72,7 @@ namespace My.Map.Entity
         private ILogicEntity? _followTarget;
         private float _followPrediction;
         private Vector2 _followOffset;
+        private float _stopDistance = 0.1f;
 
         // 运行时辅助
         private float _stuckTimer;
@@ -83,10 +84,8 @@ namespace My.Map.Entity
         public Vector2 DesiredVelocity { get; private set; }
         public Quaternion DesiredRotation { get; private set; }
 
-        /// <summary>
-        /// settings
-        /// </summary>
-        public float StopDistance = 0.1f;
+       
+        
 
 
         public float ArriveTolerance = 0.1f;
@@ -121,7 +120,7 @@ namespace My.Map.Entity
         }
 
 
-        public void MoveFollow(ILogicEntity target, float followPrediction, Vector2 offset)
+        public void MoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f)
         {
             if(target == null)
             {
@@ -130,6 +129,7 @@ namespace My.Map.Entity
             _followTarget = target;
             _followPrediction = followPrediction;
             _followOffset = offset;
+            stopDistance = 0.6f;
 
             // 首次取目标点并建路径（如果可）
             if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var goal))
@@ -285,7 +285,7 @@ namespace My.Map.Entity
             float d = (UnitEntity.Pos - _currentGoal).magnitude;
 
             // 2) 牵引半径与停止距离
-            if (d <= StopDistance)
+            if (d <= _stopDistance)
             {
                 DesiredVelocity = Vector3.zero;
                 return; // 保持Idle或微动
@@ -343,7 +343,7 @@ namespace My.Map.Entity
             {
                 // 近距缓冲：线性衰减至停止距离
                 float k_close = 2.0f;
-                float distToStopEdge = Mathf.Max(0f, d - StopDistance);
+                float distToStopEdge = Mathf.Max(0f, d - _stopDistance);
                 float maxCloseSpeed = Mathf.Min(UnitEntity.GetCurrSpeed(), distToStopEdge * k_close);
                 v_des = maxCloseSpeed;
                 // 当预计会反超或贴脸时，提高制动

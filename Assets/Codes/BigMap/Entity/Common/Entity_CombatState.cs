@@ -4,12 +4,19 @@ using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using static My.Map.EntityCombatStateComp;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map
 {
-    public class EntityCombatStateComp
+
+    public interface IUnitWithBattle
+    {
+        ECombatState CombatState { get; }
+    }
+
+    public class EntityCombatStateComp : IUnitWithBattle
     {
 
         public BaseUnitLogicEntity UnitEntity { get; private set; }
@@ -25,7 +32,7 @@ namespace My.Map
         private float maxPerInjection = 24f;       // 单次注入上限
         private float perTargetCap = 40f;          // 同一目标 SightThreat 累积上限
         private float sightDecayPerSec = 8f;       // SightThreat 衰减速率（快于伤害）
-        private float sightCooldown = 10f;         // 单位级目击冷却
+        private float sightCooldown = 1f;         // 单位级目击冷却
         private int perMinuteQuotaCount = 3;       // 每分钟最多目击注入次数
         private float aggregatedWeight = 1.0f;     // 聚合时 SightThreat 权重（可<1，
 
@@ -63,17 +70,24 @@ namespace My.Map
 
         private bool seedDamageOnSight = false;
         private float minConfidence = 0.6f;       // 目击置信度阈值
-       private float fovAngle = 140f;            // 可选前方扇形，扩大容错
+        private float fovAngle = 140f;            // 可选前方扇形，扩大容错
 
         // 可见性缓存（示例）
         private readonly HashSet<long> tempVisibleTargets = new HashSet<long>();
 
-        public bool InCombat { get; set; }
+        public enum ECombatState
+        {
+            NotCombat,
+            InCombat,
+            CombatRecover,
+        }
+        public ECombatState CombatState { get; set; }
+
+        private float _lastRecoverTimer;
 
         private float allySenseInterval = 0.5f;
         private float nextAllySenseTime = 0f;
         private float allySenseRadius = 20f;
-        private float allyFovAngle = 120f;
         public long PrimaryTargetId { get; private set; } = 0;
 
         public EntityCombatStateComp(BaseUnitLogicEntity entity)
@@ -84,6 +98,8 @@ namespace My.Map
 
         public void Tick(float dt)
         {
+            TickRecovery();
+
             DecayDamageThreat(dt);
             DecaySightThreat(dt);
             ReevaluatePrimaryTarget();
@@ -101,6 +117,11 @@ namespace My.Map
         /// <param name="amount"></param>
         public void OnGiveDamage(long targetId, float amount)
         {
+            if (CombatState != ECombatState.CombatRecover)
+            {
+                return;
+            }
+
             lastDamageGivenTime = LogicTime.time;
             AddDamageThreat(targetId);
             EnterCombat(targetId);
@@ -113,11 +134,58 @@ namespace My.Map
         /// <param name="amount"></param>
         public void OnTakeDamage(long srcId, float amount)
         {
+            if (CombatState != ECombatState.CombatRecover)
+            {
+                return;
+            }
+
             lastDamageTakenTime = LogicTime.time;
             AddDamageThreat(srcId);
             EnterCombat(srcId);
         }
 
+        public void TickRecovery()
+        {
+            if (CombatState != ECombatState.CombatRecover)
+            {
+                return;
+            }
+
+            // 1
+            if(LogicTime.time > _lastRecoverTimer + 1f)
+            {
+                return;
+            }
+
+            // 需要返回
+            if(UnitEntity.unitCfg.RecoverReturn)
+            {
+                do
+                {
+                    if(UnitEntity.LastInterruptMovePos == null)
+                    {
+                        CombatState = ECombatState.NotCombat;
+                        UnitEntity.LastInterruptMovePos = null;
+
+                        break;
+                    }
+
+                    if ((UnitEntity.LastInterruptMovePos.Value - UnitEntity.Pos).magnitude < 1e-1)
+                    {
+                        CombatState = ECombatState.NotCombat;
+                        UnitEntity.LastInterruptMovePos = null;
+                        break;
+                    }
+                }
+                while (false);
+
+            }
+            else
+            {
+                CombatState = ECombatState.NotCombat;
+                UnitEntity.LastInterruptMovePos = null;
+            }
+        }
 
         private void DecayDamageThreat(float dt)
         {
@@ -166,7 +234,7 @@ namespace My.Map
 
         private void ReevaluatePrimaryTarget()
         {
-            if (InCombat == false) return;
+            if (CombatState != ECombatState.InCombat) return;
             if (damageThreat.Count == 0 && sightThreat.Count == 0) return;
 
             long bestTid = 0;
@@ -204,7 +272,7 @@ namespace My.Map
 
         private void TryExitCombat()
         {
-            if (!InCombat) return;
+            if (CombatState != ECombatState.InCombat) return;
             if (LogicTime.time - enterCombatTime < minCombatDuration) return;
 
             bool giverSilent = (LogicTime.time - lastDamageGivenTime) >= outCombatDelay;
@@ -219,6 +287,14 @@ namespace My.Map
                 {
                     float dist = Vector2.Distance(UnitEntity.Pos, primaryEntity.Pos);
                     hardLeashExceeded = dist > hardLeashRadius;
+                }
+            }
+
+            if(UnitEntity.LastInterruptMovePos != null)
+            {
+                if((UnitEntity.Pos - UnitEntity.LastInterruptMovePos.Value).magnitude > UnitEntity.unitCfg.BattleBoundary)
+                {
+                    hardLeashExceeded = true;
                 }
             }
 
@@ -237,6 +313,10 @@ namespace My.Map
         private void AddDamageThreat(long targetId)
         {
             if (targetId == 0) return;
+            if (CombatState == ECombatState.CombatRecover)
+            {
+                return;
+            }
 
             if (damageThreat.TryGetValue(targetId, out float v))
                 damageThreat[targetId] = v + 10.0f;
@@ -244,38 +324,41 @@ namespace My.Map
                 damageThreat[targetId] = 10.0f;
 
 
-            if (!InCombat) EnterCombat(targetId);
+            if (CombatState != ECombatState.InCombat) EnterCombat(targetId);
         }
 
         private bool TryAddSightThreat(long targetId)
         {
             if (targetId == 0) return false;
-
-
+            if(CombatState == ECombatState.CombatRecover)
+            {
+                return false;
+            }
 
             // 冷却与配额
             if (LogicTime.time < nextSightAllowedTime) return false;
-            if (LogicTime.time - sightQuotaWindowStart > 60f)
-            {
-                sightQuotaWindowStart = LogicTime.time;
-                sightQuotaUsed = 0;
-            }
-            if (sightQuotaUsed >= sightPerMinuteQuota) return false;
+            //if (LogicTime.time - sightQuotaWindowStart > 60f)
+            //{
+            //    sightQuotaWindowStart = LogicTime.time;
+            //    sightQuotaUsed = 0;
+            //}
+            //if (sightQuotaUsed >= sightPerMinuteQuota) return false;
 
+            float current = 0f;
             // 上限检查
-            float current = 0f; sightThreat.TryGetValue(targetId, out current);
-            float room = perTargetSightCap - current;
-            if (room <= 0f) return false;
+            //sightThreat.TryGetValue(targetId, out current);
+            //float room = perTargetSightCap - current;
+            //if (room <= 0f) return false;
 
-            float applied = Mathf.Min(fixedSightThreat, room);
-            if (applied <= 0f) return false;
+            float applied = fixedSightThreat;
+            //if (applied <= 0f) return false;
 
             sightThreat[targetId] = current + applied;
 
             nextSightAllowedTime = LogicTime.time + sightCooldown;
             sightQuotaUsed++;
 
-            if (!InCombat) EnterCombat(targetId);
+            if (CombatState != ECombatState.InCombat) EnterCombat(targetId);
 
             // 如需更稳定，可同步少量伤害威胁
             if (seedDamageOnSight)
@@ -286,24 +369,26 @@ namespace My.Map
             return true;
         }
 
-
         public void EnterCombat(long primaryTargetId)
         {
-            InCombat = true;
+            CombatState = ECombatState.InCombat;
+            UnitEntity.LastInterruptMovePos = UnitEntity.Pos;
             PrimaryTargetId = primaryTargetId;
             enterCombatTime = LogicTime.time;
             //Events.RaiseEnterCombat(primaryTargetId);
             // TODO: 启动AI/导航追击 PrimaryTargetId
+
+            Debug.Log($"EnterCombat unit:{UnitEntity.Id} enemy {primaryTargetId}");
         }
 
         public void ExitCombat(string reason = "Silent")
         {
-            InCombat = false;
+            CombatState = ECombatState.CombatRecover;
+            _lastRecoverTimer = LogicTime.time;
             PrimaryTargetId = 0;
             damageThreat.Clear();
             sightThreat.Clear();
             //Events.RaiseExitCombat(reason);
-            lastReturnHomeTime = LogicTime.time;
             // TODO: 停止AI，回位等
         }
 
@@ -313,7 +398,7 @@ namespace My.Map
             if (LogicTime.time < nextAllySenseTime) return;
             nextAllySenseTime = LogicTime.time + allySenseInterval;
 
-            if (InCombat) return; // 未进战时才尝试自拉入
+            if (CombatState == ECombatState.InCombat) return; // 未进战时才尝试自拉入
 
 
             var list = UnitEntity.LogicManager.visionSenser.OverlapCircleAllEntity(UnitEntity.Pos, allySenseRadius, new EntityFilterParam()
@@ -330,7 +415,7 @@ namespace My.Map
                 {
                     continue;
                 }
-                if (!witness.IsInBattle) 
+                if (witness.CombatState != ECombatState.InCombat) 
                     continue;
 
                 float confidence = ComputeWitnessConfidence(witness);
@@ -386,12 +471,12 @@ namespace My.Map
             long bestEnemyId = 0;
 
             // 获取感知组件中维护的可见单位列表
-            foreach(var seeOne in UnitEntity.NoticeRecordComp.NoticeRecords.Values)
+            foreach (var seeOne in UnitEntity.NoticeRecordComp.VisibleMap.Values)
             {
                 // todo 获取最佳目标
-                if(seeOne.LastUpdateTime + 1 > LogicTime.time)
+                if (seeOne.IsInView && seeOne.LastSeenTime + 0.5f > LogicTime.time)
                 {
-                    bestEnemyId = seeOne.Id;
+                    bestEnemyId = seeOne.TargetId;
                     break;
                 }
             }

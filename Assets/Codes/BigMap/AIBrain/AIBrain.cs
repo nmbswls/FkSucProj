@@ -41,7 +41,7 @@ namespace My.Map.Entity.AI
 
         public string? CurrIntentAbility = null;
 
-        public Vector2? LastInterruptMovePos = null;
+        //public Vector2? LastInterruptMovePos = null;
     }
 
     /// <summary>

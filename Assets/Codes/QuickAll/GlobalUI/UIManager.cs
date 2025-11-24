@@ -268,15 +268,6 @@ namespace My.UI
             return panel;
         }
 
-        // Ë¢ÐÂ
-        public void RequestRefresh(InputMode mode)
-        {
-            foreach (var kv in activePanels)
-            {
-                if (kv.Value.IsVisible && kv.Value is IRefreshable r) r.Refresh();
-            }
-        }
-
         // Loading ¿ì½Ý
         public void ShowLoading(string text = "Loading...") { ShowPanel(loadingPanelId, text, UILayer.System); }
         public void HideLoading() { HidePanel(loadingPanelId); }

@@ -72,6 +72,7 @@ namespace My
         public GlobalDropTable DropTable;
 
         public MapControlEventManager controlEventManager;
+        public FactionRelationManager factionRelationManager;
 
         public bool PlayerPeaceMode = false;
 
@@ -107,6 +108,8 @@ namespace My
 
                 //AreaManager.EntityRefreshInfo.Add(refreshInfo);
             };
+
+            factionRelationManager = new();
 
             controlEventManager = new(this);
             controlEventManager.Initialize();
@@ -165,6 +168,7 @@ namespace My
                 Id = 1,
                 EntityType = EEntityType.Player,
                 CfgId = "0",
+                FactionId = EFactionId.Player,
 
                 Position = vec,
             };

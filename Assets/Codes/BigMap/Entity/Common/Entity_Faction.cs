@@ -61,6 +61,14 @@ namespace My.Map.Entity
 
         public ERelationType GetFactionRelation(EFactionId selfFaction, EFactionId targetFaction)
         {
+            switch(selfFaction)
+            {
+                case EFactionId.Player:
+                    {
+
+                    }
+                    break;
+            }
             return ERelationType.Neutral;
         }
     }

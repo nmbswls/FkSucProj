@@ -85,10 +85,10 @@ namespace My.Map.Scene
 
         Vector2 GetCurrentQuantiedPos()
         {
-            var point = MainGameManager.Instance.playerScenePresenter.transform;
-            var quanted = new Vector2((int)(point.position.x / posUpdateInterval), (int)(point.position.y / posUpdateInterval));
+            //var point = MainGameManager.Instance.playerScenePresenter.transform;
+            //var quanted = new Vector2((int)(point.position.x / posUpdateInterval), (int)(point.position.y / posUpdateInterval));
             //return quanted * posUpdateInterval;
-            return point.position;
+            return MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
         }
 
 
@@ -105,18 +105,18 @@ namespace My.Map.Scene
         {
             segmentProvider = WorldAreaManager.Instance.SegmentProvider;
 
-            fovDegrees = MainGameManager.Instance.playerScenePresenter.PlayerEntity.fovDegrees;
-            viewRadius = MainGameManager.Instance.playerScenePresenter.PlayerEntity.viewRadius;
+            fovDegrees = MainGameManager.Instance.gameLogicManager.playerLogicEntity.fovDegrees;
+            viewRadius = MainGameManager.Instance.gameLogicManager.playerLogicEntity.viewRadius;
         }
 
         void LateUpdate()
         {
-            if(MainGameManager.Instance.playerScenePresenter.PlayerEntity == null)
+            if(MainGameManager.Instance.gameLogicManager.playerLogicEntity == null)
             {
                 return;
             }
 
-            var playerFaceDir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FaceDir;
+            var playerFaceDir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.FaceDir;
             float angle = Mathf.Atan2(playerFaceDir.y, playerFaceDir.x) * Mathf.Rad2Deg; // ”Î +X ÷·º–Ω«
             orientationDegrees = angle;
             bool needUpdate = false;
@@ -143,7 +143,7 @@ namespace My.Map.Scene
             if (!NeedMask) return;
             if (segmentProvider == null) return;
 
-            Vector2 P = MainGameManager.Instance.playerScenePresenter.transform.position;
+            Vector2 P = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
             
             float fov = Mathf.Max(1f, fovDegrees) * Mathf.Deg2Rad;
 

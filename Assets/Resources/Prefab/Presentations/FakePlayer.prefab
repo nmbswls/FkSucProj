@@ -131,6 +131,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &2958613329881349285
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8623213792691732422}
+  m_Layer: 19
+  m_Name: eye
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8623213792691732422
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2958613329881349285}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.401, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8576391666722605407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3320236962454006529
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,6 +387,7 @@ Transform:
   - {fileID: 1406031766230571775}
   - {fileID: 323888337247975477}
   - {fileID: 840578726685308991}
+  - {fileID: 8623213792691732422}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &6958571036970842218
@@ -436,6 +468,7 @@ MonoBehaviour:
   highlightFx: {fileID: 0}
   ViewPoint: {fileID: 840578726685308991}
   faceIndicator: {fileID: 0}
+  EyePos: {fileID: 8623213792691732422}
   WeaponRoot: {fileID: 323888337247975477}
   WeaponCtrl: {fileID: 9213344019219386193}
   navAgent: {fileID: 0}
@@ -443,6 +476,7 @@ MonoBehaviour:
   mainCol: {fileID: 0}
   freeMoveDir: {x: 0, y: 0}
   CharacterController: {fileID: 0}
+  targetCol: {fileID: 0}
   maxTurnSpeedDegPerSec: 720
   smoothTime: 0.12
   selfRadius: 0.5

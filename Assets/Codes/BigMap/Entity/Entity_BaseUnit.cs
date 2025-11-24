@@ -11,19 +11,35 @@ using My.Map.Logic;
 using static My.Map.Entity.MapEntityAbilityController;
 using static My.Map.BaseUnitLogicEntity;
 using static UnityEngine.Rendering.VolumeComponent;
+using static My.Map.EntityCombatStateComp;
 
 
 namespace My.Map
 {
     
-    public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity, INoticeRecordComp
+    public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity,
+        INoticeRecordComp, IUnitWithBattle
     {
         public MapEntityAbilityController abilityController;
         public float viewRadius = 8f;
         public float fovDegrees = 90f;
 
 
-        public LogicEntityRecord4UnitBase UnitBaseRecord { get { return (LogicEntityRecord4UnitBase)BindingRecord; } }
+        public LogicEntityRecord4UnitBase UnitBaseRecord 
+        { 
+            get 
+            { 
+                return (LogicEntityRecord4UnitBase)BindingRecord; 
+            } 
+        }
+
+        public ECombatState CombatState
+        { 
+            get 
+            {
+                return combatStateComp?.CombatState ?? ECombatState.NotCombat;
+            } 
+        }
 
         public enum EMoveBehaveType
         {
@@ -38,11 +54,13 @@ namespace My.Map
 
         public long FollowPatrolId;
         public Vector2 PatrolGroupRelativePos;
+        public Vector2? LastInterruptMovePos;
+
 
         public EntityMotorComp entityMotorComp;
         public EntityCombatStateComp combatStateComp;
 
-        public bool IsInBattle; // 既没有战斗 也没有h attract
+        //public bool IsInBattle; // 既没有战斗 也没有h attract
         public bool IsHMode;
 
         public int BindRoomId;
@@ -646,6 +664,11 @@ namespace My.Map
             return EnmityComp.CheckIsEmnity();
         }
 
+        public bool CheckIsEmnityFaction(EFactionId factionId)
+        {
+            return EnmityComp.CheckIsEmnityFaction(factionId);
+        }
+
         #endregion
 
 
@@ -658,9 +681,9 @@ namespace My.Map
             LogicManager.globalThrowManager.TryInterruptThrowByLauncher(this, req);
         }
 
-        public bool CheckNoticeEntity(long entityId)
+        public bool IsTargetVisible(long targetId)
         {
-            throw new NotImplementedException();
+            return NoticeRecordComp.IsTargetVisible (targetId);
         }
 
         #endregion

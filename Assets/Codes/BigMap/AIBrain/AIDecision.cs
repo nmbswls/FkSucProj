@@ -189,12 +189,12 @@ namespace My.Map.Entity.AI
         /// <returns></returns>
         public override bool Decide()
         {
-            if(_brain.blackboard.LastInterruptMovePos == null)
+            if(_brain.UnitEntity.LastInterruptMovePos != null)
             {
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }
     }
 
@@ -237,6 +237,8 @@ namespace My.Map.Entity.AI
 
     public class AIDecisionCheckInBattle : AIDecision
     {
+        public bool CheckReq = true;
+
         /// <summary>
         /// On init we grab our Character component
         /// </summary>
@@ -251,7 +253,14 @@ namespace My.Map.Entity.AI
         /// <returns></returns>
         public override bool Decide()
         {
-            return _brain.UnitEntity.IsInBattle;
+            if(CheckReq)
+            {
+                return _brain.UnitEntity.CombatState == EntityCombatStateComp.ECombatState.InCombat;
+            }
+            else
+            {
+                return _brain.UnitEntity.CombatState != EntityCombatStateComp.ECombatState.InCombat;
+            }
         }
     }
 }

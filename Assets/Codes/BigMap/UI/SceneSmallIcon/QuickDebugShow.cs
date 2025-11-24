@@ -51,11 +51,30 @@ public class QuickDebugShow : MonoBehaviour
             }
 
             hpBars[k].Val.text = hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.HP).ToString();
-            var attracted = hpBars[k].bindingUnit.UnitEntity.CheckAttractState();
-            if(attracted)
+            //var attracted = hpBars[k].bindingUnit.UnitEntity.CheckAttractState();
+            //if(attracted)
+            //{
+            //    hpBars[k].Val.text += " a";
+            //}
+
+            if(hpBars[k].bindingUnit.UnitEntity.combatStateComp.CombatState == My.Map.EntityCombatStateComp.ECombatState.InCombat)
             {
-                hpBars[k].Val.text += " a";
+                hpBars[k].Val.text += " b";
             }
+            else if(hpBars[k].bindingUnit.UnitEntity.combatStateComp.CombatState == My.Map.EntityCombatStateComp.ECombatState.CombatRecover)
+            {
+                hpBars[k].Val.text += " r";
+            }
+
+            try
+            {
+                var seePlayer = hpBars[k].bindingUnit.UnitEntity.IsTargetVisible(MainGameManager.Instance.playerScenePresenter.PlayerEntity.Id);
+                if(seePlayer)
+                {
+                    hpBars[k].Val.text += " s";
+                }
+            }
+            catch { }
 
             var worldPos = hpBars[k].bindingUnit.GetWorldPosition();
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
@@ -79,10 +98,16 @@ public class QuickDebugShow : MonoBehaviour
             {
                 continue;
             }
+            if(unitPresent.UnitEntity.Type == My.Map.EEntityType.Player)
+            {
+                continue;
+            }
+
             if(!hpBars.ContainsKey(p.Id))
             {
                 HpBarStruct newStruct = new();
                 newStruct.Go = GameObject.Instantiate(HpValPrefab, transform);
+                newStruct.Go.SetActive(true);
                 newStruct.Val = newStruct.Go.GetComponentInChildren<TextMeshProUGUI>();
                 newStruct.bindingUnit = unitPresent;
                 hpBars[p.Id] = newStruct;

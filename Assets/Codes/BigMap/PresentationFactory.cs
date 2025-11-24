@@ -45,6 +45,8 @@ public static class PresentationConfig
                 return $"Prefab/Presentations/PatrolGroup";
             case EEntityType.HomePlacement:
                 return $"Prefab/Presentations/HomePlacement/{cfgId}";
+            case EEntityType.Player:
+                return $"Prefab/Presentations/FakePlayer";
             // ...
             default: return "Prefab/Presentations/Default";
         }

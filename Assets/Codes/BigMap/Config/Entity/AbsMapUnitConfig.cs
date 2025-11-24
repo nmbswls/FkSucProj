@@ -31,6 +31,9 @@ namespace Config.Unit
         public bool IsPeace = false;
         public string CombatStretegyTemplateId;
 
+        public float BattleBoundary = 10.0f;
+        public bool RecoverReturn = true;
+
         public bool HasHMode = true;
         public bool AlwaysHMode = false;
 

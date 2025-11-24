@@ -184,6 +184,7 @@ namespace My.Map.Entity.AI
                             Name = "Combat",
                         };
 
+                        combatState.ActionNames.Add("CombatMain");
                         combatState.ActionNames.Add("TryUseSkill");
                         combatState.ActionNames.Add("DistanceControl");
                         combatState.ActionNames.Add("CombatQuickMove");
@@ -195,9 +196,10 @@ namespace My.Map.Entity.AI
                             {
                                 new AIDecisionCheckInBattle()
                                 {
+                                    CheckReq = false,
                                 }
                             },
-                            FalseState = "Return",
+                            TrueState = "Return",
                         });
 
                         config.States.Add(combatState);
@@ -258,6 +260,12 @@ namespace My.Map.Entity.AI
                         };
                         config.Actions.Add(action);
                     }
+
+                    {
+                        var action = new AIActionCombatMain();
+                        config.Actions.Add(action);
+                    }
+
 
                     {
                         var action = new AIActionTryUseSkill();

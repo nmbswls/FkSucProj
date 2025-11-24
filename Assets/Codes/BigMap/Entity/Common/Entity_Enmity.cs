@@ -14,6 +14,8 @@ namespace My.Map.Entity
     public interface IWithEnmity
     {
         bool CheckIsEmnity();
+
+        bool CheckIsEmnityFaction(EFactionId factionId);
     }
 
     /// <summary>
@@ -140,7 +142,11 @@ namespace My.Map.Entity
 
         public void Tick(float dt)
         {
-            TryApplyShareEnmity();
+            //TryApplyShareEnmity();
+            if(UnitEntity.unitCfg.AlwaysHMode)
+            {
+                IsEnmityState = true;
+            }
         }
 
 
@@ -197,86 +203,96 @@ namespace My.Map.Entity
 
         protected float _shareTimer;
 
-        /// <summary>
-        /// 传播敌对状态
-        /// </summary>
-        public void TryApplyShareEnmity()
-        {
-            if (enmityConf == null)
-            {
-                return;
-            }
+        ///// <summary>
+        ///// 传播敌对状态
+        ///// </summary>
+        //public void TryApplyShareEnmity()
+        //{
+        //    if (enmityConf == null)
+        //    {
+        //        return;
+        //    }
 
-            if (!enmityConf.WillShare)
-            {
-                return;
-            }
+        //    if (!enmityConf.WillShare)
+        //    {
+        //        return;
+        //    }
 
-            _shareTimer -= LogicTime.deltaTime;
-            if (_shareTimer > 0) return;
-            _shareTimer = 1.0f;
+        //    _shareTimer -= LogicTime.deltaTime;
+        //    if (_shareTimer > 0) return;
+        //    _shareTimer = 1.0f;
 
 
-            foreach (var behave in enmityConf.Behaves)
-            {
-                if (behave.EnmityType == EEnmityBehaveType.Notice)
-                {
-                    CurrEnmityVal = 100.0f;
-                    if (CurrEnmityVal >= 100.0f && !IsEnmityState)
-                    {
-                        IsEnmityState = true;
-                    }
+        //    foreach (var behave in enmityConf.Behaves)
+        //    {
+        //        if (behave.EnmityType == EEnmityBehaveType.Notice)
+        //        {
+        //            CurrEnmityVal = 100.0f;
+        //            if (CurrEnmityVal >= 100.0f && !IsEnmityState)
+        //            {
+        //                IsEnmityState = true;
+        //            }
 
-                    // 更新最后更新时间
-                    LastTriggerEnmityTime = LogicTime.time;
-                }
-            }
+        //            // 更新最后更新时间
+        //            LastTriggerEnmityTime = LogicTime.time;
+        //        }
+        //    }
 
-            // 只有当自身是传播者 且处于敌意状态 才会传播敌意
-            if (this.CurrEnmityVal > 100.0f && IsEnmityState)
-            {
-                var radius = enmityConf.ShareEnmityRange;
-                var retEntities = UnitEntity.LogicManager.visionSenser.OverlapCircleAllEntity(UnitEntity.Pos, radius, new EntityFilterParam()
-                {
-                    CampFilterType = ECampFilterType.OnlySelf,
-                    SelfCampId = UnitEntity.FactionId,
-                });
+        //    // 只有当自身是传播者 且处于敌意状态 才会传播敌意
+        //    if (this.CurrEnmityVal > 100.0f && IsEnmityState)
+        //    {
+        //        var radius = enmityConf.ShareEnmityRange;
+        //        var retEntities = UnitEntity.LogicManager.visionSenser.OverlapCircleAllEntity(UnitEntity.Pos, radius, new EntityFilterParam()
+        //        {
+        //            CampFilterType = ECampFilterType.OnlySelf,
+        //            SelfCampId = UnitEntity.FactionId,
+        //        });
 
-                foreach (var entity in retEntities)
-                {
-                    if (entity == null) continue;
-                    if (entity is not BaseUnitLogicEntity unitEntity)
-                    {
-                        continue;
-                    }
+        //        foreach (var entity in retEntities)
+        //        {
+        //            if (entity == null) continue;
+        //            if (entity is not BaseUnitLogicEntity unitEntity)
+        //            {
+        //                continue;
+        //            }
 
-                    unitEntity.EnmityComp?.ShareEnmityValues(this);
-                }
-            }
-        }
+        //            unitEntity.EnmityComp?.ShareEnmityValues(this);
+        //        }
+        //    }
+        //}
 
-        /// <summary>
-        /// 分享敌对状态
-        /// </summary>
-        /// <param name="src"></param>
-        public void ShareEnmityValues(UnitEnmityComp src)
-        {
-            if(!src.IsEnmityState)
-            {
-                return;
-            }
-            if(src.CurrEnmityVal < 100.0f)
-            {
-                return;
-            }
+        ///// <summary>
+        ///// 分享敌对状态
+        ///// </summary>
+        ///// <param name="src"></param>
+        //public void ShareEnmityValues(UnitEnmityComp src)
+        //{
+        //    if(!src.IsEnmityState)
+        //    {
+        //        return;
+        //    }
+        //    if(src.CurrEnmityVal < 100.0f)
+        //    {
+        //        return;
+        //    }
 
-            IsEnmityState = true;
-            LastTriggerEnmityTime = LogicTime.time;
-        }
+        //    IsEnmityState = true;
+        //    LastTriggerEnmityTime = LogicTime.time;
+        //}
 
 
         public bool CheckIsEmnity()
         {
+            return IsEnmityState;
+        }
+
+        public bool CheckIsEmnityFaction(EFactionId factionId)
+        {
+            if(factionId != EFactionId.Player)
+            {
+                return false;
+            }
+
             return IsEnmityState;
         }
     }

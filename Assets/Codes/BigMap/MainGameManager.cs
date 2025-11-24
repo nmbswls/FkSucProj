@@ -49,6 +49,8 @@ public struct EntityFilterParam
 
 public interface IVisionSenser2D
 {
+
+    bool CanUnitSee(long selfEId, long targetEId);
     bool CanSee(Vector2 selftPos, Vector2 selfFace, Vector2 targetPos, float range, float fov);
 
     Vector2 ChoosePointAwayFromTarget(Vector2 orgPos, Vector2 centerPos, float awayDist);
@@ -146,12 +148,12 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         // 逻辑上将玩家放入场景
         await gameLogicManager.PlayerEnterArea(initMap);
 
-        if(playerScenePresenter == null)
-        {
-            var playerGo = Resources.Load<GameObject>("Prefab/Presentations/FakePlayer");
-            var newGo = GameObject.Instantiate(playerGo, transform);
-            playerScenePresenter = newGo.GetComponent<PlayerScenePresenter>();
-        }
+        //if(playerScenePresenter == null)
+        //{
+        //    var playerGo = Resources.Load<GameObject>("Prefab/Presentations/FakePlayer");
+        //    var newGo = GameObject.Instantiate(playerGo, transform);
+        //    playerScenePresenter = newGo.GetComponent<PlayerScenePresenter>();
+        //}
         
         bool loaded = false;
         WorldAreaManager.Instance.LoadWorld(areaInfo, onComplete: (w) => { loaded = true; });
@@ -164,7 +166,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         await Task.Delay(500);
 
-        playerScenePresenter.Bind(gameLogicManager.playerLogicEntity);
+        //playerScenePresenter.Bind(gameLogicManager.playerLogicEntity);
 
         // 整理职责
         FovGenerator.OnAreaEnter();
@@ -177,8 +179,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld, null);
 
-        // 绑定相机
-        CameraCtrl.Target = this.playerScenePresenter.ViewPoint;
 
         if(HomeSceneManager.Instance != null)
         {

@@ -2,6 +2,7 @@ using My;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Logic;
+using My.Map.Scene;
 using My.MapExport;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,6 @@ public class SceneAOIManager : MonoBehaviour
     public string AreaId { get; set; }
 
     [Header("Player & AOI")]
-    public Transform player;
     public float aoiRadius = 20f;   // 动态对象可见半径（圆或方形）
     public int chunkRing = 1;       // 玩家所在Chunk及周边环数
 
@@ -87,11 +87,6 @@ public class SceneAOIManager : MonoBehaviour
         this.AreaId = areaId;
         ExportDb = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
 
-        // player  绑定
-        if(player == null)
-        {
-            player = MainGameManager.Instance.playerScenePresenter.transform;
-        }
     }
 
     public async Task CleanupAllAsync()
@@ -218,14 +213,14 @@ public class SceneAOIManager : MonoBehaviour
 
     private void Update()
     {
-        if (player == null) return;
+        if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null) return;
         if (string.IsNullOrEmpty(AreaId)) return;
 
         // 1) 动态实体 AOI 刷新（网格桶 + 半径范围）
-        RefreshDynamicAOI(player.position, LogicTime.deltaTime);
+        RefreshDynamicAOI(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, LogicTime.deltaTime);
 
         // 2) 静态 Chunk AOI 刷新（九宫格/环）
-        RefreshStaticChunks(player.position);
+        RefreshStaticChunks(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
     }
 
     // ===== 动态实体接口 =====
@@ -483,6 +478,12 @@ public class SceneAOIManager : MonoBehaviour
         // 创建完成：更新状态
         entry.pres = pres;
         entry.creating = false;
+        if(entry.entity.Type == EEntityType.Player)
+        {
+            MainGameManager.Instance.playerScenePresenter = pres as PlayerScenePresenter;
+            // 绑定相机
+            MainGameManager.Instance.CameraCtrl.Target = MainGameManager.Instance.playerScenePresenter.ViewPoint;
+        }
 
         if (entry.canceledDuringCreate || !entry.isShown)
         {

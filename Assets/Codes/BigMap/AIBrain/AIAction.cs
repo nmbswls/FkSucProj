@@ -130,10 +130,6 @@ namespace My.Map.Entity.AI
             {
                 return 0;
             }
-            if (_brain.UnitEntity.IsInBattle)
-            {
-                return 0;
-            }
             return 1;
         }
 
@@ -142,12 +138,6 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
-            if(_brain.UnitEntity.IsInBattle)
-            {
-                Stop(AIActionStatus.Success);
-                return;
-            }
-
             if (LogicTime.time - _followTimer < 1f)
             {
                 return;
@@ -183,10 +173,7 @@ namespace My.Map.Entity.AI
             {
                 return 0;
             }
-            if (_brain.UnitEntity.IsInBattle)
-            {
-                return 0;
-            }
+            
             return 1;
         }
 
@@ -195,11 +182,6 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
-            if (_brain.UnitEntity.IsInBattle)
-            {
-                Stop(AIActionStatus.Success);
-                return;
-            }
 
             if (LogicTime.time - _Timer < 1f)
             {
@@ -213,8 +195,29 @@ namespace My.Map.Entity.AI
 
             if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Following)
             {
-                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.3f, UnityEngine.Random.insideUnitCircle * 0.5f);
+                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.3f, Vector2.zero);
             }
+        }
+    }
+
+    [Serializable]
+    public class AIActionCombatMain : AIAction
+    {
+        public override string Name => "CombatMain";
+
+        public override float RateScore()
+        {
+            return 1;
+        }
+
+        public override void Tick()
+        {
+
+        }
+
+        public override void OnEnterState()
+        {
+            base.OnEnterState();
         }
     }
 
@@ -232,12 +235,12 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if(!_brain.UnitEntity.IsInBattle)
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidOp))
             {
                 return 0;
             }
 
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidOp))
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
             {
                 return 0;
             }
@@ -383,11 +386,6 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if(!_brain.UnitEntity.IsInBattle)
-            {
-                return 0;
-            }
-
             if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
             {
                 return 0;
@@ -489,11 +487,6 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (!_brain.UnitEntity.IsInBattle)
-            {
-                return 0;
-            }
-
             if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
             {
                 return 0;
@@ -585,7 +578,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.blackboard.LastInterruptMovePos == null)
+            if (_brain.UnitEntity.LastInterruptMovePos == null)
             {
                 return 0;
             }
@@ -593,19 +586,25 @@ namespace My.Map.Entity.AI
             return 1;
         }
 
+        public override void OnEnterState()
+        {
+            base.OnEnterState();
+
+            _brain.UnitEntity.entityMotorComp.StopMove();
+            _brain.UnitEntity.entityMotorComp.MoveTo(_brain.UnitEntity.LastInterruptMovePos.Value );
+        }
+
         /// <summary>
         /// On PerformAction we do nothing
         /// </summary>
         public override void Tick()
         {
-            if (_brain.blackboard.LastInterruptMovePos == null)
+            if (_brain.UnitEntity.LastInterruptMovePos == null)
             {
                 Stop(AIActionStatus.Interrupted);
                 return;
             }
-
-            var pos = _brain.blackboard.LastInterruptMovePos.Value;
-            _brain.UnitEntity.entityMotorComp.MoveTo(pos);
+            
 
             if (LogicTime.time - _timer < 1f)
             {
@@ -614,16 +613,49 @@ namespace My.Map.Entity.AI
 
             _timer = LogicTime.time;
 
+            var pos = _brain.UnitEntity.LastInterruptMovePos.Value;
+            if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Pathing)
+            {
+                _brain.UnitEntity.entityMotorComp.MoveTo(pos);
+            }
+
 
             // ¼ì²éµ½´ï
             if ((pos - _brain.UnitEntity.Pos).magnitude < 0.1f)
             {
                 Debug.Log("AIActionReturnInterrupt return interrupt pos");
-                _brain.blackboard.LastInterruptMovePos = null;
             }
         }
     }
 
+    [Serializable]
+    public class AIActionAttractedBehave : AIAction
+    {
+        public override string Name => "AttractedBehave";
+
+        public override float RateScore()
+        {
+            if (_brain.UnitEntity.attractInfo == null)
+            {
+                return 0;
+            }
+            return 1;
+        }
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            if (_brain.UnitEntity.attractInfo == null || LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
+            {
+                Stop(AIActionStatus.Interrupted);
+                return;
+            }
+
+            //_brain.UnitEntity.entityMotorComp.MoveTo(_currAttractePos);
+        }
+    }
 
     [Serializable]
     public class AIActionAttractedMove : AIAction
@@ -644,7 +676,7 @@ namespace My.Map.Entity.AI
         {
             base.OnEnterState();
 
-            _brain.blackboard.LastInterruptMovePos = _brain.UnitEntity.Pos;
+            //_brain.blackboard.LastInterruptMovePos = _brain.UnitEntity.Pos;
         }
         public override float RateScore()
         {

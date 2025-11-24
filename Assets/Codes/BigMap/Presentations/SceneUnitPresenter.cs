@@ -22,14 +22,13 @@ namespace My.Map.Scene
     /// <summary>
     /// 场景单位 基类
     /// </summary>
-    public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEntity>, IMapWeaponHolder
+    public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEntity>, IMapWeaponHolder, ISceneTargettable
     {
-
-
         [SerializeField] protected SpriteRenderer icon;
         [SerializeField] protected GameObject highlightFx;
         public Transform ViewPoint;
         public GameObject faceIndicator;
+        public Transform EyePos;
 
         public Transform WeaponRoot;
         public MapUnitWeaponCtrl WeaponCtrl; // 武器控制器
@@ -45,6 +44,8 @@ namespace My.Map.Scene
 
         public SimpleCharacterController CharacterController;
 
+        public Collider2D targetCol;
+
         public BaseUnitLogicEntity UnitEntity
         {
             get
@@ -58,6 +59,11 @@ namespace My.Map.Scene
             if (_logic == null) return;
 
             Tick(LogicTime.deltaTime);
+        }
+
+        public Vector2 GetEyePos()
+        {
+            return EyePos.transform.position;
         }
 
         protected override void Awake()
@@ -467,6 +473,11 @@ namespace My.Map.Scene
             {
                 icon.color = new Color(1, 1, 1, 1);
             }
+        }
+
+        public Collider2D GetTargetCol()
+        {
+            return targetCol;
         }
     }
 }

@@ -23,6 +23,11 @@ public interface IScenePresentation
     bool CheckValid();
 }
 
+public interface ISceneTargettable
+{
+    Collider2D GetTargetCol();
+}
+
 public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePresentation
     where TLogic : class, ILogicEntity
 {
@@ -99,5 +104,10 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     public bool CheckValid()
     {
         return _logic != null;
+    }
+
+    public virtual Collider2D GetMainCol()
+    {
+        return null;
     }
 }
