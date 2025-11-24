@@ -152,7 +152,7 @@ namespace My.Map
             }
 
             // 1
-            if(LogicTime.time > _lastRecoverTimer + 1f)
+            if(LogicTime.time < _lastRecoverTimer + 1.5f)
             {
                 return;
             }
@@ -388,6 +388,12 @@ namespace My.Map
             PrimaryTargetId = 0;
             damageThreat.Clear();
             sightThreat.Clear();
+
+            if(!UnitEntity.unitCfg.RecoverReturn)
+            {
+                //UnitEntity.LastInterruptMovePos = null;
+            }
+
             //Events.RaiseExitCombat(reason);
             // TODO: Í£Ö¹AI£¬»ØÎ»µÈ
         }

@@ -367,6 +367,18 @@ namespace My.Map.Entity.AI
             _config = null;
         }
 
+        public override void OnExitState()
+        {
+            base.OnExitState();
+            _overTimer = 0;
+            hasCastAbility = false;
+            if (_brain.blackboard.CurrIntentAbility != null && _brain.blackboard.CurrIntentAbility == _config.Id)
+            {
+                _brain.blackboard.CurrIntentAbility = null;
+            }
+            _config = null;
+        }
+
         public override bool CanInterrupt(string reason, bool hard) => false;
     }
 
@@ -591,7 +603,11 @@ namespace My.Map.Entity.AI
             base.OnEnterState();
 
             _brain.UnitEntity.entityMotorComp.StopMove();
-            _brain.UnitEntity.entityMotorComp.MoveTo(_brain.UnitEntity.LastInterruptMovePos.Value );
+            _timer = 0;
+            //if(_brain.UnitEntity.LastInterruptMovePos != null)
+            //{
+            //    _brain.UnitEntity.entityMotorComp.MoveTo(_brain.UnitEntity.LastInterruptMovePos.Value);
+            //}
         }
 
         /// <summary>
@@ -612,11 +628,14 @@ namespace My.Map.Entity.AI
             }
 
             _timer = LogicTime.time;
-
             var pos = _brain.UnitEntity.LastInterruptMovePos.Value;
-            if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Pathing)
+
+            if (_brain.UnitEntity.unitCfg.RecoverReturn)
             {
-                _brain.UnitEntity.entityMotorComp.MoveTo(pos);
+                if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Pathing)
+                {
+                    _brain.UnitEntity.entityMotorComp.MoveTo(pos);
+                }
             }
 
 

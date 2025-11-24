@@ -235,9 +235,9 @@ namespace My.Map.Entity.AI
     [Serializable]
     //[PolymorphTag((int)EAIDecisionType.HasBuff)]
 
-    public class AIDecisionCheckInBattle : AIDecision
+    public class AIDecisionCheckCombatState : AIDecision
     {
-        public bool CheckReq = true;
+        public EntityCombatStateComp.ECombatState CheckState = 0;
 
         /// <summary>
         /// On init we grab our Character component
@@ -253,14 +253,7 @@ namespace My.Map.Entity.AI
         /// <returns></returns>
         public override bool Decide()
         {
-            if(CheckReq)
-            {
-                return _brain.UnitEntity.CombatState == EntityCombatStateComp.ECombatState.InCombat;
-            }
-            else
-            {
-                return _brain.UnitEntity.CombatState != EntityCombatStateComp.ECombatState.InCombat;
-            }
+            return _brain.UnitEntity.CombatState == (EntityCombatStateComp.ECombatState)CheckState;
         }
     }
 }

@@ -194,12 +194,24 @@ namespace My.Map.Entity.AI
                         {
                             Decisions = new List<AIDecision>()
                             {
-                                new AIDecisionCheckInBattle()
+                                new AIDecisionCheckCombatState()
                                 {
-                                    CheckReq = false,
+                                    CheckState = EntityCombatStateComp.ECombatState.CombatRecover,
                                 }
                             },
                             TrueState = "Return",
+                        });
+
+                        combatState.Transitions.Add(new AITransition()
+                        {
+                            Decisions = new List<AIDecision>()
+                            {
+                                new AIDecisionCheckCombatState()
+                                {
+                                    CheckState = EntityCombatStateComp.ECombatState.NotCombat,
+                                }
+                            },
+                            TrueState = "Idle",
                         });
 
                         config.States.Add(combatState);
@@ -211,8 +223,9 @@ namespace My.Map.Entity.AI
                         {
                             Decisions = new List<AIDecision>()
                             {
-                                new AIDecisionCheckInBattle()
+                                new AIDecisionCheckCombatState()
                                 {
+                                    CheckState = EntityCombatStateComp.ECombatState.InCombat,
                                 }
                             },
                             TrueState = "Combat",

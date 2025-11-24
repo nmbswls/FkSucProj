@@ -271,14 +271,14 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.3"
+                    RawVal = "0.2"
                 },
             };
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon01",
-                Duration = 0.3f,
+                Duration = 0.2f,
                 OnHitEffects = new()
             {
                 new MapAbilityEffectCostResourceCfg()
