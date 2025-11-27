@@ -285,7 +285,8 @@ namespace My.Map.Entity
 
             spec.Id = "default_weapon";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.CoolDown = 0.3f;
+            spec.CoolDown = 0.2f;
+            spec.DesiredUseDistance = 0.5f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -304,24 +305,25 @@ namespace My.Map.Entity
                 PhaseName = "Executing",
                 LockMovement = true,
                 LockRotation = true,
+                ImmuneKnock = true,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.18"
+                    RawVal = "0.15"
                 },
             };
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon01",
-                Duration = 0.15f,
+                Duration = 0.12f,
                 OnHitEffects = new()
             {
 
                 new MapAbilityEffectApplyDamageCfg()
                 {
                     BaseDamage = 25000,
-                    KnockBackForce = 2.0f,
+                    KnockBackForce = 1.6f,
                 },
                 //new MapAbilityEffectCostResourceCfg()
                 //{
@@ -454,7 +456,6 @@ namespace My.Map.Entity
             return spec;
         }
 
-
         private static MapAbilitySpecConfig CreateDefaultMonsterAttack()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
@@ -511,7 +512,6 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
         }
-
 
         private static MapAbilitySpecConfig CreateDefaultEnemyQinfan()
         {
@@ -657,7 +657,6 @@ namespace My.Map.Entity
             return spec;
         }
 
-
         private static MapAbilitySpecConfig CreateDefaultDashSlash()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
@@ -665,10 +664,10 @@ namespace My.Map.Entity
             spec.Id = "default_dash_slash";
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.CoolDown = 8.0f;
-            spec.DesiredUseDistance = 3.0f;
+            spec.DesiredUseDistance = 2.0f;
             spec.Priority = 100;
             spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
-            spec.Range1 = 3.5f;
+            spec.Range1 = 2.5f;
 
             var preparePhase = new MapAbilityPhase()
             {
@@ -679,7 +678,7 @@ namespace My.Map.Entity
                 FaceOffset = new Vector2(0.3f, 0),
                 IsCircle = false,
                 RangeWidth = 1.2f,
-                RangeLen = 3.0f,
+                RangeLen = 2.5f,
 
                 DurationValue = new()
                 {
@@ -710,6 +709,8 @@ namespace My.Map.Entity
                     IsFixPointMode = true,
                     DashSpeed = 8f,
                     DashOverrideHitRadius = 0.8f,
+
+                    IsTargetDir = true,
                     OnHitEffects = new()
                     {
                         // 提前进入下一phase
@@ -723,6 +724,10 @@ namespace My.Map.Entity
 
                 dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter});
             }
+
+
+            spec.Phases.Add(dashingPhase);
+            
 
             var slashPhase = new MapAbilityPhase()
             {
@@ -756,6 +761,7 @@ namespace My.Map.Entity
                 slashPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
             }
 
+            spec.Phases.Add(slashPhase);
 
             var postPhase = new MapAbilityPhase()
             {
@@ -780,7 +786,7 @@ namespace My.Map.Entity
 
             spec.Id = "basic_aoe_slash";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.CoolDown = 5.0f;
+            spec.CoolDown = 3.0f;
             spec.DesiredUseDistance = 1.0f;
             spec.Priority = 20;
 

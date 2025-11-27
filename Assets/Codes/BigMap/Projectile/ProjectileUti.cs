@@ -6,11 +6,6 @@ using static My.GameLogicManager;
 
 public static class ProjectileUtil
 {
-    public static void ApplyDamage(SceneUnitPresenter unitPresenter, float damage, long entityId)
-    {
-        unitPresenter.UnitEntity.ApplyResourceChange(AttrIdConsts.HP, -40, true, new SourceKey() {type = SourceType.Bullet, entityId = entityId });
-    }
-
     public static void HandleHitOutput(LogicProjectileInfo logicProjectile, Vector2 hitPosition, SceneUnitPresenter? hitOne)
     {
         foreach(var ef in logicProjectile.pData.OnHitEffects)

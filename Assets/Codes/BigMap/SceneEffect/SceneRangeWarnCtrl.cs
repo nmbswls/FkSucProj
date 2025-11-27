@@ -34,7 +34,7 @@ namespace My
 
         void Awake()
         {
-            rend = GetComponent<Renderer>();
+            rend = GetComponentInChildren<Renderer>();
         }
 
         private void Start()
@@ -43,7 +43,7 @@ namespace My
 
         public void StartCharge(float radius, float time)
         {
-            this.transform.localScale = new Vector2(radius, time);
+            this.transform.localScale = new Vector2(radius, radius);
             chargeTime = time;
             timer = 0f;
             charging = true;

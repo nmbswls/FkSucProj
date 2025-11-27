@@ -67,7 +67,7 @@ namespace My.UI
 
             if (MainGameManager.Instance.gameLogicManager.playerLogicEntity != null)
             {
-                PlayerHpText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.HP).ToString();
+                PlayerHpText.text = (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.HP) * 0.001f).ToString();
                 PlayerClothesText.text = (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) * 0.001f).ToString();
                 PlayerPleasureText.text = (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f).ToString();
 

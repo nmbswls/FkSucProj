@@ -31,16 +31,18 @@ namespace My.UI
         public LoopGridView GridView;
 
         public Button QuitBtn;
-        public GameObject UnrealvingHintObj;
+        public RectTransform UnrealvingHintObj;
 
         [Range(1, 10)]
         public int Columns = 5;
         public string ItemPrefabName = "ItemCellPrefab";
 
+        private bool markDirty;
+
         void Awake()
         {
             QuitBtn.onClick.AddListener(() => { 
-                //UIOrchestrator.Instance.TryQuitLootDetailMode(); 
+                UIOrchestrator.Instance.TryQuitLootDetailMode(); 
             });
             GridView.InitGridView(0, OnGetItemByIndex);
         }
@@ -60,9 +62,7 @@ namespace My.UI
 
         public void RefreshContent()
         {
-            GridView.RefreshAllShownItem();
-
-            RefreshUnrealingHint();
+            markDirty = true;
         }
 
         public void RemoveItemMask(int itemIndex)
@@ -77,17 +77,29 @@ namespace My.UI
             int unrealIdx = this.Loot.GetCurrUnrealed();
             if (unrealIdx == -1)
             {
-                UnrealvingHintObj.SetActive(false);
+                UnrealvingHintObj.gameObject.SetActive(false);
             }
             else
             {
-                UnrealvingHintObj.SetActive(true);
+                UnrealvingHintObj.gameObject.SetActive(true);
 
                 var item = GridView.GetShownItemByItemIndex(unrealIdx); // 或 FindItemByItemIndex(index)
                 if (item != null)
                 {
                     // 该项的 RectTransform
-                    UnrealvingHintObj.transform.position = item.transform.position;
+                    var itemRT = item.transform as RectTransform;
+                    var worldCenter = itemRT.TransformPoint(itemRT.rect.center);
+
+                    // 4) 世界点 -> 屏幕点 -> ui 父节点的局部坐标
+                    Vector2 screenPt = RectTransformUtility.WorldToScreenPoint(UIManager.Instance.UICamera, worldCenter);
+                    Canvas canvas = UnrealvingHintObj.GetComponentInParent<Canvas>();
+                    Vector2 localInParent;
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, screenPt, canvas.worldCamera, out localInParent);
+
+                    // 5) 设置到 UI（确保锚点合理）
+                    UnrealvingHintObj.anchoredPosition = localInParent;
+
+                    //UnrealvingHintObj.transform.position = item.transform.position + new Vector3(0.5f, -0.5f);
                     return;
                 }
             }
@@ -126,11 +138,19 @@ namespace My.UI
 
         public void Update()
         {
-            var dt = LogicTime.time;
+            var dt = LogicTime.deltaTime;
 
             if(Loot != null)
             {
                 Loot.TickUnReveal(dt);
+            }
+
+            if(markDirty)
+            {
+                GridView.RefreshAllShownItem();
+
+                RefreshUnrealingHint();
+                markDirty = false;
             }
         }
 

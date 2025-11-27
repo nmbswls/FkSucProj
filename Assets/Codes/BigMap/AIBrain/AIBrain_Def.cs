@@ -190,7 +190,7 @@ namespace My.Map.Entity.AI
                         combatState.ActionNames.Add("CombatMain");
                         combatState.ActionNames.Add("TryUseSkill");
                         combatState.ActionNames.Add("DistanceControl");
-                        combatState.ActionNames.Add("CombatQuickMove");
+                        combatState.ActionNames.Add("QuickCloser");
 
 
                         combatState.Transitions.Add(new AITransition()
@@ -325,7 +325,7 @@ namespace My.Map.Entity.AI
                         config.Actions.Add(action);
                     }
                     {
-                        var action = new AIActionCombatQuickMove();
+                        var action = new AIActionCombatQuickCloser();
                         config.Actions.Add(action);
                     }
                 }

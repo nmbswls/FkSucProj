@@ -78,6 +78,7 @@ namespace My.Map
 
         public AbsMapUnitConfig unitCfg;
 
+        public string EmnityConfId;
 
         public event Action EventOnHpChanged;
 
@@ -97,6 +98,9 @@ namespace My.Map
             this.MoveBehaveInfo.MovePath = unitRecord.MovePath;
 
             this.FaceDir = bindingRecord.FaceDir;
+
+            this.EmnityConfId = unitRecord.EnmityConfId;
+
         }
 
         public override void Initialize()
@@ -492,11 +496,11 @@ namespace My.Map
             // 数值类
             attributeStore.RegisterNumeric("Attack", initialBase: 100);
             attributeStore.RegisterNumeric("Strength", initialBase: 10);
-            attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
+            attributeStore.RegisterNumeric("HP.Max", initialBase: 100000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
             // 资源类
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, 100);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 100000);
 
             RegisterCommonStates();
 

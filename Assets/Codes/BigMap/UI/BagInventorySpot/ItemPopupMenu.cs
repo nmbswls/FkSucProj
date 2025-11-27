@@ -86,7 +86,7 @@ namespace My.UI
 
             int bagId = currentCell.ContainerId;
             // 简化：固定拆分数量为一半，实际可弹窗输入
-            int half = currentStack.Count / 2;
+            long half = currentStack.Count / 2;
             if (half > 0)
             {
                 PlayerBagUIPanel.Instance?.SplitItem(bagId, currentIndex, half);

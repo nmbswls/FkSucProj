@@ -54,12 +54,12 @@ namespace My.Map
         {
             moveSpeed = 2.0f;
             // ÊýÖµÀà
-            attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
+            attributeStore.RegisterNumeric("HP.Max", initialBase: 1000000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
             RegisterCommonStates();
 
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 1000);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 1000000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100000, 100000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerSan, null, 100, 100);
             attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 100000, 0);

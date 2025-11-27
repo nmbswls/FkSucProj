@@ -1,5 +1,6 @@
 
 using SuperScrollView;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static Config.FakeItemConf;
@@ -8,6 +9,8 @@ using static My.UI.AnyContainerItemCell;
 namespace Config
 {
 
+
+    [Serializable]
     public class FakeItemConf
     {
         public enum EStackType
@@ -17,14 +20,35 @@ namespace Config
             Size2,
             Size3,
             Size4,
-            Custom
+            Custom,
+            NoLimit,
         }
         public string ItemId;
+
+        public enum EItemType
+        {
+            Normal,
+            Currency,
+        }
+        public EItemType ItemType;
+
+
         public EStackType StackType = EStackType.NoStack;
         public int StackCount = 0;
         public string SpriteName;
 
         public int RareTier = 0;
+
+        public enum ERevealEffectType
+        { 
+            None,
+            AddGcVal,
+            CostClothes,
+        }
+
+        public ERevealEffectType RevealEffectType;
+        public long RevealParam1;
+        public long RevealParam2;
     }
 
     public static class FakeItemDatabase
@@ -100,6 +124,9 @@ namespace Config
                     item.StackType = EStackType.Size2;
                     item.SpriteName = "banana";
 
+                    item.RevealEffectType = ERevealEffectType.AddGcVal;
+                    item.RevealParam1 = 5000;
+
                     _dict[item.ItemId] = item;
                 }
                 {
@@ -107,6 +134,9 @@ namespace Config
                     item.ItemId = "qiezi";
                     item.StackType = EStackType.Size2;
                     item.SpriteName = "qiezi";
+
+                    item.RevealEffectType = ERevealEffectType.AddGcVal;
+                    item.RevealParam1 = 5000;
 
                     _dict[item.ItemId] = item;
                 }
@@ -118,7 +148,41 @@ namespace Config
 
                     _dict[item.ItemId] = item;
                 }
-                
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "flower_01";
+                    item.StackType = EStackType.Size2;
+                    item.SpriteName = "flower_01";
+
+                    _dict[item.ItemId] = item;
+                }
+
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "flower_02";
+                    item.StackType = EStackType.Size2;
+                    item.SpriteName = "flower_02";
+
+                    _dict[item.ItemId] = item;
+                }
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "flower_03";
+                    item.StackType = EStackType.Size2;
+                    item.SpriteName = "flower_03";
+
+                    _dict[item.ItemId] = item;
+                }
+
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "gold";
+                    item.ItemType = EItemType.Currency;
+                    item.StackType = EStackType.NoLimit;
+                    item.SpriteName = "gold";
+
+                    _dict[item.ItemId] = item;
+                }
 
                 {
                     var item = new FakeItemConf();

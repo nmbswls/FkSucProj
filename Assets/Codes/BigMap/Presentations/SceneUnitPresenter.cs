@@ -212,7 +212,7 @@ namespace My.Map.Scene
                 Vector2 targetMoveVel;
                 if (UnitEntity.entityMotorComp.State == EMotorState.Free)
                 {
-                    targetMoveVel = freeMoveDir;
+                    targetMoveVel = freeMoveDir * UnitEntity.GetCurrSpeed();
                 }
                 else
                 {

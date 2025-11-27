@@ -128,6 +128,8 @@ namespace My.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (maskOverlay.gameObject.activeSelf) return;
+
             //if (eventData.button == PointerEventData.InputButton.Right)
             if (boundStack != null)
             {
@@ -142,6 +144,7 @@ namespace My.UI
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (boundStack == null || boundStack.Count == 0) return;
+            if (maskOverlay.gameObject.activeSelf) return;
             ItemPopupMenu.Close();
             ItemDragDropController.Instance.BeginDrag(boundStack, ContainerType, ContainerId, Index);
         }

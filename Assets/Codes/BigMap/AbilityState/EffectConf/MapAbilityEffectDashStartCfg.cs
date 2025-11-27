@@ -16,6 +16,9 @@ namespace My.Map.Entity
         public bool IsFixPointMode;
         public float DashOverrideHitRadius = 0;
 
+        public bool IsTargetDir;
+        public bool IsCastDir;
+
         public float DashSpeed;
         public bool IsGhost;
 

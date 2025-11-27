@@ -1,6 +1,8 @@
 
 using System.Collections.Generic;
 using My.Player.Bag;
+using UnityEngine;
+using static UnityEditor.Progress;
 
 namespace My
 {
@@ -9,10 +11,73 @@ namespace My
     {
         public int ShopId { get; set; }
 
-        public List<(ItemStack, bool)> ShopItems { get { return shopItems; } }
+        public List<ShopItemInfo> ShopItems { get { return shopItems; } }
 
-        private List<(ItemStack, bool)> shopItems = new();
+        private List<ShopItemInfo> shopItems = new();
 
+        public GameLogicManager gameLogicManager { get; protected set; }
+        public NormalShop(GameLogicManager logicManager)
+        {
+            this.gameLogicManager = logicManager;
+        }
+
+        public bool TryBuyFromShop(int itemIdx, int count, int? dstBagIdx)
+        {
+            if (itemIdx < 0 || itemIdx >= shopItems.Count)
+            {
+                Debug.LogError($"TryBuyFromShop {itemIdx} {count}");
+                return false;
+            }
+
+            var shopItem = shopItems[itemIdx];
+
+            var costItem = shopItem.CostItemId;
+            if (!gameLogicManager.playerDataManager.CheckHaveItem(costItem, shopItem.CostCount))
+            {
+                Debug.LogError($"TryBuyFromShop cost not enough {costItem} {shopItem.CostCount}");
+                return false;
+            }
+
+            string giveItem = shopItem.ItemId;
+            long giveCount = shopItem.BuyCount;
+
+            // 检查是否能放的下
+            if (gameLogicManager.playerDataManager.CanGainItems(giveItem, giveCount))
+            {
+                return false;
+            }
+
+            gameLogicManager.playerDataManager.CostItem(shopItem.CostItemId, shopItem.CostCount);
+
+            long addCnt = gameLogicManager.playerDataManager.inventoryModel.MainBag.TryAdd(new ItemStack()
+            {
+                ItemID = giveItem,
+                Count = giveCount,
+            });
+            Debug.Log("TryBuyFromShop try buy " + giveItem + " " + addCnt);
+            //if (dstBagIdx != null)
+            //{
+
+            //}
+
+            return true;
+        }
+
+
+        public bool TrySellFromBag(int bagId, int itemIdx)
+        {
+            var bag = gameLogicManager.playerDataManager.inventoryModel.GetBagById(bagId);
+
+            var item = bag.GetItemByIdx(itemIdx);
+            if(item == null || item.Count <= 0)
+            {
+                return false;
+            }
+
+            // if can sell
+
+            return true;
+        }
     }
 
 
@@ -43,15 +108,44 @@ namespace My
 
         public void RefreshOnNightStart()
         {
-            List<int> getMapShopIds = new() { 2, 4, 6 };
+            List<int> getMapShopIds = new() { 1, 2, 4, 6 };
             for (int i = 0; i < getMapShopIds.Count; i++)
             {
                 int shopId = getMapShopIds[i];
-                var shop = new NormalShop();
+                var shop = new NormalShop(logicManager);
 
-                shop.ShopItems.Add(new(new ItemStack() { ItemID = "flower_01", Count = 5 }, true));
-                shop.ShopItems.Add(new(new ItemStack() { ItemID = "flower_02", Count = 4 }, true));
-                shop.ShopItems.Add(new(new ItemStack() { ItemID = "flower_03", Count = 3 }, true));
+                {
+                    var shopItem = new ShopItemInfo();
+                    shopItem.ItemId = "flower_01";
+                    shopItem.BuyCount = 1;
+
+                    shopItem.CostItemId = "gold";
+                    shopItem.CostCount = 50;
+
+                    shop.ShopItems.Add(shopItem);
+                }
+
+                {
+                    var shopItem = new ShopItemInfo();
+                    shopItem.ItemId = "flower_02";
+                    shopItem.BuyCount = 1;
+
+                    shopItem.CostItemId = "gold";
+                    shopItem.CostCount = 50;
+
+                    shop.ShopItems.Add(shopItem);
+                }
+
+                {
+                    var shopItem = new ShopItemInfo();
+                    shopItem.ItemId = "flower_03";
+                    shopItem.BuyCount = 1;
+
+                    shopItem.CostItemId = "gold";
+                    shopItem.CostCount = 100;
+
+                    shop.ShopItems.Add(shopItem);
+                }
 
                 Shops[shopId] = shop;
             }

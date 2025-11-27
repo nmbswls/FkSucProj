@@ -145,11 +145,22 @@ namespace My.Map.Entity
             float duration;
             if (realCfg.IsFixPointMode)
             {
-                Vector2 targetPos = ctx.CastDir.Value;
-                Vector2 or0gPos = ctx.Actor.Pos;
-                dir = (targetPos - or0gPos).normalized;
-                duration = dir.magnitude / realCfg.DashSpeed;
-
+                if(realCfg.IsTargetDir)
+                {
+                    Vector2 targetPos = ctx.Target.Pos;
+                    Vector2 or0gPos = ctx.Actor.Pos;
+                    var diff = (targetPos - or0gPos);
+                    dir = diff.normalized;
+                    duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
+                }
+                else
+                {
+                    Vector2 targetPos = ctx.CastDir.Value;
+                    Vector2 or0gPos = ctx.Actor.Pos;
+                    var diff = (targetPos - or0gPos);
+                    dir = diff.normalized;
+                    duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
+                }
             }
             else
             {
@@ -235,7 +246,7 @@ namespace My.Map.Entity
                         continue;
                     }
 
-                    Debug.LogError("AbilityEffectExecutor4HitBox find logic target " + candidate.Id);
+                    Debug.Log("AbilityEffectExecutor4HitBox find logic target " + candidate.Id);
 
                     foreach (var e in realCfg.OnHitEffects) 
                     {
@@ -489,7 +500,7 @@ namespace My.Map.Entity
                     if(ctx.Target is BaseUnitLogicEntity unitEntity)
                     {
                         var diff = ctx.Target.Pos - ctx.Actor.Pos;
-                        unitEntity.CreateKnockBackIntent(diff, 5f);
+                        unitEntity.CreateKnockBackIntent(diff, realCfg.KnockBackForce);
                     }
                 }
             }

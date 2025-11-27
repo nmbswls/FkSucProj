@@ -15,7 +15,7 @@ MonoBehaviour:
   UnitName: default_guard_01
   ViewSprite: {fileID: 21300000, guid: e779ad32171e85f49bbebec977f04411, type: 3}
   MoveStyle: 1
-  MoveSpeed: 5
+  MoveSpeed: 3
   IsPeace: 0
   CombatStretegyTemplateId: 
   BattleBoundary: 15
@@ -30,7 +30,6 @@ MonoBehaviour:
   - default_dash_slash
   - basic_aoe_slash
   - default_enemy_qinfan
-  - default_weapon
-  DropId: default
+  DropId: citizen_01
   NpcTag: 
   InteractList: []

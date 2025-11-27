@@ -30,8 +30,24 @@ MonoBehaviour:
       DropNums: 6300000063000000
       ChckLevelNeed: 0
       Weight: 0
+  - DropGroupId: citizen_01
+    DropDatas:
+    - ItemIds:
+      - banana
+      DropNums: 0200000002000000
+      ChckLevelNeed: 0
+      Weight: 100
+    - ItemIds:
+      - qiezi
+      DropNums: 0300000003000000
+      ChckLevelNeed: 0
+      Weight: 0
   DropBundles:
   - BundleId: default
     DropGroups:
     - normal_01
+    DropWrights: 10270000
+  - BundleId: citizen_01
+    DropGroups:
+    - citizen_01
     DropWrights: 10270000

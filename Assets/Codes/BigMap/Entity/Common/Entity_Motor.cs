@@ -72,6 +72,8 @@ namespace My.Map.Entity
         private ILogicEntity? _followTarget;
         private float _followPrediction;
         private Vector2 _followOffset;
+
+        private float _moveSpeedRate = 1.0f;
         private float _stopDistance = 0.1f;
 
         // 运行时辅助
@@ -117,12 +119,13 @@ namespace My.Map.Entity
             return true;
         }
 
-        public void MoveTo(Vector2 destination, float stopDistance = 0.35f)
+        public void MoveTo(Vector2 destination, float stopDistance = 0.35f, float moveSpeedRate = 1.0f)
         {
             if (navProvider.TryBuildPath(UnitEntity.Pos, destination, out _path) && _path.Length > 0)
             {
                 EnterPathing(destination);
                 this._stopDistance = stopDistance;
+                this._moveSpeedRate = moveSpeedRate;
             }
             else
             {
@@ -130,12 +133,14 @@ namespace My.Map.Entity
                 _path = default;
                 _pathIndex = -1;
                 _currentGoal = destination;
+                this._stopDistance = stopDistance;
+                this._moveSpeedRate = moveSpeedRate;
                 EnterPathing(destination); 
             }
         }
 
 
-        public void MoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f)
+        public void MoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
         {
             if(target == null)
             {
@@ -145,6 +150,7 @@ namespace My.Map.Entity
             _followPrediction = followPrediction;
             _followOffset = offset;
             this._stopDistance = stopDistance;
+            this._moveSpeedRate = moveSpeedRate;
 
             // 首次取目标点并建路径（如果可）
             if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var goal))
@@ -396,12 +402,14 @@ namespace My.Map.Entity
         {
             var to = (target - UnitEntity.Pos);
             var dir = to.normalized;
-            var desiredSpeed = UnitEntity.GetCurrSpeed();
+            var desiredSpeed = UnitEntity.GetCurrSpeed() * _moveSpeedRate;
 
             // 加速度/减速度控制
             //var currentSpeed = target.magnitude;
             //var targetSpeed = Mathf.MoveTowards(currentSpeed, desiredSpeed, 11);
             DesiredVelocity = dir * desiredSpeed;
+
+            Debug.Log($"MoveToward sped {desiredSpeed} {_moveSpeedRate}");
         }
 
         private void TryReplan()

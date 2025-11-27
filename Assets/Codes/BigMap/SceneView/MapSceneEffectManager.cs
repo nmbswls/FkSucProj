@@ -80,7 +80,7 @@ public class MapSceneEffectManager : MonoBehaviour
         ctx.EffectGo = go;
 
         ctx.CleanUpTimer = LogicTime.time + duration;
-
+        ctxs.Add(ctx);
         return id;
     }
 

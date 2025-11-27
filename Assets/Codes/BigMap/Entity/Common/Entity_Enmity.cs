@@ -147,14 +147,20 @@ namespace My.Map.Entity
         {
             this.UnitEntity = unit;
 
-            if(unit is NpcUnitLogicEntity npcEntity)
+            string eId = unit.EmnityConfId;
+            if (string.IsNullOrEmpty(unit.EmnityConfId))
             {
-                enmityConf = UnitEnmityConfLoader.Get("default_npc");
+                if (unit is NpcUnitLogicEntity npcEntity)
+                {
+                    eId = "default_npc";
+                }
+                else if (unit is MonsterUnitLogicEntity monsterEntity)
+                {
+                    eId = "default_monster";
+                }
             }
-            else if (unit is MonsterUnitLogicEntity monsterEntity)
-            {
-                enmityConf = UnitEnmityConfLoader.Get("default_monster");
-            }
+
+            enmityConf = UnitEnmityConfLoader.Get(eId);
         }
 
         public void Tick(float dt)

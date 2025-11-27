@@ -41,9 +41,9 @@ namespace My.Map.Drop
             }
         }
 
-        public void CreateDrop(string itemId, int amount, Vector2 position, bool autoPick, Vector2? sourcePos)
+        public void CreateDrop(string itemId, long amount, Vector2 position, bool autoPick, Vector2? sourcePos)
         {
-            var dropData = new DropData(GameLogicManager.LogicEntityIdInst++, itemId, amount, position, createTime: LogicTime.time,  autoPick);
+            var dropData = new DropData(GameLogicManager.LogicEntityIdInst++, itemId, (int)amount, position, createTime: LogicTime.time,  autoPick);
             _drops.Add(dropData.Id, dropData);
             EvOnDropAdd?.Invoke(dropData, sourcePos);
         }

@@ -1,6 +1,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using Config;
 using My.Player.Bag;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace My.Player
     {
         public GameLogicManager logicManager;
         public PlayerInventoryModel inventoryModel;
+
+        public Dictionary<string, long> CurrencyBag = new();
 
         public PlayerDataManager(GameLogicManager logicManager)
         {
@@ -35,7 +38,7 @@ namespace My.Player
             //inventoryModel.NormalSlots[6] = new ItemStack() { ItemID = "chanzi", Count = 1 };
         }
 
-        public bool CheckHaveItem(string itemId, int count)
+        public bool CheckHaveItem(string itemId, long count)
         {
             long totalNum = 0;
 
@@ -55,17 +58,39 @@ namespace My.Player
                 }
             }
 
+            CurrencyBag.TryGetValue(itemId, out var currencyVal);
+            totalNum += currencyVal;
+
+            if (totalNum >= count)
+            {
+                return true;
+            }
             return false;
         }
 
-        public int CostItem(string itemId, int count)
+        public long CostItem(string itemId, long count)
         {
             if(count <= 0)
             {
                 return 0;
             }
 
-            int leftCount = count;
+            long leftCount = count;
+            var itemConf = FakeItemDatabase.GetItem(itemId);
+            if(itemConf.ItemType == FakeItemConf.EItemType.Currency)
+            {
+                CurrencyBag.TryGetValue(itemId, out var itemVal);
+                if(itemVal > leftCount)
+                {
+                    CurrencyBag[itemId] = itemVal - leftCount;
+                    leftCount = 0;
+                }
+                else
+                {
+                    CurrencyBag[itemId] = 0;
+                    leftCount -= itemVal;
+                }
+            }
 
             for (int bagId = 0; bagId <= 4; bagId++)
             {
@@ -84,6 +109,27 @@ namespace My.Player
             }
 
             return leftCount;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public bool CanGainItems(string itemId, long count)
+        {
+            var itemConf = FakeItemDatabase.GetItem(itemId);
+            if(itemConf.ItemType == FakeItemConf.EItemType.Currency)
+            {
+                return true;
+            }
+
+            if(inventoryModel.CanGainItems(itemId, count))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

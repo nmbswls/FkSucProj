@@ -10,6 +10,8 @@ using Map.Logic.Events;
 using My.Map.Logic;
 using My.UI;
 using System.Linq;
+using My.Map.Entity;
+using static My.UI.AnyContainerItemCell;
 
 
 namespace My.Map
@@ -40,7 +42,7 @@ namespace My.Map
 
         public bool IsLocked = false;
 
-        public class LootContainer
+        public class LootContainer : IItemContainer
         {
             public GameLogicManager logicManager;
             private bool LootInialized = false;
@@ -87,6 +89,73 @@ namespace My.Map
                     return containItems;
 
                 }
+            }
+
+            public long GetMaxStack(string itemId)
+            {
+                return FakeItemDatabase.GetMaxStackByType(itemId, EContainerType.LootPoint);
+            }
+
+            public void SetItemData(int slotIdx, ItemStack item)
+            {
+                if (slotIdx < 0 || slotIdx >= MaxSlots)
+                {
+                    return;
+                }
+
+                containItems[slotIdx] = item;
+            }
+
+            public void SetItemCount(int slotIdx, long count)
+            {
+                if (slotIdx < 0 || slotIdx >= MaxSlots)
+                {
+                    return;
+                }
+
+                if(containItems[slotIdx] == null)
+                {
+                    return;
+                }
+
+                containItems[slotIdx].Count = count;
+            }
+
+            public bool IsSlotIdxValid(int slotIdx)
+            {
+                if(slotIdx < 0 || slotIdx >= MaxSlots)
+                {
+                    return false;
+                }
+
+                ItemSearchProgress.TryGetValue(slotIdx, out var progress);
+                if(progress > 0)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            public long GetItemCount(string itemId)
+            {
+                long ret = 0;
+                foreach(var item in containItems)
+                {
+                    if (item == null) continue;
+                    ret += item.Count;
+                }
+                return ret;
+            }
+
+            public ItemStack GetItemByIdx(int slotIdx)
+            {
+                if (slotIdx < 0 || slotIdx >= MaxSlots)
+                {
+                    return null;
+                }
+
+                return containItems[slotIdx];
             }
         }
 
@@ -246,7 +315,26 @@ namespace My.Map
             {
                 lootContainer.ItemSearchProgress.Remove(minKey);
                 EnOnUnrealed?.Invoke(minKey);
+
+                // ½ÒÂ¶
+                var itemStack = lootContainer.LootItems[minKey];
+                var conf = FakeItemDatabase.GetItem(itemStack.ItemID);
+
+                switch(conf.RevealEffectType)
+                {
+                    case FakeItemConf.ERevealEffectType.AddGcVal:
+                        {
+                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5000, false, null);
+                        }
+                        break;
+                    case FakeItemConf.ERevealEffectType.CostClothes:
+                        {
+                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -3000, false, null);
+                        }
+                        break;
+                }
             }
+
 
         }
 
@@ -299,9 +387,15 @@ namespace My.Map
             if (s.Count <= 0) lootContainer.LootItems[index] = null;
         }
 
+
         public AnyContainerItemCell.EContainerType GetContainerType()
         {
             return AnyContainerItemCell.EContainerType.LootPoint;
+        }
+
+        public IItemContainer GetLootItemContainer()
+        {
+            return lootContainer;
         }
     }
 

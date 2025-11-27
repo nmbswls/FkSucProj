@@ -50,6 +50,8 @@ namespace My.Map.Entity.AI
         public float LoseTargetGrace = 1.2f;
 
         public float ExitChasingRange = 10.0f;
+
+        public float GoodBattleDistance = 3.0f;
     }
 
 

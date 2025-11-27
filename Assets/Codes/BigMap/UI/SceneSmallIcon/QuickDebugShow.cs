@@ -50,7 +50,7 @@ public class QuickDebugShow : MonoBehaviour
                 continue;
             }
 
-            hpBars[k].Val.text = hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.HP).ToString();
+            hpBars[k].Val.text = (hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.HP) * 0.001f).ToString();
             //var attracted = hpBars[k].bindingUnit.UnitEntity.CheckAttractState();
             //if(attracted)
             //{

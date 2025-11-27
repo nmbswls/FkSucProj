@@ -125,7 +125,15 @@ namespace My.UI
                 defaultLayer = UILayer.HUD,
                 pooled = false,
             });
-            
+
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "ShopNormalPanel",
+                resourcePath = "UI/Prefabs/ShopNormalPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
         }
 
         public static void RegisterGroups()
@@ -424,6 +432,19 @@ namespace My.UI
 
             }
             //ItemPopupMenu.Instance.Close();
+        }
+
+        public void TryQuitLootDetailMode()
+        {
+            UIManager.Instance.HidePanel("ItemDragDrop");
+            UIManager.Instance.HidePanel("PlayerBag");
+            UIManager.Instance.HidePanel("LootPoint");
+        }
+
+        public void ShowShop(IShopProvider shop)
+        {
+            EnsurePlayerBag();
+            ShowInGroup("ShopNormalPanel", shop);
         }
 
 

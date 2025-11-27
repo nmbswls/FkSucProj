@@ -12,6 +12,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.Map;
+using My.UI;
 
 public class ConsoleGM : MonoBehaviour
 {
@@ -167,10 +168,18 @@ public class ConsoleGM : MonoBehaviour
                 });
             });
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.M))
-        {
-            
-        }
+        Register("shop", "¿ªshop",
+            new[] { new CmdParam("shop id", "int£¬Öµ") },
+            args =>
+            {
+                var id = int.Parse(args[0]);
+                var shopInfo = MainGameManager.Instance.gameLogicManager.shopDataManager.GetShop(id);
+                if(shopInfo == null)
+                {
+                    return;
+                }
+                UIOrchestrator.Instance.ShowShop(shopInfo);
+            });
     }
 
     void OnDestroy()

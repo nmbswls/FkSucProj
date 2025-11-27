@@ -4,9 +4,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static My.UI.AnyContainerItemCell;
+using static UnityEditor.Progress;
 
 namespace My.Player.Bag
 {
@@ -15,13 +17,14 @@ namespace My.Player.Bag
     public class ItemStack
     {
         public string ItemID;
-        public int Count;
+        public long Count;
+        public long ItemInstanceId;
 
         public ItemStack()
         {
 
         }
-        public ItemStack(string id, int count)
+        public ItemStack(string id, long count)
         {
             ItemID = id;
             Count = count;
@@ -38,17 +41,17 @@ namespace My.Player.Bag
             return other.ItemID == ItemID;
         }
 
-        public int AddToStack(int amount, int maxStack)
+        public long AddToStack(long amount, long maxStack)
         {
-            int canAdd = Math.Max(0, maxStack - Count);
-            int added = Math.Min(canAdd, amount);
+            long canAdd = Math.Max(0, maxStack - Count);
+            long added = Math.Min(canAdd, amount);
             Count += added;
             return added;
         }
 
-        public int RemoveFromStack(int amount)
+        public long RemoveFromStack(long amount)
         {
-            int removed = Math.Min(amount, Count);
+            long removed = Math.Min(amount, Count);
             Count -= removed;
             return removed;
         }
@@ -56,8 +59,171 @@ namespace My.Player.Bag
         public bool IsEmpty => string.IsNullOrEmpty(ItemID) || Count <= 0;
     }
 
+    public static class ItemUtils
+    {
+        /// <summary>
+        /// 移动或交换
+        /// </summary>
+        /// <returns></returns>
+        public static bool MoveOrMergeOrSwapItem(IItemContainer srcContainer, int srcIdx, IItemContainer dstContainer, int dstIdx)
+        {
+            // 检查源idx是否合法
+            if(!srcContainer.IsSlotIdxValid(srcIdx))
+            {
+                return false;
+            }
+
+            // 检查目标idx是否合法
+            if (!dstContainer.IsSlotIdxValid(dstIdx))
+            {
+                return false;
+            }
+
+            // 检查源item是否存在且合法
+            var srcItem = srcContainer.GetItemByIdx(srcIdx);
+            if(srcItem == null || srcItem.Count <= 0)
+            {
+                Debug.LogError($"ItemUtils MoveOrMergeItem {srcIdx} {dstIdx}");
+                return false;
+            }
+
+            var dstItem = dstContainer.GetItemByIdx(dstIdx);
+
+            // 目标为空 可移动或部分移动
+            if(dstItem == null || dstItem.Count <= 0)
+            {
+                var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
+
+                // 全部移动
+                if(srcItem.Count <= srcItemNewStackMax)
+                {
+                    dstContainer.SetItemData(dstIdx, srcItem);
+                    srcContainer.SetItemData(srcIdx, null);
+                    return true;
+                }
+
+                // 不支持部分移动
+                if(srcItem.ItemInstanceId != 0)
+                {
+                    return false;
+                }
+
+                long canMove = srcItemNewStackMax;
+                dstContainer.SetItemData(dstIdx, new ItemStack() { ItemID = srcItem.ItemID, Count = canMove });
+                srcContainer.SetItemCount(srcIdx, srcItem.Count - canMove);
+
+                return true;
+            }
+            // 目标为同类可堆叠 尝试合并
+            else if (dstItem.ItemID == srcItem.ItemID && srcItem.ItemInstanceId == 0 && dstItem.ItemInstanceId == 0)
+            {
+                var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
+                var dstItemNewStackMax = srcContainer.GetMaxStack(dstItem.ItemID);
+
+                long canMove1 = srcItemNewStackMax - dstItem.Count;
+                long canMove2 = dstItemNewStackMax - srcItem.Count;
+                // 可移动数量太少 尝试交换
+                if (canMove1 <= 0 && canMove2 <= 0)
+                {
+                    return false;
+                }
+
+                // 尝试两个方向的移动
+                if(canMove1 > 0)
+                {
+                    dstContainer.SetItemCount(dstIdx, dstItem.Count + canMove1);
+                    if (srcItem.Count - canMove1 <= 0)
+                    {
+                        srcContainer.SetItemData(srcIdx, null);
+                    }
+                    else
+                    {
+                        srcContainer.SetItemCount(srcIdx, srcItem.Count - canMove1);
+                    }
+                }
+                else
+                {
+                    srcContainer.SetItemCount(srcIdx, srcItem.Count + canMove2);
+                    if (dstItem.Count - canMove2 <= 0)
+                    {
+                        dstContainer.SetItemData(dstIdx, null);
+                    }
+                    else
+                    {
+                        dstContainer.SetItemCount(dstIdx, dstItem.Count - canMove2);
+                    }
+                }
+
+                return true;
+            }
+            // 不可合并 尝试交换
+            else
+            {
+                var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
+                var dstItemNewStackMax = srcContainer.GetMaxStack(dstItem.ItemID);
+
+                if(srcItem.Count > srcItemNewStackMax)
+                {
+                    return false;
+                }
+                if (dstItem.Count > dstItemNewStackMax)
+                {
+                    return false;
+                }
+
+                // 执行交换
+                // todo 允许在有空位时强行移动过来
+                dstContainer.SetItemData(dstIdx, srcItem);
+                srcContainer.SetItemData(srcIdx, dstItem);
+
+                return true;
+            }
+        }
+    }
+
+    public interface IItemContainer
+    {
+        long GetMaxStack(string itemId);
+
+        /// <summary>
+        /// 底层设置信息
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="item"></param>
+        void SetItemData(int idx, ItemStack item);
+
+        /// <summary>
+        /// 修改数量
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="item"></param>
+        void SetItemCount(int idx, long count);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        bool IsSlotIdxValid(int slotIDx);
+
+
+        /// <summary>
+        /// 获取道具总量
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        long GetItemCount(string itemId);
+
+        /// <summary>
+        /// 获取目标item
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
+        ItemStack GetItemByIdx(int idx);
+    }
+
+
     [Serializable]
-    public class PlayerBag
+    public class PlayerBag : IItemContainer
     {
         public int BagId;
         public int BasicCapacity = 30;
@@ -69,7 +235,7 @@ namespace My.Player.Bag
 
         public bool Locked = false;
 
-        public int GetMaxStack(string itemId)
+        public long GetMaxStack(string itemId)
         {
             // 普通背包这么读
             if(BagId == 0)
@@ -103,9 +269,9 @@ namespace My.Player.Bag
             return totalNum;
         }
 
-        public int TryCostItem(string itemId, int costItem)
+        public long TryCostItem(string itemId, long costItem)
         {
-            int leftCount = costItem;
+            long leftCount = costItem;
             if(leftCount > 0)
             {
                 foreach (var slot in NormalSlots)
@@ -216,10 +382,10 @@ namespace My.Player.Bag
         /// </summary>
         /// <param name="incoming"></param>
         /// <returns></returns>
-        public int TryAdd(ItemStack incoming)
+        public long TryAdd(ItemStack incoming)
         {
             if (incoming == null || incoming.IsEmpty) return 0;
-            int remaining = incoming.Count;
+            long remaining = incoming.Count;
 
             var maxStack = GetMaxStack(incoming.ItemID);
             // 先尝试再普通格子里堆叠
@@ -228,7 +394,7 @@ namespace My.Player.Bag
                 var s = NormalSlots[i];
                 if (s != null && s.ItemID == incoming.ItemID && s.Count < GetMaxStack(s.ItemID))
                 {
-                    int added = s.AddToStack(remaining, maxStack);
+                    var added = s.AddToStack(remaining, maxStack);
                     remaining -= added;
                 }
             }
@@ -237,8 +403,8 @@ namespace My.Player.Bag
             {
                 if (NormalSlots[i] == null || NormalSlots[i].IsEmpty)
                 {
-                    int max = GetMaxStack(incoming.ItemID);
-                    int put = Mathf.Min(max, remaining);
+                    var max = GetMaxStack(incoming.ItemID);
+                    var put = Math.Min(max, remaining);
                     NormalSlots[i] = new ItemStack(incoming.ItemID, put);
                     remaining -= put;
                 }
@@ -253,7 +419,7 @@ namespace My.Player.Bag
                     var s = ExtraSlots[i];
                     if (s != null && s.ItemID == incoming.ItemID && s.Count < maxStack)
                     {
-                        int added = s.AddToStack(remaining, maxStack);
+                        var added = s.AddToStack(remaining, maxStack);
                         remaining -= added;
                     }
                 }
@@ -263,7 +429,7 @@ namespace My.Player.Bag
                     // 额外还有空位
                     while (ExtraSlots.Count < MaxExtraCapacity && remaining > 0)
                     {
-                        int put = Mathf.Min(maxStack, remaining);
+                        var put = Math.Min(maxStack, remaining);
                         ExtraSlots.Add(new ItemStack(incoming.ItemID, put));
                         remaining -= put;
                     }
@@ -274,7 +440,7 @@ namespace My.Player.Bag
         }
 
         // 尝试将物品放到指定格子（堆叠或交换），返回成功移动数量
-        public int TryAddToIndexOrStack(ItemStack incoming, int dstIndex)
+        public long TryAddToIndexOrStack(ItemStack incoming, int dstIndex)
         {
             if (incoming == null || incoming.IsEmpty) return 0;
 
@@ -285,14 +451,14 @@ namespace My.Player.Bag
                 // 放入空的
                 if (dst == null || dst.IsEmpty)
                 {
-                    int put = Mathf.Min(maxStack, incoming.Count);
+                    var put = Math.Min(maxStack, incoming.Count);
                     NormalSlots[dstIndex] = new ItemStack(incoming.ItemID, put);
                     return put;
                 }
                 // 同类堆叠
                 if (dst.ItemID == incoming.ItemID && dst.Count < maxStack)
                 {
-                    int added = dst.AddToStack(incoming.Count, maxStack);
+                    var added = dst.AddToStack(incoming.Count, maxStack);
                     return added;
                 }
                 return 0;
@@ -309,7 +475,7 @@ namespace My.Player.Bag
                 // 同类堆叠
                 if (dst.ItemID == incoming.ItemID && dst.Count < maxStack)
                 {
-                    int added = dst.AddToStack(incoming.Count, maxStack);
+                    var added = dst.AddToStack(incoming.Count, maxStack);
                     return added;
                 }
                 return 0;
@@ -321,14 +487,14 @@ namespace My.Player.Bag
                 {
                     return 0; 
                 }
-                int put = Mathf.Min(maxStack, incoming.Count);
+                var put = Math.Min(maxStack, incoming.Count);
                 NormalSlots[dstIndex] = new ItemStack(incoming.ItemID, put);
                 return put;
             }
         }
 
 
-        public bool TrySplit(int srcIndex, int count)
+        public bool TrySplit(int srcIndex, long count)
         {
             // 只分离普通背包
             if (srcIndex < NormalSlots.Count)
@@ -350,13 +516,13 @@ namespace My.Player.Bag
         }
 
 
-        public int RemoveAt(int index, int count)
+        public long RemoveAt(int index, long count)
         {
             if (index < NormalSlots.Count)
             {
                 var s = NormalSlots[index];
                 if (s == null) return 0;
-                int removed = s.RemoveFromStack(count);
+                var removed = s.RemoveFromStack(count);
                 if (s.Count <= 0) NormalSlots[index] = null;
                 return removed;
             }
@@ -391,6 +557,54 @@ namespace My.Player.Bag
                 Debug.LogError("Err idx " + idx + " bag id: " + BagId);
             }
         }
+
+        /// <summary>
+        /// 是否是合法idx
+        /// </summary>
+        /// <param name="slotIdx"></param>
+        /// <returns></returns>
+        public bool IsSlotIdxValid(int slotIdx)
+        {
+            if (slotIdx < NormalSlots.Count)
+            {
+                return true;
+            }
+
+            if (slotIdx - BasicCapacity <= ExtraSlots.Count)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 设置item数量
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="count"></param>
+        public void SetItemCount(int idx, long count)
+        {
+            if (idx < NormalSlots.Count)
+            {
+                if(NormalSlots[idx] != null)
+                {
+                    NormalSlots[idx].Count = count;
+                }
+            }
+            else if (idx - BasicCapacity < MaxExtraCapacity)
+            {
+                int extraIdx = idx - BasicCapacity;
+                if (extraIdx < ExtraSlots.Count)
+                {
+                    ExtraSlots[extraIdx].Count = count;
+                }
+            }
+            else
+            {
+                Debug.LogError("SetItemCount Err idx " + idx + " bag id: " + BagId);
+            }
+        }
     }
 
 
@@ -417,7 +631,7 @@ namespace My.Player.Bag
             }
         }
 
-        public int AddItem(int bagId, int idx, string itemId, int amount)
+        public long AddItem(int bagId, int idx, string itemId, int amount)
         {
 
             var bag = GetBagById(bagId);
@@ -426,7 +640,7 @@ namespace My.Player.Bag
                 return 0;
             }
 
-            int put = bag.TryAddToIndexOrStack(new ItemStack() { ItemID = itemId, Count = amount}, idx);
+            var put = bag.TryAddToIndexOrStack(new ItemStack() { ItemID = itemId, Count = amount}, idx);
             return put;
         }
 
@@ -448,60 +662,8 @@ namespace My.Player.Bag
             var dstBag = GetBagById(dstBagId);
             if (srcBag == null || dstBag == null) return false;
 
-            var src = srcBag.GetItemByIdx(srcIndex);
-            var dst = dstBag.GetItemByIdx(dstIndex);
-            if (src == null || src.IsEmpty) return false;
 
-
-            // 同类堆叠
-            if (dst != null && !dst.IsEmpty && dst.ItemID == src.ItemID )
-            {
-                var maxStackDst = dstBag.GetMaxStack(dst.ItemID);
-                if (dst.Count < maxStackDst)
-                {
-                    int moved = dst.AddToStack(src.Count, maxStackDst);
-                    src.RemoveFromStack(moved);
-                    if (src.Count <= 0) srcBag.ClearEmptyItems();
-                    return true;
-                }
-            }
-
-            // 交换或移动
-            if(dst == null)
-            {
-                int dstStackMax = dstBag.GetMaxStack(src.ItemID);
-                if(src.Count > dstStackMax)
-                {
-                    Debug.Log("TrySwapOrMove dst stack fail.");
-                    return false;
-                }
-                dstBag.SetItemData(dstIndex, src);
-                srcBag.SetItemData(srcIndex, null);
-            }
-            else
-            {
-                int dstStackMax = dstBag.GetMaxStack(src.ItemID);
-                if (src.Count > dstStackMax)
-                {
-                    Debug.Log("TrySwapOrMove dst stack fail.");
-                    return false;
-                }
-
-                int srcStackMax = srcBag.GetMaxStack(dst.ItemID);
-                if (dst.Count > srcStackMax)
-                {
-                    Debug.Log("TrySwapOrMove src stack fail.");
-                    return false;
-                }
-
-                // 交换
-                srcBag.SetItemData(srcIndex, dst);
-                dstBag.SetItemData(dstIndex, src);
-            }
-            
-            //NormalSlots[dstIndex] = src;
-            //NormalSlots[srcIndex] = dst;
-            return true;
+            return ItemUtils.MoveOrMergeOrSwapItem(srcBag, srcIndex, dstBag, dstIndex);
         }
 
         public PlayerBag GetBagById(int bagId)
@@ -509,6 +671,28 @@ namespace My.Player.Bag
             if (bagId == 0) return MainBag;
             SpeBags.TryGetValue(bagId, out var bag);
             return bag;
+        }
+
+        public bool CanGainItems(string itemId, long count)
+        {
+            if (count == 0)
+                return true;
+            var baseBag = MainBag;
+            var maxStack = baseBag.GetMaxStack(itemId);
+            int needSlot = (int)(((count - 1) / maxStack + 1));
+
+            int empty = 0;
+            foreach(var slot in baseBag.NormalSlots)
+            {
+                if (slot != null) continue;
+                empty += 1;
+                if(empty >= needSlot)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
@@ -531,5 +715,7 @@ namespace My.Player.Bag
         EContainerType GetContainerType();
 
         event Action<int> EnOnUnrealed;
+
+        IItemContainer GetLootItemContainer();
     }
 }

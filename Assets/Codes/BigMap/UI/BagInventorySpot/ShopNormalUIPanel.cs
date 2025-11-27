@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 namespace My.UI
 {
@@ -37,9 +38,20 @@ namespace My.UI
         void Awake()
         {
             QuitBtn.onClick.AddListener(() => { 
-                //UIOrchestrator.Instance.TryQuitLootDetailMode(); 
+                UIOrchestrator.Instance.TryQuitLootDetailMode(); 
             });
             GridView.InitGridView(0, OnGetItemByIndex);
+        }
+
+        private bool MarkDirty = false;
+
+        void Update()
+        {
+            if(MarkDirty)
+            {
+                MarkDirty = false;
+                GridView.RefreshAllShownItem();
+            }
         }
 
         public override void Setup(object data = null)
@@ -53,7 +65,7 @@ namespace My.UI
 
         public void RefreshContent()
         {
-            GridView.RefreshAllShownItem();
+            MarkDirty = true;
         }
 
         LoopGridViewItem OnGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
@@ -66,9 +78,10 @@ namespace My.UI
 
             if (itemIndex < BindShop.ShopItems.Count)
             {
-                var stack = BindShop.ShopItems[itemIndex];
+                var shopItem = BindShop.ShopItems[itemIndex];
                 item.gameObject.SetActive(true);
-                cell.Bind(stack.Item1, itemIndex, AnyContainerItemCell.EContainerType.Shop, 0, null);
+                
+                cell.Bind(new ItemStack() { ItemID = shopItem.ItemId, Count = shopItem.BuyCount }, itemIndex, AnyContainerItemCell.EContainerType.Shop, 0, null);
             }
             else
             {

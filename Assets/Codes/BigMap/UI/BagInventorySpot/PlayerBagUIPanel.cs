@@ -204,7 +204,7 @@ namespace My.UI.Bag
             OnInventoryAllChanged();
         }
 
-        public void SplitItem(int bagId, int index, int count)
+        public void SplitItem(int bagId, int index, long count)
         {
             var bag = BindingInventory.GetBagById(bagId);
             if (bag == null)
@@ -221,7 +221,7 @@ namespace My.UI.Bag
             OnInventoryAllChanged();
         }
 
-        public void DropItemToGround(int bagId, int index, int count)
+        public void DropItemToGround(int bagId, int index, long count)
         {
             var bag = BindingInventory.GetBagById(bagId);
             if (bag == null)
@@ -231,7 +231,7 @@ namespace My.UI.Bag
             }
 
             var item = bag.GetItemByIdx(index);
-            int dropCount = bag.RemoveAt(index, count);
+            long dropCount = bag.RemoveAt(index, count);
             // 这里可生成场景掉落物，本示例仅移除
             //UIBus.RaiseInventoryAllChanged();
             if (dropCount > 0)
