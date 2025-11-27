@@ -32,6 +32,13 @@ namespace My.UI
 
 
         public TextMeshProUGUI PlayerHpText;
+        public TextMeshProUGUI PlayerClothesText;
+        public TextMeshProUGUI PlayerPleasureText;
+        public TextMeshProUGUI PlayerHungerText;
+        public TextMeshProUGUI PlayerSanText;
+
+
+
         public override void Setup(object data = null)
         {
             bottomProgressPanel.gameObject.SetActive(false);
@@ -58,9 +65,14 @@ namespace My.UI
         public void Update()
         {
 
-            if (MainGameManager.Instance.playerScenePresenter != null)
+            if (MainGameManager.Instance.gameLogicManager.playerLogicEntity != null)
             {
-                PlayerHpText.text = MainGameManager.Instance.playerScenePresenter.PlayerEntity.GetAttr(AttrIdConsts.HP).ToString();
+                PlayerHpText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.HP).ToString();
+                PlayerClothesText.text = (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) * 0.001f).ToString();
+                PlayerPleasureText.text = (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f).ToString();
+
+                PlayerHungerText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerHunger).ToString();
+                PlayerSanText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSan).ToString();
             }
 
             if(HudMode == EHudMode.PreviewSkill)

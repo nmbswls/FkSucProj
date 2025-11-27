@@ -19,6 +19,7 @@ namespace My.MapExport
             BornPos,
             DigPoint,
             GuardSpawner,
+            WalkerStart,
         }
 
 
@@ -31,6 +32,15 @@ namespace My.MapExport
             public Quaternion Rotation;
             public Vector3 Scale;
         }
+
+        [Serializable]
+        public struct NamedPath
+        {
+            public string Name;
+            public List<string> Points;
+            public string Tag;
+        }
+
 
         [Serializable]
         public struct StaticPrefabItem
@@ -85,7 +95,7 @@ namespace My.MapExport
         [Serializable]
         public class DynamicEntityInitInfo4Unit : DynamicEntityInitInfo
         {
-            public BaseUnitLogicEntity.EMoveBehaveType MoveMode;
+            public UnitMoveBehaveInfo.EMoveBehaveType MoveMode;
             public string EnmityConfId;
 
             public bool IsPeace;
@@ -135,6 +145,7 @@ namespace My.MapExport
 
 
         public List<NamedPoint> NamedPoints = new List<NamedPoint>();
+        public List<NamedPath> NamedPaths = new List<NamedPath>();
 
         // 运行时便捷查询（可选）
         private Dictionary<(int x, int y), List<StaticPrefabItem>> _prefabMap;
@@ -142,9 +153,9 @@ namespace My.MapExport
         private Dictionary<(int x, int y), List<Segment2D>> _segmentMap;
 
         // 
-        private Dictionary<string, NamedPoint> _namedPointMap;
-
-        public NamedPoint FindNamedPointByName(string name)
+        private Dictionary<string, NamedPoint?> _namedPointMap;
+        private Dictionary<string, NamedPath?> _namedPathMap;
+        public NamedPoint? FindNamedPointByName(string name)
         {
             if (_namedPointMap == null)
             {
@@ -153,6 +164,17 @@ namespace My.MapExport
 
             _namedPointMap.TryGetValue(name, out var point);
             return point;
+        }
+
+        public NamedPath? FindNamedPathByName(string name)
+        {
+            if (_namedPathMap == null)
+            {
+                BuildRuntimeMap();
+            }
+
+            _namedPathMap.TryGetValue(name, out var path);
+            return path;
         }
 
         public void BuildRuntimeMap()
@@ -164,11 +186,18 @@ namespace My.MapExport
                 _prefabMap[key] = b.StaticItems;
             }
 
-            _namedPointMap = new Dictionary<string, NamedPoint>();
+            _namedPointMap = new Dictionary<string, NamedPoint?>();
             foreach (var p in NamedPoints)
             {
                 var key = p.Name;
                 _namedPointMap[key] = p;
+            }
+
+            _namedPathMap = new Dictionary<string, NamedPath?>();
+            foreach (var p in NamedPaths)
+            {
+                var key = p.Name;
+                _namedPathMap[key] = p;
             }
 
             //_roomMap = new Dictionary<(int x, int y), List<RoomExportInfo>>();

@@ -25,8 +25,8 @@ namespace My.Map
             foreach (var s in record.WayPointList)
             {
                 var p = LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(s);
-                if (string.IsNullOrEmpty(p.Name)) continue;
-                this.WayPointInfos.Add(p.Position);
+                if (p == null) continue;
+                this.WayPointInfos.Add(p.Value.Position);
             }
 
             this.PatrolUnitIds.Clear();

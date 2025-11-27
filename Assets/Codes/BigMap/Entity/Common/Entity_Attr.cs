@@ -53,8 +53,9 @@ namespace My.Map
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
-                case AttrIdConsts.PlayerYinNeng:
+                case AttrIdConsts.PlayerSan:
                 case AttrIdConsts.PlayerHunger:
+                case AttrIdConsts.PlayerPleasure:
                 case AttrIdConsts.PlayerClothes:
                 case AttrIdConsts.PlayerNaiLi:
                 case AttrIdConsts.UnitEnterHVal:
@@ -118,8 +119,9 @@ namespace My.Map
     {
         public string resourceId;    // e.g., "HP", "MP", "Shield"
                                               // 上限是一个数值类属性（允许被修饰与依赖）
-        public NumericEntry max;     // HP.Max, MP.Max ...
-                                              // 当前值状态
+        public NumericEntry? maxEntry;
+        public long? maxFixVal;
+
         public long current;
         public long regenPerSec;             // 可作为 NumericEntry 或常量
         public long drainPerSec;             // 同上
@@ -197,31 +199,44 @@ namespace My.Map
         }
 
         // 注册资源（绑定 Max 到某个数值属性，例如 "HP.Max"）
-        public ResourceEntry RegisterResource(string resourceId, string maxAttrId = null, long initialCurrent = 0, MaxChangePolicy policy = MaxChangePolicy.KeepRatio)
+        public ResourceEntry RegisterResource(string resourceId, string maxAttrId = null, long? fixMaxValue = null, long initialCurrent = 0, MaxChangePolicy policy = MaxChangePolicy.KeepRatio)
         {
             if (resources.ContainsKey(resourceId))
                 throw new InvalidOperationException($"Resource already registered: {resourceId}");
 
-            NumericEntry maxEntry;
-            if (string.IsNullOrEmpty(maxAttrId))
-            {
-                maxEntry = null;
-            }
-            else
+            long currMax = initialCurrent;
+            NumericEntry? maxEntry = null;
+            if (!string.IsNullOrEmpty(maxAttrId))
             {
                 // 确保 Max 数值属性已注册
                 maxEntry = numerics.TryGetValue(maxAttrId, out var e)
                     ? e
-                    : RegisterNumeric(maxAttrId, initialBase: 0); // 或抛异常，按你的设计选择
+                    : RegisterNumeric(maxAttrId, initialBase: initialCurrent); // 或抛异常，按你的设计选择
+
+                if(maxEntry != null)
+                {
+                    currMax = maxEntry.finalValue;
+                }
+            }
+
+            if(fixMaxValue != null)
+            {
+                currMax = fixMaxValue.Value;
+            }
+
+            if (initialCurrent > currMax)
+            {
+                initialCurrent = currMax;
             }
 
             var r = new ResourceEntry
             {
                 resourceId = resourceId,
-                current = Math.Min(initialCurrent, maxEntry?.finalValue ?? initialCurrent),
-                max = maxEntry,
+                current = initialCurrent,
+                maxEntry = maxEntry,
+                maxFixVal = fixMaxValue,
                 onMaxChange = policy,
-                cacheMaxVal = maxEntry?.finalValue ?? 0,
+                cacheMaxVal = currMax,
                 dirty = true
             };
             resources[resourceId] = r;
@@ -470,7 +485,11 @@ namespace My.Map
 
                 // 4.4 最终钳制到 [0, newMax]
                 if (r.current < 0f) r.current = 0;
-                if(r.max != null)
+                if(r.maxEntry != null)
+                {
+                    if (r.current > r.cacheMaxVal) r.current = r.cacheMaxVal;
+                }
+                else if (r.maxFixVal != null)
                 {
                     if (r.current > r.cacheMaxVal) r.current = r.cacheMaxVal;
                 }
@@ -486,7 +505,10 @@ namespace My.Map
             if (id.EndsWith(".Max"))
             {
                 var rid = id[..^4]; // 去掉 ".Max"
-                if (resources.TryGetValue(rid, out var r)) return r.max.finalValue;
+                if (resources.TryGetValue(rid, out var r)) 
+                { 
+                    return r.cacheMaxVal; 
+                }
             }
             throw new KeyNotFoundException($"Attr not found: {id}");
         }
@@ -503,13 +525,13 @@ namespace My.Map
 
         private void AdjustCurrentOnMaxChange(ResourceEntry r)
         {
-            if (r.max == null)
+            if (r.maxEntry == null)
             {
                 return;
             }
             //float oldMax = r.max.finalValue;
             long oldMax = r.cacheMaxVal;
-            long newMax = r.max.finalValue;
+            long newMax = r.maxEntry.finalValue;
             // 若需要旧值，请在 ResourceEntry 中加 lastMax 并在标脏时赋值
             switch (r.onMaxChange)
             {
@@ -533,26 +555,6 @@ namespace My.Map
             r.cacheMaxVal = newMax;
         }
 
-        public void TickResourceAutoRecover(float dt)
-        {
-            foreach (var r in resources.Values)
-            {
-                long delta = (long)((r.regenPerSec * dt) - (r.drainPerSec * dt));
-                if (MathF.Abs(delta) < 1e-6f) continue;
-                long newVal = Math.Clamp(r.current + delta, 0, r.max.finalValue);
-                if (MathF.Abs(newVal - r.current) > epsilon)
-                {
-                    r.current = newVal; r.version++;
-                }
-            }
-        }
-
-        [Flags]
-        public enum DamageFlags
-        {
-            None = 0,
-        }
-
 
         #region 对外接口
 
@@ -562,8 +564,10 @@ namespace My.Map
             {
                 case AttrIdConsts.HP:
                 case AttrIdConsts.PlayerNaiLi:
-                case AttrIdConsts.PlayerYinNeng:
+                case AttrIdConsts.PlayerHunger:
+                case AttrIdConsts.PlayerSan:
                 case AttrIdConsts.PlayerClothes:
+                case AttrIdConsts.PlayerPleasure:
                 case AttrIdConsts.UnitEnterHVal:
                 case AttrIdConsts.DeepZhaChance:
                     {

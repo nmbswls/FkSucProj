@@ -39,11 +39,23 @@ namespace My
 
         private void Start()
         {
-            StartCharge(2.0f);
         }
 
-        public void StartCharge(float time)
+        public void StartCharge(float radius, float time)
         {
+            this.transform.localScale = new Vector2(radius, time);
+            chargeTime = time;
+            timer = 0f;
+            charging = true;
+            EnsureMaterial();
+            ApplyStaticParams(); // 半径/尺寸/颜色等一次性参数
+            ApplyProgress(0f);
+            SetVisible(true);
+        }
+
+        public void StartChargeRect(float width, float len, float time)
+        {
+            this.transform.localScale = new Vector2(len, width);
             chargeTime = time;
             timer = 0f;
             charging = true;

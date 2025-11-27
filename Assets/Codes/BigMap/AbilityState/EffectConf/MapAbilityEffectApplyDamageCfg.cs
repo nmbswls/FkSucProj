@@ -12,6 +12,7 @@ namespace My.Map.Entity
     public enum EDamageFlag
     {
         None = 0,
+        Crit,
     }
 
 

@@ -213,6 +213,10 @@ public class SceneAOIManager : MonoBehaviour
 
     private void Update()
     {
+        if(!WorldAreaManager.Instance.IsWorldLoaded)
+        {
+            return;
+        }
         if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null) return;
         if (string.IsNullOrEmpty(AreaId)) return;
 

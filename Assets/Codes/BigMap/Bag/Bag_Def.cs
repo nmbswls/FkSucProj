@@ -96,6 +96,32 @@ namespace Config
 
                 {
                     var item = new FakeItemConf();
+                    item.ItemId = "banana";
+                    item.StackType = EStackType.Size2;
+                    item.SpriteName = "banana";
+
+                    _dict[item.ItemId] = item;
+                }
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "qiezi";
+                    item.StackType = EStackType.Size2;
+                    item.SpriteName = "qiezi";
+
+                    _dict[item.ItemId] = item;
+                }
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "bangbangtang";
+                    item.StackType = EStackType.Size2;
+                    item.SpriteName = "bangbangtang";
+
+                    _dict[item.ItemId] = item;
+                }
+                
+
+                {
+                    var item = new FakeItemConf();
                     item.ItemId = "chanzi";
                     item.StackType = EStackType.NoStack;
                     item.SpriteName = "chanzi";

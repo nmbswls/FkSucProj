@@ -464,7 +464,11 @@ namespace My
                             executor = new AbilityEffectExecutor4SpawnEntity();
                         }
                         break;
-
+                    case MapAbilityEffectRangePreviewCfg:
+                        {
+                            executor = new AbilityEffectExecutor4RangePreview();
+                        }
+                        break;
 
                 }
 
@@ -489,15 +493,20 @@ namespace My
             public SourceKey? SourceKey; // 
 
             public ILogicEntity Actor;         // 施动者
-            public ILogicEntity Target;        // 目标对象（如门或敌人），可为空
+            public ILogicEntity? Target;        // 目标对象（如门或敌人），可为空
             public Vector2? FaceDir;           // 面朝方向
             public Vector2? CastDir;           // 面朝方向
             public Vector2? Position;         // 施放位置（如脚下或点击点）
+
+            public EFactionId ActorFactionId;
 
             // 变量集合
             public Dictionary<string, string> RunningVariables = new();
             public Dictionary<string, long> RunningStorage = new();
 
+            public Dictionary<string, long> CacheAttrVal = new();
+
+            public List<int> BindSceneFxIds = new();
 
             public string GetVariatyRawVal(OneVariaty oneVariaty)
             {

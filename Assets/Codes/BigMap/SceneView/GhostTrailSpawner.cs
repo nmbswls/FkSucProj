@@ -20,6 +20,7 @@ namespace My.Map
         private float _timer;
 
         public Transform SelfGhostContainer;
+        List<GameObject> ghosts = new List<GameObject>();
         private readonly Queue<GameObject> _pool = new Queue<GameObject>();
         private Vector3 _lastPos;
 
@@ -71,7 +72,7 @@ namespace My.Map
         GameObject CreateGhostInstance()
         {
             var ghost = new GameObject("Ghost2D");
-            //ghost.transform.SetParent(transform);
+            ghost.transform.SetParent(MainGameManager.Instance.SceneEffectLayer);
             ghost.transform.localScale = target.transform.localScale;
 
             // 添加并配置 SpriteRenderer
@@ -92,37 +93,61 @@ namespace My.Map
 
         void SpawnGhost()
         {
-            GameObject ghost = (_pool.Count > 0) ? _pool.Dequeue() : CreateGhostInstance();
-            var sr = ghost.GetComponent<SpriteRenderer>();
+            if (target == null || _targetSR == null) return; // 目标已销毁或缺组件
+            var ghost = GetGhostFromPool();
+            if (!ghost) ghost = CreateGhostInstance();
 
-            // 拷贝Sprite与渲染属性
+            var sr = ghost.GetComponent<SpriteRenderer>();
+            if (sr == null) return;
+
+            // 拷贝属性
             sr.sprite = _targetSR.sprite;
             sr.flipX = _targetSR.flipX;
             sr.flipY = _targetSR.flipY;
             sr.sortingLayerID = _targetSR.sortingLayerID;
-            sr.sortingOrder = _targetSR.sortingOrder - 1; // 避免压在本体之上，可根据需要调整
-            sr.color = _targetSR.color; // 初始颜色与目标一致（包含Alpha）
+            sr.sortingOrder = _targetSR.sortingOrder - 1;
+            sr.color = _targetSR.color;
 
             // 位置与朝向
-            ghost.transform.position = target.transform.position;
-            ghost.transform.rotation = target.transform.rotation;
+            ghost.transform.SetPositionAndRotation(target.transform.position, target.transform.rotation);
             ghost.transform.localScale = target.transform.localScale;
-
             ghost.SetActive(true);
 
             // 重置淡出
-            var fade = ghost.GetComponent<GhoseTrailFader>();
-            fade.ResetLife(ghostLife, sr.color);
+            var fader = ghost.GetComponent<GhoseTrailFader>();
+            if (fader != null) fader.ResetLife(ghostLife, sr.color);
 
-            // 回收协程
+            ghosts.Add(ghost);
+            // 启动回收
             StartCoroutine(RecycleAfter(ghost, ghostLife));
         }
 
         System.Collections.IEnumerator RecycleAfter(GameObject ghost, float delay)
         {
             yield return new WaitForSeconds(delay);
+            if (!this) yield break; // 管理器被销毁
+            if (!ghost) yield break; // 幽灵已销毁
             ghost.SetActive(false);
             _pool.Enqueue(ghost);
+
+            if (ghost)
+            {
+                ghosts.Remove(ghost);
+                Destroy(ghost);
+            }
         }
+
+        void OnDisable() { StopAllCoroutines(); }
+
+        GameObject GetGhostFromPool() { while (_pool.Count > 0) { var g = _pool.Dequeue(); if (g) return g; } return CreateGhostInstance(); }
+
+        public void DestroyAllGhosts()
+        {
+            StopAllCoroutines();
+            foreach (var g in ghosts) { if (g) Destroy(g); }
+            ghosts.Clear();
+        }
+
+        void OnDestroy() { DestroyAllGhosts(); }
     }
 }

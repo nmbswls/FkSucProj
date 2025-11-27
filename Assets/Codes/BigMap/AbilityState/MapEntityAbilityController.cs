@@ -70,10 +70,13 @@ namespace My.Map.Entity
             public int PhaseIndex;
             public float PhaseElapsed;       // 当前阶段已用时
             public float PhaseDuration;      // 当前阶段时间
+            public bool PhaseMarkSkip;      
 
             //public List<Modifier> PhaseModifiers = new();
             public List<long> PhaseBindBuffs = new();
             public Dictionary<long, AbilityHitWindow> phaseHitWindows = new();
+            public List<int> phaseBindEffectIds = new();
+            public int PhaseIntentEffectId = 0;
 
             public string? openClickkkType;
             public float? openClickkkDuration;
@@ -136,7 +139,7 @@ namespace My.Map.Entity
 
         public event Action<long, string, float> EventOnApplyUseWeapon;
         public event Action<long> EventOnCloseHitWindow;
-
+        public event Action<AbilityState> EventOnUseAbility;
 
         public class AbilityState
         {
@@ -340,6 +343,8 @@ namespace My.Map.Entity
             }
             abState.lastUseTime = LogicTime.time;
 
+            EventOnUseAbility?.Invoke(abState);
+
             return true;
         }
 
@@ -389,6 +394,11 @@ namespace My.Map.Entity
                 {
                     var effectCtx = GenerateEfffectContextByAbility();
                     EntityOwner.LogicManager.HandleLogicFightEffect(ev.Effect, effectCtx);
+
+                    //if(effectCtx.BindSceneFxIds.Count > 0)
+                    //{
+                    //    BindSceneFxIds
+                    //}
                 }
                 else if (ev.Kind == PhaseEventKind.Timed)
                 {
@@ -433,6 +443,26 @@ namespace My.Map.Entity
                 //};
                 //var modifier = EntityOwner.AddAttrModifier(srcKey, AttrIdConsts.LockFace, 1);
                 CurrentCtx.PhaseBindBuffs.Add(instId);
+            }
+            if (phase.ImmuneKnock)
+            {
+                var instId = EntityOwner.BuffManager.AddBuff(EntityOwner.Id, "immune_knock");
+                CurrentCtx.PhaseBindBuffs.Add(instId);
+            }
+            
+
+            if (phase.ShowRangePreview)
+            {
+                if(phase.IsCircle)
+                {
+                    var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(1, phase.RangeRadius, 0, EntityOwner.Pos, EntityOwner.FaceDir, phaseDur);
+                    CurrentCtx.PhaseIntentEffectId = eId;
+                }
+                else
+                {
+                    var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(2, phase.RangeWidth, phase.RangeLen, EntityOwner.Pos, EntityOwner.FaceDir, phaseDur);
+                    CurrentCtx.PhaseIntentEffectId = eId;
+                }
             }
         }
 
@@ -497,6 +527,8 @@ namespace My.Map.Entity
                 EntityOwner.LogicManager.globalBuffManager.RequestRemoveBuff(null, buffId);
             }
 
+            CurrentCtx.PhaseMarkSkip = false;
+
             CurrentCtx.PhaseBindBuffs.Clear();
 
             if (CurrentCtx.phaseHitWindows.Count > 0)
@@ -515,7 +547,23 @@ namespace My.Map.Entity
                 CurrentCtx.openClickkkType = null;
             }
 
-            if(!isInterrupt)
+            //if(CurrentCtx.phaseBindEffectIds.Count > 0)
+            //{
+            //    foreach(var id in CurrentCtx.phaseBindEffectIds)
+            //    {
+            //        EntityOwner.LogicManager.viewer.HideRangeWarnEffect(id);
+            //    }
+
+            //    CurrentCtx.phaseBindEffectIds.Clear();
+            //}
+
+            if (CurrentCtx.PhaseIntentEffectId != 0)
+            {
+                EntityOwner.LogicManager.viewer.DestroySceneFxEffect(CurrentCtx.PhaseIntentEffectId);
+                CurrentCtx.PhaseIntentEffectId = 0;
+            }
+
+            if (!isInterrupt)
             {
                 //尝试进行cancel
                 //EntityOwner.viewer.TryCancelButtomProgress(CurrentCtx.ShowProgressShowId);
@@ -573,9 +621,18 @@ namespace My.Map.Entity
                 }
             }
 
+            // 检查是否是引导
+            var phase = CurrentCtx.AbilityConfig.Phases[CurrentCtx.PhaseIndex];
+            if(phase != null) 
+            {
+                if(CurrentCtx.PhaseIntentEffectId != 0)
+                {
+                    EntityOwner.LogicManager.viewer.UpdateRangeWarnEffect(CurrentCtx.PhaseIntentEffectId, EntityOwner.Pos, EntityOwner.FaceDir);
+                }
+            }
 
             // 阶段结束
-            if (CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
+            if (CurrentCtx.PhaseMarkSkip || CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
             {
                 ExitPhase(CurrentCtx.PhaseIndex);
                 var next = CurrentCtx.PhaseIndex + 1;

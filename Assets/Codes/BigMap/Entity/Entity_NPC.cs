@@ -49,6 +49,10 @@ namespace My.Map
             base.InitAiBrain();
         }
 
+        public override bool CanWatch()
+        {
+            return true;
+        }
     }
 }
 

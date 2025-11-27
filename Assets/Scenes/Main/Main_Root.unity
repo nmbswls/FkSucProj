@@ -1021,6 +1021,7 @@ GameObject:
   - component: {fileID: 885418543}
   - component: {fileID: 885418545}
   - component: {fileID: 885418546}
+  - component: {fileID: 885418547}
   m_Layer: 0
   m_Name: GameMain
   m_TagString: Untagged
@@ -1044,6 +1045,7 @@ MonoBehaviour:
   playerScenePresenter: {fileID: 0}
   mapGlobalNoiseEmitter: {fileID: 2082581106}
   SceneFadeManager: {fileID: 885418545}
+  SceneFxManager: {fileID: 885418547}
   sceneDropManager: {fileID: 1736216468}
   FovGenerator: {fileID: 80834966}
   TimerManager: {fileID: 885418546}
@@ -1091,6 +1093,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4f6d57188e051c42a95af9e780d55e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &885418547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885418542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f53cf13927f0eaf48957744b70fed4bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EffectUniqIdCounter: 1
+  SceneRangeWarn_Circle: {fileID: 6509539912046483528, guid: 29578d5258c238e4e8f6099256a8a32e, type: 3}
+  SceneRangeWarn_Rect: {fileID: 6509539912046483528, guid: 50b34a5244ab40f4cbb1c82f9959ae01, type: 3}
 --- !u!1 &927579792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1567,7 +1584,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca5b68c5bd29d8149b55ad86e8434be8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
   aoiRadius: 32
   chunkRing: 1
   radiusHysteresis: 12

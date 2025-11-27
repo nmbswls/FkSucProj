@@ -275,7 +275,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""58c6954e-cc70-46b8-9066-abc2d66c0834"",
-                    ""path"": """",
+                    ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

@@ -18,6 +18,8 @@ MonoBehaviour:
   MoveSpeed: 5
   IsPeace: 0
   CombatStretegyTemplateId: 
+  BattleBoundary: 10
+  RecoverReturn: 0
   HasHMode: 1
   AlwaysHMode: 1
   AITemplateMode: Warrior

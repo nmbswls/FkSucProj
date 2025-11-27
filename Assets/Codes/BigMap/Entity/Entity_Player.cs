@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using My.Map.Entity;
 using My.Map.Logic;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace My.Map
 {
-    public class PlayerLogicEntity : BaseUnitLogicEntity
+    public class PlayerLogicEntity : BaseUnitLogicEntity, IAttractSource
     {
 
         public PlayerAbilityController PlayerAbilityController { get { return (PlayerAbilityController)abilityController; } }
@@ -37,6 +38,8 @@ namespace My.Map
 
             //TickMoveNoiseEffect(now, dt);
             TickAddAuraHVal(dt);
+
+            TickWatchedInfo();
         }
 
 
@@ -56,11 +59,13 @@ namespace My.Map
 
             RegisterCommonStates();
 
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, 100);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 0);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 1000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100000, 100000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerSan, null, 100, 100);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 100000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 100, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100, 100);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100, 100);
 
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 0);
@@ -76,6 +81,29 @@ namespace My.Map
         protected override void InitAbilityController()
         {
             abilityController = new PlayerAbilityController(this);
+
+            abilityController.EventOnUseAbility += (abState) =>
+            {
+                // 检查施加attract
+                if (abState.cacheConfig.CauseAttract)
+                {
+                    var filterParam = new EntityFilterParam()
+                    {
+                        FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
+                    };
+
+                    var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, abState.cacheConfig.AttractRange, filterParam);
+
+                    foreach (var surround in surrounds)
+                    {
+                        var unit = surround as BaseUnitLogicEntity;
+                        if (unit != null)
+                        {
+                            unit.ApplyAttracted(Pos, abState.cacheConfig.AttractPower, this);
+                        }
+                    }
+                }
+            };
         }
 
         public void TickResourceCost()
@@ -204,6 +232,56 @@ namespace My.Map
 
         #endregion
 
+        #region watch
+
+        public Dictionary<long, float> WatchedInfo = new();
+
+        public float _watchTimer = 0;
+        public void TickWatchedInfo()
+        { 
+            if(LogicTime.time < _watchTimer)
+            {
+                return;
+            }
+
+            _watchTimer = LogicTime.time + 1f;
+
+            foreach(var key in WatchedInfo.Keys.ToList())
+            {
+                if (WatchedInfo[key] + 2.0f < LogicTime.time)
+                {
+                    WatchedInfo.Remove(key);
+                }
+            }
+
+            if(WatchedInfo.Count > 1)
+            {
+                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 100, false, null);
+            }
+        }
+
+
+
+        /// <summary>
+        /// 只有衣装满足条件时 才成为被注视对象
+        /// </summary>
+        /// <returns></returns>
+        public bool WillBeGazed()
+        {
+            if (GetAttr(AttrIdConsts.PlayerClothes) > 80000)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public void UpdateWatchedInfo(long watchId)
+        {
+            WatchedInfo[watchId] = LogicTime.time;
+        }
+
+        #endregion
     }
 }
 

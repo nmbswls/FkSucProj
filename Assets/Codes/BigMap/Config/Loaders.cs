@@ -210,9 +210,9 @@ namespace Config
 
         private static MapDestoryObjConfig Load(string cfgId)
         {
-            var data = Resources.Load<MapDestoryObjConfig>($"Config/Entity/DestoryObj/{cfgId}");
+            var data = Resources.Load<MapDestoryObjConfig>($"Config/Entity/DestroyObj/{cfgId}");
             if (data == null)
-                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/DestoryObj/{cfgId}");
+                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/DestroyObj/{cfgId}");
             return data;
         }
 

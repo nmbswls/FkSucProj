@@ -1,6 +1,7 @@
 using Map.Entity.AI.Action;
 using Map.Logic;
 using My.Map.Entity.AI.Action;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,9 +22,7 @@ namespace My.Map.Entity.AI
     public class AIBrainBlackboard
     {
         public Vector2 SpawnPos;
-        public float VisionRange = 7f;
-        public float VisionFOV = 160f;
-        public float LoseTargetGrace = 1.2f;
+        
         public float LoseTargetTimer;
 
         // 每帧更新的感知快照
@@ -41,8 +40,18 @@ namespace My.Map.Entity.AI
 
         public string? CurrIntentAbility = null;
 
-        //public Vector2? LastInterruptMovePos = null;
+        public bool CanLeaveAttract;
     }
+
+    public class AIBrainConfig
+    {
+        public float VisionRange = 7f;
+        public float VisionFOV = 140f;
+        public float LoseTargetGrace = 1.2f;
+
+        public float ExitChasingRange = 10.0f;
+    }
+
 
     /// <summary>
     /// Transitions are a combination of one or more decisions and destination states whether or not these transitions are true or false. An example of a transition could be "_if an enemy gets in range, transition to the Shooting state_".
@@ -81,11 +90,10 @@ namespace My.Map.Entity.AI
             public int Param2;
         }
 
-        #region blackboard
 
+        public AIBrainConfig brainConfig = new();
         public AIBrainBlackboard blackboard = new();
 
-        #endregion
 
         public bool BrainActive = true;
 
@@ -110,6 +118,14 @@ namespace My.Map.Entity.AI
         protected float _lastActionsUpdate = 0f;
         protected float _lastDecisionsUpdate = 0f;
 
+        public static T DeepCopyByJson<T>(T src)
+        {
+            if (src == null) return default;
+            var json = JsonConvert.SerializeObject(src);
+            var copy = JsonConvert.DeserializeObject(json, src.GetType());
+            return (T)copy;
+        }
+
         public void InitilaizeAll(BaseUnitLogicEntity unitEntity, IVisionSenser2D vision, Vector2 spawnPos)
         {
             this.Vision = vision;
@@ -120,23 +136,20 @@ namespace My.Map.Entity.AI
             _actions.Clear();
             _commonTransitions.Clear();
 
-            string confId = "StaticNpc";
+            string confId = "BasicUnit";
 
             var conf = AITemplateConfigLoader.Get(confId);
 
             foreach(var action in conf.Actions)
             {
-                action.Initialization(this);
-                _actions.Add(action.Name, action);
+                var newAction = DeepCopyByJson(action);
+                newAction.Initialization(this);
+                _actions.Add(action.Name, newAction);
             }
 
 
             foreach (var trans in conf.CommonTransitions)
             {
-                foreach(var dec in trans.Decisions)
-                {
-                    dec.Initialization(this);
-                }
                 _commonTransitions.Add(trans);
             }
             foreach (var stateInfo in conf.States)
@@ -144,10 +157,6 @@ namespace My.Map.Entity.AI
                 var state = new AIBrainState(this) { StateName = stateInfo.Name };
                 foreach(var trans in stateInfo.Transitions)
                 {
-                    foreach(var dec in trans.Decisions)
-                    {
-                        dec.Initialization(this);
-                    }
                     state.Transitions.Add(trans);
                 }
 
@@ -212,12 +221,12 @@ namespace My.Map.Entity.AI
         {
             blackboard.Distance = Vector2.Distance(UnitEntity.Pos, PlayerEntity.Pos);
             blackboard.AngleToPlayer = Vector2.SignedAngle(UnitEntity.FaceDir, (PlayerEntity.Pos - UnitEntity.Pos));
-            blackboard.CanSee = Vision.CanSee(UnitEntity.Pos, UnitEntity.FaceDir, PlayerEntity.Pos, blackboard.VisionRange, blackboard.VisionFOV);
+            blackboard.CanSee = Vision.CanSee(UnitEntity.Pos, UnitEntity.FaceDir, PlayerEntity.Pos, brainConfig.VisionRange, brainConfig.VisionFOV);
 
             // 有问题 会丢事件
             if (blackboard.CanSee)
             {
-                blackboard.LoseTargetTimer = blackboard.LoseTargetGrace;
+                blackboard.LoseTargetTimer = brainConfig.LoseTargetGrace;
                 if (!blackboard.LastPeriodSee)
                 {
                     blackboard.LastPeriodSee = true;
@@ -375,7 +384,7 @@ namespace My.Map.Entity.AI
                         bool pass = true;
                         foreach (var decision in _commonTransitions[i].Decisions)
                         {
-                            if (!decision.Decide())
+                            if (!decision.Decide(this))
                             {
                                 pass = false; break;
                             }

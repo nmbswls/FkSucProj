@@ -164,17 +164,6 @@ namespace My.UI
                         break;
 
                 }
-
-
-                if(UnityEngine.Input.GetMouseButtonDown(0))
-                {
-                    HUDPanel.ConfirmSkillCast(PreviewAbilityName, wp, Vector2.zero);
-                }
-
-                if(UnityEngine.Input.GetMouseButtonDown(1))
-                {
-                    HUDPanel.CancelSkillCast();
-                }
             }
         }
     }

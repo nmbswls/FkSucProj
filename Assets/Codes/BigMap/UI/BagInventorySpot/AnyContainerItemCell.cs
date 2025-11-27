@@ -23,10 +23,14 @@ namespace My.UI
 
         public Image bg;
         public Image icon;
+        public RectTransform countRect;
         public TextMeshProUGUI countText;
-        public GameObject emptyOverlay;
+        //public GameObject emptyOverlay;
         public Image maskOverlay;
         public Image lockOverlay;
+        public Image addOverlay;
+
+        public TextMeshProUGUI debugNameStr;
 
         public enum EStyleType
         {
@@ -45,8 +49,6 @@ namespace My.UI
         public EContainerType ContainerType;
         public int ContainerId;
 
-        public Transform ValTr;
-
         protected FakeItemConf? cacheConf;
 
         public void Bind(ItemStack stack, int index, EContainerType containerType, int containerId, System.Action<int> onChangedCb, EStyleType style = EStyleType.Normal)
@@ -54,15 +56,28 @@ namespace My.UI
             boundStack = stack;
             Index = index;
             ContainerType = containerType;
+            ContainerId = containerId;
 
-            onChanged = onChangedCb;
+            
 
             bool hasItem = stack != null && stack.Count > 0;
             //emptyOverlay?.SetActive(!hasItem);
             icon.enabled = hasItem;
 
-
-            countText.enabled = hasItem;
+            if(hasItem)
+            {
+                var conf = FakeItemDatabase.GetItem(stack.ItemID);
+                debugNameStr.text = conf.ItemId;
+                onChanged = onChangedCb;
+                var maxStack = FakeItemDatabase.GetMaxStackByType(stack.ItemID, containerType);
+                countRect.gameObject.SetActive(hasItem && maxStack > 1);
+            }
+            else
+            {
+                debugNameStr.text = "";
+                countRect.gameObject.SetActive(false);
+            }
+            
 
             if (hasItem)
             {
@@ -70,15 +85,6 @@ namespace My.UI
 
                 //icon.sprite = FakeItemDatabase.GetIcon(stack.ItemID);
                 countText.text = stack.Count.ToString();
-                var maxStack = FakeItemDatabase.GetMaxStackByType(stack.ItemID, ContainerType);
-                if (maxStack > 1)
-                {
-                    ValTr.gameObject.SetActive(true);
-                }
-                else
-                {
-                    ValTr.gameObject.SetActive(false);
-                }
             }
 
             RefreshCellStyle(style);
@@ -89,6 +95,7 @@ namespace My.UI
         {
             maskOverlay.gameObject.SetActive(false);
             lockOverlay.gameObject.SetActive(false);
+            addOverlay.gameObject.SetActive(false);
 
             if (style == EStyleType.Red)
             {
@@ -102,6 +109,11 @@ namespace My.UI
             if(style == EStyleType.Masked)
             {
                 maskOverlay.gameObject.SetActive(true);
+            }
+
+            if(style == EStyleType.AddIcon)
+            {
+                addOverlay.gameObject.SetActive(true);
             }
         }
 

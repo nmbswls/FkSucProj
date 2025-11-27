@@ -8,6 +8,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using My;
+using My.Map.Entity;
+using My.Map.Logic;
+using My.Map.Scene;
+using My.Map;
 
 public class ConsoleGM : MonoBehaviour
 {
@@ -120,6 +124,53 @@ public class ConsoleGM : MonoBehaviour
                 MainGameManager.Instance.gameLogicManager.AddAlertVal(val);
 
             });
+
+        Register("f1", "扣衣服20点",
+            null,
+            args =>
+            {
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -20000, false, null);
+            });
+
+        Register("m1", "刷怪",
+            null,
+            args =>
+            {
+                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4UnitBase()
+                {
+                    Id = GameLogicManager.LogicEntityIdInst++,
+                    EntityType = EEntityType.Monster,
+                    CfgId = "h_sprite",
+                    Position = MainGameManager.Instance.playerScenePresenter.transform.position + new Vector3(2, 2, 0),
+                    FactionId = EFactionId.HSprite,
+
+                    IsPeace = false,
+                    MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.Hunting,
+                    EnmityConfId = "default_monster",
+                });
+            });
+        Register("m2", "扣衣服20点",
+            null,
+            args =>
+            {
+                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4UnitBase()
+                {
+                    Id = GameLogicManager.LogicEntityIdInst++,
+                    EntityType = EEntityType.Npc,
+                    CfgId = "default_guard_01",
+                    Position = MainGameManager.Instance.playerScenePresenter.transform.position + new Vector3(2, 2, 0),
+                    FactionId = EFactionId.Citizen,
+
+                    IsPeace = false,
+                    MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
+                    EnmityConfId = "default_guard",
+                });
+            });
+
+        if (UnityEngine.Input.GetKeyDown(KeyCode.M))
+        {
+            
+        }
     }
 
     void OnDestroy()

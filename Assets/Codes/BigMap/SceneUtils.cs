@@ -34,7 +34,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         {
             return false;
         }
-        Vector2 eyePos = selfUnit.GetEyePos();
+        Vector2 eyePos = selfUnit.GetWorldPosition();
         Vector2 p1 = targetP.GetWorldPosition();
         // 方向与距离
         Vector2 toTarget = p1 - eyePos;
@@ -47,7 +47,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         }
 
         Vector2 dirToTarget = toTarget.normalized;
-        float angle = Vector2.SignedAngle(selfUnit.UnitEntity.FaceDir, toTarget);
+        float angle = Mathf.Abs(Vector2.SignedAngle(selfUnit.UnitEntity.FaceDir, toTarget));
 
         // 背向硬限制
         if (angle >= HardBackLimitDeg)
@@ -137,7 +137,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         for(int i=0;i< hitCount;i++)
         {
             var trans = hits[i].transform;
-            var comp = trans.GetComponent<IScenePresentation>();
+            var comp = trans.GetComponentInParent<IScenePresentation>();
             if (comp == null) continue;
             var entity = comp.GetLogicEntity();
             if (entity == null) continue;
@@ -181,7 +181,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         for (int i = 0; i < hitCount; i++)
         {
             var trans = hits[i].transform;
-            var comp = trans.GetComponent<IScenePresentation>();
+            var comp = trans.GetComponentInParent<IScenePresentation>();
             if (comp == null) continue;
             var entity = comp.GetLogicEntity();
             if (entity == null) continue;

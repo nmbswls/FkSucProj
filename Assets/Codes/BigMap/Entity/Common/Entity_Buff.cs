@@ -92,6 +92,14 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["immune_knock"] = new BuffDefinition()
+                {
+                    BuffId = "immune_knock",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneKnock, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                };
+
                 _library["beizha"] = new BuffDefinition()
                 {
                     BuffId = "beizha",

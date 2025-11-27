@@ -79,10 +79,18 @@ namespace My.Map.Entity
         public bool WithProgress = false;
         public bool LockMovement = false;
         public bool LockRotation = false;
+        public bool ImmuneKnock = false;
         public List<PhaseEffectEvent> Events = new();  // 该阶段内的所有效果与时序
 
         public string EnterDebugString = string.Empty;
         public List<string> PhaseBuff = new();
+
+        public bool ShowRangePreview = false;
+        public Vector2 FaceOffset = Vector2.zero;
+        public bool IsCircle;
+        public float RangeWidth;
+        public float RangeLen;
+        public float RangeRadius;
     }
 
 
@@ -129,5 +137,9 @@ namespace My.Map.Entity
         public ETargetType TargetType;
         public float Range1;
         public float Range2;
+
+        public bool CauseAttract = false;
+        public float AttractPower = 0;
+        public float AttractRange = 2.0f;
     }
 }

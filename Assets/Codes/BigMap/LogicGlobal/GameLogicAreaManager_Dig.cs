@@ -52,12 +52,17 @@ namespace My.Map.Logic
             var pName = emptySlots[idx];
 
             var p = cacheDatabase.FindNamedPointByName(pName);
+            if(p == null)
+            {
+                Debug.LogError("CreateOneDig err");
+                return;
+            }
             logicManager.AddNewEntityRecord(new LogicEntityRecord4LootPoint()
             {
                 Id = GameLogicManager.LogicEntityIdInst++,
                 EntityType = EEntityType.LootPoint,
                 CfgId = digId,
-                Position = p.Position,
+                Position = p.Value.Position,
 
                 DynamicDropId = dropId,
             });

@@ -179,11 +179,11 @@ namespace My.Map.Scene
             {
                 if (UnitEntity.AnimOverrideList.Count > 0)
                 {
-                    icon.color = Color.cyan;
+                    //icon.color = Color.cyan;
                 }
                 else
                 {
-                    icon.color = Color.white;
+                    //icon.color = Color.white;
                 }
             }
 
@@ -441,7 +441,7 @@ namespace My.Map.Scene
                 if (UnitEntity.dashIntent != null)
                 {
                     // Dash×²Ç½Á¢¼´½áÊø
-                    UnitEntity.ClearDashIntent();
+                    UnitEntity.ClearDashIntent(2);
                 }
             }
         }
@@ -467,11 +467,11 @@ namespace My.Map.Scene
         {
             if (UnitEntity.GetAttr(AttrIdConsts.HidingMask) > 0)
             {
-                icon.color = new Color(1, 1, 1, 0.6f);
+                icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 0.6f);
             }
             else
             {
-                icon.color = new Color(1, 1, 1, 1);
+                icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 1);
             }
         }
 

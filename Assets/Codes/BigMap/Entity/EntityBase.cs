@@ -273,7 +273,7 @@ namespace My.Map
 
         public virtual void OnEntityDie(ResourceDeltaIntent lastIntent)
         {
-            LogicManager.AreaManager.RequestEntityDie(this.Id);
+            LogicManager.AreaManager.RequestEntityDie(this.Id, 1);
 
             Debug.Log("Unit Entity OnEntityDie dead " + Id);
 
@@ -318,7 +318,7 @@ namespace My.Map
                 if (LifeTime <= 0)
                 {
                     // ËÀÍö
-                    LogicManager.AreaManager.RequestEntityDie(this.Id);
+                    LogicManager.AreaManager.RequestEntityDie(this.Id, 2);
 
                     LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
                     {

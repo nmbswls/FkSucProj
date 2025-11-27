@@ -12,6 +12,14 @@ namespace My.Map.Entity
     {
         public bool IsTimeMode;
         public float DashDuration;
+
+        public bool IsFixPointMode;
+        public float DashOverrideHitRadius = 0;
+
         public float DashSpeed;
+        public bool IsGhost;
+
+        [SerializeReference]
+        public List<MapFightEffectCfg> OnHitEffects;
     }
 }

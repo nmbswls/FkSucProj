@@ -15,19 +15,10 @@ namespace My.Map.Entity.AI
     [Serializable]
     public abstract class AIDecision
     {
-        public abstract bool Decide();
+        public abstract bool Decide(MapUnitAIBrain brain);
 
         public string Label;
         public virtual bool DecisionInProgress { get; set; }
-        protected MapUnitAIBrain _brain { get; set; }
-
-        /// <summary>
-        /// Meant to be overridden, called when the game starts
-        /// </summary>
-        public virtual void Initialization(MapUnitAIBrain brain)
-        {
-            this._brain = brain;
-        }
 
         /// <summary>
         /// Meant to be overridden, called when the Brain enters a State this Decision is in
@@ -53,12 +44,25 @@ namespace My.Map.Entity.AI
     //[PolymorphTag((int)EAIDecisionType.None)]
     public class AIDecisionNone : AIDecision
     {
-        public override bool Decide()
+        public override bool Decide(MapUnitAIBrain brain)
         {
             return true;
         }
     }
 
+
+    /// <summary>
+	/// 
+	/// </summary>
+    [Serializable]
+    //[PolymorphTag((int)EAIDecisionType.None)]
+    public class AIDecisionCanLeaveAttact : AIDecision
+    {
+        public override bool Decide(MapUnitAIBrain brain)
+        {
+            return brain.blackboard.CanLeaveAttract;
+        }
+    }
 
     /// <summary>
 	/// 
@@ -71,20 +75,12 @@ namespace My.Map.Entity.AI
         public string BuffId;
 
         /// <summary>
-        /// On init we grab our Character component
-        /// </summary>
-        public override void Initialization(MapUnitAIBrain brain)
-        {
-            base.Initialization(brain);
-        }
-
-        /// <summary>
         /// On Decide we check what state we're in
         /// </summary>
         /// <returns></returns>
-        public override bool Decide()
+        public override bool Decide(MapUnitAIBrain brain)
         {
-            return _brain.UnitEntity.CheckHasBuff(BuffId);
+            return brain.UnitEntity.CheckHasBuff(BuffId);
         }
     }
 
@@ -97,30 +93,23 @@ namespace My.Map.Entity.AI
     public class AIDecisionCheckAttracted : AIDecision
     {
         public bool IsHas; // 是或否
-        /// <summary>
-        /// On init we grab our Character component
-        /// </summary>
-        public override void Initialization(MapUnitAIBrain brain)
-        {
-            base.Initialization(brain);
-        }
 
         /// <summary>
         /// On Decide we check what state we're in
         /// </summary>
         /// <returns></returns>
-        public override bool Decide()
+        public override bool Decide(MapUnitAIBrain brain)
         {
             bool attracted ;
             do
             {
-                if (_brain.UnitEntity.attractInfo == null)
+                if (brain.UnitEntity.attractInfo == null)
                 {
                     attracted = false; ;
                     break;
                 }
 
-                if (LogicTime.time > _brain.UnitEntity.attractInfo.LastTriggerTime + 15.0f)
+                if (LogicTime.time > brain.UnitEntity.attractInfo.LastTriggerTime + 15.0f)
                 {
                     attracted = false;
                     break;
@@ -136,98 +125,87 @@ namespace My.Map.Entity.AI
         }
     }
 
-
     /// <summary>
 	/// 
 	/// </summary>
     [Serializable]
+    //[PolymorphTag((int)EAIDecisionType.HasBuff)]
 
-    public class AIDecisionCheckIsInPatrolGroup : AIDecision
+    public class AIDecisionCheckHasMoveBehave : AIDecision
     {
-        public bool IsHas; // 是或否
-        /// <summary>
-        /// On init we grab our Character component
-        /// </summary>
-        public override void Initialization(MapUnitAIBrain brain)
-        {
-            base.Initialization(brain);
-        }
 
         /// <summary>
         /// On Decide we check what state we're in
         /// </summary>
         /// <returns></returns>
-        public override bool Decide()
+        public override bool Decide(MapUnitAIBrain brain)
         {
-            if(_brain.UnitEntity.MoveBehaveMode == BaseUnitLogicEntity.EMoveBehaveType.InPatrolGroup)
-            {
-                return true;
-            }
-
-            return false;
+            return brain.UnitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
         }
     }
 
-    /// <summary>
-	/// 
-	/// </summary>
-    [Serializable]
 
-    public class AIDecisionCheckReturn : AIDecision
-    {
-        /// <summary>
-        /// On init we grab our Character component
-        /// </summary>
-        public override void Initialization(MapUnitAIBrain brain)
-        {
-            base.Initialization(brain);
-        }
+    //   /// <summary>
+    ///// 
+    ///// </summary>
+    //   [Serializable]
 
-        /// <summary>
-        /// On Decide we check what state we're in
-        /// </summary>
-        /// <returns></returns>
-        public override bool Decide()
-        {
-            if(_brain.UnitEntity.LastInterruptMovePos != null)
-            {
-                return true;
-            }
+    //   public class AIDecisionCheckIsInPatrolGroup : AIDecision
+    //   {
+    //       public bool IsHas; // 是或否
+    //       /// <summary>
+    //       /// On init we grab our Character component
+    //       /// </summary>
+    //       public override void Initialization(MapUnitAIBrain brain)
+    //       {
+    //           base.Initialization(brain);
+    //       }
 
-            return false;
-        }
-    }
+    //       /// <summary>
+    //       /// On Decide we check what state we're in
+    //       /// </summary>
+    //       /// <returns></returns>
+    //       public override bool Decide()
+    //       {
+    //           if(_brain.UnitEntity.MoveBehaveMode == BaseUnitLogicEntity.EMoveBehaveType.InPatrolGroup)
+    //           {
+    //               return true;
+    //           }
 
-    /// <summary>
-	/// 
-	/// </summary>
-    [Serializable]
+    //           return false;
+    //       }
+    //   }
 
-    public class AIDecisionCheckIsHunting : AIDecision
-    {
-        public bool IsHas; // 是或否
-        /// <summary>
-        /// On init we grab our Character component
-        /// </summary>
-        public override void Initialization(MapUnitAIBrain brain)
-        {
-            base.Initialization(brain);
-        }
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    //[Serializable]
 
-        /// <summary>
-        /// On Decide we check what state we're in
-        /// </summary>
-        /// <returns></returns>
-        public override bool Decide()
-        {
-            if (_brain.UnitEntity.MoveBehaveMode == BaseUnitLogicEntity.EMoveBehaveType.Hunting)
-            {
-                return true;
-            }
+    //public class AIDecisionCheckReturn : AIDecision
+    //{
+    //    /// <summary>
+    //    /// On init we grab our Character component
+    //    /// </summary>
+    //    public override void Initialization(MapUnitAIBrain brain)
+    //    {
+    //        base.Initialization(brain);
+    //    }
 
-            return false;
-        }
-    }
+    //    /// <summary>
+    //    /// On Decide we check what state we're in
+    //    /// </summary>
+    //    /// <returns></returns>
+    //    public override bool Decide()
+    //    {
+    //        if(_brain.UnitEntity.LastInterruptPos != null)
+    //        {
+    //            return true;
+    //        }
+
+    //        return false;
+    //    }
+    //}
+
 
     /// <summary>
 	/// 
@@ -240,21 +218,51 @@ namespace My.Map.Entity.AI
         public EntityCombatStateComp.ECombatState CheckState = 0;
 
         /// <summary>
-        /// On init we grab our Character component
+        /// On Decide we check what state we're in
         /// </summary>
-        public override void Initialization(MapUnitAIBrain brain)
+        /// <returns></returns>
+        public override bool Decide(MapUnitAIBrain brain)
         {
-            base.Initialization(brain);
+            return brain.UnitEntity.CombatState == (EntityCombatStateComp.ECombatState)CheckState;
         }
+    }
 
+    [Serializable]
+    //[PolymorphTag((int)EAIDecisionType.HasBuff)]
+
+    public class AIDecisionCheckIsPeace : AIDecision
+    {
         /// <summary>
         /// On Decide we check what state we're in
         /// </summary>
         /// <returns></returns>
-        public override bool Decide()
+        public override bool Decide(MapUnitAIBrain brain)
         {
-            return _brain.UnitEntity.CombatState == (EntityCombatStateComp.ECombatState)CheckState;
+            return brain.UnitEntity.unitCfg.IsPeace;
         }
     }
+
+    /// <summary>
+	/// 
+	/// </summary>
+    [Serializable]
+    public class AIDecisionReachMoveInterrupt : AIDecision
+    {
+        public override bool Decide(MapUnitAIBrain brain)
+        {
+            if(brain.blackboard.LastLeaveMoveModePos == null)
+            {
+                return true;
+            }
+
+            var diff = brain.blackboard.LastLeaveMoveModePos.Value - brain.UnitEntity.Pos;
+            if(diff.magnitude < 0.2f)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
 }
 

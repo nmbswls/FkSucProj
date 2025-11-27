@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Map.Entity.AI.Action;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using static My.Map.BaseUnitLogicEntity;
 using static My.Map.Entity.MapEntityAbilityController;
+using static My.Map.EntityCombatStateComp;
 
 namespace My.Map.Entity.AI
 {
@@ -117,16 +119,169 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
-    public class AIActionFollowPatrolGroup : AIAction
+    public class AIActionRecoveryFromAttract : AIAction
     {
+        public override string Name => "RecoveryFromAttract";
+        public float MinRecoverTime = 1.5f;
 
-        public override string Name => "FollowPatrolGroup";
+        private float _recoverTimer;
 
-        private float _followTimer;
+        public override void Start()
+        {
+            base.Start();
+
+            _recoverTimer = LogicTime.time;
+            _brain.UnitEntity.entityMotorComp.StopMove();
+        }
 
         public override float RateScore()
         {
-            if(_brain.UnitEntity.MoveBehaveMode != BaseUnitLogicEntity.EMoveBehaveType.InPatrolGroup)
+            return 1;
+        }
+
+        public override void Tick()
+        {
+
+            if (_recoverTimer + MinRecoverTime > LogicTime.time)
+            {
+                return;
+            }
+
+            bool recovered = false;
+
+            do
+            {
+                if (_brain.blackboard.LastLeaveMoveModePos == null)
+                {
+                    recovered = true;
+                    break;
+                }
+
+                if (!_brain.UnitEntity.entityMotorComp.CheckIsMovingTo(_brain.blackboard.LastLeaveMoveModePos.Value))
+                {
+                    _brain.UnitEntity.entityMotorComp.MoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
+                }
+
+                var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.UnitEntity.Pos;
+                if (diff.magnitude < 0.3f)
+                {
+                    recovered = true;
+                    break;
+                }
+            }
+            while (false);
+        }
+    }
+
+
+    [Serializable]
+    public class AIActionTryRecovery : AIAction
+    {
+        public override string Name => "TryRecovery";
+        public float MinRecoverTime = 1.5f;
+
+        private float _recoverTimer;
+
+        public override void Start()
+        {
+            base.Start();
+
+            _recoverTimer = LogicTime.time;
+            _brain.UnitEntity.entityMotorComp.StopMove();
+        }
+
+        public override float RateScore()
+        {
+            return 1;
+        }
+
+        public override void Tick()
+        {
+
+            if(_recoverTimer + MinRecoverTime > LogicTime.time)
+            {
+                return;
+            }
+
+            bool recovered = false;
+
+            do
+            {
+                if (_brain.UnitEntity.unitCfg.RecoverReturn)
+                {
+                    if (_brain.blackboard.LastLeaveMoveModePos == null)
+                    {
+                        recovered = true;
+                        break;
+                    }
+
+                    if (!_brain.UnitEntity.entityMotorComp.CheckIsMovingTo(_brain.blackboard.LastLeaveMoveModePos.Value))
+                    {
+                        _brain.UnitEntity.entityMotorComp.MoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
+                    }
+
+                    var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.UnitEntity.Pos;
+                    if (diff.magnitude < 0.3f)
+                    {
+                        recovered = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    recovered = true;
+                    break;
+                }
+            }
+            while (false);
+            
+            if(recovered)
+            {
+                _brain.UnitEntity.combatStateComp.CombatState = ECombatState.NotCombat;
+            }
+        }
+    }
+
+    [Serializable]
+    public class AIActionNormalMoveDaemon : AIAction
+    {
+        public override string Name => "NormalMoveDaemon";
+
+        public override float RateScore()
+        {
+            if(Status == AIActionStatus.Running)
+            {
+                return 0;
+            }
+            return 100;
+        }
+
+        public override void OnEnterState()
+        {
+            base.OnEnterState();
+
+            _brain.blackboard.LastLeaveMoveModePos = null; ;
+        }
+
+        public override void OnExitState()
+        {
+            base.OnExitState();
+
+            _brain.UnitEntity.entityMotorComp.StopMove();
+            _brain.blackboard.LastLeaveMoveModePos = _brain.UnitEntity.Pos;
+        }
+    }
+
+
+    [Serializable]
+    public class AIActionMoveInPatrolGroup : AIAction
+    {
+
+        public override string Name => "MoveInPatrolGroup";
+
+        public override float RateScore()
+        {
+            if(_brain.UnitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup)
             {
                 return 0;
             }
@@ -138,38 +293,96 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
-            if (LogicTime.time - _followTimer < 1f)
+            if(!_brain.UnitEntity.entityMotorComp.CheckIsFollowTarget(_brain.UnitEntity.MoveBehaveInfo.FollowPatrolId))
+            {
+                var followedEntity = _brain.UnitEntity.LogicManager.GetLogicEntity(_brain.UnitEntity.MoveBehaveInfo.FollowPatrolId);
+                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, _brain.UnitEntity.MoveBehaveInfo.PatrolGroupRelativePos);
+            }
+        }
+    }
+
+
+
+
+    [Serializable]
+    public class AIActionMoveDoPath : AIAction
+    {
+
+        public override string Name => "MoveDoPath";
+
+        private int _currPathIdx = 0;
+        private Vector2? _currPathPoint;
+
+        public override float RateScore()
+        {
+            if (_brain.UnitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.MovePath)
+            {
+                return 0;
+            }
+            return 1;
+        }
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            var pathName = _brain.UnitEntity.MoveBehaveInfo.MovePath;
+            if(string.IsNullOrEmpty(pathName))
             {
                 return;
             }
 
-            _followTimer = LogicTime.time;
-
-            if(_brain.UnitEntity.entityMotorComp.State != EMotorState.Following)
+            var path = _brain.UnitEntity.LogicManager.AreaManager.GetRuntimePath(pathName);
+            if(path == null)
             {
-                var followedEntity = _brain.UnitEntity.LogicManager.GetLogicEntity(_brain.UnitEntity.FollowPatrolId);
-                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, _brain.UnitEntity.PatrolGroupRelativePos);
+                return;
+            }
+
+            if(_currPathPoint == null)
+            {
+                if(_currPathIdx < path.PointList.Count - 1)
+                {
+                    var pVec = path.PointList[_currPathIdx + 1];
+                    _currPathPoint = pVec;
+                }
+            }
+
+            // 不断移动
+            if(_currPathPoint != null && !_brain.UnitEntity.entityMotorComp.CheckIsMovingTo(_currPathPoint.Value))
+            {
+                _brain.UnitEntity.entityMotorComp.MoveTo(_currPathPoint.Value);
+            }
+
+            if(_currPathPoint != null)
+            {
+                var diff = _currPathPoint.Value - _brain.UnitEntity.Pos;
+                if(diff.magnitude < 0.5f)
+                {
+                    _currPathPoint = null;
+                    _currPathIdx += 1;
+                }
             }
 
             //var followPos = followedEntity.Pos + new Vector2(_brain.UnitEntity.PatrolGroupRelativePos.x, _brain.UnitEntity.PatrolGroupRelativePos.y);
 
             //_brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, _brain.UnitEntity.PatrolGroupRelativePos);
 
-           // _brain.UnitEntity.StartTargettedMove(BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint, null, followPos, 0.1f);
+            // _brain.UnitEntity.StartTargettedMove(BaseUnitLogicEntity.TargettedMoveIntent.ETargettedMoveType.FixPoint, null, followPos, 0.1f);
         }
     }
 
     [Serializable]
-    public class AIActionHuntingPlayer : AIAction
+    public class AIActionMoveHunting : AIAction
     {
-        public override string Name => "HuntingPlayer";
+        public override string Name => "MoveHunting";
 
 
         private float _Timer;
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.MoveBehaveMode != BaseUnitLogicEntity.EMoveBehaveType.Hunting)
+            if (_brain.UnitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.Hunting)
             {
                 return 0;
             }
@@ -191,11 +404,9 @@ namespace My.Map.Entity.AI
             _Timer = LogicTime.time;
 
             var followedEntity = _brain.UnitEntity.LogicManager.playerLogicEntity;
-            var followPos = followedEntity.Pos + new Vector2(0.5f, 0.5f);
-
-            if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Following)
+            if (!_brain.UnitEntity.entityMotorComp.CheckIsFollowTarget(followedEntity.Id))
             {
-                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.3f, Vector2.zero);
+                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, Vector2.zero, 0.35f);
             }
         }
     }
@@ -207,12 +418,27 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            return 1;
+            if (Status == AIActionStatus.Running)
+            {
+                return 0;
+            }
+            return 100;
         }
 
         public override void Tick()
         {
+            if(_brain.UnitEntity.CombatState != ECombatState.InCombat)
+            {
+                return;
+            }
 
+            if (_brain.blackboard.LastLeaveMoveModePos != null)
+            {
+                if ((_brain.UnitEntity.Pos - _brain.blackboard.LastLeaveMoveModePos.Value).magnitude > _brain.brainConfig.ExitChasingRange)
+                {
+                    _brain.UnitEntity.combatStateComp.ExitCombat();
+                }
+            }
         }
 
         public override void OnEnterState()
@@ -236,6 +462,11 @@ namespace My.Map.Entity.AI
         public override float RateScore()
         {
             if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidOp))
+            {
+                return 0;
+            }
+
+            if(_brain.UnitEntity.unitCfg.IsPeace)
             {
                 return 0;
             }
@@ -323,7 +554,16 @@ namespace My.Map.Entity.AI
                 if (_config.DesiredUseDistance > 0 && _brain.blackboard.Distance < _config.DesiredUseDistance * 1.1f)
                 {
                     var dir = _brain.PlayerEntity.Pos - _brain.UnitEntity.Pos;
-                    _brain.UnitEntity.abilityController.TryUseAbility(_config.Id, dir);
+
+                    if(_config.TargetType == MapAbilitySpecConfig.ETargetType.Point)
+                    {
+                        _brain.UnitEntity.abilityController.TryUseAbility(_config.Id, _brain.PlayerEntity.Pos);
+                    }
+                    else
+                    {
+                        _brain.UnitEntity.abilityController.TryUseAbility(_config.Id, dir);
+                    }
+
                     hasCastAbility = true;
                     return;
                 }
@@ -399,6 +639,11 @@ namespace My.Map.Entity.AI
         public override float RateScore()
         {
             if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            {
+                return 0;
+            }
+
+            if (_brain.UnitEntity.unitCfg.IsPeace)
             {
                 return 0;
             }
@@ -504,6 +749,11 @@ namespace My.Map.Entity.AI
                 return 0;
             }
 
+            if (_brain.UnitEntity.unitCfg.IsPeace)
+            {
+                return 0;
+            }
+
             if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
             {
                 return 0;
@@ -580,72 +830,6 @@ namespace My.Map.Entity.AI
 
     }
 
-    [Serializable]
-    public class AIActionReturnInterrupt : AIAction
-    {
-        public override string Name => "ReturnInterrupt";
-
-
-        private float _timer;
-
-        public override float RateScore()
-        {
-            if (_brain.UnitEntity.LastInterruptMovePos == null)
-            {
-                return 0;
-            }
-
-            return 1;
-        }
-
-        public override void OnEnterState()
-        {
-            base.OnEnterState();
-
-            _brain.UnitEntity.entityMotorComp.StopMove();
-            _timer = 0;
-            //if(_brain.UnitEntity.LastInterruptMovePos != null)
-            //{
-            //    _brain.UnitEntity.entityMotorComp.MoveTo(_brain.UnitEntity.LastInterruptMovePos.Value);
-            //}
-        }
-
-        /// <summary>
-        /// On PerformAction we do nothing
-        /// </summary>
-        public override void Tick()
-        {
-            if (_brain.UnitEntity.LastInterruptMovePos == null)
-            {
-                Stop(AIActionStatus.Interrupted);
-                return;
-            }
-            
-
-            if (LogicTime.time - _timer < 1f)
-            {
-                return;
-            }
-
-            _timer = LogicTime.time;
-            var pos = _brain.UnitEntity.LastInterruptMovePos.Value;
-
-            if (_brain.UnitEntity.unitCfg.RecoverReturn)
-            {
-                if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Pathing)
-                {
-                    _brain.UnitEntity.entityMotorComp.MoveTo(pos);
-                }
-            }
-
-
-            // 检查到达
-            if ((pos - _brain.UnitEntity.Pos).magnitude < 0.1f)
-            {
-                Debug.Log("AIActionReturnInterrupt return interrupt pos");
-            }
-        }
-    }
 
     [Serializable]
     public class AIActionAttractedBehave : AIAction
@@ -676,6 +860,7 @@ namespace My.Map.Entity.AI
         }
     }
 
+
     [Serializable]
     public class AIActionAttractedMove : AIAction
     {
@@ -686,9 +871,8 @@ namespace My.Map.Entity.AI
         public float StayDuration = 5.0f;
         public float WatchDistance = 0.8f;
 
-        private float _lastUpdateAttract;
         private Vector2 _currAttractePos;
-        private float _attractSrcTime;
+        private float _attarctLastTriggerTime;
 
 
         public override void OnEnterState()
@@ -697,27 +881,29 @@ namespace My.Map.Entity.AI
 
             //_brain.blackboard.LastInterruptMovePos = _brain.UnitEntity.Pos;
         }
+
         public override float RateScore()
         {
-            if (_brain.UnitEntity.attractInfo == null)
-            {
-                return 0;
-            }
-
-            if (LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
-            {
-                return 0;
-            }
-
             return 10;
         }
-
 
 
         public override void Start()
         {
             base.Start();
 
+            // 进入时赋值
+            if(_brain.UnitEntity.attractInfo != null)
+            {
+                _currAttractePos = _brain.UnitEntity.attractInfo.Pos;
+                _attarctLastTriggerTime = _brain.UnitEntity.attractInfo.LastTriggerTime;
+                _brain.blackboard.CanLeaveAttract = false;
+                _brain.UnitEntity.entityMotorComp.StopMove();
+            }
+            else
+            {
+                _brain.blackboard.CanLeaveAttract = true;
+            }
         }
 
         /// <summary>
@@ -725,39 +911,41 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
-            if (_brain.UnitEntity.attractInfo == null || LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
+            // 如果当前有吸引事件 持续更新信息
+            if (_brain.UnitEntity.attractInfo != null)
             {
-                Stop(AIActionStatus.Interrupted);
-                return;
+                // 更新触发事件
+                if (_brain.UnitEntity.attractInfo.LastTriggerTime != _attarctLastTriggerTime)
+                {
+                    _attarctLastTriggerTime = _brain.UnitEntity.attractInfo.LastTriggerTime;
+                }
+
+                // 尝试启动首次寻路 或改变目标寻路
+                if (_brain.UnitEntity.attractInfo.Pos != _currAttractePos)
+                {
+                    _currAttractePos = _brain.UnitEntity.attractInfo.Pos;
+                    Debug.Log("init or change attracted pos " + _brain.UnitEntity.attractInfo.Pos + (_brain.UnitEntity.attractInfo.AttractSource != null ? _brain.UnitEntity.attractInfo.AttractSource.Id : "0"));
+
+                    var diff = _brain.UnitEntity.Pos - _currAttractePos;
+                    if(diff.magnitude > WatchDistance)
+                    {
+                        var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _currAttractePos, WatchDistance);
+                        _brain.UnitEntity.entityMotorComp.MoveTo(watchPos);
+                    }
+                }
             }
 
-            // 
-            if(_attractSrcTime != 0 && LogicTime.time - _attractSrcTime > StayDuration)
+            // 待购时间退出
+            if(LogicTime.time - _attarctLastTriggerTime > StayDuration)
             {
-                //Stop(AIActionStatus.Interrupted);
-                return;
+                _brain.blackboard.CanLeaveAttract = true;
             }
 
+        }
 
-            // 尝试启动首次寻路 或改变目标寻路
-            if(_currAttractePos == null || _brain.UnitEntity.attractInfo.Pos != _currAttractePos)
-            {
-                _currAttractePos = _brain.UnitEntity.attractInfo.Pos;
-                Debug.Log("init or change attracted pos " + _brain.UnitEntity.attractInfo.Pos + (_brain.UnitEntity.attractInfo.AttractSource != null ? _brain.UnitEntity.attractInfo.AttractSource.Id : "0"));
-
-                var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _currAttractePos, WatchDistance);
-                _brain.UnitEntity.entityMotorComp.MoveTo(watchPos);
-                return;
-            }
-
-            // 检查到达
-            if(_attractSrcTime == 0 && (_currAttractePos - _brain.UnitEntity.Pos).magnitude < WatchDistance * 1.1f)
-            {
-                _attractSrcTime = LogicTime.time;
-            }
-
-            _brain.UnitEntity.LogicManager.viewer.ShowFakeFxEffect("被吸引", _brain.UnitEntity.Pos);
-            //_brain.UnitEntity.entityMotorComp.MoveTo(_currAttractePos);
+        public override void OnExitState()
+        {
+            base.OnExitState();
         }
     }
 }

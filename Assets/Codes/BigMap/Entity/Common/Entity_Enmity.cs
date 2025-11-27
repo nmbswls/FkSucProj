@@ -106,6 +106,23 @@ namespace My.Map.Entity
 
                     _infos[conf.Id] = conf;
                 }
+
+                {
+                    var conf = new UnitEnmityConf();
+                    conf.Id = "default_guard";
+                    conf.BaseEnmity = 0;
+                    conf.Behaves = new List<UnitEnmityBehave>()
+                    {
+                        new UnitEnmityBehave()
+                        {
+                            EnmityType = EEnmityBehaveType.Notice,
+                            Param1 = 40
+                        },
+                    };
+
+                    _infos[conf.Id] = conf;
+                }
+                
             }
 
             _infos.TryGetValue(id, out var ret);
@@ -146,6 +163,14 @@ namespace My.Map.Entity
             if(UnitEntity.unitCfg.AlwaysHMode)
             {
                 IsEnmityState = true;
+            }
+
+            if(UnitEntity.NoticeRecordComp.IsTargetVisible(UnitEntity.LogicManager.playerLogicEntity.Id))
+            {
+                if(UnitEntity.LogicManager.playerLogicEntity.WillBeGazed())
+                {
+                    IsEnmityState = true;
+                }
             }
         }
 

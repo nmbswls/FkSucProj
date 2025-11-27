@@ -80,6 +80,7 @@ namespace My.Map
             NotCombat,
             InCombat,
             CombatRecover,
+            Escape,
         }
         public ECombatState CombatState { get; set; }
 
@@ -98,8 +99,6 @@ namespace My.Map
 
         public void Tick(float dt)
         {
-            TickRecovery();
-
             DecayDamageThreat(dt);
             DecaySightThreat(dt);
             ReevaluatePrimaryTarget();
@@ -144,48 +143,7 @@ namespace My.Map
             EnterCombat(srcId);
         }
 
-        public void TickRecovery()
-        {
-            if (CombatState != ECombatState.CombatRecover)
-            {
-                return;
-            }
-
-            // 1
-            if(LogicTime.time < _lastRecoverTimer + 1.5f)
-            {
-                return;
-            }
-
-            // 需要返回
-            if(UnitEntity.unitCfg.RecoverReturn)
-            {
-                do
-                {
-                    if(UnitEntity.LastInterruptMovePos == null)
-                    {
-                        CombatState = ECombatState.NotCombat;
-                        UnitEntity.LastInterruptMovePos = null;
-
-                        break;
-                    }
-
-                    if ((UnitEntity.LastInterruptMovePos.Value - UnitEntity.Pos).magnitude < 1e-1)
-                    {
-                        CombatState = ECombatState.NotCombat;
-                        UnitEntity.LastInterruptMovePos = null;
-                        break;
-                    }
-                }
-                while (false);
-
-            }
-            else
-            {
-                CombatState = ECombatState.NotCombat;
-                UnitEntity.LastInterruptMovePos = null;
-            }
-        }
+        
 
         private void DecayDamageThreat(float dt)
         {
@@ -290,14 +248,7 @@ namespace My.Map
                 }
             }
 
-            if(UnitEntity.LastInterruptMovePos != null)
-            {
-                if((UnitEntity.Pos - UnitEntity.LastInterruptMovePos.Value).magnitude > UnitEntity.unitCfg.BattleBoundary)
-                {
-                    hardLeashExceeded = true;
-                }
-            }
-
+            
             if ((giverSilent && takerSilent && noThreat) || hardLeashExceeded)
             {
                 string reason = "Silent";
@@ -372,7 +323,6 @@ namespace My.Map
         public void EnterCombat(long primaryTargetId)
         {
             CombatState = ECombatState.InCombat;
-            UnitEntity.LastInterruptMovePos = UnitEntity.Pos;
             PrimaryTargetId = primaryTargetId;
             enterCombatTime = LogicTime.time;
             //Events.RaiseEnterCombat(primaryTargetId);
@@ -388,11 +338,6 @@ namespace My.Map
             PrimaryTargetId = 0;
             damageThreat.Clear();
             sightThreat.Clear();
-
-            if(!UnitEntity.unitCfg.RecoverReturn)
-            {
-                //UnitEntity.LastInterruptMovePos = null;
-            }
 
             //Events.RaiseExitCombat(reason);
             // TODO: 停止AI，回位等
@@ -469,16 +414,33 @@ namespace My.Map
             return confidence;
         }
 
+
+        private float _enmitySightTimer = 0;
         /// <summary>
         /// 
         /// </summary>
         private void EnemySightThreatTick()
         {
+
+            if(_enmitySightTimer + 1.0f > LogicTime.time)
+            {
+                return;
+            }
+
+            _enmitySightTimer = LogicTime.time;
+
             long bestEnemyId = 0;
 
             // 获取感知组件中维护的可见单位列表
             foreach (var seeOne in UnitEntity.NoticeRecordComp.VisibleMap.Values)
             {
+                var seeOneEntity = UnitEntity.LogicManager.GetLogicEntity(seeOne.TargetId, false);
+                if (seeOneEntity == null) continue;
+                if(!UnitEntity.CheckIsEmnityFaction(seeOneEntity.FactionId))
+                {
+                    continue;
+                }
+
                 // todo 获取最佳目标
                 if (seeOne.IsInView && seeOne.LastSeenTime + 0.5f > LogicTime.time)
                 {

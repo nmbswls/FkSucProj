@@ -97,15 +97,23 @@ namespace My.Map
                     lootTarget = targt.Pos;
                 }
             }
-
-            if(lootTarget == null)
+            else if(attractInfo != null)
             {
-                if (attractInfo != null)
+                if(attractInfo.AttractSource != null)
+                {
+                    lootTarget = attractInfo.AttractSource.Pos;
+                }
+                else
                 {
                     lootTarget = attractInfo.Pos;
                 }
             }
+            //else if(IsWatchingPlayer)
+            //{
+            //    lootTarget = LogicManager.playerLogicEntity.Pos;
+            //}
 
+            
             Vector2 lookDir = Vector2.zero;
             if (lootTarget != null)
             {

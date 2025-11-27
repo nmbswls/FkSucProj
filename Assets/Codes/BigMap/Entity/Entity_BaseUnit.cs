@@ -9,14 +9,38 @@ using My.Map.Entity.AI;
 using My.Map.Entity;
 using My.Map.Logic;
 using static My.Map.Entity.MapEntityAbilityController;
-using static My.Map.BaseUnitLogicEntity;
 using static UnityEngine.Rendering.VolumeComponent;
 using static My.Map.EntityCombatStateComp;
+using static My.GameLogicManager;
 
 
 namespace My.Map
 {
-    
+
+    public class UnitMoveBehaveInfo
+    {
+        public enum EMoveBehaveType
+        {
+            NoMove,
+            Patrol,
+            MovePath,
+            Hunting,
+            InPatrolGroup,
+        }
+
+        public EMoveBehaveType MoveBehaveMode 
+        { 
+            get; 
+            set; 
+        }
+
+        public long FollowPatrolId;
+        public Vector2 PatrolGroupRelativePos;
+        public bool DisappearOnArrive;
+        public string MovePath = null;
+
+    }
+
     public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity,
         INoticeRecordComp, IUnitWithBattle
     {
@@ -41,21 +65,8 @@ namespace My.Map
             } 
         }
 
-        public enum EMoveBehaveType
-        {
-            NoMove,
-            Patrol,
-            Spawn,
-            Hunting,
-            InPatrolGroup,
-        }
-
-        public EMoveBehaveType MoveBehaveMode;
-
-        public long FollowPatrolId;
-        public Vector2 PatrolGroupRelativePos;
-        public Vector2? LastInterruptMovePos;
-
+        public UnitMoveBehaveInfo MoveBehaveInfo;
+        //public Vector2? LastInterruptPos;
 
         public EntityMotorComp entityMotorComp;
         public EntityCombatStateComp combatStateComp;
@@ -70,60 +81,20 @@ namespace My.Map
 
         public event Action EventOnHpChanged;
 
-        /// <summary>
-        /// 吸引源信息
-        /// </summary>
-        public class AttractInfo
-        {
-            public float AttractPower;
-            public Vector2 Pos;
-            public IAttractSource? AttractSource;
-            public float LastTriggerTime;
-        }
-
-        public AttractInfo? attractInfo;
-        public void ApplyAttracted(Vector2 pos, float power, IAttractSource? attractSrc)
-        {
-
-            if(attractInfo != null && attractInfo.AttractPower > power && LogicTime.time - attractInfo.LastTriggerTime < 5.0f)
-            {
-                Debug.Log("");
-                return;
-            }
-
-            attractInfo = new();
-            attractInfo.Pos = pos;
-            attractInfo.AttractPower = power;
-            attractInfo.LastTriggerTime = LogicTime.time;
-            attractInfo.AttractSource = attractSrc;
-        }
-
-
-        public bool CheckAttractState()
-        {
-            if(attractInfo == null)
-            {
-                return false;
-            }
-
-            if(LogicTime.time - attractInfo.LastTriggerTime > 5.0f)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
+      
         public UnitEnmityComp EnmityComp;
         public UnitNoticeRecordComp NoticeRecordComp;
 
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
-            this.MoveBehaveMode = unitRecord.MoveBehaveType;
-            this.FollowPatrolId = unitRecord.PatrolFollowId;
-            this.PatrolGroupRelativePos = unitRecord.PatrolGroupRelativePos;
-
+            Debug.Log($"BaseUnitLogicEntity init {instId} {unitRecord.MoveBehaveType}");
+            this.MoveBehaveInfo = new();
+            this.MoveBehaveInfo.MoveBehaveMode = unitRecord.MoveBehaveType;
+            this.MoveBehaveInfo.FollowPatrolId = unitRecord.PatrolFollowId;
+            this.MoveBehaveInfo.PatrolGroupRelativePos = unitRecord.PatrolGroupRelativePos;
+            this.MoveBehaveInfo.DisappearOnArrive = unitRecord.DisappearOnArrive;
+            this.MoveBehaveInfo.MovePath = unitRecord.MovePath;
 
             this.FaceDir = bindingRecord.FaceDir;
         }
@@ -171,6 +142,7 @@ namespace My.Map
         {
             base.Tick(dt);
             // 计时、条件检查、冷却等
+
             abilityController?.Tick(dt);
 
             {
@@ -179,7 +151,7 @@ namespace My.Map
                     dashIntent.dashTimeLeft -= dt;
                     if (dashIntent.dashTimeLeft <= 0f)
                     {
-                        ClearDashIntent();
+                        ClearDashIntent(1);
                     }
                 }
 
@@ -216,14 +188,18 @@ namespace My.Map
             entityMotorComp?.Tick(dt);
 
             UpdateFaceDir();
+
+            TickAttractState();
+
+            TickGaze();
         }
 
         public override void OnEnterAOI()
         {
-            if(MoveBehaveMode == EMoveBehaveType.InPatrolGroup)
+            if(MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup)
             {
-                var groupEntity = LogicManager.GetLogicEntity(FollowPatrolId);
-                this.SetPosition(groupEntity.Pos + PatrolGroupRelativePos);
+                var groupEntity = LogicManager.GetLogicEntity(MoveBehaveInfo.FollowPatrolId);
+                this.SetPosition(groupEntity.Pos + MoveBehaveInfo.PatrolGroupRelativePos);
             }
         }
 
@@ -308,6 +284,7 @@ namespace My.Map
             public Vector2 dashDir;
             public float dashSpeed;
 
+            public List<MapFightEffectCfg> OnHitUnitCfg;
             public Action onCollide;
         }
         public DashIntent? dashIntent;
@@ -350,7 +327,7 @@ namespace My.Map
         public event Action<DashIntent> onNewDashIntent;
         public event Action<KnockBackIntent> onNewKnockBackIntent;
 
-        public void CreateDashIntent(Vector2 dir, float dashTime, float speed)
+        public void CreateDashIntent(Vector2 dir, float dashTime, float speed, List<MapFightEffectCfg> onEndEffects)
         {
             if (dashIntent != null)
             {
@@ -363,6 +340,8 @@ namespace My.Map
             intent.dashSpeed = speed;
 
             intent.dashDuration = dashTime;
+            intent.OnHitUnitCfg = onEndEffects;
+
             externalVel = intent.dashDir.normalized * intent.dashSpeed;
             //onNewDashIntent?.Invoke(intent);
 
@@ -370,8 +349,22 @@ namespace My.Map
         }
 
 
-        public void ClearDashIntent()
+        public void ClearDashIntent(int reason)
         {
+
+            if(reason != 0)
+            {
+                if(dashIntent.OnHitUnitCfg != null)
+                {
+                    foreach(var e in dashIntent.OnHitUnitCfg)
+                    {
+                        LogicFightEffectContext newCtx = new(LogicManager, null);
+                        newCtx.Actor = this;
+                        newCtx.Position = this.Pos;
+                        LogicManager.HandleLogicFightEffect(e, newCtx);
+                    }
+                }
+            }
 
             dashIntent?.onCollide?.Invoke();
 
@@ -393,7 +386,20 @@ namespace My.Map
 
         public void CreateKnockBackIntent(Vector2 dir, float power, Action<int>? onKnockEnd = null)
         {
-            ClearDashIntent();
+
+            if(CheckHasState(AttrIdConsts.ImmuneKnock))
+            {
+                return;
+            }
+
+            TryInterrupt(new InterruptRequest()
+            {
+                source = InterruptSource.KnockUp,
+                priority = 10,
+            });
+
+
+            ClearDashIntent(0);
             ClearKnockbackInfo(2);
 
             KnockBackIntent intent = new();
@@ -509,6 +515,9 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.ForbidOp, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.NoSelect, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Ghost, initialBase: 0);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.ImmuneKnock, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Stun, initialBase: 0);
         }
 
 
@@ -685,6 +694,11 @@ namespace My.Map
         {
             return NoticeRecordComp.IsTargetVisible (targetId);
         }
+
+        #endregion
+
+
+        #region a
 
         #endregion
     }

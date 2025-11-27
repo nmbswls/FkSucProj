@@ -119,6 +119,7 @@ namespace My.UI
             switch (droppedItem.ContainerType)
             {
                 case EContainerType.Inventory:
+                case EContainerType.SpecialInventory:
                     {
                         OnDropToInventory(droppedItem.ContainerId, payload, dstIndex);
                         break;
@@ -195,7 +196,8 @@ namespace My.UI
 
 
             }
-            else if (payload.SourceContainerType == EContainerType.Inventory)
+            else if (payload.SourceContainerType == EContainerType.Inventory
+                || payload.SourceContainerType == EContainerType.SpecialInventory)
             {
                 int fromBag = payload.SourceContainerId;
                 int toBag = bagId;
@@ -203,7 +205,7 @@ namespace My.UI
                 bool ok = PlayerBagUIPanel.Instance.BindingInventory.TrySwapOrMove(fromBag, payload.SourceIndex, toBag, dstIndex);
                 if (ok)
                 {
-                    UIManager.Instance.ShowPanel("PlayerBag");
+                    //UIOrchestrator.Instance.EnsurePlayerBag();
                     PlayerBagUIPanel.Instance.RefreshContent();
                     //UIBus.RaiseInventoryAllChanged();
                 }

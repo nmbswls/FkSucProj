@@ -5,6 +5,7 @@ using UnityEngine;
 using My.Player.Bag;
 using UnityEngine.UI;
 using Config;
+using TMPro;
 
 namespace My.UI.Bag
 {
@@ -32,10 +33,21 @@ namespace My.UI.Bag
         /// 隐藏背包
         /// </summary>
         public RectTransform SpeBagPanel;
+        public Button CollapseSpeBagBtn;
         public LoopGridView SpeGridView;
         public int CurrExpandSpeBag; // 当前展开的背包
-        public List<Button> SpeBagBtns = new();
 
+        public Transform SpecBagSelectionsTr;
+
+        public class InnerSpeBagItem
+        {
+            public RectTransform Root;
+            public Button Btn;
+            public Image SelectHint;
+            public TextMeshProUGUI StackCount;
+        }
+
+        public List<InnerSpeBagItem> SpeBagItems = new();
 
 
         public PlayerInventoryModel BindingInventory { get { return MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel; } }
@@ -49,20 +61,40 @@ namespace My.UI.Bag
 
             GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
 
-            var speBtnTrans = transform.Find("SpeBagBtns");
-            for (int i = 0; i < speBtnTrans.childCount; i++)
+            for (int i = 0; i < SpecBagSelectionsTr.childCount; i++)
             {
-                var childOne = speBtnTrans.GetChild(i);
-                var btn = childOne.GetComponent<Button>();
-                SpeBagBtns.Add(btn);
+                var childOne = SpecBagSelectionsTr.GetChild(i);
+
+                var item = new InnerSpeBagItem()
+                {
+                    Root = childOne.GetComponent<RectTransform>()
+                };
+
+
+                var btn = childOne.GetComponentInChildren<Button>();
+                item.Btn = btn;
+
+                int partId = i + 1;
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() =>
                 {
-                    SwitchSpeBag(i);
+                    SwitchSpeBag(partId);
                 });
+
+                item.SelectHint = childOne.Find("Select").GetComponent<Image>();
+                item.StackCount = childOne.Find("Hint").GetComponentInChildren<TextMeshProUGUI>();
+
+                item.SelectHint.gameObject.SetActive(false);
+                item.StackCount.gameObject.SetActive(false);
+
+                SpeBagItems.Add(item);
             }
 
-
+            CollapseSpeBagBtn.onClick.RemoveAllListeners();
+            CollapseSpeBagBtn.onClick.AddListener(() =>
+            {
+                CloseSpeBag();
+            });
 
             //gameObject.SetActive(false);
         }
@@ -71,9 +103,18 @@ namespace My.UI.Bag
         {
             if (markDirty)
             {
-                GridView.RefreshAllShownItem();
+                OnInventoryAllChanged();
+
                 markDirty = false;
             }
+        }
+
+        public override void Show()
+        {
+            base.Show();
+
+            InitilaizeView();
+            CloseSpeBag();
         }
 
         public void InitilaizeView()
@@ -109,7 +150,7 @@ namespace My.UI.Bag
             if (CurrExpandSpeBag != -1)
             {
                 var speBag = BindingInventory.GetBagById(CurrExpandSpeBag);
-                SpeGridView.SetListItemCount(speBag.BasicCapacity + speBag.MaxExtraCapacity);
+                SpeGridView.SetListItemCount(speBag.BasicCapacity + speBag.ExtraSlots.Count + 1);
                 SpeGridView.RefreshAllShownItem();
             }
         }
@@ -202,16 +243,32 @@ namespace My.UI.Bag
             OnInventoryAllChanged();
         }
 
+        void CloseSpeBag()
+        {
+            SpeBagPanel.gameObject.SetActive(false);
 
-        void SwitchSpeBag(int idx)
+            SpeGridView.SetListItemCount(0);
+            SpeGridView.RefreshAllShownItem();
+            this.CurrExpandSpeBag = -1;
+
+            foreach (var item in SpeBagItems)
+            {
+                item.SelectHint.gameObject.SetActive(false);
+            }
+        }
+
+        void SwitchSpeBag(int partId)
         {
             int oldIdx = this.CurrExpandSpeBag;
-            if (this.CurrExpandSpeBag == idx)
+            if (this.CurrExpandSpeBag == partId)
             {
                 return;
             }
-
-            this.CurrExpandSpeBag = idx;
+            foreach (var item in SpeBagItems)
+            {
+                item.SelectHint.gameObject.SetActive(false);
+            }
+            this.CurrExpandSpeBag = partId;
             if(oldIdx == -1)
             {
                 
@@ -222,6 +279,8 @@ namespace My.UI.Bag
 
             SpeGridView.SetListItemCount(bag.NormalSlots.Count + bag.ExtraSlots.Count + 1);
             SpeGridView.RefreshAllShownItem();
+
+            SpeBagItems[partId - 1].SelectHint.gameObject.SetActive(true);
         }
 
         LoopGridViewItem OnSpeGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
@@ -240,14 +299,14 @@ namespace My.UI.Bag
             var specBag = BindingInventory.GetBagById(CurrExpandSpeBag);
             if (itemIndex < specBag.BasicCapacity)
             {
-                var stack = specBag.NormalSlots[itemIndex];
+                var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
                 cell.Bind(stack, itemIndex, AnyContainerItemCell.EContainerType.SpecialInventory, CurrExpandSpeBag, null);
             }
             // 特殊
             else if(itemIndex < specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
-                var stack = specBag.NormalSlots[itemIndex];
+                var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
                 cell.Bind(stack, itemIndex, AnyContainerItemCell.EContainerType.SpecialInventory, CurrExpandSpeBag, null, AnyContainerItemCell.EStyleType.Red);
             }

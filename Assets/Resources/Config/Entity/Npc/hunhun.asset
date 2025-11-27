@@ -14,14 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitName: hunhun
   ViewSprite: {fileID: 21300000, guid: e779ad32171e85f49bbebec977f04411, type: 3}
-  MoveStyle: 0
+  MoveStyle: 1
   MoveSpeed: 1
   IsPeace: 0
   CombatStretegyTemplateId: 
+  BattleBoundary: 10
+  RecoverReturn: 1
   HasHMode: 1
+  AlwaysHMode: 0
   AITemplateMode: 
   AITemplateName: 
+  DefaultFactionId: 0
   Hp: 100
   SkillList: []
   DropId: default
   NpcTag: 
+  InteractList: []

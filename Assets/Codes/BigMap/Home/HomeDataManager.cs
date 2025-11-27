@@ -47,6 +47,8 @@ namespace My.Home
         public HomeDataManager(GameLogicManager logicManager)
         {
             this.LogicManager = logicManager;
+
+            VariableDict["fix_teleport"] = true;
         }
 
 
@@ -209,7 +211,7 @@ namespace My.Home
                 refreshInfo.InitInfo = initInfo;
 
                 initInfo.IsPeace = true;
-                initInfo.MoveMode = BaseUnitLogicEntity.EMoveBehaveType.NoMove;
+                initInfo.MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
                 
 
                 retList.Add(refreshInfo);

@@ -487,7 +487,7 @@ MonoBehaviour:
       Param5: 
       Param6: 
     InitInfo:
-      rid: 9166156106227253355
+      rid: 69777801989325255
   - UniqId: 101
     EntityType: 7
     CfgId: obj_01
@@ -572,7 +572,7 @@ MonoBehaviour:
       Param5: 
       Param6: 
     InitInfo:
-      rid: 9166156106227253356
+      rid: 69777801989325256
   - UniqId: 106
     EntityType: 3
     CfgId: civil_sleeping
@@ -589,7 +589,7 @@ MonoBehaviour:
       Param5: 
       Param6: 
     InitInfo:
-      rid: 9166156106227253357
+      rid: 69777801989325257
   - UniqId: 107
     EntityType: 3
     CfgId: civil
@@ -606,7 +606,7 @@ MonoBehaviour:
       Param5: 
       Param6: 
     InitInfo:
-      rid: 9166156106227253358
+      rid: 69777801989325258
   - UniqId: 108
     EntityType: 3
     CfgId: civil
@@ -623,7 +623,7 @@ MonoBehaviour:
       Param5: 
       Param6: 
     InitInfo:
-      rid: 9166156106227253359
+      rid: 69777801989325259
   - UniqId: 109
     EntityType: 3
     CfgId: civil
@@ -640,7 +640,7 @@ MonoBehaviour:
       Param5: 
       Param6: 
     InitInfo:
-      rid: 9166156106227253360
+      rid: 69777801989325260
   - UniqId: 110
     EntityType: 4
     CfgId: box_01
@@ -718,12 +718,78 @@ MonoBehaviour:
     Position: {x: -4.69, y: 4.42, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_01
+    PointType: 4
+    Position: {x: -9.3, y: 0.15, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_02
+    PointType: 4
+    Position: {x: 22.46, y: -17.11, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_03
+    PointType: 4
+    Position: {x: 24.4, y: 12.99, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_001
+    PointType: 0
+    Position: {x: 23.17, y: 3.45, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_002
+    PointType: 0
+    Position: {x: 23, y: -3.33, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_003
+    PointType: 0
+    Position: {x: -0.14, y: -0.18, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_004
+    PointType: 0
+    Position: {x: 6.41, y: -9.78, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_005
+    PointType: 0
+    Position: {x: 7.31, y: 9.94, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_006
+    PointType: 0
+    Position: {x: 14.67, y: 9.94, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  NamedPaths:
+  - Name: walker_01
+    Points:
+    - walker_born_01
+    - p_003
+    - walker_born_02
+    Tag: walker
+  - Name: walker_02
+    Points:
+    - walker_born_01
+    - p_005
+    - p_006
+    - walker_born_03
+    Tag: walker
+  - Name: walker_03
+    Points:
+    - walker_born_02
+    - p_002
+    - p_001
+    - walker_born_03
+    Tag: walker
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 9166156106227253355
+    - rid: 69777801989325255
       type: {class: MapExportDatabase/DynamicEntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         MoveSpeed: 0.2
@@ -743,35 +809,35 @@ MonoBehaviour:
         - EntityType: 3
           CfgId: hunhun
           RelativePos: {x: 0, y: 0.2}
-    - rid: 9166156106227253356
+    - rid: 69777801989325256
       type: {class: MapExportDatabase/DynamicEntityInitInfo4Unit, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         MoveMode: 0
         EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
-    - rid: 9166156106227253357
+    - rid: 69777801989325257
       type: {class: MapExportDatabase/DynamicEntityInitInfo4Unit, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         MoveMode: 0
         EnmityConfId: 
         IsPeace: 1
         InitUnsensored: 1
-    - rid: 9166156106227253358
+    - rid: 69777801989325258
       type: {class: MapExportDatabase/DynamicEntityInitInfo4Unit, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         MoveMode: 0
         EnmityConfId: 
         IsPeace: 1
         InitUnsensored: 1
-    - rid: 9166156106227253359
+    - rid: 69777801989325259
       type: {class: MapExportDatabase/DynamicEntityInitInfo4Unit, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         MoveMode: 0
         EnmityConfId: 
         IsPeace: 1
         InitUnsensored: 1
-    - rid: 9166156106227253360
+    - rid: 69777801989325260
       type: {class: MapExportDatabase/DynamicEntityInitInfo4Unit, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         MoveMode: 0

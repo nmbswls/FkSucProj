@@ -164,4 +164,10 @@ public interface ISceneAbilityViewer
     void CloseClickkkWindow(string windowType, bool isInterrupt);
 
     void DoDeepZhaquSmallGame(long targetUnitId, object extraParam);
+
+    int ShowRangeWarnEffect(int shape, float p1, float p2, Vector2 vec1, Vector2 vec, float duration);
+
+    void UpdateRangeWarnEffect(int eId, Vector2 pos, Vector2 dir);
+
+    void DestroySceneFxEffect(int effe);
 }

@@ -33,7 +33,7 @@ namespace My.Map.Entity.AI
                 {
                     var config = new AIBehaviorConfig()
                     {
-                        BehaviorName = "StaticNpc",
+                        BehaviorName = "BasicUnit",
                     };
                     _configs[config.BehaviorName] = config;
 
@@ -56,26 +56,28 @@ namespace My.Map.Entity.AI
                             },
                             TrueState = "Attracted",
                         });
+
+
                         idleState.Transitions.Add(new AITransition()
                         {
                             Decisions = new List<AIDecision>()
                             {
-                                new AIDecisionCheckIsInPatrolGroup()
+                                new AIDecisionCheckHasMoveBehave()
                                 {
                                 }
                             },
-                            TrueState = "MoveInPatrolGroup",
+                            TrueState = "MoveBehave",
                         });
-                        idleState.Transitions.Add(new AITransition()
-                        {
-                            Decisions = new List<AIDecision>()
-                            {
-                                new AIDecisionCheckIsHunting()
-                                {
-                                }
-                            },
-                            TrueState = "Hunting",
-                        });
+                        //idleState.Transitions.Add(new AITransition()
+                        //{
+                        //    Decisions = new List<AIDecision>()
+                        //    {
+                        //        new AIDecisionCheckIsHunting()
+                        //        {
+                        //        }
+                        //    },
+                        //    TrueState = "Hunting",
+                        //});
 
                         config.States.Add(idleState);
                     }
@@ -86,7 +88,6 @@ namespace My.Map.Entity.AI
                             Name = "Attracted",
                         };
 
-
                         attractedState.ActionNames.Add("AttractedMove");
 
 
@@ -94,33 +95,56 @@ namespace My.Map.Entity.AI
                         {
                             Decisions = new List<AIDecision>()
                             {
-                                new AIDecisionCheckAttracted()
+                                new AIDecisionCanLeaveAttact()
                                 {
-                                    IsHas = false,
                                 }
                             },
-                            TrueState = "Return"
+                            TrueState = "RecoverFromAttract"
                         });
 
                         config.States.Add(attractedState);
+                    }
+
+                    {
+                        var returnState = new AIBehaviorConfig.StateInfo()
+                        {
+                            Name = "RecoverFromAttract",
+                        };
+
+
+                        returnState.ActionNames.Add("RecoveryFromAttract");
+
+                        returnState.Transitions.Add(new AITransition()
+                        {
+                            Decisions = new List<AIDecision>()
+                            {
+                                new AIDecisionReachMoveInterrupt()
+                                {
+                                }
+                            },
+                            TrueState = "Idle"
+                        });
+
+                        config.States.Add(returnState);
                     }
 
 
                     {
                         var returnState = new AIBehaviorConfig.StateInfo()
                         {
-                            Name = "Return",
+                            Name = "RecoverFromCombat",
                         };
 
 
-                        returnState.ActionNames.Add("ReturnInterrupt");
+                        returnState.ActionNames.Add("TryRecovery");
 
                         returnState.Transitions.Add(new AITransition()
                         {
                             Decisions = new List<AIDecision>()
                             {
-                                new AIDecisionCheckReturn()
+                                new AIDecisionCheckCombatState()
                                 {
+                                    CheckState = EntityCombatStateComp.ECombatState.CombatRecover
                                 }
                             },
                             FalseState = "Idle"
@@ -129,16 +153,19 @@ namespace My.Map.Entity.AI
                         config.States.Add(returnState);
                     }
 
+
                     {
-                        var returnState = new AIBehaviorConfig.StateInfo()
+                        var moveState = new AIBehaviorConfig.StateInfo()
                         {
-                            Name = "MoveInPatrolGroup",
+                            Name = "MoveBehave",
                         };
 
+                        moveState.ActionNames.Add("NormalMoveDaemon");
 
-                        returnState.ActionNames.Add("FollowPatrolGroup");
-
-                        returnState.Transitions.Add(new AITransition()
+                        moveState.ActionNames.Add("MoveDoPath");
+                        moveState.ActionNames.Add("MoveHunting");
+                        moveState.ActionNames.Add("MoveInPatrolGroup");
+                        moveState.Transitions.Add(new AITransition()
                         {
                             Decisions = new List<AIDecision>()
                             {
@@ -150,31 +177,7 @@ namespace My.Map.Entity.AI
                             TrueState = "Attracted",
                         });
 
-                        config.States.Add(returnState);
-                    }
-
-                    {
-                        var huntingState = new AIBehaviorConfig.StateInfo()
-                        {
-                            Name = "Hunting",
-                        };
-
-
-                        huntingState.ActionNames.Add("HuntingPlayer");
-
-                        huntingState.Transitions.Add(new AITransition()
-                        {
-                            Decisions = new List<AIDecision>()
-                            {
-                                new AIDecisionCheckAttracted()
-                                {
-                                    IsHas = true,
-                                }
-                            },
-                            TrueState = "Attracted",
-                        });
-
-                        config.States.Add(huntingState);
+                        config.States.Add(moveState);
                     }
 
                     {
@@ -199,7 +202,7 @@ namespace My.Map.Entity.AI
                                     CheckState = EntityCombatStateComp.ECombatState.CombatRecover,
                                 }
                             },
-                            TrueState = "Return",
+                            TrueState = "RecoverFromCombat",
                         });
 
                         combatState.Transitions.Add(new AITransition()
@@ -248,26 +251,58 @@ namespace My.Map.Entity.AI
                         config.Actions.Add(aAction);
                     }
 
+                    //{
+                    //    var aAction = new AIActionReturnInterrupt()
+                    //    {
+                    //    };
+
+                    //    config.Actions.Add(aAction);
+                    //}
+
+
                     {
-                        var aAction = new AIActionReturnInterrupt()
+                        var aAction = new AIActionTryRecovery()
                         {
                         };
 
                         config.Actions.Add(aAction);
                     }
-
                     {
-                        var aAction = new AIActionFollowPatrolGroup()
+                        var aAction = new AIActionRecoveryFromAttract()
                         {
-
                         };
+
                         config.Actions.Add(aAction);
                     }
-
                     
 
+
                     {
-                        var action = new AIActionHuntingPlayer()
+                        var aAction = new AIActionMoveDoPath()
+                        {
+
+                        };
+                        config.Actions.Add(aAction);
+                    }
+
+                    {
+                        var action = new AIActionMoveHunting()
+                        {
+
+                        };
+                        config.Actions.Add(action);
+                    }
+
+                    {
+                        var action = new AIActionNormalMoveDaemon()
+                        {
+
+                        };
+                        config.Actions.Add(action);
+                    }
+
+                    {
+                        var action = new AIActionMoveInPatrolGroup()
                         {
 
                         };
@@ -294,6 +329,8 @@ namespace My.Map.Entity.AI
                         config.Actions.Add(action);
                     }
                 }
+
+                
             }
 
 

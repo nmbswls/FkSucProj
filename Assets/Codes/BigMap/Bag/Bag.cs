@@ -165,7 +165,7 @@ namespace My.Player.Bag
         {
             for (int i = 0; i < NormalSlots.Count; i++)
             {
-                if (NormalSlots[i].Count <= 0)
+                if (NormalSlots[i] != null && NormalSlots[i].Count <= 0)
                 {
                     NormalSlots[i] = null;
                 }
@@ -173,7 +173,7 @@ namespace My.Player.Bag
 
             for (int i = ExtraSlots.Count - 1; i >= 0; i--)
             {
-                if (ExtraSlots[i].Count <= 0 || ExtraSlots[i] == null)
+                if (ExtraSlots[i] == null || ExtraSlots[i].Count <= 0)
                 {
                     ExtraSlots.RemoveAt(i);
                 }
@@ -369,13 +369,26 @@ namespace My.Player.Bag
             if (idx < NormalSlots.Count)
             {
                 NormalSlots[idx] = item;
-                return;
             }
-
-            if(idx - BasicCapacity < ExtraSlots.Count)
+            else if(idx - BasicCapacity < MaxExtraCapacity)
             {
-                ExtraSlots[idx - BasicCapacity] = item;
-                return;
+                int extraIdx = idx - BasicCapacity;
+                if (extraIdx < ExtraSlots.Count)
+                {
+                    ExtraSlots[extraIdx] = item;
+                }
+                else
+                {
+                    ExtraSlots.Add(item);
+                }
+                if (item == null)
+                {
+                    ClearEmptyItems();
+                }
+            }
+            else
+            {
+                Debug.LogError("Err idx " + idx + " bag id: " + BagId);
             }
         }
     }
@@ -439,15 +452,18 @@ namespace My.Player.Bag
             var dst = dstBag.GetItemByIdx(dstIndex);
             if (src == null || src.IsEmpty) return false;
 
-            var maxStackDst = dstBag.GetMaxStack(dst.ItemID);
 
             // 同类堆叠
-            if (dst != null && !dst.IsEmpty && dst.ItemID == src.ItemID && dst.Count < maxStackDst)
+            if (dst != null && !dst.IsEmpty && dst.ItemID == src.ItemID )
             {
-                int moved = dst.AddToStack(src.Count, maxStackDst);
-                src.RemoveFromStack(moved);
-                if (src.Count <= 0) srcBag.ClearEmptyItems();
-                return true;
+                var maxStackDst = dstBag.GetMaxStack(dst.ItemID);
+                if (dst.Count < maxStackDst)
+                {
+                    int moved = dst.AddToStack(src.Count, maxStackDst);
+                    src.RemoveFromStack(moved);
+                    if (src.Count <= 0) srcBag.ClearEmptyItems();
+                    return true;
+                }
             }
 
             // 交换或移动
@@ -460,6 +476,7 @@ namespace My.Player.Bag
                     return false;
                 }
                 dstBag.SetItemData(dstIndex, src);
+                srcBag.SetItemData(srcIndex, null);
             }
             else
             {

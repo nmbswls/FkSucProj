@@ -11,6 +11,7 @@ namespace My.Map.Scene
         public MapUnitWeaponCtrl WeaponCtrl;
 
         public long HitId = 0;
+        private float _durationTimer = 0;
 
         public void OnTriggerEnter2D(Collider2D other)
         {
@@ -20,10 +21,20 @@ namespace My.Map.Scene
             WeaponCtrl.OnWeaponTriggerHit(HitId, unitComp.GetLogicEntity().Id);
         }
 
+        private void Update()
+        {
+            if(HitId != 0 && LogicTime.time >= this._durationTimer)
+            {
+                ClearWeapon();
+            }
+        }
+
         public void ShowWeapon(long hitId, float duration)
         {
             this.HitId = hitId;
             gameObject.SetActive(true);
+
+            this._durationTimer = LogicTime.time + duration;
 
             // 先尝试获取 clip 长度（简单版：按 clip 名匹配）
             float clipLenSec = -1f;
@@ -52,6 +63,7 @@ namespace My.Map.Scene
         {
             gameObject.SetActive(false);
             HitId = 0;
+            _durationTimer = 0;
         }
     }
 }

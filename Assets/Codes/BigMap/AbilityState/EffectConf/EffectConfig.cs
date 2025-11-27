@@ -26,5 +26,12 @@ using UnityEngine;
     {
         public EAbilityEffectType EffectType;
     }
+
+    [Serializable]
+    public class MapAbilityEffectNextPhaseCfg : MapFightEffectCfg
+    {
+        public string MatchSkill;
+        public string MatchPhase;
+    }
 }
 

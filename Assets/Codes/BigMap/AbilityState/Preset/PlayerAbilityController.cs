@@ -17,7 +17,7 @@ namespace My.Map.Entity
             "use_item",
 
             "player_shoot",
-            "player_weapon",
+            "default_weapon",
             "default_dash",
             "fix_clothes",
 
@@ -66,7 +66,7 @@ namespace My.Map.Entity
         public void TrySlash(Vector2 shootDir)
         {
             //Debug.Log("PlayerAbilityController TryShoot " + shootDir);
-            TryUseAbility("player_weapon", castDir: shootDir, overrideParams: new Dictionary<string, string>()
+            TryUseAbility("default_weapon", castDir: shootDir, overrideParams: new Dictionary<string, string>()
             {
             }); ;
         }

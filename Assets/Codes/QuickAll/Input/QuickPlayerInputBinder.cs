@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Map.Logic;
 using My.Map;
+using My.Map.Entity;
 using My.Map.Scene;
 using My.UI;
 using UnityEngine;
@@ -66,6 +67,14 @@ namespace My.Input
         private void Start()
         {
             uiRouter = UIManager.Instance;
+        }
+
+        private void Update()
+        {
+            if(UnityEngine.Input.GetKeyDown(KeyCode.I))
+            {
+                UIOrchestrator.Instance.EnsurePlayerBag();
+            }
         }
 
 
@@ -307,7 +316,7 @@ namespace My.Input
                 return;
             }
 
-            if (!LogicTime.paused)
+            if (!LogicTime.paused && !player.PlayerEntity.CheckHasState(AttrIdConsts.LockFace))
             {
                 
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
@@ -332,7 +341,7 @@ namespace My.Input
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
 
-                player.PlayerEntity.PlayerAbilityController.TryShoot(castDir);
+                player.PlayerEntity.PlayerAbilityController.TrySlash(castDir);
             }
         }
 
@@ -344,7 +353,7 @@ namespace My.Input
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
 
-                player.PlayerEntity.PlayerAbilityController.TrySlash(castDir);
+                player.PlayerEntity.PlayerAbilityController.TryShoot(castDir);
             }
         }
 

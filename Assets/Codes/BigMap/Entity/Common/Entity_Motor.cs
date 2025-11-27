@@ -103,11 +103,26 @@ namespace My.Map.Entity
             this.navProvider = navProvider;
         }
 
-        public void MoveTo(Vector2 destination)
+        public bool CheckIsFollowTarget(long targetId)
+        {
+            if (State != EMotorState.Following) return false;
+            if (_followTarget == null || _followTarget.Id != targetId) return false;
+            return true;
+        }
+
+        public bool CheckIsMovingTo(Vector2 targetPos)
+        {
+            if (State != EMotorState.Pathing) return false;
+            if (_currentGoal == null || _currentGoal != targetPos) return false;
+            return true;
+        }
+
+        public void MoveTo(Vector2 destination, float stopDistance = 0.35f)
         {
             if (navProvider.TryBuildPath(UnitEntity.Pos, destination, out _path) && _path.Length > 0)
             {
                 EnterPathing(destination);
+                this._stopDistance = stopDistance;
             }
             else
             {
@@ -129,7 +144,7 @@ namespace My.Map.Entity
             _followTarget = target;
             _followPrediction = followPrediction;
             _followOffset = offset;
-            stopDistance = 0.6f;
+            this._stopDistance = stopDistance;
 
             // 首次取目标点并建路径（如果可）
             if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var goal))
@@ -380,13 +395,13 @@ namespace My.Map.Entity
         private void MoveToward(Vector2 target)
         {
             var to = (target - UnitEntity.Pos);
-            var dir = to;
-            var desiredSpeed = UnitEntity.moveSpeed;
+            var dir = to.normalized;
+            var desiredSpeed = UnitEntity.GetCurrSpeed();
 
             // 加速度/减速度控制
-            var currentSpeed = target.magnitude;
-            var targetSpeed = Mathf.MoveTowards(currentSpeed, desiredSpeed, 11);
-            DesiredVelocity = dir * targetSpeed;
+            //var currentSpeed = target.magnitude;
+            //var targetSpeed = Mathf.MoveTowards(currentSpeed, desiredSpeed, 11);
+            DesiredVelocity = dir * desiredSpeed;
         }
 
         private void TryReplan()
@@ -402,7 +417,7 @@ namespace My.Map.Entity
                 else
                 {
                     //OnLostTarget?.Invoke();
-                    EnterFree();
+                    //EnterFree();
                     return;
                 }
             }

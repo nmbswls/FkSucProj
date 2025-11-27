@@ -65,6 +65,8 @@ namespace My.Map.Entity.AI
                     oneDecision.OnExitState();
                 }
             }
+
+            _running.Clear();
         }
 
         public AIAction SelectBestAction()
@@ -138,7 +140,7 @@ namespace My.Map.Entity.AI
                 bool pass = true;
                 foreach(var decision in Transitions[i].Decisions)
                 {
-                    if(!decision.Decide())
+                    if(!decision.Decide(_brain))
                     {
                         pass = false; break;
                     }

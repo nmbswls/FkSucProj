@@ -82,7 +82,7 @@ namespace My.UI
             {
                 panelId = "ItemDragDrop",
                 resourcePath = "UI/Prefabs/ItemDragDrop",
-                defaultLayer = UILayer.Popup,
+                defaultLayer = UILayer.Overlay,
                 pooled = false,
             });
             UIManager.Instance.RegisterPanel(new PanelResource()
@@ -97,7 +97,7 @@ namespace My.UI
             {
                 panelId = "DeepZhaQuMiniGame",
                 resourcePath = "UI/Prefabs/DeepZhaQuMiniGame",
-                defaultLayer = UILayer.Overlay,
+                defaultLayer = UILayer.Popup,
                 pooled = false,
             });
 
@@ -105,7 +105,7 @@ namespace My.UI
             {
                 panelId = "BeFckedWindow",
                 resourcePath = "UI/Prefabs/BeFckedWindow",
-                defaultLayer = UILayer.Overlay,
+                defaultLayer = UILayer.Popup,
                 pooled = false,
             });
 
@@ -406,13 +406,18 @@ namespace My.UI
 
         #region 具体逻辑部分
 
+        public void EnsurePlayerBag()
+        {
+            ShowInGroup("ItemDragDrop");
+            ShowInGroup("PlayerBag");
+        }
+
+
         public void TryEnterLootDetailMode(ILootableObj lootObj)
         {
+            EnsurePlayerBag();
             // 打开lootpoint
             ShowInGroup("LootPoint", lootObj);
-            ShowInGroup("PlayerBag");
-            ShowInGroup("PlayerBag");
-
 
             //if(UIManager.Instance.IsPanelVisible())
             {

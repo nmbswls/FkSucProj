@@ -14,16 +14,27 @@ namespace My.Map
         public List<string> DefaultSkillList = new List<string>()
         {
             "player_shoot",
-            "player_weapon",
+            "default_weapon",
             "default_enemy_qinfan",
         };
 
         public DefaultNpcAbilityController(BaseUnitLogicEntity owner) : base(owner)
         {
-            foreach (var skill in DefaultSkillList)
+            if(owner.unitCfg.SkillList.Count > 0)
             {
-                var conf = AbilityLibrary.GetAbilityConfig(skill);
-                RegisterAbility(conf);
+                foreach (var skill in owner.unitCfg.SkillList)
+                {
+                    var conf = AbilityLibrary.GetAbilityConfig(skill);
+                    RegisterAbility(conf);
+                }
+            }
+            else
+            {
+                foreach (var skill in DefaultSkillList)
+                {
+                    var conf = AbilityLibrary.GetAbilityConfig(skill);
+                    RegisterAbility(conf);
+                }
             }
         }
 

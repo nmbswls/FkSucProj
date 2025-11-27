@@ -19,11 +19,15 @@ namespace My.Map.Entity
         public const string Stun = "Stun";
         public const string ForbidOp = "ForbidOp";
         public const string NoSelect = "NoSelect";
+        public const string ImmuneKnock = "ImmuneKnock";
         public const string Ghost = "Ghost";
 
-        public const string PlayerYinNeng = "PlayerYinNeng";
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes";
+        public const string PlayerPleasure = "PlayerPleasure";
+        public const string PlayerSan = "PlayerSan";
+
+
         public const string PlayerKnockDown = "PlayerKnockDown";
 
         public const string PlayerNaiLi = "PlayerNaiLi";

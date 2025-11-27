@@ -53,16 +53,22 @@ namespace My.Map.Logic
     {
         public bool IsPeace;
 
-        public BaseUnitLogicEntity.EMoveBehaveType MoveBehaveType;
+        public UnitMoveBehaveInfo.EMoveBehaveType MoveBehaveType;
 
         public string EnmityConfId;
         public List<string> MoveWayPoints;
 
         public long PatrolFollowId;
         public Vector2 PatrolGroupRelativePos;
+        public bool DisappearOnArrive;
+        public string MovePath = null;
+        public int CurrPathIdx = 0;
+        public float CurrPathProgress = 0;
 
         // 仅保存特殊状态 buff丢弃
         public bool Unsensored;
+
+
     }
 
     [Serializable]
@@ -357,6 +363,7 @@ namespace My.Map.Logic
 
             InitDigPoints();
             InitGuardSpawnPoints();
+            InitWalkerPath();
 
             checkRefreshTimer = LogicTime.time;
         }
@@ -453,7 +460,7 @@ namespace My.Map.Logic
                         patrolGroupRecord.WayPointList.AddRange(initInfo.Waypoints);
 
                         var pName = patrolGroupRecord.WayPointList[patrolGroupRecord.WayPointIdx];
-                        Vector2 point = cacheDatabase.FindNamedPointByName(pName).Position;
+                        Vector2 point = cacheDatabase.FindNamedPointByName(pName)?.Position ?? Vector3.zero;
                         // 初始化巡逻兵
                         foreach (var one in initInfo.GroupUnits)
                         {
@@ -468,7 +475,7 @@ namespace My.Map.Logic
 
 
 
-                            oneRecrord.MoveBehaveType = BaseUnitLogicEntity.EMoveBehaveType.InPatrolGroup;
+                            oneRecrord.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup;
                             oneRecrord.PatrolFollowId = id;
                             oneRecrord.PatrolGroupRelativePos = one.RelativePos;
 
@@ -572,11 +579,8 @@ namespace My.Map.Logic
                 // 初始状态：可选择 Active 或 Sleep
                 runtimeStates[rec.Id] = new OneEntityRuntimeState { Id = rec.Id, State = LogicLifeState.Active };
             }
-            else
-            {
-
-            }
         }
+
 
         /// <summary>
         /// 更新实体位置
@@ -655,7 +659,7 @@ namespace My.Map.Logic
         private readonly Queue<long> despawnEntityQ = new();
         private readonly Queue<long> wakeEntityQ = new();
         private readonly Queue<long> sleepEntityQ = new();
-        private readonly Queue<long> dieEntityQ = new();
+        private readonly Queue<(long, int)> dieEntityQ = new();
         private readonly Queue<long> corpseCleanupQ = new();
 
         // 复用容器
@@ -737,6 +741,59 @@ namespace My.Map.Logic
 
             // 处理尸体回收
             ProcessCorpse(dt);
+
+            TickRefreshWalker();
+
+            TickLowFreqTickRecord();
+        }
+
+        private float _lowFreqTickTimer = 0;
+        private void TickLowFreqTickRecord()
+        {
+            float interval = 5.0f;
+            if(_lowFreqTickTimer + interval > LogicTime.time)
+            {
+                return;
+            }
+
+            _lowFreqTickTimer = LogicTime.time;
+
+            foreach(var rec in Repo.Records.Values)
+            {
+                if(Repo.IsLoaded(rec.Id))
+                {
+                    continue;
+                }
+
+                if(rec is LogicEntityRecord4UnitBase unitRecord)
+                {
+                    if(unitRecord.MoveBehaveType != UnitMoveBehaveInfo.EMoveBehaveType.MovePath)
+                    {
+                        continue;
+                    }
+
+                    var path = GetRuntimePath(unitRecord.MovePath);
+                    if(unitRecord.CurrPathIdx == path.PointList.Count - 1)
+                    {
+                        continue;
+                    }
+
+                    var p0 = path.PointList[unitRecord.CurrPathIdx];
+                    var p1 = path.PointList[unitRecord.CurrPathIdx + 1];
+
+                    var dist = (p1 - p0).magnitude;
+                    var spd = 2.0f;
+
+                    float addProgress = (spd * interval) / dist;
+                    unitRecord.CurrPathProgress += addProgress;
+
+                    if(unitRecord.CurrPathProgress >= 1)
+                    {
+                        unitRecord.CurrPathProgress = 0;
+                        unitRecord.CurrPathIdx += 1;
+                    }
+                }
+            }
         }
 
         private void StepStateMachine(OneEntityRuntimeState st, float dt)
@@ -921,7 +978,7 @@ namespace My.Map.Logic
             while (despawnEntityQ.Count > 0 && n-- > 0)
             {
                 var id = despawnEntityQ.Dequeue();
-                DespawnEntity(id, false);
+                DespawnEntity(id);
             }
 
             // Spawn：对长生命周期可给“优先队列”或即时创建（你已在 StepStateMachine 中处理 AlwaysActive）
@@ -965,8 +1022,8 @@ namespace My.Map.Logic
             int budget = 64; // 可配置
             while (dieEntityQ.Count > 0 && budget-- > 0)
             {
-                var id = dieEntityQ.Dequeue();
-                KillEntity(id);
+                var pair = dieEntityQ.Dequeue();
+                DestroyEntity(pair.Item1, pair.Item2);
             }
         }
 
@@ -992,27 +1049,15 @@ namespace My.Map.Logic
                 //{
                 //}
 
-                DespawnEntity(id, true);
-
-                // 从 AOI 移除（如果之前没移除）
-                UnitGridIndex.Remove(id); 
-
-                st.State = LogicLifeState.NotLoaded;
-                st.Timer = 0;
-
-                //EnqueueDespawn(id);
-
-                runtimeStates.Remove(id);
+                DespawnEntity(id);
+                RemoveLogicRecord(id);
             }
         }
 
-        public void DespawnEntity(long id, bool isDead)
+        public void DespawnEntity(long id)
         {
             if (!Repo.IsLoaded(id)) return;
-            if (Repo.Records.TryGetValue(id, out var rec) && IsRecordAlwaysActive(rec))
-            {
-                return;
-            }
+            
             var ent = Repo.GetLoaded(id);
 
             ent.OnDespawn(out var snap);
@@ -1021,18 +1066,13 @@ namespace My.Map.Logic
 
             logicManager.RecycleEntity(ent);
 
-            // 因死亡而移除
-            if(isDead)
-            {
-                UnitGridIndex.Remove(id);
-                runtimeStates.Remove(id);
-            }
+            
         }
 
         // 异步请求：下一帧/本帧队列处理
-        public void RequestEntityDie(long id)
+        public void RequestEntityDie(long id, int reason)
         {
-            if (!dieEntityQ.Contains(id)) dieEntityQ.Enqueue(id);
+            dieEntityQ.Enqueue((id, reason));
         }
 
         /// <summary>
@@ -1040,40 +1080,74 @@ namespace My.Map.Logic
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public bool KillEntity(long id)
+        private bool DestroyEntity(long id, int reason)
         {
-            // 1) 校验是否已加载
-            if (!Repo.IsLoaded(id)) return false;
-
-            var ent = Repo.GetLoaded(id);
-            if (ent == null) return false;
-
-            // 2) 调用实体死亡逻辑
-            ent.MarkDead = true;
-
-            // 3) 标记运行态和记录
-            if (!runtimeStates.TryGetValue(id, out var st))
+            // 检查是否由record
+            if(!Repo.HasRecord(id))
             {
-                st = new OneEntityRuntimeState { Id = id, State = LogicLifeState.NotLoaded };
-                runtimeStates[id] = st;
+                Debug.Log($"DestroyEntity id:{id} reason:{reason}");
+                return false;
             }
-            st.IsDeadRuntime = true;
-            st.DeathRemainTimer = 0.5f;
 
-            // 4) 死亡后立即退出活跃：可先 Sleep，随后走尸体清理流程
-            if (st.DeathRemainTimer > 0f)
+            // 对于已加载的 走卸载流程
+            if (Repo.IsLoaded(id))
             {
-                // 让实体先 Sleep（停逻辑）
-                EnqueueSleep(id);
-                // 将尸体加入清理队列
-                if (!corpseCleanupQ.Contains(id)) corpseCleanupQ.Enqueue(id);
+                var ent = Repo.GetLoaded(id);
+                ent.MarkDead = true;
+
+                // 3) 标记运行态和记录
+
+                if (!runtimeStates.TryGetValue(id, out var st))
+                {
+                    st = new OneEntityRuntimeState { Id = id, State = LogicLifeState.NotLoaded };
+                    runtimeStates[id] = st;
+                }
+                st.IsDeadRuntime = true;
+                if(reason == 0)
+                {
+                    st.DeathRemainTimer = 0f;
+                }
+                else
+                {
+                    st.DeathRemainTimer = 0.5f;
+                }
+
+                // 4) 死亡后立即退出活跃：可先 Sleep，随后走尸体清理流程
+                if (st.DeathRemainTimer > 0f)
+                {
+                    // 让实体先 Sleep（停逻辑）
+                    EnqueueSleep(id);
+                    // 将尸体加入清理队列
+                    if (!corpseCleanupQ.Contains(id)) corpseCleanupQ.Enqueue(id);
+                }
+                else
+                {
+                    // 立即卸载
+                    DespawnEntity(id);
+
+                    RemoveLogicRecord(id);
+                }
             }
+            // 对于未加载的条目 直接移除
             else
             {
-                // 立即卸载
-                DespawnEntity(id, true);
+                RemoveLogicRecord(id);
             }
+
             return true;
+        }
+
+
+        private void RemoveLogicRecord(long recId)
+        {
+            Repo.Records.TryGetValue(recId, out var rec);
+            if (rec != null && IsRecordAlwaysActive(rec))
+            {
+                LongLived.Unregister(recId);
+            }
+            Repo.RemoveRecord(recId);
+            UnitGridIndex.Remove(recId);
+            runtimeStates.Remove(recId);
         }
 
         /// <summary>

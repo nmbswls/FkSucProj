@@ -23,5 +23,11 @@ namespace My.Map.Entity
         public float speed;
         public int param1;
         public int param2;
+
+
+        [SerializeReference]
+        public List<MapFightEffectCfg> HitEffects = new();
+        public bool TriggerOnLifeEnd;
+        public bool TriggerOnCollide;
     }
 }

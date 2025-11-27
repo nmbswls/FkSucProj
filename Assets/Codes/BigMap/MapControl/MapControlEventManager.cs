@@ -112,7 +112,23 @@ namespace My.Map
                 events.Add(oneEvent);
             }
 
-            foreach(var ev in events)
+            //{
+            //    // 
+            //    MapControlEvent oneEvent = new();
+            //    oneEvent.TriggerType = ETriggerType.JingJie;
+            //    oneEvent.TriggerP1 = 1;
+
+            //    oneEvent.Actions.Add(new MapControlAction()
+            //    {
+            //        ActionType = MapControlAction.EActionType.SpawnShouWei,
+            //        Param1 = 3,
+            //        Param3 = "default_shouwei",
+            //    });
+
+            //    events.Add(oneEvent);
+            //}
+
+            foreach (var ev in events)
             {
                 EMapLogicEventType listenType = EMapLogicEventType.Invalid;
 
@@ -163,7 +179,7 @@ namespace My.Map
                         record.Position = Vector2.zero;
                         record.FaceDir = Vector2.down;
 
-                        record.MoveBehaveType = BaseUnitLogicEntity.EMoveBehaveType.NoMove;
+                        record.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
 
                         logicManager.AddNewEntityRecord(record);
                     }

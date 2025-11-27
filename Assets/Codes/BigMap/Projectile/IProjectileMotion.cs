@@ -91,7 +91,15 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
         if (_finished) return;
         _time += dt;
         _lifetime -= dt;
-        if (_lifetime <= 0f) { _finished = true; return; }
+        if (_lifetime <= 0f) 
+        { 
+            _finished = true;
+            if (ownerProj.bindingProjInfo.pData.TriggerOnLifeEnd)
+            {
+                ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
+            }
+            return; 
+        }
 
         _speed += D.acceleration * dt;
         if (_speed < 0f) _speed = 0f;
@@ -150,6 +158,11 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
 
         if (col.gameObject.layer == LayerMask.NameToLayer("Wall"))
         {
+            if(ownerProj.bindingProjInfo.pData.TriggerOnCollide)
+            {
+                ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, _pos, null);
+                Debug.Log("Handle Hit _pos " + _pos);
+            }
             return true;
         }
         else if(col.gameObject.layer == LayerMask.NameToLayer("MapTarget"))
@@ -170,7 +183,7 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
             if (_hitCD.TryGetValue(entityId, out float next) && _time < next) return false;
             //_hitCD[id] = _time + PD.hitCooldown;
 
-            ProjectileUtil.ApplyDamage(unitPresent, PD.damage, ownerProj.bindingProjInfo.ownerEntity.Id);
+            ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, unitPresent);
 
             _penetrationLeft--;
             if (_penetrationLeft <= 0) return true;
@@ -265,7 +278,7 @@ public class MapProjectileParabolaMotion : IMapProjectileMotion
                 //    return false;
                 long entityId = unitPresent.Id;
                 //_hitCD[id] = _time + PD.hitCooldown;
-                ProjectileUtil.ApplyDamage(unitPresent, PD.damage, Owner.bindingProjInfo.ownerEntity.Id);
+                //ProjectileUtil.ApplyDamage(unitPresent, PD.damage, Owner.bindingProjInfo.ownerEntity.Id);
 
                 //if (!PD.friendlyFire && _ctx.owner != null && c.transform.root == _ctx.owner.root)
                 //    continue;

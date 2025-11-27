@@ -16,11 +16,7 @@ namespace My.Map
     { 
         long Id { get; }
 
-        float AttractPower { get; }
-
         Vector2 Pos { get; }
-        
-        float AttractRange { get; }
     }
 
     public class AttractPointLogicEntity : LogicEntityBase, IAttractSource
@@ -39,15 +35,6 @@ namespace My.Map
 
         public override EEntityType Type => EEntityType.AttractPoint;
 
-        public float AttractPower
-        {
-            get { return 5.0f; }
-        }
-
-        public float AttractRange
-        {
-            get { return 5.0f; }
-        }
 
         public override void Initialize()
         {
@@ -76,14 +63,14 @@ namespace My.Map
                     FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
                 };
 
-                var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, AttractRange, filterParam);
+                var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 5.0f, filterParam);
 
                 foreach (var surround in surrounds)
                 {
                     var unit = surround as BaseUnitLogicEntity;
                     if (unit != null)
                     {
-                        unit.ApplyAttracted(Pos, AttractPower, this);
+                        unit.ApplyAttracted(Pos, 3.0f, this);
                     }
                 }
 

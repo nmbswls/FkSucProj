@@ -23,6 +23,7 @@ using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using static Map.Encounter.EncounterBattleService;
+using static MapSceneEffectManager;
 using static UnityEngine.UI.ContentSizeFitter;
 
 
@@ -80,6 +81,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public MapGlobalNoiseEmitter mapGlobalNoiseEmitter;
 
     public MapSceneFadeAlphaManager SceneFadeManager;
+
+    public MapSceneEffectManager SceneFxManager;
 
     public MapSceneDropManager sceneDropManager;
 
@@ -195,21 +198,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             gameLogicManager.Tick(LogicTime.deltaTime);
             interactSystem.Tick(LogicTime.deltaTime);
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.M))
-            {
-                gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4UnitBase()
-                {
-                    Id = GameLogicManager.LogicEntityIdInst ++,
-                    EntityType = EEntityType.Monster,
-                    CfgId = "h_sprite",
-                    Position = playerScenePresenter.transform.position + new Vector3(1, 1, 0),
-                    FactionId = EFactionId.HSprite,
-
-                    IsPeace = false,
-                    MoveBehaveType = BaseUnitLogicEntity.EMoveBehaveType.Hunting,
-                    EnmityConfId = "default_monster",
-                });
-            }
+            
 
             if(UnityEngine.Input.GetKeyDown(KeyCode.L))
             {
@@ -503,6 +492,30 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         UIManager.Instance.HideLoading();
     }
+
+    public int ShowRangeWarnEffect(int shape, float p1, float p2, Vector2 vec1, Vector2 vec2, float duration)
+    {
+        if(shape == 1)
+        {
+            return SceneFxManager.ShowSceneWarnRangeCircle(vec1, vec2, p1, duration, Vector2.zero);
+        }
+        else if (shape == 2)
+        {
+            return SceneFxManager.ShowSceneWarnRangeRect(vec1, vec2, p1, p2, duration, new Vector2(0.3f, 0));
+        }
+        return 0;
+    }
+
+    public void UpdateRangeWarnEffect(int eId, Vector2 pos, Vector2 dir)
+    {
+        SceneFxManager.UpdateSceneWarnRangeRect(eId, pos, dir);
+    }
+
+
+    public void DestroySceneFxEffect(int effectId)
+    {
+        SceneFxManager.ForceDestroy(effectId);
+    }
 }
 
 
@@ -512,7 +525,14 @@ public class UnityNavProvider : INavProvider
     public bool TryBuildPath(Vector3 start, Vector3 destination, out NavPath path)
     {
         NavMeshPath nmPath = new NavMeshPath();
-        bool ok = NavMesh.CalculatePath(start, destination, 0, nmPath);
+
+        int walkable = NavMesh.GetAreaFromName("Walkable");
+        int mask = 1 << walkable; // 或组合多个区域
+
+        var ret1 = NavMesh.SamplePosition(start, out var h1, 2f, mask);
+        var ret2 = NavMesh.SamplePosition(destination, out var h2, 2f, mask);
+
+        bool ok = NavMesh.CalculatePath(h1.position, h2.position, mask, nmPath);
         path = new NavPath { 
             Waypoints = new Vector2[nmPath.corners.Length],
         };

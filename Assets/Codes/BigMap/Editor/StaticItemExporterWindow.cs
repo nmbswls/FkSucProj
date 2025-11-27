@@ -45,6 +45,7 @@ public class StaticItemExporterWindow : EditorWindow
         new();
 
     private Dictionary<string, NamedPoint> namedPointCache = new();
+    private Dictionary<string, NamedPath> namedPathCache = new();
 
     private Dictionary<(int x, int y), List<Segment2D>> chunkSegments =
         new Dictionary<(int x, int y), List<Segment2D>>();
@@ -99,8 +100,7 @@ public class StaticItemExporterWindow : EditorWindow
         EditorGUILayout.LabelField("Result Preview", EditorStyles.boldLabel);
         EditorGUILayout.LabelField($"Buckets: {chunkBuckets.Count}");
 
-        EditorGUILayout.LabelField($"Geenetor:{dynamicGenerator.Count}");
-        
+        EditorGUILayout.LabelField($"Geenetor:{dynamicGenerator.Count} points:{namedPointCache.Count} path:{namedPathCache.Count}");
     }
 
     private void DrawRootsList()
@@ -116,6 +116,7 @@ public class StaticItemExporterWindow : EditorWindow
         chunkSegments.Clear();
 
         namedPointCache.Clear();
+        namedPathCache.Clear();
 
         if (sceneRoot == null)
         {
@@ -214,19 +215,39 @@ public class StaticItemExporterWindow : EditorWindow
         {
             var t = namedPoint.GetChild(i);
             var comp = t.GetComponent<NamePointGenerator>();
-            if(comp != null)
+
+            var pInfo = new NamedPoint()
             {
-                namedPointCache[t.name] = comp.Info;
+                Name = t.gameObject.name,
+                Position = t.gameObject.transform.position,
+                Rotation = t.gameObject.transform.rotation,
+                PointType = ENamedPointType.Normal,
+            };
+
+            if (comp != null)
+            {
+                pInfo.PointType = comp.Info.PointType;
             }
-            else
+
+            namedPointCache[pInfo.Name] = pInfo;
+        }
+
+        var namedPathRoot = sceneRoot.transform.Find("NamedPath");
+        for (int i = 0; i < namedPathRoot.childCount; i++)
+        {
+            var t = namedPathRoot.GetChild(i);
+            var comp = t.GetComponent<NamePathProvider>();
+            if (comp != null)
             {
-                namedPointCache[t.name] = new NamedPoint()
+                var path = new NamedPath();
+                path.Name = comp.Name;
+                path.Tag = comp.Tag;
+                path.Points = new();
+                foreach (var p in comp.NamedPoints)
                 {
-                    Name = t.gameObject.name,
-                    Position = t.gameObject.transform.position,
-                    Rotation = t.gameObject.transform.rotation,
-                    PointType = ENamedPointType.Normal,
-                };
+                    path.Points.Add(p.gameObject.name);
+                }
+                namedPathCache[t.name] = path;
             }
         }
 
@@ -441,7 +462,7 @@ public class StaticItemExporterWindow : EditorWindow
             {
                 var initInfo = new MapExportDatabase.DynamicEntityInitInfo4Unit();
                 initInfo.EnmityConfId = unitEntity.EnmityConfId;
-                initInfo.MoveMode = BaseUnitLogicEntity.EMoveBehaveType.NoMove;
+                initInfo.MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
                 initInfo.IsPeace = unitEntity.IsPeace;
                 initInfo.InitUnsensored = unitEntity.IsPeace;
 
@@ -470,6 +491,11 @@ public class StaticItemExporterWindow : EditorWindow
         foreach(var p in namedPointCache)
         {
             asset.NamedPoints.Add(p.Value);
+        }
+
+        foreach (var p in namedPathCache)
+        {
+            asset.NamedPaths.Add(p.Value);
         }
 
         AssetDatabase.CreateAsset(asset, path);

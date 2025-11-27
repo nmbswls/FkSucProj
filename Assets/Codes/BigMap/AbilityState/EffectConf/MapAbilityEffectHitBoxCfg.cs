@@ -23,7 +23,7 @@ namespace My.Map.Entity
 
         public EEntityType TargetEntityType;
 
-        public EntityFilterParam FilterParams;
+        public ECampFilterType CampFilterType;
 
         public bool IncludeEnmity;
         public bool IncludeFriendly;

@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements.Experimental;
 
 
 namespace My.Map.Entity
@@ -68,7 +69,16 @@ namespace My.Map.Entity
                     var ab = CreateSpawnAttractAbility();
                     _abilityDict[ab.Id] = ab;
                 }
-                
+
+                {
+                    var ab = CreateDefaultDashSlash();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateBasicAoeSlash();
+                    _abilityDict[ab.Id] = ab;
+                }
             }
 
             _abilityDict.TryGetValue(abilityName, out var abConfig);
@@ -167,6 +177,10 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.CoolDown = 1.0f;
 
+            spec.CauseAttract = true;
+            spec.AttractPower = 10.0f;
+            spec.AttractRange = 2.0f;
+
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Executing",
@@ -202,10 +216,11 @@ namespace My.Map.Entity
                 PhaseName = "Pre",
                 LockMovement = true,
                 LockRotation = true,
+                WithProgress = true,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "1"
                 },
             });
 
@@ -226,6 +241,27 @@ namespace My.Map.Entity
                 motionType = EMotionType.Linear,
                 lifeTime = 0.6f,
                 speed = 9f,
+                TriggerOnCollide = true,
+                TriggerOnLifeEnd = true,
+
+                HitEffects = new()
+                {
+                    new MapAbilityEffectHitBoxCfg()
+                    {
+                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                        Radius = 1.0f,
+                        CampFilterType = ECampFilterType.NotSelf,
+
+                        OnHitEffects = new()
+                        {
+                            new MapAbilityEffectAddResourceCfg()
+                            {
+                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                AddValue = 50000,
+                            }
+                        }
+                    }
+                },
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 
@@ -247,9 +283,9 @@ namespace My.Map.Entity
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
-            spec.Id = "player_weapon";
+            spec.Id = "default_weapon";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.CoolDown = 0.5f;
+            spec.CoolDown = 0.3f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -271,22 +307,28 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "0.18"
                 },
             };
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon01",
-                Duration = 0.2f,
+                Duration = 0.15f,
                 OnHitEffects = new()
             {
-                new MapAbilityEffectCostResourceCfg()
+
+                new MapAbilityEffectApplyDamageCfg()
                 {
-                    ResourceId = AttrIdConsts.HP,
-                    CostValue = 25,
-                    Flags = 1,
-                }
+                    BaseDamage = 25000,
+                    KnockBackForce = 2.0f,
+                },
+                //new MapAbilityEffectCostResourceCfg()
+                //{
+                //    ResourceId = AttrIdConsts.HP,
+                //    CostValue = 25,
+                //    Flags = 1,
+                //},
             }
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
@@ -449,6 +491,7 @@ namespace My.Map.Entity
 
             var newEffect = new MapAbilityEffectHitBoxCfg()
             {
+                Shape = MapAbilityEffectHitBoxCfg.EShape.Square,
                 TargetEntityType = EEntityType.Player,
                 Width = 1.2f,
                 Length = 1f,
@@ -485,6 +528,13 @@ namespace My.Map.Entity
                 PhaseName = "Executing",
                 EnterDebugString = "准备抓取",
                 PhaseBuff = new() { "jian_su_self" },
+
+                ShowRangePreview = true,
+                FaceOffset = new Vector2(0.3f, 0),
+                IsCircle = false,
+                RangeWidth = 0.8f,
+                RangeLen = 1.2f,
+
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -518,6 +568,7 @@ namespace My.Map.Entity
             }
 
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnExit });
+
 
             spec.Phases.Add(mainPhase);
 
@@ -605,7 +656,208 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
         }
-        
+
+
+        private static MapAbilitySpecConfig CreateDefaultDashSlash()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "default_dash_slash";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CoolDown = 8.0f;
+            spec.DesiredUseDistance = 3.0f;
+            spec.Priority = 100;
+            spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
+            spec.Range1 = 3.5f;
+
+            var preparePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+
+                ShowRangePreview = true,
+                FaceOffset = new Vector2(0.3f, 0),
+                IsCircle = false,
+                RangeWidth = 1.2f,
+                RangeLen = 3.0f,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            };
+
+            spec.Phases.Add(preparePhase);
+
+
+            var dashingPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Dashing",
+                LockMovement = true,
+                LockRotation = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            };
+
+            {
+                var dashEffect = new MapAbilityEffectDashStartCfg()
+                {
+                    IsFixPointMode = true,
+                    DashSpeed = 8f,
+                    DashOverrideHitRadius = 0.8f,
+                    OnHitEffects = new()
+                    {
+                        // 提前进入下一phase
+                        new MapAbilityEffectNextPhaseCfg()
+                        {
+                            MatchPhase = "Dashing",
+                            MatchSkill = "default_dash_slash"
+                        },
+                    },
+                };
+
+                dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter});
+            }
+
+            var slashPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Slash",
+                LockMovement = true,
+                LockRotation = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.12"
+                },
+            };
+
+            {
+                var hitEffect = new MapAbilityEffectUseWeaponCfg()
+                {
+                    WeaponName = "Weapon01",
+                    Duration = 0.12f,
+                    OnHitEffects = new()
+                    {
+
+                        new MapAbilityEffectApplyDamageCfg()
+                        {
+                            BaseDamage = 25000,
+                            KnockBackForce = 1.0f,
+                        },
+                    }
+                };
+
+                slashPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+            }
+
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                LockRotation = true,
+                InterruptMask = EAbilityInterruptMask.InputCancel,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
+
+            spec.Phases.Add(postPhase);
+
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateBasicAoeSlash()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "basic_aoe_slash";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CoolDown = 5.0f;
+            spec.DesiredUseDistance = 1.0f;
+            spec.Priority = 20;
+
+            var preparePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+
+                ShowRangePreview = true,
+                FaceOffset = new Vector2(0, 0),
+                IsCircle = true,
+                RangeRadius = 1.2f,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.8"
+                },
+            };
+
+            spec.Phases.Add(preparePhase);
+
+
+            var slashPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Slash",
+                LockMovement = true,
+                LockRotation = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.12"
+                },
+            };
+
+
+            {
+                var hitCfg = new MapAbilityEffectHitBoxCfg();
+                hitCfg.EffectType = EAbilityEffectType.HitBox;
+                hitCfg.Shape = MapAbilityEffectHitBoxCfg.EShape.Circle;
+                hitCfg.Radius = 1.2f;
+                hitCfg.TargetEntityType = EEntityType.Player;
+
+                {
+                    var dmgEffect = new MapAbilityEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 25000,
+                        KnockBackForce = 1.0f,
+                    };
+
+                    hitCfg.OnHitEffects = new() { dmgEffect };
+                }
+
+                slashPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnEnter });
+                
+            }
+
+            spec.Phases.Add(slashPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                LockRotation = true,
+                InterruptMask = EAbilityInterruptMask.InputCancel,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
+
+            spec.Phases.Add(postPhase);
+
+            return spec;
+        }
     }
 
 }

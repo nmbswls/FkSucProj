@@ -102,10 +102,10 @@ namespace My.Map.Entity
                     continue;
                 }
 
-                if(!UnitEntity.CheckIsEmnityFaction(otherUnit.FactionId))
-                {
-                    continue;
-                }
+                //if(!UnitEntity.CheckIsEmnityFaction(otherUnit.FactionId))
+                //{
+                //    continue;
+                //}
 
                 if (!UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, otherUnit.Id))
                 {
