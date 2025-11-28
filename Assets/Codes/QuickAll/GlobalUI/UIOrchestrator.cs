@@ -134,6 +134,15 @@ namespace My.UI
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "ItemCountChooseBox",
+                resourcePath = "UI/Prefabs/Box/ItemCountChoose",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+            
         }
 
         public static void RegisterGroups()

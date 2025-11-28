@@ -25,6 +25,7 @@ namespace My.UI
             }
         }
 
+
         public IShopProvider BindShop;
 
         public LoopGridView GridView;

@@ -239,12 +239,20 @@ namespace My.UI
             {
                 var fromBag = PlayerBagUIPanel.Instance.BindingInventory.GetBagById(payload.SourceContainerId);
 
+                //
+                if(payload.Stack.Count > 0)
+                {
+                    ShopNormalUIPanel.Instance.ShowSellHint();
+                }
+
                 bool sell = ShopNormalUIPanel.Instance.BindShop.TrySellFromBag(fromBag.BagId, payload.SourceIndex);
                 if (sell)
                 {
                     ShopNormalUIPanel.Instance.RefreshContent();
                     PlayerBagUIPanel.Instance.RefreshContent();
                 }
+
+                
             }
         }
     }
