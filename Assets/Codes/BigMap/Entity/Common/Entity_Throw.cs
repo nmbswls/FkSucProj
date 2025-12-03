@@ -165,17 +165,17 @@ namespace My.Map.Entity
         {
             if (!launcher2ContextMap.TryGetValue(launcher.Id, out var launcherCtxId))
             {
-                Debug.LogError("TryInterruptThrowByLauncher not find throw launcher " + launcher.Id);
+                //Debug.LogError("TryInterruptThrowByLauncher not find throw launcher " + launcher.Id);
                 return false;
             }
 
             if (!ContextContainer.TryGetValue(launcherCtxId, out var launcherCtx))
             {
-                Debug.LogError("interrupt status error wrong state");
+                //Debug.LogError("interrupt status error wrong state");
                 launcher2ContextMap.Remove(launcher.Id);
                 return false;
             }
-
+            Debug.LogError("TryInterruptThrowByLauncher " + launcher.Id);
             CleanOneThrowContext(launcherCtx);
 
             return true;

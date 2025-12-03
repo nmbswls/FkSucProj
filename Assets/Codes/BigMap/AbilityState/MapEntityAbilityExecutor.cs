@@ -257,6 +257,8 @@ namespace My.Map.Entity
             
             EventOnUseAbility?.Invoke(abilityConf.Id);
 
+            Debug.Log($"entity {EntityOwner.Id} TryStart {abilityConf.Id}");
+
             return true;
         }
 

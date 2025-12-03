@@ -17,11 +17,14 @@ namespace My.Player
 
         public List<string> PlayerSkillList = new() 
         {
-            "player_shoot",
-            "default_weapon",
+            "queen_attack",
             "default_dash",
+            "queen_shoot",
             "fix_clothes",
-            "spawn_attract"};
+            "spawn_attract",
+
+            "default_push"
+        };
 
         public PlayerDataManager(GameLogicManager logicManager)
         {

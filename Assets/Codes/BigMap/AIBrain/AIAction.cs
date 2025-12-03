@@ -678,10 +678,10 @@ namespace My.Map.Entity.AI
                 var firstTran = trans[0];
                 var node = _brain.UnitEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
 
-                var skillConf = SkillLibrary.GetSkillConfig(node.skillId);
+                var skillConf = SkillLibrary.GetSkillConfig(node.AbilityId);
                 (Vector2? vec, long? targetId) = AIActionUtils.GetSkillUseParams(skillConf, _brain.UnitEntity);
                 //_brain.UnitEntity.ablilityManager.GetCanDerive
-                _brain.UnitEntity.ablilityManager.UseSkill(node.skillId, castVec: vec, target: targetId != null ? _brain.UnitEntity.LogicManager.GetLogicEntity(targetId.Value) : null);
+                _brain.UnitEntity.ablilityManager.UseSkill(node.AbilityId, castVec: vec, target: targetId != null ? _brain.UnitEntity.LogicManager.GetLogicEntity(targetId.Value) : null);
 
                 // 修改技能释放条件
                 _brain.blackboard.CurrIntentSkill = skillConf.SkillId;

@@ -128,14 +128,14 @@ namespace My.Map
             {
                 var node = new ComboNode()
                 {
-                    id = 100,
-                    skillId = "queen_attack_01",
+                    NodeId = 100,
+                    AbilityId = "queen_attack_01",
                     deriveWindows = new List<DeriveWindow>()
                     {
                         new DeriveWindow()
                         {
                             id = "1",
-                            window = new TimeWindow(0.2f, 0.3f),
+                            window = new TimeWindow(0.27f, 0.57f),
                         }
                     }
                 };
@@ -145,14 +145,14 @@ namespace My.Map
             {
                 var node = new ComboNode()
                 {
-                    id = 101,
-                    skillId = "queen_attack_02",
+                    NodeId = 101,
+                    AbilityId = "queen_attack_02",
                     deriveWindows = new List<DeriveWindow>()
                     {
                         new DeriveWindow()
                         {
                             id = "1",
-                            window = new TimeWindow(0.2f, 0.3f),
+                            window = new TimeWindow(0.27f, 0.6f),
                         }
                     }
                 };
@@ -162,8 +162,8 @@ namespace My.Map
             {
                 var node = new ComboNode()
                 {
-                    id = 102,
-                    skillId = "queen_attack_03",
+                    NodeId = 102,
+                    AbilityId = "queen_attack_03",
                 };
                 graph.ComboNodes.Add(node);
 
@@ -171,8 +171,8 @@ namespace My.Map
             {
                 var node = new ComboNode()
                 {
-                    id = 200,
-                    skillId = "queen_dash",
+                    NodeId = 200,
+                    AbilityId = "queen_dash",
                     deriveWindows = new List<DeriveWindow>()
                     {
                         new DeriveWindow()
@@ -189,8 +189,8 @@ namespace My.Map
             {
                 var node = new ComboNode()
                 {
-                    id = 201,
-                    skillId = "queen_dash_attack",
+                    NodeId = 201,
+                    AbilityId = "queen_dash_attack",
                 };
                 graph.ComboNodes.Add(node);
 
@@ -203,7 +203,7 @@ namespace My.Map
                     toNodeId = 100,
                     triggerInput = new InputPattern()
                     {
-                        SkillId = "queen_attack_01"
+                        SkillId = "queen_attack"
                     },
 
                 };
@@ -217,7 +217,7 @@ namespace My.Map
                     toNodeId = 101,
                     triggerInput = new InputPattern()
                     {
-                        SkillId = "queen_attack_01"
+                        SkillId = "queen_attack"
                     },
                     windowId = "1",
                 };
@@ -231,7 +231,7 @@ namespace My.Map
                     toNodeId = 102,
                     triggerInput = new InputPattern()
                     {
-                        SkillId = "queen_attack_01"
+                        SkillId = "queen_attack"
                     },
                     windowId = "1",
                 };
@@ -258,7 +258,7 @@ namespace My.Map
                     toNodeId = 201,
                     triggerInput = new InputPattern()
                     {
-                        SkillId = "queen_attack_01"
+                        SkillId = "queen_attack"
                     },
                 };
 

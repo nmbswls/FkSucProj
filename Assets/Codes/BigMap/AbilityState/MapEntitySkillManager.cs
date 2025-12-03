@@ -165,9 +165,9 @@ namespace My.Map.Entity
         [Serializable]
         public class ComboNode
         {
-            public int id;
-            public string skillId;
-            public float expectedDuration = 0.5f; // 估计时长，仅用于窗口参考
+            public int NodeId;
+            public string AbilityId;
+            public float ExpectedDuration = 0.5f; // 估计时长，仅用于窗口参考
             public List<DeriveWindow> deriveWindows = new List<DeriveWindow>();
         }
 
@@ -197,8 +197,8 @@ namespace My.Map.Entity
         {
             foreach (var n in ComboNodes)
             {
-                nodes[n.id] = n;
-                if (!transitionsFrom.ContainsKey(n.id)) transitionsFrom[n.id] = new List<Transition>();
+                nodes[n.NodeId] = n;
+                if (!transitionsFrom.ContainsKey(n.NodeId)) transitionsFrom[n.NodeId] = new List<Transition>();
             }
 
             foreach (var t in Transitions)
@@ -260,7 +260,7 @@ namespace My.Map.Entity
 
         public ComboNode GetComboNode(int nodeId)
         {
-            return _graph.GetNode(nodeId);
+            return _graph?.GetNode(nodeId) ?? null;
         }
 
         public void Tick(float dt)
@@ -273,6 +273,7 @@ namespace My.Map.Entity
 
         public List<EntitySkillComboGraph.Transition> GetPossibleTransition()
         {
+            if (_graph == null) return null;
             var nodeId = _ctx.currentNodeId;
             var node = _graph.GetNode(nodeId);
             if (node == null) return null;
@@ -307,64 +308,76 @@ namespace My.Map.Entity
         /// <param name="input"></param>
         /// <param name="chosen"></param>
         /// <returns></returns>
-        public bool GetTriggerCombo(SkillInput input, out EntitySkillComboGraph.Transition chosen)
+        public bool TryTriggerCurrentCombo(SkillInput input, out EntitySkillComboGraph.Transition chosen)
         {
             chosen = null;
+            if (_graph == null) return false;
             var nodeId = _ctx.currentNodeId;
             var node = _graph.GetNode(nodeId);
 
             // 尝试进行entry transition
             if (node == null)
             {
-                var transitions = _graph.GetTransitions(nodeId);
-                float best = float.NegativeInfinity;
-                foreach (var t in transitions)
-                {
-                    if (t.requireHitConfirm && !_ctx.hitConfirmed) continue;
-                    if (!input.Matches(t.triggerInput)) continue;
-
-                    float score = t.scoreBias;
-                    if (score > best)
-                    {
-                        best = score;
-                        chosen = t;
-                    }
-                }
                 return false;
             }
-            else
+
+            // 激活窗口
+            var activeWindows = new Dictionary<string, EntitySkillComboGraph.DeriveWindow>();
+            foreach (var w in node.deriveWindows)
             {
-                // 激活窗口
-                var activeWindows = new Dictionary<string, EntitySkillComboGraph.DeriveWindow>();
-                foreach (var w in node.deriveWindows)
+                if (w.window.Contains(_ctx.nodeClock))
                 {
-                    if (w.window.Contains(_ctx.nodeClock))
-                    {
-                        activeWindows[w.id] = w;
-                    }
+                    activeWindows[w.id] = w;
                 }
-                if (activeWindows.Count == 0) return false;
-
-                // 评分挑选
-                var transitions = _graph.GetTransitions(nodeId);
-                float best = float.NegativeInfinity;
-                foreach (var t in transitions)
-                {
-                    if (!activeWindows.ContainsKey(t.windowId)) continue;
-                    if (t.requireHitConfirm && !_ctx.hitConfirmed) continue;
-                    if (!input.Matches(t.triggerInput)) continue;
-
-                    float score = t.scoreBias;
-                    if (score > best)
-                    {
-                        best = score;
-                        chosen = t;
-                    }
-                }
-                return chosen != null;
             }
+            if (activeWindows.Count == 0) return false;
+
+            // 评分挑选
+            var transitions = _graph.GetTransitions(nodeId);
+            float best = float.NegativeInfinity;
+            foreach (var t in transitions)
+            {
+                if (!activeWindows.ContainsKey(t.windowId)) continue;
+                if (t.requireHitConfirm && !_ctx.hitConfirmed) continue;
+                if (!input.Matches(t.triggerInput)) continue;
+
+                float score = t.scoreBias;
+                if (score > best)
+                {
+                    best = score;
+                    chosen = t;
+                }
+            }
+            return chosen != null;
         }
 
+
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="chosen"></param>
+        /// <returns></returns>
+        public bool TryTriggerEntryCombo(SkillInput input, out EntitySkillComboGraph.Transition chosen)
+        {
+            chosen = null;
+            if (_graph == null) return false;
+            var transitions = _graph.GetTransitions(0);
+            float best = float.NegativeInfinity;
+            foreach (var t in transitions)
+            {
+                if (t.requireHitConfirm && !_ctx.hitConfirmed) continue;
+                if (!input.Matches(t.triggerInput)) continue;
+
+                float score = t.scoreBias;
+                if (score > best)
+                {
+                    best = score;
+                    chosen = t;
+                }
+            }
+            return chosen != null;
+        }
 
         public void OnHitConfirm()
         {
@@ -375,7 +388,8 @@ namespace My.Map.Entity
 
         public void TransitCombo(int nextNodeId)
         {
-            if(nextNodeId == 0)
+            if (_graph == null) return;
+            if (nextNodeId == 0)
             {
                 _ctx.SetNode(0);
 
@@ -491,25 +505,50 @@ namespace My.Map.Entity
                 return false;
             }
 
-            string realSkillId = skillId;
-            // 检查是否能衔接combo
-            if (comboOrchestrator.GetTriggerCombo(new SkillInput() { SkillId = skillId }, out var chosenTran))
+            string realAbilityId;
+            EntitySkillComboGraph.Transition chosenTran = null;
+
+            // 先检查是否能直接衔接combo
+            if (comboOrchestrator.TryTriggerCurrentCombo(new SkillInput() { SkillId = skillId }, out chosenTran))
             {
                 var nextNode = comboOrchestrator.GetComboNode(chosenTran.toNodeId);
-                realSkillId = nextNode.skillId;
+                realAbilityId = nextNode.AbilityId;
+            }
+            // 再检查能否触发入口combo
+            else if(comboOrchestrator.TryTriggerEntryCombo(new SkillInput() { SkillId = skillId }, out chosenTran))
+            {
+                var nextNode = comboOrchestrator.GetComboNode(chosenTran.toNodeId);
+                realAbilityId = nextNode.AbilityId;
+            }
+            // 非combo类技能 直接执行
+            else
+            {
+                realAbilityId = skillRuntime.cacheConfig.MainAbilityId;
             }
 
-            if (!Executor.TryUseAbility(realSkillId, castDir: castVec, target: target))
+            if (!Executor.TryUseAbility(realAbilityId, castDir: castVec, target: target))
             {
                 Debug.Log("UseSkill fail");
                 comboOrchestrator.TransitCombo(0);
                 return false;
             }
 
-            // 赋值或重置连击信息
-            comboOrchestrator.TransitCombo(chosenTran?.toNodeId ?? 0);
+            // 执行combo状态更新
+            // todo 如果技能打断连击 则需要在这里置空
+            if(chosenTran != null)
+            {
+                comboOrchestrator.TransitCombo(chosenTran.toNodeId);
+            }
+            else
+            {
+                // 打断连招的技能 需要重置
+                if(skillRuntime.cacheConfig.InterruptCombo)
+                {
+                    comboOrchestrator.TransitCombo(0);
+                }
+            }
 
-            // 检查冷却等情况
+            // 冷却等情况
             if (skillRuntime.cacheConfig.CoolDown > 0)
             {
                 skillRuntime.cooldown = skillRuntime.cacheConfig.CoolDown;

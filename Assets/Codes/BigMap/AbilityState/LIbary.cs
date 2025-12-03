@@ -27,11 +27,33 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "queen_attack_01";
                     cfg.CoolDown = 0.2f;
                     cfg.DesiredUseDistance = 0.8f;
+                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "default_dash";
+                    cfg.MainAbilityId = "default_dash";
+                    cfg.CoolDown = 1.0f;
+                    cfg.DesiredUseDistance = 999f;
+                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
 
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "queen_shoot";
+                    cfg.MainAbilityId = "queen_shoot";
+                    cfg.CoolDown = 5.0f;
+                    cfg.DesiredUseDistance = 5.0f;
+                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -121,6 +143,10 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreateQueenAttackAbility3();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultPushAbility();
                     _abilityDict[ab.Id] = ab;
                 }
             }
@@ -252,7 +278,7 @@ namespace My.Map.Entity
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
-            spec.Id = "player_shoot";
+            spec.Id = "queen_shoot";
             spec.TypeTag = AbilityTypeTag.Combat;
 
             spec.Phases.Add(new MapAbilityPhase()
@@ -1102,6 +1128,60 @@ namespace My.Map.Entity
                 },
             };
             spec.Phases.Add(postPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateDefaultPushAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "default_push";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            //spec.CoolDown = 0.2f;
+            //spec.DesiredUseDistance = 0.5f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                AnimTag = "Push",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.12"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = "Push",
+                Duration = 0.12f,
+                OnHitEffects = new()
+                {
+                    new MapAbilityEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 1000,
+                        KnockBackForce = 1.6f,
+                    },
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
             return spec;
         }
     }

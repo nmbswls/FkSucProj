@@ -348,7 +348,7 @@ namespace My.Input
                 }
                 else
                 {
-                    skillName = "default_weapon";
+                    skillName = "default_push";
                 }
                 
                 player.PlayerEntity.ablilityManager.UseSkill(skillName, castVec:castDir, target:null);

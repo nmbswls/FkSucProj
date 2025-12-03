@@ -19,7 +19,7 @@ namespace Config.Unit
 
         public bool NeedHMode;
 
-        public bool IsFinisher;
+        public bool InterruptCombo = true;
 
         public bool IsDerived;
 
