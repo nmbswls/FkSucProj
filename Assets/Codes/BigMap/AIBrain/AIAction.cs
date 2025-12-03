@@ -30,6 +30,11 @@ namespace My.Map.Entity.AI
                 case ESelectPolicy.PrimaryTarget:
                     {
                         var target = caster.LogicManager.GetLogicEntity(caster.combatStateComp.PrimaryTargetId, false);
+                        if(target == null)
+                        {
+                            Debug.LogError("GetSkillUseParams not found primary target");
+                            return (caster.Pos + caster.FaceDir, null);
+                        }
                         return (target.Pos, target.Id);
                     }
                     break;
@@ -542,7 +547,7 @@ namespace My.Map.Entity.AI
         public float OverTimeLimit = 99f;
         private float _overTimer;
         private bool hasCastAbility = false;
-        private bool isTryingCombo = false;
+        private string currComboAbilityName = string.Empty;
 
         private EntitySkillCfg? _config;
 
@@ -605,6 +610,8 @@ namespace My.Map.Entity.AI
             _brain.blackboard.CurrIntentSkill = skillConf.SkillId;
             _overTimer = LogicTime.time + OverTimeLimit;
             hasCastAbility = false;
+            currComboAbilityName = string.Empty;
+
             _config = skillConf;
 
             var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, best.cacheConfig.DesiredUseDistance);
@@ -674,20 +681,20 @@ namespace My.Map.Entity.AI
                     return;
                 }
 
-                Debug.Log($"AIActionTryUseSkill try to do derived");
                 var firstTran = trans[0];
                 var node = _brain.UnitEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
 
-                var skillConf = SkillLibrary.GetSkillConfig(node.AbilityId);
-                (Vector2? vec, long? targetId) = AIActionUtils.GetSkillUseParams(skillConf, _brain.UnitEntity);
-                //_brain.UnitEntity.ablilityManager.GetCanDerive
-                _brain.UnitEntity.ablilityManager.UseSkill(node.AbilityId, castVec: vec, target: targetId != null ? _brain.UnitEntity.LogicManager.GetLogicEntity(targetId.Value) : null);
 
-                // 修改技能释放条件
-                _brain.blackboard.CurrIntentSkill = skillConf.SkillId;
-                _overTimer = LogicTime.time + OverTimeLimit;
-                isTryingCombo = true;
-                _config = skillConf;
+                _brain.UnitEntity.FaceDir = _brain.UnitEntity.DesiredFaceDir;
+
+                // 一定无目标参数
+                if (_brain.UnitEntity.ablilityManager.UseSkill(firstTran.triggerInput.SkillId))
+                {
+                    // 修改技能释放条件
+                    _overTimer = LogicTime.time + OverTimeLimit;
+                    currComboAbilityName = node.AbilityId;
+                }
+                Debug.Log($"AIActionTryUseSkill try to do derived " + currComboAbilityName);
             }
         }
 

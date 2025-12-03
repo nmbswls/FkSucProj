@@ -4,6 +4,7 @@ using UnityEngine;
 using My.Map.Logic;
 using My.Map.Entity;
 using System.Collections.Generic;
+using static My.Map.Entity.EntitySkillComboGraph;
 
 
 namespace My.Map
@@ -35,6 +36,68 @@ namespace My.Map
         protected override void InitAbility()
         {
             base.InitAbility();
+        }
+
+        protected override EntitySkillComboGraph GenerateComboGraph()
+        {
+            EntitySkillComboGraph graph = new();
+            {
+                var node = new ComboNode()
+                {
+                    NodeId = 100,
+                    AbilityId = "guard_attack_01",
+                    deriveWindows = new List<DeriveWindow>()
+                    {
+                        new DeriveWindow()
+                        {
+                            id = "1",
+                            window = new TimeWindow(0.27f, 0.57f),
+                        }
+                    }
+                };
+                graph.ComboNodes.Add(node);
+
+            }
+            {
+                var node = new ComboNode()
+                {
+                    NodeId = 101,
+                    AbilityId = "guard_attack_02",
+                };
+                graph.ComboNodes.Add(node);
+
+            }
+
+            {
+                var trans = new EntitySkillComboGraph.Transition()
+                {
+                    fromNodeId = 0,
+                    toNodeId = 100,
+                    triggerInput = new InputPattern()
+                    {
+                        SkillId = "guard_attack"
+                    },
+                };
+
+                graph.Transitions.Add(trans);
+            }
+            {
+                var trans = new EntitySkillComboGraph.Transition()
+                {
+                    fromNodeId = 100,
+                    toNodeId = 101,
+                    triggerInput = new InputPattern()
+                    {
+                        SkillId = "guard_attack"
+                    },
+                    windowId = "1",
+                };
+
+                graph.Transitions.Add(trans);
+            }
+
+            graph.BuildGraph();
+            return graph;
         }
 
         public override void Initialize()

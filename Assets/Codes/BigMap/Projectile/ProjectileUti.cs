@@ -20,8 +20,8 @@ public static class ProjectileUtil
 
 
             var efCtx = new LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, srcInfo);
-            efCtx.CastPos = hitPosition;
-            efCtx.CastDir = hitPosition - logicProjectile.spawnPos;
+            efCtx.TriggerPos = hitPosition;
+            efCtx.CastVec1 = hitPosition - logicProjectile.spawnPos;
 
             MainGameManager.Instance.gameLogicManager.HandleLogicFightEffect(ef, efCtx);
         }

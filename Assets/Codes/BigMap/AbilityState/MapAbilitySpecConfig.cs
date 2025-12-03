@@ -110,6 +110,8 @@ namespace My.Map.Entity
         public string Id;
         public AbilityTypeTag TypeTag = AbilityTypeTag.Combat;
 
+        public float MaxStepDistance = 0.0f;
+
         // ½×¶Î¶¨Òå
         public List<MapAbilityPhase> Phases = new List<MapAbilityPhase>();
 

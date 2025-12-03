@@ -11,7 +11,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     // Start is called before the first frame update
     public SceneUnitPresenter UnitPresenter;
 
-    public MapUnitWeaponOne WeaponOne;
+    public List<MapUnitWeaponOne> WeaponOnes = new();
 
     public void Awake()
     {
@@ -19,7 +19,11 @@ public class MapUnitWeaponCtrl : MonoBehaviour
 
         for(int i=0;i< transform.childCount;i++)
         {
+            var go = transform.GetChild(i);
+            var weaponOne = go.GetComponent<MapUnitWeaponOne>();
 
+            WeaponOnes.Add(weaponOne);
+            go.gameObject.SetActive(false);
         }
     }
 
@@ -35,12 +39,24 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     /// <param name="hitId"></param>
     public void ApplyUseWeapon(string weaponName, long hitId, float duration)
     {
-        WeaponOne.ShowWeapon(hitId, duration);
+        var findIt = WeaponOnes.Find((item)=>item.gameObject.name == weaponName);
+        if(findIt == null)
+        {
+            Debug.LogError($"ApplyUseWeapon {weaponName} not found");
+            return;
+        }
+        findIt.ShowWeapon(hitId, duration);
     }
 
-    public void OnHitWindowClear(long hitId)
+    public void OnHitWindowClear(string weaponName, long hitId)
     {
-        WeaponOne.ClearWeapon();
+        var findIt = WeaponOnes.Find((item) => item.gameObject.name == weaponName);
+        if (findIt == null)
+        {
+            Debug.LogError($"ApplyUseWeapon {weaponName} not found");
+            return;
+        }
+        findIt.ClearWeapon(hitId);
     }
 
     public void OnWeaponTriggerHit(long hitId, long entityId)

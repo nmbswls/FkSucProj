@@ -234,7 +234,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.P))
             {
-                playerScenePresenter.PlayerEntity.CreateKnockBackIntent(Vector2.right, 2f);
+                playerScenePresenter.PlayerEntity.ApplyKnockBack(Vector2.right, 2f);
             }
         }
 

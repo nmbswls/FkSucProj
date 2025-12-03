@@ -42,7 +42,7 @@ namespace My.Map.Scene
 
             TickMoveNoiseEffect(LogicTime.time, dt);
 
-            if(PlayerEntity.dashIntent != null)
+            if(PlayerEntity.controlledMoveCtx != null && PlayerEntity.controlledMoveCtx.WithEffect)
             {
                 MoveTrailSpawner.IsShowing = true;
             }

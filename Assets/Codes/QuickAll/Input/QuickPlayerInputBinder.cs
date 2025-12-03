@@ -351,7 +351,7 @@ namespace My.Input
                     skillName = "default_push";
                 }
                 
-                player.PlayerEntity.ablilityManager.UseSkill(skillName, castVec:castDir, target:null);
+                player.PlayerEntity.ablilityManager.UseSkill(skillName, null, target:null);
             }
         }
 
@@ -397,7 +397,7 @@ namespace My.Input
                             dir = MainGameManager.Instance.playerScenePresenter.freeMoveDir;
                         }
 
-                        MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", dir);
+                        MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", dir + MainGameManager.Instance.playerScenePresenter.PlayerEntity.Pos);
                     }
                 }
             }

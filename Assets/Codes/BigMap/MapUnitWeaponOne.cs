@@ -25,7 +25,7 @@ namespace My.Map.Scene
         {
             if(HitId != 0 && LogicTime.time >= this._durationTimer)
             {
-                ClearWeapon();
+                ClearWeapon(HitId);
             }
         }
 
@@ -37,30 +37,37 @@ namespace My.Map.Scene
             this._durationTimer = LogicTime.time + duration;
 
             // 先尝试获取 clip 长度（简单版：按 clip 名匹配）
-            float clipLenSec = -1f;
-            var rac = weaponAnim.runtimeAnimatorController;
-            if (rac != null)
+            if(weaponAnim != null)
             {
-                foreach (var clip in rac.animationClips)
+                float clipLenSec = -1f;
+                var rac = weaponAnim.runtimeAnimatorController;
+                if (rac != null)
                 {
-                    if (clip != null && clip.name == "Attack")
+                    foreach (var clip in rac.animationClips)
                     {
-                        clipLenSec = clip.length;
-                        break;
+                        if (clip != null)
+                        {
+                            clipLenSec = clip.length;
+                            break;
+                        }
                     }
                 }
+                weaponAnim.speed = 1.0f;
+                if (clipLenSec != -1)
+                {
+                    var speed = clipLenSec / duration;
+                    weaponAnim.speed = speed;
+                }
+                weaponAnim.Play("Show", 0, 0f);
             }
-            weaponAnim.speed = 1.0f;
-            if (clipLenSec != -1)
-            {
-                var speed = clipLenSec / duration;
-                weaponAnim.speed = speed;
-            }
-            weaponAnim.Play("Attack", 0, 0f);
         }
 
-        public void ClearWeapon()
+        public void ClearWeapon(long hitId)
         {
+            if(hitId != HitId)
+            {
+                return;
+            }
             gameObject.SetActive(false);
             HitId = 0;
             _durationTimer = 0;

@@ -109,7 +109,7 @@ namespace My.Map.Entity
             }
             else
             {
-                bornPos = ctx.CastPos;
+                bornPos = ctx.TriggerPos;
             }
 
             if(bornPos == null)
@@ -118,7 +118,16 @@ namespace My.Map.Entity
                 return;
             }
 
-            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, ctx.CastDir ?? Vector2.right);
+            Vector2 dir = Vector2.zero;
+            if(realCfg.RandomDir)
+            {
+                dir = UnityEngine.Random.insideUnitCircle.normalized;
+            }
+            else if(ctx.CastVec1 != null && ctx.TriggerPos != null)
+            {
+                dir = ctx.CastVec1.Value - ctx.TriggerPos.Value;
+            }
+            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir);
         }
     }
     
@@ -181,42 +190,49 @@ namespace My.Map.Entity
 
             Vector2 dir;
             float duration;
-            if (realCfg.IsFixPointMode)
-            {
-                if(realCfg.IsTargetDir)
-                {
-                    var target = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false);
-                    if(target != null)
-                    {
-                        Vector2 targetPos = target.Pos;
-                        Vector2 or0gPos = actor.Pos;
-                        var diff = (targetPos - or0gPos);
-                        dir = diff.normalized;
-                        duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
-                    }
-                    else
-                    {
-                        dir = Vector2.right;
-                        duration = 0.05f;
 
-                    }
-                }
-                else
+            Vector2? dashEndP = null;
+            // 尝试获取目标位置
+            if (realCfg.IsLockTarget && ctx.TargetId != 0)
+            {
+                var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+                if (target != null)
                 {
-                    Vector2 targetPos = ctx.CastDir.Value;
-                    Vector2 or0gPos = actor.Pos;
-                    var diff = (targetPos - or0gPos);
-                    dir = diff.normalized;
-                    duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
+                    dashEndP = target.Pos;
                 }
+            }
+
+            // 获取目标失败 从施法参数中获取
+            if (dashEndP == null)
+            {
+                dashEndP = ctx.CastVec1;
+            }
+
+            // 仍没有 进行保底哦位移
+            if (dashEndP == null)
+            {
+                dir = Vector2.right;
+                duration = 0.01f;
+                Debug.Log("dash baodi");
             }
             else
             {
-                dir = ctx.CastDir.Value;
-                duration = realCfg.DashDuration;
+                Vector2 or0gPos = actor.Pos;
+                var diff = (dashEndP.Value - or0gPos);
+
+                if (realCfg.IsFixPointMode)
+                {
+                    dir = diff.normalized;
+                    duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
+                }
+                else
+                {
+                    dir = diff.normalized;
+                    duration = realCfg.DashDuration;
+                }
             }
 
-            unitEntity.CreateDashIntent(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects);
+            unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, true);
         }
     }
 
@@ -261,21 +277,22 @@ namespace My.Map.Entity
             }
 
             List<ILogicEntity> candidates = null;
+            var castDir = ctx.CastVec1 - ctx.TriggerPos;
             // 通过hitbox 找到目标
             if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
             {
-                var realCenter = ctx.CastPos.Value + ctx.CastDir.Value * realCfg.Length * 0.5f;
+                var realCenter = ctx.TriggerPos.Value + castDir.Value * realCfg.Length * 0.5f;
 
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
 
-                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, ctx.CastDir.Value, new Vector2(realCfg.Width, realCfg.Length), filter);
-                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir:ctx.CastDir);
+                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, castDir.Value, new Vector2(realCfg.Width, realCfg.Length), filter);
+                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: castDir);
             }
             else if(realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Circle)
             {
-                var realCenter = ctx.CastPos.Value;
+                var realCenter = ctx.TriggerPos.Value;
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
@@ -299,7 +316,8 @@ namespace My.Map.Entity
                     {
                         LogicFightEffectContext newCtx = new(ctx.Env, ctx.SourceInfo);
 
-                        newCtx.CastDir = ctx.CastDir;
+                        newCtx.TriggerPos = ctx.TriggerPos;
+                        newCtx.CastVec1 = ctx.CastVec1;
                         newCtx.TargetId = candidate.Id;
                         ctx.Env.HandleLogicFightEffect(e, newCtx);
                     }
@@ -560,7 +578,7 @@ namespace My.Map.Entity
                     if(target is BaseUnitLogicEntity unitEntity)
                     {
                         var diff = target.Pos - actor.Pos;
-                        unitEntity.CreateKnockBackIntent(diff, realCfg.KnockBackForce);
+                        unitEntity.ApplyKnockBack(diff, realCfg.KnockBackForce);
                     }
                 }
             }
@@ -630,9 +648,9 @@ namespace My.Map.Entity
                 return;
             }
 
-            if(ctx.CastDir == null)
+            if(ctx.CastVec1 == null)
             {
-                Debug.LogError("AbilityEffectExecutor4SpawnEntity cast dir invalid");
+                Debug.LogError("AbilityEffectExecutor4SpawnEntity CastVec1 dir invalid");
                 return;
             }
 
@@ -640,7 +658,7 @@ namespace My.Map.Entity
             record.CfgId = realCfg.CfgId;
             record.EntityType = realCfg.EntityType;
             record.LifeTime = realCfg.LifeTime;
-            record.Position = ctx.CastDir.Value;
+            record.Position = ctx.CastVec1.Value;
 
             ctx.Env.AddNewEntityRecord(record);
         }
@@ -659,12 +677,12 @@ namespace My.Map.Entity
 
             if(realCfg.Shape == MapAbilityEffectRangePreviewCfg.EShape.Circle)
             {
-                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.CastPos.Value, Vector2.zero, realCfg.PreviewDuration);
+                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.TriggerPos.Value, Vector2.zero, realCfg.PreviewDuration);
                 ctx.BindSceneFxIds.Add(effectId);
             }
             else if (realCfg.Shape == MapAbilityEffectRangePreviewCfg.EShape.Circle)
             {
-                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.CastPos.Value, Vector2.zero, realCfg.PreviewDuration);
+                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.TriggerPos.Value, Vector2.zero, realCfg.PreviewDuration);
                 ctx.BindSceneFxIds.Add(effectId);
             }
         }

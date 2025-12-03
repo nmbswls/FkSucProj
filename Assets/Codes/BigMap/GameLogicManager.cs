@@ -529,9 +529,10 @@ namespace My
 
             public EffectSourceInfo SourceInfo; // 
 
-            public long TargetId;             // 目标对象
-            public Vector2? CastDir;           // 面朝方向
-            public Vector2? CastPos;          // 施放位置（如脚下或点击点）
+            public long TargetId;              // 锁定对象 如果来自技能 则在释放时锁定 如果来自效果触发 则在逻辑中绑定
+            public Vector2? TriggerPos;        // 发生地点 技能释放位置 子弹碰撞位置 buff触发位置等
+            public Vector2? CastVec1;          // 施法参数1 技能施法参数
+            public Vector2? CastVec2;          // 施法参数2
 
             // 变量集合
             public Dictionary<string, string> RunningVariables = new();

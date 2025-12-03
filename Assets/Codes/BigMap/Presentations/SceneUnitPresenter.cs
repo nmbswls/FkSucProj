@@ -40,7 +40,6 @@ namespace My.Map.Scene
 
         public Vector2 freeMoveDir;
         private float acceleration = 99.0f;
-        private float externalDecay = 30f;          // 外力自然衰减（每秒）
 
         public SimpleCharacterController CharacterController;
 
@@ -165,13 +164,6 @@ namespace My.Map.Scene
                     WeaponRoot.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.forward); // 绕 Z 轴
                 }
             }
-
-            // 外力自然衰减（除非在Dash中保持常速）
-            if (UnitEntity.dashIntent == null && UnitEntity.knockBackIntent == null)
-            {
-                UnitEntity.externalVel = Vector2.MoveTowards(UnitEntity.externalVel, Vector2.zero, externalDecay * dt);
-            }
-
             //if (knockBackIntent.knockbackTimeLeft <= 0f || externalVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
             //    ClearKnockbackIntent();
 
@@ -202,7 +194,7 @@ namespace My.Map.Scene
             if(UnitEntity == null) return Vector2.zero;
             float arriveRaiuds = 0.12f;
             if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
-                || UnitEntity.dashIntent != null || UnitEntity.knockBackIntent != null)
+                || UnitEntity.controlledMoveCtx != null)
             {
                 //UnitEntity.activeMoveVec = Vector2.zero;
                 return UnitEntity.externalVel;
@@ -219,7 +211,7 @@ namespace My.Map.Scene
                     targetMoveVel = UnitEntity.entityMotorComp.GetDesiredVelocity();
                 }
 
-                return targetMoveVel + UnitEntity.externalVel + UnitEntity.knockVel;
+                return targetMoveVel + UnitEntity.externalVel;
             }
 
         }
@@ -364,9 +356,9 @@ namespace My.Map.Scene
                 WeaponCtrl.ApplyUseWeapon(weaponName, hitId, duration);
             };
 
-            UnitEntity.abilityController.EventOnCloseHitWindow += (hitId) =>
+            UnitEntity.abilityController.EventOnCloseHitWindow += (weaponName, hitId) =>
             {
-                WeaponCtrl.OnHitWindowClear(hitId);
+                WeaponCtrl.OnHitWindowClear(weaponName, hitId);
             };
         }
 
@@ -431,17 +423,12 @@ namespace My.Map.Scene
             if (isWall)
             {
                 Vector2 normal = collision.contacts[0].normal;
-                if (UnitEntity.knockBackIntent != null)
+                if (UnitEntity.controlledMoveCtx != null)
                 {
-                    // 撞墙后结束击退并可转眩晕
-                    UnitEntity.externalVel = Vector2.zero;
-                    //ApplyStun(defaultStunDuration * 0.6f);
-                }
-
-                if (UnitEntity.dashIntent != null)
-                {
-                    // Dash撞墙立即结束
-                    UnitEntity.ClearDashIntent(2);
+                    if(UnitEntity.controlledMoveCtx.EndOnCollideWall)
+                    {
+                        UnitEntity.EndControlledMove(2);
+                    }
                 }
             }
         }

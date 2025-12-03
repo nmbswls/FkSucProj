@@ -12,6 +12,7 @@ using static My.Map.Entity.MapEntityAbilityExecutor;
 using static UnityEngine.Rendering.VolumeComponent;
 using static My.Map.EntityCombatStateComp;
 using static My.GameLogicManager;
+using UnityEditor.Experimental.GraphView;
 
 
 namespace My.Map
@@ -88,6 +89,7 @@ namespace My.Map
         public UnitEnmityComp EnmityComp;
         public UnitNoticeRecordComp NoticeRecordComp;
 
+        private float externalDecay = 30f;          // 外力自然衰减（每秒）
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
@@ -152,19 +154,28 @@ namespace My.Map
             ablilityManager?.Tick(dt);
             abilityController?.Tick(dt);
 
-            {
-                if (dashIntent != null)
-                {
-                    dashIntent.dashTimeLeft -= dt;
-                    if (dashIntent.dashTimeLeft <= 0f)
-                    {
-                        ClearDashIntent(1);
-                    }
-                }
 
+
+            UpdateControlledMove(dt);
+            // 外力自然衰减（除非在Dash中保持常速）
+            if (controlledMoveCtx == null)
+            {
+                externalVel = Vector2.MoveTowards(externalVel, Vector2.zero, externalDecay * dt);
             }
 
-            UpdateKnockback(dt);
+            //{
+            //    if (dashIntent != null)
+            //    {
+            //        dashIntent.dashTimeLeft -= dt;
+            //        if (dashIntent.dashTimeLeft <= 0f)
+            //        {
+            //            ClearDashIntent(1);
+            //        }
+            //    }
+
+            //}
+
+            //UpdateKnockback(dt);
 
             AIBrain?.Tick(dt);
 
@@ -235,7 +246,7 @@ namespace My.Map
                 var diff = srcEntity.Pos - this.Pos;
                 var impluse = -(diff.normalized);
 
-                CreateKnockBackIntent(impluse, 5f);
+                ApplyKnockBack(impluse, 5f);
             }
 
 
@@ -281,32 +292,34 @@ namespace My.Map
             return moveSpeed * (10000 - jiansu) * 0.0001f;
         }
 
-        public class DashIntent
-        {
-            public float dashTimeLeft = 0f;
+        //public class DashIntent
+        //{
+        //    public float dashTimeLeft = 0f;
 
-            public float dashDuration;
-            public bool dashIFrameActive = false;
-            public float dashIFrameLeft = 0f;
-            public Vector2 dashDir;
-            public float dashSpeed;
+        //    public float dashDuration;
+        //    public bool dashIFrameActive = false;
+        //    public float dashIFrameLeft = 0f;
+        //    public Vector2 dashDir;
+        //    public float dashSpeed;
 
-            public List<MapFightEffectCfg> OnHitUnitCfg;
-            public Action onCollide;
-        }
-        public DashIntent? dashIntent;
+        //    public List<MapFightEffectCfg> OnHitUnitCfg;
+        //    public Action onCollide;
+        //}
+        //public DashIntent? dashIntent;
 
-        public class KnockBackIntent
-        {
-            public float knockbackMinEndSpeed;
-            public float knockbackPower;
-            public Vector2 knockDir;
-            public Action<int>? onKnockEnd;
-        }
-        public KnockBackIntent? knockBackIntent;
+        //public class KnockBackIntent
+        //{
+        //    public float knockbackMinEndSpeed;
+        //    public float knockbackPower;
+        //    public Vector2 knockDir;
+        //    public Action<int>? onKnockEnd;
+        //}
+        //public KnockBackIntent? knockBackIntent;
 
         public class ControlledMoveCtx
         {
+            public enum EType { None, Dash, Knock, Step}
+            public EType Type;
             public float Duration;
             public float MinEndSpeed;
             public bool DashIFrameActive = false;
@@ -321,104 +334,27 @@ namespace My.Map
             public float OriginSpeed;
             public float ImpulsePower;
 
+            public bool EndOnCollideWall;
+
             public List<MapFightEffectCfg> OnHitUnitEffects;
 
-            public float dashTimeLeft = 0f;
+            public float timeLeft = 0f;
+
+            public Action<int>? onMoveEnd;
+            public bool WithEffect = false;
         }
         public ControlledMoveCtx? controlledMoveCtx;
 
-
-        // 推进（建议放 FixedUpdate 或你的角色控制器速度合成前）
-        private void UpdateKnockback(float dt)
+        // 冲锋
+        public void StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onEndEffects, bool withEffect = false)
         {
-            if (knockBackIntent == null) return;
-
-            knockTimer -= dt;
-            if (knockTimer <= 0f)
-            {
-                ClearKnockbackInfo(0);
-                return;
-            }
-
-            // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
-            // lambda 越大，减速越快；配合最小末速钳制
-            float lambda = 16f; // 可调 6~16
-            float damping = Mathf.Exp(-lambda * dt);
-            knockVel *= damping;
-
-            // 末端钳制
-            if (knockTimer < 0.08f && knockVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
-            {
-                knockVel = Vector2.zero;
-            }
+            ApplyControlledMove(ControlledMoveCtx.EType.Dash, dashDir, dashTime, speed, onEndEffects: onEndEffects);
+            controlledMoveCtx.WithEffect = withEffect;
         }
 
-        public event Action<DashIntent> onNewDashIntent;
-        public event Action<KnockBackIntent> onNewKnockBackIntent;
-
-        public void CreateDashIntent(Vector2 dir, float dashTime, float speed, List<MapFightEffectCfg> onEndEffects)
+        public void ApplyKnockBack(Vector2 dir, float power, Action<int>? onKnockEnd = null)
         {
-            if (dashIntent != null)
-            {
-
-            }
-
-            DashIntent intent = new();
-            intent.dashDir = dir;
-            intent.dashTimeLeft = dashTime;
-            intent.dashSpeed = speed;
-
-            intent.dashDuration = dashTime;
-            intent.OnHitUnitCfg = onEndEffects;
-
-            externalVel = intent.dashDir.normalized * intent.dashSpeed;
-            //onNewDashIntent?.Invoke(intent);
-
-            dashIntent = intent;
-        }
-
-
-        public void ClearDashIntent(int reason)
-        {
-
-            if(reason != 0)
-            {
-                if(dashIntent.OnHitUnitCfg != null)
-                {
-                    //var 
-                    //foreach(var e in dashIntent.OnHitUnitCfg)
-                    //{
-
-                    //    LogicFightEffectContext newCtx = new(LogicManager);
-                    //    newCtx.Actor = this;
-                    //    newCtx.CastPos = this.Pos;
-                    //    LogicManager.HandleLogicFightEffect(e, newCtx);
-                    //}
-                }
-            }
-
-            dashIntent?.onCollide?.Invoke();
-
-            dashIntent = null;
-            // 平滑收尾：保留少量速度并快速衰减
-            externalVel *= 0.1f;
-
-            Debug.Log("end ClearDashIntent");
-        }
-
-        private void ClearKnockbackInfo(int endReason)
-        {
-            knockBackIntent?.onKnockEnd?.Invoke(endReason);
-            knockBackIntent = null;
-            knockVel = Vector2.zero;
-            knockTimer = 0;
-        }
-
-
-        public void CreateKnockBackIntent(Vector2 dir, float power, Action<int>? onKnockEnd = null)
-        {
-
-            if(CheckHasState(AttrIdConsts.ImmuneKnock))
+            if (CheckHasState(AttrIdConsts.ImmuneKnock))
             {
                 return;
             }
@@ -429,84 +365,192 @@ namespace My.Map
                 priority = 10,
             });
 
+            ApplyControlledMove(ControlledMoveCtx.EType.Knock, dir, 0.15f, impulsePower: power, minEndSpeed: 0.1f);
 
-            ClearDashIntent(0);
-            ClearKnockbackInfo(2);
+            //ClearDashIntent(0);
+            //ClearKnockbackInfo(2);
 
-            KnockBackIntent intent = new();
+            //KnockBackIntent intent = new();
 
-            intent.knockbackMinEndSpeed = 0.1f;
-            intent.knockbackPower = power;
-            intent.knockDir = dir;
+            //intent.knockbackMinEndSpeed = 0.1f;
+            //intent.knockbackPower = power;
+            //intent.knockDir = dir;
 
-            externalVel = intent.knockDir.normalized * power;
+            //externalVel = intent.knockDir.normalized * power;
 
-            knockTimer = 0.15f;
-            knockVel = intent.knockDir * power; // 初速大
+            //knockTimer = 0.15f;
+            //knockVel = intent.knockDir * power; // 初速大
 
-            //onNewKnockBackIntent?.Invoke(intent);
-            knockBackIntent = intent;
+            ////onNewKnockBackIntent?.Invoke(intent);
+            //knockBackIntent = intent;
         }
 
-
-
-        public class TargettedMoveIntent
+        /// <summary>
+        /// 实现受控移动
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="dir"></param>
+        /// <param name="duration"></param>
+        /// <param name="speed"></param>
+        /// <param name="onEndEffects"></param>
+        /// <param name="minEndSpeed"></param>
+        public void ApplyControlledMove(ControlledMoveCtx.EType type, Vector2 dir, float duration, float? originSpeed = null, float? impulsePower = null, List<MapFightEffectCfg> onEndEffects = null, float minEndSpeed = 0)
         {
-            public enum ETargettedMoveType
+            if(controlledMoveCtx != null)
             {
-                FixPoint,
-                FollowEntity,
-                FollowSomething,
+                if(controlledMoveCtx.onMoveEnd != null)
+                {
+                    controlledMoveCtx.onMoveEnd?.Invoke(99);
+                }
             }
 
-            public ETargettedMoveType MoveType;
+            ControlledMoveCtx ctx = new();
 
+            ctx.Type = type;
+            ctx.Duration = duration;
+            ctx.MinEndSpeed = minEndSpeed;
+            ctx.MoveDir = dir;
+            ctx.OriginSpeed = originSpeed ?? 0;
 
-            public enum ESpeedType
+            ctx.OnHitUnitEffects = onEndEffects;
+
+            ctx.timeLeft = ctx.Duration;
+
+            //onNewDashIntent?.Invoke(intent);
+
+            controlledMoveCtx = ctx;
+
+            // 施加初始速度
+            externalVel = ctx.MoveDir.normalized * ctx.OriginSpeed;
+        }
+
+        private void UpdateControlledMove(float dt)
+        {
+            if(controlledMoveCtx == null)
             {
-                Normal = 0,
-                Slow,
-                Dash,
+                return;
             }
 
-            public ESpeedType SpeedType;
+            if(controlledMoveCtx.Type == ControlledMoveCtx.EType.Dash)
+            {
+                controlledMoveCtx.timeLeft -= dt;
+                if (controlledMoveCtx.timeLeft <= 0f)
+                {
+                    EndControlledMove(1);
+                }
+            }
+            else if(controlledMoveCtx.Type == ControlledMoveCtx.EType.Knock)
+            {
+                controlledMoveCtx.timeLeft -= dt;
+                if (controlledMoveCtx.timeLeft <= 0f)
+                {
+                    EndControlledMove(1);
+                    return;
+                }
 
-            public Vector2 FixedMoveTarget;
-            public ILogicEntity? FollowEntity;
+                // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
+                // lambda 越大，减速越快；配合最小末速钳制
+                float lambda = 16f; // 可调 6~16
+                float damping = Mathf.Exp(-lambda * dt);
+                externalVel *= damping;
 
-
-            public Vector2 targettedDesireDir;
-            public float ArriveDistance = 1f;
-
-            public bool NeedRecalculatePath;
+                // 末端钳制
+                if (controlledMoveCtx.timeLeft < 0.08f && externalVel.magnitude < controlledMoveCtx.MinEndSpeed)
+                {
+                    externalVel = Vector2.zero;
+                }
+            }
         }
 
 
-        //public TargettedMoveIntent? targetMoveIntent;
-
-        //public void StartTargettedMove(TargettedMoveIntent.ETargettedMoveType moveType, ILogicEntity? followedEntity, Vector2 fixedPoint, float arriveDistance, bool clearNav = false, TargettedMoveIntent.ESpeedType speedType = TargettedMoveIntent.ESpeedType.Normal)
+        //// 推进（建议放 FixedUpdate 或你的角色控制器速度合成前）
+        //private void UpdateKnockback(float dt)
         //{
-        //    if (targetMoveIntent == null)
+        //    if (knockBackIntent == null) return;
+
+        //    knockTimer -= dt;
+        //    if (knockTimer <= 0f)
         //    {
-        //        targetMoveIntent = new();
+        //        ClearKnockbackInfo(0);
+        //        return;
         //    }
 
-        //    targetMoveIntent.MoveType = moveType;
-        //    targetMoveIntent.SpeedType = speedType;
+        //    // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
+        //    // lambda 越大，减速越快；配合最小末速钳制
+        //    float lambda = 16f; // 可调 6~16
+        //    float damping = Mathf.Exp(-lambda * dt);
+        //    knockVel *= damping;
 
-        //    targetMoveIntent.FollowEntity = followedEntity;
-        //    targetMoveIntent.FixedMoveTarget = fixedPoint;
-
-        //    targetMoveIntent.ArriveDistance = arriveDistance;
-            
-        //    targetMoveIntent.NeedRecalculatePath = true;
-
-        //    // 是否清理速度
-        //    if(!clearNav)
+        //    // 末端钳制
+        //    if (knockTimer < 0.08f && knockVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
         //    {
-        //        targetMoveIntent.targettedDesireDir = Vector2.zero;
+        //        knockVel = Vector2.zero;
         //    }
         //}
+
+        //public event Action<DashIntent> onNewDashIntent;
+        //public event Action<KnockBackIntent> onNewKnockBackIntent;
+
+        /// <summary>
+        /// 
+        /// 1 time over
+        /// 2 wall collide
+        /// </summary>
+        /// <param name="reason"></param>
+        public void EndControlledMove(int reason)
+        {
+
+            if (reason != 0)
+            {
+                //
+            }
+
+            //controlledMoveCtx?.onCollide?.Invoke();
+
+            controlledMoveCtx = null;
+            // 平滑收尾：保留少量速度并快速衰减
+            externalVel *= 0.1f;
+
+            Debug.Log("end ClearControlledMove");
+        }
+
+        //public void ClearDashIntent(int reason)
+        //{
+
+        //    if(reason != 0)
+        //    {
+        //        if(dashIntent.OnHitUnitCfg != null)
+        //        {
+        //            //var 
+        //            //foreach(var e in dashIntent.OnHitUnitCfg)
+        //            //{
+
+        //            //    LogicFightEffectContext newCtx = new(LogicManager);
+        //            //    newCtx.Actor = this;
+        //            //    newCtx.CastPos = this.Pos;
+        //            //    LogicManager.HandleLogicFightEffect(e, newCtx);
+        //            //}
+        //        }
+        //    }
+
+        //    dashIntent?.onCollide?.Invoke();
+
+        //    dashIntent = null;
+        //    // 平滑收尾：保留少量速度并快速衰减
+        //    externalVel *= 0.1f;
+
+        //    Debug.Log("end ClearDashIntent");
+        //}
+
+        //private void ClearKnockbackInfo(int endReason)
+        //{
+        //    knockBackIntent?.onKnockEnd?.Invoke(endReason);
+        //    knockBackIntent = null;
+        //    knockVel = Vector2.zero;
+        //    knockTimer = 0;
+        //}
+
+
 
         //public void StopTargetteMove()
         //{
@@ -520,6 +564,13 @@ namespace My.Map
             var comboGraph = GenerateComboGraph();
             ablilityManager = new MapEntitySkillManager(this, comboGraph);
 
+            if(unitCfg != null)
+            {
+                foreach(var skillId in unitCfg.SkillList)
+                {
+                    ablilityManager.RegisterSkill(skillId);
+                }
+            }
 
             abilityController = new DefaultNpcAbilityController(this);
 

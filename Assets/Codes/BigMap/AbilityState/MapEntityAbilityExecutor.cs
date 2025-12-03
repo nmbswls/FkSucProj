@@ -30,6 +30,7 @@ namespace My.Map.Entity
     public class AbilityHitWindow
     {
         public long hitId;
+        public string weaponName;
         public float openTime;
         public float durationTime;
         public List<long> HitRecord = new();
@@ -52,8 +53,8 @@ namespace My.Map.Entity
         {
             public ILogicEntity Actor;         // 施动者
             public ILogicEntity Target;        // 目标对象（如门或敌人），可为空
-            public Vector2? FaceDir;           // 面朝方向
-            public Vector2? CastDir;           // 面朝方向
+            public Vector2 FaceDir;           // 面朝方向
+            public Vector2? CastVec1;           // 面朝方向
             public Vector2? Position;         // 施放位置（如脚下或点击点）
             public Dictionary<string, object> UserData = new();
             // 时间推进
@@ -129,7 +130,7 @@ namespace My.Map.Entity
         //private Dictionary<string, float> _sharedCooldown = new();
 
         public event Action<long, string, float> EventOnApplyUseWeapon;
-        public event Action<long> EventOnCloseHitWindow;
+        public event Action<string, long> EventOnCloseHitWindow;
         public event Action<string> EventOnUseAbility;
         public event Action<string, int> EventOnAbilityEnd;
         public event Action EventOnInputCancelPhaseStart;
@@ -192,7 +193,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            return TryStart(config, castDir: castDir, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims, groupOwnerName: groupOwnerName);
+            return TryStart(config, castVec1: castDir, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims, groupOwnerName: groupOwnerName);
         }
 
         public void Tick(float dt)
@@ -207,12 +208,12 @@ namespace My.Map.Entity
         /// 使用技能
         /// </summary>
         /// <param name="abState"></param>
-        /// <param name="castDir"></param>
+        /// <param name="castVec1"></param>
         /// <param name="target"></param>
         /// <param name="runningOverrides"></param>
         /// <param name="phaseOverrideAnims"></param>
         /// <returns></returns>
-        protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
+        protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? castVec1 = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
         {
             // 检查可打断
             if (!IsActionable())
@@ -240,7 +241,8 @@ namespace My.Map.Entity
                 AbilityConfig = abilityConf,
                 viewer = EntityOwner.viewer,
                 RunningVariables = runningOverrides,
-                CastDir = castDir,
+                CastVec1 = castVec1,
+                FaceDir = EntityOwner.DesiredFaceDir,
                 Position = EntityOwner.Pos,
 
                 PhaseOverrideAnims = phaseOverrideAnims,
@@ -256,6 +258,11 @@ namespace My.Map.Entity
 
             
             EventOnUseAbility?.Invoke(abilityConf.Id);
+
+            if(abilityConf.MaxStepDistance > 0)
+            {
+                EntityOwner.StartDash(EntityOwner.DesiredFaceDir, 0.1f, abilityConf.MaxStepDistance / 0.1f, null);
+            }
 
             Debug.Log($"entity {EntityOwner.Id} TryStart {abilityConf.Id}");
 
@@ -378,6 +385,11 @@ namespace My.Map.Entity
                     CurrentCtx.PhaseIntentEffectId = eId;
                 }
             }
+
+            if(phase.CanInputInterrupt)
+            {
+                EventOnInputCancelPhaseStart?.Invoke();
+            }
         }
 
         private void ExitPhase(int index)
@@ -450,7 +462,7 @@ namespace My.Map.Entity
             {
                 foreach (var hitWindow in CurrentCtx.phaseHitWindows.Values)
                 {
-                    EventOnCloseHitWindow?.Invoke(hitWindow.hitId);
+                    EventOnCloseHitWindow?.Invoke(hitWindow.weaponName, hitWindow.hitId);
                 }
 
                 CurrentCtx.phaseHitWindows.Clear();
@@ -494,8 +506,18 @@ namespace My.Map.Entity
             };
             var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, sourceInfo);
             ctx.TargetId = this.CurrentCtx.Target ?.Id ?? 0;
-            ctx.CastDir = this.CurrentCtx.CastDir;
-            ctx.CastPos = this.CurrentCtx.Position;
+            ctx.TriggerPos = EntityOwner.Pos;
+
+            if(this.CurrentCtx.CastVec1 != null)
+            {
+                ctx.CastVec1 = this.CurrentCtx.CastVec1;
+            }
+            else
+            {
+                ctx.CastVec1 = this.EntityOwner.Pos + this.CurrentCtx.FaceDir;
+            }
+
+            ctx.TriggerPos = this.CurrentCtx.Position;
 
             ctx.RunningVariables = this.CurrentCtx.RunningVariables;
 
@@ -655,6 +677,7 @@ namespace My.Map.Entity
             var hitWin = new AbilityHitWindow()
             {
                 hitId = hitId,
+                weaponName = weaponName,
                 openTime = Time.realtimeSinceStartup,
                 durationTime = openTime,
                 OnHitEffects = hitCfgs,
@@ -695,9 +718,10 @@ namespace My.Map.Entity
                         {
                             GameLogicManager.LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, srcInfo);
 
-                            newCtx.CastDir = hitEntity.Pos - EntityOwner.Pos;
                             newCtx.TargetId = hitEntity.Id;
-                            newCtx.CastPos = hitEntity.Pos;
+                            newCtx.TriggerPos = hitEntity.Pos;
+                            newCtx.CastVec1 = hitEntity.Pos;
+
 
                             EntityOwner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
                         }

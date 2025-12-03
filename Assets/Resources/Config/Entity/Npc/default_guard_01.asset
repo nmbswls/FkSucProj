@@ -30,6 +30,7 @@ MonoBehaviour:
   - default_dash_slash
   - basic_aoe_slash
   - default_enemy_qinfan
+  - guard_attack
   DropId: citizen_01
   NpcTag: 
   InteractList: []

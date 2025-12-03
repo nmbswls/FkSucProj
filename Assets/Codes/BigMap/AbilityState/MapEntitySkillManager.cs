@@ -494,11 +494,6 @@ namespace My.Map.Entity
                 return false;
             }
 
-            if (!IsSkillReady(skillId))
-            {
-                return false;
-            }
-
             // 不可行动
             if (!Executor.IsActionable())
             {
@@ -519,11 +514,19 @@ namespace My.Map.Entity
             {
                 var nextNode = comboOrchestrator.GetComboNode(chosenTran.toNodeId);
                 realAbilityId = nextNode.AbilityId;
+                if (!IsSkillReady(skillId))
+                {
+                    return false;
+                }
             }
             // 非combo类技能 直接执行
             else
             {
                 realAbilityId = skillRuntime.cacheConfig.MainAbilityId;
+                if (!IsSkillReady(skillId))
+                {
+                    return false;
+                }
             }
 
             if (!Executor.TryUseAbility(realAbilityId, castDir: castVec, target: target))

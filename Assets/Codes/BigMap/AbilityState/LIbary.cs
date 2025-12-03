@@ -54,6 +54,57 @@ namespace My.Map.Entity
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "default_push";
+                    cfg.MainAbilityId = "default_push";
+                    cfg.CoolDown = 0.6f;
+                    cfg.DesiredUseDistance = 1.0f;
+                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "default_dash_slash";
+                    cfg.MainAbilityId = "default_dash_slash";
+                    cfg.CoolDown = 8.0f;
+                    cfg.DesiredUseDistance = 2.0f;
+                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "basic_aoe_slash";
+                    cfg.MainAbilityId = "basic_aoe_slash";
+                    cfg.CoolDown = 6.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "default_enemy_qinfan";
+                    cfg.MainAbilityId = "default_enemy_qinfan";
+                    cfg.CoolDown = 6.0f;
+                    cfg.DesiredUseDistance = 0.8f;
+                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.NeedHMode = true;
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "guard_attack";
+                    cfg.MainAbilityId = "guard_attack";
+                    cfg.CoolDown = 1.0f;
+                    cfg.DesiredUseDistance = 0.8f;
+                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -147,6 +198,15 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreateDefaultPushAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateDefaultGuardAttack1();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultGuardAttack2();
                     _abilityDict[ab.Id] = ab;
                 }
             }
@@ -264,7 +324,6 @@ namespace My.Map.Entity
 
             var newEffect = new MapAbilityEffectDashStartCfg()
             {
-                IsTimeMode = true,
                 DashDuration = 0.3f,
                 DashSpeed = 8f,
             };
@@ -739,7 +798,7 @@ namespace My.Map.Entity
             //spec.CoolDown = 8.0f;
             //spec.DesiredUseDistance = 2.0f;
             //spec.Priority = 100;
-            spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
+            spec.TargetType = MapAbilitySpecConfig.ETargetType.LockTarget;
             spec.Range1 = 2.5f;
 
             var preparePhase = new MapAbilityPhase()
@@ -752,7 +811,7 @@ namespace My.Map.Entity
                 {
                     FaceOffset = new Vector2(0.3f, 0),
                     IsCircle = false,
-                    RangeWidth = 1.2f,
+                    RangeWidth = 0.9f,
                     RangeLen = 2.5f,
                 },
 
@@ -786,7 +845,7 @@ namespace My.Map.Entity
                     DashSpeed = 8f,
                     DashOverrideHitRadius = 0.8f,
 
-                    IsTargetDir = true,
+                    IsLockTarget = true,
                     OnHitEffects = new()
                     {
                         // 提前进入下一phase
@@ -798,31 +857,10 @@ namespace My.Map.Entity
                     },
                 };
 
-                dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter});
-            }
-
-
-            spec.Phases.Add(dashingPhase);
-            
-
-            var slashPhase = new MapAbilityPhase()
-            {
-                PhaseName = "Slash",
-                LockMovement = true,
-                LockRotation = true,
-
-                DurationValue = new()
-                {
-                    ValType = EOneVariatyType.Float,
-                    RawVal = "0.12"
-                },
-            };
-
-            {
                 var hitEffect = new MapAbilityEffectUseWeaponCfg()
                 {
-                    WeaponName = "Weapon01",
-                    Duration = 0.12f,
+                    WeaponName = "Charge",
+                    Duration = 0.45f,
                     OnHitEffects = new()
                     {
 
@@ -834,10 +872,12 @@ namespace My.Map.Entity
                     }
                 };
 
-                slashPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+                dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter});
+                dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
             }
 
-            spec.Phases.Add(slashPhase);
+
+            spec.Phases.Add(dashingPhase);
 
             var postPhase = new MapAbilityPhase()
             {
@@ -862,7 +902,6 @@ namespace My.Map.Entity
 
             spec.Id = "basic_aoe_slash";
             spec.TypeTag = AbilityTypeTag.Combat;
-            //spec.CoolDown = 3.0f;
             //spec.DesiredUseDistance = 1.0f;
             //spec.Priority = 20;
 
@@ -1137,6 +1176,7 @@ namespace My.Map.Entity
 
             spec.Id = "default_push";
             spec.TypeTag = AbilityTypeTag.Combat;
+            spec.MaxStepDistance = 0.3f;
             //spec.CoolDown = 0.2f;
             //spec.DesiredUseDistance = 0.5f;
 
@@ -1148,7 +1188,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.1"
+                    RawVal = "0.15"
                 },
             });
 
@@ -1162,14 +1202,14 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.12"
+                    RawVal = "0.2"
                 },
             };
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Push",
-                Duration = 0.12f,
+                Duration = 0.24f,
                 OnHitEffects = new()
                 {
                     new MapAbilityEffectApplyDamageCfg()
@@ -1184,6 +1224,136 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
         }
+
+
+        private static MapAbilitySpecConfig CreateDefaultGuardAttack1()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "guard_attack_01";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.MaxStepDistance = 0.4f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.25"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = "Hit_01",
+                Duration = 0.12f,
+                OnHitEffects = new()
+                {
+
+                    new MapAbilityEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 25000,
+                        KnockBackForce = 1.6f,
+                    },
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            };
+            spec.Phases.Add(postPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateDefaultGuardAttack2()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "guard_attack_02";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.MaxStepDistance = 0.4f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.25"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = "Hit_02",
+                Duration = 0.12f,
+                OnHitEffects = new()
+                {
+
+                    new MapAbilityEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 25000,
+                        KnockBackForce = 1.6f,
+                    },
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            };
+            spec.Phases.Add(postPhase);
+            return spec;
+        }
     }
+
 
 }

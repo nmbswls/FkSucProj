@@ -35,6 +35,8 @@ namespace My.Map
         }
         // 内部状态
         float _currentAngle;     // 当前朝向角度（度，0=向右）
+
+        public Vector2 DesiredFaceDir { get { return DirFromAngle(_targetAngle); } }
         float _targetAngle;
 
         float _angularVel;       // SmoothDampAngle 用
@@ -81,8 +83,6 @@ namespace My.Map
                 faceDir = DirFromAngle(_currentAngle);
             }
         }
-
-
 
         public void UpdateFacing()
         {

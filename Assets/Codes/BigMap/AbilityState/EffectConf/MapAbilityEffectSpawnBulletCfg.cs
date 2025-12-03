@@ -24,6 +24,11 @@ namespace My.Map.Entity
         public int param1;
         public int param2;
 
+        /// <summary>
+        /// 方向参数 多个
+        /// </summary>
+        public bool RandomDir;
+
 
         [SerializeReference]
         public List<MapFightEffectCfg> HitEffects = new();
