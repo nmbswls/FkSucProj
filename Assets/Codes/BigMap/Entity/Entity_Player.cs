@@ -164,14 +164,6 @@ namespace My.Map
                 {
                     id = 102,
                     skillId = "queen_attack_03",
-                    deriveWindows = new List<DeriveWindow>()
-                    {
-                        new DeriveWindow()
-                        {
-                            id = "1",
-                            window = new TimeWindow(0.2f, 0.3f),
-                        }
-                    }
                 };
                 graph.ComboNodes.Add(node);
 
@@ -179,8 +171,8 @@ namespace My.Map
             {
                 var node = new ComboNode()
                 {
-                    id = 104,
-                    skillId = "queen_attack_04",
+                    id = 200,
+                    skillId = "queen_dash",
                     deriveWindows = new List<DeriveWindow>()
                     {
                         new DeriveWindow()
@@ -195,14 +187,25 @@ namespace My.Map
             }
 
             {
+                var node = new ComboNode()
+                {
+                    id = 201,
+                    skillId = "queen_dash_attack",
+                };
+                graph.ComboNodes.Add(node);
+
+            }
+
+            {
                 var trans = new EntitySkillComboGraph.Transition()
                 {
                     fromNodeId = 0,
-                    toNodeId = 101,
+                    toNodeId = 100,
                     triggerInput = new InputPattern()
                     {
                         SkillId = "queen_attack_01"
-                    } ,
+                    },
+
                 };
 
                 graph.Transitions.Add(trans);
@@ -212,6 +215,25 @@ namespace My.Map
                 {
                     fromNodeId = 100,
                     toNodeId = 101,
+                    triggerInput = new InputPattern()
+                    {
+                        SkillId = "queen_attack_01"
+                    },
+                    windowId = "1",
+                };
+
+                graph.Transitions.Add(trans);
+            }
+            {
+                var trans = new EntitySkillComboGraph.Transition()
+                {
+                    fromNodeId = 101,
+                    toNodeId = 102,
+                    triggerInput = new InputPattern()
+                    {
+                        SkillId = "queen_attack_01"
+                    },
+                    windowId = "1",
                 };
 
                 graph.Transitions.Add(trans);
@@ -220,7 +242,11 @@ namespace My.Map
                 var trans = new EntitySkillComboGraph.Transition()
                 {
                     fromNodeId = 0,
-                    toNodeId = 101,
+                    toNodeId = 200,
+                    triggerInput = new InputPattern()
+                    {
+                        SkillId = "queen_dash"
+                    },
                 };
 
                 graph.Transitions.Add(trans);
@@ -228,12 +254,18 @@ namespace My.Map
             {
                 var trans = new EntitySkillComboGraph.Transition()
                 {
-                    fromNodeId = 0,
-                    toNodeId = 101,
+                    fromNodeId = 200,
+                    toNodeId = 201,
+                    triggerInput = new InputPattern()
+                    {
+                        SkillId = "queen_attack_01"
+                    },
                 };
 
                 graph.Transitions.Add(trans);
             }
+
+            graph.BuildGraph();
             return graph;
         }
         public void TickResourceCost()
