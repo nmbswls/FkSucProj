@@ -281,7 +281,6 @@ namespace My.Map.Entity
             var activeWindows = new Dictionary<string, EntitySkillComboGraph.DeriveWindow>();
             foreach (var w in node.deriveWindows)
             {
-                if (w.requiresHitConfirm && !_ctx.hitConfirmed) continue;
                 if (w.window.Contains(_ctx.nodeClock))
                 {
                     activeWindows[w.id] = w;
@@ -339,7 +338,6 @@ namespace My.Map.Entity
                 var activeWindows = new Dictionary<string, EntitySkillComboGraph.DeriveWindow>();
                 foreach (var w in node.deriveWindows)
                 {
-                    if (w.requiresHitConfirm && !_ctx.hitConfirmed) continue;
                     if (w.window.Contains(_ctx.nodeClock))
                     {
                         activeWindows[w.id] = w;

@@ -24,9 +24,14 @@ namespace My.Map.Entity
                 {
                     var cfg = new EntitySkillCfg();
                     cfg.SkillId = "queen_attack";
+                    cfg.MainAbilityId = "queen_attack_01";
+                    cfg.CoolDown = 0.2f;
+                    cfg.DesiredUseDistance = 0.8f;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
+
+
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -103,6 +108,19 @@ namespace My.Map.Entity
 
                 {
                     var ab = CreateBasicAoeSlash();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateQueenAttackAbility1();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateQueenAttackAbility2();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateQueenAttackAbility3();
                     _abilityDict[ab.Id] = ab;
                 }
             }
@@ -897,6 +915,193 @@ namespace My.Map.Entity
 
             spec.Phases.Add(postPhase);
 
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateQueenAttackAbility1()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "queen_attack_01";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.15"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.12"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = "Weapon01",
+                Duration = 0.15f,
+                OnHitEffects = new()
+                {
+
+                    new MapAbilityEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 25000,
+                        KnockBackForce = 1.6f,
+                    },
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            };
+            spec.Phases.Add(postPhase);
+            return spec;
+        }
+        private static MapAbilitySpecConfig CreateQueenAttackAbility2()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "queen_attack_02";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.25"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = "Weapon02",
+                Duration = 0.12f,
+                OnHitEffects = new()
+                {
+
+                    new MapAbilityEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 25000,
+                        KnockBackForce = 1.6f,
+                    },
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            };
+            spec.Phases.Add(postPhase);
+            return spec;
+        }
+        private static MapAbilitySpecConfig CreateQueenAttackAbility3()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "queen_attack_03";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.35"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = "Weapon03",
+                Duration = 0.35f,
+                OnHitEffects = new()
+                {
+
+                    new MapAbilityEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 25000,
+                        KnockBackForce = 1.6f,
+                    },
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            };
+            spec.Phases.Add(postPhase);
             return spec;
         }
     }

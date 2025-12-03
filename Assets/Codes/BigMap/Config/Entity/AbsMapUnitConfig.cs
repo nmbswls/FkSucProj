@@ -13,6 +13,7 @@ namespace Config.Unit
     {
         public string SkillId;
 
+        public string MainAbilityId;
         public bool IsPassive;
         public string PassiveBuffId;
 
@@ -26,7 +27,6 @@ namespace Config.Unit
         public int StackCount = 0;
 
         public int Priority = 10;
-
         public float DesiredUseAngle;
         public float DesiredUseDistance;
         public enum ESelectPolicy
