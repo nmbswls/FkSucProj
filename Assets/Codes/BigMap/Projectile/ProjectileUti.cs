@@ -10,10 +10,17 @@ public static class ProjectileUtil
     {
         foreach(var ef in logicProjectile.pData.OnHitEffects)
         {
-            var efCtx = new LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, new SourceKey() { type = SourceType.Bullet, entityId = logicProjectile.ownerEntity.Id });
-            efCtx.Actor = logicProjectile.ownerEntity;
-            efCtx.ActorFactionId = logicProjectile.ownerEntity.FactionId;
-            efCtx.Position = hitPosition;
+            var srcInfo = new EffectSourceInfo()
+            {
+                SrcType = ESourceType.Bullet,
+                SrcInstId = logicProjectile.instId,
+                SrcEntityId = logicProjectile.ownerEntity.Id,
+                SrcFactionId = logicProjectile.ownerEntity.FactionId,
+            };
+
+
+            var efCtx = new LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, srcInfo);
+            efCtx.CastPos = hitPosition;
             efCtx.CastDir = hitPosition - logicProjectile.spawnPos;
 
             MainGameManager.Instance.gameLogicManager.HandleLogicFightEffect(ef, efCtx);

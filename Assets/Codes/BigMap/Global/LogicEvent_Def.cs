@@ -66,7 +66,7 @@ namespace Map.Logic.Events
     {
         public MapLogicEventContext Ctx { get; set; }
         public EMapLogicEventType Type { get { return EMapLogicEventType.AddBuff; } }
-        public SourceKey SrcKey;
+        public ModSourceKey SrcKey;
         public long OnHitId;
         public long Damage;
         public int Flags;

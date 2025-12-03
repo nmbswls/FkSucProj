@@ -1,3 +1,4 @@
+using Config.Unit;
 using Map.Entity;
 using My.Map.Entity;
 using System;
@@ -9,6 +10,31 @@ using UnityEngine.UIElements.Experimental;
 
 namespace My.Map.Entity
 {
+
+    public static class SkillLibrary
+    {
+        public static Dictionary<string, EntitySkillCfg> _skillDict = null;
+
+        public static EntitySkillCfg GetSkillConfig(string skillName)
+        {
+            if (_skillDict == null)
+            {
+                _skillDict = new();
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "queen_attack";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+            }
+
+            _skillDict.TryGetValue(skillName, out var skillCfg);
+            return skillCfg;
+        }
+    }
+
+
     public static class AbilityLibrary
     {
 
@@ -175,7 +201,7 @@ namespace My.Map.Entity
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
             spec.Id = "default_dash";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.CoolDown = 1.0f;
+            //spec.CoolDown = 1.0f;
 
             spec.CauseAttract = true;
             spec.AttractPower = 10.0f;
@@ -285,8 +311,8 @@ namespace My.Map.Entity
 
             spec.Id = "default_weapon";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.CoolDown = 0.2f;
-            spec.DesiredUseDistance = 0.5f;
+            //spec.CoolDown = 0.2f;
+            //spec.DesiredUseDistance = 0.5f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -462,9 +488,9 @@ namespace My.Map.Entity
 
             spec.Id = "attack";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.DesiredUseDistance = 0.5f;
+            //spec.DesiredUseDistance = 0.5f;
 
-            spec.CoolDown = 2.0f;
+            //spec.CoolDown = 2.0f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -519,9 +545,9 @@ namespace My.Map.Entity
 
             spec.Id = "default_enemy_qinfan";
             spec.TypeTag = AbilityTypeTag.HMode;
-            spec.CoolDown = 6.0f;
-            spec.DesiredUseDistance = 0.8f;
-            spec.Priority = 100;
+            //spec.CoolDown = 6.0f;
+            //spec.DesiredUseDistance = 0.8f;
+            //spec.Priority = 100;
 
             var mainPhase = new MapAbilityPhase()
             {
@@ -530,10 +556,13 @@ namespace My.Map.Entity
                 PhaseBuff = new() { "jian_su_self" },
 
                 ShowRangePreview = true,
-                FaceOffset = new Vector2(0.3f, 0),
-                IsCircle = false,
-                RangeWidth = 0.8f,
-                RangeLen = 1.2f,
+                PreviewIntent = new()
+                {
+                    FaceOffset = new Vector2(0.3f, 0),
+                    IsCircle = false,
+                    RangeWidth = 0.8f,
+                    RangeLen = 1.2f,
+                },
 
                 DurationValue = new()
                 {
@@ -627,8 +656,8 @@ namespace My.Map.Entity
 
             spec.Id = "spawn_attract";
             spec.TypeTag = AbilityTypeTag.Utility;
-            spec.CoolDown = 10.0f;
-            spec.StackCount = 5;
+            //spec.CoolDown = 10.0f;
+            //spec.StackCount = 5;
             spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
             spec.Range1 = 5.0f;
 
@@ -663,9 +692,9 @@ namespace My.Map.Entity
 
             spec.Id = "default_dash_slash";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.CoolDown = 8.0f;
-            spec.DesiredUseDistance = 2.0f;
-            spec.Priority = 100;
+            //spec.CoolDown = 8.0f;
+            //spec.DesiredUseDistance = 2.0f;
+            //spec.Priority = 100;
             spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
             spec.Range1 = 2.5f;
 
@@ -675,10 +704,13 @@ namespace My.Map.Entity
                 LockMovement = true,
 
                 ShowRangePreview = true,
-                FaceOffset = new Vector2(0.3f, 0),
-                IsCircle = false,
-                RangeWidth = 1.2f,
-                RangeLen = 2.5f,
+                PreviewIntent = new()
+                {
+                    FaceOffset = new Vector2(0.3f, 0),
+                    IsCircle = false,
+                    RangeWidth = 1.2f,
+                    RangeLen = 2.5f,
+                },
 
                 DurationValue = new()
                 {
@@ -786,9 +818,9 @@ namespace My.Map.Entity
 
             spec.Id = "basic_aoe_slash";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.CoolDown = 3.0f;
-            spec.DesiredUseDistance = 1.0f;
-            spec.Priority = 20;
+            //spec.CoolDown = 3.0f;
+            //spec.DesiredUseDistance = 1.0f;
+            //spec.Priority = 20;
 
             var preparePhase = new MapAbilityPhase()
             {
@@ -797,9 +829,12 @@ namespace My.Map.Entity
                 LockRotation = true,
 
                 ShowRangePreview = true,
-                FaceOffset = new Vector2(0, 0),
-                IsCircle = true,
-                RangeRadius = 1.2f,
+                PreviewIntent = new()
+                {
+                    FaceOffset = new Vector2(0, 0),
+                    IsCircle = true,
+                    RangeRadius = 1.2f,
+                },
 
                 DurationValue = new()
                 {

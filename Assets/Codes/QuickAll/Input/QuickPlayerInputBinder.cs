@@ -334,14 +334,24 @@ namespace My.Input
 
         public void OnSceneLeftClick()
         {
-
             if (!LogicTime.paused)
             {
                 var player = MainGameManager.Instance.playerScenePresenter;
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
 
-                player.PlayerEntity.PlayerAbilityController.TrySlash(castDir);
+                //  get skill name from data
+                string skillName;
+                if (player.PlayerEntity.IsQueenMode)
+                {
+                    skillName = "queen_attack";
+                }
+                else
+                {
+                    skillName = "default_weapon";
+                }
+                
+                player.PlayerEntity.ablilityManager.UseSkill(skillName, castVec:castDir, target:null);
             }
         }
 
@@ -387,7 +397,7 @@ namespace My.Input
                             dir = MainGameManager.Instance.playerScenePresenter.freeMoveDir;
                         }
 
-                        MainGameManager.Instance.playerScenePresenter.PlayerEntity.PlayerAbilityController.TryDash(dir);
+                        MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", dir);
                     }
                 }
             }

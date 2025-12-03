@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Config;
 using My.Player.Bag;
 using My.UI.Bag;
@@ -242,7 +243,8 @@ namespace My.UI
                 //
                 if(payload.Stack.Count > 0)
                 {
-                    ShopNormalUIPanel.Instance.ShowSellHint();
+                    //ShopNormalUIPanel.Instance.ShowSellHint();
+                    UIManager.Instance.ShowPanel("ItemCountChooseBox", new Dictionary<int, long>());
                 }
 
                 bool sell = ShopNormalUIPanel.Instance.BindShop.TrySellFromBag(fromBag.BagId, payload.SourceIndex);

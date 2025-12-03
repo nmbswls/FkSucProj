@@ -38,7 +38,7 @@ namespace My.Map.Entity.AI
 
         public bool IsInHMode;
 
-        public string? CurrIntentAbility = null;
+        public string? CurrIntentSkill = null;
 
         public bool CanLeaveAttract;
     }
@@ -216,6 +216,11 @@ namespace My.Map.Entity.AI
             TransitionToState("Idle");
         }
 
+        public void TriggerUpdateImmediately()
+        {
+            _lastActionsUpdate = 0;
+            _lastDecisionsUpdate = 0;
+        }
         /// <summary>
 		/// Stores the last known position of the target
 		/// </summary>

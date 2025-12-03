@@ -10,9 +10,18 @@ namespace My.Player
     public class PlayerDataManager
     {
         public GameLogicManager logicManager;
+
         public PlayerInventoryModel inventoryModel;
 
         public Dictionary<string, long> CurrencyBag = new();
+
+        public List<string> PlayerSkillList = new() 
+        {
+            "player_shoot",
+            "default_weapon",
+            "default_dash",
+            "fix_clothes",
+            "spawn_attract"};
 
         public PlayerDataManager(GameLogicManager logicManager)
         {

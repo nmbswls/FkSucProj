@@ -9,20 +9,7 @@ using UnityEngine;
 
 namespace My.Map
 {
-    public enum SourceType
-    {
-        AbilityActive,
-        Buff,
-        BuffTrigger,
-        BuffEffect,
-        Item, 
-        Env,
-        Aura,
-        AreaEffect,
-        Bullet,
-        Mechanism,
-        Throw,
-    }
+    
 
     public enum EAttrType
     {
@@ -69,25 +56,20 @@ namespace My.Map
     }
 
 
-    public  struct SourceKey : IEquatable<SourceKey>
+    public struct ModSourceKey : IEquatable<ModSourceKey>
     {
-        public SourceType type;
-
         public long entityId;
         public long buffId;
-        public string buffName;
         public string abilityName;
-        public string sourceId;
-        public long bulletId;
 
-        public bool Equals(SourceKey other) => type == other.type && entityId == other.entityId && buffId == other.buffId && buffName == other.buffName && abilityName == other.abilityName && sourceId == other.sourceId;
-        public override int GetHashCode() => HashCode.Combine((int)type, entityId, buffId, buffName, abilityName, sourceId, bulletId);
+        public bool Equals(ModSourceKey other) => entityId == other.entityId && buffId == other.buffId && abilityName == other.abilityName;
+        public override int GetHashCode() => HashCode.Combine((int)entityId, buffId, abilityName);
     }
 
     public sealed class Modifier
     {
         public long instId;
-        public  SourceKey source;
+        public  ModSourceKey source;
         public  string attrId;
         public  bool isOverride;
         public  long value;      // 可扩展为曲线/表达式
@@ -103,7 +85,7 @@ namespace My.Map
 
         public readonly List<Modifier> overrideMods = new(); // 按 priority 排序
                                                              // 索引：来源 -> 修饰器集合（用于 O(1) 过期）
-        public readonly Dictionary<SourceKey, List<Modifier>> bySource = new();
+        public readonly Dictionary<ModSourceKey, List<Modifier>> bySource = new();
         // 聚合缓存
         public long addSum = 0;
         public long mulProduct = 10000;         // 乘法统一存为 Π(1+rate) 或直接乘 value
@@ -141,7 +123,7 @@ namespace My.Map
     public class ResourceDeltaIntent
     {
         public long delta;
-        public SourceKey? srcKey;
+        public long? srcEntityId;
         public int deltaFlags;
         public Dictionary<string, long> extraAttrs = null;
 
@@ -167,9 +149,9 @@ namespace My.Map
         private readonly Dictionary<string, NumericEntry> numerics = new();
         private readonly Dictionary<string, ResourceEntry> resources = new(); // key: "HP", "MP"... (Current通过资源管理)
                                                                               // 来源索引（实体级别）：来源 -> (attrId, modifier) 列表，便于 Buff 结束时批量过期
-        private readonly Dictionary<SourceKey, List<(string attrId, Modifier mod)>> sourceIndex = new();
+        private readonly Dictionary<ModSourceKey, List<(string attrId, Modifier mod)>> sourceIndex = new();
 
-        private readonly List<(string resourceId, float delta, bool isDamage, SourceKey source)> _resourceChanges = new();
+        private readonly List<(string resourceId, float delta, bool isDamage, ModSourceKey source)> _resourceChanges = new();
 
         // 依赖图
         private readonly float epsilon = 1e-5f;
@@ -247,7 +229,7 @@ namespace My.Map
         /// 增加modifier
         /// </summary>
         /// <param name="m"></param>
-        public Modifier AddModifier(SourceKey source, string attrId, long val)
+        public Modifier AddModifier(ModSourceKey source, string attrId, long val)
         {
             var m = new Modifier()
             {
@@ -320,7 +302,7 @@ namespace My.Map
             e.overrideMods.Insert(idx, m);
         }
 
-        public void ExpireBySource(SourceKey sk)
+        public void ExpireBySource(ModSourceKey sk)
         {
             if (!sourceIndex.TryGetValue(sk, out var list)) return;
             foreach (var (attrId, mod) in list)
@@ -445,7 +427,7 @@ namespace My.Map
 
 
         // 3) 聚合资源变化
-        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source, Dictionary<string, long> extraAttrs = null)
+        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
         {
             if (!resources.TryGetValue(resourceId, out var r)) 
             {
@@ -456,7 +438,7 @@ namespace My.Map
             r.pendingDelta.Add(new ResourceDeltaIntent()
             {
                 delta = delta,
-                srcKey = source,
+                srcEntityId = srcEntityId,
                 deltaFlags = isDamage ? 1 : 0,
                 extraAttrs = extraAttrs,
             });

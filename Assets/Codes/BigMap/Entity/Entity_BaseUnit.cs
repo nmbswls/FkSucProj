@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using My.Map.Entity.AI;
 using My.Map.Entity;
 using My.Map.Logic;
-using static My.Map.Entity.MapEntityAbilityController;
+using static My.Map.Entity.MapEntityAbilityExecutor;
 using static UnityEngine.Rendering.VolumeComponent;
 using static My.Map.EntityCombatStateComp;
 using static My.GameLogicManager;
@@ -44,7 +44,8 @@ namespace My.Map
     public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity,
         INoticeRecordComp, IUnitWithBattle
     {
-        public MapEntityAbilityController abilityController;
+        public MapEntitySkillManager ablilityManager;
+        public MapEntityAbilityExecutor abilityController;
         public float viewRadius = 8f;
         public float fovDegrees = 90f;
 
@@ -73,6 +74,7 @@ namespace My.Map
 
         //public bool IsInBattle; // 既没有战斗 也没有h attract
         public bool IsHMode;
+        public bool IsQueenMode = false;
 
         public int BindRoomId;
 
@@ -108,7 +110,7 @@ namespace My.Map
             base.Initialize();
 
             // get meta info
-            InitAbilityController();
+            InitAbility();
 
             InitAiBrain();
 
@@ -147,6 +149,7 @@ namespace My.Map
             base.Tick(dt);
             // 计时、条件检查、冷却等
 
+            ablilityManager?.Tick(dt);
             abilityController?.Tick(dt);
 
             {
@@ -225,11 +228,11 @@ namespace My.Map
         {
             base.OnEntityDie(lastIntent);
 
-            if(lastIntent.srcKey != null)
+            if(lastIntent.srcEntityId != null)
             {
-                var logicEntity = LogicManager.GetLogicEntity(lastIntent.srcKey.Value.entityId);
+                var srcEntity = LogicManager.GetLogicEntity(lastIntent.srcEntityId.Value);
 
-                var diff = logicEntity.Pos - this.Pos;
+                var diff = srcEntity.Pos - this.Pos;
                 var impluse = -(diff.normalized);
 
                 CreateKnockBackIntent(impluse, 5f);
@@ -302,6 +305,28 @@ namespace My.Map
         }
         public KnockBackIntent? knockBackIntent;
 
+        public class ControlledMoveCtx
+        {
+            public float Duration;
+            public float MinEndSpeed;
+            public bool DashIFrameActive = false;
+            public Vector2 MoveDir;
+            public enum EControlMode
+            {
+                None,
+                FixSpeed,
+                Impulse,
+            }
+            public EControlMode ControlMode;
+            public float OriginSpeed;
+            public float ImpulsePower;
+
+            public List<MapFightEffectCfg> OnHitUnitEffects;
+
+            public float dashTimeLeft = 0f;
+        }
+        public ControlledMoveCtx? controlledMoveCtx;
+
 
         // 推进（建议放 FixedUpdate 或你的角色控制器速度合成前）
         private void UpdateKnockback(float dt)
@@ -360,13 +385,15 @@ namespace My.Map
             {
                 if(dashIntent.OnHitUnitCfg != null)
                 {
-                    foreach(var e in dashIntent.OnHitUnitCfg)
-                    {
-                        LogicFightEffectContext newCtx = new(LogicManager, null);
-                        newCtx.Actor = this;
-                        newCtx.Position = this.Pos;
-                        LogicManager.HandleLogicFightEffect(e, newCtx);
-                    }
+                    //var 
+                    //foreach(var e in dashIntent.OnHitUnitCfg)
+                    //{
+
+                    //    LogicFightEffectContext newCtx = new(LogicManager);
+                    //    newCtx.Actor = this;
+                    //    newCtx.CastPos = this.Pos;
+                    //    LogicManager.HandleLogicFightEffect(e, newCtx);
+                    //}
                 }
             }
 
@@ -488,7 +515,29 @@ namespace My.Map
         #endregion
 
 
-        protected abstract void InitAbilityController();
+        protected virtual void InitAbility()
+        {
+            var comboGraph = GenerateComboGraph();
+            ablilityManager = new MapEntitySkillManager(this, comboGraph);
+
+
+            abilityController = new DefaultNpcAbilityController(this);
+
+            ablilityManager.Executor = abilityController;
+
+            abilityController.EventOnInputCancelPhaseStart += () =>
+            {
+                if(AIBrain != null)
+                {
+                    AIBrain.TriggerUpdateImmediately();
+                }
+            };
+        }
+
+        protected virtual EntitySkillComboGraph GenerateComboGraph()
+        {
+            return null;
+        }
 
 
         protected override void InitAttribute()

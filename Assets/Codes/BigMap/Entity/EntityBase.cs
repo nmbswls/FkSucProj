@@ -48,16 +48,16 @@ namespace My.Map
         long Id { get; }
         long GetAttr(string attrId);
 
-        void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source, Dictionary<string, long> extraAttrs = null);
+        void ApplyResourceChange(string resourceId, long delta, bool isDamage, long? srcEntityId, Dictionary<string, long> extraAttrs = null);
 
         long CalculateResourceCostAmount(ResourceDeltaIntent intent);
         /// <summary>
         /// Ôö¼Ómodifier
         /// </summary>
         /// <param name="m"></param>
-        Modifier AddAttrModifier(SourceKey source, string attrId, long val);
+        Modifier AddAttrModifier(ModSourceKey source, string attrId, long val);
 
-        void ExpireModifierBySource(SourceKey sk);
+        void ExpireModifierBySource(ModSourceKey sk);
 
         void UpdateAttrModifier(Modifier m);
 
@@ -189,9 +189,9 @@ namespace My.Map
         {
             return attributeStore.CheckHasState(attrId);
         }
-        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, SourceKey? source, Dictionary<string, long> extraAttrs = null)
+        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
         {
-            attributeStore.ApplyResourceChange(resourceId, delta, isDamage, source, extraAttrs);
+            attributeStore.ApplyResourceChange(resourceId, delta, isDamage, srcEntityId, extraAttrs);
         }
 
 
@@ -223,10 +223,10 @@ namespace My.Map
                     {
                         if(intent.deltaFlags > 0)
                         {
-                            if (intent.srcKey != null && intent.srcKey.Value.entityId != 0)
+                            if (intent.srcEntityId != null && intent.srcEntityId.Value != 0)
                             {
                                 var dmg = -intent.finalDelta;
-                                var entity = LogicManager.GetLogicEntity(intent.srcKey.Value.entityId);
+                                var entity = LogicManager.GetLogicEntity(intent.srcEntityId.Value);
                                 var xixue = entity.GetAttr(AttrIdConsts.DamageXiXue);
 
                                 if(intent.extraAttrs != null)
@@ -239,7 +239,7 @@ namespace My.Map
                                 {
                                     Debug.Log("ÎüÑª »ØÑª OnResourceAttriChanged");
                                     var xixueVal = (long)(dmg * (double)(xixue / 10000));
-                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false, new SourceKey() { type = SourceType.Mechanism, entityId = entity.Id});
+                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false, srcEntityId: Id);
                                 }
                             }
                         }
@@ -254,12 +254,12 @@ namespace My.Map
             }
         }
 
-        public Modifier AddAttrModifier(SourceKey source, string attrId, long val)
+        public Modifier AddAttrModifier(ModSourceKey source, string attrId, long val)
         {
             return attributeStore.AddModifier(source, attrId, val);
         }
 
-        public void ExpireModifierBySource(SourceKey sk)
+        public void ExpireModifierBySource(ModSourceKey sk)
         {
             attributeStore.ExpireBySource(sk);
         }

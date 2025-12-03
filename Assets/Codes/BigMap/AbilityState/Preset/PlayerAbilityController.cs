@@ -8,32 +8,12 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map.Entity
 {
-    public class PlayerAbilityController : MapEntityAbilityController
+    public class PlayerAbilityController : MapEntityAbilityExecutor
     {
-        public List<string> PlayerDefaultSkilld = new()
-        {
-            "unlock_loot_point",
-            "use_loot_point",
-            "use_item",
 
-            "player_shoot",
-            "default_weapon",
-            "default_dash",
-            "fix_clothes",
-
-            "zhaqu",
-            "deep_zhaqu",
-
-            "spawn_attract"
-        };
 
         public PlayerAbilityController(BaseUnitLogicEntity owner) : base(owner)
         {
-            foreach(var skill in PlayerDefaultSkilld)
-            {
-                var conf = AbilityLibrary.GetAbilityConfig(skill);
-                RegisterAbility(conf);
-            }
         }
 
         public void UseUnlockLootPoint(ILogicEntity entity)

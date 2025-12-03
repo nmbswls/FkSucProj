@@ -469,6 +469,11 @@ namespace My
                             executor = new AbilityEffectExecutor4RangePreview();
                         }
                         break;
+                    case MapAbilityEffectNextPhaseCfg:
+                        {
+                            executor = new AbilityEffectExecutor4NextPhase();
+                        }
+                        break;
 
                 }
 
@@ -481,24 +486,52 @@ namespace My
             return executor;
         }
 
+        public enum ESourceType
+        {
+            Unknown,
+            Ability,
+            Buff,
+            BuffTrigger,
+            BuffEffect,
+            Item,
+            Env,
+            Aura,
+            AreaEffect,
+            Bullet,
+            Mechanism,
+            Throw,
+        }
+
+        /// <summary>
+        /// 效果源信息
+        /// </summary>
+        [Serializable]
+        public class EffectSourceInfo
+        {
+            public ESourceType SrcType; // 
+            public long SrcEntityId;
+            public long SrcInstId;
+            public string SrcCfgId;
+
+            public long SrcBuffId;
+            public EFactionId SrcFactionId;
+        }
+
+
         public class LogicFightEffectContext
         {
             public GameLogicManager Env { get; protected set; }
-            public LogicFightEffectContext(GameLogicManager env, SourceKey? sourceKey)
+            public LogicFightEffectContext(GameLogicManager env, EffectSourceInfo sourceInfo)
             {
                 this.Env = env;
-                this.SourceKey = sourceKey;
+                this.SourceInfo = sourceInfo;
             }
 
-            public SourceKey? SourceKey; // 
+            public EffectSourceInfo SourceInfo; // 
 
-            public ILogicEntity Actor;         // 施动者
-            public ILogicEntity? Target;        // 目标对象（如门或敌人），可为空
-            public Vector2? FaceDir;           // 面朝方向
+            public long TargetId;             // 目标对象
             public Vector2? CastDir;           // 面朝方向
-            public Vector2? Position;         // 施放位置（如脚下或点击点）
-
-            public EFactionId ActorFactionId;
+            public Vector2? CastPos;          // 施放位置（如脚下或点击点）
 
             // 变量集合
             public Dictionary<string, string> RunningVariables = new();

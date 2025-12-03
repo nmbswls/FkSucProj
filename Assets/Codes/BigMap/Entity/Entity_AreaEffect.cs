@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using Map.Logic;
 using My.Map.Logic;
+using static My.GameLogicManager;
 
 
 namespace My.Map
@@ -62,12 +63,14 @@ namespace My.Map
 
             if (cacheCfg.TriggerEffects != null)
             {
+                var srcInfo = new EffectSourceInfo()
+                {
+                    SrcType = ESourceType.AreaEffect,
+                    SrcEntityId = Id,
+                };
                 foreach (var effect in cacheCfg.TriggerEffects)
                 {
-                    var ctx = new GameLogicManager.LogicFightEffectContext(LogicManager, new SourceKey()
-                    {
-                        type = SourceType.AreaEffect,
-                    });
+                    var ctx = new GameLogicManager.LogicFightEffectContext(LogicManager, srcInfo);
                     LogicManager.HandleLogicFightEffect(effect, ctx);
                 }
             }

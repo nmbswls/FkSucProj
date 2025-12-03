@@ -75,6 +75,10 @@ namespace My.Map.Entity.AI
             float bestScore = float.NegativeInfinity;
             foreach (var s in Actions)
             {
+                if(s.Status == AIActionStatus.Running)
+                {
+                    continue;
+                }
                 float u = s.RateScore();
                 if (u <= 0) continue;
                 float score = u;

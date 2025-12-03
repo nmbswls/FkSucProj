@@ -68,6 +68,17 @@ namespace My.Map.Entity
     }
 
     [Serializable]
+    public class MapPreviewIntent
+    {
+        public Vector2 FaceOffset = Vector2.zero;
+        public bool IsCircle;
+        public float RangeWidth;
+        public float RangeLen;
+        public float RangeRadius;
+    }
+
+
+    [Serializable]
     public class MapAbilityPhase
     {
         public string PhaseName;
@@ -80,17 +91,15 @@ namespace My.Map.Entity
         public bool LockMovement = false;
         public bool LockRotation = false;
         public bool ImmuneKnock = false;
+        public bool CanInputInterrupt = false;
+
         public List<PhaseEffectEvent> Events = new();  // 该阶段内的所有效果与时序
 
         public string EnterDebugString = string.Empty;
         public List<string> PhaseBuff = new();
 
         public bool ShowRangePreview = false;
-        public Vector2 FaceOffset = Vector2.zero;
-        public bool IsCircle;
-        public float RangeWidth;
-        public float RangeLen;
-        public float RangeRadius;
+        public MapPreviewIntent PreviewIntent = new();
     }
 
 
@@ -115,17 +124,9 @@ namespace My.Map.Entity
         // 变量集合
         public Dictionary<string, string> Variables = new();
 
-        public float DesiredUseAngle;
-        public float DesiredUseDistance;
-
-        public bool IsPassive;
-        public string PassiveBuffId;
+       
         public string AbilityTag;
-
-        public float CoolDown = 5.0f;
-        public int StackCount = 0;
-
-        public int Priority = 10;
+        
 
         public enum ETargetType
         {
@@ -133,10 +134,14 @@ namespace My.Map.Entity
             Point,
             Circle,
             Rect,
+            LockTarget,
         }
         public ETargetType TargetType;
         public float Range1;
         public float Range2;
+
+        // ai 相关
+        
 
         public bool CauseAttract = false;
         public float AttractPower = 0;

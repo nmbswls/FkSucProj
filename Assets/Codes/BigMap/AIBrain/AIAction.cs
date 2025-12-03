@@ -2,15 +2,93 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Config.Unit;
 using Map.Entity.AI.Action;
 using Unity.VisualScripting.FullSerializer;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static Config.Unit.EntitySkillCfg;
 using static My.Map.BaseUnitLogicEntity;
-using static My.Map.Entity.MapEntityAbilityController;
+using static My.Map.Entity.MapEntityAbilityExecutor;
 using static My.Map.EntityCombatStateComp;
+using static UnityEngine.GraphicsBuffer;
 
 namespace My.Map.Entity.AI
 {
+    public static class AIActionUtils
+    {
+        public static (Vector2?, long?) GetSkillUseParams(EntitySkillCfg skillConf, BaseUnitLogicEntity caster)
+        {
+            //
+            switch(skillConf.SelectPolicy)
+            {
+                case ESelectPolicy.None:
+                    {
+                        return (null, null);
+                    }
+                    break;
+                case ESelectPolicy.PrimaryTarget:
+                    {
+                        var target = caster.LogicManager.GetLogicEntity(caster.combatStateComp.PrimaryTargetId, false);
+                        return (target.Pos, target.Id);
+                    }
+                    break;
+                case ESelectPolicy.Random:
+                    {
+                        return (null, null);
+                    }
+                    break;
+                default:
+                    {
+                        Debug.Log("GetSkillUseParams type error");
+                        return (null, null);
+                    }
+            }
+
+            
+            //if (skillConf.SelectPolicy == ESelectPolicy.None)
+            //{
+            //    if (caster.combatStateComp.PrimaryTargetId != 0)
+            //    {
+                    
+            //    }
+            //    else
+            //    {
+            //        Debug.LogError("AIActionUtils GetAbilityUseParams no primary target ");
+            //    }
+            //}
+
+            //// 目标为点 对于ai来说 
+            //if (abilityConf.TargetType == MapAbilitySpecConfig.ETargetType.Point
+            //    || abilityConf.TargetType == MapAbilitySpecConfig.ETargetType.Circle)
+            //{
+                
+            //}
+            //else if (abilityConf.TargetType == MapAbilitySpecConfig.ETargetType.LockTarget)
+            //{
+            //    if (abilityConf.SelectPolicy == 0)
+            //    {
+            //        if (caster.combatStateComp.PrimaryTargetId != 0)
+            //        {
+            //            caster.ablilityManager.UseSkill(abilityConf.Id, Vector2.zero, Vector2.zero, caster.combatStateComp.PrimaryTargetId);
+            //        }
+            //        else
+            //        {
+            //            Debug.LogError("AIActionUtils GetAbilityUseParams no primary target ");
+            //        }
+            //    }
+            //}
+            //else if (abilityConf.TargetType == MapAbilitySpecConfig.ETargetType.NoTarget)
+            //{
+            //    caster.ablilityManager.UseSkill(abilityConf.Id, Vector2.zero, Vector2.zero, 0);
+            //}
+            //else
+            //{
+            //    Debug.LogError($"AIActionUtils GetAbilityUseParams unsopoorted {abilityConf.TargetType}");
+            //}
+        }
+    }
+
 
     public enum EAIActionType
     {
@@ -464,7 +542,9 @@ namespace My.Map.Entity.AI
         public float OverTimeLimit = 99f;
         private float _overTimer;
         private bool hasCastAbility = false;
-        private MapAbilitySpecConfig? _config;
+        private bool isTryingCombo = false;
+
+        private EntitySkillCfg? _config;
 
         public override float RateScore()
         {
@@ -478,13 +558,13 @@ namespace My.Map.Entity.AI
                 return 0;
             }
 
-            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentSkill))
             {
                 return 0;
             }
 
             // 检查 有任意技能可使用
-            var anyReady = _brain.UnitEntity.abilityController.CheckAnyReadyAbility();
+            var anyReady = _brain.UnitEntity.ablilityManager.CheckAnyReadySkill();
             if(anyReady)
             {
                 return 10;
@@ -495,14 +575,14 @@ namespace My.Map.Entity.AI
         public override void Start()
         {
             Status = AIActionStatus.Running;
-            if(!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            if(!string.IsNullOrEmpty(_brain.blackboard.CurrIntentSkill))
             {
-                Debug.LogError("AIActionTryUseSkill confict occur old ability " + _brain.blackboard.CurrIntentAbility);
+                Debug.LogError("AIActionTryUseSkill confict occur old ability " + _brain.blackboard.CurrIntentSkill);
                 Stop(AIActionStatus.Success);
                 return;
             }
 
-            var skills = _brain.UnitEntity.abilityController.GetAllReadyAbilities();
+            var skills = _brain.UnitEntity.ablilityManager.GetAllReadySkills();
 
             if(skills.Count == 0)
             {
@@ -520,11 +600,12 @@ namespace My.Map.Entity.AI
 
             var best = skills[0];
 
+            var skillConf = SkillLibrary.GetSkillConfig(best.SkillName);
             // 更新状态
-            _brain.blackboard.CurrIntentAbility = best.AbilityName;
+            _brain.blackboard.CurrIntentSkill = skillConf.SkillId;
             _overTimer = LogicTime.time + OverTimeLimit;
             hasCastAbility = false;
-            _config = best.cacheConfig;
+            _config = skillConf;
 
             var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, best.cacheConfig.DesiredUseDistance);
             Debug.Log($"AIActionTryUseSkill move pos {targetPos}");
@@ -558,47 +639,55 @@ namespace My.Map.Entity.AI
             if (!hasCastAbility)
             {
                 // 距离满足施法条件 使用
-                if (_config.DesiredUseDistance > 0 && _brain.blackboard.Distance < _config.DesiredUseDistance * 1.1f)
+                if (_config.DesiredUseDistance > 0 && _brain.blackboard.Distance < _config.DesiredUseDistance)
                 {
                     var dir = _brain.PlayerEntity.Pos - _brain.UnitEntity.Pos;
 
-                    if(_config.TargetType == MapAbilitySpecConfig.ETargetType.Point)
-                    {
-                        _brain.UnitEntity.abilityController.TryUseAbility(_config.Id, _brain.PlayerEntity.Pos, _brain.PlayerEntity);
-                    }
-                    else
-                    {
-                        _brain.UnitEntity.abilityController.TryUseAbility(_config.Id, dir);
-                    }
+                    (Vector2? vec, long? targetId) = AIActionUtils.GetSkillUseParams(_config, _brain.UnitEntity);
+                    _brain.UnitEntity.ablilityManager.UseSkill(_config.SkillId, castVec: vec, target: targetId != null ? _brain.UnitEntity.LogicManager.GetLogicEntity(targetId.Value, false) : null);
 
                     hasCastAbility = true;
                     return;
                 }
                 else
                 {
-                    // 玩家位置偏移 需要更新位置
-                    //bool needReMove = false;
-                    //if (_brain.UnitEntity.entityMotorComp.State != EMotorState.Following)
-                    //{
-                    //    needReMove = true;
-                    //}
-
-                    //if (needReMove)
-                    //{
-                    //    _brain.UnitEntity.entityMotorComp.MoveFollow(_brain.PlayerEntity, 0.3f, UnityEngine.Random.insideUnitCircle.normalized * _config.DesiredUseDistance * 0.8f);
-                    //    return;
-                    //}
-
                     _brain.UnitEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _config.DesiredUseDistance, 1.0f);
                 }
             }
-            // 正在使用技能 等待技能结束
+            // 正在使用技能
             else
             {
-                if (!_brain.UnitEntity.abilityController.IsRunning)
+                // 继续等待actiona
+                if(!_brain.UnitEntity.abilityController.IsActionable())
                 {
-                    Stop(AIActionStatus.Success);
+                    return;
                 }
+
+                var trans = _brain.UnitEntity.ablilityManager.comboOrchestrator.GetPossibleTransition();
+                // 不可接技能 跳出
+                if (trans == null || trans.Count == 0)
+                {
+                    if (!_brain.UnitEntity.abilityController.IsRunning)
+                    {
+                        Stop(AIActionStatus.Success);
+                    }
+                    return;
+                }
+
+                Debug.Log($"AIActionTryUseSkill try to do derived");
+                var firstTran = trans[0];
+                var node = _brain.UnitEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
+
+                var skillConf = SkillLibrary.GetSkillConfig(node.skillId);
+                (Vector2? vec, long? targetId) = AIActionUtils.GetSkillUseParams(skillConf, _brain.UnitEntity);
+                //_brain.UnitEntity.ablilityManager.GetCanDerive
+                _brain.UnitEntity.ablilityManager.UseSkill(node.skillId, castVec: vec, target: targetId != null ? _brain.UnitEntity.LogicManager.GetLogicEntity(targetId.Value) : null);
+
+                // 修改技能释放条件
+                _brain.blackboard.CurrIntentSkill = skillConf.SkillId;
+                _overTimer = LogicTime.time + OverTimeLimit;
+                isTryingCombo = true;
+                _config = skillConf;
             }
         }
 
@@ -609,9 +698,9 @@ namespace My.Map.Entity.AI
 
             _overTimer = 0;
             hasCastAbility = false;
-            if(_brain.blackboard.CurrIntentAbility != null && _brain.blackboard.CurrIntentAbility == _config.Id)
+            if(_brain.blackboard.CurrIntentSkill != null && _brain.blackboard.CurrIntentSkill == _config.SkillId)
             {
-                _brain.blackboard.CurrIntentAbility = null;
+                _brain.blackboard.CurrIntentSkill = null;
             }
             _config = null;
 
@@ -623,9 +712,9 @@ namespace My.Map.Entity.AI
             base.OnExitState();
             _overTimer = 0;
             hasCastAbility = false;
-            if (_brain.blackboard.CurrIntentAbility != null && _brain.blackboard.CurrIntentAbility == _config.Id)
+            if (_brain.blackboard.CurrIntentSkill != null && _brain.blackboard.CurrIntentSkill == _config.SkillId)
             {
-                _brain.blackboard.CurrIntentAbility = null;
+                _brain.blackboard.CurrIntentSkill = null;
             }
             _config = null;
         }
@@ -659,7 +748,7 @@ namespace My.Map.Entity.AI
                 return 0;
             }
 
-            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentSkill))
             {
                 return 0;
             }
@@ -682,7 +771,7 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentSkill))
             {
                 Stop(AIActionStatus.Success);
                 return;
@@ -726,7 +815,7 @@ namespace My.Map.Entity.AI
                 return 0;
             }
 
-            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentSkill))
             {
                 return 0;
             }
@@ -754,7 +843,7 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentAbility))
+            if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentSkill))
             {
                 Stop(AIActionStatus.Success);
                 return;

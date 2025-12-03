@@ -2,6 +2,8 @@ using Config.Unit;
 using Config;
 using UnityEngine;
 using My.Map.Logic;
+using My.Map.Entity;
+using System.Collections.Generic;
 
 
 namespace My.Map
@@ -20,9 +22,19 @@ namespace My.Map
 
         public override EEntityType Type => EEntityType.Npc;
 
-        protected override void InitAbilityController()
+        // 预设程序生成行为
+        public List<string> DefaultSkillList = new List<string>()
         {
-            abilityController = new DefaultNpcAbilityController(this);
+            "player_shoot",
+            "default_weapon",
+            "default_enemy_qinfan",
+        };
+
+
+
+        protected override void InitAbility()
+        {
+            base.InitAbility();
         }
 
         public override void Initialize()

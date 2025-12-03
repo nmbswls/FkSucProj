@@ -1,9 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using My.Map.Entity;
 using My.Map.Logic;
+using UnityEditor.Experimental.GraphView;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
+using static My.GameLogicManager;
+using static My.Map.Entity.EntitySkillComboGraph;
+using static My.Map.Entity.MapEntitySkillManager;
 
 
 namespace My.Map
@@ -78,34 +84,158 @@ namespace My.Map
 
         public float applyHValTimer;
 
-        protected override void InitAbilityController()
+        protected override void InitAbility()
         {
-            abilityController = new PlayerAbilityController(this);
+            base.InitAbility();
 
-            abilityController.EventOnUseAbility += (abState) =>
+            foreach(var skill in LogicManager.playerDataManager.PlayerSkillList)
+            {
+                ablilityManager.RegisterSkill(skill);
+            }
+
+            abilityController.EventOnUseAbility += (abilityName) =>
             {
                 // ºÏ≤È ©º”attract
-                if (abState.cacheConfig.CauseAttract)
+                var abilityConf = AbilityLibrary.GetAbilityConfig(abilityName);
+                if (abilityConf == null)
+                {
+                    return;
+                }
+                if (abilityConf.CauseAttract)
                 {
                     var filterParam = new EntityFilterParam()
                     {
                         FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
                     };
 
-                    var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, abState.cacheConfig.AttractRange, filterParam);
+                    var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, abilityConf.AttractRange, filterParam);
 
                     foreach (var surround in surrounds)
                     {
                         var unit = surround as BaseUnitLogicEntity;
                         if (unit != null)
                         {
-                            unit.ApplyAttracted(Pos, abState.cacheConfig.AttractPower, this);
+                            unit.ApplyAttracted(Pos, abilityConf.AttractPower, this);
                         }
                     }
                 }
             };
         }
 
+        protected override EntitySkillComboGraph GenerateComboGraph()
+        {
+            EntitySkillComboGraph graph = new();
+            {
+                var node = new ComboNode()
+                {
+                    id = 100,
+                    skillId = "queen_attack_01",
+                    deriveWindows = new List<DeriveWindow>()
+                    {
+                        new DeriveWindow()
+                        {
+                            id = "1",
+                            window = new TimeWindow(0.2f, 0.3f),
+                        }
+                    }
+                };
+                graph.ComboNodes.Add(node);
+
+            }
+            {
+                var node = new ComboNode()
+                {
+                    id = 101,
+                    skillId = "queen_attack_02",
+                    deriveWindows = new List<DeriveWindow>()
+                    {
+                        new DeriveWindow()
+                        {
+                            id = "1",
+                            window = new TimeWindow(0.2f, 0.3f),
+                        }
+                    }
+                };
+                graph.ComboNodes.Add(node);
+
+            }
+            {
+                var node = new ComboNode()
+                {
+                    id = 102,
+                    skillId = "queen_attack_03",
+                    deriveWindows = new List<DeriveWindow>()
+                    {
+                        new DeriveWindow()
+                        {
+                            id = "1",
+                            window = new TimeWindow(0.2f, 0.3f),
+                        }
+                    }
+                };
+                graph.ComboNodes.Add(node);
+
+            }
+            {
+                var node = new ComboNode()
+                {
+                    id = 104,
+                    skillId = "queen_attack_04",
+                    deriveWindows = new List<DeriveWindow>()
+                    {
+                        new DeriveWindow()
+                        {
+                            id = "1",
+                            window = new TimeWindow(0.4f, 0.55f),
+                        }
+                    }
+                };
+                graph.ComboNodes.Add(node);
+
+            }
+
+            {
+                var trans = new EntitySkillComboGraph.Transition()
+                {
+                    fromNodeId = 0,
+                    toNodeId = 101,
+                    triggerInput = new InputPattern()
+                    {
+                        SkillId = "queen_attack_01"
+                    } ,
+                };
+
+                graph.Transitions.Add(trans);
+            }
+            {
+                var trans = new EntitySkillComboGraph.Transition()
+                {
+                    fromNodeId = 100,
+                    toNodeId = 101,
+                };
+
+                graph.Transitions.Add(trans);
+            }
+            {
+                var trans = new EntitySkillComboGraph.Transition()
+                {
+                    fromNodeId = 0,
+                    toNodeId = 101,
+                };
+
+                graph.Transitions.Add(trans);
+            }
+            {
+                var trans = new EntitySkillComboGraph.Transition()
+                {
+                    fromNodeId = 0,
+                    toNodeId = 101,
+                };
+
+                graph.Transitions.Add(trans);
+            }
+            return graph;
+        }
         public void TickResourceCost()
         {
             var baseGc = attributeStore.GetAttr(AttrIdConsts.PlayerHungerCost);
@@ -212,16 +342,16 @@ namespace My.Map
                 Flags = 100,
             };
 
-            SourceKey srcKey = new SourceKey()
-            {
-                type = SourceType.Mechanism,
-            };
             foreach (var unit in units)
             {
-                GameLogicManager.LogicFightEffectContext ctx = new(LogicManager, srcKey)
+                var sourceInfo = new EffectSourceInfo()
                 {
-                    Actor = this,
-                    Target = unit,
+                    SrcType = ESourceType.Mechanism,
+                    SrcEntityId = this.Id,
+                };
+                GameLogicManager.LogicFightEffectContext ctx = new(LogicManager, sourceInfo)
+                {
+                    TargetId = unit.Id,
                 };
                 LogicManager.HandleLogicFightEffect(effect, ctx);
             }

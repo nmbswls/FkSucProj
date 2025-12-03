@@ -8,7 +8,38 @@ using UnityEngine;
 namespace Config.Unit
 {
 
+    [Serializable]
+    public class EntitySkillCfg
+    {
+        public string SkillId;
 
+        public bool IsPassive;
+        public string PassiveBuffId;
+
+        public bool NeedHMode;
+
+        public bool IsFinisher;
+
+        public bool IsDerived;
+
+        public float CoolDown = 5.0f;
+        public int StackCount = 0;
+
+        public int Priority = 10;
+
+        public float DesiredUseAngle;
+        public float DesiredUseDistance;
+        public enum ESelectPolicy
+        {
+            None,
+            PrimaryTarget,
+            Self,
+            LowHpAlly,
+            LowHpEnmity,
+            Random,
+        }
+        public ESelectPolicy SelectPolicy; // 1-敌人主目标 2-自身 3-血量最低友方 4 血量最低敌方 5 随机 
+    }
 
 
     [Serializable]

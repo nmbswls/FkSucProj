@@ -75,8 +75,8 @@ namespace My
             }
 
             // if can sell
-            Debug.Log("TryBuyFromShop try buy " + giveItem + " " + addCnt);
-            bag.RemoveAt(itemIdx, );
+            //Debug.Log("TryBuyFromShop try buy " + giveItem + " " + addCnt);
+            bag.RemoveAt(itemIdx, item.Count);
 
             return true;
         }

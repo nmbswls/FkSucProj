@@ -24,13 +24,18 @@ namespace My.Map.Entity
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
-            if(ctx.Target is LootPointLogicEntity lootPoint)
+            if(ctx.TargetId == 0)
+            {
+                return;
+            }
+            var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if(targetEntity != null && targetEntity is LootPointLogicEntity lootPoint)
             {
                 lootPoint.TryUnlockLootPoint();
             }
             else
             {
-                Debug.LogError($"AbilityEffectExecutor4UnlockLootPoint not loot point {ctx.Target.Id}");
+                Debug.LogError($"AbilityEffectExecutor4UnlockLootPoint not loot point {ctx.TargetId}");
             }
         }
     }
@@ -39,13 +44,18 @@ namespace My.Map.Entity
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
-            if (ctx.Target is LootPointLogicEntity lootPoint)
+            if (ctx.TargetId == 0)
+            {
+                return;
+            }
+            var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if (targetEntity != null && targetEntity is LootPointLogicEntity lootPoint)
             {
                 lootPoint.TryUseLootPoint();
             }
             else
             {
-                Debug.LogError($"AbilityEffectExecutor4UseLootPoint not loot point {ctx.Target.Id}");
+                Debug.LogError($"AbilityEffectExecutor4UnlockLootPoint not loot point {ctx.TargetId}");
             }
         }
     }
@@ -86,8 +96,29 @@ namespace My.Map.Entity
                     }
                     break;
             }
-            
-            ctx.Env.projectileHolder.CreateLogicProjectile(pData, ctx.Actor, ctx.Actor.Pos, ctx.CastDir ?? Vector2.right);
+            ILogicEntity? caster = null;
+            if(ctx.SourceInfo.SrcEntityId != 0)
+            {
+                caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            }
+
+            Vector2? bornPos = null;
+            if(caster != null)
+            {
+                bornPos = caster.Pos;
+            }
+            else
+            {
+                bornPos = ctx.CastPos;
+            }
+
+            if(bornPos == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4SpawnBullet bornPos null");
+                return;
+            }
+
+            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, ctx.CastDir ?? Vector2.right);
         }
     }
     
@@ -118,7 +149,14 @@ namespace My.Map.Entity
                 return;
             }
 
-            if(ctx.Actor is BaseUnitLogicEntity unitEntity)
+            if(ctx.SourceInfo.SrcEntityId == 0)
+            {
+                return;
+            }
+
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+
+            if(actor != null && actor is BaseUnitLogicEntity unitEntity)
             {
                 unitEntity.abilityController.ApplyUseWeaponHitBox(realCfg.WeaponName, realCfg.Duration, realCfg.OnHitEffects);
             }
@@ -135,8 +173,8 @@ namespace My.Map.Entity
                 Debug.LogError("AbilityEffectExecutor4UseWeapon cfg error");
                 return;
             }
-
-            if (ctx.Actor == null || ctx.Actor is not BaseUnitLogicEntity unitEntity)
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false);
+            if (actor == null || actor is not BaseUnitLogicEntity unitEntity)
             {
                 return;
             }
@@ -147,16 +185,26 @@ namespace My.Map.Entity
             {
                 if(realCfg.IsTargetDir)
                 {
-                    Vector2 targetPos = ctx.Target.Pos;
-                    Vector2 or0gPos = ctx.Actor.Pos;
-                    var diff = (targetPos - or0gPos);
-                    dir = diff.normalized;
-                    duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
+                    var target = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false);
+                    if(target != null)
+                    {
+                        Vector2 targetPos = target.Pos;
+                        Vector2 or0gPos = actor.Pos;
+                        var diff = (targetPos - or0gPos);
+                        dir = diff.normalized;
+                        duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
+                    }
+                    else
+                    {
+                        dir = Vector2.right;
+                        duration = 0.05f;
+
+                    }
                 }
                 else
                 {
                     Vector2 targetPos = ctx.CastDir.Value;
-                    Vector2 or0gPos = ctx.Actor.Pos;
+                    Vector2 or0gPos = actor.Pos;
                     var diff = (targetPos - or0gPos);
                     dir = diff.normalized;
                     duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
@@ -184,20 +232,19 @@ namespace My.Map.Entity
             }
 
             long? srcBuffId = null;
-            if (ctx.SourceKey != null && ctx.SourceKey.Value.buffId != 0)
+            if(ctx.SourceInfo.SrcType == ESourceType.Buff)
             {
-                srcBuffId = ctx.SourceKey.Value.buffId;
+                srcBuffId = ctx.SourceInfo.SrcBuffId;
             }
 
             // 当目标type为0时 在正常语境下 就是给目标使用
             if (realCfg.TargetType == 0)
             {
-                
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.Target.Id, realCfg.BuffId, realCfg.Layer, casterId:ctx.SourceKey?.entityId ?? 0, srcBuffId : srcBuffId);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.TargetId, realCfg.BuffId, realCfg.Layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId : srcBuffId);
             }
             else
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.Actor.Id, realCfg.BuffId, realCfg.Layer, casterId: ctx.SourceKey?.entityId ?? 0, srcBuffId: srcBuffId);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.SourceInfo.SrcEntityId, realCfg.BuffId, realCfg.Layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId: srcBuffId);
             }
         }
     }
@@ -217,21 +264,21 @@ namespace My.Map.Entity
             // 通过hitbox 找到目标
             if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
             {
-                var realCenter = ctx.Position.Value + ctx.CastDir.Value * realCfg.Length * 0.5f;
+                var realCenter = ctx.CastPos.Value + ctx.CastDir.Value * realCfg.Length * 0.5f;
 
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
-                filter.SelfCampId = ctx.ActorFactionId;
+                filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
 
                 candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, ctx.CastDir.Value, new Vector2(realCfg.Width, realCfg.Length), filter);
                 DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir:ctx.CastDir);
             }
             else if(realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Circle)
             {
-                var realCenter = ctx.Position.Value;
+                var realCenter = ctx.CastPos.Value;
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
-                filter.SelfCampId = ctx.ActorFactionId;
+                filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
                 candidates = ctx.Env.visionSenser.OverlapCircleAllEntity(realCenter, realCfg.Radius, filter);
 
                 DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Circle, realCenter, new Vector2(realCfg.Radius, realCfg.Radius), Color.red, 1f);
@@ -250,11 +297,10 @@ namespace My.Map.Entity
 
                     foreach (var e in realCfg.OnHitEffects) 
                     {
-                        LogicFightEffectContext newCtx = new(ctx.Env, ctx.SourceKey);
+                        LogicFightEffectContext newCtx = new(ctx.Env, ctx.SourceInfo);
 
-                        newCtx.Actor = ctx.Actor;
                         newCtx.CastDir = ctx.CastDir;
-                        newCtx.Target = candidate;
+                        newCtx.TargetId = candidate.Id;
                         ctx.Env.HandleLogicFightEffect(e, newCtx);
                     }
                 }
@@ -274,13 +320,14 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (ctx.Target == null)
+            var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if (targetEntity == null)
             {
-                Debug.LogError($"AbilityEffectExecutor4RemoveBuff target err :{ctx.Target?.Id ?? 0}");
+                Debug.LogError($"AbilityEffectExecutor4RemoveBuff target err :{ctx.TargetId}");
                 return;
             }
 
-            ctx.Env.globalBuffManager.RemoveAllBuffById(ctx.Target.Id, realCfg.BuffId);
+            ctx.Env.globalBuffManager.RemoveAllBuffById(ctx.TargetId, realCfg.BuffId);
         }
     }
 
@@ -295,12 +342,19 @@ namespace My.Map.Entity
                 return;
             }
 
+            var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if (targetEntity == null)
+            {
+                Debug.LogError($"AbilityEffectExecutor4IfBranch target err :{ctx.TargetId}");
+                return;
+            }
+
             bool isTrue = true;
             switch(realCfg.CheckType)
             {
                 case MapAbilityEffectIfBranchCfg.ECheckType.HasBuff:
                     {
-                        if(ctx.Target.BuffManager.CheckHasBuff(ctx.Target.Id, realCfg.Param1))
+                        if(targetEntity.BuffManager.CheckHasBuff(targetEntity.Id, realCfg.Param1))
                         {
                             isTrue = true;
                         }
@@ -312,7 +366,7 @@ namespace My.Map.Entity
                     break;
                 case MapAbilityEffectIfBranchCfg.ECheckType.AttrGreater:
                     {
-                        long val = ctx.Target.GetAttr(realCfg.Param1);
+                        long val = targetEntity.GetAttr(realCfg.Param1);
                         if (val > realCfg.Param3)
                         {
                             isTrue = true;
@@ -357,14 +411,15 @@ namespace My.Map.Entity
                 return;
             }
 
-            if(ctx.Actor is not BaseUnitLogicEntity unitEntity)
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if(actor == null || actor is not BaseUnitLogicEntity unitEntity)
             {
                 Debug.LogError("AbilityEffectExecutor4ClickkkWindow cfg error");
                 return;
             }
 
             //unitEntity.
-            ctx.Env.viewer.ShowClickkkWindow(realCfg.WindowType, ctx.Actor.Pos, realCfg.Duration);
+            ctx.Env.viewer.ShowClickkkWindow(realCfg.WindowType, unitEntity.Pos, realCfg.Duration);
         }
     }
 
@@ -379,7 +434,8 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (ctx.Actor is not PlayerLogicEntity player)
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (actor == null || actor is not PlayerLogicEntity player)
             {
                 Debug.LogError("AbilityEffectExecutor4DeepZhaqu cfg error");
                 return;
@@ -402,7 +458,8 @@ namespace My.Map.Entity
                 return;
             }
 
-            if(ctx.Target == null)
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if(target == null)
             {
                 Debug.LogError("AbilityEffectExecutor4AddResource err");
                 return;
@@ -417,7 +474,7 @@ namespace My.Map.Entity
                     extraAttrs[pair.AttrId] = pair.Val;
                 }
             }
-            ctx.Target.ApplyResourceChange(realCfg.ResourceId, realCfg.AddValue, false, ctx.SourceKey, extraAttrs);
+            target.ApplyResourceChange(realCfg.ResourceId, realCfg.AddValue, false, ctx.SourceInfo.SrcEntityId, extraAttrs);
         }
     }
 
@@ -433,7 +490,8 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (ctx.Target == null)
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if (target == null)
             {
                 Debug.LogError("AbilityEffectExecutor4CostResource err");
                 return;
@@ -449,7 +507,7 @@ namespace My.Map.Entity
                 }
             }
 
-            ctx.Target.ApplyResourceChange(realCfg.ResourceId, -realCfg.CostValue, realCfg.Flags > 0, ctx.SourceKey, extraAttrs);
+            target.ApplyResourceChange(realCfg.ResourceId, -realCfg.CostValue, realCfg.Flags > 0, ctx.SourceInfo.SrcEntityId, extraAttrs);
         }
     }
 
@@ -466,7 +524,8 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (ctx.Target == null)
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if (target == null)
             {
                 Debug.LogError("AbilityEffectExecutor4CostResource err");
                 return;
@@ -490,16 +549,17 @@ namespace My.Map.Entity
                 }
             }
 
-            ctx.Target.ApplyResourceChange(AttrIdConsts.HP, -baseVal, true, ctx.SourceKey, extraAttrs);
+            target.ApplyResourceChange(AttrIdConsts.HP, -baseVal, true, ctx.SourceInfo.SrcEntityId, extraAttrs);
 
-            if (realCfg.KnockBackForce > 0 && ctx.Actor != null)
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (realCfg.KnockBackForce > 0 && actor != null)
             {
                 // 对目标击打
                 if(realCfg.TargetType == 0)
                 {
-                    if(ctx.Target is BaseUnitLogicEntity unitEntity)
+                    if(target is BaseUnitLogicEntity unitEntity)
                     {
-                        var diff = ctx.Target.Pos - ctx.Actor.Pos;
+                        var diff = target.Pos - actor.Pos;
                         unitEntity.CreateKnockBackIntent(diff, realCfg.KnockBackForce);
                     }
                 }
@@ -520,12 +580,15 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (ctx.Target == null || ctx.Target is not IThrowTarget throwTarget)
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+
+            if (target == null || target is not IThrowTarget throwTarget)
             {
                 Debug.LogError("AbilityEffectExecutor4CostResource throwTarget err");
                 return;
             }
-            if (ctx.Actor == null || ctx.Actor is not IThrowLauncher throwLauncher)
+            if (actor == null || actor is not IThrowLauncher throwLauncher)
             {
                 Debug.LogError("AbilityEffectExecutor4CostResource throwLauncher err");
                 return;
@@ -596,12 +659,12 @@ namespace My.Map.Entity
 
             if(realCfg.Shape == MapAbilityEffectRangePreviewCfg.EShape.Circle)
             {
-                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.Position.Value, Vector2.zero, realCfg.PreviewDuration);
+                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.CastPos.Value, Vector2.zero, realCfg.PreviewDuration);
                 ctx.BindSceneFxIds.Add(effectId);
             }
             else if (realCfg.Shape == MapAbilityEffectRangePreviewCfg.EShape.Circle)
             {
-                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.Position.Value, Vector2.zero, realCfg.PreviewDuration);
+                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.CastPos.Value, Vector2.zero, realCfg.PreviewDuration);
                 ctx.BindSceneFxIds.Add(effectId);
             }
         }
@@ -614,11 +677,12 @@ namespace My.Map.Entity
             var realCfg = effectConf as MapAbilityEffectNextPhaseCfg;
             if (realCfg == null)
             {
-                Debug.LogError("AbilityEffectExecutor4SpawnEntity cfg error");
+                Debug.LogError("AbilityEffectExecutor4NextPhase cfg error");
                 return;
             }
 
-            if(ctx.Actor == null || ctx.Actor is not BaseUnitLogicEntity unit)
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (actor == null || actor is not BaseUnitLogicEntity unit)
             {
                 return;
             }
@@ -628,6 +692,8 @@ namespace My.Map.Entity
                 return;
             }
             var abilityCtx = unit.abilityController.CurrentCtx;
+            var srcSkill = ctx.SourceInfo.SrcCfgId;
+
             if (abilityCtx.AbilityConfig.Id != realCfg.MatchSkill)
             {
                 return;

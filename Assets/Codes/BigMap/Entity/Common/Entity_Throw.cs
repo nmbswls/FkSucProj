@@ -10,7 +10,7 @@ using Unity.VisualScripting.FullSerializer;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.WSA;
-using static My.Map.Entity.MapEntityAbilityController;
+using static My.Map.Entity.MapEntityAbilityExecutor;
 
 
 

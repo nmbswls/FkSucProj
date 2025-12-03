@@ -6,7 +6,7 @@ using Map.Logic.Events;
 using My.Map;
 using TMPro;
 using UnityEngine;
-using static My.Map.Entity.MapEntityAbilityController;
+using static My.Map.Entity.MapEntityAbilityExecutor;
 
 namespace My.UI
 {

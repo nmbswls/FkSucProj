@@ -7,27 +7,20 @@ using System.Xml.Linq;
 using Unity.Burst.Intrinsics;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.UIElements;
-using static My.Map.Entity.MapEntityAbilityController;
-using static Unity.VisualScripting.Member;
-using static UnityEditor.Progress;
-using static UnityEngine.Rendering.VolumeComponent;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+using static My.GameLogicManager;
 
 namespace My.Map.Entity
 {
     public class InterruptUtils
     {
-        public static EAbilityInterruptMask SourceToMask(MapEntityAbilityController.InterruptSource s)
+        public static EAbilityInterruptMask SourceToMask(MapEntityAbilityExecutor.InterruptSource s)
         {
             return s switch
             {
-                MapEntityAbilityController.InterruptSource.Hit => EAbilityInterruptMask.Hit,
-                MapEntityAbilityController.InterruptSource.Stun => EAbilityInterruptMask.Stun,
-                MapEntityAbilityController.InterruptSource.KnockUp => EAbilityInterruptMask.KnockUp,
-                MapEntityAbilityController.InterruptSource.InputCancel => EAbilityInterruptMask.InputCancel,
+                MapEntityAbilityExecutor.InterruptSource.Hit => EAbilityInterruptMask.Hit,
+                MapEntityAbilityExecutor.InterruptSource.Stun => EAbilityInterruptMask.Stun,
+                MapEntityAbilityExecutor.InterruptSource.KnockUp => EAbilityInterruptMask.KnockUp,
+                MapEntityAbilityExecutor.InterruptSource.InputCancel => EAbilityInterruptMask.InputCancel,
                 _ => EAbilityInterruptMask.System
             };
         }
@@ -49,7 +42,7 @@ namespace My.Map.Entity
         // 来源是weapon 还是 技能？
     }
 
-    public class MapEntityAbilityController
+    public class MapEntityAbilityExecutor
     {
         public BaseUnitLogicEntity EntityOwner { get; set; }
 
@@ -70,7 +63,7 @@ namespace My.Map.Entity
             public int PhaseIndex;
             public float PhaseElapsed;       // 当前阶段已用时
             public float PhaseDuration;      // 当前阶段时间
-            public bool PhaseMarkSkip;      
+            public bool PhaseMarkSkip;
 
             //public List<Modifier> PhaseModifiers = new();
             public List<long> PhaseBindBuffs = new();
@@ -86,7 +79,6 @@ namespace My.Map.Entity
             public string DebugSavedAnimTag;
             public float DebugSavedAnimTagTimer;
 
-            public SourceKey? SrcKey = null;
             public List<ScheduledEvent> _scheduled = new();
 
             public long ShowProgressShowId = 0;
@@ -97,6 +89,7 @@ namespace My.Map.Entity
 
             public Dictionary<string, long> RunningStorage = new();
 
+            public string GroupOwnerName = null;
 
             public string GetVariatyRawVal(OneVariaty oneVariaty)
             {
@@ -133,28 +126,37 @@ namespace My.Map.Entity
         private bool _running = false;
 
 
-        private Dictionary<string, float> _sharedCooldown = new();
-
-
+        //private Dictionary<string, float> _sharedCooldown = new();
 
         public event Action<long, string, float> EventOnApplyUseWeapon;
         public event Action<long> EventOnCloseHitWindow;
-        public event Action<AbilityState> EventOnUseAbility;
+        public event Action<string> EventOnUseAbility;
+        public event Action<string, int> EventOnAbilityEnd;
+        public event Action EventOnInputCancelPhaseStart;
 
-        public class AbilityState
-        {
-            public string AbilityName;
-            public float lastUseTime;
-            public float cooldown;
-
-            public MapAbilitySpecConfig cacheConfig;
-        }
-
-        public Dictionary<string, AbilityState> AbilityStateInfos = new();
 
 
         public bool IsRunning { get { return _running; } }
 
+        public bool IsActionable()
+        {
+            if(!IsRunning)
+            {
+                return true;
+            }
+            var phase = GetCurrentPhase();
+            if(phase == null)
+            {
+                return true;
+            }
+
+            if(phase.CanInputInterrupt)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         public class ScheduledEvent
         {
@@ -174,145 +176,59 @@ namespace My.Map.Entity
         }
 
 
-        public MapEntityAbilityController(BaseUnitLogicEntity owner)
+        public MapEntityAbilityExecutor(BaseUnitLogicEntity owner)
         {
             this.EntityOwner = owner;
         }
 
-        /// <summary>
-        /// 获取当前准备好的主动技能
-        /// </summary>
-        /// <returns></returns>
-        public bool CheckAnyReadyAbility()
+        
+        
+
+        public virtual bool TryUseAbility(string abilityName, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> overrideParams = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
         {
-            foreach (var abName in AbilityStateInfos.Keys)
-            {
-                if (!IsAbilityReady(abName))
-                {
-                    continue;
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// 获取当前准备好的主动技能
-        /// </summary>
-        /// <returns></returns>
-        public List<AbilityState> GetAllReadyAbilities()
-        {
-            List<AbilityState> ret = new();
-            foreach (var abName in AbilityStateInfos.Keys)
-            {
-                if(!IsAbilityReady(abName))
-                {
-                    continue;
-                }
-
-                ret.Add(AbilityStateInfos[abName]);
-            }
-
-            return ret;
-        }
-
-        /// <summary>
-        /// 获取当前准备好的主动技能
-        /// </summary>
-        /// <returns></returns>
-        public bool IsAbilityReady(string abilityName)
-        {
-
-            AbilityStateInfos.TryGetValue(abilityName, out var abState);
-            if(abState == null)
+            var config = AbilityLibrary.GetAbilityConfig(abilityName);
+            if (config == null)
             {
                 return false;
             }
 
-            if (abState.cacheConfig.IsPassive)
-            {
-                return false;
-            }
-
-            if (abState.cooldown > 0)
-            {
-                return false;
-            }
-
-            if (abState.cacheConfig.TypeTag == AbilityTypeTag.Combat)
-            {
-                if (EntityOwner.IsHMode)
-                {
-                    return false;
-                }
-            }
-            else if (abState.cacheConfig.TypeTag == AbilityTypeTag.HMode)
-            {
-                if (!EntityOwner.IsHMode)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-
-        public bool RegisterAbility(MapAbilitySpecConfig abilityCfg)
-        {
-            if (AbilityStateInfos.TryGetValue(abilityCfg.Id, out var state))
-            {
-                Debug.Log($"RegisterAbility duplicate {abilityCfg.Id}");
-                return false;
-            }
-            var newState = new AbilityState()
-            {
-                AbilityName = abilityCfg.Id,
-                cacheConfig = abilityCfg
-            };
-
-            AbilityStateInfos[newState.AbilityName] = newState;
-            return true;
-        }
-
-        public virtual void TryUseAbility(string abilityName, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> overrideParams = null, Dictionary<string, string> phaseOverrideAnims = null)
-        {
-            AbilityStateInfos.TryGetValue(abilityName, out var abilityState);
-            if (abilityState == null || abilityState.cacheConfig == null)
-            {
-                return;
-            }
-
-            if(!IsAbilityReady(abilityName))
-            {
-                return;
-            }
-
-            TryStart(abilityState, castDir: castDir, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims);
+            return TryStart(config, castDir: castDir, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims, groupOwnerName: groupOwnerName);
         }
 
         public void Tick(float dt)
         {
-            foreach(var abState in AbilityStateInfos.Values)
-            {
-                if(abState.cooldown > 0)
-                {
-                    abState.cooldown -= dt;
-                }
-            }
-
             if (!_running) return;
             TickIntern(dt);
         }
 
 
 
-
-        protected bool TryStart(AbilityState abState, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null)
+        /// <summary>
+        /// 使用技能
+        /// </summary>
+        /// <param name="abState"></param>
+        /// <param name="castDir"></param>
+        /// <param name="target"></param>
+        /// <param name="runningOverrides"></param>
+        /// <param name="phaseOverrideAnims"></param>
+        /// <returns></returns>
+        protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
         {
-            if (_running) return false;
+            // 检查可打断
+            if (!IsActionable())
+            {
+                return false;
+            }
+
+            EntityOwner.TryInterrupt(new InterruptRequest()
+            {
+                source = InterruptSource.InputCancel,
+            });
+
+            if (IsRunning)
+            {
+                return false;
+            }
 
             CurrentCtx = new AbilityRunningContext
             {
@@ -321,15 +237,16 @@ namespace My.Map.Entity
                 AbilityTime = 0f,
                 PhaseIndex = 0,
                 PhaseElapsed = 0f,
-                AbilityConfig = abState.cacheConfig,
+                AbilityConfig = abilityConf,
                 viewer = EntityOwner.viewer,
                 RunningVariables = runningOverrides,
                 CastDir = castDir,
                 Position = EntityOwner.Pos,
 
                 PhaseOverrideAnims = phaseOverrideAnims,
+                GroupOwnerName = groupOwnerName,
             };
-            foreach (var e in abState.cacheConfig.OnStartEffects)
+            foreach (var e in abilityConf.OnStartEffects)
             {
                 var effectCtx = GenerateEfffectContextByAbility();
                 EntityOwner.LogicManager.HandleLogicFightEffect(e, effectCtx);
@@ -337,13 +254,8 @@ namespace My.Map.Entity
             EnterPhase(0);
             _running = true;
 
-            if(abState.cacheConfig.CoolDown > 0)
-            {
-                abState.cooldown = abState.cacheConfig.CoolDown;
-            }
-            abState.lastUseTime = LogicTime.time;
-
-            EventOnUseAbility?.Invoke(abState);
+            
+            EventOnUseAbility?.Invoke(abilityConf.Id);
 
             return true;
         }
@@ -453,14 +365,14 @@ namespace My.Map.Entity
 
             if (phase.ShowRangePreview)
             {
-                if(phase.IsCircle)
+                if(phase.PreviewIntent.IsCircle)
                 {
-                    var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(1, phase.RangeRadius, 0, EntityOwner.Pos, EntityOwner.FaceDir, phaseDur);
+                    var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(1, phase.PreviewIntent.RangeRadius, 0, EntityOwner.Pos, EntityOwner.FaceDir, phaseDur);
                     CurrentCtx.PhaseIntentEffectId = eId;
                 }
                 else
                 {
-                    var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(2, phase.RangeWidth, phase.RangeLen, EntityOwner.Pos, EntityOwner.FaceDir, phaseDur);
+                    var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(2, phase.PreviewIntent.RangeWidth, phase.PreviewIntent.RangeLen, EntityOwner.Pos, EntityOwner.FaceDir, phaseDur);
                     CurrentCtx.PhaseIntentEffectId = eId;
                 }
             }
@@ -493,27 +405,28 @@ namespace My.Map.Entity
                 return false;
             }
 
-            if (CurrentCtx.PhaseIndex >= CurrentCtx.AbilityConfig.Phases.Count)
+            var phase = GetCurrentPhase();
+            if(phase != null)
             {
-                Debug.Log("TryInterrupt satate wrror phase index >= count");
-                return false;
+                if(req.source != InterruptSource.InputCancel)
+                {
+                    if (EntityOwner.GetAttr(AttrIdConsts.StatUnstoppable) > 0)
+                    {
+                        // 不可被该来源打断 跳出
+                        return false;
+                    }
+                }
+                else
+                {
+                    if(!phase.CanInputInterrupt)
+                    {
+                        Debug.Log("TryInterrupt not work");
+                        return false;
+                    }
+                }
             }
 
-            var phase = CurrentCtx.AbilityConfig.Phases[CurrentCtx.PhaseIndex];
-            if (phase == null) return false;
-
-            if (EntityOwner.GetAttr(AttrIdConsts.StatUnstoppable) > 0)
-            {
-                Debug.Log("TryInterrupt unstoppable");
-                return false;
-            }
-
-            // 不可被该来源打断 跳出
-            if (!phase.InterruptMask.HasFlag(InterruptUtils.SourceToMask(req.source)))
-                return false;
-
-            // 执行打断
-            CleanupPhase();
+            Cancel();
             return true;
         }
 
@@ -572,17 +485,15 @@ namespace My.Map.Entity
 
         public GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility()
         {
-            var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, new SourceKey()
+            var sourceInfo = new EffectSourceInfo()
             {
-                entityId = EntityOwner.Id,
-                type = SourceType.AbilityActive,
-                sourceId = this.CurrentCtx.AbilityConfig.Id,
-            });
-            ctx.Actor = this.CurrentCtx.Actor;
-            ctx.Target = this.CurrentCtx.Target;
-            ctx.FaceDir = this.CurrentCtx.FaceDir;
+                SrcType = ESourceType.Ability,
+                SrcEntityId = this.EntityOwner.Id,
+            };
+            var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, sourceInfo);
+            ctx.TargetId = this.CurrentCtx.Target ?.Id ?? 0;
             ctx.CastDir = this.CurrentCtx.CastDir;
-            ctx.Position = this.CurrentCtx.Position;
+            ctx.CastPos = this.CurrentCtx.Position;
 
             ctx.RunningVariables = this.CurrentCtx.RunningVariables;
 
@@ -668,6 +579,8 @@ namespace My.Map.Entity
 
         private void Complete()
         {
+            var abName = CurrentCtx.AbilityConfig.Id;
+
             foreach (var e in CurrentCtx.AbilityConfig.OnCompleteEffects)
             {
                 var effectCtx = GenerateEfffectContextByAbility();
@@ -683,11 +596,14 @@ namespace My.Map.Entity
             _running = false;
             Debug.Log($"Ability {CurrentCtx.AbilityConfig.Id} complete");
             CurrentCtx = null;
+
+            EventOnAbilityEnd?.Invoke(abName, 0);
         }
 
         public void Cancel()
         {
             if (!_running) return;
+            var abName = CurrentCtx.AbilityConfig.Id;
             foreach (var e in CurrentCtx.AbilityConfig.OnCancelEffects)
             {
                 var effectCtx = GenerateEfffectContextByAbility();
@@ -704,17 +620,29 @@ namespace My.Map.Entity
 
             CleanupPhase();
 
-
-
             _running = false;
             Debug.Log($"Ability {CurrentCtx.AbilityConfig.Id} Cancel");
             CurrentCtx = null;
+
+            EventOnAbilityEnd?.Invoke(abName, 1);
         }
 
         private void ReleaseLocks()
         {
             //var mover = GetComponent<CharacterMover>();
             //if (mover) mover.LockMovement = false;
+        }
+
+        private MapAbilityPhase GetCurrentPhase()
+        {
+            if (CurrentCtx == null) return null;
+            if (CurrentCtx.PhaseIndex >= CurrentCtx.AbilityConfig.Phases.Count)
+            {
+                return null;
+            }
+
+            var phase = CurrentCtx.AbilityConfig.Phases[CurrentCtx.PhaseIndex];
+            return phase;
         }
 
         public void ApplyUseWeaponHitBox(string weaponName, float openTime, List<MapFightEffectCfg> hitCfgs)
@@ -755,14 +683,19 @@ namespace My.Map.Entity
                     //MainGameManager.Instance.gameLogicManager.logicEntityDict.TryGetValue(hitEntityId, out var hitEntity);
                     if (hitEntity != null)
                     {
+                        var srcInfo = new EffectSourceInfo()
+                        {
+                            SrcType = ESourceType.Ability,
+                            SrcEntityId = EntityOwner.Id,
+                        };
+
                         foreach (var hitEffect in window.OnHitEffects)
                         {
-                            GameLogicManager.LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, new SourceKey() { entityId = EntityOwner.Id, type = SourceType.AbilityActive });
+                            GameLogicManager.LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, srcInfo);
 
-                            newCtx.Actor = EntityOwner;
                             newCtx.CastDir = hitEntity.Pos - EntityOwner.Pos;
-                            newCtx.Target = hitEntity;
-                            newCtx.Position = hitEntity.Pos;
+                            newCtx.TargetId = hitEntity.Id;
+                            newCtx.CastPos = hitEntity.Pos;
 
                             EntityOwner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
                         }

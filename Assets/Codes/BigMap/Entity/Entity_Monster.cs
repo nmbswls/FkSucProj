@@ -49,21 +49,19 @@ namespace My.Map
             base.InitAiBrain();
         }
 
-        protected override void InitAbilityController()
-        {
-            abilityController = new(this);
 
+
+
+        protected override void InitAbility()
+        {
+            base.InitAbility();
 
             List<string> defaultSkillList = new List<string>()
             {
                 "default_enemy_qinfan",
             };
 
-            foreach (var skill in defaultSkillList)
-            {
-                var conf = AbilityLibrary.GetAbilityConfig(skill);
-                abilityController.RegisterAbility(conf);
-            }
+ 
         }
     }
 }

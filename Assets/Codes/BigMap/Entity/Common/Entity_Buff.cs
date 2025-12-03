@@ -808,9 +808,9 @@ namespace My.Map.Entity
                 registeredModifiers = new();
                 foreach (var oneAttr in Def.ModifierAttrs)
                 {
-                    var srcKey = new SourceKey()
+                    var srcKey = new ModSourceKey()
                     {
-                        type = SourceType.Buff,
+                        entityId = CasterId,
                         buffId = InstanceId,
                     };
                     var modifier = BuffOwner.AddAttrModifier(srcKey, oneAttr.ModifierAttrId, oneAttr.ModifierValue * Layer);
@@ -881,14 +881,15 @@ namespace My.Map.Entity
                                     {
                                         long srcEntity = CasterId;
 
-                                        var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, new SourceKey()
+                                        var srcInfo = new EffectSourceInfo()
                                         {
-                                            type = SourceType.BuffEffect,
-                                            entityId = srcEntity,
-                                            buffId = InstanceId,
-                                        });
+                                            SrcType = ESourceType.BuffEffect,
+                                            SrcEntityId = srcEntity,
+                                            SrcBuffId = InstanceId,
+                                        };
+                                        var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, srcInfo);
 
-                                        ctx.Target = BuffOwner as ILogicEntity;
+                                        ctx.TargetId = BuffOwner.Id;
 
                                         BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);
                                     }

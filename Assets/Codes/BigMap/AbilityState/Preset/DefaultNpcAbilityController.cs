@@ -8,34 +8,28 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map
 {
-    public class DefaultNpcAbilityController : MapEntityAbilityController
+    public class DefaultNpcAbilityController : MapEntityAbilityExecutor
     {
-        // 预设程序生成行为
-        public List<string> DefaultSkillList = new List<string>()
-        {
-            "player_shoot",
-            "default_weapon",
-            "default_enemy_qinfan",
-        };
+        
 
         public DefaultNpcAbilityController(BaseUnitLogicEntity owner) : base(owner)
         {
-            if(owner.unitCfg.SkillList.Count > 0)
-            {
-                foreach (var skill in owner.unitCfg.SkillList)
-                {
-                    var conf = AbilityLibrary.GetAbilityConfig(skill);
-                    RegisterAbility(conf);
-                }
-            }
-            else
-            {
-                foreach (var skill in DefaultSkillList)
-                {
-                    var conf = AbilityLibrary.GetAbilityConfig(skill);
-                    RegisterAbility(conf);
-                }
-            }
+            //if(owner.unitCfg.SkillList.Count > 0)
+            //{
+            //    foreach (var skill in owner.unitCfg.SkillList)
+            //    {
+            //        var conf = AbilityLibrary.GetAbilityConfig(skill);
+            //        RegisterAbility(conf);
+            //    }
+            //}
+            //else
+            //{
+            //    foreach (var skill in DefaultSkillList)
+            //    {
+            //        var conf = AbilityLibrary.GetAbilityConfig(skill);
+            //        RegisterAbility(conf);
+            //    }
+            //}
         }
 
     }
