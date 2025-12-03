@@ -6,6 +6,8 @@ public class MapProjectile : MonoBehaviour
 {
     public LogicProjectileInfo bindingProjInfo;
 
+    public Transform ViewRoot;
+
     private IMapProjectileMotion _motion;
     private Transform _body;
     private Transform _shadow;           // ½öÅ×ÎïÓÃ
@@ -14,6 +16,11 @@ public class MapProjectile : MonoBehaviour
     private float _lifetime;
     private bool _despawned;
 
+    private void Awake()
+    {
+        ViewRoot = transform.Find("view");
+    }
+
     private IMapProjectileMotion CreateProjectileMotion(MotionDataBase motionData)
     {
         switch(motionData)
@@ -21,6 +28,10 @@ public class MapProjectile : MonoBehaviour
             case LinearMotionData linerData:
                 {
                     return new MapProjectileLinearMotion();
+                }
+            case InstanceMotionData instanceData:
+                {
+                    return new MapProjectileInstanceMotion();
                 }
             case ParabolaMotionData motion2:
                 {

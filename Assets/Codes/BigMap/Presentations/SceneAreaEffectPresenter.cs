@@ -1,6 +1,7 @@
 using Config.Map;
 using Map.Entity;
 using My.Map.Entity;
+using My.Map.Fight;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -50,11 +51,11 @@ namespace My.Map.Scene
 
             ILogicEntity activator = null;
 
-            switch (AreaEffectEntity.cacheCfg.Shape)
+            switch (AreaEffectEntity.cacheCfg.ShapeInfo.Type)
             {
-                case MapAreaEffectConfig.EShape.Square:
+                case FightStruct.EShapeType.Square:
                     {
-                        int count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.Radius, AreaEffectEntity.cacheCfg.Radius), 0, hits, 1 << LayerMask.NameToLayer("MapTarget"));
+                        int count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.ShapeInfo.Radius, AreaEffectEntity.cacheCfg.ShapeInfo.Radius), 0, hits, 1 << LayerMask.NameToLayer("MapTarget"));
                         // 遍历命中，筛选实现了接口的对象
                         for (int i = 0; i < count; i++)
                         {
@@ -69,9 +70,9 @@ namespace My.Map.Scene
                         }
                     }
                     break;
-                case MapAreaEffectConfig.EShape.Circle:
+                case FightStruct.EShapeType.Circle:
                     {
-                        int count = Physics2D.OverlapCircleNonAlloc(transform.position, AreaEffectEntity.cacheCfg.Radius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
+                        int count = Physics2D.OverlapCircleNonAlloc(transform.position, AreaEffectEntity.cacheCfg.ShapeInfo.Radius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
 
                         // 遍历命中，筛选实现了接口的对象
                         for (int i = 0; i < count; i++)

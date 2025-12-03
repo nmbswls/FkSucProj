@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using My.Map.Entity;
+using My.Map.Fight;
 using TMPro;
 using UnityEngine;
 
@@ -29,16 +30,8 @@ namespace Config.Unit
         public int Priority = 10;
         public float DesiredUseAngle;
         public float DesiredUseDistance;
-        public enum ESelectPolicy
-        {
-            None,
-            PrimaryTarget,
-            Self,
-            LowHpAlly,
-            LowHpEnmity,
-            Random,
-        }
-        public ESelectPolicy SelectPolicy; // 1-敌人主目标 2-自身 3-血量最低友方 4 血量最低敌方 5 随机 
+        
+        public FightStruct.ESelectPolicy SelectPolicy; // 1-敌人主目标 2-自身 3-血量最低友方 4 血量最低敌方 5 随机 
     }
 
 

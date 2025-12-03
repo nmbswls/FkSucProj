@@ -6,6 +6,7 @@ using My.Player.Bag;
 using UnityEngine.UI;
 using Config;
 using TMPro;
+using static UnityEditor.Progress;
 
 namespace My.UI.Bag
 {
@@ -198,8 +199,13 @@ namespace My.UI.Bag
                 bag.ClearEmptyItems();
             }
 
-            MainGameManager.Instance.gameLogicManager.playerLogicEntity.PlayerAbilityController.TryUseItem(stack.ItemID);
+            //MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseItem(stack.ItemID);
 
+            MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("use_item", overrideParams: new Dictionary<string, string>()
+            {
+                ["PhaseExecutingTime"] = "0.5",
+                ["ItemId"] = stack.ItemID,
+            }); ;
             //UIBus.RaiseInventoryChanged(index);
             OnInventoryAllChanged();
         }

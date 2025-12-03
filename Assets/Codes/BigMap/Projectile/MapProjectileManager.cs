@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,11 +38,13 @@ public enum EMotionType
     Homing,
 }
 
+[Serializable]
 public abstract class MotionDataBase
 {
     //public abstract IMapProjectileMotion CreateMotionInstance();
-}
 
+}
+ 
 
 public class MapProjectileManager : MonoBehaviour
 {

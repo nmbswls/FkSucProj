@@ -365,7 +365,7 @@ namespace My.Map
                 priority = 10,
             });
 
-            ApplyControlledMove(ControlledMoveCtx.EType.Knock, dir, 0.15f, impulsePower: power, minEndSpeed: 0.1f);
+            ApplyControlledMove(ControlledMoveCtx.EType.Knock, dir, 0.25f, originSpeed: power, impulsePower: power, minEndSpeed: 0.1f);
 
             //ClearDashIntent(0);
             //ClearKnockbackInfo(2);
@@ -450,14 +450,15 @@ namespace My.Map
 
                 // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
                 // lambda 越大，减速越快；配合最小末速钳制
-                float lambda = 16f; // 可调 6~16
+                float lambda = 8f; // 可调 6~16
                 float damping = Mathf.Exp(-lambda * dt);
                 externalVel *= damping;
 
                 // 末端钳制
-                if (controlledMoveCtx.timeLeft < 0.08f && externalVel.magnitude < controlledMoveCtx.MinEndSpeed)
+                if (externalVel.magnitude < controlledMoveCtx.MinEndSpeed)
                 {
                     externalVel = Vector2.zero;
+                    EndControlledMove(1);
                 }
             }
         }
@@ -572,7 +573,7 @@ namespace My.Map
                 }
             }
 
-            abilityController = new DefaultNpcAbilityController(this);
+            abilityController = new MapEntityAbilityExecutor(this);
 
             ablilityManager.Executor = abilityController;
 

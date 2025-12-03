@@ -2,9 +2,13 @@ using Map.Entity;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Scene;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public interface IMapProjectileMotion
 {
@@ -19,7 +23,29 @@ public interface IMapProjectileMotion
     Vector2 Forward { get; }
 }
 
+[Serializable]
+public class NoneMotionData : MotionDataBase
+{
 
+}
+
+
+[Serializable]
+public class InstanceMotionData : MotionDataBase
+{
+    public float prepareTime = 1.0f;
+    public bool showRangeWarn = false;
+
+    public bool isHoming; // 是否制导
+    public float homingTime = 999; // 制导时间
+
+
+    public float homingSterRate = 1.0f;  // 转向保留原速度
+    public float homingSpeed = 12;
+    public bool homingConstantSpeed = false;
+}
+
+[Serializable]
 public class LinearMotionData : MotionDataBase
 {
     [Header("Linear")]
@@ -83,7 +109,8 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
         _hitCD.Clear();
 
         float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg; // 与 +X 轴夹角
-        owner.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // 绕 Z 轴
+        if(owner.ViewRoot != null)
+            owner.ViewRoot.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // 绕 Z 轴
     }
 
     public void Tick(float dt)
@@ -190,6 +217,147 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
             return false;
         }
         return false;
+    }
+}
+
+/// <summary>
+/// instance motion
+/// </summary>
+public class MapProjectileInstanceMotion : IMapProjectileMotion
+{
+    private MapProjectile ownerProj;
+    private Vector2 _pos;
+    private Vector2 _dir;
+    private float _speed;
+    private float _lifetime;
+
+    private float _time;
+    private bool _finished;
+
+
+    private InstanceMotionData D => (InstanceMotionData)ownerProj.bindingProjInfo.pData.motionData;
+    private ProjectileData PD => ownerProj.bindingProjInfo.pData;
+
+    private Dictionary<long, float> _hitCD = new();
+
+    public bool IsFinished => _finished;
+    public Vector2 Position => _pos;
+    public Vector2 Forward => _dir;
+
+    /// <summary>
+    /// 转向时间
+    /// </summary>
+    public float turnResponseTime = 0.3f;
+
+    public void Initialize(MapProjectile owner)
+    {
+        this.ownerProj = owner;
+        _pos = ownerProj.bindingProjInfo.spawnPos;
+        _dir = ownerProj.bindingProjInfo.initialDir;
+
+        _lifetime = PD.maxLifetime;
+        _time = 0f;
+        _finished = false;
+        _hitCD.Clear();
+
+        float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg; // 与 +X 轴夹角
+        if (owner.ViewRoot != null)
+            owner.ViewRoot.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // 绕 Z 轴
+    }
+
+    float angleVel;
+
+
+    public void Tick(float dt)
+    {
+        if (_finished) return;
+        _time += dt;
+        _lifetime -= dt;
+        if (_lifetime <= 0f)
+        {
+            _finished = true;
+            if (ownerProj.bindingProjInfo.pData.TriggerOnLifeEnd)
+            {
+                ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
+            }
+            return;
+        }
+
+        // 未到准备阶段
+        if(_time >= D.prepareTime)
+        {
+            ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
+            return;
+        }
+
+        TickHoming();
+
+        TickWarnPreview();
+    }
+
+    private void TickHoming()
+    {
+
+        if (!D.isHoming) return;
+        if (_time > D.homingTime) return;
+
+        // 导航
+        var targetId = ownerProj.bindingProjInfo.homingTargetId;
+        if (targetId == null || targetId == 0)
+        {
+            return;
+        }
+        var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(targetId.Value);
+        if (target == null) return;
+
+        Vector2 pos = ownerProj.transform.position;
+        Vector2 toTarget = ((Vector2)target.Pos - pos);
+        float desired = Mathf.Atan2(toTarget.y, toTarget.x) * Mathf.Rad2Deg;
+        float current = ownerProj.transform.eulerAngles.z;
+
+        float newAngle = Mathf.SmoothDampAngle(current, desired, ref angleVel, turnResponseTime, Mathf.Infinity, LogicTime.deltaTime);
+        ownerProj.transform.rotation = Quaternion.Euler(0, 0, newAngle);
+
+        Vector2 forward = new Vector2(Mathf.Cos(newAngle * Mathf.Deg2Rad), Mathf.Sin(newAngle * Mathf.Deg2Rad));
+
+        // 固定速度 可能跑过
+        if (D.homingConstantSpeed)
+        {
+            Vector2 vel = forward * D.homingSpeed;
+            ownerProj.transform.position = pos + vel * Time.fixedDeltaTime;
+        }
+        else
+        {
+            if (toTarget.sqrMagnitude < 1e-6f) return;
+            if(toTarget.sqrMagnitude < LogicTime.deltaTime * D.homingSpeed)
+            {
+                ownerProj.transform.position = toTarget;
+            }
+            else
+            {
+                Vector2 vel = forward * D.homingSpeed;
+                ownerProj.transform.position = pos + vel * Time.fixedDeltaTime; ;
+            }
+        }
+
+    }
+
+    private void TickWarnPreview()
+    {
+        if (!D.showRangeWarn)
+        {
+            return;
+        }
+
+        if (ownerProj.bindingProjInfo.WarnEffectId == 0)
+        {
+
+        }
+
+        if(ownerProj.bindingProjInfo.WarnEffectId != 0)
+        {
+            //MainGameManager.Instance.ShowRangeWarnEffect();
+        }
     }
 }
 
@@ -301,5 +469,7 @@ public class LogicProjectileInfo
 
     public Vector2 spawnPos;
     public Vector2 initialDir;
-    public Transform homingTarget;     // 追踪用（可空）
+    public long? homingTargetId;     // 追踪
+
+    public int WarnEffectId;
 }

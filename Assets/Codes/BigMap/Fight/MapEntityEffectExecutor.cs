@@ -76,26 +76,14 @@ namespace My.Map.Entity
             var pData = new ProjectileData()
             {
                 maxLifetime = realCfg.lifeTime,
-                motiontype = realCfg.motionType,
 
                 TriggerOnLifeEnd = realCfg.TriggerOnLifeEnd,
                 TriggerOnCollide = realCfg.TriggerOnCollide,
             };
 
             pData.OnHitEffects.AddRange(realCfg.HitEffects);
+            pData.motionData = realCfg.MotionData;
 
-            switch (realCfg.motionType)
-            {
-                case EMotionType.Linear:
-                    {
-                        pData.motionData = new LinearMotionData()
-                        {
-                            speed = realCfg.speed,
-                            radius = 0.1f
-                        };
-                    }
-                    break;
-            }
             ILogicEntity? caster = null;
             if(ctx.SourceInfo.SrcEntityId != 0)
             {
@@ -127,7 +115,26 @@ namespace My.Map.Entity
             {
                 dir = ctx.CastVec1.Value - ctx.TriggerPos.Value;
             }
-            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir);
+
+            long? homingTarget = null;
+            if(realCfg.isHoming)
+            {
+                switch(realCfg.homingSelectPolicy)
+                {
+                    case Fight.FightStruct.ESelectPolicy.PrimaryTarget:
+                        {
+                            if(caster != null && caster is BaseUnitLogicEntity unit)
+                            {
+                                if(unit.combatStateComp.PrimaryTargetId != 0)
+                                {
+                                    homingTarget = unit.combatStateComp.PrimaryTargetId;
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir, homingTarget: homingTarget);
         }
     }
     

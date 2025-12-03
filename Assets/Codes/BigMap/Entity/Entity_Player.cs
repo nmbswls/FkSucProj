@@ -17,8 +17,6 @@ namespace My.Map
     public class PlayerLogicEntity : BaseUnitLogicEntity, IAttractSource
     {
 
-        public PlayerAbilityController PlayerAbilityController { get { return (PlayerAbilityController)abilityController; } }
-
         public PlayerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
 

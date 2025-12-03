@@ -1,6 +1,7 @@
 using Config.Unit;
 using Map.Entity;
 using My.Map.Entity;
+using My.Map.Fight;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "queen_attack_01";
                     cfg.CoolDown = 0.2f;
                     cfg.DesiredUseDistance = 0.8f;
-                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
 
                     _skillDict[cfg.SkillId] = cfg;
@@ -39,7 +40,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "default_dash";
                     cfg.CoolDown = 1.0f;
                     cfg.DesiredUseDistance = 999f;
-                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -50,7 +51,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "queen_shoot";
                     cfg.CoolDown = 5.0f;
                     cfg.DesiredUseDistance = 5.0f;
-                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -60,7 +61,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "default_push";
                     cfg.CoolDown = 0.6f;
                     cfg.DesiredUseDistance = 1.0f;
-                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -71,7 +72,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "default_dash_slash";
                     cfg.CoolDown = 8.0f;
                     cfg.DesiredUseDistance = 2.0f;
-                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -81,7 +82,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "basic_aoe_slash";
                     cfg.CoolDown = 6.0f;
                     cfg.DesiredUseDistance = 1.0f;
-                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -91,7 +92,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "default_enemy_qinfan";
                     cfg.CoolDown = 6.0f;
                     cfg.DesiredUseDistance = 0.8f;
-                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
                     cfg.NeedHMode = true;
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -101,7 +102,17 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "guard_attack";
                     cfg.CoolDown = 1.0f;
                     cfg.DesiredUseDistance = 0.8f;
-                    cfg.SelectPolicy = EntitySkillCfg.ESelectPolicy.PrimaryTarget;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "crazy_fire";
+                    cfg.MainAbilityId = "crazy_fire";
+                    cfg.CoolDown = 21.0f;
+                    cfg.DesiredUseDistance = 5f;
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -142,6 +153,10 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreateDefaultShootAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateCrazyFireAbility();
                     _abilityDict[ab.Id] = ab;
                 }
                 {
@@ -366,10 +381,12 @@ namespace My.Map.Entity
 
             var newEffect = new MapAbilityEffectSpawnBulletCfg()
             {
-                targetType = MapAbilityEffectSpawnBulletCfg.ETargetType.Dir,
-                motionType = EMotionType.Linear,
+                MotionData = new LinearMotionData()
+                {
+                    speed = 9f,
+                },
+                //motionType = EMotionType.Linear,
                 lifeTime = 0.6f,
-                speed = 9f,
                 TriggerOnCollide = true,
                 TriggerOnLifeEnd = true,
 
@@ -404,6 +421,227 @@ namespace My.Map.Entity
             //    },
             //});
 
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateCrazyFireAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "crazy_fire";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+
+            {
+                var newEffect = new MapAbilityEffectSpawnBulletCfg()
+                {
+                    PendingTime = 3.0f,
+                    MotionData = new InstanceMotionData()
+                    {
+                        prepareTime = 5f,
+                        showRangeWarn = true,
+
+                        isHoming = true,
+                        homingSterRate = 1.0f,
+
+                        homingConstantSpeed = true,
+                        homingSpeed = 6,
+                    },
+                    lifeTime = 999f,
+
+                    HitEffects = new()
+                {
+                    new MapAbilityEffectHitBoxCfg()
+                    {
+                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                        Radius = 1.0f,
+                        CampFilterType = ECampFilterType.NotSelf,
+
+                        OnHitEffects = new()
+                        {
+                            new MapAbilityEffectAddResourceCfg()
+                            {
+                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                AddValue = 50000,
+                            }
+                        }
+                    }
+                },
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            }
+            {
+                var newEffect = new MapAbilityEffectSpawnBulletCfg()
+                {
+                    PendingTime = 5.0f,
+                    MotionData = new InstanceMotionData()
+                    {
+                        prepareTime = 5f,
+                        showRangeWarn = true,
+
+                        isHoming = true,
+                        homingSterRate = 1.0f,
+                        homingConstantSpeed = true,
+                        homingSpeed = 6,
+                    },
+                    lifeTime = 999f,
+
+                    HitEffects = new()
+                {
+                    new MapAbilityEffectHitBoxCfg()
+                    {
+                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                        Radius = 1.0f,
+                        CampFilterType = ECampFilterType.NotSelf,
+
+                        OnHitEffects = new()
+                        {
+                            new MapAbilityEffectAddResourceCfg()
+                            {
+                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                AddValue = 50000,
+                            }
+                        }
+                    }
+                },
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            }
+            {
+                var newEffect = new MapAbilityEffectSpawnBulletCfg()
+                {
+                    PendingTime = 7.0f,
+                    MotionData = new InstanceMotionData()
+                    {
+                        prepareTime = 5f,
+                        showRangeWarn = true,
+
+                        isHoming = true,
+                        homingSterRate = 1.0f,
+                        homingConstantSpeed = true,
+                        homingSpeed = 6,
+                    },
+                    lifeTime = 999f,
+
+                    HitEffects = new()
+                {
+                    new MapAbilityEffectHitBoxCfg()
+                    {
+                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                        Radius = 1.0f,
+                        CampFilterType = ECampFilterType.NotSelf,
+
+                        OnHitEffects = new()
+                        {
+                            new MapAbilityEffectAddResourceCfg()
+                            {
+                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                AddValue = 50000,
+                            }
+                        }
+                    }
+                },
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            }
+            {
+                var newEffect = new MapAbilityEffectSpawnBulletCfg()
+                {
+                    PendingTime = 9.0f,
+                    MotionData = new InstanceMotionData()
+                    {
+                        prepareTime = 5f,
+                        showRangeWarn = true,
+
+                        isHoming = true,
+                        homingSterRate = 1.0f,
+                        homingConstantSpeed = true,
+                        homingSpeed = 6,
+                    },
+                    lifeTime = 999f,
+
+                    HitEffects = new()
+                {
+                    new MapAbilityEffectHitBoxCfg()
+                    {
+                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                        Radius = 1.0f,
+                        CampFilterType = ECampFilterType.NotSelf,
+
+                        OnHitEffects = new()
+                        {
+                            new MapAbilityEffectAddResourceCfg()
+                            {
+                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                AddValue = 50000,
+                            }
+                        }
+                    }
+                },
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            }
+            {
+                var newEffect = new MapAbilityEffectSpawnBulletCfg()
+                {
+                    PendingTime = 11.0f,
+                    MotionData = new InstanceMotionData()
+                    {
+                        prepareTime = 5f,
+                        showRangeWarn = true,
+
+                        isHoming = true,
+                        homingSterRate = 1.0f,
+                        homingConstantSpeed = true,
+                        homingSpeed = 6,
+                    },
+                    lifeTime = 999f,
+
+                    HitEffects = new()
+                {
+                    new MapAbilityEffectHitBoxCfg()
+                    {
+                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                        Radius = 1.0f,
+                        CampFilterType = ECampFilterType.NotSelf,
+
+                        OnHitEffects = new()
+                        {
+                            new MapAbilityEffectAddResourceCfg()
+                            {
+                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                AddValue = 50000,
+                            }
+                        }
+                    }
+                },
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            }
             spec.Phases.Add(mainPhase);
             return spec;
         }
@@ -452,7 +690,7 @@ namespace My.Map.Entity
                 new MapAbilityEffectApplyDamageCfg()
                 {
                     BaseDamage = 25000,
-                    KnockBackForce = 1.6f,
+                    KnockBackForce = 3.6f,
                 },
                 //new MapAbilityEffectCostResourceCfg()
                 //{
@@ -867,7 +1105,7 @@ namespace My.Map.Entity
                         new MapAbilityEffectApplyDamageCfg()
                         {
                             BaseDamage = 25000,
-                            KnockBackForce = 1.0f,
+                            KnockBackForce = 5.0f,
                         },
                     }
                 };
@@ -954,7 +1192,7 @@ namespace My.Map.Entity
                     var dmgEffect = new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 1.0f,
+                        KnockBackForce = 8.0f,
                     };
 
                     hitCfg.OnHitEffects = new() { dmgEffect };
@@ -1025,7 +1263,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 1.6f,
+                        KnockBackForce = 5f,
                     },
                 }
             };
@@ -1087,7 +1325,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 1.6f,
+                        KnockBackForce = 5f,
                     },
                 }
             };
@@ -1149,7 +1387,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 1.6f,
+                        KnockBackForce = 5f,
                     },
                 }
             };
@@ -1215,7 +1453,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 1000,
-                        KnockBackForce = 1.6f,
+                        KnockBackForce = 5f,
                     },
                 }
             };
@@ -1269,7 +1507,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 1.6f,
+                        KnockBackForce = 4f,
                     },
                 }
             };
@@ -1333,7 +1571,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 1.6f,
+                        KnockBackForce = 4f,
                     },
                 }
             };

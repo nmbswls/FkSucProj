@@ -21,9 +21,15 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         {
             var go = transform.GetChild(i);
             var weaponOne = go.GetComponent<MapUnitWeaponOne>();
-
+            if(weaponOne == null)
+            {
+                Debug.LogError("MapUnitWeaponCtrl init fail");
+                continue;
+            }    
             WeaponOnes.Add(weaponOne);
             go.gameObject.SetActive(false);
+
+            weaponOne.WeaponCtrl = this;
         }
     }
 

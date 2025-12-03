@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Config.Unit;
 using Map.Entity.AI.Action;
+using My.Map.Fight;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -22,12 +23,12 @@ namespace My.Map.Entity.AI
             //
             switch(skillConf.SelectPolicy)
             {
-                case ESelectPolicy.None:
+                case FightStruct.ESelectPolicy.None:
                     {
                         return (null, null);
                     }
                     break;
-                case ESelectPolicy.PrimaryTarget:
+                case FightStruct.ESelectPolicy.PrimaryTarget:
                     {
                         var target = caster.LogicManager.GetLogicEntity(caster.combatStateComp.PrimaryTargetId, false);
                         if(target == null)
@@ -38,7 +39,7 @@ namespace My.Map.Entity.AI
                         return (target.Pos, target.Id);
                     }
                     break;
-                case ESelectPolicy.Random:
+                case FightStruct.ESelectPolicy.Random:
                     {
                         return (null, null);
                     }

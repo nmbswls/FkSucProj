@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using My.Map.Entity;
+using My.Map.Fight;
 using TMPro;
 using UnityEngine;
 
@@ -16,16 +17,9 @@ namespace Config.Map
         public string CfgId;
 
         public bool HastriggerArea;
-        public enum EShape
-        {
-            None,
-            Square,
-            Circle,
-        }
 
-        public EShape Shape = EShape.None;
-        public float Length;
-        public float Radius;
+        public FightStruct.Shape ShapeInfo = new();
+
         [SerializeReference]
         public List<MapFightEffectCfg> TriggerEffects;
 

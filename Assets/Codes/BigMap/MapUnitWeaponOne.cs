@@ -17,7 +17,11 @@ namespace My.Map.Scene
         {
             var unitComp = other.GetComponentInParent<SceneUnitPresenter>();
             if (unitComp == null) return;
-
+            if(unitComp.GetLogicEntity() == null)
+            {
+                Debug.LogError("MapUnitWeaponOne OnTriggerEnter2D triiger no binding logic");
+                return;
+            }
             WeaponCtrl.OnWeaponTriggerHit(HitId, unitComp.GetLogicEntity().Id);
         }
 

@@ -25,6 +25,7 @@ using UnityEngine;
     public abstract class MapFightEffectCfg
     {
         public EAbilityEffectType EffectType;
+        public float PendingTime;
     }
 
     [Serializable]

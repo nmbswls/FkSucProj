@@ -136,6 +136,11 @@ namespace My.Map.Scene
             {
                 ComputeAndRender();
             }
+
+            if(MainGameManager.Instance.playerScenePresenter != null && CircleFovShape != null)
+            {
+                CircleFovShape.transform.position = MainGameManager.Instance.playerScenePresenter.ViewPoint.position;
+            }
         }
 
         void ComputeAndRender()

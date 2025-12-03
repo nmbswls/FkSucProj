@@ -363,7 +363,7 @@ namespace My.Input
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
 
-                player.PlayerEntity.PlayerAbilityController.TryShoot(castDir);
+                player.PlayerEntity.ablilityManager.UseSkill("queen_shoot", castDir.normalized + player.PlayerEntity.Pos);
             }
         }
 

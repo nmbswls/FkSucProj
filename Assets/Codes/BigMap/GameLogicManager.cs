@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using static MapSceneEffectManager;
 using static My.MapExport.MapExportDatabase;
 using static UnityEditor.PlayerSettings;
 
@@ -185,6 +186,9 @@ namespace My
             });
 
             shopDataManager.RefreshOnNightStart();
+
+            // 清空延迟信息
+            DelayedEffectQueue.Clear();
         }
 
         /// <summary>
@@ -227,6 +231,8 @@ namespace My
             AreaManager.Tick(dt);
 
             globalDropCollection?.Tick(dt);
+
+            TickPendingEffect();
         }
 
         public void AddNewEntityRecord(LogicEntityRecord record)
@@ -234,6 +240,34 @@ namespace My
             pendingNewEntities.Add(record);
         }
 
+
+        private void TickPendingEffect()
+        {
+            if(_delayQueueDirty)
+            {
+                _delayQueueDirty = false;
+                DelayedEffectQueue.Sort((itemA, itemB) => { return itemA.exeTIme.CompareTo(itemB.exeTIme); });
+            }
+
+            if(DelayedEffectQueue.Count > 0)
+            {
+                int handled = 0;
+                while(DelayedEffectQueue.Count > 0 && handled < 10)
+                {
+                    if(LogicTime.time < DelayedEffectQueue[0].exeTIme)
+                    {
+                        break;
+                    }
+
+                    var wrapped = DelayedEffectQueue[0];
+                    DelayedEffectQueue.RemoveAt(0);
+
+                    var executor = GetLogicFightEffectExecutor(wrapped.effectConf);
+                    executor?.Apply(wrapped.effectConf, wrapped.ctx);
+                    handled += 1;
+                }
+            }
+        }
 
 
         public ProjectileHolder projectileHolder;
@@ -567,12 +601,34 @@ namespace My
             }
         }
 
+
+        public class DelayedFightEffectWrapper
+        {
+            public MapFightEffectCfg effectConf;
+            public LogicFightEffectContext ctx;
+            public float exeTIme;
+        }
+        public List<DelayedFightEffectWrapper> DelayedEffectQueue = new();
+
+        private bool _delayQueueDirty = false; 
+           
         public void HandleLogicFightEffect(MapFightEffectCfg effectConf, LogicFightEffectContext effectCtx)
         {
+            if(effectConf.PendingTime > 0)
+            {
+                DelayedEffectQueue.Add(new DelayedFightEffectWrapper()
+                {
+                    effectConf = effectConf,
+                    ctx = effectCtx,
+                    exeTIme = LogicTime.time + effectConf.PendingTime,
+                });
+                _delayQueueDirty = true;
+                return;
+            }
+            
             var executor = GetLogicFightEffectExecutor(effectConf);
             executor?.Apply(effectConf, effectCtx);
         }
-
 
         #region 全局警戒
 
@@ -607,7 +663,7 @@ namespace My
 
         public event Action<LogicProjectileInfo> EventOnLogicProjectileSpawn;
 
-        public LogicProjectileInfo CreateLogicProjectile(ProjectileData pData, ILogicEntity caster, Vector2 bornPos, Vector2 dir)
+        public LogicProjectileInfo CreateLogicProjectile(ProjectileData pData, ILogicEntity caster, Vector2 bornPos, Vector2 dir, long? homingTarget = null)
         {
             var projectilInfo = new LogicProjectileInfo
             {
@@ -618,6 +674,7 @@ namespace My
                 initialDir = dir,
             };
 
+            projectilInfo.homingTargetId = homingTarget;
             ProjectileInfos.Add(projectilInfo.instId, projectilInfo);
             EventOnLogicProjectileSpawn?.Invoke(projectilInfo);
             return projectilInfo;

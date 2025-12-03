@@ -55,7 +55,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 69777308777185285
-      type: {class: MapAbilityEffectHitBoxCfg, ns: Unit.Ability.Effect, asm: Assembly-CSharp}
+      type: {class: MapAbilityEffectHitBoxCfg, ns: My.Map.Entity, asm: Assembly-CSharp}
       data:
         EffectType: 5
         Shape: 1
@@ -69,7 +69,7 @@ MonoBehaviour:
         OnHitEffects:
         - rid: 69777308777185287
     - rid: 69777308777185287
-      type: {class: MapAbilitySpecDamageEffectCfg, ns: Unit.Ability.Effect, asm: Assembly-CSharp}
+      type: {class: MapAbilityEffectApplyDamageCfg, ns: My.Map.Entity, asm: Assembly-CSharp}
       data:
         EffectType: 2
         DamageValName:
