@@ -6,6 +6,7 @@ using My.Map.Entity;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static My.Map.Fight.FightStruct;
 
 namespace My.Map
 {
@@ -37,6 +38,7 @@ namespace My.Map
 
                 case AttrIdConsts.Attack:
                 case AttrIdConsts.HP_MAX:
+                case AttrIdConsts.PlayerGcThreshold:
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
@@ -124,7 +126,8 @@ namespace My.Map
     {
         public long delta;
         public long? srcEntityId;
-        public int deltaFlags;
+        public bool isEnmity;
+        public EDmgFlag deltaFlags;
         public Dictionary<string, long> extraAttrs = null;
 
         public long finalDelta;
@@ -427,7 +430,7 @@ namespace My.Map
 
 
         // 3) 聚合资源变化
-        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
+        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
         {
             if (!resources.TryGetValue(resourceId, out var r)) 
             {
@@ -439,7 +442,8 @@ namespace My.Map
             {
                 delta = delta,
                 srcEntityId = srcEntityId,
-                deltaFlags = isDamage ? 1 : 0,
+                isEnmity = isEnmity,
+                deltaFlags = flags,
                 extraAttrs = extraAttrs,
             });
         }

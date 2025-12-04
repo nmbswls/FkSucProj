@@ -66,9 +66,9 @@ namespace My.Map.Scene
         public override void Bind(ILogicEntity logic)
         {
             base.Bind(logic);
-
-
         }
+
+
 
         private float _updateRoomStatusTimer = 0;
 

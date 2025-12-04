@@ -1,4 +1,6 @@
 
+using System;
+
 namespace My.Map.Fight
 {
     public class FightStruct
@@ -10,6 +12,8 @@ namespace My.Map.Fight
             Circle,
             Sector,
         }
+
+        [Serializable]
         public class Shape
         {
             public EShapeType Type = EShapeType.None;
@@ -27,6 +31,17 @@ namespace My.Map.Fight
             LowHpAlly,
             LowHpEnmity,
             Random,
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Flags]
+        public enum EDmgFlag
+        {
+            None,
+            ZiWei = 0x08,
+            Xixue = 1 << 4,
         }
     }
     

@@ -403,7 +403,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(targetUnitId);
             if (entity != null && entity is BaseUnitLogicEntity unitEntity)
             {
-                unitEntity.ApplyResourceChange(AttrIdConsts.DeepZhaChance, -1, true, null);
+                unitEntity.ApplyResourceChange(AttrIdConsts.DeepZhaChance, -1, true, FightStruct.EDmgFlag.None, null);
                 gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(0.3f, 0.3f), true, unitEntity.Pos);
                 gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.3f, 0.1f), true, unitEntity.Pos);
                 gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.1f, 0.6f), true, unitEntity.Pos);

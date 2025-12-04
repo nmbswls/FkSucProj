@@ -13,6 +13,7 @@ using My.Map.Logic;
 using My.Map.Scene;
 using My.Map;
 using My.UI;
+using My.Map.Fight;
 
 public class ConsoleGM : MonoBehaviour
 {
@@ -130,7 +131,7 @@ public class ConsoleGM : MonoBehaviour
             null,
             args =>
             {
-                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -20000, false, null);
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -20000, false, FightStruct.EDmgFlag.None, null);
             });
 
         Register("m1", "Ë¢¹Ö",
@@ -179,6 +180,16 @@ public class ConsoleGM : MonoBehaviour
                     return;
                 }
                 UIOrchestrator.Instance.ShowShop(shopInfo);
+            });
+
+        Register("gc", "¼Ógc",
+            new[] { new CmdParam("val", "int£¬Öµ") },
+            args =>
+            {
+                var val = int.Parse(args[0]);
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+
+                player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, val, false, FightStruct.EDmgFlag.None, null);
             });
     }
 

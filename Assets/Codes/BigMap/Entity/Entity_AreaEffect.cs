@@ -7,6 +7,8 @@ using System;
 using Map.Logic;
 using My.Map.Logic;
 using static My.GameLogicManager;
+using System.Linq;
+using System.Security.Principal;
 
 
 namespace My.Map
@@ -20,14 +22,12 @@ namespace My.Map
 
         }
 
-        public class RuntimeTriggerInfo
-        {
-            public Dictionary<long, float> lastTriggerTimeDict = new();
-            public int TotalTriggerCnt = 0;
-        }
 
-        public RuntimeTriggerInfo? runtimeInfo;
+        public HashSet<long> currAffectedEntites = new();
+        public HashSet<long> newEntities = new();
+        public int TotalTriggerCnt = 0;
 
+        private float _lastCheckTimer;
 
         public override EEntityType Type => EEntityType.AreaEffect;
 
@@ -36,44 +36,51 @@ namespace My.Map
             base.Initialize();
 
             cacheCfg = MapAreaEffectLoader.Get(CfgId);
-
-            if (string.IsNullOrEmpty(cacheCfg.BindingBuffId))
-            {
-                LogicManager.globalBuffManager.RequestAddBuff(this.Id, cacheCfg.BindingBuffId);
-            }
-
-            if (cacheCfg.HastriggerArea)
-            {
-                runtimeInfo = new();
-            }
         }
 
-        public void OnTriggerAreaTriggered(ILogicEntity triggerOne)
+        public override void Tick(float dt)
         {
-            if (!cacheCfg.HastriggerArea)
+            base.Tick(dt);
+        }
+
+        public void UpdateAffectedLogics(List<ILogicEntity> inEnties)
+        {
+            newEntities.Clear();
+            foreach (var inEntity in inEnties)
             {
-                return;
+                // 新的
+                if(!currAffectedEntites.Contains(inEntity.Id))
+                {
+                    LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, cacheCfg.AreaBuffId, casterId:Id);
+                }
+                // 维护tmp2
+                newEntities.Add(inEntity.Id);
             }
 
-            runtimeInfo.lastTriggerTimeDict.TryGetValue(triggerOne.Id, out float lastTime);
-            if (lastTime != 0 && LogicTime.time < lastTime + 1.0f)
+            foreach (var curEntity in currAffectedEntites)
             {
-                return;
-            }
-
-            if (cacheCfg.TriggerEffects != null)
-            {
-                var srcInfo = new EffectSourceInfo()
+                if(!newEntities.Contains(curEntity))
                 {
-                    SrcType = ESourceType.AreaEffect,
-                    SrcEntityId = Id,
-                };
-                foreach (var effect in cacheCfg.TriggerEffects)
-                {
-                    var ctx = new GameLogicManager.LogicFightEffectContext(LogicManager, srcInfo);
-                    LogicManager.HandleLogicFightEffect(effect, ctx);
+                    LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, cacheCfg.AreaBuffId, casterId: Id);
                 }
             }
+
+            var t = currAffectedEntites;
+            currAffectedEntites = newEntities;
+            newEntities = t;
+        }
+
+
+        public override void OnEntityDie(int reason, ResourceDeltaIntent lastIntent = null)
+        {
+            base.OnEntityDie(reason, lastIntent);
+
+            // 清理
+            foreach(var curEntity in currAffectedEntites)
+            {
+                LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, cacheCfg.AreaBuffId, casterId: Id);
+            }
+            currAffectedEntites.Clear();
         }
     }
 

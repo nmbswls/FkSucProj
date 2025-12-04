@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using My.Map.Entity;
+using My.Map.Fight;
 using My.Map.Logic;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.PackageManager.UI;
@@ -10,12 +11,18 @@ using UnityEngine;
 using static My.GameLogicManager;
 using static My.Map.Entity.EntitySkillComboGraph;
 using static My.Map.Entity.MapEntitySkillManager;
+using static My.Map.Fight.FightStruct;
 
 
 namespace My.Map
 {
     public class PlayerLogicEntity : BaseUnitLogicEntity, IAttractSource
     {
+
+        public bool isPendingGc; // 是否等待触发gc
+        public long? gcCuaseId;
+        public bool isSelfGc; 
+
 
         public PlayerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
@@ -44,6 +51,9 @@ namespace My.Map
             TickAddAuraHVal(dt);
 
             TickWatchedInfo();
+
+            TickGc();
+            TickPlayerGcYishang();
         }
 
 
@@ -58,6 +68,7 @@ namespace My.Map
         {
             moveSpeed = 2.0f;
             // 数值类
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 10000);
             attributeStore.RegisterNumeric("HP.Max", initialBase: 1000000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
@@ -78,6 +89,37 @@ namespace My.Map
             attributeStore.Commit();
         }
 
+        public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
+        {
+            base.OnResourceAttriChanged(attrId, before, after, intent);
+
+            // 4.3 死亡判断窗口：仅在含伤害时检查
+            switch (attrId)
+            {
+                case AttrIdConsts.PlayerPleasure:
+                    {
+                        if(isPendingGc)
+                        {
+                            break;
+                        }
+                        var gcThreshold = attributeStore.GetAttr(AttrIdConsts.PlayerGcThreshold);
+                        if (before < gcThreshold && after >= gcThreshold)
+                        {
+                            isPendingGc = true;
+                            if(intent.deltaFlags.HasFlag(EDmgFlag.ZiWei))
+                            {
+                                isSelfGc = true;
+                            }
+                            else
+                            {
+                                isSelfGc = false;
+                            }
+                            break;
+                        }
+                    }
+                    break;
+            }
+        }
 
 
         public float applyHValTimer;
@@ -272,6 +314,64 @@ namespace My.Map
 
         }
 
+        /// <summary>
+        /// 更新身上的高潮易伤
+        /// </summary>
+        public void TickPlayerGcYishang()
+        {
+            BuffInstance buffInst = null;
+            foreach (var buff in BuffContainer)
+            {
+                if (buff.Value.BuffId == "gc_self_yishang") 
+                {
+                    buffInst = buff.Value;
+                }
+            }
+
+            if(buffInst != null)
+            {
+                if(buffInst.Layer > 0)
+                {
+                    buffInst.Layer -= (int)(Math.Ceiling(LogicTime.time * 20));
+                    buffInst.Layer = Math.Max(0, buffInst.Layer);
+
+                    buffInst.OnBuffAddOrUpdate(false);
+                }
+
+                if(buffInst.Layer <= 0)
+                {
+                    LogicManager.globalBuffManager.RequestRemoveBuff(this, buffInst.InstanceId);
+                }
+            }
+        }
+
+        public void TickGc()
+        {
+            if(!isPendingGc)
+            {
+                return;
+            }
+            isPendingGc = true;
+
+            var gcLiquidEntity = new LogicEntityRecord();
+            gcLiquidEntity.EntityType = EEntityType.AreaEffect;
+            gcLiquidEntity.CfgId = "ground_gc_liquid";
+            gcLiquidEntity.LifeTime = 20.0f;
+            gcLiquidEntity.Position = this.Pos;
+
+            LogicManager.AddNewEntityRecord(gcLiquidEntity);
+
+            LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_debuff");
+
+            LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_yishang", layer: 100);
+
+            if(!isSelfGc)
+            {
+                // 非自慰需要扣san
+                ApplyResourceChange(AttrIdConsts.PlayerSan, -500, false, FightStruct.EDmgFlag.None, this.Id);
+            }
+        }
+
         public override void OnStatusAttriChanged(string attrId, bool isOn)
         {
             base.OnStatusAttriChanged(attrId, isOn);
@@ -369,7 +469,7 @@ namespace My.Map
             {
                 ResourceId = AttrIdConsts.UnitEnterHVal,
                 AddValue = 2000,
-                Flags = 100,
+                IsEnmity = true,
             };
 
             foreach (var unit in units)
@@ -416,7 +516,7 @@ namespace My.Map
 
             if(WatchedInfo.Count > 1)
             {
-                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 100, false, null);
+                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 100, false, EDmgFlag.None, null);
             }
         }
 

@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static My.Map.Fight.FightStruct;
 
 namespace My.Map
 {
@@ -48,7 +49,7 @@ namespace My.Map
         long Id { get; }
         long GetAttr(string attrId);
 
-        void ApplyResourceChange(string resourceId, long delta, bool isDamage, long? srcEntityId, Dictionary<string, long> extraAttrs = null);
+        void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null);
 
         long CalculateResourceCostAmount(ResourceDeltaIntent intent);
         /// <summary>
@@ -189,9 +190,9 @@ namespace My.Map
         {
             return attributeStore.CheckHasState(attrId);
         }
-        public void ApplyResourceChange(string resourceId, long delta, bool isDamage, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
+        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
         {
-            attributeStore.ApplyResourceChange(resourceId, delta, isDamage, srcEntityId, extraAttrs);
+            attributeStore.ApplyResourceChange(resourceId, delta, isEnmity, flags, srcEntityId, extraAttrs);
         }
 
 
@@ -239,14 +240,14 @@ namespace My.Map
                                 {
                                     Debug.Log("吸血 回血 OnResourceAttriChanged");
                                     var xixueVal = (long)(dmg * (double)(xixue / 10000));
-                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false, srcEntityId: Id);
+                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false,  EDmgFlag.ZiWei, srcEntityId: Id);
                                 }
                             }
                         }
 
                         if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
                         {
-                            OnEntityDie(intent);
+                            OnEntityDie(0, intent);
                             break;
                         }
                     }
@@ -271,8 +272,9 @@ namespace My.Map
         }
 
 
-        public virtual void OnEntityDie(ResourceDeltaIntent lastIntent)
+        public virtual void OnEntityDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
+            MarkDead = true;
             LogicManager.AreaManager.RequestEntityDie(this.Id, 1);
 
             Debug.Log("Unit Entity OnEntityDie dead " + Id);
@@ -317,15 +319,16 @@ namespace My.Map
                 LifeTime -= dt;
                 if (LifeTime <= 0)
                 {
-                    // 死亡
-                    LogicManager.AreaManager.RequestEntityDie(this.Id, 2);
+                    OnEntityDie(1, null);
+                    //// 死亡
+                    //LogicManager.AreaManager.RequestEntityDie(this.Id, 2);
 
-                    LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
-                    {
-                        Name = "Death",
-                        Param3 = this.Id,
-                        Param4 = 3, // 3 时间到期
-                    });
+                    //LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+                    //{
+                    //    Name = "Death",
+                    //    Param3 = this.Id,
+                    //    Param4 = 3, // 3 时间到期
+                    //});
 
                     //EventOnDeath?.Invoke();
                 }

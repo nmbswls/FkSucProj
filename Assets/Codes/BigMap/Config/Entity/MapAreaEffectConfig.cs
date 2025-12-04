@@ -16,14 +16,9 @@ namespace Config.Map
     {
         public string CfgId;
 
-        public bool HastriggerArea;
-
         public FightStruct.Shape ShapeInfo = new();
-
-        [SerializeReference]
-        public List<MapFightEffectCfg> TriggerEffects;
-
-        public string BindingBuffId;
+        public string AreaBuffId;
+        public ECampFilterType CampFilterType = ECampFilterType.NotSelf;
 
         public float DefaultLifeTime = -1; // 正值表示有时间
 

@@ -12,6 +12,7 @@ using My.UI;
 using System.Linq;
 using My.Map.Entity;
 using static My.UI.AnyContainerItemCell;
+using My.Map.Fight;
 
 
 namespace My.Map
@@ -324,12 +325,12 @@ namespace My.Map
                 {
                     case FakeItemConf.ERevealEffectType.AddGcVal:
                         {
-                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5000, false, null);
+                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5000, false, FightStruct.EDmgFlag.None, null);
                         }
                         break;
                     case FakeItemConf.ERevealEffectType.CostClothes:
                         {
-                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -3000, false, null);
+                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -3000, false, FightStruct.EDmgFlag.None, null);
                         }
                         break;
                 }

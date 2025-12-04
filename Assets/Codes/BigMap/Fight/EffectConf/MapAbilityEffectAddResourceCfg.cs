@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using My.Map.Entity;
 using UnityEngine;
+using static My.Map.Fight.FightStruct;
 
 
 namespace My.Map.Entity
@@ -12,7 +13,8 @@ namespace My.Map.Entity
     {
         public string ResourceId;
         public long AddValue;
-        public int Flags;
+        public bool IsEnmity;
+        public EDmgFlag Flags;
 
         public List<AttrKvPair> ExtraAttrInfos;
     }

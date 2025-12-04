@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static My.Map.Fight.FightStruct;
 
 
 namespace My.Map.Entity
@@ -13,7 +14,8 @@ namespace My.Map.Entity
     {
         public string ResourceId;
         public long CostValue;
-        public int Flags;
+        public bool IsEnmity;
+        public EDmgFlag Flags;
 
         public int TargetType; // 在不同触发语境下 该值的含义不同
 

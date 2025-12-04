@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem.HID;
 using static My.GameLogicManager;
+using static My.Map.Fight.FightStruct;
 
 namespace My.Map.Entity
 {
@@ -538,7 +539,7 @@ namespace My.Map.Entity
                     extraAttrs[pair.AttrId] = pair.Val;
                 }
             }
-            target.ApplyResourceChange(realCfg.ResourceId, realCfg.AddValue, false, ctx.SourceInfo.SrcEntityId, extraAttrs);
+            target.ApplyResourceChange(realCfg.ResourceId, realCfg.AddValue, realCfg.IsEnmity, realCfg.Flags, ctx.SourceInfo.SrcEntityId, extraAttrs);
         }
     }
 
@@ -571,7 +572,7 @@ namespace My.Map.Entity
                 }
             }
 
-            target.ApplyResourceChange(realCfg.ResourceId, -realCfg.CostValue, realCfg.Flags > 0, ctx.SourceInfo.SrcEntityId, extraAttrs);
+            target.ApplyResourceChange(realCfg.ResourceId, -realCfg.CostValue,realCfg.IsEnmity, realCfg.Flags, ctx.SourceInfo.SrcEntityId, extraAttrs);
         }
     }
 
@@ -613,7 +614,7 @@ namespace My.Map.Entity
                 }
             }
 
-            target.ApplyResourceChange(AttrIdConsts.HP, -baseVal, true, ctx.SourceInfo.SrcEntityId, extraAttrs);
+            target.ApplyResourceChange(AttrIdConsts.HP, -baseVal, true, EDmgFlag.None, ctx.SourceInfo.SrcEntityId, extraAttrs);
 
             var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
             if (realCfg.KnockBackForce > 0 && actor != null)

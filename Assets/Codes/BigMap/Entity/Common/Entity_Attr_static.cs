@@ -10,6 +10,9 @@ namespace My.Map.Entity
     {
         public const string Attack = "Attack";
         public const string JianSu = "JianSu";
+        public const string Special_JianShang = "Special_JianShang";
+        public const string Special_YiShang = "Special_YiShang";
+        public const string PlayerGcThreshold = "PlayerGcThreshold";
 
         public const string HP = "HP";
         public const string HP_MAX = "HP.Max";
@@ -39,6 +42,8 @@ namespace My.Map.Entity
         public const string StatUnstoppable = "StatUnstoppable";
 
         public const string DamageXiXue = "DamageXiXue";
+
+        public const string HValYiShang = "HValYiShang";
 
         #region ÌØÊâ×´Ì¬¡¢ÊÓ¾õµÈ
 

@@ -132,7 +132,7 @@ namespace My.Map.Entity
                                 {
                                     ResourceId = AttrIdConsts.HP,
                                     CostValue = 5,
-                                    Flags = 1,
+                                    IsEnmity = true,
                                     ExtraAttrInfos = new List<AttrKvPair>(){new(){ AttrId  = AttrIdConsts.DamageXiXue, Val = 2000} }
                                 }
                             }
@@ -203,7 +203,7 @@ namespace My.Map.Entity
                                 {
                                     ResourceId = AttrIdConsts.PlayerKnockDown,
                                     AddValue = 2,
-                                    Flags = 1,
+                                    IsEnmity = true,
                                 }
                             }
                         }
@@ -243,7 +243,61 @@ namespace My.Map.Entity
                     },
                     DefaultDuration = -1,
                 };
-                
+
+                // 玩家gc易伤
+                _library["gc_self_yishang"] = new BuffDefinition()
+                {
+                    BuffId = "gc_self_yishang",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    DefaultDuration = -1,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Special_YiShang, ModifierValue = 1000 },
+                    },
+                };
+
+                _library["gc_self_debuff"] = new BuffDefinition()
+                {
+                    BuffId = "gc_self_debuff",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = 5f,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.JianSu, ModifierValue = 5000 },
+                    },
+                };
+
+                _library["ground_gc_liquid"] = new BuffDefinition()
+                {
+                    BuffId = "ground_gc_liquid",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HValYiShang, ModifierValue = 1000 },
+                    },
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = TriggerType.Tick,
+                            TriggerParam1 = 500, // 每0.5秒一次
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddResourceCfg()
+                                {
+                                    ResourceId = AttrIdConsts.UnitEnterHVal,
+                                    AddValue = 200,
+                                    IsEnmity = true,
+                                }
+                            }
+                        }
+                    },
+                };
 
             }
 

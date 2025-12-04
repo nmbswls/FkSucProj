@@ -235,11 +235,11 @@ namespace My.Map
         }
 
 
-        public override void OnEntityDie(ResourceDeltaIntent lastIntent)
+        public override void OnEntityDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
-            base.OnEntityDie(lastIntent);
+            base.OnEntityDie(reason, lastIntent);
 
-            if(lastIntent.srcEntityId != null)
+            if(lastIntent != null && lastIntent.srcEntityId != null)
             {
                 var srcEntity = LogicManager.GetLogicEntity(lastIntent.srcEntityId.Value);
 

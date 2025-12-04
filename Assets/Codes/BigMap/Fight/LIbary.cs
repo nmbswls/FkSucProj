@@ -937,7 +937,7 @@ namespace My.Map.Entity
                     {
                         ResourceId  = AttrIdConsts.HP,
                         CostValue = 5,
-                        Flags = 1,
+                        IsEnmity = true,
                     }
                 }
             };
@@ -994,7 +994,7 @@ namespace My.Map.Entity
                 var failEffect = new MapAbilityEffectCostResourceCfg();
                 failEffect.ResourceId = AttrIdConsts.HP;
                 failEffect.CostValue = 5;
-                failEffect.Flags = 1;
+                failEffect.IsEnmity = true;
 
                 var throwEffect = new MapAbilityEffectThrowStartCfg();
 
