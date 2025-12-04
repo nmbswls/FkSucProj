@@ -459,6 +459,13 @@ namespace My
                             executor = new AbilityEffectExecutor4UseWeapon();
                         }
                         break;
+
+                    case MapAbilityEffectDefaultInteractCfg:
+                        {
+                            executor = new AbilityEffectExecutor4DefaultInteract();
+                        }
+                        break;
+
                     case MapAbilityEffectDashStartCfg:
                         {
                             executor = new AbilityEffectExecutor4DashStart();

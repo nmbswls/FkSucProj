@@ -194,6 +194,40 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4DefaultInteract : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectDefaultInteractCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4UseItem err");
+                return;
+            }
+
+            var eIdString = ctx.GetVariatyRawVal(realCfg.InteractEntityId);
+            long.TryParse(eIdString, out var entityId);
+            if(entityId == 0)
+            {
+                Debug.LogError("AbilityEffectExecutor4DefaultInteract entityId 0.");
+                return;
+            }
+            var entity = ctx.Env.GetLogicEntity(entityId);
+
+            if (entity == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4DefaultInteract entityId not found.");
+                return;
+            }
+            if(entity is GatherPointLogicEntity gatherPointEntity)
+            {
+                gatherPointEntity.DoGather();
+            }
+        }
+    }
+    
+
+
     public class AbilityEffectExecutor4UseWeapon : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)

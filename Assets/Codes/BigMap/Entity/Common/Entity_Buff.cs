@@ -291,7 +291,7 @@ namespace My.Map.Entity
                                 new MapAbilityEffectAddResourceCfg()
                                 {
                                     ResourceId = AttrIdConsts.UnitEnterHVal,
-                                    AddValue = 200,
+                                    AddValue = 50,
                                     IsEnmity = true,
                                 }
                             }

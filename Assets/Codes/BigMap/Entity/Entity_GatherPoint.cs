@@ -57,6 +57,8 @@ namespace My.Map.Entity
         /// </summary>
         public void DoGather()
         {
+            Debug.Log($"DoGather {Id} ");
+
             if(LeftCount <= 0)
             {
                 return;
@@ -76,10 +78,21 @@ namespace My.Map.Entity
             var dropId = cacheConfig.DropBundleId;
             
             var items = LogicManager.DropTable.GetBundleDropItems(dropId);
+
             foreach (var item in items)
             {
-                LogicManager.globalDropCollection.CreateDrop(item.Item1, item.Item2, Pos + UnityEngine.Random.insideUnitCircle, false, Pos);
+                string itemId = item.Item1;
+                int cnt = item.Item2;
+
+                var put = 0;
+                //var put = LogicManager.playerDataManager.TryGiveItem(itemId, cnt);
+                if(put < cnt)
+                {
+                    Debug.Log("bag full create drop");
+                    LogicManager.globalDropCollection.CreateDrop(item.Item1, cnt - put, Pos + UnityEngine.Random.insideUnitCircle, false, Pos);
+                }
             }
+
         }
     }
 }

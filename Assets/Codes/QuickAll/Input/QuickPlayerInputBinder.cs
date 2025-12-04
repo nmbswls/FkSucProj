@@ -133,8 +133,8 @@ namespace My.Input
             actions.OverworldMap.Space.performed -= OnSpace;
 
 
-            actions.OverworldMap.Confirm.performed += OnConfirm;
-            actions.OverworldMap.Cancel.performed += OnCancel;
+            actions.OverworldMap.Confirm.performed -= OnConfirm;
+            actions.OverworldMap.Cancel.performed -= OnCancel;
 
             actions.OverworldMap.Scroll.performed -= OnMouseScroll;
 

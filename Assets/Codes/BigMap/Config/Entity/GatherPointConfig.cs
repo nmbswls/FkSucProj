@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Config.Unit
 {
-    [CreateAssetMenu(menuName = "GP/Config/Entity/DestoryObj")]
+    [CreateAssetMenu(menuName = "GP/Config/Entity/GatherPoint")]
     [Serializable]
     public class GatherPointConfig : ScriptableObject
     {

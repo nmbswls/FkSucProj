@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map.Scene
@@ -58,7 +59,13 @@ namespace My.Map.Scene
 
         public void TriggerInteract(int selectionId)
         {
-            GatherPointEntity.DoGather();
+            //GatherPointEntity.DoGather();
+            MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("default_interact",  overrideParams: new Dictionary<string, string>()
+            {
+                ["InteractTime"] = GatherPointEntity.cacheConfig.GatherTime.ToString(),
+                ["EntityId"] = this.Id.ToString(),
+                ["SelectId"] = "1",
+            });
         }
     }
 }

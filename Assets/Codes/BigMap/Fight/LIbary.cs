@@ -149,6 +149,12 @@ namespace My.Map.Entity
                     _abilityDict[ab.Id] = ab;
                 }
                 {
+                    var ab = CreateDefaultInteractProgress();
+                    _abilityDict[ab.Id] = ab;
+                }
+                
+
+                {
                     var ab = CreateDefaultDash();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -309,6 +315,42 @@ namespace My.Map.Entity
                     ValType = EOneVariatyType.String,
                     ReferName = "ItemId"
                 }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateDefaultInteractProgress()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+            spec.Id = "default_interact";
+            spec.TypeTag = AbilityTypeTag.Interaction;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                WithProgress = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    ReferName = "InteractTime"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectDefaultInteractCfg()
+            {
+                InteractEntityId = new()
+                {
+                    ValType = EOneVariatyType.Int,
+                    ReferName = "EntityId"
+                },
+                TriggerId = new()
+                {
+                    ValType = EOneVariatyType.Int,
+                    ReferName = "SelectId"
+                },
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
 

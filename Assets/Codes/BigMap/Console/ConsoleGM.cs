@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
 using My;
 using My.Map.Entity;
 using My.Map.Logic;
@@ -190,6 +187,23 @@ public class ConsoleGM : MonoBehaviour
                 var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
 
                 player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, val, false, FightStruct.EDmgFlag.None, null);
+            });
+
+        Register("gptest", "´´½¨²âÊÔÓÃgather point",
+            null,
+            args =>
+            {
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+
+                Vector2 pos = player.Pos + UnityEngine.Random.insideUnitCircle * 1f;
+
+                var rec = new LogicEntityRecord();
+                rec.Id = GameLogicManager.LogicEntityIdInst++;
+                rec.Position = pos;
+                rec.EntityType = EEntityType.GatherPoint;
+                rec.CfgId = "berry_01";
+
+                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(rec);
             });
     }
 

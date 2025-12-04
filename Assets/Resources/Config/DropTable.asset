@@ -42,6 +42,13 @@ MonoBehaviour:
       DropNums: 0300000003000000
       ChckLevelNeed: 0
       Weight: 0
+  - DropGroupId: berry_small
+    DropDatas:
+    - ItemIds:
+      - berry
+      DropNums: 0200000003000000
+      ChckLevelNeed: 0
+      Weight: 100
   DropBundles:
   - BundleId: default
     DropGroups:
@@ -50,4 +57,8 @@ MonoBehaviour:
   - BundleId: citizen_01
     DropGroups:
     - citizen_01
+    DropWrights: 10270000
+  - BundleId: berry_small
+    DropGroups:
+    - berry_small
     DropWrights: 10270000

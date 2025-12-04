@@ -9,16 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9680a832d6fb294d8009224fe77f636, type: 3}
-  m_Name: ground_gc_liquid
+  m_Script: {fileID: 11500000, guid: ec67b7e4ecb66af418814ddd980f0f8b, type: 3}
+  m_Name: berry_01
   m_EditorClassIdentifier: 
-  CfgId: ground_gc_liquid
-  ShapeInfo:
-    Type: 1
-    Length: 1.5
-    Width: 1.5
-    Radius: 0
-    Angle: 0
-  AreaBuffId: ground_gc_liquid
-  CampFilterType: 1
-  DefaultLifeTime: 15
+  CfgId: 
+  CanRefresh: 0
+  RefreshInterval: 9999
+  MaxCount: 3
+  GatherTime: 1.5
+  DropBundleId: berry_small

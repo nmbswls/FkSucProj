@@ -176,6 +176,15 @@ namespace Config
 
                 {
                     var item = new FakeItemConf();
+                    item.ItemId = "berry";
+                    item.StackType = EStackType.Size1;
+                    item.SpriteName = "berry";
+
+                    _dict[item.ItemId] = item;
+                }
+
+                {
+                    var item = new FakeItemConf();
                     item.ItemId = "gold";
                     item.ItemType = EItemType.Currency;
                     item.StackType = EStackType.NoLimit;

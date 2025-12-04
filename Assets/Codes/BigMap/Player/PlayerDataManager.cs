@@ -144,6 +144,25 @@ namespace My.Player
             }
             return false;
         }
+
+        /// <summary>
+        /// 返回值为实际添加数量
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public long TryGiveItem(string itemId, long count)
+        {
+            var itemConf = FakeItemDatabase.GetItem(itemId);
+            if (itemConf.ItemType == FakeItemConf.EItemType.Currency)
+            {
+                CurrencyBag[itemId] = CurrencyBag.GetValueOrDefault(itemId) + count;
+                return count;
+            }
+
+            var put = inventoryModel.GiveItem(itemId, count);
+            return put;
+        }
     }
 }
 

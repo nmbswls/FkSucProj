@@ -16,8 +16,6 @@ public interface ISceneInteractable
 
     Vector3 GetHintAnchorPosition();
 
-    //event Action<bool> EventOnInteractStateChanged;
-
     List<SceneInteractSelection> GetInteractSelections();
 }
 

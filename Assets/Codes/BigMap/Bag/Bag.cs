@@ -644,6 +644,19 @@ namespace My.Player.Bag
             return put;
         }
 
+        public long GiveItem(string itemId, long amount)
+        {
+
+            var bag = GetBagById(0);
+            if (bag == null)
+            {
+                return 0;
+            }
+
+            var put = bag.TryAdd(new ItemStack() { ItemID = itemId, Count = amount });
+            return put;
+        }
+
         /// <summary>
         /// ≥¢ ‘ΩªªªªÚ“∆∂Ø
         /// </summary>
