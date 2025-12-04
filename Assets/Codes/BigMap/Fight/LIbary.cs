@@ -112,6 +112,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "crazy_fire";
                     cfg.CoolDown = 21.0f;
                     cfg.DesiredUseDistance = 5f;
+                    cfg.Priority = 2000;
                     cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
@@ -381,12 +382,20 @@ namespace My.Map.Entity
 
             var newEffect = new MapAbilityEffectSpawnBulletCfg()
             {
+                BulletId = "ProjectileOne",
                 MotionData = new LinearMotionData()
                 {
                     speed = 9f,
                 },
-                //motionType = EMotionType.Linear,
+
+                lockViewAngle = false,
+
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+
                 lifeTime = 0.6f,
+
+
                 TriggerOnCollide = true,
                 TriggerOnLifeEnd = true,
 
@@ -459,19 +468,32 @@ namespace My.Map.Entity
             {
                 var newEffect = new MapAbilityEffectSpawnBulletCfg()
                 {
+                    BulletId = "ProjectileGroundFire",
                     PendingTime = 3.0f,
                     MotionData = new InstanceMotionData()
                     {
                         prepareTime = 5f,
-                        showRangeWarn = true,
 
-                        isHoming = true,
                         homingSterRate = 1.0f,
 
                         homingConstantSpeed = true,
-                        homingSpeed = 6,
+                        speed = 2,
+                        homingOverrideSpeed = 5,
                     },
+
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.Random,
+
+                    showRangeWarn = true,
+
+                    isHoming = true,
+
                     lifeTime = 999f,
+                    BulletShape = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 0.8f,
+                    },
 
                     HitEffects = new()
                 {
@@ -497,18 +519,30 @@ namespace My.Map.Entity
             {
                 var newEffect = new MapAbilityEffectSpawnBulletCfg()
                 {
+                    BulletId = "ProjectileGroundFire",
                     PendingTime = 5.0f,
                     MotionData = new InstanceMotionData()
                     {
                         prepareTime = 5f,
-                        showRangeWarn = true,
 
-                        isHoming = true,
                         homingSterRate = 1.0f,
                         homingConstantSpeed = true,
-                        homingSpeed = 6,
+                        speed = 2,
+
+                        homingOverrideSpeed = 5,
                     },
+                    showRangeWarn = true,
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.Random,
+                    isHoming = true,
+
+
                     lifeTime = 999f,
+                    BulletShape = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 0.8f,
+                    },
 
                     HitEffects = new()
                 {
@@ -534,18 +568,29 @@ namespace My.Map.Entity
             {
                 var newEffect = new MapAbilityEffectSpawnBulletCfg()
                 {
+                    BulletId = "ProjectileGroundFire",
                     PendingTime = 7.0f,
                     MotionData = new InstanceMotionData()
                     {
                         prepareTime = 5f,
-                        showRangeWarn = true,
 
-                        isHoming = true,
                         homingSterRate = 1.0f,
                         homingConstantSpeed = true,
-                        homingSpeed = 6,
+                        speed = 2,
+
+                        homingOverrideSpeed = 5,
                     },
+                    showRangeWarn = true,
+                    isHoming = true,
+
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.Random,
                     lifeTime = 999f,
+                    BulletShape = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 0.8f,
+                    },
 
                     HitEffects = new()
                 {
@@ -571,55 +616,77 @@ namespace My.Map.Entity
             {
                 var newEffect = new MapAbilityEffectSpawnBulletCfg()
                 {
+                    BulletId = "ProjectileGroundFire",
                     PendingTime = 9.0f,
                     MotionData = new InstanceMotionData()
                     {
                         prepareTime = 5f,
-                        showRangeWarn = true,
 
-                        isHoming = true,
                         homingSterRate = 1.0f,
                         homingConstantSpeed = true,
-                        homingSpeed = 6,
+                        speed = 2,
+                        homingOverrideSpeed = 5,
                     },
+                    showRangeWarn = true,
+                    isHoming = true,
+
+
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.Random,
                     lifeTime = 999f,
+                    BulletShape = new FightStruct.Shape()
+                    { 
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 0.8f,
+                    },
 
                     HitEffects = new()
-                {
-                    new MapAbilityEffectHitBoxCfg()
                     {
-                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
-                        Radius = 1.0f,
-                        CampFilterType = ECampFilterType.NotSelf,
-
-                        OnHitEffects = new()
+                        new MapAbilityEffectHitBoxCfg()
                         {
-                            new MapAbilityEffectAddResourceCfg()
+                            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                            Radius = 1.0f,
+                            CampFilterType = ECampFilterType.NotSelf,
+
+                            OnHitEffects = new()
                             {
-                                ResourceId  = AttrIdConsts.UnitEnterHVal,
-                                AddValue = 50000,
+                                new MapAbilityEffectAddResourceCfg()
+                                {
+                                    ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                    AddValue = 50000,
+                                }
                             }
                         }
-                    }
-                },
+                    },
                 };
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
             }
             {
                 var newEffect = new MapAbilityEffectSpawnBulletCfg()
                 {
+                    BulletId = "ProjectileGroundFire",
                     PendingTime = 11.0f,
                     MotionData = new InstanceMotionData()
                     {
                         prepareTime = 5f,
-                        showRangeWarn = true,
 
-                        isHoming = true,
                         homingSterRate = 1.0f,
                         homingConstantSpeed = true,
-                        homingSpeed = 6,
+                        speed = 2,
+                        homingOverrideSpeed = 5,
                     },
+
+                    showRangeWarn = true,
+                    isHoming = true,
+
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.Random,
                     lifeTime = 999f,
+                    BulletShape = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 0.8f,
+                    },
 
                     HitEffects = new()
                 {
@@ -900,9 +967,12 @@ namespace My.Map.Entity
                 PreviewIntent = new()
                 {
                     FaceOffset = new Vector2(0.3f, 0),
-                    IsCircle = false,
-                    RangeWidth = 0.8f,
-                    RangeLen = 1.2f,
+                    ShapeInfo = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Square,
+                        Width = 0.8f,
+                        Length = 1.2f,
+                    },
                 },
 
                 DurationValue = new()
@@ -1048,9 +1118,12 @@ namespace My.Map.Entity
                 PreviewIntent = new()
                 {
                     FaceOffset = new Vector2(0.3f, 0),
-                    IsCircle = false,
-                    RangeWidth = 0.9f,
-                    RangeLen = 2.5f,
+                    ShapeInfo = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Square,
+                        Width = 0.9f,
+                        Length = 2.5f,
+                    },
                 },
 
                 DurationValue = new()
@@ -1153,8 +1226,12 @@ namespace My.Map.Entity
                 PreviewIntent = new()
                 {
                     FaceOffset = new Vector2(0, 0),
-                    IsCircle = true,
-                    RangeRadius = 1.2f,
+                    ShapeInfo = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 1.2f,
+                        Length = 2.5f,
+                    },
                 },
 
                 DurationValue = new()

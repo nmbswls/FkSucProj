@@ -8,6 +8,7 @@ using My;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.UI;
@@ -82,7 +83,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public MapSceneFadeAlphaManager SceneFadeManager;
 
-    public MapSceneEffectManager SceneFxManager;
+    public MapSceneRangeWarnManager SceneRangeWarnManager;
 
     public MapSceneDropManager sceneDropManager;
 
@@ -493,28 +494,34 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         UIManager.Instance.HideLoading();
     }
 
-    public int ShowRangeWarnEffect(int shape, float p1, float p2, Vector2 vec1, Vector2 vec2, float duration)
+    public int ShowRangeWarnEffect(FightStruct.Shape shape, Vector2 centerPos, Vector2 dir, float duration, Vector2 offset)
     {
-        if(shape == 1)
+        switch(shape.Type)
         {
-            return SceneFxManager.ShowSceneWarnRangeCircle(vec1, vec2, p1, duration, Vector2.zero);
-        }
-        else if (shape == 2)
-        {
-            return SceneFxManager.ShowSceneWarnRangeRect(vec1, vec2, p1, p2, duration, new Vector2(0.3f, 0));
+            case FightStruct.EShapeType.Circle:
+                {
+                    return SceneRangeWarnManager.ShowSceneWarnRangeCircle(centerPos, dir, shape.Radius, duration, offset);
+                }
+                break;
+            case FightStruct.EShapeType.Square:
+                {
+                    return SceneRangeWarnManager.ShowSceneWarnRangeRect(centerPos, dir, shape.Width, shape.Length, duration, offset);
+                }
+                break;
         }
         return 0;
     }
 
+
     public void UpdateRangeWarnEffect(int eId, Vector2 pos, Vector2 dir)
     {
-        SceneFxManager.UpdateSceneWarnRangeRect(eId, pos, dir);
+        SceneRangeWarnManager.UpdateSceneWarnRangeRect(eId, pos, dir);
     }
 
 
     public void DestroySceneFxEffect(int effectId)
     {
-        SceneFxManager.ForceDestroy(effectId);
+        MapSceneEffectManager.Instance.ForceDestroy(effectId);
     }
 }
 

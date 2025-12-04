@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using My.Map.Fight;
 using UnityEngine;
 
 
@@ -71,10 +72,7 @@ namespace My.Map.Entity
     public class MapPreviewIntent
     {
         public Vector2 FaceOffset = Vector2.zero;
-        public bool IsCircle;
-        public float RangeWidth;
-        public float RangeLen;
-        public float RangeRadius;
+        public FightStruct.Shape ShapeInfo;
     }
 
 

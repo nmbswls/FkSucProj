@@ -75,10 +75,18 @@ namespace My.Map.Entity
 
             var pData = new ProjectileData()
             {
+                id = realCfg.BulletId,
                 maxLifetime = realCfg.lifeTime,
 
                 TriggerOnLifeEnd = realCfg.TriggerOnLifeEnd,
                 TriggerOnCollide = realCfg.TriggerOnCollide,
+
+                isHoming = realCfg.isHoming,
+                homingTime = realCfg.homingTime,
+
+                ProjShape = realCfg.BulletShape,
+                showRangeWarn = realCfg.showRangeWarn,
+                lockAngle = realCfg.lockViewAngle
             };
 
             pData.OnHitEffects.AddRange(realCfg.HitEffects);
@@ -91,13 +99,18 @@ namespace My.Map.Entity
             }
 
             Vector2? bornPos = null;
-            if(caster != null)
+            switch (realCfg.SpawnPos)
             {
-                bornPos = caster.Pos;
-            }
-            else
-            {
-                bornPos = ctx.TriggerPos;
+                case MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos:
+                    {
+                        bornPos = ctx.TriggerPos;
+                    }
+                    break;
+                case MapAbilityEffectSpawnBulletCfg.ESpawnPos.CastPos:
+                    {
+                        bornPos = ctx.CastVec1;
+                    }
+                    break;
             }
 
             if(bornPos == null)
@@ -106,14 +119,35 @@ namespace My.Map.Entity
                 return;
             }
 
-            Vector2 dir = Vector2.zero;
-            if(realCfg.RandomDir)
+            Vector2? dir = null;
+            switch (realCfg.SpawnDir)
             {
-                dir = UnityEngine.Random.insideUnitCircle.normalized;
+                case MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos:
+                    {
+                        dir = ctx.CastVec1.Value - bornPos;
+                    }
+                    break;
+                case MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToTriggerPos:
+                    {
+                        dir = ctx.TriggerPos.Value - bornPos;
+                    }
+                    break;
+                case MapAbilityEffectSpawnBulletCfg.ESpawnDir.Random:
+                    {
+                        dir = UnityEngine.Random.insideUnitCircle.normalized;
+                    }
+                    break;
+                case MapAbilityEffectSpawnBulletCfg.ESpawnDir.NoDir:
+                    {
+                        dir = Vector2.zero;
+                    }
+                    break;
             }
-            else if(ctx.CastVec1 != null && ctx.TriggerPos != null)
+
+            if(dir == null)
             {
-                dir = ctx.CastVec1.Value - ctx.TriggerPos.Value;
+                Debug.LogError("AbilityEffectExecutor4SpawnBullet no dir null");
+                return;
             }
 
             long? homingTarget = null;
@@ -133,8 +167,13 @@ namespace My.Map.Entity
                         }
                         break;
                 }
+
+                if(homingTarget == null)
+                {
+                    Debug.LogError("AbilityEffectExecutor4SpawnBullet not found target");
+                }
             }
-            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir, homingTarget: homingTarget);
+            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir.Value, homingTarget: homingTarget);
         }
     }
     
@@ -682,16 +721,16 @@ namespace My.Map.Entity
                 return;
             }
 
-            if(realCfg.Shape == MapAbilityEffectRangePreviewCfg.EShape.Circle)
-            {
-                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.TriggerPos.Value, Vector2.zero, realCfg.PreviewDuration);
-                ctx.BindSceneFxIds.Add(effectId);
-            }
-            else if (realCfg.Shape == MapAbilityEffectRangePreviewCfg.EShape.Circle)
-            {
-                int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.TriggerPos.Value, Vector2.zero, realCfg.PreviewDuration);
-                ctx.BindSceneFxIds.Add(effectId);
-            }
+            //if(realCfg.Shape == MapAbilityEffectRangePreviewCfg.EShape.Circle)
+            //{
+            //    int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.TriggerPos.Value, Vector2.zero, realCfg.PreviewDuration);
+            //    ctx.BindSceneFxIds.Add(effectId);
+            //}
+            //else if (realCfg.Shape == MapAbilityEffectRangePreviewCfg.EShape.Circle)
+            //{
+            //    int effectId = ctx.Env.viewer.ShowRangeWarnEffect(1, realCfg.Radius, 0, ctx.TriggerPos.Value, Vector2.zero, realCfg.PreviewDuration);
+            //    ctx.BindSceneFxIds.Add(effectId);
+            //}
         }
     }
 

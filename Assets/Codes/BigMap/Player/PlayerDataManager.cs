@@ -23,7 +23,8 @@ namespace My.Player
             "fix_clothes",
             "spawn_attract",
 
-            "default_push"
+            "default_push",
+            "crazy_fire",
         };
 
         public PlayerDataManager(GameLogicManager logicManager)

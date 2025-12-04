@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class MapSceneEffectManager : MonoBehaviour
 {
+    public static MapSceneEffectManager Instance;
+
     public int EffectUniqIdCounter = 1;
     public class EffectCtx
     {
@@ -17,8 +19,15 @@ public class MapSceneEffectManager : MonoBehaviour
 
     public List<EffectCtx> ctxs = new();
 
-    public GameObject SceneRangeWarn_Circle;
-    public GameObject SceneRangeWarn_Rect;
+    private Dictionary<string, GameObject> _innerPrefabPool = new();
+
+
+    private void Awake()
+    {
+        Instance = this;
+        DontDestroyOnLoad(this);
+    }
+
 
     public void Update()
     {
@@ -32,69 +41,26 @@ public class MapSceneEffectManager : MonoBehaviour
         }
     }
 
-    public int ShowSceneWarnRangeCircle(Vector2 centerPos, Vector2 dir, float radius, float duration, Vector2 offset)
+    /// <summary>
+    /// œ‘ æÃÿ–ß
+    /// </summary>
+    /// <param name="originPos"></param>
+    /// <param name="duration"></param>
+    /// <param name="effectName"></param>
+    /// <returns></returns>
+    public EffectCtx ShowSceneEffect(Vector2 originPos, float duration, string effectName)
     {
+        var prefab = Resources.Load<GameObject>($"SceneEffect/{effectName}");
+        if (prefab == null) return null;
+        var go = GameObject.Instantiate(prefab, MainGameManager.Instance.SceneEffectLayer);
         int id = EffectUniqIdCounter++;
-
-        var go = GameObject.Instantiate(SceneRangeWarn_Circle, MainGameManager.Instance.SceneEffectLayer);
-
-        go.transform.position = centerPos;
-
-        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        go.transform.eulerAngles = new Vector3(0, 0, angle);
-
-        var ctrl = go.GetComponent<SceneRangeWarnCtrl>();
-        ctrl.StartCharge(radius, duration);
-
-        var mainView = go.transform.GetChild(0);
-        mainView.localPosition = offset;
 
         var ctx = new EffectCtx();
         ctx.UniqId = id;
         ctx.EffectGo = go;
-
         ctx.CleanUpTimer = LogicTime.time + duration;
         ctxs.Add(ctx);
-        return id;
-    }
-
-    public int ShowSceneWarnRangeRect(Vector2 centerPos, Vector2 dir, float width, float len, float duration, Vector2 offset)
-    {
-        int id = EffectUniqIdCounter++;
-
-        var go = GameObject.Instantiate(SceneRangeWarn_Rect, MainGameManager.Instance.SceneEffectLayer);
-
-        go.transform.position = centerPos;
-
-        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        go.transform.eulerAngles = new Vector3(0, 0, angle);
-
-        var ctrl = go.GetComponent<SceneRangeWarnCtrl>();
-
-        var mainView = go.transform.GetChild(0);
-        mainView.localPosition = offset;
-
-        ctrl.StartChargeRect(width, len, duration);
-        var ctx = new EffectCtx();
-        ctx.UniqId = id;
-        ctx.EffectGo = go;
-
-        ctx.CleanUpTimer = LogicTime.time + duration;
-        ctxs.Add(ctx);
-        return id;
-    }
-
-    public void UpdateSceneWarnRangeRect(int effectId, Vector2 centerPos, Vector2 dir)
-    {
-        var findIt = ctxs.Find((item) => item.UniqId == effectId);
-        if(findIt == null)
-        {
-            return;
-        }
-        findIt.EffectGo.transform.position = centerPos;
-
-        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        findIt.EffectGo.transform.eulerAngles = new Vector3(0, 0, angle);
+        return ctx;
     }
 
     public void ForceDestroy(int id)

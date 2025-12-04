@@ -23,6 +23,8 @@ namespace My
 
         public UnityEvent onChargeComplete; // 填满回调
 
+
+
         [Header("Materials")]
         public Material circleMat; // 绑定到圆盘Renderer
         public Material rectMat;   // 绑定到矩形Renderer

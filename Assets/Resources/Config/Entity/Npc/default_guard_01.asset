@@ -31,6 +31,7 @@ MonoBehaviour:
   - basic_aoe_slash
   - default_enemy_qinfan
   - guard_attack
+  - crazy_fire
   DropId: citizen_01
   NpcTag: 
   InteractList: []

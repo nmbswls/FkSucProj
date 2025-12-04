@@ -1,4 +1,5 @@
 using Map.Entity;
+using My.Map.Fight;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -165,7 +166,7 @@ public interface ISceneAbilityViewer
 
     void DoDeepZhaquSmallGame(long targetUnitId, object extraParam);
 
-    int ShowRangeWarnEffect(int shape, float p1, float p2, Vector2 vec1, Vector2 vec, float duration);
+    int ShowRangeWarnEffect(FightStruct.Shape shape, Vector2 centerPos, Vector2 dir, float duration, Vector2 offset);
 
     void UpdateRangeWarnEffect(int eId, Vector2 pos, Vector2 dir);
 

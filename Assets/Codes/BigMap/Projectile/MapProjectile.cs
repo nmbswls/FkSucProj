@@ -6,6 +6,9 @@ public class MapProjectile : MonoBehaviour
 {
     public LogicProjectileInfo bindingProjInfo;
 
+    public int WarnEffectId;
+
+
     public Transform ViewRoot;
 
     private IMapProjectileMotion _motion;
@@ -76,22 +79,51 @@ public class MapProjectile : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         _motion.Tick(dt);
 
-        // 更新本体可视（非抛物：直接贴 Position）
-        if (!(_motion is MapProjectileParabolaMotion))
-        {
-            Vector2 pos = _motion.Position;
-            transform.position = pos;
-            if (_body != null) _body.position = pos;
-            if (bindingProjInfo.pData.rotateBodyToVelocity && _body != null)
-            {
-                var fwd = _motion.Forward;
-                if (fwd.sqrMagnitude > 0.0001f) _body.right = fwd;
-            }
-        }
+        //// 更新本体可视（非抛物：直接贴 Position）
+        //if (!(_motion is MapProjectileParabolaMotion))
+        //{
+        //    Vector2 pos = _motion.Position;
+        //    transform.position = pos;
+        //    if (_body != null) _body.position = pos;
+        //    if (bindingProjInfo.pData.rotateBodyToVelocity && _body != null)
+        //    {
+        //        var fwd = _motion.Forward;
+        //        if (fwd.sqrMagnitude > 0.0001f) _body.right = fwd;
+        //    }
+        //}
 
         if (_motion.IsFinished)
         {
             Despawn();
+        }
+    }
+
+
+    private void LateUpdate()
+    {
+        TickWarnPreview();
+    }
+
+    private void TickWarnPreview()
+    {
+        if (!bindingProjInfo.pData.showRangeWarn)
+        {
+            return;
+        }
+
+        if (bindingProjInfo.pData.ProjShape.Type == My.Map.Fight.FightStruct.EShapeType.None)
+        {
+            return;
+        }
+
+        if (WarnEffectId == 0)
+        {
+            MainGameManager.Instance.ShowRangeWarnEffect(bindingProjInfo.pData.ProjShape, _motion.Position, _motion.Forward, 999, Vector2.zero);
+        }
+
+        if (WarnEffectId != 0)
+        {
+            MainGameManager.Instance.UpdateRangeWarnEffect(WarnEffectId, _motion.Position, _motion.Forward);
         }
     }
 
@@ -164,6 +196,12 @@ public class MapProjectile : MonoBehaviour
     {
         if (_despawned) return;
         _despawned = true;
+
+        if(WarnEffectId != 0)
+        {
+            MainGameManager.Instance.DestroySceneFxEffect(WarnEffectId);
+            WarnEffectId = 0;
+        }
         Destroy(gameObject);
     }
 }

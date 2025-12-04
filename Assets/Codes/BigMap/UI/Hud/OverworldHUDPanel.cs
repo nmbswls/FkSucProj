@@ -160,7 +160,7 @@ namespace My.UI
 
                 if (index == 1)
                 {
-                    abilityName = "fix_clothes";
+                    abilityName = "crazy_fire";
                 }
                 else if (index == 2)
                 {

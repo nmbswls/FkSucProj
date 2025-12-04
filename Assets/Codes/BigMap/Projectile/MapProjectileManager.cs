@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using My.Map.Entity;
+using My.Map.Fight;
 using UnityEngine;
 
 
@@ -21,12 +22,21 @@ public class ProjectileData
     //public GameObject explodeFX;         // 抛物/终止FX
     public float fxAutoDestroy = 3f;
 
+    public bool showRangeWarn = false;
+
     public EMotionType motiontype;
     public MotionDataBase motionData;    // 指向具体运动SO（Linear/Parabola/Homing）
+
+    public FightStruct.Shape ProjShape;
+
+    public bool isHoming;
+    public float homingTime = 999; // 制导时间
 
     public bool TriggerOnLifeEnd;
     public bool TriggerOnCollide;
     public List<MapFightEffectCfg> OnHitEffects = new() ;
+
+    public bool lockAngle = false;
 }
 
 
@@ -56,8 +66,9 @@ public class MapProjectileManager : MonoBehaviour
 
     public MapProjectile Spawn(LogicProjectileInfo logicProjectile, Transform homingTarget = null)
     {
-        var firstPrefab = PrefabList.FirstOrDefault();
-        var newGo = GameObject.Instantiate(firstPrefab, transform);
+        var projectilePrefab = Resources.Load<GameObject>($"Prefab/Projectile/{logicProjectile.pData.id}");
+        // var firstPrefab = PrefabList.FirstOrDefault();
+        var newGo = GameObject.Instantiate(projectilePrefab, transform);
         //newGo.name = "Projectile";
         //var go = new GameObject($"Projectile_{logicProjectile.pData.id}");
         var p = newGo.AddComponent<MapProjectile>();

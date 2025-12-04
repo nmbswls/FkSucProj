@@ -374,16 +374,8 @@ namespace My.Map.Entity
 
             if (phase.ShowRangePreview)
             {
-                if(phase.PreviewIntent.IsCircle)
-                {
-                    var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(1, phase.PreviewIntent.RangeRadius, 0, EntityOwner.Pos, EntityOwner.FaceDir, phaseDur);
-                    CurrentCtx.PhaseIntentEffectId = eId;
-                }
-                else
-                {
-                    var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(2, phase.PreviewIntent.RangeWidth, phase.PreviewIntent.RangeLen, EntityOwner.Pos, EntityOwner.FaceDir, phaseDur);
-                    CurrentCtx.PhaseIntentEffectId = eId;
-                }
+                var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(phase.PreviewIntent.ShapeInfo,  EntityOwner.Pos, EntityOwner.FaceDir, phaseDur, phase.PreviewIntent.FaceOffset);
+                CurrentCtx.PhaseIntentEffectId = eId;
             }
 
             if(phase.CanInputInterrupt)
