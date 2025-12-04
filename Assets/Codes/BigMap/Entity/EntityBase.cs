@@ -143,6 +143,7 @@ namespace My.Map
             this.CfgId = cfgId;
             this.Pos = orgPos;
             this.BelongRoomId = bindingRecord.BelongRoomId;
+            this.FactionId = bindingRecord.FactionId;
 
             this.LifeTime = bindingRecord.LifeTime;
 
@@ -153,6 +154,7 @@ namespace My.Map
 
         public virtual void Initialize()
         {
+
             attributeStore = new(this);
 
             attributeStore.EvOnStatusAttrChanged += OnStatusAttriChanged;
@@ -195,6 +197,15 @@ namespace My.Map
             attributeStore.ApplyResourceChange(resourceId, delta, isEnmity, flags, srcEntityId, extraAttrs);
         }
 
+        /// <summary>
+        /// 一般由系统机制调用
+        /// </summary>
+        /// <param name="resourceId"></param>
+        /// <param name="newVal"></param>
+        public void ForceSetResource(string resourceId, long newVal)
+        {
+            attributeStore.SetResource(resourceId, newVal);
+        }
 
         public virtual void OnStatusAttriChanged(string attrId, bool isOn)
         {
@@ -240,7 +251,7 @@ namespace My.Map
                                 {
                                     Debug.Log("吸血 回血 OnResourceAttriChanged");
                                     var xixueVal = (long)(dmg * (double)(xixue / 10000));
-                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false,  EDmgFlag.ZiWei, srcEntityId: Id);
+                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false,  EDmgFlag.Xixue, srcEntityId: Id);
                                 }
                             }
                         }

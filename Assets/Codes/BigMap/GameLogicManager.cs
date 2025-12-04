@@ -12,6 +12,7 @@ using My.UI;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.Profiling;
 using UnityEngine;
 using static MapSceneEffectManager;
 using static My.MapExport.MapExportDatabase;
@@ -199,7 +200,6 @@ namespace My
         {
             EventOnPlayerSwitchArea?.Invoke(null, areaName);
         }
-
         public void Tick(float dt)
         {
             if (!Initialized)
@@ -227,6 +227,8 @@ namespace My
                 }
                 pendingNewEntities.Clear();
             }
+
+
 
             AreaManager.Tick(dt);
 

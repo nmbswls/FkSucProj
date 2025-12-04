@@ -48,7 +48,7 @@ namespace My.Map.Scene
             {
                 case FightStruct.EShapeType.Square:
                     {
-                        count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.ShapeInfo.Radius, AreaEffectEntity.cacheCfg.ShapeInfo.Radius), 0, hits, 1 << LayerMask.NameToLayer("MapTarget"));
+                        count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.ShapeInfo.Width, AreaEffectEntity.cacheCfg.ShapeInfo.Length), 0, hits, 1 << LayerMask.NameToLayer("MapTarget"));
                     }
                     break;
                 case FightStruct.EShapeType.Circle:

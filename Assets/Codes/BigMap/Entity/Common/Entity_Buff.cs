@@ -931,7 +931,9 @@ namespace My.Map.Entity
                             switch(fightEffect)
                             {
                                 // buff´¥·¢Æ÷ÖÐ 
-                                case MapAbilityEffectCostResourceCfg costResourceCfg:
+                                case MapAbilityEffectAddResourceCfg:
+                                case MapAbilityEffectCostResourceCfg:
+                                case MapAbilityEffectApplyDamageCfg:
                                     {
                                         long srcEntity = CasterId;
 
@@ -943,6 +945,7 @@ namespace My.Map.Entity
                                         };
                                         var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, srcInfo);
 
+                                        ctx.TriggerPos = BuffOwner.Pos;
                                         ctx.TargetId = BuffOwner.Id;
 
                                         BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);

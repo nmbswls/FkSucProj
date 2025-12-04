@@ -42,6 +42,13 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     }
 
 
+    public void Update()
+    {
+        if (_logic == null) return;
+
+        Tick(LogicTime.deltaTime);
+    }
+
     public virtual void Bind(ILogicEntity logic)
     {
         _logic = logic as TLogic;

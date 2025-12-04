@@ -351,13 +351,15 @@ namespace My.Map
             {
                 return;
             }
-            isPendingGc = true;
+            isPendingGc = false;
 
             var gcLiquidEntity = new LogicEntityRecord();
+            gcLiquidEntity.Id = GameLogicManager.LogicEntityIdInst++;
             gcLiquidEntity.EntityType = EEntityType.AreaEffect;
             gcLiquidEntity.CfgId = "ground_gc_liquid";
             gcLiquidEntity.LifeTime = 20.0f;
             gcLiquidEntity.Position = this.Pos;
+            gcLiquidEntity.FactionId = this.FactionId;
 
             LogicManager.AddNewEntityRecord(gcLiquidEntity);
 
@@ -370,6 +372,8 @@ namespace My.Map
                 // 非自慰需要扣san
                 ApplyResourceChange(AttrIdConsts.PlayerSan, -500, false, FightStruct.EDmgFlag.None, this.Id);
             }
+
+            ForceSetResource(AttrIdConsts.PlayerPleasure, 0);
         }
 
         public override void OnStatusAttriChanged(string attrId, bool isOn)
@@ -444,11 +448,11 @@ namespace My.Map
         /// </summary>
         protected void TickAddAuraHVal(float dt)
         {
-            applyHValTimer -= dt;
-            if (applyHValTimer > 0)
+            if (LogicTime.time < applyHValTimer)
             {
                 return;
             }
+            applyHValTimer = LogicTime.time + 0.2f;
 
             ApplyAuraHVal();
         }
@@ -468,7 +472,7 @@ namespace My.Map
             var effect = new MapAbilityEffectAddResourceCfg()
             {
                 ResourceId = AttrIdConsts.UnitEnterHVal,
-                AddValue = 2000,
+                AddValue = 20,
                 IsEnmity = true,
             };
 

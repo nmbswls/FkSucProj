@@ -90,7 +90,7 @@ namespace My.Map
         public readonly Dictionary<ModSourceKey, List<Modifier>> bySource = new();
         // 聚合缓存
         public long addSum = 0;
-        public long mulProduct = 10000;         // 乘法统一存为 Π(1+rate) 或直接乘 value
+        //public long mulProduct = 10000;         // 乘法统一存为 Π(1+rate) 或直接乘 value
         public long? overrideValue = null;
         public long finalValue;
         public bool dirty = true;
@@ -410,7 +410,7 @@ namespace My.Map
             if (e.overrideValue.HasValue) final = e.overrideValue.Value;
             else
             {
-                final = (baseComputed + e.addSum) * e.mulProduct;
+                final = (baseComputed + e.addSum);
             }
 
             Debug.Log($"entity {Owner.Id} RecomputeNumeric {attrId} update {final}");
@@ -447,6 +447,18 @@ namespace My.Map
                 extraAttrs = extraAttrs,
             });
         }
+
+        public void SetResource(string resourceId, long newVal)
+        {
+            if (!resources.TryGetValue(resourceId, out var r))
+            {
+                Debug.LogError("ApplyResourceChange not find " + resourceId);
+                return;
+            }
+
+            r.current = newVal;
+        }
+
 
         /// <summary>
         /// 更新

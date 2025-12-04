@@ -6,8 +6,8 @@ using System.Linq;
 using My.Map.Entity.AI;
 
 // 针对 AIAction
-[CustomPropertyDrawer(typeof(AIAction), true)]
-public class AIActionDrawer : BaseTypePickerDrawer
+[CustomPropertyDrawer(typeof(AIActionCfg), true)]
+public class AIActionCfgDrawer : BaseTypePickerDrawer
 {
-    protected override Type BaseType => typeof(AIAction);
+    protected override Type BaseType => typeof(AIActionCfg);
 }

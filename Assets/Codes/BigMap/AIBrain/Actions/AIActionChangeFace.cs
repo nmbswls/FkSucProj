@@ -4,13 +4,22 @@ using System;
 namespace My.Map.Entity.AI.Action
 {
 
+    [Serializable]
+    public class AIActionCfgChangeFace : AIActionCfg
+    {
+        public float ChangeFaceInterval = 5.0f;
+    }
     public class AIActionChangeFace : AIAction
     {
 
-        public float ChangeFaceInterval = 5.0f;
+        public AIActionCfgChangeFace realCfg { get { return (AIActionCfgChangeFace)cfg; } }
 
         [NonSerialized]
         protected float _lastFaceTickTime;
+
+        public AIActionChangeFace(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override string Name => "ChangeFace";
 
@@ -26,7 +35,7 @@ namespace My.Map.Entity.AI.Action
 
         public override void Tick()
         {
-            if(LogicTime.time - _lastFaceTickTime < ChangeFaceInterval)
+            if(LogicTime.time - _lastFaceTickTime < realCfg.ChangeFaceInterval)
             {
                 return;
             }

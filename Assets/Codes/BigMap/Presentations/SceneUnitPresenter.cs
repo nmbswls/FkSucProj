@@ -53,12 +53,6 @@ namespace My.Map.Scene
             }
         }
 
-        public void Update()
-        {
-            if (_logic == null) return;
-
-            Tick(LogicTime.deltaTime);
-        }
 
         public Vector2 GetEyePos()
         {

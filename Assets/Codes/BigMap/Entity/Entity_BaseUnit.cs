@@ -607,8 +607,8 @@ namespace My.Map
 
 
             // ×ÊÔ´Àà
-            attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 0);
-            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 3);
+            attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 10000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
 
             attributeStore.Commit();
         }

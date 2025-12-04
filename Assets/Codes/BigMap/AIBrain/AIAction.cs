@@ -103,6 +103,11 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
+    public abstract class AIActionCfg
+    {
+
+    }
+
     public abstract class AIAction
     {
         public enum InitializationModes { EveryTime, OnlyOnce, }
@@ -132,13 +137,12 @@ namespace My.Map.Entity.AI
             }
         }
 
-        /// <summary>
-		/// Initializes the action. Meant to be overridden
-		/// </summary>
-		public virtual void Initialization(MapUnitAIBrain aIBrain)
+        protected AIActionCfg cfg { get; set; }
+
+        public AIAction(MapUnitAIBrain aIBrain, AIActionCfg cfg)
         {
             this._brain = aIBrain;
-            _initialized = true;
+            this.cfg = cfg;
         }
 
         public virtual float RateScore()
@@ -183,14 +187,22 @@ namespace My.Map.Entity.AI
         }
     }
 
+
     [Serializable]
+    public class AIActionCfgDoNothing : AIActionCfg
+    {
+
+    }
+
     public class AIActionDoNothing : AIAction
     {
 
         public override string Name => "DoNothing";
 
 
-        public string DoNothing;
+        public AIActionDoNothing(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
 
         /// <summary>
@@ -202,13 +214,24 @@ namespace My.Map.Entity.AI
         }
     }
 
+
     [Serializable]
+    public class AIActionCfgRecoveryFromAttract : AIActionCfg
+    {
+        
+    }
+
+
     public class AIActionRecoveryFromAttract : AIAction
     {
         public override string Name => "RecoveryFromAttract";
         public float MinRecoverTime = 1.5f;
 
         private float _recoverTimer;
+
+        public AIActionRecoveryFromAttract(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override void Start()
         {
@@ -257,14 +280,22 @@ namespace My.Map.Entity.AI
         }
     }
 
-
     [Serializable]
+    public class AIActionCfgTryRecovery : AIActionCfg
+    {
+        public float MinRecoverTime = 1.5f;
+    }
+
     public class AIActionTryRecovery : AIAction
     {
         public override string Name => "TryRecovery";
-        public float MinRecoverTime = 1.5f;
 
         private float _recoverTimer;
+
+        public AIActionCfgTryRecovery realCfg { get { return (AIActionCfgTryRecovery)cfg; } }
+        public AIActionTryRecovery(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override void Start()
         {
@@ -282,7 +313,7 @@ namespace My.Map.Entity.AI
         public override void Tick()
         {
 
-            if(_recoverTimer + MinRecoverTime > LogicTime.time)
+            if(_recoverTimer + realCfg.MinRecoverTime > LogicTime.time)
             {
                 return;
             }
@@ -327,8 +358,13 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
+    public class AIActionCfgNormalMoveDaemon: AIActionCfg { }
     public class AIActionNormalMoveDaemon : AIAction
     {
+        public AIActionNormalMoveDaemon(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
+
         public override string Name => "NormalMoveDaemon";
 
         public override float RateScore()
@@ -356,10 +392,13 @@ namespace My.Map.Entity.AI
         }
     }
 
-
     [Serializable]
+    public class AIActionCfgMoveInPatrolGroup : AIActionCfg { }
     public class AIActionMoveInPatrolGroup : AIAction
     {
+        public AIActionMoveInPatrolGroup(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override string Name => "MoveInPatrolGroup";
 
@@ -386,9 +425,9 @@ namespace My.Map.Entity.AI
     }
 
 
-
-
     [Serializable]
+    public class AIActionCfgMoveDoPath : AIActionCfg { }
+
     public class AIActionMoveDoPath : AIAction
     {
 
@@ -396,6 +435,10 @@ namespace My.Map.Entity.AI
 
         private int _currPathIdx = 0;
         private Vector2? _currPathPoint;
+
+        public AIActionMoveDoPath(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override float RateScore()
         {
@@ -457,12 +500,17 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
+    public class AIActionCfgMoveHunting : AIActionCfg { }
     public class AIActionMoveHunting : AIAction
     {
         public override string Name => "MoveHunting";
 
 
         private float _Timer;
+
+        public AIActionMoveHunting(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override float RateScore()
         {
@@ -496,8 +544,14 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
+    public class AIActionCfgCombatMain : AIActionCfg { }
+
     public class AIActionCombatMain : AIAction
     {
+        public AIActionCombatMain(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
+
         public override string Name => "CombatMain";
 
         public override float RateScore()
@@ -540,6 +594,8 @@ namespace My.Map.Entity.AI
 
 
     [Serializable]
+    public class AIActionCfgTryUseSkill : AIActionCfg { }
+
     public class AIActionTryUseSkill : AIAction
     {
 
@@ -551,6 +607,10 @@ namespace My.Map.Entity.AI
         private string currComboAbilityName = string.Empty;
 
         private EntitySkillCfg? _config;
+
+        public AIActionTryUseSkill(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override float RateScore()
         {
@@ -730,19 +790,26 @@ namespace My.Map.Entity.AI
         public override bool CanInterrupt(string reason, bool hard) => false;
     }
 
+
     [Serializable]
+    public class AIActionCfgDistanceControl : AIActionCfg
+    {
+        public float GoodDistance = 0.8f;
+    }
+
     public class AIActionDistanceControl : AIAction
     {
-
         public override string Name => "DistanceControl";
 
-        // 参数列表
-        public float goodDistance;
-        public float goodDiff;
 
         private float _Timer;
         private float _lastSlowTime;
 
+        public AIActionCfgDistanceControl realCfg { get { return (AIActionCfgDistanceControl)cfg; } }
+
+        public AIActionDistanceControl(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override float RateScore()
         {
@@ -808,6 +875,8 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
+    public class AIActionCfgCombatQuickCloser : AIActionCfg { }
+
     public class AIActionCombatQuickCloser : AIAction
     {
 
@@ -815,6 +884,9 @@ namespace My.Map.Entity.AI
 
         private float _Timer;
 
+        public AIActionCombatQuickCloser(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override float RateScore()
         {
@@ -879,8 +951,13 @@ namespace My.Map.Entity.AI
 
 
     [Serializable]
+    public class AIActionCfgAttractedBehave : AIActionCfg { }
     public class AIActionAttractedBehave : AIAction
     {
+        public AIActionAttractedBehave(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
+
         public override string Name => "AttractedBehave";
 
         public override float RateScore()
@@ -907,20 +984,25 @@ namespace My.Map.Entity.AI
         }
     }
 
-
     [Serializable]
+    public class AIActionCfgAttractedMove : AIActionCfg
+    {
+        public float StayDuration = 5.0f;
+        public float WatchDistance = 0.8f;
+    }
+
     public class AIActionAttractedMove : AIAction
     {
 
         public override string Name => "AttractedMove";
 
-
-        public float StayDuration = 5.0f;
-        public float WatchDistance = 0.8f;
-
         private Vector2 _currAttractePos;
         private float _attarctLastTriggerTime;
 
+        public AIActionCfgAttractedMove realCfg { get { return (AIActionCfgAttractedMove)cfg; } }
+        public AIActionAttractedMove(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
 
         public override void OnEnterState()
         {
@@ -974,16 +1056,16 @@ namespace My.Map.Entity.AI
                     Debug.Log("init or change attracted pos " + _brain.UnitEntity.attractInfo.Pos + (_brain.UnitEntity.attractInfo.AttractSource != null ? _brain.UnitEntity.attractInfo.AttractSource.Id : "0"));
 
                     var diff = _brain.UnitEntity.Pos - _currAttractePos;
-                    if(diff.magnitude > WatchDistance)
+                    if(diff.magnitude > realCfg.WatchDistance)
                     {
-                        var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _currAttractePos, WatchDistance);
+                        var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _currAttractePos, realCfg.WatchDistance);
                         _brain.UnitEntity.entityMotorComp.MoveTo(watchPos, moveSpeedRate: 0.1f);
                     }
                 }
             }
 
             // 待购时间退出
-            if(LogicTime.time - _attarctLastTriggerTime > StayDuration)
+            if(LogicTime.time - _attarctLastTriggerTime > realCfg.StayDuration)
             {
                 _brain.blackboard.CanLeaveAttract = true;
             }

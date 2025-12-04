@@ -120,12 +120,97 @@ namespace My.Map.Entity.AI
         protected float _lastActionsUpdate = 0f;
         protected float _lastDecisionsUpdate = 0f;
 
-        public static T DeepCopyByJson<T>(T src)
+        //public static T DeepCopyByJson<T>(T src)
+        //{
+        //    if (src == null) return default;
+        //    var json = JsonConvert.SerializeObject(src);
+        //    var copy = JsonConvert.DeserializeObject(json, src.GetType());
+        //    return (T)copy;
+        //}
+
+        public static AIAction CreateActionFromCfg(MapUnitAIBrain brain, AIActionCfg cfg)
         {
-            if (src == null) return default;
-            var json = JsonConvert.SerializeObject(src);
-            var copy = JsonConvert.DeserializeObject(json, src.GetType());
-            return (T)copy;
+            AIAction action = null;
+            switch(cfg)
+            {
+                case AIActionCfgDoNothing:
+                    {
+                        action = new AIActionDoNothing(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgRecoveryFromAttract:
+                    {
+                        action = new AIActionRecoveryFromAttract(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgTryRecovery:
+                    {
+                        action = new AIActionTryRecovery(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgNormalMoveDaemon:
+                    {
+                        action = new AIActionNormalMoveDaemon(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgMoveInPatrolGroup:
+                    {
+                        action = new AIActionMoveInPatrolGroup(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgMoveDoPath:
+                    {
+                        action = new AIActionMoveDoPath(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgMoveHunting:
+                    {
+                        action = new AIActionMoveHunting(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgCombatMain:
+                    {
+                        action = new AIActionCombatMain(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgTryUseSkill:
+                    {
+                        action = new AIActionTryUseSkill(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgDistanceControl:
+                    {
+                        action = new AIActionDistanceControl(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgCombatQuickCloser:
+                    {
+                        action = new AIActionCombatQuickCloser(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgAttractedBehave:
+                    {
+                        action = new AIActionAttractedBehave(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgAttractedMove:
+                    {
+                        action = new AIActionAttractedMove(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgChangeFace:
+                    {
+                        action = new AIActionChangeFace(brain, cfg);
+                    }
+                    break;
+                default:
+                    {
+                        Debug.LogError("");
+                        break;
+                    }
+            }
+
+            return action;
         }
 
         public void InitilaizeAll(BaseUnitLogicEntity unitEntity, IVisionSenser2D vision, Vector2 spawnPos)
@@ -140,13 +225,14 @@ namespace My.Map.Entity.AI
 
             string confId = "BasicUnit";
 
-            var conf = AITemplateConfigLoader.Get(confId);
+            var conf = AITemplateConfigLoader.Load(confId);
 
-            foreach(var action in conf.Actions)
+            foreach(var actionCfg in conf.Actions)
             {
-                var newAction = DeepCopyByJson(action);
-                newAction.Initialization(this);
-                _actions.Add(action.Name, newAction);
+                var action = CreateActionFromCfg(this, actionCfg);
+                if (action == null) continue;
+                //var newAction = DeepCopyByJson(action);
+                _actions.Add(action.Name, action);
             }
 
 

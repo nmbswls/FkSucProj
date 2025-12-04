@@ -21,7 +21,7 @@ public class AIBehaviorConfig : ScriptableObject
     public List<StateInfo> States = new();
 
     [SerializeReference]
-    public List<AIAction> Actions = new();
+    public List<AIActionCfg> Actions = new();
 
     /// <summary>
     /// 

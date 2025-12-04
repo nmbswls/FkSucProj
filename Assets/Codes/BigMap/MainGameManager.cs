@@ -8,6 +8,7 @@ using My;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Entity.AI;
 using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
@@ -121,6 +122,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public async Task InitStartGame(string startParams, Action? onComplete)
     {
+        AITemplateConfigLoader.Load("");
         gameLogicManager = new();
         gameLogicManager.viewer = this;
         gameLogicManager.visionSenser = VisionSenser2D;

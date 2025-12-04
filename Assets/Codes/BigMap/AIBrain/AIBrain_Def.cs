@@ -1,6 +1,7 @@
 using Map.Entity.AI.Action;
 using Map.Logic;
 using My.Map.Entity.AI.Action;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,21 +22,19 @@ namespace My.Map.Entity.AI
     public static class AITemplateConfigLoader
     {
 
-
+        //public static Dictionary<string, string> _aiConfigJson = null;
         public static Dictionary<string, AIBehaviorConfig> _configs = null;
 
-        public static AIBehaviorConfig Get(string name)
+        public static AIBehaviorConfig Load(string name)
         {
-            if(_configs == null)
+            if (_configs == null)
             {
                 _configs = new();
 
                 {
-                    var config = new AIBehaviorConfig()
-                    {
-                        BehaviorName = "BasicUnit",
-                    };
-                    _configs[config.BehaviorName] = config;
+                    var config = ScriptableObject.CreateInstance<AIBehaviorConfig>();
+                    config.BehaviorName = "BasicUnit";
+
 
                     {
                         var idleState = new AIBehaviorConfig.StateInfo()
@@ -236,7 +235,7 @@ namespace My.Map.Entity.AI
                     }
 
                     {
-                        var aAction = new AIActionDoNothing()
+                        var aAction = new AIActionCfgDoNothing()
                         {
                         };
 
@@ -244,11 +243,11 @@ namespace My.Map.Entity.AI
                     }
 
                     {
-                        var aAction = new AIActionAttractedMove()
+                        var actionCfg = new AIActionCfgAttractedMove()
                         {
                         };
 
-                        config.Actions.Add(aAction);
+                        config.Actions.Add(actionCfg);
                     }
 
                     //{
@@ -261,78 +260,79 @@ namespace My.Map.Entity.AI
 
 
                     {
-                        var aAction = new AIActionTryRecovery()
+                        var actionCfg = new AIActionCfgTryRecovery()
                         {
                         };
 
-                        config.Actions.Add(aAction);
+                        config.Actions.Add(actionCfg);
                     }
                     {
-                        var aAction = new AIActionRecoveryFromAttract()
+                        var actionCfg = new AIActionCfgRecoveryFromAttract()
                         {
                         };
 
-                        config.Actions.Add(aAction);
+                        config.Actions.Add(actionCfg);
                     }
                     
 
 
                     {
-                        var aAction = new AIActionMoveDoPath()
+                        var actionCfg = new AIActionCfgMoveDoPath()
                         {
 
                         };
-                        config.Actions.Add(aAction);
+                        config.Actions.Add(actionCfg);
                     }
 
                     {
-                        var action = new AIActionMoveHunting()
+                        var actionCfg = new AIActionCfgMoveHunting()
                         {
 
                         };
-                        config.Actions.Add(action);
+                        config.Actions.Add(actionCfg);
                     }
 
                     {
-                        var action = new AIActionNormalMoveDaemon()
+                        var actionCfg = new AIActionCfgNormalMoveDaemon()
                         {
 
                         };
-                        config.Actions.Add(action);
+                        config.Actions.Add(actionCfg);
                     }
 
                     {
-                        var action = new AIActionMoveInPatrolGroup()
+                        var actionCfg = new AIActionCfgMoveInPatrolGroup()
                         {
 
                         };
-                        config.Actions.Add(action);
+                        config.Actions.Add(actionCfg);
                     }
 
                     {
-                        var action = new AIActionCombatMain();
-                        config.Actions.Add(action);
+                        var actionCfg = new AIActionCfgCombatMain();
+                        config.Actions.Add(actionCfg);
                     }
 
 
                     {
-                        var action = new AIActionTryUseSkill();
-                        config.Actions.Add(action);
+                        var actionCfg = new AIActionCfgTryUseSkill();
+                        config.Actions.Add(actionCfg);
                     }
 
                     {
-                        var action = new AIActionDistanceControl();
-                        config.Actions.Add(action);
+                        var actionCfg = new AIActionCfgDistanceControl();
+                        config.Actions.Add(actionCfg);
                     }
                     {
-                        var action = new AIActionCombatQuickCloser();
-                        config.Actions.Add(action);
+                        var actionCfg = new AIActionCfgCombatQuickCloser();
+                        config.Actions.Add(actionCfg);
                     }
+
+                    _configs[config.BehaviorName] = config;
                 }
 
-                
-            }
 
+            }
 
             _configs.TryGetValue(name, out var result);
             return result;
