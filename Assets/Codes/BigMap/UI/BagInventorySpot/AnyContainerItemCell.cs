@@ -13,13 +13,7 @@ namespace My.UI
 {
     public class AnyContainerItemCell : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
     {
-        public enum EContainerType
-        {
-            Inventory,
-            LootPoint,
-            SpecialInventory,
-            Shop,
-        }
+
 
         public Image bg;
         public Image icon;

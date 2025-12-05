@@ -1,9 +1,9 @@
+using Config;
 using My.Player.Bag;
 using My.UI.Bag;
 using SuperScrollView;
 using UnityEngine;
 using UnityEngine.UI;
-using static My.UI.AnyContainerItemCell;
 
 
 namespace My.UI
@@ -16,13 +16,13 @@ namespace My.UI
         {
 
             var panel = UIManager.Instance.ShowPanel("ItemPopup", null) as ItemPopupMenu;
+            if(panel == null)
+            {
+                return;
+            }
 
-            panel.currentCell = cell;
-            panel.currentStack = stack;
-            panel.currentIndex = index;
 
-            panel.gameObject.SetActive(true);
-
+            panel.RefreshView(cell, stack, index);
             var canvas = panel.GetComponentInParent<Canvas>();
             if (canvas != null)
             {
@@ -30,13 +30,6 @@ namespace My.UI
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, screenPos, canvas.worldCamera, out local);
                 panel.transform.localPosition = local;
             }
-
-            // 根据物品可用性禁用按钮
-            //bool canUse = currentIsInventory && FakeItemDatabase.CanUse(stack.ItemID);
-            //UseBtn.interactable = canUse;
-
-            //SplitBtn.interactable = currentIsInventory && stack.Count > 1;
-            //DropBtn.interactable = currentIsInventory;
         }
 
         public static void Close()
@@ -46,7 +39,9 @@ namespace My.UI
 
 
         public RectTransform Panel;
+
         public Button UseBtn;
+        public Button UseBtn2;
         public Button SplitBtn;
         public Button DropBtn;
         public Button CloseBtn;
@@ -62,7 +57,47 @@ namespace My.UI
             UseBtn.onClick.AddListener(OnClickUse);
             SplitBtn.onClick.AddListener(OnClickSplit);
             DropBtn.onClick.AddListener(OnClickDrop);
-            //CloseBtn.onClick.AddListener(Close);
+            CloseBtn.onClick.AddListener(Close);
+        }
+
+        private void RefreshView(AnyContainerItemCell cell, ItemStack stack, int index)
+        {
+            currentCell = cell;
+            currentStack = stack;
+            currentIndex = index;
+
+            gameObject.SetActive(true);
+
+            UseBtn.gameObject.SetActive(false);
+            UseBtn2.gameObject.SetActive(false);
+            SplitBtn.gameObject.SetActive(false);
+
+            DropBtn.gameObject.SetActive(false);
+            CloseBtn.gameObject.SetActive(true);
+
+            // 根据物品可用性禁用按钮
+            //bool canUse = currentIsInventory && FakeItemDatabase.CanUse(stack.ItemID);
+            //UseBtn.interactable = canUse;
+
+            if (cell.ContainerType == EContainerType.Inventory
+                || cell.ContainerType == EContainerType.SpecialInventory)
+            {
+                if (stack.Count > 1)
+                {
+                    SplitBtn.gameObject.SetActive(true);
+                }
+
+                var itemConf = FakeItemDatabase.GetItem(stack.ItemID);
+                if(itemConf.CanDrop)
+                {
+                    DropBtn.gameObject.SetActive(true);
+                }
+                var bag = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.GetBagById(cell.ContainerId);
+                if(bag != null)
+                {
+                    //var item = 
+                }
+            }
         }
 
 

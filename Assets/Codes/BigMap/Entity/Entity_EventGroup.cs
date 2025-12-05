@@ -32,6 +32,8 @@ namespace My.Map
         ///// </summary>
         //public Dictionary<int, ILogicEntity> GroupMemberDict = new();
 
+        private bool TriggerEnmity = false;
+
         private bool AllDeadFlag = false;
         private float _lastCheckTimer;
 
@@ -42,6 +44,20 @@ namespace My.Map
             base.Initialize();
 
             cacheCfg = MapEventGroupCfgLoader.Get(CfgId);
+
+
+            foreach(var kv in RealRecord.MemberEntityMap)
+            {
+                var entity = LogicManager.GetLogicEntity(kv.Value);
+                if(entity is BaseUnitLogicEntity unitEntity)
+                {
+                    unitEntity.EventOnEnmityBehave += () =>
+                    {
+                        // 有敌意行为 尝试切换状态
+                        TriggerEnmity = true;
+                    };
+                }
+            }
         }
 
         public override void Tick(float dt)

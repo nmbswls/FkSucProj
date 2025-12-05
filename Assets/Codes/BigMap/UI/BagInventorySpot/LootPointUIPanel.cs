@@ -120,11 +120,11 @@ namespace My.UI
 
                 if(Loot.IsRevealed(itemIndex))
                 {
-                    cell.Bind(stack, slotIndex, AnyContainerItemCell.EContainerType.LootPoint, 0, null);
+                    cell.Bind(stack, slotIndex, EContainerType.LootPoint, 0, null);
                 }
                 else
                 {
-                    cell.Bind(stack, slotIndex, AnyContainerItemCell.EContainerType.LootPoint, 0, null, AnyContainerItemCell.EStyleType.Masked);
+                    cell.Bind(stack, slotIndex, EContainerType.LootPoint, 0, null, AnyContainerItemCell.EStyleType.Masked);
                 }
             }
             else

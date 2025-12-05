@@ -1,4 +1,5 @@
 
+using My.Player.Bag;
 using SuperScrollView;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,8 @@ namespace Config
         public EStackType StackType = EStackType.NoStack;
         public int StackCount = 0;
         public string SpriteName;
+
+        public bool CanDrop = true;
 
         public int RareTier = 0;
 

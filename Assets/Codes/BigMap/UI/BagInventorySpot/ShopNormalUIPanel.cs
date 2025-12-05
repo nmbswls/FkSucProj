@@ -84,7 +84,7 @@ namespace My.UI
                 var shopItem = BindShop.ShopItems[itemIndex];
                 item.gameObject.SetActive(true);
 
-                shopCell.Bind(shopItem.LeftCount, new ItemStack() { ItemID = shopItem.ItemId, Count = shopItem.BuyCount }, itemIndex, AnyContainerItemCell.EContainerType.Shop, 0, null);
+                shopCell.Bind(shopItem.LeftCount, new ItemStack() { ItemID = shopItem.ItemId, Count = shopItem.BuyCount }, itemIndex, EContainerType.Shop, 0, null);
             }
             else
             {

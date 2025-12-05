@@ -233,29 +233,6 @@ namespace My.Map
             {
                 case AttrIdConsts.HP:
                     {
-                        if(intent.deltaFlags > 0)
-                        {
-                            if (intent.srcEntityId != null && intent.srcEntityId.Value != 0)
-                            {
-                                var dmg = -intent.finalDelta;
-                                var entity = LogicManager.GetLogicEntity(intent.srcEntityId.Value);
-                                var xixue = entity.GetAttr(AttrIdConsts.DamageXiXue);
-
-                                if(intent.extraAttrs != null)
-                                {
-                                    intent.extraAttrs.TryGetValue(AttrIdConsts.DamageXiXue, out var extraVal);
-                                    xixue += extraVal;
-                                }
-
-                                if(xixue > 0)
-                                {
-                                    Debug.Log("ÎüÑª »ØÑª OnResourceAttriChanged");
-                                    var xixueVal = (long)(dmg * (double)(xixue / 10000));
-                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false,  EDmgFlag.Xixue, srcEntityId: Id);
-                                }
-                            }
-                        }
-
                         if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
                         {
                             OnEntityDie(0, intent);

@@ -389,9 +389,9 @@ namespace My.Map
         }
 
 
-        public AnyContainerItemCell.EContainerType GetContainerType()
+        public EContainerType GetContainerType()
         {
-            return AnyContainerItemCell.EContainerType.LootPoint;
+            return EContainerType.LootPoint;
         }
 
         public IItemContainer GetLootItemContainer()

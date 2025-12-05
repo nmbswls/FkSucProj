@@ -13,6 +13,7 @@ using static UnityEngine.Rendering.VolumeComponent;
 using static My.Map.EntityCombatStateComp;
 using static My.GameLogicManager;
 using UnityEditor.Experimental.GraphView;
+using static My.Map.Fight.FightStruct;
 
 
 namespace My.Map
@@ -83,9 +84,9 @@ namespace My.Map
 
         public string EmnityConfId;
 
-        public event Action EventOnHpChanged;
+        public event Action EventOnHit;
+        public event Action EventOnEnmityBehave;
 
-      
         public UnitEnmityComp EnmityComp;
         public UnitNoticeRecordComp NoticeRecordComp;
 
@@ -763,6 +764,61 @@ namespace My.Map
         #region a
 
         #endregion
+
+        /// <summary>
+        /// 属性变化回调
+        /// </summary>
+        /// <param name="attrId"></param>
+        /// <param name="before"></param>
+        /// <param name="after"></param>
+        /// <param name="intent"></param>
+
+        public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
+        {
+            // 4.3 死亡判断窗口：仅在含伤害时检查
+            switch (attrId)
+            {
+                case AttrIdConsts.HP:
+                    {
+                        if (intent.isEnmity)
+                        {
+                            if (intent.srcEntityId != null && intent.srcEntityId.Value != 0)
+                            {
+                                var dmg = -intent.finalDelta;
+                                var entity = LogicManager.GetLogicEntity(intent.srcEntityId.Value);
+                                var xixue = entity.GetAttr(AttrIdConsts.DamageXiXue);
+
+                                if (intent.extraAttrs != null)
+                                {
+                                    intent.extraAttrs.TryGetValue(AttrIdConsts.DamageXiXue, out var extraVal);
+                                    xixue += extraVal;
+                                }
+
+                                if (xixue > 0)
+                                {
+                                    Debug.Log("吸血 回血 OnResourceAttriChanged");
+                                    var xixueVal = (long)(dmg * (double)(xixue / 10000));
+                                    entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false, EDmgFlag.Xixue, srcEntityId: Id);
+                                }
+                            }
+
+                            EventOnHit?.Invoke();
+                        }
+
+                        if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
+                        {
+                            OnEntityDie(0, intent);
+                            break;
+                        }
+                    }
+                    break;
+            }
+
+            if(intent.isEnmity)
+            {
+                EventOnEnmityBehave?.Invoke();
+            }
+        }
     }
 
 }

@@ -161,12 +161,29 @@ namespace My.UI
             }
             else if(payload.SourceContainerType == EContainerType.Shop)
             {
-                bool buy = ShopNormalUIPanel.Instance.BindShop.TryBuyFromShop(payload.SourceIndex, 1, null);
-                if(buy)
+                var buyItem = ShopNormalUIPanel.Instance.BindShop.ShopItems[payload.SourceIndex];
+                if(buyItem.LeftCount > 1)
                 {
-                    ShopNormalUIPanel.Instance.RefreshContent();
-                    PlayerBagUIPanel.Instance.RefreshContent();
+                    ItemCountChooseBox.Show(buyItem.LeftCount, (chooseCnt) => {
+
+                        bool buy = ShopNormalUIPanel.Instance.BindShop.TryBuyFromShop(payload.SourceIndex, (int)chooseCnt, null);
+                        if (buy)
+                        {
+                            ShopNormalUIPanel.Instance.RefreshContent();
+                            PlayerBagUIPanel.Instance.RefreshContent();
+                        }
+                    });
                 }
+                else
+                {
+                    bool buy = ShopNormalUIPanel.Instance.BindShop.TryBuyFromShop(payload.SourceIndex, 1, null);
+                    if (buy)
+                    {
+                        ShopNormalUIPanel.Instance.RefreshContent();
+                        PlayerBagUIPanel.Instance.RefreshContent();
+                    }
+                }
+                
             }
             else if (payload.SourceContainerType == EContainerType.Inventory
                 || payload.SourceContainerType == EContainerType.SpecialInventory)

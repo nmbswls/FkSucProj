@@ -169,7 +169,7 @@ namespace My.UI.Bag
             {
                 var stack = mainBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, AnyContainerItemCell.EContainerType.Inventory, 0, null);
+                cell.Bind(stack, itemIndex, EContainerType.Inventory, 0, null);
             }
             else
             {
@@ -307,19 +307,19 @@ namespace My.UI.Bag
             {
                 var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, AnyContainerItemCell.EContainerType.SpecialInventory, CurrExpandSpeBag, null);
+                cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, CurrExpandSpeBag, null);
             }
             // Ãÿ ‚
             else if(itemIndex < specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, AnyContainerItemCell.EContainerType.SpecialInventory, CurrExpandSpeBag, null, AnyContainerItemCell.EStyleType.Red);
+                cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, CurrExpandSpeBag, null, AnyContainerItemCell.EStyleType.Red);
             }
             else if(itemIndex == specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 item.gameObject.SetActive(true);
-                cell.Bind(null, itemIndex, AnyContainerItemCell.EContainerType.SpecialInventory, CurrExpandSpeBag, null, AnyContainerItemCell.EStyleType.AddIcon);
+                cell.Bind(null, itemIndex, EContainerType.SpecialInventory, CurrExpandSpeBag, null, AnyContainerItemCell.EStyleType.AddIcon);
             }
             else
             {

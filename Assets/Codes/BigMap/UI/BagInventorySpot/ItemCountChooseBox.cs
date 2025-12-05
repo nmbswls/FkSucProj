@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,21 @@ namespace My.UI
 
     public class ItemCountChooseBox : PanelBase
     {
+
+
+        public static ItemCountChooseBox Show(long maxVal, Action<long> confirmCallback = null, Action cancelCallback = null)
+        {
+
+            var panel = UIManager.Instance.ShowPanel("ItemCountChooseBox") as ItemCountChooseBox;
+            if(panel == null)
+            {
+                Debug.LogError("ItemCountChooseBox err");
+                return null;
+            }
+
+            panel.RefreshData(maxVal, confirmCallback, cancelCallback);
+            return panel;
+        }
 
         public RectTransform Mask;
 
@@ -25,43 +41,19 @@ namespace My.UI
         public Button btnCancel;
 
         // 回调
-        private Action<int> onConfirm;
+        private Action<long> onConfirm;
         private Action onCancel;
 
-        private int minValue = 1;
-        private int maxValue = 1;
+        private long minValue = 1;
+        private long maxValue = 1;
         private int step = 1;
-        private int quantity;
+        private long quantity;
 
-        public class InitInfo
-        {
-            public int minValue = 1;
-            public int maxValue = 1;
-            public int step = 1;
-
-            public Action<int> confirmCallback = null;
-            public Action cancelCallback = null;
-        }
 
         private bool _updating;
 
-
-        public override void Setup(object data = null)
+        private void Awake()
         {
-            base.Setup(data);
-
-            var initInfo = (InitInfo)data;
-            minValue = initInfo.minValue;
-            maxValue = initInfo.maxValue;
-
-
-            quantity = Mathf.Clamp(1, minValue, maxValue);
-
-            // 初始化控件
-            slider.minValue = minValue;
-            slider.maxValue = maxValue;
-            slider.wholeNumbers = true;
-
             // 绑定事件
             btnMinus.onClick.AddListener(() => ChangeBy(-step));
             btnPlus.onClick.AddListener(() => ChangeBy(+step));
@@ -81,10 +73,20 @@ namespace My.UI
                 onCancel?.Invoke();
                 Close();
             });
+        }
 
-            onConfirm = initInfo.confirmCallback;
-            onCancel = initInfo.cancelCallback;
+        public void RefreshData(long maxVal, Action<long> confirmCallback = null, Action cancelCallback = null)
+        {
+            minValue = 1;
+            maxValue = maxVal;
 
+
+            quantity = Math.Clamp(1, minValue, maxValue);
+
+            onConfirm = confirmCallback;
+            onCancel = cancelCallback;
+
+            RefreshUI();
 
         }
 
@@ -138,9 +140,9 @@ namespace My.UI
             SetQuantity(quantity + delta);
         }
 
-        private void SetQuantity(int val)
+        private void SetQuantity(long val)
         {
-            val = Mathf.Clamp(val, minValue, maxValue);
+            val = Math.Clamp(val, minValue, maxValue);
             if (val == quantity) { RefreshButtons(); return; }
             quantity = val;
             RefreshUI();
@@ -150,6 +152,11 @@ namespace My.UI
         {
             if (_updating) return;
             _updating = true;
+
+            // 初始化控件
+            slider.minValue = minValue;
+            slider.maxValue = maxValue;
+            slider.wholeNumbers = true;
 
             // 同步控件
             if (inputField.text != quantity.ToString())

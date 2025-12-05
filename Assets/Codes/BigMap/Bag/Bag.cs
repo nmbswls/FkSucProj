@@ -221,6 +221,13 @@ namespace My.Player.Bag
         ItemStack GetItemByIdx(int idx);
     }
 
+    public enum EContainerType
+    {
+        Inventory,
+        LootPoint,
+        SpecialInventory,
+        Shop,
+    }
 
     [Serializable]
     public class PlayerBag : IItemContainer
