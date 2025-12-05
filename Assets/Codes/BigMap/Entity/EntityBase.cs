@@ -24,7 +24,7 @@ namespace My.Map
         GatherPoint,
         AttractPoint,
         PatrolGroup,
-
+        EventGroup,
         HomePlacement,
     }
 

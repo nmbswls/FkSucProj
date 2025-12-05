@@ -33,6 +33,7 @@ namespace My.Map.Scene
             else
             {
                 IsFlying = false;
+                transform.position = dropPos;
             }
 
             //_particleIndex = particleIndex;
@@ -43,7 +44,7 @@ namespace My.Map.Scene
         {
             if(IsFlying && SrcPos != null)
             {
-                transform.position = Vector2.Lerp(transform.position, DropPos, 0.5f * Time.deltaTime);
+                transform.position = Vector2.Lerp(transform.position, DropPos, 3f * Time.deltaTime);
                 Vector2 pos2 = transform.position;
 
                 if ((DropPos - pos2).magnitude < 0.01f)

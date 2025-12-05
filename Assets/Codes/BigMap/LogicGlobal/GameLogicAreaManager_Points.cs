@@ -1,13 +1,13 @@
 using Map.Entity;
 using Map.Logic.Events;
 using My.Map.Entity;
+using My.MapExport;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using static My.MapExport.MapExportDatabase;
 
 namespace My.Map.Logic
 {

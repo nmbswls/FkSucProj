@@ -74,15 +74,17 @@ namespace My.UI
             if (BindShop == null) return null;
             // 注意：部分版本是 OnGetItemByRowColumn 回调签名不同，按你的 API 改名
             // itemIndex = 行序号（row），列用 column 参数
+
+
             var item = grid.NewListViewItem(ItemPrefabName);
-            var cell = item.GetComponent<AnyContainerItemCell>();
+            var shopCell = item.GetComponent<ShopContainerWrapper>();
 
             if (itemIndex < BindShop.ShopItems.Count)
             {
                 var shopItem = BindShop.ShopItems[itemIndex];
                 item.gameObject.SetActive(true);
-                
-                cell.Bind(new ItemStack() { ItemID = shopItem.ItemId, Count = shopItem.BuyCount }, itemIndex, AnyContainerItemCell.EContainerType.Shop, 0, null);
+
+                shopCell.Bind(shopItem.LeftCount, new ItemStack() { ItemID = shopItem.ItemId, Count = shopItem.BuyCount }, itemIndex, AnyContainerItemCell.EContainerType.Shop, 0, null);
             }
             else
             {

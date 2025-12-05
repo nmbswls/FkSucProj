@@ -1,0 +1,212 @@
+
+
+using System.Collections.Generic;
+using Config;
+using My.MapExport;
+using UnityEngine;
+
+namespace My.Map.Logic
+
+{
+    public partial class GameLogicAreaManager
+    {
+
+        public class LogicEntityRepository
+        {
+            public readonly Dictionary<long, LogicEntityRecord> Records = new();
+            // 已加载的运行时实体
+            public readonly Dictionary<long, ILogicEntity> Loaded = new();
+
+            public bool HasRecord(long id) => Records.ContainsKey(id);
+            public bool IsLoaded(long id) => Loaded.ContainsKey(id);
+
+            public ILogicEntity GetLoaded(long id) => Loaded.TryGetValue(id, out var e) ? e : null;
+
+            public void RegisterRecord(LogicEntityRecord r) => Records[r.Id] = r;
+            public void RemoveRecord(long id) => Records.Remove(id);
+        }
+
+        public class LongLivedRegistry
+        {
+            private readonly Dictionary<long, ILogicEntity> _map = new();
+            public void Register(ILogicEntity ent) => _map[ent.Id] = ent;
+            public void Unregister(long id) => _map.Remove(id);
+            public bool TryGet(long id, out ILogicEntity ent) => _map.TryGetValue(id, out ent);
+            public IEnumerable<ILogicEntity> All => _map.Values;
+        }
+
+
+        /// <summary>
+        /// 检查刷新和消失
+        /// </summary>
+        /// <param name="dt"></param>
+        public void CheckRefreshAppearAndDisappear(float dt)
+        {
+            if (EntityRefreshInfo.Count == 0)
+            {
+                return;
+            }
+
+            if (LogicTime.time < checkRefreshTimer + 1)
+            {
+                return;
+            }
+
+            checkRefreshTimer = LogicTime.time;
+
+            int tickCnt = 100;
+            while (tickCnt-- > 0)
+            {
+                tickDynamicObjIdx += 1;
+                tickDynamicObjIdx = tickDynamicObjIdx % EntityRefreshInfo.Count;
+
+                HandleOneRefreshInfo(EntityRefreshInfo[tickDynamicObjIdx]);
+            }
+
+        }
+
+        /// <summary>
+        /// 处理一次刷新
+        /// </summary>
+        /// <param name="refreshInfo"></param>
+        public void HandleOneRefreshInfo(DynamicEntityRefreshInfo refreshInfo)
+        {
+            if (RefreshInfo2Record.TryGetValue(refreshInfo.UniqId, out var recordId))
+            {
+                return;
+            }
+
+            // 检查条件
+            if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != 0)
+            {
+                if (!logicManager.CheckCommonCond(refreshInfo.AppearCond))
+                {
+                    return;
+                }
+            }
+
+            LogicEntityRecord record = CreateEntityRecordFromInitInfo(refreshInfo.InitInfo);
+
+            if(record == null)
+            {
+                return;
+            }
+
+            RegisterEntityRecord(record);
+            RefreshInfo2Record[refreshInfo.UniqId] = record.Id;
+        }
+
+
+        public LogicEntityRecord CreateEntityRecordFromInitInfo(EntityInitInfo initInfo)
+        {
+            LogicEntityRecord record = null;
+            var id = GameLogicManager.LogicEntityIdInst++;
+
+            switch (initInfo.EntityType)
+            {
+                case EEntityType.PatrolGroup:
+                    {
+                        var patrolGroupRecord = new LogicEntityRecord4PatrolGroup();
+
+                        var initInfo4PatrolGroup = (DynamicEntityInitInfo4PatrolGroup)initInfo;
+
+                        patrolGroupRecord.WayPointIdx = 0;
+                        patrolGroupRecord.WayPointDistance = 0;
+
+                        patrolGroupRecord.MoveSpeed = initInfo4PatrolGroup.MoveSpeed;
+                        patrolGroupRecord.WayPointList.AddRange(initInfo4PatrolGroup.Waypoints);
+
+                        var pName = patrolGroupRecord.WayPointList[patrolGroupRecord.WayPointIdx];
+                        Vector2 point = cacheDatabase.FindNamedPointByName(pName)?.Position ?? Vector3.zero;
+                        // 初始化巡逻兵
+                        foreach (var one in initInfo4PatrolGroup.GroupUnits)
+                        {
+                            var oneRecrord = new LogicEntityRecord4UnitBase();
+
+                            oneRecrord.Id = GameLogicManager.LogicEntityIdInst++;
+                            oneRecrord.EntityType = one.EntityType;
+                            oneRecrord.CfgId = one.CfgId;
+
+                            oneRecrord.Position = point + one.RelativePos;
+                            oneRecrord.FaceDir = initInfo4PatrolGroup.FaceDir;
+
+
+
+                            oneRecrord.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup;
+                            oneRecrord.PatrolFollowId = id;
+                            oneRecrord.PatrolGroupRelativePos = one.RelativePos;
+
+
+                            patrolGroupRecord.PatrolUnitIds.Add(oneRecrord.Id);
+
+                            Repo.RegisterRecord(oneRecrord);
+                        }
+                        record = patrolGroupRecord;
+                        break;
+                    }
+                case EEntityType.Npc:
+                case EEntityType.Monster:
+                    {
+                        var unitRecord = new LogicEntityRecord4UnitBase();
+
+                        var initInfo4Unit = (EntityInitInfo4Unit)initInfo;
+
+                        unitRecord.IsPeace = initInfo4Unit.IsPeace;
+                        unitRecord.MoveBehaveType = initInfo4Unit.MoveMode;
+                        unitRecord.EnmityConfId = initInfo4Unit.EnmityConfId;
+                        unitRecord.Unsensored = initInfo4Unit.InitUnsensored;
+
+                        record = unitRecord;
+                        break;
+                    }
+                case EEntityType.InteractPoint:
+                    {
+                        var realRecord = new LogicEntityRecord4InteractPoint();
+                        realRecord.Status = 0;
+
+                        record = realRecord;
+                        break;
+                    }
+                case EEntityType.LootPoint:
+                    {
+                        var realRecord = new LogicEntityRecord4LootPoint();
+                        record = realRecord;
+                        break;
+                    }
+                case EEntityType.EventGroup:
+                    {
+                        var egRecord = new LogicEntityRecord4EventGroup();
+                        var cfg = MapEventGroupCfgLoader.Get(egRecord.CfgId);
+
+                        foreach(var memberInfo in cfg.StaticGroupEntites)
+                        {
+                            int groupId = memberInfo.GroupId;
+
+                            var mRecord = CreateEntityRecordFromInitInfo(memberInfo.InitInfo);
+                            egRecord.MemberEntityMap.Add(groupId, mRecord.Id);
+
+                            Repo.RegisterRecord(mRecord);
+                        }
+                    }
+                    break;
+                default:
+                    {
+                        record = new LogicEntityRecord();
+                    }
+                    break;
+            }
+
+            if (record != null)
+            {
+                record.Id = id;
+                record.EntityType = initInfo.EntityType;
+                record.CfgId = initInfo.CfgId;
+                record.Position = initInfo.Position;
+                record.BelongRoomId = initInfo.BindRoomId;
+                record.FactionId = initInfo.OrgFactionId;
+
+            }
+            return record;
+        }
+    }
+}

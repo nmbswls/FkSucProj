@@ -1,6 +1,7 @@
 using Map.Entity;
 using Map.Logic.Events;
 using My.Map.Entity;
+using My.MapExport;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace My.Map.Logic
             var namePoints = cacheDatabase.NamedPoints;
             foreach(var p in namePoints)
             {
-                if(p.PointType == MapExport.MapExportDatabase.ENamedPointType.DigPoint)
+                if(p.PointType == ENamedPointType.DigPoint)
                 {
                     emptySlots.Add(p.Name);
                 }

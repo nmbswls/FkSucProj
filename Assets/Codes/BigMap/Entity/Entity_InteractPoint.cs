@@ -27,20 +27,11 @@ namespace My.Map.Entity
 
         public event Action OnStatusChange;
 
+        public LogicEntityRecord4InteractPoint RealRecord { get { return (LogicEntityRecord4InteractPoint)BindingRecord; } }
+
         public InteractPointLogic(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             cacheCfg = MapInteractPointLoader.Get(CfgId);
-
-            var realRecord = (LogicEntityRecord4InteractPoint)bindingRecord;
-            CurrStatusId = realRecord.Status;
-
-            InteractComp = new(this);
-
-            var curState = GetCurrentStatusInfo();
-            if(curState != null)
-            {
-                InteractComp.RegisterInteractInfo(curState.InteractInfos);
-            }
 
             //InitStatusChangeListner();
         }
@@ -50,6 +41,16 @@ namespace My.Map.Entity
         public override void Initialize()
         {
             base.Initialize();
+
+            CurrStatusId = RealRecord.Status;
+
+            InteractComp = new(this);
+
+            var curState = GetCurrentStatusInfo();
+            if (curState != null)
+            {
+                InteractComp.RegisterInteractInfo(curState.InteractInfos);
+            }
 
             CheckStatusCondition();
         }
@@ -80,7 +81,7 @@ namespace My.Map.Entity
                 }
 
                 var poassed = true;
-                foreach(var cond in rule.Conds)
+                foreach(var cond in rule.CommonConds)
                 {
                     if (!LogicManager.CheckCommonCond(cond))
                     {
@@ -88,8 +89,17 @@ namespace My.Map.Entity
                         break;
                     }
                 }
-                
-                if(poassed)
+
+                foreach (var needFlag in rule.NeedSelfFlag)
+                {
+                    if(!this.RealRecord.CustomFlags.Contains(needFlag))
+                    {
+                        poassed = false;
+                        break;
+                    }
+                }
+
+                if (poassed)
                 {
                     ChangeSelfStatus(rule.ToStatus);
                     break;
@@ -119,9 +129,27 @@ namespace My.Map.Entity
 
         public override void Tick(float dt)
         {
+            base.Tick(dt);
 
+            // µÍÆµ¼ì²é×´Ì¬ÇÐ»»
+            LowFreqCheckStatusChange();
         }
 
+        private float _lowFreqCheckStatusTimer = 0;
+        /// <summary>
+        /// µÍÆµ¼ì²é
+        /// </summary>
+        protected void LowFreqCheckStatusChange()
+        {
+            if(LogicTime.time < _lowFreqCheckStatusTimer)
+            {
+                return;
+            }
+
+            _lowFreqCheckStatusTimer = LogicTime.time + 2f;
+
+            CheckStatusCondition();
+        }
 
         public void ChangeSelfStatus(int newStatus)
         {

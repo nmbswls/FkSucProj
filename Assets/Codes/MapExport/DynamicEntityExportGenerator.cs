@@ -12,11 +12,7 @@ namespace My.MapExport
 {
     public class DynamicEntityExportGenerator : MonoBehaviour
     {
-        public EEntityType EntityType;
-        public string CfgId;
-
-        public string BindRoomId;
-        public CommonCheckCond? AppearCond;
+        public DynamicEntityRefreshInfo RefreshInfo;
     }
 }
 

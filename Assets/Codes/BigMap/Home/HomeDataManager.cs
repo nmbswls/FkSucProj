@@ -8,6 +8,7 @@ using Map.Logic.Events;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Logic;
+using My.MapExport;
 using UnityEngine;
 using static My.MapExport.MapExportDatabase;
 
@@ -196,9 +197,13 @@ namespace My.Home
 
                 var refreshInfo = new DynamicEntityRefreshInfo();
                 refreshInfo.UniqId = uniqId++;
-                refreshInfo.EntityType = EEntityType.Npc;
-                refreshInfo.CfgId = "home_liki";
-                refreshInfo.Position = new Vector2(2.0f, 0f);
+                refreshInfo.InitInfo = new EntityInitInfo4Npc()
+                {
+                    CfgId = "home_liki",
+                    Position = new Vector2(2.0f, 0f),
+                    IsPeace = true,
+                    MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove
+                };
 
                 refreshInfo.AppearCond = new CommonCheckCond()
                 {
@@ -206,13 +211,6 @@ namespace My.Home
                     Param1 = 1,
                     Param5 = "liki",
                 };
-
-                var initInfo = new DynamicEntityInitInfo4Unit();
-                refreshInfo.InitInfo = initInfo;
-
-                initInfo.IsPeace = true;
-                initInfo.MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
-                
 
                 retList.Add(refreshInfo);
             }

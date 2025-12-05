@@ -20,6 +20,9 @@ namespace My.Config
             CostItems,
             Teleport,
             OpenPanel,
+
+
+            ActivateEventGroup,
         }
 
         public EOutputType OutputType;

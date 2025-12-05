@@ -13,95 +13,10 @@ namespace My.MapExport
     public class MapExportDatabase : ScriptableObject
     {
 
-        public enum ENamedPointType
-        {
-            Normal,
-            BornPos,
-            DigPoint,
-            GuardSpawner,
-            WalkerStart,
-        }
+        
 
 
-        [Serializable]
-        public struct NamedPoint
-        {
-            public string Name;
-            public ENamedPointType PointType;
-            public Vector3 Position;
-            public Quaternion Rotation;
-            public Vector3 Scale;
-        }
-
-        [Serializable]
-        public struct NamedPath
-        {
-            public string Name;
-            public List<string> Points;
-            public string Tag;
-        }
-
-
-        [Serializable]
-        public struct StaticPrefabItem
-        {
-            public int ItemId;
-            public string Key;
-            public Vector3 Position;
-            public Quaternion Rotation;
-            public Vector3 Scale;
-
-            public CommonCheckCond AppearCond;
-        }
-
-
-
-        [Serializable]
-        public class DynamicEntityRefreshInfo
-        {
-            public int UniqId; // 场景内唯一id 用于检查是否已创建 自动分配
-
-            public EEntityType EntityType;
-            public string CfgId;
-
-            public Vector2 Position;
-            public Vector2 FaceDir;
-
-            public string BindRoomId;
-            public EFactionId OrgFactionId;
-
-            public CommonCheckCond? AppearCond;
-
-            [SerializeReference]
-            public DynamicEntityInitInfo? InitInfo = null;
-        }
-
-        [Serializable]
-        public class DynamicEntityInitInfo
-        {
-
-        }
-
-        [Serializable]
-        public class DynamicEntityInitInfo4PatrolGroup : DynamicEntityInitInfo
-        {
-            public float MoveSpeed = 0.2f;
-            public List<string> Waypoints = new();
-            public DynamicPatrolGroupExportGenerator.ELoopMode LoopMode;
-            public List<DynamicPatrolGroupExportGenerator.PatrolOneInfo> GroupUnits = new();
-        }
-
-
-        [Serializable]
-        public class DynamicEntityInitInfo4Unit : DynamicEntityInitInfo
-        {
-            public UnitMoveBehaveInfo.EMoveBehaveType MoveMode;
-            public string EnmityConfId;
-
-            public bool IsPeace;
-
-            public bool InitUnsensored;
-        }
+        
 
 
         [Serializable]

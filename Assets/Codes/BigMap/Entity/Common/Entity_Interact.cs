@@ -56,6 +56,7 @@ namespace My.Map
                 }
             }
 
+
             return passed;
         }
 
@@ -90,6 +91,17 @@ namespace My.Map
                     case Config.LogicInteractOutput.EOutputType.Teleport:
                         {
                             Owner.LogicManager.PlayerSwitchArea(output.Param3);
+                        }
+                        break;
+                    case Config.LogicInteractOutput.EOutputType.ActivateEventGroup:
+                        {
+                            if( Owner is not EventGroupLogicEntity egPoint)
+                            {
+                                Debug.Log("TryTriggerInteract ActivateEventGroup valid egpoint");
+                                return false;
+                            }
+
+                            egPoint.ActivateSleepyMembers();
                         }
                         break;
                 }

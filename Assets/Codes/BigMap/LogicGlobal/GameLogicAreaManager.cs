@@ -15,83 +15,6 @@ using static UnityEngine.EventSystems.EventTrigger;
 namespace My.Map.Logic
 {
 
-    // 逻辑实体的轻量描述（可存持久化）
-    [Serializable]
-    public class LogicEntityRecord
-    {
-        public long Id;               // 全局唯一ID
-        public EEntityType EntityType;
-        public string CfgId;     
-        public Vector2 Position;
-        public Vector2 FaceDir;
-
-        public EFactionId FactionId;
-
-        public bool DeadMark;
-        public float LifeTime;
-
-        public string BelongRoomId;
-        //public bool AlwaysActive;
-    }
-
-    [Serializable]
-    public class LogicEntityRecord4InteractPoint : LogicEntityRecord
-    {
-        public int Status;
-    }
-
-
-    [Serializable]
-    public class LogicEntityRecord4LootPoint : LogicEntityRecord
-    {
-        public string DynamicDropId;
-    }
-
-    // 逻辑实体的轻量描述（可存持久化）
-    [Serializable]
-    public class LogicEntityRecord4UnitBase : LogicEntityRecord
-    {
-        public bool IsPeace;
-
-        public UnitMoveBehaveInfo.EMoveBehaveType MoveBehaveType;
-
-        public string EnmityConfId;
-        public List<string> MoveWayPoints;
-
-        public long PatrolFollowId;
-        public Vector2 PatrolGroupRelativePos;
-        public bool DisappearOnArrive;
-        public string MovePath = null;
-        public int CurrPathIdx = 0;
-        public float CurrPathProgress = 0;
-
-        // 仅保存特殊状态 buff丢弃
-        public bool Unsensored;
-
-
-    }
-
-    [Serializable]
-    public class LogicEntityRecord4Npc : LogicEntityRecord4UnitBase
-    { 
-        
-    }
-
-
-    // 逻辑实体的轻量描述（可存持久化）
-    [Serializable]
-    public class LogicEntityRecord4PatrolGroup : LogicEntityRecord
-    {
-        public float MoveSpeed;
-        public int WayPointIdx = 0;
-        public float WayPointDistance;
-        public List<string> WayPointList = new();
-        public bool IsBack = false;
-
-        public List<long> PatrolUnitIds = new();
-    }
-
-
     public struct ChunkCoord
     {
         public int X;
@@ -104,16 +27,6 @@ namespace My.Map.Logic
         }
     }
 
-    //public static class ChunkConfig
-    //{
-    //    public static IEnumerable<ChunkMapExportDatabase.StaticItem> GetPrefabs(ChunkCoord c)
-    //    {
-    //        var db = Resources.Load<ChunkMapExportDatabase>("Area/1");
-
-    //        var it = db.GetChunkStaticItems(c.X, c.Y);
-    //        return it;
-    //    }
-    //}
 
     /// <summary>
     /// 房间信息 临时数据 考虑放在哪边
@@ -123,115 +36,6 @@ namespace My.Map.Logic
         public string RoomId = string.Empty;
         //public RoomExportInfo rawData;
 
-    }
-
-    // InterestPoint：兴趣点（玩家、本地AI、相机锚点等）
-    public class LogicAreaInterestPoint
-    {
-        public int Id;            // 唯一ID
-        public Func<Vector3> Pos; // 实时位置获取委托
-        public float LogicRadius; // 逻辑活跃半径（进入即唤醒）
-        public float WarmupRadius;// 预热半径（在更远处预加载，进入Active半径更近）
-    }
-
-    public class LogicEntityRepository
-    {
-        public readonly Dictionary<long, LogicEntityRecord> Records = new();
-        // 已加载的运行时实体
-        public readonly Dictionary<long, ILogicEntity> Loaded = new();
-
-        public bool HasRecord(long id) => Records.ContainsKey(id);
-        public bool IsLoaded(long id) => Loaded.ContainsKey(id);
-
-        public ILogicEntity GetLoaded(long id) => Loaded.TryGetValue(id, out var e) ? e : null;
-
-        public void RegisterRecord(LogicEntityRecord r) => Records[r.Id] = r;
-        public void RemoveRecord(long id) => Records.Remove(id);
-    }
-
-    public class LongLivedRegistry
-    {
-        private readonly Dictionary<long, ILogicEntity> _map = new();
-        public void Register(ILogicEntity ent) => _map[ent.Id] = ent;
-        public void Unregister(long id) => _map.Remove(id);
-        public bool TryGet(long id, out ILogicEntity ent) => _map.TryGetValue(id, out ent);
-        public IEnumerable<ILogicEntity> All => _map.Values;
-    }
-
-    public class UniformGridIndex<TKey> where TKey : IEquatable<TKey>
-    {
-        private readonly float cellSize;
-        private readonly Dictionary<(int x, int y), List<TKey>> cellToIds = new();
-        private readonly Dictionary<TKey, (int x, int y)> idToCell = new();
-
-        public UniformGridIndex(float cellSize) { this.cellSize = Mathf.Max(1f, cellSize); }
-
-        public static (int x, int y) PosToCell(Vector2 p, float cellSize)
-        {
-            int x = Mathf.FloorToInt(p.x / cellSize);
-            int y = Mathf.FloorToInt(p.y / cellSize);
-            return (x, y);
-        }
-
-        public void AddOrMove(TKey id, Vector2 pos)
-        {
-            var cell = PosToCell(pos, cellSize);
-            if (idToCell.TryGetValue(id, out var old) && old.Equals(cell)) return;
-
-            if (idToCell.TryGetValue(id, out var oldCell))
-            {
-                if (cellToIds.TryGetValue(oldCell, out var lst))
-                    lst.Remove(id);
-            }
-
-            idToCell[id] = cell;
-            if (!cellToIds.TryGetValue(cell, out var list))
-                cellToIds[cell] = list = new List<TKey>(8);
-            if (!list.Contains(id)) list.Add(id);
-        }
-
-        public void Remove(TKey id)
-        {
-            if (idToCell.TryGetValue(id, out var cell))
-            {
-                if (cellToIds.TryGetValue(cell, out var lst)) lst.Remove(id);
-                idToCell.Remove(id);
-            }
-        }
-
-        // 简易范围查询（方形近似）
-        public void Query(Vector2 center, float radius, List<TKey> result)
-        {
-            if(result == null)
-            {
-                ;
-            }
-            result.Clear();
-            int r = Mathf.CeilToInt(radius / cellSize);
-            var c0 = PosToCell(center, cellSize);
-            for (int y = c0.y - r; y <= c0.y + r; y++)
-                for (int x = c0.x - r; x <= c0.x + r; x++)
-                {
-                    if (!cellToIds.TryGetValue((x, y), out var lst)) continue;
-                    foreach (var id in lst) result.Add(id);
-                }
-        }
-
-        public void Clear()
-        {
-            cellToIds.Clear();
-            idToCell.Clear();
-        }
-    }
-
-
-    // InterestPoint：兴趣点（玩家、本地AI、相机锚点等）
-    public class InterestPoint
-    {
-        public int Id;            // 唯一ID
-        public Func<Vector3> Pos; // 实时位置获取委托
-        public float LogicRadius; // 逻辑活跃半径（进入即唤醒）
-        public float WarmupRadius;// 预热半径（在更远处预加载，进入Active半径更近）
     }
 
     /// <summary>
@@ -402,141 +206,7 @@ namespace My.Map.Logic
             }
         }
 
-        public void CheckRefreshAppearAndDisappear(float dt)
-        {
-            if(EntityRefreshInfo.Count == 0)
-            {
-                return;
-            }
-
-            if(LogicTime.time < checkRefreshTimer + 1)
-            {
-                return;
-            }
-
-            checkRefreshTimer = LogicTime.time;
-
-            int tickCnt = 100;
-            while(tickCnt-- > 0)
-            {
-                tickDynamicObjIdx += 1;
-                tickDynamicObjIdx = tickDynamicObjIdx % EntityRefreshInfo.Count;
-
-                HandleOneRefreshInfo(EntityRefreshInfo[tickDynamicObjIdx]);
-            }
-            
-        }
-
-        public void HandleOneRefreshInfo(MapExportDatabase.DynamicEntityRefreshInfo refreshInfo)
-        {
-            if(RefreshInfo2Record.TryGetValue(refreshInfo.UniqId, out var recordId))
-            {
-                return;
-            }
-
-            // 检查条件
-            if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != 0)
-            {
-                if (!logicManager.CheckCommonCond(refreshInfo.AppearCond))
-                {
-                    return;
-                }
-            }
-
-            LogicEntityRecord record = null;
-            var id = GameLogicManager.LogicEntityIdInst++;
-            switch (refreshInfo.EntityType)
-            {
-                case EEntityType.PatrolGroup:
-                    {
-                        var patrolGroupRecord = new LogicEntityRecord4PatrolGroup();
-
-                        var initInfo = (MapExportDatabase.DynamicEntityInitInfo4PatrolGroup)refreshInfo.InitInfo;
-
-                        patrolGroupRecord.WayPointIdx = 0;
-                        patrolGroupRecord.WayPointDistance = 0;
-
-                        patrolGroupRecord.MoveSpeed = initInfo.MoveSpeed;
-                        patrolGroupRecord.WayPointList.AddRange(initInfo.Waypoints);
-
-                        var pName = patrolGroupRecord.WayPointList[patrolGroupRecord.WayPointIdx];
-                        Vector2 point = cacheDatabase.FindNamedPointByName(pName)?.Position ?? Vector3.zero;
-                        // 初始化巡逻兵
-                        foreach (var one in initInfo.GroupUnits)
-                        {
-                            var oneRecrord = new LogicEntityRecord4UnitBase();
-
-                            oneRecrord.Id = GameLogicManager.LogicEntityIdInst++;
-                            oneRecrord.EntityType = one.EntityType;
-                            oneRecrord.CfgId = one.CfgId;
-
-                            oneRecrord.Position = point + one.RelativePos;
-                            oneRecrord.FaceDir = refreshInfo.FaceDir;
-
-
-
-                            oneRecrord.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup;
-                            oneRecrord.PatrolFollowId = id;
-                            oneRecrord.PatrolGroupRelativePos = one.RelativePos;
-
-
-                            patrolGroupRecord.PatrolUnitIds.Add(oneRecrord.Id);
-
-                            Repo.RegisterRecord(oneRecrord);
-                        }
-                        record = patrolGroupRecord;
-                        break;
-                    }
-                case EEntityType.Npc:
-                case EEntityType.Monster:
-                    {
-                        var unitRecord = new LogicEntityRecord4UnitBase();
-
-                        var initInfo = (MapExportDatabase.DynamicEntityInitInfo4Unit)refreshInfo.InitInfo;
-
-                        unitRecord.IsPeace = initInfo.IsPeace;
-                        unitRecord.MoveBehaveType = initInfo.MoveMode;
-                        unitRecord.EnmityConfId = initInfo.EnmityConfId;
-                        unitRecord.Unsensored = initInfo.InitUnsensored;
-
-                        record = unitRecord;
-                        break;
-                    }
-                case EEntityType.InteractPoint:
-                    {
-                        var realRecord = new LogicEntityRecord4InteractPoint();
-                        realRecord.Status = 0;
-
-                        record = realRecord;
-                        break;
-                    }
-                case EEntityType.LootPoint:
-                    {
-                        var realRecord = new LogicEntityRecord4LootPoint();
-                        record = realRecord;
-                        break;
-                    }
-                default:
-                    {
-                        record = new LogicEntityRecord();
-                    }
-                    break;
-            }
-
-            if(record != null)
-            {
-                record.Id = id;
-                record.EntityType = refreshInfo.EntityType;
-                record.CfgId = refreshInfo.CfgId;
-                record.Position = refreshInfo.Position;
-                record.BelongRoomId = refreshInfo.BindRoomId;
-                record.FactionId = refreshInfo.OrgFactionId;
-
-                RegisterEntityRecord(record);
-                RefreshInfo2Record[refreshInfo.UniqId] = record.Id;
-            }
-        }
-
+        
 
         public bool IsRecordAlwaysActive(LogicEntityRecord rec)
         {
@@ -674,11 +344,23 @@ namespace My.Map.Logic
             if (Repo.IsLoaded(instId))
             {
                 var ent = Repo.GetLoaded(instId);
+
+                // 续命
+                if (runtimeStates.TryGetValue(instId, out var st))
+                {
+                    if(st.State == LogicLifeState.Cooldown)
+                    {
+                        st.State = LogicLifeState.Active;
+                        st.Timer = 0;
+                    }
+                }
+
                 return ent;
             }
 
             if(ensureExist)
             {
+                Debug.Log("GetLogicEntiy ensure exist " + instId);
                 return ImmediateSpawnAndWake(instId, rec);
             }
 

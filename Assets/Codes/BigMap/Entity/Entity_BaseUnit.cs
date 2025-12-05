@@ -514,49 +514,6 @@ namespace My.Map
 
             Debug.Log("end ClearControlledMove");
         }
-
-        //public void ClearDashIntent(int reason)
-        //{
-
-        //    if(reason != 0)
-        //    {
-        //        if(dashIntent.OnHitUnitCfg != null)
-        //        {
-        //            //var 
-        //            //foreach(var e in dashIntent.OnHitUnitCfg)
-        //            //{
-
-        //            //    LogicFightEffectContext newCtx = new(LogicManager);
-        //            //    newCtx.Actor = this;
-        //            //    newCtx.CastPos = this.Pos;
-        //            //    LogicManager.HandleLogicFightEffect(e, newCtx);
-        //            //}
-        //        }
-        //    }
-
-        //    dashIntent?.onCollide?.Invoke();
-
-        //    dashIntent = null;
-        //    // 平滑收尾：保留少量速度并快速衰减
-        //    externalVel *= 0.1f;
-
-        //    Debug.Log("end ClearDashIntent");
-        //}
-
-        //private void ClearKnockbackInfo(int endReason)
-        //{
-        //    knockBackIntent?.onKnockEnd?.Invoke(endReason);
-        //    knockBackIntent = null;
-        //    knockVel = Vector2.zero;
-        //    knockTimer = 0;
-        //}
-
-
-
-        //public void StopTargetteMove()
-        //{
-        //    targetMoveIntent = null;
-        //}
         #endregion
 
 

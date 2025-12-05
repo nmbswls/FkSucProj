@@ -17,7 +17,7 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
-        public string ShowName => gameObject.name;
+        public virtual string ShowName => gameObject.name;
 
         public InteractPointLogic RealLogic { get { return (InteractPointLogic)_logic; } }
 

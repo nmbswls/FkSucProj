@@ -281,8 +281,37 @@ namespace Config
             _byId.Clear();
         }
     }
-    
 
+
+    public static class MapEventGroupCfgLoader
+    {
+
+        private static Dictionary<string, EventGroupConfig> _byId = new Dictionary<string, EventGroupConfig>();
+
+        public static EventGroupConfig Get(string cfgId)
+        {
+            if (_byId.TryGetValue(cfgId, out var data))
+                return data;
+
+            var loadOne = Load(cfgId);
+            _byId[cfgId] = loadOne;
+            return loadOne;
+        }
+
+
+        private static EventGroupConfig Load(string cfgId)
+        {
+            var data = Resources.Load<EventGroupConfig>($"Config/Entity/EventGroup/{cfgId}");
+            if (data == null)
+                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/EventGroup/{cfgId}");
+            return data;
+        }
+
+        public static void Clear()
+        {
+            _byId.Clear();
+        }
+    }
 
 
     #region build

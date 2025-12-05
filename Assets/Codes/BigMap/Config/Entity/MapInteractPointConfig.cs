@@ -35,7 +35,8 @@ namespace Config.Map
         public class StateChangeRule
         {
             public int FromStatus;
-            public List<CommonCheckCond> Conds = new();
+            public List<CommonCheckCond> CommonConds = new();
+            public List<string> NeedSelfFlag = new();
             public int ToStatus;
         }
 

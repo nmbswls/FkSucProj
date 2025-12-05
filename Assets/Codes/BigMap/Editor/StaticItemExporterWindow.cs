@@ -37,8 +37,8 @@ public class StaticItemExporterWindow : EditorWindow
     [SerializeField] private Vector2 chunkOrigin = Vector2.zero; // ×ø±êÔ­µãÆ«ÒÆ
 
     // É¨Ãè½á¹û»º´æ
-    private Dictionary<(int x, int y), List<MapExportDatabase.StaticPrefabItem>> chunkBuckets =
-        new Dictionary<(int x, int y), List<MapExportDatabase.StaticPrefabItem>>();
+    private Dictionary<(int x, int y), List<StaticPrefabItem>> chunkBuckets =
+        new Dictionary<(int x, int y), List<StaticPrefabItem>>();
 
     // É¨Ãè½á¹û»º´æ
     private List<DynamicEntityExportGenerator> dynamicGenerator =
@@ -154,10 +154,10 @@ public class StaticItemExporterWindow : EditorWindow
                     var key = (ck.x, ck.y);
                     if (!chunkBuckets.TryGetValue(key, out var list))
                     {
-                        list = new List<MapExportDatabase.StaticPrefabItem>();
+                        list = new List<StaticPrefabItem>();
                         chunkBuckets[key] = list;
                     }
-                    list.Add(new MapExportDatabase.StaticPrefabItem
+                    list.Add(new StaticPrefabItem
                     {
                         ItemId = ++statidId,
                         Key = prefabProvider.Key,
@@ -441,45 +441,12 @@ public class StaticItemExporterWindow : EditorWindow
             chunkItems.FovStaticSegments = kv.Value;
         }
 
-        int unitId = 100;
+        int staticRefreshId = 1;
 
         foreach (var dynamicGen in dynamicGenerator)
         {
-            var refreshInfo = new MapExportDatabase.DynamicEntityRefreshInfo()
-            {
-                UniqId = unitId++,
-                EntityType = dynamicGen.EntityType,
-                CfgId = dynamicGen.CfgId,
-                Position = dynamicGen.transform.position,
-                FaceDir = dynamicGen.transform.right,
-
-
-                BindRoomId = dynamicGen.BindRoomId,
-                AppearCond = dynamicGen.AppearCond,
-            };
-
-            if (dynamicGen is DynamicNpcExportGenerator unitEntity)
-            {
-                var initInfo = new MapExportDatabase.DynamicEntityInitInfo4Unit();
-                initInfo.EnmityConfId = unitEntity.EnmityConfId;
-                initInfo.MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
-                initInfo.IsPeace = unitEntity.IsPeace;
-                initInfo.InitUnsensored = unitEntity.IsPeace;
-
-                refreshInfo.InitInfo = initInfo;
-            }
-            else if (dynamicGen is DynamicPatrolGroupExportGenerator patrolGroupGen)
-            {
-                var initInfo = new MapExportDatabase.DynamicEntityInitInfo4PatrolGroup();
-
-                initInfo.MoveSpeed = patrolGroupGen.MoveSpeed;
-                initInfo.Waypoints.AddRange(patrolGroupGen.Waypoints);
-                initInfo.LoopMode = patrolGroupGen.LoopMode;
-                initInfo.GroupUnits = patrolGroupGen.GroupUnits;
-
-                refreshInfo.InitInfo = initInfo;
-            }
-
+            var refreshInfo = dynamicGen.RefreshInfo;
+            refreshInfo.UniqId = staticRefreshId++;
             asset.EntityRefreshInfo.Add(refreshInfo);
         }
 

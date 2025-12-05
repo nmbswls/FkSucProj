@@ -75,7 +75,7 @@ public class SceneAOIManager : MonoBehaviour
     private readonly Dictionary<long, AOIEntry> _aoiStates = new(); // id -> entry
 
     protected MapExportDatabase ExportDb;
-    public IEnumerable<MapExportDatabase.StaticPrefabItem> GetChunkPrefabs(ChunkCoord c)
+    public IEnumerable<StaticPrefabItem> GetChunkPrefabs(ChunkCoord c)
     {
         var it = ExportDb.GetChunkStaticItems(c.X, c.Y);
         return it;
@@ -836,7 +836,7 @@ public class SceneAOIManager : MonoBehaviour
         _concurrentLoading++;
 
         var instances = new List<(GameObject, int)>();
-        var batchBuffer = new List<MapExportDatabase.StaticPrefabItem>(batchObjectsPerSlice);
+        var batchBuffer = new List<StaticPrefabItem>(batchObjectsPerSlice);
         int objCountSinceYield = 0;
 
         // 批次枚举（根据你的配置实现 GetPrefabs）
@@ -901,7 +901,7 @@ public class SceneAOIManager : MonoBehaviour
         WorldAreaManager.Instance.SegmentProvider.AddSegments(rec.coord.ToString(), segments);
     }
 
-    private async Task<int> InstantiateBatch(List<MapExportDatabase.StaticPrefabItem> items, List<(GameObject, int)> instances, int objCountSinceYield)
+    private async Task<int> InstantiateBatch(List<StaticPrefabItem> items, List<(GameObject, int)> instances, int objCountSinceYield)
     {
         for (int i = 0; i < items.Count; i++)
         {

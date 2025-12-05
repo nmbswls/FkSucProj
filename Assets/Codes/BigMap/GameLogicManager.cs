@@ -366,6 +366,14 @@ namespace My
                         newEntity = homePlacement;
                     }
                     break;
+
+                case EEntityType.EventGroup:
+                    {
+                        var egEntity = new EventGroupLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+
+                        newEntity = egEntity;
+                    }
+                    break;
             }
 
             if (newEntity != null)
