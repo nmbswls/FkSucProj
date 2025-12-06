@@ -22,10 +22,16 @@ namespace My.Map.Scene
     /// <summary>
     /// 场景单位 基类
     /// </summary>
-    public abstract class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEntity>, IMapWeaponHolder, ISceneTargettable
+    public abstract partial class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEntity>, IMapWeaponHolder, ISceneTargettable
     {
-        [SerializeField] protected SpriteRenderer icon;
         [SerializeField] protected GameObject highlightFx;
+
+        public Transform ShadowView;
+        public Transform AgentView;
+        private SpriteRenderer[] srs;
+
+        public SpriteRenderer MainView;
+
         public Transform ViewPoint;
         public GameObject faceIndicator;
         public Transform EyePos;
@@ -99,6 +105,11 @@ namespace My.Map.Scene
                     return UnitEntity.CheckHasState(AttrIdConsts.Ghost);
                 };
             }
+
+            if(AgentView != null)
+            {
+                srs = AgentView.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+            }
         }
 
         private float _tickMoveStateTimer;
@@ -161,7 +172,7 @@ namespace My.Map.Scene
             //if (knockBackIntent.knockbackTimeLeft <= 0f || externalVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
             //    ClearKnockbackIntent();
 
-            if (icon != null)
+            if (MainView != null)
             {
                 if (UnitEntity.AnimOverrideList.Count > 0)
                 {
@@ -174,7 +185,9 @@ namespace My.Map.Scene
             }
 
             UpdateFaceDirIndicator();
-            
+
+
+            UpdateOffsetZView();
         }
 
         //private Vector2 smoothedTarget;
@@ -241,7 +254,11 @@ namespace My.Map.Scene
 
             if (visible)
             {
-                icon.enabled = true;
+                if(MainView != null)
+                {
+                    MainView.enabled = true;
+                }
+
                 if (faceIndicator != null)
                 {
                     faceIndicator?.gameObject.SetActive(true);
@@ -249,7 +266,11 @@ namespace My.Map.Scene
             }
             else
             {
-                icon.enabled = false;
+                if(MainView != null)
+                {
+                    MainView.enabled = false;
+                }
+                
                 if (faceIndicator != null)
                     faceIndicator?.gameObject.SetActive(false);
             }
@@ -320,7 +341,11 @@ namespace My.Map.Scene
 
             UnitEntity.EventOnDeath += () =>
             {
-                icon.DOColor(new Color(1, 1, 1, 0), 0.5f);
+                if(MainView != null)
+                {
+                    MainView.DOColor(new Color(1, 1, 1, 0), 0.5f);
+                }
+                //icon.DOColor(new Color(1, 1, 1, 0), 0.5f);
                 //.OnComplete(() =>
                 //{
                 //    SceneAOIManager.Instance.UnregisterEntity(logic, transform.position);
@@ -448,11 +473,11 @@ namespace My.Map.Scene
         {
             if (UnitEntity.GetAttr(AttrIdConsts.HidingMask) > 0)
             {
-                icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 0.6f);
+                //icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 0.6f);
             }
             else
             {
-                icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 1);
+                //icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 1);
             }
         }
 

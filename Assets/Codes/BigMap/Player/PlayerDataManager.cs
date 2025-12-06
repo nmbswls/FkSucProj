@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Config;
+using Map.Logic.Events;
 using My.Player.Bag;
 using UnityEngine;
 
@@ -15,6 +16,11 @@ namespace My.Player
 
         public Dictionary<string, long> CurrencyBag = new();
 
+        /// <summary>
+        /// 游戏变量表
+        /// </summary>
+        public Dictionary<string, bool> VariableDict = new();
+
         public List<string> PlayerSkillList = new() 
         {
             "queen_attack",
@@ -23,6 +29,8 @@ namespace My.Player
             "fix_clothes",
             "spawn_attract",
 
+            "queen_counter",
+
             "default_push",
             "crazy_fire",
         };
@@ -30,6 +38,9 @@ namespace My.Player
         public PlayerDataManager(GameLogicManager logicManager)
         {
             this.logicManager = logicManager;
+
+            VariableDict["fix_teleport"] = true;
+            VariableDict["a1"] = true;
         }
         public void InitPlayer()
         {
@@ -51,6 +62,23 @@ namespace My.Player
             //inventoryModel.NormalSlots[6] = new ItemStack() { ItemID = "chanzi", Count = 1 };
         }
 
+        public bool CheckHasParam(string id)
+        {
+            VariableDict.TryGetValue(id, out var val);
+            return val;
+        }
+
+        public void SetVariable(string id)
+        {
+            VariableDict[id] = true;
+
+            // 变量事件
+            logicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()
+            {
+                Name = id,
+                AfterVal = 1,
+            });
+        }
         public bool CheckHaveItem(string itemId, long count)
         {
             long totalNum = 0;

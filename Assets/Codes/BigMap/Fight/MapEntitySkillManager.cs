@@ -495,6 +495,7 @@ namespace My.Map.Entity
             }
 
             // 不可行动
+            // 处理中断技能层级
             if (!Executor.IsActionable())
             {
                 return false;

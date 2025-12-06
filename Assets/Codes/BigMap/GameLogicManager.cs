@@ -11,6 +11,7 @@ using My.Player;
 using My.UI;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Unity.Profiling;
 using UnityEngine;
@@ -405,6 +406,15 @@ namespace My
 
         //}
 
+        public void EntityTeleportTo(long entityId, Vector2 pos)
+        {
+            var entity = AreaManager.GetLogicEntiy(entityId);
+            if(entity == null)return;
+
+            entity.TeleportTo(pos);
+        }
+
+
         public Vector2 GetNamedPointPos(string pointName)
         {
             var areaName = CurrentArea;
@@ -525,7 +535,16 @@ namespace My
                             executor = new AbilityEffectExecutor4NextPhase();
                         }
                         break;
-
+                    case MapAbilityEffectTeleportToCfg:
+                        {
+                            executor = new AbilityEffectExecutor4TeleportTo();
+                        }
+                        break;
+                    case MapAbilityEffectCastSkillCfg:
+                        {
+                            executor = new AbilityEffectExecutor4CastSkill();
+                        }
+                        break;
                 }
 
                 if (executor != null)

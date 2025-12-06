@@ -58,7 +58,7 @@ namespace My.Map.Scene
             if (state is InteractPointState s)
             {
                 transform.position = s.Position;
-                if (icon != null) icon.enabled = s.IsEnabled;
+                //if (icon != null) icon.enabled = s.IsEnabled;
                 //if (highlightFx != null) highlightFx.SetActive(s.IsEnabled && _logic.IsInAOI);
             }
         }

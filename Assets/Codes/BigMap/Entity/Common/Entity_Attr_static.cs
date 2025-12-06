@@ -13,6 +13,7 @@ namespace My.Map.Entity
         public const string Special_JianShang = "Special_JianShang";
         public const string Special_YiShang = "Special_YiShang";
         public const string PlayerGcThreshold = "PlayerGcThreshold";
+        public const string Basic_JianShang = "Basic_JianShang";
 
         public const string HP = "HP";
         public const string HP_MAX = "HP.Max";

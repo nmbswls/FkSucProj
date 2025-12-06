@@ -76,18 +76,129 @@ MonoBehaviour:
         Param5: Clear_Ruin_02
         Param6: 
     FovStaticSegments: []
-  EntityRefreshInfo: []
+  EntityRefreshInfo:
+  - UniqId: 3
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1421625798272221193
+  - UniqId: 2
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1421625798272221194
+  - UniqId: 1
+    AppearCond:
+      Type: 2
+      Param1: 1
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: fix_teleport
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1421625798272221195
   NamedPoints:
-  - Name: 
+  - Name: p1
     PointType: 0
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: born_01
     PointType: 1
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
+  - Name: hole_01_p
+    PointType: 0
+    Position: {x: -3.98, y: 3.49, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: hole_02_p
+    PointType: 0
+    Position: {x: -4.82, y: 3.5, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  NamedPaths: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 1421625798272221193
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hole
+        Position: {x: -4.95, y: 3.52}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys:
+          - tp_name
+          values:
+          - hole_01_p
+    - rid: 1421625798272221194
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hole
+        Position: {x: -3.89, y: 3.52}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys:
+          - tp_name
+          values:
+          - hole_02_p
+    - rid: 1421625798272221195
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: teleport
+        Position: {x: -0.96, y: 4.26}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []

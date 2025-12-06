@@ -30,7 +30,8 @@ namespace My.Map.Logic
     public class LogicEntityRecord4InteractPoint : LogicEntityRecord
     {
         public int Status;
-        public List<string> CustomFlags = new();
+
+        public Dictionary<string, string> DynamicVariables = new();
     }
 
 

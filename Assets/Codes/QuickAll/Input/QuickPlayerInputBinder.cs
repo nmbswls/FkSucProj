@@ -119,6 +119,8 @@ namespace My.Input
 
             actions.OverworldMap.HotKey1.performed += OnHotKey1;
             actions.OverworldMap.HotKey2.performed += OnHotKey2;
+            actions.OverworldMap.HotKey3.performed += OnHotKey3;
+            actions.OverworldMap.HotKey4.performed += OnHotKey4;
 
             actions.OverworldMap.Click.started += OnLeftDown;
             actions.OverworldMap.RightClick.started += OnRightDown;
@@ -140,6 +142,8 @@ namespace My.Input
 
             actions.OverworldMap.HotKey1.performed -= OnHotKey1;
             actions.OverworldMap.HotKey2.performed -= OnHotKey2;
+            actions.OverworldMap.HotKey3.performed -= OnHotKey3;
+            actions.OverworldMap.HotKey4.performed -= OnHotKey4;
 
             actions.OverworldMap.Click.started -= OnLeftDown;
             actions.OverworldMap.RightClick.started -= OnRightDown;
@@ -272,6 +276,36 @@ namespace My.Input
             if (ctx.performed)
             {
                 if (uiRouter == null || !uiRouter.DispatchHotkey(2))
+                {
+                }
+            }
+        }
+
+        public void OnHotKey3(InputAction.CallbackContext ctx)
+        {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+            if (ctx.performed)
+            {
+                if (uiRouter == null || !uiRouter.DispatchHotkey(3))
+                {
+                }
+            }
+        }
+
+        public void OnHotKey4(InputAction.CallbackContext ctx)
+        {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+            if (ctx.performed)
+            {
+                if (uiRouter == null || !uiRouter.DispatchHotkey(4))
                 {
                 }
             }

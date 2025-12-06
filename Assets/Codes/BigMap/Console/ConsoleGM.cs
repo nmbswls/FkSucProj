@@ -107,7 +107,7 @@ public class ConsoleGM : MonoBehaviour
                 
                 Log($"…Ë÷√±‰¡ø id={id}");
 
-                HomeSceneManager.Instance.DataSource.SetVariable(id);
+                MainGameManager.Instance.gameLogicManager.playerDataManager.SetVariable(id);
 
             });
 

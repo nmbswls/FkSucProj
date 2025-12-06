@@ -13,8 +13,14 @@ using static UnityEditor.Rendering.CameraUI;
 namespace My.Map.Entity
 {
 
-    
-    public class InteractPointLogic : LogicEntityBase, IWithInteract
+    public interface IEntityInteractable
+    {
+        string GetRuntimeVariable(string paramName);
+
+        GameLogicManager LogicManager { get; }
+    }
+
+    public class InteractPointLogic : LogicEntityBase, IWithInteract, IEntityInteractable
     {
 
         // ״̬
@@ -55,6 +61,11 @@ namespace My.Map.Entity
             CheckStatusCondition();
         }
 
+        public string GetRuntimeVariable(string paramName)
+        {
+            RealRecord.DynamicVariables.TryGetValue(paramName, out var value);
+            return value;
+        }
 
         public StatusInfo GetCurrentStatusInfo()
         {
@@ -90,14 +101,14 @@ namespace My.Map.Entity
                     }
                 }
 
-                foreach (var needFlag in rule.NeedSelfFlag)
-                {
-                    if(!this.RealRecord.CustomFlags.Contains(needFlag))
-                    {
-                        poassed = false;
-                        break;
-                    }
-                }
+                //foreach (var needFlag in rule.NeedSelfFlag)
+                //{
+                //    if(!this.RealRecord.CustomFlags.Contains(needFlag))
+                //    {
+                //        poassed = false;
+                //        break;
+                //    }
+                //}
 
                 if (poassed)
                 {

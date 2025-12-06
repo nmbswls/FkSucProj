@@ -80,7 +80,9 @@ namespace My.Map.Entity
     public class MapAbilityPhase
     {
         public string PhaseName;
+
         public OneVariaty DurationValue;
+        
         public string AnimTag; // 可用于驱动动画状态
 
         public EAbilityInterruptMask InterruptMask; // 自定义Flags
@@ -128,17 +130,7 @@ namespace My.Map.Entity
         public string AbilityTag;
         
 
-        public enum ETargetType
-        {
-            NoTarget,
-            Point,
-            Circle,
-            Rect,
-            LockTarget,
-        }
-        public ETargetType TargetType;
-        public float Range1;
-        public float Range2;
+        
 
         // ai 相关
         

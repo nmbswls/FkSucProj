@@ -610,6 +610,61 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4CastSkill : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectCastSkillCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4CostResource err");
+                return;
+            }
+
+            var casterId = ctx.SourceInfo.SrcEntityId;
+            var caster = ctx.Env.GetLogicEntity(casterId);
+            if(caster == null || caster.MarkDead)
+            {
+                Debug.LogError("AbilityEffectExecutor4CostResource err 2 ");
+                return;
+            }
+
+            if(caster is not BaseUnitLogicEntity unitEntity)
+            {
+                Debug.LogError("AbilityEffectExecutor4CostResource err 3");
+                return;
+            }
+
+            if(unitEntity.CheckHasState(AttrIdConsts.ForbidOp))
+            {
+                return;
+            }
+
+            if(unitEntity.abilityController.IsActionable())
+            {
+                return;
+            }
+
+            ILogicEntity targetEntity = null;
+            if (ctx.TargetId != 0)
+            {
+                targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
+            }
+
+            Vector2 castVec = ctx.CastVec1.Value;
+            if (realCfg.UseTargetAsTarget)
+            {
+                castVec = targetEntity.Pos;
+            }
+
+
+            // 使用技能
+            unitEntity.ablilityManager.UseSkill(realCfg.SkillId, castVec, realCfg.UseTargetAsTarget ? targetEntity : null);
+        }
+    }
+    
+
 
     public class AbilityEffectExecutor4ApplyDamage : AbilityEffectExecutor
     {
@@ -810,6 +865,40 @@ namespace My.Map.Entity
 
             Debug.Log("AbilityEffectExecutor4NextPhase try apply");
             abilityCtx.PhaseMarkSkip = true;
+        }
+    }
+
+    public class AbilityEffectExecutor4TeleportTo : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectTeleportToCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4CostResource err");
+                return;
+            }
+
+            var teleportTarget = ctx.TargetId;
+            if(teleportTarget == 0)
+            {
+                teleportTarget = ctx.SourceInfo.SrcEntityId;
+            }
+
+            var target = ctx.Env.GetLogicEntity(teleportTarget);
+            if (target == null || target.MarkDead)
+            {
+                Debug.LogError("target be invalid err");
+                return;
+            }
+
+            if(ctx.CastVec1 == null)
+            {
+                Debug.LogError("target be invalid por err");
+                return;
+            }
+            ctx.Env.EntityTeleportTo(ctx.TargetId, ctx.CastVec1??Vector2.zero);
         }
     }
 

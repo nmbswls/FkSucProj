@@ -2,6 +2,7 @@
 using My.Map.Entity;
 using TMPro;
 using UnityEngine;
+using static Config.Unit.EntitySkillCfg;
 using static UnityEngine.Rendering.DebugUI.Table;
 
 
@@ -156,30 +157,34 @@ namespace My.UI
         {
             if(HudMode == EHudMode.Normal)
             {
-                string abilityName = string.Empty;
+                string skillId = string.Empty;
 
                 if (index == 1)
                 {
-                    abilityName = "crazy_fire";
+                    skillId = "crazy_fire";
                 }
                 else if (index == 2)
                 {
-                    abilityName = "spawn_attract";
+                    skillId = "spawn_attract";
+                }
+                else if (index == 3)
+                {
+                    skillId = "queen_counter";
                 }
 
-                if (string.IsNullOrEmpty(abilityName))
+                if (string.IsNullOrEmpty(skillId))
                 {
                     return false;
                 }
 
-                var abConf = AbilityLibrary.GetAbilityConfig(abilityName);
-                if (abConf.TargetType != MapAbilitySpecConfig.ETargetType.NoTarget)
+                var skillConf = SkillLibrary.GetSkillConfig(skillId);
+                if (skillConf.TargetType != ETargetType.NoTarget)
                 {
-                    EnterSkillPreviewMode(abilityName);
+                    EnterSkillPreviewMode(skillId);
                 }
                 else
                 {
-                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(abilityName);
+                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId);
                 }
 
                 return true;
@@ -204,7 +209,7 @@ namespace My.UI
                 // ×ó¼ü
                 if (button == 0)
                 {
-                    ConfirmSkillCast(overworldSkillPreviewUI.PreviewAbilityName, wp, Vector2.zero);
+                    ConfirmSkillCast(overworldSkillPreviewUI.PreviewSkillName, wp, Vector2.zero);
 
                 }
                 else if (button == 1)
@@ -262,10 +267,10 @@ namespace My.UI
 
         #region ¼¼ÄÜÔ¤ÀÀ
 
-        protected void EnterSkillPreviewMode(string abName)
+        protected void EnterSkillPreviewMode(string skillId)
         {
             UpdateHudMode(EHudMode.PreviewSkill);
-            overworldSkillPreviewUI.Initialize(abName);
+            overworldSkillPreviewUI.Initialize(skillId);
         }
 
 

@@ -233,21 +233,24 @@ public class StaticItemExporterWindow : EditorWindow
         }
 
         var namedPathRoot = sceneRoot.transform.Find("NamedPath");
-        for (int i = 0; i < namedPathRoot.childCount; i++)
+        if(namedPathRoot != null)
         {
-            var t = namedPathRoot.GetChild(i);
-            var comp = t.GetComponent<NamePathProvider>();
-            if (comp != null)
+            for (int i = 0; i < namedPathRoot.childCount; i++)
             {
-                var path = new NamedPath();
-                path.Name = comp.Name;
-                path.Tag = comp.Tag;
-                path.Points = new();
-                foreach (var p in comp.NamedPoints)
+                var t = namedPathRoot.GetChild(i);
+                var comp = t.GetComponent<NamePathProvider>();
+                if (comp != null)
                 {
-                    path.Points.Add(p.gameObject.name);
+                    var path = new NamedPath();
+                    path.Name = comp.Name;
+                    path.Tag = comp.Tag;
+                    path.Points = new();
+                    foreach (var p in comp.NamedPoints)
+                    {
+                        path.Points.Add(p.gameObject.name);
+                    }
+                    namedPathCache[t.name] = path;
                 }
-                namedPathCache[t.name] = path;
             }
         }
 
@@ -441,12 +444,19 @@ public class StaticItemExporterWindow : EditorWindow
             chunkItems.FovStaticSegments = kv.Value;
         }
 
-        int staticRefreshId = 1;
-
+        HashSet<int> refreshKeys = new();
         foreach (var dynamicGen in dynamicGenerator)
         {
             var refreshInfo = dynamicGen.RefreshInfo;
-            refreshInfo.UniqId = staticRefreshId++;
+            if(refreshKeys.Contains(refreshInfo.UniqId))
+            {
+                Debug.LogError($"duplicate key {refreshInfo.UniqId} in {dynamicGen.gameObject.name}");
+                continue;
+            }
+            refreshInfo.InitInfo.Position = dynamicGen.transform.position;
+            //refreshInfo.InitInfo.FaceDir = dynamicGen.transform.position;
+
+            refreshKeys.Add(refreshInfo.UniqId);
             asset.EntityRefreshInfo.Add(refreshInfo);
         }
 

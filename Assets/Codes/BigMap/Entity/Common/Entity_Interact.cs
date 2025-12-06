@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using My.Config;
 using My.Map.Entity;
 using UnityEngine;
+using static My.GameLogicManager;
 
 namespace My.Map
 {
@@ -20,12 +21,12 @@ namespace My.Map
 
     public class EntityInteractComp : IWithInteract
     {
-        public LogicEntityBase Owner;
+        public IEntityInteractable Owner;
 
         private List<MapInteractInfo> interactInfos = new();
         public List<MapInteractInfo> InteractInfos { get { return interactInfos; } }
 
-        public EntityInteractComp(LogicEntityBase owner)
+        public EntityInteractComp(IEntityInteractable owner)
         {
             this.Owner = owner;
         }
@@ -102,6 +103,43 @@ namespace My.Map
                             }
 
                             egPoint.ActivateSleepyMembers();
+                        }
+                        break;
+                    case LogicInteractOutput.EOutputType.SpecialMoveTo:
+                        {
+                            var player = Owner.LogicManager.playerLogicEntity;
+                            
+                            // 尝试获取覆盖的值
+                            var pName = Owner.GetRuntimeVariable(output.Param3);
+                            if(string.IsNullOrEmpty(pName))
+                            {
+                                pName = output.Param3;
+                            }
+
+                            var p = Owner.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(pName);
+                            if(p == null)
+                            {
+                                Debug.Log("special move no point found");
+                                return false;
+                            } 
+
+                            float delay = output.Param1 * 0.001f;
+                            LogicFightEffectContext ctx = new LogicFightEffectContext(Owner.LogicManager, new EffectSourceInfo()
+                            {
+                                SrcType = ESourceType.Mechanism
+                            });
+                            ctx.TargetId = player.Id;
+                            ctx.CastVec1 = p.Value.Position;
+
+
+                            //Debug.Log("special move yo");
+                            Owner.LogicManager.globalBuffManager.AddBuff(player.Id, "lock_move", overrideDuration: delay);
+                            Owner.LogicManager.viewer.DoPlayerSpecialMove(p.Value.Position, player.Pos, delay, () =>
+                            {
+
+                            });
+                            Owner.LogicManager.HandleLogicFightEffect(new MapAbilityEffectTeleportToCfg() { PendingTime = delay}, ctx);
+
                         }
                         break;
                 }

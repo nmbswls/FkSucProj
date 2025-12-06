@@ -32,6 +32,18 @@ namespace Config.Unit
         public float DesiredUseDistance;
         
         public FightStruct.ESelectPolicy SelectPolicy; // 1-敌人主目标 2-自身 3-血量最低友方 4 血量最低敌方 5 随机 
+
+        public enum ETargetType
+        {
+            NoTarget,
+            Point,
+            Circle,
+            Rect,
+            LockTarget,
+        }
+        public ETargetType TargetType;
+        public float Range1;
+        public float Range2;
     }
 
 

@@ -1,5 +1,6 @@
 
 
+using Config.Unit;
 using My.Map;
 using My.Map.Entity;
 using TMPro;
@@ -20,8 +21,8 @@ namespace My.UI
         public GameObject PreviewCastRangePrefab;
 
         public TextMeshProUGUI HintText;
-        public string PreviewAbilityName;
-        protected MapAbilitySpecConfig AbilityConfig;
+        public string PreviewSkillName;
+        protected EntitySkillCfg SkillConfig;
 
 
         protected SceneRangeWarnCtrl PreviewCircle;
@@ -46,48 +47,48 @@ namespace My.UI
             }
         }
 
-        public void Initialize(string abName)
+        public void Initialize(string skillId)
         {
-            this.PreviewAbilityName = abName;
-            AbilityConfig = AbilityLibrary.GetAbilityConfig(abName);
+            this.PreviewSkillName = skillId;
+            SkillConfig = SkillLibrary.GetSkillConfig(skillId);
 
 
             PreviewCircle.gameObject.SetActive(false);
             PreviewRect.gameObject.SetActive(false);
             PreviewCastRange.SetActive(false);
 
-            if (AbilityConfig.TargetType == MapAbilitySpecConfig.ETargetType.NoTarget)
+            if (SkillConfig.TargetType == EntitySkillCfg.ETargetType.NoTarget)
             {
-                if(AbilityConfig.Range1 > 1e-1)
+                if(SkillConfig.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
                 }
             }
-            else if (AbilityConfig.TargetType == MapAbilitySpecConfig.ETargetType.Point)
+            else if (SkillConfig.TargetType == EntitySkillCfg.ETargetType.Point)
             {
-                if(AbilityConfig.Range1 > 1e-1)
+                if(SkillConfig.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
-                    PreviewCastRange.transform.localScale = Vector3.one * AbilityConfig.Range1;
+                    PreviewCastRange.transform.localScale = Vector3.one * SkillConfig.Range1;
                 }
                 PreviewCircle.gameObject.SetActive(true);
                 PreviewCircle.transform.localScale = Vector3.one * 0.1f;
             }
-            else if(AbilityConfig.TargetType == MapAbilitySpecConfig.ETargetType.Circle)
+            else if(SkillConfig.TargetType == EntitySkillCfg.ETargetType.Circle)
             {
-                if (AbilityConfig.Range1 > 1e-1)
+                if (SkillConfig.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
-                    PreviewCastRange.transform.localScale = Vector3.one * AbilityConfig.Range1;
+                    PreviewCastRange.transform.localScale = Vector3.one * SkillConfig.Range1;
                 }
                 
                 PreviewCircle.gameObject.SetActive(true);
-                PreviewCircle.transform.localScale = Vector3.one * AbilityConfig.Range2;
+                PreviewCircle.transform.localScale = Vector3.one * SkillConfig.Range2;
             }
-            else if(AbilityConfig.TargetType == MapAbilitySpecConfig.ETargetType.Rect)
+            else if(SkillConfig.TargetType == EntitySkillCfg.ETargetType.Rect)
             {
                 PreviewRect.gameObject.SetActive(true);
-                PreviewRect.transform.localScale = new Vector3(AbilityConfig.Range1, AbilityConfig.Range2, 1);
+                PreviewRect.transform.localScale = new Vector3(SkillConfig.Range1, SkillConfig.Range2, 1);
             }
         }
 
@@ -97,14 +98,14 @@ namespace My.UI
             PreviewRect.gameObject.SetActive(false);
             PreviewCastRange.SetActive(false);
 
-            PreviewAbilityName = null;
-            AbilityConfig = null;
+            PreviewSkillName = null;
+            SkillConfig = null;
         }
 
 
         public void TickPreviewState()
         {
-            if (string.IsNullOrEmpty(PreviewAbilityName))
+            if (string.IsNullOrEmpty(PreviewSkillName))
             {
                 return;
             }
@@ -121,7 +122,7 @@ namespace My.UI
 
                 if(PreviewRect.gameObject.activeSelf)
                 {
-                    if(AbilityConfig.TargetType == MapAbilitySpecConfig.ETargetType.Rect)
+                    if(SkillConfig.TargetType == EntitySkillCfg.ETargetType.Rect)
                     {
                         PreviewRect.transform.position = playerPos;
                     }
@@ -129,8 +130,8 @@ namespace My.UI
 
                 if(PreviewCircle.gameObject.activeSelf)
                 {
-                    if (AbilityConfig.TargetType == MapAbilitySpecConfig.ETargetType.NoTarget
-                        && AbilityConfig.Range1 > 1e-1)
+                    if (SkillConfig.TargetType == EntitySkillCfg.ETargetType.NoTarget
+                        && SkillConfig.Range1 > 1e-1)
                     {
                         PreviewCircle.transform.position = playerPos;
                     }
@@ -146,13 +147,13 @@ namespace My.UI
 
                 
 
-                switch (AbilityConfig.TargetType)
+                switch (SkillConfig.TargetType)
                 {
-                    case MapAbilitySpecConfig.ETargetType.Point:
-                    case MapAbilitySpecConfig.ETargetType.Circle:
+                    case EntitySkillCfg.ETargetType.Point:
+                    case EntitySkillCfg.ETargetType.Circle:
                         {
                             //  ©∑®æ‡¿Î
-                            var dist = AbilityConfig.Range1;
+                            var dist = SkillConfig.Range1;
 
                             if (dist < (wp - playerPos).magnitude)
                             {

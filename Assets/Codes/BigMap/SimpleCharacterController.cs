@@ -27,7 +27,7 @@ namespace My.Map.Scene
         public float dynamicQueryExtra = 1.0f;  // ≤È—Ø∞Îæ∂»ﬂ”‡
 
         private Rigidbody2D rb;
-        private CircleCollider2D circleCollider;
+        private Collider2D selfCollider;
         private Vector2 velocity;               // ∆Ωª¨ÀŸ∂»
         private static Collider2D[] overlapBuf = new Collider2D[32]; // ∏¥”√ª∫≥Â
 
@@ -45,8 +45,8 @@ namespace My.Map.Scene
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             rb.freezeRotation = true;
 
-            circleCollider = GetComponent<CircleCollider2D>();
-            radius = circleCollider.radius;
+            selfCollider = GetComponent<Collider2D>();
+            radius = GetApproxRadius(selfCollider); 
 
             separationRadius = radius * 1.5f;
         }

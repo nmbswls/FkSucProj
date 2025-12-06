@@ -164,6 +164,12 @@ namespace My.Map.Logic
                         var realRecord = new LogicEntityRecord4InteractPoint();
                         realRecord.Status = 0;
 
+                        var initInfo4IP = (EntityInitInfo4InteractPoint) initInfo;
+                        for(int i=0;i<initInfo4IP.Variables.keys.Count;i++)
+                        {
+                            realRecord.DynamicVariables.Add(initInfo4IP.Variables.keys[i], initInfo4IP.Variables.values[i]);
+                        }
+                        
                         record = realRecord;
                         break;
                     }

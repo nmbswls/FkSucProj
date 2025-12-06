@@ -23,6 +23,7 @@ namespace My.Config
 
 
             ActivateEventGroup,
+            SpecialMoveTo,
         }
 
         public EOutputType OutputType;

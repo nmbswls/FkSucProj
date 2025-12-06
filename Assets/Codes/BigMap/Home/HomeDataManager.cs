@@ -37,7 +37,7 @@ namespace My.Home
 
         public long HomePlacementIdCounter = 100;
 
-        public Dictionary<string, bool> VariableDict = new();
+        
 
         public List<HomePlacementInfo> PlacementInfos = new();
 
@@ -49,45 +49,29 @@ namespace My.Home
         {
             this.LogicManager = logicManager;
 
-            VariableDict["fix_teleport"] = true;
         }
 
 
         public void OnPlayerEnterHome()
         {
-            {
-                var record = new LogicEntityRecord4InteractPoint();
-                record.Id = GameLogicManager.LogicEntityIdInst++;
-                record.EntityType = EEntityType.InteractPoint;
-                record.CfgId = "teleport";
-                record.Position = new Vector2(2.0f, 2.0f);
+            //{
+            //    var record = new LogicEntityRecord4InteractPoint();
+            //    record.Id = GameLogicManager.LogicEntityIdInst++;
+            //    record.EntityType = EEntityType.InteractPoint;
+            //    record.CfgId = "teleport";
+            //    record.Position = new Vector2(2.0f, 2.0f);
 
-                LogicManager.AddNewEntityRecord(record);
-            }
+            //    LogicManager.AddNewEntityRecord(record);
+            //}
         }
 
-        public void SetVariable(string id)
-        {
-            VariableDict[id] = true;
-
-            // 变量事件
-            LogicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()
-            {
-                Name = id,
-                AfterVal = 1,
-            });
-        }
 
         public bool CheckHasPlacement(string id)
         {
             return PlacementInfos.Find((item) => item.Id == id) != null;
         }
 
-        public bool CheckHasParam(string id)
-        {
-            VariableDict.TryGetValue(id, out var val);
-            return val;
-        }
+
 
         public void AddPlacement(string id, Vector3Int pivorPos, EPlacementRotation rot)
         {
@@ -195,24 +179,24 @@ namespace My.Home
 
             {
 
-                var refreshInfo = new DynamicEntityRefreshInfo();
-                refreshInfo.UniqId = uniqId++;
-                refreshInfo.InitInfo = new EntityInitInfo4Npc()
-                {
-                    CfgId = "home_liki",
-                    Position = new Vector2(2.0f, 0f),
-                    IsPeace = true,
-                    MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove
-                };
+                //var refreshInfo = new DynamicEntityRefreshInfo();
+                //refreshInfo.UniqId = uniqId++;
+                //refreshInfo.InitInfo = new EntityInitInfo4Npc()
+                //{
+                //    CfgId = "home_liki",
+                //    Position = new Vector2(2.0f, 0f),
+                //    IsPeace = true,
+                //    MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove
+                //};
 
-                refreshInfo.AppearCond = new CommonCheckCond()
-                {
-                    Type = ECommonCheckType.CheckVariable,
-                    Param1 = 1,
-                    Param5 = "liki",
-                };
+                //refreshInfo.AppearCond = new CommonCheckCond()
+                //{
+                //    Type = ECommonCheckType.CheckVariable,
+                //    Param1 = 1,
+                //    Param5 = "liki",
+                //};
 
-                retList.Add(refreshInfo);
+                //retList.Add(refreshInfo);
             }
 
             return retList;

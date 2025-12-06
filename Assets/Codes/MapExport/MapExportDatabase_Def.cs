@@ -108,6 +108,8 @@ namespace My.MapExport
     public class EntityInitInfo4InteractPoint : EntityInitInfo
     {
         public override EEntityType EntityType => EEntityType.InteractPoint;
+
+        public SerializableDict<string, string> Variables = new();
     }
 
     [Serializable]

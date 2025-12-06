@@ -90,7 +90,7 @@ namespace My.Map
                 if(CheckAllRequiredEntityCleared())
                 {
                     AllDeadFlag = true;
-                    RealRecord.CustomFlags.Add("Finish_01");
+                    //RealRecord.CustomFlags.Add("Finish_01");
                 }
             }
         }

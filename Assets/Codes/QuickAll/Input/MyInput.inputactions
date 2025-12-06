@@ -70,6 +70,24 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "HotKey3",
+                    "type": "Button",
+                    "id": "2f9879e3-1e95-4ae8-8b42-c25e6f1c69b7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HotKey4",
+                    "type": "Button",
+                    "id": "1d3cbdaa-5a83-4b82-bdb9-4d156f9caabc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Click",
                     "type": "Button",
                     "id": "39aa9469-ae43-40ea-b0b1-30739813dca5",
@@ -249,6 +267,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "PointerPos",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5d42403a-0774-4631-bdcd-e74cec554dc6",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "648ec13e-fc61-4281-859c-b13cc989e6f0",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey4",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

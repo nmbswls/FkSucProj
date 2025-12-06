@@ -142,7 +142,14 @@ namespace My.UI
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
-            
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "YesNoMsgBox",
+                resourcePath = "UI/Prefabs/Box/YesNoMsg",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
         }
 
         public static void RegisterGroups()

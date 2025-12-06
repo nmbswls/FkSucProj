@@ -12,6 +12,7 @@ using My.Map.Entity.AI;
 using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
+using My.Map.View;
 using My.UI;
 using System;
 using System.Collections;
@@ -237,7 +238,9 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.P))
             {
-                playerScenePresenter.PlayerEntity.ApplyKnockBack(Vector2.right, 2f);
+                //playerScenePresenter.PlayerEntity.ApplyKnockBack(Vector2.right, 2f);
+                 
+                DoPlayerSpecialMove(Vector2.one, new Vector2(-3, -3), 3.0f);
             }
         }
 
@@ -524,6 +527,25 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public void DestroySceneFxEffect(int effectId)
     {
         MapSceneEffectManager.Instance.ForceDestroy(effectId);
+    }
+
+
+    /// <summary>
+    /// 特殊移动
+    /// </summary>
+    /// <param name="targetPos"></param>
+    /// <param name="fromPos"></param>
+    /// <param name="duration"></param>
+    public void DoPlayerSpecialMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onCompelete = null)
+    {
+        if(playerScenePresenter != null)
+        {
+            var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(fromPos, duration + 1f, "PlayerSpecialMove");
+
+            var effectGo = ctx.EffectGo.GetComponent<PlayerGhostMoveFxCtrl>();
+            effectGo.playerSR = playerScenePresenter.transform.Find("view").Find("agent").GetComponentInChildren<SpriteRenderer>();
+            effectGo.PlayMoveFx(playerScenePresenter.transform, targetPos, () => { onCompelete?.Invoke(); }, () => { });
+        }
     }
 }
 

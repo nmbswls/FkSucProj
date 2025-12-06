@@ -49,11 +49,11 @@ namespace My
                         {
                             checkHas = true;
                         }
-                        if(checkHas && homeDataManager.CheckHasParam(cond.Param5))
+                        if(checkHas && playerDataManager.CheckHasParam(cond.Param5))
                         {
                             return true;
                         }
-                        if (!checkHas && !homeDataManager.CheckHasParam(cond.Param5))
+                        if (!checkHas && !playerDataManager.CheckHasParam(cond.Param5))
                         {
                             return true;
                         }

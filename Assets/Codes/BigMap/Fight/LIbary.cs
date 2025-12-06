@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
+using static Config.Unit.EntitySkillCfg;
 
 
 namespace My.Map.Entity
@@ -114,6 +115,35 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 5f;
                     cfg.Priority = 2000;
                     cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "queen_counter";
+                    cfg.MainAbilityId = "queen_counter";
+                    cfg.CoolDown = 10.0f;
+                    cfg.DesiredUseDistance = 0f;
+                    cfg.Priority = 1;
+                    //cfg.tar
+                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
+                    cfg.TargetType = EntitySkillCfg.ETargetType.NoTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "spawn_attract";
+                    cfg.MainAbilityId = "spawn_attract";
+                    cfg.CoolDown = 10.0f;
+                    cfg.DesiredUseDistance = 5f;
+                    cfg.Priority = 1;
+
+                    cfg.StackCount = 5;
+                    cfg.TargetType = EntitySkillCfg.ETargetType.Point;
+                    cfg.Range1 = 5.0f;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -229,6 +259,15 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreateDefaultGuardAttack2();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateQueenCounter();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateQueenCounterPayback();
                     _abilityDict[ab.Id] = ab;
                 }
             }
@@ -1111,8 +1150,8 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.Utility;
             //spec.CoolDown = 10.0f;
             //spec.StackCount = 5;
-            spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
-            spec.Range1 = 5.0f;
+            //spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
+            //spec.Range1 = 5.0f;
 
             var mainPhase = new MapAbilityPhase()
             {
@@ -1148,8 +1187,8 @@ namespace My.Map.Entity
             //spec.CoolDown = 8.0f;
             //spec.DesiredUseDistance = 2.0f;
             //spec.Priority = 100;
-            spec.TargetType = MapAbilitySpecConfig.ETargetType.LockTarget;
-            spec.Range1 = 2.5f;
+            //spec.TargetType = MapAbilitySpecConfig.ETargetType.LockTarget;
+            //spec.Range1 = 2.5f;
 
             var preparePhase = new MapAbilityPhase()
             {
@@ -1705,6 +1744,132 @@ namespace My.Map.Entity
                 {
                     ValType = EOneVariatyType.Float,
                     RawVal = "0.1"
+                },
+            };
+            spec.Phases.Add(postPhase);
+            return spec;
+        }
+
+
+        private static MapAbilitySpecConfig CreateQueenCounter()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "queen_counter";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.MaxStepDistance = 0.4f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.6"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "2"
+                },
+            };
+
+            var effect = new MapAbilityEffectAddBuffCfg()
+            {
+                BuffId = "queen_countering",
+
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            };
+            spec.Phases.Add(postPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateQueenCounterPayback()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "queen_counter_payback";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.MaxStepDistance = 0.4f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "2"
+                },
+            };
+
+            {
+                //var effect = new MapAbilityEffectAddBuffCfg()
+                //{
+                //    BuffId = "queen_countering",
+                //    TargetType = 0,
+                //};
+                //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnEnter });
+
+
+            }
+
+            {
+                var effect = new MapAbilityEffectTeleportToCfg()
+                {
+                    
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnEnter });
+            }
+
+            spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
                 },
             };
             spec.Phases.Add(postPhase);

@@ -803,6 +803,12 @@ namespace My.Map
                             }
 
                             EventOnHit?.Invoke();
+                            {
+                                foreach(var b in BuffContainer.Values)
+                                {
+                                    b.DoBuffTrigger(ETriggerType.OnHit);
+                                }
+                            }
                         }
 
                         if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)

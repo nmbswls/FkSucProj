@@ -94,6 +94,8 @@ namespace My.Map
         bool MarkDead { get; set; }
 
         void OnMapLogicEvent(IMapLogicEvent ev);
+
+        void TeleportTo(Vector2 pos);
     }
 
     public static class LogicEvents
@@ -162,6 +164,15 @@ namespace My.Map
 
             InitAttribute();
         }
+
+        public void TeleportTo(Vector2 pos)
+        {
+            // ÆäËû
+            var posNow = this.Pos;
+            SetPosition(pos);
+            EventOnEntityMove?.Invoke(posNow, pos);
+        }
+
 
         protected virtual void InitAttribute()
         {

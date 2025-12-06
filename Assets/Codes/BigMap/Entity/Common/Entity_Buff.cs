@@ -15,20 +15,31 @@ using static My.GameLogicManager;
 
 namespace My.Map.Entity
 {
-    public enum TriggerType
+    public enum ETriggerType
     {
         Tick,
         OnSkillUsed,
+        OnHit,
     }
+
+    [Serializable]
+    public class BuffTriggerOutput
+    {
+
+    }
+
 
     public class BuffTriggerRuleConfig
     {
-        public TriggerType TriggerType;
+        public ETriggerType TriggerType;
         public int TriggerParam1;
         public int TriggerParam2;
         public int TriggerParam3;
 
+        [SerializeReference]
         public List<MapFightEffectCfg> OutputFightEffects;
+
+        public bool RemoveOnTrigger;
     }
 
     public enum EBuffEffectType
@@ -117,7 +128,7 @@ namespace My.Map.Entity
                     {
                         new BuffTriggerRuleConfig()
                         {
-                            TriggerType = TriggerType.Tick,
+                            TriggerType = ETriggerType.Tick,
                             TriggerParam1 = 200, // 每0.2秒一次
                             //OutputEffects = new()
                             //{
@@ -195,7 +206,7 @@ namespace My.Map.Entity
                     {
                         new BuffTriggerRuleConfig()
                         {
-                            TriggerType = TriggerType.Tick,
+                            TriggerType = ETriggerType.Tick,
                             TriggerParam1 = 200, // 每0.2秒一次
                             OutputFightEffects = new()
                             {
@@ -284,7 +295,7 @@ namespace My.Map.Entity
                     {
                         new BuffTriggerRuleConfig()
                         {
-                            TriggerType = TriggerType.Tick,
+                            TriggerType = ETriggerType.Tick,
                             TriggerParam1 = 500, // 每0.5秒一次
                             OutputFightEffects = new()
                             {
@@ -299,6 +310,37 @@ namespace My.Map.Entity
                     },
                 };
 
+
+                _library["queen_countering"] = new BuffDefinition()
+                {
+                    BuffId = "queen_countering",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = 2.0f,
+                    ZOffsetOverride = 0.5f,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_JianShang, ModifierValue = 9000 },
+                    },
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.OnHit,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectCastSkillCfg()
+                                {
+                                    UseTargetAsTarget = true,
+                                    UseTargetAsCastVec = true,
+                                    SkillId = "queen_counter_payback",
+                                }
+                            },
+                            RemoveOnTrigger = true,
+                        }
+                    },
+                };
             }
 
             _library.TryGetValue(buffId, out BuffDefinition def);
@@ -333,7 +375,9 @@ namespace My.Map.Entity
 
         public bool IsAura;
         public float AuraRange;
-        public string AuraBuffId;   
+        public string AuraBuffId;
+
+        public float ZOffsetOverride;
 
         [Serializable]
         public class OneModPair
@@ -798,11 +842,11 @@ namespace My.Map.Entity
 
         private List<Modifier?> registeredModifiers;
 
-        private List<TickTriggerStruct> tickTriggers;
+        private List<TriggerRuntimeStruct> triggerRuntimes;
 
-        public class TickTriggerStruct
+        public class TriggerRuntimeStruct
         {
-            public float lastTick;
+            public float lastTriggerTime;
             public BuffTriggerRuleConfig config;
         }
 
@@ -832,18 +876,15 @@ namespace My.Map.Entity
             owner.BuffContainer.Add(instId, this);
             foreach (var trigger in Def.TriggerList)
             {
-                if (trigger.TriggerType == TriggerType.Tick)
+                if (triggerRuntimes == null)
                 {
-                    if (tickTriggers == null)
-                    {
-                        tickTriggers = new();
-                    }
-                    tickTriggers.Add(new TickTriggerStruct()
-                    {
-                        lastTick = 0,
-                        config = trigger,
-                    });
+                    triggerRuntimes = new();
                 }
+                triggerRuntimes.Add(new TriggerRuntimeStruct()
+                {
+                    lastTriggerTime = 0,
+                    config = trigger,
+                });
             }
 
             if (Def.IsAura)
@@ -899,62 +940,29 @@ namespace My.Map.Entity
 
         public void Tick(float dt)
         {
-            if (tickTriggers != null)
+            if (triggerRuntimes != null)
             {
-                foreach (var triggerInfo in tickTriggers)
+                foreach (var triggerInfo in triggerRuntimes)
                 {
-                    if (triggerInfo.lastTick == 0)
-                    {
-                        triggerInfo.lastTick = LogicTime.time;
-                        continue;
-                    }
-
-                    if (LogicTime.time - triggerInfo.lastTick < triggerInfo.config.TriggerParam1 * 0.001f)
+                    if (triggerInfo.config.TriggerType != ETriggerType.Tick)
                     {
                         continue;
                     }
 
-                    triggerInfo.lastTick = triggerInfo.lastTick + triggerInfo.config.TriggerParam1 * 0.001f;
-
-                    //if (triggerInfo.config.OutputEffects != null)
-                    //{
-                    //    foreach (var effect in triggerInfo.config.OutputEffects)
-                    //    {
-                    //        BuffOwner.BuffManager.ExecuteBuffTriggerEffect(this, effect);
-                    //    }
-                    //}
-
-                    if(triggerInfo.config.OutputFightEffects != null)
+                    if (triggerInfo.lastTriggerTime == 0)
                     {
-                        foreach (var fightEffect in triggerInfo.config.OutputFightEffects)
-                        {
-                            switch(fightEffect)
-                            {
-                                // buff触发器中 
-                                case MapAbilityEffectAddResourceCfg:
-                                case MapAbilityEffectCostResourceCfg:
-                                case MapAbilityEffectApplyDamageCfg:
-                                    {
-                                        long srcEntity = CasterId;
-
-                                        var srcInfo = new EffectSourceInfo()
-                                        {
-                                            SrcType = ESourceType.BuffEffect,
-                                            SrcEntityId = srcEntity,
-                                            SrcBuffId = InstanceId,
-                                        };
-                                        var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, srcInfo);
-
-                                        ctx.TriggerPos = BuffOwner.Pos;
-                                        ctx.TargetId = BuffOwner.Id;
-
-                                        BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);
-                                    }
-                                    break;
-                            }
-                            
-                        }
+                        triggerInfo.lastTriggerTime = LogicTime.time;
+                        continue;
                     }
+
+                    if (LogicTime.time - triggerInfo.lastTriggerTime < triggerInfo.config.TriggerParam1 * 0.001f)
+                    {
+                        continue;
+                    }
+
+                    triggerInfo.lastTriggerTime = triggerInfo.lastTriggerTime + triggerInfo.config.TriggerParam1 * 0.001f;
+
+                    HandleBuffTriggerEffect(triggerInfo);
                 }
             }
 
@@ -964,6 +972,82 @@ namespace My.Map.Entity
             }
         }
 
+        public void DoBuffTrigger(ETriggerType triggerType)
+        {
+            if (triggerRuntimes == null)
+            {
+                return;
+            }
+
+            foreach (var t in triggerRuntimes)
+            {
+                if(t.config.TriggerType != triggerType)
+                {
+                    continue;
+                }
+                // check
+                switch (triggerType)
+                {
+                    case ETriggerType.OnHit:
+                        {
+
+                        }
+                        break;
+                }
+
+                HandleBuffTriggerEffect(t);
+
+                // 移除自身
+                if(t.config.RemoveOnTrigger)
+                {
+                    this.MarkedForRemove = true;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 处理触发效果
+        /// </summary>
+        /// <param name="triggerRuntime"></param>
+        protected void HandleBuffTriggerEffect(TriggerRuntimeStruct triggerRuntime)
+        {
+            if (triggerRuntime.config.OutputFightEffects == null)
+            {
+                return;
+            }
+
+            foreach (var fightEffect in triggerRuntime.config.OutputFightEffects)
+            {
+                switch (fightEffect)
+                {
+                    // buff触发器中 
+                    case MapAbilityEffectAddResourceCfg:
+                    case MapAbilityEffectCostResourceCfg:
+                    case MapAbilityEffectApplyDamageCfg:
+                    case MapAbilityEffectCastSkillCfg:
+                        {
+                            long srcEntity = CasterId;
+
+                            var srcInfo = new EffectSourceInfo()
+                            {
+                                SrcType = ESourceType.BuffEffect,
+                                SrcEntityId = srcEntity,
+                                SrcBuffId = InstanceId,
+                            };
+                            var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, srcInfo);
+
+                            ctx.TriggerPos = BuffOwner.Pos;
+                            ctx.TargetId = BuffOwner.Id;
+
+                            Debug.Log($"HandleBuffTriggerEffect handle trigger effect {fightEffect.GetType()}");
+                            BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);
+                        }
+                        break;
+                }
+
+            }
+        }
+        
         protected void TickAuraEffect()
         {
             if (!Def.IsAura)
