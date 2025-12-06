@@ -293,7 +293,6 @@ public class MapProjectileInstanceMotion : IMapProjectileMotion
 
         TickHoming();
 
-        ownerProj.transform.position = _pos;
     }
 
     private void TickHoming()

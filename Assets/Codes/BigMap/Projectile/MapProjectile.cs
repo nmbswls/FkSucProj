@@ -92,6 +92,10 @@ public class MapProjectile : MonoBehaviour
         //    }
         //}
 
+        {
+            transform.position = _motion.Position;
+        }
+
         if (_motion.IsFinished)
         {
             Despawn();
