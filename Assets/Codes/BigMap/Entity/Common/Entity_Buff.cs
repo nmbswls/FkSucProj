@@ -316,7 +316,7 @@ namespace My.Map.Entity
                     BuffId = "queen_countering",
                     LayerOverrideType = EBuffLayerOverrideType.Replace,
                     DefaultDuration = 2.0f,
-                    ZOffsetOverride = 0.5f,
+                    ZOffsetOverride = 0.2f,
 
                     ModifierAttrs = new()
                     {

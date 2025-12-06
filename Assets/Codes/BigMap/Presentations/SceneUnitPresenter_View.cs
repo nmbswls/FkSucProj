@@ -25,9 +25,9 @@ namespace My.Map.Scene
 
             float targetOffsetZ = offsetZ;
 
-            _pendingOffsetZ = Mathf.Lerp(_pendingOffsetZ, targetOffsetZ, 5f * LogicTime.deltaTime);
+            _pendingOffsetZ = Mathf.Lerp(_pendingOffsetZ, targetOffsetZ, 3f * LogicTime.deltaTime);
 
-            this.AgentView.transform.localPosition = new(this.AgentView.transform.localPosition.x, offsetZ, 0);
+            this.AgentView.transform.localPosition = new(this.AgentView.transform.localPosition.x, _pendingOffsetZ, 0);
         }
     }
 }
