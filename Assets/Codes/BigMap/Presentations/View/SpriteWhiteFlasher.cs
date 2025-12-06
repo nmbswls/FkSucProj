@@ -7,9 +7,9 @@ namespace My.Map
     public class SpriteWhiteFlasher : MonoBehaviour
     {
         public SpriteRenderer sr;
-        [Range(0, 1)] public float peakAmount = 0.9f; // 白混强度
-        public float brightBoost = 0.3f;
-        public float duration = 0.12f;
+        [Range(0, 1)] public float peakAmount = 1.5f; // 白混强度
+        public float brightBoost = 0.5f;
+        public float duration = 0.4f;
         private Material mat;
         private Coroutine routine;
 
@@ -24,10 +24,7 @@ namespace My.Map
 
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                TriggerFlash();
-            }
+            
         }
 
         public void TriggerFlash()

@@ -164,7 +164,7 @@ namespace My.UI
                 var buyItem = ShopNormalUIPanel.Instance.BindShop.ShopItems[payload.SourceIndex];
                 if(buyItem.LeftCount > 1)
                 {
-                    ItemCountChooseBox.Show(buyItem.LeftCount, (chooseCnt) => {
+                    ItemCountChooseBox.Show(buyItem.LeftCount, initVal:1, (chooseCnt) => {
 
                         bool buy = ShopNormalUIPanel.Instance.BindShop.TryBuyFromShop(payload.SourceIndex, (int)chooseCnt, null);
                         if (buy)

@@ -110,6 +110,8 @@ namespace My.Map.Scene
             {
                 srs = AgentView.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
             }
+
+            MainFlasher = GetComponentInChildren<SpriteWhiteFlasher>();
         }
 
         private float _tickMoveStateTimer;
@@ -355,6 +357,11 @@ namespace My.Map.Scene
                 //    //icon.color = new Color(1, 1, 1, 0);
                 //    SceneAOIManager.Instance.UnregisterEntity(logic, transform.position);
                 //});
+            };
+
+            UnitEntity.EventOnHit += () =>
+            {
+                PresenterOnHit();
             };
 
             //UnitEntity.onNewDashIntent += (intent) =>

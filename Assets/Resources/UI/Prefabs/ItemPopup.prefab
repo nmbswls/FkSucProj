@@ -1469,6 +1469,11 @@ MonoBehaviour:
   panelId: 
   canvasGroup: {fileID: 0}
   Panel: {fileID: 2987719498107875037}
+  UseBtnGo: {fileID: 2667627344007091150}
+  UseBtn2Go: {fileID: 4752140627182930499}
+  SplitBtnGo: {fileID: 2382657747947836476}
+  DropBtnGo: {fileID: 4647398984544040821}
+  CloseBtnGo: {fileID: 4852259586454948490}
   UseBtn: {fileID: 4705073172784342096}
   UseBtn2: {fileID: 606572790939634201}
   SplitBtn: {fileID: 1104618229316056051}

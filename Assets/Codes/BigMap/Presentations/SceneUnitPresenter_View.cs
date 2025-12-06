@@ -1,6 +1,7 @@
 
 
 using System.Numerics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace My.Map.Scene
@@ -28,6 +29,12 @@ namespace My.Map.Scene
             _pendingOffsetZ = Mathf.Lerp(_pendingOffsetZ, targetOffsetZ, 3f * LogicTime.deltaTime);
 
             this.AgentView.transform.localPosition = new(this.AgentView.transform.localPosition.x, _pendingOffsetZ, 0);
+        }
+
+        public SpriteWhiteFlasher MainFlasher;
+        public void PresenterOnHit()
+        {
+            MainFlasher?.TriggerFlash();
         }
     }
 }

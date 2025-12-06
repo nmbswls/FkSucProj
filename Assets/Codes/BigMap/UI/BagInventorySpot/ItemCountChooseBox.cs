@@ -14,7 +14,7 @@ namespace My.UI
     {
 
 
-        public static ItemCountChooseBox Show(long maxVal, Action<long> confirmCallback = null, Action cancelCallback = null)
+        public static ItemCountChooseBox Show(long maxVal, long initVal = 1,  Action<long> confirmCallback = null, Action cancelCallback = null)
         {
 
             var panel = UIManager.Instance.ShowPanel("ItemCountChooseBox") as ItemCountChooseBox;
@@ -24,7 +24,7 @@ namespace My.UI
                 return null;
             }
 
-            panel.RefreshData(maxVal, confirmCallback, cancelCallback);
+            panel.RefreshData(maxVal, initVal, confirmCallback, cancelCallback);
             return panel;
         }
 
@@ -75,13 +75,12 @@ namespace My.UI
             });
         }
 
-        public void RefreshData(long maxVal, Action<long> confirmCallback = null, Action cancelCallback = null)
+        public void RefreshData(long maxVal, long initVal = 1, Action<long> confirmCallback = null, Action cancelCallback = null)
         {
             minValue = 1;
             maxValue = maxVal;
 
-
-            quantity = Math.Clamp(1, minValue, maxValue);
+            quantity = Math.Clamp(initVal, minValue, maxValue);
 
             onConfirm = confirmCallback;
             onCancel = cancelCallback;
