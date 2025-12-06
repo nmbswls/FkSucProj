@@ -1757,7 +1757,6 @@ namespace My.Map.Entity
 
             spec.Id = "queen_counter";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.4f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1788,7 +1787,7 @@ namespace My.Map.Entity
             var effect = new MapAbilityEffectAddBuffCfg()
             {
                 BuffId = "queen_countering",
-
+                TargetType = 1,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(mainPhase);
