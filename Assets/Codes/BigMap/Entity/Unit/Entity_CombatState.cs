@@ -212,8 +212,16 @@ namespace My.Map
                     float dist = Vector2.Distance(UnitEntity.Pos, targetEntity.Pos);
                     if (dist > leashRadius) distWeight = 0.5f;
                 }
-                
-                float score = GetAggregatedThreat(tid) * distWeight;
+
+                float score;
+                if (UnitEntity.VisibilityComp.IsTargetVisible(tid))
+                {
+                    score = 0.1f;
+                }
+                else
+                {
+                    score = GetAggregatedThreat(tid) * distWeight;
+                }
                 if (score > bestScore)
                 {
                     bestScore = score;
@@ -432,7 +440,7 @@ namespace My.Map
             long bestEnemyId = 0;
 
             // 获取感知组件中维护的可见单位列表
-            foreach (var seeOne in UnitEntity.NoticeRecordComp.VisibleMap.Values)
+            foreach (var seeOne in UnitEntity.VisibilityComp.VisibleMap.Values)
             {
                 var seeOneEntity = UnitEntity.LogicManager.GetLogicEntity(seeOne.TargetId, false);
                 if (seeOneEntity == null) continue;

@@ -15,6 +15,7 @@ namespace Config.Map
     public  class MapInteractPointConfig : ScriptableObject
     {
         public string CfgId;
+        public string ShowName;
 
         [Serializable]
         public class StatusInfo

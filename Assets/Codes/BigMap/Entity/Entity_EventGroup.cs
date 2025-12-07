@@ -14,7 +14,7 @@ using My.Map.Entity;
 
 namespace My.Map
 {
-    public class EventGroupLogicEntity : InteractPointLogic
+    public class EventGroupLogicEntity : LogicEntityInteractPoint
     {
 
         public EventGroupConfig cacheCfg;

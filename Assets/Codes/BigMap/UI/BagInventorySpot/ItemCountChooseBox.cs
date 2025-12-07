@@ -10,7 +10,7 @@ using UnityEngine.UI;
 namespace My.UI
 { 
 
-    public class ItemCountChooseBox : PanelBase
+    public class ItemCountChooseBox : PanelBase, IInputConsumer
     {
 
 
@@ -54,25 +54,7 @@ namespace My.UI
 
         private void Awake()
         {
-            // 绑定事件
-            btnMinus.onClick.AddListener(() => ChangeBy(-step));
-            btnPlus.onClick.AddListener(() => ChangeBy(+step));
-            btnMin.onClick.AddListener(() => SetQuantity(minValue));
-            btnMax.onClick.AddListener(() => SetQuantity(maxValue));
-
-            inputField.onEndEdit.AddListener(OnInputEndEdit);
-            slider.onValueChanged.AddListener(OnSliderChanged);
-
-            btnConfirm.onClick.AddListener(() =>
-            {
-                onConfirm?.Invoke(quantity);
-                Close();
-            });
-            btnCancel.onClick.AddListener(() =>
-            {
-                onCancel?.Invoke();
-                Close();
-            });
+            
         }
 
         public void RefreshData(long maxVal, long initVal = 1, Action<long> confirmCallback = null, Action cancelCallback = null)
@@ -97,12 +79,35 @@ namespace My.UI
             RefreshUI();
         }
 
+        private void OnEnable()
+        {
+            // 绑定事件
+            btnMinus.onClick.AddListener(() => ChangeBy(-step));
+            btnPlus.onClick.AddListener(() => ChangeBy(+step));
+            //btnMin.onClick.AddListener(() => SetQuantity(minValue));
+            btnMax.onClick.AddListener(() => SetQuantity(maxValue));
+
+            inputField.onEndEdit.AddListener(OnInputEndEdit);
+            slider.onValueChanged.AddListener(OnSliderChanged);
+
+            btnConfirm.onClick.AddListener(() =>
+            {
+                onConfirm?.Invoke(quantity);
+                Close();
+            });
+            btnCancel.onClick.AddListener(() =>
+            {
+                onCancel?.Invoke();
+                Close();
+            });
+        }
+
         private void OnDisable()
         {
             // 清理事件（避免重复绑定）
             btnMinus.onClick.RemoveAllListeners();
             btnPlus.onClick.RemoveAllListeners();
-            btnMin.onClick.RemoveAllListeners();
+            //btnMin.onClick.RemoveAllListeners();
             btnMax.onClick.RemoveAllListeners();
             btnConfirm.onClick.RemoveAllListeners();
             btnCancel.onClick.RemoveAllListeners();
@@ -173,7 +178,7 @@ namespace My.UI
         {
             btnMinus.interactable = quantity > minValue;
             btnPlus.interactable = quantity < maxValue;
-            btnMin.interactable = quantity != minValue;
+            //btnMin.interactable = quantity != minValue;
             btnMax.interactable = quantity != maxValue;
         }
 
@@ -183,6 +188,41 @@ namespace My.UI
             maxValue = 1;
 
             Hide();
+        }
+
+        public bool OnConfirm()
+        {
+            return true;
+        }
+
+        public bool OnCancel()
+        {
+            return true;
+        }
+
+        public bool OnNavigate(Vector2 dir)
+        {
+            return true;
+        }
+
+        public bool OnHotkey(int index)
+        {
+            return true;
+        }
+
+        public bool OnScroll(float deltaY)
+        {
+            return true;
+        }
+
+        public bool OnSpace()
+        {
+            return true;
+        }
+
+        public bool OnClick(int button, Vector2 mousePos)
+        {
+            throw new NotImplementedException();
         }
     }
 }

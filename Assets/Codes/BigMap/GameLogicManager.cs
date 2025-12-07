@@ -331,7 +331,7 @@ namespace My
                     break;
                 case EEntityType.InteractPoint:
                     {
-                        var newIntPoint = new InteractPointLogic(this, record.Id, record.CfgId, record.Position, record);
+                        var newIntPoint = new LogicEntityInteractPoint(this, record.Id, record.CfgId, record.Position, record);
                         newEntity = newIntPoint;
                     }
                     break;

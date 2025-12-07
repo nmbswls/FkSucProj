@@ -171,12 +171,17 @@ namespace My.Map.Entity
                 IsEnmityState = true;
             }
 
-            if(UnitEntity.NoticeRecordComp.IsTargetVisible(UnitEntity.LogicManager.playerLogicEntity.Id))
+            if(UnitEntity.VisibilityComp.IsTargetVisible(UnitEntity.LogicManager.playerLogicEntity.Id))
             {
-                if(UnitEntity.LogicManager.playerLogicEntity.WillBeGazed())
+
+                if(!UnitEntity.IsTargetInvisibleFromSelf(UnitEntity.LogicManager.playerLogicEntity.Id))
                 {
-                    IsEnmityState = true;
+                    if (UnitEntity.LogicManager.playerLogicEntity.WillBeGazed())
+                    {
+                        IsEnmityState = true;
+                    }
                 }
+                
             }
         }
 

@@ -18,9 +18,13 @@ namespace My.Map.Entity
         string GetRuntimeVariable(string paramName);
 
         GameLogicManager LogicManager { get; }
+
+        Vector2 Pos { get; }
+
+        long Id { get; }
     }
 
-    public class InteractPointLogic : LogicEntityBase, IWithInteract, IEntityInteractable
+    public class LogicEntityInteractPoint : LogicEntityBase, IWithInteract, IEntityInteractable
     {
 
         // ״̬
@@ -35,7 +39,7 @@ namespace My.Map.Entity
 
         public LogicEntityRecord4InteractPoint RealRecord { get { return (LogicEntityRecord4InteractPoint)BindingRecord; } }
 
-        public InteractPointLogic(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
+        public LogicEntityInteractPoint(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             cacheCfg = MapInteractPointLoader.Get(CfgId);
 

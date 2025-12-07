@@ -21,10 +21,11 @@ namespace My.Map.Entity
         public const string Unmovable = "Unmovable";
         public const string LockFace = "LockFace";
         public const string Stun = "Stun";
-        public const string ForbidOp = "ForbidOp";
+        public const string ForbidSkillOp = "ForbidSkillOp";
         public const string NoSelect = "NoSelect";
         public const string ImmuneKnock = "ImmuneKnock";
         public const string Ghost = "Ghost";
+        public const string Invisible = "Invisible";
 
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes";

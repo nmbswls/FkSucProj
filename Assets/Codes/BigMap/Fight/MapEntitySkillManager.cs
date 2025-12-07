@@ -494,6 +494,13 @@ namespace My.Map.Entity
                 return false;
             }
 
+            // 停止技能输入 
+            if(OwnerEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
+            {
+                return false;
+            }
+
+
             // 不可行动
             // 处理中断技能层级
             if (!Executor.IsActionable())

@@ -117,7 +117,7 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.AddLayer,
                     ModifierAttrs = new() { 
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidOp, ModifierValue = 1 }
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 }
                     },
                     DurationEffect = new BuffDurationEffet()
                     {
@@ -193,7 +193,7 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.AddLayer,
                     ModifierAttrs = new() {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
                     },
@@ -238,7 +238,7 @@ namespace My.Map.Entity
                     { 
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidOp, ModifierValue = 1 }
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 }
                     },
                     DefaultDuration = -1,
                 };
@@ -310,6 +310,18 @@ namespace My.Map.Entity
                     },
                 };
 
+                _library["player_stealth"] = new BuffDefinition()
+                {
+                    BuffId = "player_stealth",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = -1,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Ghost, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                    },
+                };
 
                 _library["queen_countering"] = new BuffDefinition()
                 {

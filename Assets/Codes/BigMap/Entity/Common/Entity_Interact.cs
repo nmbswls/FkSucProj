@@ -48,7 +48,7 @@ namespace My.Map
             }
 
             var passed = true;
-            foreach(var oneCond in interactItem.CheckCond)
+            foreach(var oneCond in interactItem.CheckCommonCond)
             {
                 if (!Owner.LogicManager.CheckCommonCond(oneCond))
                 {
@@ -57,6 +57,24 @@ namespace My.Map
                 }
             }
 
+            if(passed)
+            {
+                foreach (var oneCond in interactItem.CheckInteractCond)
+                {
+                    switch (oneCond.CheckType)
+                    {
+                        case InteractCheckCond.ECheckType.NotHide:
+                            {
+                                if(Owner.LogicManager.playerLogicEntity.IsInStealth())
+                                {
+                                    passed = false;
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+            
 
             return passed;
         }
@@ -81,7 +99,7 @@ namespace My.Map
                 {
                     case Config.LogicInteractOutput.EOutputType.ChangeSelfStatus:
                         {
-                            if(Owner is not InteractPointLogic intPoint)
+                            if(Owner is not LogicEntityInteractPoint intPoint)
                             {
                                 Debug.Log("TryTriggerInteract not valid change self status");
                                 return false;
@@ -140,6 +158,13 @@ namespace My.Map
                             });
                             Owner.LogicManager.HandleLogicFightEffect(new MapAbilityEffectTeleportToCfg() { PendingTime = delay}, ctx);
 
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.StartStealth:
+                        {
+                            var player = Owner.LogicManager.playerLogicEntity;
+                            player.StartStealth(Owner.Id, Owner.Pos);
                         }
                         break;
                 }

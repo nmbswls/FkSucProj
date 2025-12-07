@@ -14,6 +14,7 @@ using static My.Map.EntityCombatStateComp;
 using static My.GameLogicManager;
 using UnityEditor.Experimental.GraphView;
 using static My.Map.Fight.FightStruct;
+using static UnityEngine.GraphicsBuffer;
 
 
 namespace My.Map
@@ -44,7 +45,7 @@ namespace My.Map
     }
 
     public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity,
-        INoticeRecordComp, IUnitWithBattle
+        IUnitVisibility, IUnitWithBattle
     {
         public MapEntitySkillManager ablilityManager;
         public MapEntityAbilityExecutor abilityController;
@@ -88,7 +89,7 @@ namespace My.Map
         public event Action EventOnEnmityBehave;
 
         public UnitEnmityComp EnmityComp;
-        public UnitNoticeRecordComp NoticeRecordComp;
+        public UnitVisibilityComp VisibilityComp;
 
         private float externalDecay = 30f;          // 外力自然衰减（每秒）
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -133,8 +134,8 @@ namespace My.Map
             
             if(Type != EEntityType.Player)
             {
-                NoticeRecordComp = new();
-                NoticeRecordComp.Initialize(this);
+                VisibilityComp = new();
+                VisibilityComp.Initialize(this);
 
                 EnmityComp = new();
                 EnmityComp.Initialize(this);
@@ -202,7 +203,7 @@ namespace My.Map
 
             UpdateHMode();
 
-            NoticeRecordComp?.TryUpdateNoticeList();
+            VisibilityComp?.TryUpdateNoticeList();
 
             entityMotorComp?.Tick(dt);
 
@@ -575,7 +576,7 @@ namespace My.Map
         {
             attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
-            attributeStore.RegisterNumeric(AttrIdConsts.ForbidOp, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.ForbidSkillOp, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.NoSelect, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Ghost, initialBase: 0);
 
@@ -755,7 +756,7 @@ namespace My.Map
 
         public bool IsTargetVisible(long targetId)
         {
-            return NoticeRecordComp.IsTargetVisible (targetId);
+            return VisibilityComp.IsTargetVisible (targetId);
         }
 
         #endregion

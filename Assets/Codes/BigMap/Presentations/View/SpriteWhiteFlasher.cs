@@ -8,8 +8,8 @@ namespace My.Map
     {
         public SpriteRenderer sr;
         [Range(0, 1)] public float peakAmount = 1.5f; // °×»ìÇ¿¶È
-        public float brightBoost = 0.5f;
-        public float duration = 0.4f;
+        private float brightBoost = 0.24f;
+        private float duration = 0.3f;
         private Material mat;
         private Coroutine routine;
 

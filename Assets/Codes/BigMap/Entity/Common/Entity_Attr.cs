@@ -29,7 +29,7 @@ namespace My.Map
                 case AttrIdConsts.Unmovable:
                 case AttrIdConsts.LockFace:
                 case AttrIdConsts.Stun:
-                case AttrIdConsts.ForbidOp:
+                case AttrIdConsts.ForbidSkillOp:
                 case AttrIdConsts.NoSelect:
                 case AttrIdConsts.HidingMask:
                 case AttrIdConsts.UnitDizzy:

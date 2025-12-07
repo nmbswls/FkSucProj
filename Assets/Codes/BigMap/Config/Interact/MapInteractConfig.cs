@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static My.Config.LogicInteractOutput;
 
 namespace My.Config
 {
@@ -21,6 +22,7 @@ namespace My.Config
             Teleport,
             OpenPanel,
 
+            StartStealth,
 
             ActivateEventGroup,
             SpecialMoveTo,
@@ -33,7 +35,22 @@ namespace My.Config
         public string Param4;
     }
 
-   
+    [Serializable]
+    public class InteractCheckCond
+    {
+        public enum ECheckType
+        {
+            None,
+            NotHide,
+        }
+
+        public ECheckType CheckType;
+        public long Param1;
+        public long Param2;
+        public string Param3;
+        public string Param4;
+    }
+
 
     [Serializable]
     public class MapInteractInfo
@@ -42,9 +59,10 @@ namespace My.Config
         public int InteractId;
         public string Label; // 选项
         public string UnLabel; // 灰色选项
-        public bool HideWhenFail = false;
+        public bool HideWhenFail = true;
 
-        public List<CommonCheckCond> CheckCond = new();
+        public List<CommonCheckCond> CheckCommonCond = new();
+        public List<InteractCheckCond> CheckInteractCond = new();
         public List<LogicInteractOutput> Outputs = new();
     }
 }

@@ -636,7 +636,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            if(unitEntity.CheckHasState(AttrIdConsts.ForbidOp))
+            if(unitEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
             {
                 return;
             }

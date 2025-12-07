@@ -364,6 +364,33 @@ namespace My.Map.Scene
                 PresenterOnHit();
             };
 
+            UnitEntity.EventOnStartStealth += (entityId) =>
+            {
+                if(mainCol != null)
+                {
+                    mainCol.enabled = false;
+                }
+
+                var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
+                if(pres != null)
+                {
+                    pres.SetFadeAlpha(0.35f);
+                }
+            };
+
+            UnitEntity.EventOnEndStealth += (entityId) =>
+            {
+                if (mainCol != null)
+                {
+                    mainCol.enabled = true;
+                }
+
+                var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
+                if (pres != null)
+                {
+                    pres.SetFadeAlpha(0.2f);
+                }
+            };
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
             //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;

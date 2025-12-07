@@ -205,6 +205,24 @@ public class ConsoleGM : MonoBehaviour
 
                 MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(rec);
             });
+
+        Register("hptest", "´´½¨²âÊÔÓÃhide point",
+            null,
+            args =>
+            {
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+
+                Vector2 pos = player.Pos + UnityEngine.Random.insideUnitCircle * 1f;
+
+                var rec = new LogicEntityRecord4InteractPoint();
+                rec.Id = GameLogicManager.LogicEntityIdInst++;
+                rec.Position = pos;
+                rec.EntityType = EEntityType.InteractPoint;
+                rec.CfgId = "hide_point_01";
+
+                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(rec);
+            });
+        
     }
 
     void OnDestroy()

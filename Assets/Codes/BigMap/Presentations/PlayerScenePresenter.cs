@@ -11,7 +11,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map.Scene
 {
-    public class PlayerScenePresenter : SceneUnitPresenter
+    public class PlayerScenePresenter : SceneUnitPresenter, ISceneInteractable
     {
 
         public GhostTrailSpawner MoveTrailSpawner;
@@ -29,8 +29,7 @@ namespace My.Map.Scene
             }
         }
 
-
-
+        public string ShowName => "Self";
 
         public override void Tick(float dt)
         {
@@ -135,6 +134,48 @@ namespace My.Map.Scene
                     lastEmitNoiseTs = now;
                 }
             }
+        }
+
+        public bool CanInteractEnable()
+        {
+            if(PlayerEntity.IsInStealth())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void TriggerInteract(int selectionId)
+        {
+            if(selectionId == 1)
+            {
+                PlayerEntity.EndStealth();
+            }
+        }
+
+        public Vector3 GetHintAnchorPosition()
+        {
+            return GetWorldPosition();
+        }
+
+        public List<SceneInteractSelection> GetInteractSelections()
+        {
+            List<SceneInteractSelection> ret = new();
+
+            if (!PlayerEntity.IsInStealth())
+            {
+                return ret;
+            }
+
+            ret.Add(new SceneInteractSelection()
+            {
+                SelectId = 1,
+                SelectContent = "Leave",
+                Selectable = true,
+            });
+
+            return ret;
         }
     }
 

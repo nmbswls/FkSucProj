@@ -5,21 +5,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map.Scene
 {
-    public class InteractPointPresenter : ScenePresentationBase<InteractPointLogic>, ISceneInteractable
+    public class InteractPointPresenter : ScenePresentationBase<LogicEntityInteractPoint>, ISceneInteractable
     {
-        [SerializeField] private SpriteRenderer icon;
         [SerializeField] private GameObject highlightFx;
         public List<GameObject> Blocks;
 
         public event Action<bool> EventOnInteractStateChanged;
 
-        public virtual string ShowName => gameObject.name;
+        public virtual string ShowName { 
+            get 
+            {
+                return RealLogic.cacheCfg.ShowName;
+            }
+        }
 
-        public InteractPointLogic RealLogic { get { return (InteractPointLogic)_logic; } }
+        public LogicEntityInteractPoint RealLogic { get { return (LogicEntityInteractPoint)_logic; } }
 
         public Vector3 GetHintAnchorPosition()
         {
@@ -55,7 +58,19 @@ namespace My.Map.Scene
 
         public bool CanInteractEnable()
         {
-            return RealLogic.InteractInfos.Count > 0;
+            int enableOne = 0;
+            var logicInts = RealLogic.InteractInfos;
+
+            foreach (var i in logicInts)
+            {
+                bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
+                if(canInt || !i.HideWhenFail)
+                {
+                    enableOne += 1;
+                }
+            }
+
+            return enableOne > 0;
         }
 
         public override void Bind(ILogicEntity logic)
@@ -78,6 +93,25 @@ namespace My.Map.Scene
         public void OnStatusChanged()
         {
             //MainGameManager.Instance.interactSystem.UpdateInteractRangeObjs
+        }
+
+        public override void Tick(float dt)
+        {
+            base.Tick(dt);
+
+        }
+
+        protected override void RefreshFadeState()
+        {
+            base.RefreshFadeState();
+
+            if(_mainSpriteArr != null)
+            {
+                foreach(var s in _mainSpriteArr)
+                {
+                    s.color = new Color(s.color.r, s.color.g, s.color.b, _currFadeAlpha);
+                }
+            }
         }
     }
 }

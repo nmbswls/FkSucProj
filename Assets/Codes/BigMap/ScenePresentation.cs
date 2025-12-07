@@ -21,6 +21,8 @@ public interface IScenePresentation
     Vector3 GetWorldPosition();
 
     bool CheckValid();
+
+    void SetFadeAlpha(float fadeAlpha);
 }
 
 public interface ISceneTargettable
@@ -34,11 +36,18 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     public long Id => _logic?.Id ?? 0;
     protected TLogic _logic;
 
+    public Transform MainViewRt;
+    protected SpriteRenderer[] _mainSpriteArr;
+
     private bool _visible;
 
 
     protected virtual void Awake()
     { 
+        if(MainViewRt != null)
+        {
+            _mainSpriteArr = MainViewRt.GetComponentsInChildren<SpriteRenderer>();
+        }
     }
 
 
@@ -86,7 +95,10 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
         gameObject.SetActive(visible);
     }
 
-    public virtual void Tick(float dt) { }
+    public virtual void Tick(float dt) 
+    {
+        RefreshFadeState();
+    }
 
     public void OnEntityMove(Vector2 oldPos, Vector2 newPos)
     {
@@ -116,5 +128,17 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     public virtual Collider2D GetMainCol()
     {
         return null;
+    }
+
+    protected float _targetFadeAlpha = 1;
+    protected float _currFadeAlpha = 1;
+    public void SetFadeAlpha(float alpha)
+    {
+        _targetFadeAlpha = alpha;
+    }
+
+    protected virtual void RefreshFadeState()
+    {
+        _currFadeAlpha = Mathf.Lerp(_currFadeAlpha, _targetFadeAlpha, 2 * LogicTime.deltaTime);
     }
 }

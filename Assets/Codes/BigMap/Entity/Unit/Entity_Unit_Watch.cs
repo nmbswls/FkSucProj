@@ -30,7 +30,7 @@ namespace My.Map
                 return;
             }
 
-            if (NoticeRecordComp.IsTargetVisible(LogicManager.playerLogicEntity.Id))
+            if (VisibilityComp.IsTargetVisible(LogicManager.playerLogicEntity.Id))
             {
                 if(LogicManager.playerLogicEntity.WillBeGazed())
                 {

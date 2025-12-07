@@ -614,7 +614,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidOp))
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
             {
                 return 0;
             }
@@ -697,11 +697,19 @@ namespace My.Map.Entity.AI
             }
 
             // 禁止操作时 跳出
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidOp))
+            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
             {
                 Stop(AIActionStatus.Success);
                 return;
             }
+
+            if(_brain.UnitEntity.IsTargetInvisibleFromSelf(_brain.PlayerEntity.Id))
+            {
+                Debug.Log("AIActionTryUseSkill target hide.");
+                Stop(AIActionStatus.Success);
+                return;
+            }
+
 
             // 未使用技能
             if (!hasCastAbility)

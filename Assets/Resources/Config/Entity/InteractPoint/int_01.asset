@@ -12,28 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
   m_Name: int_01
   m_EditorClassIdentifier: 
-  CfgId: 
+  CfgId: int_01
   MainStatusInfo:
     StatusId: 0
-    InteractName: "\u4FEE\u7406"
-    CheckCond:
-      CheckConfType: 0
-    Outputs:
-    - OutputType: 1
-      Param1: 1
-      Param2: 0
-      Param3: 0
-      Param4: 0
-    - OutputType: 4
-      Param1: 1
-      Param2: 1
-      Param3: 0
-      Param4: 0
+    InteractInfos: []
     HasBlock: 1
   ExtraStatusInfos:
   - StatusId: 1
-    InteractName: 
-    CheckCond:
-      CheckConfType: 0
-    Outputs: []
+    InteractInfos: []
     HasBlock: 0
+  InitState: 0
+  StateChangeRules: []

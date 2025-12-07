@@ -7,34 +7,29 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.PlayerSettings;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.GraphicsBuffer;
 
 namespace My.Map.Entity
 {
 
-    public interface INoticeRecordComp
+    public interface IUnitVisibility
     {
         bool IsTargetVisible(long targetId);
+
     }
 
 
     /// <summary>
     /// 注意力列表
     /// </summary>
-    public class UnitNoticeRecordComp : INoticeRecordComp
+    public class UnitVisibilityComp : IUnitVisibility
     {
         public BaseUnitLogicEntity UnitEntity;
 
 
         private float EntryExpireAfter = 2.0f;
-
-        //public class NoticeRecord
-        //{
-        //    public long Id;
-        //    public bool IsEnmity;
-        //    public float LastUpdateTime;
-        //}
 
         public class VisibilityEntry
         {
@@ -46,14 +41,9 @@ namespace My.Map.Entity
             public float LastUpdateTime; // 最近一次更新（任何状态）
             public Vector2 LastKnownPos; // 最近可见时记录的位置
         }
-        /// <summary>
-        /// 上一次可见，
-        /// </summary>
-        //public Dictionary<long, NoticeRecord> NoticeRecords = new();
         public Dictionary<long, VisibilityEntry> VisibleMap = new(); // TargetId => Entry
 
-        public Dictionary<long, int> ExposeRecord;
-
+       
         private float _lastUpdateTime;
 
 
@@ -181,8 +171,11 @@ namespace My.Map.Entity
         // 查询接口
         public bool IsTargetVisible(long targetId)
         {
-            return VisibleMap.TryGetValue(targetId, out var e) && e.IsInView;
+            bool basicView =  VisibleMap.TryGetValue(targetId, out var e) && e.IsInView;
+
+            return basicView;
         }
+
 
         private void MarkVisible(VisibilityEntry e, float now, Vector2 pos)
         {
