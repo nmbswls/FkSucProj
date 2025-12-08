@@ -52,6 +52,10 @@ namespace My.Map
                 var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Attract, innerListener);
                 subs.Add(sub);
             }
+            {
+                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, innerListener);
+                subs.Add(sub);
+            }
 
             RegisterMapControlEvents();
         }

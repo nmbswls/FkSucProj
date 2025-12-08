@@ -40,8 +40,8 @@ namespace My.Map.Logic
             walkerPathDict.Clear();
             foreach(var one in SpawnedWalkerRecords)
             {
-                RequestEntityDie(one, 0); 
-            }
+                RequestEntityDestroy(one, "walker_remove"); 
+            } 
             SpawnedWalkerRecords.Clear();
 
             foreach (var path in cacheDatabase.NamedPaths)
@@ -107,7 +107,7 @@ namespace My.Map.Logic
                     if(rec == null || rec is not LogicEntityRecord4UnitBase unitRec)
                     {
                         SpawnedWalkerRecords.RemoveAt(i);
-                        DestroyEntity(recId, 0);
+                        RequestEntityDestroy(recId, "err");
                         continue;
                     }
 
@@ -116,7 +116,7 @@ namespace My.Map.Logic
                     {
                         Debug.Log("TickCleanWalker unloaded rec destroyed");
                         SpawnedWalkerRecords.RemoveAt(i);
-                        DestroyEntity(recId, 0);
+                        RequestEntityDestroy(recId, "walker_reach");
                         continue;
                     }
                 }
@@ -128,7 +128,7 @@ namespace My.Map.Logic
                     {
                         Debug.LogError($"TickRefreshWalker invalid {recId}");
                         SpawnedWalkerRecords.RemoveAt(i);
-                        DestroyEntity(recId, 0);
+                        RequestEntityDestroy(recId, "err");
                         continue;
                     }
 
@@ -141,7 +141,7 @@ namespace My.Map.Logic
                         || string.IsNullOrEmpty(unitEntity.MoveBehaveInfo.MovePath))
                     {
                         SpawnedWalkerRecords.RemoveAt(i);
-                        DestroyEntity(recId, 0);
+                        RequestEntityDestroy(recId, "err");
                         continue;
                     }
 
@@ -153,7 +153,7 @@ namespace My.Map.Logic
                     if (diff.magnitude < 0.3f)
                     {
                         SpawnedWalkerRecords.RemoveAt(i);
-                        DestroyEntity(recId, 0);
+                        RequestEntityDestroy(recId, "walker_reach");
                         continue;
                     }
                 }

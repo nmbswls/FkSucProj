@@ -142,6 +142,8 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
             var entity = comp.GetLogicEntity();
             if (entity == null) continue;
 
+            if (entity.MarkDestroyed) continue;
+
             if(filter != null)
             {
                 // ²»Âú×ã
@@ -185,6 +187,8 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
             if (comp == null) continue;
             var entity = comp.GetLogicEntity();
             if (entity == null) continue;
+            if (entity.MarkDestroyed) continue;
+
             if (filter != null)
             {
                 // ²»Âú×ã

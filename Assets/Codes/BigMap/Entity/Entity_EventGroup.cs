@@ -14,7 +14,7 @@ using My.Map.Entity;
 
 namespace My.Map
 {
-    public class EventGroupLogicEntity : LogicEntityInteractPoint
+    public class EventGroupLogicEntity : LogicEntityBase
     {
 
         public EventGroupConfig cacheCfg;
@@ -32,12 +32,18 @@ namespace My.Map
         ///// </summary>
         //public Dictionary<int, ILogicEntity> GroupMemberDict = new();
 
-        private bool TriggerEnmity = false;
-
-        private bool AllDeadFlag = false;
         private float _lastCheckTimer;
 
-        public override EEntityType Type => EEntityType.AreaEffect;
+        public class GroupEventTriggerState
+        {
+            public int TriggerIdx = 0;
+            public int TriggerTimes = 0;
+
+            public EventGroupConfig.GroupEventTrigger cacheTriggerConf;
+        }
+        protected List<GroupEventTriggerState> TriggerInfos = new();
+
+        public override EEntityType Type => EEntityType.EventGroup;
 
         public override void Initialize()
         {
@@ -45,18 +51,12 @@ namespace My.Map
 
             cacheCfg = MapEventGroupCfgLoader.Get(CfgId);
 
-
-            foreach(var kv in RealRecord.MemberEntityMap)
+            foreach(var eventTrigger in cacheCfg.EventTriggers)
             {
-                var entity = LogicManager.GetLogicEntity(kv.Value);
-                if(entity is BaseUnitLogicEntity unitEntity)
-                {
-                    unitEntity.EventOnEnmityBehave += () =>
-                    {
-                        // 有敌意行为 尝试切换状态
-                        TriggerEnmity = true;
-                    };
-                }
+                var info = new GroupEventTriggerState();
+                info.cacheTriggerConf = eventTrigger;
+
+                TriggerInfos.Add(info);
             }
         }
 
@@ -67,15 +67,7 @@ namespace My.Map
             TickAllMemberStatus();
         }
 
-        public bool CanInteractEnable()
-        {
-            if(!CheckAllRequiredEntityCleared())
-            {
-                return false;
-            }
-            return true;
-        }
-
+        
         public void TickAllMemberStatus()
         {
             if(LogicTime.time < _lastCheckTimer)
@@ -85,33 +77,131 @@ namespace My.Map
 
             _lastCheckTimer = LogicTime.time + 0.5f;
 
-            if(!AllDeadFlag)
+            foreach (var t in TriggerInfos)
             {
-                if(CheckAllRequiredEntityCleared())
+                if (t.TriggerTimes > 0) continue;
+                if(t.cacheTriggerConf.TriggerType == EventGroupConfig.GroupEventTrigger.ETriggerType.Cleared)
                 {
-                    AllDeadFlag = true;
-                    //RealRecord.CustomFlags.Add("Finish_01");
+                    // 死亡标记
+                    var idStrs = t.cacheTriggerConf.Param3.Split(",");
+                    bool allCleared = true;
+                    foreach (var idStr in idStrs)
+                    {
+                        int.TryParse(idStr, out var memberId);
+                        if (memberId == 0) continue;
+
+                        if (!RealRecord.DestroyedMemberIds.Contains(memberId))
+                        {
+                            allCleared = false;
+                            break;
+                        }
+                    }
+
+                    if (allCleared)
+                    {
+                        t.TriggerTimes += 1;
+
+                        HandleOutput(t.cacheTriggerConf);
+                    }
                 }
+                else if(t.cacheTriggerConf.TriggerType != EventGroupConfig.GroupEventTrigger.ETriggerType.MemberIntStatus)
+                {
+                    int member = (int)t.cacheTriggerConf.Param1;
+                    int status = (int)t.cacheTriggerConf.Param2;
+
+                    RealRecord.MemberEntityMap.TryGetValue(member, out var entityId);
+                    var intEntity = LogicManager.GetLogicEntity(entityId);
+                    if (intEntity == null || intEntity is not LogicEntityInteractPoint intP)
+                    {
+                        Debug.Log("triger member int status not found");
+                        break;
+                    }
+
+                    if(intP.CurrStatusId != status)
+                    {
+                        break;
+                    }
+
+                    t.TriggerTimes += 1;
+                    HandleOutput(t.cacheTriggerConf);
+                }
+
+                
             }
         }
 
-
-        public bool CheckAllRequiredEntityCleared()
+        public void HandleOutput(EventGroupConfig.GroupEventTrigger triggerCfg)
         {
-            bool allDead = false;
-            foreach(var i in cacheCfg.InteractCondDeadList)
-            {
-                RealRecord.MemberEntityMap.TryGetValue(i, out long eId);
-                var entity = LogicManager.GetLogicEntity(eId);
-                if(entity == null || entity.MarkDead)
-                {
-                    continue;
-                }
+            Debug.Log($"EventGroupLogicEntity HandleOutput {this.Id} for {triggerCfg.TriggerType}");
 
-                allDead = true;
+            if (triggerCfg.Outputs != null)
+            {
+                foreach (var output in triggerCfg.Outputs)
+                {
+                    switch (output.OutputType)
+                    {
+                        case EventGroupConfig.GroupEventOutput.EOutputType.UpdateInteractStatus:
+                            {
+                                int memberId = (int)output.Param1;
+                                int status = (int)output.Param2;
+
+                                RealRecord.MemberEntityMap.TryGetValue(memberId, out var entityId);
+                                if(entityId == 0)
+                                {
+                                    Debug.Log("HandleOutput UpdateInteractStatus fail e");
+                                    continue;
+                                }
+
+                                var intPoint = LogicManager.GetLogicEntity(entityId) as LogicEntityInteractPoint;
+                                if (intPoint == null)
+                                {
+                                    Debug.Log("HandleOutput UpdateInteractStatus no entity e");
+                                    continue;
+                                }
+
+                                intPoint.ChangeSelfStatus(status);
+                            }
+                            break;
+                        case EventGroupConfig.GroupEventOutput.EOutputType.ActivateUnits:
+                            {
+                                var idStrs = output.Param3.Split(",");
+                                bool allCleared = true;
+                                foreach (var idStr in idStrs)
+                                {
+                                    int.TryParse(idStr, out var memberId);
+                                    if (memberId == 0) continue;
+
+                                    RealRecord.MemberEntityMap.TryGetValue(memberId, out var entityId);
+
+                                    var unit = LogicManager.GetLogicEntity(entityId) as BaseUnitLogicEntity;
+                                    // 
+                                    Debug.Log($"HandleOutput ActivateUnits activate {entityId}");
+                                    if(unit != null)
+                                    {
+                                        unit.IsActive = true;
+                                    }
+                                }
+                            }
+                            break;
+                        case EventGroupConfig.GroupEventOutput.EOutputType.RemoveEntities:
+                            {
+                                var idStrs = output.Param3.Split(",");
+                                bool allCleared = true;
+                                foreach (var idStr in idStrs)
+                                {
+                                    int.TryParse(idStr, out var memberId);
+                                    if (memberId == 0) continue;
+
+                                    RealRecord.MemberEntityMap.TryGetValue(memberId, out var entityId);
+                                    
+                                    Debug.Log($"HandleOutput ActivateUnits activate {entityId}");
+                                    LogicManager.AreaManager.RequestEntityDestroy(entityId, "event_group_remove");
+                                }
+                            }
+                            break;
+                    }
+                }
             }
-            
-            return allDead;
         }
 
         /// <summary>
@@ -121,14 +211,75 @@ namespace My.Map
         {
             foreach(var id in RealRecord.SleepMemberIds)
             {
-                
+                 
             }
 
             RealRecord.SleepMemberIds.Clear();
         }
+
+        public override void OnSpawn(LogicEntityRecord data)
+        {
+            base.OnSpawn(data);
+            foreach (var kv in RealRecord.MemberEntityMap)
+            {
+                var member = LogicManager.GetLogicEntity(kv.Value);
+
+                if(member is BaseUnitLogicEntity unitEntity)
+                {
+                    unitEntity.EventOnDie += OnMemberUnitDead;
+                    unitEntity.EventOnEnmityBehave += OnMemberEntityEnmityBehaved;
+                }
+            }
+        }
+
+        public override void OnDespawn(out LogicEntityRecord? snapshot)
+        {
+            base.OnDespawn(out snapshot);
+
+            foreach (var kv in RealRecord.MemberEntityMap)
+            {
+                var member = LogicManager.GetLogicEntity(kv.Value);
+
+                if (member is BaseUnitLogicEntity unitEntity)
+                {
+                    unitEntity.EventOnDie -= OnMemberUnitDead;
+                    unitEntity.EventOnEnmityBehave -= OnMemberEntityEnmityBehaved;
+                }
+            }
+        }
+
+        protected void OnMemberEntityEnmityBehaved(long deadEntityId)
+        {
+            foreach (var t in TriggerInfos)
+            {
+                if (t.cacheTriggerConf.TriggerType != EventGroupConfig.GroupEventTrigger.ETriggerType.AnyEnmity)
+                {
+                    continue;
+                }
+
+                // 死亡标记
+                t.TriggerTimes += 1;
+
+                HandleOutput(t.cacheTriggerConf);
+            }
+        }
+
+        protected void OnMemberUnitDead(long deadEntityId)
+        {
+            int markMemberId = 1;
+            foreach (var kv in RealRecord.MemberEntityMap)
+            {
+                if (kv.Value == deadEntityId)
+                {
+                    markMemberId = kv.Key;
+                }
+            }
+
+            RealRecord.MemberEntityMap.Remove(markMemberId);
+            RealRecord.DestroyedMemberIds.Add(markMemberId);
+        }
+
     }
-
-
 
 }
 

@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem.HID;
 using static My.GameLogicManager;
+using static My.Map.BaseUnitLogicEntity;
 using static My.Map.Fight.FightStruct;
 
 namespace My.Map.Entity
@@ -194,6 +195,9 @@ namespace My.Map.Entity
         }
     }
 
+    
+
+
     public class AbilityEffectExecutor4DefaultInteract : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
@@ -317,6 +321,53 @@ namespace My.Map.Entity
         }
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class AbilityEffectExecutor4ControlledMove : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg useItemCfg, LogicFightEffectContext ctx)
+        {
+            var realCfg = useItemCfg as MapAbilityEffectControlledMoveCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ControlledMove err");
+                return;
+            }
+
+            BaseUnitLogicEntity unitEntity = null;
+            if (realCfg.TargetType == 0)
+            {
+                unitEntity = ctx.Env.GetLogicEntity(ctx.TargetId, false) as BaseUnitLogicEntity;
+            }
+            else
+            {
+                unitEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false) as BaseUnitLogicEntity;
+            }
+
+
+            if (unitEntity == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ControlledMove move unit not found");
+                return;
+            }
+
+            if (ctx.CastVec1 == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ControlledMove move cast vel");
+                return;
+            }
+            Vector2 targetPos = ctx.CastVec1.Value;
+            float duration = realCfg.FixedDuration;
+
+            var diff = targetPos - unitEntity.Pos;
+            var speed = diff.magnitude / duration;
+            unitEntity.ApplyControlledMove(ControlledMoveCtx.EType.Pull, diff.normalized, duration, originSpeed: diff.magnitude * 8f, onEndEffects : null);
+        }
+    }
+
+
     public class AbilityEffectExecutor4AddBuff : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
@@ -373,7 +424,17 @@ namespace My.Map.Entity
             }
             else if(realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Circle)
             {
-                var realCenter = ctx.TriggerPos.Value;
+
+                Vector2 realCenter;
+                if(realCfg.CenterPosType == 0)
+                {
+                    realCenter = ctx.TriggerPos.Value;
+                }
+                else
+                {
+                    realCenter = ctx.CastVec1.Value;
+                }
+
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
@@ -386,7 +447,7 @@ namespace My.Map.Entity
             {
                 foreach (var candidate in candidates)
                 {
-                    if (candidate.Type != realCfg.TargetEntityType)
+                    if (realCfg.TargetEntityType != EEntityType.None && candidate.Type != realCfg.TargetEntityType)
                     {
                         continue;
                     }
@@ -624,7 +685,7 @@ namespace My.Map.Entity
 
             var casterId = ctx.SourceInfo.SrcEntityId;
             var caster = ctx.Env.GetLogicEntity(casterId);
-            if(caster == null || caster.MarkDead)
+            if(caster == null || caster.MarkDestroyed)
             {
                 Debug.LogError("AbilityEffectExecutor4CostResource err 2 ");
                 return;
@@ -887,7 +948,7 @@ namespace My.Map.Entity
             }
 
             var target = ctx.Env.GetLogicEntity(teleportTarget);
-            if (target == null || target.MarkDead)
+            if (target == null || target.MarkDestroyed)
             {
                 Debug.LogError("target be invalid err");
                 return;

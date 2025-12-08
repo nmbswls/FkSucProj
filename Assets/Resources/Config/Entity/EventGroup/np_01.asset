@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 834e569363032a84684e80f019fd7faa, type: 3}
+  m_Name: np_01
+  m_EditorClassIdentifier: 
+  CfgId: np_01
+  StaticGroupEntites:
+  - GroupId: 1
+    InitInfo:
+      rid: 1421625818343277514
+  - GroupId: 2
+    InitInfo:
+      rid: 1421625818343277518
+  - GroupId: 3
+    InitInfo:
+      rid: 1421625818343277520
+  - GroupId: 4
+    InitInfo:
+      rid: 1421625818343277522
+  - GroupId: 5
+    InitInfo:
+      rid: 1421625818343277523
+  EventTriggers:
+  - TriggerType: 1
+    Param1: 0
+    Param2: 0
+    Param3: 1,2,3,4
+    Param4: 
+    Outputs:
+    - OutputType: 1
+      Param1: 5
+      Param2: 2
+      Param3: 
+      Param4: 
+  - TriggerType: 2
+    Param1: 0
+    Param2: 0
+    Param3: 
+    Param4: 
+    Outputs:
+    - OutputType: 2
+      Param1: 0
+      Param2: 0
+      Param3: 1,2,3,4
+      Param4: 
+    - OutputType: 1
+      Param1: 5
+      Param2: 1
+      Param3: 
+      Param4: 
+  references:
+    version: 2
+    RefIds:
+    - rid: 1421625818343277514
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: 0.2, y: 0}
+        FaceDir: {x: 0, y: 1}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+    - rid: 1421625818343277518
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: -0.2, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+    - rid: 1421625818343277520
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: 0.4, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+    - rid: 1421625818343277522
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: -0.4, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+    - rid: 1421625818343277523
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: fck_girl_01
+        Position: {x: 0, y: 0.3}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        Variables:
+          keys: []
+          values: []

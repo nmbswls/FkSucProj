@@ -8,6 +8,7 @@ using Unity.Burst.Intrinsics;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using static My.GameLogicManager;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace My.Map.Entity
 {
@@ -495,6 +496,7 @@ namespace My.Map.Entity
             {
                 SrcType = ESourceType.Ability,
                 SrcEntityId = this.EntityOwner.Id,
+                SrcFactionId = this.EntityOwner.FactionId,
             };
             var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, sourceInfo);
             ctx.TargetId = this.CurrentCtx.Target ?.Id ?? 0;
@@ -687,7 +689,6 @@ namespace My.Map.Entity
                 return;
             }
             CurrentCtx.phaseHitWindows.TryGetValue(hitId, out var window);
-
             //  todo ∂‡¥Œ√¸÷–
             if (!window.HitRecord.Contains(hitEntityId))
             {
@@ -698,7 +699,7 @@ namespace My.Map.Entity
                 {
                     var hitEntity = EntityOwner.LogicManager.AreaManager.GetLogicEntiy(hitEntityId);
                     //MainGameManager.Instance.gameLogicManager.logicEntityDict.TryGetValue(hitEntityId, out var hitEntity);
-                    if (hitEntity != null)
+                    if (hitEntity != null && !hitEntity.MarkDestroyed)
                     {
                         var srcInfo = new EffectSourceInfo()
                         {
@@ -720,7 +721,7 @@ namespace My.Map.Entity
                     }
                     else
                     {
-                        Debug.Log($"OnWeaponHitCallback hit target not found {hitEntityId}");
+                        Debug.Log($"OnWeaponHitCallback hit target not found or dead {hitEntityId}");
                     }
                 }
             }

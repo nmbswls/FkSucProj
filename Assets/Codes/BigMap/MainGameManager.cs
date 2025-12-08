@@ -387,6 +387,13 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         ShowClickkkUI.Instance.CloseClickkkWindow(windowType, isInterrupt);
     }
 
+
+    public void ShowPauseCloseupWindow(string showName, float duration)
+    {
+        PauseCloseupWindow.Show(showName, duration);
+    }
+
+
     public void DoDeepZhaquSmallGame(long targetUnitId, object extraParam)
     {
         LogicTime.ReleasePause("deep");
@@ -430,16 +437,16 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     private bool isSwitchingEncounter = false;
 
-    public void EnterEncounter()
+    public void EnterEncounter(int battleId, string battleReason)
     {
         if(isSwitchingEncounter)
         {
             return;
         }
 
-
         isSwitchingEncounter = true;
-        _ = InnerEnterEncounter().ContinueWith(t =>
+
+        _ = InnerEnterEncounter(battleId, battleReason).ContinueWith(t =>
         {
             if (t.IsFaulted)
             {
@@ -469,7 +476,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
 
-    protected async Task InnerEnterEncounter()
+    protected async Task InnerEnterEncounter(int battleId, string battleReason)
     {
         UIManager.Instance.ShowLoading("good");
 
@@ -478,7 +485,9 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
 
         BattleContext ctx = new();
-        ctx.BattleId = 1;
+        ctx.BattleId = battleId;
+        ctx.BattleReason = battleReason;
+
         await EncounterBattleLoader.LoadBattleAsync(ctx);
 
 
@@ -547,6 +556,50 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             effectGo.PlayMoveFx(playerScenePresenter.transform, targetPos, () => { onCompelete?.Invoke(); }, () => { });
         }
     }
+
+    /// <summary>
+    /// 等待击败战斗
+    /// </summary>
+    public void WaitingIntoDefeatedBattle()
+    {
+        _ = AsyncPrepareDefeatedBattle().ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+            {
+                Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+            }
+            isSwitchingEncounter = false;
+        }, TaskScheduler.FromCurrentSynchronizationContext()); ;
+    }
+
+    protected async Task AsyncPrepareDefeatedBattle()
+    {
+        await Task.Delay(5000);
+
+        var dialog = Resources.Load<TextAsset>($"Dialogue/defeated_01");
+
+        var data = TxtDialogueScriptParser.Parse(dialog.text, "defeated_01");
+
+        var dialogPanel = UIManager.Instance.ShowPanel("DialoguePanel") as DialogueUI;
+
+        var runtime = new DialogueRuntime
+        {
+            ui = dialogPanel,
+            //cam = cam,
+            //audio = audio,
+            driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
+            //Localize = Loc.Tr,
+            JumpTo = label => dialoguePlayer.JumpToLabel(label)
+        };
+
+        dialoguePlayer.ui = dialogPanel;
+        dialoguePlayer.PlayFromData(data, runtime, () =>
+        {
+            // do dialog finish events;
+            UIManager.Instance.HidePanel("DialoguePanel");
+        });
+        //await InnerEnterEncounter(0, "defeated");
+    }
 }
 
 
@@ -608,5 +661,6 @@ public class UnityNavProvider : INavProvider
         hitPoint = hit.position;
         return hitNav;
     }
+
 
 }

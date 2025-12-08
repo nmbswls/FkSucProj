@@ -26,6 +26,7 @@ namespace My.Map.Entity
 
     public class LogicEntityInteractPoint : LogicEntityBase, IWithInteract, IEntityInteractable
     {
+        public LogicEntityRecord4InteractPoint RealRecord { get { return (LogicEntityRecord4InteractPoint)BindingRecord; } }
 
         // ״̬
         //public bool Appear = false;
@@ -37,7 +38,6 @@ namespace My.Map.Entity
 
         public event Action OnStatusChange;
 
-        public LogicEntityRecord4InteractPoint RealRecord { get { return (LogicEntityRecord4InteractPoint)BindingRecord; } }
 
         public LogicEntityInteractPoint(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {

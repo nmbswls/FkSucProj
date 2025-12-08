@@ -1,4 +1,5 @@
 
+using My;
 using My.Player.Bag;
 using SuperScrollView;
 using System;
@@ -6,6 +7,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Config.FakeItemConf;
 using static My.UI.AnyContainerItemCell;
+using static UnityEngine.Rendering.DebugUI;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace Config
 {
@@ -30,6 +33,8 @@ namespace Config
         {
             Normal,
             Currency,
+            Equip,
+            Pocket,
         }
         public EItemType ItemType;
 
@@ -52,12 +57,69 @@ namespace Config
         public ERevealEffectType RevealEffectType;
         public long RevealParam1;
         public long RevealParam2;
+
+        public enum EItemUseType
+        {
+            None,
+            AddHunger,
+        }
+
+        [Serializable]
+        public class ItemUseCfg
+        {
+            public bool Usable = false;
+            public bool CostOnUse;
+            public float UseCd;
+
+
+            public EItemUseType UseType;
+            public string UseParams;
+        }
+
+        public ItemUseCfg UseCfg1;
+        public ItemUseCfg UseCfg2;
+        public ItemUseCfg UseCfg3;
     }
 
     public static class FakeItemDatabase
     {
 
         private static Dictionary<string, FakeItemConf> _dict = null;
+
+        public static ItemStack CreateItemStack(string itemId, long count)
+        {
+            var itemConf = GetItem(itemId);
+            if (itemConf == null) return null;
+
+            var item = new ItemStack(itemId, count);
+
+            if(IsInstanceType(itemConf.ItemType))
+            {
+                item.ItemInstanceId = GameLogicManager.ItemInstanceIdCounter++;
+                switch(itemConf.ItemType)
+                {
+                    case EItemType.Equip:
+                    {
+                        item.InstanceInfo = new ItemInstance4Equip();
+                    }
+                    break;
+                }
+            }
+            
+            return item;
+        }
+
+        public static bool IsInstanceType(EItemType itemType)
+        {
+            switch (itemType)
+            {
+                case EItemType.Equip:
+                case EItemType.Pocket:
+                    return true;
+            }
+
+            return false;
+        }
 
         public static int GetMaxStackByType(string itemId, EContainerType containerMode)
         {
@@ -97,6 +159,7 @@ namespace Config
                 {
                     var item = new FakeItemConf();
                     item.ItemId = "small_stone";
+                    item.ItemType = EItemType.Normal;
                     item.StackType = EStackType.Size1;
                     item.SpriteName = "small_stone";
 
@@ -106,6 +169,7 @@ namespace Config
                 {
                     var item = new FakeItemConf();
                     item.ItemId = "stick";
+                    item.ItemType = EItemType.Normal;
                     item.StackType = EStackType.Size2;
                     item.SpriteName = "stick";
 
@@ -115,6 +179,7 @@ namespace Config
                 {
                     var item = new FakeItemConf();
                     item.ItemId = "wood";
+                    item.ItemType = EItemType.Normal;
                     item.StackType = EStackType.Size3;
                     item.SpriteName = "wood";
 
@@ -124,17 +189,26 @@ namespace Config
                 {
                     var item = new FakeItemConf();
                     item.ItemId = "banana";
+                    item.ItemType = EItemType.Normal;
                     item.StackType = EStackType.Size2;
                     item.SpriteName = "banana";
 
                     item.RevealEffectType = ERevealEffectType.AddGcVal;
                     item.RevealParam1 = 5000;
 
+                    item.UseCfg1 = new ItemUseCfg()
+                    {
+                        Usable = true,
+                        CostOnUse = true,
+                        UseCd = 1.0f,
+                    };
+
                     _dict[item.ItemId] = item;
                 }
                 {
                     var item = new FakeItemConf();
                     item.ItemId = "qiezi";
+                    item.ItemType = EItemType.Normal;
                     item.StackType = EStackType.Size2;
                     item.SpriteName = "qiezi";
 
@@ -146,6 +220,7 @@ namespace Config
                 {
                     var item = new FakeItemConf();
                     item.ItemId = "bangbangtang";
+                    item.ItemType = EItemType.Normal;
                     item.StackType = EStackType.Size2;
                     item.SpriteName = "bangbangtang";
 
@@ -199,6 +274,7 @@ namespace Config
                 {
                     var item = new FakeItemConf();
                     item.ItemId = "chanzi";
+                    item.ItemType = EItemType.Equip;
                     item.StackType = EStackType.NoStack;
                     item.SpriteName = "chanzi";
 

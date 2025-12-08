@@ -130,6 +130,25 @@ namespace My.Map
         {
             return true;
         }
+
+        public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
+        {
+            base.OnUnitDie(reason, lastIntent);
+
+            // ³õÊ¼»¯µôÂä°ü
+            dropBagContainer = new(this.LogicManager, unitCfg.DropId, 12);
+
+
+            if (lastIntent != null && lastIntent.srcEntityId != null)
+            {
+                var srcEntity = LogicManager.GetLogicEntity(lastIntent.srcEntityId.Value);
+
+                var diff = srcEntity.Pos - this.Pos;
+                var impluse = -(diff.normalized);
+
+                ApplyKnockBack(impluse, 5f);
+            }
+        }
     }
 }
 

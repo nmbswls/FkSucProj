@@ -75,8 +75,10 @@ namespace My.Map
         EEntityType Type { get; }
 
         EFactionId FactionId { get; }
-        bool IsActive { get; }
+        bool IsActive { get; set; }
         Vector2 Pos { get; }
+
+        long LifeBindEntityId { get; }
 
         // 生命周期钩子
         void OnSpawn(LogicEntityRecord data);    // 从记录创建完整实例
@@ -89,9 +91,10 @@ namespace My.Map
 
         void OnExitAOI();
 
-        event Action<Vector2, Vector2> EventOnEntityMove;
+        event Action<long, Vector2, Vector2> EventOnEntityMove;
+        event Action<long> EventOnDestroyed;
 
-        bool MarkDead { get; set; }
+        bool MarkDestroyed { get;}
 
         void OnMapLogicEvent(IMapLogicEvent ev);
 
@@ -124,11 +127,12 @@ namespace My.Map
 
         public EFactionId FactionId { get; set; }
 
-        public bool IsActive { get; protected set; } = true;
+        public bool IsActive { get; set; } = true;
 
-        public bool MarkDead { get; set; }
+        public bool MarkDestroyed { get; set; }
 
-        public event Action<Vector2, Vector2> EventOnEntityMove;
+        public event Action<long, Vector2, Vector2> EventOnEntityMove;
+        public event Action<long> EventOnDestroyed;
 
         public Vector2 Pos { get; protected set; } = Vector2.zero;
 
@@ -137,6 +141,11 @@ namespace My.Map
         public string BelongRoomId { get; set; } = string.Empty;
 
         public float LifeTime;
+
+        /// <summary>
+        /// todo 拆分到外部维护
+        /// </summary>
+        public long LifeBindEntityId { get; set; }
 
         public LogicEntityBase(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord)
         {
@@ -147,7 +156,9 @@ namespace My.Map
             this.BelongRoomId = bindingRecord.BelongRoomId;
             this.FactionId = bindingRecord.FactionId;
 
+            this.IsActive = bindingRecord.Activated;
             this.LifeTime = bindingRecord.LifeTime;
+            this.LifeBindEntityId = bindingRecord.LifeBindEntityId;
 
             BindingRecord = bindingRecord;
         }
@@ -170,7 +181,7 @@ namespace My.Map
             // 其他
             var posNow = this.Pos;
             SetPosition(pos);
-            EventOnEntityMove?.Invoke(posNow, pos);
+            EventOnEntityMove?.Invoke(this.Id, posNow, pos);
         }
 
 
@@ -240,18 +251,6 @@ namespace My.Map
         public virtual void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
         {
             // 4.3 死亡判断窗口：仅在含伤害时检查
-            switch (attrId)
-            {
-                case AttrIdConsts.HP:
-                    {
-                        if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
-                        {
-                            OnEntityDie(0, intent);
-                            break;
-                        }
-                    }
-                    break;
-            }
         }
 
         public Modifier AddAttrModifier(ModSourceKey source, string attrId, long val)
@@ -270,37 +269,72 @@ namespace My.Map
             attributeStore.UpdateModifier(m);
         }
 
-
-        public virtual void OnEntityDie(int reason, ResourceDeltaIntent lastIntent = null)
+        /// <summary>
+        /// 销毁理由：
+        /// </summary>
+        /// <param name="reason"></param>
+        public virtual void DoEntityDestroyed(string reason)
         {
-            MarkDead = true;
-            LogicManager.AreaManager.RequestEntityDie(this.Id, 1);
-
-            Debug.Log("Unit Entity OnEntityDie dead " + Id);
-
-            LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+            if (MarkDestroyed)
             {
-                Ctx = new()
-                {
-                    SourceEntity = this,
-                    HappenPos = this.Pos,
-                },
-                Name = "Death",
-                Param3 = this.Id,
-                //Param4 = src != null ? src.Id : 0,
-            });
+                Debug.Log("DoEntityDestroyed already mark dead");
+                return;
+            }
 
-            EventOnDeath?.Invoke();
+            // 标记已销毁 
+            MarkDestroyed = true;
+
+            // 销毁回调
+            EventOnDestroyed?.Invoke(this.Id);
+
+            LogicManager.AreaManager.RequestEntityDestroy(this.Id, reason);
         }
 
-        public event Action EventOnDeath;
+        /// <summary>
+        /// 处理entity的死亡逻辑
+        ///  可能包括状态清理 各种中断等
+        ///  死亡后默认5秒后销毁 但view可能已经隐藏
+        /// </summary>
+        /// <param name="reason"></param>
+        /// <param name="lastIntent"></param>
+        //public virtual void OnEntityDie(int reason, ResourceDeltaIntent lastIntent = null)
+        //{
+        //    if(MarkDestroyed)
+        //    {
+        //        Debug.Log("OnEntityDie already mark dead");
+        //        return;
+        //    }
+
+        //    // 标记死亡 
+        //    MarkDestroyed = true;
+        //    MarkDeadTime = LogicTime.time;
+
+        //    //LogicManager.AreaManager.RequestEntityDestroy(this.Id, 1);
+
+        //    Debug.Log("Unit Entity OnEntityDie dead " + Id);
+
+        //    LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+        //    {
+        //        Ctx = new()
+        //        {
+        //            SourceEntity = this,
+        //            HappenPos = this.Pos,
+        //        },
+        //        Name = "Death",
+        //        Param3 = this.Id,
+        //        //Param4 = src != null ? src.Id : 0,
+        //    });
+
+        //    EventOnDeath?.Invoke(this.Id);
+        //}
+
 
         public virtual void OnEnterAOI()
         {
         }
 
 
-        public void OnExitAOI()
+        public virtual void OnExitAOI()
         {
         }
 
@@ -313,23 +347,13 @@ namespace My.Map
 
         protected virtual void TickLifeTime(float dt)
         {
-            if (!MarkDead && LifeTime > 0)
+            if (!MarkDestroyed && LifeTime > 0)
             {
                 LifeTime -= dt;
                 if (LifeTime <= 0)
                 {
-                    OnEntityDie(1, null);
-                    //// 死亡
-                    //LogicManager.AreaManager.RequestEntityDie(this.Id, 2);
-
-                    //LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
-                    //{
-                    //    Name = "Death",
-                    //    Param3 = this.Id,
-                    //    Param4 = 3, // 3 时间到期
-                    //});
-
-                    //EventOnDeath?.Invoke();
+                    // 
+                    DoEntityDestroyed("lifetime");
                 }
             }
         }
@@ -342,11 +366,11 @@ namespace My.Map
             return false;
         }
 
-        public void OnSpawn(LogicEntityRecord data)
+        public virtual void OnSpawn(LogicEntityRecord data)
         {
         }
 
-        public void OnDespawn(out LogicEntityRecord? snapshot)
+        public virtual void OnDespawn(out LogicEntityRecord? snapshot)
         {
             snapshot = null;
         }

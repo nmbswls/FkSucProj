@@ -22,10 +22,12 @@ namespace My.Config
             Teleport,
             OpenPanel,
 
-            StartStealth,
 
             ActivateEventGroup,
             SpecialMoveTo,
+
+            StartStealth,
+
         }
 
         public EOutputType OutputType;

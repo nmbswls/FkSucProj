@@ -1,4 +1,5 @@
 
+using Config.Unit;
 using My.Map.Entity;
 using TMPro;
 using UnityEngine;
@@ -171,6 +172,10 @@ namespace My.UI
                 {
                     skillId = "queen_counter";
                 }
+                else if(index == 4)
+                {
+                    skillId = "queen_pull_all";
+                }
 
                 if (string.IsNullOrEmpty(skillId))
                 {
@@ -274,14 +279,34 @@ namespace My.UI
         }
 
 
-        public void ConfirmSkillCast(string abName, Vector2 point1, Vector2 point2)
+        public void ConfirmSkillCast(string skillName, Vector2 point1, Vector2 point2)
         {
             if (HudMode != EHudMode.PreviewSkill)
             {
                 return;
             }
 
-            MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(abName, castDir: point1);
+            var skillConfig = SkillLibrary.GetSkillConfig(skillName);
+            switch (skillConfig.TargetType)
+            {
+                case EntitySkillCfg.ETargetType.Point:
+                case EntitySkillCfg.ETargetType.Circle:
+                    {
+                        //  ©∑®æ‡¿Î
+                        var dist = skillConfig.Range1;
+                        var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
+                        if (dist < (point1 - playerPos).magnitude)
+                        {
+                            point1 = playerPos + (point1 - playerPos).normalized * dist;
+                        }
+                    }
+                    break;
+
+            }
+
+            var truncatedPoint = 
+
+            MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(skillName, castDir: point1);
             UpdateHudMode(EHudMode.Normal);
         }
 

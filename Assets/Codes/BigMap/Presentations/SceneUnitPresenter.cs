@@ -202,7 +202,7 @@ namespace My.Map.Scene
         {
             if(UnitEntity == null) return Vector2.zero;
             float arriveRaiuds = 0.12f;
-            if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
+            if (UnitEntity.IsDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
                 || UnitEntity.controlledMoveCtx != null)
             {
                 //UnitEntity.activeMoveVec = Vector2.zero;
@@ -340,57 +340,17 @@ namespace My.Map.Scene
             base.Bind(logic);
 
             InitWeaponInfo();
+        }
 
-            UnitEntity.EventOnDeath += () =>
-            {
-                if(MainView != null)
-                {
-                    MainView.DOColor(new Color(1, 1, 1, 0), 0.5f);
-                }
-                //icon.DOColor(new Color(1, 1, 1, 0), 0.5f);
-                //.OnComplete(() =>
-                //{
-                //    SceneAOIManager.Instance.UnregisterEntity(logic, transform.position);
-                //})
-                //.OnKill(() =>
-                //{
-                //    //icon.color = new Color(1, 1, 1, 0);
-                //    SceneAOIManager.Instance.UnregisterEntity(logic, transform.position);
-                //});
-            };
+        protected override void RegisterEvents()
+        {
+            base.RegisterEvents();
 
-            UnitEntity.EventOnHit += () =>
-            {
-                PresenterOnHit();
-            };
+            UnitEntity.EventOnDie += OnEventUnitDie;
+            UnitEntity.EventOnHit += OnEventUnitHit;
+            UnitEntity.EventOnStartStealth += OnEventStartStealth;
+            UnitEntity.EventOnEndStealth += OnEventEndStealth; 
 
-            UnitEntity.EventOnStartStealth += (entityId) =>
-            {
-                if(mainCol != null)
-                {
-                    mainCol.enabled = false;
-                }
-
-                var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
-                if(pres != null)
-                {
-                    pres.SetFadeAlpha(0.35f);
-                }
-            };
-
-            UnitEntity.EventOnEndStealth += (entityId) =>
-            {
-                if (mainCol != null)
-                {
-                    mainCol.enabled = true;
-                }
-
-                var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
-                if (pres != null)
-                {
-                    pres.SetFadeAlpha(0.2f);
-                }
-            };
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
             //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
@@ -401,6 +361,18 @@ namespace My.Map.Scene
             //    UnitEntity.externalVel = intent.knockDir.normalized * intent.knockDuration;
             //};
         }
+
+        protected override void UnregisterEvents()
+        {
+            base.UnregisterEvents();
+
+            UnitEntity.EventOnDie += OnEventUnitDie;
+            UnitEntity.EventOnHit -= OnEventUnitHit;
+            UnitEntity.EventOnStartStealth -= OnEventStartStealth;
+            UnitEntity.EventOnEndStealth -= OnEventEndStealth;
+        }
+
+
 
         protected virtual void InitWeaponInfo()
         {
@@ -415,6 +387,62 @@ namespace My.Map.Scene
             };
         }
 
+        #region 监听
+
+        protected virtual void OnEventUnitDie(long entityId)
+        {
+            MainGameManager.Instance.ShowFakeFxEffect("我死了", this.transform.position);
+
+            if(MainView != null)
+            {
+                MainView.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+            }
+        }
+
+        protected virtual void OnEventUnitHit(long entityId)
+        {
+            PresenterOnHit();
+        }
+
+        protected virtual void OnEventStartStealth(long entityId)
+        {
+            if (mainCol != null)
+            {
+                mainCol.enabled = false;
+            }
+
+            var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
+            if (pres != null)
+            {
+                pres.SetFadeAlpha(0.35f);
+            }
+        }
+
+        protected virtual void OnEventEndStealth(long entityId)
+        {
+            if (mainCol != null)
+            {
+                mainCol.enabled = true;
+            }
+            var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
+            if (pres != null)
+            {
+                pres.SetFadeAlpha(1);
+            }
+        }
+
+        protected override void OnEventEntityDestroyed(long entityId)
+        {
+            base.OnEventEntityDestroyed(entityId);
+
+            if (MainView != null)
+            {
+                MainView.DOColor(new Color(1, 1, 1, 0), 0.5f);
+            }
+        }
+
+
+        #endregion
 
         #region 受控移动
 

@@ -1,4 +1,5 @@
 using Map.Logic.Events;
+using My.Map.View;
 using My.Player.Bag;
 using System;
 using System.Collections;
@@ -150,6 +151,15 @@ namespace My.UI
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "PauseCloseupWindow",
+                resourcePath = "UI/Prefabs/PauseCloseupWindow",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+            
         }
 
         public static void RegisterGroups()
@@ -491,6 +501,7 @@ namespace My.UI
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnHit, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.AddBuff, adapter));
+            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, adapter));
         }
 
         public void OnMapLogicEvent(IMapLogicEvent ev)

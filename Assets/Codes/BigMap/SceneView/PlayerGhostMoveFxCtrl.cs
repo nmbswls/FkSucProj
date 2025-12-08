@@ -101,14 +101,14 @@ namespace My.Map.View
 
         void Burst(ParticleSystem[] psList)
         {
-            foreach (var ps in psList)
-            {
-                var emission = ps.emission;
-                // 临时提高发射率作为简单爆闪
-                var original = emission.rateOverTime.constant;
-                emission.rateOverTime = original * 3f;
-                DOVirtual.DelayedCall(0.12f, () => emission.rateOverTime = original);
-            }
+            //foreach (var ps in psList)
+            //{
+            //    var emission = ps.emission;
+            //    // 临时提高发射率作为简单爆闪
+            //    var original = emission.rateOverTime.constant;
+            //    emission.rateOverTime = original * 3f;
+            //    DOVirtual.DelayedCall(0.12f, () => emission.rateOverTime = original);
+            //}
         }
     }
 }

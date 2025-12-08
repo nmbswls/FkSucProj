@@ -374,6 +374,8 @@ namespace My.Map
             }
 
             ForceSetResource(AttrIdConsts.PlayerPleasure, 0);
+
+            LogicManager.viewer.ShowPauseCloseupWindow("gc", 1.0f);
         }
 
         public override void OnStatusAttriChanged(string attrId, bool isOn)
@@ -546,6 +548,13 @@ namespace My.Map
         }
 
         #endregion
+
+        public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
+        {
+            base.OnUnitDie(reason, lastIntent);
+
+
+        }
     }
 }
 

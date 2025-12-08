@@ -177,6 +177,15 @@ namespace My.Map.Scene
 
             return ret;
         }
+
+
+        protected override void OnEventUnitDie(long entityId)
+        {
+            base.OnEventUnitDie(entityId);
+
+            MainGameManager.Instance.WaitingIntoDefeatedBattle();
+        }
+
     }
 
 }

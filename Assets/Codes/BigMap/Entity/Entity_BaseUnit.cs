@@ -15,6 +15,7 @@ using static My.GameLogicManager;
 using UnityEditor.Experimental.GraphView;
 using static My.Map.Fight.FightStruct;
 using static UnityEngine.GraphicsBuffer;
+using My.Player.Bag;
 
 
 namespace My.Map
@@ -78,6 +79,7 @@ namespace My.Map
         //public bool IsInBattle; // 既没有战斗 也没有h attract
         public bool IsHMode;
         public bool IsQueenMode = false;
+        public bool IsDead = false;
 
         public int BindRoomId;
 
@@ -85,8 +87,13 @@ namespace My.Map
 
         public string EmnityConfId;
 
-        public event Action EventOnHit;
-        public event Action EventOnEnmityBehave;
+        /// <summary>
+        /// event
+        /// </summary>
+        public event Action<long> EventOnHit;
+        public event Action<long> EventOnEnmityBehave;
+        public event Action<long> EventOnDie;
+
 
         public UnitEnmityComp EnmityComp;
         public UnitVisibilityComp VisibilityComp;
@@ -104,6 +111,7 @@ namespace My.Map
             this.MoveBehaveInfo.MovePath = unitRecord.MovePath;
 
             this.FaceDir = bindingRecord.FaceDir;
+
 
             this.EmnityConfId = unitRecord.EnmityConfId;
 
@@ -153,10 +161,10 @@ namespace My.Map
             base.Tick(dt);
             // 计时、条件检查、冷却等
 
-            ablilityManager?.Tick(dt);
-            abilityController?.Tick(dt);
-
-
+            if(IsActive && !IsDead)
+            {
+                TickActivateState(dt);
+            }
 
             UpdateControlledMove(dt);
             // 外力自然衰减（除非在Dash中保持常速）
@@ -165,40 +173,21 @@ namespace My.Map
                 externalVel = Vector2.MoveTowards(externalVel, Vector2.zero, externalDecay * dt);
             }
 
-            //{
-            //    if (dashIntent != null)
-            //    {
-            //        dashIntent.dashTimeLeft -= dt;
-            //        if (dashIntent.dashTimeLeft <= 0f)
-            //        {
-            //            ClearDashIntent(1);
-            //        }
-            //    }
+            ablilityManager?.Tick(dt);
+            abilityController?.Tick(dt);
 
-            //}
+            if(!MarkDestroyed)
+            {
+                attributeStore.Commit();
+            }
+        }
 
-            //UpdateKnockback(dt);
-
+        protected virtual void TickActivateState(float dt)
+        {
             AIBrain?.Tick(dt);
-
-
-            attributeStore.Commit();
 
             EnmityComp?.Tick(dt);
 
-            //if(EnmityComp != null)
-            //{
-            //    // 见到
-            //    if(EnmityComp.IsEnmityState && LogicTime.time - PlayerNoticeInfo.LastSeeTime < 1f)
-            //    {
-            //        IsInBattle = true;
-            //    }
-            //}
-
-            //if(IsInBattle)
-            //{
-
-            //}
             combatStateComp?.Tick(dt);
 
             UpdateHMode();
@@ -207,13 +196,12 @@ namespace My.Map
 
             entityMotorComp?.Tick(dt);
 
-            UpdateFaceDir();
-
             TickAttractState();
 
             TickGaze();
-        }
 
+            UpdateFaceDir();
+        }
         public override void OnEnterAOI()
         {
             if(MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup)
@@ -237,35 +225,22 @@ namespace My.Map
         }
 
 
-        public override void OnEntityDie(int reason, ResourceDeltaIntent lastIntent = null)
+        public virtual void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
-            base.OnEntityDie(reason, lastIntent);
+            this.IsDead = true;
 
-            if(lastIntent != null && lastIntent.srcEntityId != null)
+            EventOnDie?.Invoke(this.Id);
+
+            LogicManager.LogicEventBus.Publish(new MLEUnitDeadEvent()
             {
-                var srcEntity = LogicManager.GetLogicEntity(lastIntent.srcEntityId.Value);
-
-                var diff = srcEntity.Pos - this.Pos;
-                var impluse = -(diff.normalized);
-
-                ApplyKnockBack(impluse, 5f);
-            }
-
-
-            if(!string.IsNullOrEmpty(unitCfg.DropId))
-            {
-                Debug.Log("entity die generate drop spoil." + Id);
-
-                LogicEntityRecord rec = new LogicEntityRecord4LootPoint()
+                Ctx = new()
                 {
-                    Id = GameLogicManager.LogicEntityIdInst++,
-                    EntityType = EEntityType.LootPoint,
-                    CfgId = "spoil_small",
-                    Position = this.Pos,
-                    DynamicDropId = unitCfg.DropId,
-                };
-                LogicManager.AddNewEntityRecord(rec);
-            }
+                    HappenPos = Pos,
+                    SourceEntity = LogicManager.playerLogicEntity,
+                },
+                EntityId = this.Id,
+                Pos = Pos,
+            });
         }
 
 
@@ -320,7 +295,14 @@ namespace My.Map
 
         public class ControlledMoveCtx
         {
-            public enum EType { None, Dash, Knock, Step}
+            public enum EType 
+            { 
+                None, 
+                Dash, 
+                Knock, 
+                Step,
+                Pull,
+            }
             public EType Type;
             public float Duration;
             public float MinEndSpeed;
@@ -433,23 +415,34 @@ namespace My.Map
                 return;
             }
 
-            if(controlledMoveCtx.Type == ControlledMoveCtx.EType.Dash)
+            controlledMoveCtx.timeLeft -= dt;
+            if (controlledMoveCtx.timeLeft <= 0f)
             {
-                controlledMoveCtx.timeLeft -= dt;
-                if (controlledMoveCtx.timeLeft <= 0f)
-                {
-                    EndControlledMove(1);
-                }
+                EndControlledMove(1);
+                return;
+            }
+
+            if (controlledMoveCtx.Type == ControlledMoveCtx.EType.Dash)
+            {
+                
             }
             else if(controlledMoveCtx.Type == ControlledMoveCtx.EType.Knock)
             {
-                controlledMoveCtx.timeLeft -= dt;
-                if (controlledMoveCtx.timeLeft <= 0f)
-                {
-                    EndControlledMove(1);
-                    return;
-                }
+                // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
+                // lambda 越大，减速越快；配合最小末速钳制
+                float lambda = 8f; // 可调 6~16
+                float damping = Mathf.Exp(-lambda * dt);
+                externalVel *= damping;
 
+                // 末端钳制
+                if (externalVel.magnitude < controlledMoveCtx.MinEndSpeed)
+                {
+                    externalVel = Vector2.zero;
+                    EndControlledMove(1);
+                }
+            }
+            else if (controlledMoveCtx.Type == ControlledMoveCtx.EType.Pull)
+            {
                 // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
                 // lambda 越大，减速越快；配合最小末速钳制
                 float lambda = 8f; // 可调 6~16
@@ -579,6 +572,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.ForbidSkillOp, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.NoSelect, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Ghost, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Invisible, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneKnock, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Stun, initialBase: 0);
@@ -726,10 +720,6 @@ namespace My.Map
                 EnmityComp.OnMapLogicEvent(evt);
             }
 
-            if(evt is MLEAttractEvent realEvt)
-            {
-                ApplyAttracted(realEvt.Pos, realEvt.Power, realEvt.AttractSource);
-            }
         }
 
         public bool CheckIsEmnity()
@@ -765,6 +755,49 @@ namespace My.Map
         #region a
 
         #endregion
+
+        public override void OnDespawn(out LogicEntityRecord? snapshot)
+        {
+            snapshot = BindingRecord;
+
+            //
+            // 当死亡状态下的unit被回收时，执行destroy 且如果有掠夺品 需要创建新掠夺物
+            if(IsDead)
+            {
+                DoEntityDestroyed("dead_despawn");
+
+                bool hasDrop = false;
+                List<ItemStack> items = new();
+                if (dropBagContainer != null)
+                {
+                    foreach(var slot in dropBagContainer.InnerItems)
+                    {
+                        if(slot != null && slot.Count > 0)
+                        {
+                            hasDrop = true;
+                            items.Add(slot);
+                        }
+                    }
+                }
+
+                if(hasDrop)
+                {
+                    Debug.Log("entity remove on die create loot point." + Id);
+
+                    LogicEntityRecord rec = new LogicEntityRecord4LootPoint()
+                    {
+                        Id = GameLogicManager.LogicEntityIdInst++,
+                        EntityType = EEntityType.LootPoint,
+                        CfgId = "spoil_small",
+                        Position = this.Pos,
+
+                        ItemInitialized = true,
+                        InnerItems = items,
+                    };
+                    LogicManager.AddNewEntityRecord(rec);
+                }
+            }
+        }
 
         /// <summary>
         /// 属性变化回调
@@ -803,7 +836,7 @@ namespace My.Map
                                 }
                             }
 
-                            EventOnHit?.Invoke();
+                            EventOnHit?.Invoke(this.Id);
                             {
                                 foreach(var b in BuffContainer.Values)
                                 {
@@ -814,7 +847,7 @@ namespace My.Map
 
                         if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
                         {
-                            OnEntityDie(0, intent);
+                            OnUnitDie(0, intent);
                             break;
                         }
                     }
@@ -823,9 +856,124 @@ namespace My.Map
 
             if(intent.isEnmity)
             {
-                EventOnEnmityBehave?.Invoke();
+                EventOnEnmityBehave?.Invoke(this.Id);
             }
         }
+
+        public class UnitBagContainer : IItemContainer
+        {
+            public GameLogicManager logicManager;
+            private bool Inialized = false;
+            private List<ItemStack> containItems = new List<ItemStack>();
+            public string DropId;
+            public int MaxSlots;
+
+            public Dictionary<int, float> ItemSearchProgress = new();
+
+            public UnitBagContainer(GameLogicManager logicManager, string dropId, int maxSlots)
+            {
+                this.logicManager = logicManager;
+                this.DropId = dropId;
+                this.MaxSlots = maxSlots;
+            }
+
+            public List<ItemStack> InnerItems
+            {
+                get
+                {
+
+                    if (!Inialized)
+                    {
+                        Inialized = true;
+
+                        for (int i = 0; i < MaxSlots; i++)
+                        {
+                            containItems.Add(null);
+                        }
+
+                        var items = logicManager.DropTable.GetBundleDropItems(DropId);
+                        for (int i = 0; i < items.Count; i++)
+                        {
+                            containItems[i] = FakeItemDatabase.CreateItemStack(items[i].Item1, items[i].Item2);
+
+                            //var itemConf = FakeItemDatabase.GetIcon();
+                            ItemSearchProgress[i] = 1.5f;
+                        }
+                    }
+                    return containItems;
+
+                }
+            }
+
+            public long GetMaxStack(string itemId)
+            {
+                return FakeItemDatabase.GetMaxStackByType(itemId, EContainerType.LootPoint);
+            }
+
+            public void SetItemData(int slotIdx, ItemStack item)
+            {
+                if (slotIdx < 0 || slotIdx >= MaxSlots)
+                {
+                    return;
+                }
+
+                containItems[slotIdx] = item;
+            }
+
+            public void SetItemCount(int slotIdx, long count)
+            {
+                if (slotIdx < 0 || slotIdx >= MaxSlots)
+                {
+                    return;
+                }
+
+                if (containItems[slotIdx] == null)
+                {
+                    return;
+                }
+
+                containItems[slotIdx].Count = count;
+            }
+
+            public bool IsSlotIdxValid(int slotIdx)
+            {
+                if (slotIdx < 0 || slotIdx >= MaxSlots)
+                {
+                    return false;
+                }
+
+                ItemSearchProgress.TryGetValue(slotIdx, out var progress);
+                if (progress > 0)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            public long GetItemCount(string itemId)
+            {
+                long ret = 0;
+                foreach (var item in containItems)
+                {
+                    if (item == null) continue;
+                    ret += item.Count;
+                }
+                return ret;
+            }
+
+            public ItemStack GetItemByIdx(int slotIdx)
+            {
+                if (slotIdx < 0 || slotIdx >= MaxSlots)
+                {
+                    return null;
+                }
+
+                return containItems[slotIdx];
+            }
+        }
+
+        protected UnitBagContainer dropBagContainer = null;
     }
 
 }

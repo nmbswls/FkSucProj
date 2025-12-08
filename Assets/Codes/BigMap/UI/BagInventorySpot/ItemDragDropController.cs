@@ -12,7 +12,10 @@ namespace My.UI
 {
     public class DragPayload
     {
-        public ItemStack Stack;
+        //public ItemStack Stack;
+        public string ItemId;
+        public long ItemCnt;
+
         public EContainerType SourceContainerType;
         public int SourceContainerId;
         public int SourceIndex;
@@ -65,7 +68,10 @@ namespace My.UI
 
             Payload = new DragPayload
             {
-                Stack = stack.Clone(), // 拖拽过程使用克隆数据
+                //Stack = stack.Clone(), // 拖拽过程使用克隆数据
+                ItemId = stack.ItemID,
+                ItemCnt = stack.Count,
+
                 SourceContainerType = sourceType,
                 SourceIndex = sourceIndex,
                 SourceContainerId = sourceContainerId,
@@ -191,9 +197,6 @@ namespace My.UI
                 int fromBag = payload.SourceContainerId;
                 int toBag = bagId;
 
-                var container = LootPointUIPanel.Instance.Loot.GetLootItemContainer();
-
-
                 // 背包内部移动/堆叠/交换
                 bool ok = PlayerBagUIPanel.Instance.BindingInventory.TrySwapOrMove(fromBag, payload.SourceIndex, toBag, dstIndex);
                 if (ok)
@@ -258,7 +261,7 @@ namespace My.UI
                 var fromBag = PlayerBagUIPanel.Instance.BindingInventory.GetBagById(payload.SourceContainerId);
 
                 //
-                if(payload.Stack.Count > 0)
+                if(payload.ItemCnt> 0)
                 {
                     //ShopNormalUIPanel.Instance.ShowSellHint();
                     UIManager.Instance.ShowPanel("ItemCountChooseBox", new Dictionary<int, long>());

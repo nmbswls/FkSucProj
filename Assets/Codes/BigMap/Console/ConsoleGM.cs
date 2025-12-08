@@ -222,7 +222,15 @@ public class ConsoleGM : MonoBehaviour
 
                 MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(rec);
             });
-        
+
+        Register("dmg", "Ôì³ÉÉËº¦",
+            null,
+            args =>
+            {
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                player.ApplyResourceChange(AttrIdConsts.HP, 9999999, false, FightStruct.EDmgFlag.None, null);
+            });
+
     }
 
     void OnDestroy()

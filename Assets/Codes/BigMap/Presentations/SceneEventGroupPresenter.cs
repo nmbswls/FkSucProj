@@ -9,13 +9,10 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map.Scene
 {
-    public class SceneEventGroupPresenter : InteractPointPresenter
+    public class SceneEventGroupPresenter : ScenePresentationBase<EventGroupLogicEntity>
     {
 
-        public override string ShowName => "EG";
-
         public EventGroupLogicEntity EventGroupEntity { get { return (EventGroupLogicEntity)_logic; } }
-
 
         public override void Tick(float dt)
         {

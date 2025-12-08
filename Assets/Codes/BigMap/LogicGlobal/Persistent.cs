@@ -4,6 +4,7 @@ using My.Map.Entity;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using My.Player.Bag;
 
 namespace My.Map.Logic
 {
@@ -19,10 +20,11 @@ namespace My.Map.Logic
 
         public EFactionId FactionId;
 
-        public bool DeadMark;
         public float LifeTime;
 
         public string BelongRoomId;
+        public bool Activated = true;
+        public long LifeBindEntityId;
         //public bool AlwaysActive;
     }
 
@@ -38,7 +40,9 @@ namespace My.Map.Logic
     [Serializable]
     public class LogicEntityRecord4LootPoint : LogicEntityRecord
     {
+        public bool ItemInitialized = false;
         public string DynamicDropId;
+        public List<ItemStack> InnerItems = new();
     }
 
     // 逻辑实体的轻量描述（可存持久化）
@@ -61,6 +65,7 @@ namespace My.Map.Logic
 
         // 仅保存特殊状态 buff丢弃
         public bool Unsensored;
+        public bool MarkDefeated; // 击败标记
 
 
     }

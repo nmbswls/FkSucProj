@@ -71,9 +71,9 @@ namespace My.Map
         }
 
 
-        public override void OnEntityDie(int reason, ResourceDeltaIntent lastIntent = null)
+        public override void DoEntityDestroyed(string reason)
         {
-            base.OnEntityDie(reason, lastIntent);
+            base.DoEntityDestroyed(reason);
 
             // «Â¿Ì
             foreach(var curEntity in currAffectedEntites)

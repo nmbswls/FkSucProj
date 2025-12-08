@@ -65,7 +65,8 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
         // 初始状态可能需要主动拉取或由逻辑层在 Bind 后立即推送
         
         transform.localPosition = MainGameManager.Instance.GetWorldPosFromLogicPos(_logic.Pos);
-        _logic.EventOnEntityMove += OnEntityMove;
+
+        RegisterEvents();
 
         // vieweventbus
         SceneSmallIconLayerPanel.Instance?.OnScenePresentationBinded(this);
@@ -73,11 +74,29 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
 
     public virtual void Unbind()
     {
-        _logic.EventOnEntityMove -= OnEntityMove;
-
         SceneSmallIconLayerPanel.Instance?.OnScenePresentationUbbind(this);
 
+        UnregisterEvents();
+
         _logic = null;
+    }
+
+    protected virtual void RegisterEvents()
+    {
+        _logic.EventOnEntityMove += OnEntityMove;
+        _logic.EventOnDestroyed += OnEventEntityDestroyed;
+
+    }
+    protected virtual void UnregisterEvents()
+    {
+        _logic.EventOnEntityMove -= OnEntityMove;
+        _logic.EventOnDestroyed -= OnEventEntityDestroyed;
+    }
+
+
+    protected virtual void OnEventEntityDestroyed(long entityId)
+    {
+
     }
 
     public virtual void ApplyState(object state) { }
@@ -100,7 +119,7 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
         RefreshFadeState();
     }
 
-    public void OnEntityMove(Vector2 oldPos, Vector2 newPos)
+    public void OnEntityMove(long entityId, Vector2 oldPos, Vector2 newPos)
     {
         transform.position = newPos;
         SceneAOIManager.Instance.MoveEntity(_logic, oldPos, newPos);

@@ -20,7 +20,7 @@ MonoBehaviour:
     - InteractId: 1
       Label: Hide
       UnLabel: Hide(X)
-      HideWhenFail: 0
+      HideWhenFail: 1
       CheckCommonCond: []
       CheckInteractCond:
       - CheckType: 1

@@ -21,7 +21,6 @@ namespace My.Map
     {
         public MapLootPointConfig cacheConfig;
 
-        public string DropId;
         public int MaxSlots = 12;
 
         public LootPointLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -29,13 +28,22 @@ namespace My.Map
             cacheConfig = MapLootPointConfigLoader.Get(cfgId);
 
             var realRec = (LogicEntityRecord4LootPoint)bindingRecord;
-            DropId = realRec.DynamicDropId;
-            if(string.IsNullOrEmpty(DropId))
+            if(!realRec.ItemInitialized)
             {
-                DropId = cacheConfig.DefaultDropId;
+                var dropId = realRec.DynamicDropId;
+                if (string.IsNullOrEmpty(dropId))
+                {
+                    dropId = cacheConfig.DefaultDropId;
+                }
+                lootContainer = new(logicManager, MaxSlots);
+                lootContainer.InitByDropId(dropId);
+            }
+            else
+            {
+                lootContainer = new(logicManager, MaxSlots);
+                lootContainer.InitByItems(realRec.InnerItems);
             }
 
-            lootContainer = new(logicManager, DropId, MaxSlots);
         }
 
         public override EEntityType Type => EEntityType.LootPoint;
@@ -48,16 +56,58 @@ namespace My.Map
             public GameLogicManager logicManager;
             private bool LootInialized = false;
             private List<ItemStack> containItems = new List<ItemStack>();
-            public string DropId;
             public int MaxSlots;
 
             public Dictionary<int, float> ItemSearchProgress = new();
 
-            public LootContainer(GameLogicManager logicManager, string dropId, int maxSlots)
+            public LootContainer(GameLogicManager logicManager, int maxSlots)
             {
                 this.logicManager = logicManager;
-                this.DropId = dropId;
                 this.MaxSlots = maxSlots;
+            }
+
+            public void InitByDropId(string dropId)
+            {
+                if (LootInialized)
+                {
+                    return;
+                }
+
+                LootInialized = true;
+
+                for (int i = 0; i < MaxSlots; i++)
+                {
+                    containItems.Add(null);
+                }
+
+                var items = logicManager.DropTable.GetBundleDropItems(dropId);
+                for (int i = 0; i < items.Count; i++)
+                {
+                    containItems[i] = FakeItemDatabase.CreateItemStack(items[i].Item1, items[i].Item2);
+
+                    //var itemConf = FakeItemDatabase.GetIcon();
+                    ItemSearchProgress[i] = 1.5f;
+                }
+            }
+
+            public void InitByItems(List<ItemStack> items)
+            {
+                if(LootInialized)
+                {
+                    return;
+                }
+
+                this.LootInialized = true;
+                this.containItems.Clear();
+                for (int i = 0; i < MaxSlots; i++)
+                {
+                    containItems.Add(null);
+                }
+
+                for(int i=0;i<items.Count;i++)
+                {
+                    containItems[i] = items[i];
+                }
             }
 
             public List<ItemStack> LootItems
@@ -65,28 +115,7 @@ namespace My.Map
                 get
                 {
 
-                    if (!LootInialized)
-                    {
-                        LootInialized = true;
-
-                        for(int i=0;i< MaxSlots;i++)
-                        {
-                            containItems.Add(null);
-                        }
-
-                        var items = logicManager.DropTable.GetBundleDropItems(DropId);
-                        for (int i=0;i<items.Count;i++)
-                        {
-                            containItems[i] = (new ItemStack()
-                            {
-                                ItemID = items[i].Item1,
-                                Count = items[i].Item2
-                            });
-
-                            //var itemConf = FakeItemDatabase.GetIcon();
-                            ItemSearchProgress[i] = 1.5f;
-                        }
-                    }
+                    
                     return containItems;
 
                 }
@@ -356,29 +385,6 @@ namespace My.Map
             return result <= 0;
         }
 
-        public void Add(ItemStack s, int dstIdx)
-        {
-            if(dstIdx < MaxSlots)
-            {
-                return;
-            }
-
-            if (s != null && !s.IsEmpty)
-            {
-                if(dstIdx >= lootContainer.LootItems.Count)
-                {
-                    return;
-                }
-
-                if (lootContainer.LootItems[dstIdx] != null)
-                {
-                    return;
-                }
-
-                lootContainer.LootItems[dstIdx] = new ItemStack(s.ItemID, s.Count);
-            }
-        }
-
         public void RemoveFromIndex(int index, int count)
         {
             if (index < 0 || index >= lootContainer.LootItems.Count) return;
@@ -387,7 +393,6 @@ namespace My.Map
             s.RemoveFromStack(count);
             if (s.Count <= 0) lootContainer.LootItems[index] = null;
         }
-
 
         public EContainerType GetContainerType()
         {

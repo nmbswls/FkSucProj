@@ -21,6 +21,8 @@ namespace My.Map.Entity
         public float Length;
         public float Radius;
 
+        public int CenterPosType = 0; // 0 happen 1 castVec
+
         public EEntityType TargetEntityType;
 
         public ECampFilterType CampFilterType;

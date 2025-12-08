@@ -38,6 +38,7 @@ namespace My
     public partial class GameLogicManager : ILogicEntityFactory
     {
         public static long LogicEntityIdInst = 100;
+        public static long ItemInstanceIdCounter = 100;
 
         public bool Initialized { get; set; }
 
@@ -215,7 +216,7 @@ namespace My
             foreach (var entity in AreaManager.Repo.Loaded.Values)
             {
                 entity.Tick(dt);
-                if (entity.MarkDead)
+                if (entity.MarkDestroyed)
                 {
                 }
             }
@@ -543,6 +544,11 @@ namespace My
                     case MapAbilityEffectCastSkillCfg:
                         {
                             executor = new AbilityEffectExecutor4CastSkill();
+                        }
+                        break;
+                    case MapAbilityEffectControlledMoveCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ControlledMove();
                         }
                         break;
                 }

@@ -1,0 +1,5 @@
+[Step intro]
+ : 能量流失。
+ : 周围的敌人围聚上来。
+ 
+EnterEncounter id=0 reason=defeated

@@ -147,6 +147,22 @@ namespace My.Map.Entity
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "queen_pull_all";
+                    cfg.MainAbilityId = "queen_pull_all";
+                    cfg.CoolDown = 3.0f;
+                    cfg.DesiredUseDistance = 5f;
+                    cfg.Priority = 1;
+
+                    cfg.TargetType = ETargetType.Circle;
+                    cfg.Range1 = 2.5f;
+                    cfg.Range2 = 2.0f;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -268,6 +284,10 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreateQueenCounterPayback();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreatePullAllEnemy();
                     _abilityDict[ab.Id] = ab;
                 }
             }
@@ -1064,6 +1084,7 @@ namespace My.Map.Entity
             };
 
             var hitCfg = new MapAbilityEffectHitBoxCfg();
+            hitCfg.CenterPosType = 0;
             hitCfg.EffectType = EAbilityEffectType.HitBox;
             hitCfg.Shape = MapAbilityEffectHitBoxCfg.EShape.Square;
             hitCfg.Width = 0.9f;
@@ -1572,7 +1593,7 @@ namespace My.Map.Entity
 
             spec.Id = "default_push";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.3f;
+            spec.MaxStepDistance = 0.5f;
             //spec.CoolDown = 0.2f;
             //spec.DesiredUseDistance = 0.5f;
 
@@ -1806,6 +1827,10 @@ namespace My.Map.Entity
             return spec;
         }
 
+        /// <summary>
+        /// 描述已经锁定施法目标后 对目标进行一次反击
+        /// </summary>
+        /// <returns></returns>
         private static MapAbilitySpecConfig CreateQueenCounterPayback()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
@@ -1869,6 +1894,83 @@ namespace My.Map.Entity
                 {
                     ValType = EOneVariatyType.Float,
                     RawVal = "0.5"
+                },
+            };
+            spec.Phases.Add(postPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreatePullAllEnemy()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "queen_pull_all";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.8"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.2"
+                },
+            };
+
+
+            {
+                // 怎么弄hitbox
+                var effect = new MapAbilityEffectHitBoxCfg()
+                {
+                    Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                    Radius = 2.0f,
+
+                    CampFilterType = ECampFilterType.NotSelf,
+                    IncludeEnmity = true,
+                    CenterPosType = 1,
+
+                    OnHitEffects = new()
+                    {
+                        new MapAbilityEffectControlledMoveCfg()
+                        {
+                            TargetType = 0,
+                            UseCastVec = true,
+                            FixedDuration = 0.45f,
+                            IsEnmity = true,
+                            ControlForce = 10.0f,
+                        }
+                    },
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnEnter });
+            }
+
+            spec.Phases.Add(mainPhase);
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                CanInputInterrupt = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
                 },
             };
             spec.Phases.Add(postPhase);

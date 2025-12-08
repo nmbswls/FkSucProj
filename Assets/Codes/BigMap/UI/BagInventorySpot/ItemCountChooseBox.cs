@@ -222,7 +222,7 @@ namespace My.UI
 
         public bool OnClick(int button, Vector2 mousePos)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

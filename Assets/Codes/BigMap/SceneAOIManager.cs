@@ -382,7 +382,7 @@ public class SceneAOIManager : MonoBehaviour
                         {
                             ShowPresentation(entry); // === 修改 ===
                         }
-                        else if (!entry.creating && !entry.entity.MarkDead)
+                        else if (!entry.creating && !entry.entity.MarkDestroyed)
                         {
                             entry.creating = true;              // === 新增 ===
                             entry.canceledDuringCreate = false; // === 新增 ===

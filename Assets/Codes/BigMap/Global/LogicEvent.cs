@@ -19,6 +19,7 @@ namespace Map.Logic.Events
         OnHit,
         Attract,
         VariableChange,
+        OnDie,
     }
 
 

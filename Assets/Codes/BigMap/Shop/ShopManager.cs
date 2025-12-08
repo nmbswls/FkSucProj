@@ -49,11 +49,7 @@ namespace My
 
             gameLogicManager.playerDataManager.CostItem(shopItem.CostItemId, shopItem.CostCount);
 
-            long addCnt = gameLogicManager.playerDataManager.inventoryModel.MainBag.TryAdd(new ItemStack()
-            {
-                ItemID = giveItem,
-                Count = giveCount,
-            });
+            long addCnt = gameLogicManager.playerDataManager.inventoryModel.MainBag.TryGiveItem(giveItem, giveCount);
             Debug.Log("TryBuyFromShop try buy " + giveItem + " " + addCnt);
             //if (dstBagIdx != null)
             //{

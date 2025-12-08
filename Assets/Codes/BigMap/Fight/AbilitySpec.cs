@@ -173,4 +173,6 @@ public interface ISceneAbilityViewer
     void DestroySceneFxEffect(int effe);
 
     void DoPlayerSpecialMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onCompelete = null);
+
+    void ShowPauseCloseupWindow(string showName, float duration);
 }

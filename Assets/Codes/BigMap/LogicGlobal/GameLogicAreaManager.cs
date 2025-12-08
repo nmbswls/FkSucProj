@@ -129,6 +129,11 @@ namespace My.Map.Logic
                 var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.VariableChange, innerListener);
                 subs.Add(sub);
             }
+            {
+                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, innerListener);
+                subs.Add(sub);
+            }
+
             Repo = null;
 
             // 加载 cacheDatabase
@@ -172,6 +177,25 @@ namespace My.Map.Logic
             checkRefreshTimer = LogicTime.time;
         }
 
+        public void SaveRecords()
+        {
+            if(Repo != null)
+            {
+                return;
+            }
+
+            foreach(var rec in Repo.Records.Values)
+            {
+                runtimeStates.TryGetValue(rec.Id, out var st);
+                if(st != null && st.IsMarkDestroy)
+                {
+                    continue;
+                }
+
+                // keyi cun
+            }
+        }
+
 
         private float checkRefreshTimer;
         private int tickDynamicObjIdx = 0; 
@@ -204,6 +228,8 @@ namespace My.Map.Logic
                     e.OnMapLogicEvent(ev);
                 }
             }
+
+            
         }
 
         
@@ -239,15 +265,19 @@ namespace My.Map.Logic
             // 长生命周期对象
             if(IsRecordAlwaysActive(rec))
             {
-                var ent = logicManager.CreateEntityByRecord(rec);
-                ent.OnSpawn(rec);
-                Repo.Loaded[rec.Id] = ent;
+                var ent = SpawnEntity(rec.Id);
+                if(ent == null)
+                {
+                    Debug.LogError("RegisterEntityRecord create null ");
+                }
+                else
+                {
+                    // 特殊容器
+                    LongLived.Register(ent);
 
-                // 特殊容器
-                LongLived.Register(ent);
-
-                // 初始状态：可选择 Active 或 Sleep
-                runtimeStates[rec.Id] = new OneEntityRuntimeState { Id = rec.Id, State = LogicLifeState.Active };
+                    // 初始状态：可选择 Active 或 Sleep
+                    runtimeStates[rec.Id] = new OneEntityRuntimeState { Id = rec.Id, State = LogicLifeState.Active };
+                }
             }
         }
 
@@ -316,8 +346,7 @@ namespace My.Map.Logic
             public bool NearAnyWarmup;     // 是否落入任一Warmup半径
             public float ForceActiveUntil;
 
-            // 新增：死亡态处理
-            public bool IsDeadRuntime;        // 运行时死亡标记
+            public bool IsMarkDestroy;        // 运行时死亡标记
             public float DeathRemainTimer;    // 尸体/残留计时
         }
 
@@ -329,8 +358,8 @@ namespace My.Map.Logic
         private readonly Queue<long> despawnEntityQ = new();
         private readonly Queue<long> wakeEntityQ = new();
         private readonly Queue<long> sleepEntityQ = new();
-        private readonly Queue<(long, int)> dieEntityQ = new();
-        private readonly Queue<long> corpseCleanupQ = new();
+        //private readonly Queue<(long, int)> destroyEntityQ = new();
+        private readonly Queue<(long, string)> corpseCleanupQ = new();
 
         // 复用容器
         private readonly List<long> queryBufInt = new(256);
@@ -361,7 +390,7 @@ namespace My.Map.Logic
             if(ensureExist)
             {
                 Debug.Log("GetLogicEntiy ensure exist " + instId);
-                return ImmediateSpawnAndWake(instId, rec);
+                return ImmediateSpawnAndWake(instId);
             }
 
             return null;
@@ -415,8 +444,8 @@ namespace My.Map.Logic
                 StepStateMachine(st, dt);
             }
 
-            // 处理死亡状态
-            ProcessDieQueue();
+            //// 处理死亡状态
+            //ProcessDieQueue();
 
             // 处理其他加载卸载等
             ProcessQueues(dt);
@@ -480,7 +509,7 @@ namespace My.Map.Logic
 
         private void StepStateMachine(OneEntityRuntimeState st, float dt)
         {
-            if (st.IsDeadRuntime)
+            if (st.IsMarkDestroy)
             {
                 // 死亡后交给尸体处理管线清理状态
                 return;
@@ -500,9 +529,7 @@ namespace My.Map.Logic
                 if (!Repo.IsLoaded(st.Id))
                 {
                     // 直接创建避免队列延迟，或使用优先队列
-                    var ent = logicManager.CreateEntityByRecord(rec);
-                    ent.OnSpawn(rec);
-                    Repo.Loaded[st.Id] = ent;
+                    var ent = SpawnEntity(rec.Id);
                 }
                 // 确保已Wake
                 Repo.GetLoaded(st.Id)?.OnWake();
@@ -562,12 +589,22 @@ namespace My.Map.Logic
                     if (st.InterestRefCount > 0)
                     {
                         st.Timer = 0f;
+                        break;
                     }
-                    else
+
+                    Repo.Loaded.TryGetValue(st.Id, out var loadedEntity);
+                    if (loadedEntity.LifeBindEntityId != 0)
                     {
-                        st.State = LogicLifeState.Cooldown;
-                        st.Timer = settings.ExitCooldown;
+                        runtimeStates.TryGetValue(loadedEntity.LifeBindEntityId, out var lifeBindSt);
+                        if(lifeBindSt != null && lifeBindSt.State == LogicLifeState.Active)
+                        {
+                            st.Timer = 0f;
+                            break;
+                        }
                     }
+
+                    st.State = LogicLifeState.Cooldown;
+                    st.Timer = settings.ExitCooldown;
                     break;
 
                 case LogicLifeState.Cooldown:
@@ -668,17 +705,8 @@ namespace My.Map.Logic
             while (spawnEntityQ.Count > 0 && n-- > 0)
             {
                 var id = spawnEntityQ.Dequeue();
-                if (Repo.IsLoaded(id)) continue;
-                if (!Repo.Records.TryGetValue(id, out var rec)) continue;
 
-                var ent = logicManager.CreateEntityByRecord(rec);
-                ent.OnSpawn(rec);
-                Repo.Loaded[id] = ent;
-
-                if (IsRecordAlwaysActive(rec))
-                {
-                    LongLived.Register(ent);
-                }
+                var ent = SpawnEntity(id);
             }
 
             // Sleep/Wake 不变
@@ -699,44 +727,74 @@ namespace My.Map.Logic
             }
         }
 
-        private void ProcessDieQueue()
-        {
-            int budget = 64; // 可配置
-            while (dieEntityQ.Count > 0 && budget-- > 0)
-            {
-                var pair = dieEntityQ.Dequeue();
-                DestroyEntity(pair.Item1, pair.Item2);
-            }
-        }
+        //private void ProcessDieQueue()
+        //{
+        //    int budget = 64; // 可配置
+        //    while (destroyEntityQ.Count > 0 && budget-- > 0)
+        //    {
+        //        var pair = destroyEntityQ.Dequeue();
+        //        DestroyEntity(pair.Item1, pair.Item2);
+        //    }
+        //}
 
+        private float _corpseTickTimer;
+
+        /// <summary>
+        /// 处理尸体销毁
+        /// </summary>
+        /// <param name="dt"></param>
         private void ProcessCorpse(float dt)
         {
+
+            float interval = 1.0f;
+            if (_corpseTickTimer + interval > LogicTime.time)
+            {
+                return;
+            }
+
+            _corpseTickTimer = LogicTime.time;
+
             int n = 32; // 每帧检查上限
             int count = Math.Min(n, corpseCleanupQ.Count);
             for (int i = 0; i < count; i++)
             {
-                var id = corpseCleanupQ.Dequeue();
-                if (!runtimeStates.TryGetValue(id, out var st)) continue;
+                (var id, string reason) = corpseCleanupQ.Dequeue();
+                // 未注册或已清理的实例
                 if (!Repo.Records.TryGetValue(id, out var rec)) continue;
+
+                if (!runtimeStates.TryGetValue(id, out var st)) continue;
 
                 st.DeathRemainTimer -= dt;
                 if (st.DeathRemainTimer > 0f)
                 {
                     // 尚未到时间，回队列
-                    corpseCleanupQ.Enqueue(id);
+                    corpseCleanupQ.Enqueue((id, reason));
                     continue;
                 }
 
-                //if (rec.AlwaysActive)
-                //{
-                //}
-
-                DespawnEntity(id);
-                RemoveLogicRecord(id);
+                // 摧毁entity
+                DestroyEntity(id, reason);
             }
         }
 
-        public void DespawnEntity(long id)
+        private ILogicEntity SpawnEntity(long entityId)
+        {
+            // 保持Active：若未加载则立刻Spawn+Wake（不走限流）或走优先级更高的队列
+            if (Repo.IsLoaded(entityId))
+            {
+                return null;   
+            }
+
+            if (!Repo.Records.TryGetValue(entityId, out var rec)) return null;
+
+            var ent = logicManager.CreateEntityByRecord(rec);
+            ent.OnSpawn(rec);
+            Repo.Loaded[entityId] = ent;
+
+            return ent;
+        }
+
+        private void DespawnEntity(long id)
         {
             if (!Repo.IsLoaded(id)) return;
             
@@ -746,23 +804,49 @@ namespace My.Map.Logic
             Repo.Loaded.Remove(id);
             if (snap != null) Repo.Records[id] = snap;
 
+            //ent.EventOnDestroyed -= OnEventEntityDestroyed;
             logicManager.RecycleEntity(ent);
-
-            
         }
 
-        // 异步请求：下一帧/本帧队列处理
-        public void RequestEntityDie(long id, int reason)
+
+        private void OnEventEntityDestroyed(long entityId)
         {
-            dieEntityQ.Enqueue((id, reason));
+
         }
 
         /// <summary>
-        /// entity
+        /// 请求销毁entity
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="reason"></param>
+        public void RequestEntityDestroy(long id, string reason)
+        {
+            // 检查是否合法
+            if (!Repo.HasRecord(id))
+            {
+                Debug.Log($"RequestEntityDestroy id:{id} not found {reason}");
+                return;
+            }
+
+            // 保证拥有runtime状态
+            if (!runtimeStates.TryGetValue(id, out var st))
+            {
+                st = new OneEntityRuntimeState { Id = id, State = LogicLifeState.NotLoaded };
+                runtimeStates[id] = st;
+            }
+
+            st.IsMarkDestroy = true;
+            st.DeathRemainTimer = 5.0f; // 留5秒钟容错时间
+
+            corpseCleanupQ.Enqueue((id, reason));
+        }
+
+        /// <summary>
+        /// 执行销毁 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool DestroyEntity(long id, int reason)
+        private bool DestroyEntity(long id, string reason)
         {
             // 检查是否由record
             if(!Repo.HasRecord(id))
@@ -771,50 +855,45 @@ namespace My.Map.Logic
                 return false;
             }
 
-            // 对于已加载的 走卸载流程
+            // 对于已加载的logic 先执行卸载
             if (Repo.IsLoaded(id))
             {
                 var ent = Repo.GetLoaded(id);
-                ent.MarkDead = true;
+                DespawnEntity(id); // 先卸载logic实体
+                //if (!runtimeStates.TryGetValue(id, out var st))
+                //{
+                //    st = new OneEntityRuntimeState { Id = id, State = LogicLifeState.NotLoaded };
+                //    runtimeStates[id] = st;
+                //}
+                //st.IsDeadRuntime = true;
+                //if(reason == 0)
+                //{
+                //    st.DeathRemainTimer = 0f;
+                //}
+                //else
+                //{
+                //    st.DeathRemainTimer = 0.5f;
+                //}
 
-                // 3) 标记运行态和记录
+                //// 4) 死亡后立即退出活跃：可先 Sleep，随后走尸体清理流程
+                //if (st.DeathRemainTimer > 0f)
+                //{
+                //    // 让实体先 Sleep（停逻辑）
+                //    EnqueueSleep(id);
+                //    // 将尸体加入清理队列
+                //    if (!corpseCleanupQ.Contains(id)) corpseCleanupQ.Enqueue(id);
+                //}
+                //else
+                //{
+                //    // 立即卸载
+                //    DespawnEntity(id);
 
-                if (!runtimeStates.TryGetValue(id, out var st))
-                {
-                    st = new OneEntityRuntimeState { Id = id, State = LogicLifeState.NotLoaded };
-                    runtimeStates[id] = st;
-                }
-                st.IsDeadRuntime = true;
-                if(reason == 0)
-                {
-                    st.DeathRemainTimer = 0f;
-                }
-                else
-                {
-                    st.DeathRemainTimer = 0.5f;
-                }
-
-                // 4) 死亡后立即退出活跃：可先 Sleep，随后走尸体清理流程
-                if (st.DeathRemainTimer > 0f)
-                {
-                    // 让实体先 Sleep（停逻辑）
-                    EnqueueSleep(id);
-                    // 将尸体加入清理队列
-                    if (!corpseCleanupQ.Contains(id)) corpseCleanupQ.Enqueue(id);
-                }
-                else
-                {
-                    // 立即卸载
-                    DespawnEntity(id);
-
-                    RemoveLogicRecord(id);
-                }
+                //    RemoveLogicRecord(id);
+                //}
             }
-            // 对于未加载的条目 直接移除
-            else
-            {
-                RemoveLogicRecord(id);
-            }
+
+
+            RemoveLogicRecord(id);
 
             return true;
         }
@@ -838,26 +917,17 @@ namespace My.Map.Logic
         /// <param name="id"></param>
         /// <param name="rec"></param>
         /// <returns></returns>
-        private ILogicEntity? ImmediateSpawnAndWake(long id, LogicEntityRecord rec)
+        private ILogicEntity? ImmediateSpawnAndWake(long id)
         {
             // 防重入：若刚被加载，直接返回
             if (Repo.IsLoaded(id)) return Repo.GetLoaded(id);
 
-            // 创建实例
-            var ent = logicManager.CreateEntityByRecord(rec);
-            if (ent == null) return null;
-
-            // OnSpawn
-            ent.OnSpawn(rec);
-
-            // 写 Loaded
-            Repo.Loaded[id] = ent;
-
+            var newEnt = SpawnEntity(id);
             // OnWake（如需要）
-            ent.OnWake();
+            newEnt.OnWake();
 
             // 统一 AOI 索引（避免后续查询不到）
-            UnitGridIndex.AddOrMove(id, rec.Position);
+            UnitGridIndex.AddOrMove(id, newEnt.Pos);
 
             // 更新运行态
             var st = runtimeStates.ContainsKey(id) ? runtimeStates[id] : (runtimeStates[id] = new OneEntityRuntimeState { Id = id });
@@ -867,7 +937,7 @@ namespace My.Map.Logic
 
             //IssueKeepAliveToken(id, ttlSec: 0.2f);
 
-            return ent;
+            return newEnt;
         }
     }
 }

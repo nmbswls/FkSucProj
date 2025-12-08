@@ -14,25 +14,30 @@ namespace My.Player.Bag
 {
 
     [Serializable]
+    public abstract class ItemInstanceInfo
+    { 
+
+    }
+
+    [Serializable]
+    public class ItemInstance4Equip : ItemInstanceInfo
+    {
+        public long RandVal;
+    }
+
+
+    [Serializable]
     public class ItemStack
     {
         public string ItemID;
         public long Count;
         public long ItemInstanceId;
+        public ItemInstanceInfo InstanceInfo;
 
-        public ItemStack()
-        {
-
-        }
         public ItemStack(string id, long count)
         {
             ItemID = id;
             Count = count;
-        }
-
-        public ItemStack Clone()
-        {
-            return new ItemStack(ItemID, Count);
         }
 
         public bool CanStackWith(ItemStack other)
@@ -109,7 +114,8 @@ namespace My.Player.Bag
                 }
 
                 long canMove = srcItemNewStackMax;
-                dstContainer.SetItemData(dstIdx, new ItemStack() { ItemID = srcItem.ItemID, Count = canMove });
+                var newItem = FakeItemDatabase.CreateItemStack(srcItem.ItemID, canMove);
+                dstContainer.SetItemData(dstIdx, newItem);
                 srcContainer.SetItemCount(srcIdx, srcItem.Count - canMove);
 
                 return true;
@@ -389,17 +395,20 @@ namespace My.Player.Bag
         /// </summary>
         /// <param name="incoming"></param>
         /// <returns></returns>
-        public long TryAdd(ItemStack incoming)
+        public long TryGiveItem(string itemId, long count, int preferredIdx = -1)
         {
-            if (incoming == null || incoming.IsEmpty) return 0;
-            long remaining = incoming.Count;
+            if (itemId == null || count <= 0) return 0;
+            var itemConf = FakeItemDatabase.GetItem(itemId);
+            if (itemConf == null) return 0;
 
-            var maxStack = GetMaxStack(incoming.ItemID);
+            long remaining = count;
+
+            var maxStack = GetMaxStack(itemId);
             // 先尝试再普通格子里堆叠
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 var s = NormalSlots[i];
-                if (s != null && s.ItemID == incoming.ItemID && s.Count < GetMaxStack(s.ItemID))
+                if (s != null && s.ItemID == itemId && s.Count < GetMaxStack(s.ItemID))
                 {
                     var added = s.AddToStack(remaining, maxStack);
                     remaining -= added;
@@ -410,9 +419,9 @@ namespace My.Player.Bag
             {
                 if (NormalSlots[i] == null || NormalSlots[i].IsEmpty)
                 {
-                    var max = GetMaxStack(incoming.ItemID);
+                    var max = GetMaxStack(itemId);
                     var put = Math.Min(max, remaining);
-                    NormalSlots[i] = new ItemStack(incoming.ItemID, put);
+                    NormalSlots[i] = FakeItemDatabase.CreateItemStack(itemId, put);
                     remaining -= put;
                 }
             }
@@ -424,7 +433,7 @@ namespace My.Player.Bag
                 for (int i = 0; i < ExtraSlots.Count && remaining > 0; i++)
                 {
                     var s = ExtraSlots[i];
-                    if (s != null && s.ItemID == incoming.ItemID && s.Count < maxStack)
+                    if (s != null && s.ItemID == itemId && s.Count < maxStack)
                     {
                         var added = s.AddToStack(remaining, maxStack);
                         remaining -= added;
@@ -437,70 +446,15 @@ namespace My.Player.Bag
                     while (ExtraSlots.Count < MaxExtraCapacity && remaining > 0)
                     {
                         var put = Math.Min(maxStack, remaining);
-                        ExtraSlots.Add(new ItemStack(incoming.ItemID, put));
+                        var newItem = FakeItemDatabase.CreateItemStack(itemId, put);
+                        ExtraSlots.Add(newItem);
                         remaining -= put;
                     }
                 }
             }
 
-            return incoming.Count - remaining;
+            return count - remaining;
         }
-
-        // 尝试将物品放到指定格子（堆叠或交换），返回成功移动数量
-        public long TryAddToIndexOrStack(ItemStack incoming, int dstIndex)
-        {
-            if (incoming == null || incoming.IsEmpty) return 0;
-
-            var maxStack = GetMaxStack(incoming.ItemID);
-            if (dstIndex < NormalSlots.Count)
-            {
-                var dst = NormalSlots[dstIndex];
-                // 放入空的
-                if (dst == null || dst.IsEmpty)
-                {
-                    var put = Math.Min(maxStack, incoming.Count);
-                    NormalSlots[dstIndex] = new ItemStack(incoming.ItemID, put);
-                    return put;
-                }
-                // 同类堆叠
-                if (dst.ItemID == incoming.ItemID && dst.Count < maxStack)
-                {
-                    var added = dst.AddToStack(incoming.Count, maxStack);
-                    return added;
-                }
-                return 0;
-            }
-            else if (dstIndex < BasicCapacity + ExtraSlots.Count)
-            {
-                var dst = ExtraSlots[dstIndex - BasicCapacity];
-                // 放入空的
-                if (dst == null || dst.IsEmpty)
-                {
-                    Debug.LogError("extra cant be null");
-                    return 0;
-                }
-                // 同类堆叠
-                if (dst.ItemID == incoming.ItemID && dst.Count < maxStack)
-                {
-                    var added = dst.AddToStack(incoming.Count, maxStack);
-                    return added;
-                }
-                return 0;
-            }
-            // 放在末尾
-            else
-            {
-                if(ExtraSlots.Count >= MaxExtraCapacity)
-                {
-                    return 0; 
-                }
-                var put = Math.Min(maxStack, incoming.Count);
-                NormalSlots[dstIndex] = new ItemStack(incoming.ItemID, put);
-                return put;
-            }
-        }
-
-
         public bool TrySplit(int srcIndex, long count)
         {
             // 只分离普通背包
@@ -510,12 +464,18 @@ namespace My.Player.Bag
                 if (src == null || src.IsEmpty) return false;
                 if (count <= 0 || count >= src.Count) return false;
 
+                // 实例化道具无法拆分
+                if(src.ItemInstanceId != 0)
+                {
+                    return false;
+                }
+
                 // 找空位
                 int emptyIdx = NormalSlots.FindIndex(s => s == null || s.IsEmpty);
                 if (emptyIdx < 0) return false;
 
                 src.RemoveFromStack(count);
-                NormalSlots[emptyIdx] = new ItemStack(src.ItemID, count);
+                NormalSlots[emptyIdx] = FakeItemDatabase.CreateItemStack(src.ItemID, count);
                 return true;
             }
                 
@@ -638,29 +598,15 @@ namespace My.Player.Bag
             }
         }
 
-        public long AddItem(int bagId, int idx, string itemId, int amount)
-        {
-
-            var bag = GetBagById(bagId);
-            if (bag == null)
-            {
-                return 0;
-            }
-
-            var put = bag.TryAddToIndexOrStack(new ItemStack() { ItemID = itemId, Count = amount}, idx);
-            return put;
-        }
-
         public long GiveItem(string itemId, long amount)
         {
-
             var bag = GetBagById(0);
             if (bag == null)
             {
                 return 0;
             }
 
-            var put = bag.TryAdd(new ItemStack() { ItemID = itemId, Count = amount });
+            var put = bag.TryGiveItem(itemId, amount);
             return put;
         }
 
@@ -726,9 +672,6 @@ namespace My.Player.Bag
         void TickUnReveal(float dt);
 
         int GetCurrUnrealed();
-
-        void Add(ItemStack s, int dstIdx);
-
 
         void RemoveFromIndex(int index, int count);
 

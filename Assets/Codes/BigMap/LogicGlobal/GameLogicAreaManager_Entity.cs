@@ -189,7 +189,12 @@ namespace My.Map.Logic
                             int groupId = memberInfo.GroupId;
 
                             var mRecord = CreateEntityRecordFromInitInfo(memberInfo.InitInfo);
+                            mRecord.Position = memberInfo.InitInfo.Position + egRecord.Position;
+
                             egRecord.MemberEntityMap.Add(groupId, mRecord.Id);
+
+                            mRecord.LifeBindEntityId = id;
+                            mRecord.Activated = false;
 
                             Repo.RegisterRecord(mRecord);
                         }

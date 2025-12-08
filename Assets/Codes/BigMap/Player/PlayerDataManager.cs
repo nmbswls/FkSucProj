@@ -12,6 +12,7 @@ namespace My.Player
     {
         public GameLogicManager logicManager;
 
+        public long ItemInstanceIdCounter = 100;
         public PlayerInventoryModel inventoryModel;
 
         public Dictionary<string, long> CurrencyBag = new();
@@ -28,6 +29,7 @@ namespace My.Player
             "queen_shoot",
             "fix_clothes",
             "spawn_attract",
+            "queen_pull_all",
 
             "queen_counter",
 
@@ -51,10 +53,11 @@ namespace My.Player
         {
             inventoryModel = new();
 
-            inventoryModel.AddItem(0, 0, "banana",2);
-            inventoryModel.AddItem(0, 1, "qiezi", 3);
-            inventoryModel.AddItem(0, 2, "bangbangtang", 3);
-            inventoryModel.AddItem(0, 6, "chanzi", 2);
+            var mainBag = inventoryModel.MainBag;
+            mainBag.NormalSlots[0] = FakeItemDatabase.CreateItemStack("banana", 2);
+            mainBag.NormalSlots[1] = FakeItemDatabase.CreateItemStack("qiezi", 3);
+            mainBag.NormalSlots[2] = FakeItemDatabase.CreateItemStack("bangbangtang", 3);
+            mainBag.NormalSlots[6] = FakeItemDatabase.CreateItemStack("chanzi", 1);
 
             //inventoryModel.NormalSlots[1] = new ItemStack() { ItemID = "qiezi", Count = 3 };
             //inventoryModel.NormalSlots[2] = new ItemStack() { ItemID = "bangbangtang", Count = 3 };

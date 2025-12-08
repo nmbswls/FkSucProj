@@ -198,7 +198,7 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
             {
                 return false;
             }
-            if(unitPresent.UnitEntity.MarkDead)
+            if(unitPresent.UnitEntity.MarkDestroyed)
             {
                 return false;
             }

@@ -385,7 +385,10 @@ public partial class DialoguePlayer : MonoBehaviour
                 {
                     Debug.Log("EnterEncounter item from dialog ");
 
-                    MainGameManager.Instance.EnterEncounter();
+                    string id = TryS(cd, "id");
+                    string reason = TryS(cd, "reason");
+
+                    MainGameManager.Instance.EnterEncounter(0, "dialog");
 
                     SafeComplete();
                     break;

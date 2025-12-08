@@ -1,0 +1,36 @@
+[Step intro]
+CameraMove pos=0,0,-10 duration=0
+CameraZoom fov=60 duration=0
+ShowPortrait slot=Left characterId=hero expressionId=default fade=0.25
+ShowPortrait slot=Right characterId=companion expressionId=smile fade=0.25
+
+Hero: 终于到了约定的地点。
+Companion: 你比我想象的准时。
+
+[Choice]
+- 立刻出发 -> branch_go
+- 再收集些情报 -> branch_info
+
+[Step branch_go]
+GiveItem itemId=Herb amount=1
+Companion: 好，那就现在行动！
+ChangeExpression slot=Right expressionId=smile fade=0.2
+CameraZoom fov=50 duration=0.4
+PlaySE name=step_confirm
+Hero: 跟紧我。
+Jump label=endin
+
+[Step branch_info]
+Hero: 谨慎总是没错的。先打听一下附近的情况。
+ChangeExpression slot=Left expressionId=think fade=0.2
+CameraMove pos=-0.3,0,-10 duration=0.4
+PlaySE name=ui_select
+Companion: 那我联系一下线人。
+Jump label=ending
+
+[Step ending]
+HidePortrait slot=Right fade=0.25
+ChangeExpression slot=Left expressionId=default fade=0.2
+Hero: 准备完毕，出发。
+EnterEncounter
+PlaySE name=ui_close
