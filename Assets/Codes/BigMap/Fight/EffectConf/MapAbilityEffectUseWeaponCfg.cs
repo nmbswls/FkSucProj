@@ -12,6 +12,7 @@ namespace My.Map.Entity
     {
         public string WeaponName;
         public float Duration;
+        public int MaxHit;
 
         [SerializeReference]
         public List<MapFightEffectCfg> OnHitEffects;

@@ -6,8 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+
 
 namespace My.Map.Scene
 {
@@ -143,14 +142,26 @@ namespace My.Map.Scene
                 return true;
             }
 
+            if (PlayerEntity.AtttachingObjList.Count > 0)
+            {
+                return true;
+            }
+
             return false;
         }
 
         public void TriggerInteract(int selectionId)
         {
-            if(selectionId == 1)
+            if (selectionId == 1)
             {
                 PlayerEntity.EndStealth();
+            }
+            else if (selectionId == 2)
+            {
+                foreach(var obj in PlayerEntity.AtttachingObjList)
+                {
+                    obj.LeftHp -= 1;
+                }
             }
         }
 
@@ -163,17 +174,25 @@ namespace My.Map.Scene
         {
             List<SceneInteractSelection> ret = new();
 
-            if (!PlayerEntity.IsInStealth())
+            if (PlayerEntity.IsInStealth())
             {
-                return ret;
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 1,
+                    SelectContent = "Leave",
+                    Selectable = true,
+                });
             }
 
-            ret.Add(new SceneInteractSelection()
+            if(PlayerEntity.AtttachingObjList.Count > 0)
             {
-                SelectId = 1,
-                SelectContent = "Leave",
-                Selectable = true,
-            });
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 2,
+                    SelectContent = "’ı‘˙",
+                    Selectable = true,
+                });
+            }
 
             return ret;
         }
@@ -186,6 +205,52 @@ namespace My.Map.Scene
             MainGameManager.Instance.WaitingIntoDefeatedBattle();
         }
 
+        protected override void RegisterEvents()
+        {
+            base.RegisterEvents();
+
+            PlayerEntity.EventOnAttachmentUpdate += OnEventAttachmentUpdate;
+        }
+
+        protected override void UnregisterEvents()
+        {
+            base.UnregisterEvents();
+
+            PlayerEntity.EventOnAttachmentUpdate -= OnEventAttachmentUpdate;
+        }
+
+        private void OnEventAttachmentUpdate(long e)
+        {
+            RefreshAttachmentView();
+        }
+
+        public Transform AttachmentRoot;
+
+        private Dictionary<int, GameObject> AttachViewDict = new();
+        public void RefreshAttachmentView()
+        {
+            foreach(var attach in PlayerEntity.AtttachingObjList)
+            {
+                if(!AttachViewDict.TryGetValue(attach.Id, out var showObj))
+                {
+                    var prefab = Resources.Load<GameObject>("Prefab/Attach/attach_unit_01");
+                    var go = GameObject.Instantiate(prefab, AttachmentRoot);
+                    go.SetActive(true);
+                    go.transform.localPosition = Vector3.zero;
+                    AttachViewDict[attach.Id] = go;
+                }
+            }
+
+            foreach(var key in AttachViewDict.Keys.ToList())
+            {
+                if (PlayerEntity.AtttachingObjList.Find((item) => { return item.Id == key; }) == null)
+                {
+                    GameObject.Destroy(AttachViewDict[key].gameObject);
+                    AttachViewDict.Remove(key); 
+                }
+            }
+
+        }
     }
 
 }

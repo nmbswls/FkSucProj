@@ -265,6 +265,12 @@ namespace My.UI.Bag
 
         void SwitchSpeBag(int partId)
         {
+            if(partId > 0 && MainGameManager.Instance.gameLogicManager.playerLogicEntity.AtttachingObjList.Count > 0)
+            {
+                FakeHintTextManager.ShowWorld("Ëø¶¨", MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
+                return;
+            }
+
             int oldIdx = this.CurrExpandSpeBag;
             if (this.CurrExpandSpeBag == partId)
             {

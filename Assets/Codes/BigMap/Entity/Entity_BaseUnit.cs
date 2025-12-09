@@ -86,6 +86,8 @@ namespace My.Map
         public event Action<long> EventOnHit;
         public event Action<long> EventOnEnmityBehave;
         public event Action<long> EventOnDie;
+        public event Action<long> EventOnAttachStatusChanged;
+
 
         public UnitVisibilityComp VisibilityComp;
 
@@ -266,6 +268,7 @@ namespace My.Map
             public EControlMode ControlMode;
             public float OriginSpeed;
             public float ImpulsePower;
+            public float DecayPowerRate = 0;
 
             public bool EndOnCollideWall;
 
@@ -285,7 +288,7 @@ namespace My.Map
             controlledMoveCtx.WithEffect = withEffect;
         }
 
-        public void ApplyKnockBack(Vector2 dir, float power, Action<int>? onKnockEnd = null)
+        public void ApplyKnockBack(Vector2 dir, float knockDist, float decayRate = 8f, Action<int>? onKnockEnd = null)
         {
             if (CheckHasState(AttrIdConsts.ImmuneKnock))
             {
@@ -298,24 +301,7 @@ namespace My.Map
                 priority = 10,
             });
 
-            ApplyControlledMove(ControlledMoveCtx.EType.Knock, dir, 0.25f, originSpeed: power, impulsePower: power, minEndSpeed: 0.1f);
-
-            //ClearDashIntent(0);
-            //ClearKnockbackInfo(2);
-
-            //KnockBackIntent intent = new();
-
-            //intent.knockbackMinEndSpeed = 0.1f;
-            //intent.knockbackPower = power;
-            //intent.knockDir = dir;
-
-            //externalVel = intent.knockDir.normalized * power;
-
-            //knockTimer = 0.15f;
-            //knockVel = intent.knockDir * power; // 初速大
-
-            ////onNewKnockBackIntent?.Invoke(intent);
-            //knockBackIntent = intent;
+            ApplyControlledMove(ControlledMoveCtx.EType.Knock, dir, originSpeed: knockDist * decayRate, minEndSpeed: 0.1f);
         }
 
         /// <summary>
@@ -327,7 +313,7 @@ namespace My.Map
         /// <param name="speed"></param>
         /// <param name="onEndEffects"></param>
         /// <param name="minEndSpeed"></param>
-        public void ApplyControlledMove(ControlledMoveCtx.EType type, Vector2 dir, float duration, float? originSpeed = null, float? impulsePower = null, List<MapFightEffectCfg> onEndEffects = null, float minEndSpeed = 0)
+        public void ApplyControlledMove(ControlledMoveCtx.EType type, Vector2 dir, float duration = -1, float? originSpeed = null, float decayRate = 8f, List<MapFightEffectCfg> onEndEffects = null, float minEndSpeed = 0)
         {
             if(controlledMoveCtx != null)
             {
@@ -347,6 +333,8 @@ namespace My.Map
 
             ctx.OnHitUnitEffects = onEndEffects;
 
+            ctx.DecayPowerRate = decayRate;
+
             ctx.timeLeft = ctx.Duration;
 
             //onNewDashIntent?.Invoke(intent);
@@ -364,12 +352,17 @@ namespace My.Map
                 return;
             }
 
-            controlledMoveCtx.timeLeft -= dt;
-            if (controlledMoveCtx.timeLeft <= 0f)
+
+            if(controlledMoveCtx.Duration > 0)
             {
-                EndControlledMove(1);
-                return;
+                controlledMoveCtx.timeLeft -= dt;
+                if (controlledMoveCtx.timeLeft <= 0f)
+                {
+                    EndControlledMove(1);
+                    return;
+                }
             }
+            
 
             if (controlledMoveCtx.Type == ControlledMoveCtx.EType.Dash)
             {
@@ -379,7 +372,11 @@ namespace My.Map
             {
                 // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
                 // lambda 越大，减速越快；配合最小末速钳制
-                float lambda = 8f; // 可调 6~16
+                float lambda = controlledMoveCtx.DecayPowerRate; // 可调 6~16
+                if (lambda < 1) lambda = 1;
+
+
+
                 float damping = Mathf.Exp(-lambda * dt);
                 externalVel *= damping;
 
@@ -394,7 +391,7 @@ namespace My.Map
             {
                 // 指数衰减：v(t+dt) = v(t) * e^{-lambda * dt}
                 // lambda 越大，减速越快；配合最小末速钳制
-                float lambda = 8f; // 可调 6~16
+                float lambda = controlledMoveCtx.DecayPowerRate; // 可调 6~16
                 float damping = Mathf.Exp(-lambda * dt);
                 externalVel *= damping;
 
@@ -881,6 +878,64 @@ namespace My.Map
         }
 
         #endregion
+
+        public bool IsAttaching = false;
+
+
+        /// <summary>
+        /// 转换成attach
+        /// </summary>
+        public void ConvertToAttachment()
+        {
+            if (IsAttaching || IsDead)
+            {
+                return;
+            }
+
+            IsAttaching = true;
+
+            OnConvertToAttachment();
+        }
+
+        public void RestoreFromAttach()
+        {
+            if (!IsAttaching || IsDead)
+            {
+                return;
+            }
+
+            IsAttaching = false;
+
+            OnRestoreFromAttach();
+        }
+
+        protected virtual void OnConvertToAttachment()
+        {
+            LogicManager.globalBuffManager.RequestAddBuff(this.Id, "as_attaching");
+
+            entityMotorComp.StopMove();
+
+            TryInterrupt(new InterruptRequest()
+            {
+                source = InterruptSource.System,
+                priority = 999,
+            });
+
+
+            EventOnAttachStatusChanged?.Invoke(this.Id);
+        }
+
+
+        protected virtual void OnRestoreFromAttach()
+        {
+            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "as_attaching");
+
+            entityMotorComp.StopMove();
+
+            ApplyKnockBack(UnityEngine.Random.insideUnitCircle, 1.0f);
+
+            EventOnAttachStatusChanged?.Invoke(this.Id);
+        }
     }
 
 }

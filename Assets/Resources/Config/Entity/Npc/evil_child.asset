@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffed65fabbf947541801724cb68002ff, type: 3}
+  m_Name: evil_child
+  m_EditorClassIdentifier: 
+  UnitName: evil_child
+  ViewSprite: {fileID: 0}
+  MoveStyle: 1
+  MoveSpeed: 2
+  IsPeace: 0
+  CombatStretegyTemplateId: 
+  BattleBoundary: 10
+  RecoverReturn: 1
+  HasHMode: 1
+  AlwaysHMode: 1
+  AITemplateMode: 
+  AITemplateName: 
+  DefaultFactionId: 3
+  Hp: 100
+  SkillList:
+  - evil_child_attach
+  DropId: citizen_01
+  NpcTag: 
+  InteractList: []

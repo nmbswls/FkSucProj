@@ -168,7 +168,7 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
 
                     ModifierAttrs = new() {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HidingMask, ModifierValue = 1 } ,
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HideView, ModifierValue = 1 } ,
                     },
                 };
 
@@ -351,6 +351,19 @@ namespace My.Map.Entity
                             },
                             RemoveOnTrigger = true,
                         }
+                    },
+                };
+
+                _library["as_attaching"] = new BuffDefinition()
+                {
+                    BuffId = "as_attaching",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = -1,
+                    ZOffsetOverride = 0.08f,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HideView, ModifierValue = 1 },
                     },
                 };
             }

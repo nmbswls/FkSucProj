@@ -43,7 +43,6 @@ namespace My.Map.Scene
         {
             base.RegisterEvents();
 
-            NpcEntity.EventOnConvertAttach += OnEventConvertAttach;
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
             //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
@@ -59,20 +58,7 @@ namespace My.Map.Scene
         {
             base.UnregisterEvents();
 
-            NpcEntity.EventOnConvertAttach -= OnEventConvertAttach;
 
-        }
-        protected virtual void OnEventConvertAttach(long entityId)
-        {
-            if (mainCol != null)
-            {
-                mainCol.enabled = false;
-            }
-            var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
-            if (pres != null)
-            {
-                pres.SetFadeAlpha(0);
-            }
         }
 
         public bool CanInteractEnable()

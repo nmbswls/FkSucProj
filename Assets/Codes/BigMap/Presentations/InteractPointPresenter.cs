@@ -101,10 +101,8 @@ namespace My.Map.Scene
 
         }
 
-        protected override void RefreshFadeState()
+        protected override void OnFadeStateUpdate()
         {
-            base.RefreshFadeState();
-
             if(_mainSpriteArr != null)
             {
                 foreach(var s in _mainSpriteArr)

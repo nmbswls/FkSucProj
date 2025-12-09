@@ -14,17 +14,7 @@ namespace My.Map.Entity
 {
     public class InterruptUtils
     {
-        public static EAbilityInterruptMask SourceToMask(MapEntityAbilityExecutor.InterruptSource s)
-        {
-            return s switch
-            {
-                MapEntityAbilityExecutor.InterruptSource.Hit => EAbilityInterruptMask.Hit,
-                MapEntityAbilityExecutor.InterruptSource.Stun => EAbilityInterruptMask.Stun,
-                MapEntityAbilityExecutor.InterruptSource.KnockUp => EAbilityInterruptMask.KnockUp,
-                MapEntityAbilityExecutor.InterruptSource.InputCancel => EAbilityInterruptMask.InputCancel,
-                _ => EAbilityInterruptMask.System
-            };
-        }
+        
     }
 
 
@@ -152,7 +142,7 @@ namespace My.Map.Entity
                 return true;
             }
 
-            if(phase.CanInputInterrupt)
+            if(!phase.InterruptMask.HasFlag(EAbilityInterruptMask.NewAbility))
             {
                 return true;
             }
@@ -379,7 +369,7 @@ namespace My.Map.Entity
                 CurrentCtx.PhaseIntentEffectId = eId;
             }
 
-            if(phase.CanInputInterrupt)
+            if(phase.InterruptMask.HasFlag(EAbilityInterruptMask.NewAbility))
             {
                 EventOnInputCancelPhaseStart?.Invoke();
             }
@@ -425,11 +415,7 @@ namespace My.Map.Entity
                 }
                 else
                 {
-                    if(!phase.CanInputInterrupt)
-                    {
-                        Debug.Log("TryInterrupt not work");
-                        return false;
-                    }
+                    
                 }
             }
 

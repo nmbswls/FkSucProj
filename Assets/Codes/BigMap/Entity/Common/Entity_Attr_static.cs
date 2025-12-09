@@ -26,6 +26,8 @@ namespace My.Map.Entity
         public const string ImmuneKnock = "ImmuneKnock";
         public const string Ghost = "Ghost";
         public const string Invisible = "Invisible";
+        public const string HideView = "HideView";
+
 
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes";
@@ -49,7 +51,6 @@ namespace My.Map.Entity
 
         #region ÌØÊâ×´Ì¬¡¢ÊÓ¾õµÈ
 
-        public const string HidingMask = "HidingMask";
         public const string UnitDizzy = "UnitDizzy";
 
         #endregion

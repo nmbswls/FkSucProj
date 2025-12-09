@@ -31,7 +31,7 @@ namespace My.Map
                 case AttrIdConsts.Stun:
                 case AttrIdConsts.ForbidSkillOp:
                 case AttrIdConsts.NoSelect:
-                case AttrIdConsts.HidingMask:
+                case AttrIdConsts.HideView:
                 case AttrIdConsts.UnitDizzy:
                 case AttrIdConsts.StatUnstoppable:
                     return EAttrType.State;

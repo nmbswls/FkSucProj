@@ -148,7 +148,7 @@ public class ConsoleGM : MonoBehaviour
                     EnmityConfId = "default_monster",
                 });
             });
-        Register("m2", "扣衣服20点",
+        Register("m2", "刷守卫",
             null,
             args =>
             {
@@ -165,6 +165,25 @@ public class ConsoleGM : MonoBehaviour
                     EnmityConfId = "default_guard",
                 });
             });
+
+        Register("m3", "刷小鬼",
+            null,
+            args =>
+            {
+                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4Npc()
+                {
+                    Id = GameLogicManager.LogicEntityIdInst++,
+                    EntityType = EEntityType.Npc,
+                    CfgId = "evil_child",
+                    Position = MainGameManager.Instance.playerScenePresenter.transform.position + new Vector3(2, 2, 0),
+                    FactionId = EFactionId.Citizen,
+
+                    IsPeace = false,
+                    MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
+                    EnmityConfId = "default_monster",
+                });
+            });
+        
 
         Register("shop", "开shop",
             new[] { new CmdParam("shop id", "int，值") },

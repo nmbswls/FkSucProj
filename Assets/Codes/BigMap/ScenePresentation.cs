@@ -156,8 +156,17 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
         _targetFadeAlpha = alpha;
     }
 
-    protected virtual void RefreshFadeState()
+    protected void RefreshFadeState()
     {
-        _currFadeAlpha = Mathf.Lerp(_currFadeAlpha, _targetFadeAlpha, 2 * LogicTime.deltaTime);
+        if(Math.Abs(_targetFadeAlpha - _currFadeAlpha) > 1e-2)
+        {
+            _currFadeAlpha = Mathf.Lerp(_currFadeAlpha, _targetFadeAlpha, 2 * LogicTime.deltaTime);
+            OnFadeStateUpdate();
+        }
+    }
+
+    protected virtual void OnFadeStateUpdate()
+    {
+
     }
 }

@@ -61,10 +61,8 @@ namespace My.Map.Entity
     {
         None = 0,
         Hit = 1 << 0,
-        Stun = 1 << 1,
-        KnockUp = 1 << 2,
-        InputCancel = 1 << 3,
-        System = 1 << 4,
+        Dodge = 1 << 2, // 可通过翻滚打断
+        Move = 1 << 3,
         NewAbility = 1 << 5,
     }
 
@@ -91,7 +89,8 @@ namespace My.Map.Entity
         public bool LockMovement = false;
         public bool LockRotation = false;
         public bool ImmuneKnock = false;
-        public bool CanInputInterrupt = false;
+
+        public List<string> PhaseSelfBuffs = new();
 
         public List<PhaseEffectEvent> Events = new();  // 该阶段内的所有效果与时序
 

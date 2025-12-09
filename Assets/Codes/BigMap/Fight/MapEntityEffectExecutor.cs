@@ -9,6 +9,7 @@ using UnityEngine.InputSystem.HID;
 using static My.GameLogicManager;
 using static My.Map.BaseUnitLogicEntity;
 using static My.Map.Fight.FightStruct;
+using static My.Map.PlayerLogicEntity;
 
 namespace My.Map.Entity
 {
@@ -363,7 +364,7 @@ namespace My.Map.Entity
 
             var diff = targetPos - unitEntity.Pos;
             var speed = diff.magnitude / duration;
-            unitEntity.ApplyControlledMove(ControlledMoveCtx.EType.Pull, diff.normalized, duration, originSpeed: diff.magnitude * 8f, onEndEffects : null);
+            unitEntity.ApplyControlledMove(ControlledMoveCtx.EType.Pull, diff.normalized, originSpeed: diff.magnitude * 8f, onEndEffects : null, minEndSpeed : 0.1f);
         }
     }
 
@@ -670,6 +671,39 @@ namespace My.Map.Entity
             target.ApplyResourceChange(realCfg.ResourceId, -realCfg.CostValue,realCfg.IsEnmity, realCfg.Flags, ctx.SourceInfo.SrcEntityId, extraAttrs);
         }
     }
+
+
+    public class AbilityEffectExecutor4ConvertAttach : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectConvertAttachCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ConvertAttach err");
+                return;
+            }
+
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if (target == null || target is not PlayerLogicEntity playerEntity)
+            {
+                Debug.LogError("AbilityEffectExecutor4ConvertAttach err target invalid");
+                return;
+            }
+
+            var srcActor1 = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if(srcActor1 == null || srcActor1 is not BaseUnitLogicEntity baseUnit)
+            {
+                Debug.LogError("AbilityEffectExecutor4ConvertAttach src invalid");
+                return;
+            }
+
+            baseUnit.ConvertToAttachment();
+            playerEntity.AddAttachingObjInfo("attach_01", baseUnit.Id);
+        }
+    }
+
 
     public class AbilityEffectExecutor4CastSkill : AbilityEffectExecutor
     {

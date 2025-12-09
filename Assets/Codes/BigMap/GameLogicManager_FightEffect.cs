@@ -142,6 +142,12 @@ namespace My
                             executor = new AbilityEffectExecutor4ControlledMove();
                         }
                         break;
+
+                    case MapAbilityEffectConvertAttachCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ConvertAttach();
+                        }
+                        break;
                 }
 
                 if (executor != null)

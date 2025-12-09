@@ -24,9 +24,6 @@ namespace My.Map
 
         public bool IsHMode;
 
-        public event Action<long> EventOnConvertAttach;
-
-
         public override NpcCombatStateComp.ECombatState CombatState
         {
             get
@@ -173,25 +170,7 @@ namespace My.Map
             AIBrain.InitilaizeAll(this, LogicManager.visionSenser, Pos);
         }
 
-        public bool IsAttaching = false;
-
-
-        /// <summary>
-        /// 转换成attach
-        /// </summary>
-        public virtual void ConvertToAttachment()
-        {
-            if (IsAttaching || IsDead)
-            {
-                return;
-            }
-
-            IsAttaching = true;
-            EventOnConvertAttach?.Invoke(this.Id);
-
-            // 设置attach
-            LogicManager.playerLogicEntity.AtttachingUnits.Add(this.Id);
-        }
+        
 
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
@@ -208,7 +187,7 @@ namespace My.Map
                 var diff = srcEntity.Pos - this.Pos;
                 var impluse = -(diff.normalized);
 
-                ApplyKnockBack(impluse, 5f);
+                ApplyKnockBack(impluse, 0.5f);
             }
         }
 
@@ -216,18 +195,18 @@ namespace My.Map
         {
             base.TickActivateState(dt);
 
-            AIBrain?.Tick(dt);
+            if(!IsAttaching)
+            {
+                AIBrain?.Tick(dt);
+                TickAttractState();
+                EnmityComp?.Tick(dt);
+                combatStateComp?.Tick(dt);
 
-            EnmityComp?.Tick(dt);
+                // 这个一定是属于npc的 其他unit不应该有 
+                UpdateHMode();
+            }
 
-            combatStateComp?.Tick(dt);
-
-            UpdateHMode();
-
-
-            TickAttractState();
-
-            TickGaze();
+            //TickGaze();
         }
 
         /// <summary>
@@ -258,6 +237,18 @@ namespace My.Map
             {
                 IsHMode = true;
             }
+        }
+
+        protected override void OnConvertToAttachment()
+        {
+            base.OnConvertToAttachment();
+
+            AIBrain.ResetBrain();
+        }
+
+        protected override void OnRestoreFromAttach()
+        {
+            base.OnRestoreFromAttach();
         }
     }
 }

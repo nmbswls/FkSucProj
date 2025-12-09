@@ -61,6 +61,8 @@ namespace My.Map
 
             TickGc();
             TickPlayerGcYishang();
+
+            TickAttachingObj(dt);
         }
 
 
@@ -388,7 +390,7 @@ namespace My.Map
             base.OnStatusAttriChanged(attrId, isOn);
             switch (attrId)
             {
-                case AttrIdConsts.HidingMask:
+                case AttrIdConsts.HideView:
                     {
                         
                     }
@@ -518,20 +520,90 @@ namespace My.Map
 
         }
 
-        public class AttachmentUnitInfo
+        public class AttachingObjInfo
         {
-            public string AttachBuffId;
-            public string AttachViewName;
+            public int Id;
+            public string AttachId;
+            public long? SrcEntityId;
+            public float AttachDuration;
+
+            public float leftDuration;
+            public float LeftHp;
         }
 
-        public List<long> AtttachingUnits = new();
-        public void AddAttachmentUnit(long entity, string attachId)
+        public List<AttachingObjInfo> AtttachingObjList = new();
+
+
+        public void AddAttachingObjInfo(string attachId, long? srcEntityId)
         {
-            AtttachingUnits.Add(entity);
+            int id = 1;
+            if(AtttachingObjList.Count > 0)
+            {
+                id = AtttachingObjList.Select(item => item.Id).Max() + 1;
+            }
+
+            var obj = new AttachingObjInfo();
+            obj.Id = id;
+            obj.AttachId = attachId;
+            obj.SrcEntityId = srcEntityId;
+
+            obj.LeftHp = 3;
+
+            AtttachingObjList.Add(obj);
 
             // 通知上层改变view
             EventOnAttachmentUpdate?.Invoke(0);
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private void TickAttachingObj(float dt)
+        {
+            foreach(var obj in AtttachingObjList)
+            {
+                if(obj.SrcEntityId != null)
+                {
+                    var entity = LogicManager.GetLogicEntity(obj.SrcEntityId.Value) as BaseUnitLogicEntity;
+                    if (entity != null)
+                    {
+                        entity.TeleportTo(this.Pos);
+                    }
+                }
+
+                obj.AttachDuration -= dt;
+            }
+
+            bool changed = false;
+            for(int i = AtttachingObjList.Count - 1; i>=0;i--)
+            {
+                bool removed = false;
+                if ((AtttachingObjList[i].AttachDuration > 0 && AtttachingObjList[i].leftDuration <= 0) || AtttachingObjList[i].LeftHp <= 0)
+                {
+                    removed = true;
+                }
+
+                if (removed)
+                {
+                    if (AtttachingObjList[i].SrcEntityId != null)
+                    {
+                        var entity = LogicManager.GetLogicEntity(AtttachingObjList[i].SrcEntityId.Value) as BaseUnitLogicEntity;
+                        if (entity != null)
+                        {
+                            entity.RestoreFromAttach();
+                        }
+                    }
+
+                    AtttachingObjList.RemoveAt(i);
+
+                    changed = true;
+                }
+            }
+
+            if(changed)
+            {
+                EventOnAttachmentUpdate?.Invoke(0);
+            }
         }
     }
 }

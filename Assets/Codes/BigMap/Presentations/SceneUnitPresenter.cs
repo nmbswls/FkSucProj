@@ -120,6 +120,7 @@ namespace My.Map.Scene
 
         public override void Tick(float dt)
         {
+            base.Tick(dt);
 
             if (navAgent != null)
             {
@@ -352,6 +353,8 @@ namespace My.Map.Scene
             UnitEntity.EventOnHit += OnEventUnitHit;
             UnitEntity.EventOnStartStealth += OnEventStartStealth;
             UnitEntity.EventOnEndStealth += OnEventEndStealth;
+            UnitEntity.EventOnAttachStatusChanged += OnEventConvertAttach;
+
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
             //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
@@ -371,7 +374,7 @@ namespace My.Map.Scene
             UnitEntity.EventOnHit -= OnEventUnitHit;
             UnitEntity.EventOnStartStealth -= OnEventStartStealth;
             UnitEntity.EventOnEndStealth -= OnEventEndStealth;
-
+            UnitEntity.EventOnAttachStatusChanged -= OnEventConvertAttach;
         }
 
 
@@ -442,6 +445,24 @@ namespace My.Map.Scene
             {
 
                 //ViewRoot.DOColor(new Color(1, 1, 1, 0), 0.5f);
+            }
+        }
+
+
+        protected virtual void OnEventConvertAttach(long entityId)
+        {
+            if (mainCol != null)
+            {
+                mainCol.enabled = false;
+            }
+
+            if(UnitEntity.IsAttaching)
+            {
+                SetFadeAlpha(0);
+            }
+            else
+            {
+                SetFadeAlpha(1);
             }
         }
 
@@ -537,7 +558,7 @@ namespace My.Map.Scene
         /// </summary>
         public void UpdateViewAlpha()
         {
-            if (UnitEntity.GetAttr(AttrIdConsts.HidingMask) > 0)
+            if (UnitEntity.GetAttr(AttrIdConsts.HideView) > 0)
             {
                 //icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 0.6f);
             }

@@ -162,7 +162,17 @@ namespace My.Map.Entity
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
-                
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "evil_child_attach";
+                    cfg.MainAbilityId = "evil_child_attach";
+                    cfg.CoolDown = 6.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+                    cfg.Priority = 1;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -288,6 +298,11 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreatePullAllEnemy();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateLittleNpcAttachAbility();
                     _abilityDict[ab.Id] = ab;
                 }
             }
@@ -858,7 +873,7 @@ namespace My.Map.Entity
                 new MapAbilityEffectApplyDamageCfg()
                 {
                     BaseDamage = 25000,
-                    KnockBackForce = 3.6f,
+                    KnockBackForce = 0.3f,
                 },
                 //new MapAbilityEffectCostResourceCfg()
                 //{
@@ -942,7 +957,7 @@ namespace My.Map.Entity
             //{
             //    targetType = MapAbilityEffectSpawnBulletCfg.ETargetType.Dir,
             //    motionType = EMotionType.Linear,
-            //    lifeTime = 0.6f,
+            //    lifeTime = 0.6f,0.6f
             //    speed = 9f,
             //};
             //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
@@ -1280,7 +1295,7 @@ namespace My.Map.Entity
                         new MapAbilityEffectApplyDamageCfg()
                         {
                             BaseDamage = 25000,
-                            KnockBackForce = 5.0f,
+                            KnockBackForce = 0.3f,
                         },
                     }
                 };
@@ -1296,7 +1311,7 @@ namespace My.Map.Entity
             {
                 PhaseName = "Post",
                 LockRotation = true,
-                InterruptMask = EAbilityInterruptMask.InputCancel,
+                InterruptMask = EAbilityInterruptMask.NewAbility,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1371,7 +1386,7 @@ namespace My.Map.Entity
                     var dmgEffect = new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 8.0f,
+                        KnockBackForce = 0.8f,
                     };
 
                     hitCfg.OnHitEffects = new() { dmgEffect };
@@ -1387,7 +1402,8 @@ namespace My.Map.Entity
             {
                 PhaseName = "Post",
                 LockRotation = true,
-                InterruptMask = EAbilityInterruptMask.InputCancel,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1442,7 +1458,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 5f,
+                        KnockBackForce = 0.3f,
                     },
                 }
             };
@@ -1452,11 +1468,11 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                CanInputInterrupt = true,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.1"
+                    RawVal = "0.25"
                 },
             };
             spec.Phases.Add(postPhase);
@@ -1504,7 +1520,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 5f,
+                        KnockBackForce = 0.3f,
                     },
                 }
             };
@@ -1514,11 +1530,11 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                CanInputInterrupt = true,
+                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.1"
+                    RawVal = "0.2"
                 },
             };
             spec.Phases.Add(postPhase);
@@ -1566,7 +1582,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 5f,
+                        KnockBackForce = 0.3f,
                     },
                 }
             };
@@ -1576,11 +1592,11 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                CanInputInterrupt = true,
+                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.1"
+                    RawVal = "0.25"
                 },
             };
             spec.Phases.Add(postPhase);
@@ -1632,7 +1648,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 1000,
-                        KnockBackForce = 5f,
+                        KnockBackForce = 0.3f,
                     },
                 }
             };
@@ -1686,7 +1702,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 4f,
+                        KnockBackForce = 0.3f,
                     },
                 }
             };
@@ -1696,11 +1712,11 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                CanInputInterrupt = true,
+                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.1"
+                    RawVal = "0.25"
                 },
             };
             spec.Phases.Add(postPhase);
@@ -1750,7 +1766,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 4f,
+                        KnockBackForce = 0.3f,
                     },
                 }
             };
@@ -1760,7 +1776,7 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                CanInputInterrupt = true,
+                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1797,7 +1813,7 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 ImmuneKnock = true,
-                CanInputInterrupt = true,
+                
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1816,11 +1832,11 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                CanInputInterrupt = true,
+                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.1"
+                    RawVal = "0.2"
                 },
             };
             spec.Phases.Add(postPhase);
@@ -1857,11 +1873,10 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 ImmuneKnock = true,
-                CanInputInterrupt = true,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "2"
+                    RawVal = "1"
                 },
             };
 
@@ -1889,7 +1904,8 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                CanInputInterrupt = true,
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1926,7 +1942,7 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 ImmuneKnock = true,
-                CanInputInterrupt = true,
+                InterruptMask = EAbilityInterruptMask.Dodge,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1966,7 +1982,9 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                CanInputInterrupt = true,
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1974,6 +1992,84 @@ namespace My.Map.Entity
                 },
             };
             spec.Phases.Add(postPhase);
+            return spec;
+        }
+
+
+        private static MapAbilitySpecConfig CreateLittleNpcAttachAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "evil_child_attach";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            //spec.MaxStepDistance = 0.5f;
+            //spec.CoolDown = 0.2f;
+            //spec.DesiredUseDistance = 0.5f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                EnterDebugString = "?",
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.5"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                AnimTag = "Push",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.6"
+                },
+            };
+
+            {
+                var dashEffect = new MapAbilityEffectDashStartCfg()
+                {
+                    IsFixPointMode = true,
+                    DashSpeed = 6f,
+                    IsLockTarget = true,
+                    OnHitEffects = new()
+                    {
+                        // 提前进入下一phase
+                        new MapAbilityEffectNextPhaseCfg()
+                        {
+                            MatchPhase = "Dashing",
+                            MatchSkill = "default_dash_slash"
+                        },
+                    },
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
+            }
+
+            {
+                var hitEffect = new MapAbilityEffectUseWeaponCfg()
+                {
+                    WeaponName = "Catch",
+                    Duration = 0.4f,
+                    MaxHit = 1,
+                    OnHitEffects = new()
+                    {
+                        new MapAbilityEffectConvertAttachCfg()
+                        {
+                            AttachId = "evil_child_attach",
+                        },
+                    }
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+            }
+            
+            spec.Phases.Add(mainPhase);
             return spec;
         }
     }
