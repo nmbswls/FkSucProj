@@ -1,4 +1,5 @@
 
+using My.Encounter;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,7 +15,7 @@ namespace My.UI
 
             EndBtn.onClick.AddListener(() =>
             {
-                MainGameManager.Instance.QuitEncounter();
+                EncounterBattleManager.Instance.FinishBattle();
             });
         }
 

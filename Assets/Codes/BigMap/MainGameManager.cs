@@ -201,7 +201,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         gameLogicManager.SwitchAreaIntent = null;
         gameLogicManager.Initialized = true;
 
-        Debug.LogError("LoadGameMain finished");
+        Debug.Log("LoadGameMain finished");
     }
 
     void Update()

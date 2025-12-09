@@ -29,6 +29,10 @@ namespace My.Map.Encounter
             var battleScene = SceneManager.GetSceneByName("BattleScene");
             SceneManager.SetActiveScene(battleScene);
 
+            // todo virtual camera
+            MainGameManager.Instance.CameraCtrl.enabled = false;
+            Camera.main.transform.position = new Vector2(1000, 1000);
+
             // “˛≤ÿ¥ÛµÿÕº ‰»Î
             await UIOrchestrator.Instance.SetStateAsync(UIAppState.Battle);
             UIManager.Instance.HideLoading();
@@ -39,6 +43,11 @@ namespace My.Map.Encounter
             UIManager.Instance.ShowLoading();
             var op = SceneManager.UnloadSceneAsync("BattleScene");
             while (!op.isDone) await Task.Yield();
+
+            // todo virtual camera
+            MainGameManager.Instance.CameraCtrl.enabled = true;
+            Camera.main.transform.position = MainGameManager.Instance.playerScenePresenter.transform.position;
+
             // ª÷∏¥ ‰»Î
             await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld);
             UIManager.Instance.HideLoading();

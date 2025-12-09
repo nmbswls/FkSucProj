@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace My.Encounter
@@ -23,6 +24,7 @@ namespace My.Encounter
             public bool IsDefeatMode;
 
             public string EnemyId;
+            public List<long> InvolvedEntites = new();
         }
 
         
@@ -30,7 +32,7 @@ namespace My.Encounter
         public bool IsInBattle;
 
         public BattleContext? PendingContext;
-        public GameLogicManager.BattleResult LastResult;
+        public GameLogicManager.BattleResult LastResult = new();
 
         public void StartBattleContext()
         {

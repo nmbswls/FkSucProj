@@ -8,6 +8,19 @@ namespace My.Encounter
     public class EncounterBattleManager : MonoBehaviour
     {
 
+        public static EncounterBattleManager Instance;
+        public void Awake()
+        {
+            Instance = this;
+        }
+
+        public void OnDestroy()
+        {
+            Instance = null;
+        }
+
+        public EncounterBattleService.BattleContext CurContext;
+
         public void Start()
         {
             // load
@@ -20,6 +33,16 @@ namespace My.Encounter
             {
                 Debug.Log("EncounterBattleManager " + ctx.BattleId);
             }
+
+            CurContext = ctx;
+        }
+
+        public void FinishBattle()
+        {
+            EncounterBattleService.Instance.LastResult.IsWin = false;
+            EncounterBattleService.Instance.LastResult.InvolvedEntites.AddRange(CurContext.InvolvedEntites);
+
+            MainGameManager.Instance.QuitEncounter();
         }
     }
 }
