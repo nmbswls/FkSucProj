@@ -148,6 +148,12 @@ namespace My
                             executor = new AbilityEffectExecutor4ConvertAttach();
                         }
                         break;
+
+                    case MapAbilityEffectHitAttachCfg:
+                        {
+                            executor = new AbilityEffectExecutor4HitAttach();
+                        }
+                        break;
                 }
 
                 if (executor != null)

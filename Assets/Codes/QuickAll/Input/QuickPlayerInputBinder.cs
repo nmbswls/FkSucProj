@@ -52,6 +52,8 @@ namespace My.Input
 
         public Vector2 LastPos;
 
+        private bool IsRightMouseHolding;
+
         public bool GlobalLock { get; set; }
 
         private void Awake()
@@ -74,6 +76,11 @@ namespace My.Input
             if(UnityEngine.Input.GetKeyDown(KeyCode.I))
             {
                 UIOrchestrator.Instance.EnsurePlayerBag();
+            }
+
+            if(IsRightMouseHolding)
+            {
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHold("player_normal_defend");
             }
         }
 
@@ -124,6 +131,10 @@ namespace My.Input
 
             actions.OverworldMap.Click.started += OnLeftDown;
             actions.OverworldMap.RightClick.started += OnRightDown;
+
+            actions.OverworldMap.RightClickHold.started += OnRightHoldStart;
+            actions.OverworldMap.RightClickHold.canceled += OnRightHoldEnd;
+
             actions.OverworldMap.PointerPos.performed += OnPointerMove;
         }
 
@@ -147,6 +158,9 @@ namespace My.Input
 
             actions.OverworldMap.Click.started -= OnLeftDown;
             actions.OverworldMap.RightClick.started -= OnRightDown;
+            actions.OverworldMap.RightClickHold.started -= OnRightHoldStart;
+            actions.OverworldMap.RightClickHold.canceled -= OnRightHoldEnd;
+
             actions.OverworldMap.PointerPos.performed -= OnPointerMove;
 
             actions.OverworldMap.Disable();
@@ -200,6 +214,34 @@ namespace My.Input
             {
                 OnSceneRightClick();
             }
+        }
+
+        void OnRightHoldStart(InputAction.CallbackContext ctx)
+        {
+            //if (GlobalLock)
+            //{
+            //    return;
+            //}
+
+            //if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            //    return;
+            IsRightMouseHolding = true;
+            //OnSceneRightHoldStart();
+        }
+
+        void OnRightHoldEnd(InputAction.CallbackContext ctx)
+        {
+            IsRightMouseHolding = false;
+
+            if (GlobalLock)
+            {
+                return;
+            }
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            OnSceneRightHoldEnd();
         }
 
         public void OnPointerMove(InputAction.CallbackContext ctx)
@@ -398,7 +440,19 @@ namespace My.Input
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
 
-                player.PlayerEntity.ablilityManager.UseSkill("queen_shoot", castDir.normalized + player.PlayerEntity.Pos);
+                //player.PlayerEntity.ablilityManager.UseSkill("player_normal_defend", castDir.normalized + player.PlayerEntity.Pos);
+                player.PlayerEntity.ablilityManager.UseSkill("player_normal_defend", castDir.normalized + player.PlayerEntity.Pos);
+            }
+        }
+
+        
+        public void OnSceneRightHoldEnd()
+        {
+            if (!LogicTime.paused)
+            {
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                //player.abilityController.CheckSkillCanceled("queen_shoot", castDir.normalized + player.PlayerEntity.Pos);
+                player.ablilityManager.CheckSkillCanceled("player_normal_defend");
             }
         }
 

@@ -34,6 +34,7 @@ namespace My.Player
             "queen_counter",
 
             "default_push",
+            "player_normal_defend",
             "crazy_fire",
         };
 

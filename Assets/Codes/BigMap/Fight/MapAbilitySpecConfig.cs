@@ -80,6 +80,7 @@ namespace My.Map.Entity
         public string PhaseName;
 
         public OneVariaty DurationValue;
+        public bool HoldingPhase; // 持续施法的phase不会自然结束
         
         public string AnimTag; // 可用于驱动动画状态
 
@@ -90,7 +91,6 @@ namespace My.Map.Entity
         public bool LockRotation = false;
         public bool ImmuneKnock = false;
 
-        public List<string> PhaseSelfBuffs = new();
 
         public List<PhaseEffectEvent> Events = new();  // 该阶段内的所有效果与时序
 

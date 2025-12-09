@@ -8,6 +8,7 @@ using Unity.Burst.Intrinsics;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using static My.GameLogicManager;
+using static Unity.Collections.Unicode;
 using static UnityEngine.EventSystems.EventTrigger;
 
 namespace My.Map.Entity
@@ -55,6 +56,7 @@ namespace My.Map.Entity
             public int PhaseIndex;
             public float PhaseElapsed;       // 当前阶段已用时
             public float PhaseDuration;      // 当前阶段时间
+            public float LastPhaseHoldTime;  // 上次续长按时间
             public bool PhaseMarkSkip;
 
             //public List<Modifier> PhaseModifiers = new();
@@ -194,7 +196,6 @@ namespace My.Map.Entity
         }
 
 
-
         /// <summary>
         /// 使用技能
         /// </summary>
@@ -265,12 +266,17 @@ namespace My.Map.Entity
         {
             CurrentCtx.PhaseIndex = index;
             CurrentCtx.PhaseElapsed = 0f;
+            
             var phase = CurrentCtx.AbilityConfig.Phases[index];
 
+            if(phase.HoldingPhase)
+            {
+                CurrentCtx.LastPhaseHoldTime = LogicTime.time;
+            }
             // 锁动作
             var phaseDurRaw = CurrentCtx.GetVariatyRawVal(phase.DurationValue);
             var phaseDur = 0f;
-            if (!float.TryParse(phaseDurRaw, out phaseDur))
+            if (!phase.HoldingPhase && !float.TryParse(phaseDurRaw, out phaseDur))
             {
                 Debug.LogError("TickIntern wrong param");
             }
@@ -546,8 +552,26 @@ namespace My.Map.Entity
                 }
             }
 
+            bool phaseFinish = false;
+            if(CurrentCtx.PhaseMarkSkip)
+            {
+                phaseFinish = true;
+            }
+            // 检查非holding阶段
+            else if(!phase.HoldingPhase)
+            {
+                if(CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
+                {
+                    phaseFinish = true;
+                }
+            }
+            else if(LogicTime.time - CurrentCtx.LastPhaseHoldTime > 0.5f)
+            {
+                phaseFinish = true;
+            }
+
             // 阶段结束
-            if (CurrentCtx.PhaseMarkSkip || CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
+            if (phaseFinish)
             {
                 ExitPhase(CurrentCtx.PhaseIndex);
                 var next = CurrentCtx.PhaseIndex + 1;
@@ -637,7 +661,7 @@ namespace My.Map.Entity
             //if (mover) mover.LockMovement = false;
         }
 
-        private MapAbilityPhase GetCurrentPhase()
+        public MapAbilityPhase GetCurrentPhase()
         {
             if (CurrentCtx == null) return null;
             if (CurrentCtx.PhaseIndex >= CurrentCtx.AbilityConfig.Phases.Count)

@@ -323,6 +323,20 @@ namespace My.Map.Entity
                     },
                 };
 
+                _library["player_normal_defend_on"] = new BuffDefinition()
+                {
+                    BuffId = "player_normal_defend_on",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = -1,
+                    
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_JianShang, ModifierValue = 5000 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.JianSu, ModifierValue = 3000 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneKnock, ModifierValue = 1 },
+                    },
+                };
+
                 _library["queen_countering"] = new BuffDefinition()
                 {
                     BuffId = "queen_countering",

@@ -102,7 +102,7 @@
                     "id": "77b93d26-6a11-44df-937a-56e563b7afc1",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Press",
                     "initialStateCheck": false
                 },
                 {
@@ -112,6 +112,15 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightClickHold",
+                    "type": "Button",
+                    "id": "6459f4f3-a531-4703-bff4-78ca56e3f54d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Hold",
                     "initialStateCheck": false
                 }
             ],
@@ -289,6 +298,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "HotKey4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aeda0400-7cb3-472d-96a9-4e6b0eff3433",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightClickHold",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

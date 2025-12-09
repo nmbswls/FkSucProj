@@ -996,4 +996,26 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4HitAttach : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectHitAttachCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4HitAttach err");
+                return;
+            }
+
+            var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if(caster == null || caster is not PlayerLogicEntity player)
+            {
+                Debug.LogError("AbilityEffectExecutor4HitAttach err");
+                return;
+            }
+
+            player.HitAttachObjs();
+        }
+    }
 }

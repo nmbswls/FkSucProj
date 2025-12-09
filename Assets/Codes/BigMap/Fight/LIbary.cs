@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
 using static Config.Unit.EntitySkillCfg;
+using static System.Net.WebRequestMethods;
 
 
 namespace My.Map.Entity
@@ -173,6 +174,18 @@ namespace My.Map.Entity
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_normal_defend";
+                    cfg.MainAbilityId = "player_normal_defend";
+                    cfg.CoolDown = 1.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+                    cfg.Priority = 1;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -303,6 +316,16 @@ namespace My.Map.Entity
 
                 {
                     var ab = CreateLittleNpcAttachAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateHitAttachAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreatePlayerNormalDefend();
                     _abilityDict[ab.Id] = ab;
                 }
             }
@@ -2072,6 +2095,88 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
         }
+    
+    
+        private static MapAbilitySpecConfig CreateHitAttachAbility()
+        {
+
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "hit_attach";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+                AnimTag = "’ı‘˙",
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.5"
+                },
+            };
+
+            {
+                var dashEffect = new MapAbilityEffectHitAttachCfg()
+                {
+                    HitHp = 1,
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+            
+        }
+    
+        
+        private static MapAbilitySpecConfig CreatePlayerNormalDefend()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_normal_defend";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockRotation = true,
+
+                PhaseBuff = new List<string>() { "player_normal_defend_on" },
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+                HoldingPhase = true
+            };
+
+            {
+                //var dashEffect = new MapAbilityEffectHitAttachCfg()
+                //{
+                //    HitHp = 1,
+                //};
+                //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+            
+        }
+    
     }
 
 

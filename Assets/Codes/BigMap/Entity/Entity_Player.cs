@@ -534,6 +534,17 @@ namespace My.Map
         public List<AttachingObjInfo> AtttachingObjList = new();
 
 
+        /// <summary>
+        /// ´òattach
+        /// </summary>
+        public void HitAttachObjs()
+        {
+            foreach (var obj in AtttachingObjList)
+            {
+                obj.LeftHp -= 1;
+            }
+        }
+
         public void AddAttachingObjInfo(string attachId, long? srcEntityId)
         {
             int id = 1;

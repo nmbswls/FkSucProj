@@ -188,7 +188,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""id"": ""77b93d26-6a11-44df-937a-56e563b7afc1"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -198,6 +198,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightClickHold"",
+                    ""type"": ""Button"",
+                    ""id"": ""6459f4f3-a531-4703-bff4-78ca56e3f54d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -377,6 +386,17 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""action"": ""HotKey4"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aeda0400-7cb3-472d-96a9-4e6b0eff3433"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightClickHold"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -453,6 +473,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_Click = m_OverworldMap.FindAction("Click", throwIfNotFound: true);
         m_OverworldMap_RightClick = m_OverworldMap.FindAction("RightClick", throwIfNotFound: true);
         m_OverworldMap_PointerPos = m_OverworldMap.FindAction("PointerPos", throwIfNotFound: true);
+        m_OverworldMap_RightClickHold = m_OverworldMap.FindAction("RightClickHold", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -553,6 +574,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_Click;
     private readonly InputAction m_OverworldMap_RightClick;
     private readonly InputAction m_OverworldMap_PointerPos;
+    private readonly InputAction m_OverworldMap_RightClickHold;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -612,6 +634,10 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "OverworldMap/PointerPos".
         /// </summary>
         public InputAction @PointerPos => m_Wrapper.m_OverworldMap_PointerPos;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/RightClickHold".
+        /// </summary>
+        public InputAction @RightClickHold => m_Wrapper.m_OverworldMap_RightClickHold;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -674,6 +700,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @PointerPos.started += instance.OnPointerPos;
             @PointerPos.performed += instance.OnPointerPos;
             @PointerPos.canceled += instance.OnPointerPos;
+            @RightClickHold.started += instance.OnRightClickHold;
+            @RightClickHold.performed += instance.OnRightClickHold;
+            @RightClickHold.canceled += instance.OnRightClickHold;
         }
 
         /// <summary>
@@ -721,6 +750,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @PointerPos.started -= instance.OnPointerPos;
             @PointerPos.performed -= instance.OnPointerPos;
             @PointerPos.canceled -= instance.OnPointerPos;
+            @RightClickHold.started -= instance.OnRightClickHold;
+            @RightClickHold.performed -= instance.OnRightClickHold;
+            @RightClickHold.canceled -= instance.OnRightClickHold;
         }
 
         /// <summary>
@@ -1037,6 +1069,13 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPointerPos(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RightClickHold" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRightClickHold(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

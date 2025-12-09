@@ -158,10 +158,7 @@ namespace My.Map.Scene
             }
             else if (selectionId == 2)
             {
-                foreach(var obj in PlayerEntity.AtttachingObjList)
-                {
-                    obj.LeftHp -= 1;
-                }
+                PlayerEntity.abilityController.TryUseAbility("hit_attach");
             }
         }
 

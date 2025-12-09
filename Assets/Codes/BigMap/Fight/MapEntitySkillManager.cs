@@ -437,6 +437,10 @@ namespace My.Map.Entity
 
         public Dictionary<string, SkillRuntime> SkillRuntimes = new();
 
+        public string? CurrentSkillId = null;
+        public string? CurrentAbilityId = null;
+
+
         public MapEntitySkillManager(BaseUnitLogicEntity ownerEntity, EntitySkillComboGraph comboGraph = null)
         {
             this.OwnerEntity = ownerEntity;
@@ -444,6 +448,10 @@ namespace My.Map.Entity
             this.comboOrchestrator = new(comboGraph);
             // 初始化comboOrchestrator
         }
+
+
+
+
 
         public bool RegisterSkill(string skillId)
         {
@@ -477,6 +485,13 @@ namespace My.Map.Entity
                 {
                     abState.cooldown -= dt;
                 }
+            }
+
+            // 清理
+            if(!Executor.IsRunning)
+            {
+                CurrentSkillId = null;
+                CurrentAbilityId = null;
             }
         }
         /// <summary>
@@ -559,6 +574,10 @@ namespace My.Map.Entity
                 }
             }
 
+            // 保存当前技能
+            CurrentSkillId = skillId;
+            CurrentAbilityId = realAbilityId;
+
             // 冷却等情况
             if (skillRuntime.cacheConfig.CoolDown > 0)
             {
@@ -569,6 +588,56 @@ namespace My.Map.Entity
             return true;
         }
 
+        public void CheckSkillCanceled(string skillId)
+        {
+            if(CurrentSkillId == null || CurrentSkillId == skillId)
+            {
+                return;
+            }
+
+            if(!Executor.IsRunning)
+            {
+                return;
+            }
+
+            // 不一致
+            if (Executor.CurrentCtx.AbilityConfig.Id != CurrentAbilityId)
+            {
+                return;
+            }
+
+            var phase = Executor.GetCurrentPhase();
+            if (phase == null) return;
+            if (phase.HoldingPhase)
+            {
+                Executor.CurrentCtx.PhaseMarkSkip = true;
+            }
+        }
+
+        /// <summary>
+        /// 持续按键
+        /// </summary>
+        /// <param name="skillId"></param>
+        public void TrySkillHold(string skillId)
+        {
+
+            if (CurrentSkillId == null || CurrentSkillId == skillId)
+            {
+                return;
+            }
+
+            if (!Executor.IsRunning)
+            {
+                return;
+            }
+
+            var phase = Executor.GetCurrentPhase();
+            if (phase == null) return;
+            if (phase.HoldingPhase)
+            {
+                Executor.CurrentCtx.LastPhaseHoldTime = LogicTime.time;
+            }
+        }
 
         /// <summary>
         /// 获取当前准备好的主动技能
