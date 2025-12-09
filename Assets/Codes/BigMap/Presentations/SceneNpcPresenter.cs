@@ -39,6 +39,42 @@ namespace My.Map.Scene
             base.Bind(logic);
         }
 
+        protected override void RegisterEvents()
+        {
+            base.RegisterEvents();
+
+            NpcEntity.EventOnConvertAttach += OnEventConvertAttach;
+            //UnitEntity.onNewDashIntent += (intent) =>
+            //{
+            //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
+            //};
+
+            //UnitEntity.onNewKnockBackIntent += (intent) =>
+            //{
+            //    UnitEntity.externalVel = intent.knockDir.normalized * intent.knockDuration;
+            //};
+        }
+
+        protected override void UnregisterEvents()
+        {
+            base.UnregisterEvents();
+
+            NpcEntity.EventOnConvertAttach -= OnEventConvertAttach;
+
+        }
+        protected virtual void OnEventConvertAttach(long entityId)
+        {
+            if (mainCol != null)
+            {
+                mainCol.enabled = false;
+            }
+            var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
+            if (pres != null)
+            {
+                pres.SetFadeAlpha(0);
+            }
+        }
+
         public bool CanInteractEnable()
         {
             if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)

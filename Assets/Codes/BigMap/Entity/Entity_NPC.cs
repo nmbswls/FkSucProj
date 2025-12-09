@@ -8,6 +8,7 @@ using static My.Map.Entity.EntitySkillComboGraph;
 using Map.Logic.Events;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using My.Map.Entity.AI;
+using System;
 
 
 namespace My.Map
@@ -22,6 +23,9 @@ namespace My.Map
         public NpcCombatStateComp combatStateComp;
 
         public bool IsHMode;
+
+        public event Action<long> EventOnConvertAttach;
+
 
         public override NpcCombatStateComp.ECombatState CombatState
         {
@@ -169,6 +173,25 @@ namespace My.Map
             AIBrain.InitilaizeAll(this, LogicManager.visionSenser, Pos);
         }
 
+        public bool IsAttaching = false;
+
+
+        /// <summary>
+        /// ×ª»»³Éattach
+        /// </summary>
+        public virtual void ConvertToAttachment()
+        {
+            if (IsAttaching || IsDead)
+            {
+                return;
+            }
+
+            IsAttaching = true;
+            EventOnConvertAttach?.Invoke(this.Id);
+
+            // ÉèÖÃattach
+            LogicManager.playerLogicEntity.AtttachingUnits.Add(this.Id);
+        }
 
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
@@ -201,9 +224,6 @@ namespace My.Map
 
             UpdateHMode();
 
-            VisibilityComp?.TryUpdateNoticeList();
-
-            entityMotorComp?.Tick(dt);
 
             TickAttractState();
 
