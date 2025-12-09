@@ -1,5 +1,5 @@
 
-using Map.Encounter;
+using My.Map.Encounter;
 using UnityEngine;
 
 namespace My.Encounter

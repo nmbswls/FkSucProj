@@ -349,8 +349,8 @@ namespace My.Map.Scene
             UnitEntity.EventOnDie += OnEventUnitDie;
             UnitEntity.EventOnHit += OnEventUnitHit;
             UnitEntity.EventOnStartStealth += OnEventStartStealth;
-            UnitEntity.EventOnEndStealth += OnEventEndStealth; 
-
+            UnitEntity.EventOnEndStealth += OnEventEndStealth;
+            UnitEntity.EventOnConvertAttach += OnEventConvertAttach;
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
             //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
@@ -366,10 +366,12 @@ namespace My.Map.Scene
         {
             base.UnregisterEvents();
 
-            UnitEntity.EventOnDie += OnEventUnitDie;
+            UnitEntity.EventOnDie -= OnEventUnitDie;
             UnitEntity.EventOnHit -= OnEventUnitHit;
             UnitEntity.EventOnStartStealth -= OnEventStartStealth;
             UnitEntity.EventOnEndStealth -= OnEventEndStealth;
+            UnitEntity.EventOnConvertAttach -= OnEventConvertAttach;
+
         }
 
 
@@ -415,6 +417,19 @@ namespace My.Map.Scene
             if (pres != null)
             {
                 pres.SetFadeAlpha(0.35f);
+            }
+        }
+
+        protected virtual void OnEventConvertAttach(long entityId)
+        {
+            if (mainCol != null)
+            {
+                mainCol.enabled = false;
+            }
+            var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
+            if (pres != null)
+            {
+                pres.SetFadeAlpha(0);
             }
         }
 

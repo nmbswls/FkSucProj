@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Map.Encounter
+namespace My.Encounter
 {
     public class EncounterBattleService
     {
@@ -20,19 +20,17 @@ namespace Map.Encounter
         {
             public int BattleId;
             public string BattleReason;
+            public bool IsDefeatMode;
 
             public string EnemyId;
         }
 
-        public class BattleResult
-        {
-            public bool IsWin;
-        }
+        
 
         public bool IsInBattle;
 
         public BattleContext? PendingContext;
-        public BattleResult LastResult;
+        public GameLogicManager.BattleResult LastResult;
 
         public void StartBattleContext()
         {

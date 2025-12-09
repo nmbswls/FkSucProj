@@ -35,6 +35,14 @@ namespace My
         void RecycleEntity(ILogicEntity entity);
     }
 
+    public class SwitchAreaIntent
+    {
+        public string? OldAreaName;
+        public string NewAreaName;
+        public bool Reset;
+        public LogicEntityRecord4Player SavedRecord;
+    }
+
     public partial class GameLogicManager : ILogicEntityFactory
     {
         public static long LogicEntityIdInst = 100;
@@ -52,12 +60,17 @@ namespace My
         /// <summary>
         /// 通知上层玩家需要切换场景
         /// </summary>
-        public event Action<string?, string?> EventOnPlayerSwitchArea;
+        public event Action EventOnPlayerSwitchArea;
+        public SwitchAreaIntent? SwitchAreaIntent;
+        
 
         public ISceneAbilityViewer? viewer; // 表现层接口
         public IVisionSenser2D? visionSenser;
         public INavProvider? navProvider;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public GlobalBuffManager globalBuffManager;
         public GlobalThrowManager globalThrowManager;
         public GlobalMapDropCollection globalDropCollection;
@@ -119,6 +132,12 @@ namespace My
             controlEventManager.Initialize();
 
             DropTable = Resources.Load<GlobalDropTable>("Config/DropTable");
+
+            SwitchAreaIntent = new SwitchAreaIntent()
+            {
+                NewAreaName = "home",
+                Reset = true,
+            };
         }
 
 
@@ -131,11 +150,11 @@ namespace My
         /// 玩家进入/切换场景
         /// </summary>
         /// <param name="areaName"></param>
-        public async Task PlayerEnterArea(string areaName)
+        public async Task OnSwitchAreaFinish(SwitchAreaIntent intent)
         {
-            await AreaManager.InitilizeArea(areaName);
+            await AreaManager.InitilizeArea(intent.NewAreaName);
 
-            if(areaName == "home")
+            if(intent.NewAreaName == "home")
             {
                 homeDataManager.OnPlayerEnterHome();
             }
@@ -151,7 +170,8 @@ namespace My
                 }
             }
 
-            if(areaName == "home")
+            // todo
+            if(intent.NewAreaName == "home")
             {
                 PlayerPeaceMode = true;
             }
@@ -167,16 +187,24 @@ namespace My
                 vec = bornPos[randIdx].Position;
             }
 
-            var playerRecord = new LogicEntityRecord4UnitBase()
+            LogicEntityRecord4Player playerRecord;
+            if (intent.Reset)
             {
-                Id = 1,
-                EntityType = EEntityType.Player,
-                CfgId = "0",
-                FactionId = EFactionId.Player,
+                playerRecord = new LogicEntityRecord4Player()
+                {
+                    Id = 1,
+                    EntityType = EEntityType.Player,
+                    CfgId = "0",
+                    FactionId = EFactionId.Player,
 
-                Position = vec,
-            };
-
+                    Position = vec,
+                };
+            }
+            else
+            {
+                playerRecord = intent.SavedRecord;
+                playerRecord.Position = vec;
+            }
 
             AreaManager.RegisterEntityRecord(playerRecord);
 
@@ -198,9 +226,22 @@ namespace My
         /// 玩家进入/切换场景
         /// </summary>
         /// <param name="areaName"></param>
-        public void PlayerSwitchArea(string areaName)
+        public void PlayerSwitchArea(string areaName, bool reset)
         {
-            EventOnPlayerSwitchArea?.Invoke(null, areaName);
+            if(SwitchAreaIntent != null)
+            {
+                Debug.LogError("PlayerSwitchArea when have pending switch intent.");
+                return;
+            }
+            var intent = new SwitchAreaIntent();
+            intent.NewAreaName = areaName;
+            intent.OldAreaName = AreaManager.AreaId;
+            intent.Reset = reset;
+            intent.SavedRecord = new();
+
+            SwitchAreaIntent = intent;
+
+            EventOnPlayerSwitchArea?.Invoke();
         }
         public void Tick(float dt)
         {
@@ -266,8 +307,16 @@ namespace My
                     var wrapped = DelayedEffectQueue[0];
                     DelayedEffectQueue.RemoveAt(0);
 
-                    var executor = GetLogicFightEffectExecutor(wrapped.effectConf);
-                    executor?.Apply(wrapped.effectConf, wrapped.ctx);
+                    switch(wrapped)
+                    {
+                        case DelayedFightEffectWrapper fightEffectWrapper:
+                            {
+                                var executor = GetLogicFightEffectExecutor(fightEffectWrapper.effectConf);
+                                executor?.Apply(fightEffectWrapper.effectConf, fightEffectWrapper.ctx);
+                            }
+                            break;
+                    }
+                    
                     handled += 1;
                 }
             }
@@ -423,255 +472,7 @@ namespace My
             return Vector2.zero;
         }
 
-        private Dictionary<Type, AbilityEffectExecutor> EffectExecutors = new(); // executor
-        private AbilityEffectExecutor GetLogicFightEffectExecutor(MapFightEffectCfg effectType)
-        {
-            if (!EffectExecutors.TryGetValue(effectType.GetType(), out var executor))
-            {
-                switch (effectType)
-                {
-                    case MapAbilityEffectUnlockLootPoint:
-                        {
-                            executor = new AbilityEffectExecutor4UnlockLootPoint();
-                        }
-                        break;
-                    case MapAbilityEffectUseLootPoint:
-                        {
-                            executor = new AbilityEffectExecutor4UseLootPoint();
-                        }
-                        break;
-                    case MapAbilityEffectCostResourceCfg:
-                        {
-                            executor = new AbilityEffectExecutor4CostResource();
-                        }
-                        break;
-
-                    case MapAbilityEffectApplyDamageCfg:
-                        {
-                            executor = new AbilityEffectExecutor4ApplyDamage();
-                        }
-                        break;
-
-                    case MapAbilityEffectThrowStartCfg:
-                        {
-                            executor = new AbilityEffectExecutor4ThrowStart();
-                        }
-                        break;
-
-                    case MapAbilityEffectAddResourceCfg:
-                        {
-                            executor = new AbilityEffectExecutor4AddResource();
-                        }
-                        break;
-                    case MapAbilityEffectUseItemCfg:
-                        {
-                            executor = new AbilityEffectExecutor4UseItem();
-                        }
-                        break;
-                    case MapAbilityEffectSpawnBulletCfg:
-                        {
-                            executor = new AbilityEffectExecutor4SpawnBullet();
-                        }
-                        break;
-                    case MapAbilityEffectUseWeaponCfg:
-                        {
-                            executor = new AbilityEffectExecutor4UseWeapon();
-                        }
-                        break;
-
-                    case MapAbilityEffectDefaultInteractCfg:
-                        {
-                            executor = new AbilityEffectExecutor4DefaultInteract();
-                        }
-                        break;
-
-                    case MapAbilityEffectDashStartCfg:
-                        {
-                            executor = new AbilityEffectExecutor4DashStart();
-                        }
-                        break;
-                    case MapAbilityEffectAddBuffCfg:
-                        {
-                            executor = new AbilityEffectExecutor4AddBuff();
-                        }
-                        break;
-                    case MapAbilityEffectRemoveBuffCfg:
-                        {
-                            executor = new AbilityEffectExecutor4RemoveBuff();
-                        }
-                        break;
-                    case MapAbilityEffectHitBoxCfg:
-                        {
-                            executor = new AbilityEffectExecutor4HitBox();
-                        }
-                        break;
-                    case MapAbilityEffectIfBranchCfg:
-                        {
-                            executor = new AbilityEffectExecutor4IfBranch();
-                        }
-                        break;
-                    case MapAbilityEffectOpenClickWindowCfg:
-                        {
-                            executor = new AbilityEffectExecutor4OpenClickWindow();
-                        }
-                        break;
-                    case MapAbilityEffectDeepZhaquCfg:
-                        {
-                            executor = new AbilityEffectExecutor4DeepZhaqu();
-                        }
-                        break;
-
-                    case MapAbilityEffectSpawnEntityCfg:
-                        {
-                            executor = new AbilityEffectExecutor4SpawnEntity();
-                        }
-                        break;
-                    case MapAbilityEffectRangePreviewCfg:
-                        {
-                            executor = new AbilityEffectExecutor4RangePreview();
-                        }
-                        break;
-                    case MapAbilityEffectNextPhaseCfg:
-                        {
-                            executor = new AbilityEffectExecutor4NextPhase();
-                        }
-                        break;
-                    case MapAbilityEffectTeleportToCfg:
-                        {
-                            executor = new AbilityEffectExecutor4TeleportTo();
-                        }
-                        break;
-                    case MapAbilityEffectCastSkillCfg:
-                        {
-                            executor = new AbilityEffectExecutor4CastSkill();
-                        }
-                        break;
-                    case MapAbilityEffectControlledMoveCfg:
-                        {
-                            executor = new AbilityEffectExecutor4ControlledMove();
-                        }
-                        break;
-                }
-
-                if (executor != null)
-                {
-                    EffectExecutors[effectType.GetType()] = executor;
-                }
-            }
-
-            return executor;
-        }
-
-        public enum ESourceType
-        {
-            Unknown,
-            Ability,
-            Buff,
-            BuffTrigger,
-            BuffEffect,
-            Item,
-            Env,
-            Aura,
-            AreaEffect,
-            Bullet,
-            Mechanism,
-            Throw,
-        }
-
-        /// <summary>
-        /// 效果源信息
-        /// </summary>
-        [Serializable]
-        public class EffectSourceInfo
-        {
-            public ESourceType SrcType; // 
-            public long SrcEntityId;
-            public long SrcInstId;
-            public string SrcCfgId;
-
-            public long SrcBuffId;
-            public EFactionId SrcFactionId;
-        }
-
-
-        public class LogicFightEffectContext
-        {
-            public GameLogicManager Env { get; protected set; }
-            public LogicFightEffectContext(GameLogicManager env, EffectSourceInfo sourceInfo)
-            {
-                this.Env = env;
-                this.SourceInfo = sourceInfo;
-            }
-
-            public EffectSourceInfo SourceInfo; // 
-
-            public long TargetId;              // 锁定对象 如果来自技能 则在释放时锁定 如果来自效果触发 则在逻辑中绑定
-            public Vector2? TriggerPos;        // 发生地点 技能释放位置 子弹碰撞位置 buff触发位置等
-            public Vector2? CastVec1;          // 施法参数1 技能施法参数
-            public Vector2? CastVec2;          // 施法参数2
-
-            // 变量集合
-            public Dictionary<string, string> RunningVariables = new();
-            public Dictionary<string, long> RunningStorage = new();
-
-            public Dictionary<string, long> CacheAttrVal = new();
-
-            public List<int> BindSceneFxIds = new();
-
-            public string GetVariatyRawVal(OneVariaty oneVariaty)
-            {
-                if (oneVariaty.ValType == EOneVariatyType.Invalid)
-                {
-                    return string.Empty;
-                }
-
-                string strVal = oneVariaty.RawVal;
-                if (!string.IsNullOrEmpty(oneVariaty.ReferName))
-                {
-                    do
-                    {
-                        if (RunningVariables != null && RunningVariables.TryGetValue(oneVariaty.ReferName, out var runningVal))
-                        {
-                            strVal = runningVal;
-                            break;
-                        }
-                    }
-                    while (false);
-                }
-
-                return strVal;
-            }
-        }
-
-
-        public class DelayedFightEffectWrapper
-        {
-            public MapFightEffectCfg effectConf;
-            public LogicFightEffectContext ctx;
-            public float exeTIme;
-        }
-        public List<DelayedFightEffectWrapper> DelayedEffectQueue = new();
-
-        private bool _delayQueueDirty = false; 
-           
-        public void HandleLogicFightEffect(MapFightEffectCfg effectConf, LogicFightEffectContext effectCtx)
-        {
-            if(effectConf.PendingTime > 0)
-            {
-                DelayedEffectQueue.Add(new DelayedFightEffectWrapper()
-                {
-                    effectConf = effectConf,
-                    ctx = effectCtx,
-                    exeTIme = LogicTime.time + effectConf.PendingTime,
-                });
-                _delayQueueDirty = true;
-                return;
-            }
-            
-            var executor = GetLogicFightEffectExecutor(effectConf);
-            executor?.Apply(effectConf, effectCtx);
-        }
-
+        
         #region 全局警戒
 
         public int AlertVal = 0;
@@ -695,49 +496,46 @@ namespace My
         }
 
         #endregion
-    }
 
 
-    public class ProjectileHolder
-    {
-        public Dictionary<long, LogicProjectileInfo> ProjectileInfos = new();
-        public static long IdInstCounter = 10000;
+        #region 战斗回调
 
-        public event Action<LogicProjectileInfo> EventOnLogicProjectileSpawn;
-
-        public LogicProjectileInfo CreateLogicProjectile(ProjectileData pData, ILogicEntity caster, Vector2 bornPos, Vector2 dir, long? homingTarget = null)
+        public class BattleResult
         {
-            var projectilInfo = new LogicProjectileInfo
-            {
-                instId = ++IdInstCounter,
-                ownerEntity = caster,
-                pData = pData,
-                spawnPos = bornPos,
-                initialDir = dir,
-            };
-
-            projectilInfo.homingTargetId = homingTarget;
-            ProjectileInfos.Add(projectilInfo.instId, projectilInfo);
-            EventOnLogicProjectileSpawn?.Invoke(projectilInfo);
-            return projectilInfo;
+            public bool IsWin;
+            public long JingExp;
+            public List<long> InvolvedEntites = new();
         }
 
-        public void TickLogicProjectile()
+        public void OnBattleEnd(BattleResult result)
         {
-
-        }
-
-        public void OnProjectileTriggered(long projectileId)
-        {
-            ProjectileInfos.TryGetValue(projectileId, out var pInfo);
-            if (pInfo != null)
+            if (result.IsWin)
             {
-                // give effect
-                //pInfo.
+                // 回血
+                
+                foreach(var i in result.InvolvedEntites)
+                {
+                    var e = GetLogicEntity(i);
+                    if(e != null && e is BaseUnitLogicEntity unit)
+                    {
+                        unit.ForceDie();
+                    }
+                }
+            }
+            else
+            {
+
+                // 死亡
+                // 检查是否有map事件hook
+
+                // 回城
+                PlayerSwitchArea("home", true);
             }
         }
 
+        #endregion
     }
+
 }
 
 

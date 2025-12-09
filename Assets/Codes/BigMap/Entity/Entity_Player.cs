@@ -19,10 +19,15 @@ namespace My.Map
     public class PlayerLogicEntity : BaseUnitLogicEntity, IAttractSource
     {
 
+        public bool IsQueenMode;
+
+
         public bool isPendingGc; // 是否等待触发gc
         public long? gcCuaseId;
-        public bool isSelfGc; 
+        public bool isSelfGc;
 
+
+        public event Action<long> EventOnAttachmentUpdate;
 
         public PlayerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
@@ -553,6 +558,22 @@ namespace My.Map
         {
             base.OnUnitDie(reason, lastIntent);
 
+
+        }
+
+        public class AttachmentUnitInfo
+        {
+            public string AttachBuffId;
+            public string AttachViewName;
+        }
+
+        public List<long> AtttachingUnits = new();
+        public void AddAttachmentUnit(long entity, string attachId)
+        {
+            AtttachingUnits.Add(entity);
+
+            // 通知上层改变view
+            EventOnAttachmentUpdate?.Invoke(0);
 
         }
     }

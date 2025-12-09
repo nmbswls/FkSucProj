@@ -228,7 +228,7 @@ public class ConsoleGM : MonoBehaviour
             args =>
             {
                 var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-                player.ApplyResourceChange(AttrIdConsts.HP, 9999999, false, FightStruct.EDmgFlag.None, null);
+                player.ApplyResourceChange(AttrIdConsts.HP, -9999999, false, FightStruct.EDmgFlag.None, null);
             });
 
     }

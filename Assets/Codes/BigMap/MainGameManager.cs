@@ -1,12 +1,13 @@
-using Map.Encounter;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
 using Map.Scene.UI;
 using Map.SmallGame.Zha;
 using My;
+using My.Encounter;
 using My.Input;
 using My.Map;
+using My.Map.Encounter;
 using My.Map.Entity;
 using My.Map.Entity.AI;
 using My.Map.Fight;
@@ -25,7 +26,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
-using static Map.Encounter.EncounterBattleService;
 using static MapSceneEffectManager;
 using static UnityEngine.UI.ContentSizeFitter;
 
@@ -142,18 +142,24 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         UIManager.Instance.ShowLoading("starting");
         // 
-        await LoadGameMain("home");
+        await LoadGameMain();
 
         UIManager.Instance.HideLoading();
     }
 
 
-    protected async Task LoadGameMain(string initMap)
+    protected async Task LoadGameMain()
     {
-        var areaInfo = Resources.Load<WorldAreaInfo>($"Area/{initMap}");
+        var intent = gameLogicManager.SwitchAreaIntent;
+        if(intent == null)
+        {
+            Debug.LogError("LoadGameMain intent null");
+            return;
+        }
+        var areaInfo = Resources.Load<WorldAreaInfo>($"Area/{intent.NewAreaName}");
 
         // 逻辑上将玩家放入场景
-        await gameLogicManager.PlayerEnterArea(initMap);
+        await gameLogicManager.OnSwitchAreaFinish(intent);
 
         //if(playerScenePresenter == null)
         //{
@@ -192,7 +198,10 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             HomeSceneManager.Instance.InitHomePlacements();
         }
 
+        gameLogicManager.SwitchAreaIntent = null;
         gameLogicManager.Initialized = true;
+
+        Debug.LogError("LoadGameMain finished");
     }
 
     void Update()
@@ -244,18 +253,20 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             }
         }
 
-        if(!string.IsNullOrEmpty(SwitchAreaIntent))
+        if(switchAreaFlag)
         {
-            _ = AsyncSwitchArea(SwitchAreaIntent).ContinueWith(t =>
+            _ = AsyncSwitchArea().ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {
                     Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
                 }
+
+                gameLogicManager.SwitchAreaIntent = null;
+
             }, TaskScheduler.FromCurrentSynchronizationContext());
 
-            SwitchAreaIntent = null;
-
+            switchAreaFlag = false;
         }
     }
 
@@ -291,16 +302,13 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         return new Vector2(worldPos.x, worldPos.y);
     }
 
-    public string SwitchAreaIntent;
-
-    public void OnPlayerSwitchArea(string? oldArea, string newArea)
+    private bool switchAreaFlag = false;
+    public void OnPlayerSwitchArea()
     {
-
-        SwitchAreaIntent = newArea;
-
+        switchAreaFlag = true;
     }
 
-    public async Task AsyncSwitchArea(string newArea)
+    public async Task AsyncSwitchArea()
     {
         gameLogicManager.Initialized = false;
 
@@ -321,7 +329,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         await SceneAOIManager.Instance.CleanupAllAsync();
 
-        await LoadGameMain(newArea);
+        await LoadGameMain();
 
         UIManager.Instance.HideLoading();
     }
@@ -437,22 +445,21 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     private bool isSwitchingEncounter = false;
 
-    public void EnterEncounter(int battleId, string battleReason)
+    public void EnterEncounter(int battleId, string battleReason, bool isDefeatMode = false)
     {
         if(isSwitchingEncounter)
         {
             return;
         }
 
-        isSwitchingEncounter = true;
+        isSwitchingEncounter = false;
 
-        _ = InnerEnterEncounter(battleId, battleReason).ContinueWith(t =>
+        _ = InnerEnterEncounter(battleId, battleReason, isDefeatMode).ContinueWith(t =>
         {
             if (t.IsFaulted)
             {
                 Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
             }
-            isSwitchingEncounter = false;
         }, TaskScheduler.FromCurrentSynchronizationContext()); ;
     }
 
@@ -476,7 +483,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
 
-    protected async Task InnerEnterEncounter(int battleId, string battleReason)
+    protected async Task InnerEnterEncounter(int battleId, string battleReason, bool isDefeatMode = false)
     {
         UIManager.Instance.ShowLoading("good");
 
@@ -484,9 +491,12 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
 
-        BattleContext ctx = new();
+        EncounterBattleService.BattleContext ctx = new();
+
+        
         ctx.BattleId = battleId;
         ctx.BattleReason = battleReason;
+        ctx.IsDefeatMode = isDefeatMode;
 
         await EncounterBattleLoader.LoadBattleAsync(ctx);
 
@@ -506,6 +516,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         LogicTime.ReleasePause("encounter");
 
         UIManager.Instance.HideLoading();
+
+        gameLogicManager.OnBattleEnd(EncounterBattleService.Instance.LastResult);
     }
 
     public int ShowRangeWarnEffect(FightStruct.Shape shape, Vector2 centerPos, Vector2 dir, float duration, Vector2 offset)

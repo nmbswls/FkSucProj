@@ -109,7 +109,7 @@ namespace My.Map
                         break;
                     case Config.LogicInteractOutput.EOutputType.Teleport:
                         {
-                            Owner.LogicManager.PlayerSwitchArea(output.Param3);
+                            Owner.LogicManager.PlayerSwitchArea(output.Param3, false);
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.ActivateEventGroup:

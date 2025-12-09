@@ -1,12 +1,12 @@
 
 
-using static Map.Encounter.EncounterBattleService;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Threading.Tasks;
 using My.UI;
+using My.Encounter;
 
-namespace Map.Encounter
+namespace My.Map.Encounter
 {
     public class EncounterBattleLoader
     {
@@ -16,7 +16,7 @@ namespace Map.Encounter
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public static async Task LoadBattleAsync(BattleContext ctx)
+        public static async Task LoadBattleAsync(EncounterBattleService.BattleContext ctx)
         {
             EncounterBattleService.Instance.PendingContext = ctx;
             // ÏÔÊ¾¹ý¶ÉUI

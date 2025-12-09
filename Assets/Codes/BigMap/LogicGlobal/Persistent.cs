@@ -66,9 +66,22 @@ namespace My.Map.Logic
         // 仅保存特殊状态 buff丢弃
         public bool Unsensored;
         public bool MarkDefeated; // 击败标记
-
-
+        public bool MarkAttaching;
+        
     }
+
+    // 逻辑实体的轻量描述（可存持久化）
+    [Serializable]
+    public class LogicEntityRecord4Player : LogicEntityRecord4UnitBase
+    {
+        public class PlayerAttachment
+        {
+            public long AttachSrcId;
+            public string AttachTypeId;
+        }
+        public List<PlayerAttachment> AttachUnits = new();
+    }
+
 
     [Serializable]
     public class LogicEntityRecord4Npc : LogicEntityRecord4UnitBase

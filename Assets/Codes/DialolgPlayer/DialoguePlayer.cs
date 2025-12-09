@@ -386,10 +386,21 @@ public partial class DialoguePlayer : MonoBehaviour
                     Debug.Log("EnterEncounter item from dialog ");
 
                     string id = TryS(cd, "id");
-                    string reason = TryS(cd, "reason");
+                    string defeat = TryS(cd, "defeat");
 
-                    MainGameManager.Instance.EnterEncounter(0, "dialog");
+                    bool defeated = false;
+                    if(defeat == "True")
+                    {
+                        defeated = true;
+                    }
+                    MainGameManager.Instance.EnterEncounter(0, "dialog", defeated);
 
+                    SafeComplete();
+                    break;
+                }
+            case "BlackMask":
+                {
+                    ui.BlackMask.gameObject.SetActive(true);
                     SafeComplete();
                     break;
                 }

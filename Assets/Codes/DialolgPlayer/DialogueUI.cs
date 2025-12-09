@@ -9,10 +9,12 @@ namespace My.UI
 {
     public class DialogueUI : PanelBase
     {
+
         [Header("Refs")]
         public TextMeshProUGUI nameText;
         public TextMeshProUGUI contentText;
         public GameObject nextIndicator;
+        public Transform BlackMask;
 
         [Header("Choice UI")]
         public GameObject choicePanel;

@@ -78,8 +78,8 @@ namespace My.Map
 
         //public bool IsInBattle; // 既没有战斗 也没有h attract
         public bool IsHMode;
-        public bool IsQueenMode = false;
         public bool IsDead = false;
+        public bool IsAttaching = false;
 
         public int BindRoomId;
 
@@ -93,7 +93,7 @@ namespace My.Map
         public event Action<long> EventOnHit;
         public event Action<long> EventOnEnmityBehave;
         public event Action<long> EventOnDie;
-
+        public event Action<long> EventOnConvertAttach;
 
         public UnitEnmityComp EnmityComp;
         public UnitVisibilityComp VisibilityComp;
@@ -974,6 +974,33 @@ namespace My.Map
         }
 
         protected UnitBagContainer dropBagContainer = null;
+
+        /// <summary>
+        /// 转换成attach
+        /// </summary>
+        public virtual void ConvertToAttachment()
+        {
+            if(IsAttaching || IsDead)
+            {
+                return;
+            }
+
+            IsAttaching = true;
+            EventOnConvertAttach?.Invoke(this.Id);
+
+            // 设置attach
+            LogicManager.playerLogicEntity.AtttachingUnits.Add(this.Id);
+        }
+
+        /// <summary>
+        /// 强制死亡
+        /// </summary>
+        public void ForceDie()
+        {
+            //  
+            this.attributeStore.SetResource(AttrIdConsts.HP, 0);
+            OnUnitDie(99);
+        }
     }
 
 }
