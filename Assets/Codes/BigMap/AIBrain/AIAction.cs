@@ -11,14 +11,14 @@ using UnityEngine;
 using static Config.Unit.EntitySkillCfg;
 using static My.Map.BaseUnitLogicEntity;
 using static My.Map.Entity.MapEntityAbilityExecutor;
-using static My.Map.EntityCombatStateComp;
+using static My.Map.NpcCombatStateComp;
 using static UnityEngine.GraphicsBuffer;
 
 namespace My.Map.Entity.AI
 {
     public static class AIActionUtils
     {
-        public static (Vector2?, long?) GetSkillUseParams(EntitySkillCfg skillConf, BaseUnitLogicEntity caster)
+        public static (Vector2?, long?) GetSkillUseParams(EntitySkillCfg skillConf, NpcUnitLogicEntity caster)
         {
             //
             switch(skillConf.SelectPolicy)
@@ -238,7 +238,7 @@ namespace My.Map.Entity.AI
             base.Start();
 
             _recoverTimer = LogicTime.time;
-            _brain.UnitEntity.entityMotorComp.StopMove();
+            _brain.NpcEntity.entityMotorComp.StopMove();
         }
 
         public override float RateScore()
@@ -264,12 +264,12 @@ namespace My.Map.Entity.AI
                     break;
                 }
 
-                if (!_brain.UnitEntity.entityMotorComp.CheckIsMovingTo(_brain.blackboard.LastLeaveMoveModePos.Value))
+                if (!_brain.NpcEntity.entityMotorComp.CheckIsMovingTo(_brain.blackboard.LastLeaveMoveModePos.Value))
                 {
-                    _brain.UnitEntity.entityMotorComp.MoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
+                    _brain.NpcEntity.entityMotorComp.MoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
                 }
 
-                var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.UnitEntity.Pos;
+                var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.NpcEntity.Pos;
                 if (diff.magnitude < 0.3f)
                 {
                     recovered = true;
@@ -302,7 +302,7 @@ namespace My.Map.Entity.AI
             base.Start();
 
             _recoverTimer = LogicTime.time;
-            _brain.UnitEntity.entityMotorComp.StopMove();
+            _brain.NpcEntity.entityMotorComp.StopMove();
         }
 
         public override float RateScore()
@@ -322,7 +322,7 @@ namespace My.Map.Entity.AI
 
             do
             {
-                if (_brain.UnitEntity.unitCfg.RecoverReturn)
+                if (_brain.NpcEntity.unitCfg.RecoverReturn)
                 {
                     if (_brain.blackboard.LastLeaveMoveModePos == null)
                     {
@@ -330,12 +330,12 @@ namespace My.Map.Entity.AI
                         break;
                     }
 
-                    if (!_brain.UnitEntity.entityMotorComp.CheckIsMovingTo(_brain.blackboard.LastLeaveMoveModePos.Value))
+                    if (!_brain.NpcEntity.entityMotorComp.CheckIsMovingTo(_brain.blackboard.LastLeaveMoveModePos.Value))
                     {
-                        _brain.UnitEntity.entityMotorComp.MoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
+                        _brain.NpcEntity.entityMotorComp.MoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
                     }
 
-                    var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.UnitEntity.Pos;
+                    var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.NpcEntity.Pos;
                     if (diff.magnitude < 0.3f)
                     {
                         recovered = true;
@@ -352,7 +352,7 @@ namespace My.Map.Entity.AI
             
             if(recovered)
             {
-                _brain.UnitEntity.combatStateComp.CombatState = ECombatState.NotCombat;
+                _brain.NpcEntity.combatStateComp.CombatState = ECombatState.NotCombat;
             }
         }
     }
@@ -387,8 +387,8 @@ namespace My.Map.Entity.AI
         {
             base.OnExitState();
 
-            _brain.UnitEntity.entityMotorComp.StopMove();
-            _brain.blackboard.LastLeaveMoveModePos = _brain.UnitEntity.Pos;
+            _brain.NpcEntity.entityMotorComp.StopMove();
+            _brain.blackboard.LastLeaveMoveModePos = _brain.NpcEntity.Pos;
         }
     }
 
@@ -404,7 +404,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if(_brain.UnitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup)
+            if(_brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup)
             {
                 return 0;
             }
@@ -416,10 +416,10 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
-            if(!_brain.UnitEntity.entityMotorComp.CheckIsFollowTarget(_brain.UnitEntity.MoveBehaveInfo.FollowPatrolId))
+            if(!_brain.NpcEntity.entityMotorComp.CheckIsFollowTarget(_brain.NpcEntity.MoveBehaveInfo.FollowPatrolId))
             {
-                var followedEntity = _brain.UnitEntity.LogicManager.GetLogicEntity(_brain.UnitEntity.MoveBehaveInfo.FollowPatrolId);
-                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, _brain.UnitEntity.MoveBehaveInfo.PatrolGroupRelativePos);
+                var followedEntity = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.MoveBehaveInfo.FollowPatrolId);
+                _brain.NpcEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, _brain.NpcEntity.MoveBehaveInfo.PatrolGroupRelativePos);
             }
         }
     }
@@ -442,7 +442,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.MovePath)
+            if (_brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.MovePath)
             {
                 return 0;
             }
@@ -454,13 +454,13 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
-            var pathName = _brain.UnitEntity.MoveBehaveInfo.MovePath;
+            var pathName = _brain.NpcEntity.MoveBehaveInfo.MovePath;
             if(string.IsNullOrEmpty(pathName))
             {
                 return;
             }
 
-            var path = _brain.UnitEntity.LogicManager.AreaManager.GetRuntimePath(pathName);
+            var path = _brain.NpcEntity.LogicManager.AreaManager.GetRuntimePath(pathName);
             if(path == null)
             {
                 return;
@@ -476,14 +476,14 @@ namespace My.Map.Entity.AI
             }
 
             // 不断移动
-            if(_currPathPoint != null && !_brain.UnitEntity.entityMotorComp.CheckIsMovingTo(_currPathPoint.Value))
+            if(_currPathPoint != null && !_brain.NpcEntity.entityMotorComp.CheckIsMovingTo(_currPathPoint.Value))
             {
-                _brain.UnitEntity.entityMotorComp.MoveTo(_currPathPoint.Value);
+                _brain.NpcEntity.entityMotorComp.MoveTo(_currPathPoint.Value);
             }
 
             if(_currPathPoint != null)
             {
-                var diff = _currPathPoint.Value - _brain.UnitEntity.Pos;
+                var diff = _currPathPoint.Value - _brain.NpcEntity.Pos;
                 if(diff.magnitude < 0.5f)
                 {
                     _currPathPoint = null;
@@ -514,7 +514,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.Hunting)
+            if (_brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.Hunting)
             {
                 return 0;
             }
@@ -535,10 +535,10 @@ namespace My.Map.Entity.AI
 
             _Timer = LogicTime.time;
 
-            var followedEntity = _brain.UnitEntity.LogicManager.playerLogicEntity;
-            if (!_brain.UnitEntity.entityMotorComp.CheckIsFollowTarget(followedEntity.Id))
+            var followedEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
+            if (!_brain.NpcEntity.entityMotorComp.CheckIsFollowTarget(followedEntity.Id))
             {
-                _brain.UnitEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, Vector2.zero, 0.35f);
+                _brain.NpcEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, Vector2.zero, 0.35f);
             }
         }
     }
@@ -565,16 +565,16 @@ namespace My.Map.Entity.AI
 
         public override void Tick()
         {
-            if(_brain.UnitEntity.CombatState != ECombatState.InCombat)
+            if(_brain.NpcEntity.CombatState != ECombatState.InCombat)
             {
                 return;
             }
 
             if (_brain.blackboard.LastLeaveMoveModePos != null)
             {
-                if ((_brain.UnitEntity.Pos - _brain.blackboard.LastLeaveMoveModePos.Value).magnitude > _brain.brainConfig.ExitChasingRange)
+                if ((_brain.NpcEntity.Pos - _brain.blackboard.LastLeaveMoveModePos.Value).magnitude > _brain.brainConfig.ExitChasingRange)
                 {
-                    _brain.UnitEntity.combatStateComp.ExitCombat();
+                    _brain.NpcEntity.combatStateComp.ExitCombat();
                 }
             }
         }
@@ -588,7 +588,7 @@ namespace My.Map.Entity.AI
         {
             base.OnEnterState();
 
-            _brain.UnitEntity.entityMotorComp.StopMove();
+            _brain.NpcEntity.entityMotorComp.StopMove();
         }
     }
 
@@ -614,12 +614,12 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
+            if (_brain.NpcEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
             {
                 return 0;
             }
 
-            if(_brain.UnitEntity.unitCfg.IsPeace)
+            if(_brain.NpcEntity.unitCfg.IsPeace)
             {
                 return 0;
             }
@@ -630,7 +630,7 @@ namespace My.Map.Entity.AI
             }
 
             // 检查 有任意技能可使用
-            var anyReady = _brain.UnitEntity.ablilityManager.CheckAnyReadySkill();
+            var anyReady = _brain.NpcEntity.ablilityManager.CheckAnyReadySkill();
             if(anyReady)
             {
                 return 10;
@@ -648,7 +648,7 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            var skills = _brain.UnitEntity.ablilityManager.GetAllReadySkills();
+            var skills = _brain.NpcEntity.ablilityManager.GetAllReadySkills();
 
             if(skills.Count == 0)
             {
@@ -675,9 +675,9 @@ namespace My.Map.Entity.AI
 
             _config = skillConf;
 
-            var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _brain.PlayerEntity.Pos, best.cacheConfig.DesiredUseDistance);
+            var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.NpcEntity.Pos, _brain.PlayerEntity.Pos, best.cacheConfig.DesiredUseDistance);
             Debug.Log($"AIActionTryUseSkill move pos {targetPos}");
-            _brain.UnitEntity.entityMotorComp.MoveTo(targetPos);
+            _brain.NpcEntity.entityMotorComp.MoveTo(targetPos);
         }
 
         public override void Tick()
@@ -697,13 +697,13 @@ namespace My.Map.Entity.AI
             }
 
             // 禁止操作时 跳出
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
+            if (_brain.NpcEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
             {
                 Stop(AIActionStatus.Success);
                 return;
             }
 
-            if(_brain.UnitEntity.IsTargetInvisibleFromSelf(_brain.PlayerEntity.Id))
+            if(_brain.NpcEntity.IsTargetInvisibleFromSelf(_brain.PlayerEntity.Id))
             {
                 Debug.Log("AIActionTryUseSkill target hide.");
                 Stop(AIActionStatus.Success);
@@ -717,33 +717,33 @@ namespace My.Map.Entity.AI
                 // 距离满足施法条件 使用
                 if (_config.DesiredUseDistance > 0 && _brain.blackboard.Distance < _config.DesiredUseDistance)
                 {
-                    var dir = _brain.PlayerEntity.Pos - _brain.UnitEntity.Pos;
+                    var dir = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
 
-                    (Vector2? vec, long? targetId) = AIActionUtils.GetSkillUseParams(_config, _brain.UnitEntity);
-                    _brain.UnitEntity.ablilityManager.UseSkill(_config.SkillId, castVec: vec, target: targetId != null ? _brain.UnitEntity.LogicManager.GetLogicEntity(targetId.Value, false) : null);
+                    (Vector2? vec, long? targetId) = AIActionUtils.GetSkillUseParams(_config, _brain.NpcEntity);
+                    _brain.NpcEntity.ablilityManager.UseSkill(_config.SkillId, castVec: vec, target: targetId != null ? _brain.NpcEntity.LogicManager.GetLogicEntity(targetId.Value, false) : null);
 
                     hasCastAbility = true;
                     return;
                 }
                 else
                 {
-                    _brain.UnitEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _config.DesiredUseDistance, 1.0f);
+                    _brain.NpcEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _config.DesiredUseDistance, 1.0f);
                 }
             }
             // 正在使用技能
             else
             {
                 // 继续等待actiona
-                if(!_brain.UnitEntity.abilityController.IsActionable())
+                if(!_brain.NpcEntity.abilityController.IsActionable())
                 {
                     return;
                 }
 
-                var trans = _brain.UnitEntity.ablilityManager.comboOrchestrator.GetPossibleTransition();
+                var trans = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetPossibleTransition();
                 // 不可接技能 跳出
                 if (trans == null || trans.Count == 0)
                 {
-                    if (!_brain.UnitEntity.abilityController.IsRunning)
+                    if (!_brain.NpcEntity.abilityController.IsRunning)
                     {
                         Stop(AIActionStatus.Success);
                     }
@@ -751,13 +751,13 @@ namespace My.Map.Entity.AI
                 }
 
                 var firstTran = trans[0];
-                var node = _brain.UnitEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
+                var node = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
 
 
-                _brain.UnitEntity.FaceDir = _brain.UnitEntity.DesiredFaceDir;
+                _brain.NpcEntity.FaceDir = _brain.NpcEntity.DesiredFaceDir;
 
                 // 一定无目标参数
-                if (_brain.UnitEntity.ablilityManager.UseSkill(firstTran.triggerInput.SkillId))
+                if (_brain.NpcEntity.ablilityManager.UseSkill(firstTran.triggerInput.SkillId))
                 {
                     // 修改技能释放条件
                     _overTimer = LogicTime.time + OverTimeLimit;
@@ -780,7 +780,7 @@ namespace My.Map.Entity.AI
             }
             _config = null;
 
-            _brain.UnitEntity.entityMotorComp.StopMove();
+            _brain.NpcEntity.entityMotorComp.StopMove();
         }
 
         public override void OnExitState()
@@ -821,12 +821,12 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            if (_brain.NpcEntity.CheckHasState(AttrIdConsts.Unmovable))
             {
                 return 0;
             }
 
-            if (_brain.UnitEntity.unitCfg.IsPeace)
+            if (_brain.NpcEntity.unitCfg.IsPeace)
             {
                 return 0;
             }
@@ -848,7 +848,7 @@ namespace My.Map.Entity.AI
         public override void Tick()
         {
 
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            if (_brain.NpcEntity.CheckHasState(AttrIdConsts.Unmovable))
             {
                 Stop(AIActionStatus.Success);
                 return;
@@ -868,8 +868,8 @@ namespace My.Map.Entity.AI
 
             _Timer = LogicTime.time;
 
-            var targetEntity = _brain.UnitEntity.LogicManager.playerLogicEntity;
-            _brain.UnitEntity.entityMotorComp.MoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
+            var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
+            _brain.NpcEntity.entityMotorComp.MoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
 
         }
 
@@ -898,7 +898,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            if (_brain.NpcEntity.CheckHasState(AttrIdConsts.Unmovable))
             {
                 return 0;
             }
@@ -920,12 +920,12 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
-            _brain.UnitEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
+            _brain.NpcEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
         }
 
         public override void Tick()
         {
-            if (_brain.UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            if (_brain.NpcEntity.CheckHasState(AttrIdConsts.Unmovable))
             {
                 Stop(AIActionStatus.Success);
                 return;
@@ -943,9 +943,9 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            var targetEntity = _brain.UnitEntity.LogicManager.playerLogicEntity;
+            var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
             //var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, _brain.PlayerEntity.Pos, goodDistance);
-            _brain.UnitEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
+            _brain.NpcEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
         }
 
         public override void Stop(AIActionStatus endStatus)
@@ -970,10 +970,10 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (_brain.UnitEntity.attractInfo == null)
-            {
-                return 0;
-            }
+            //if (_brain.UnitEntity.attractInfo == null)
+            //{
+            //    return 0;
+            //}
             return 1;
         }
 
@@ -982,11 +982,11 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
-            if (_brain.UnitEntity.attractInfo == null || LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
-            {
-                Stop(AIActionStatus.Interrupted);
-                return;
-            }
+            //if (_brain.UnitEntity.attractInfo == null || LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
+            //{
+            //    Stop(AIActionStatus.Interrupted);
+            //    return;
+            //}
 
             //_brain.UnitEntity.entityMotorComp.MoveTo(_currAttractePos);
         }
@@ -1029,13 +1029,14 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
+            var npcUnit = _brain.NpcEntity as NpcUnitLogicEntity;
             // 进入时赋值
-            if(_brain.UnitEntity.attractInfo != null)
+            if (npcUnit.attractInfo != null)
             {
-                _currAttractePos = _brain.UnitEntity.attractInfo.Pos;
-                _attarctLastTriggerTime = _brain.UnitEntity.attractInfo.LastTriggerTime;
+                _currAttractePos = npcUnit.attractInfo.Pos;
+                _attarctLastTriggerTime = npcUnit.attractInfo.LastTriggerTime;
                 _brain.blackboard.CanLeaveAttract = false;
-                _brain.UnitEntity.entityMotorComp.StopMove();
+                _brain.NpcEntity.entityMotorComp.StopMove();
             }
             else
             {
@@ -1048,26 +1049,27 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
+            var npcUnit = _brain.NpcEntity as NpcUnitLogicEntity;
             // 如果当前有吸引事件 持续更新信息
-            if (_brain.UnitEntity.attractInfo != null)
+            if (npcUnit.attractInfo != null)
             {
                 // 更新触发事件
-                if (_brain.UnitEntity.attractInfo.LastTriggerTime != _attarctLastTriggerTime)
+                if (npcUnit.attractInfo.LastTriggerTime != _attarctLastTriggerTime)
                 {
-                    _attarctLastTriggerTime = _brain.UnitEntity.attractInfo.LastTriggerTime;
+                    _attarctLastTriggerTime = npcUnit.attractInfo.LastTriggerTime;
                 }
 
                 // 尝试启动首次寻路 或改变目标寻路
-                if (_brain.UnitEntity.attractInfo.Pos != _currAttractePos)
+                if (npcUnit.attractInfo.Pos != _currAttractePos)
                 {
-                    _currAttractePos = _brain.UnitEntity.attractInfo.Pos;
-                    Debug.Log("init or change attracted pos " + _brain.UnitEntity.attractInfo.Pos + (_brain.UnitEntity.attractInfo.AttractSource != null ? _brain.UnitEntity.attractInfo.AttractSource.Id : "0"));
+                    _currAttractePos = npcUnit.attractInfo.Pos;
+                    Debug.Log("init or change attracted pos " + npcUnit.attractInfo.Pos + (npcUnit.attractInfo.AttractSource != null ? npcUnit.attractInfo.AttractSource.Id : "0"));
 
-                    var diff = _brain.UnitEntity.Pos - _currAttractePos;
+                    var diff = _brain.NpcEntity.Pos - _currAttractePos;
                     if(diff.magnitude > realCfg.WatchDistance)
                     {
-                        var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos, _currAttractePos, realCfg.WatchDistance);
-                        _brain.UnitEntity.entityMotorComp.MoveTo(watchPos, moveSpeedRate: 0.1f);
+                        var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.NpcEntity.Pos, _currAttractePos, realCfg.WatchDistance);
+                        _brain.NpcEntity.entityMotorComp.MoveTo(watchPos, moveSpeedRate: 0.1f);
                     }
                 }
             }

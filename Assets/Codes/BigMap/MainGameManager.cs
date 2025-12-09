@@ -210,7 +210,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             gameLogicManager.Tick(LogicTime.deltaTime);
             interactSystem.Tick(LogicTime.deltaTime);
-
             
 
             if(UnityEngine.Input.GetKeyDown(KeyCode.L))
@@ -243,13 +242,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
                     // do dialog finish events;
                     UIManager.Instance.HidePanel("DialoguePanel");
                 });
-            }
-
-            if (UnityEngine.Input.GetKeyDown(KeyCode.P))
-            {
-                //playerScenePresenter.PlayerEntity.ApplyKnockBack(Vector2.right, 2f);
-                 
-                DoPlayerSpecialMove(Vector2.one, new Vector2(-3, -3), 3.0f);
             }
         }
 

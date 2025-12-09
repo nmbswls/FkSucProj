@@ -59,11 +59,11 @@ public class QuickDebugShow : MonoBehaviour
             //    hpBars[k].Val.text += " a";
             //}
 
-            if (hpBars[k].bindingUnit.UnitEntity.combatStateComp.CombatState == My.Map.EntityCombatStateComp.ECombatState.InCombat)
+            if (hpBars[k].bindingUnit.UnitEntity.CombatState == My.Map.NpcCombatStateComp.ECombatState.InCombat)
             {
                 hpBars[k].Val.text += " b";
             }
-            else if(hpBars[k].bindingUnit.UnitEntity.combatStateComp.CombatState == My.Map.EntityCombatStateComp.ECombatState.CombatRecover)
+            else if(hpBars[k].bindingUnit.UnitEntity.CombatState == My.Map.NpcCombatStateComp.ECombatState.CombatRecover)
             {
                 hpBars[k].Val.text += " r";
             }

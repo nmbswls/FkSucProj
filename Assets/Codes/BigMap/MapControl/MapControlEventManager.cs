@@ -175,7 +175,7 @@ namespace My.Map
                         var points = logicManager.AreaManager.emptyGuardSpawners;
                         var guardName = action.Param3;
 
-                        var record = new LogicEntityRecord4UnitBase();
+                        var record = new LogicEntityRecord4Npc();
                         record.Id = GameLogicManager.LogicEntityIdInst++;
                         record.EntityType = EEntityType.Npc;
                         record.CfgId = guardName;

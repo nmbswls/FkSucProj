@@ -18,7 +18,6 @@ namespace My.Map
         InteractPoint,
         Npc,
         LootPoint,
-        Monster,
         AreaEffect,
         DestroyObj,
         GatherPoint,

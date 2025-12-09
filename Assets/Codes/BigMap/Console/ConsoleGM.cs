@@ -135,10 +135,10 @@ public class ConsoleGM : MonoBehaviour
             null,
             args =>
             {
-                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4UnitBase()
+                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4Npc()
                 {
                     Id = GameLogicManager.LogicEntityIdInst++,
-                    EntityType = EEntityType.Monster,
+                    EntityType = EEntityType.Npc,
                     CfgId = "h_sprite",
                     Position = MainGameManager.Instance.playerScenePresenter.transform.position + new Vector3(2, 2, 0),
                     FactionId = EFactionId.HSprite,
@@ -152,7 +152,7 @@ public class ConsoleGM : MonoBehaviour
             null,
             args =>
             {
-                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4UnitBase()
+                MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(new LogicEntityRecord4Npc()
                 {
                     Id = GameLogicManager.LogicEntityIdInst++,
                     EntityType = EEntityType.Npc,

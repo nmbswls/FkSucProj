@@ -80,7 +80,7 @@ namespace My.Map.Entity.AI
         /// <returns></returns>
         public override bool Decide(MapUnitAIBrain brain)
         {
-            return brain.UnitEntity.CheckHasBuff(BuffId);
+            return brain.NpcEntity.CheckHasBuff(BuffId);
         }
     }
 
@@ -103,13 +103,15 @@ namespace My.Map.Entity.AI
             bool attracted ;
             do
             {
-                if (brain.UnitEntity.attractInfo == null)
+                var unit = brain.NpcEntity as NpcUnitLogicEntity;
+                if (unit == null) return false;
+                if (unit.attractInfo == null)
                 {
                     attracted = false; ;
                     break;
                 }
 
-                if (LogicTime.time > brain.UnitEntity.attractInfo.LastTriggerTime + 15.0f)
+                if (LogicTime.time > unit.attractInfo.LastTriggerTime + 15.0f)
                 {
                     attracted = false;
                     break;
@@ -140,7 +142,7 @@ namespace My.Map.Entity.AI
         /// <returns></returns>
         public override bool Decide(MapUnitAIBrain brain)
         {
-            return brain.UnitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
+            return brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
         }
     }
 
@@ -215,7 +217,7 @@ namespace My.Map.Entity.AI
 
     public class AIDecisionCheckCombatState : AIDecision
     {
-        public EntityCombatStateComp.ECombatState CheckState = 0;
+        public NpcCombatStateComp.ECombatState CheckState = 0;
 
         /// <summary>
         /// On Decide we check what state we're in
@@ -223,7 +225,7 @@ namespace My.Map.Entity.AI
         /// <returns></returns>
         public override bool Decide(MapUnitAIBrain brain)
         {
-            return brain.UnitEntity.CombatState == (EntityCombatStateComp.ECombatState)CheckState;
+            return brain.NpcEntity.CombatState == (NpcCombatStateComp.ECombatState)CheckState;
         }
     }
 
@@ -238,7 +240,7 @@ namespace My.Map.Entity.AI
         /// <returns></returns>
         public override bool Decide(MapUnitAIBrain brain)
         {
-            return brain.UnitEntity.unitCfg.IsPeace;
+            return brain.NpcEntity.unitCfg.IsPeace;
         }
     }
 
@@ -255,7 +257,7 @@ namespace My.Map.Entity.AI
                 return true;
             }
 
-            var diff = brain.blackboard.LastLeaveMoveModePos.Value - brain.UnitEntity.Pos;
+            var diff = brain.blackboard.LastLeaveMoveModePos.Value - brain.NpcEntity.Pos;
             if(diff.magnitude < 0.2f)
             {
                 return true;

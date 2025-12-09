@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using My.Map.Entity;
 using UnityEngine;
 using static My.Map.BaseUnitLogicEntity;
-using static My.Map.EntityCombatStateComp;
+using static My.Map.NpcCombatStateComp;
 
 namespace My.Map
 {
@@ -85,7 +85,7 @@ namespace My.Map
                 CampFilterType = ECampFilterType.NotSelf,
                 SelfCampId = FactionId,
 
-                FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc }
+                FilterParamLists = new() {  EEntityType.Npc }
             });
 
             foreach (var e in list)

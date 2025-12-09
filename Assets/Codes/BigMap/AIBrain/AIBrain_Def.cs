@@ -143,7 +143,7 @@ namespace My.Map.Entity.AI
                             {
                                 new AIDecisionCheckCombatState()
                                 {
-                                    CheckState = EntityCombatStateComp.ECombatState.CombatRecover
+                                    CheckState = NpcCombatStateComp.ECombatState.CombatRecover
                                 }
                             },
                             FalseState = "Idle"
@@ -198,7 +198,7 @@ namespace My.Map.Entity.AI
                             {
                                 new AIDecisionCheckCombatState()
                                 {
-                                    CheckState = EntityCombatStateComp.ECombatState.CombatRecover,
+                                    CheckState = NpcCombatStateComp.ECombatState.CombatRecover,
                                 }
                             },
                             TrueState = "RecoverFromCombat",
@@ -210,7 +210,7 @@ namespace My.Map.Entity.AI
                             {
                                 new AIDecisionCheckCombatState()
                                 {
-                                    CheckState = EntityCombatStateComp.ECombatState.NotCombat,
+                                    CheckState = NpcCombatStateComp.ECombatState.NotCombat,
                                 }
                             },
                             TrueState = "Idle",
@@ -227,7 +227,7 @@ namespace My.Map.Entity.AI
                             {
                                 new AIDecisionCheckCombatState()
                                 {
-                                    CheckState = EntityCombatStateComp.ECombatState.InCombat,
+                                    CheckState = NpcCombatStateComp.ECombatState.InCombat,
                                 }
                             },
                             TrueState = "Combat",

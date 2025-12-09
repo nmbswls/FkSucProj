@@ -633,17 +633,17 @@ namespace My.Map.Entity
 
             if (!skillRuntime.cacheConfig.NeedHMode)
             {
-                if (OwnerEntity.IsHMode)
-                {
-                    return false;
-                }
+                //if (OwnerEntity.IsHMode)
+                //{
+                //    return false;
+                //}
             }
             else
             {
-                if (!OwnerEntity.IsHMode)
-                {
-                    return false;
-                }
+                //if (!OwnerEntity.IsHMode)
+                //{
+                //    return false;
+                //}
             }
 
             return true;

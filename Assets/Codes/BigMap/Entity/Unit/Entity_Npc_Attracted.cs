@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace My.Map
 {
-    public partial class BaseUnitLogicEntity
+    public partial class NpcUnitLogicEntity
     {
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace My.Map
                 return;
             }
 
-            if(combatStateComp.CombatState != EntityCombatStateComp.ECombatState.NotCombat)
+            if(combatStateComp.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
             {
                 attractInfo = null;
                 return;

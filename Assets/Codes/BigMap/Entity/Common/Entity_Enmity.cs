@@ -154,10 +154,6 @@ namespace My.Map.Entity
                 {
                     eId = "default_npc";
                 }
-                else if (unit is MonsterUnitLogicEntity monsterEntity)
-                {
-                    eId = "default_monster";
-                }
             }
 
             enmityConf = UnitEnmityConfLoader.Get(eId);

@@ -339,13 +339,7 @@ namespace My
                         newEntity = playerLogicEntity;
                     }
                     break;
-                case EEntityType.Monster:
-                    {
-                        var newMonster = new MonsterUnitLogicEntity(this, record.Id, record.CfgId, record.Position, record);
-
-                        newEntity = newMonster;
-                    }
-                    break;
+                
                 case EEntityType.LootPoint:
                     {
                         var newLoot = new LootPointLogicEntity(this, record.Id, record.CfgId, record.Position, record);

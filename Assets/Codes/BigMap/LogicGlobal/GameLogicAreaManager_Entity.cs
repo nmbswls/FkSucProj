@@ -1,6 +1,7 @@
 
 
 using System.Collections.Generic;
+using System.Drawing;
 using Config;
 using My.MapExport;
 using UnityEngine;
@@ -121,33 +122,16 @@ namespace My.Map.Logic
                         // ³õÊ¼»¯Ñ²Âß±ø
                         foreach (var one in initInfo4PatrolGroup.GroupUnits)
                         {
-                            var oneRecrord = new LogicEntityRecord4UnitBase();
-
-                            oneRecrord.Id = GameLogicManager.LogicEntityIdInst++;
-                            oneRecrord.EntityType = one.EntityType;
-                            oneRecrord.CfgId = one.CfgId;
-
-                            oneRecrord.Position = point + one.RelativePos;
-                            oneRecrord.FaceDir = initInfo4PatrolGroup.FaceDir;
-
-
-
-                            oneRecrord.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup;
-                            oneRecrord.PatrolFollowId = id;
-                            oneRecrord.PatrolGroupRelativePos = one.RelativePos;
-
-
-                            patrolGroupRecord.PatrolUnitIds.Add(oneRecrord.Id);
-
-                            Repo.RegisterRecord(oneRecrord);
+                            var groupRecord = CreateEntityRecordFromInitInfo(one.InitInfo);
+                            patrolGroupRecord.PatrolUnitIds.Add(groupRecord.Id);
+                            Repo.RegisterRecord(groupRecord);
                         }
                         record = patrolGroupRecord;
                         break;
                     }
                 case EEntityType.Npc:
-                case EEntityType.Monster:
                     {
-                        var unitRecord = new LogicEntityRecord4UnitBase();
+                        var unitRecord = new LogicEntityRecord4Npc();
 
                         var initInfo4Unit = (EntityInitInfo4Unit)initInfo;
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.PackageManager;
 using UnityEngine;
-using static My.Map.EntityCombatStateComp;
+using static My.Map.NpcCombatStateComp;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
@@ -16,7 +16,7 @@ namespace My.Map
         ECombatState CombatState { get; }
     }
 
-    public class EntityCombatStateComp : IUnitWithBattle
+    public class NpcCombatStateComp : IUnitWithBattle
     {
 
         public BaseUnitLogicEntity UnitEntity { get; private set; }
@@ -91,7 +91,7 @@ namespace My.Map
         private float allySenseRadius = 20f;
         public long PrimaryTargetId { get; private set; } = 0;
 
-        public EntityCombatStateComp(BaseUnitLogicEntity entity)
+        public NpcCombatStateComp(BaseUnitLogicEntity entity)
         {
             this.UnitEntity = entity;
         }
@@ -365,12 +365,12 @@ namespace My.Map
                 CampFilterType = ECampFilterType.OnlySelf,
                 SelfCampId = UnitEntity.FactionId,
             });
-            BaseUnitLogicEntity bestWitness = null;
+            NpcUnitLogicEntity bestWitness = null;
             float bestScore = 0f;
 
             foreach (var e in list)
             {
-                if(e == null || e is not BaseUnitLogicEntity witness)
+                if(e == null || e is not NpcUnitLogicEntity witness)
                 {
                     continue;
                 }

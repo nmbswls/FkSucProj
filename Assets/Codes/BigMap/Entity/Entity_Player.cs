@@ -37,10 +37,12 @@ namespace My.Map
 
         public override EEntityType Type => EEntityType.Player;
 
-        public bool IsEnabled { get; private set; } = true;
-
-        protected override void InitAiBrain()
+        public override NpcCombatStateComp.ECombatState CombatState 
         {
+            get
+            {
+                return NpcCombatStateComp.ECombatState.NotCombat;
+            }
         }
 
         public override void Tick(float dt)
@@ -65,8 +67,6 @@ namespace My.Map
         public override void Initialize()
         {
             base.Initialize();
-
-            this.ControlledFacing = true;
         }
 
         protected override void InitAttribute()
@@ -150,14 +150,14 @@ namespace My.Map
                 {
                     var filterParam = new EntityFilterParam()
                     {
-                        FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
+                        FilterParamLists = new() { EEntityType.Npc },
                     };
 
                     var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, abilityConf.AttractRange, filterParam);
 
                     foreach (var surround in surrounds)
                     {
-                        var unit = surround as BaseUnitLogicEntity;
+                        var unit = surround as NpcUnitLogicEntity;
                         if (unit != null)
                         {
                             unit.ApplyAttracted(Pos, abilityConf.AttractPower, this);
@@ -390,50 +390,7 @@ namespace My.Map
             {
                 case AttrIdConsts.HidingMask:
                     {
-                        // 进入隐身时
-                        if (isOn)
-                        {
-                            bool hasWatched = false;
-                            var filterParam = new EntityFilterParam()
-                            {
-                                FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
-                                CampFilterType = ECampFilterType.NotSelf,
-                                SelfCampId = EFactionId.Player,
-                            };
-
-                            var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 5, filterParam);
-                            if (surrounds != null)
-                            {
-                                foreach (var one in surrounds)
-                                {
-                                    if (one is not BaseUnitLogicEntity unit)
-                                    {
-                                        continue;
-                                    }
-
-                                    // 敌对模式
-                                    if (unit.Type == EEntityType.Monster)
-                                    {
-                                        if (!LogicManager.visionSenser.CanSee(unit.Pos, unit.FaceDir, this.Pos, 5f, 60))
-                                        {
-                                            continue;
-                                        }
-
-                                        hasWatched = true;
-                                    }
-                                }
-                            }
-
-                            if (hasWatched)
-                            {
-                                LogicManager.globalBuffManager.RequestAddBuff(this.Id, "hide_marked", 1);
-                            }
-                        }
-                        else
-                        {
-                            // 脱战时同样需要清理该标记
-                            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "hide_marked");
-                        }
+                        
                     }
                     break;
             }
@@ -471,7 +428,7 @@ namespace My.Map
             // 
             var units = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 3.0f, new EntityFilterParam()
             {
-                FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
+                FilterParamLists = new() { EEntityType.Npc },
                 CampFilterType = ECampFilterType.NotSelf,
                 SelfCampId = EFactionId.Player,
             });

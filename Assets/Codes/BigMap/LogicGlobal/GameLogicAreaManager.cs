@@ -476,32 +476,32 @@ namespace My.Map.Logic
                     continue;
                 }
 
-                if(rec is LogicEntityRecord4UnitBase unitRecord)
+                if(rec is LogicEntityRecord4Npc npcRecord)
                 {
-                    if(unitRecord.MoveBehaveType != UnitMoveBehaveInfo.EMoveBehaveType.MovePath)
+                    if(npcRecord.MoveBehaveType != UnitMoveBehaveInfo.EMoveBehaveType.MovePath)
                     {
                         continue;
                     }
 
-                    var path = GetRuntimePath(unitRecord.MovePath);
-                    if(unitRecord.CurrPathIdx == path.PointList.Count - 1)
+                    var path = GetRuntimePath(npcRecord.MovePath);
+                    if(npcRecord.CurrPathIdx == path.PointList.Count - 1)
                     {
                         continue;
                     }
 
-                    var p0 = path.PointList[unitRecord.CurrPathIdx];
-                    var p1 = path.PointList[unitRecord.CurrPathIdx + 1];
+                    var p0 = path.PointList[npcRecord.CurrPathIdx];
+                    var p1 = path.PointList[npcRecord.CurrPathIdx + 1];
 
                     var dist = (p1 - p0).magnitude;
                     var spd = 2.0f;
 
                     float addProgress = (spd * interval) / dist;
-                    unitRecord.CurrPathProgress += addProgress;
+                    npcRecord.CurrPathProgress += addProgress;
 
-                    if(unitRecord.CurrPathProgress >= 1)
+                    if(npcRecord.CurrPathProgress >= 1)
                     {
-                        unitRecord.CurrPathProgress = 0;
-                        unitRecord.CurrPathIdx += 1;
+                        npcRecord.CurrPathProgress = 0;
+                        npcRecord.CurrPathIdx += 1;
                     }
                 }
             }

@@ -73,7 +73,7 @@ namespace My.Map.Entity.AI
     public class MapUnitAIBrain
     {
         public IVisionSenser2D Vision;
-        public BaseUnitLogicEntity UnitEntity;
+        public NpcUnitLogicEntity NpcEntity;
         public PlayerLogicEntity PlayerEntity;
 
         public Animator Animator;
@@ -213,12 +213,12 @@ namespace My.Map.Entity.AI
             return action;
         }
 
-        public void InitilaizeAll(BaseUnitLogicEntity unitEntity, IVisionSenser2D vision, Vector2 spawnPos)
+        public void InitilaizeAll(NpcUnitLogicEntity npcEntity, IVisionSenser2D vision, Vector2 spawnPos)
         {
             this.Vision = vision;
-            this.UnitEntity = unitEntity;
+            this.NpcEntity = npcEntity;
             this.blackboard.SpawnPos = spawnPos;
-            this.PlayerEntity = unitEntity.LogicManager.playerLogicEntity;
+            this.PlayerEntity = npcEntity.LogicManager.playerLogicEntity;
 
             _actions.Clear();
             _commonTransitions.Clear();
@@ -312,9 +312,9 @@ namespace My.Map.Entity.AI
 		/// </summary>
 		protected virtual void UpdateBlackboardData()
         {
-            blackboard.Distance = Vector2.Distance(UnitEntity.Pos, PlayerEntity.Pos);
-            blackboard.AngleToPlayer = Vector2.SignedAngle(UnitEntity.FaceDir, (PlayerEntity.Pos - UnitEntity.Pos));
-            blackboard.CanSee = Vision.CanSee(UnitEntity.Pos, UnitEntity.FaceDir, PlayerEntity.Pos, brainConfig.VisionRange, brainConfig.VisionFOV);
+            blackboard.Distance = Vector2.Distance(NpcEntity.Pos, PlayerEntity.Pos);
+            blackboard.AngleToPlayer = Vector2.SignedAngle(NpcEntity.FaceDir, (PlayerEntity.Pos - NpcEntity.Pos));
+            blackboard.CanSee = Vision.CanSee(NpcEntity.Pos, NpcEntity.FaceDir, PlayerEntity.Pos, brainConfig.VisionRange, brainConfig.VisionFOV);
 
             // 有问题 会丢事件
             if (blackboard.CanSee)
@@ -341,7 +341,7 @@ namespace My.Map.Entity.AI
 
             // 边界
             var center = blackboard.SpawnPos;
-            float dist = Vector2.Distance(UnitEntity.Pos, center);
+            float dist = Vector2.Distance(NpcEntity.Pos, center);
             bool nowIn = dist <= blackboard.BoundaryRadius;
             if (blackboard.InBoundary && !nowIn)
             {

@@ -60,14 +60,14 @@ namespace My.Map
 
                 var filterParam = new EntityFilterParam()
                 {
-                    FilterParamLists = new() { EEntityType.Monster, EEntityType.Npc },
+                    FilterParamLists = new() { EEntityType.Npc },
                 };
 
                 var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 5.0f, filterParam);
 
                 foreach (var surround in surrounds)
                 {
-                    var unit = surround as BaseUnitLogicEntity;
+                    var unit = surround as NpcUnitLogicEntity;
                     if (unit != null)
                     {
                         unit.ApplyAttracted(Pos, 3.0f, this);

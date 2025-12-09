@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace My.Map
 {
-    public partial class BaseUnitLogicEntity
+    public partial class NpcUnitLogicEntity
     {
         /// <summary>
         /// todo À©³äÎª¶à¸ö
@@ -25,7 +25,7 @@ namespace My.Map
 
             IsWatchingPlayer = false;
 
-            if(combatStateComp.CombatState != EntityCombatStateComp.ECombatState.NotCombat)
+            if(combatStateComp.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
             {
                 return;
             }

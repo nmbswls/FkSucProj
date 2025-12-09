@@ -49,19 +49,7 @@ namespace My.Map.Logic
     [Serializable]
     public class LogicEntityRecord4UnitBase : LogicEntityRecord
     {
-        public bool IsPeace;
-
-        public UnitMoveBehaveInfo.EMoveBehaveType MoveBehaveType;
-
-        public string EnmityConfId;
-        public List<string> MoveWayPoints;
-
-        public long PatrolFollowId;
-        public Vector2 PatrolGroupRelativePos;
-        public bool DisappearOnArrive;
-        public string MovePath = null;
-        public int CurrPathIdx = 0;
-        public float CurrPathProgress = 0;
+        
 
         // ½ö±£´æÌØÊâ×´Ì¬ buff¶ªÆú
         public bool Unsensored;
@@ -86,7 +74,19 @@ namespace My.Map.Logic
     [Serializable]
     public class LogicEntityRecord4Npc : LogicEntityRecord4UnitBase
     {
+        public bool IsPeace;
 
+        public UnitMoveBehaveInfo.EMoveBehaveType MoveBehaveType;
+
+        public string EnmityConfId;
+        public List<string> MoveWayPoints;
+
+        public long PatrolFollowId;
+        public Vector2 PatrolGroupRelativePos;
+        public bool DisappearOnArrive;
+        public string MovePath = null;
+        public int CurrPathIdx = 0;
+        public float CurrPathProgress = 0; 
     }
 
 

@@ -104,15 +104,15 @@ namespace My.Map.Logic
                 if (!Repo.IsLoaded(recId))
                 {
                     Repo.Records.TryGetValue(recId, out var rec);
-                    if(rec == null || rec is not LogicEntityRecord4UnitBase unitRec)
+                    if(rec == null || rec is not LogicEntityRecord4Npc unitNpcRec)
                     {
                         SpawnedWalkerRecords.RemoveAt(i);
                         RequestEntityDestroy(recId, "err");
                         continue;
                     }
 
-                    var path = GetRuntimePath(unitRec.MovePath);
-                    if (unitRec.CurrPathIdx >= path.PointList.Count - 1)
+                    var path = GetRuntimePath(unitNpcRec.MovePath);
+                    if (unitNpcRec.CurrPathIdx >= path.PointList.Count - 1)
                     {
                         Debug.Log("TickCleanWalker unloaded rec destroyed");
                         SpawnedWalkerRecords.RemoveAt(i);
@@ -124,7 +124,7 @@ namespace My.Map.Logic
                 {
                     Repo.Loaded.TryGetValue(recId, out var entity);
 
-                    if (entity == null || entity is not BaseUnitLogicEntity unitEntity)
+                    if (entity == null || entity is not NpcUnitLogicEntity unitNpc)
                     {
                         Debug.LogError($"TickRefreshWalker invalid {recId}");
                         SpawnedWalkerRecords.RemoveAt(i);
@@ -132,20 +132,20 @@ namespace My.Map.Logic
                         continue;
                     }
 
-                    if (unitEntity.combatStateComp.CombatState != EntityCombatStateComp.ECombatState.NotCombat)
+                    if (unitNpc.combatStateComp.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
                     {
                         continue;
                     }
 
-                    if (unitEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.MovePath
-                        || string.IsNullOrEmpty(unitEntity.MoveBehaveInfo.MovePath))
+                    if (unitNpc.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.MovePath
+                        || string.IsNullOrEmpty(unitNpc.MoveBehaveInfo.MovePath))
                     {
                         SpawnedWalkerRecords.RemoveAt(i);
                         RequestEntityDestroy(recId, "err");
                         continue;
                     }
 
-                    walkerPathDict.TryGetValue(unitEntity.MoveBehaveInfo.MovePath, out var path);
+                    walkerPathDict.TryGetValue(unitNpc.MoveBehaveInfo.MovePath, out var path);
                     var endP = path.PointList[path.PointList.Count - 1];
                     var diff = endP - entity.Pos;
 
@@ -183,7 +183,7 @@ namespace My.Map.Logic
 
                 var firstPoint = path.PointList.First();
 
-                var rec = new LogicEntityRecord4UnitBase()
+                var rec = new LogicEntityRecord4Npc()
                 {
                     Id = GameLogicManager.LogicEntityIdInst++,
                     EntityType = EEntityType.Npc,

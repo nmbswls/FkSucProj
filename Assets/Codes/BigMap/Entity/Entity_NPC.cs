@@ -7,37 +7,71 @@ using System.Collections.Generic;
 using static My.Map.Entity.EntitySkillComboGraph;
 using Map.Logic.Events;
 using static UnityEngine.RuleTile.TilingRuleOutput;
+using My.Map.Entity.AI;
 
 
 namespace My.Map
 {
-    public class NpcUnitLogicEntity : BaseUnitLogicEntity
+    public partial class NpcUnitLogicEntity : BaseUnitLogicEntity
     {
         public MapNpcConfig cacheCfg;
+
+        public UnitEnmityComp EnmityComp;
+        public MapUnitAIBrain? AIBrain;
+
+        public NpcCombatStateComp combatStateComp;
+
+        public bool IsHMode;
+
+        public override NpcCombatStateComp.ECombatState CombatState
+        {
+            get
+            {
+                return combatStateComp.CombatState;
+            }
+        }
+
+        public LogicEntityRecord4Npc NpcRecord
+        {
+            get
+            {
+                return (LogicEntityRecord4Npc)BindingRecord;
+            }
+        }
 
         public NpcUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             cacheCfg = MapNpcConfigLoader.Get(CfgId);
             this.unitCfg = cacheCfg;
 
-            
+            var npcRecord = (LogicEntityRecord4Npc)bindingRecord;
+
+            Debug.Log($"NpcUnitLogicEntity init {instId} {npcRecord.MoveBehaveType}");
+            this.MoveBehaveInfo = new();
+            this.MoveBehaveInfo.MoveBehaveMode = npcRecord.MoveBehaveType;
+            this.MoveBehaveInfo.FollowPatrolId = npcRecord.PatrolFollowId;
+            this.MoveBehaveInfo.PatrolGroupRelativePos = npcRecord.PatrolGroupRelativePos;
+            this.MoveBehaveInfo.DisappearOnArrive = npcRecord.DisappearOnArrive;
+            this.MoveBehaveInfo.MovePath = npcRecord.MovePath;
+
+
+
+            this.EmnityConfId = npcRecord.EnmityConfId;
         }
 
         public override EEntityType Type => EEntityType.Npc;
 
-        // 预设程序生成行为
-        public List<string> DefaultSkillList = new List<string>()
-        {
-            "player_shoot",
-            "default_weapon",
-            "default_enemy_qinfan",
-        };
-
-
-
         protected override void InitAbility()
         {
             base.InitAbility();
+
+            abilityController.EventOnInputCancelPhaseStart += () =>
+            {
+                if (AIBrain != null)
+                {
+                    AIBrain.TriggerUpdateImmediately();
+                }
+            };
         }
 
         protected override EntitySkillComboGraph GenerateComboGraph()
@@ -106,7 +140,14 @@ namespace My.Map
         {
             base.Initialize();
 
-            if (UnitBaseRecord.Unsensored)
+            EnmityComp = new();
+            EnmityComp.Initialize(this);
+
+            combatStateComp = new(this);
+
+            InitAiBrain();
+
+            if (NpcRecord.Unsensored)
             {
                 LogicManager.globalBuffManager.RequestAddBuff(Id, "unsensored");
             }
@@ -121,15 +162,13 @@ namespace My.Map
 
         }
 
-        protected override void InitAiBrain()
+        protected virtual void InitAiBrain()
         {
-            base.InitAiBrain();
+            AIBrain = new();
+            //var cacheCfg = MapMonsterConfigLoader.Get(CfgId);
+            AIBrain.InitilaizeAll(this, LogicManager.visionSenser, Pos);
         }
 
-        public override bool CanWatch()
-        {
-            return true;
-        }
 
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
@@ -147,6 +186,57 @@ namespace My.Map
                 var impluse = -(diff.normalized);
 
                 ApplyKnockBack(impluse, 5f);
+            }
+        }
+
+        protected override void TickActivateState(float dt)
+        {
+            base.TickActivateState(dt);
+
+            AIBrain?.Tick(dt);
+
+            EnmityComp?.Tick(dt);
+
+            combatStateComp?.Tick(dt);
+
+            UpdateHMode();
+
+            VisibilityComp?.TryUpdateNoticeList();
+
+            entityMotorComp?.Tick(dt);
+
+            TickAttractState();
+
+            TickGaze();
+        }
+
+        /// <summary>
+        /// 检查事件 
+        /// </summary>
+        /// <param name="evt"></param>
+        public override void OnMapLogicEvent(IMapLogicEvent evt)
+        {
+            if (EnmityComp != null)
+            {
+                EnmityComp.OnMapLogicEvent(evt);
+            }
+        }
+
+        public override bool CheckIsEmnity()
+        {
+            return EnmityComp.CheckIsEmnity();
+        }
+
+        public override bool CheckIsEmnityFaction(EFactionId factionId)
+        {
+            return EnmityComp.CheckIsEmnityFaction(factionId);
+        }
+
+        public void UpdateHMode()
+        {
+            if(cacheCfg.AlwaysHMode)
+            {
+                IsHMode = true;
             }
         }
     }

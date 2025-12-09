@@ -119,12 +119,6 @@ namespace My.MapExport
     }
 
     [Serializable]
-    public class EntityInitInfo4Monster : EntityInitInfo4Unit
-    {
-        public override EEntityType EntityType => EEntityType.Monster;
-    }
-
-    [Serializable]
     public class EntityInitInfo4AreaEffect : EntityInitInfo
     {
         public override EEntityType EntityType => EEntityType.AreaEffect;
@@ -173,9 +167,9 @@ namespace My.MapExport
         [Serializable]
         public class PatrolOneInfo
         {
-            public EEntityType EntityType;
-            public string CfgId;
-            public Vector2 RelativePos;
+            public int GroupIdx = 0;
+            [SerializeReference]
+            public EntityInitInfo InitInfo;
         }
 
         public override EEntityType EntityType => EEntityType.PatrolGroup;

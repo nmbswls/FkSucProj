@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Unity.Properties;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem.HID;
@@ -26,11 +27,12 @@ namespace My.Map.Scene
     {
         [SerializeField] protected GameObject highlightFx;
 
+        public Transform ViewRoot;
         public Transform ShadowView;
         public Transform AgentView;
         private SpriteRenderer[] srs;
 
-        public SpriteRenderer MainView;
+        //public SpriteRenderer MainView;
 
         public Transform ViewPoint;
         public GameObject faceIndicator;
@@ -174,7 +176,7 @@ namespace My.Map.Scene
             //if (knockBackIntent.knockbackTimeLeft <= 0f || externalVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
             //    ClearKnockbackIntent();
 
-            if (MainView != null)
+            if (srs != null)
             {
                 if (UnitEntity.AnimOverrideList.Count > 0)
                 {
@@ -234,7 +236,7 @@ namespace My.Map.Scene
             {
                 return;
             }
-            _updateVisibleTimer = 0.2f;
+            _updateVisibleTimer = 0.3f;
             if (MainGameManager.Instance.playerScenePresenter == null)
             {
                 return;
@@ -256,9 +258,9 @@ namespace My.Map.Scene
 
             if (visible)
             {
-                if(MainView != null)
+                if(ViewRoot != null)
                 {
-                    MainView.enabled = true;
+                    ViewRoot.gameObject.SetActive(true);
                 }
 
                 if (faceIndicator != null)
@@ -268,9 +270,9 @@ namespace My.Map.Scene
             }
             else
             {
-                if(MainView != null)
+                if(ViewRoot != null)
                 {
-                    MainView.enabled = false;
+                    ViewRoot.gameObject.SetActive(false);
                 }
                 
                 if (faceIndicator != null)
@@ -395,9 +397,9 @@ namespace My.Map.Scene
         {
             MainGameManager.Instance.ShowFakeFxEffect("Œ“À¿¡À", this.transform.position);
 
-            if(MainView != null)
+            if(ViewRoot != null)
             {
-                MainView.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+                ViewRoot.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
             }
         }
 
@@ -450,9 +452,10 @@ namespace My.Map.Scene
         {
             base.OnEventEntityDestroyed(entityId);
 
-            if (MainView != null)
+            if (ViewRoot != null)
             {
-                MainView.DOColor(new Color(1, 1, 1, 0), 0.5f);
+
+                //ViewRoot.DOColor(new Color(1, 1, 1, 0), 0.5f);
             }
         }
 

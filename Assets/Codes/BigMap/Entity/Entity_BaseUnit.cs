@@ -10,7 +10,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using static My.Map.Entity.MapEntityAbilityExecutor;
 using static UnityEngine.Rendering.VolumeComponent;
-using static My.Map.EntityCombatStateComp;
+using static My.Map.NpcCombatStateComp;
 using static My.GameLogicManager;
 using UnityEditor.Experimental.GraphView;
 using static My.Map.Fight.FightStruct;
@@ -62,22 +62,16 @@ namespace My.Map
             } 
         }
 
-        public ECombatState CombatState
-        { 
-            get 
-            {
-                return combatStateComp?.CombatState ?? ECombatState.NotCombat;
-            } 
+        public abstract ECombatState CombatState
+        {
+            get;
         }
 
         public UnitMoveBehaveInfo MoveBehaveInfo;
         //public Vector2? LastInterruptPos;
 
         public EntityMotorComp entityMotorComp;
-        public EntityCombatStateComp combatStateComp;
 
-        //public bool IsInBattle; // 既没有战斗 也没有h attract
-        public bool IsHMode;
         public bool IsDead = false;
         public bool IsAttaching = false;
 
@@ -95,26 +89,15 @@ namespace My.Map
         public event Action<long> EventOnDie;
         public event Action<long> EventOnConvertAttach;
 
-        public UnitEnmityComp EnmityComp;
         public UnitVisibilityComp VisibilityComp;
 
-        private float externalDecay = 30f;          // 外力自然衰减（每秒）
+        protected float externalDecay = 30f;          // 外力自然衰减（每秒）
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
-            Debug.Log($"BaseUnitLogicEntity init {instId} {unitRecord.MoveBehaveType}");
             this.MoveBehaveInfo = new();
-            this.MoveBehaveInfo.MoveBehaveMode = unitRecord.MoveBehaveType;
-            this.MoveBehaveInfo.FollowPatrolId = unitRecord.PatrolFollowId;
-            this.MoveBehaveInfo.PatrolGroupRelativePos = unitRecord.PatrolGroupRelativePos;
-            this.MoveBehaveInfo.DisappearOnArrive = unitRecord.DisappearOnArrive;
-            this.MoveBehaveInfo.MovePath = unitRecord.MovePath;
 
             this.FaceDir = bindingRecord.FaceDir;
-
-
-            this.EmnityConfId = unitRecord.EnmityConfId;
-
         }
 
         public override void Initialize()
@@ -124,7 +107,7 @@ namespace My.Map
             // get meta info
             InitAbility();
 
-            InitAiBrain();
+            
 
             // 优先应用覆盖值
             if(UnitBaseRecord.FactionId != EFactionId.None)
@@ -138,18 +121,9 @@ namespace My.Map
                     this.FactionId = unitCfg.DefaultFactionId;
                 }
             }
-            
-            
-            if(Type != EEntityType.Player)
-            {
-                VisibilityComp = new();
-                VisibilityComp.Initialize(this);
 
-                EnmityComp = new();
-                EnmityComp.Initialize(this);
-
-                combatStateComp = new(this);
-            }
+            VisibilityComp = new();
+            VisibilityComp.Initialize(this);
 
             entityMotorComp = new(this, LogicManager.navProvider);
 
@@ -184,21 +158,10 @@ namespace My.Map
 
         protected virtual void TickActivateState(float dt)
         {
-            AIBrain?.Tick(dt);
-
-            EnmityComp?.Tick(dt);
-
-            combatStateComp?.Tick(dt);
-
-            UpdateHMode();
 
             VisibilityComp?.TryUpdateNoticeList();
 
             entityMotorComp?.Tick(dt);
-
-            TickAttractState();
-
-            TickGaze();
 
             UpdateFaceDir();
         }
@@ -211,18 +174,6 @@ namespace My.Map
             }
         }
 
-        protected virtual void UpdateHMode()
-        {
-            if(Type == EEntityType.Player)
-            {
-                return;
-            }
-
-            if (unitCfg.AlwaysHMode)
-            {
-                IsHMode = true;
-            }
-        }
 
 
         public virtual void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
@@ -529,13 +480,7 @@ namespace My.Map
 
             ablilityManager.Executor = abilityController;
 
-            abilityController.EventOnInputCancelPhaseStart += () =>
-            {
-                if(AIBrain != null)
-                {
-                    AIBrain.TriggerUpdateImmediately();
-                }
-            };
+            
         }
 
         protected virtual EntitySkillComboGraph GenerateComboGraph()
@@ -579,98 +524,7 @@ namespace My.Map
         }
 
 
-        public MapUnitAIBrain? AIBrain;
-
-
-        protected virtual void InitAiBrain()
-        {
-            AIBrain = new();
-            //var cacheCfg = MapMonsterConfigLoader.Get(CfgId);
-            AIBrain.InitilaizeAll(this, LogicManager.visionSenser, Pos);
-
-            //AIBrain.BrainStateMachine.Reset();
-
-            //// 装备移动状态
-            //string initState = string.Empty;
-
-            //switch (UnitBaseRecord.ActMode)
-            //{
-            //    case EUnitMoveActMode.NoMove:
-            //        {
-            //            AIBrain.BrainStateMachine.Register(new IdleBrainState(AIBrain));
-            //            initState = "Idle";
-            //            break;
-            //        }
-            //    case EUnitMoveActMode.Hunting:
-            //        {
-            //            AIBrain.BrainStateMachine.Register(new HuntingBrainState(AIBrain));
-            //            initState = "Hunting";
-            //            break;
-            //        }
-            //    case EUnitMoveActMode.PatrolFollow:
-            //        {
-            //            AIBrain.BrainStateMachine.Register(new FollowPatrolGroupBrainState(AIBrain));
-            //            initState = "FollowPatrolGroup";
-            //            break;
-            //        }
-            //}
-
-            //// 对于有H模式的单位 赋予状态
-            //if (unitCfg.HasHMode)
-            //{
-            //    AIBrain.BrainStateMachine.Register(new HModeChaseBrainState(AIBrain));
-            //}
-
-            //if (!unitCfg.IsPeace)
-            //{
-            //    var combatState = new CombatChaseBrainState(AIBrain);
-
-            //    switch (unitCfg.AITemplateMode)
-            //    {
-            //        case "Warrior":
-            //            {
-            //                var template = Resources.Load<DefaultAIParamTemplate4Warrior>($"AITemplate/{unitCfg.AITemplateName}");
-
-            //                var standOffStrategy = new DistanceControlStrategy(template.KeepDistance * 0.001f);
-            //                combatState.RegisterStrategy(standOffStrategy);
-
-            //                var mainFightStrategy = new PrimaryUseSkillStrategy(1f);
-            //                combatState.RegisterStrategy(mainFightStrategy);
-            //            }
-            //            break;
-            //        case "Shooter":
-            //            {
-            //                var template = Resources.Load<DefaultAIParamTemplate4Shooter>($"AITemplate/{unitCfg.AITemplateName}");
-
-            //                var standOffStrategy = new DistanceControlStrategy(template.KeepDistance * 0.001f);
-            //                combatState.RegisterStrategy(standOffStrategy);
-
-            //                var mainFightStrategy = new PrimaryUseSkillStrategy(1f);
-            //                combatState.RegisterStrategy(mainFightStrategy);
-            //            }
-            //            break;
-            //    }
-
-            //    AIBrain.BrainStateMachine.Register(combatState);
-            //}
-            //else
-            //{
-            //    var fleeState = new FleeAwayBrainState(AIBrain, 10, 5f);
-            //    AIBrain.BrainStateMachine.Register(fleeState);
-            //}
-
-            //AIBrain.BrainStateMachine.Register(new ReturnBrainState(AIBrain));
-            //// 你可以注册 Idle/Patrol/Return 等状态，这里示例聚焦 CombatChase。
-
-            //if (!string.IsNullOrEmpty(initState))
-            //{
-            //    AIBrain.BrainStateMachine.Change(initState);
-            //}
-            //else
-            //{
-            //    Debug.LogError("AIBrain.BrainStateMachine no init ");
-            //}
-        }
+        
 
         public void OnThrownInterrupt()
         {
@@ -715,21 +569,17 @@ namespace My.Map
         /// <param name="evt"></param>
         public override void OnMapLogicEvent(IMapLogicEvent evt)
         {
-            if(EnmityComp != null)
-            {
-                EnmityComp.OnMapLogicEvent(evt);
-            }
-
+            
         }
 
-        public bool CheckIsEmnity()
+        public virtual bool CheckIsEmnity()
         {
-            return EnmityComp.CheckIsEmnity();
+            return false;
         }
 
-        public bool CheckIsEmnityFaction(EFactionId factionId)
+        public virtual bool CheckIsEmnityFaction(EFactionId factionId)
         {
-            return EnmityComp.CheckIsEmnityFaction(factionId);
+            return false;
         }
 
         #endregion
@@ -1001,6 +851,53 @@ namespace My.Map
             this.attributeStore.SetResource(AttrIdConsts.HP, 0);
             OnUnitDie(99);
         }
+
+        #region face
+
+        protected Vector2 faceDir = Vector2.zero;
+        public Vector2 FaceDir
+        {
+            get { return faceDir; }
+            set
+            {
+                faceDir = value;
+                _currentAngle = AngleFromDir(faceDir);
+                _targetAngle = _currentAngle;
+            }
+        }
+        // 内部状态
+        protected float _currentAngle;     // 当前朝向角度（度，0=向右）
+
+        public Vector2 DesiredFaceDir { get { return DirFromAngle(_targetAngle); } }
+        protected float _targetAngle;
+
+        protected float _angularVel;       // SmoothDampAngle 用
+
+
+        public virtual void InitFacing()
+        {
+
+        }
+
+        protected virtual void UpdateFaceDir()
+        {
+
+        }
+
+        // 工具函数
+        public static float AngleFromDir(Vector2 dir)
+        {
+            if (dir.sqrMagnitude < 1e-8f) return 0f;
+            return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        }
+
+        public static Vector2 DirFromAngle(float angleDeg)
+        {
+            float rad = angleDeg * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+        }
+
+        #endregion
     }
 
 }

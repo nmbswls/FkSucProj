@@ -159,11 +159,11 @@ namespace My.Map.Entity
                 {
                     case Fight.FightStruct.ESelectPolicy.PrimaryTarget:
                         {
-                            if(caster != null && caster is BaseUnitLogicEntity unit)
+                            if(caster != null && caster is NpcUnitLogicEntity npcUnit)
                             {
-                                if(unit.combatStateComp.PrimaryTargetId != 0)
+                                if(npcUnit.combatStateComp.PrimaryTargetId != 0)
                                 {
-                                    homingTarget = unit.combatStateComp.PrimaryTargetId;
+                                    homingTarget = npcUnit.combatStateComp.PrimaryTargetId;
                                 }
                             }
                         }
@@ -827,9 +827,8 @@ namespace My.Map.Entity
             switch (realCfg.EntityType)
             {
                 case EEntityType.Npc:
-                case EEntityType.Monster:
                     {
-                        record = new LogicEntityRecord4UnitBase();
+                        record = new LogicEntityRecord4Npc();
                     }
                     break;
                 default:

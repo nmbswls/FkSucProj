@@ -5,52 +5,37 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map
 {
-    public partial class BaseUnitLogicEntity
+    public partial class NpcUnitLogicEntity
     {
-        //public enum OrientationMode { MoveFacing, LookAtTarget, BlendFacing, FixedHeading }
 
-        public bool ControlledFacing = false;
-        //public OrientationMode faceMode = OrientationMode.MoveFacing;
-        public float blendWeight = 0.6f;
+        /// <summary>
+        /// 受外部控制面向
+        /// </summary>
+        public bool ControlledFacing { get; set; } = false;
 
-        public ILogicEntity? lookTarget;      // 固定目标
-        public Vector2? lootTargetPos;        // 固定目标
-        public Vector2 fixedHeading = Vector2.right; // 固定面向
+        public class TempFaceIntent
+        {
+            public Vector2 LookPos;
+            public float LookStartTime;
+        }
 
         public float speedThreshold = 0.05f; // 速度太小不更新面向
         public float deadzoneAngle = 3f;     // 小角度不转动（度）
         public float maxAngularSpeed = 360f; // 每秒最大旋转角度（度/s）
         public float smoothTime = 0.05f;     // 平滑时间（秒）
 
-        private Vector2 faceDir = Vector2.zero;
-        public Vector2 FaceDir 
+        
+
+        public override void InitFacing()
         {
-            get { return faceDir; }
-            set 
-            {
-                faceDir = value;
-                _currentAngle = AngleFromDir(faceDir);
-                _targetAngle = _currentAngle;
-            }
-        }
-        // 内部状态
-        float _currentAngle;     // 当前朝向角度（度，0=向右）
-
-        public Vector2 DesiredFaceDir { get { return DirFromAngle(_targetAngle); } }
-        float _targetAngle;
-
-        float _angularVel;       // SmoothDampAngle 用
-
-        public void InitFacing()
-        {
+            base.InitFacing();
         }
 
         /// <summary>
         /// 更新朝向
         /// </summary>
-        protected virtual void UpdateFaceDir()
+        protected override void UpdateFaceDir()
         {
-
             if (attributeStore.CheckHasState(AttrIdConsts.LockFace))
             {
                 return;
@@ -89,7 +74,7 @@ namespace My.Map
             // 检查是否需要锁定目标朝向
             Vector2? lootTarget = null;
            
-            if (combatStateComp != null && combatStateComp.CombatState == EntityCombatStateComp.ECombatState.InCombat && combatStateComp.PrimaryTargetId != 0)
+            if (combatStateComp != null && combatStateComp.CombatState == NpcCombatStateComp.ECombatState.InCombat && combatStateComp.PrimaryTargetId != 0)
             {
                 var targt = LogicManager.GetLogicEntity(combatStateComp.PrimaryTargetId, false);
                 if (targt != null)
@@ -141,18 +126,7 @@ namespace My.Map
 
 
 
-        // 工具函数
-        static float AngleFromDir(Vector2 dir)
-        {
-            if (dir.sqrMagnitude < 1e-8f) return 0f;
-            return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        }
-
-        static Vector2 DirFromAngle(float angleDeg)
-        {
-            float rad = angleDeg * Mathf.Deg2Rad;
-            return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-        }
+        
 
         static Vector2 NormalizeSafe(Vector2 v)
         {

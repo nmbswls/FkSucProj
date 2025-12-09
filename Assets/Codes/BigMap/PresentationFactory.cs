@@ -33,7 +33,6 @@ public static class PresentationConfig
             case EEntityType.InteractPoint: return $"Prefab/Presentations/InteractPoint/{cfgId}";
             case EEntityType.LootPoint: return $"Prefab/Presentations/LootPoint/{cfgId}";
             case EEntityType.Npc: return $"Prefab/Presentations/Npc/{cfgId}";
-            case EEntityType.Monster: return $"Prefab/Presentations/Monster/{cfgId}";
             case EEntityType.AreaEffect: return $"Prefab/Presentations/AreaEffect/{cfgId}";
             case EEntityType.DestroyObj:
                 return $"Prefab/Presentations/DestroyObj/{cfgId}";

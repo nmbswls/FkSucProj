@@ -70,37 +70,7 @@ namespace Config
         }
     }
 
-    public static class MapMonsterConfigLoader
-    {
-
-        private static Dictionary<string, MapMonsterConfig> _byId = new Dictionary<string, MapMonsterConfig>();
-
-        public static MapMonsterConfig Get(string cfgId)
-        {
-            if (_byId.TryGetValue(cfgId, out var data))
-                return data;
-
-            var loadOne = Load(cfgId);
-            _byId[cfgId] = loadOne;
-            return loadOne;
-        }
-
-
-        // 传入名称，如 "Fireball"；路径相对 Resources 根（不含扩展名）
-        private static MapMonsterConfig Load(string cfgId)
-        {
-            var data = Resources.Load<MapMonsterConfig>($"Config/Entity/Monster/{cfgId}");
-            if (data == null)
-                Debug.LogError($"MapNpcConfigLoader not found at Resources/Config/Monster/{cfgId}");
-            return data;
-        }
-
-        public static void Clear()
-        {
-            _byId.Clear();
-        }
-    }
-
+    
     public static class MapUnitStrategyTemplateLoader
     {
 
