@@ -2144,7 +2144,7 @@ namespace My.Map.Entity
             spec.Phases.Add(new MapAbilityPhase()
             {
                 PhaseName = "Pre",
-                LockMovement = true,
+                LockRotation = true,
 
                 DurationValue = new()
                 {

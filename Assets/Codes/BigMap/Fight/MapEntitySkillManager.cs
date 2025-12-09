@@ -590,7 +590,7 @@ namespace My.Map.Entity
 
         public void CheckSkillCanceled(string skillId)
         {
-            if(CurrentSkillId == null || CurrentSkillId == skillId)
+            if(CurrentSkillId == null || CurrentSkillId != skillId)
             {
                 return;
             }
@@ -621,7 +621,7 @@ namespace My.Map.Entity
         public void TrySkillHold(string skillId)
         {
 
-            if (CurrentSkillId == null || CurrentSkillId == skillId)
+            if (CurrentSkillId == null || CurrentSkillId != skillId)
             {
                 return;
             }

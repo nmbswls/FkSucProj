@@ -335,6 +335,12 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.JianSu, ModifierValue = 3000 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneKnock, ModifierValue = 1 },
                     },
+
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.AnimOverride,
+                        ParamStr = "test",
+                    },
                 };
 
                 _library["queen_countering"] = new BuffDefinition()
