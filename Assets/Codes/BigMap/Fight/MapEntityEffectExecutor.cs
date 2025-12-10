@@ -230,10 +230,40 @@ namespace My.Map.Entity
             }
         }
     }
+
+    public class AbilityFightExecutor4QueueMode : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectQueueModeCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityFightExecutor4QueueMode cfg error");
+                return;
+            }
+
+            if (ctx.TargetId == 0)
+            {
+                return;
+            }
+
+            var playerEntity = ctx.Env.GetLogicEntity(ctx.TargetId) as PlayerLogicEntity;
+
+            if(realCfg.InEnter)
+            {
+                playerEntity.IsQueenMode = true;
+            }
+            else
+            {
+                playerEntity.IsQueenMode = false;
+            }
+        }
+    }
+
     
 
 
-    public class AbilityEffectExecutor4UseWeapon : AbilityEffectExecutor
+    public class AbilityFightExecutor4UseWeapon : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
@@ -386,14 +416,16 @@ namespace My.Map.Entity
                 srcBuffId = ctx.SourceInfo.SrcBuffId;
             }
 
+            int layer = realCfg.Layer;
+            if (realCfg.Layer <= 0) layer = 1;
             // 当目标type为0时 在正常语境下 就是给目标使用
             if (realCfg.TargetType == 0)
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.TargetId, realCfg.BuffId, realCfg.Layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId : srcBuffId);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.TargetId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId : srcBuffId);
             }
             else
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.SourceInfo.SrcEntityId, realCfg.BuffId, realCfg.Layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId: srcBuffId);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.SourceInfo.SrcEntityId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId: srcBuffId);
             }
         }
     }

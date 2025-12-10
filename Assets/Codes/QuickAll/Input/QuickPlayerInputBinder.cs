@@ -55,7 +55,9 @@ namespace My.Input
 
         public enum EInputKey
         {
+            MouseLeft,
             MouseRight,
+
             Tab,
             Space,
 
@@ -163,8 +165,8 @@ namespace My.Input
             actions.OverworldMap.HotKey3.performed += OnHotKey3;
             actions.OverworldMap.HotKey4.performed += OnHotKey4;
 
-            actions.OverworldMap.Click.started += OnLeftDown;
-            actions.OverworldMap.RightClick.started += OnRightDown;
+            actions.OverworldMap.Click.performed += OnLeftDown;
+            actions.OverworldMap.RightClick.performed += OnRightDown;
 
             actions.OverworldMap.RightClickHold.started += OnRightHoldStart;
             actions.OverworldMap.RightClickHold.canceled += OnRightHoldEnd;
@@ -198,8 +200,9 @@ namespace My.Input
             actions.OverworldMap.HotKey3.performed -= OnHotKey3;
             actions.OverworldMap.HotKey4.performed -= OnHotKey4;
 
-            actions.OverworldMap.Click.started -= OnLeftDown;
-            actions.OverworldMap.RightClick.started -= OnRightDown;
+            actions.OverworldMap.Click.performed -= OnLeftDown;
+            actions.OverworldMap.RightClick.performed -= OnRightDown;
+
             actions.OverworldMap.RightClickHold.started -= OnRightHoldStart;
             actions.OverworldMap.RightClickHold.canceled -= OnRightHoldEnd;
 
@@ -247,7 +250,6 @@ namespace My.Input
             {
                 OnSceneLeftClick();
             }
-            
         }
 
         void OnRightDown(InputAction.CallbackContext ctx)
@@ -286,8 +288,6 @@ namespace My.Input
             OnSceneHoldEnd(EInputKey.MouseRight.ToString());
         }
 
-
-
         public void OnPointerMove(InputAction.CallbackContext ctx)
         {
             if (GlobalLock)
@@ -305,7 +305,6 @@ namespace My.Input
 
         public void OnMove(InputAction.CallbackContext ctx)
         {
-
             if(GlobalLock)
             {
                 return;
@@ -465,9 +464,6 @@ namespace My.Input
 
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.entityMotorComp.FreeMoveInput = Vector2.ClampMagnitude(dir, 1f);
             }
-
-
-
         }
 
 
@@ -499,22 +495,22 @@ namespace My.Input
         {
             if (!LogicTime.paused)
             {
-                var player = MainGameManager.Instance.playerScenePresenter;
-                Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
-                var castDir = (LastPos - playerScreenPos).normalized;
+                //var player = MainGameManager.Instance.playerScenePresenter;
+                //Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
+                //var castDir = (LastPos - playerScreenPos).normalized;
 
-                //  get skill name from data
-                string skillName;
-                if (player.PlayerEntity.IsQueenMode)
-                {
-                    skillName = "queen_attack";
-                }
-                else
-                {
-                    skillName = "default_push";
-                }
+                ////  get skill name from data
+                //string skillName;
+                //if (player.PlayerEntity.IsQueenMode)
+                //{
+                //    skillName = "queen_attack";
+                //}
+                //else
+                //{
+                //    skillName = "default_push";
+                //}
 
-                player.PlayerEntity.ablilityManager.UseSkill(skillName, null, target: null);
+                //player.PlayerEntity.ablilityManager.UseSkill(skillName, null, target: null);
             }
         }
 
@@ -522,12 +518,12 @@ namespace My.Input
         {
             if (!LogicTime.paused)
             {
-                var player = MainGameManager.Instance.playerScenePresenter;
-                Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
-                var castDir = (LastPos - playerScreenPos).normalized;
+                //var player = MainGameManager.Instance.playerScenePresenter;
+                //Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
+                //var castDir = (LastPos - playerScreenPos).normalized;
 
+                ////player.PlayerEntity.ablilityManager.UseSkill("player_normal_defend", castDir.normalized + player.PlayerEntity.Pos);
                 //player.PlayerEntity.ablilityManager.UseSkill("player_normal_defend", castDir.normalized + player.PlayerEntity.Pos);
-                player.PlayerEntity.ablilityManager.UseSkill("player_normal_defend", castDir.normalized + player.PlayerEntity.Pos);
             }
         }
 
@@ -548,10 +544,10 @@ namespace My.Input
 
         private void OnSceneHolding(string key)
         {
-            if(key == EInputKey.MouseRight.ToString())
-            {
-                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHold("player_normal_defend");
-            }
+            //if(key == EInputKey.MouseRight.ToString())
+            //{
+            //    MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHold("player_normal_defend");
+            //}
         }
 
         public void OnSceneHoldEnd(string keyName)

@@ -84,7 +84,7 @@ namespace My.UI
                 }
                 hint.InitBind(interactPoint);
 
-                hint.BindInteractPoint = interactPoint;
+                hint.sceneInteract = interactPoint;
                 hint.gameObject.SetActive(true);
                 sceneInteractHintDicts[interactPoint.Id] = hint;
 

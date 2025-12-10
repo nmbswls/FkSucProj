@@ -37,9 +37,9 @@ namespace My.UI
         }
         public EShowStatus ShowStatus;
 
-        public List<ISceneInteractable> CurrInteractPoint = new();
+        public List<(ISceneInteractable, float)> CurrInteractPoint = new();
         public ISceneInteractable? currBindPoint = null;
-
+        public float? currBindPointDist = null;
 
         public void Awake()
         {
@@ -51,13 +51,14 @@ namespace My.UI
                     return;
                 }
 
-                if (currBindPoint == CurrInteractPoint[idx])
+                if (currBindPoint == CurrInteractPoint[idx].Item1)
                 {
                     return;
                 }
 
-                currBindPoint = CurrInteractPoint[idx];
-                ShowDirectInteractMenuOnObj(currBindPoint);
+                currBindPoint = CurrInteractPoint[idx].Item1;
+                currBindPointDist = CurrInteractPoint[idx].Item2;
+                ShowDirectInteractMenuOnObj(currBindPoint, currBindPointDist.Value);
             };
 
 
@@ -106,7 +107,7 @@ namespace My.UI
 
             foreach (var one in CurrInteractPoint)
             {
-                innerList.Add(new(one.Id, one.ShowName, true));
+                innerList.Add(new(one.Item1.Id, one.Item1.ShowName, true));
             }
             ChooseObjMenu.SetData(innerList);
 
@@ -116,7 +117,7 @@ namespace My.UI
         /// 刷新详细交互小界面
         /// </summary>
         /// <param name="interactObj"></param>
-        private void ShowDirectInteractMenuOnObj(ISceneInteractable interactObj)
+        private void ShowDirectInteractMenuOnObj(ISceneInteractable interactObj, float dist)
         {
             this.ChooseObjMenu.gameObject.SetActive(false);
             ChooseInteractMenu.gameObject.SetActive(true);
@@ -124,7 +125,7 @@ namespace My.UI
             this.ShowStatus = EShowStatus.ShowInteract;
             this.currBindPoint = interactObj;
 
-            var selections = interactObj.GetInteractSelections();
+            var selections = interactObj.GetInteractSelections(dist);
 
             var hintPos = interactObj.GetHintAnchorPosition();
             Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
@@ -173,7 +174,7 @@ namespace My.UI
         /// 刷新交互物
         /// </summary>
         /// <param name="interactPoints"></param>
-        public void RefreshInteractObjs(List<ISceneInteractable> interactPoints)
+        public void RefreshInteractObjs(List<(ISceneInteractable, float)> interactPoints)
         {
             this.CurrInteractPoint.Clear();
             this.CurrInteractPoint.AddRange(interactPoints);
@@ -188,7 +189,7 @@ namespace My.UI
             else if (CurrInteractPoint.Count == 1)
             {
                 ShowStatus = EShowStatus.ShowInteract;
-                ShowDirectInteractMenuOnObj(CurrInteractPoint.First());
+                ShowDirectInteractMenuOnObj(CurrInteractPoint.First().Item1, CurrInteractPoint.First().Item2);
             }
             else
             {
@@ -203,10 +204,11 @@ namespace My.UI
             if (ShowStatus == EShowStatus.ShowObj)
             {
                 int idx = ChooseObjMenu.CurrentIndex;
-                var chosenInteract = CurrInteractPoint[idx];
+                var chosenInteract = CurrInteractPoint[idx].Item1;
 
                 this.currBindPoint = chosenInteract;
-                ShowDirectInteractMenuOnObj(chosenInteract);
+                this.currBindPointDist = CurrInteractPoint[idx].Item2;
+                ShowDirectInteractMenuOnObj(chosenInteract, currBindPointDist.Value);
                 return true;
             }
             else if (ShowStatus == EShowStatus.ShowInteract)

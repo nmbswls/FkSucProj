@@ -185,7 +185,29 @@ namespace My.Map.Entity
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
-                
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_enter_queen";
+                    cfg.MainAbilityId = "player_enter_queen";
+                    cfg.CoolDown = 1.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+                    cfg.Priority = 1;
+
+                    cfg.TargetType = ETargetType.Self;
+                    cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.NoQueenMode});
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_quit_queen";
+                    cfg.MainAbilityId = "player_quit_queen";
+
+                    cfg.TargetType = ETargetType.Self;
+                    cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.QueenMode });
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -328,6 +350,12 @@ namespace My.Map.Entity
                     var ab = CreatePlayerNormalDefend();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                {
+                    var ab = CreatePlayerEnterQueenMode();
+                    _abilityDict[ab.Id] = ab;
+                }
+
             }
 
             _abilityDict.TryGetValue(abilityName, out var abConfig);
@@ -2176,7 +2204,92 @@ namespace My.Map.Entity
             return spec;
             
         }
-    
+
+
+        private static MapAbilitySpecConfig CreatePlayerEnterQueenMode()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_enter_queen";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            };
+
+
+            {
+                var effect = new MapFightEffectQueueModeCfg()
+                {
+                    InEnter = true,
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+            }
+
+            {
+                var effect = new MapAbilityEffectAddBuffCfg()
+                {
+                    TargetType = 1,
+                    BuffId = "queen_mode_on",
+                    Layer = 1,
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
+
+            return spec;
+
+        }
+
+
+
+        private static MapAbilitySpecConfig CreatePlayerQuitQueenMode()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_quit_queen";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            };
+
+
+            {
+                var effect = new MapFightEffectQueueModeCfg()
+                {
+                    InEnter = false,
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
+
+            return spec;
+
+        }
+
     }
 
 

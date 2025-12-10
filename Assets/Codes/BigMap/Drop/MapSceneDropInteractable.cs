@@ -60,9 +60,11 @@ namespace My.Map.Scene
             return new Vector2(transform.position.x, transform.position.y) + new Vector2(0, 0f);
         }
 
-        public List<SceneInteractSelection> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             var ret = new List<SceneInteractSelection>();
+            if (dist > 0.5f) return ret;
+
             ret.Add(new SceneInteractSelection()
             {
                 SelectId = 1,
@@ -82,8 +84,9 @@ namespace My.Map.Scene
             MainGameManager.Instance.gameLogicManager.globalDropCollection.RemoveDrop(DropId, false);
         }
 
-        public bool CanInteractEnable()
+        public bool CanInteractEnable(float dist)
         {
+            if (dist > 0.5f) return false;
             if (IsFlying)
             {
                 return false;

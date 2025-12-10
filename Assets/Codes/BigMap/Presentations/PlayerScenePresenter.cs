@@ -136,7 +136,7 @@ namespace My.Map.Scene
             }
         }
 
-        public bool CanInteractEnable()
+        public bool CanInteractEnable(float dist)
         {
             if(PlayerEntity.IsInStealth())
             {
@@ -168,7 +168,7 @@ namespace My.Map.Scene
             return GetWorldPosition();
         }
 
-        public List<SceneInteractSelection> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             List<SceneInteractSelection> ret = new();
 

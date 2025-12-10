@@ -33,6 +33,27 @@ namespace Config.Unit
         
         public FightStruct.ESelectPolicy SelectPolicy; // 1-敌人主目标 2-自身 3-血量最低友方 4 血量最低敌方 5 随机 
 
+        public enum ECastConditionType
+        {
+            None,
+            HMode,
+
+            QueenMode,
+            NoQueenMode,
+        }
+
+        [Serializable]
+        public class CastCondition
+        {
+            public ECastConditionType Type;
+            public long Param1;
+            public long Param2;
+            public string Param3;
+            public string Param4;
+        }
+
+        public List<CastCondition> CastConditions = new();
+
         public enum ETargetType
         {
             NoTarget,
@@ -40,6 +61,7 @@ namespace Config.Unit
             Circle,
             Rect,
             LockTarget,
+            Self,
         }
         public ETargetType TargetType;
         public float Range1;

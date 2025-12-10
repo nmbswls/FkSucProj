@@ -31,6 +31,9 @@ namespace My.Player
             "spawn_attract",
             "queen_pull_all",
 
+            "player_enter_queen",
+            "player_quit_queen",
+
             "queen_counter",
 
             "default_push",
@@ -65,6 +68,9 @@ namespace My.Player
 
             //inventoryModel.NormalSlots[6] = new ItemStack() { ItemID = "chanzi", Count = 1 };
         }
+
+
+
 
         public bool CheckHasParam(string id)
         {

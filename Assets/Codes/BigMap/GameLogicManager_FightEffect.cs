@@ -66,13 +66,18 @@ namespace My
                         break;
                     case MapAbilityEffectUseWeaponCfg:
                         {
-                            executor = new AbilityEffectExecutor4UseWeapon();
+                            executor = new AbilityFightExecutor4UseWeapon();
                         }
                         break;
 
                     case MapAbilityEffectDefaultInteractCfg:
                         {
                             executor = new AbilityEffectExecutor4DefaultInteract();
+                        }
+                        break;
+                    case MapFightEffectQueueModeCfg:
+                        {
+                            executor = new AbilityFightExecutor4QueueMode();
                         }
                         break;
 

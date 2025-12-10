@@ -4,7 +4,9 @@ using My.Input;
 using My.Map.Entity;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static Config.Unit.EntitySkillCfg;
+using static My.Input.QuickPlayerInputBinder;
 using static UnityEngine.Rendering.DebugUI.Table;
 
 
@@ -40,6 +42,7 @@ namespace My.UI
         public TextMeshProUGUI PlayerHungerText;
         public TextMeshProUGUI PlayerSanText;
 
+        public TextMeshProUGUI PlayerQueenStatusText;
 
 
         public override void Setup(object data = null)
@@ -76,6 +79,8 @@ namespace My.UI
 
                 PlayerHungerText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerHunger).ToString();
                 PlayerSanText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSan).ToString();
+
+                PlayerQueenStatusText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsQueenMode ? "Queen" : "Normal";
             }
 
             if(HudMode == EHudMode.PreviewSkill)
@@ -153,14 +158,11 @@ namespace My.UI
             return false;
         }
 
-
-        public bool OnNavigate(Vector2 dir) => false;
-        public bool OnHotkey(string keyName)
+        public string GetSkillIdByKey(string keyName)
         {
-            if(HudMode == EHudMode.Normal)
+            string skillId = string.Empty;
+            if(MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsQueenMode)
             {
-                string skillId = string.Empty;
-
                 if (keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
                 {
                     skillId = "crazy_fire";
@@ -173,27 +175,67 @@ namespace My.UI
                 {
                     skillId = "queen_counter";
                 }
-                else if(keyName == QuickPlayerInputBinder.EInputKey.Num4.ToString())
+                else if (keyName == QuickPlayerInputBinder.EInputKey.Num4.ToString())
                 {
                     skillId = "queen_pull_all";
                 }
-
-                if (string.IsNullOrEmpty(skillId))
+                else if (keyName == QuickPlayerInputBinder.EInputKey.Q.ToString())
                 {
-                    return false;
+                    skillId = "player_enter_queen";
                 }
-
-                var skillConf = SkillLibrary.GetSkillConfig(skillId);
-                if (skillConf.TargetType != ETargetType.NoTarget)
+                else if(keyName == QuickPlayerInputBinder.EInputKey.MouseLeft.ToString())
                 {
-                    EnterSkillPreviewMode(skillId);
+                    skillId = "queen_attack";
                 }
-                else
+            }
+            else
+            {
+                if (keyName == QuickPlayerInputBinder.EInputKey.MouseLeft.ToString())
                 {
-                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId);
+                    skillId = "default_push";
                 }
+                else if (keyName == QuickPlayerInputBinder.EInputKey.MouseRight.ToString())
+                {
+                    skillId = "player_normal_defend";
+                }
+            }
 
-                return true;
+            return skillId;
+        }
+
+
+        private bool TryRouteUseSkill(string keyName)
+        {
+            var skillId = GetSkillIdByKey(keyName);
+
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            var skillConf = SkillLibrary.GetSkillConfig(skillId);
+            if (skillConf.TargetType == ETargetType.Self)
+            {
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, target: MainGameManager.Instance.gameLogicManager.playerLogicEntity);
+            }
+            else if (skillConf.TargetType != ETargetType.NoTarget)
+            {
+                EnterSkillPreviewMode(skillId);
+            }
+            else
+            {
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId);
+            }
+
+            return true;
+        }
+
+        public bool OnNavigate(Vector2 dir) => false;
+        public bool OnHotkey(string keyName)
+        {
+            if(HudMode == EHudMode.Normal)
+            {
+                return TryRouteUseSkill(keyName);
             }
             
             return false;
@@ -207,6 +249,15 @@ namespace My.UI
 
         public bool OnHoldUpdate(string holdKey)
         {
+            if(HudMode == EHudMode.Normal)
+            {
+                var skillId = GetSkillIdByKey(holdKey);
+                if(!string.IsNullOrEmpty(skillId))
+                {
+                    MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHold(skillId);
+                }
+            }
+
             return false;
         }
 
@@ -220,8 +271,18 @@ namespace My.UI
 
         public bool OnClick(int button, Vector2 mousePos)
         {
-
-            if (HudMode == EHudMode.PreviewSkill)
+            if(HudMode == EHudMode.Normal)
+            {
+                if(button == 0)
+                {
+                    TryRouteUseSkill(QuickPlayerInputBinder.EInputKey.MouseLeft.ToString());
+                }
+                else if(button == 1)
+                {
+                    TryRouteUseSkill(QuickPlayerInputBinder.EInputKey.MouseRight.ToString());
+                }
+            }
+            else if (HudMode == EHudMode.PreviewSkill)
             {
                 Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
                 wp.z = 0; // 将 z 固定到你的世界平面（例如 0）

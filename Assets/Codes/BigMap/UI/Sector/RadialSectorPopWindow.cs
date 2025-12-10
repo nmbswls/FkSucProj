@@ -56,11 +56,7 @@ namespace My.UI
             }
 
             List<RadialItem> builds = new();
-            builds.Add(
-                new RadialItem() { abilityId = "player_ziwei", interactable = true }
-                
-                );
-
+            builds.Add(new RadialItem() { abilityId = "player_ziwei", interactable = true });
             builds.Add(new RadialItem() { abilityId = "fix_clothes", interactable = true });
             
             panel.BuildMenu(builds);

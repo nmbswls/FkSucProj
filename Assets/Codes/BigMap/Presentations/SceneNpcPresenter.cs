@@ -61,15 +61,12 @@ namespace My.Map.Scene
 
         }
 
-        public bool CanInteractEnable()
+        public bool CanInteractEnable(float dist)
         {
-            if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
-            {
-                return false;
-            }
 
             if(MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
+                if (dist > 0.5f) return false;
                 if(NpcEntity.cacheCfg.InteractList.Count > 0)
                 {
                     return true;
@@ -81,8 +78,19 @@ namespace My.Map.Scene
             }
             else
             {
-                var diff = transform.position - MainGameManager.Instance.playerScenePresenter.transform.position;
-                if (diff.magnitude > 2f)
+
+                if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+                {
+                    if(NpcEntity.IsHMode)
+                    {
+
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                if (dist > 2f)
                 {
                     return false;
                 }
@@ -115,8 +123,10 @@ namespace My.Map.Scene
 
         public void TriggerInteract(int selectionId)
         {
-            if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+
+            if(selectionId == 99)
             {
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.UseSkill("h_mode_execute", target:NpcEntity);
                 return;
             }
 
@@ -124,7 +134,7 @@ namespace My.Map.Scene
             {
                 if (selectionId < NpcEntity.cacheCfg.InteractList.Count)
                 {
-                    var selection = NpcEntity.cacheCfg.InteractList[selectionId];
+                    var selection = NpcEntity.cacheCfg.InteractList[selectionId]; 
                     foreach(var output in selection.Outputs)
                     {
                         switch(output.OutputType)
@@ -183,9 +193,35 @@ namespace My.Map.Scene
         /// 2 ��
         /// </summary>
         /// <returns></returns>
-        public List<SceneInteractSelection> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             var ret = new List<SceneInteractSelection>();
+
+            if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+            {
+                if (NpcEntity.IsHMode)
+                {
+                    if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.IsSkillReady("h_mode_execute"))
+                    {
+                        ret.Add(new SceneInteractSelection()
+                        {
+                            SelectId = 99,
+                            SelectContent = "եȡ",
+                            Selectable = true
+                        }); ;
+                    }
+                    else
+                    {
+                        ret.Add(new SceneInteractSelection()
+                        {
+                            SelectId = 99,
+                            SelectContent = "եȡ(cd)",
+                            Selectable = false
+                        }); ;
+                    }
+                }
+            }
+
 
             if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {

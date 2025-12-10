@@ -19,8 +19,9 @@ namespace My.Map.Scene
 
         public GatherPointLogicEntity GatherPointEntity { get { return (GatherPointLogicEntity)_logic; } }
 
-        public bool CanInteractEnable()
+        public bool CanInteractEnable(float dist)
         {
+            if (dist > 0.5f) return false;
             return true;
         }
 
@@ -29,9 +30,10 @@ namespace My.Map.Scene
             return transform.position;
         }
 
-        public List<SceneInteractSelection> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             var ret = new List<SceneInteractSelection>();
+            if (dist > 0.5f) return ret;
 
             bool selectable;
             if(GatherPointEntity.LeftCount <= 0)

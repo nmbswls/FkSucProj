@@ -398,6 +398,27 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_PleasureAdd, ModifierValue = 20 },
                     },
                 };
+
+
+                _library["queen_mode_on"] = new BuffDefinition()
+                {
+                    BuffId = "queen_mode_on",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = 15.0f,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_KnockResistent, ModifierValue = 8000 },
+                    },
+
+                    OnDetachEffects = new()
+                    {
+                        new MapFightEffectQueueModeCfg()
+                        {
+                            InEnter = false
+                        }
+                    },
+                };
             }
 
             _library.TryGetValue(buffId, out BuffDefinition def);
@@ -1019,7 +1040,13 @@ namespace My.Map.Entity
 
                     triggerInfo.lastTriggerTime = triggerInfo.lastTriggerTime + triggerInfo.config.TriggerParam1 * 0.001f;
 
-                    HandleBuffTriggerEffect(triggerInfo);
+                    if(triggerInfo.config.OutputFightEffects != null)
+                    {
+                        foreach(var e in  triggerInfo.config.OutputFightEffects)
+                        {
+                            HandleBuffTriggerEffect(e);
+                        }
+                    }
                 }
             }
 
@@ -1052,7 +1079,13 @@ namespace My.Map.Entity
                         break;
                 }
 
-                HandleBuffTriggerEffect(t);
+                if (t.config.OutputFightEffects != null)
+                {
+                    foreach (var fightEffect in t.config.OutputFightEffects)
+                    {
+                        HandleBuffTriggerEffect(fightEffect);
+                    }
+                }
 
                 // 移除自身
                 if(t.config.RemoveOnTrigger)
@@ -1062,46 +1095,39 @@ namespace My.Map.Entity
             }
         }
         
+
         /// <summary>
         /// 处理触发效果
         /// </summary>
         /// <param name="triggerRuntime"></param>
-        protected void HandleBuffTriggerEffect(TriggerRuntimeStruct triggerRuntime)
+        protected void HandleBuffTriggerEffect(MapFightEffectCfg fightEffect)
         {
-            if (triggerRuntime.config.OutputFightEffects == null)
+            switch (fightEffect)
             {
-                return;
-            }
+                // buff触发器中 
+                case MapAbilityEffectAddResourceCfg:
+                case MapAbilityEffectCostResourceCfg:
+                case MapAbilityEffectApplyDamageCfg:
+                case MapAbilityEffectCastSkillCfg:
+                case MapFightEffectQueueModeCfg:
+                    {
+                        long srcEntity = CasterId;
 
-            foreach (var fightEffect in triggerRuntime.config.OutputFightEffects)
-            {
-                switch (fightEffect)
-                {
-                    // buff触发器中 
-                    case MapAbilityEffectAddResourceCfg:
-                    case MapAbilityEffectCostResourceCfg:
-                    case MapAbilityEffectApplyDamageCfg:
-                    case MapAbilityEffectCastSkillCfg:
+                        var srcInfo = new EffectSourceInfo()
                         {
-                            long srcEntity = CasterId;
+                            SrcType = ESourceType.BuffEffect,
+                            SrcEntityId = srcEntity,
+                            SrcBuffId = InstanceId,
+                        };
+                        var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, srcInfo);
 
-                            var srcInfo = new EffectSourceInfo()
-                            {
-                                SrcType = ESourceType.BuffEffect,
-                                SrcEntityId = srcEntity,
-                                SrcBuffId = InstanceId,
-                            };
-                            var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, srcInfo);
+                        ctx.TriggerPos = BuffOwner.Pos;
+                        ctx.TargetId = BuffOwner.Id;
 
-                            ctx.TriggerPos = BuffOwner.Pos;
-                            ctx.TargetId = BuffOwner.Id;
-
-                            Debug.Log($"HandleBuffTriggerEffect handle trigger effect {fightEffect.GetType()}");
-                            BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);
-                        }
-                        break;
-                }
-
+                        Debug.Log($"HandleBuffTriggerEffect handle trigger effect {fightEffect.GetType()}");
+                        BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);
+                    }
+                    break;
             }
         }
         
@@ -1141,8 +1167,22 @@ namespace My.Map.Entity
             }
         }
 
+
+
+        /// <summary>
+        /// buff移除
+        /// </summary>
         public void OnBuffRemove()
         {
+
+            if(Def.OnDetachEffects != null)
+            {
+                foreach(var fightEffect in  Def.OnDetachEffects)
+                {
+                    HandleBuffTriggerEffect(fightEffect);
+                }
+            }
+
             if (registeredModifiers != null)
             {
                 foreach (var mod in registeredModifiers)

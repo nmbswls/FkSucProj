@@ -18,24 +18,23 @@ namespace My
 
         public List<ISceneInteractable> bindingSceneInteractables = new();
 
-        public bool CanInteractEnable()
+        public bool CanInteractEnable(float dist)
         {
             return false;
         }
 
         public void TriggerInteract(int selectionId)
         {
-            throw new System.NotImplementedException();
         }
 
         public Vector3 GetHintAnchorPosition()
         {
-            throw new System.NotImplementedException();
+            return transform.position;
         }
 
-        public List<SceneInteractSelection> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
-            throw new System.NotImplementedException();
+            return new();
         }
     }
 }

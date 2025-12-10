@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using My.Map.Scene;
 using My.UI;
 using TMPro;
 using Unity.Burst.CompilerServices;
@@ -10,7 +11,7 @@ namespace My.UI
 {
     public class SceneInteractUIHinter : MonoBehaviour
     {
-        public ISceneInteractable BindInteractPoint;
+        public ISceneInteractable sceneInteract;
 
         public bool IsExpanded = false;
 
@@ -26,12 +27,12 @@ namespace My.UI
         // Update is called once per frame
         private void LateUpdate()
         {
-            if (BindInteractPoint == null)
+            if (sceneInteract == null)
             {
                 return;
             }
 
-            if (BindInteractPoint.CanInteractEnable())
+            if (sceneInteract is LootPointPresenter)
             {
                 ShowRoot.gameObject.SetActive(true);
             }
@@ -42,7 +43,7 @@ namespace My.UI
 
             if(ShowRoot.gameObject.activeSelf)
             {
-                var hintPos = BindInteractPoint.GetHintAnchorPosition();
+                var hintPos = sceneInteract.GetHintAnchorPosition();
                 Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
 
                 // 如果是 Screen Space - Camera 或 World Space，用 RectTransformUtility：
@@ -59,14 +60,14 @@ namespace My.UI
 
         public void InitBind(ISceneInteractable sceneInteract)
         {
-            this.BindInteractPoint = sceneInteract;
+            this.sceneInteract = sceneInteract;
             //this.BindInteractPoint.EventOnInteractStateChanged += OnExpandStateChanged;
         }
 
         public void Clear()
         {
             //BindInteractPoint.EventOnInteractStateChanged -= OnExpandStateChanged;
-            BindInteractPoint = null;
+            sceneInteract = null;
 
             OnExpandStateChanged(false);
         }

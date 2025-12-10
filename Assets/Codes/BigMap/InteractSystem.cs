@@ -11,12 +11,12 @@ public interface ISceneInteractable
 
     string ShowName { get; }
 
-    bool CanInteractEnable();
+    bool CanInteractEnable(float dist);
     void TriggerInteract(int selectionId);
 
     Vector3 GetHintAnchorPosition();
 
-    List<SceneInteractSelection> GetInteractSelections();
+    List<SceneInteractSelection> GetInteractSelections(float dist);
 }
 
 public class SceneInteractSelection
@@ -29,7 +29,7 @@ public class SceneInteractSelection
 public class SceneInteractSystem
 {
 
-    private float _checkRadius = 0.4f;
+    private float _checkRadius = 3f;
 
     private float _interactTimer = 0f;
 
@@ -43,10 +43,10 @@ public class SceneInteractSystem
     private struct ResultItem
     {
         public ISceneInteractable interactable;
-        public float distanceSqr;
+        public float distance;
     }
     private readonly List<ResultItem> candidates = new List<ResultItem>(64);
-    public List<ISceneInteractable> currInteractPoints = new();
+    public List<(ISceneInteractable, float)> currInteractPoints = new();
     //public ISceneInteractable? currnteractObj;
 
     public void Tick(float dt)
@@ -66,7 +66,7 @@ public class SceneInteractSystem
         {
             for(int i=0;i<currInteractPoints.Count;i++)
             {
-                if (currInteractPoints[i] != candidates[i].interactable)
+                if (currInteractPoints[i].Item1 != candidates[i].interactable)
                 {
                     allSame = false;
                 }
@@ -84,7 +84,7 @@ public class SceneInteractSystem
         currInteractPoints.Clear();
         foreach(var one in candidates)
         {
-            currInteractPoints.Add(one.interactable);
+            currInteractPoints.Add((one.interactable, one.distance));
         }
 
         SceneInteractMenuPanel.Instance?.RefreshInteractObjs(currInteractPoints); 
@@ -116,25 +116,25 @@ public class SceneInteractSystem
             var interactable = col.GetComponentInParent<ISceneInteractable>();
             if (interactable == null) continue;
 
-            if(!interactable.CanInteractEnable())
+            // 计算距离（以角色位置 center 为基准）
+            // 距离点可以用碰撞体最近点，能更准确反映“与角色的最短距离”
+            Vector2 nearest = col.ClosestPoint(center);
+            float dist = (nearest - center).sqrMagnitude;
+
+            if (!interactable.CanInteractEnable(dist))
             {
                 continue;
             }
 
-            // 计算距离（以角色位置 center 为基准）
-            // 距离点可以用碰撞体最近点，能更准确反映“与角色的最短距离”
-            Vector2 nearest = col.ClosestPoint(center);
-            float distSqr = (nearest - center).sqrMagnitude;
-
             candidates.Add(new ResultItem
             {
                 interactable = interactable,
-                distanceSqr = distSqr
+                distance = dist
             });
         }
 
         // 根据距离从近到远排序
-        candidates.Sort((a, b) => a.distanceSqr.CompareTo(b.distanceSqr));
+        candidates.Sort((a, b) => a.distance.CompareTo(b.distance));
     }
     
 }

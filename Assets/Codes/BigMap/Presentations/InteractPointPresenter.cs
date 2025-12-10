@@ -35,9 +35,10 @@ namespace My.Map.Scene
             RealLogic.TryTriggerInteract(selectionId);
         }
 
-        public List<SceneInteractSelection> GetInteractSelections()
+        public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             var ret = new List<SceneInteractSelection>();
+            if (dist > 0.5f) return ret;
 
             var logicInts = RealLogic.InteractInfos;
 
@@ -56,8 +57,11 @@ namespace My.Map.Scene
             return ret;
         }
 
-        public bool CanInteractEnable()
+        public bool CanInteractEnable(float dist)
         {
+
+            if (dist > 0.5f) return false;
+
             int enableOne = 0;
             var logicInts = RealLogic.InteractInfos;
 

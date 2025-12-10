@@ -15,6 +15,8 @@ namespace My.Map.Entity
         public const string PlayerGcThreshold = "PlayerGcThreshold";
         public const string Basic_JianShang = "Basic_JianShang";
 
+        public const string Basic_KnockResistent = "Basic_KnockResistent";
+
         public const string Basic_PleasureAdd = "Basic_PleasureAdd";
         public const string Basic_HungerCost = "Basic_HungerCost";
 
