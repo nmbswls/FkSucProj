@@ -113,7 +113,7 @@ namespace My.UI
 
         public virtual bool OnNavigate(Vector2 dir)
         {
-            return true;
+            return false;
         }
 
         public virtual bool OnScroll(float deltaY)

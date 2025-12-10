@@ -1,3 +1,4 @@
+using Config;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
@@ -230,7 +231,8 @@ namespace My.Map.Scene
             {
                 if(!AttachViewDict.TryGetValue(attach.Id, out var showObj))
                 {
-                    var prefab = Resources.Load<GameObject>("Prefab/Attach/attach_unit_01");
+                    var cfg = MapPlayerAttachObjCfgLoader.Get(attach.AttachId);
+                    var prefab = Resources.Load<GameObject>($"Prefab/Attach/{attach.AttachId}");
                     var go = GameObject.Instantiate(prefab, AttachmentRoot);
                     go.SetActive(true);
                     go.transform.localPosition = Vector3.zero;

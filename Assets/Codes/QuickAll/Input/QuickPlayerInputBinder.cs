@@ -169,10 +169,13 @@ namespace My.Input
             actions.OverworldMap.RightClickHold.started += OnRightHoldStart;
             actions.OverworldMap.RightClickHold.canceled += OnRightHoldEnd;
 
-            actions.OverworldMap.Tab.started += OnHotKeyTab;
+            actions.OverworldMap.Tab.performed += OnHotKeyTab;
             actions.OverworldMap.TabHold.started += OnTabHoldStart;
             actions.OverworldMap.TabHold.canceled += OnTabHoldEnd;
 
+            actions.OverworldMap.Q.performed += OnHotKeyQ;
+            actions.OverworldMap.E.performed += OnHotKeyE;
+            actions.OverworldMap.R.performed += OnHotKeyR;
 
             actions.OverworldMap.PointerPos.performed += OnPointerMove;
         }
@@ -205,6 +208,10 @@ namespace My.Input
             actions.OverworldMap.Tab.started -= OnHotKeyTab;
             actions.OverworldMap.TabHold.started -= OnTabHoldStart;
             actions.OverworldMap.TabHold.canceled -= OnTabHoldEnd;
+
+            actions.OverworldMap.Q.performed -= OnHotKeyQ;
+            actions.OverworldMap.E.performed -= OnHotKeyE;
+            actions.OverworldMap.R.performed -= OnHotKeyR;
 
             actions.OverworldMap.Disable();
             actions.BattleMap.Disable();
@@ -363,9 +370,8 @@ namespace My.Input
         public void OnHotKeySpace(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Space.ToString());
         public void OnHotKeyTab(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Tab.ToString());
 
-        public void OnTabHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(ctx, EInputKey.Space.ToString());
-
-        public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(ctx, EInputKey.Space.ToString()); 
+        public void OnTabHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(ctx, EInputKey.Tab.ToString());
+        public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(ctx, EInputKey.Tab.ToString()); 
 
 
         public void OnKeyPress(InputAction.CallbackContext ctx, string keyName)
@@ -442,6 +448,11 @@ namespace My.Input
                     MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", dir + MainGameManager.Instance.playerScenePresenter.PlayerEntity.Pos);
                 }
             }
+            else if(keyName == EInputKey.Tab.ToString())
+            {
+                MapPlayerRadialMenu.ShowMenu();
+            }
+
         }
 
 

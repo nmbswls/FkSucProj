@@ -595,8 +595,8 @@ namespace My.Map
             obj.Id = id;
             obj.AttachId = attachId;
             obj.SrcEntityId = srcEntityId;
-
-            obj.LeftHp = 3;
+            obj.AttachDuration = cfg.AutoDropTime;
+            obj.LeftHp = cfg.HitCount;
 
             AtttachingObjList.Add(obj);
 
@@ -626,7 +626,7 @@ namespace My.Map
                     }
                 }
 
-                obj.AttachDuration -= dt;
+                obj.leftDuration -= dt;
             }
 
             bool changed = false;

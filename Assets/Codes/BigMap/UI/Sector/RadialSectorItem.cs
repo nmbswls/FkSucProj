@@ -23,7 +23,7 @@ namespace My.UI
             AbilityId = abId;
             if (sectorBg != null)
             {
-                sectorBg.fillAmount = fillAmount - 0.02f; // Ìî³ä=ÉÈÇø½Ç¶È/360
+                sectorBg.fillAmount = fillAmount - 2 * 1.0f / 360f; // Ìî³ä=ÉÈÇø½Ç¶È/360
                 sectorBg.color = normal;
             }
             //if (icon != null) icon.sprite = iconSprite;

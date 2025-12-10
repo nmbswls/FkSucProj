@@ -140,6 +140,33 @@
                     "processors": "",
                     "interactions": "Hold",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Q",
+                    "type": "Button",
+                    "id": "5ca89802-312f-47fc-bc69-dc3edf75ea6c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "E",
+                    "type": "Button",
+                    "id": "a965de26-1703-4cd8-ae0c-a6797f571f0f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "R",
+                    "type": "Button",
+                    "id": "aa53342c-b5a6-442d-bdb2-6f7a679f25de",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -349,6 +376,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "TabHold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cdf2cc66-e36e-4535-bcfe-6f4186dccf01",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Q",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a4421444-f291-4eb6-bdc1-cc23eb67f97a",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "E",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ddf7a873-8224-4905-adea-0f01a625ad5d",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "R",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

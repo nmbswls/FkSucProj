@@ -700,7 +700,7 @@ namespace My.Map.Entity
             }
 
             baseUnit.ConvertToAttachment();
-            playerEntity.AddAttachingObjInfo("attach_01", baseUnit.Id);
+            playerEntity.AddAttachingObjInfo(realCfg.AttachId, baseUnit.Id);
         }
     }
 

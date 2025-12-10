@@ -226,6 +226,33 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Q"",
+                    ""type"": ""Button"",
+                    ""id"": ""5ca89802-312f-47fc-bc69-dc3edf75ea6c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""E"",
+                    ""type"": ""Button"",
+                    ""id"": ""a965de26-1703-4cd8-ae0c-a6797f571f0f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""R"",
+                    ""type"": ""Button"",
+                    ""id"": ""aa53342c-b5a6-442d-bdb2-6f7a679f25de"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -437,6 +464,39 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""action"": ""TabHold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cdf2cc66-e36e-4535-bcfe-6f4186dccf01"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Q"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a4421444-f291-4eb6-bdc1-cc23eb67f97a"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""E"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ddf7a873-8224-4905-adea-0f01a625ad5d"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""R"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -516,6 +576,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_RightClickHold = m_OverworldMap.FindAction("RightClickHold", throwIfNotFound: true);
         m_OverworldMap_Tab = m_OverworldMap.FindAction("Tab", throwIfNotFound: true);
         m_OverworldMap_TabHold = m_OverworldMap.FindAction("TabHold", throwIfNotFound: true);
+        m_OverworldMap_Q = m_OverworldMap.FindAction("Q", throwIfNotFound: true);
+        m_OverworldMap_E = m_OverworldMap.FindAction("E", throwIfNotFound: true);
+        m_OverworldMap_R = m_OverworldMap.FindAction("R", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -619,6 +682,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_RightClickHold;
     private readonly InputAction m_OverworldMap_Tab;
     private readonly InputAction m_OverworldMap_TabHold;
+    private readonly InputAction m_OverworldMap_Q;
+    private readonly InputAction m_OverworldMap_E;
+    private readonly InputAction m_OverworldMap_R;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -691,6 +757,18 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @TabHold => m_Wrapper.m_OverworldMap_TabHold;
         /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/Q".
+        /// </summary>
+        public InputAction @Q => m_Wrapper.m_OverworldMap_Q;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/E".
+        /// </summary>
+        public InputAction @E => m_Wrapper.m_OverworldMap_E;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/R".
+        /// </summary>
+        public InputAction @R => m_Wrapper.m_OverworldMap_R;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_OverworldMap; }
@@ -761,6 +839,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @TabHold.started += instance.OnTabHold;
             @TabHold.performed += instance.OnTabHold;
             @TabHold.canceled += instance.OnTabHold;
+            @Q.started += instance.OnQ;
+            @Q.performed += instance.OnQ;
+            @Q.canceled += instance.OnQ;
+            @E.started += instance.OnE;
+            @E.performed += instance.OnE;
+            @E.canceled += instance.OnE;
+            @R.started += instance.OnR;
+            @R.performed += instance.OnR;
+            @R.canceled += instance.OnR;
         }
 
         /// <summary>
@@ -817,6 +904,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @TabHold.started -= instance.OnTabHold;
             @TabHold.performed -= instance.OnTabHold;
             @TabHold.canceled -= instance.OnTabHold;
+            @Q.started -= instance.OnQ;
+            @Q.performed -= instance.OnQ;
+            @Q.canceled -= instance.OnQ;
+            @E.started -= instance.OnE;
+            @E.performed -= instance.OnE;
+            @E.canceled -= instance.OnE;
+            @R.started -= instance.OnR;
+            @R.performed -= instance.OnR;
+            @R.canceled -= instance.OnR;
         }
 
         /// <summary>
@@ -1154,6 +1250,27 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTabHold(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Q" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQ(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "E" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnE(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "R" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnR(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

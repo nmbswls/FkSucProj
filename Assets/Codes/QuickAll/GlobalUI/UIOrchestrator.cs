@@ -159,7 +159,15 @@ namespace My.UI
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
-            
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "MapPlayerRadialMenu",
+                resourcePath = "UI/Prefabs/MapPlayerRadialMenu",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
         }
 
         public static void RegisterGroups()

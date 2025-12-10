@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using My.Map;
 using My.Input;
+using TMPro;
 
 namespace My.UI
 {
@@ -26,6 +27,8 @@ namespace My.UI
         public RectTransform sectorContainer;
         public RadialSectorItem sectorPrefab;
 
+        public TextMeshProUGUI chosenAbilityLabel;
+
         [Header("Appearance")]
         public float radius = 180f;
         public float innerRadius = 60f; // 内圈死区，避免误触中心
@@ -41,6 +44,8 @@ namespace My.UI
         private Camera uiCam; // 若 Canvas 是 ScreenSpace-Overlay，可为 null
 
         private float LastHoldUpdateTime;
+
+        private List<RadialItem> builds = new();
 
         public static void ShowMenu()
         {
@@ -69,6 +74,7 @@ namespace My.UI
         {
             Clear();
 
+            builds.AddRange(items);
             float count = SectorCount;
             float step = 360f / count;
             float fillAmount = step / 360f;
@@ -90,17 +96,17 @@ namespace My.UI
                 }
 
                 // 设置旋转/摆放
-                float startAngle = -90f - step / 2f + i * step; // 从正上方开始
-                float endAngle = startAngle + step;
+                float startAngle = 0 - i * step; // 从正上方开始
+                //float endAngle = startAngle + step;
                 //inst.startAngle = Mathf.Repeat(startAngle, 360f);
                 //inst.endAngle = Mathf.Repeat(endAngle, 360f);
 
-                inst.SectRoot.localRotation = Quaternion.Euler(0, 0, startAngle + step / 2f);
-
+                inst.SectRoot.localRotation = Quaternion.Euler(0, 0, startAngle + step / 2f - 1);
+                inst.label.text = i.ToString();
                 // 图标位置在圆环中线
                 if (inst.InfoRoot != null)
                 {
-                    float midAngleRad = Mathf.Deg2Rad * (startAngle + step / 2f);
+                    float midAngleRad = Mathf.Deg2Rad * (startAngle + 90);
                     Vector2 dir = new Vector2(Mathf.Cos(midAngleRad), Mathf.Sin(midAngleRad));
                     inst.InfoRoot.anchoredPosition = dir * ((radius + innerRadius) * 0.5f);
                 }
@@ -143,7 +149,8 @@ namespace My.UI
         {
             base.Show();
 
-            SetOpen(false, instant: true);
+            SetOpen(true, instant: true);
+            LastHoldUpdateTime = LogicTime.time;
         }
 
         public override void Hide()
@@ -156,7 +163,7 @@ namespace My.UI
         private void HandleClose()
         {
             // 超时未更新 关闭
-            if(LogicTime.time - LastHoldUpdateTime > 0.2f)
+            if(LogicTime.time - LastHoldUpdateTime > 1f)
             {
                 OnReleaseToConfirm();
             }
@@ -186,11 +193,25 @@ namespace My.UI
                 return;
             }
 
+            float count = SectorCount;
+            float step = 360f / count;
             float angle = Mathf.Atan2(local.y, local.x) * Mathf.Rad2Deg;
+
+            float startAngle = -90f - step / 2f;
+
             // 将右方0度转换为上方0度（-90），并映射到0-360
-            angle = Mathf.Repeat(angle - 90f, 360f);
-            int idx = AngleToIndex(angle);
+            //angle = Mathf.Repeat(angle - 90f, 360f);
+            int idx = AngleToIndex(-angle + 90);
             Highlight(idx);
+
+            if(idx < builds.Count)
+            {
+                chosenAbilityLabel.text = builds[idx].abilityId;
+            }
+            else
+            {
+                chosenAbilityLabel.text = "无";
+            }
         }
 
         private int AngleToIndex(float angle)
@@ -239,8 +260,14 @@ namespace My.UI
                 if (s) Destroy(s.gameObject);
             sectors.Clear();
             currentIndex = -1;
+
+            builds.Clear();
         }
 
+        public override bool OnNavigate(Vector2 dir)
+        {
+            return false;
+        }
 
         public override bool OnHoldUpdate(string holdKey)
         {

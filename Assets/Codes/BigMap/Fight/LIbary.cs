@@ -2038,7 +2038,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "1.5"
+                    RawVal = "1.0"
                 },
             });
 
