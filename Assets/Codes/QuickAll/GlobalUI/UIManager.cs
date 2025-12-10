@@ -122,16 +122,18 @@ namespace My.UI
             handlers.Clear();
         }
 
-        
 
+        private List<IPanel> _tickCacheList = new();
         //  ‰»Î√∞≈›∑÷∑¢
         private bool TryConsumeByLayers(Func<IInputConsumer, bool> call)
         {
             for (int layer = (int)UILayer.System; layer >= (int)UILayer.HUD; layer--)
             {
                 if (!layerPanels.TryGetValue(layer, out var list) || list.Count == 0) continue;
-                list.Sort((a, b) => GetPriority(b).CompareTo(GetPriority(a)));
-                foreach (var p in list)
+                _tickCacheList.Clear();
+                _tickCacheList.AddRange(list);
+                _tickCacheList.Sort((a, b) => GetPriority(b).CompareTo(GetPriority(a)));
+                foreach (var p in _tickCacheList)
                 {
                     if (!p.IsVisible) continue;
                     if (p is IFocusable f && !f.CanFocus) continue;
@@ -296,21 +298,27 @@ namespace My.UI
             return false;
         }
 
-        public bool DispatchHotkey(int index) 
+        public bool DispatchHotkey(string keyName) 
         { 
-            if (TryConsumeByLayers(c => c.OnHotkey(index))) return true;
-            return false;
-        }
-
-        public bool DispatchSpace()
-        {
-            if (TryConsumeByLayers(c => c.OnSpace())) return true;
+            if (TryConsumeByLayers(c => c.OnHotkey(keyName))) return true;
             return false;
         }
 
         public bool DispatchClick(int button, Vector2 mousePos)
         {
             if (TryConsumeByLayers(c => c.OnClick(button, mousePos))) return true;
+            return false;
+        }
+
+        public bool DispatchHoldingUpdate(string holdingKey)
+        {
+            if (TryConsumeByLayers(c => c.OnHoldUpdate(holdingKey))) return true;
+            return false;
+        }
+
+        public bool DispatchHoldingEnd(string holdingKey)
+        {
+            if (TryConsumeByLayers(c => c.OnHoldingEnd(holdingKey))) return true;
             return false;
         }
     }

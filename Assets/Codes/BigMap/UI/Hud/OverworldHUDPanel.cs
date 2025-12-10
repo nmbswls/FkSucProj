@@ -1,5 +1,6 @@
 
 using Config.Unit;
+using My.Input;
 using My.Map.Entity;
 using TMPro;
 using UnityEngine;
@@ -154,25 +155,25 @@ namespace My.UI
 
 
         public bool OnNavigate(Vector2 dir) => false;
-        public bool OnHotkey(int index)
+        public bool OnHotkey(string keyName)
         {
             if(HudMode == EHudMode.Normal)
             {
                 string skillId = string.Empty;
 
-                if (index == 1)
+                if (keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
                 {
                     skillId = "crazy_fire";
                 }
-                else if (index == 2)
+                else if (keyName == QuickPlayerInputBinder.EInputKey.Num2.ToString())
                 {
                     skillId = "spawn_attract";
                 }
-                else if (index == 3)
+                else if (keyName == QuickPlayerInputBinder.EInputKey.Num3.ToString())
                 {
                     skillId = "queen_counter";
                 }
-                else if(index == 4)
+                else if(keyName == QuickPlayerInputBinder.EInputKey.Num4.ToString())
                 {
                     skillId = "queen_pull_all";
                 }
@@ -202,6 +203,20 @@ namespace My.UI
         {
             return false;
         }
+
+
+        public bool OnHoldUpdate(string holdKey)
+        {
+            return false;
+        }
+
+
+        public bool OnHoldingEnd(string holdKey)
+        {
+            return false;
+        }
+
+
 
         public bool OnClick(int button, Vector2 mousePos)
         {
@@ -260,13 +275,6 @@ namespace My.UI
             bottomProgressPanel.TryCancelProgressComplete(showId);
         }
 
-        public bool OnSpace()
-        {
-            return false;
-        }
-
-
-        
 
         #endregion
 
@@ -325,9 +333,6 @@ namespace My.UI
 
         protected void EnterBuildMode()
         {
-
-
-
             UpdateHudMode(EHudMode.Build);
             
         }

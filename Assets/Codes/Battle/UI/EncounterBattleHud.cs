@@ -36,7 +36,22 @@ namespace My.UI
             return false;
         }
 
-        public bool OnHotkey(int index)
+        public bool OnHoldingEnd(string holdKey)
+        {
+            return false;
+        }
+
+        public bool OnHoldUpdate(int holdKey)
+        {
+            return false;
+        }
+
+        public bool OnHoldUpdate(string holdKey)
+        {
+            return false;
+        }
+
+        public bool OnHotkey(string keyName)
         {
             return false;
         }
@@ -47,11 +62,6 @@ namespace My.UI
         }
 
         public bool OnScroll(float deltaY)
-        {
-            return false;
-        }
-
-        public bool OnSpace()
         {
             return false;
         }

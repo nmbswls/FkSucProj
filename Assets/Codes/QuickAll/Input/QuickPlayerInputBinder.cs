@@ -20,11 +20,12 @@ namespace My.Input
         bool DispatchNavigate(Vector2 dir);
         bool DispatchScroll(float deltaY);
 
-        bool DispatchHotkey(int index);
-
-        bool DispatchSpace();
+        bool DispatchHotkey(string keyName);
 
         bool DispatchClick(int button, Vector2 mousePos);
+
+        bool DispatchHoldingUpdate(string holdingKey);
+        bool DispatchHoldingEnd(string holdingKey);
     }
 
     //public interface ISceneRouter
@@ -52,7 +53,34 @@ namespace My.Input
 
         public Vector2 LastPos;
 
-        private bool IsRightMouseHolding;
+        public enum EInputKey
+        {
+            MouseRight,
+            Tab,
+            Space,
+
+            Q,
+            E,
+            R,
+
+            Num1,
+            Num2,
+            Num3,
+            Num4,
+            Num5,
+
+            Num6,
+            Num7,
+            Num8,
+            Num9,
+            Num10,
+        }
+
+        //public static string MouseRight = "MouseRight";
+        //public static string Tab = "Tab";
+
+
+        private Dictionary<string, bool> keyHoldingStatus = new();
 
         public bool GlobalLock { get; set; }
 
@@ -69,6 +97,9 @@ namespace My.Input
         private void Start()
         {
             uiRouter = UIManager.Instance;
+
+            keyHoldingStatus[EInputKey.MouseRight.ToString()] = false;
+            keyHoldingStatus[EInputKey.Tab.ToString()] = false;
         }
 
         private void Update()
@@ -78,9 +109,12 @@ namespace My.Input
                 UIOrchestrator.Instance.EnsurePlayerBag();
             }
 
-            if(IsRightMouseHolding)
+            foreach(var kv in keyHoldingStatus)
             {
-                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHold("player_normal_defend");
+                if(kv.Value)
+                {
+                    OnKeyHoldingUpdate(kv.Key);
+                }
             }
         }
 
@@ -116,7 +150,7 @@ namespace My.Input
             actions.OverworldMap.Move.performed += OnMove;
             actions.OverworldMap.Move.canceled += OnMove;
 
-            actions.OverworldMap.Space.performed += OnSpace;
+            actions.OverworldMap.Space.performed += OnHotKeySpace;
 
             actions.OverworldMap.Confirm.performed += OnConfirm;
             actions.OverworldMap.Cancel.performed += OnCancel;
@@ -135,6 +169,11 @@ namespace My.Input
             actions.OverworldMap.RightClickHold.started += OnRightHoldStart;
             actions.OverworldMap.RightClickHold.canceled += OnRightHoldEnd;
 
+            actions.OverworldMap.Tab.started += OnHotKeyTab;
+            actions.OverworldMap.TabHold.started += OnTabHoldStart;
+            actions.OverworldMap.TabHold.canceled += OnTabHoldEnd;
+
+
             actions.OverworldMap.PointerPos.performed += OnPointerMove;
         }
 
@@ -143,7 +182,7 @@ namespace My.Input
             actions.OverworldMap.Move.performed -= OnMove;
             actions.OverworldMap.Move.canceled -= OnMove;
 
-            actions.OverworldMap.Space.performed -= OnSpace;
+            actions.OverworldMap.Space.performed -= OnHotKeySpace;
 
 
             actions.OverworldMap.Confirm.performed -= OnConfirm;
@@ -163,6 +202,10 @@ namespace My.Input
 
             actions.OverworldMap.PointerPos.performed -= OnPointerMove;
 
+            actions.OverworldMap.Tab.started -= OnHotKeyTab;
+            actions.OverworldMap.TabHold.started -= OnTabHoldStart;
+            actions.OverworldMap.TabHold.canceled -= OnTabHoldEnd;
+
             actions.OverworldMap.Disable();
             actions.BattleMap.Disable();
             actions.UIMenuMap.Disable();
@@ -178,7 +221,7 @@ namespace My.Input
             var delta = ctx.ReadValue<Vector2>().y; // 鼠标滚轮
             if (uiRouter == null || !uiRouter.DispatchScroll(delta))
             {
-                OnMouseScroll(delta);
+                OnSceneMouseScroll(delta);
             }
         }
 
@@ -218,20 +261,12 @@ namespace My.Input
 
         void OnRightHoldStart(InputAction.CallbackContext ctx)
         {
-            //if (GlobalLock)
-            //{
-            //    return;
-            //}
-
-            //if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            //    return;
-            IsRightMouseHolding = true;
-            //OnSceneRightHoldStart();
+            keyHoldingStatus[EInputKey.MouseRight.ToString()] = true; 
         }
 
         void OnRightHoldEnd(InputAction.CallbackContext ctx)
         {
-            IsRightMouseHolding = false;
+            keyHoldingStatus[EInputKey.MouseRight.ToString()] = false;
 
             if (GlobalLock)
             {
@@ -241,8 +276,10 @@ namespace My.Input
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            OnSceneRightHoldEnd();
+            OnSceneHoldEnd(EInputKey.MouseRight.ToString());
         }
+
+
 
         public void OnPointerMove(InputAction.CallbackContext ctx)
         {
@@ -292,66 +329,7 @@ namespace My.Input
             }
         }
 
-        public void OnHotKey1(InputAction.CallbackContext ctx)
-        {
-            if (GlobalLock)
-            {
-                return;
-            }
 
-            if (ctx.performed)
-            {
-                if (uiRouter == null || !uiRouter.DispatchHotkey(1))
-                {
-
-                }
-            }
-        }
-
-        public void OnHotKey2(InputAction.CallbackContext ctx)
-        {
-            if (GlobalLock)
-            {
-                return;
-            }
-
-            if (ctx.performed)
-            {
-                if (uiRouter == null || !uiRouter.DispatchHotkey(2))
-                {
-                }
-            }
-        }
-
-        public void OnHotKey3(InputAction.CallbackContext ctx)
-        {
-            if (GlobalLock)
-            {
-                return;
-            }
-
-            if (ctx.performed)
-            {
-                if (uiRouter == null || !uiRouter.DispatchHotkey(3))
-                {
-                }
-            }
-        }
-
-        public void OnHotKey4(InputAction.CallbackContext ctx)
-        {
-            if (GlobalLock)
-            {
-                return;
-            }
-
-            if (ctx.performed)
-            {
-                if (uiRouter == null || !uiRouter.DispatchHotkey(4))
-                {
-                }
-            }
-        }
 
         public void OnCancel(InputAction.CallbackContext ctx)
         {
@@ -370,18 +348,115 @@ namespace My.Input
             }
         }
 
+
+
+        public void OnHotKey1(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Num1.ToString());
+        public void OnHotKey2(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Num2.ToString());
+        public void OnHotKey3(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Num3.ToString());
+        public void OnHotKey4(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Num4.ToString());
+        public void OnHotKey5(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Num5.ToString());
+
+        public void OnHotKeyQ(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Q.ToString());
+        public void OnHotKeyE(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.E.ToString());
+        public void OnHotKeyR(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.R.ToString());
+
+        public void OnHotKeySpace(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Space.ToString());
+        public void OnHotKeyTab(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Tab.ToString());
+
+        public void OnTabHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(ctx, EInputKey.Space.ToString());
+
+        public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(ctx, EInputKey.Space.ToString()); 
+
+
+        public void OnKeyPress(InputAction.CallbackContext ctx, string keyName)
+        {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+            if (ctx.performed)
+            {
+                if (uiRouter == null || !uiRouter.DispatchHotkey(keyName))
+                {
+                    OnSceneKeyPress(keyName);
+                }
+            }
+        }
+
+        private void OnKeyHoldingUpdate(string holdKey)
+        {
+            if (GlobalLock)
+            {
+                return;
+            }
+
+            if (uiRouter == null || !uiRouter.DispatchHoldingUpdate(holdKey))
+            {
+                OnSceneHolding(holdKey);
+            }
+        }
+
+        void OnKeyHoldStart(InputAction.CallbackContext ctx, string keyName)
+        {
+            keyHoldingStatus[keyName] = true;
+        }
+
+        void OnKeyHoldEnd(InputAction.CallbackContext ctx, string keyName)
+        {
+            keyHoldingStatus[keyName] = false;
+
+            if (GlobalLock)
+            {
+                return;
+            }
+
+            if (uiRouter == null || !uiRouter.DispatchHoldingEnd(keyName))
+            {
+                // 监听scene里的结束
+                OnSceneHoldEnd(keyName);
+            }
+        }
+
+
+        
+
+        #region scene ops
+
+        private void OnSceneKeyPress(string keyName)
+        {
+            if(keyName == EInputKey.Space.ToString())
+            {
+                if (MainGameManager.Instance.playerScenePresenter != null)
+                {
+                    Vector2 dir = Vector2.one;
+                    if (MainGameManager.Instance.playerScenePresenter.freeMoveDir.magnitude < 0.01f)
+                    {
+                        dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FaceDir;
+                    }
+                    else
+                    {
+                        dir = MainGameManager.Instance.playerScenePresenter.freeMoveDir;
+                    }
+
+                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", dir + MainGameManager.Instance.playerScenePresenter.PlayerEntity.Pos);
+                }
+            }
+        }
+
+
         public void DoPlayerMove(Vector2 dir)
         {
-            if(MainGameManager.Instance.playerScenePresenter != null)
+            if (MainGameManager.Instance.playerScenePresenter != null)
             {
                 MainGameManager.Instance.playerScenePresenter.freeMoveDir = dir;
                 MainGameManager.Instance.playerScenePresenter.freeMoveDir = Vector2.ClampMagnitude(dir, 1f);
 
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.entityMotorComp.FreeMoveInput = Vector2.ClampMagnitude(dir, 1f);
             }
-            
-        
-        
+
+
+
         }
 
 
@@ -395,7 +470,7 @@ namespace My.Input
 
             if (!LogicTime.paused && !player.PlayerEntity.CheckHasState(AttrIdConsts.LockFace))
             {
-                
+
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
 
@@ -427,8 +502,8 @@ namespace My.Input
                 {
                     skillName = "default_push";
                 }
-                
-                player.PlayerEntity.ablilityManager.UseSkill(skillName, null, target:null);
+
+                player.PlayerEntity.ablilityManager.UseSkill(skillName, null, target: null);
             }
         }
 
@@ -445,52 +520,43 @@ namespace My.Input
             }
         }
 
+
+
         
-        public void OnSceneRightHoldEnd()
-        {
-            if (!LogicTime.paused)
-            {
-                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-                //player.abilityController.CheckSkillCanceled("queen_shoot", castDir.normalized + player.PlayerEntity.Pos);
-                player.ablilityManager.CheckSkillCanceled("player_normal_defend");
-            }
-        }
 
-        public void OnMouseScroll(float deltaY)
+        #endregion
+
+
+
+
+        public void OnSceneMouseScroll(float deltaY)
         {
 
         }
 
 
-        public void OnSpace(InputAction.CallbackContext ctx)
+        private void OnSceneHolding(string key)
         {
-            if (GlobalLock)
+            if(key == EInputKey.MouseRight.ToString())
             {
-                return;
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHold("player_normal_defend");
             }
+        }
 
+        public void OnSceneHoldEnd(string keyName)
+        {
 
-            if (ctx.performed)
+            if(keyName == EInputKey.MouseRight.ToString())
             {
-                if (uiRouter == null || !uiRouter.DispatchSpace())
+                if (!LogicTime.paused)
                 {
-                    if (MainGameManager.Instance.playerScenePresenter != null)
-                    {
-                        Vector2 dir = Vector2.one;
-                        if (MainGameManager.Instance.playerScenePresenter.freeMoveDir.magnitude < 0.01f)
-                        {
-                            dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FaceDir;
-                        }
-                        else
-                        {
-                            dir = MainGameManager.Instance.playerScenePresenter.freeMoveDir;
-                        }
-
-                        MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", dir + MainGameManager.Instance.playerScenePresenter.PlayerEntity.Pos);
-                    }
+                    var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                    //player.abilityController.CheckSkillCanceled("queen_shoot", castDir.normalized + player.PlayerEntity.Pos);
+                    player.ablilityManager.CheckSkillCanceled("player_normal_defend");
                 }
             }
         }
+
 
         public void DoPauseMenu()
         {

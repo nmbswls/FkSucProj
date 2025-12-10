@@ -10,7 +10,7 @@ using UnityEngine.UI;
 namespace My.UI
 { 
 
-    public class ItemCountChooseBox : PanelBase, IInputConsumer
+    public class ItemCountChooseBox : PanelWithInput
     {
 
 
@@ -189,40 +189,6 @@ namespace My.UI
 
             Hide();
         }
-
-        public bool OnConfirm()
-        {
-            return true;
-        }
-
-        public bool OnCancel()
-        {
-            return true;
-        }
-
-        public bool OnNavigate(Vector2 dir)
-        {
-            return true;
-        }
-
-        public bool OnHotkey(int index)
-        {
-            return true;
-        }
-
-        public bool OnScroll(float deltaY)
-        {
-            return true;
-        }
-
-        public bool OnSpace()
-        {
-            return true;
-        }
-
-        public bool OnClick(int button, Vector2 mousePos)
-        {
-            return true;
-        }
+        
     }
 }

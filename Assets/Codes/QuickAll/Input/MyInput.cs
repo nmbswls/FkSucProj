@@ -208,6 +208,24 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Tab"",
+                    ""type"": ""Button"",
+                    ""id"": ""731f65be-d117-4a73-b9e4-199eee7ab3d4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TabHold"",
+                    ""type"": ""Button"",
+                    ""id"": ""ec6b3573-4d37-47f8-9d8a-319a70db05e3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -391,10 +409,32 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""aeda0400-7cb3-472d-96a9-4e6b0eff3433"",
                     ""path"": ""<Mouse>/rightButton"",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""RightClickHold"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4e4e2841-eadd-4b02-9b6a-1895cab85ce2"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e52b3592-5144-4160-931c-7c4188a7d31b"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TabHold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -474,6 +514,8 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_RightClick = m_OverworldMap.FindAction("RightClick", throwIfNotFound: true);
         m_OverworldMap_PointerPos = m_OverworldMap.FindAction("PointerPos", throwIfNotFound: true);
         m_OverworldMap_RightClickHold = m_OverworldMap.FindAction("RightClickHold", throwIfNotFound: true);
+        m_OverworldMap_Tab = m_OverworldMap.FindAction("Tab", throwIfNotFound: true);
+        m_OverworldMap_TabHold = m_OverworldMap.FindAction("TabHold", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -575,6 +617,8 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_RightClick;
     private readonly InputAction m_OverworldMap_PointerPos;
     private readonly InputAction m_OverworldMap_RightClickHold;
+    private readonly InputAction m_OverworldMap_Tab;
+    private readonly InputAction m_OverworldMap_TabHold;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -638,6 +682,14 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "OverworldMap/RightClickHold".
         /// </summary>
         public InputAction @RightClickHold => m_Wrapper.m_OverworldMap_RightClickHold;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/Tab".
+        /// </summary>
+        public InputAction @Tab => m_Wrapper.m_OverworldMap_Tab;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/TabHold".
+        /// </summary>
+        public InputAction @TabHold => m_Wrapper.m_OverworldMap_TabHold;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -703,6 +755,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @RightClickHold.started += instance.OnRightClickHold;
             @RightClickHold.performed += instance.OnRightClickHold;
             @RightClickHold.canceled += instance.OnRightClickHold;
+            @Tab.started += instance.OnTab;
+            @Tab.performed += instance.OnTab;
+            @Tab.canceled += instance.OnTab;
+            @TabHold.started += instance.OnTabHold;
+            @TabHold.performed += instance.OnTabHold;
+            @TabHold.canceled += instance.OnTabHold;
         }
 
         /// <summary>
@@ -753,6 +811,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @RightClickHold.started -= instance.OnRightClickHold;
             @RightClickHold.performed -= instance.OnRightClickHold;
             @RightClickHold.canceled -= instance.OnRightClickHold;
+            @Tab.started -= instance.OnTab;
+            @Tab.performed -= instance.OnTab;
+            @Tab.canceled -= instance.OnTab;
+            @TabHold.started -= instance.OnTabHold;
+            @TabHold.performed -= instance.OnTabHold;
+            @TabHold.canceled -= instance.OnTabHold;
         }
 
         /// <summary>
@@ -1076,6 +1140,20 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRightClickHold(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Tab" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTab(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "TabHold" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTabHold(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

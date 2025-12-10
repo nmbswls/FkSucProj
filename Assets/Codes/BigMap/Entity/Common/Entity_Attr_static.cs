@@ -15,6 +15,9 @@ namespace My.Map.Entity
         public const string PlayerGcThreshold = "PlayerGcThreshold";
         public const string Basic_JianShang = "Basic_JianShang";
 
+        public const string Basic_PleasureAdd = "Basic_PleasureAdd";
+        public const string Basic_HungerCost = "Basic_HungerCost";
+
         public const string HP = "HP";
         public const string HP_MAX = "HP.Max";
 
@@ -40,7 +43,6 @@ namespace My.Map.Entity
         public const string PlayerNaiLi = "PlayerNaiLi";
         public const string PlayerNaiLi_Recovery = "PlayerNaiLi.Recovery";
 
-        public const string PlayerHungerCost = "PlayerHungerCost";
 
         public const string UnitEnterHVal = "UnitEnterHVal";
         public const string StatUnstoppable = "StatUnstoppable";

@@ -24,13 +24,15 @@ namespace My.UI
         bool OnConfirm();
         bool OnCancel();
         bool OnNavigate(Vector2 dir);
-        bool OnHotkey(int index);
+        bool OnHotkey(string keyName);
 
         bool OnScroll(float deltaY);
 
-        bool OnSpace();
-
         bool OnClick(int button, Vector2 mousePos);
+
+        bool OnHoldUpdate(string holdKey);
+
+        bool OnHoldingEnd(string holdKey);
     }
 
     public interface IFocusable
@@ -77,5 +79,47 @@ namespace My.UI
         public virtual void Teardown() { }
     }
 
+    public abstract class PanelWithInput : PanelBase, IInputConsumer
+    {
+        public virtual bool OnCancel()
+        {
+            return true;
+        }
+
+        public virtual bool OnClick(int button, Vector2 mousePos)
+        {
+            return true;
+        }
+
+        public virtual bool OnConfirm()
+        {
+            return true;
+        }
+
+        public virtual bool OnHoldingEnd(string holdKey)
+        {
+            return true;
+        }
+
+        public virtual bool OnHoldUpdate(string holdKey)
+        {
+            return true;
+        }
+
+        public virtual bool OnHotkey(string keyName)
+        {
+            return true;
+        }
+
+        public virtual bool OnNavigate(Vector2 dir)
+        {
+            return true;
+        }
+
+        public virtual bool OnScroll(float deltaY)
+        {
+            return true;
+        }
+    }
 }
 

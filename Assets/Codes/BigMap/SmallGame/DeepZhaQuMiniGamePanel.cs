@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Map.SmallGame.Zha
 {
-    public class DeepZhaQuMiniGamePanel : PanelBase, IInputConsumer
+    public class DeepZhaQuMiniGamePanel : PanelWithInput
     {
         public static DeepZhaQuMiniGamePanel Instance
         {
@@ -225,18 +225,14 @@ namespace Map.SmallGame.Zha
             MainGameManager.Instance.OnSmallGameFinish(ZhaQuTargetId, success, null);
         }
 
-        public bool OnConfirm()
+        public override bool OnConfirm()
         {
             OnSmallGameFinish(true);
             return true;
         }
 
-        public bool OnCancel()
-        {
-            return true;
-        }
 
-        public bool OnNavigate(Vector2 dir)
+        public override bool OnNavigate(Vector2 dir)
         {
             if (dir.y > 0)
             {
@@ -248,26 +244,6 @@ namespace Map.SmallGame.Zha
             }
 
             return true;
-        }
-
-        public bool OnHotkey(int index)
-        {
-            return true;
-        }
-
-        public bool OnScroll(float deltaY)
-        {
-            return true;
-        }
-
-        public bool OnSpace()
-        {
-            return false;
-        }
-
-        public bool OnClick(int button, Vector2 mousePos)
-        {
-            return false;
         }
     }
 }

@@ -1,6 +1,7 @@
 using Config.Map;
 using Config.Unit;
 using My;
+using My.Config;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -319,5 +320,33 @@ namespace Config
     #endregion
 
 
-    
+    public static class MapPlayerAttachObjCfgLoader
+    {
+
+        private static Dictionary<string, PlayerAttachObjCfg> _byId = new Dictionary<string, PlayerAttachObjCfg>();
+
+        public static PlayerAttachObjCfg Get(string cfgId)
+        {
+            if (_byId.TryGetValue(cfgId, out var data))
+                return data;
+
+            var loadOne = Load(cfgId);
+            _byId[cfgId] = loadOne;
+            return loadOne;
+        }
+
+
+        private static PlayerAttachObjCfg Load(string cfgId)
+        {
+            var data = Resources.Load<PlayerAttachObjCfg>($"Config/Misc/Attach/{cfgId}");
+            if (data == null)
+                Debug.LogError($"MapPlayerAttachObjCfgLoader not found at Resources/Config/Misc/Attach/{cfgId}");
+            return data;
+        }
+
+        public static void Clear()
+        {
+            _byId.Clear();
+        }
+    }
 }

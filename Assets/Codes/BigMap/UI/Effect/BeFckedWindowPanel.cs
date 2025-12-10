@@ -3,6 +3,7 @@
 
 
 using Map.Logic.Events;
+using My.Input;
 using My.Map;
 using TMPro;
 using UnityEngine;
@@ -10,7 +11,7 @@ using static My.Map.Entity.MapEntityAbilityExecutor;
 
 namespace My.UI
 {
-    public class BeFckedWindowPanel : PanelBase, IInputConsumer, IRefreshable
+    public class BeFckedWindowPanel : PanelWithInput, IRefreshable
     {
         public TextMeshProUGUI LeftCatchValComp;
         public TextMeshProUGUI SelfKnockDownComp;
@@ -70,45 +71,21 @@ namespace My.UI
             FckingUnitId = 0;
         }
 
-        public bool OnCancel()
-        {
-            return false;
-        }
-
-        public bool OnConfirm()
-        {
-            return false;
-        }
-
-        public bool OnHotkey(int index)
-        {
-            return false;
-        }
-
-        public bool OnNavigate(Vector2 dir)
-        {
-            return false;
-        }
-
-        public bool OnScroll(float deltaY)
-        {
-            return false;
-        }
 
         public void Refresh()
         {
             
         }
 
-        public bool OnSpace()
+        public override bool OnHotkey(string keyName)
         {
-            CatchVal -= 8;
-            return true;
+            if(keyName == QuickPlayerInputBinder.EInputKey.Space.ToString())
+            {
+                CatchVal -= 8;
+                return true;
+            }
+            return false;
         }
 
-        public bool OnClick(int button, Vector2 mousePos)
-        {
-            return true;
-        }
     }
 }

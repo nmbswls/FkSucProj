@@ -244,11 +244,7 @@ namespace My.UI
             return false;
         }
 
-        public bool OnHotkey(int index)
-        {
-            //throw new System.NotImplementedException();
-            return false;
-        }
+
 
         public bool OnScroll(float deltaY)
         {
@@ -286,13 +282,24 @@ namespace My.UI
             //
         }
 
-        public bool OnSpace()
+        public bool OnClick(int button, Vector2 mousePos)
         {
             return false;
         }
 
-        public bool OnClick(int button, Vector2 mousePos)
+        public bool OnHoldUpdate(string holdKey)
         {
+            return false;
+        }
+
+        public bool OnHoldingEnd(string holdKey)
+        {
+            return false;
+        }
+
+        public bool OnHotkey(string keyName)
+        {
+            //throw new System.NotImplementedException();
             return false;
         }
     }

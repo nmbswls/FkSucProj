@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Config;
 using My.Map.Entity;
 using My.Map.Fight;
 using My.Map.Logic;
@@ -50,7 +51,7 @@ namespace My.Map
             base.Tick(dt);
 
             //扣减值
-            TickResourceCost();
+            TickResourceChange();
 
             TickRefreshSpiritMonster();
 
@@ -76,18 +77,21 @@ namespace My.Map
             moveSpeed = 2.0f;
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 10000);
-            attributeStore.RegisterNumeric("HP.Max", initialBase: 1000000);
+            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 100000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
+            attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
 
             RegisterCommonStates();
 
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 1000000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100000, 100000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerSan, null, 100, 100);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 100000, 0);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 100, 0);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100, 100);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100, 100);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 100000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 10000, 10000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerSan, null, 10000, 10000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 10000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 10000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 10000, 10000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 10000, 10000);
 
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 0);
@@ -315,10 +319,34 @@ namespace My.Map
             graph.BuildGraph();
             return graph;
         }
-        public void TickResourceCost()
-        {
-            var baseGc = attributeStore.GetAttr(AttrIdConsts.PlayerHungerCost);
 
+        private float _tickResourceTimeSec = 0;
+        public void TickResourceChange()
+        {
+            if(_tickResourceTimeSec == 0)
+            {
+                _tickResourceTimeSec = (int)LogicTime.time;
+                return;
+            }
+
+            if(LogicTime.time < _tickResourceTimeSec + 1.0f)
+            {
+                return;
+            }
+
+            _tickResourceTimeSec += 1.0f;
+
+            var baseGc = attributeStore.GetAttr(AttrIdConsts.Basic_PleasureAdd);
+            ApplyResourceChange(AttrIdConsts.PlayerPleasure, baseGc, false, EDmgFlag.None, null);
+
+            var baseHungerCost = attributeStore.GetAttr(AttrIdConsts.Basic_HungerCost);
+            ApplyResourceChange(AttrIdConsts.PlayerHunger, -baseHungerCost, false, EDmgFlag.None, null);
+
+            if(GetAttr(AttrIdConsts.PlayerHunger) <= 0)
+            {
+                ApplyResourceChange(AttrIdConsts.HP, -500, false, EDmgFlag.None, null);
+                LogicManager.viewer.ShowFakeFxEffect("饿", this.Pos);
+            }
         }
 
         /// <summary>
@@ -529,6 +557,8 @@ namespace My.Map
 
             public float leftDuration;
             public float LeftHp;
+
+            public long BuffInstId;
         }
 
         public List<AttachingObjInfo> AtttachingObjList = new();
@@ -553,6 +583,14 @@ namespace My.Map
                 id = AtttachingObjList.Select(item => item.Id).Max() + 1;
             }
 
+
+            var cfg = MapPlayerAttachObjCfgLoader.Get(attachId);
+            if(cfg == null)
+            {
+                Debug.LogError("No attach found {attachId}");
+                return;
+            }
+
             var obj = new AttachingObjInfo();
             obj.Id = id;
             obj.AttachId = attachId;
@@ -561,6 +599,12 @@ namespace My.Map
             obj.LeftHp = 3;
 
             AtttachingObjList.Add(obj);
+
+            if(!string.IsNullOrEmpty(cfg.AttachMainBuff))
+            {
+                long bid = LogicManager.globalBuffManager.AddBuff(this.Id, cfg.AttachMainBuff);
+                obj.BuffInstId = bid;
+            }
 
             // 通知上层改变view
             EventOnAttachmentUpdate?.Invoke(0);
@@ -594,16 +638,10 @@ namespace My.Map
                     removed = true;
                 }
 
+
                 if (removed)
                 {
-                    if (AtttachingObjList[i].SrcEntityId != null)
-                    {
-                        var entity = LogicManager.GetLogicEntity(AtttachingObjList[i].SrcEntityId.Value) as BaseUnitLogicEntity;
-                        if (entity != null)
-                        {
-                            entity.RestoreFromAttach();
-                        }
-                    }
+                    OnAttachRemoved(AtttachingObjList[i]);
 
                     AtttachingObjList.RemoveAt(i);
 
@@ -614,6 +652,24 @@ namespace My.Map
             if(changed)
             {
                 EventOnAttachmentUpdate?.Invoke(0);
+            }
+        }
+
+
+        private void OnAttachRemoved(AttachingObjInfo obj)
+        {
+            if (obj.SrcEntityId != null)
+            {
+                var entity = LogicManager.GetLogicEntity(obj.SrcEntityId.Value) as BaseUnitLogicEntity;
+                if (entity != null)
+                {
+                    entity.RestoreFromAttach();
+                }
+            }
+
+            if(obj.BuffInstId != 0)
+            {
+                LogicManager.globalBuffManager.RequestRemoveBuff(this, obj.BuffInstId);
             }
         }
     }

@@ -386,6 +386,18 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HideView, ModifierValue = 1 },
                     },
                 };
+
+                _library["attach_small"] = new BuffDefinition()
+                {
+                    BuffId = "attach_small",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    DefaultDuration = -1,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_PleasureAdd, ModifierValue = 20 },
+                    },
+                };
             }
 
             _library.TryGetValue(buffId, out BuffDefinition def);

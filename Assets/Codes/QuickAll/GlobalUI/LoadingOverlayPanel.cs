@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    public class LoadingOverlayPanel : PanelBase, IInputConsumer
+    public class LoadingOverlayPanel : PanelWithInput
     {
         [SerializeField] private TextMeshProUGUI loadingText;
 
@@ -18,26 +18,6 @@ namespace My.UI
         public override bool CanFocus => true;
         public override int FocusPriority => 1000;
 
-        // ÍÌµôËùÓÐÊäÈë£¬·ÀÖ¹´©Í¸
-        public bool OnConfirm() => true;
-        public bool OnCancel() => true;
-        public bool OnNavigate(Vector2 dir) => true;
-        public bool OnHotkey(int index) => true;
-
-        public bool OnScroll(float deltaY)
-        {
-            return true;
-        }
-
-        public bool OnSpace()
-        {
-            return false;
-        }
-
-        public bool OnClick(int button, Vector2 mousePos)
-        {
-            return true;
-        }
     }
 }
 

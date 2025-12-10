@@ -94,7 +94,7 @@ namespace My.Map.View
             return true;
         }
 
-        public bool OnHotkey(int index)
+        public bool OnHotkey(string keyName)
         {
             return true;
         }
@@ -104,12 +104,17 @@ namespace My.Map.View
             return true;
         }
 
-        public bool OnSpace()
+        public bool OnClick(int button, Vector2 mousePos)
         {
             return true;
         }
 
-        public bool OnClick(int button, Vector2 mousePos)
+        public bool OnHoldUpdate(string holdKey)
+        {
+            return true;
+        }
+
+        public bool OnHoldingEnd(string holdKey)
         {
             return true;
         }

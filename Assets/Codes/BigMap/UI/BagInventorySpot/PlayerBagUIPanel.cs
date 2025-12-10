@@ -351,7 +351,7 @@ namespace My.UI.Bag
             return false;
         }
 
-        public bool OnHotkey(int index)
+        public bool OnHotkey(string keyName)
         {
             return false;
         }
@@ -367,6 +367,16 @@ namespace My.UI.Bag
         }
 
         public bool OnClick(int button, Vector2 mousePos)
+        {
+            return false;
+        }
+
+        public bool OnHoldUpdate(string holdKey)
+        {
+            return false;
+        }
+
+        public bool OnHoldingEnd(string holdKey)
         {
             return false;
         }
