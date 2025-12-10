@@ -52,7 +52,7 @@ public class QuickDebugShow : MonoBehaviour
 
             hpBars[k].Val.text = ((int)(hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.HP) * 0.01f)).ToString();
             hpBars[k].Val.text += "/";
-            hpBars[k].Val.text += ((int)(hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.UnitEnterHVal) * 0.01f)).ToString();
+            hpBars[k].Val.text += ((int)(hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.UnitHVal) * 0.01f)).ToString();
             //var attracted = hpBars[k].bindingUnit.UnitEntity.CheckAttractState();
             //if(attracted)
             //{

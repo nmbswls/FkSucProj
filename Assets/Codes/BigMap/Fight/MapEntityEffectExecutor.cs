@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Config;
 using My.Map.Logic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -190,9 +191,34 @@ namespace My.Map.Entity
             if(realCfg == null)
             {
                 Debug.LogError("AbilityEffectExecutor4UseItem err");
+                return;
             }
 
+            var useItemId = ctx.GetVariatyRawVal(realCfg.UseItemId);
+            Debug.Log("use " + useItemId);
 
+            var itemCfg = FakeItemDatabase.GetItem(useItemId);
+            if(itemCfg == null || itemCfg.UseCfg1 == null)
+            {
+                Debug.LogError($"AbilityEffectExecutor4UseItem item not found {useItemId}");
+                return;
+            }
+
+            ctx.Env.playerDataManager.ItemUseCd[useItemId] = LogicTime.time;
+            switch(itemCfg.UseCfg1.UseType)
+            {
+                case FakeItemConf.EItemUseType.AddHunger:
+                    {
+                        var srcActor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
+                        long.TryParse(itemCfg.UseCfg1.UseParams, out var addVal);
+
+                        if(srcActor != null)
+                        {
+                            srcActor.ApplyResourceChange(AttrIdConsts.PlayerHunger, +addVal * 100, false, EDmgFlag.None, ctx.SourceInfo.SrcEntityId);
+                        }
+                    }
+                    break;
+            }
         }
     }
 
@@ -261,7 +287,43 @@ namespace My.Map.Entity
     }
 
     
+    public class AbilityFightExecutor4SpecialMoveTo : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectSpecialMoveToCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityFightExecutor4SpecialMoveTo cfg error");
+                return;
+            }
 
+            if (ctx.SourceInfo.SrcEntityId == 0)
+            {
+                return;
+            }
+
+            if (ctx.TargetId == 0)
+            {
+                return;
+            }
+
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (target == null || actor == null || actor is not BaseUnitLogicEntity unitEntity)
+            {
+                return;
+            }
+
+            var duration = realCfg.Duration;
+
+            ctx.Env.globalBuffManager.AddBuff(actor.Id, "lock_move", overrideDuration: duration);
+            ctx.Env.viewer.DoPlayerSpecialMove(target.Pos, actor.Pos, duration, () =>
+            {
+                unitEntity.TeleportTo(target.Pos);
+            });
+        }
+    }
 
     public class AbilityFightExecutor4UseWeapon : AbilityEffectExecutor
     {

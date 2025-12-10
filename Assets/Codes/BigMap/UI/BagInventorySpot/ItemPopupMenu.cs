@@ -1,7 +1,9 @@
 using Config;
+using My.Map;
 using My.Player.Bag;
 using My.UI.Bag;
 using SuperScrollView;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -52,8 +54,11 @@ namespace My.UI
         public Button DropBtn;
         public Button CloseBtn;
 
+        public TextMeshProUGUI UseBtnCdText;
+
         private AnyContainerItemCell currentCell;
         private ItemStack currentStack;
+        private FakeItemConf cacheItemCfg;
         private int currentIndex;
 
         void Awake()
@@ -80,6 +85,8 @@ namespace My.UI
             currentIndex = index;
 
             gameObject.SetActive(true);
+
+            cacheItemCfg = FakeItemDatabase.GetItem(stack.ItemID);
 
             UseBtnGo.SetActive(false);
             UseBtn2Go.SetActive(false);
@@ -109,9 +116,32 @@ namespace My.UI
                 {
                     //var item = 
                 }
+
+                if(FakeItemDatabase.CanUse(stack.ItemID))
+                {
+                    UseBtnGo.SetActive(true);
+                }
             }
         }
 
+        public void Update()
+        {
+            if(UseBtnGo.activeSelf)
+            {
+                MainGameManager.Instance.gameLogicManager.playerDataManager.ItemUseCd.TryGetValue(currentStack.ItemID, out var useTime);
+                
+                // ²»ÔÚcd
+                if(useTime == 0 || LogicTime.time - useTime > cacheItemCfg.UseCfg1.UseCd)
+                {
+                    UseBtnCdText.text = "";
+                }
+                else
+                {
+                    var cdVal = (int)Mathf.Ceil((cacheItemCfg.UseCfg1.UseCd + useTime) - LogicTime.time);
+                    UseBtnCdText.text = $"({cdVal}s)";
+                }
+            }
+        }
 
         private void OnClickUse()
         {

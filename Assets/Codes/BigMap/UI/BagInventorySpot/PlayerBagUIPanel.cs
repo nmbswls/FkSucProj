@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Config;
 using TMPro;
 using static UnityEditor.Progress;
+using My.Map;
 
 namespace My.UI.Bag
 {
@@ -191,6 +192,7 @@ namespace My.UI.Bag
             var stack = bag.GetItemByIdx(index);
             if (stack == null || stack.IsEmpty) return;
 
+            var itemConf = FakeItemDatabase.GetItem(stack.ItemID);
             if (!FakeItemDatabase.CanUse(stack.ItemID)) return;
 
             stack.RemoveFromStack(1);
@@ -199,11 +201,16 @@ namespace My.UI.Bag
                 bag.ClearEmptyItems();
             }
 
-            //MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseItem(stack.ItemID);
+            MainGameManager.Instance.gameLogicManager.playerDataManager.ItemUseCd.TryGetValue(stack.ItemID, out var lastUseTime);
+            if(lastUseTime != 0 && itemConf.UseCfg1.UseCd > 0 && LogicTime.time - lastUseTime < itemConf.UseCfg1.UseCd)
+            {
+                Debug.LogError($"use item fail cd {lastUseTime}");
+                return;
+            }
 
             MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("use_item", overrideParams: new Dictionary<string, string>()
             {
-                ["PhaseExecutingTime"] = "0.5",
+                ["PhaseExecutingTime"] = itemConf.UseCfg1.UseTime.ToString(),
                 ["ItemId"] = stack.ItemID,
             }); ;
             //UIBus.RaiseInventoryChanged(index);

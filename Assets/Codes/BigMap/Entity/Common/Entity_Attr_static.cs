@@ -46,7 +46,7 @@ namespace My.Map.Entity
         public const string PlayerNaiLi_Recovery = "PlayerNaiLi.Recovery";
 
 
-        public const string UnitEnterHVal = "UnitEnterHVal";
+        public const string UnitHVal = "UnitHVal";
         public const string StatUnstoppable = "StatUnstoppable";
 
         public const string DamageXiXue = "DamageXiXue";

@@ -94,7 +94,7 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 10000, 10000);
 
             // ×ÊÔ´Àà
-            attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 0);
+            attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 0);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 3);
 
             attributeStore.Commit();
@@ -465,7 +465,7 @@ namespace My.Map
 
             var effect = new MapAbilityEffectAddResourceCfg()
             {
-                ResourceId = AttrIdConsts.UnitEnterHVal,
+                ResourceId = AttrIdConsts.UnitHVal,
                 AddValue = 20,
                 IsEnmity = true,
             };

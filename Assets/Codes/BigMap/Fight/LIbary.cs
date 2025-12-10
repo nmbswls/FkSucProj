@@ -208,6 +208,25 @@ namespace My.Map.Entity
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_ziwei";
+                    cfg.MainAbilityId = "player_ziwei";
+
+                    cfg.TargetType = ETargetType.Self;
+                    cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.NoQueenMode });
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "h_mode_execute";
+                    cfg.MainAbilityId = "h_mode_execute";
+                    cfg.CoolDown = 10.0f;
+
+                    cfg.TargetType = ETargetType.LockTarget;
+                    _skillDict[cfg.SkillId] = cfg;
+                }
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -356,6 +375,15 @@ namespace My.Map.Entity
                     _abilityDict[ab.Id] = ab;
                 }
 
+                {
+                    var ab = CreatePlayerZiWei();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreatePlayerHModeExecute();
+                    _abilityDict[ab.Id] = ab;
+                }
             }
 
             _abilityDict.TryGetValue(abilityName, out var abConfig);
@@ -578,7 +606,7 @@ namespace My.Map.Entity
                         {
                             new MapAbilityEffectAddResourceCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                ResourceId  = AttrIdConsts.UnitHVal,
                                 AddValue = 50000,
                             }
                         }
@@ -674,7 +702,7 @@ namespace My.Map.Entity
                         {
                             new MapAbilityEffectAddResourceCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                ResourceId  = AttrIdConsts.UnitHVal,
                                 AddValue = 50000,
                             }
                         }
@@ -723,7 +751,7 @@ namespace My.Map.Entity
                         {
                             new MapAbilityEffectAddResourceCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                ResourceId  = AttrIdConsts.UnitHVal,
                                 AddValue = 50000,
                             }
                         }
@@ -771,7 +799,7 @@ namespace My.Map.Entity
                         {
                             new MapAbilityEffectAddResourceCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                ResourceId  = AttrIdConsts.UnitHVal,
                                 AddValue = 50000,
                             }
                         }
@@ -819,7 +847,7 @@ namespace My.Map.Entity
                             {
                                 new MapAbilityEffectAddResourceCfg()
                                 {
-                                    ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                    ResourceId  = AttrIdConsts.UnitHVal,
                                     AddValue = 50000,
                                 }
                             }
@@ -867,7 +895,7 @@ namespace My.Map.Entity
                         {
                             new MapAbilityEffectAddResourceCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitEnterHVal,
+                                ResourceId  = AttrIdConsts.UnitHVal,
                                 AddValue = 50000,
                             }
                         }
@@ -1993,7 +2021,6 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 ImmuneKnock = true,
-                InterruptMask = EAbilityInterruptMask.Dodge,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -2219,6 +2246,7 @@ namespace My.Map.Entity
                 LockRotation = true,
                 LockMovement = true,
                 ImmuneKnock = true,
+                EnterDebugString = "Queen!",
 
                 DurationValue = new()
                 {
@@ -2254,14 +2282,73 @@ namespace My.Map.Entity
 
 
 
-        private static MapAbilitySpecConfig CreatePlayerQuitQueenMode()
+        private static MapAbilitySpecConfig CreatePlayerZiWei()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
-            spec.Id = "player_quit_queen";
-            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.Id = "player_ziwei";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var prePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+                AnimTag = "ziwei",
+                EnterDebugString = "¿ª¿Ù",
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.0"
+                },
+            };
+
+            spec.Phases.Add(prePhase);
+
 
             var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit | EAbilityInterruptMask.NewAbility,
+
+                AnimTag = "ziwei",
+
+                HoldingPhase = true,
+
+                PhaseBuff = new() { "player_ziweiing"}
+
+                //DurationValue = new()
+                //{
+                //    ValType = EOneVariatyType.Float,
+                //    RawVal = "1.0"
+                //},
+            };
+
+            {
+                //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
+
+            return spec;
+
+        }
+
+
+        private static MapAbilitySpecConfig CreatePlayerHModeExecute()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "h_mode_execute";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var prePhase = new MapAbilityPhase()
             {
                 PhaseName = "Prepare",
                 LockRotation = true,
@@ -2271,25 +2358,81 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.5"
+                    RawVal = "0.4"
                 },
             };
 
+            spec.Phases.Add(prePhase);
+
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit | EAbilityInterruptMask.NewAbility,
+
+
+                PhaseBuff = new() { "super_armor" },
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.5"
+                },
+            };
 
             {
-                var effect = new MapFightEffectQueueModeCfg()
+
+                var addStunEffect = new MapAbilityEffectAddBuffCfg()
                 {
-                    InEnter = false,
+                    BuffId = "force_stun",
+                    Duration = 1.5f,
+                    Layer = 1,
+                    TargetType = 0,
                 };
-                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addStunEffect, Kind = PhaseEventKind.OnEnter });
+            }
+            {
+
+                var closeToEffect = new MapFightEffectSpecialMoveToCfg()
+                {
+                    Duration = 0.3f,
+                };
+
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = closeToEffect, Kind = PhaseEventKind.OnEnter });
+            }
+
+            {
+
+                var addHEffect = new MapAbilityEffectAddResourceCfg()
+                {
+                    ResourceId = AttrIdConsts.UnitHVal,
+                    AddValue = 10000,
+                    IsEnmity = false,
+                };
+
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addHEffect, Kind = PhaseEventKind.OnExit });
+
+                //var dashEffect = new MapAbilityEffectControlledMoveCfg()
+                //{
+                //    TargetType = 0,
+                //    UseCastVec = true,
+                //    FixedDuration = 0.45f,
+                //    IsEnmity = true,
+                //    ControlForce = 10.0f,
+                //};
+
+                //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
             }
 
             spec.Phases.Add(mainPhase);
 
             return spec;
-
         }
-
     }
 
 

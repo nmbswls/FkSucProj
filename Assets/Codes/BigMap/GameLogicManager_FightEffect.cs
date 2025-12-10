@@ -159,6 +159,12 @@ namespace My
                             executor = new AbilityEffectExecutor4HitAttach();
                         }
                         break;
+                    case MapFightEffectSpecialMoveToCfg:
+                        {
+                            executor = new AbilityFightExecutor4SpecialMoveTo();
+                        }
+                        break;
+                        
                 }
 
                 if (executor != null)

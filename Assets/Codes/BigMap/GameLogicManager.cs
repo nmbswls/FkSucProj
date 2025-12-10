@@ -41,6 +41,8 @@ namespace My
         public string NewAreaName;
         public bool Reset;
         public LogicEntityRecord4Player SavedRecord;
+
+        public string? TargetPoint;
     }
 
     public partial class GameLogicManager : ILogicEntityFactory
@@ -226,7 +228,7 @@ namespace My
         /// 玩家进入/切换场景
         /// </summary>
         /// <param name="areaName"></param>
-        public void PlayerSwitchArea(string areaName, bool reset)
+        public void PlayerSwitchArea(string areaName, bool reset, string? targetPoint = null)
         {
             if(SwitchAreaIntent != null)
             {
@@ -238,6 +240,7 @@ namespace My
             intent.OldAreaName = AreaManager.AreaId;
             intent.Reset = reset;
             intent.SavedRecord = new();
+            intent.TargetPoint = targetPoint;
 
             SwitchAreaIntent = intent;
 
@@ -456,14 +459,6 @@ namespace My
             if(entity == null)return;
 
             entity.TeleportTo(pos);
-        }
-
-
-        public Vector2 GetNamedPointPos(string pointName)
-        {
-            var areaName = CurrentArea;
-            //Config
-            return Vector2.zero;
         }
 
         

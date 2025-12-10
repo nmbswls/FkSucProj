@@ -61,7 +61,6 @@ namespace My.Map.Entity
     {
         None = 0,
         Hit = 1 << 0,
-        Dodge = 1 << 2, // 可通过翻滚打断
         Move = 1 << 3,
         NewAbility = 1 << 5,
     }
@@ -85,6 +84,7 @@ namespace My.Map.Entity
         public string AnimTag; // 可用于驱动动画状态
 
         public EAbilityInterruptMask InterruptMask; // 自定义Flags
+        public bool ForbidDodge = false;
 
         public bool WithProgress = false;
         public bool LockMovement = false;

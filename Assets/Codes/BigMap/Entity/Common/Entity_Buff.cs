@@ -301,7 +301,7 @@ namespace My.Map.Entity
                             {
                                 new MapAbilityEffectAddResourceCfg()
                                 {
-                                    ResourceId = AttrIdConsts.UnitEnterHVal,
+                                    ResourceId = AttrIdConsts.UnitHVal,
                                     AddValue = 50,
                                     IsEnmity = true,
                                 }
@@ -419,6 +419,16 @@ namespace My.Map.Entity
                         }
                     },
                 };
+
+                _library["player_ziwei"] = new BuffDefinition()
+                {
+                    BuffId = "player_ziwei",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = -1,
+
+                    
+                };
+                
             }
 
             _library.TryGetValue(buffId, out BuffDefinition def);

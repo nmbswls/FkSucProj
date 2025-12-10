@@ -23,6 +23,9 @@ namespace My.Map
         public NpcCombatStateComp combatStateComp;
 
         public bool IsHMode;
+        private float _lastHModeTimer;
+
+        public event Action EventOnHModeChange;
 
         public override NpcCombatStateComp.ECombatState CombatState
         {
@@ -204,9 +207,68 @@ namespace My.Map
 
                 // 这个一定是属于npc的 其他unit不应该有 
                 UpdateHMode();
+
+                TickHMode();
             }
 
             //TickGaze();
+        }
+
+        public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
+        {
+            base.OnResourceAttriChanged(attrId, before, after, intent);
+
+            // 4.3 死亡判断窗口：仅在含伤害时检查
+            switch (attrId)
+            {
+                case AttrIdConsts.UnitHVal:
+                    {
+                        _lastHModeTimer = LogicTime.time;
+                    }
+                    break;
+            }
+        }
+
+
+        /// <summary>
+        /// 检查h模式
+        /// </summary>
+        protected void TickHMode()
+        {
+            if(!IsHMode)
+            {
+                var hVal = GetAttr(AttrIdConsts.UnitHVal);
+                if(hVal >= 10000)
+                {
+                    IsHMode = true;
+                    _lastHModeTimer = LogicTime.time;
+
+                    EventOnHModeChange?.Invoke();
+
+                    ForceSetResource(AttrIdConsts.UnitHVal, 0);
+                }
+            }
+            else
+            {
+                if(LogicTime.time - _lastHModeTimer > 5 * 60)
+                {
+                    IsHMode = false;
+                    EventOnHModeChange?.Invoke();
+                    return;
+                }
+
+                var hVal = GetAttr(AttrIdConsts.UnitHVal);
+                if (hVal >= 10000)
+                {
+                    ForceSetResource(AttrIdConsts.UnitHVal, 0);
+
+                    LogicManager.viewer.ShowFakeFxEffect("射!", this.Pos);
+
+                    // 伤害
+                    ApplyResourceChange(AttrIdConsts.HP, -80000, false, Fight.FightStruct.EDmgFlag.None, this.Id);
+                }
+
+            }
         }
 
         /// <summary>

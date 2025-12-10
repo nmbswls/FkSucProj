@@ -70,6 +70,7 @@ namespace Config
             public bool Usable = false;
             public bool CostOnUse;
             public float UseCd;
+            public float UseTime = 0.5f;
 
 
             public EItemUseType UseType;
@@ -200,7 +201,8 @@ namespace Config
                     {
                         Usable = true,
                         CostOnUse = true,
-                        UseCd = 1.0f,
+                        UseCd = 10.0f,
+                        UseTime = 1.5f,
                     };
 
                     _dict[item.ItemId] = item;
@@ -312,12 +314,13 @@ namespace Config
         public static bool CanUse(string id)
         {
             //if (Instance == null) return false;
-            if (id == "banana")
+            var cfg = GetItem(id);
+            if(cfg == null || cfg.UseCfg1 == null)
             {
-                return true;
+                return false;
             }
-            //return Instance.dict.TryGetValue(id, out var data) ? data.Usable : false;
-            return false;
+            
+            return true;
         }
 
         //public static bool CanEquip(string id, out string slot)

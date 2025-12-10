@@ -489,17 +489,17 @@ namespace My.Map
             // 数值类
             attributeStore.RegisterNumeric("Attack", initialBase: 100);
             attributeStore.RegisterNumeric("Strength", initialBase: 10);
-            attributeStore.RegisterNumeric("HP.Max", initialBase: 100000);
+            attributeStore.RegisterNumeric("HP.Max", initialBase: 10000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
             // 资源类
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 100000);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 10000);
 
             RegisterCommonStates();
 
 
             // 资源类
-            attributeStore.RegisterResource(AttrIdConsts.UnitEnterHVal, null, 10000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 10000, 0);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
 
             attributeStore.Commit();

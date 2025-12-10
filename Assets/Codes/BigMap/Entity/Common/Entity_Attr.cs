@@ -47,7 +47,7 @@ namespace My.Map
                 case AttrIdConsts.PlayerPleasure:
                 case AttrIdConsts.PlayerClothes:
                 case AttrIdConsts.PlayerNaiLi:
-                case AttrIdConsts.UnitEnterHVal:
+                case AttrIdConsts.UnitHVal:
                     return EAttrType.Resource;
 
                 default:
@@ -566,7 +566,7 @@ namespace My.Map
                 case AttrIdConsts.PlayerSan:
                 case AttrIdConsts.PlayerClothes:
                 case AttrIdConsts.PlayerPleasure:
-                case AttrIdConsts.UnitEnterHVal:
+                case AttrIdConsts.UnitHVal:
                 case AttrIdConsts.DeepZhaChance:
                     {
                         return GetResourceCurrent(attrId);

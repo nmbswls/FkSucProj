@@ -15,6 +15,8 @@ namespace My.Player
         public long ItemInstanceIdCounter = 100;
         public PlayerInventoryModel inventoryModel;
 
+        public Dictionary<string, float> ItemUseCd = new();
+
         public Dictionary<string, long> CurrencyBag = new();
 
         /// <summary>

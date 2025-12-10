@@ -109,7 +109,26 @@ namespace My.Map
                         break;
                     case Config.LogicInteractOutput.EOutputType.Teleport:
                         {
-                            Owner.LogicManager.PlayerSwitchArea(output.Param3, false);
+                            string areaName = output.Param3;
+                            string namedP = output.Param4;
+
+                            // Ô­µØ´«ËÍ
+                            if(areaName == Owner.LogicManager.AreaManager.AreaId)
+                            {
+                                if(string.IsNullOrEmpty(namedP))
+                                {
+                                    var p = Owner.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(namedP);
+                                    if(p == null)
+                                    {
+                                        break;
+                                    }
+                                    Owner.LogicManager.playerLogicEntity.TeleportTo(p.Value.Position);
+                                }
+                            }
+                            else
+                            {
+                                Owner.LogicManager.PlayerSwitchArea(output.Param3, false, namedP);
+                            }
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.ActivateEventGroup:
