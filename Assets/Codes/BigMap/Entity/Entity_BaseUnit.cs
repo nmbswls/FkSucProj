@@ -514,7 +514,8 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.NoSelect, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Ghost, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Invisible, initialBase: 0);
-
+            attributeStore.RegisterNumeric(AttrIdConsts.SuperArmor, initialBase: 0);
+            
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneKnock, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Stun, initialBase: 0);
         }

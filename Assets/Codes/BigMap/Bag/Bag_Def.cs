@@ -282,6 +282,26 @@ namespace Config
 
                     _dict[item.ItemId] = item;
                 }
+
+
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "key_a1_001";
+                    item.ItemType = EItemType.Normal;
+                    item.StackType = EStackType.NoStack;
+                    item.SpriteName = "key_a1_01";
+
+                    _dict[item.ItemId] = item;
+                }
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "key_a1_002";
+                    item.ItemType = EItemType.Normal;
+                    item.StackType = EStackType.NoStack;
+                    item.SpriteName = "key_a1_02";
+
+                    _dict[item.ItemId] = item;
+                }
             }
 
             _dict.TryGetValue(itemId, out var conf);

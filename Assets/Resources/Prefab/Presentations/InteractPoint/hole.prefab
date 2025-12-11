@@ -46,8 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc149c528279e346a87ae17af548bd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  MainViewRt: {fileID: 0}
   highlightFx: {fileID: 0}
+  MainBlock: {fileID: 0}
   Blocks: []
 --- !u!1 &3826656254232539657
 GameObject:
@@ -115,7 +116,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.1
 --- !u!1 &6287151784329516367
 GameObject:
   m_ObjectHideFlags: 0

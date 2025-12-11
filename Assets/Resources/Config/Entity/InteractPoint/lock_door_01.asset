@@ -12,22 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
   m_Name: lock_door_01
   m_EditorClassIdentifier: 
-  CfgId: bridge_block
-  ShowName: 
+  CfgId: lock_door_01
+  ShowName: "\u95E8"
+  PrefabName: lock_door
   MainStatusInfo:
     StatusId: 0
     InteractInfos:
     - InteractId: 1
-      Label: "\u4FEE\u7406"
-      UnLabel: "\u4FEE\u7406(no)"
+      Label: "\u6253\u5F00"
+      UnLabel: "\u6253\u5F00(no)"
       HideWhenFail: 0
       CheckCommonCond:
-      - Type: 0
-        Param1: 0
+      - Type: 4
+        Param1: 1
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: key_a1_001
         Param6: 
       CheckInteractCond: []
       Outputs:

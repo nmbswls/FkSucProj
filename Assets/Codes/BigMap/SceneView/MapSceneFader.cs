@@ -64,8 +64,9 @@ namespace My.Map
 
             var dist = (MainGameManager.Instance.playerScenePresenter.transform.position - transform.position);
             dist.z = 0;
-            if(dist.sqrMagnitude > 3.0 * 3.0)
+            if(dist.sqrMagnitude > 5.0 * 5.0)
             {
+                SetFade(1.0f);
                 return;
             }
 
@@ -78,7 +79,10 @@ namespace My.Map
             //             (transform.position.y); //
             //}
 
-            if (inside && behind) SetFade(0.3f);
+            if (inside && behind) 
+            { 
+                SetFade(0.3f); 
+            }
             else SetFade(1.0f);
         }
 

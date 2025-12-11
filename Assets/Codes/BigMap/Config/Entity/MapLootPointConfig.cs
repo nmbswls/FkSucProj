@@ -13,6 +13,7 @@ namespace Config.Map
     public  class MapLootPointConfig : ScriptableObject
     {
         public string CfgId;
+        public string PrefabName;
 
         public bool DefaultLocked = false; // ÊÇ·ñÄ¬ÈÏ´øËø
 

@@ -16,6 +16,7 @@ namespace Config.Map
     {
         public string CfgId;
         public string ShowName;
+        public string PrefabName;
 
         [Serializable]
         public class StatusInfo

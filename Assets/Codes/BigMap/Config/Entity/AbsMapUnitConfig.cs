@@ -74,6 +74,7 @@ namespace Config.Unit
     {
         public string UnitName;
         public Sprite ViewSprite;
+        public string PrefabName;
 
         public enum EMapUnitMoveStyle
         {

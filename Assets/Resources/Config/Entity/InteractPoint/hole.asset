@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CfgId: hole
   ShowName: "\u5C0F\u6D1E"
+  PrefabName: 
   MainStatusInfo:
     StatusId: 0
     InteractInfos: []
@@ -25,6 +26,7 @@ MonoBehaviour:
       Label: TP
       UnLabel: TP(lock)
       HideWhenFail: 0
+      NeedDist: 0.05
       CheckCommonCond: []
       CheckInteractCond: []
       Outputs:

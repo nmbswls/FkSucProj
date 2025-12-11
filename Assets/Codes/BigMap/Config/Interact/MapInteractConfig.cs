@@ -62,6 +62,7 @@ namespace My.Config
         public string Label; // 选项
         public string UnLabel; // 灰色选项
         public bool HideWhenFail = true;
+        public float NeedDist = 0.4f;
 
         public List<CommonCheckCond> CheckCommonCond = new();
         public List<InteractCheckCond> CheckInteractCond = new();

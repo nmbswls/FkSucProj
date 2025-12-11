@@ -1,3 +1,4 @@
+using Config;
 using Map.Entity;
 using My.Map;
 using My.Map.Entity;
@@ -30,20 +31,60 @@ public static class PresentationConfig
         // 映射逻辑类型到表现Prefab地址（Addressables key/Resources路径）
         switch (type)
         {
-            case EEntityType.InteractPoint: return $"Prefab/Presentations/InteractPoint/{cfgId}";
-            case EEntityType.LootPoint: return $"Prefab/Presentations/LootPoint/{cfgId}";
-            case EEntityType.Npc: return $"Prefab/Presentations/Npc/{cfgId}";
-            case EEntityType.AreaEffect: return $"Prefab/Presentations/AreaEffect/{cfgId}";
+            case EEntityType.InteractPoint: 
+                {
+                    var cfg = MapInteractPointLoader.Get(cfgId);
+                    string prefabName = cfg.PrefabName;
+                    if (string.IsNullOrEmpty(prefabName))
+                    {
+                        prefabName = cfgId;
+                    }
+                    return $"Prefab/Presentations/InteractPoint/{prefabName}"; 
+                }
+            case EEntityType.LootPoint:
+                {
+                    var cfg = MapLootPointConfigLoader.Get(cfgId);
+                    string prefabName = cfg.PrefabName;
+                    if (string.IsNullOrEmpty(prefabName))
+                    {
+                        prefabName = cfgId;
+                    }
+                    return $"Prefab/Presentations/LootPoint/{prefabName}";
+                }
+            case EEntityType.Npc:
+                {
+                    var cfg = MapNpcConfigLoader.Get(cfgId);
+                    string prefabName = cfg.PrefabName;
+                    if (string.IsNullOrEmpty(prefabName))
+                    {
+                        prefabName = cfgId;
+                    }
+                    return $"Prefab/Presentations/Npc/{prefabName}";
+                }
+            case EEntityType.AreaEffect:
+                {
+                    return $"Prefab/Presentations/AreaEffect/{cfgId}";
+                }
             case EEntityType.DestroyObj:
-                return $"Prefab/Presentations/DestroyObj/{cfgId}";
+                {
+                    return $"Prefab/Presentations/DestroyObj/{cfgId}";
+                }
             case EEntityType.GatherPoint:
-                return $"Prefab/Presentations/GatherPoint/{cfgId}";
+                {
+                    return $"Prefab/Presentations/GatherPoint/{cfgId}";
+                }
             case EEntityType.AttractPoint:
-                return $"Prefab/Presentations/AttractPoint/{cfgId}";
+                {
+                    return $"Prefab/Presentations/AttractPoint/{cfgId}";
+                }
             case EEntityType.PatrolGroup:
-                return $"Prefab/Presentations/PatrolGroup";
+                {
+                    return $"Prefab/Presentations/PatrolGroup";
+                }
             case EEntityType.HomePlacement:
-                return $"Prefab/Presentations/HomePlacement/{cfgId}";
+                {
+                    return $"Prefab/Presentations/HomePlacement/{cfgId}";
+                }
             case EEntityType.Player:
                 return $"Prefab/Presentations/FakePlayer";
             case EEntityType.EventGroup:
