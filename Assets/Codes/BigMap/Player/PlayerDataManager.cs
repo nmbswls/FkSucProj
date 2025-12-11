@@ -15,9 +15,6 @@ namespace My.Player
         public long ItemInstanceIdCounter = 100;
         public PlayerInventoryModel inventoryModel;
 
-        public Dictionary<string, float> ItemUseCd = new();
-
-        public Dictionary<string, long> CurrencyBag = new();
 
         /// <summary>
         /// 游戏变量表
@@ -35,6 +32,9 @@ namespace My.Player
 
             "player_enter_queen",
             "player_quit_queen",
+
+
+            "h_mode_execute",
 
             "queen_counter",
 
@@ -93,75 +93,12 @@ namespace My.Player
         }
         public bool CheckHaveItem(string itemId, long count)
         {
-            long totalNum = 0;
-
-            for(int bagId = 0; bagId <= 4; bagId++)
-            {
-                var bag = inventoryModel.GetBagById(bagId);
-                if (bag == null)
-                {
-                    continue;
-                }
-
-                var bagCount = bag.GetItemCount(itemId);
-                totalNum += bagCount;
-                if(totalNum >= count)
-                {
-                    return true;
-                }
-            }
-
-            CurrencyBag.TryGetValue(itemId, out var currencyVal);
-            totalNum += currencyVal;
-
-            if (totalNum >= count)
-            {
-                return true;
-            }
-            return false;
+            return inventoryModel.CheckHaveItem(itemId, count);
         }
 
         public long CostItem(string itemId, long count)
         {
-            if(count <= 0)
-            {
-                return 0;
-            }
-
-            long leftCount = count;
-            var itemConf = FakeItemDatabase.GetItem(itemId);
-            if(itemConf.ItemType == FakeItemConf.EItemType.Currency)
-            {
-                CurrencyBag.TryGetValue(itemId, out var itemVal);
-                if(itemVal > leftCount)
-                {
-                    CurrencyBag[itemId] = itemVal - leftCount;
-                    leftCount = 0;
-                }
-                else
-                {
-                    CurrencyBag[itemId] = 0;
-                    leftCount -= itemVal;
-                }
-            }
-
-            for (int bagId = 0; bagId <= 4; bagId++)
-            {
-                var bag = inventoryModel.GetBagById(bagId);
-                if (bag == null)
-                {
-                    continue;
-                }
-
-                leftCount = bag.TryCostItem(itemId, leftCount);
-
-                if(leftCount <= 0)
-                {
-                    break;
-                }
-            }
-
-            return leftCount;
+            return inventoryModel.CostItem(itemId, count);
         }
 
         /// <summary>
@@ -193,15 +130,7 @@ namespace My.Player
         /// <returns></returns>
         public long TryGiveItem(string itemId, long count)
         {
-            var itemConf = FakeItemDatabase.GetItem(itemId);
-            if (itemConf.ItemType == FakeItemConf.EItemType.Currency)
-            {
-                CurrencyBag[itemId] = CurrencyBag.GetValueOrDefault(itemId) + count;
-                return count;
-            }
-
-            var put = inventoryModel.GiveItem(itemId, count);
-            return put;
+            return inventoryModel.GiveItem(itemId, count);
         }
     }
 }

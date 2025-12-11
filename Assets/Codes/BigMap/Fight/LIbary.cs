@@ -384,6 +384,11 @@ namespace My.Map.Entity
                     var ab = CreatePlayerHModeExecute();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                {
+                    var ab = CreateNpcHModeSJ();
+                    _abilityDict[ab.Id] = ab;
+                }
             }
 
             _abilityDict.TryGetValue(abilityName, out var abConfig);
@@ -1390,7 +1395,7 @@ namespace My.Map.Entity
             {
                 PhaseName = "Post",
                 LockRotation = true,
-                InterruptMask = EAbilityInterruptMask.NewAbility,
+                InterruptMask = EAbilityInterruptMask.Cast,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1481,7 +1486,7 @@ namespace My.Map.Entity
             {
                 PhaseName = "Post",
                 LockRotation = true,
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
 
                 DurationValue = new()
                 {
@@ -1547,7 +1552,7 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1609,7 +1614,7 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
+                InterruptMask = EAbilityInterruptMask.Cast | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1671,7 +1676,7 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
+                InterruptMask = EAbilityInterruptMask.Cast | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1791,7 +1796,7 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
+                InterruptMask = EAbilityInterruptMask.Cast | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1855,7 +1860,7 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
+                InterruptMask = EAbilityInterruptMask.Cast | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1911,7 +1916,7 @@ namespace My.Map.Entity
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
-                InterruptMask = EAbilityInterruptMask.NewAbility | EAbilityInterruptMask.Move,
+                InterruptMask = EAbilityInterruptMask.Cast | EAbilityInterruptMask.Move,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1984,7 +1989,7 @@ namespace My.Map.Entity
             {
                 PhaseName = "Post",
 
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -2061,7 +2066,7 @@ namespace My.Map.Entity
             {
                 PhaseName = "Post",
 
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
 
                 DurationValue = new()
                 {
@@ -2167,7 +2172,7 @@ namespace My.Map.Entity
                 LockRotation = true,
                 WithProgress = true,
                 AnimTag = "’ı‘˙",
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -2215,7 +2220,7 @@ namespace My.Map.Entity
 
                 PhaseBuff = new List<string>() { "player_normal_defend_on" },
 
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.NewAbility,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
                 HoldingPhase = true
             };
 
@@ -2315,7 +2320,7 @@ namespace My.Map.Entity
                 LockMovement = true,
                 ImmuneKnock = true,
 
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit | EAbilityInterruptMask.NewAbility,
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit | EAbilityInterruptMask.Cast,
 
                 AnimTag = "ziwei",
 
@@ -2371,9 +2376,6 @@ namespace My.Map.Entity
                 LockRotation = true,
                 LockMovement = true,
                 ImmuneKnock = true,
-
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit | EAbilityInterruptMask.NewAbility,
-
 
                 PhaseBuff = new() { "super_armor" },
 
@@ -2431,6 +2433,39 @@ namespace My.Map.Entity
 
             spec.Phases.Add(mainPhase);
 
+            return spec;
+        }
+    
+    
+        private static MapAbilitySpecConfig CreateNpcHModeSJ()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "unit_h_mode_sj";
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.IsDodge = true;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Execute",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+                ForbidDodge = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.8"
+                },
+            };
+            spec.Phases.Add(mainPhase);
+
+            {
+                var blurEffect = new MapFightEffectHModeBlurtCfg();
+
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = blurEffect, Kind = PhaseEventKind.OnExit });
+            }
             return spec;
         }
     }

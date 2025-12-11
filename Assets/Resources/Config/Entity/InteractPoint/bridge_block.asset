@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
+  m_Name: bridge_block
+  m_EditorClassIdentifier: 
+  CfgId: bridge_block
+  ShowName: 
+  MainStatusInfo:
+    StatusId: 0
+    InteractInfos:
+    - InteractId: 1
+      Label: "\u4FEE\u7406"
+      UnLabel: "\u4FEE\u7406(no)"
+      HideWhenFail: 0
+      CheckCommonCond:
+      - Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 1
+        Param1: 1
+        Param2: 0
+        Param3: 
+        Param4: 
+    HasBlock: 1
+  ExtraStatusInfos:
+  - StatusId: 1
+    InteractInfos: []
+    HasBlock: 0
+  InitState: 0
+  StateChangeRules: []

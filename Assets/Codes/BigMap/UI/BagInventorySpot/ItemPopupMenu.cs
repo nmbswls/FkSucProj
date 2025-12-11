@@ -128,7 +128,7 @@ namespace My.UI
         {
             if(UseBtnGo.activeSelf)
             {
-                MainGameManager.Instance.gameLogicManager.playerDataManager.ItemUseCd.TryGetValue(currentStack.ItemID, out var useTime);
+                MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.ItemUseCd.TryGetValue(currentStack.ItemID, out var useTime);
                 
                 // ²»ÔÚcd
                 if(useTime == 0 || LogicTime.time - useTime > cacheItemCfg.UseCfg1.UseCd)

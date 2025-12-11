@@ -10,10 +10,12 @@ namespace My.Map.Entity.AI
         public string StateName;
         protected MapUnitAIBrain _brain;
 
-        public List<AIAction> Actions = new();
+        public List<AIAction> DecorateActions = new();
+        public List<AIAction> NormalActions = new();
         public List<AITransition> Transitions = new();
 
-        private readonly List<AIAction> _running = new();
+        private readonly List<AIAction> _runningDecorate = new();
+        private AIAction _runningNormal = null;
         /// <summary>
         /// On Awake we grab our Brain
         /// </summary>
@@ -27,7 +29,11 @@ namespace My.Map.Entity.AI
         /// </summary>
         public virtual void Initialization()
         {
-
+            _runningDecorate.Clear();
+            foreach (var action in DecorateActions)
+            {
+                _runningDecorate.Add(action);
+            }
         }
 
         /// <summary>
@@ -35,10 +41,17 @@ namespace My.Map.Entity.AI
         /// </summary>
         public virtual void OnEnterState()
         {
-            foreach (var action in Actions)
+            foreach (var action in NormalActions)
             {
                 action.OnEnterState();
             }
+
+            foreach (var action in DecorateActions)
+            {
+                action.OnEnterState();
+                action.Start();
+            }
+
             foreach (AITransition transition in Transitions)
             {
                 foreach(var oneDecision in transition.Decisions)
@@ -54,10 +67,23 @@ namespace My.Map.Entity.AI
 		/// </summary>
 		public virtual void OnExitState()
         {
-            foreach (var action in Actions)
+            if(_runningNormal != null)
+            {
+                _runningNormal.Stop(AIActionStatus.Interrupted);
+                _runningNormal = null;
+            }
+
+            foreach (var action in NormalActions)
             {
                 action.OnExitState();
             }
+
+            foreach (var action in DecorateActions)
+            {
+                action.Stop(AIActionStatus.Interrupted);
+                action.OnExitState();
+            }
+
             foreach (AITransition transition in Transitions)
             {
                 foreach (var oneDecision in transition.Decisions)
@@ -65,15 +91,13 @@ namespace My.Map.Entity.AI
                     oneDecision.OnExitState();
                 }
             }
-
-            _running.Clear();
         }
 
         public AIAction SelectBestAction()
         {
             AIAction best = null;
             float bestScore = float.NegativeInfinity;
-            foreach (var s in Actions)
+            foreach (var s in NormalActions)
             {
                 if(s.Status == AIActionStatus.Running)
                 {
@@ -89,15 +113,15 @@ namespace My.Map.Entity.AI
 
         public void TryInterruptAllActions(bool hard, string reason)
         {
-            for (int i = _running.Count - 1; i >= 0; --i)
-            {
-                var a = _running[i];
-                if (a.CanInterrupt(reason, hard))
-                {
-                    a.Stop(AIActionStatus.Interrupted);
-                    _running.RemoveAt(i);
-                }
-            }
+            //for (int i = _running.Count - 1; i >= 0; --i)
+            //{
+            //    var a = _running[i];
+            //    if (a.CanInterrupt(reason, hard))
+            //    {
+            //        a.Stop(AIActionStatus.Interrupted);
+            //        _running.RemoveAt(i);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -105,30 +129,26 @@ namespace My.Map.Entity.AI
         /// </summary>
         public virtual void PerformActions()
         {
-            for (int i = _running.Count - 1; i >= 0; --i)
+            for (int i = _runningDecorate.Count - 1; i >= 0; --i)
             {
-                _running[i].Tick();
+                _runningDecorate[i].Tick();
             }
 
-            for (int i = _running.Count - 1; i >= 0; --i)
+            if(_runningNormal != null)
             {
-                if (_running[i].Status != AIActionStatus.Running)
-                    _running.RemoveAt(i);
+                _runningNormal.Tick();
+                if (_runningNormal.Status != AIActionStatus.Running)
+                    _runningNormal = null;
             }
-
-            bool hasExclusive = _running.Exists(s => s.IsExclusive);
-            if (!hasExclusive)
+            
+            if(_runningNormal == null || _runningNormal.CanInterrupt(null, false))
             {
                 var chosen = SelectBestAction();
-                if (chosen != null && !_running.Contains(chosen))
+                if (chosen != null && _runningNormal != chosen)
                 {
-                    if (chosen.IsExclusive)
-                    {
-                        TryInterruptAllActions(hard: true, reason: "Exclusive");
-                        _running.Clear();
-                    }
+                    _runningNormal.Stop(AIActionStatus.Interrupted);
                     chosen.Start();
-                    _running.Add(chosen);
+                    _runningNormal = chosen;
                 }
             }
         }

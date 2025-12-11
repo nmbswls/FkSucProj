@@ -32,6 +32,7 @@ namespace My.Map.Entity
         public const string Ghost = "Ghost";
         public const string Invisible = "Invisible";
         public const string HideView = "HideView";
+        public const string SuperArmor = "SuperArmor";
 
 
         public const string PlayerHunger = "PlayerHunger";
@@ -47,6 +48,7 @@ namespace My.Map.Entity
 
 
         public const string UnitHVal = "UnitHVal";
+        public const string UnitHShield = "UnitHShield";
         public const string StatUnstoppable = "StatUnstoppable";
 
         public const string DamageXiXue = "DamageXiXue";

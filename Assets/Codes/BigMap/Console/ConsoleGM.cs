@@ -250,6 +250,17 @@ public class ConsoleGM : MonoBehaviour
                 player.ApplyResourceChange(AttrIdConsts.HP, -9999999, false, FightStruct.EDmgFlag.None, null);
             });
 
+        Register("give_item", "给item",
+            new[] { new CmdParam("itemId", "string，变量名"),
+             new CmdParam("count", "string，变量名")},
+            args =>
+            {
+                string itemId = args[0];
+                var val = int.Parse(args[1]);
+
+                MainGameManager.Instance.gameLogicManager.playerDataManager.TryGiveItem(itemId, val);
+
+            });
     }
 
     void OnDestroy()

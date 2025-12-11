@@ -14,6 +14,8 @@ namespace My
         TaskFinish,
         CheckVariable,
         HasPlacement,
+
+        OwnItem, // p5 itemid p1 count
     }
 
 
@@ -54,6 +56,17 @@ namespace My
                             return true;
                         }
                         if (!checkHas && !playerDataManager.CheckHasParam(cond.Param5))
+                        {
+                            return true;
+                        }
+                    }
+                    break;
+                case ECommonCheckType.OwnItem:
+                    {
+                        string itemId = cond.Param5;
+                        long itemCnt = cond.Param1;
+
+                        if(playerDataManager.CheckHaveItem(itemId, itemCnt))
                         {
                             return true;
                         }

@@ -8,6 +8,7 @@ using Unity.Burst.Intrinsics;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using static My.GameLogicManager;
+using static My.Map.Fight.FightStruct;
 using static Unity.Collections.Unicode;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -144,7 +145,7 @@ namespace My.Map.Entity
                 return true;
             }
 
-            if(!phase.InterruptMask.HasFlag(EAbilityInterruptMask.NewAbility))
+            if(!phase.InterruptMask.HasFlag(EAbilityInterruptMask.Cast))
             {
                 return true;
             }
@@ -158,15 +159,6 @@ namespace My.Map.Entity
             public PhaseEffectEvent Source;
             public int Left;
             public float NextInterval;
-        }
-
-        public enum InterruptSource { InputCancel, Hit, Stun, KnockUp, System }
-
-        public struct InterruptRequest
-        {
-            public InterruptSource source;
-            public int priority;     // 来源优先级（例如：Stun=100, Hit=50, InputCancel=30）
-            public object payload;   // 可选：时长、方向、效果ID等
         }
 
 
@@ -207,6 +199,15 @@ namespace My.Map.Entity
         /// <returns></returns>
         protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? castVec1 = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
         {
+
+            if(abilityConf.IsDodge)
+            {
+                EntityOwner.TryInterrupt(new InterruptRequest()
+                {
+                    source = EInterruptSource.Dodge,
+                });
+            }
+
             // 检查可打断
             if (!IsActionable())
             {
@@ -215,8 +216,9 @@ namespace My.Map.Entity
 
             EntityOwner.TryInterrupt(new InterruptRequest()
             {
-                source = InterruptSource.InputCancel,
+                source = EInterruptSource.Cast,
             });
+
 
             if (IsRunning)
             {
@@ -375,7 +377,7 @@ namespace My.Map.Entity
                 CurrentCtx.PhaseIntentEffectId = eId;
             }
 
-            if(phase.InterruptMask.HasFlag(EAbilityInterruptMask.NewAbility))
+            if(phase.InterruptMask.HasFlag(EAbilityInterruptMask.Cast))
             {
                 EventOnInputCancelPhaseStart?.Invoke();
             }
@@ -409,21 +411,55 @@ namespace My.Map.Entity
             }
 
             var phase = GetCurrentPhase();
-            if(phase != null)
+            if (phase == null)
             {
-                if(req.source != InterruptSource.InputCancel)
-                {
-                    if (EntityOwner.GetAttr(AttrIdConsts.StatUnstoppable) > 0)
-                    {
-                        // 不可被该来源打断 跳出
-                        return false;
-                    }
-                }
-                else
-                {
-                    
-                }
+                return false;
             }
+            
+            switch(req.source)
+            {
+                case EInterruptSource.Move:
+                    {
+                        if (!phase.InterruptMask.HasFlag(EAbilityInterruptMask.Move))
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+                case EInterruptSource.InputCancel:
+                    {
+                        if (!phase.InterruptMask.HasFlag(EAbilityInterruptMask.Cancel))
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+                case EInterruptSource.Hit:
+                    {
+                        if (!phase.InterruptMask.HasFlag(EAbilityInterruptMask.Hit))
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+                case EInterruptSource.Dodge:
+                    {
+                        if (phase.ForbidDodge)
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+                case EInterruptSource.Cast:
+                    {
+                        if (!phase.InterruptMask.HasFlag(EAbilityInterruptMask.Cast))
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+            }
+            
 
             Cancel();
             return true;

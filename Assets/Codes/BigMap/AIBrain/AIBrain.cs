@@ -243,7 +243,8 @@ namespace My.Map.Entity.AI
             foreach (var stateInfo in conf.States)
             {
                 var state = new AIBrainState(this) { StateName = stateInfo.Name };
-                foreach(var trans in stateInfo.Transitions)
+                
+                foreach (var trans in stateInfo.Transitions)
                 {
                     state.Transitions.Add(trans);
                 }
@@ -253,10 +254,17 @@ namespace My.Map.Entity.AI
                     _actions.TryGetValue(actionName, out var action);
                     if(action != null)
                     {
-                        state.Actions.Add(action);
+                        if(action.cfg.IsDecorate)
+                        {
+                            state.DecorateActions.Add(action);
+                        }
+                        else
+                        {
+                            state.NormalActions.Add(action);
+                        }
                     }
                 }
-
+                state.Initialization();
                 States.Add(state);
             }
 

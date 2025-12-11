@@ -56,20 +56,22 @@ namespace My.Map.Entity
         public float RepeatInterval = 0f;     // 可选：重复间隔（适合持续伤害/持续采样）
     }
 
-    [System.Flags]
-    public enum EAbilityInterruptMask
-    {
-        None = 0,
-        Hit = 1 << 0,
-        Move = 1 << 3,
-        NewAbility = 1 << 5,
-    }
+    
 
     [Serializable]
     public class MapPreviewIntent
     {
         public Vector2 FaceOffset = Vector2.zero;
         public FightStruct.Shape ShapeInfo;
+    }
+
+    public enum EAbilityInterruptMask
+    {
+        None = 0,
+        Hit = 1 << 0, // 普通受击
+        Move = 1 << 1, // 普通受击
+        Cancel = 1 << 2, // 普通取消
+        Cast = 1 << 3,
     }
 
 
@@ -82,6 +84,7 @@ namespace My.Map.Entity
         public bool HoldingPhase; // 持续施法的phase不会自然结束
         
         public string AnimTag; // 可用于驱动动画状态
+
 
         public EAbilityInterruptMask InterruptMask; // 自定义Flags
         public bool ForbidDodge = false;
@@ -127,8 +130,8 @@ namespace My.Map.Entity
 
        
         public string AbilityTag;
-        
 
+        public bool IsDodge;
         
 
         // ai 相关

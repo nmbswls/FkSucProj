@@ -164,7 +164,12 @@ namespace My
                             executor = new AbilityFightExecutor4SpecialMoveTo();
                         }
                         break;
-                        
+
+                    case MapFightEffectHModeBlurtCfg:
+                        {
+                            executor = new AbilityEffectExecutor4HModeBlurt();
+                        }
+                        break;
                 }
 
                 if (executor != null)

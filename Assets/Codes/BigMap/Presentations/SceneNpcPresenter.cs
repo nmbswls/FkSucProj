@@ -64,7 +64,13 @@ namespace My.Map.Scene
         public bool CanInteractEnable(float dist)
         {
 
-            if(MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+            if (NpcEntity.IsHMode)
+            {
+
+                return true;
+            }
+
+            if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
                 if (dist > 0.5f) return false;
                 if(NpcEntity.cacheCfg.InteractList.Count > 0)
@@ -197,7 +203,7 @@ namespace My.Map.Scene
         {
             var ret = new List<SceneInteractSelection>();
 
-            if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+            //if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
             {
                 if (NpcEntity.IsHMode)
                 {
@@ -258,6 +264,8 @@ namespace My.Map.Scene
 
             return ret;
         }
+
+        
     }
 }
 

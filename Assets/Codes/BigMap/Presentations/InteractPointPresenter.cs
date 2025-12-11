@@ -11,6 +11,8 @@ namespace My.Map.Scene
     public class InteractPointPresenter : ScenePresentationBase<LogicEntityInteractPoint>, ISceneInteractable
     {
         [SerializeField] private GameObject highlightFx;
+
+        public GameObject MainBlock;
         public List<GameObject> Blocks;
 
         public event Action<bool> EventOnInteractStateChanged;
@@ -88,7 +90,7 @@ namespace My.Map.Scene
         {
             if(RealLogic != null)
             {
-                RealLogic.OnStatusChange += OnStatusChanged;
+                RealLogic.OnStatusChange -= OnStatusChanged;
             }
 
             base.Unbind();
@@ -97,6 +99,15 @@ namespace My.Map.Scene
         public void OnStatusChanged()
         {
             //MainGameManager.Instance.interactSystem.UpdateInteractRangeObjs
+            var status = RealLogic.GetCurrentStatusInfo();
+            if (status.HasBlock)
+            {
+                MainBlock.SetActive(true);
+            }
+            else
+            {
+                MainBlock.SetActive(false);
+            }
         }
 
         public override void Tick(float dt)

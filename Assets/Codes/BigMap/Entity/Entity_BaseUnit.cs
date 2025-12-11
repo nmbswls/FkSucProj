@@ -295,11 +295,11 @@ namespace My.Map
                 return;
             }
 
-            TryInterrupt(new InterruptRequest()
-            {
-                source = InterruptSource.KnockUp,
-                priority = 10,
-            });
+            //TryInterrupt(new InterruptRequest()
+            //{
+            //    source = EInterruptSource.KnockUp,
+            //    priority = 10,
+            //});
 
             ApplyControlledMove(ControlledMoveCtx.EType.Knock, dir, originSpeed: knockDist * decayRate, minEndSpeed: 0.1f);
         }
@@ -500,6 +500,7 @@ namespace My.Map
 
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 10000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 12000, 12000);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
 
             attributeStore.Commit();
@@ -582,8 +583,24 @@ namespace My.Map
 
         #region interrrupt
 
+        /// <summary>
+        /// 打断
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
         public void TryInterrupt(InterruptRequest req)
         {
+            // 检查超级护甲
+            if (CheckHasState(AttrIdConsts.SuperArmor))
+            {
+                // 免疫所有被动打断
+                if (req.source == EInterruptSource.Stun
+                || req.source == EInterruptSource.Hit)
+                {
+                    return;
+                }
+            }
+                
             abilityController.TryInterrupt(req);
 
             LogicManager.globalThrowManager.TryInterruptThrowByLauncher(this, req);
@@ -681,13 +698,9 @@ namespace My.Map
                                 }
                             }
 
-                            EventOnHit?.Invoke(this.Id);
-                            {
-                                foreach(var b in BuffContainer.Values)
-                                {
-                                    b.DoBuffTrigger(ETriggerType.OnHit);
-                                }
-                            }
+                            UnitOnHit(intent.delta);
+
+                            
                         }
 
                         if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
@@ -704,6 +717,29 @@ namespace My.Map
                 EventOnEnmityBehave?.Invoke(this.Id);
             }
         }
+
+
+        protected virtual void UnitOnHit(long delta)
+        {
+            // 触发onhit
+            foreach (var b in BuffContainer.Values)
+            {
+                b.DoBuffTrigger(ETriggerType.OnHit);
+            }
+
+            // 高于5.00的伤害才触发打断
+            if(Math.Abs(delta) > 500)
+            {
+                TryInterrupt(new InterruptRequest()
+                {
+                    source = EInterruptSource.Hit,
+                });
+            }
+
+            EventOnHit?.Invoke(this.Id);
+
+        }
+
 
         public class UnitBagContainer : IItemContainer
         {
@@ -917,7 +953,7 @@ namespace My.Map
 
             TryInterrupt(new InterruptRequest()
             {
-                source = InterruptSource.System,
+                source = EInterruptSource.System,
                 priority = 999,
             });
 
@@ -935,6 +971,57 @@ namespace My.Map
             ApplyKnockBack(UnityEngine.Random.insideUnitCircle, 1.0f);
 
             EventOnAttachStatusChanged?.Invoke(this.Id);
+        }
+
+
+        public override void OnStatusAttriChanged(string attrId, bool isOn)
+        {
+            base.OnStatusAttriChanged (attrId, isOn);
+
+            switch (attrId)
+            {
+                case AttrIdConsts.Stun:
+                    {
+                        if(isOn)
+                        {
+                            TryInterrupt(new InterruptRequest()
+                            {
+                                source = EInterruptSource.Stun,
+                                priority = 10,
+                            });
+                        }
+                    }
+                    break;
+            }
+        }
+
+        public override long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent)
+        {
+            long delta = intent.delta;
+            switch(attrId)
+            {
+                case AttrIdConsts.HP:
+                    {
+                        if (delta < 0)
+                        {
+                            var dmg = Math.Abs(delta);
+
+                            var basicJs = attributeStore.GetAttr(AttrIdConsts.Basic_JianShang);
+                            if (basicJs > 9900)
+                            {
+                                basicJs = 9900;
+                            }
+                            dmg = (long)(dmg * basicJs * 0.0001);
+                            return -dmg;
+                        }
+                        return delta;
+                    }
+                    break;
+                default:
+                    {
+                        return base.CalculateResourceCostAmount(attrId, intent);
+                    }
+            }
         }
     }
 

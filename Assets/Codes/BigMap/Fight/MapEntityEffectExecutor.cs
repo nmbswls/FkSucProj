@@ -204,7 +204,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            ctx.Env.playerDataManager.ItemUseCd[useItemId] = LogicTime.time;
+            ctx.Env.playerDataManager.inventoryModel.ItemUseCd[useItemId] = LogicTime.time;
             switch(itemCfg.UseCfg1.UseType)
             {
                 case FakeItemConf.EItemUseType.AddHunger:
@@ -1112,4 +1112,68 @@ namespace My.Map.Entity
             player.HitAttachObjs();
         }
     }
+
+    public class AbilityEffectExecutor4HModeBlurt : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectHModeBlurtCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4HModeBlurt err");
+                return;
+            }
+
+            var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (caster == null || caster is not NpcUnitLogicEntity npcUnit)
+            {
+                Debug.LogError("AbilityEffectExecutor4HModeBlurt unit not found.");
+                return;
+            }
+
+            //
+            if(ctx.Env.playerLogicEntity.IsQueenMode)
+            {
+
+            }
+            else
+            {
+                var diff = ctx.Env.playerLogicEntity.Pos - npcUnit.Pos;
+                // 
+                bool absorb = false;
+                if (diff.magnitude < 0.1f)
+                {
+                    absorb = true;
+                }
+                else if(diff.magnitude < 1.0f)
+                {
+                    var signedAngle = Vector2.SignedAngle(diff, npcUnit.FaceDir);
+                    if(signedAngle < 45)
+                    {
+                        absorb = true;
+                    }
+                }
+
+                // 被主角吸收
+                if(absorb)
+                {
+                    //ctx.Env.globalBuffManager.AddBuff();
+                    Debug.Log("AbilityEffectExecutor4HModeBlurt sj to player");
+                    ctx.Env.viewer.ShowPauseCloseupWindow("jingyu", 0.5f);
+                }
+                else
+                {
+                    var dropPos = npcUnit.Pos + npcUnit.FaceDir * 0.5f;
+                    for(int i=0; i< 4;i++)
+                    {
+                        ctx.Env.globalDropCollection.CreateDrop("j_drop", 1, dropPos, true, npcUnit.Pos);
+                    }
+
+                    ctx.Env.viewer.ShowFakeFxEffect("落地", dropPos);
+                }
+            }
+        }
+    }
+    
 }

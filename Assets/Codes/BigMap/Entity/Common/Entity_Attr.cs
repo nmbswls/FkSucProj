@@ -471,7 +471,7 @@ namespace My.Map
                 {
                     long before = r.current;
 
-                    var delta = Owner.CalculateResourceCostAmount(pending);
+                    var delta = Owner.CalculateResourceCostAmount(r.resourceId, pending);
                     pending.finalDelta = delta;
                     r.current += delta;
 
@@ -568,6 +568,7 @@ namespace My.Map
                 case AttrIdConsts.PlayerPleasure:
                 case AttrIdConsts.UnitHVal:
                 case AttrIdConsts.DeepZhaChance:
+                case AttrIdConsts.UnitHShield:
                     {
                         return GetResourceCurrent(attrId);
                     }

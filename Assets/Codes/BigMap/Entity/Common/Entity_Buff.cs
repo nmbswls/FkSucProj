@@ -111,6 +111,28 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["super_armor"] = new BuffDefinition()
+                {
+                    BuffId = "super_armor",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.SuperArmor, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                };
+
+                _library["force_stun"] = new BuffDefinition()
+                {
+                    BuffId = "force_stun",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 } ,
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
+                    },
+                    DefaultDuration = -1,
+                };
+                
+
                 _library["beizha"] = new BuffDefinition()
                 {
                     BuffId = "beizha",
@@ -424,9 +446,27 @@ namespace My.Map.Entity
                 {
                     BuffId = "player_ziwei",
                     LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_PleasureAdd, ModifierValue = 100 },
+                    },
                     DefaultDuration = -1,
 
-                    
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 1000, // √ø0.2√Î“ª¥Œ
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectHitBoxCfg()
+                                {
+                                    
+                                }
+                            }
+                        }
+                    },
                 };
                 
             }

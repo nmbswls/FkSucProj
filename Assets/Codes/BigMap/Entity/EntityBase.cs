@@ -50,7 +50,7 @@ namespace My.Map
 
         void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null);
 
-        long CalculateResourceCostAmount(ResourceDeltaIntent intent);
+        long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent);
         /// <summary>
         /// Ôö¼Ómodifier
         /// </summary>
@@ -233,7 +233,7 @@ namespace My.Map
 
         }
         
-        public virtual long CalculateResourceCostAmount(ResourceDeltaIntent intent)
+        public virtual long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent)
         {
             return intent.delta;
         }

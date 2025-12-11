@@ -9,6 +9,7 @@ using Map.Logic.Events;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using My.Map.Entity.AI;
 using System;
+using static My.Map.Fight.FightStruct;
 
 
 namespace My.Map
@@ -237,37 +238,32 @@ namespace My.Map
         {
             if(!IsHMode)
             {
-                var hVal = GetAttr(AttrIdConsts.UnitHVal);
-                if(hVal >= 10000)
+                var hVal = GetAttr(AttrIdConsts.UnitHShield);
+                if(hVal <= 0)
                 {
                     IsHMode = true;
                     _lastHModeTimer = LogicTime.time;
 
                     EventOnHModeChange?.Invoke();
-
-                    ForceSetResource(AttrIdConsts.UnitHVal, 0);
                 }
             }
             else
             {
+                // 五分钟后恢复意志
                 if(LogicTime.time - _lastHModeTimer > 5 * 60)
                 {
                     IsHMode = false;
+                    ForceSetResource(AttrIdConsts.UnitHShield, 10000);
                     EventOnHModeChange?.Invoke();
                     return;
                 }
 
+                var hValMax = GetHValMax();
                 var hVal = GetAttr(AttrIdConsts.UnitHVal);
-                if (hVal >= 10000)
+                if (hVal >= hValMax)
                 {
-                    ForceSetResource(AttrIdConsts.UnitHVal, 0);
-
-                    LogicManager.viewer.ShowFakeFxEffect("射!", this.Pos);
-
-                    // 伤害
-                    ApplyResourceChange(AttrIdConsts.HP, -80000, false, Fight.FightStruct.EDmgFlag.None, this.Id);
+                    OnNpcBlurt();
                 }
-
             }
         }
 
@@ -311,6 +307,68 @@ namespace My.Map
         protected override void OnRestoreFromAttach()
         {
             base.OnRestoreFromAttach();
+        }
+
+        public override long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent)
+        {
+
+            var delta = intent.delta;
+
+            switch (attrId)
+            {
+                
+                case AttrIdConsts.UnitHVal:
+                    {
+
+                        // 对于累计h值 检查扣盾
+                        if(delta > 0)
+                        {
+                            var shieldVal = attributeStore.GetAttr(AttrIdConsts.UnitHShield);
+                            if (shieldVal > delta)
+                            {
+                                ApplyResourceChange(AttrIdConsts.UnitHShield, -delta, intent.isEnmity, intent.deltaFlags, intent.srcEntityId);
+                                Debug.Log($"CalculateResourceCostAmount cost hshield {delta}");
+                                delta = 0;
+                            }
+                            else
+                            {
+                                ApplyResourceChange(AttrIdConsts.UnitHShield, -shieldVal, intent.isEnmity, intent.deltaFlags, intent.srcEntityId);
+                                Debug.Log($"CalculateResourceCostAmount cost hshield {shieldVal}");
+                                delta = delta - shieldVal;
+                            }
+                        }
+                        
+                    }
+                    break;
+                default:
+                    {
+                        return base.CalculateResourceCostAmount(attrId, intent);
+                    }
+            }
+
+            return delta;
+        }
+
+        protected virtual long GetHValMax()
+        {
+            return 10000;
+        }
+
+        protected virtual void OnNpcBlurt()
+        {
+            ForceSetResource(AttrIdConsts.UnitHVal, 0);
+
+            LogicManager.viewer.ShowFakeFxEffect("射!", this.Pos);
+
+            // 伤害
+            ApplyResourceChange(AttrIdConsts.HP, -80000, false, Fight.FightStruct.EDmgFlag.None, this.Id);
+
+            TryInterrupt(new InterruptRequest()
+            {
+                source = EInterruptSource.System,
+            });
+
+            abilityController.TryUseAbility("unit_h_mode_sj");
         }
     }
 }

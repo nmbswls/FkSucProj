@@ -46,7 +46,7 @@ namespace My.Map.Scene
         public Rigidbody2D rb;
         public Collider2D mainCol;
 
-        public Vector2 freeMoveDir;
+        //public Vector2 freeMoveDir;
         private float acceleration = 99.0f;
 
         public SimpleCharacterController CharacterController;
@@ -216,7 +216,7 @@ namespace My.Map.Scene
                 Vector2 targetMoveVel;
                 if (UnitEntity.entityMotorComp.State == EMotorState.Free)
                 {
-                    targetMoveVel = freeMoveDir * UnitEntity.GetCurrSpeed();
+                    targetMoveVel = UnitEntity.entityMotorComp.FreeMoveInput * UnitEntity.GetCurrSpeed();
                 }
                 else
                 {

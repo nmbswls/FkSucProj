@@ -391,7 +391,7 @@ namespace My.Player.Bag
         }
 
         /// <summary>
-        /// 增加到背包 不指定位置
+        /// 尝试增加到背包 仅添加一次
         /// </summary>
         /// <param name="incoming"></param>
         /// <returns></returns>
@@ -404,7 +404,28 @@ namespace My.Player.Bag
             long remaining = count;
 
             var maxStack = GetMaxStack(itemId);
-            // 先尝试再普通格子里堆叠
+            // 
+            if (preferredIdx != -1)
+            {
+                // 检查普通槽位
+                if(preferredIdx < NormalSlots.Count)
+                {
+                    var s = NormalSlots[preferredIdx];
+                    if (s != null && s.ItemID == itemId && s.Count < GetMaxStack(s.ItemID))
+                    {
+                        var added = s.AddToStack(remaining, maxStack);
+                        remaining -= added;
+                    }
+                    else if (s == null || s.Count <= 0)
+                    {
+                        var put = Math.Min(maxStack, remaining);
+                        NormalSlots[preferredIdx] = FakeItemDatabase.CreateItemStack(itemId, put);
+                        remaining -= put;
+                    }
+                }
+            }
+
+            // 尝试普通格子堆叠
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 var s = NormalSlots[i];
@@ -414,20 +435,30 @@ namespace My.Player.Bag
                     remaining -= added;
                 }
             }
-            // 再找普通格子空位
+
+            if(remaining <= 0)
+            {
+                return count;
+            }
+
+            // 找普通格子空位继续放
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 if (NormalSlots[i] == null || NormalSlots[i].IsEmpty)
                 {
-                    var max = GetMaxStack(itemId);
-                    var put = Math.Min(max, remaining);
+                    var put = Math.Min(maxStack, remaining);
                     NormalSlots[i] = FakeItemDatabase.CreateItemStack(itemId, put);
                     remaining -= put;
                 }
             }
 
+            if (remaining <= 0)
+            {
+                return count;
+            }
+
             // 如果背包可超载 在超载中寻找
-            if (remaining > 0 && MaxExtraCapacity > 0)
+            if (MaxExtraCapacity > 0)
             {
                 // 先堆叠
                 for (int i = 0; i < ExtraSlots.Count && remaining > 0; i++)
@@ -584,6 +615,9 @@ namespace My.Player.Bag
         public Dictionary<int, PlayerBag> SpeBags = new Dictionary<int, PlayerBag>();
 
 
+        public Dictionary<string, float> ItemUseCd = new();
+
+        public Dictionary<string, long> CurrencyBag = new();
         public PlayerInventoryModel()
         {
             MainBag = new();
@@ -598,8 +632,89 @@ namespace My.Player.Bag
             }
         }
 
+        public bool CheckHaveItem(string itemId, long count)
+        {
+            long totalNum = 0;
+
+            for (int bagId = 0; bagId <= 4; bagId++)
+            {
+                var bag = GetBagById(bagId);
+                if (bag == null)
+                {
+                    continue;
+                }
+
+                var bagCount = bag.GetItemCount(itemId);
+                totalNum += bagCount;
+                if (totalNum >= count)
+                {
+                    return true;
+                }
+            }
+
+            CurrencyBag.TryGetValue(itemId, out var currencyVal);
+            totalNum += currencyVal;
+
+            if (totalNum >= count)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public long CostItem(string itemId, long count)
+        {
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            long leftCount = count;
+            var itemConf = FakeItemDatabase.GetItem(itemId);
+            if (itemConf.ItemType == FakeItemConf.EItemType.Currency)
+            {
+                CurrencyBag.TryGetValue(itemId, out var itemVal);
+                if (itemVal > leftCount)
+                {
+                    CurrencyBag[itemId] = itemVal - leftCount;
+                    leftCount = 0;
+                }
+                else
+                {
+                    CurrencyBag[itemId] = 0;
+                    leftCount -= itemVal;
+                }
+            }
+
+            for (int bagId = 0; bagId <= 4; bagId++)
+            {
+                var bag = GetBagById(bagId);
+                if (bag == null)
+                {
+                    continue;
+                }
+
+                leftCount = bag.TryCostItem(itemId, leftCount);
+
+                if (leftCount <= 0)
+                {
+                    break;
+                }
+            }
+
+            return leftCount;
+        }
+
         public long GiveItem(string itemId, long amount)
         {
+            var itemConf = FakeItemDatabase.GetItem(itemId);
+            if (itemConf.ItemType == FakeItemConf.EItemType.Currency)
+            {
+                CurrencyBag[itemId] = CurrencyBag.GetValueOrDefault(itemId) + amount;
+                return amount;
+            }
+
+
             var bag = GetBagById(0);
             if (bag == null)
             {

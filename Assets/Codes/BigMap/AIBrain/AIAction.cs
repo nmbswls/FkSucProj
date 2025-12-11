@@ -105,7 +105,8 @@ namespace My.Map.Entity.AI
     [Serializable]
     public abstract class AIActionCfg
     {
-
+        // ÊÇ·ñÎª×°ÊÎÆ÷action
+        public abstract bool IsDecorate { get; }
     }
 
     public abstract class AIAction
@@ -137,7 +138,7 @@ namespace My.Map.Entity.AI
             }
         }
 
-        protected AIActionCfg cfg { get; set; }
+        public AIActionCfg cfg { get; protected set; }
 
         public AIAction(MapUnitAIBrain aIBrain, AIActionCfg cfg)
         {
@@ -191,7 +192,7 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgDoNothing : AIActionCfg
     {
-
+        public override bool IsDecorate => false;
     }
 
     public class AIActionDoNothing : AIAction
@@ -218,7 +219,7 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgRecoveryFromAttract : AIActionCfg
     {
-        
+        public override bool IsDecorate => false;
     }
 
 
@@ -283,6 +284,8 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgTryRecovery : AIActionCfg
     {
+        public override bool IsDecorate => false;
+
         public float MinRecoverTime = 1.5f;
     }
 
@@ -358,7 +361,11 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
-    public class AIActionCfgNormalMoveDaemon: AIActionCfg { }
+    public class AIActionCfgNormalMoveDaemon: AIActionCfg 
+    { 
+        public override bool IsDecorate => false; 
+    }
+
     public class AIActionNormalMoveDaemon : AIAction
     {
         public AIActionNormalMoveDaemon(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
@@ -393,7 +400,10 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
-    public class AIActionCfgMoveInPatrolGroup : AIActionCfg { }
+    public class AIActionCfgMoveInPatrolGroup : AIActionCfg 
+    {
+        public override bool IsDecorate => false; 
+    }
     public class AIActionMoveInPatrolGroup : AIAction
     {
         public AIActionMoveInPatrolGroup(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
@@ -426,7 +436,10 @@ namespace My.Map.Entity.AI
 
 
     [Serializable]
-    public class AIActionCfgMoveDoPath : AIActionCfg { }
+    public class AIActionCfgMoveDoPath : AIActionCfg 
+    { 
+        public override bool IsDecorate => false; 
+    }
 
     public class AIActionMoveDoPath : AIAction
     {
@@ -500,7 +513,10 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
-    public class AIActionCfgMoveHunting : AIActionCfg { }
+    public class AIActionCfgMoveHunting : AIActionCfg 
+    {
+        public override bool IsDecorate => false;
+    }
     public class AIActionMoveHunting : AIAction
     {
         public override string Name => "MoveHunting";
@@ -544,7 +560,10 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
-    public class AIActionCfgCombatMain : AIActionCfg { }
+    public class AIActionCfgCombatMain : AIActionCfg 
+    {
+        public override bool IsDecorate => false;
+    }
 
     public class AIActionCombatMain : AIAction
     {
@@ -594,7 +613,10 @@ namespace My.Map.Entity.AI
 
 
     [Serializable]
-    public class AIActionCfgTryUseSkill : AIActionCfg { }
+    public class AIActionCfgTryUseSkill : AIActionCfg 
+    {
+        public override bool IsDecorate => false;
+    }
 
     public class AIActionTryUseSkill : AIAction
     {
@@ -802,6 +824,7 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgDistanceControl : AIActionCfg
     {
+        public override bool IsDecorate => false;
         public float GoodDistance = 0.8f;
     }
 
@@ -883,7 +906,10 @@ namespace My.Map.Entity.AI
     }
 
     [Serializable]
-    public class AIActionCfgCombatQuickCloser : AIActionCfg { }
+    public class AIActionCfgCombatQuickCloser : AIActionCfg 
+    {
+        public override bool IsDecorate => false;
+    }
 
     public class AIActionCombatQuickCloser : AIAction
     {
@@ -959,7 +985,10 @@ namespace My.Map.Entity.AI
 
 
     [Serializable]
-    public class AIActionCfgAttractedBehave : AIActionCfg { }
+    public class AIActionCfgAttractedBehave : AIActionCfg
+    {
+        public override bool IsDecorate => false;
+    }
     public class AIActionAttractedBehave : AIAction
     {
         public AIActionAttractedBehave(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
@@ -995,6 +1024,7 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgAttractedMove : AIActionCfg
     {
+         public override bool IsDecorate => false;
         public float StayDuration = 5.0f;
         public float WatchDistance = 0.8f;
     }

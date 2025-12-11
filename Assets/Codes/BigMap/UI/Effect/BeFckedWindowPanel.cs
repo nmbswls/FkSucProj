@@ -5,9 +5,11 @@
 using Map.Logic.Events;
 using My.Input;
 using My.Map;
+using My.Map.Fight;
 using TMPro;
 using UnityEngine;
 using static My.Map.Entity.MapEntityAbilityExecutor;
+using static My.Map.Fight.FightStruct;
 
 namespace My.UI
 {
@@ -57,8 +59,8 @@ namespace My.UI
             var srcEntity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(FckingUnitId, false);
             if (srcEntity != null && srcEntity is BaseUnitLogicEntity unitEntity) 
             {
-                unitEntity.TryInterrupt(new InterruptRequest() {
-                    source = InterruptSource.System,
+                unitEntity.TryInterrupt(new FightStruct.InterruptRequest() {
+                    source = EInterruptSource.System,
                     priority = 999,
                 });
             }

@@ -201,7 +201,7 @@ namespace My.UI.Bag
                 bag.ClearEmptyItems();
             }
 
-            MainGameManager.Instance.gameLogicManager.playerDataManager.ItemUseCd.TryGetValue(stack.ItemID, out var lastUseTime);
+            MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.ItemUseCd.TryGetValue(stack.ItemID, out var lastUseTime);
             if(lastUseTime != 0 && itemConf.UseCfg1.UseCd > 0 && LogicTime.time - lastUseTime < itemConf.UseCfg1.UseCd)
             {
                 Debug.LogError($"use item fail cd {lastUseTime}");

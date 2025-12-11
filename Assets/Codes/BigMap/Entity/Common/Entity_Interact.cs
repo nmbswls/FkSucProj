@@ -186,6 +186,20 @@ namespace My.Map
                             player.StartStealth(Owner.Id, Owner.Pos);
                         }
                         break;
+                    case Config.LogicInteractOutput.EOutputType.CostItems:
+                        {
+                            string itemId = output.Param3;
+                            long count = output.Param1;
+                            Owner.LogicManager.playerDataManager.CostItem(itemId, count);
+                        }
+                        break;
+                    case Config.LogicInteractOutput.EOutputType.GiveItems:
+                        {
+                            string itemId = output.Param3;
+                            long count = output.Param1;
+                            Owner.LogicManager.playerDataManager.TryGiveItem(itemId, count);
+                        }
+                        break;
                 }
             }
             return true;

@@ -11,6 +11,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.WSA;
 using static My.Map.Entity.MapEntityAbilityExecutor;
+using static My.Map.Fight.FightStruct;
 
 
 
@@ -163,19 +164,26 @@ namespace My.Map.Entity
 
         public bool TryInterruptThrowByLauncher(IThrowLauncher launcher, InterruptRequest req)
         {
+
             if (!launcher2ContextMap.TryGetValue(launcher.Id, out var launcherCtxId))
             {
-                //Debug.LogError("TryInterruptThrowByLauncher not find throw launcher " + launcher.Id);
                 return false;
             }
 
             if (!ContextContainer.TryGetValue(launcherCtxId, out var launcherCtx))
             {
-                //Debug.LogError("interrupt status error wrong state");
+                Debug.LogError("interrupt status error wrong state");
                 launcher2ContextMap.Remove(launcher.Id);
                 return false;
             }
-            Debug.LogError("TryInterruptThrowByLauncher " + launcher.Id);
+
+            if(req.source != EInterruptSource.Stun
+                && req.source != EInterruptSource.System)
+            {
+                return false;
+            }
+
+            // ¥¶¿Ì
             CleanOneThrowContext(launcherCtx);
 
             return true;
@@ -200,6 +208,14 @@ namespace My.Map.Entity
             launcher2ContextMap.Remove(oldlauncher.Id);
 
             ContextContainer.Remove(ctx.CtxId);
+
+            if(oldTarget != null)
+            {
+                if(oldTarget is BaseUnitLogicEntity unit)
+                {
+                    unit.ApplyKnockBack(UnityEngine.Random.insideUnitCircle, 0.2f);
+                }
+            }
         }
     }
 }

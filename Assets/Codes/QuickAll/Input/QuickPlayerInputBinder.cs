@@ -435,13 +435,13 @@ namespace My.Input
                 if (MainGameManager.Instance.playerScenePresenter != null)
                 {
                     Vector2 dir = Vector2.one;
-                    if (MainGameManager.Instance.playerScenePresenter.freeMoveDir.magnitude < 0.01f)
+                    if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.entityMotorComp.FreeMoveInput.magnitude < 0.01f)
                     {
                         dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FaceDir;
                     }
                     else
                     {
-                        dir = MainGameManager.Instance.playerScenePresenter.freeMoveDir;
+                        dir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.entityMotorComp.FreeMoveInput;
                     }
 
                     MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", dir + MainGameManager.Instance.playerScenePresenter.PlayerEntity.Pos);
@@ -459,8 +459,8 @@ namespace My.Input
         {
             if (MainGameManager.Instance.playerScenePresenter != null)
             {
-                MainGameManager.Instance.playerScenePresenter.freeMoveDir = dir;
-                MainGameManager.Instance.playerScenePresenter.freeMoveDir = Vector2.ClampMagnitude(dir, 1f);
+                //MainGameManager.Instance.playerScenePresenter.freeMoveDir = dir;
+                //MainGameManager.Instance.playerScenePresenter.freeMoveDir = Vector2.ClampMagnitude(dir, 1f);
 
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.entityMotorComp.FreeMoveInput = Vector2.ClampMagnitude(dir, 1f);
             }

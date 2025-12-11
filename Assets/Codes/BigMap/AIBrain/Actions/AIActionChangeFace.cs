@@ -7,6 +7,7 @@ namespace My.Map.Entity.AI.Action
     [Serializable]
     public class AIActionCfgChangeFace : AIActionCfg
     {
+        public override bool IsDecorate => false;
         public float ChangeFaceInterval = 5.0f;
     }
     public class AIActionChangeFace : AIAction
