@@ -49,7 +49,9 @@ namespace My.Map.Entity.AI
         public float VisionFOV = 140f;
         public float LoseTargetGrace = 1.2f;
 
-        public float ExitChasingRange = 10.0f;
+        public bool ExitCombatBoundary = true;
+        public float ExitCombatBoundaryRange = 10.0f;
+        public float ExitCombatMinRecoverTime = 1f;
 
         public float GoodBattleDistance = 3.0f;
     }

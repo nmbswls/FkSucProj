@@ -710,9 +710,8 @@ namespace My.Map
                                 }
                             }
 
-                            UnitOnHit(intent.delta);
+                            UnitOnHit(intent.delta, intent.srcEntityId);
 
-                            
                         }
 
                         if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
@@ -731,7 +730,7 @@ namespace My.Map
         }
 
 
-        protected virtual void UnitOnHit(long delta)
+        protected virtual void UnitOnHit(long delta, long? srcEntityId)
         {
             // ´¥·¢onhit
             foreach (var b in BuffContainer.Values)
@@ -750,6 +749,15 @@ namespace My.Map
 
             EventOnHit?.Invoke(this.Id);
 
+            // ÉËº¦Âß¼­
+            if(srcEntityId != null)
+            {
+                var srcNpc = LogicManager.GetLogicEntity(srcEntityId.Value) as NpcUnitLogicEntity;
+                if(srcNpc != null)
+                {
+                    srcNpc.combatStateComp.OnGiveDamage(this.Id, Math.Abs(delta));
+                }
+            }    
         }
 
 

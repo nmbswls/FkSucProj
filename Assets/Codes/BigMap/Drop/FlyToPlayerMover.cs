@@ -32,7 +32,7 @@ public class FlyToPlayerMover : MonoBehaviour
         if (dist <= arriveDistance)
         {
             _onArrived?.Invoke();
-            enabled = false; // 停止移动（上层可能会销毁）
+            //enabled = false; // 停止移动（上层可能会销毁）
             return;
         }
 

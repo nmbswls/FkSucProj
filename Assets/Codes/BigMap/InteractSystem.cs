@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using My.UI;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public interface ISceneInteractable
 {
@@ -30,6 +31,7 @@ public class SceneInteractSystem
 {
 
     private float _checkRadius = 3f;
+    private float _checkAngle = 60f;
 
     private float _interactTimer = 0f;
 
@@ -40,13 +42,14 @@ public class SceneInteractSystem
     }
 
     private Collider2D[] hits;
-    private struct ResultItem
+    public struct IntResultItem
     {
         public ISceneInteractable interactable;
         public float distance;
+        public Vector2 pos;
     }
-    private readonly List<ResultItem> candidates = new List<ResultItem>(64);
-    public List<(ISceneInteractable, float)> currInteractPoints = new();
+    private readonly List<IntResultItem> candidates = new List<IntResultItem>(64);
+    private List<IntResultItem> currInteractPoints = new();
     public List<long> closeUnitCache = new();
     //public ISceneInteractable? currnteractObj;
 
@@ -67,7 +70,7 @@ public class SceneInteractSystem
         {
             for(int i=0;i<currInteractPoints.Count;i++)
             {
-                if (currInteractPoints[i].Item1 != candidates[i].interactable)
+                if (currInteractPoints[i].interactable != candidates[i].interactable)
                 {
                     allSame = false;
                 }
@@ -85,7 +88,7 @@ public class SceneInteractSystem
         currInteractPoints.Clear();
         foreach(var one in candidates)
         {
-            currInteractPoints.Add((one.interactable, one.distance));
+            currInteractPoints.Add(one);
         }
 
         SceneInteractMenuPanel.Instance?.RefreshInteractObjs(currInteractPoints); 
@@ -115,20 +118,43 @@ public class SceneInteractSystem
             var interactable = col.GetComponentInParent<ISceneInteractable>();
             if (interactable == null) continue;
 
-            // 计算距离（以角色位置 center 为基准）
-            // 距离点可以用碰撞体最近点，能更准确反映“与角色的最短距离”
-            Vector2 nearest = col.ClosestPoint(center);
-            float dist = (nearest - center).sqrMagnitude;
+            Vector2 diff = (Vector2)col.transform.position - center;
+            var dist = diff.magnitude;
+
+            bool canInt = false;
+            if (dist < 0.3f)
+            {
+                canInt = true;
+            }
+            else
+            {
+                var angle = Vector2.Angle(diff, presenter.PlayerEntity.FaceDir);
+                if (angle < _checkAngle * 0.5f)
+                {
+                    canInt = true;
+                }
+            }
+
+            if (!canInt)
+            {
+                continue;
+            }
+
+            //// 计算距离（以角色位置 center 为基准）
+            //// 距离点可以用碰撞体最近点，能更准确反映“与角色的最短距离”
+            //Vector2 nearest = col.ClosestPoint(center);
+            //float dist = (nearest - center).sqrMagnitude;
 
             if (!interactable.CanInteractEnable(dist))
             {
                 continue;
             }
 
-            candidates.Add(new ResultItem
+            candidates.Add(new IntResultItem
             {
                 interactable = interactable,
-                distance = dist
+                distance = dist,
+                pos = col.transform.position,
             });
         }
 

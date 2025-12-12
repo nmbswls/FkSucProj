@@ -77,7 +77,7 @@ namespace My.Map.Scene
         public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             var ret = new List<SceneInteractSelection>();
-            if (dist > 0.1f) return ret;
+            if (dist > 0.5f) return ret;
 
             ret.Add(new SceneInteractSelection()
             {

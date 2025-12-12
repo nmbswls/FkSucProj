@@ -9,6 +9,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static SceneInteractSystem;
 
 namespace My.UI
 {
@@ -38,7 +39,7 @@ namespace My.UI
         }
         public EShowStatus ShowStatus;
 
-        public List<(ISceneInteractable, float)> CurrInteractPoint = new();
+        public List<IntResultItem> CurrInteractPoint = new();
         public ISceneInteractable? currBindPoint = null;
         public float? currBindPointDist = null;
 
@@ -52,13 +53,13 @@ namespace My.UI
                     return;
                 }
 
-                if (currBindPoint == CurrInteractPoint[idx].Item1)
+                if (currBindPoint == CurrInteractPoint[idx].interactable)
                 {
                     return;
                 }
 
-                currBindPoint = CurrInteractPoint[idx].Item1;
-                currBindPointDist = CurrInteractPoint[idx].Item2;
+                currBindPoint = CurrInteractPoint[idx].interactable;
+                currBindPointDist = CurrInteractPoint[idx].distance;
                 ShowDirectInteractMenuOnObj(currBindPoint, currBindPointDist.Value);
             };
 
@@ -124,7 +125,7 @@ namespace My.UI
 
             foreach (var one in CurrInteractPoint)
             {
-                innerList.Add(new(one.Item1.Id, one.Item1.ShowName, true));
+                innerList.Add(new(one.interactable.Id, one.interactable.ShowName, true));
             }
             ChooseObjMenu.SetData(innerList);
 
@@ -191,10 +192,23 @@ namespace My.UI
         /// 刷新交互物
         /// </summary>
         /// <param name="interactPoints"></param>
-        public void RefreshInteractObjs(List<(ISceneInteractable, float)> interactPoints)
+        public void RefreshInteractObjs(List<IntResultItem> interactPoints)
         {
             this.CurrInteractPoint.Clear();
-            this.CurrInteractPoint.AddRange(interactPoints);
+            if(interactPoints.Count > 0)
+            {
+                var firstPoint = interactPoints[0];
+                this.CurrInteractPoint.Add(firstPoint);
+
+
+                for (int i= 1; i < interactPoints.Count; i++)
+                {
+                    if ((interactPoints[i].pos - firstPoint.pos).sqrMagnitude < 0.3f * 0.3f)
+                    {
+                        this.CurrInteractPoint.AddRange(interactPoints);
+                    }
+                }
+            }
 
             // 无可交互物 全部隐藏
             if (CurrInteractPoint.Count == 0)
@@ -206,7 +220,7 @@ namespace My.UI
             else if (CurrInteractPoint.Count == 1)
             {
                 ShowStatus = EShowStatus.ShowInteract;
-                ShowDirectInteractMenuOnObj(CurrInteractPoint.First().Item1, CurrInteractPoint.First().Item2);
+                ShowDirectInteractMenuOnObj(CurrInteractPoint.First().interactable, CurrInteractPoint.First().distance);
             }
             else
             {
@@ -221,10 +235,10 @@ namespace My.UI
             if (ShowStatus == EShowStatus.ShowObj)
             {
                 int idx = ChooseObjMenu.CurrentIndex;
-                var chosenInteract = CurrInteractPoint[idx].Item1;
+                var chosenInteract = CurrInteractPoint[idx].interactable;
 
                 this.currBindPoint = chosenInteract;
-                this.currBindPointDist = CurrInteractPoint[idx].Item2;
+                this.currBindPointDist = CurrInteractPoint[idx].distance;
                 ShowDirectInteractMenuOnObj(chosenInteract, currBindPointDist.Value);
                 return true;
             }

@@ -1,5 +1,6 @@
 
 
+using System.Collections.Generic;
 using System.Numerics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace My.Map.Scene
 {
     public abstract partial class SceneUnitPresenter
     {
+        public Transform BindEffectRoot;
 
         private float _pendingOffsetZ = 0;
         public void UpdateOffsetZView()
@@ -49,5 +51,12 @@ namespace My.Map.Scene
                 }
             }
         }
+
+
+        protected virtual void UpdateBindingEffect()
+        {
+
+        }
+
     }
 }

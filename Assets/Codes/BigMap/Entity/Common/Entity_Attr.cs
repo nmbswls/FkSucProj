@@ -44,6 +44,9 @@ namespace My.Map
                 case AttrIdConsts.PlayerGcThreshold:
                 case AttrIdConsts.Basic_PleasureAdd:
                 case AttrIdConsts.Basic_HungerCost:
+                case AttrIdConsts.Basic_JianShang:
+                case AttrIdConsts.Special_JianShang:
+                case AttrIdConsts.JianSu:
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:

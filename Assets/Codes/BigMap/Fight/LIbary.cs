@@ -180,7 +180,7 @@ namespace My.Map.Entity
                     cfg.SkillId = "evil_child_insertion";
                     cfg.MainAbilityId = "evil_child_insertion";
                     cfg.CoolDown = 6.0f;
-                    cfg.DesiredUseDistance = 1.0f;
+                    cfg.DesiredUseDistance = 0.3f;
                     cfg.Priority = 1;
 
                     cfg.TargetType = ETargetType.LockTarget;
@@ -731,7 +731,7 @@ namespace My.Map.Entity
                             new MapAbilityEffectAddResourceCfg()
                             {
                                 ResourceId  = AttrIdConsts.UnitHVal,
-                                AddValue = 50000,
+                                AddValue = 50_000,
                             }
                         }
                     }
@@ -2231,7 +2231,7 @@ namespace My.Map.Entity
             {
                 var hitEffect = new MapAbilityEffectUseWeaponCfg()
                 {
-                    WeaponName = "Catch",
+                    WeaponName = "Give",
                     Duration = 0.4f,
                     MaxHit = 1,
                     OnHitEffects = new()
@@ -2314,7 +2314,7 @@ namespace My.Map.Entity
 
                 PhaseBuff = new List<string>() { "player_normal_defend_on" },
 
-                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
+                InterruptMask = EAbilityInterruptMask.Cast,
                 HoldingPhase = true
             };
 
@@ -2488,7 +2488,7 @@ namespace My.Map.Entity
                 var addHEffect = new MapAbilityEffectAddResourceCfg()
                 {
                     ResourceId = AttrIdConsts.UnitHVal,
-                    AddValue = 10000,
+                    AddValue = 100_000,
                     IsEnmity = false,
                 };
 

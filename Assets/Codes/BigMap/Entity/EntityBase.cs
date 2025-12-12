@@ -41,6 +41,9 @@ namespace My.Map
         GlobalBuffManager BuffManager { get; }
 
         bool CheckHasBuff(string buffId);
+
+        void RegisterBuff(BuffInstance buffInst);
+        void UnregisterBuff(BuffInstance buffInst);
     }
 
     public interface IEntityAttributeOwner
@@ -420,11 +423,24 @@ namespace My.Map
             return false;
         }
 
+        public void RegisterBuff(BuffInstance buffInst)
+        {
+            BuffContainer.Add(buffInst.InstanceId, buffInst);
+            EventOnBuffRegister?.Invoke(buffInst);
+        }
+        public void UnregisterBuff(BuffInstance buffInst)
+        {
+            BuffContainer.Remove(buffInst.InstanceId);
+            EventOnBuffUnregister?.Invoke(buffInst.InstanceId);
+        }
+
         public virtual void OnMapLogicEvent(IMapLogicEvent evt)
         {
         }
 
         public Dictionary<long, BuffInstance> BuffContainer { get; protected set; } = new();
+        public event Action<BuffInstance> EventOnBuffRegister;
+        public event Action<long> EventOnBuffUnregister;
     }
 
 }

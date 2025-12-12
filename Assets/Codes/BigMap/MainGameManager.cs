@@ -375,7 +375,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         var worldPos = GetWorldPosFromLogicPos(logicPos);
 
-        var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(worldPos, 1, "ChamEffect");
+        var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(worldPos, 1, "ChamEffect", null);
         if (fxCtx == null)
         {
             return;
@@ -564,7 +564,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         if(playerScenePresenter != null)
         {
-            var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(fromPos, duration + 1f, "PlayerSpecialMove");
+            var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(fromPos, duration + 1f, "PlayerSpecialMove", null);
 
             var effectGo = ctx.EffectGo.GetComponent<PlayerGhostMoveFxCtrl>();
             effectGo.playerSR = playerScenePresenter.transform.Find("view").Find("agent").GetComponentInChildren<SpriteRenderer>();

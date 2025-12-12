@@ -31,7 +31,8 @@ namespace My.Map
         private float minPerInjection = 8f;        // 单次注入下限
         private float maxPerInjection = 24f;       // 单次注入上限
         private float perTargetCap = 40f;          // 同一目标 SightThreat 累积上限
-        private float sightDecayPerSec = 8f;       // SightThreat 衰减速率（快于伤害）
+
+        private float sightDecayPerSec = 5f;       // SightThreat 衰减速率（快于伤害）
         private float sightCooldown = 1f;         // 单位级目击冷却
         private int perMinuteQuotaCount = 3;       // 每分钟最多目击注入次数
         private float aggregatedWeight = 1.0f;     // 聚合时 SightThreat 权重（可<1，
@@ -42,8 +43,8 @@ namespace My.Map
         private float resetDelayAtHome = 1.0f;     // 回到home后静置多久才脱战
 
         // 牵引边界
-        private float leashRadius = 26f;           // 软牵引半径
-        private float hardLeashRadius = 40f;       // 硬牵引边界（超出加速脱战）
+        private float leashRadius = 8f;           // 软牵引半径
+        private float hardLeashRadius = 12f;       // 硬牵引边界（超出加速脱战）
 
         // DamageThreat 衰减（线性）
         private float baseDecayPerSec = 6f;        // 每秒线性衰减
@@ -54,21 +55,11 @@ namespace My.Map
         private float enterCombatTime = -999f;
         private float lastDamageTakenTime = -999f;
         private float lastDamageGivenTime = -999f;
-        private float lastReturnHomeTime = -999f;
+        private float lastExitCombatTime = -999f;
+        private float lastTryRecoverTime = -999;
 
-        // 目击限流
-        private float nextSightAllowedTime = 0f;
-        private int sightQuotaUsed = 0;
-        private float sightQuotaWindowStart = 0f;
+        private float fixedSightThreat = 10f;       // 固定值注入
 
-        private float minPerSightInjection = 8f;    // 单次下限
-        private float maxPerSightInjection = 24f;   // 单次上限
-        private float perTargetSightCap = 40f;      // 同目标Sight累积上限
-        private int sightPerMinuteQuota = 3;        // 每分钟目击注入次数上限
-
-        private float fixedSightThreat = 20f;       // 固定值注入
-
-        private bool seedDamageOnSight = false;
         private float minConfidence = 0.6f;       // 目击置信度阈值
         private float fovAngle = 140f;            // 可选前方扇形，扩大容错
 
@@ -84,12 +75,12 @@ namespace My.Map
         }
         public ECombatState CombatState { get; set; }
 
-        private float _lastRecoverTimer;
-
-        private float allySenseInterval = 0.5f;
+        private float allySenseInterval = 1.0f;
         private float nextAllySenseTime = 0f;
-        private float allySenseRadius = 20f;
+        private float allySenseRadius = 5f;
         public long PrimaryTargetId { get; private set; } = 0;
+
+        
 
         public NpcCombatStateComp(BaseUnitLogicEntity entity)
         {
@@ -101,12 +92,29 @@ namespace My.Map
         {
             DecayDamageThreat(dt);
             DecaySightThreat(dt);
-            ReevaluatePrimaryTarget();
+
             TryExitCombat();
 
             AllySenseThreatTick();
 
             EnemySightThreatTick();
+            ReevaluatePrimaryTarget();
+
+            if(CombatState == ECombatState.CombatRecover)
+            {
+                if(LogicTime.time - lastTryRecoverTime > 1.0f)
+                {
+                    CombatState = ECombatState.NotCombat;
+                }
+            }
+        }
+
+        public void TryRecover()
+        {
+            if(CombatState == ECombatState.CombatRecover)
+            {
+                lastTryRecoverTime = LogicTime.time;
+            }
         }
 
         /// <summary>
@@ -116,13 +124,13 @@ namespace My.Map
         /// <param name="amount"></param>
         public void OnGiveDamage(long targetId, float amount)
         {
-            if (CombatState != ECombatState.CombatRecover)
+            if (CombatState != ECombatState.NotCombat)
             {
                 return;
             }
 
             lastDamageGivenTime = LogicTime.time;
-            AddDamageThreat(targetId);
+            AddDamageThreat(targetId, 2);
             EnterCombat(targetId);
         }
 
@@ -133,18 +141,26 @@ namespace My.Map
         /// <param name="amount"></param>
         public void OnTakeDamage(long srcId, float amount)
         {
-            if (CombatState != ECombatState.CombatRecover)
+            if (CombatState != ECombatState.NotCombat)
             {
                 return;
             }
 
             lastDamageTakenTime = LogicTime.time;
-            AddDamageThreat(srcId);
+            AddDamageThreat(srcId, 10);
             EnterCombat(srcId);
         }
 
-        
 
+        public void TryUnitFlee()
+        {
+
+        }
+        
+        /// <summary>
+        /// 伤害衰减
+        /// </summary>
+        /// <param name="dt"></param>
         private void DecayDamageThreat(float dt)
         {
             if (damageThreat.Count == 0) return;
@@ -153,7 +169,7 @@ namespace My.Map
             foreach (var kv in damageThreat)
             {
                 var targetEntity = UnitEntity.LogicManager.GetLogicEntity(kv.Key, false);
-                if(targetEntity != null && UnitEntity.LogicManager.visionSenser.CanSee(UnitEntity.Pos, UnitEntity.FaceDir, targetEntity.Pos, 5.0f, 60f))
+                if(targetEntity != null && UnitEntity.LogicManager.visionSenser.CanSee(UnitEntity.Pos, UnitEntity.FaceDir, targetEntity.Pos, 6.0f, 140f))
                 {
                     tempVisibleTargets.Add(kv.Key);
                 }
@@ -190,6 +206,9 @@ namespace My.Map
             }
         }
 
+        /// <summary>
+        /// 评估主目标
+        /// </summary>
         private void ReevaluatePrimaryTarget()
         {
             if (CombatState != ECombatState.InCombat) return;
@@ -269,7 +288,8 @@ namespace My.Map
             }
         }
 
-        private void AddDamageThreat(long targetId)
+
+        private void AddDamageThreat(long targetId, float addVal)
         {
             if (targetId == 0) return;
             if (CombatState == ECombatState.CombatRecover)
@@ -278,9 +298,9 @@ namespace My.Map
             }
 
             if (damageThreat.TryGetValue(targetId, out float v))
-                damageThreat[targetId] = v + 10.0f;
+                damageThreat[targetId] = v + addVal;
             else
-                damageThreat[targetId] = 10.0f;
+                damageThreat[targetId] = addVal;
 
 
             if (CombatState != ECombatState.InCombat) EnterCombat(targetId);
@@ -289,40 +309,24 @@ namespace My.Map
         private bool TryAddSightThreat(long targetId)
         {
             if (targetId == 0) return false;
-            if(CombatState == ECombatState.CombatRecover)
-            {
-                return false;
-            }
-
-            // 冷却与配额
-            if (LogicTime.time < nextSightAllowedTime) return false;
-            //if (LogicTime.time - sightQuotaWindowStart > 60f)
+            //if(CombatState != ECombatState.NotCombat)
             //{
-            //    sightQuotaWindowStart = LogicTime.time;
-            //    sightQuotaUsed = 0;
+            //    return false;
             //}
-            //if (sightQuotaUsed >= sightPerMinuteQuota) return false;
-
-            float current = 0f;
-            // 上限检查
-            //sightThreat.TryGetValue(targetId, out current);
-            //float room = perTargetSightCap - current;
-            //if (room <= 0f) return false;
 
             float applied = fixedSightThreat;
-            //if (applied <= 0f) return false;
-
-            sightThreat[targetId] = current + applied;
-
-            nextSightAllowedTime = LogicTime.time + sightCooldown;
-            sightQuotaUsed++;
-
-            if (CombatState != ECombatState.InCombat) EnterCombat(targetId);
-
-            // 如需更稳定，可同步少量伤害威胁
-            if (seedDamageOnSight)
+            if(sightThreat.ContainsKey(targetId))
             {
-                AddDamageThreat(targetId);
+                sightThreat[targetId] = Mathf.Max(sightThreat[targetId], applied);
+            }
+            else
+            {
+                sightThreat[targetId] = fixedSightThreat;
+            }
+
+            if (CombatState == ECombatState.NotCombat)
+            {
+                EnterCombat(targetId);
             }
 
             return true;
@@ -342,29 +346,34 @@ namespace My.Map
         public void ExitCombat(string reason = "Silent")
         {
             CombatState = ECombatState.CombatRecover;
-            _lastRecoverTimer = LogicTime.time;
             PrimaryTargetId = 0;
             damageThreat.Clear();
             sightThreat.Clear();
 
             //Events.RaiseExitCombat(reason);
-            // TODO: 停止AI，回位等
+            lastTryRecoverTime = LogicTime.time + 1.0f;
+            lastExitCombatTime = LogicTime.time;
         }
 
-
+        /// <summary>
+        /// 低频拉取周围同阵营单位的威胁列表
+        /// </summary>
         private void AllySenseThreatTick()
         {
             if (LogicTime.time < nextAllySenseTime) return;
             nextAllySenseTime = LogicTime.time + allySenseInterval;
 
-            if (CombatState == ECombatState.InCombat) return; // 未进战时才尝试自拉入
+            if (CombatState != ECombatState.NotCombat) return; // 未进战时才尝试自拉入
 
 
             var list = UnitEntity.LogicManager.visionSenser.OverlapCircleAllEntity(UnitEntity.Pos, allySenseRadius, new EntityFilterParam()
             {
                 CampFilterType = ECampFilterType.OnlySelf,
                 SelfCampId = UnitEntity.FactionId,
+
+                FilterType = EEntityType.Npc,
             });
+
             NpcUnitLogicEntity bestWitness = null;
             float bestScore = 0f;
 
@@ -377,29 +386,19 @@ namespace My.Map
                 if (witness.CombatState != ECombatState.InCombat) 
                     continue;
 
-                float confidence = ComputeWitnessConfidence(witness);
-                if (confidence < minConfidence) continue;
+                //float confidence = ComputeWitnessConfidence(witness);
+                //if (confidence < minConfidence) continue;
 
                 long witnessPrimary = witness.combatStateComp.PrimaryTargetId;
                 if (witnessPrimary == 0) continue;
-                var witnessPrimaryEntity = UnitEntity.LogicManager.GetLogicEntity(witnessPrimary, false);
+                var witnessPrimaryEntity = UnitEntity.LogicManager.GetLogicEntity(witnessPrimary);
                 if (witnessPrimaryEntity == null) continue;
                 float dist = Vector3.Distance(UnitEntity.Pos, witnessPrimaryEntity.Pos);
-                if(dist > leashRadius)
+                if (dist > leashRadius)
                 {
                     continue;
                 }
 
-                if (confidence > bestScore)
-                {
-                    bestScore = confidence;
-                    bestWitness = witness;
-                }
-            }
-
-            if (bestWitness != null)
-            {
-                // 采用 SightThreat 注入，内部含冷却与配额控制
                 TryAddSightThreat(bestWitness.combatStateComp.PrimaryTargetId);
             }
         }

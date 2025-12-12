@@ -284,9 +284,7 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgTryRecovery : AIActionCfg
     {
-        public override bool IsDecorate => false;
-
-        public float MinRecoverTime = 1.5f;
+        public override bool IsDecorate => true;
     }
 
     public class AIActionTryRecovery : AIAction
@@ -316,8 +314,9 @@ namespace My.Map.Entity.AI
         public override void Tick()
         {
 
-            if(_recoverTimer + realCfg.MinRecoverTime > LogicTime.time)
+            if(_recoverTimer + _brain.brainConfig.ExitCombatMinRecoverTime > LogicTime.time)
             {
+                _brain.NpcEntity.combatStateComp.TryRecover();
                 return;
             }
 
@@ -339,7 +338,7 @@ namespace My.Map.Entity.AI
                     }
 
                     var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.NpcEntity.Pos;
-                    if (diff.magnitude < 0.3f)
+                    if (diff.magnitude < 0.2f)
                     {
                         recovered = true;
                         break;
@@ -352,10 +351,10 @@ namespace My.Map.Entity.AI
                 }
             }
             while (false);
-            
-            if(recovered)
+
+            if(!recovered)
             {
-                _brain.NpcEntity.combatStateComp.CombatState = ECombatState.NotCombat;
+                _brain.NpcEntity.combatStateComp.TryRecover();
             }
         }
     }
@@ -363,7 +362,7 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgNormalMoveDaemon: AIActionCfg 
     { 
-        public override bool IsDecorate => false; 
+        public override bool IsDecorate => true; 
     }
 
     public class AIActionNormalMoveDaemon : AIAction
@@ -376,11 +375,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if(Status == AIActionStatus.Running)
-            {
-                return 0;
-            }
-            return 100;
+            return 1;
         }
 
         public override void OnEnterState()
@@ -562,7 +557,7 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgCombatMain : AIActionCfg 
     {
-        public override bool IsDecorate => false;
+        public override bool IsDecorate => true;
     }
 
     public class AIActionCombatMain : AIAction
@@ -575,11 +570,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            if (Status == AIActionStatus.Running)
-            {
-                return 0;
-            }
-            return 100;
+            return 1;
         }
 
         public override void Tick()
@@ -589,13 +580,21 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            if (_brain.blackboard.LastLeaveMoveModePos != null)
+            if (_brain.blackboard.LastLeaveMoveModePos != null && _brain.brainConfig.ExitCombatBoundary)
             {
-                if ((_brain.NpcEntity.Pos - _brain.blackboard.LastLeaveMoveModePos.Value).magnitude > _brain.brainConfig.ExitChasingRange)
+                if ((_brain.NpcEntity.Pos - _brain.blackboard.LastLeaveMoveModePos.Value).magnitude > _brain.brainConfig.ExitCombatBoundaryRange)
                 {
                     _brain.NpcEntity.combatStateComp.ExitCombat();
                 }
             }
+        }
+
+        public override void Stop(AIActionStatus endStatus)
+        {
+            base.Stop(endStatus);
+
+            // 离开前停止移动
+            _brain.NpcEntity.entityMotorComp.StopMove();
         }
 
         public override void OnEnterState()
@@ -607,7 +606,6 @@ namespace My.Map.Entity.AI
         {
             base.OnEnterState();
 
-            _brain.NpcEntity.entityMotorComp.StopMove();
         }
     }
 
@@ -623,7 +621,7 @@ namespace My.Map.Entity.AI
 
         public override string Name => "TryUseSkill";
 
-        public float OverTimeLimit = 99f;
+        public float OverTimeLimit = 15f;
         private float _overTimer;
         private bool hasCastAbility = false;
         private string currComboAbilityName = string.Empty;
@@ -641,6 +639,7 @@ namespace My.Map.Entity.AI
                 return 0;
             }
 
+            // 和平人不放技能
             if(_brain.NpcEntity.unitCfg.IsPeace)
             {
                 return 0;
@@ -677,6 +676,7 @@ namespace My.Map.Entity.AI
                 Stop(AIActionStatus.Success);
                 return;
             }
+
             skills.Sort((itemA, itemB) =>
             {
                 if (itemA.cacheConfig.Priority != itemB.cacheConfig.Priority)
@@ -715,6 +715,7 @@ namespace My.Map.Entity.AI
 
             if (_config == null)
             {
+                Stop(AIActionStatus.Success);
                 return;
             }
 
@@ -749,7 +750,7 @@ namespace My.Map.Entity.AI
                 }
                 else
                 {
-                    _brain.NpcEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _config.DesiredUseDistance, 1.0f);
+                    _brain.NpcEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _config.DesiredUseDistance, 1.2f);
                 }
             }
             // 正在使用技能
@@ -808,13 +809,6 @@ namespace My.Map.Entity.AI
         public override void OnExitState()
         {
             base.OnExitState();
-            _overTimer = 0;
-            hasCastAbility = false;
-            if (_brain.blackboard.CurrIntentSkill != null && _brain.blackboard.CurrIntentSkill == _config.SkillId)
-            {
-                _brain.blackboard.CurrIntentSkill = null;
-            }
-            _config = null;
         }
 
         public override bool CanInterrupt(string reason, bool hard) => false;
@@ -825,7 +819,7 @@ namespace My.Map.Entity.AI
     public class AIActionCfgDistanceControl : AIActionCfg
     {
         public override bool IsDecorate => false;
-        public float GoodDistance = 0.8f;
+        public float GoodDistance = 1.5f;
     }
 
     public class AIActionDistanceControl : AIAction
@@ -849,16 +843,17 @@ namespace My.Map.Entity.AI
                 return 0;
             }
 
-            if (_brain.NpcEntity.unitCfg.IsPeace)
-            {
-                return 0;
-            }
-
             if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentSkill))
             {
                 return 0;
             }
- 
+            
+            // 距离够了 不用移动
+            if(_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance)
+            {
+                return 0;
+            }
+
             return 1;
         }
 
@@ -866,6 +861,9 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
+
+            var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
+            _brain.NpcEntity.entityMotorComp.MoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
         }
 
         public override void Tick()
@@ -883,13 +881,12 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            
-            if (LogicTime.time - _Timer < 0.2f)
+            // 距离够了 不用移动
+            if (_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance)
             {
+                Stop(AIActionStatus.Success);
                 return;
             }
-
-            _Timer = LogicTime.time;
 
             var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
             _brain.NpcEntity.entityMotorComp.MoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
@@ -899,6 +896,8 @@ namespace My.Map.Entity.AI
         public override void Stop(AIActionStatus endStatus)
         {
             base.Stop(endStatus);
+
+            _brain.NpcEntity.entityMotorComp.StopMove();
         }
 
         public override bool CanInterrupt(string reason, bool hard) => true;
@@ -936,7 +935,7 @@ namespace My.Map.Entity.AI
 
             if (_brain.blackboard.Distance > _brain.brainConfig.GoodBattleDistance + 1.0f)
             {
-                return 10;
+                return 1;
             }
 
             return 0;

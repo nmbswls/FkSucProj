@@ -324,7 +324,7 @@ namespace My.Map.Entity
                                 new MapAbilityEffectAddResourceCfg()
                                 {
                                     ResourceId = AttrIdConsts.UnitHVal,
-                                    AddValue = 50,
+                                    AddValue = 500,
                                     IsEnmity = true,
                                 }
                             }
@@ -351,6 +351,8 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.Replace,
                     DefaultDuration = -1,
                     
+                    EffectId = "Skill/player_shield",
+
                     ModifierAttrs = new()
                     {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_JianShang, ModifierValue = 5000 },
@@ -526,6 +528,8 @@ namespace My.Map.Entity
         public bool IsAura;
         public float AuraRange;
         public string AuraBuffId;
+
+        public string EffectId;
 
         public float ZOffsetOverride;
 
@@ -707,6 +711,7 @@ namespace My.Map.Entity
                 if (buff.MarkedForRemove)
                 {
                     buff.OnBuffRemove();
+                    buff.BuffOwner.UnregisterBuff(buff);
                     toRemove.Add(buff.InstanceId);
                 }
             }
@@ -887,7 +892,10 @@ namespace My.Map.Entity
             {
                 existing = new BuffInstance(target, ++BuffInstIdCounter, buffId, layer, lifeTIme: duration, casterId:casterId, srcBuffId:srcBuffId);
                 existing.OnBuffAddOrUpdate(true);
+                
                 _buffs.Add(existing.InstanceId, existing);
+                target.RegisterBuff(existing);
+
                 var ev = new MLEApplyBuff()
                 {
                     Ctx = new MapLogicEventContext { CorrelationId = Guid.NewGuid() },
@@ -1023,7 +1031,6 @@ namespace My.Map.Entity
 
             Def = BuffLibrary.GetBuffDefinition(buffId);
 
-            owner.BuffContainer.Add(instId, this);
             foreach (var trigger in Def.TriggerList)
             {
                 if (triggerRuntimes == null)

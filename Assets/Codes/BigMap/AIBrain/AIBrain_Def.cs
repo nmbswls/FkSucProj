@@ -67,6 +67,19 @@ namespace My.Map.Entity.AI
                             },
                             TrueState = "MoveBehave",
                         });
+
+                        idleState.Transitions.Add(new AITransition()
+                        {
+                            Decisions = new List<AIDecision>()
+                                {
+                                    new AIDecisionCheckCombatState()
+                                    {
+                                        CheckState = NpcCombatStateComp.ECombatState.InCombat,
+                                    }
+                                },
+                            TrueState = "Combat",
+                        });
+
                         //idleState.Transitions.Add(new AITransition()
                         //{
                         //    Decisions = new List<AIDecision>()
@@ -101,6 +114,18 @@ namespace My.Map.Entity.AI
                             TrueState = "RecoverFromAttract"
                         });
 
+                        attractedState.Transitions.Add(new AITransition()
+                        {
+                            Decisions = new List<AIDecision>()
+                                {
+                                    new AIDecisionCheckCombatState()
+                                    {
+                                        CheckState = NpcCombatStateComp.ECombatState.InCombat,
+                                    }
+                                },
+                            TrueState = "Combat",
+                        });
+
                         config.States.Add(attractedState);
                     }
 
@@ -122,6 +147,18 @@ namespace My.Map.Entity.AI
                                 }
                             },
                             TrueState = "Idle"
+                        });
+
+                        returnState.Transitions.Add(new AITransition()
+                        {
+                            Decisions = new List<AIDecision>()
+                                {
+                                    new AIDecisionCheckCombatState()
+                                    {
+                                        CheckState = NpcCombatStateComp.ECombatState.InCombat,
+                                    }
+                                },
+                            TrueState = "Combat",
                         });
 
                         config.States.Add(returnState);
@@ -176,6 +213,18 @@ namespace My.Map.Entity.AI
                             TrueState = "Attracted",
                         });
 
+                        moveState.Transitions.Add(new AITransition()
+                        {
+                            Decisions = new List<AIDecision>()
+                                {
+                                    new AIDecisionCheckCombatState()
+                                    {
+                                        CheckState = NpcCombatStateComp.ECombatState.InCombat,
+                                    }
+                                },
+                            TrueState = "Combat",
+                        });
+
                         config.States.Add(moveState);
                     }
 
@@ -187,6 +236,7 @@ namespace My.Map.Entity.AI
                         };
 
                         combatState.ActionNames.Add("CombatMain");
+
                         combatState.ActionNames.Add("TryUseSkill");
                         combatState.ActionNames.Add("DistanceControl");
                         combatState.ActionNames.Add("QuickCloser");
@@ -220,19 +270,19 @@ namespace My.Map.Entity.AI
                     }
 
 
-                    {
-                        config.CommonTransitions.Add(new AITransition()
-                        {
-                            Decisions = new List<AIDecision>()
-                            {
-                                new AIDecisionCheckCombatState()
-                                {
-                                    CheckState = NpcCombatStateComp.ECombatState.InCombat,
-                                }
-                            },
-                            TrueState = "Combat",
-                        });
-                    }
+                    //{
+                    //    config.CommonTransitions.Add(new AITransition()
+                    //    {
+                    //        Decisions = new List<AIDecision>()
+                    //        {
+                    //            new AIDecisionCheckCombatState()
+                    //            {
+                    //                CheckState = NpcCombatStateComp.ECombatState.InCombat,
+                    //            }
+                    //        },
+                    //        TrueState = "Combat",
+                    //    });
+                    //}
 
                     {
                         var aAction = new AIActionCfgDoNothing()
@@ -320,7 +370,10 @@ namespace My.Map.Entity.AI
                     }
 
                     {
-                        var actionCfg = new AIActionCfgDistanceControl();
+                        var actionCfg = new AIActionCfgDistanceControl()
+                        {
+                            GoodDistance = 1.5f
+                        };
                         config.Actions.Add(actionCfg);
                     }
                     {

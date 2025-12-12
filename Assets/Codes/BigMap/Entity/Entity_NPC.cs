@@ -370,6 +370,17 @@ namespace My.Map
 
             abilityController.TryUseAbility("unit_h_mode_sj");
         }
+
+
+        protected override void UnitOnHit(long delta, long? srcEntityId)
+        {
+            base.UnitOnHit(delta, srcEntityId);
+
+            if(srcEntityId != null)
+            {
+                combatStateComp.OnTakeDamage(srcEntityId.Value, Math.Abs(delta));
+            }
+        }
     }
 }
 

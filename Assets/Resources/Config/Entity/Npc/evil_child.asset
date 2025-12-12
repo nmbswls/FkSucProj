@@ -16,7 +16,7 @@ MonoBehaviour:
   ViewSprite: {fileID: 0}
   PrefabName: 
   MoveStyle: 1
-  MoveSpeed: 2
+  MoveSpeed: 1
   IsPeace: 0
   CombatStretegyTemplateId: 
   BattleBoundary: 10

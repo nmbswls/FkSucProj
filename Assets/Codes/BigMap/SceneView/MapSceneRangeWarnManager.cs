@@ -18,7 +18,7 @@ namespace My.Map
 
         public int ShowSceneWarnRangeCircle(Vector2 centerPos, Vector2 dir, float radius, float duration, Vector2 offset)
         {
-            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(centerPos, duration, SceneRangeWarn_Circle);
+            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(centerPos, duration, SceneRangeWarn_Circle, null);
             if(fxCtx == null)
             {
                 return 0;
@@ -40,7 +40,7 @@ namespace My.Map
 
         public int ShowSceneWarnRangeRect(Vector2 centerPos, Vector2 dir, float width, float len, float duration, Vector2 offset)
         {
-            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(centerPos, duration, SceneRangeWarn_Rect);
+            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(centerPos, duration, SceneRangeWarn_Rect, null);
             if (fxCtx == null)
             {
                 return 0;

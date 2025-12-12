@@ -17,6 +17,8 @@ public class MapSceneEffectManager : MonoBehaviour
         public string EffectName;
         public GameObject EffectGo;
         public float CleanUpTimer;
+
+        public long? BindingUnit = null;
     }
 
     public List<EffectCtx> ctxs = new();
@@ -42,7 +44,28 @@ public class MapSceneEffectManager : MonoBehaviour
     {
         for(int i=ctxs.Count - 1; i>=0;i--)
         {
-            if(LogicTime.time > ctxs[i].CleanUpTimer)
+            if (ctxs[i].BindingUnit != null)
+            {
+                var pres = SceneAOIManager.Instance.GetActivePresentation(ctxs[i].BindingUnit.Value);
+                if (pres != null)
+                {
+                    if (!ctxs[i].EffectGo.activeSelf)
+                    {
+                        ctxs[i].EffectGo.SetActive(true);
+                    }
+
+                    ctxs[i].EffectGo.transform.position = pres.GetWorldPosition();
+                }
+                else
+                {
+                    if(ctxs[i].EffectGo.activeSelf)
+                    {
+                        ctxs[i].EffectGo.SetActive(false);
+                    }
+                }
+            }
+
+            if(ctxs[i].CleanUpTimer != -1 && LogicTime.time > ctxs[i].CleanUpTimer)
             {
                 // ´æ£¿
                 GameObject.Destroy(ctxs[i].EffectGo);
@@ -58,7 +81,7 @@ public class MapSceneEffectManager : MonoBehaviour
     /// <param name="duration"></param>
     /// <param name="effectName"></param>
     /// <returns></returns>
-    public EffectCtx ShowSceneEffect(Vector2 originPos, float duration, string effectName)
+    public EffectCtx ShowSceneEffect(Vector2 originPos, float duration, string effectName, long? bindingUnitId)
     {
         var prefab = Resources.Load<GameObject>($"SceneEffect/{effectName}");
         if (prefab == null) return null;
@@ -81,7 +104,15 @@ public class MapSceneEffectManager : MonoBehaviour
         ctx.UniqId = id;
         ctx.EffectName = effectName;
         ctx.EffectGo = newGo;
-        ctx.CleanUpTimer = LogicTime.time + duration;
+        ctx.BindingUnit = bindingUnitId;
+        if(duration < 0)
+        {
+            ctx.CleanUpTimer = -1;
+        }
+        else
+        {
+            ctx.CleanUpTimer = LogicTime.time + duration;
+        }
         ctxs.Add(ctx);
         return ctx;
     }

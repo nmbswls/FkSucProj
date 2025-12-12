@@ -357,7 +357,8 @@ namespace My.Map.Scene
             UnitEntity.EventOnEndStealth += OnEventEndStealth;
             UnitEntity.EventOnAttachStatusChanged += OnEventConvertAttach;
             UnitEntity.EventOnGhostChange += OnEventGhostChange;
-            
+            UnitEntity.EventOnBuffRegister += OnEventBuffRegister;
+            UnitEntity.EventOnBuffUnregister += OnEventBuffUnregister;
 
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
@@ -380,6 +381,8 @@ namespace My.Map.Scene
             UnitEntity.EventOnEndStealth -= OnEventEndStealth;
             UnitEntity.EventOnAttachStatusChanged -= OnEventConvertAttach;
             UnitEntity.EventOnGhostChange -= OnEventGhostChange;
+            UnitEntity.EventOnBuffRegister -= OnEventBuffRegister;
+            UnitEntity.EventOnBuffUnregister -= OnEventBuffUnregister;
         }
 
 
@@ -453,6 +456,25 @@ namespace My.Map.Scene
             }
         }
 
+        private Dictionary<long, int> _bindingEffectsCtxId = new();
+
+        protected virtual void OnEventBuffRegister(BuffInstance buffInst)
+        {
+            if(!string.IsNullOrEmpty(buffInst.Def.EffectId))
+            {
+                var effectCtx = MapSceneEffectManager.Instance.ShowSceneEffect(this.transform.position, -1, buffInst.Def.EffectId, UnitEntity.Id);
+                _bindingEffectsCtxId[buffInst.InstanceId] = effectCtx.UniqId;
+            }
+            
+        }
+        protected virtual void OnEventBuffUnregister(long buffInstId)
+        {
+            if (_bindingEffectsCtxId.TryGetValue(buffInstId, out var ctxId))
+            {
+                MapSceneEffectManager.Instance.ForceDestroy(ctxId);
+                _bindingEffectsCtxId.Remove(buffInstId);
+            }
+        }
 
         protected virtual void OnEventConvertAttach(long entityId)
         {

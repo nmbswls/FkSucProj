@@ -132,6 +132,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitPresenter: {fileID: 0}
   WeaponOnes: []
+--- !u!1 &792543582559931137
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4203489501796133219}
+  m_Layer: 19
+  m_Name: effects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4203489501796133219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792543582559931137}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.05}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1816564416192949448}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1153952993320468417
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,6 +276,7 @@ Transform:
   - {fileID: 8215072525480467239}
   - {fileID: 3626497417264651404}
   - {fileID: 2966173927635901620}
+  - {fileID: 4203489501796133219}
   m_Father: {fileID: 8576391666722605407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4677760164077730100
@@ -462,7 +494,6 @@ MonoBehaviour:
   navAgent: {fileID: 0}
   rb: {fileID: 0}
   mainCol: {fileID: 0}
-  freeMoveDir: {x: 0, y: 0}
   CharacterController: {fileID: 0}
   targetCol: {fileID: 0}
   maxTurnSpeedDegPerSec: 720
@@ -487,6 +518,7 @@ MonoBehaviour:
     m_Bits: 0
   MainFlasher: {fileID: 765004380595138668}
   MoveTrailSpawner: {fileID: 513470045793456111}
+  NoiseEmitter: {fileID: 0}
   AttachmentRoot: {fileID: 2966173927635901620}
 --- !u!114 &7358391202987309545
 MonoBehaviour:

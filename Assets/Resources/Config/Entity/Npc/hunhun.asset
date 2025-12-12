@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitName: hunhun
   ViewSprite: {fileID: 21300000, guid: e779ad32171e85f49bbebec977f04411, type: 3}
+  PrefabName: 
   MoveStyle: 1
-  MoveSpeed: 1
+  MoveSpeed: 1.4
   IsPeace: 0
   CombatStretegyTemplateId: 
   BattleBoundary: 10

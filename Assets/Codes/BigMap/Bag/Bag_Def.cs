@@ -351,6 +351,7 @@ namespace Config
                     item.StackType = EStackType.NoStack;
                     item.SpriteName = "insertion_maoqiu";
 
+                    item.CanDrop = false;
                     item.AutoDestroy = true;
                     item.AutoDestroyTime = 30.0f;
 
