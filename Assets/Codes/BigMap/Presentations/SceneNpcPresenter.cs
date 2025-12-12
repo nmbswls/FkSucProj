@@ -64,9 +64,10 @@ namespace My.Map.Scene
         public bool CanInteractEnable(float dist)
         {
 
+            if (NpcEntity.IsAttaching) return false;
+
             if (NpcEntity.IsHMode)
             {
-
                 return true;
             }
 
@@ -202,7 +203,7 @@ namespace My.Map.Scene
         public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             var ret = new List<SceneInteractSelection>();
-
+            if (NpcEntity.IsAttaching) return ret;
             //if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
             {
                 if (NpcEntity.IsHMode)

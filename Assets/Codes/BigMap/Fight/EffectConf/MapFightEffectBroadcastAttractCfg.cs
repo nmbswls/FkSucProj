@@ -12,7 +12,8 @@ namespace My.Map.Entity
     [Serializable]
     public class MapFightEffectBroadcastAttractCfg : MapFightEffectCfg
     {
-        
+        public float Power;
+        public float Range;
     }
 }
 

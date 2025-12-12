@@ -9,10 +9,11 @@ using UnityEngine;
 namespace My.Map.Entity
 {
     [Serializable]
-    public class MapAbilityEffectUseItemCfg : MapFightEffectCfg
+    public class MapAbilityEffectGiveItemCfg : MapFightEffectCfg
     {
-        public OneVariaty UseItemId;
-        public OneVariaty UseItemSrcIdx;
+        public string ItemId;
+        public int Count;
+        public int SpecificBagId;
     }
 }
 

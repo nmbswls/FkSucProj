@@ -34,6 +34,9 @@ namespace My.Map
                 case AttrIdConsts.HideView:
                 case AttrIdConsts.UnitDizzy:
                 case AttrIdConsts.StatUnstoppable:
+                case AttrIdConsts.Ghost:
+                case AttrIdConsts.SuperArmor:
+                case AttrIdConsts.ImmuneKnock:
                     return EAttrType.State;
 
                 case AttrIdConsts.Attack:
@@ -365,6 +368,7 @@ namespace My.Map
                 while (q.Count > 0)
                 {
                     var attrId = q.Dequeue();
+                    numerics.TryGetValue(attrId, out var e);
                     var changed = RecomputeNumeric(attrId);
                     if (!changed) continue;
                     // 向后继传播
@@ -374,6 +378,7 @@ namespace My.Map
                     {
                         foreach (var dep in attrNode.outs) Enqueue(dep.level, dep.attrId);
                     }
+
                 }
                 dirtyQueues.Remove(level);
             }
@@ -423,6 +428,13 @@ namespace My.Map
                 e.version++;
                 // 如果这是某个资源的 Max，标注该资源需要联动
                 TryMarkResourceOnMaxChanged(attrId, old, final);
+
+
+                if (AttrUtils.GetAttrType(attrId) == EAttrType.State)
+                {
+                    EvOnStatusAttrChanged?.Invoke(attrId, e.finalValue > 0);
+                }
+
                 return true;
             }
             return false;

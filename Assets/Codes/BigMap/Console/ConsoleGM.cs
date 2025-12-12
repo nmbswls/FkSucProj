@@ -258,7 +258,7 @@ public class ConsoleGM : MonoBehaviour
                 string itemId = args[0];
                 var val = int.Parse(args[1]);
 
-                MainGameManager.Instance.gameLogicManager.playerDataManager.TryGiveItem(itemId, val);
+                MainGameManager.Instance.gameLogicManager.playerDataManager.TryGiveItem(itemId, val, 0);
 
             });
     }

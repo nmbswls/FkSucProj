@@ -1,11 +1,14 @@
 
 using My;
+using My.Map;
 using My.Player.Bag;
 using SuperScrollView;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static Config.FakeItemConf;
+using static My.Map.BaseUnitLogicEntity.ControlledMoveCtx;
 using static My.UI.AnyContainerItemCell;
 using static UnityEngine.Rendering.DebugUI;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
@@ -28,6 +31,7 @@ namespace Config
             NoLimit,
         }
         public string ItemId;
+        public string DisplayName;
 
         public enum EItemType
         {
@@ -35,6 +39,8 @@ namespace Config
             Currency,
             Equip,
             Pocket,
+
+            Insertion,
         }
         public EItemType ItemType;
 
@@ -62,24 +68,38 @@ namespace Config
         {
             None,
             AddHunger,
+            GiveDrop,
         }
 
         [Serializable]
         public class ItemUseCfg
         {
             public bool Usable = false;
-            public bool CostOnUse;
+            public bool CostOnUse = true;
             public float UseCd;
             public float UseTime = 0.5f;
 
 
             public EItemUseType UseType;
             public string UseParams;
+            public long Param1;
+            public long Param2;
+            public string Param5;
+            public string Param6;
         }
 
         public ItemUseCfg UseCfg1;
         public ItemUseCfg UseCfg2;
         public ItemUseCfg UseCfg3;
+
+        public bool AutoDestroy;
+        public float AutoDestroyTime;
+        public string SpecialBuffId;
+        public float SpecialBuffInterval;
+
+        public bool AutoPick;
+
+        public bool IsAutoUse;
     }
 
     public static class FakeItemDatabase
@@ -104,6 +124,15 @@ namespace Config
                         item.InstanceInfo = new ItemInstance4Equip();
                     }
                     break;
+                    case EItemType.Insertion:
+                    {
+                        var instInfo = new ItemInstance4Insertion();
+                        instInfo.BuffTickTimer = LogicTime.time;
+                        instInfo.Lifetime = itemConf.AutoDestroyTime;
+
+                        item.InstanceInfo = instInfo;
+                    }
+                    break;
                 }
             }
             
@@ -116,6 +145,8 @@ namespace Config
             {
                 case EItemType.Equip:
                 case EItemType.Pocket:
+
+                case EItemType.Insertion:
                     return true;
             }
 
@@ -275,6 +306,16 @@ namespace Config
 
                 {
                     var item = new FakeItemConf();
+                    item.ItemId = "j";
+                    item.ItemType = EItemType.Currency;
+                    item.StackType = EStackType.NoLimit;
+                    item.SpriteName = "j";
+
+                    _dict[item.ItemId] = item;
+                }
+                
+                {
+                    var item = new FakeItemConf();
                     item.ItemId = "chanzi";
                     item.ItemType = EItemType.Equip;
                     item.StackType = EStackType.NoStack;
@@ -302,6 +343,46 @@ namespace Config
 
                     _dict[item.ItemId] = item;
                 }
+
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "insertion_maoqiu";
+                    item.ItemType = EItemType.Insertion;
+                    item.StackType = EStackType.NoStack;
+                    item.SpriteName = "insertion_maoqiu";
+
+                    item.AutoDestroy = true;
+                    item.AutoDestroyTime = 30.0f;
+
+                    item.SpecialBuffInterval = 5.0f;
+                    item.SpecialBuffId = "insertion_debuff_small";
+
+                    _dict[item.ItemId] = item;
+                }
+
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "j_drop_small";
+                    item.ItemType = EItemType.Normal;
+                    item.StackType = EStackType.NoStack;
+                    item.SpriteName = "j_drop_small";
+
+                    item.UseCfg1 = new ItemUseCfg()
+                    {
+                        Usable = true,
+                        UseCd = 0,
+                        UseTime = 0,
+
+                        UseType = EItemUseType.GiveDrop,
+                        Param5 = "j_drop_small",
+                    };
+
+                    item.AutoPick = true;
+                    item.IsAutoUse = true;
+
+                    _dict[item.ItemId] = item;
+                }
+                
             }
 
             _dict.TryGetValue(itemId, out var conf);

@@ -13,7 +13,7 @@ namespace My.Map.Entity
     {
         public string BuffId;
         public int Layer;
-        public float Duration;
+        public float Duration = -1;
         public int TargetType; // 0 target 1 self 2 other
 
         public List<AttrKvPair> ExtraAttrInfos;

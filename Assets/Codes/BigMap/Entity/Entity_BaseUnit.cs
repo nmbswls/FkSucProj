@@ -87,7 +87,7 @@ namespace My.Map
         public event Action<long> EventOnEnmityBehave;
         public event Action<long> EventOnDie;
         public event Action<long> EventOnAttachStatusChanged;
-
+        public event Action<long> EventOnGhostChange;
 
         public UnitVisibilityComp VisibilityComp;
 
@@ -153,6 +153,17 @@ namespace My.Map
             if(!MarkDestroyed)
             {
                 attributeStore.Commit();
+            }
+
+            if(!MarkDestroyed && !IsAttaching && !IsDead && !CheckHasState(AttrIdConsts.Unmovable))
+            {
+                if(entityMotorComp.FreeMoveInput.magnitude > 0.1f)
+                {
+                    TryInterrupt(new InterruptRequest()
+                    {
+                        source = EInterruptSource.Move,
+                    });
+                }
             }
         }
 
@@ -489,18 +500,18 @@ namespace My.Map
             // 数值类
             attributeStore.RegisterNumeric("Attack", initialBase: 100);
             attributeStore.RegisterNumeric("Strength", initialBase: 10);
-            attributeStore.RegisterNumeric("HP.Max", initialBase: 10000);
+            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 100_000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
             // 资源类
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 10000);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 100_000);
 
             RegisterCommonStates();
 
 
             // 资源类
-            attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 10000, 0);
-            attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 12000, 12000);
+            attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
 
             attributeStore.Commit();
@@ -991,6 +1002,11 @@ namespace My.Map
                                 priority = 10,
                             });
                         }
+                    }
+                    break;
+                case AttrIdConsts.Ghost:
+                    {
+                        EventOnGhostChange?.Invoke(this.Id);
                     }
                     break;
             }

@@ -57,7 +57,7 @@ namespace My.Player
 
         public void InitBagInfo()
         {
-            inventoryModel = new();
+            inventoryModel = new(this);
 
             var mainBag = inventoryModel.MainBag;
             mainBag.NormalSlots[0] = FakeItemDatabase.CreateItemStack("banana", 2);
@@ -71,8 +71,10 @@ namespace My.Player
             //inventoryModel.NormalSlots[6] = new ItemStack() { ItemID = "chanzi", Count = 1 };
         }
 
-
-
+        public void Tick(float dt)
+        {
+            inventoryModel.Tick(dt);
+        }
 
         public bool CheckHasParam(string id)
         {
@@ -128,9 +130,9 @@ namespace My.Player
         /// <param name="itemId"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public long TryGiveItem(string itemId, long count)
+        public long TryGiveItem(string itemId, long count, int bagId)
         {
-            return inventoryModel.GiveItem(itemId, count);
+            return inventoryModel.GiveItem(itemId, count, bagId);
         }
     }
 }

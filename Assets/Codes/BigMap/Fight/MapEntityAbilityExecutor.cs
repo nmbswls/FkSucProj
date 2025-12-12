@@ -758,8 +758,8 @@ namespace My.Map.Entity
                             GameLogicManager.LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, srcInfo);
 
                             newCtx.TargetId = hitEntity.Id;
-                            newCtx.TriggerPos = hitEntity.Pos;
-                            newCtx.CastVec1 = hitEntity.Pos;
+                            newCtx.TriggerPos = EntityOwner.Pos;
+                            newCtx.CastVec1 = hitEntity.Pos - EntityOwner.Pos;
 
 
                             EntityOwner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);

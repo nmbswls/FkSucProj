@@ -1,4 +1,6 @@
 using Config;
+using My.Map;
+using My.Map.Entity;
 using SuperScrollView;
 using System;
 using System.Collections;
@@ -7,6 +9,8 @@ using System.Text;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static Config.FakeItemConf;
+using static My.Map.Fight.FightStruct;
 using static My.UI.AnyContainerItemCell;
 using static UnityEditor.Progress;
 
@@ -23,6 +27,14 @@ namespace My.Player.Bag
     public class ItemInstance4Equip : ItemInstanceInfo
     {
         public long RandVal;
+    }
+
+    [Serializable]
+    public class ItemInstance4Insertion : ItemInstanceInfo
+    {
+        public float Lifetime;
+
+        public float BuffTickTimer;
     }
 
 
@@ -403,6 +415,8 @@ namespace My.Player.Bag
 
             long remaining = count;
 
+            
+
             var maxStack = GetMaxStack(itemId);
             // 
             if (preferredIdx != -1)
@@ -610,6 +624,7 @@ namespace My.Player.Bag
     [System.Serializable]
     public class PlayerInventoryModel
     {
+        public PlayerDataManager DataManager;
         public PlayerBag MainBag;
 
         public Dictionary<int, PlayerBag> SpeBags = new Dictionary<int, PlayerBag>();
@@ -618,8 +633,10 @@ namespace My.Player.Bag
         public Dictionary<string, float> ItemUseCd = new();
 
         public Dictionary<string, long> CurrencyBag = new();
-        public PlayerInventoryModel()
+        public PlayerInventoryModel(PlayerDataManager dataManager)
         {
+            this.DataManager = dataManager;
+
             MainBag = new();
             MainBag.InitBag(0, 60, 0);
 
@@ -631,6 +648,71 @@ namespace My.Player.Bag
                 SpeBags[bag.BagId] = bag;
             }
         }
+
+        private float _bagTimer;
+
+        public void Tick(float dt)
+        {
+            if (LogicTime.time - _bagTimer < 0.3f)
+            {
+                return;
+            }
+            _bagTimer = LogicTime.time;
+
+            foreach (var bag in SpeBags.Values)
+            {
+                for(int i=0;i<bag.NormalSlots.Count;i++)
+                {
+                    if (bag.NormalSlots[i] == null)continue;
+
+                    if(bag.NormalSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
+                    {
+                        var itemConf = FakeItemDatabase.GetItem(bag.NormalSlots[i].ItemID);
+                        if(itemConf.AutoDestroy)
+                        {
+                            insertion.Lifetime -= dt;
+                            if(insertion.Lifetime <= 0)
+                            {
+                                bag.NormalSlots[i] = null;
+                                continue;
+                            }
+
+                            if(!string.IsNullOrEmpty(itemConf.SpecialBuffId) && LogicTime.time - insertion.BuffTickTimer > itemConf.SpecialBuffInterval)
+                            {
+                                insertion.BuffTickTimer += itemConf.SpecialBuffInterval;
+
+                                DataManager.logicManager.globalBuffManager.AddBuff(DataManager.logicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
+                            }
+                        }
+                    }
+                }
+
+                for(int i=bag.ExtraSlots.Count -1; i>=0; i--)
+                {
+                    if (bag.ExtraSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
+                    {
+                        var itemConf = FakeItemDatabase.GetItem(bag.ExtraSlots[i].ItemID);
+                        if (itemConf.AutoDestroy)
+                        {
+                            insertion.Lifetime -= dt;
+                            if (insertion.Lifetime <= 0)
+                            {
+                                bag.ExtraSlots.RemoveAt(i);
+                                continue;
+                            }
+
+                            if (!string.IsNullOrEmpty(itemConf.SpecialBuffId) && LogicTime.time - insertion.BuffTickTimer > itemConf.SpecialBuffInterval)
+                            {
+                                insertion.BuffTickTimer += itemConf.SpecialBuffInterval;
+
+                                DataManager.logicManager.globalBuffManager.AddBuff(DataManager.logicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         public bool CheckHaveItem(string itemId, long count)
         {
@@ -705,7 +787,7 @@ namespace My.Player.Bag
             return leftCount;
         }
 
-        public long GiveItem(string itemId, long amount)
+        public long GiveItem(string itemId, long amount, int bagId)
         {
             var itemConf = FakeItemDatabase.GetItem(itemId);
             if (itemConf.ItemType == FakeItemConf.EItemType.Currency)
@@ -714,8 +796,13 @@ namespace My.Player.Bag
                 return amount;
             }
 
+            if (itemConf.IsAutoUse)
+            {
+                DataManager.logicManager.HandleUseItem(DataManager.logicManager.playerLogicEntity.Id, amount, itemConf.UseCfg1);
+                return amount;
+            }
 
-            var bag = GetBagById(0);
+            var bag = GetBagById(bagId);
             if (bag == null)
             {
                 return 0;
@@ -724,6 +811,8 @@ namespace My.Player.Bag
             var put = bag.TryGiveItem(itemId, amount);
             return put;
         }
+
+        
 
         /// <summary>
         /// ≥¢ ‘ΩªªªªÚ“∆∂Ø

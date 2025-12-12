@@ -460,15 +460,37 @@ namespace My.Map.Entity
                             TriggerParam1 = 1000, // 每0.2秒一次
                             OutputFightEffects = new()
                             {
-                                new MapAbilityEffectHitBoxCfg()
+                                new MapFightEffectBroadcastAttractCfg()
                                 {
-                                    
+                                    Power = 0.8f,
+                                    Range = 5f,
                                 }
                             }
                         }
                     },
                 };
-                
+
+                /// 小物品产生的阶段性冲击
+                _library["insertion_debuff_small"] = new BuffDefinition()
+                {
+                    BuffId = "insertion_debuff_small",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
+                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
+                    },
+                    DefaultDuration = 0.5f,
+
+                    OnAttachEffects = new()
+                    {
+                        new MapAbilityEffectAddResourceCfg()
+                        {
+                            ResourceId = AttrIdConsts.PlayerPleasure,
+                            AddValue = 200,
+                        }
+                    },
+                };
             }
 
             _library.TryGetValue(buffId, out BuffDefinition def);

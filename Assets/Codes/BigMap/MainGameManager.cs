@@ -20,6 +20,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -81,7 +82,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public DefaultSceneVisionSenser2D VisionSenser2D;
 
-    public MapGlobalNoiseEmitter mapGlobalNoiseEmitter;
 
     public MapSceneFadeAlphaManager SceneFadeManager;
 
@@ -374,7 +374,18 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public void ShowNoiseEffect(float intensity, Vector2 logicPos)
     {
         var worldPos = GetWorldPosFromLogicPos(logicPos);
-        mapGlobalNoiseEmitter.EmitNoiseFixed(intensity, worldPos);
+
+        var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(worldPos, 1, "ChamEffect");
+        if (fxCtx == null)
+        {
+            return;
+        }
+
+        var ring = fxCtx.EffectGo.GetComponent<MapNoiseRing>();
+        ring.transform.position = worldPos;
+        ring.gameObject.SetActive(true);
+        ring.Play(Mathf.Clamp01(intensity), worldPos);
+        ring.autoDestroy = false;
     }
 
     public void ShowClickkkWindow(string windowType, Vector2 showPos, float duration)

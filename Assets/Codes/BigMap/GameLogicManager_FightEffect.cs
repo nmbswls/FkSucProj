@@ -170,6 +170,22 @@ namespace My
                             executor = new AbilityEffectExecutor4HModeBlurt();
                         }
                         break;
+                    case MapAbilityEffectGiveItemCfg:
+                        {
+                            executor = new AbilityEffectExecutor4GiveItem();
+                        }
+                        break;
+
+                    case MapFightEffectKnockBackCfg:
+                        {
+                            executor = new AbilityFightExecutor4KnockBack();
+                        }
+                        break;
+                    case MapFightEffectBroadcastAttractCfg:
+                        {
+                            executor = new AbilityEffectExecutor4BroadcastAttract();
+                        }
+                        break;
                 }
 
                 if (executor != null)
@@ -226,7 +242,11 @@ namespace My
 
             public long TargetId;              // 锁定对象 如果来自技能 则在释放时锁定 如果来自效果触发 则在逻辑中绑定
             public Vector2? TriggerPos;        // 发生地点 技能释放位置 子弹碰撞位置 buff触发位置等
-            public Vector2? CastVec1;          // 施法参数1 技能施法参数
+            
+            public Vector2? CastVec1;          // 1.技能 为施法参数 
+                                               // 2.hitbox 击打方向
+                                               // 3.武器 单位间diff
+
             public Vector2? CastVec2;          // 施法参数2
 
             // 变量集合

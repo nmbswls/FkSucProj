@@ -15,7 +15,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Unity.Profiling;
 using UnityEngine;
+using static Config.FakeItemConf;
 using static MapSceneEffectManager;
+using static My.Map.Fight.FightStruct;
 using static My.MapExport.MapExportDatabase;
 using static UnityEditor.PlayerSettings;
 
@@ -255,7 +257,7 @@ namespace My
 
             globalBuffManager.Tick(dt);
             globalThrowManager.Tick(dt);
-
+            playerDataManager.Tick(dt);
 
             foreach (var entity in AreaManager.Repo.Loaded.Values)
             {
@@ -523,6 +525,45 @@ namespace My
         }
 
         #endregion
+
+        public bool HandleUseItem(long userUnit, long cnt, ItemUseCfg useCfg)
+        {
+            var srcActor = GetLogicEntity(userUnit) as BaseUnitLogicEntity;
+            if (srcActor != null)
+            {
+                return false;
+            }
+            switch (useCfg.UseType)
+            {
+                case FakeItemConf.EItemUseType.AddHunger:
+                    {
+                        srcActor.ApplyResourceChange(AttrIdConsts.PlayerHunger, +useCfg.Param1 * 100 * cnt, false, EDmgFlag.None, srcActor.Id);
+                    }
+                    break;
+                case FakeItemConf.EItemUseType.GiveDrop:
+                    {
+                        string dropId = useCfg.Param5;
+                        if(cnt > 100)
+                        {
+                            Debug.Log($"HandleUseItem too much bundle {cnt}");
+                            break; 
+                        }
+
+                        int it = 0;
+                        while(it++ < cnt)
+                        {
+                            var items = DropTable.GetBundleDropItems(dropId);
+                            for (int i = 0; i < items.Count; i++)
+                            {
+                                playerDataManager.TryGiveItem(items[i].Item1, items[i].Item2, 0);
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            return false;
+        }
     }
 
 }

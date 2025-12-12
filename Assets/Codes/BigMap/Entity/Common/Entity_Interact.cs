@@ -197,7 +197,7 @@ namespace My.Map
                         {
                             string itemId = output.Param3;
                             long count = output.Param1;
-                            Owner.LogicManager.playerDataManager.TryGiveItem(itemId, count);
+                            Owner.LogicManager.playerDataManager.TryGiveItem(itemId, count, 0);
                         }
                         break;
                 }

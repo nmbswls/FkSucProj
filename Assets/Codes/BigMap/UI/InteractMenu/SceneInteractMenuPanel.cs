@@ -1,3 +1,4 @@
+using My.Map;
 using SuperScrollView;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,6 +76,9 @@ namespace My.UI
             ChooseObjMenu.gameObject.SetActive(false);
         }
 
+        private float _interactViewUpdateTimer = 0;
+
+
         public void Update()
         {
             //HandleInput();
@@ -95,6 +99,19 @@ namespace My.UI
                     out Vector2 localPos
                 );
                 ChooseInteractMenu.transform.localPosition = localPos;
+
+                if(_interactViewUpdateTimer + 1.0f  > LogicTime.time)
+                {
+                    return;
+                }
+                _interactViewUpdateTimer = LogicTime.time;
+                var innerList = new List<(long, string, bool)>();
+                var selections = currBindPoint.GetInteractSelections(0.5f);
+                foreach (var one in selections)
+                {
+                    innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));
+                }
+                ChooseInteractMenu.SetData(innerList);
             }
         }
 

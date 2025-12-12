@@ -76,8 +76,8 @@ namespace My.Map
         {
             moveSpeed = 2.0f;
             // 数值类
-            attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 10000);
-            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 100000);
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
+            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 1000_000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
@@ -85,13 +85,13 @@ namespace My.Map
 
             RegisterCommonStates();
 
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 100000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 10000, 10000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerSan, null, 10000, 10000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 10000, 0);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 10000, 0);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 10000, 10000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 10000, 10000);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 1000_000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100_000, 100_000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerSan, null, 100_000, 100_000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 100_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 100_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100_000, 100_000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100_000, 100_000);
 
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 0);
@@ -446,7 +446,7 @@ namespace My.Map
             {
                 return;
             }
-            applyHValTimer = LogicTime.time + 0.2f;
+            applyHValTimer = LogicTime.time + 1f;
 
             ApplyAuraHVal();
         }
@@ -466,7 +466,7 @@ namespace My.Map
             var effect = new MapAbilityEffectAddResourceCfg()
             {
                 ResourceId = AttrIdConsts.UnitHVal,
-                AddValue = 20,
+                AddValue = 50,
                 IsEnmity = true,
             };
 

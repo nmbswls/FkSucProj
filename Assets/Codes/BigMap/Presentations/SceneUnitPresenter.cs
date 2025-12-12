@@ -343,6 +343,8 @@ namespace My.Map.Scene
             base.Bind(logic);
 
             InitWeaponInfo();
+
+            OnEventGhostChange(this.Id);
         }
 
         protected override void RegisterEvents()
@@ -354,6 +356,8 @@ namespace My.Map.Scene
             UnitEntity.EventOnStartStealth += OnEventStartStealth;
             UnitEntity.EventOnEndStealth += OnEventEndStealth;
             UnitEntity.EventOnAttachStatusChanged += OnEventConvertAttach;
+            UnitEntity.EventOnGhostChange += OnEventGhostChange;
+            
 
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
@@ -375,6 +379,7 @@ namespace My.Map.Scene
             UnitEntity.EventOnStartStealth -= OnEventStartStealth;
             UnitEntity.EventOnEndStealth -= OnEventEndStealth;
             UnitEntity.EventOnAttachStatusChanged -= OnEventConvertAttach;
+            UnitEntity.EventOnGhostChange -= OnEventGhostChange;
         }
 
 
@@ -466,7 +471,19 @@ namespace My.Map.Scene
             }
         }
 
-
+        protected virtual void OnEventGhostChange(long entityId)
+        {
+            if(UnitEntity.CheckHasState(AttrIdConsts.Ghost))
+            {
+                mainCol.enabled = false;
+            }
+            else
+            {
+                mainCol.enabled = true;
+                Vector3 diff = UnityEngine.Random.insideUnitCircle * 0.05f;
+                this.transform.position = this.transform.position + diff;
+            }
+        }
         #endregion
 
         #region  ‹øÿ“∆∂Ø

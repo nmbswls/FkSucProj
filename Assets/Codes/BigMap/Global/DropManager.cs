@@ -16,9 +16,11 @@ namespace My.Map.Drop
 
         public Dictionary<string, long> LostItems = new Dictionary<string, long>();
 
+        public GameLogicManager logicManager;
         public GlobalMapDropCollection(GameLogicManager logicManager)
         {
             _lastRecycleTime = LogicTime.time;
+            this.logicManager = logicManager;
         }
 
         private float _lastRecycleTime;
@@ -46,6 +48,19 @@ namespace My.Map.Drop
             var dropData = new DropData(GameLogicManager.LogicEntityIdInst++, itemId, (int)amount, position, createTime: LogicTime.time,  autoPick);
             _drops.Add(dropData.Id, dropData);
             EvOnDropAdd?.Invoke(dropData, sourcePos);
+        }
+
+        public void PickDrop(long id)
+        {
+            _drops.TryGetValue(id, out var dropData);
+            if(dropData != null)
+            {
+                RemoveDrop(id, isRecycle: false);
+
+                // ʰȡ
+                Debug.Log("PickDrop " + id);
+                logicManager.playerDataManager.TryGiveItem(dropData.ItemId, dropData.Amount, 0);
+            }
         }
 
         public void RemoveDrop(long id, bool isRecycle)

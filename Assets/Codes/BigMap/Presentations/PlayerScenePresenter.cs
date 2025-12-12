@@ -16,6 +16,8 @@ namespace My.Map.Scene
 
         public GhostTrailSpawner MoveTrailSpawner;
 
+        public MapGlobalNoiseEmitter NoiseEmitter;
+
         protected override void Awake()
         {
             base.Awake();
@@ -207,6 +209,7 @@ namespace My.Map.Scene
         {
             base.RegisterEvents();
 
+            PlayerEntity.EventOnAttachmentUpdate += OnEventAttachmentUpdate;
             PlayerEntity.EventOnAttachmentUpdate += OnEventAttachmentUpdate;
         }
 

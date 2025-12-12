@@ -146,7 +146,7 @@ namespace My.Map.Entity.AI
                 var chosen = SelectBestAction();
                 if (chosen != null && _runningNormal != chosen)
                 {
-                    _runningNormal.Stop(AIActionStatus.Interrupted);
+                    _runningNormal?.Stop(AIActionStatus.Interrupted);
                     chosen.Start();
                     _runningNormal = chosen;
                 }

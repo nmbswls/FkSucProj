@@ -25,6 +25,7 @@ namespace My.Map.Scene
         public UniformGridIndex<long> GridIndex;
 
 
+        // 可交互物 和 普通拾取是否共享
         private Dictionary<long, MapSceneDropInteractable> _spawnedInteractObjs = new Dictionary<long, MapSceneDropInteractable>();
         private Queue<MapSceneDropInteractable> _innerPool = new();
         public GameObject interactablePrefab;
@@ -53,7 +54,7 @@ namespace My.Map.Scene
 
         private List<long> cacheList = new();
 
-        public float activateDistance = 32f;    // 距离阈值（米）
+        public float activateDistance = 16f;    // 距离阈值（米）
 
         private float _checkInteractTimer;
         public void CheckInteractWithDrops()
@@ -88,44 +89,54 @@ namespace My.Map.Scene
                 {
                     continue;
                 }
-                var dropPos = dropData.Position;
-                if (dropData.AutoPick && LogicTime.time - dropData.CreateTime > 1.5f)
+                var dropPos = dropData.Position; 
+                float distSqr = (dropPos - playerPos).sqrMagnitude;
+
+                if (!_spawnedInteractObjs.TryGetValue(item, out var obj))
                 {
-                    var go = Instantiate(autoPickPrefab, dropPos, Quaternion.identity);
-                    var mover = go.GetComponent<FlyToPlayerMover>();
-                    if (mover != null)
+                    if (distSqr <= activateDistance * activateDistance)
                     {
-                        mover.Init(MainGameManager.Instance.playerScenePresenter.transform, onArrived: () =>
+                        // 生成交互物
+                        obj = SpawnInteractable(dropData, null, dropData.AutoPick);
+                        _spawnedInteractObjs[item] = obj;
+                    }
+                }
+
+                if (dropData.AutoPick && !obj.IsFlying && LogicTime.time - dropData.CreateTime > 0.5f && distSqr < 1.0)
+                {
+                    obj.flyToPlayerMover.Init(MainGameManager.Instance.playerScenePresenter.transform, onArrived: () =>
                         {
                             Debug.Log("触发拾取道具添加");
-                            GameObject.Destroy(go);
+
+                            MainGameManager.Instance.gameLogicManager.globalDropCollection.PickDrop(obj.DropData.Id);
                         });
+                    //var go = Instantiate(autoPickPrefab, dropPos, Quaternion.identity);
+                    //var mover = go.GetComponent<FlyToPlayerMover>();
+                    //if (mover != null)
+                    //{
+                    //    mover.Init(MainGameManager.Instance.playerScenePresenter.transform, onArrived: () =>
+                    //    {
+                    //        Debug.Log("触发拾取道具添加");
+                    //        GameObject.Destroy(go);
+                    //    });
 
-                        // 刷新显示的 sprite（从材质或你自己的配置来源）
-                        var sr = go.GetComponentInChildren<SpriteRenderer>();
-                        if (sr != null)
-                        {
-                            //sr.sprite = ParticleLayer.TryGetFirstSpriteFromTSA();
-                        }
-                    }
+                    //    // 刷新显示的 sprite（从材质或你自己的配置来源）
+                    //    var sr = go.GetComponentInChildren<SpriteRenderer>();
+                    //    if (sr != null)
+                    //    {
+                    //        //sr.sprite = ParticleLayer.TryGetFirstSpriteFromTSA();
+                    //    }
+                    //}
 
-                    // 可选：生成后移除粒子避免重复
-                    OnDropRemoved(item);
-                    //spawned++;
-                    //if (spawned >= maxSpawnPerScan) break;
+                    //// 可选：生成后移除粒子避免重复
+                    //OnDropRemoved(item);
+                    ////spawned++;
+                    ////if (spawned >= maxSpawnPerScan) break;
                 }
                 // 非自动拾取 生成交互物
                 else
                 {
-                    if (_spawnedInteractObjs.ContainsKey(item)) continue;
-
-                    float distSqr = (dropPos - playerPos).sqrMagnitude;
-                    if (distSqr <= activateDistance * activateDistance)
-                    {
-                        // 生成交互物
-                        var go = SpawnInteractable(dropPos, item, null);
-                        _spawnedInteractObjs[item] = go;
-                    }
+                    
                 }
             }
 
@@ -169,7 +180,7 @@ namespace My.Map.Scene
 
                         if (_innerPool.Count < 20)
                         {
-                            o.gameObject.SetActive(false);
+                            o.DoRecycle();
                             _innerPool.Enqueue(o);
                         }
                         else
@@ -181,7 +192,7 @@ namespace My.Map.Scene
             }
         }
 
-        private MapSceneDropInteractable SpawnInteractable(Vector3 pos, long dropId, Vector3? srcPos)
+        private MapSceneDropInteractable SpawnInteractable(DropData dropData, Vector3? srcPos, bool autoPick)
         {
             MapSceneDropInteractable interactObj = null;
             if (_innerPool.Count > 0)
@@ -192,7 +203,7 @@ namespace My.Map.Scene
             else
             {
                 // 对象池可替换 Instantiate
-                var go = Instantiate(interactablePrefab, pos, Quaternion.identity, transform);
+                var go = Instantiate(interactablePrefab, dropData.Position, Quaternion.identity, transform);
                 interactObj = go.GetComponent<MapSceneDropInteractable>();
                 interactObj.gameObject.SetActive(true);
             }
@@ -202,28 +213,29 @@ namespace My.Map.Scene
                 return null;
             }
 
-            interactObj.InitFromDrop(dropId, pos, srcPos);
+            interactObj.InitFromDrop(dropData, srcPos, autoPick);
             return interactObj;
         }
 
         public void OnDropCreate(DropData newDrop, Vector2? srcPos)
         {
+            Debug.Log("OnDropCreate " + newDrop.ItemId);
             //int particleIndex = ParticleLayer.EmitDrop(newDrop.Position, 0, 0.4f, Color.white);
             //DropParticleIndex[newDrop.Id] = particleIndex;
             GridIndex.AddOrMove(newDrop.Id, newDrop.Position);
 
-            if (srcPos != null)
+            if (MainGameManager.Instance.playerScenePresenter == null) return;
+            Vector2 playerPos = MainGameManager.Instance.playerScenePresenter.GetWorldPosition();
+            if ((playerPos - srcPos.Value).sqrMagnitude < activateDistance * activateDistance)
             {
-                Vector2 playerPos = MainGameManager.Instance.playerScenePresenter.GetWorldPosition();
-                if ((playerPos - srcPos.Value).sqrMagnitude < activateDistance * activateDistance)
-                {
-                    if (_spawnedInteractObjs.ContainsKey(newDrop.Id)) return;
+                if (_spawnedInteractObjs.ContainsKey(newDrop.Id)) return;
 
-                    // 生成交互物
-                    var go = SpawnInteractable(newDrop.Position, newDrop.Id, srcPos);
-                    _spawnedInteractObjs[newDrop.Id] = go;
-                }
+                // 生成交互物
+                var go = SpawnInteractable(newDrop, srcPos, newDrop.AutoPick);
+                _spawnedInteractObjs[newDrop.Id] = go;
             }
+
+            
         }
 
         public void OnDropRemoved(long id)
@@ -240,8 +252,8 @@ namespace My.Map.Scene
             {
                 _spawnedInteractObjs.Remove(id);
                 if(_innerPool.Count < 20)
-                    {
-                    spawnedInteract.gameObject.SetActive(false);
+                {
+                    spawnedInteract.DoRecycle();
                     _innerPool.Enqueue(spawnedInteract);
                 }
                     else

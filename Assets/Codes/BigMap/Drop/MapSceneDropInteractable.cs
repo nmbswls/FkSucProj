@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Config;
+using My.Map.Drop;
 using UnityEngine;
 
 
@@ -8,22 +10,31 @@ namespace My.Map.Scene
 {
     public class MapSceneDropInteractable : MonoBehaviour, ISceneInteractable
     {
-        public long Id { get; set; }
-        public long DropId { get; set; }
-
-        public string ShowName => gameObject.name;
-
-        public event Action<bool> EventOnInteractStateChanged;
+        public string ShowName => cacheItemName;
+        private string cacheItemName;
 
         public Vector2? SrcPos;
-        public Vector2 DropPos;
         public bool IsFlying;
 
-        public void InitFromDrop(long dropId, Vector2 dropPos,  Vector3? srcPos/*, System.Action<int, GameObject> onPicked*/)
+        public long Id { get { return DropData?.Id ?? 0; } }
+
+        public DropData DropData { get; protected set; }
+        public bool AutoPick { get; set; }
+        public bool Picking { get; set; }
+
+
+        public FlyToPlayerMover flyToPlayerMover;
+
+        private void Awake()
         {
-            this.DropId = dropId;
-            this.DropPos = dropPos;
+            flyToPlayerMover = GetComponent<FlyToPlayerMover>();
+        }
+
+        public void InitFromDrop(DropData dropData,  Vector3? srcPos/*, System.Action<int, GameObject> onPicked*/, bool autoPick)
+        {
+            this.DropData = dropData;
             this.SrcPos = srcPos;
+            this.AutoPick = autoPick;
 
             if (srcPos != null)
             {
@@ -33,21 +44,24 @@ namespace My.Map.Scene
             else
             {
                 IsFlying = false;
-                transform.position = dropPos;
+                transform.position = dropData.Position;
             }
 
-            //_particleIndex = particleIndex;
-            //_onPicked = onPicked;
+            var itemCfg = FakeItemDatabase.GetItem(dropData.ItemId);
+            cacheItemName = itemCfg?.DisplayName ?? "?";
+
+            flyToPlayerMover.Clear();
+            Picking = false;
         }
 
         public void Update()
         {
-            if(IsFlying && SrcPos != null)
+            if(!Picking && IsFlying && SrcPos != null)
             {
-                transform.position = Vector2.Lerp(transform.position, DropPos, 3f * Time.deltaTime);
+                transform.position = Vector2.Lerp(transform.position, DropData.Position, 6f * Time.deltaTime);
                 Vector2 pos2 = transform.position;
 
-                if ((DropPos - pos2).magnitude < 0.01f)
+                if ((DropData.Position - pos2).magnitude < 0.01f)
                 {
                     IsFlying = false;
                 }
@@ -63,25 +77,20 @@ namespace My.Map.Scene
         public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             var ret = new List<SceneInteractSelection>();
-            if (dist > 0.5f) return ret;
+            if (dist > 0.1f) return ret;
 
             ret.Add(new SceneInteractSelection()
             {
                 SelectId = 1,
                 SelectContent = "pick",
-
             });
             return ret;
-        }
-
-        public void SetInteractExpandStatus(bool expanded)
-        {
         }
 
         public void TriggerInteract(int selectionId)
         {
             Debug.Log("手动拾取触发");
-            MainGameManager.Instance.gameLogicManager.globalDropCollection.RemoveDrop(DropId, false);
+            MainGameManager.Instance.gameLogicManager.globalDropCollection.PickDrop(DropData.Id);
         }
 
         public bool CanInteractEnable(float dist)
@@ -91,7 +100,22 @@ namespace My.Map.Scene
             {
                 return false;
             }
+            if(AutoPick)
+            {
+                return false;
+            }
             return true;
+        }
+
+
+        public void DoRecycle()
+        {
+            this.flyToPlayerMover.Clear();
+            this.DropData = null;
+            this.Picking = false;
+            this.AutoPick = false;
+
+            gameObject.SetActive(false);
         }
     }
 }

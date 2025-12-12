@@ -177,6 +177,19 @@ namespace My.Map.Entity
 
                 {
                     var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "evil_child_insertion";
+                    cfg.MainAbilityId = "evil_child_insertion";
+                    cfg.CoolDown = 6.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+                    cfg.Priority = 1;
+
+                    cfg.TargetType = ETargetType.LockTarget;
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+                {
+                    var cfg = new EntitySkillCfg();
                     cfg.SkillId = "player_normal_defend";
                     cfg.MainAbilityId = "player_normal_defend";
                     cfg.CoolDown = 1.0f;
@@ -227,6 +240,9 @@ namespace My.Map.Entity
                     cfg.TargetType = ETargetType.LockTarget;
                     _skillDict[cfg.SkillId] = cfg;
                 }
+
+
+                
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -389,6 +405,13 @@ namespace My.Map.Entity
                     var ab = CreateNpcHModeSJ();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                // ≤Â»Î
+                {
+                    var ab = CreateEvilChildInsertionAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                
             }
 
             _abilityDict.TryGetValue(abilityName, out var abConfig);
@@ -1729,11 +1752,22 @@ namespace My.Map.Entity
                 Duration = 0.24f,
                 OnHitEffects = new()
                 {
-                    new MapAbilityEffectApplyDamageCfg()
+                    //new MapAbilityEffectApplyDamageCfg()
+                    //{
+                    //    BaseDamage = 1000,
+                    //    KnockBackForce = 0.6f,
+                    //},
+                    new MapAbilityEffectAddResourceCfg()
                     {
-                        BaseDamage = 1000,
-                        KnockBackForce = 0.3f,
+                        ResourceId = AttrIdConsts.UnitHVal,
+                        AddValue = 1000,
+                        IsEnmity = true,
                     },
+                    new MapFightEffectKnockBackCfg()
+                    {
+                        KnockBackForce = 0.6f,
+                        DirType = MapFightEffectKnockBackCfg.EKnockBackType.CastDir,
+                    }
                 }
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
@@ -2156,7 +2190,67 @@ namespace My.Map.Entity
             return spec;
         }
     
-    
+        
+        private static MapAbilitySpecConfig CreateEvilChildInsertionAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "evil_child_insertion";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            //spec.MaxStepDistance = 0.5f;
+            //spec.CoolDown = 0.2f;
+            //spec.DesiredUseDistance = 0.5f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                EnterDebugString = "I",
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.8"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.6"
+                },
+            };
+
+
+            {
+                var hitEffect = new MapAbilityEffectUseWeaponCfg()
+                {
+                    WeaponName = "Catch",
+                    Duration = 0.4f,
+                    MaxHit = 1,
+                    OnHitEffects = new()
+                    {
+                        new MapAbilityEffectGiveItemCfg()
+                        {
+                            ItemId = "insertion_maoqiu",
+                            Count = 1,
+                            SpecificBagId = 1,
+                        },
+                    }
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+            }
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
         private static MapAbilitySpecConfig CreateHitAttachAbility()
         {
 
@@ -2324,15 +2418,14 @@ namespace My.Map.Entity
 
                 AnimTag = "ziwei",
 
-                HoldingPhase = true,
 
-                PhaseBuff = new() { "player_ziweiing"}
+                PhaseBuff = new() { "player_ziwei" },
 
-                //DurationValue = new()
-                //{
-                //    ValType = EOneVariatyType.Float,
-                //    RawVal = "1.0"
-                //},
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "99.0"
+                },
             };
 
             {
@@ -2353,23 +2446,6 @@ namespace My.Map.Entity
             spec.Id = "h_mode_execute";
             spec.TypeTag = AbilityTypeTag.Utility;
 
-            var prePhase = new MapAbilityPhase()
-            {
-                PhaseName = "Prepare",
-                LockRotation = true,
-                LockMovement = true,
-                ImmuneKnock = true,
-
-                DurationValue = new()
-                {
-                    ValType = EOneVariatyType.Float,
-                    RawVal = "0.4"
-                },
-            };
-
-            spec.Phases.Add(prePhase);
-
-
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Executing",
@@ -2377,7 +2453,7 @@ namespace My.Map.Entity
                 LockMovement = true,
                 ImmuneKnock = true,
 
-                PhaseBuff = new() { "super_armor" },
+                PhaseBuff = new() { "super_armor", "phase_move" },
 
                 DurationValue = new()
                 {
@@ -2418,17 +2494,6 @@ namespace My.Map.Entity
                 };
 
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addHEffect, Kind = PhaseEventKind.OnExit });
-
-                //var dashEffect = new MapAbilityEffectControlledMoveCfg()
-                //{
-                //    TargetType = 0,
-                //    UseCastVec = true,
-                //    FixedDuration = 0.45f,
-                //    IsEnmity = true,
-                //    ControlForce = 10.0f,
-                //};
-
-                //mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
             }
 
             spec.Phases.Add(mainPhase);

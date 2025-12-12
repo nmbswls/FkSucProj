@@ -11,11 +11,11 @@ namespace My.Map.View
         public GameObject orbPrefab;          // FX_Orb2D 预制体（独立特效）
 
         [Header("Timings")]
-        public float playerFadeOut = 0.2f;    // 玩家隐去时间
-        public float orbFadeIn = 0.15f;       // 光点淡入时间
-        public float orbMoveDuration = 0.5f;  // 光点飞行时间
-        public float orbFadeOut = 0.15f;      // 光点淡出时间
-        public float playerFadeIn = 0.2f;     // 玩家恢复显示时间
+        public float playerFadeOut = 0.1f;    // 玩家隐去时间
+        public float orbFadeIn = 0.08f;       // 光点淡入时间
+        public float orbMoveDuration = 0.3f;  // 光点飞行时间
+        public float orbFadeOut = 0.1f;      // 光点淡出时间
+        public float playerFadeIn = 0.12f;     // 玩家恢复显示时间
 
         [Header("Ease")]
         public Ease moveEase = Ease.InOutCubic;

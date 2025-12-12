@@ -408,8 +408,6 @@ namespace My.Map.Entity
             //var currentSpeed = target.magnitude;
             //var targetSpeed = Mathf.MoveTowards(currentSpeed, desiredSpeed, 11);
             DesiredVelocity = dir * desiredSpeed;
-
-            Debug.Log($"MoveToward sped {desiredSpeed} {_moveSpeedRate}");
         }
 
         private void TryReplan()

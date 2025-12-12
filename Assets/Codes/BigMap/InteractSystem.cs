@@ -47,6 +47,7 @@ public class SceneInteractSystem
     }
     private readonly List<ResultItem> candidates = new List<ResultItem>(64);
     public List<(ISceneInteractable, float)> currInteractPoints = new();
+    public List<long> closeUnitCache = new();
     //public ISceneInteractable? currnteractObj;
 
     public void Tick(float dt)
@@ -58,7 +59,7 @@ public class SceneInteractSystem
         }
 
         _interactTimer = 0.2f;
-        UpdateInteractRangeObjs();
+        UpdateNormalInteractRangeObjs();
 
         bool allSame = true;
 
@@ -91,9 +92,7 @@ public class SceneInteractSystem
     }
 
 
-    
-
-    public void UpdateInteractRangeObjs()
+    public void UpdateNormalInteractRangeObjs()
     {
         var presenter = MainGameManager.Instance.playerScenePresenter;
         if (presenter == null || presenter.GetLogicEntity() == null)

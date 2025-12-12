@@ -11,6 +11,7 @@ using static My.GameLogicManager;
 using static My.Map.BaseUnitLogicEntity;
 using static My.Map.Fight.FightStruct;
 using static My.Map.PlayerLogicEntity;
+using static UnityEngine.GraphicsBuffer;
 
 namespace My.Map.Entity
 {
@@ -205,19 +206,14 @@ namespace My.Map.Entity
             }
 
             ctx.Env.playerDataManager.inventoryModel.ItemUseCd[useItemId] = LogicTime.time;
-            switch(itemCfg.UseCfg1.UseType)
-            {
-                case FakeItemConf.EItemUseType.AddHunger:
-                    {
-                        var srcActor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
-                        long.TryParse(itemCfg.UseCfg1.UseParams, out var addVal);
 
-                        if(srcActor != null)
-                        {
-                            srcActor.ApplyResourceChange(AttrIdConsts.PlayerHunger, +addVal * 100, false, EDmgFlag.None, ctx.SourceInfo.SrcEntityId);
-                        }
-                    }
-                    break;
+            var srcIdxStr = ctx.GetVariatyRawVal(realCfg.UseItemSrcIdx);
+            int.TryParse(srcIdxStr, out var srcIdx);
+
+            ctx.Env.HandleUseItem(ctx.SourceInfo.SrcEntityId, 1, itemCfg.UseCfg1);
+            if(itemCfg.UseCfg1.CostOnUse)
+            {
+                ctx.Env.playerDataManager.CostItem(useItemId, 1);
             }
         }
     }
@@ -286,7 +282,72 @@ namespace My.Map.Entity
         }
     }
 
-    
+    public class AbilityFightExecutor4KnockBack : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectKnockBackCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityFightExecutor4KnockBack cfg error");
+                return;
+            }
+
+            if (realCfg.KnockBackForce <= 0)
+            {
+                Debug.LogError("AbilityFightExecutor4KnockBack param inbalid");
+                return;
+            }
+
+            // 对目标施加
+            if(realCfg.TargetType == 0)
+            {
+                var targetUnit = ctx.Env.GetLogicEntity(ctx.TargetId) as BaseUnitLogicEntity;
+                if (targetUnit == null)
+                {
+                    Debug.LogError("AbilityFightExecutor4KnockBack target not found.");
+                    return;
+                }
+
+                Vector2? dir = null;
+                switch (realCfg.DirType)
+                {
+                    case MapFightEffectKnockBackCfg.EKnockBackType.CastDir:
+                        {
+                            dir = ctx.CastVec1.Value;
+                        }
+                        break;
+                    case MapFightEffectKnockBackCfg.EKnockBackType.Random:
+                        {
+                            dir = UnityEngine.Random.insideUnitCircle.normalized; 
+                        }
+                        break;
+                }
+
+                if(dir == null)
+                {
+                    Debug.LogError("AbilityFightExecutor4KnockBack dir err.");
+                    return;
+                }
+
+                targetUnit.ApplyKnockBack(dir.Value, realCfg.KnockBackForce);
+            }
+            else
+            {
+                var srcUnit = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
+                if (srcUnit == null)
+                {
+                    Debug.LogError("AbilityFightExecutor4KnockBack target not found.");
+                    return;
+                }
+
+                var diff = ctx.CastVec1.Value - ctx.TriggerPos.Value;
+                srcUnit.ApplyKnockBack(diff, realCfg.KnockBackForce);
+            }
+        }
+    }
+
+
     public class AbilityFightExecutor4SpecialMoveTo : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
@@ -483,11 +544,11 @@ namespace My.Map.Entity
             // 当目标type为0时 在正常语境下 就是给目标使用
             if (realCfg.TargetType == 0)
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.TargetId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId : srcBuffId);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.TargetId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId : srcBuffId, overrideDuration:realCfg.Duration);
             }
             else
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.SourceInfo.SrcEntityId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId: srcBuffId);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.SourceInfo.SrcEntityId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId: srcBuffId, overrideDuration: realCfg.Duration);
             }
         }
     }
@@ -505,10 +566,12 @@ namespace My.Map.Entity
 
             List<ILogicEntity> candidates = null;
             var castDir = ctx.CastVec1 - ctx.TriggerPos;
+
+            Vector2 realCenter = Vector2.zero;
             // 通过hitbox 找到目标
             if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
             {
-                var realCenter = ctx.TriggerPos.Value + castDir.Value * realCfg.Length * 0.5f;
+                realCenter = ctx.TriggerPos.Value + castDir.Value * realCfg.Length * 0.5f;
 
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
@@ -519,8 +582,6 @@ namespace My.Map.Entity
             }
             else if(realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Circle)
             {
-
-                Vector2 realCenter;
                 if(realCfg.CenterPosType == 0)
                 {
                     realCenter = ctx.TriggerPos.Value;
@@ -553,8 +614,13 @@ namespace My.Map.Entity
                     {
                         LogicFightEffectContext newCtx = new(ctx.Env, ctx.SourceInfo);
 
-                        newCtx.TriggerPos = ctx.TriggerPos;
-                        newCtx.CastVec1 = ctx.CastVec1;
+                        //newCtx.TriggerPos = ctx.TriggerPos;
+                        //newCtx.CastVec1 = ctx.CastVec1;
+
+                        newCtx.TriggerPos = candidate.Pos;
+                        newCtx.CastVec1 = candidate.Pos - realCenter;
+                        newCtx.CastVec2 = Vector2.zero;
+
                         newCtx.TargetId = candidate.Id;
                         ctx.Env.HandleLogicFightEffect(e, newCtx);
                     }
@@ -1113,6 +1179,23 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4GiveItem : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectGiveItemCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4HitAttach err");
+                return;
+            }
+
+            ctx.Env.playerDataManager.TryGiveItem(realCfg.ItemId, realCfg.Count, realCfg.SpecificBagId);
+        }
+    }
+    
+
     public class AbilityEffectExecutor4HModeBlurt : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
@@ -1160,19 +1243,43 @@ namespace My.Map.Entity
                 {
                     //ctx.Env.globalBuffManager.AddBuff();
                     Debug.Log("AbilityEffectExecutor4HModeBlurt sj to player");
-                    ctx.Env.viewer.ShowPauseCloseupWindow("jingyu", 0.5f);
+                    //ctx.Env.viewer.ShowPauseCloseupWindow("jingyu", 0.5f);
+                    ctx.Env.viewer.ShowFakeFxEffect("精浴", ctx.Env.playerLogicEntity.Pos);
                 }
                 else
                 {
                     var dropPos = npcUnit.Pos + npcUnit.FaceDir * 0.5f;
                     for(int i=0; i< 4;i++)
                     {
-                        ctx.Env.globalDropCollection.CreateDrop("j_drop", 1, dropPos, true, npcUnit.Pos);
+                        ctx.Env.globalDropCollection.CreateDrop("j_drop_small", 1, dropPos + UnityEngine.Random.insideUnitCircle * 0.5f, true, npcUnit.Pos);
                     }
 
                     ctx.Env.viewer.ShowFakeFxEffect("落地", dropPos);
                 }
             }
+        }
+    }
+
+    public class AbilityEffectExecutor4BroadcastAttract : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectBroadcastAttractCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4BroadcastAttract err");
+                return;
+            }
+
+            var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (caster == null || caster is not PlayerLogicEntity playerEntity)
+            {
+                Debug.LogError("AbilityEffectExecutor4BroadcastAttract unit not found.");
+                return;
+            }
+
+            ctx.Env.viewer.ShowNoiseEffect(0.8f, playerEntity.Pos);
         }
     }
     

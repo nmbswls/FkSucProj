@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitName: evil_child
   ViewSprite: {fileID: 0}
+  PrefabName: 
   MoveStyle: 1
   MoveSpeed: 2
   IsPeace: 0
@@ -27,7 +28,7 @@ MonoBehaviour:
   DefaultFactionId: 3
   Hp: 100
   SkillList:
-  - evil_child_attach
+  - evil_child_insertion
   DropId: citizen_01
   NpcTag: 
   InteractList: []

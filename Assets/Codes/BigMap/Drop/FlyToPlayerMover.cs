@@ -17,6 +17,12 @@ public class FlyToPlayerMover : MonoBehaviour
         _onArrived = onArrived;
     }
 
+    public void Clear()
+    {
+        _target = null;
+        _fixedPosition = Vector3.zero;
+    }
+
     void Update()
     {
         if (_target == null) return;
