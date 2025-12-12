@@ -337,7 +337,7 @@ namespace My.Map.Entity
             {
                 foreach(var buffId in phase.PhaseBuff)
                 {
-                    var instId = EntityOwner.BuffManager.AddBuff(EntityOwner.Id, buffId);
+                    var instId = EntityOwner.BuffManager.AddBuff(EntityOwner.Id, buffId, casterId: EntityOwner.Id);
                     CurrentCtx.PhaseBindBuffs.Add(instId);
                 }
             }

@@ -2411,7 +2411,6 @@ namespace My.Map.Entity
             {
                 PhaseName = "Executing",
                 LockRotation = true,
-                LockMovement = true,
                 ImmuneKnock = true,
 
                 InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit | EAbilityInterruptMask.Cast,
