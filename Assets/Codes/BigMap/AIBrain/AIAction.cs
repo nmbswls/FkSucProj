@@ -213,6 +213,13 @@ namespace My.Map.Entity.AI
         {
 
         }
+
+        public override void OnExitState()
+        {
+            base.OnExitState();
+
+            _brain.blackboard.LastLeaveMoveModePos = _brain.NpcEntity.Pos;
+        }
     }
 
 
