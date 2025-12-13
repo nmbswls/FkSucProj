@@ -202,6 +202,7 @@ namespace My.Map
             if(!IsAttaching)
             {
                 AIBrain?.Tick(dt);
+
                 TickAttractState();
                 EnmityComp?.Tick(dt);
                 combatStateComp?.Tick(dt);

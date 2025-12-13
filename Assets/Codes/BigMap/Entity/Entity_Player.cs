@@ -58,7 +58,7 @@ namespace My.Map
             //TickMoveNoiseEffect(now, dt);
             TickAddAuraHVal(dt);
 
-            TickWatchedInfo();
+            TickBeingGazedInfo();
 
             TickGc();
             TickPlayerGcYishang();
@@ -495,7 +495,11 @@ namespace My.Map
         public Dictionary<long, float> BeingGazedTrack = new();
 
         public float _watchTimer = 0;
-        public void TickWatchedInfo()
+
+        /// <summary>
+        /// tick 被注视效果
+        /// </summary>
+        public void TickBeingGazedInfo()
         { 
             if(LogicTime.time < _watchTimer)
             {
@@ -504,21 +508,23 @@ namespace My.Map
 
             _watchTimer = LogicTime.time + 1f;
 
-            foreach(var key in WatchedInfo.Keys.ToList())
+            foreach(var key in BeingGazedTrack.Keys.ToList())
             {
-                if (WatchedInfo[key] + 2.0f < LogicTime.time)
+                if (BeingGazedTrack[key] + 2.0f < LogicTime.time)
                 {
-                    WatchedInfo.Remove(key);
+                    BeingGazedTrack.Remove(key);
                 }
             }
 
-            if(WatchedInfo.Count > 1)
+            if(WillBeGazed())
             {
-                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 100, false, EDmgFlag.None, null);
+                if (BeingGazedTrack.Count > 1)
+                {
+                    //attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 100, false, EDmgFlag.None, null);
+                }
             }
+            
         }
-
-
 
         /// <summary>
         /// 只有衣装满足条件时 才成为被注视对象
@@ -534,15 +540,14 @@ namespace My.Map
             return true;
         }
 
-
-        public bool OnGazeLeave()
+        public void OnGazeEnter(long srcId)
         {
-
+            BeingGazedTrack[srcId] = LogicTime.time;
         }
 
-        public void UpdateWatchedInfo(long watchId)
+        public void OnGazeLeave(long srcId)
         {
-            WatchedInfo[watchId] = LogicTime.time;
+            BeingGazedTrack.Remove(srcId);
         }
 
         #endregion
@@ -550,9 +555,9 @@ namespace My.Map
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
             base.OnUnitDie(reason, lastIntent);
-
-
         }
+
+
 
         public class AttachingObjInfo
         {

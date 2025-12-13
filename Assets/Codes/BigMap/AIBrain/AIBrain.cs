@@ -41,6 +41,8 @@ namespace My.Map.Entity.AI
         public string? CurrIntentSkill = null;
 
         public bool CanLeaveAttract;
+
+        public bool AttractTrigger;
     }
 
     public class AIBrainConfig

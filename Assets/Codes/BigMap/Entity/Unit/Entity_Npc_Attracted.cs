@@ -18,50 +18,61 @@ namespace My.Map
             public float LastTriggerTime;
         }
 
-        //public AttractInfo? attractInfo;
+        public AttractInfo? attractInfo;
 
         public void TickAttractState()
         {
-            if(attractInfo == null)
-            {
-                return;
-            }
+            //if(attractInfo == null)
+            //{
+            //    return;
+            //}
 
-            if(LogicTime.time - attractInfo.LastTriggerTime > 5.0f)
-            {
-                attractInfo = null;
-                return;
-            }
+            //if(LogicTime.time - attractInfo.LastTriggerTime > 5.0f)
+            //{
+            //    attractInfo = null;
+            //    return;
+            //}
 
-            if(combatStateComp.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
-            {
-                attractInfo = null;
-                return;
-            }
+            //if(combatStateComp.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+            //{
+            //    attractInfo = null;
+            //    return;
+            //}
 
-            if(AttractInfo != null)
-            {
-                // 更新intent
-                UpdateLookIntent();
-            }
+            //if(attractInfo != null)
+            //{
+            //    // 更新intent
+            //    UpdateLookIntent(new UnitLookIntent() { });
+            //}
         }
 
         public void ApplyAttracted(Vector2 pos, float power, IAttractSource? attractSrc)
         {
 
-            if (attractInfo != null && attractInfo.AttractPower > power && LogicTime.time - attractInfo.LastTriggerTime < 5.0f)
+            //if (attractInfo != null && attractInfo.AttractPower > power && LogicTime.time - attractInfo.LastTriggerTime < 5.0f)
+            //{
+            //    Debug.Log("");
+            //    return;
+            //}
+
+            //attractInfo = new();
+            //attractInfo.Pos = pos;
+            //attractInfo.AttractPower = power;
+            //attractInfo.LastTriggerTime = LogicTime.time;
+            //attractInfo.AttractSource = attractSrc;
+
+            if(AIBrain != null)
             {
-                Debug.Log("");
-                return;
+                AIBrain.blackboard.AttractTrigger = true;
             }
 
-            attractInfo = new();
-            attractInfo.Pos = pos;
-            attractInfo.AttractPower = power;
-            attractInfo.LastTriggerTime = LogicTime.time;
-            attractInfo.AttractSource = attractSrc;
+            UpdateLookIntent(new UnitLookIntent() 
+            {
+                LockEntityId = attractSrc?.Id ?? 0,
 
+                HappenTime = LogicTime.time,
 
+            });
         }
     }
 }
