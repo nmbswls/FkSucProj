@@ -602,6 +602,9 @@ namespace My.Map.Entity.AI
 
             // 离开前停止移动
             _brain.NpcEntity.entityMotorComp.StopMove();
+
+            // 保底清理一次attract 避免立刻就被魅惑
+            _brain.blackboard.AttractTrigger = false;
         }
 
         public override void OnEnterState()
@@ -633,6 +636,8 @@ namespace My.Map.Entity.AI
         private bool hasCastAbility = false;
         private string currComboAbilityName = string.Empty;
 
+        private float _lastEndTime;
+
         private EntitySkillCfg? _config;
 
         public AIActionTryUseSkill(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
@@ -653,6 +658,12 @@ namespace My.Map.Entity.AI
             }
 
             if (!string.IsNullOrEmpty(_brain.blackboard.CurrIntentSkill))
+            {
+                return 0;
+            }
+
+            // 给一个保底cd
+            if(_lastEndTime != 0 && LogicTime.time - _lastEndTime < 2.0f)
             {
                 return 0;
             }
@@ -811,6 +822,8 @@ namespace My.Map.Entity.AI
             _config = null;
 
             _brain.NpcEntity.entityMotorComp.StopMove();
+
+            _lastEndTime = LogicTime.time;
         }
 
         public override void OnExitState()
@@ -1003,6 +1016,8 @@ namespace My.Map.Entity.AI
 
         public override string Name => "AttractedBehave";
 
+        // 缓存attract信息 随时比较变化
+
         public override float RateScore()
         {
             //if (_brain.UnitEntity.attractInfo == null)
@@ -1017,9 +1032,15 @@ namespace My.Map.Entity.AI
             base.Start();
 
             // 进入后清理trigger
-            _brain.blackboard.AttractTrigger = false;
+            
         }
 
+        public override void Stop(AIActionStatus endStatus)
+        {
+            base.Stop(endStatus);
+
+            _brain.blackboard.AttractTrigger = false;
+        }
 
         /// <summary>
         /// On PerformAction we do nothing
