@@ -492,7 +492,7 @@ namespace My.Map
 
         #region watch
 
-        public Dictionary<long, float> WatchedInfo = new();
+        public Dictionary<long, float> BeingGazedTrack = new();
 
         public float _watchTimer = 0;
         public void TickWatchedInfo()
@@ -532,6 +532,12 @@ namespace My.Map
             }
 
             return true;
+        }
+
+
+        public bool OnGazeLeave()
+        {
+
         }
 
         public void UpdateWatchedInfo(long watchId)

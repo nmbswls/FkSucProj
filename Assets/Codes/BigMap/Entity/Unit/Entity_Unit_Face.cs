@@ -9,7 +9,6 @@ namespace My.Map
     public partial class BaseUnitLogicEntity
     {
 
-
         /// <summary>
         /// 受外部控制面向
         /// </summary>
@@ -31,6 +30,17 @@ namespace My.Map
 
         public void UpdateLookIntent(UnitLookIntent intent)
         {
+            if(this.lastestLookIntent.LockEntityId != null && this.lastestLookIntent.LockEntityId == intent.LockEntityId)
+            {
+                this.lastestLookIntent.HappenTime = LogicTime.time;
+                return;
+            }
+            var oldIntent = this.lastestLookIntent;
+            if(oldIntent != null && oldIntent.LockEntityId != null)
+            {
+                var playerEntity = LogicManager.GetLogicEntity(oldIntent.LockEntityId.Value) as PlayerLogicEntity;
+                playerEntity.OnGazeLeave();
+            }
             this.lastestLookIntent = intent;
         }
 
