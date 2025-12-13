@@ -43,6 +43,8 @@ namespace My.Map.Entity.AI
         public bool CanLeaveAttract;
 
         public bool AttractTrigger;
+        public Vector2 AttractPos;
+        public long AttractSrcId;
     }
 
     public class AIBrainConfig
@@ -192,9 +194,9 @@ namespace My.Map.Entity.AI
                         action = new AIActionCombatQuickCloser(brain, cfg);
                     }
                     break;
-                case AIActionCfgAttractedBehave:
+                case AIActionCfgAttractedDaemon:
                     {
-                        action = new AIActionAttractedBehave(brain, cfg);
+                        action = new AIActionAttractedDaemon(brain, cfg);
                     }
                     break;
                 case AIActionCfgAttractedMove:
@@ -205,6 +207,11 @@ namespace My.Map.Entity.AI
                 case AIActionCfgChangeFace:
                     {
                         action = new AIActionChangeFace(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgXianZhuShou:
+                    {
+                        action = new AIActionXianZhuShou(brain, cfg);
                     }
                     break;
                 default:

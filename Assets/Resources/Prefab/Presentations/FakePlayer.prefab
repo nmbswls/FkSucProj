@@ -440,6 +440,7 @@ Transform:
   - {fileID: 323888337247975477}
   - {fileID: 840578726685308991}
   - {fileID: 8623213792691732422}
+  - {fileID: 562006068582017824}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &6958571036970842218
@@ -516,6 +517,7 @@ MonoBehaviour:
   wallsLayer:
     serializedVersion: 2
     m_Bits: 0
+  BindEffectRoot: {fileID: 0}
   MainFlasher: {fileID: 765004380595138668}
   MoveTrailSpawner: {fileID: 513470045793456111}
   NoiseEmitter: {fileID: 0}
@@ -712,6 +714,63 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!1 &4151355084330930103
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 562006068582017824}
+  - component: {fileID: 1013523002160710136}
+  m_Layer: 19
+  m_Name: rumor_pivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &562006068582017824
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4151355084330930103}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.902, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1621264985550783479}
+  m_Father: {fileID: 8576391666722605407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1013523002160710136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4151355084330930103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cda6fef623d5ee449a0042afe935f9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 562006068582017824}
+  spawnOffset: {x: 0, y: 2, z: 0}
+  spawnRate: 1
+  maxActiveTexts: 12
+  horizontalSpread: 1.2
+  verticalJitter: 0.5
+  rumorLines:
+  - "what\uFF1F"
+  - "why\uFF01"
+  textBubblePrefab: {fileID: 0}
+  usePool: 1
+  poolSize: 24
 --- !u!1 &4787604529858390943
 GameObject:
   m_ObjectHideFlags: 0
@@ -1401,6 +1460,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &7769333777254263323
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1621264985550783479}
+  m_Layer: 19
+  m_Name: rumor_one
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1621264985550783479
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7769333777254263323}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 562006068582017824}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8811489616554582756
 GameObject:
   m_ObjectHideFlags: 0

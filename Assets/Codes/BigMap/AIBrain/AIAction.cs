@@ -991,17 +991,64 @@ namespace My.Map.Entity.AI
 
 
     [Serializable]
-    public class AIActionCfgAttractedBehave : AIActionCfg
+    public class AIActionCfgAttractedDaemon : AIActionCfg
     {
         public override bool IsDecorate => false;
     }
-    public class AIActionAttractedBehave : AIAction
+    public class AIActionAttractedDaemon : AIAction
     {
-        public AIActionAttractedBehave(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        public AIActionAttractedDaemon(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
         {
         }
 
         public override string Name => "AttractedBehave";
+
+        public override float RateScore()
+        {
+            //if (_brain.UnitEntity.attractInfo == null)
+            //{
+            //    return 0;
+            //}
+            return 1;
+        }
+
+        public override void Start()
+        {
+            base.Start();
+
+            // 进入后清理trigger
+            _brain.blackboard.AttractTrigger = false;
+        }
+
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            //if (_brain.UnitEntity.attractInfo == null || LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
+            //{
+            //    Stop(AIActionStatus.Interrupted);
+            //    return;
+            //}
+
+            //_brain.UnitEntity.entityMotorComp.MoveTo(_currAttractePos);
+        }
+    }
+
+
+    [Serializable]
+    public class AIActionCfgXianZhuShou : AIActionCfg
+    {
+        public override bool IsDecorate => false;
+    }
+    public class AIActionXianZhuShou : AIAction
+    {
+        public AIActionXianZhuShou(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
+
+        public override string Name => "XianZhuShou";
 
         public override float RateScore()
         {
@@ -1037,7 +1084,6 @@ namespace My.Map.Entity.AI
 
     public class AIActionAttractedMove : AIAction
     {
-
         public override string Name => "AttractedMove";
 
         private Vector2 _currAttractePos;
@@ -1057,7 +1103,7 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
-            return 10;
+            return 1;
         }
 
 
@@ -1065,19 +1111,21 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
-            var npcUnit = _brain.NpcEntity as NpcUnitLogicEntity;
-            // 进入时赋值
-            if (npcUnit.attractInfo != null)
-            {
-                _currAttractePos = npcUnit.attractInfo.Pos;
-                _attarctLastTriggerTime = npcUnit.attractInfo.LastTriggerTime;
-                _brain.blackboard.CanLeaveAttract = false;
-                _brain.NpcEntity.entityMotorComp.StopMove();
-            }
-            else
-            {
-                _brain.blackboard.CanLeaveAttract = true;
-            }
+            _brain.blackboard.
+
+            //var npcUnit = _brain.NpcEntity as NpcUnitLogicEntity;
+            //// 进入时赋值
+            //if (npcUnit.attractInfo != null)
+            //{
+            //    _currAttractePos = npcUnit.attractInfo.Pos;
+            //    _attarctLastTriggerTime = npcUnit.attractInfo.LastTriggerTime;
+            //    _brain.blackboard.CanLeaveAttract = false;
+            //    _brain.NpcEntity.entityMotorComp.StopMove();
+            //}
+            //else
+            //{
+            //    _brain.blackboard.CanLeaveAttract = true;
+            //}
         }
 
         /// <summary>

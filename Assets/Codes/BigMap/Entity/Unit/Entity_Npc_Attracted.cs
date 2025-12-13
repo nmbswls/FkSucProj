@@ -18,7 +18,7 @@ namespace My.Map
             public float LastTriggerTime;
         }
 
-        public AttractInfo? attractInfo;
+        //public AttractInfo? attractInfo;
 
         public void TickAttractState()
         {
@@ -41,7 +41,7 @@ namespace My.Map
 
             //if(attractInfo != null)
             //{
-            //    // 更新intent
+            //    // 更新intentaiac
             //    UpdateLookIntent(new UnitLookIntent() { });
             //}
         }

@@ -698,6 +698,9 @@ namespace My.Player.Bag
                             if (insertion.Lifetime <= 0)
                             {
                                 bag.ExtraSlots.RemoveAt(i);
+
+
+                                DataManager.logicManager.viewer.ShowFakeFxEffect("-"+itemConf.DisplayName, DataManager.logicManager.playerLogicEntity.Pos);
                                 continue;
                             }
 

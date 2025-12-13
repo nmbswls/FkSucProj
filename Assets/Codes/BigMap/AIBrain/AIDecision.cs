@@ -100,29 +100,28 @@ namespace My.Map.Entity.AI
         /// <returns></returns>
         public override bool Decide(MapUnitAIBrain brain)
         {
-            bool attracted ;
-            do
-            {
-                var unit = brain.NpcEntity as NpcUnitLogicEntity;
-                if (unit == null) return false;
-                if (unit.attractInfo == null)
-                {
-                    attracted = false; ;
-                    break;
-                }
+            //bool attracted ;
+            //do
+            //{
+            //    var unit = brain.NpcEntity as NpcUnitLogicEntity;
+            //    if (unit == null) return false;
+            //    if (unit.attractInfo == null)
+            //    {
+            //        attracted = false; ;
+            //        break;
+            //    }
 
-                if (LogicTime.time > unit.attractInfo.LastTriggerTime + 15.0f)
-                {
-                    attracted = false;
-                    break;
-                }
+            //    if (LogicTime.time > unit.attractInfo.LastTriggerTime + 15.0f)
+            //    {
+            //        attracted = false;
+            //        break;
+            //    }
 
-                attracted = true;
+            //    attracted = true;
 
-            } while (false);
-            
+            //} while (false);
 
-            
+            bool attracted = brain.blackboard.AttractTrigger;
             return IsHas == attracted;
         }
     }
