@@ -18,7 +18,7 @@ namespace My.Map
             public float LastTriggerTime;
         }
 
-        public AttractInfo? attractInfo;
+        //public AttractInfo? attractInfo;
 
         public void TickAttractState()
         {
@@ -38,6 +38,12 @@ namespace My.Map
                 attractInfo = null;
                 return;
             }
+
+            if(AttractInfo != null)
+            {
+                // ¸üÐÂintent
+                UpdateLookIntent();
+            }
         }
 
         public void ApplyAttracted(Vector2 pos, float power, IAttractSource? attractSrc)
@@ -54,6 +60,8 @@ namespace My.Map
             attractInfo.AttractPower = power;
             attractInfo.LastTriggerTime = LogicTime.time;
             attractInfo.AttractSource = attractSrc;
+
+
         }
     }
 }

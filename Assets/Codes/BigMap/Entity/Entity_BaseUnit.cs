@@ -888,52 +888,7 @@ namespace My.Map
             OnUnitDie(99);
         }
 
-        #region face
-
-        protected Vector2 faceDir = Vector2.zero;
-        public Vector2 FaceDir
-        {
-            get { return faceDir; }
-            set
-            {
-                faceDir = value;
-                _currentAngle = AngleFromDir(faceDir);
-                _targetAngle = _currentAngle;
-            }
-        }
-        // 内部状态
-        protected float _currentAngle;     // 当前朝向角度（度，0=向右）
-
-        public Vector2 DesiredFaceDir { get { return DirFromAngle(_targetAngle); } }
-        protected float _targetAngle;
-
-        protected float _angularVel;       // SmoothDampAngle 用
-
-
-        public virtual void InitFacing()
-        {
-
-        }
-
-        protected virtual void UpdateFaceDir()
-        {
-
-        }
-
-        // 工具函数
-        public static float AngleFromDir(Vector2 dir)
-        {
-            if (dir.sqrMagnitude < 1e-8f) return 0f;
-            return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        }
-
-        public static Vector2 DirFromAngle(float angleDeg)
-        {
-            float rad = angleDeg * Mathf.Deg2Rad;
-            return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-        }
-
-        #endregion
+        
 
         public bool IsAttaching = false;
 

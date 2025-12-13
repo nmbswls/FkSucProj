@@ -8,16 +8,7 @@ namespace My.Map
     public partial class NpcUnitLogicEntity
     {
 
-        /// <summary>
-        /// 受外部控制面向
-        /// </summary>
-        public bool ControlledFacing { get; set; } = false;
 
-        public class TempFaceIntent
-        {
-            public Vector2 LookPos;
-            public float LookStartTime;
-        }
 
         public float speedThreshold = 0.05f; // 速度太小不更新面向
         public float deadzoneAngle = 3f;     // 小角度不转动（度）
@@ -49,24 +40,7 @@ namespace My.Map
 
             UpdateFacing();
 
-            {
-                // 死区：小角差直接保持，减少抖动
-                float angleDelta = Mathf.DeltaAngle(_currentAngle, _targetAngle);
-                if (Mathf.Abs(angleDelta) < deadzoneAngle)
-                    _currentAngle = _targetAngle;
-
-                // 单次最大角步长（限速）
-                //float maxStep = maxAngularSpeed * Time.deltaTime;
-                float maxStep = 10000;
-                float clampedTarget = MoveTowardsAngle(_currentAngle, _targetAngle, maxStep);
-
-                // 仅保留一次平滑：对限速后的目标做 SmoothDampAngle
-                float newAngle = SmoothDampAngle(_currentAngle, clampedTarget, ref _angularVel, smoothTime);
-
-                // 更新状态与朝向向量
-                _currentAngle = newAngle;
-                faceDir = DirFromAngle(_currentAngle);
-            }
+            
         }
 
         public void UpdateFacing()
