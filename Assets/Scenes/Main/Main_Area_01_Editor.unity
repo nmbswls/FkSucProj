@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 70930984}
   - component: {fileID: 70930985}
   m_Layer: 0
-  m_Name: DestroyObj1 (1)
+  m_Name: 'DestroyObj1 '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,17 +167,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 7
-  CfgId: obj_01
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 40002
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1384458314864918742
+  references:
+    version: 2
+    RefIds:
+    - rid: 1384458314864918742
+      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: obj_01
+        Position: {x: -1.605, y: 0.409}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
 --- !u!1 &76101881
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,7 +345,7 @@ GameObject:
   - component: {fileID: 133059233}
   - component: {fileID: 133059234}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -353,37 +375,80 @@ MonoBehaviour:
   m_GameObject: {fileID: 133059232}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d1471b91e8c6354baaeae85988e1f15, type: 3}
+  m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 10
-  CfgId: patrol_01
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
-  MoveSpeed: 0.2
-  Waypoints:
-  - patrol_point_01
-  - patrol_point_02
-  - patrol_point_03
-  - patrol_point_04
-  LoopMode: 2
-  GroupUnits:
-  - EntityType: 3
-    CfgId: hunhun
-    RelativePos: {x: 0.2, y: 0}
-  - EntityType: 3
-    CfgId: hunhun
-    RelativePos: {x: -0.2, y: 0}
-  - EntityType: 3
-    CfgId: hunhun
-    RelativePos: {x: 0, y: 0.2}
+  RefreshInfo:
+    UniqId: 90001
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1384458314864918738
+  references:
+    version: 2
+    RefIds:
+    - rid: 1384458314864918738
+      type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: -6.09, y: 5.01}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveSpeed: 0.2
+        Waypoints:
+        - patrol_point_01
+        - patrol_point_02
+        - patrol_point_03
+        - patrol_point_04
+        LoopMode: 2
+        GroupUnits:
+        - GroupIdx: 0
+          InitInfo:
+            rid: 1384458314864918739
+        - GroupIdx: 1
+          InitInfo:
+            rid: 1384458314864918741
+    - rid: 1384458314864918739
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: 0.2, y: 0.2}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 4
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+    - rid: 1384458314864918741
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: -0.2, y: 0.2}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 4
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
 --- !u!1 &142237532
 GameObject:
   m_ObjectHideFlags: 0
@@ -401,7 +466,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &142237533
 Transform:
   m_ObjectHideFlags: 0
@@ -481,17 +546,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae4d36ad87ee2b4fb16a835b93973f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 3
-  CfgId: civil
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 0
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: -2
   NpcName: civil
   CampId: 0
   IsPeace: 1
@@ -501,6 +577,11 @@ MonoBehaviour:
   NpcTag: 
   InitUnsensored: 0
   EnmityConfId: 
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1001 &143831673
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -575,7 +656,7 @@ GameObject:
   - component: {fileID: 231827563}
   - component: {fileID: 231827562}
   m_Layer: 0
-  m_Name: Circle (2)
+  m_Name: box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -608,17 +689,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 4
-  CfgId: box_01
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 1003
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1384458314864918734
+  references:
+    version: 2
+    RefIds:
+    - rid: 1384458314864918734
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: dig_01
+        Position: {x: 5.07, y: -3.09}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
 --- !u!212 &231827563
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -688,7 +791,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &287812962
 Transform:
   m_ObjectHideFlags: 0
@@ -716,17 +819,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae4d36ad87ee2b4fb16a835b93973f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 3
-  CfgId: civil_sleeping
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 0
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: -2
   NpcName: civil_sleeping
   CampId: 0
   IsPeace: 1
@@ -736,6 +850,11 @@ MonoBehaviour:
   NpcTag: 
   InitUnsensored: 1
   EnmityConfId: 
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!212 &287812964
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1721,7 +1840,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1106176971
 Transform:
   m_ObjectHideFlags: 0
@@ -1801,17 +1920,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae4d36ad87ee2b4fb16a835b93973f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 3
-  CfgId: civil
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 0
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: -2
   NpcName: civil
   CampId: 0
   IsPeace: 1
@@ -1821,6 +1951,11 @@ MonoBehaviour:
   NpcTag: 
   InitUnsensored: 0
   EnmityConfId: 
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &1126251295
 GameObject:
   m_ObjectHideFlags: 0
@@ -2171,7 +2306,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1368895971
 Transform:
   m_ObjectHideFlags: 0
@@ -2251,17 +2386,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae4d36ad87ee2b4fb16a835b93973f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 3
-  CfgId: civil
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 0
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: -2
   NpcName: civil
   CampId: 0
   IsPeace: 1
@@ -2271,6 +2417,11 @@ MonoBehaviour:
   NpcTag: 
   InitUnsensored: 0
   EnmityConfId: 
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &1460362602
 GameObject:
   m_ObjectHideFlags: 0
@@ -2319,7 +2470,7 @@ GameObject:
   - component: {fileID: 1470351303}
   - component: {fileID: 1470351302}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2352,17 +2503,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 4
-  CfgId: dig_01
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 1001
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1384458314864918732
+  references:
+    version: 2
+    RefIds:
+    - rid: 1384458314864918732
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: box_01
+        Position: {x: -2.42, y: 2.51}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
 --- !u!212 &1470351303
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2709,7 +2882,7 @@ GameObject:
   - component: {fileID: 1629868180}
   - component: {fileID: 1629868179}
   m_Layer: 0
-  m_Name: Circle (1)
+  m_Name: box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2742,17 +2915,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 4
-  CfgId: box_01
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 1002
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1384458314864918733
+  references:
+    version: 2
+    RefIds:
+    - rid: 1384458314864918733
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: box_01
+        Position: {x: 4.99, y: 5.56}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
 --- !u!212 &1629868180
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2991,7 +3186,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1864419127
 Transform:
   m_ObjectHideFlags: 0
@@ -3019,17 +3214,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae4d36ad87ee2b4fb16a835b93973f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 3
-  CfgId: hunhun
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 0
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: -2
   NpcName: hunhun
   CampId: 0
   IsPeace: 0
@@ -3039,6 +3245,11 @@ MonoBehaviour:
   NpcTag: 
   InitUnsensored: 0
   EnmityConfId: 
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!212 &1864419129
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3442,7 +3653,7 @@ GameObject:
   - component: {fileID: 2028724062}
   - component: {fileID: 2028724063}
   m_Layer: 0
-  m_Name: DestroyObj1 (2)
+  m_Name: 'DestroyObj1 '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3476,17 +3687,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 7
-  CfgId: obj_01
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 40003
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1384458314864918737
+  references:
+    version: 2
+    RefIds:
+    - rid: 1384458314864918737
+      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: obj_01
+        Position: {x: -1.034, y: 0.554}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
 --- !u!1 &2033061136
 GameObject:
   m_ObjectHideFlags: 0
@@ -3869,17 +4102,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5709debdc93fdd47bbe6d70fd46523a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 6
-  CfgId: bush_default
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 30004
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1384458314864918735
+  references:
+    version: 2
+    RefIds:
+    - rid: 1384458314864918735
+      type: {class: EntityInitInfo4AreaEffect, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: 0, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
 --- !u!1 &4508686082341419044
 GameObject:
   m_ObjectHideFlags: 0
@@ -4032,17 +4287,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityType: 7
-  CfgId: obj_01
-  BindRoomId: 
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
+  RefreshInfo:
+    UniqId: 40001
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 1384458314864918736
+  references:
+    version: 2
+    RefIds:
+    - rid: 1384458314864918736
+      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: obj_01
+        Position: {x: -1.034, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
 --- !u!4 &8167108431821563803
 Transform:
   m_ObjectHideFlags: 0
@@ -4075,7 +4352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

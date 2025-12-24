@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CfgId: teleport
   ShowName: "\u4F20\u9001\u88C5\u7F6E"
+  PrefabName: 
   MainStatusInfo:
     StatusId: 0
     InteractInfos: []
@@ -25,6 +26,7 @@ MonoBehaviour:
       Label: "\u4F20\u9001"
       UnLabel: "\u4F20\u9001"
       HideWhenFail: 0
+      NeedDist: 1.4
       CheckCommonCond: []
       CheckInteractCond: []
       Outputs:

@@ -241,7 +241,13 @@ namespace My
             intent.NewAreaName = areaName;
             intent.OldAreaName = AreaManager.AreaId;
             intent.Reset = reset;
-            intent.SavedRecord = new();
+            intent.SavedRecord = new()
+            {
+                Id = 1,
+                EntityType = EEntityType.Player,
+                CfgId = "0",
+                FactionId = EFactionId.Player,
+            };
             intent.TargetPoint = targetPoint;
 
             SwitchAreaIntent = intent;
@@ -422,6 +428,11 @@ namespace My
                         var egEntity = new EventGroupLogicEntity(this, record.Id, record.CfgId, record.Position, record);
 
                         newEntity = egEntity;
+                    }
+                    break;
+                default:
+                    {
+                        ;
                     }
                     break;
             }

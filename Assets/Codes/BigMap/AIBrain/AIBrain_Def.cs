@@ -48,9 +48,8 @@ namespace My.Map.Entity.AI
                         {
                             Decisions = new List<AIDecision>()
                             {
-                                new AIDecisionCheckAttracted()
+                                new AIDecisionHasAttractTrigger()
                                 {
-                                    IsHas = true,
                                 }
                             },
                             TrueState = "Attracted",
@@ -100,8 +99,8 @@ namespace My.Map.Entity.AI
                             Name = "Attracted",
                         };
 
-                        attractedState.ActionNames.Add("AttractedMain");
-
+                        attractedState.ActionNames.Add("AttractedDaemon");
+                        //attractedState.ActionNames.Add("AttractedMove");
 
                         attractedState.Transitions.Add(new AITransition()
                         {
@@ -201,13 +200,13 @@ namespace My.Map.Entity.AI
                         moveState.ActionNames.Add("MoveDoPath");
                         moveState.ActionNames.Add("MoveHunting");
                         moveState.ActionNames.Add("MoveInPatrolGroup");
+
                         moveState.Transitions.Add(new AITransition()
                         {
                             Decisions = new List<AIDecision>()
                             {
-                                new AIDecisionCheckAttracted()
+                                new AIDecisionHasAttractTrigger()
                                 {
-                                    IsHas = true,
                                 }
                             },
                             TrueState = "Attracted",
@@ -293,12 +292,19 @@ namespace My.Map.Entity.AI
                     }
 
                     {
-                        var actionCfg = new AIActionCfgAttractedMove()
+                        var actionCfg = new AIActionCfgAttractedDaemon()
                         {
                         };
 
                         config.Actions.Add(actionCfg);
                     }
+                    //{
+                    //    var actionCfg = new AIActionCfgAttractedMove()
+                    //    {
+                    //    };
+
+                    //    config.Actions.Add(actionCfg);
+                    //}
 
                     //{
                     //    var aAction = new AIActionReturnInterrupt()

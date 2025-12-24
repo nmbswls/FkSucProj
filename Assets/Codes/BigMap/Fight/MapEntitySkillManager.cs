@@ -95,11 +95,13 @@ namespace My.Map.Entity
     {
         public string SkillId;
         public Vector2 AppendDir;
+        public float HappenTime;
 
-        public SkillInput(string skillId, Vector2 appp)
+        public SkillInput(string skillId, Vector2 appp, float happenTime)
         {
             SkillId = skillId;
             AppendDir = appp;
+            HappenTime = happenTime;
         }
 
         public bool Matches(EntitySkillComboGraph.InputPattern pattern)
@@ -231,14 +233,7 @@ namespace My.Map.Entity
             public bool hitConfirmed;          // 是否命中确认
             public float lastHitTime;          // 命中时间（用于窗口）
             public float useSkillTime;
-            public Queue<SkillInput> inputBuffer = new Queue<SkillInput>();
             public int maxBuffer = 6;
-
-            public void PushInput(SkillInput f)
-            {
-                inputBuffer.Enqueue(f);
-                while (inputBuffer.Count > maxBuffer) inputBuffer.Dequeue();
-            }
 
             public void ResetClock() => nodeClock = 0f;
             public void SetNode(int id)
@@ -420,6 +415,15 @@ namespace My.Map.Entity
     public class MapEntitySkillManager
     {
 
+        public class SkillIntent
+        {
+            public string skillId;
+            public Vector2? castVec = null;
+            public ILogicEntity target = null;
+
+            public float happenTime;
+        }
+
         public BaseUnitLogicEntity OwnerEntity;
         public MapEntityAbilityExecutor Executor;
         public ComboOrchestrator comboOrchestrator;
@@ -441,6 +445,9 @@ namespace My.Map.Entity
         public string? CurrentAbilityId = null;
 
 
+        public List<SkillIntent> inputBuffer = new List<SkillIntent>();
+
+
         public MapEntitySkillManager(BaseUnitLogicEntity ownerEntity, EntitySkillComboGraph comboGraph = null)
         {
             this.OwnerEntity = ownerEntity;
@@ -448,10 +455,6 @@ namespace My.Map.Entity
             this.comboOrchestrator = new(comboGraph);
             // 初始化comboOrchestrator
         }
-
-
-
-
 
         public bool RegisterSkill(string skillId)
         {
@@ -493,6 +496,37 @@ namespace My.Map.Entity
                 CurrentSkillId = null;
                 CurrentAbilityId = null;
             }
+
+            // 如果可以使用技能 检查input buffer
+            if (Executor.IsActionable())
+            {
+                if(inputBuffer.Count > 0)
+                {
+                    var lastInput = inputBuffer[inputBuffer.Count - 1];
+
+                    do
+                    {
+                        var skillConf = SkillLibrary.GetSkillConfig(lastInput.skillId);
+                        if (skillConf == null)
+                        {
+                            break;
+                        }
+
+                        float timeDiff = LogicTime.time - lastInput.happenTime;
+                        if (timeDiff > skillConf.BufferCacheTime)
+                        {
+                            break;
+                        }
+
+                        UseSkill(lastInput.skillId, castVec:lastInput.castVec, target:lastInput.target);
+                        break;
+                    }
+                    while (false);
+
+                    inputBuffer.Clear();
+                }
+            }
+
         }
         /// <summary>
         /// 使用技能
@@ -515,11 +549,19 @@ namespace My.Map.Entity
                 return false;
             }
 
-
             // 不可行动
             // 处理中断技能层级
             if (!Executor.IsActionable())
             {
+                // 
+                inputBuffer.Add(new SkillIntent()
+                {
+                    skillId = skillId,
+                    castVec = castVec,
+                    target = target,
+                    happenTime = LogicTime.time,
+                });
+
                 return false;
             }
 

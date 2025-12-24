@@ -15,6 +15,8 @@ namespace My.Map.Scene
         public GameObject MainBlock;
         public List<GameObject> Blocks;
 
+        public Vector2 Pos => transform.position;
+
         public event Action<bool> EventOnInteractStateChanged;
 
         public virtual string ShowName { 
@@ -40,7 +42,7 @@ namespace My.Map.Scene
         public List<SceneInteractSelection> GetInteractSelections(float dist)
         {
             var ret = new List<SceneInteractSelection>();
-            if (dist > 0.5f) return ret;
+            //if (dist > 0.5f) return ret;
 
             var logicInts = RealLogic.InteractInfos;
 
@@ -67,9 +69,6 @@ namespace My.Map.Scene
 
         public bool CanInteractEnable(float dist)
         {
-
-            if (dist > 0.5f) return false;
-
             int enableOne = 0;
             var logicInts = RealLogic.InteractInfos;
 

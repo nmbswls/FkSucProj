@@ -111,6 +111,12 @@ namespace My
                             executor = new AbilityEffectExecutor4OpenClickWindow();
                         }
                         break;
+                    case MapFightEffectShowCloseupWindowCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ShowCloseupWindow();
+                        }
+                        break;
+                        
                     case MapAbilityEffectDeepZhaquCfg:
                         {
                             executor = new AbilityEffectExecutor4DeepZhaqu();

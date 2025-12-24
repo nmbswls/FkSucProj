@@ -30,7 +30,8 @@ namespace Config.Unit
         public int Priority = 10;
         public float DesiredUseAngle;
         public float DesiredUseDistance;
-        
+
+        public float BufferCacheTime = 0.1f;
         public FightStruct.ESelectPolicy SelectPolicy; // 1-敌人主目标 2-自身 3-血量最低友方 4 血量最低敌方 5 随机 
 
         public enum ECastConditionType

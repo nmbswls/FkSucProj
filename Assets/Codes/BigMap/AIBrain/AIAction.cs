@@ -1006,24 +1006,24 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgAttractedDaemon : AIActionCfg
     {
-        public override bool IsDecorate => false;
+        public override bool IsDecorate => true;
     }
     public class AIActionAttractedDaemon : AIAction
     {
+
+        private float lastAttractTime = 0;
+        protected Vector2? attractSourcePos;
+
         public AIActionAttractedDaemon(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
         {
         }
 
-        public override string Name => "AttractedBehave";
+        public override string Name => "AttractedDaemon";
 
         // 缓存attract信息 随时比较变化
 
         public override float RateScore()
         {
-            //if (_brain.UnitEntity.attractInfo == null)
-            //{
-            //    return 0;
-            //}
             return 1;
         }
 
@@ -1031,15 +1031,15 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
-            // 进入后清理trigger
-            
+            // 进入后将状态取入本地 清理trigger 以方便下次进入
+            FetchDataFromAttractTrigger();
+
+            _brain.blackboard.CanLeaveAttract = false;
         }
 
         public override void Stop(AIActionStatus endStatus)
         {
             base.Stop(endStatus);
-
-            _brain.blackboard.AttractTrigger = false;
         }
 
         /// <summary>
@@ -1047,13 +1047,76 @@ namespace My.Map.Entity.AI
         /// </summary>
         public override void Tick()
         {
-            //if (_brain.UnitEntity.attractInfo == null || LogicTime.time - _brain.UnitEntity.attractInfo.LastTriggerTime > 15.0f)
-            //{
-            //    Stop(AIActionStatus.Interrupted);
-            //    return;
-            //}
+            FetchDataFromAttractTrigger();
 
-            //_brain.UnitEntity.entityMotorComp.MoveTo(_currAttractePos);
+            if(LogicTime.time - lastAttractTime > 5.0f)
+            {
+                _brain.blackboard.CanLeaveAttract = true;
+                return;
+            }
+            PlayerLogicEntity srcPlayer = null;
+
+            _brain.blackboard.CurrentAttractLevel = 0;
+            if (_brain.blackboard.AttractSrcId != 0)
+            {
+                srcPlayer = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.blackboard.AttractSrcId) as PlayerLogicEntity;
+                if (srcPlayer != null)
+                {
+                    _brain.blackboard.CurrentAttractLevel = srcPlayer.GetAttractLevel();
+                }
+            }
+
+            // 进行移动
+            if(_brain.blackboard.CurrentAttractLevel >= 3)
+            {
+                // 2级以上 
+                if(srcPlayer != null)
+                {
+                    _brain.NpcEntity.entityMotorComp.MoveTo(srcPlayer.Pos, moveSpeedRate: 0.9f);
+                    _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract fast", _brain.NpcEntity.Pos);
+                }
+            }
+            else if (_brain.blackboard.CurrentAttractLevel >= 2)
+            {
+                // 2级以上 
+                if (srcPlayer != null)
+                {
+                    _brain.NpcEntity.entityMotorComp.MoveTo(srcPlayer.Pos, moveSpeedRate: 0.1f);
+                    _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract slow", _brain.NpcEntity.Pos);
+                }
+            }
+            else
+            {
+                _brain.NpcEntity.entityMotorComp.StopMove();
+            }
+
+            // 条件满足时执行揩油
+            if(_brain.blackboard.CurrentAttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
+            {
+                if(srcPlayer != null && !srcPlayer.CheckHasState(AttrIdConsts.ImmumeKaiYou))
+                {
+                    var diff = srcPlayer.Pos - _brain.NpcEntity.Pos;
+                    if (diff.magnitude < 0.5f)
+                    {
+                        _brain.NpcEntity.abilityController.TryUseAbility("close_kaiyou", target: srcPlayer);
+                    }    
+                }
+            }
+        }
+
+
+        private void FetchDataFromAttractTrigger()
+        {
+            if(!_brain.blackboard.AttractTrigger)
+            {
+                return;
+            }
+            // 进入后将状态取入本地 清理trigger 以方便下次进入
+            _brain.blackboard.AttractTrigger = false;
+
+            attractSourcePos = null;
+
+            lastAttractTime = LogicTime.time;
         }
     }
 
@@ -1103,18 +1166,13 @@ namespace My.Map.Entity.AI
         public float WatchDistance = 0.8f;
     }
 
-    public class AIActionAttractedMain : AIAction
+    public class AIActionAttractedMove : AIAction
     {
-        public override string Name => "AttractedMain";
+        public override string Name => "AttractedMove";
 
-        private Vector2 _currAttractePos;
-        private float _attarctLastTriggerTime;
-
-        protected ILogicEntity attractSource;
-        protected Vector2? attractSourcePos;
-
+        private int lastAttractLevel = 0;
         public AIActionCfgAttractedMove realCfg { get { return (AIActionCfgAttractedMove)cfg; } }
-        public AIActionAttractedMain(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        public AIActionAttractedMove(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
         {
         }
 
@@ -1127,6 +1185,8 @@ namespace My.Map.Entity.AI
 
         public override float RateScore()
         {
+            // 2级以上吸引时 才会主动移动
+            
             return 1;
         }
 
@@ -1134,24 +1194,6 @@ namespace My.Map.Entity.AI
         public override void Start()
         {
             base.Start();
-
-            _brain.blackboard.CurrentAttractLevel = 0;
-
-            _brain.blackboard.
-
-            //var npcUnit = _brain.NpcEntity as NpcUnitLogicEntity;
-            //// 进入时赋值
-            //if (npcUnit.attractInfo != null)
-            //{
-            //    _currAttractePos = npcUnit.attractInfo.Pos;
-            //    _attarctLastTriggerTime = npcUnit.attractInfo.LastTriggerTime;
-            //    _brain.blackboard.CanLeaveAttract = false;
-            //    _brain.NpcEntity.entityMotorComp.StopMove();
-            //}
-            //else
-            //{
-            //    _brain.blackboard.CanLeaveAttract = true;
-            //}
         }
 
         /// <summary>
@@ -1161,8 +1203,16 @@ namespace My.Map.Entity.AI
         {
             var npcUnit = _brain.NpcEntity as NpcUnitLogicEntity;
 
+            var curAttractLevel = _brain.blackboard.CurrentAttractLevel;
+            if(lastAttractLevel != curAttractLevel)
+            {
 
-            _brain.blackboard.
+                lastAttractLevel = curAttractLevel;
+            }
+
+            
+
+            //_brain.blackboard.
 
             // 如果当前有吸引事件 持续更新信息
             //if (npcUnit.attractInfo != null)

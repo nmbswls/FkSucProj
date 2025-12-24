@@ -744,6 +744,22 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4ShowCloseupWindow : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectShowCloseupWindowCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ShowCloseupWindow cfg error");
+                return;
+            }
+            //unitEntity.
+            ctx.Env.viewer.ShowPauseCloseupWindow(realCfg.WindowType, realCfg.Duration);
+        }
+    }
+
+    
     public class AbilityEffectExecutor4DeepZhaqu : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)

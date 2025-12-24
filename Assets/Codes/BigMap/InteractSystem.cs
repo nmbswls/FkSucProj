@@ -12,6 +12,8 @@ public interface ISceneInteractable
 
     string ShowName { get; }
 
+    Vector2 Pos { get; }
+
     bool CanInteractEnable(float dist);
     void TriggerInteract(int selectionId);
 

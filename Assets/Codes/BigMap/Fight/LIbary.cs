@@ -43,6 +43,7 @@ namespace My.Map.Entity
                     cfg.CoolDown = 1.0f;
                     cfg.DesiredUseDistance = 999f;
                     cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
+                    cfg.BufferCacheTime = 0.2f;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -240,9 +241,6 @@ namespace My.Map.Entity
                     cfg.TargetType = ETargetType.LockTarget;
                     _skillDict[cfg.SkillId] = cfg;
                 }
-
-
-                
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -409,6 +407,11 @@ namespace My.Map.Entity
                 // ≤Â»Î
                 {
                     var ab = CreateEvilChildInsertionAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateNpcCloseKaiyou();
                     _abilityDict[ab.Id] = ab;
                 }
                 
@@ -2529,6 +2532,54 @@ namespace My.Map.Entity
                 var blurEffect = new MapFightEffectHModeBlurtCfg();
 
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = blurEffect, Kind = PhaseEventKind.OnExit });
+            }
+            return spec;
+        }
+
+
+        private static MapAbilitySpecConfig CreateNpcCloseKaiyou()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "close_kaiyou";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Execute",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.8"
+                },
+            };
+            spec.Phases.Add(mainPhase);
+
+            {
+                var closeupCfg = new MapFightEffectShowCloseupWindowCfg();
+                closeupCfg.WindowType = "kaiyou";
+                closeupCfg.Duration = 2.0f;
+
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = closeupCfg, Kind = PhaseEventKind.OnEnter });
+            }
+
+            {
+                var addBuff = new MapAbilityEffectAddBuffCfg();
+                addBuff.BuffId = "immune_kaiyou";
+                addBuff.Duration = 10.0f;
+
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addBuff, Kind = PhaseEventKind.OnEnter });
+            }
+
+            {
+                var addEffect1 = new MapAbilityEffectAddResourceCfg();
+                addEffect1.ResourceId = AttrIdConsts.PlayerPleasure;
+                addEffect1.AddValue = 3000;
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addEffect1, Kind = PhaseEventKind.OnEnter });
             }
             return spec;
         }

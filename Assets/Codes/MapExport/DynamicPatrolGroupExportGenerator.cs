@@ -8,9 +8,5 @@ using UnityEngine;
 
 namespace My.MapExport
 {
-    public class DynamicPatrolGroupExportGenerator : DynamicEntityExportGenerator
-    {
-
-    }
 }
 

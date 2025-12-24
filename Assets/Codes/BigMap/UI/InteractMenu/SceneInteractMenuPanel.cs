@@ -106,8 +106,11 @@ namespace My.UI
                     return;
                 }
                 _interactViewUpdateTimer = LogicTime.time;
+
+                var dif = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos - currBindPoint.Pos;
+
                 var innerList = new List<(long, string, bool)>();
-                var selections = currBindPoint.GetInteractSelections(0.5f);
+                var selections = currBindPoint.GetInteractSelections(dif.magnitude);
                 foreach (var one in selections)
                 {
                     innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));

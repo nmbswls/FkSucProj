@@ -37,6 +37,7 @@ namespace My.Map
                 case AttrIdConsts.Ghost:
                 case AttrIdConsts.SuperArmor:
                 case AttrIdConsts.ImmuneKnock:
+                case AttrIdConsts.ImmumeKaiYou:
                     return EAttrType.State;
 
                 case AttrIdConsts.Attack:

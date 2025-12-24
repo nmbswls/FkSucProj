@@ -18,9 +18,12 @@ namespace My.Map.Scene
 
         public long Id { get { return DropData?.Id ?? 0; } }
 
+
         public DropData DropData { get; protected set; }
         public bool AutoPick { get; set; }
         public bool Picking { get; set; }
+
+        public Vector2 Pos => transform.position;
 
 
         public FlyToPlayerMover flyToPlayerMover;

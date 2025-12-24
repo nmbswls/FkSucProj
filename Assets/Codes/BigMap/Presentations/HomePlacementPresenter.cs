@@ -16,6 +16,8 @@ namespace My
 
         public string ShowName => throw new System.NotImplementedException();
 
+        public Vector2 Pos => _logic.Pos;
+
         public List<ISceneInteractable> bindingSceneInteractables = new();
 
         public bool CanInteractEnable(float dist)

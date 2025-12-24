@@ -68,6 +68,20 @@ namespace My.Map.Entity.AI
 	/// 
 	/// </summary>
     [Serializable]
+    //[PolymorphTag((int)EAIDecisionType.None)]
+    public class AIDecisionHasAttractTrigger : AIDecision
+    {
+        public override bool Decide(MapUnitAIBrain brain)
+        {
+            return brain.blackboard.AttractTrigger;
+        }
+    }
+    
+
+    /// <summary>
+	/// 
+	/// </summary>
+    [Serializable]
     //[PolymorphTag((int)EAIDecisionType.HasBuff)]
 
     public class AIDecisionHasBuff : AIDecision
@@ -84,47 +98,6 @@ namespace My.Map.Entity.AI
         }
     }
 
-    /// <summary>
-	/// 
-	/// </summary>
-    [Serializable]
-    //[PolymorphTag((int)EAIDecisionType.HasBuff)]
-
-    public class AIDecisionCheckAttracted : AIDecision
-    {
-        public bool IsHas; // ÊÇ»ò·ñ
-
-        /// <summary>
-        /// On Decide we check what state we're in
-        /// </summary>
-        /// <returns></returns>
-        public override bool Decide(MapUnitAIBrain brain)
-        {
-            //bool attracted ;
-            //do
-            //{
-            //    var unit = brain.NpcEntity as NpcUnitLogicEntity;
-            //    if (unit == null) return false;
-            //    if (unit.attractInfo == null)
-            //    {
-            //        attracted = false; ;
-            //        break;
-            //    }
-
-            //    if (LogicTime.time > unit.attractInfo.LastTriggerTime + 15.0f)
-            //    {
-            //        attracted = false;
-            //        break;
-            //    }
-
-            //    attracted = true;
-
-            //} while (false);
-
-            bool attracted = brain.blackboard.AttractTrigger;
-            return IsHas == attracted;
-        }
-    }
 
     /// <summary>
 	/// 

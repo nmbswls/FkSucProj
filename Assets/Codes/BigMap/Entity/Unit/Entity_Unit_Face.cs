@@ -38,7 +38,7 @@ namespace My.Map
         /// <param name="intent"></param>
         public void UpdateLookIntent(UnitLookIntent intent)
         {
-            if(this.lastestLookIntent.LockEntityId != null && this.lastestLookIntent.LockEntityId == intent.LockEntityId)
+            if(this.lastestLookIntent != null && this.lastestLookIntent.LockEntityId != null && this.lastestLookIntent.LockEntityId == intent.LockEntityId)
             {
                 this.lastestLookIntent.HappenTime = LogicTime.time;
                 return;

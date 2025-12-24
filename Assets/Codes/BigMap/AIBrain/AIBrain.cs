@@ -43,9 +43,11 @@ namespace My.Map.Entity.AI
         public bool CanLeaveAttract;
 
         public bool AttractTrigger;
+
         public Vector2 AttractPos;
         public long AttractSrcId;
 
+        public Vector2 EnterAttractPos; // 
         public int CurrentAttractLevel; // 当前吸引等级
     }
 
@@ -203,7 +205,7 @@ namespace My.Map.Entity.AI
                     break;
                 case AIActionCfgAttractedMove:
                     {
-                        action = new AIActionAttractedMain(brain, cfg);
+                        action = new AIActionAttractedMove(brain, cfg);
                     }
                     break;
                 case AIActionCfgChangeFace:

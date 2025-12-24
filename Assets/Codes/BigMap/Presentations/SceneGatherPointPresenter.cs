@@ -14,7 +14,7 @@ namespace My.Map.Scene
         [SerializeField] private SpriteRenderer icon;
         [SerializeField] private GameObject highlightFx;
 
-
+        public Vector2 Pos => transform.position;
         public string ShowName => gameObject.name;
 
         public GatherPointLogicEntity GatherPointEntity { get { return (GatherPointLogicEntity)_logic; } }

@@ -109,7 +109,7 @@ namespace My.Map.Logic
                     {
                         var patrolGroupRecord = new LogicEntityRecord4PatrolGroup();
 
-                        var initInfo4PatrolGroup = (DynamicEntityInitInfo4PatrolGroup)initInfo;
+                        var initInfo4PatrolGroup = (EntityInitInfo4PatrolGroup)initInfo;
 
                         patrolGroupRecord.WayPointIdx = 0;
                         patrolGroupRecord.WayPointDistance = 0;

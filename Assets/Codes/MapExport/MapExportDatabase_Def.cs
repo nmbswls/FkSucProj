@@ -113,6 +113,12 @@ namespace My.MapExport
     }
 
     [Serializable]
+    public class EntityInitInfo4LootPoint : EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.LootPoint;
+    }
+
+    [Serializable]
     public class EntityInitInfo4Npc : EntityInitInfo4Unit
     {
         public override EEntityType EntityType => EEntityType.Npc;
@@ -155,7 +161,7 @@ namespace My.MapExport
     }
 
     [Serializable]
-    public class DynamicEntityInitInfo4PatrolGroup : EntityInitInfo
+    public class EntityInitInfo4PatrolGroup : EntityInitInfo
     {
         public enum ELoopMode
         {

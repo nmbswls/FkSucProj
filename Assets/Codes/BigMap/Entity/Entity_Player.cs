@@ -683,6 +683,12 @@ namespace My.Map
                 LogicManager.globalBuffManager.RequestRemoveBuff(this, obj.BuffInstId);
             }
         }
+
+
+        public int GetAttractLevel()
+        {
+            return 1;
+        }
     }
 }
 

@@ -49,6 +49,10 @@ namespace My.Map
         public void ApplyAttracted(Vector2 pos, float power, IAttractSource? attractSrc)
         {
 
+            if(attractSrc == null || attractSrc is not PlayerLogicEntity playerEntity)
+            {
+                return;
+            }
             //if (attractInfo != null && attractInfo.AttractPower > power && LogicTime.time - attractInfo.LastTriggerTime < 5.0f)
             //{
             //    Debug.Log("");
@@ -61,9 +65,14 @@ namespace My.Map
             //attractInfo.LastTriggerTime = LogicTime.time;
             //attractInfo.AttractSource = attractSrc;
 
-            if(AIBrain != null)
+            if(playerEntity.GetAttractLevel() > 0)
             {
-                AIBrain.blackboard.AttractTrigger = true;
+                if (AIBrain != null)
+                {
+                    AIBrain.blackboard.AttractTrigger = true;
+                    AIBrain.blackboard.AttractPos = pos;
+                    AIBrain.blackboard.AttractSrcId = attractSrc?.Id ?? 0;
+                }
             }
 
             UpdateLookIntent(new UnitLookIntent() 

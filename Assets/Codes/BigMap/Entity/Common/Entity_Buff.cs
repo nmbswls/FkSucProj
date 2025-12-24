@@ -119,6 +119,14 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["immune_kaiyou"] = new BuffDefinition()
+                {
+                    BuffId = "immune_kaiyou",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmumeKaiYou, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                };
+
                 _library["force_stun"] = new BuffDefinition()
                 {
                     BuffId = "force_stun",

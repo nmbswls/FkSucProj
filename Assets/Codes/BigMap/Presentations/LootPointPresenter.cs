@@ -13,6 +13,9 @@ namespace My.Map.Scene
         [SerializeField] private SpriteRenderer icon;
         [SerializeField] private GameObject highlightFx;
 
+
+        public Vector2 Pos => transform.position;
+
         public event Action<bool> EventOnInteractStateChanged;
 
         public string ShowName => gameObject.name;

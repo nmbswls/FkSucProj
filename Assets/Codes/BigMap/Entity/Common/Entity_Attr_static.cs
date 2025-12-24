@@ -15,6 +15,8 @@ namespace My.Map.Entity
         public const string PlayerGcThreshold = "PlayerGcThreshold";
         public const string Basic_JianShang = "Basic_JianShang";
 
+        public const string Player_AttrctPower = "Player_AttrctPower";
+
         public const string Basic_KnockResistent = "Basic_KnockResistent";
 
         public const string Basic_PleasureAdd = "Basic_PleasureAdd";
@@ -33,6 +35,7 @@ namespace My.Map.Entity
         public const string Invisible = "Invisible";
         public const string HideView = "HideView";
         public const string SuperArmor = "SuperArmor";
+        public const string ImmumeKaiYou = "ImmumeKaiYou";
 
 
         public const string PlayerHunger = "PlayerHunger";

@@ -145,7 +145,7 @@ namespace My.Map.Entity
                 return true;
             }
 
-            if(!phase.InterruptMask.HasFlag(EAbilityInterruptMask.Cast))
+            if(phase.InterruptMask.HasFlag(EAbilityInterruptMask.Cast))
             {
                 return true;
             }

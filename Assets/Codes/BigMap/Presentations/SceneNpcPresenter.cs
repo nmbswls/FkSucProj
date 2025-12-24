@@ -13,7 +13,7 @@ namespace My.Map.Scene
 {
     public class SceneNpcPresenter : SceneUnitPresenter, ISceneInteractable
     {
-
+        public Vector2 Pos => transform.position;
         public string ShowName => gameObject.name;
         public NpcUnitLogicEntity NpcEntity
         {

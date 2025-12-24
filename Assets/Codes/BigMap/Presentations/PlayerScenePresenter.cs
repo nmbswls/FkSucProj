@@ -33,6 +33,8 @@ namespace My.Map.Scene
 
         public string ShowName => "Self";
 
+        public Vector2 Pos => transform.position;
+
         public override void Tick(float dt)
         {
             base.Tick(dt);
