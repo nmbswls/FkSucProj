@@ -100,7 +100,7 @@ namespace My.Map.Entity.AI
                             Name = "Attracted",
                         };
 
-                        attractedState.ActionNames.Add("AttractedMove");
+                        attractedState.ActionNames.Add("AttractedMain");
 
 
                         attractedState.Transitions.Add(new AITransition()

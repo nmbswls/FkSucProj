@@ -1098,20 +1098,23 @@ namespace My.Map.Entity.AI
     [Serializable]
     public class AIActionCfgAttractedMove : AIActionCfg
     {
-         public override bool IsDecorate => false;
+         public override bool IsDecorate => true;
         public float StayDuration = 5.0f;
         public float WatchDistance = 0.8f;
     }
 
-    public class AIActionAttractedMove : AIAction
+    public class AIActionAttractedMain : AIAction
     {
-        public override string Name => "AttractedMove";
+        public override string Name => "AttractedMain";
 
         private Vector2 _currAttractePos;
         private float _attarctLastTriggerTime;
 
+        protected ILogicEntity attractSource;
+        protected Vector2? attractSourcePos;
+
         public AIActionCfgAttractedMove realCfg { get { return (AIActionCfgAttractedMove)cfg; } }
-        public AIActionAttractedMove(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        public AIActionAttractedMain(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
         {
         }
 
@@ -1131,6 +1134,8 @@ namespace My.Map.Entity.AI
         public override void Start()
         {
             base.Start();
+
+            _brain.blackboard.CurrentAttractLevel = 0;
 
             _brain.blackboard.
 
@@ -1155,35 +1160,39 @@ namespace My.Map.Entity.AI
         public override void Tick()
         {
             var npcUnit = _brain.NpcEntity as NpcUnitLogicEntity;
+
+
+            _brain.blackboard.
+
             // 如果当前有吸引事件 持续更新信息
-            if (npcUnit.attractInfo != null)
-            {
-                // 更新触发事件
-                if (npcUnit.attractInfo.LastTriggerTime != _attarctLastTriggerTime)
-                {
-                    _attarctLastTriggerTime = npcUnit.attractInfo.LastTriggerTime;
-                }
+            //if (npcUnit.attractInfo != null)
+            //{
+            //    // 更新触发事件
+            //    if (npcUnit.attractInfo.LastTriggerTime != _attarctLastTriggerTime)
+            //    {
+            //        _attarctLastTriggerTime = npcUnit.attractInfo.LastTriggerTime;
+            //    }
 
-                // 尝试启动首次寻路 或改变目标寻路
-                if (npcUnit.attractInfo.Pos != _currAttractePos)
-                {
-                    _currAttractePos = npcUnit.attractInfo.Pos;
-                    Debug.Log("init or change attracted pos " + npcUnit.attractInfo.Pos + (npcUnit.attractInfo.AttractSource != null ? npcUnit.attractInfo.AttractSource.Id : "0"));
+            //    // 尝试启动首次寻路 或改变目标寻路
+            //    if (npcUnit.attractInfo.Pos != _currAttractePos)
+            //    {
+            //        _currAttractePos = npcUnit.attractInfo.Pos;
+            //        Debug.Log("init or change attracted pos " + npcUnit.attractInfo.Pos + (npcUnit.attractInfo.AttractSource != null ? npcUnit.attractInfo.AttractSource.Id : "0"));
 
-                    var diff = _brain.NpcEntity.Pos - _currAttractePos;
-                    if(diff.magnitude > realCfg.WatchDistance)
-                    {
-                        var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.NpcEntity.Pos, _currAttractePos, realCfg.WatchDistance);
-                        _brain.NpcEntity.entityMotorComp.MoveTo(watchPos, moveSpeedRate: 0.1f);
-                    }
-                }
-            }
+            //        var diff = _brain.NpcEntity.Pos - _currAttractePos;
+            //        if(diff.magnitude > realCfg.WatchDistance)
+            //        {
+            //            var watchPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.NpcEntity.Pos, _currAttractePos, realCfg.WatchDistance);
+            //            _brain.NpcEntity.entityMotorComp.MoveTo(watchPos, moveSpeedRate: 0.1f);
+            //        }
+            //    }
+            //}
 
-            // 待购时间退出
-            if(LogicTime.time - _attarctLastTriggerTime > realCfg.StayDuration)
-            {
-                _brain.blackboard.CanLeaveAttract = true;
-            }
+            //// 待购时间退出
+            //if(LogicTime.time - _attarctLastTriggerTime > realCfg.StayDuration)
+            //{
+            //    _brain.blackboard.CanLeaveAttract = true;
+            //}
 
         }
 
