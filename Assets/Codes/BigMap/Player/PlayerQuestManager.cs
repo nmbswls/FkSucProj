@@ -1,71 +1,96 @@
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace My.Quest
 {
     //public enum RouteMode { Default, FirstMatch, AllOf, AnyOf, PlayerChoice }
 
-    //public enum ConditionType { Kill, Collect, Interact, Area, TimeLimit, HasState, And, Or, Not }
+    public enum ConditionType { Kill, Collect, Interact, Area, TimeLimit, HasState, And, Or, Not }
 
     //[Serializable]
     //public class QuestOutput
     //{ }
 
+    [Serializable]
+    public class ConditionData
+    {
+        public ConditionType type;
+        public ConditionData[] children;
+
+        public int id;           // monsterId, itemId, areaId, objectId, stateKey
+        public int count;
+        public float duration;   // seconds
+        public bool negate;
+    }
+
+    [Serializable]
+    public class ObjectiveData
+    {
+        [Tooltip("UI显示的描述")]
+        public string text;
+
+        [Tooltip("达成条件")]
+        public ConditionData condition;
+
+        [Tooltip("是否初始隐藏")]
+        public bool isHidden;
+
+        [Tooltip("是否可选")]
+        public bool isOption;
+
+        [Header("标签系统")]
+        [Tooltip("当此目标完成时，给任务实例打上这些标签 (Internal Tags)")]
+        public string[] completionTags;
+    }
 
 
-    //[Serializable]
-    //public class ConditionData
-    //{
-    //    public ConditionType type;
-    //    public ConditionData[] children;
 
-    //    public int id;           // monsterId, itemId, areaId, objectId, stateKey
-    //    public int count;
-    //    public float duration;   // seconds
-    //    public bool negate;
-    //}
+    [Serializable]
+    public class StepOutcomeData
+    {
+        public string outcomeName;    // 比如 "正面突击"
+        public string description;    // UI描述 "击杀守卫"
 
-    //[Serializable]
-    //public class RouteData
-    //{
-    //    public string routeName;
-    //    public RouteMode mode = RouteMode.Default;
-    //    public ConditionData routeCondition; // 建议在运行时缓存为条件实例
-    //    public int[] nextStepIds;            // 使用int作为stepId
-    //}
+        public int[] NeedObjectiveIds;
+        public int nextStepId;     // 达成后跳转的ID列表
+    }
 
 
-    //[Serializable]
-    //public class QuestStepData
-    //{
-    //    public int stepId;                            // 唯一ID（int）
-    //    [TextArea] public string objectiveText;
+    [Serializable]
+    public class QuestStepData
+    {
+        public int stepId;
+        public bool isRoot;           // 是否是起始步骤
 
-    //    // 主完成条件
-    //    public ConditionData completeCondition;
-    //    public int completeStepId;
+        [Header("完成路径 (任意一个达成即完成)")]
+        public StepOutcomeData[] outcomes;
 
-    //    // 失败条件
-    //    public ConditionData failCondition;
-    //    public int failStepId;
+        [Header("目标")]
+        public ObjectiveData[] objectives;
 
-    //    public bool isRoot = true;                    // 是否为根步骤（可多根并行）
-    //}
+        [Header("失败条件 (可选)")]
+        public ConditionData failCondition;
+    }
 
-    //[CreateAssetMenu(menuName = "Quests/Quest")]
-    //public class QuestData : ScriptableObject
-    //{
-    //    public int questId;
-    //    public string title;
-    //    [TextArea] public string description;
+    [CreateAssetMenu(menuName = "Quest/Quest Data")]
+    public class QuestData : ScriptableObject
+    {
+        public int questId;
+        public string title;
+        [TextArea] public string description;
 
-    //    public bool repeatable;
-    //    public QuestOutput reward;
+        public QuestStepData[] steps;
 
-    //    public QuestStepData[] steps;                 // 根步骤或全步骤清单
-    //    public ConditionData[] abortConditions;       // 全局中断条件
-    //}
+        // 辅助方法：构建ID索引
+        public Dictionary<int, QuestStepData> BuildStepMap()
+        {
+            var map = new Dictionary<int, QuestStepData>();
+            foreach (var s in steps) map[s.stepId] = s;
+            return map;
+        }
+    }
 
     //public class RuntimeCondition
     //{
