@@ -14,6 +14,7 @@ using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.Map.View;
+using My.Saving;
 using My.UI;
 using System;
 using System.Collections;
@@ -133,7 +134,15 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         gameLogicManager.EventOnPlayerSwitchArea += OnPlayerSwitchArea;
 
-        gameLogicManager.OnGameInit();
+
+        // 2. [后台线程] 执行异步读取
+        // 此时画面不会卡死，转圈圈动画会流畅播放
+        SaveData loadedData = await SaveSystem.LoadAsync(SAVE_FILE_NAME);
+        if(loadedData == null)
+        {
+            Debug.Log("no saving found");
+        }
+        gameLogicManager.OnGameInit(loadedData);
 
         gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>
         {
@@ -141,6 +150,14 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         };
 
         UIManager.Instance.ShowLoading("starting");
+        
+
+        // 3. [主线程] 应用数据 (Restore State)
+        if (loadedData != null)
+        {
+            ApplyDataToGame(loadedData);
+        }
+
         // 
         await LoadGameMain();
 
@@ -259,6 +276,18 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             }, TaskScheduler.FromCurrentSynchronizationContext());
 
             switchAreaFlag = false;
+        }
+
+        if(Input.GetKeyDown(KeyCode.V))
+        {
+            _ = OnSaveClicked().ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+                }
+
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
     }
 
@@ -614,6 +643,53 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             UIManager.Instance.HidePanel("DialoguePanel");
         });
         //await InnerEnterEncounter(0, "defeated");
+    }
+
+    private const string SAVE_FILE_NAME = "mysave.json";
+
+    // --- 保存流程 ---
+    public async Task OnSaveClicked()
+    {
+        if (SaveSystem.IsBusy) return;
+
+
+        // 2. [主线程] 采集数据 (Capture State)
+        // 必须在主线程做，因为后台线程不能访问 transform.position 等 Unity API
+        SaveData dataToSave = new SaveData();
+
+        // 填充元数据
+        dataToSave.Meta.SaveTime = System.DateTime.Now.ToString();
+        dataToSave.Meta.Version = Application.version;
+
+        // 填充玩家数据
+        //dataToSave.Player.Level = this.PlayerLevel;
+        //dataToSave.Player.CurrentHP = this.PlayerHP;
+        //dataToSave.Player.MaxHP = 100f;
+
+        // 填充位置数据 (转为纯 float 数组)
+        //Vector3 pos = PlayerTransform.position;
+        //Vector3 rot = PlayerTransform.eulerAngles;
+        //dataToSave.World.Position = new float[] { pos.x, pos.y, pos.z };
+        //dataToSave.World.Rotation = new float[] { rot.x, rot.y, rot.z };
+        //dataToSave.World.SceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+        // 填充背包 (模拟数据)
+        dataToSave.Inventory.Add(new InventoryItemData { ItemID = "Sword_01", Amount = 1 });
+
+        // 3. [后台线程] 执行异步保存
+        // 此时 UI 会继续渲染，不会卡顿
+        await SaveSystem.SaveAsync(SAVE_FILE_NAME, dataToSave);
+
+        Debug.Log("UI: 保存流程结束");
+    }
+
+    /// <summary>
+    ///  将读出来的数据应用到游戏对象上
+    /// </summary>
+    /// <param name="data"></param>
+    private void ApplyDataToGame(SaveData data)
+    {
+        Debug.Log($"ApplyDataToGame finish, 时间: {data.Meta.SaveTime}");
     }
 }
 

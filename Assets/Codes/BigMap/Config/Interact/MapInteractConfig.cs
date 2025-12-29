@@ -35,6 +35,8 @@ namespace My.Config
         public long Param2;
         public string Param3;
         public string Param4;
+
+        public float DelayTime;
     }
 
     [Serializable]

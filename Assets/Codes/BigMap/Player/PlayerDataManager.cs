@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using Config;
 using Map.Logic.Events;
 using My.Player.Bag;
+using My.Saving;
 using UnityEngine;
 
 namespace My.Player
 {
     public class PlayerDataManager
     {
-        public GameLogicManager logicManager;
+        public GameLogicManager logicManager { get;private set; }
 
         public long ItemInstanceIdCounter = 100;
         public PlayerInventoryModel inventoryModel;
@@ -50,7 +51,7 @@ namespace My.Player
             VariableDict["fix_teleport"] = true;
             VariableDict["a1"] = true;
         }
-        public void InitPlayer()
+        public void InitPlayerData(SaveData savingData)
         {
             InitBagInfo();
         }

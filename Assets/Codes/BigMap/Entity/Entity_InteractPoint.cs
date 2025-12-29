@@ -31,12 +31,13 @@ namespace My.Map.Entity
         // ״̬
         //public bool Appear = false;
         public int CurrStatusId = 0;
+        private bool IsSwitching = false;
 
         public MapInteractPointConfig cacheCfg;
 
         public EntityInteractComp InteractComp;
 
-        public event Action OnStatusChange;
+        public event Action<StateChangeView> OnStatusChange;
 
 
         public LogicEntityInteractPoint(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -116,7 +117,7 @@ namespace My.Map.Entity
 
                 if (poassed)
                 {
-                    ChangeSelfStatus(rule.ToStatus);
+                    ChangeSelfStatus(rule.ToStatus, rule.ChangeView);
                     break;
                 }
             }
@@ -166,10 +167,11 @@ namespace My.Map.Entity
             CheckStatusCondition();
         }
 
-        public void ChangeSelfStatus(int newStatus)
+        public void ChangeSelfStatus(int newStatus, StateChangeView changeView = null)
         {
             int oldStat = CurrStatusId;
             CurrStatusId = newStatus;
+
             var curState = GetCurrentStatusInfo();
             if (curState != null)
             {
@@ -180,7 +182,7 @@ namespace My.Map.Entity
                 InteractComp.RegisterInteractInfo(new());
             }
 
-            OnStatusChange?.Invoke();
+            OnStatusChange?.Invoke(changeView);
         }
     }
 

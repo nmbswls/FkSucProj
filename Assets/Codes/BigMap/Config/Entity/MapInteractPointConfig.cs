@@ -34,12 +34,24 @@ namespace Config.Map
         public int InitState;
 
         [Serializable]
+        public class StateChangeView
+        {
+            public float ChangingDuration = 0;
+            public string ChangingAnimName;
+            public string ChangingEffect;
+        }
+
+
+
+        [Serializable]
         public class StateChangeRule
         {
             public int FromStatus;
             public List<CommonCheckCond> CommonConds = new();
             public List<string> NeedSelfFlag = new();
             public int ToStatus;
+
+            public StateChangeView ChangeView;
         }
 
         /// <summary>

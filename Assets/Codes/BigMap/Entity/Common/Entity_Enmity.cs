@@ -174,7 +174,7 @@ namespace My.Map.Entity
                 {
                     if (UnitEntity.LogicManager.playerLogicEntity.WillBeGazed())
                     {
-                        IsEnmityState = true;
+                        //IsEnmityState = true;
                     }
                 }
                 

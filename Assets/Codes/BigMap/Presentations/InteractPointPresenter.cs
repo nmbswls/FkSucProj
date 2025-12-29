@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Config.Map.MapInteractPointConfig;
 
 namespace My.Map.Scene
 {
@@ -19,6 +20,8 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
+        private bool IsSwitching = false;  // ≤ª∫œ¿Ì
+        private float switchingTimer = 0;
         public virtual string ShowName { 
             get 
             {
@@ -43,7 +46,7 @@ namespace My.Map.Scene
         {
             var ret = new List<SceneInteractSelection>();
             //if (dist > 0.5f) return ret;
-
+            if (IsSwitching) return ret;
             var logicInts = RealLogic.InteractInfos;
 
             foreach (var i in logicInts)
@@ -69,6 +72,7 @@ namespace My.Map.Scene
 
         public bool CanInteractEnable(float dist)
         {
+            if (IsSwitching) return false;
             int enableOne = 0;
             var logicInts = RealLogic.InteractInfos;
 
@@ -102,10 +106,11 @@ namespace My.Map.Scene
                 RealLogic.OnStatusChange -= OnStatusChanged;
             }
 
+            IsSwitching = false;
             base.Unbind();
         }
 
-        public void OnStatusChanged()
+        public void OnStatusChanged(StateChangeView changeView)
         {
             //MainGameManager.Instance.interactSystem.UpdateInteractRangeObjs
             var status = RealLogic.GetCurrentStatusInfo();
@@ -117,12 +122,29 @@ namespace My.Map.Scene
             {
                 MainBlock.SetActive(false);
             }
+
+            if(changeView != null && changeView.ChangingDuration > 0)
+            {
+                IsSwitching = true;
+                switchingTimer = changeView.ChangingDuration;
+            }
         }
 
         public override void Tick(float dt)
         {
             base.Tick(dt);
 
+            if(IsSwitching)
+            {
+                switchingTimer -= dt;
+
+                if(switchingTimer <= 0)
+                {
+                    IsSwitching = false;
+                }
+
+                MainGameManager.Instance.ShowFakeFxEffect("switching", transform.position);
+            }
         }
 
         protected override void OnFadeStateUpdate()

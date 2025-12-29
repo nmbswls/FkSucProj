@@ -8,6 +8,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.MapExport;
 using My.Player;
+using My.Saving;
 using My.UI;
 using System;
 using System.Collections.Generic;
@@ -97,8 +98,11 @@ namespace My
 
         public bool PlayerPeaceMode = false;
 
-        public void OnGameInit()
+        public void OnGameInit(SaveData saveData)
         {
+            playerDataManager = new(this);
+            playerDataManager.InitPlayerData(saveData);
+
             LogicEventBus = new();
             AreaManager = new(this, new GameLogicAreaManager.Settings()
             {
@@ -117,8 +121,7 @@ namespace My
 
             projectileHolder = new();
 
-            playerDataManager = new(this);
-            playerDataManager.InitPlayer();
+            
 
             shopDataManager = new(this);
 
