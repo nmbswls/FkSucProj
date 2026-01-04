@@ -1,13 +1,23 @@
 
+using SuperScrollView;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace My.Quest
 {
-    //public enum RouteMode { Default, FirstMatch, AllOf, AnyOf, PlayerChoice }
 
-    public enum ConditionType { Kill, Collect, Interact, Area, TimeLimit, HasState, And, Or, Not }
+    /// <summary>
+    /// 任务枚举
+    /// </summary>
+    public enum ConditionType 
+    { 
+        Kill, 
+        HasState, 
+        And,
+        Or, 
+        Not 
+    }
 
     //[Serializable]
     //public class QuestOutput
@@ -19,15 +29,23 @@ namespace My.Quest
         public ConditionType type;
         public ConditionData[] children;
 
-        public int id;           // monsterId, itemId, areaId, objectId, stateKey
-        public int count;
-        public float duration;   // seconds
+        public int RequireProgress;
+
+        public int Param1;
+        public int Param2;
+        public long Param3;
+        public long Param4;
+        public string Param5;
+        public string Param6;
+
         public bool negate;
     }
 
     [Serializable]
     public class ObjectiveData
     {
+        public int objectiveId;
+
         [Tooltip("UI显示的描述")]
         public string text;
 
@@ -53,6 +71,7 @@ namespace My.Quest
         public string outcomeName;    // 比如 "正面突击"
         public string description;    // UI描述 "击杀守卫"
 
+        public int completeId;
         public int[] NeedObjectiveIds;
         public int nextStepId;     // 达成后跳转的ID列表
     }
@@ -63,8 +82,9 @@ namespace My.Quest
     {
         public int stepId;
         public bool isRoot;           // 是否是起始步骤
+        public bool isAuto;           // 是否是起始步骤
 
-        [Header("完成路径 (任意一个达成即完成)")]
+        [Header("完成路径")]
         public StepOutcomeData[] outcomes;
 
         [Header("目标")]
@@ -79,6 +99,7 @@ namespace My.Quest
     {
         public int questId;
         public string title;
+        public int InitStepId;
         [TextArea] public string description;
 
         public QuestStepData[] steps;
@@ -92,291 +113,281 @@ namespace My.Quest
         }
     }
 
-    //public class RuntimeCondition
-    //{
-    //    public long LocalProgress;
-    //    public ConditionData cacheConfig;
 
 
-    //}
+    // --- 步骤运行时 ---
+
+    
+    /// <summary>
+    /// 单个目标
+    /// 冗余装载配置中的数据
+    /// </summary>
+    public class ObjectiveRuntime
+    {
+        protected GameLogicManager ctx { get; set; }
+        public readonly ObjectiveData Data;
+        public long ProgressVal = 0;
+
+        public ObjectiveRuntime(ObjectiveData data, GameLogicManager ctx)
+        {
+            Data = data;
+            this.ctx = ctx;
+        }
+
+        public bool IsOptional()
+        {
+            return Data.isOption;
+        }
+
+        public long GetRequireProgress()
+        {
+            return 1;
+        }
+
+        public long GetCurrProgress()
+        {
+            switch (Data.condition.type)
+            {
+                case ConditionType.Kill:
+                    {
+                        return ProgressVal;
+                    }
+                    break;
+            }
+
+            return 0;
+        }
+    }
 
 
+    public class StepRuntime
+    {
+        protected GameLogicManager ctx { get; set; }
+        public int CurrStepId = 0;
+        public readonly QuestStepData Data;
 
-    //public sealed class StepRuntime
-    //{
-    //    public readonly QuestStepData data;
-    //    private readonly ICondition enter;
-    //    private readonly ICondition complete;
-    //    private readonly ICondition fail;
-    //    private readonly ICondition routeConditionCached; // 可选缓存（仅示例对FirstMatch/Default使用一个条件）
+        private readonly ObjectiveRuntime[] _objectives;
+        private readonly ObjectiveRuntime[] _failObjectives;
 
-    //    public StepRuntime(QuestStepData data)
-    //    {
-    //        this.data = data;
-    //        enter = data.enterCondition != null ? ConditionFactory.Create(data.enterCondition) : null;
-    //        complete = data.completeCondition != null ? ConditionFactory.Create(data.completeCondition) : null;
-    //        fail = data.failCondition != null ? ConditionFactory.Create(data.failCondition) : null;
+        private Dictionary<int, ObjectiveRuntime> objectiveMap = new();
 
-    //        // 简化示例：若第一条路由有条件，可缓存避免每次ResolveNext创建
-    //        if (data.nextRoutes != null && data.nextRoutes.Length > 0 && data.nextRoutes[0].routeCondition != null)
-    //        {
-    //            routeConditionCached = ConditionFactory.Create(data.nextRoutes[0].routeCondition);
-    //        }
-    //    }
+        public bool IsCompleted { get; set; }
+        public int CompletedOutcome { get; private set; }
 
-    //    public bool CanEnter(QuestContext ctx) => enter == null || enter.Evaluate(ctx);
+        public StepRuntime(QuestStepData data, GameLogicManager ctx)
+        {
+            CurrStepId = data.stepId;
+            Data = data;
 
-    //    public void Enter(QuestContext ctx)
-    //    {
-    //        enter?.Reset();
-    //        complete?.Reset();
-    //        fail?.Reset();
+            // 初始化 Outcomes
+            _objectives = new ObjectiveRuntime[data.objectives?.Length ?? 0];
+            for (int i = 0; i < _objectives.Length; i++)
+            {
+                _objectives[i] = new ObjectiveRuntime(data.objectives[i], ctx);
 
-    //        // 通知计时类条件开始（通过StateChanged事件）
-    //        ctx.Bus.Publish(new GameEvent { Type = GameEventType.StateChanged, Id = StateIds.StepEnter }, ctx);
+                objectiveMap[data.objectives[i].objectiveId] = _objectives[i];
+            }
 
-    //        SubscribeConditions(ctx);
-    //    }
+            this.ctx = ctx;
+        }
 
-    //    private void SubscribeConditions(QuestContext ctx)
-    //    {
-    //        if (complete is IEventSubscriber es1) ctx.Bus.Subscribe(es1);
-    //        if (fail is IEventSubscriber es2) ctx.Bus.Subscribe(es2);
-    //        // enter一般不订阅事件
-    //    }
+        public void Enter()
+        {
+            CompletedOutcome = 0;
+            // Subscribe logic...
+        }
 
-    //    public void Exit(QuestContext ctx)
-    //    {
-    //        if (complete is IEventSubscriber es1) ctx.Bus.Unsubscribe(es1);
-    //        if (fail is IEventSubscriber es2) ctx.Bus.Unsubscribe(es2);
-    //    }
+        public void Exit()
+        {
+        }
 
-    //    public bool IsCompleted(QuestContext ctx) => complete == null || complete.Evaluate(ctx);
-    //    public bool IsFailed(QuestContext ctx) => fail != null && fail.Evaluate(ctx);
+        public void Tick()
+        {
+            if(Data.isAuto && !IsCompleted)
+            {
+                for(int ii = 0; ii< Data.outcomes.Length; ii++)
+                {
+                    var complete = CheckCompletion(ii);
 
-    //    // 路由解析：写入外部列表，避免分配
-    //    public void ResolveNext(List<StepRuntime> outList, Dictionary<int, StepRuntime> directory, QuestContext ctx)
-    //    {
-    //        if (data.nextRoutes == null || data.nextRoutes.Length == 0) return;
+                    if(complete)
+                    {
+                        OnStepCompleted(ii);
+                        break;
+                    }
+                }
+            }
+        }
 
-    //        for (int i = 0; i < data.nextRoutes.Length; i++)
-    //        {
-    //            var route = data.nextRoutes[i];
-    //            bool match = route.mode == RouteMode.Default;
+        public bool CheckFailure()
+        {
+            return false;
+        }
 
-    //            // 优先使用缓存路由条件，未缓存则直接Evaluate（会创建实例，建议你扩展为缓存全部）
-    //            if (route.routeCondition != null)
-    //            {
-    //                var cond = (i == 0 && routeConditionCached != null) ? routeConditionCached : ConditionFactory.Create(route.routeCondition);
-    //                match = cond.Evaluate(ctx);
-    //            }
+        public bool CheckCompletion(int index)
+        {
+            var outcome = Data.outcomes[index];
+            bool allFinish = true;
+            foreach (var needObj in outcome.NeedObjectiveIds)
+            {
+                objectiveMap.TryGetValue(needObj, out var objectRuntime);
+                if(objectRuntime == null)
+                {
+                    allFinish = false;
+                    break;
+                }
 
-    //            if (!match) continue;
+                if(objectRuntime.GetCurrProgress() < objectRuntime.GetRequireProgress())
+                {
+                    allFinish = false;
+                    break;
+                }
 
-    //            var ids = route.nextStepIds;
-    //            if (ids != null)
-    //            {
-    //                for (int j = 0; j < ids.Length; j++)
-    //                {
-    //                    if (directory.TryGetValue(ids[j], out var next))
-    //                    {
-    //                        outList.Add(next);
-    //                    }
-    //                }
-    //            }
+            }
+            return allFinish;
+        }
 
-    //            if (route.mode == RouteMode.FirstMatch) break;
-    //        }
-    //    }
-    //}
+        public void OnStepCompleted(int index)
+        {
+            IsCompleted = true;
+            CompletedOutcome = index;
+        }
+    }
+
+    public class QuestInstance
+    {
+
+        protected GameLogicManager ctx { get; set; }
+
+        public QuestData Data { get; private set; }
+        public bool IsActive { get; private set; }
+
+        
+        // 当前活跃的步骤
+        private StepRuntime _activeStep;
+
+        // 步骤查找表
+        private Dictionary<int, QuestStepData> _stepMap = new();
+
+        // --- 内部标签集 (Internal Tags) ---
+        // 这是子系统交互的关键
+        private HashSet<string> _internalTags = new HashSet<string>();
+
+        /// <summary>
+        /// 创建任务
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="ctx"></param>
+        public QuestInstance(QuestData data, GameLogicManager ctx)
+        {
+            this.ctx = ctx;
+
+            Data = data;
+            _stepMap = data.BuildStepMap();
 
 
+            foreach(var step in Data.steps)
+            {
+                _stepMap[step.stepId] = step;
+            }
 
-    //public sealed class QuestInstance
-    //{
-    //    public readonly QuestData Data;
-    //    public QuestStatus Status { get; private set; } = QuestStatus.Inactive;
+            _stepMap.TryGetValue(Data.InitStepId, out var initStep);
+            if(initStep == null)
+            {
+                Debug.LogError($"QuestInstance init fail no init step found {data.questId} {Data.InitStepId}");
+                return;
+            }
 
-    //    private readonly QuestContext ctx;
-    //    private readonly EventBus bus;
+            var runtime = new StepRuntime(initStep, ctx);
+            _activeStep = runtime;
 
-    //    private readonly Dictionary<int, StepRuntime> stepDir = new Dictionary<int, StepRuntime>(64);
-    //    private readonly List<StepRuntime> activeSteps = new List<StepRuntime>(16);
+            IsActive = true;
 
-    //    private readonly List<StepRuntime> completedQueue = new List<StepRuntime>(8);
-    //    private readonly List<StepRuntime> failedQueue = new List<StepRuntime>(4);
+        }
 
-    //    private readonly ICondition[] abortConds;
-    //    private bool abortFlag;
+        public void CheckComplete()
+        {
+            if(_activeStep != null)
+            {
+                for (int outcomeIdx = 0; outcomeIdx < _activeStep.Data.outcomes.Length; outcomeIdx++)
+                {
+                    var complete = _activeStep.CheckCompletion(outcomeIdx);
 
-    //    public QuestInstance(QuestData data, QuestContext ctx)
-    //    {
-    //        Data = data;
-    //        this.ctx = ctx;
-    //        this.bus = ctx.Bus;
+                    if (complete)
+                    {
+                        _activeStep.OnStepCompleted(outcomeIdx);
+                        break;
+                    }
+                }
+            }
+        }
 
-    //        BuildStepsAndAbort();
-    //    }
+        // 标签操作 API
+        private void AddInternalTag(string tag)
+        {
+            if (!_internalTags.Contains(tag))
+            {
+                _internalTags.Add(tag);
+                Debug.Log($"[QuestInstance] Tag Added: {tag}");
+            }
+        }
 
-    //    private void BuildStepsAndAbort()
-    //    {
-    //        if (Data.steps != null)
-    //        {
-    //            for (int i = 0; i < Data.steps.Length; i++)
-    //            {
-    //                var rt = new StepRuntime(Data.steps[i]);
-    //                stepDir[Data.steps[i].stepId] = rt;
-    //            }
-    //        }
+        public bool HasTag(string tag) => _internalTags.Contains(tag);
 
-    //        if (Data.abortConditions != null && Data.abortConditions.Length > 0)
-    //        {
-    //            abortConds = new ICondition[Data.abortConditions.Length];
-    //            for (int i = 0; i < Data.abortConditions.Length; i++)
-    //            {
-    //                abortConds[i] = ConditionFactory.Create(Data.abortConditions[i]);
-    //            }
-    //        }
-    //        else
-    //        {
-    //            abortConds = Array.Empty<ICondition>();
-    //        }
-    //    }
+        // 主循环
+        public void LateTick()
+        {
+            if (!IsActive) return;
 
-    //    public void Start()
-    //    {
-    //        if (Status != QuestStatus.Inactive) return;
-    //        Status = QuestStatus.Active;
 
-    //        ActivateInitialSteps();
-    //        for (int i = 0; i < activeSteps.Count; i++)
-    //        {
-    //            activeSteps[i].Enter(ctx);
-    //        }
-    //    }
+            // 2. 处理失败
+            if(_activeStep != null && _activeStep.IsCompleted)
+            {
+                ResolveNextSteps();
+            }
 
-    //    private void ActivateInitialSteps()
-    //    {
-    //        foreach (var kv in stepDir)
-    //        {
-    //            var s = kv.Value;
-    //            if (s.data.isRoot && s.CanEnter(ctx))
-    //            {
-    //                ActivateStep(s);
-    //            }
-    //        }
-    //    }
+            //if (_activeSteps.Count == 0)
+            //{
+            //    Debug.Log("Quest Fully Completed!");
+            //    IsActive = false;
+            //}
+        }
 
-    //    private void ActivateStep(StepRuntime step)
-    //    {
-    //        if (!activeSteps.Contains(step))
-    //        {
-    //            activeSteps.Add(step);
-    //        }
-    //    }
+        private void ResolveNextSteps()
+        {
+            var outcomeIdx = _activeStep.CompletedOutcome;
+            var outcome = _activeStep.Data.outcomes[outcomeIdx];
 
-    //    // 外部驱动：在MonoBehaviour的Update中发布Timer事件，在LateUpdate中调用LateTick
-    //    public void LateTick()
-    //    {
-    //        if (Status != QuestStatus.Active) return;
+            if (outcome == null || outcome.nextStepId == 0)
+            {
+                Debug.LogError($"ResolveNextSteps not outcome found quest invalid");
+                return;
+            }
 
-    //        // 全局中断优先
-    //        abortFlag = CheckAbort();
-    //        if (abortFlag) { Abort(); return; }
+            if (_stepMap.TryGetValue(outcome.nextStepId, out var nextData))
+            {
+                var nextRuntime = new StepRuntime(nextData, ctx);
+                _activeStep = nextRuntime;
+            }
+        }
 
-    //        failedQueue.Clear();
-    //        completedQueue.Clear();
+        /// <summary>
+        /// 这里维护监听结构
+        /// </summary>
+        public void OnLogicEvent()
+        {
+            if (_activeStep != null && !_activeStep.IsCompleted)
+            {
+                //for (int ii = 0; ii < Data.outcomes.Length; ii++)
+                //{
+                //    var complete = CheckCompletion(ii);
 
-    //        // 先判失败
-    //        for (int i = 0; i < activeSteps.Count; i++)
-    //        {
-    //            var step = activeSteps[i];
-    //            if (step.IsFailed(ctx))
-    //            {
-    //                failedQueue.Add(step);
-    //            }
-    //        }
-    //        if (failedQueue.Count > 0) { Fail(); return; }
-
-    //        // 再判完成
-    //        for (int i = 0; i < activeSteps.Count; i++)
-    //        {
-    //            var step = activeSteps[i];
-    //            if (step.IsCompleted(ctx))
-    //            {
-    //                completedQueue.Add(step);
-    //            }
-    //        }
-
-    //        // 统一处理完成
-    //        for (int i = 0; i < completedQueue.Count; i++)
-    //        {
-    //            var s = completedQueue[i];
-    //            s.Exit(ctx);
-    //            activeSteps.Remove(s);
-
-    //            var nextBuffer = ListPool<StepRuntime>.Get();
-    //            try
-    //            {
-    //                s.ResolveNext(nextBuffer, stepDir, ctx);
-    //                for (int n = 0; n < nextBuffer.Count; n++)
-    //                {
-    //                    var next = nextBuffer[n];
-    //                    ActivateStep(next);
-    //                    next.Enter(ctx);
-    //                }
-    //            }
-    //            finally
-    //            {
-    //                ListPool<StepRuntime>.Release(nextBuffer);
-    //            }
-    //        }
-
-    //        // 终止判定（根据你的设计：全部完成或到达终止状态）
-    //        if (activeSteps.Count == 0)
-    //        {
-    //            Complete();
-    //        }
-    //    }
-
-    //    private bool CheckAbort()
-    //    {
-    //        for (int i = 0; i < abortConds.Length; i++)
-    //        {
-    //            if (abortConds[i].Evaluate(ctx)) return true;
-    //        }
-    //        return false;
-    //    }
-
-    //    private void Abort()
-    //    {
-    //        if (Status != QuestStatus.Active) return;
-    //        Status = QuestStatus.Aborted;
-    //        Cleanup();
-    //    }
-
-    //    private void Fail()
-    //    {
-    //        if (Status != QuestStatus.Active) return;
-    //        Status = QuestStatus.Failed;
-    //        Cleanup();
-    //    }
-
-    //    private void Complete()
-    //    {
-    //        if (Status != QuestStatus.Active) return;
-    //        Status = QuestStatus.Completed;
-    //        // 发放奖励：可在外部通过 Data.reward 处理
-    //        Cleanup();
-    //    }
-
-    //    private void Cleanup()
-    //    {
-    //        for (int i = 0; i < activeSteps.Count; i++)
-    //        {
-    //            activeSteps[i].Exit(ctx);
-    //        }
-    //        activeSteps.Clear();
-    //    }
-    //}
+                //    if (complete)
+                //    {
+                //        OnStepCompleted(ii);
+                //        break;
+                //    }
+                //}
+            }
+        }
+    }
 }
