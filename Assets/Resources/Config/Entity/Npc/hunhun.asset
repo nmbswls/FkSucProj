@@ -23,9 +23,8 @@ MonoBehaviour:
   RecoverReturn: 1
   HasHMode: 1
   AlwaysHMode: 0
-  AITemplateMode: 
-  AITemplateName: 
-  DefaultFactionId: 0
+  AIBrainParamsCfgId: default
+  DefaultFactionId: 3
   Hp: 100
   SkillList: []
   DropId: default

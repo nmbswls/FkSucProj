@@ -97,8 +97,9 @@ namespace Config.Unit
         public bool HasHMode = true;
         public bool AlwaysHMode = false;
 
-        public string AITemplateMode = string.Empty;
-        public string AITemplateName = string.Empty;
+        public string AIBrainParamsCfgId = "default";
+
+
 
         public EFactionId DefaultFactionId;
 

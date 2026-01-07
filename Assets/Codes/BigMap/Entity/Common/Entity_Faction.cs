@@ -10,7 +10,6 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 namespace My.Map.Entity
 {
-    [Flags]
     public enum EFactionId
     { 
         None = 0,

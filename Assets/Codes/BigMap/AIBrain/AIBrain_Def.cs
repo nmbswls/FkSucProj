@@ -19,6 +19,32 @@ namespace My.Map.Entity.AI
 {
 
 
+    public static class AIBrainParamsConfigLoader
+    {
+        //public static Dictionary<string, string> _aiConfigJson = null;
+        public static Dictionary<string, AIBrainConfig> _configs = null;
+
+        public static AIBrainConfig Load(string name)
+        {
+            if (_configs == null)
+            {
+                {
+                    var config = new AIBrainConfig();
+                    _configs["default"] = config;
+                }
+                {
+                    var config = new AIBrainConfig();
+                    config.SpecialAnimTag1 = "qitao";
+                    _configs["qigai"] = config;
+                }
+            }
+
+            _configs.TryGetValue(name, out var result);
+            return result;
+        }
+    }
+
+
     public static class AITemplateConfigLoader
     {
 

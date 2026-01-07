@@ -51,6 +51,7 @@ namespace My.Map.Entity.AI
         public int CurrentAttractLevel; // 当前吸引等级
     }
 
+    [System.Serializable]
     public class AIBrainConfig
     {
         public float VisionRange = 7f;
@@ -62,6 +63,12 @@ namespace My.Map.Entity.AI
         public float ExitCombatMinRecoverTime = 1f;
 
         public float GoodBattleDistance = 3.0f;
+
+        public string SpecialAnimTag1;
+        public string SpecialAnimTag2;
+        public string SpecialAnimTag3;
+        public string SpecialAnimTag4;
+
     }
 
 
@@ -103,7 +110,7 @@ namespace My.Map.Entity.AI
         }
 
 
-        public AIBrainConfig brainConfig = new();
+        public AIBrainConfig brainConfig;
         public AIBrainBlackboard blackboard = new();
 
 
@@ -146,6 +153,11 @@ namespace My.Map.Entity.AI
                 case AIActionCfgDoNothing:
                     {
                         action = new AIActionDoNothing(brain, cfg);
+                    }
+                    break;
+                case AIActionCfgDoSomething:
+                    {
+                        action = new AIActionDoSomething(brain, cfg);
                     }
                     break;
                 case AIActionCfgRecoveryFromAttract:
@@ -239,6 +251,8 @@ namespace My.Map.Entity.AI
             _commonTransitions.Clear();
 
             string confId = "BasicUnit";
+
+            brainConfig = AIBrainParamsConfigLoader.Load(npcEntity.unitCfg.AIBrainParamsCfgId);
 
             var conf = AITemplateConfigLoader.Load(confId);
 

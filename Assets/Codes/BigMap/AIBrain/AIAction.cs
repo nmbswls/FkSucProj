@@ -224,6 +224,49 @@ namespace My.Map.Entity.AI
 
 
     [Serializable]
+    public class AIActionCfgDoSomething : AIActionCfg
+    {
+        public override bool IsDecorate => true;
+        public int SpecialAnimIdx;
+    }
+
+    public class AIActionDoSomething : AIAction
+    {
+
+        public override string Name => "DoSomething";
+
+        private float _Timer;
+
+
+        public AIActionDoSomething(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
+
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            if (LogicTime.time - _Timer < 1f)
+            {
+                return;
+            }
+
+            _Timer = LogicTime.time;
+
+            var animName = _brain.brainConfig.SpecialAnimTag1;
+            _brain.NpcEntity.AddAnimLayer(animName);
+        }
+
+        public override void OnExitState()
+        {
+            base.OnExitState();
+
+        }
+    }
+
+    [Serializable]
     public class AIActionCfgRecoveryFromAttract : AIActionCfg
     {
         public override bool IsDecorate => false;
