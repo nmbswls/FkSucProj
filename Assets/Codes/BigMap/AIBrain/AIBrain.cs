@@ -46,6 +46,7 @@ namespace My.Map.Entity.AI
 
         public Vector2 AttractPos;
         public long AttractSrcId;
+        public int AttractLevel;
 
         public Vector2 EnterAttractPos; // 
         public int CurrentAttractLevel; // 当前吸引等级

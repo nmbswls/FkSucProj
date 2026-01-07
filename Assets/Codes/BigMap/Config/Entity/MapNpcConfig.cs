@@ -14,5 +14,7 @@ namespace Config.Unit
         public string NpcTag = string.Empty;
 
         public List<MapInteractInfo> InteractList = new();
+
+        public int IgnoreAttractLevel = 0;
     }
 }

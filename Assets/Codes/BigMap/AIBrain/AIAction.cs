@@ -1059,6 +1059,7 @@ namespace My.Map.Entity.AI
 
         private float lastAttractTime = 0;
         protected Vector2? attractSourcePos;
+        private float attractLastTime = 3.0f;
 
         public AIActionAttractedDaemon(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
         {
@@ -1080,6 +1081,14 @@ namespace My.Map.Entity.AI
             // 进入后将状态取入本地 清理trigger 以方便下次进入
             FetchDataFromAttractTrigger();
 
+            if(_brain.blackboard.AttractLevel == 1)
+            {
+                attractLastTime = 3.0f;
+            }
+            else
+            {
+                attractLastTime = 5.0f;
+            }
             _brain.blackboard.CanLeaveAttract = false;
         }
 
@@ -1095,7 +1104,7 @@ namespace My.Map.Entity.AI
         {
             FetchDataFromAttractTrigger();
 
-            if(LogicTime.time - lastAttractTime > 5.0f)
+            if(LogicTime.time - lastAttractTime > 3.0f)
             {
                 _brain.blackboard.CanLeaveAttract = true;
                 return;

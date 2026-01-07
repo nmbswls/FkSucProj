@@ -341,6 +341,8 @@ namespace My.Map
             // TODO: Æô¶¯AI/µ¼º½×·»÷ PrimaryTargetId
 
             Debug.Log($"EnterCombat unit:{UnitEntity.Id} enemy {primaryTargetId}");
+
+            UnitEntity.LogicManager.OnUnitCombatStateUpdate(this.UnitEntity);
         }
 
         public void ExitCombat(string reason = "Silent")

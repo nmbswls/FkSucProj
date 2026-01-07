@@ -301,5 +301,18 @@ namespace My.Map.Logic
                 Record2RefreshInfo.Remove(recId);
             }
         }
+
+        public List<ILogicEntity> FindEntityInRange(Vector2 pos, float radius)
+        {
+            UnitGridIndex.Query(pos, radius, queryBufInt);
+
+            var ret = new List<ILogicEntity>();
+            foreach (var id in queryBufInt)
+            {
+                var entity = GetLogicEntiy(id);
+                ret.Add(entity);
+            }
+            return ret;
+        }
     }
 }

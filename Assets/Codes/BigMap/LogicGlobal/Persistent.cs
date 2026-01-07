@@ -49,13 +49,10 @@ namespace My.Map.Logic
     [Serializable]
     public class LogicEntityRecord4UnitBase : LogicEntityRecord
     {
-        
-
         // 仅保存特殊状态 buff丢弃
         public bool Unsensored;
         public bool MarkDefeated; // 击败标记
         public bool MarkAttaching;
-        
     }
 
     // 逻辑实体的轻量描述（可存持久化）

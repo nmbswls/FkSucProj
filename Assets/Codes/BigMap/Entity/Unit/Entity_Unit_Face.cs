@@ -101,6 +101,15 @@ namespace My.Map
                 return;
             }
 
+            if (lastestLookIntent != null && LogicTime.time - lastestLookIntent.HappenTime > lastestLookIntent.Duration)
+            {
+                lastestLookIntent = null;
+                if(interruptedFaceDir != null)
+                {
+                    faceDir = interruptedFaceDir.Value;
+                }
+            }
+
             if(lastestLookIntent == null)
             {
                 interruptedFaceDir = null;
@@ -113,6 +122,7 @@ namespace My.Map
                 interruptedFaceDir = FaceDir;
             }
             Vector2? lookDir = null;
+
 
             if (lastestLookIntent.LockEntityId != null)
             {

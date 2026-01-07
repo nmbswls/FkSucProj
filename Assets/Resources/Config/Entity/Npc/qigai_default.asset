@@ -30,3 +30,4 @@ MonoBehaviour:
   DropId: default
   NpcTag: 
   InteractList: []
+  IgnoreAttractLevel: 2

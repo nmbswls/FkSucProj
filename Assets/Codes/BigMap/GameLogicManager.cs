@@ -100,7 +100,7 @@ namespace My
         public MapControlEventManager controlEventManager;
         public FactionRelationManager factionRelationManager;
 
-        public bool PlayerPeaceMode = false;
+        public bool PlayerPeaceMode { get; set; } = false;
 
         public void OnGameInit(SaveData saveData)
         {
@@ -182,14 +182,14 @@ namespace My
             }
 
             // todo
-            if(intent.NewAreaName == "home")
-            {
-                PlayerPeaceMode = true;
-            }
-            else
-            {
-                PlayerPeaceMode = false;
-            }
+            //if(intent.NewAreaName == "home")
+            //{
+            //    PlayerPeaceMode = true;
+            //}
+            //else
+            //{
+            //    PlayerPeaceMode = false;
+            //}
 
             var vec = Vector2.zero;
             if(bornPos.Count != 0)
@@ -297,7 +297,7 @@ namespace My
 
             TickPendingEffect();
 
-
+            TickPeaceMode();
         }
 
         public void AddNewEntityRecord(LogicEntityRecord record)
@@ -342,6 +342,78 @@ namespace My
             }
         }
 
+
+        private HashSet<long> InBattleUnitDict = new();
+        public void OnUnitCombatStateUpdate(BaseUnitLogicEntity unit)
+        {
+            if(unit.CombatState == NpcCombatStateComp.ECombatState.InCombat)
+            {
+                InBattleUnitDict.Add(unit.Id);
+            }
+            else
+            {
+                InBattleUnitDict.Remove(unit.Id);
+            }
+
+            if (InBattleUnitDict.Count == 0)
+            {
+                PlayerPeaceMode = true;
+            }
+            else
+            {
+                PlayerPeaceMode = false;
+            }
+        }
+
+        private float _peaceModeTimer = 0;
+        private List<long> inbattleCache = new();
+        private void TickPeaceMode()
+        {
+            if(LogicTime.time - _peaceModeTimer < 3.0f)
+            {
+                return;
+            }
+            _peaceModeTimer = LogicTime.time;
+
+            foreach(var id in InBattleUnitDict)
+            {
+                var logicEntity = AreaManager.GetLogicEntiy(id, false);
+                if (logicEntity == null || logicEntity is not BaseUnitLogicEntity unitEntity || unitEntity.CombatState != NpcCombatStateComp.ECombatState.InCombat)
+                {
+                    inbattleCache.Add(id);
+                }
+            }
+
+            foreach(var id in inbattleCache)
+            {
+                InBattleUnitDict.Remove(id);
+            }
+
+            //bool allPeace = true;
+            //var rett = AreaManager.FindEntityInRange(playerLogicEntity.Pos, 30.0f);
+            //foreach(var one in rett)
+            //{
+            //    if(one is not NpcUnitLogicEntity npcUnit)
+            //    {
+            //        continue;
+            //    }
+
+            //    if(npcUnit.CombatState == NpcCombatStateComp.ECombatState.InCombat)
+            //    {
+            //        allPeace = false;
+            //        break;
+            //    }
+            //}
+
+            if(InBattleUnitDict.Count == 0)
+            {
+                PlayerPeaceMode = true;
+            }
+            else
+            {
+                PlayerPeaceMode = false;
+            }
+        }
 
         public ProjectileHolder projectileHolder;
 

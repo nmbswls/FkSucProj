@@ -687,6 +687,9 @@ namespace My.Map
 
         public int GetAttractLevel()
         {
+            return 1;
+
+
             var clothesVal = GetAttr(AttrIdConsts.PlayerClothes);
             if(clothesVal > 80000)
             {
