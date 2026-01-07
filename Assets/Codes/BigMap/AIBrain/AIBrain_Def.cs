@@ -34,7 +34,7 @@ namespace My.Map.Entity.AI
                 }
                 {
                     var config = new AIBrainConfig();
-                    config.SpecialAnimTag1 = "qitao";
+                    config.SpecialAnimTag1 = "a_qigai_qitao";
                     _configs["qigai"] = config;
                 }
             }

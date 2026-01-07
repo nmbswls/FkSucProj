@@ -23,10 +23,20 @@ namespace My.Map.Scene
             }
         }
 
+        public List<AnimationClip> SpecialAnimClips;
+        private Dictionary<string, AnimationClip> _animCacheDict = new();
 
         protected override void Awake()
         {
             base.Awake();
+
+            if (SpecialAnimClips != null)
+            {
+                foreach(var clip in SpecialAnimClips)
+                {
+                    _animCacheDict[clip.name] = clip;
+                }
+            }
         }
 
         public override void Tick(float dt)
@@ -43,6 +53,15 @@ namespace My.Map.Scene
         {
             base.RegisterEvents();
 
+            UnitEntity.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
+
+            //UnitEntity.onNewKnockBackIntent += (intent) =>
+            //{
+            //    UnitEntity.externalVel = intent.knockDir.normalized * intent.knockDuration;
+            //};
+
+
+
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
             //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
@@ -58,7 +77,25 @@ namespace My.Map.Scene
         {
             base.UnregisterEvents();
 
+            UnitEntity.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
+        }
 
+
+        public void OnEventAnimLayerUpdate()
+        {
+            if (UnitEntity.AnimLayers.Count > 0)
+            {
+                var firstAnim = UnitEntity.AnimLayers[0];
+
+                if (string.IsNullOrEmpty(firstAnim.Name) && _Animancer != null)
+                {
+                    _animCacheDict.TryGetValue(firstAnim.Name, out var clip);
+                    if(clip != null)
+                    {
+                        _Animancer.Play(clip);
+                    }
+                }
+            }
         }
 
         public bool CanInteractEnable(float dist)

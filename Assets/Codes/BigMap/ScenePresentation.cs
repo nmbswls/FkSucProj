@@ -1,3 +1,4 @@
+using Animancer;
 using Map.Entity;
 using Map.Logic;
 using My.Map;
@@ -40,6 +41,7 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     protected SpriteRenderer[] _mainSpriteArr;
 
     private bool _visible;
+    protected AnimancerComponent _Animancer;
 
 
     protected virtual void Awake()
@@ -48,6 +50,8 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
         {
             _mainSpriteArr = MainViewRt.GetComponentsInChildren<SpriteRenderer>();
         }
+
+        _Animancer = GetComponentInChildren<AnimancerComponent>();
     }
 
 
