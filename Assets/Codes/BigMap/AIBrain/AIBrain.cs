@@ -51,25 +51,6 @@ namespace My.Map.Entity.AI
         public int CurrentAttractLevel; // 当前吸引等级
     }
 
-    [System.Serializable]
-    public class AIBrainConfig
-    {
-        public float VisionRange = 7f;
-        public float VisionFOV = 140f;
-        public float LoseTargetGrace = 1.2f;
-
-        public bool ExitCombatBoundary = true;
-        public float ExitCombatBoundaryRange = 10.0f;
-        public float ExitCombatMinRecoverTime = 1f;
-
-        public float GoodBattleDistance = 3.0f;
-
-        public string SpecialAnimTag1;
-        public string SpecialAnimTag2;
-        public string SpecialAnimTag3;
-        public string SpecialAnimTag4;
-
-    }
 
 
     /// <summary>
@@ -110,7 +91,7 @@ namespace My.Map.Entity.AI
         }
 
 
-        public AIBrainConfig brainConfig;
+        public AIBrainParamsConfig brainConfig;
         public AIBrainBlackboard blackboard = new();
 
 

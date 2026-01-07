@@ -36,6 +36,15 @@ namespace My.Map.Logic
             public IEnumerable<ILogicEntity> All => _map.Values;
         }
 
+        public class SceneRefreshInfoRuntime
+        {
+            public long EntityInstId;
+            public float LastRespawnTime;
+            public float LastDestroyTime;
+        }
+        public Dictionary<int, SceneRefreshInfoRuntime> RefreshInfoRuntimes = new();
+        public Dictionary<long, int> Record2RefreshInfo = new();
+
 
         /// <summary>
         /// 检查刷新和消失
@@ -72,9 +81,17 @@ namespace My.Map.Logic
         /// <param name="refreshInfo"></param>
         public void HandleOneRefreshInfo(DynamicEntityRefreshInfo refreshInfo)
         {
-            if (RefreshInfo2Record.TryGetValue(refreshInfo.UniqId, out var recordId))
+            if (RefreshInfoRuntimes.TryGetValue(refreshInfo.UniqId, out var refreshRuntime))
             {
-                return;
+                if(!refreshInfo.WillRespawn)
+                {
+                    return;
+                }
+
+                if(LogicTime.time - refreshRuntime.LastDestroyTime < refreshInfo.RespawnInterval)
+                {
+                    return;
+                }
             }
 
             // 检查条件
@@ -90,11 +107,18 @@ namespace My.Map.Logic
 
             if(record == null)
             {
+                Debug.Log("HandleOneRefreshInfo err not good");
                 return;
             }
 
             RegisterEntityRecord(record);
-            RefreshInfo2Record[refreshInfo.UniqId] = record.Id;
+            RefreshInfoRuntimes[refreshInfo.UniqId] = new SceneRefreshInfoRuntime()
+            {
+                EntityInstId = record.Id,
+                LastRespawnTime = LogicTime.time,
+            };
+
+            Record2RefreshInfo[record.Id] = refreshInfo.UniqId;
         }
 
 
@@ -202,6 +226,80 @@ namespace My.Map.Logic
 
             }
             return record;
+        }
+
+
+        public bool IsRecordAlwaysActive(LogicEntityRecord rec)
+        {
+            switch (rec.EntityType)
+            {
+                case EEntityType.Player:
+                case EEntityType.PatrolGroup:
+                case EEntityType.HomePlacement:
+                    {
+                        return true;
+                    }
+                    break;
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rec"></param>
+        /// <returns></returns>
+        public void RegisterEntityRecord(LogicEntityRecord rec)
+        {
+            // 交由仓库管理
+            Repo.RegisterRecord(rec);
+            // 注册到 AOI
+            UnitGridIndex.AddOrMove(rec.Id, rec.Position);
+
+            // 长生命周期对象
+            if (IsRecordAlwaysActive(rec))
+            {
+                var ent = SpawnEntity(rec.Id);
+                if (ent == null)
+                {
+                    Debug.LogError("RegisterEntityRecord create null ");
+                }
+                else
+                {
+                    // 特殊容器
+                    LongLived.Register(ent);
+
+                    // 初始状态：可选择 Active 或 Sleep
+                    runtimeStates[rec.Id] = new OneEntityRuntimeState { Id = rec.Id, State = LogicLifeState.Active };
+                }
+            }
+        }
+
+
+
+        private void UnregisterEntityRecord(long recId)
+        {
+            Repo.Records.TryGetValue(recId, out var rec);
+            if (rec != null && IsRecordAlwaysActive(rec))
+            {
+                LongLived.Unregister(recId);
+            }
+            Repo.RemoveRecord(recId);
+            UnitGridIndex.Remove(recId);
+            runtimeStates.Remove(recId);
+
+            if(Record2RefreshInfo.TryGetValue(recId, out var refreshId))
+            {
+                RefreshInfoRuntimes.TryGetValue(refreshId, out var refreshRuntime);
+                if(refreshRuntime != null)
+                {
+                    refreshRuntime.EntityInstId = 0;
+                    refreshRuntime.LastDestroyTime = LogicTime.time;
+                }
+
+                Record2RefreshInfo.Remove(recId);
+            }
         }
     }
 }

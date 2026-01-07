@@ -256,7 +256,10 @@ namespace My.Map.Entity.AI
             _Timer = LogicTime.time;
 
             var animName = _brain.brainConfig.SpecialAnimTag1;
-            _brain.NpcEntity.AddAnimLayer(animName);
+            if(!string.IsNullOrEmpty(animName))
+            {
+                _brain.NpcEntity.AddAnimLayer(animName);
+            }
         }
 
         public override void OnExitState()

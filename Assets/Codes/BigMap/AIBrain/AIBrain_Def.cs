@@ -22,18 +22,19 @@ namespace My.Map.Entity.AI
     public static class AIBrainParamsConfigLoader
     {
         //public static Dictionary<string, string> _aiConfigJson = null;
-        public static Dictionary<string, AIBrainConfig> _configs = null;
+        public static Dictionary<string, AIBrainParamsConfig> _configs = null;
 
-        public static AIBrainConfig Load(string name)
+        public static AIBrainParamsConfig Load(string name)
         {
             if (_configs == null)
             {
+                _configs = new();
                 {
-                    var config = new AIBrainConfig();
+                    var config = ScriptableObject.CreateInstance<AIBrainParamsConfig>();
                     _configs["default"] = config;
                 }
                 {
-                    var config = new AIBrainConfig();
+                    var config = ScriptableObject.CreateInstance<AIBrainParamsConfig>();
                     config.SpecialAnimTag1 = "a_qigai_qitao";
                     _configs["qigai"] = config;
                 }
@@ -69,6 +70,7 @@ namespace My.Map.Entity.AI
                         };
                         
                         idleState.ActionNames.Add("DoNothing");
+                        idleState.ActionNames.Add("DoSomething");
 
                         idleState.Transitions.Add(new AITransition()
                         {
@@ -311,6 +313,14 @@ namespace My.Map.Entity.AI
 
                     {
                         var aAction = new AIActionCfgDoNothing()
+                        {
+                        };
+
+                        config.Actions.Add(aAction);
+                    }
+
+                    {
+                        var aAction = new AIActionCfgDoSomething()
                         {
                         };
 

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ffed65fabbf947541801724cb68002ff, type: 3}
-  m_Name: qigai
+  m_Name: qigai_default
   m_EditorClassIdentifier: 
   UnitName: hunhun
   ViewSprite: {fileID: 21300000, guid: e779ad32171e85f49bbebec977f04411, type: 3}
   PrefabName: 
   MoveStyle: 1
-  MoveSpeed: 1.4
+  MoveSpeed: 0.5
   IsPeace: 1
   CombatStretegyTemplateId: 
   BattleBoundary: 10

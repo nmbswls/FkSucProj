@@ -60,7 +60,7 @@ namespace My.Map.Logic
         public MapExportDatabase cacheDatabase;
 
         public Dictionary<string, LogicRoomInfo> RuntimeRoomInfos = new();
-        public Dictionary<int, long> RefreshInfo2Record = new();
+        
 
         private GameLogicManager logicManager;
 
@@ -234,52 +234,7 @@ namespace My.Map.Logic
 
         
 
-        public bool IsRecordAlwaysActive(LogicEntityRecord rec)
-        {
-            switch (rec.EntityType)
-            {
-                case EEntityType.Player:
-                case EEntityType.PatrolGroup:
-                case EEntityType.HomePlacement:
-                    {
-                        return true;
-                    }
-                    break;
-            }
-            return false;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="rec"></param>
-        /// <returns></returns>
-        public void RegisterEntityRecord(LogicEntityRecord rec)
-        {
-            // 交由仓库管理
-            Repo.RegisterRecord(rec);
-            // 注册到 AOI
-            UnitGridIndex.AddOrMove(rec.Id, rec.Position);
-
-            // 长生命周期对象
-            if(IsRecordAlwaysActive(rec))
-            {
-                var ent = SpawnEntity(rec.Id);
-                if(ent == null)
-                {
-                    Debug.LogError("RegisterEntityRecord create null ");
-                }
-                else
-                {
-                    // 特殊容器
-                    LongLived.Register(ent);
-
-                    // 初始状态：可选择 Active 或 Sleep
-                    runtimeStates[rec.Id] = new OneEntityRuntimeState { Id = rec.Id, State = LogicLifeState.Active };
-                }
-            }
-        }
+        
 
 
         /// <summary>
@@ -893,23 +848,11 @@ namespace My.Map.Logic
             }
 
 
-            RemoveLogicRecord(id);
+            UnregisterEntityRecord(id);
 
             return true;
         }
 
-
-        private void RemoveLogicRecord(long recId)
-        {
-            Repo.Records.TryGetValue(recId, out var rec);
-            if (rec != null && IsRecordAlwaysActive(rec))
-            {
-                LongLived.Unregister(recId);
-            }
-            Repo.RemoveRecord(recId);
-            UnitGridIndex.Remove(recId);
-            runtimeStates.Remove(recId);
-        }
 
         /// <summary>
         /// 立即创建保活
