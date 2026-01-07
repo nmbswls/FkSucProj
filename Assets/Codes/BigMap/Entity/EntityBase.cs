@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static My.Map.Fight.FightStruct;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace My.Map
 {
@@ -110,7 +111,14 @@ namespace My.Map
         public const string STATE_CHANGED = "state_changed";
     }
 
-    public abstract class LogicEntityBase : ILogicEntity, IEntityBuffOwner, IEntityAttributeOwner
+    public interface IWithAnim
+    {
+        void AddAnimLayer(string animName, int layer = 0, int priorirt = 1);
+
+        void RemoveAnimLayer(string animName);
+    }
+
+    public abstract class LogicEntityBase : ILogicEntity, IEntityBuffOwner, IEntityAttributeOwner, IWithAnim
     {
 
         public GlobalBuffManager BuffManager
@@ -135,7 +143,7 @@ namespace My.Map
 
         public event Action<long, Vector2, Vector2> EventOnEntityMove;
         public event Action<long> EventOnDestroyed;
-
+        public event Action EventOnAnimLayerUpdate;
         public Vector2 Pos { get; protected set; } = Vector2.zero;
 
         public ISceneAbilityViewer? viewer; // 表现层接口
@@ -436,6 +444,41 @@ namespace My.Map
 
         public virtual void OnMapLogicEvent(IMapLogicEvent evt)
         {
+        }
+
+        public struct AnimLayerStruct
+        {
+            public int Layer;
+            public string Name;
+            public int Priority;
+        }
+
+        public List<AnimLayerStruct> AnimLayers { get; set; } = new();
+
+        public virtual void AddAnimLayer(string animName, int layer = 0, int priorirt = 1)
+        {
+            foreach(var a in AnimLayers)
+            {
+                if(a.Name == animName)
+                {
+                    return;
+                }
+            }
+
+            AnimLayers.Add(new AnimLayerStruct() {
+                Layer = layer,
+                Name = animName,
+                Priority = priorirt
+            });
+
+            EventOnAnimLayerUpdate?.Invoke();
+        }
+
+        public virtual void RemoveAnimLayer(string animName)
+        {
+            AnimLayers.RemoveAll(a => a.Name == animName);
+
+            EventOnAnimLayerUpdate?.Invoke();
         }
 
         public Dictionary<long, BuffInstance> BuffContainer { get; protected set; } = new();

@@ -73,6 +73,10 @@ namespace My
         public IVisionSenser2D? visionSenser;
         public INavProvider? navProvider;
 
+
+        public int TimePeriod;
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -292,6 +296,8 @@ namespace My
             globalDropCollection?.Tick(dt);
 
             TickPendingEffect();
+
+
         }
 
         public void AddNewEntityRecord(LogicEntityRecord record)
