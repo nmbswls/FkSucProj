@@ -29,5 +29,19 @@ MonoBehaviour:
   SkillList: []
   DropId: default
   NpcTag: 
-  InteractList: []
+  InteractList:
+  - InteractId: 0
+    Label: "\u7ED9\u4E88"
+    UnLabel: "\u7ED9\u4E88"
+    HideWhenFail: 0
+    NeedDist: 0
+    CheckCommonCond: []
+    CheckInteractCond: []
+    Outputs:
+    - OutputType: 2
+      Param1: 0
+      Param2: 0
+      Param3: 1
+      Param4: 
+      DelayTime: 0
   IgnoreAttractLevel: 2

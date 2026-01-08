@@ -157,6 +157,29 @@ namespace My.Map
         /// </summary>
         public long LifeBindEntityId { get; set; }
 
+
+        #region Í¨ÓÃ×Ö¶Î
+
+        protected HashSet<string> EntityLocalSwitches = new();
+        public bool CheckLocalSwitch(string switchName)
+        {
+            return EntityLocalSwitches.Contains(switchName);
+        }
+
+        public void SetLocalSwitch(string switchName, bool isOn)
+        {
+            if(isOn)
+            {
+                EntityLocalSwitches.Add(switchName);
+            }
+            else
+            {
+                EntityLocalSwitches.Remove(switchName);
+            }
+        }
+
+        #endregion
+
         public LogicEntityBase(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord)
         {
             this.LogicManager = logicManager;
@@ -171,6 +194,14 @@ namespace My.Map
             this.LifeBindEntityId = bindingRecord.LifeBindEntityId;
 
             BindingRecord = bindingRecord;
+
+            if (bindingRecord.LocalSwitches != null)
+            {
+                foreach(var oneSwitch in bindingRecord.LocalSwitches)
+                {
+                    EntityLocalSwitches.Add(oneSwitch);
+                }
+            }
         }
 
         protected AttributeStore attributeStore;

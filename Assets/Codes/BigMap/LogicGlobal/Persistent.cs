@@ -26,6 +26,8 @@ namespace My.Map.Logic
         public bool Activated = true;
         public long LifeBindEntityId;
         //public bool AlwaysActive;
+
+        public List<string> LocalSwitches = null;
     }
 
     [Serializable]

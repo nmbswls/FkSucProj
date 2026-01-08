@@ -10,6 +10,7 @@ using My.MapExport;
 using My.Player;
 using My.Saving;
 using My.UI;
+using SimpleJSON;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -104,6 +105,8 @@ namespace My
 
         public void OnGameInit(SaveData saveData)
         {
+            LoadGameConfigs();
+
             playerDataManager = new(this);
             playerDataManager.InitPlayerData(saveData);
 
@@ -655,6 +658,20 @@ namespace My
             }
 
             return false;
+        }
+
+
+        private cfg.Tables _gameConfigs = null;
+
+        public cfg.Tables Cfgs { get { return _gameConfigs; } }
+        private void LoadGameConfigs()
+        {
+            string gameConfDir = "Config/Json"; // 替换为gen.bat中outputDataDir指向的目录
+
+            _gameConfigs = new cfg.Tables((file) => {
+                var configAsset = Resources.Load<TextAsset>($"{gameConfDir}/{file}");
+                return JSON.Parse(configAsset.text);
+            });
         }
     }
 
