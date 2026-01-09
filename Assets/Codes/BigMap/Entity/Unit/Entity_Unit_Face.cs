@@ -17,6 +17,8 @@ namespace My.Map
 
         public float deadzoneAngle = 3f;     // 小角度不转动（度）
         public float smoothTime = 0.05f;     // 平滑时间（秒）
+        protected float _angularVel;       // SmoothDampAngle 用
+
 
         // 注视intent
         public class UnitLookIntent
@@ -24,23 +26,22 @@ namespace My.Map
             public long? LockEntityId;
             public Vector2? LockPos;
             public int Priority = 1;
-            public float HappenTime;
-            public float Duration;
         }
 
         public UnitLookIntent? lastestLookIntent;
 
-        private Vector2? interruptedFaceDir { get; set; }
+        private float? interruptedAngle { get; set; }
 
         /// <summary>
         /// 更新视线intent
         /// </summary>
         /// <param name="intent"></param>
-        public void UpdateLookIntent(UnitLookIntent intent)
+        public void UpdateLookIntent(long? lockEntity, Vector2? lockPos)
         {
-            if(this.lastestLookIntent != null && this.lastestLookIntent.LockEntityId != null && this.lastestLookIntent.LockEntityId == intent.LockEntityId)
+            if(lockEntity == null && lockPos == null) return;
+
+            if(this.lastestLookIntent != null && this.lastestLookIntent.LockEntityId != null && this.lastestLookIntent.LockEntityId == lockEntity)
             {
-                this.lastestLookIntent.HappenTime = LogicTime.time;
                 return;
             }
 
@@ -50,44 +51,70 @@ namespace My.Map
                 var playerEntity = LogicManager.GetLogicEntity(oldIntent.LockEntityId.Value) as PlayerLogicEntity;
                 playerEntity.OnGazeLeave(this.Id);
             }
-            this.lastestLookIntent = intent;
-
-            if(intent.LockEntityId != null)
+            this.lastestLookIntent = new UnitLookIntent()
             {
-                var playerEntity = LogicManager.GetLogicEntity(intent.LockEntityId.Value) as PlayerLogicEntity;
+                LockEntityId = lockEntity,
+                LockPos = lockPos
+            };
+
+            if(lockEntity != null)
+            {
+                var playerEntity = LogicManager.GetLogicEntity(lockEntity.Value) as PlayerLogicEntity;
                 playerEntity.OnGazeEnter(this.Id);
+            }
+        }
+
+        public void ClearLookIntent()
+        {
+            var oldIntent = this.lastestLookIntent;
+            if (oldIntent != null && oldIntent.LockEntityId != null)
+            {
+                var playerEntity = LogicManager.GetLogicEntity(oldIntent.LockEntityId.Value) as PlayerLogicEntity;
+                playerEntity.OnGazeLeave(this.Id);
+            }
+            this.lastestLookIntent = null;
+            if(interruptedAngle != null)
+            {
+                _targetAngle = interruptedAngle.Value;
+                interruptedAngle = null;
             }
         }
 
         #region face
 
-        protected Vector2 faceDir = Vector2.zero;
-        public Vector2 FaceDir
-        {
-            get { return faceDir; }
-            set
-            {
-                faceDir = value;
-                _currentAngle = AngleFromDir(faceDir);
-                _targetAngle = _currentAngle;
-            }
-        }
-        // 内部状态
-        protected float _currentAngle;     // 当前朝向角度（度，0=向右）
+        //protected Vector2 faceDir = Vector2.zero;
+        //public Vector2 FaceDir
+        //{
+        //    get { return faceDir; }
+        //    set
+        //    {
+        //        faceDir = value;
+        //        _currentAngle = AngleFromDir(faceDir);
+        //        _targetAngle = _currentAngle;
+        //    }
+        //}
 
-        public Vector2 DesiredFaceDir { get { return DirFromAngle(_targetAngle); } }
+        // 内部状态
+        protected float _currentAngle { get; set; }     // 当前朝向角度（度，0=向右）
         protected float _targetAngle;
 
-        protected float _angularVel;       // SmoothDampAngle 用
+        public Vector2 DesiredFaceDir { get { return DirFromAngle(_targetAngle); } }
 
+        protected Vector2 _faceDir = Vector2.right;
+        public Vector2 FaceDir { get { return _faceDir; } }
 
-        public virtual void InitFacing()
+        public void ForceSetFace(Vector2 faceDir)
         {
+            _currentAngle = AngleFromDir(faceDir);
+            _targetAngle = _currentAngle;
 
+            _faceDir = faceDir;
         }
-
-
-        protected virtual void UpdateFaceDir()
+        /// <summary>
+        /// 更新面向状态
+        /// 由外部逻辑驱动look intent的维护，该函数为底层调整面向函数
+        /// </summary>
+        protected void UpdateFaceDir()
         {
             // 检查状态
             if (attributeStore.CheckHasState(AttrIdConsts.LockFace))
@@ -101,25 +128,17 @@ namespace My.Map
                 return;
             }
 
-            if (lastestLookIntent != null && LogicTime.time - lastestLookIntent.HappenTime > lastestLookIntent.Duration)
-            {
-                lastestLookIntent = null;
-                if(interruptedFaceDir != null)
-                {
-                    faceDir = interruptedFaceDir.Value;
-                }
-            }
-
+            
             if(lastestLookIntent == null)
             {
-                interruptedFaceDir = null;
+                interruptedAngle = null;
                 return;
             }
 
             // 当前有intent
-            if (interruptedFaceDir == null)
+            if (interruptedAngle == null)
             {
-                interruptedFaceDir = FaceDir;
+                interruptedAngle = _targetAngle;
             }
             Vector2? lookDir = null;
 
@@ -158,7 +177,8 @@ namespace My.Map
 
             // 更新状态与朝向向量
             _currentAngle = newAngle;
-            faceDir = DirFromAngle(_currentAngle);
+
+            _faceDir = DirFromAngle(_currentAngle);
         }
 
         // 工具函数

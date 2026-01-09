@@ -40,8 +40,7 @@ namespace My.Map.Entity.AI.Action
             {
                 return;
             }
-
-            _brain.NpcEntity.FaceDir = UnityEngine.Random.insideUnitCircle.normalized;
+            _brain.NpcEntity.UpdateLookIntent(null, UnityEngine.Random.insideUnitCircle.normalized);
         }
 
         public override void Stop(AIActionStatus endStatus)

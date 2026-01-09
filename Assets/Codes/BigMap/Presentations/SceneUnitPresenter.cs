@@ -173,6 +173,18 @@ namespace My.Map.Scene
                     float angle = Mathf.Atan2(UnitEntity.FaceDir.y, UnitEntity.FaceDir.x) * Mathf.Rad2Deg; // Óë +X Öá¼Ð½Ç
                     WeaponRoot.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.forward); // ÈÆ Z Öá
                 }
+
+                if(AgentView != null)
+                {
+                    if (UnitEntity.FaceDir.x >= 0)
+                    {
+                        AgentView.localScale = new Vector3(Mathf.Abs(AgentView.localScale.x), AgentView.localScale.y, AgentView.localScale.z);
+                    }
+                    else
+                    {
+                        AgentView.localScale = new Vector3(-Mathf.Abs(AgentView.localScale.x), AgentView.localScale.y, AgentView.localScale.z);
+                    }
+                }
             }
             //if (knockBackIntent.knockbackTimeLeft <= 0f || externalVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
             //    ClearKnockbackIntent();

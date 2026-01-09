@@ -36,13 +36,6 @@ namespace My.Map
                     AIBrain.blackboard.AttractSrcId = attractSrc?.Id ?? 0;
                     AIBrain.blackboard.AttractLevel = attractLevel;
                 }
-
-                UpdateLookIntent(new UnitLookIntent()
-                {
-                    LockEntityId = attractSrc?.Id ?? 0,
-                    HappenTime = LogicTime.time,
-                    Duration = attractLevel > 1 ? 5.0f : 3.0f,
-                });
             }
         }
     }

@@ -485,7 +485,7 @@ namespace My.Input
                 {
                     return;
                 }
-                player.PlayerEntity.FaceDir = castDir;
+                player.PlayerEntity.ForceSetFace(castDir);
             }
         }
 

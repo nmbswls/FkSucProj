@@ -840,8 +840,7 @@ namespace My.Map.Entity.AI
                 var firstTran = trans[0];
                 var node = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
 
-
-                _brain.NpcEntity.FaceDir = _brain.NpcEntity.DesiredFaceDir;
+                _brain.NpcEntity.ForceSetFace(_brain.NpcEntity.DesiredFaceDir);
 
                 // 一定无目标参数
                 if (_brain.NpcEntity.ablilityManager.UseSkill(firstTran.triggerInput.SkillId))
@@ -1090,11 +1089,14 @@ namespace My.Map.Entity.AI
                 attractLastTime = 5.0f;
             }
             _brain.blackboard.CanLeaveAttract = false;
+
+            _brain.NpcEntity.UpdateLookIntent(_brain.blackboard.AttractSrcId, null);
         }
 
         public override void Stop(AIActionStatus endStatus)
         {
             base.Stop(endStatus);
+            _brain.NpcEntity.ClearLookIntent();
         }
 
         /// <summary>

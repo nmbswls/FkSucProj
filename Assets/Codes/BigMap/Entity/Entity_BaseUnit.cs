@@ -97,7 +97,7 @@ namespace My.Map
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
             this.MoveBehaveInfo = new();
 
-            this.FaceDir = bindingRecord.FaceDir;
+            //this.FaceDir = bindingRecord.FaceDir;
         }
 
         public override void Initialize()
@@ -106,8 +106,6 @@ namespace My.Map
 
             // get meta info
             InitAbility();
-
-            
 
             // 优先应用覆盖值
             if(UnitBaseRecord.FactionId != EFactionId.None)
@@ -126,8 +124,6 @@ namespace My.Map
             VisibilityComp.Initialize(this);
 
             entityMotorComp = new(this, LogicManager.navProvider);
-
-            InitFacing();
         }
 
         public override void Tick(float dt)

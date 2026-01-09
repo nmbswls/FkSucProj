@@ -16,7 +16,7 @@ namespace My.Map.Logic
         public EEntityType EntityType;
         public string CfgId;
         public Vector2 Position;
-        public Vector2 FaceDir;
+        public Vector2 FaceDir = Vector2.right;
 
         public EFactionId FactionId;
 
