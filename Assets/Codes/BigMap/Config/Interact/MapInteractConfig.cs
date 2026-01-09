@@ -46,6 +46,8 @@ namespace My.Config
         {
             None,
             NotHide,
+            HasLocalSwitch,
+            NoLocalSwitch,
         }
 
         public ECheckType CheckType;

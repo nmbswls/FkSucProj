@@ -13,16 +13,6 @@ using static UnityEditor.Rendering.CameraUI;
 namespace My.Map.Entity
 {
 
-    public interface IEntityInteractable
-    {
-        string GetRuntimeVariable(string paramName);
-
-        GameLogicManager LogicManager { get; }
-
-        Vector2 Pos { get; }
-
-        long Id { get; }
-    }
 
     public class LogicEntityInteractPoint : LogicEntityBase, IWithInteract, IEntityInteractable
     {

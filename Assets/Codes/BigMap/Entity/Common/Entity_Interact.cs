@@ -19,6 +19,22 @@ namespace My.Map
     }
 
 
+    public interface IEntityInteractable
+    {
+        string GetRuntimeVariable(string paramName);
+
+        GameLogicManager LogicManager { get; }
+
+        Vector2 Pos { get; }
+
+        long Id { get; }
+
+        bool CheckLocalSwitch(string switchName);
+
+        void SetLocalSwitch(string switchName, bool isOn);
+    }
+
+
     public class EntityInteractComp : IWithInteract
     {
         public IEntityInteractable Owner;
@@ -35,7 +51,6 @@ namespace My.Map
         {
             this.interactInfos.Clear();
             this.interactInfos.AddRange(interactInfos);
-
         }
 
 
@@ -57,24 +72,41 @@ namespace My.Map
                 }
             }
 
-            if(passed)
+            if(!passed)return false;
+
+            foreach (var oneCond in interactItem.CheckInteractCond)
             {
-                foreach (var oneCond in interactItem.CheckInteractCond)
+                switch (oneCond.CheckType)
                 {
-                    switch (oneCond.CheckType)
-                    {
-                        case InteractCheckCond.ECheckType.NotHide:
+                    case InteractCheckCond.ECheckType.NotHide:
+                        {
+                            if (Owner.LogicManager.playerLogicEntity.IsInStealth())
                             {
-                                if(Owner.LogicManager.playerLogicEntity.IsInStealth())
-                                {
-                                    passed = false;
-                                }
+                                passed = false;
                             }
-                            break;
-                    }
+                        }
+                        break;
+                    case InteractCheckCond.ECheckType.HasLocalSwitch:
+                        {
+                            string switchName = oneCond.Param3;
+                            if(!Owner.CheckLocalSwitch(switchName))
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
+                    case InteractCheckCond.ECheckType.NoLocalSwitch:
+                        {
+                            string switchName = oneCond.Param3;
+                            if (Owner.CheckLocalSwitch(switchName))
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
                 }
             }
-            
+
 
             return passed;
         }
