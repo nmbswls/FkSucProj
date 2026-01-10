@@ -35,14 +35,7 @@ MonoBehaviour:
     UnLabel: "\u7ED9\u4E881g"
     HideWhenFail: 1
     NeedDist: 0
-    CheckCommonCond:
-    - Type: 4
-      Param1: 1
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: gold
-      Param6: 
+    CheckCommonCond: []
     CheckInteractCond:
     - CheckType: 3
       Param1: 0
@@ -50,6 +43,12 @@ MonoBehaviour:
       Param3: p1
       Param4: 
     Outputs:
+    - OutputType: 14
+      Param1: 2000
+      Param2: 0
+      Param3: 
+      Param4: 
+      DelayTime: 0
     - OutputType: 10
       Param1: 0
       Param2: 0
@@ -61,14 +60,7 @@ MonoBehaviour:
     UnLabel: "\u7ED9\u4E883g"
     HideWhenFail: 1
     NeedDist: 0
-    CheckCommonCond:
-    - Type: 4
-      Param1: 3
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: gold
-      Param6: 
+    CheckCommonCond: []
     CheckInteractCond:
     - CheckType: 3
       Param1: 0
@@ -81,6 +73,12 @@ MonoBehaviour:
       Param3: p1
       Param4: 
     Outputs:
+    - OutputType: 14
+      Param1: 2000
+      Param2: 0
+      Param3: 
+      Param4: 
+      DelayTime: 0
     - OutputType: 10
       Param1: 0
       Param2: 0
@@ -92,14 +90,7 @@ MonoBehaviour:
     UnLabel: "\u7ED9\u4E885g"
     HideWhenFail: 1
     NeedDist: 0
-    CheckCommonCond:
-    - Type: 4
-      Param1: 5
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: gold
-      Param6: 
+    CheckCommonCond: []
     CheckInteractCond:
     - CheckType: 3
       Param1: 0
@@ -112,6 +103,12 @@ MonoBehaviour:
       Param3: p2
       Param4: 
     Outputs:
+    - OutputType: 14
+      Param1: 2000
+      Param2: 0
+      Param3: 
+      Param4: 
+      DelayTime: 0
     - OutputType: 10
       Param1: 0
       Param2: 0
