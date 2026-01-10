@@ -12,6 +12,8 @@ using static UnityEditor.LightingExplorerTableColumn;
 using Codice.Client.BaseCommands.BranchExplorer;
 using My.Quest;
 using UnityEditor.U2D.Aseprite;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace My.Dialog
 {
@@ -39,8 +41,8 @@ namespace My.Dialog
 
         private void OnEnable()
         {
-            commandTypes = typeof(DialogCommandBase).Assembly.GetTypes()
-                .Where(t => t.IsSubclassOf(typeof(DialogCommandBase)) && !t.IsAbstract)
+            commandTypes = typeof(EditorDialogCommand).Assembly.GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(EditorDialogCommand)) && !t.IsAbstract)
                 .ToArray();
 
 
@@ -60,6 +62,19 @@ namespace My.Dialog
             currentData = (EditorDialogueData)EditorGUILayout.ObjectField("Target Data", currentData, typeof(EditorDialogueData), false, GUILayout.Width(300));
 
             if (EditorGUI.EndChangeCheck()) InitSerializedObject();
+
+            GUILayout.FlexibleSpace(); // 把按钮推到最右边
+            if (GUILayout.Button("Export to JSON", EditorStyles.toolbarButton, GUILayout.Width(100)))
+            {
+                if (currentData != null)
+                {
+                    ExportDialogueData(currentData);
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("Error", "Please select a data file first!", "OK");
+                }
+            }
 
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
@@ -226,8 +241,7 @@ namespace My.Dialog
                             if(cmdIndex > 0)
                             {
                                 var lastCmdElement = freshCommandsProp.GetArrayElementAtIndex(cmdIndex - 1);
-                                var lastInnerCmd = lastCmdElement.FindPropertyRelative("CommandData");
-                                if(lastInnerCmd.managedReferenceValue is DialogueTextCommand lastDialogCmd)
+                                if(lastCmdElement.managedReferenceValue is EditorDialogueTextCommand lastDialogCmd)
                                 {
                                     newSpeaker = lastDialogCmd.Speaker;
                                 }
@@ -239,14 +253,10 @@ namespace My.Dialog
                             // 4. 获取刚插入的元素
                             var newElement = freshCommandsProp.GetArrayElementAtIndex(cmdIndex);
 
-                            // 5. 初始化内部字段默认值 (防止空指针)
-                            // 这一步很重要，因为 Insert 有时会复制上一个元素的值，有时是默认值
-                            var innerData = newElement.FindPropertyRelative("CommandData");
-
                             // 6. 赋值
-                            var commandText = new DialogueTextCommand();
+                            var commandText = new EditorDialogueTextCommand();
                             commandText.Speaker = newSpeaker;
-                            innerData.managedReferenceValue = commandText;
+                            newElement.managedReferenceValue = commandText;
 
                             serializedObject.ApplyModifiedProperties();
                             innerListCache.Clear();
@@ -332,22 +342,15 @@ namespace My.Dialog
                 if (wrapperProp.FindPropertyRelative("IsFolded").boolValue)
                     return EditorGUIUtility.singleLineHeight + 4;
 
-                // 3. 【关键修改】深入获取内部数据属性 (CommandData)
-                var innerDataProp = wrapperProp.FindPropertyRelative("CommandData");
-
-                // 4. 【关键修改】获取内部数据的真实对象类型
-                // 注意：这里传入的是 innerDataProp，而不是 wrapperProp
-                object realCommandObj = GetTargetObjectOfProperty(innerDataProp);
-
                 // 5. 根据真实类型分流
-                if (realCommandObj is ChoiceCommand)
+                if (wrapperProp.managedReferenceValue is EditorChoiceCommand)
                 {
                     // 必须传入 innerDataProp，因为 ChoiceCommand 的字段 (如 Options) 在这一层
-                    return GetChoiceCommandHeight(innerDataProp);
+                    return GetChoiceCommandHeight(wrapperProp);
                 }
 
                 // 普通 Command 使用通用计算，也建议传入 innerDataProp
-                return GetGenericCommandHeight(innerDataProp);
+                return GetGenericCommandHeight(wrapperProp);
             };
 
             list.drawElementCallback = (r, i, active, focused) =>
@@ -381,8 +384,7 @@ namespace My.Dialog
 
             // --- 2. 数据获取 ---
             var isFoldedProp = element.FindPropertyRelative("IsFolded");
-            var innerDataProp = element.FindPropertyRelative("CommandData");
-            DialogCommandBase cmdData = GetTargetObjectOfProperty(innerDataProp) as DialogCommandBase;
+            var cmdData = element.managedReferenceValue as EditorDialogCommand;
 
             // --- 3. 绘制折叠/展开逻辑 ---
             // 这里不再使用 EditorGUI.Foldout，而是根据状态手动绘制
@@ -403,15 +405,15 @@ namespace My.Dialog
                 // 如果是展开状态 (IsFolded == false)
                 // 此时直接画内容，头部没有 Label 遮挡
 
-                if (cmdData is ChoiceCommand)
+                if (cmdData is EditorChoiceCommand)
                 {
                     // 给普通命令留一个标题高度，或者直接画属性
                     Rect contentRect = new Rect(contentAreaRect.x, contentAreaRect.y + EditorGUIUtility.singleLineHeight + 2, contentAreaRect.width, contentAreaRect.height);
                     // 这里可以补一个标题 Label 让界面好看点，或者直接留空
                     EditorGUI.LabelField(new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight), summary);
-                    DrawChoiceCommandProperty(contentRect, innerDataProp);
+                    DrawChoiceCommandProperty(contentRect, element);
                 }
-                else if (cmdData is DialogueTextCommand)
+                else if (cmdData is EditorDialogueTextCommand)
                 {
                     // === 剧本模式绘制 ===
 
@@ -447,8 +449,8 @@ namespace My.Dialog
                     // 咱们先简单处理：先画名字和内容，然后手动在该行下方画其他属性
 
                     // 1. 获取特定属性
-                    var speakerProp = innerDataProp.FindPropertyRelative("Speaker");
-                    var contentProp = innerDataProp.FindPropertyRelative("Content");
+                    var speakerProp = element.FindPropertyRelative("Speaker");
+                    var contentProp = element.FindPropertyRelative("Content");
 
                     // 2. 绘制第一行 (Speaker + Content)
                     // 为了防止内容覆盖下面的属性，我们需要估算一个高度。
@@ -461,7 +463,7 @@ namespace My.Dialog
                     float verticalSpacing = 2f;
 
                     // 临时创建一个 iterator 副本用于计算剩余属性的高度
-                    var iterator = innerDataProp.Copy();
+                    var iterator = element.Copy();
                     var endProperty = iterator.GetEndProperty();
                     int extraFieldCount = 0;
 
@@ -496,7 +498,7 @@ namespace My.Dialog
                         // 起始 Y 坐标：在上半部分下方
                         float currentY = contentAreaRect.y + topAreaHeight + verticalSpacing;
 
-                        iterator = innerDataProp.Copy(); // 重置迭代器
+                        iterator = element.Copy(); // 重置迭代器
                         iterator.NextVisible(true); // 进入内部
 
                         while (!SerializedProperty.EqualContents(iterator, endProperty))
@@ -520,7 +522,7 @@ namespace My.Dialog
                 {
                     Rect contentRect = new Rect(contentAreaRect.x, contentAreaRect.y + EditorGUIUtility.singleLineHeight + 2, contentAreaRect.width, contentAreaRect.height);
                     EditorGUI.LabelField(new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight), summary);
-                    DrawGenericCommandProperties(innerDataProp, contentRect);
+                    DrawGenericCommandProperties(element, contentRect);
                 }
             }
 
@@ -883,13 +885,9 @@ namespace My.Dialog
                     // 4. 获取刚插入的元素
                     var newElement = freshCommandsProp.GetArrayElementAtIndex(index);
 
-                    // 5. 初始化内部字段默认值 (防止空指针)
-                    // 这一步很重要，因为 Insert 有时会复制上一个元素的值，有时是默认值
-                    var innerData = newElement.FindPropertyRelative("CommandData");
-
                     // 6. 赋值
                     object instance = Activator.CreateInstance(type);
-                    innerData.managedReferenceValue = instance;
+                    newElement.managedReferenceValue = instance;
 
                     serializedObject.ApplyModifiedProperties();
                     innerListCache.Clear();
@@ -986,6 +984,93 @@ namespace My.Dialog
                     }
                 } while (iterator.NextVisible(false)); // false 表示不进入更深层级，只重置当前层级的直接子字段
             }
+        }
+
+
+
+        private void ExportDialogueData(EditorDialogueData source)
+        {
+            // 1. 选择保存路径
+            string path = EditorUtility.SaveFilePanel("Export JSON", Application.streamingAssetsPath, source.name, "json");
+            if (string.IsNullOrEmpty(path)) return;
+
+            // 2. 将 ScriptableObject 转换为 运行时 DTO 对象
+            //    这一步是为了剥离编辑器专用的数据（如 Rect 坐标），并将引用转为字符串
+            DialogueData runtimeData = new DialogueData();
+            runtimeData.DialogId = source.name;
+
+            foreach (var srcStep in source.Steps)
+            {
+                var runStep = new DialogueStepData();
+                runStep.Id = srcStep.Id;
+                runStep.Note = srcStep.Note; // 假设有 Content 字段
+
+                foreach (var srcCommand in srcStep.Commands)
+                {
+                    DialogCommandData runCommand = null;
+
+                    switch(srcCommand)
+                    {
+                        case EditorDialogueTextCommand textCommand:
+                            {
+                                var runTextCommand = new DialogCommandData4Text();
+
+                                runCommand = runTextCommand;
+                            }
+                            break;
+                        case EditorSetImageCommand setImageCommand:
+                            {
+                                var runSetImageCommand = new DialogCommandData4SetImage();
+
+                                runSetImageCommand.ImageName = AssetDatabase.GetAssetPath(setImageCommand.Image);
+
+                                runCommand = runSetImageCommand;
+                            }
+                            break;
+
+                        case EditorChoiceCommand choiceCommand:
+                            {
+                                var runChoiceCommand = new DialogCommandData4Choice();
+
+                                runCommand = runChoiceCommand;
+                            }
+                            break;
+                    }
+
+                    //// [难点1] 处理多态条件列表 (直接复制引用，依靠 Newtonsoft 序列化子类字段)
+                    //// 注意：如果 Condition 类里有 UnityEngine.Object 引用，这里需要手动深拷贝转换
+                    //runOption.Conditions = srcOption.Conditions1.ToList();
+
+                    if(runCommand == null)
+                    {
+                        Debug.LogError("ExportDialogueData text command err");
+                        continue;
+                    }
+                    runStep.Commands.Add(runCommand);
+                }
+
+                runtimeData.Steps.Add(runStep);
+            }
+
+            // 3. 序列化为 JSON
+            // 使用 TypeNameHandling.Auto 可以自动记录 Condition 的子类类型名称
+            // 这样运行时反序列化时，知道是 ConditionLocalVariableInt 还是 ConditionHasItem
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                TypeNameHandling = TypeNameHandling.Auto, // 关键：保存多态类型信息
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            string json = JsonConvert.SerializeObject(runtimeData, settings);
+
+            // 4. 写入文件
+            File.WriteAllText(path, json);
+
+            // 5. 刷新资源目录 (如果保存到了 Assets 文件夹内)
+            AssetDatabase.Refresh();
+
+            EditorUtility.DisplayDialog("Success", $"Exported to:\n{path}", "OK");
         }
     }
 }

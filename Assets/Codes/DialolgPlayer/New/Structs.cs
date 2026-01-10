@@ -8,43 +8,50 @@ namespace My.Dialog
 {
 
     [Serializable]
-    public abstract class DialogCommandBase
+    public class DialogueData
     {
-        public virtual string GetSummary() => $"";
+        public string DialogId;
+        public List<DialogueStepData> Steps = new List<DialogueStepData>();
     }
 
-    // --- 具体子类示例 ---
+    [Serializable]
+    public class DialogueStepData
+    {
+        public string Id;
+        public string Note;
+
+        public List<DialogCommandData> Commands = new List<DialogCommandData>();
+    }
+
+    // --- 抽象基类 ---
+    [Serializable]
+    public abstract class DialogCommandData
+    {
+    }
 
     [Serializable]
-    public class DialogueTextCommand : DialogCommandBase
+    public class DialogCommandData4Text : DialogCommandData
     {
         public string Speaker;
-        [TextArea(2, 5)] public string Content;
-        public AudioClip VoiceLine;
-
-        public override string GetSummary() => $"[Talk]";
+        public string Content;
+        public string VoiceLine;
     }
 
     [Serializable]
-    public class SetImageCommand : DialogCommandBase
+    public class DialogCommandData4SetImage : DialogCommandData
     {
-        public Sprite image;
+        public string ImageName;
         public enum ImgPos { Left, Center, Right, Background }
-        public ImgPos position;
-
-        public override string GetSummary() => $"[SetImage]";
-        //public override string GetSummary() => $"[Img] {position} - {(image ? image.name : "None")}";
+        public ImgPos Position;
     }
 
     [Serializable]
-    public class ChoiceCommand : DialogCommandBase
+    public class DialogCommandData4Choice : DialogCommandData
     {
-        public float timeLimit = 0;
+        public float TimeLimit = 0;
         public List<DialogChoiceOption> Options = new List<DialogChoiceOption>();
-
-        public override string GetSummary() => $"[Choice]";
-        //public override string GetSummary() => $"[Choice] {Options.Count} Options";
     }
+
 
     [Serializable]
     public class DialogChoiceOption

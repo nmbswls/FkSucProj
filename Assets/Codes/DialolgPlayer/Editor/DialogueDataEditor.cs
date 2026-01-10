@@ -17,20 +17,50 @@ namespace My.Dialog
     {
         public string Id;
         public string Note;
-        public bool IsExpanded = false; // 控制卡片折叠
 
+        [SerializeReference]
         public List<EditorDialogCommand> Commands = new List<EditorDialogCommand>();
     }
 
 
     // --- 抽象基类 ---
     [Serializable]
-    public class EditorDialogCommand
+    public abstract class EditorDialogCommand
     {
         public bool IsFolded = true; // 内部折叠
+        public virtual string GetSummary() => $"";
+    }
 
-        [SerializeReference]
-        public DialogCommandBase CommandData;
+
+    // --- 具体子类示例 ---
+
+    [Serializable]
+    public class EditorDialogueTextCommand : EditorDialogCommand
+    {
+        public string Speaker;
+        [TextArea(2, 5)] public string Content;
+        public AudioClip VoiceLine;
+
+        public override string GetSummary() => $"[Talk]";
+    }
+
+    [Serializable]
+    public class EditorSetImageCommand : EditorDialogCommand
+    {
+        public Sprite Image;
+        public enum ImgPos { Left, Center, Right, Background }
+        public ImgPos position;
+
+        public override string GetSummary() => $"[SetImage]";
+    }
+
+    [Serializable]
+    public class EditorChoiceCommand : EditorDialogCommand
+    {
+        public float timeLimit = 0;
+        public List<DialogChoiceOption> Options = new List<DialogChoiceOption>();
+
+        public override string GetSummary() => $"[Choice]";
     }
 
 }
