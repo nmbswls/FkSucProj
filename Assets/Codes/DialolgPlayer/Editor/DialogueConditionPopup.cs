@@ -1,27 +1,34 @@
 
+using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace My.Dialog
 {
-    // ÕâÊÇÒ»¸öÁÙÊ±µÄµ¯³ö´°¿ÚÄÚÈÝ£¬ÓÃÓÚ±à¼­µ¥¸öÌõ¼þ
+    // è¿™æ˜¯ä¸€ä¸ªä¸´æ—¶çš„å¼¹å‡ºçª—å£å†…å®¹ï¼Œç”¨äºŽç¼–è¾‘å•ä¸ªæ¡ä»¶
     public class DialogueConditionPopup : PopupWindowContent
     {
         private readonly DialogCondition _condition;
-        private readonly EditorWindow _ownerWindow; // ÓÃÓÚÖØ»æÖ÷´°¿Ú
-        private readonly ScriptableObject _dataObject; // ÓÃÓÚUndo¼ÇÂ¼
+        private readonly EditorWindow _ownerWindow; // ç”¨äºŽé‡ç»˜ä¸»çª—å£
+        private readonly ScriptableObject _dataObject; // ç”¨äºŽUndoè®°å½•
 
-        // ¹¹Ôìº¯Êý½ÓÊÕÐèÒª±à¼­µÄÊý¾ÝÊµÀý
+        // ç¼“å­˜å­—æ®µåˆ—è¡¨ï¼Œé¿å…æ¯å¸§åå°„
+        private FieldInfo[] _fields;
+        // æž„é€ å‡½æ•°æŽ¥æ”¶éœ€è¦ç¼–è¾‘çš„æ•°æ®å®žä¾‹
         public DialogueConditionPopup(DialogCondition condition, EditorWindow owner, ScriptableObject dataObject)
         {
             _condition = condition;
             _ownerWindow = owner;
             _dataObject = dataObject;
+
+            _fields = _condition.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
         }
 
         public override Vector2 GetWindowSize()
         {
-            // ¸ù¾Ý²»Í¬ÀàÐÍ¶¯Ì¬µ÷Õû¸ß¶È
+            // æ ¹æ®ä¸åŒç±»åž‹åŠ¨æ€è°ƒæ•´é«˜åº¦
             if (_condition is ConditionLocalVariableInt) return new Vector2(300, 160);
             if (_condition is ConditionLocalVariableString) return new Vector2(300, 160);
             return new Vector2(300, 100);
@@ -31,63 +38,95 @@ namespace My.Dialog
         {
             GUILayout.Label("Edit Condition Parameters", EditorStyles.boldLabel);
 
-            // »æÖÆ±³¾°
+            // ç»˜åˆ¶èƒŒæ™¯
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            EditorGUI.BeginChangeCheck(); // ¿ªÊ¼¼ì²âÐÞ¸Ä
+            EditorGUI.BeginChangeCheck(); // å¼€å§‹æ£€æµ‹ä¿®æ”¹
 
-            // --- ÀàÐÍ 1: Int ±äÁ¿ ---
-            if (_condition is ConditionLocalVariableInt intCond)
-            {
-                intCond.VariableKey = EditorGUILayout.TextField("Variable Key", intCond.VariableKey);
-                intCond.Compare = (ConditionLocalVariableInt.CompareType)EditorGUILayout.EnumPopup("Operator", intCond.Compare);
-                intCond.Value = EditorGUILayout.IntField("Value", intCond.Value);
+            // --- ç±»åž‹ 1: Int å˜é‡ ---
+            //if (_condition is ConditionLocalVariableInt intCond)
+            //{
+            //    intCond.VariableKey = EditorGUILayout.TextField("Variable Key", intCond.VariableKey);
+            //    intCond.Compare = (ConditionLocalVariableInt.CompareType)EditorGUILayout.EnumPopup("Operator", intCond.Compare);
+            //    intCond.Value = EditorGUILayout.IntField("Value", intCond.Value);
 
-                // ÏÔÊ¾ÈËÐÔ»¯µÄÔ¤ÀÀ
-                string opSymbol = GetOpSymbol(intCond.Compare);
-                EditorGUILayout.Space();
-                EditorGUILayout.HelpBox($"Logic: if ( {intCond.VariableKey} {opSymbol} {intCond.Value} )", MessageType.Info);
-            }
-            // --- ÀàÐÍ 2: String ±äÁ¿ ---
-            else if (_condition is ConditionLocalVariableString strCond)
-            {
-                strCond.VariableKey = EditorGUILayout.TextField("Variable Key", strCond.VariableKey);
-                strCond.Compare = (ConditionLocalVariableString.CompareType)EditorGUILayout.EnumPopup("Operator", strCond.Compare);
-                strCond.Value = EditorGUILayout.TextField("Value", strCond.Value);
+            //    // æ˜¾ç¤ºäººæ€§åŒ–çš„é¢„è§ˆ
+            //    string opSymbol = GetOpSymbol(intCond.Compare);
+            //    EditorGUILayout.Space();
+            //    //EditorGUILayout.HelpBox($"Logic: if ( {intCond.VariableKey} {opSymbol} {intCond.Value} )", MessageType.Info);
+            //}
+            //// --- ç±»åž‹ 2: String å˜é‡ ---
+            //else if (_condition is ConditionLocalVariableString strCond)
+            //{
+            //    strCond.VariableKey = EditorGUILayout.TextField("Variable Key", strCond.VariableKey);
+            //    strCond.Compare = (ConditionLocalVariableString.CompareType)EditorGUILayout.EnumPopup("Operator", strCond.Compare);
+            //    strCond.Value = EditorGUILayout.TextField("Value", strCond.Value);
 
-                string opSymbol = strCond.Compare == ConditionLocalVariableString.CompareType.Equals ? "==" : "!=";
-                EditorGUILayout.Space();
-                EditorGUILayout.HelpBox($"Logic: if ( {strCond.VariableKey} {opSymbol} \"{strCond.Value}\" )", MessageType.Info);
-            }
-            else
+            //    string opSymbol = strCond.Compare == ConditionLocalVariableString.CompareType.Equals ? "==" : "!=";
+            //    EditorGUILayout.Space();
+            //    //EditorGUILayout.HelpBox($"Logic: if ( {strCond.VariableKey} {opSymbol} \"{strCond.Value}\" )", MessageType.Info);
+            //}
+            //else
+            //{
+            //    EditorGUILayout.LabelField("Unknown Condition Type");
+            //}
+
+            // 2. é€šç”¨åå°„ç»˜åˆ¶å­—æ®µ
+            foreach (var field in _fields)
             {
-                EditorGUILayout.LabelField("Unknown Condition Type");
+                // èŽ·å–å½“å‰å€¼
+                object value = field.GetValue(_condition);
+                string label = ObjectNames.NicifyVariableName(field.Name); // é©¼å³°è½¬å¯è¯»åç§°
+
+                // æ ¹æ®ç±»åž‹ç»˜åˆ¶ä¸åŒçš„è¾“å…¥æ¡†
+                object newValue = DrawField(label, field.FieldType, value);
+
+                // å¦‚æžœå€¼å˜äº†ï¼Œåˆ©ç”¨åå°„å†™å›žå¯¹è±¡
+                if (GUI.changed) // æ³¨æ„ï¼šè¿™é‡Œç®€å•ç”¨GUI.changedåˆ¤æ–­ï¼Œä¸‹é¢ç»Ÿä¸€å¤„ç†Undo
+                {
+                    field.SetValue(_condition, newValue);
+                }
             }
 
             EditorGUILayout.EndVertical();
 
-            // Èç¹û·¢ÉúÐÞ¸Ä
+            // å¦‚æžœå‘ç”Ÿä¿®æ”¹
             if (EditorGUI.EndChangeCheck())
             {
-                // ±ê¼Ç¶ÔÏóÒÑÔà£¬È·±£Ctrl+ZÓÐÐ§ÇÒÄÜ±£´æ
+                // æ ‡è®°å¯¹è±¡å·²è„ï¼Œç¡®ä¿Ctrl+Zæœ‰æ•ˆä¸”èƒ½ä¿å­˜
                 if (_dataObject != null) EditorUtility.SetDirty(_dataObject);
-                // Ç¿ÖÆÖ÷´°¿ÚÖØ»æ£¬ÒÔ±ã°´Å¥ÉÏµÄÎÄ×ÖÊµÊ±¸üÐÂ
+                // å¼ºåˆ¶ä¸»çª—å£é‡ç»˜ï¼Œä»¥ä¾¿æŒ‰é’®ä¸Šçš„æ–‡å­—å®žæ—¶æ›´æ–°
                 if (_ownerWindow != null) _ownerWindow.Repaint();
             }
         }
 
-        private string GetOpSymbol(ConditionLocalVariableInt.CompareType type)
+        // è¾…åŠ©å‡½æ•°ï¼šæ ¹æ®ç±»åž‹ç”»å‡ºå¯¹åº”çš„ GUI
+        private object DrawField(string label, Type type, object value)
         {
-            switch (type)
+            if (type == typeof(int))
             {
-                case ConditionLocalVariableInt.CompareType.Equals: return "==";
-                case ConditionLocalVariableInt.CompareType.Greater: return ">";
-                case ConditionLocalVariableInt.CompareType.Less: return "<";
-                case ConditionLocalVariableInt.CompareType.GE: return ">=";
-                case ConditionLocalVariableInt.CompareType.LE: return "<=";
-                case ConditionLocalVariableInt.CompareType.NotEquals: return "!=";
-                default: return "?";
+                return EditorGUILayout.IntField(label, (int)value);
             }
+            else if (type == typeof(float))
+            {
+                return EditorGUILayout.FloatField(label, (float)value);
+            }
+            else if (type == typeof(string))
+            {
+                return EditorGUILayout.TextField(label, (string)value ?? "");
+            }
+            else if (type == typeof(bool))
+            {
+                return EditorGUILayout.Toggle(label, (bool)value);
+            }
+            else if (type.IsEnum)
+            {
+                return EditorGUILayout.EnumPopup(label, (Enum)value);
+            }
+            // å¯ä»¥æ ¹æ®éœ€è¦æ‰©å±•æ›´å¤šç±»åž‹ (Vector3, Color ç­‰)
+
+            EditorGUILayout.LabelField(label, "Unsupported Type");
+            return value;
         }
     }
 }

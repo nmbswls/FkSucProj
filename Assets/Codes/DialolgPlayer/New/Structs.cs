@@ -56,12 +56,20 @@ namespace My.Dialog
         public List<DialogCondition> Conditions1 = new List<DialogCondition>();
     }
 
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    public class ConditionMenuNameAttribute : System.Attribute
+    {
+        public string MenuPath;
+        public ConditionMenuNameAttribute(string path) { MenuPath = path; }
+    }
+
     [Serializable]
     public abstract class DialogCondition
     {
-
+        public virtual string GetSummary() => "[Unknown]";
     }
 
+    [ConditionMenuName("Local/Check Int")]
     [Serializable]
     public class ConditionLocalVariableInt : DialogCondition
     {
@@ -70,8 +78,25 @@ namespace My.Dialog
         public enum CompareType { Equals, Greater, Less, GE, LE, NotEquals }
         public CompareType Compare;
         public int Value;
+
+
+        public override string GetSummary()
+        {
+            string op = "";
+            switch (Compare)
+            {
+                case ConditionLocalVariableInt.CompareType.Equals: op = "=="; break;
+                case ConditionLocalVariableInt.CompareType.Greater: op = ">"; break;
+                case ConditionLocalVariableInt.CompareType.Less: op = "<"; break;
+                case ConditionLocalVariableInt.CompareType.GE: op = ">="; break;
+                case ConditionLocalVariableInt.CompareType.LE: op = "<="; break;
+                case ConditionLocalVariableInt.CompareType.NotEquals: op = "!="; break;
+            }
+            return $"[Int] {(string.IsNullOrEmpty(VariableKey) ? "Null" : VariableKey)} {op} {Value}";
+        }
     }
 
+    [ConditionMenuName("Local/Check String")]
     [Serializable]
     public class ConditionLocalVariableString : DialogCondition
     {
@@ -80,6 +105,24 @@ namespace My.Dialog
         public enum CompareType { Equals, NotEquals }
         public CompareType Compare;
         public string Value;
+
+        public override string GetSummary()
+        {
+            string op = (Compare == ConditionLocalVariableString.CompareType.Equals) ? "==" : "!=";
+            return $"[String] {(string.IsNullOrEmpty(VariableKey) ? "Null" : VariableKey)} {op} \"{Value}\"";
+        }
+    }
+
+    [ConditionMenuName("Player/Level")]
+    [Serializable]
+    public class ConditionCheckPlayerLevel : DialogCondition
+    {
+        public int PlayerLevel;
+
+        public override string GetSummary()
+        {
+            return $"[PlayerLevel] {PlayerLevel}";
+        }
     }
 
 }

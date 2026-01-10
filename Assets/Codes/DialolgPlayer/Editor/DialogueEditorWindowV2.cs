@@ -9,6 +9,9 @@ using System.Reflection;
 using My.Util;
 using static PlasticPipe.Server.MonitorStats;
 using static UnityEditor.LightingExplorerTableColumn;
+using Codice.Client.BaseCommands.BranchExplorer;
+using My.Quest;
+using UnityEditor.U2D.Aseprite;
 
 namespace My.Dialog
 {
@@ -26,6 +29,7 @@ namespace My.Dialog
         private Vector2 scrollPos;
 
         private static Type[] commandTypes;
+        private static Type[] conditionTypes;
 
         [MenuItem("Tools/Dialogue Editor (V2)")]
         public static void ShowWindow()
@@ -35,10 +39,15 @@ namespace My.Dialog
 
         private void OnEnable()
         {
-            // 获取所有 DialogCommandBase 的子类
             commandTypes = typeof(DialogCommandBase).Assembly.GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(DialogCommandBase)) && !t.IsAbstract)
                 .ToArray();
+
+
+            conditionTypes = typeof(DialogCondition).Assembly.GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(DialogCondition)) && !t.IsAbstract)
+                .ToArray();
+
 
             if (currentData != null) InitSerializedObject();
         }
@@ -62,11 +71,14 @@ namespace My.Dialog
             }
 
             serializedObject.Update();
+
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
             if (mainStepList != null) mainStepList.DoLayoutList();
             EditorGUILayout.EndScrollView();
+
             serializedObject.ApplyModifiedProperties();
         }
+
 
         private void InitSerializedObject()
         {
@@ -251,7 +263,25 @@ namespace My.Dialog
                 }
             };
 
-            mainStepList.onAddCallback = l => { ReorderableList.defaultBehaviours.DoAddButton(l); innerListCache.Clear(); };
+            mainStepList.onAddCallback = l => { 
+                ReorderableList.defaultBehaviours.DoAddButton(l); innerListCache.Clear();
+
+                // 3. --- 开始清理新 Step 数据 ---
+                var listProp = l.serializedProperty;
+
+                // 获取刚刚添加的元素 (位于数组末尾)
+                var newStepProp = listProp.GetArrayElementAtIndex(listProp.arraySize - 1);
+
+                newStepProp.FindPropertyRelative("Id").stringValue = (listProp.arraySize + 1).ToString();
+                newStepProp.FindPropertyRelative("Note").stringValue = "";
+
+                SerializedProperty commandsProp = newStepProp.FindPropertyRelative("Commands");
+                if (commandsProp != null && commandsProp.isArray)
+                {
+                    commandsProp.ClearArray();
+                }
+
+            };
             mainStepList.onRemoveCallback = l => { ReorderableList.defaultBehaviours.DoRemoveButton(l); innerListCache.Clear(); };
             mainStepList.onReorderCallback = l => innerListCache.Clear();
         }
@@ -383,21 +413,108 @@ namespace My.Dialog
                 }
                 else if (cmdData is DialogueTextCommand)
                 {
-                    // === 剧本模式核心修复 ===
-                    // 直接在起始位置画输入框，不再受 Foldout 干扰
+                    // === 剧本模式绘制 ===
 
-                    // 名字栏 (左侧)
-                    Rect speakerRect = new Rect(contentAreaRect.x, contentAreaRect.y, 30, contentAreaRect.height);
-                    // 内容栏 (右侧，占据剩余安全宽度)
-                    Rect textRect = new Rect(contentAreaRect.x + 35, contentAreaRect.y, contentAreaRect.width - 35, contentAreaRect.height);
+                    // 1. 定义第一行的高度 (名字+文本内容)
+                    // 注意：如果是 ReorderableList，rect.height 通常是 ElementHeight 计算出来的总高度
+                    // 我们假设第一行占据主要高度，底部留一行给其他属性，或者根据实际情况动态布局
+                    // 这里为了简单，假设 textRect 占据大部分高度，留出单行高度给底部属性
 
+                    // 预留底部高度给其他属性 (假设其他属性加起来占一行，如果有多行需要调整 ElementHeight 的计算逻辑)
+                    // 如果你的 ElementHeight 已经是动态计算好的，这里可以直接用。
+                    // 暂且假设第一行固定高度或者占满剩余空间减去底部
+
+                    float extraFieldsHeight = 0f;
+
+                    // 我们先统计一下有多少个额外字段，以便预留空间（可选优化，简单的做法是直接画在下方）
+                    // 但在这个 Draw 方法里，rect 是外部传入的，所以我们只能在 rect 范围内画。
+                    // **前提：** 你的 ElementHeightCallback 必须已经为这些额外字段预留了高度。
+
+                    // --- 第一行：名字 + 内容 ---
+                    // 假设第一行高度是总高度减去额外字段所需的预估高度，或者固定一个最小高度
+                    // 更加稳健的做法：规定第一行高度 = 总高度 - (剩余属性数量 * 单行高度)
+                    // 但最简单的还是：第一行就是主视觉，额外属性画在最底下
+
+                    // 这里采用：第一行占据顶部，下方留出空间给其他属性
+                    // 比如我们留出 20像素 (一行的高度) 给其他属性，如果属性很多，这里需要调整
+
+                    // *重要*：为了让 TextArea 撑满，我们需要知道其他属性占了多高。
+                    // 这里为了不让代码太复杂，我们先画名字和内容，让它们占据顶部区域。
+
+                    // 这一段逻辑依赖于你的 GetElementHeight 是怎么算的。
+                    // 假设 totalHeight = textAreaHeight + otherPropertiesHeight
+
+                    // 咱们先简单处理：先画名字和内容，然后手动在该行下方画其他属性
+
+                    // 1. 获取特定属性
                     var speakerProp = innerDataProp.FindPropertyRelative("Speaker");
                     var contentProp = innerDataProp.FindPropertyRelative("Content");
 
-                    EditorGUI.PropertyField(speakerRect, speakerProp, GUIContent.none);
+                    // 2. 绘制第一行 (Speaker + Content)
+                    // 为了防止内容覆盖下面的属性，我们需要估算一个高度。
+                    // 这里假设 TextArea 的高度是根据内容自动撑开的 (通常在 ElementHeight 里计算)
+                    // 在这里我们让 TextRect 占据 rect 的绝大部分，只在底部留出空间。
 
-                    // TextArea 现在处于顶层，没有任何控件覆盖它，光标操作恢复正常
+                    // 此时我们用一种自动布局的方式来遍历剩余属性，这样比较通用
+
+                    float singleLine = EditorGUIUtility.singleLineHeight;
+                    float verticalSpacing = 2f;
+
+                    // 临时创建一个 iterator 副本用于计算剩余属性的高度
+                    var iterator = innerDataProp.Copy();
+                    var endProperty = iterator.GetEndProperty();
+                    int extraFieldCount = 0;
+
+                    iterator.NextVisible(true); // 进入子节点
+                    while (!SerializedProperty.EqualContents(iterator, endProperty))
+                    {
+                        if (iterator.name != "Speaker" && iterator.name != "Content" && iterator.name != "m_Script")
+                        {
+                            extraFieldCount++;
+                        }
+                        if (!iterator.NextVisible(false)) break;
+                    }
+
+                    float bottomAreaHeight = extraFieldCount * (singleLine + verticalSpacing);
+
+                    // 计算上半部分给 TextArea 的高度
+                    float topAreaHeight = contentAreaRect.height - bottomAreaHeight - verticalSpacing;
+                    if (topAreaHeight < singleLine) topAreaHeight = singleLine; // 最小保底
+
+                    // --- 绘制 Speaker 和 Content ---
+                    Rect topRowRect = new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, topAreaHeight);
+
+                    Rect speakerRect = new Rect(topRowRect.x, topRowRect.y, 80, topRowRect.height);
+                    Rect textRect = new Rect(topRowRect.x + 85, topRowRect.y, topRowRect.width - 85, topRowRect.height);
+
+                    EditorGUI.PropertyField(speakerRect, speakerProp, GUIContent.none);
                     contentProp.stringValue = EditorGUI.TextArea(textRect, contentProp.stringValue, EditorStyles.textArea);
+
+                    // --- 绘制剩余字段 ---
+                    if (extraFieldCount > 0)
+                    {
+                        // 起始 Y 坐标：在上半部分下方
+                        float currentY = contentAreaRect.y + topAreaHeight + verticalSpacing;
+
+                        iterator = innerDataProp.Copy(); // 重置迭代器
+                        iterator.NextVisible(true); // 进入内部
+
+                        while (!SerializedProperty.EqualContents(iterator, endProperty))
+                        {
+                            // 跳过已绘制字段和脚本引用
+                            if (iterator.name != "Speaker" && iterator.name != "Content" && iterator.name != "m_Script")
+                            {
+                                Rect fieldRect = new Rect(contentAreaRect.x, currentY, contentAreaRect.width, singleLine);
+
+                                // 绘制属性 (包含 label)
+                                EditorGUI.PropertyField(fieldRect, iterator, true);
+
+                                currentY += singleLine + verticalSpacing;
+                            }
+
+                            if (!iterator.NextVisible(false)) break; // 不再进入更深层级
+                        }
+                    }
                 }
                 else
                 {
@@ -420,10 +537,7 @@ namespace My.Dialog
             // [删除按钮]
             if (GUI.Button(deleteRect, "×", EditorStyles.miniButton))
             {
-                EditorApplication.delayCall += () =>
-                {
-                    if (element.serializedObject != null) DeleteElement(element);
-                };
+                if (element.serializedObject != null) DeleteElement(element, idx);
             }
 
             // --- 5. 事件穿透防护 (关键) ---
@@ -439,35 +553,43 @@ namespace My.Dialog
 
 
         // 辅助删除方法
-        private void DeleteElement(SerializedProperty element)
+        private void DeleteElement(SerializedProperty element, int idx)
         {
-            // 获取所属的数组属性
-            SerializedProperty listProp = element.serializedObject.FindProperty(element.propertyPath.Split(new string[] { ".Array" }, StringSplitOptions.None)[0]);
+            // 获取 SerializedObject 和 数组路径
+            var serializedObject = element.serializedObject;
 
-            // 找到自己的索引
-            // 这是一个简单的遍历查找，因为 propertyPath 包含索引信息 "steps.Array.data[0].Commands.Array.data[5]"
-            // 但为了稳健，我们通过 content hash 或循环对比
+            // 通过简单的字符串截取找到父数组的路径
+            // 比如 "Commands.Array.data[5]" -> "Commands"
+            string propertyPath = element.propertyPath;
+            string arrayPath = propertyPath.Substring(0, propertyPath.LastIndexOf(".Array"));
 
-            // 最简单的做法：其实你最好修改 DrawCommandElement 的签名，传入 int index
-            // 假设你修改了签名: DrawCommandElement(Rect rect, int index, SerializedProperty wrapperProp, SerializedProperty listProp)
-            // listProp.DeleteArrayElementAtIndex(index);
-
-            // 如果不想改签名，且列表不是很长，可以用这个简易版逻辑：
-            // *警告*：直接在 Draw 中删除可能导致报错 (EndLayoutGroup)，
-            // 最好用 EditorApplication.delayCall 延迟一帧执行删除
-
-            var propertyPath = element.propertyPath;
+            // 使用 delayCall 防止在绘制帧报错
             EditorApplication.delayCall += () =>
             {
-                element.serializedObject.Update();
-                // 重新查找属性（防止引用丢失）
-                var target = element.serializedObject.FindProperty(propertyPath);
-                if (target != null)
+                serializedObject.Update();
+                var listProp = serializedObject.FindProperty(arrayPath);
+
+                // 双重保险：确保属性还存在，且索引有效
+                if (listProp != null && idx < listProp.arraySize)
                 {
-                    // 这是一个比较通用的删除当前 Property 的技巧
-                    // 但最稳妥的还是在 Loop 外面删。
-                    // 鉴于 ReorderableList 的封装性，推荐下面的 "方案 B"
+                    // 如果是对象引用类型，第一次 Delete 可能是置空，第二次才是删除
+                    // 但对于普通类（非 UnityEngine.Object），一次就删掉了
+                    listProp.DeleteArrayElementAtIndex(idx);
+
+                    // 它是对象引用且不为空，可能需要再删一次（视具体需求而定，通常一次够了）
+                    // if (listProp.GetArrayElementAtIndex(index).objectReferenceValue != null) 
+                    //     listProp.DeleteArrayElementAtIndex(index);
+
+                    serializedObject.ApplyModifiedProperties();
                 }
+
+                // 3. 立即提交修改！不要等下一帧
+                serializedObject.ApplyModifiedProperties();
+
+                // 4. 强制重绘 Inspector！
+                // 这一步是消除“延迟感”的关键。
+                // 如果代码在 Editor 类里：
+                this.Repaint(); 
             };
         }
 
@@ -475,109 +597,92 @@ namespace My.Dialog
         // 为了支持 SerializedProperty 的撤销系统，我们需要用 Property 查找子属性
         private void DrawChoiceCommandProperty(Rect rect, SerializedProperty choiceCmdProp)
         {
-            // 因为我们是在 OnGUI 内部计算布局，这里使用 BeginArea 来在一个固定 Rect 中绘制复杂 UI
-            GUILayout.BeginArea(rect);
-            EditorGUILayout.BeginVertical(); // 不再加 box，因为外层已经可能有背景了
+            // 1. 初始化当前绘制光标 y
+            float currentY = rect.y;
+            float standardHeight = EditorGUIUtility.singleLineHeight;
+            float space = 2f;
+
+            // 为了防止内容画出界，我们先不加 Box 背景，直接画内容
+            // (如果想要背景，可以用 GUI.Box(rect, "")，但先确保内容能显示)
 
             SerializedProperty optionsProp = choiceCmdProp.FindPropertyRelative("Options");
 
-            // 遍历 Options 列表
+            // 2. 遍历 Options 列表
             for (int i = 0; i < optionsProp.arraySize; i++)
             {
                 SerializedProperty optionProp = optionsProp.GetArrayElementAtIndex(i);
-                EditorGUILayout.BeginVertical("box");
 
-                // Header
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"Option {i + 1}", EditorStyles.boldLabel, GUILayout.Width(70));
-                if (GUILayout.Button("X", GUILayout.Width(20)))
+                // --- 计算当前 Option 的总高度 (Header + 2个属性 + 间距) ---
+                // 这里只是简单的估算，如果 ConditionList 是动态高度，需要更复杂的计算
+                // 假设每个 Option 目前占 3行属性 + 1行Header
+                //float optionBlockHeight = (standardHeight + space) * 4 + 10;
+                SerializedProperty condsProp = optionProp.FindPropertyRelative("Conditions1");
+
+                float fixedPartHeight = (standardHeight + space) * 4 + 15f;
+                float conditionsPartHeight = 0f;
+                // 2.2 累加每个 Condition 的高度
+                if (condsProp.arraySize > 0)
+                {
+                    // 假设每个 Condition 占一行
+                    conditionsPartHeight += condsProp.arraySize * (standardHeight + space);
+                }
+
+                float totalOptionHeight = fixedPartHeight + conditionsPartHeight;
+
+                // 定义当前 Option 的区域
+                Rect optionRect = new Rect(rect.x, currentY, rect.width, totalOptionHeight);
+                GUI.Box(optionRect, GUIContent.none, "box"); // 画个框表示范围
+
+
+                // --- 绘制 Header (Option X + Delete 按钮) ---
+                Rect headerRect = new Rect(optionRect.x + 5, currentY + 5, 100, standardHeight);
+                Rect deleteBtnRect = new Rect(optionRect.x + optionRect.width - 25, currentY + 5, 20, standardHeight);
+
+                EditorGUI.LabelField(headerRect, $"Option {i + 1}", EditorStyles.boldLabel);
+                if (GUI.Button(deleteBtnRect, "X"))
                 {
                     optionsProp.DeleteArrayElementAtIndex(i);
-                    break;
+                    return; // 立即返回，等待下一帧重绘
                 }
-                EditorGUILayout.EndHorizontal();
+                currentY += standardHeight + space;
 
-                // Fields
-                EditorGUILayout.PropertyField(optionProp.FindPropertyRelative("Text"));
-                EditorGUILayout.PropertyField(optionProp.FindPropertyRelative("TargetStepId"));
+                // --- 绘制 Text 属性 ---
+                Rect textRect = new Rect(rect.x + 5, currentY, rect.width - 10, standardHeight);
+                EditorGUI.PropertyField(textRect, optionProp.FindPropertyRelative("Text"));
+                currentY += standardHeight + space;
 
-                // Conditions List
-                DrawConditionListForProperty(optionProp);
+                // --- 绘制 TargetStepId 属性 ---
+                Rect targetRect = new Rect(rect.x + 5, currentY, rect.width - 10, standardHeight);
+                EditorGUI.PropertyField(targetRect, optionProp.FindPropertyRelative("TargetStepId"));
+                currentY += standardHeight + space;
 
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.Space(2);
+                // --- 调用修改后的 Condition 绘制函数 ---
+                Rect conditionStartRect = new Rect(rect.x, currentY, rect.width, 0); // 高度给0没事，函数只用 y
+                // --- (暂时注释掉 ConditionList，确保基础能显示再放开) ---
+                float conditionHeight = DrawConditionListForProperty(conditionStartRect, optionProp);
+                currentY += conditionHeight + +space; // 加上间距
+                // 假设 ConditionList 占了一行的高度
+                currentY += standardHeight + space;
             }
 
-            if (GUILayout.Button("+ Add Option"))
+            // 3. 绘制 "Add Option" 按钮
+            // 这里的关键是：完全不用 GUILayout，直接算坐标
+            Rect btnRect = new Rect(rect.x, currentY + 5, rect.width, 25);
+
+            // --- 调试大法：如果你还看不见，这行红线会告诉你按钮在哪 ---
+            // EditorGUI.DrawRect(btnRect, Color.red); 
+
+            if (GUI.Button(btnRect, "+ Add Option"))
             {
                 optionsProp.InsertArrayElementAtIndex(optionsProp.arraySize);
-                // 初始化新元素（避免数据残留）
                 var newElem = optionsProp.GetArrayElementAtIndex(optionsProp.arraySize - 1);
-                newElem.FindPropertyRelative("Text").stringValue = "New Option";
+
                 newElem.FindPropertyRelative("Conditions1").ClearArray();
+
+                newElem.FindPropertyRelative("Text").stringValue = "New Option";
+                // newElem.FindPropertyRelative("Conditions1").ClearArray();
             }
-
-            EditorGUILayout.EndVertical();
-            GUILayout.EndArea();
         }
-
-        //private void DrawScriptModeDialogue(Rect rect, SerializedProperty innerDataProp)
-        //{
-        //    // 获取字段
-        //    var speakerProp = innerDataProp.FindPropertyRelative("Speaker"); 
-        //    var contentProp = innerDataProp.FindPropertyRelative("Content");   
-
-        //    // 1. 【读取合成】：把数据变成 "Speaker : Content" 的格式显示
-        //    string speaker = speakerProp.stringValue;
-        //    string content = contentProp.stringValue;
-        //    string displayValue;
-
-        //    if (string.IsNullOrWhiteSpace(speaker))
-        //    {
-        //        displayValue = content; // 没有说话人，直接显示内容
-        //    }
-        //    else
-        //    {
-        //        displayValue = $"{speaker} : {content}"; // 加上冒号
-        //    }
-
-        //    // 2. 绘制 TextArea
-        //    // 稍微调整 rect 留出一点边距
-        //    Rect textAreaRect = new Rect(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4);
-
-        //    EditorGUI.BeginChangeCheck();
-
-        //    // 使用 TextArea 支持多行，并且自带边框
-        //    string newValue = EditorGUI.TextArea(textAreaRect, displayValue, EditorStyles.textArea);
-
-        //    // 3. 【写入解析】：当用户修改文本后，拆分回填
-        //    if (EditorGUI.EndChangeCheck())
-        //    {
-        //        // 兼容中文冒号，把 '：' 替换成 ':' 方便统一处理
-        //        string parseValue = newValue.Replace("：", ":");
-
-        //        int colonIndex = parseValue.IndexOf(':');
-
-        //        if (colonIndex >= 0)
-        //        {
-        //            // 有冒号 -> 拆分
-        //            // 前半部分是名字，去除首尾空格
-        //            string newSpeaker = parseValue.Substring(0, colonIndex).Trim();
-        //            // 后半部分是内容，去除开头的空格 (保留内容里的换行等)
-        //            string newContent = parseValue.Substring(colonIndex + 1).TrimStart();
-
-        //            speakerProp.stringValue = newSpeaker;
-        //            contentProp.stringValue = newContent;
-        //        }
-        //        else
-        //        {
-        //            // 没有冒号 -> 只有内容，清空名字
-        //            speakerProp.stringValue = "";
-        //            contentProp.stringValue = newValue; // 保持原样，不Trim，允许用户打空格
-        //        }
-        //    }
-        //}
-
 
         // --- Choice Command 的高度计算 ---
         // 必须手动计算，否则 ReorderableList 会遮挡内容
@@ -606,55 +711,95 @@ namespace My.Dialog
                 SerializedProperty condsProp = optionProp.FindPropertyRelative("Conditions1");
                 h += EditorGUIUtility.singleLineHeight + 4; // "Conditions:" title row
                                                             // 每个 Condition 一行
-                h += (condsProp.arraySize * (20 + 2));
+                h += (condsProp.arraySize * (30 + 2));
             }
+
+            h += EditorGUIUtility.singleLineHeight + 10;
 
             return h;
         }
 
         // --- Condition 列表绘制 (基于 Property) ---
-        private void DrawConditionListForProperty(SerializedProperty optionProp)
+        private float DrawConditionListForProperty(Rect startRect, SerializedProperty optionProp)
         {
             SerializedProperty condsProp = optionProp.FindPropertyRelative("Conditions1");
+            float currentY = startRect.y;
+            float startX = startRect.x;
+            float width = startRect.width;
+            float lineHeight = EditorGUIUtility.singleLineHeight + 3f;
+            float spacing = 2f;
 
-            EditorGUILayout.Space(2);
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Conditions:", EditorStyles.miniLabel, GUILayout.Width(70));
+            // --- 1. 标题行 + 添加按钮 ---
+            Rect headerLabelRect = new Rect(startX + 5, currentY, 80, lineHeight);
+            EditorGUI.LabelField(headerLabelRect, "Conditions:", EditorStyles.label);
 
-            if (GUILayout.Button("+ Add Condition", EditorStyles.miniButton, GUILayout.Width(100)))
+            Rect addBtnRect = new Rect(startX + 100, currentY, 120, lineHeight);
+            if (GUI.Button(addBtnRect, "+ Add Condition", EditorStyles.miniButton))
             {
                 GenericMenu menu = new GenericMenu();
-                menu.AddItem(new GUIContent("Int Variable Check"), false, () => AddCondition(optionProp, new ConditionLocalVariableInt()));
-                menu.AddItem(new GUIContent("String Variable Check"), false, () => AddCondition(optionProp, new ConditionLocalVariableString()));
+
+                foreach (var type in conditionTypes)
+                {
+                    var capturedType = type;
+
+                    // 尝试获取 Attribute
+                    var attr = (ConditionMenuNameAttribute)System.Attribute.GetCustomAttribute(type, typeof(ConditionMenuNameAttribute));
+
+                    // 如果有 Attribute 就用 Attribute 的名字，否则用类名
+                    string menuName = attr != null ? attr.MenuPath : type.Name;
+
+                    menu.AddItem(new GUIContent(menuName), false, () =>
+                    {
+                        DialogCondition newCondition = (DialogCondition)System.Activator.CreateInstance(capturedType);
+                        AddCondition(optionProp, newCondition);
+                    });
+                }
+
+                // 注意：这里 Lambda 里的 optionProp 必须是有效的
+                //menu.AddItem(new GUIContent("Int Variable Check"), false, () => AddCondition(optionProp, new ConditionLocalVariableInt()));
+                //menu.AddItem(new GUIContent("String Variable Check"), false, () => AddCondition(optionProp, new ConditionLocalVariableString()));
+                //menu.AddItem(new GUIContent("Player Level Check"), false, () => AddCondition(optionProp, new ConditionCheckPlayerLevel()));
                 menu.ShowAsContext();
             }
-            EditorGUILayout.EndHorizontal();
 
+            currentY += lineHeight + spacing; // 换行
+
+            // --- 2. 遍历 Conditions 列表 ---
             for (int i = 0; i < condsProp.arraySize; i++)
             {
                 SerializedProperty condProp = condsProp.GetArrayElementAtIndex(i);
-
-                // 为了获取 Condition 对象的实际值用于显示摘要和传给 Popup，这里需要反射
                 DialogCondition condObj = GetTargetObjectOfProperty(condProp) as DialogCondition;
 
-                EditorGUILayout.BeginHorizontal();
+                Rect rowRect = new Rect(startX + 20, currentY, width - 25, lineHeight);
 
-                // 显示摘要
-                string summary = GetConditionSummary(condObj);
-                if (GUILayout.Button(summary, EditorStyles.miniButton, GUILayout.Height(20)))
+                // 删除按钮 (右侧 20px)
+                Rect deleteRect = new Rect(rowRect.x + rowRect.width - 25, rowRect.y, 25, lineHeight);
+                // 内容按钮 (剩余宽度)
+                Rect contentRect = new Rect(rowRect.x, rowRect.y, rowRect.width - 30, lineHeight);
+
+                
+                string summary = condObj.GetSummary();
+
+                // 点击摘要弹出编辑窗口
+                if (GUI.Button(contentRect, summary, EditorStyles.miniButton))
                 {
-                    Rect btnRect = GUILayoutUtility.GetLastRect();
-                    // 弹出窗口修改的是具体的对象
-                    PopupWindow.Show(btnRect, new DialogueConditionPopup(condObj, this, currentData));
+                    // PopupWindow 需要屏幕坐标，Event.current.mousePosition 有时更好用，或者转换 Rect
+                    // 这里直接传 rect 通常没问题
+                    PopupWindow.Show(contentRect, new DialogueConditionPopup(condObj, this, currentData));
                 }
 
-                if (GUILayout.Button("-", EditorStyles.miniButtonRight, GUILayout.Width(20), GUILayout.Height(20)))
+                if (GUI.Button(deleteRect, "-", EditorStyles.miniButtonRight))
                 {
                     condsProp.DeleteArrayElementAtIndex(i);
-                    break;
+                    // 这里不需要 break，因为是 GUI 模式，稍后刷新即可，但为了安全可以 return
+                    return currentY - startRect.y + lineHeight;
                 }
-                EditorGUILayout.EndHorizontal();
+
+                currentY += lineHeight + spacing; // 换行
             }
+
+            // 返回总高度：当前 Y 减去 起始 Y
+            return currentY - startRect.y;
         }
 
         // --- 辅助：添加 Condition 的桥接方法 ---
@@ -802,28 +947,45 @@ namespace My.Dialog
             return enm.Current;
         }
 
-        private string GetConditionSummary(DialogCondition cond)
+
+
+        private static void ResetValues(SerializedProperty prop)
         {
-            if (cond is ConditionLocalVariableInt intC)
+            // 遍历该属性下的所有直接子属性并重置
+            var iterator = prop.Copy();
+            var end = iterator.GetEndProperty();
+
+            // 进入第一个子节点
+            if (iterator.NextVisible(true))
             {
-                string op = "";
-                switch (intC.Compare)
+                do
                 {
-                    case ConditionLocalVariableInt.CompareType.Equals: op = "=="; break;
-                    case ConditionLocalVariableInt.CompareType.Greater: op = ">"; break;
-                    case ConditionLocalVariableInt.CompareType.Less: op = "<"; break;
-                    case ConditionLocalVariableInt.CompareType.GE: op = ">="; break;
-                    case ConditionLocalVariableInt.CompareType.LE: op = "<="; break;
-                    case ConditionLocalVariableInt.CompareType.NotEquals: op = "!="; break;
-                }
-                return $"[Int] {intC.VariableKey} {op} {intC.Value}";
+                    if (SerializedProperty.EqualContents(iterator, end)) break;
+
+                    switch (iterator.propertyType)
+                    {
+                        case SerializedPropertyType.String:
+                            iterator.stringValue = "";
+                            break;
+                        case SerializedPropertyType.Integer:
+                            iterator.intValue = 0;
+                            break;
+                        case SerializedPropertyType.Float:
+                            iterator.floatValue = 0f;
+                            break;
+                        case SerializedPropertyType.Boolean:
+                            iterator.boolValue = false;
+                            break;
+                        case SerializedPropertyType.ObjectReference:
+                            iterator.objectReferenceValue = null;
+                            break;
+                        case SerializedPropertyType.Generic:
+                            // 如果是数组/List，清空它
+                            if (iterator.isArray) iterator.ClearArray();
+                            break;
+                    }
+                } while (iterator.NextVisible(false)); // false 表示不进入更深层级，只重置当前层级的直接子字段
             }
-            else if (cond is ConditionLocalVariableString strC)
-            {
-                string op = (strC.Compare == ConditionLocalVariableString.CompareType.Equals) ? "==" : "!=";
-                return $"[String] {strC.VariableKey} {op} \"{strC.Value}\"";
-            }
-            return "[Unknown]";
         }
     }
 }
