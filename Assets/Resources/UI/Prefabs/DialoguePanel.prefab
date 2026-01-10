@@ -1006,6 +1006,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 0}
   nameText: {fileID: 4678241216300107556}
   contentText: {fileID: 6284583017038680377}
+  nameTextContainer: {fileID: 3933372139890293015}
   nextIndicator: {fileID: 0}
   BlackMask: {fileID: 8069214417913805457}
   choicePanel: {fileID: 5665048729301383636}

@@ -668,8 +668,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         dialoguePlayer.PlayFromData(dialogData, runtime, () =>
         {
             UIManager.Instance.HidePanel("DialoguePanel");
-
-            // do end events;
         });
     }
 }

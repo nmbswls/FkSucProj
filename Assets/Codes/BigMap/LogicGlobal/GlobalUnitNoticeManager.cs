@@ -1,6 +1,0 @@
-
-
-namespace My.Map
-{
-
-}

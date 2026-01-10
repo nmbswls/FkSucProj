@@ -115,7 +115,7 @@ namespace My.Map
         {
             if(!CheckTriggerInteract(interactId))
             {
-                return false;
+                //return false;
             }
 
             var interactItem = interactInfos.Find((item) => item.InteractId == interactId);

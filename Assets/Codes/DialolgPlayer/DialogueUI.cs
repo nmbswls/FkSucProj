@@ -14,6 +14,9 @@ namespace My.UI
         [Header("Refs")]
         public TextMeshProUGUI nameText;
         public TextMeshProUGUI contentText;
+
+        public Transform nameTextContainer;
+
         public GameObject nextIndicator;
         public Transform BlackMask;
 
@@ -81,6 +84,15 @@ namespace My.UI
 
         public void StartTypeText(string speaker, string content, string voice, bool fast, Action onComplete)
         {
+            if(string.IsNullOrEmpty(speaker))
+            {
+                nameTextContainer.gameObject.SetActive(false);
+            }
+            else
+            {
+                nameTextContainer.gameObject.SetActive(true);
+            }
+
             if (nameText) nameText.text = speaker;
             ShowNextIndicator(false);
 
