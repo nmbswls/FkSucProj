@@ -110,8 +110,24 @@ namespace My.Map.Scene
 
             if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
-                if (dist > 0.5f) return false;
-                if(NpcEntity.cacheCfg.InteractList.Count > 0)
+                //if (dist > 0.5f) return false;
+
+                var logicInts = NpcEntity.InteractComp.InteractInfos;
+                int enableOne = 0;
+                foreach (var i in logicInts)
+                {
+                    if (i.NeedDist != 0 && dist >= i.NeedDist)
+                    {
+                        continue;
+                    }
+                    bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
+                    if (canInt || !i.HideWhenFail)
+                    {
+                        enableOne += 1;
+                    }
+                }
+
+                if (enableOne > 0)
                 {
                     return true;
                 }
@@ -178,21 +194,8 @@ namespace My.Map.Scene
             {
                 if (selectionId < NpcEntity.cacheCfg.InteractList.Count)
                 {
-                    var selection = NpcEntity.cacheCfg.InteractList[selectionId]; 
-                    foreach(var output in selection.Outputs)
-                    {
-                        switch(output.OutputType)
-                        {
-                            case Config.LogicInteractOutput.EOutputType.OpenPanel:
-                                {
-                                    if(output.Param1 == 1)
-                                    {
-                                        // 
-                                    }
-                                }
-                                break;
-                        }
-                    }
+
+                    NpcEntity.InteractComp.TryTriggerInteract(selectionId);
                 }
             }
             else

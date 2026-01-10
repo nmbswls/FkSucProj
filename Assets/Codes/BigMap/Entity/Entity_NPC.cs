@@ -14,7 +14,7 @@ using static My.Map.Fight.FightStruct;
 
 namespace My.Map
 {
-    public partial class NpcUnitLogicEntity : BaseUnitLogicEntity
+    public partial class NpcUnitLogicEntity : BaseUnitLogicEntity, IEntityInteractable
     {
         public MapNpcConfig cacheCfg;
 
@@ -27,6 +27,13 @@ namespace My.Map
         private float _lastHModeTimer;
 
         public event Action EventOnHModeChange;
+
+        public EntityInteractComp InteractComp;
+
+        public string GetRuntimeVariable(string paramName)
+        {
+            return string.Empty;
+        }
 
         public override NpcCombatStateComp.ECombatState CombatState
         {
@@ -156,6 +163,9 @@ namespace My.Map
             {
                 LogicManager.globalBuffManager.RequestAddBuff(Id, "unsensored");
             }
+
+            InteractComp = new(this);
+            InteractComp.RegisterInteractInfo(cacheCfg.InteractList);
         }
 
         protected override void InitAttribute()

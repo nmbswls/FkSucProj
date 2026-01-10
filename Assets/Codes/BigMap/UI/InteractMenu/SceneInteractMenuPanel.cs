@@ -109,13 +109,38 @@ namespace My.UI
 
                 var dif = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos - currBindPoint.Pos;
 
+                
+
                 var innerList = new List<(long, string, bool)>();
                 var selections = currBindPoint.GetInteractSelections(dif.magnitude);
                 foreach (var one in selections)
                 {
                     innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));
                 }
-                ChooseInteractMenu.SetData(innerList);
+
+                bool same = true;
+                if (innerList.Count != ChooseInteractMenu.data.Count)
+                {
+                    same = false;
+                }
+                else
+                {
+                    for(int i=0;i<innerList.Count;i++)
+                    {
+                        if (innerList[i].Item1 != ChooseInteractMenu.data[i].Item1
+                            || innerList[i].Item2 != ChooseInteractMenu.data[i].Item2
+                             || innerList[i].Item3 != ChooseInteractMenu.data[i].Item3)
+                        {
+                            same = false;
+                            break;
+                        }
+                    }
+                }
+
+                if(!same)
+                {
+                    ChooseInteractMenu.SetData(innerList);
+                }
             }
         }
 
