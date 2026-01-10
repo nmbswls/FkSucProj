@@ -10,7 +10,7 @@ namespace My.Dialog
     [Serializable]
     public abstract class DialogCommandBase
     {
-        public virtual string GetSummary() => $"abc";
+        public virtual string GetSummary() => $"";
     }
 
     // --- 具体子类示例 ---
@@ -22,7 +22,7 @@ namespace My.Dialog
         [TextArea(2, 5)] public string Content;
         public AudioClip VoiceLine;
 
-        //public override string GetSummary() => $"[Talk] {Speaker}: {Content}";
+        public override string GetSummary() => $"[Talk]";
     }
 
     [Serializable]
@@ -32,6 +32,7 @@ namespace My.Dialog
         public enum ImgPos { Left, Center, Right, Background }
         public ImgPos position;
 
+        public override string GetSummary() => $"[SetImage]";
         //public override string GetSummary() => $"[Img] {position} - {(image ? image.name : "None")}";
     }
 
@@ -41,6 +42,7 @@ namespace My.Dialog
         public float timeLimit = 0;
         public List<DialogChoiceOption> Options = new List<DialogChoiceOption>();
 
+        public override string GetSummary() => $"[Choice]";
         //public override string GetSummary() => $"[Choice] {Options.Count} Options";
     }
 

@@ -324,7 +324,7 @@ namespace My.Dialog
             {
                 if (i >= commandsProp.arraySize) return;
                 var el = commandsProp.GetArrayElementAtIndex(i);
-                DrawCommandElement(r, el);
+                DrawCommandElement(r, el, i);
             };
 
             list.onAddDropdownCallback = (r, l) => ShowAddMenu(stepIndex);
@@ -333,72 +333,107 @@ namespace My.Dialog
         }
 
         // --- 核心修改：统一绘制入口 ---
-        private void DrawCommandElement(Rect rect, SerializedProperty element)
+        private void DrawCommandElement(Rect rect, SerializedProperty element, int idx)
         {
-            // 1. 获取包装器里的属性
+            // --- 1. 布局规划 ---
+            float btnSize = 20f;
+            float spacing = 2f; // 按钮之间的间距
+
+            // 计算右侧两个按钮的位置
+            // [Delete] 在最右侧
+            Rect deleteRect = new Rect(rect.x + rect.width - btnSize, rect.y, btnSize, EditorGUIUtility.singleLineHeight);
+            // [Fold] 在 Delete 左侧
+            Rect foldBtnRect = new Rect(deleteRect.x - btnSize - spacing, rect.y, btnSize, EditorGUIUtility.singleLineHeight);
+
+            // 计算左侧内容的安全区域 (减去两个按钮的宽度)
+            float safeWidth = rect.width - (btnSize * 2) - (spacing * 3);
+            Rect contentAreaRect = new Rect(rect.x, rect.y, safeWidth, rect.height);
+
+            // --- 2. 数据获取 ---
             var isFoldedProp = element.FindPropertyRelative("IsFolded");
             var innerDataProp = element.FindPropertyRelative("CommandData");
-
-            // 2. 获取内部数据的实际对象 (用于显示 Summary 和判断类型)
-            // 注意：这里我们要获取 innerDataProp 的目标对象，而不是 element 的
             DialogCommandBase cmdData = GetTargetObjectOfProperty(innerDataProp) as DialogCommandBase;
 
+            // --- 3. 绘制折叠/展开逻辑 ---
+            // 这里不再使用 EditorGUI.Foldout，而是根据状态手动绘制
+
             string summary = cmdData != null ? cmdData.GetSummary() : "Empty Slot";
+            summary = $"{idx}:{summary}";
 
-            rect.y += 2;
-            Rect titleRect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
-
-            // 绘制折叠栏
-            isFoldedProp.boolValue = EditorGUI.Foldout(titleRect, isFoldedProp.boolValue, summary, true);
-
-            if (!isFoldedProp.boolValue)
+            // 如果是折叠状态 (IsFolded == true)
+            if (isFoldedProp.boolValue)
             {
-                Rect contentRect = new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight + 2, rect.width, rect.height);
+                Rect labelRect = new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight);
 
-                // 3. 根据内部数据的类型分流
-                if (cmdData is ChoiceCommand) // 假设 ChoiceCommand 继承自 DialogCommandBase
+                // 只画文本标签，没有点击热区，不会误触
+                EditorGUI.LabelField(labelRect, summary, EditorStyles.boldLabel);
+            }
+            else
+            {
+                // 如果是展开状态 (IsFolded == false)
+                // 此时直接画内容，头部没有 Label 遮挡
+
+                if (cmdData is ChoiceCommand)
                 {
-                    // 注意：这里传 innerDataProp (实际数据)，而不是 element (包装器)
+                    // 给普通命令留一个标题高度，或者直接画属性
+                    Rect contentRect = new Rect(contentAreaRect.x, contentAreaRect.y + EditorGUIUtility.singleLineHeight + 2, contentAreaRect.width, contentAreaRect.height);
+                    // 这里可以补一个标题 Label 让界面好看点，或者直接留空
+                    EditorGUI.LabelField(new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight), summary);
                     DrawChoiceCommandProperty(contentRect, innerDataProp);
                 }
                 else if (cmdData is DialogueTextCommand)
                 {
-                    // 不再画折叠箭头，直接画内容，省去点击展开的步骤
-                    // 计算布局
-                    Rect speakerRect = new Rect(rect.x, rect.y, 80, rect.height); // 左边名字
-                    Rect textRect = new Rect(rect.x + 85, rect.y, rect.width - 85, rect.height); // 右边内容
+                    // === 剧本模式核心修复 ===
+                    // 直接在起始位置画输入框，不再受 Foldout 干扰
+
+                    // 名字栏 (左侧)
+                    Rect speakerRect = new Rect(contentAreaRect.x, contentAreaRect.y, 30, contentAreaRect.height);
+                    // 内容栏 (右侧，占据剩余安全宽度)
+                    Rect textRect = new Rect(contentAreaRect.x + 35, contentAreaRect.y, contentAreaRect.width - 35, contentAreaRect.height);
 
                     var speakerProp = innerDataProp.FindPropertyRelative("Speaker");
                     var contentProp = innerDataProp.FindPropertyRelative("Content");
 
-                    // 名字栏
                     EditorGUI.PropertyField(speakerRect, speakerProp, GUIContent.none);
 
-                    // 内容栏 (使用 TextArea 支持多行)
+                    // TextArea 现在处于顶层，没有任何控件覆盖它，光标操作恢复正常
                     contentProp.stringValue = EditorGUI.TextArea(textRect, contentProp.stringValue, EditorStyles.textArea);
                 }
                 else
                 {
-                    // 通用绘制，也传 innerDataProp
+                    Rect contentRect = new Rect(contentAreaRect.x, contentAreaRect.y + EditorGUIUtility.singleLineHeight + 2, contentAreaRect.width, contentAreaRect.height);
+                    EditorGUI.LabelField(new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight), summary);
                     DrawGenericCommandProperties(innerDataProp, contentRect);
                 }
             }
 
-            // --- 新增：通用删除按钮 (右上角的小X) ---
-            // 计算位置：最右侧，留出一点边距
-            float buttonSize = 20;
-            Rect deleteRect = new Rect(rect.x + rect.width - buttonSize, rect.y, buttonSize, EditorGUIUtility.singleLineHeight);
+            // --- 4. 绘制右侧按钮组 ---
 
-            // 使用一个小样式的按钮
-            if (GUI.Button(deleteRect, "X", EditorStyles.miniButton))
+            // [折叠/展开按钮]
+            // 根据状态显示不同图标：_ (最小化) 或 □ (最大化/展开)
+            string foldIcon = isFoldedProp.boolValue ? "□" : "_";
+            if (GUI.Button(foldBtnRect, foldIcon, EditorStyles.miniButton))
             {
-                // 获取当前元素在 list 中的索引
-                // 注意：wrapperProp 是 GetArrayElementAtIndex 获取的，我们可以反推
-                // 或者更简单的，把 index 参数传给 DrawCommandElement (推荐做法)
+                isFoldedProp.boolValue = !isFoldedProp.boolValue;
+            }
 
-                // 由于这里没有传 index，我们用一个稍微 "黑魔法" 一点但很方便的方法：
-                // 直接操作 property 删除自身
-                DeleteElement(element);
+            // [删除按钮]
+            if (GUI.Button(deleteRect, "×", EditorStyles.miniButton))
+            {
+                EditorApplication.delayCall += () =>
+                {
+                    if (element.serializedObject != null) DeleteElement(element);
+                };
+            }
+
+            // --- 5. 事件穿透防护 (关键) ---
+            // 只要鼠标点击了这两个按钮的区域，就吞噬事件，防止 List 选中/拖拽/缩放
+            if (Event.current.type == EventType.MouseDown)
+            {
+                if (deleteRect.Contains(Event.current.mousePosition) || foldBtnRect.Contains(Event.current.mousePosition))
+                {
+                    Event.current.Use();
+                }
             }
         }
 
