@@ -17,7 +17,7 @@ namespace My.UI
         [Header("SuperScrollView")]
         public LoopListView2 listView;          // 拖入场景中的 LoopListView2
         public RectTransform viewport;          // ScrollRect 的 Viewport，控制可见高度=5*itemHeight
-        public float itemHeight = 20f;          // 与Prefab高度一致
+        public float itemHeight = 32f;          // 与Prefab高度一致
         public string itemPrefabName = "TabItem"; // 在 SuperScrollView 的 ItemPrefabMgr 里注册的名字
 
         [Header("Data")]
@@ -153,7 +153,8 @@ namespace My.UI
             listView.RefreshAllShownItem();
             ScrollToCenter(currentIndex);
 
-            this.viewport.sizeDelta = new(this.viewport.sizeDelta.x, data.Count * itemHeight);
+            this.ScrollView.sizeDelta = new(this.ScrollView.sizeDelta.x, data.Count * itemHeight);
+            //this.viewport.sizeDelta = new(this.viewport.sizeDelta.x, 222);
         }
 
     }
