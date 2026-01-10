@@ -33,7 +33,7 @@ MonoBehaviour:
   - InteractId: 0
     Label: "\u7ED9\u4E881g"
     UnLabel: "\u7ED9\u4E881g"
-    HideWhenFail: 0
+    HideWhenFail: 1
     NeedDist: 0
     CheckCommonCond:
     - Type: 4
@@ -59,7 +59,7 @@ MonoBehaviour:
   - InteractId: 1
     Label: "\u7ED9\u4E883g"
     UnLabel: "\u7ED9\u4E883g"
-    HideWhenFail: 0
+    HideWhenFail: 1
     NeedDist: 0
     CheckCommonCond:
     - Type: 4
@@ -75,6 +75,11 @@ MonoBehaviour:
       Param2: 0
       Param3: p2
       Param4: 
+    - CheckType: 2
+      Param1: 0
+      Param2: 0
+      Param3: p1
+      Param4: 
     Outputs:
     - OutputType: 10
       Param1: 0
@@ -85,7 +90,7 @@ MonoBehaviour:
   - InteractId: 2
     Label: "\u7ED9\u4E885g"
     UnLabel: "\u7ED9\u4E885g"
-    HideWhenFail: 0
+    HideWhenFail: 1
     NeedDist: 0
     CheckCommonCond:
     - Type: 4
@@ -101,6 +106,11 @@ MonoBehaviour:
       Param2: 0
       Param3: p3
       Param4: 
+    - CheckType: 2
+      Param1: 0
+      Param2: 0
+      Param3: p2
+      Param4: 
     Outputs:
     - OutputType: 10
       Param1: 0
@@ -113,14 +123,7 @@ MonoBehaviour:
     UnLabel: "\u529D\u8BF1"
     HideWhenFail: 0
     NeedDist: 0
-    CheckCommonCond:
-    - Type: 4
-      Param1: 5
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: gold
-      Param6: 
+    CheckCommonCond: []
     CheckInteractCond:
     - CheckType: 3
       Param1: 0

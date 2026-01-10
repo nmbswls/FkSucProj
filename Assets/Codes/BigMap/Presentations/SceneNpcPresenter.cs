@@ -272,13 +272,22 @@ namespace My.Map.Scene
 
             if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
-                for(int i=0;i< NpcEntity.cacheCfg.InteractList.Count;i++)
+                var logicInts = NpcEntity.InteractComp.InteractInfos;
+                foreach (var i in logicInts)
                 {
-                    ret.Add(new SceneInteractSelection()
+                    if (i.NeedDist != 0 && dist >= i.NeedDist)
                     {
-                        SelectId = i,
-                        SelectContent = NpcEntity.cacheCfg.InteractList[i].Label,
-                    });
+                        continue;
+                    }
+                    bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
+                    if (canInt || !i.HideWhenFail)
+                    {
+                        ret.Add(new SceneInteractSelection()
+                        {
+                            SelectId = i.InteractId,
+                            SelectContent = i.Label,
+                        });
+                    }
                 }
             }
             else

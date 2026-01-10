@@ -641,7 +641,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public void PlayDialog(string dialogId)
     {
-        var dialogAsset = Resources.Load<TextAsset>($"Dialog/output/{dialogId}");
+        var dialogAsset = Resources.Load<TextAsset>($"Dialogue/output/{dialogId}");
         if(dialogAsset == null)
         {
             Debug.Log("PlayerDialog not found dialog " + dialogId);
