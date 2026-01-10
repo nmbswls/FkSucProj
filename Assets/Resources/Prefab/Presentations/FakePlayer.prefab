@@ -127,7 +127,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 323814376726441341}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0de6285771de77f4cb9ec8d5152fb115, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ded39603a22b4644bbdfde35369b81e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UnitPresenter: {fileID: 0}
@@ -877,11 +877,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4787604529858390943}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aae91b5eeb011ec41ad090ec552d5c6e, type: 3}
+  m_Script: {fileID: 11500000, guid: ba3e617cc2e13904699d53503c931326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponAnim: {fileID: 52621759635963629}
-  WeaponCtrl: {fileID: 9213344019219386193}
+  weaponAnim: {fileID: 0}
+  WeaponCtrl: {fileID: 0}
   HitId: 0
 --- !u!61 &2425733097804743784
 BoxCollider2D:
@@ -1376,7 +1376,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5703681607792972550}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aae91b5eeb011ec41ad090ec552d5c6e, type: 3}
+  m_Script: {fileID: 11500000, guid: ba3e617cc2e13904699d53503c931326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponAnim: {fileID: 0}

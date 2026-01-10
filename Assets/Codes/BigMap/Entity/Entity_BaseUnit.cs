@@ -136,6 +136,7 @@ namespace My.Map
                 TickActivateState(dt);
             }
 
+
             UpdateControlledMove(dt);
             // 外力自然衰减（除非在Dash中保持常速）
             if (controlledMoveCtx == null)

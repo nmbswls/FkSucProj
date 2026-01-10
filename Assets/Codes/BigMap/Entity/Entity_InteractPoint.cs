@@ -50,7 +50,7 @@ namespace My.Map.Entity
             var curState = GetCurrentStatusInfo();
             if (curState != null)
             {
-                InteractComp.RegisterInteractInfo(curState.InteractInfos);
+                InteractComp.RefreshInteractInfo(curState.InteractInfos);
             }
 
             CheckStatusCondition();
@@ -113,6 +113,11 @@ namespace My.Map.Entity
             }
         }
 
+        /// <summary>
+        /// ÊÇ·ñÕýÔÚ½»»¥
+        /// </summary>
+        public bool IsInteracting { get { return InteractComp.IsInteracting; } }
+
         public List<MapInteractInfo> InteractInfos { get { return InteractComp.InteractInfos; } }
 
         public bool TryTriggerInteract(int interactId)
@@ -139,6 +144,8 @@ namespace My.Map.Entity
 
             // µÍÆµ¼ì²é×´Ì¬ÇÐ»»
             LowFreqCheckStatusChange();
+
+            InteractComp?.TickInteract(dt);
         }
 
         private float _lowFreqCheckStatusTimer = 0;
@@ -165,14 +172,22 @@ namespace My.Map.Entity
             var curState = GetCurrentStatusInfo();
             if (curState != null)
             {
-                InteractComp.RegisterInteractInfo(curState.InteractInfos);
+                InteractComp.RefreshInteractInfo(curState.InteractInfos);
             }
             else
             {
-                InteractComp.RegisterInteractInfo(new());
+                InteractComp.RefreshInteractInfo(new());
             }
 
             OnStatusChange?.Invoke(changeView);
+        }
+
+        public void DoAnimation(string animName)
+        {
+            //
+            Debug.Log("DoAnimation doanimation");
+
+            AddAnimLayer(animName);
         }
     }
 

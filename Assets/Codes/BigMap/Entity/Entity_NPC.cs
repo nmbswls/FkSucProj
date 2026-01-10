@@ -165,7 +165,7 @@ namespace My.Map
             }
 
             InteractComp = new(this);
-            InteractComp.RegisterInteractInfo(cacheCfg.InteractList);
+            InteractComp.RefreshInteractInfo(cacheCfg.InteractList);
         }
 
         protected override void InitAttribute()
@@ -223,8 +223,12 @@ namespace My.Map
                 TickHMode();
             }
 
+            InteractComp?.TickInteract(dt);
             //TickGaze();
         }
+
+
+
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
         {
@@ -391,6 +395,11 @@ namespace My.Map
             {
                 combatStateComp.OnTakeDamage(srcEntityId.Value, Math.Abs(delta));
             }
+        }
+
+        public void DoAnimation(string animName)
+        {
+            AddAnimLayer(animName);
         }
     }
 }

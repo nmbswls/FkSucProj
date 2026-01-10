@@ -47,6 +47,12 @@ namespace My.Map.Scene
             var ret = new List<SceneInteractSelection>();
             //if (dist > 0.5f) return ret;
             if (IsSwitching) return ret;
+
+            if(RealLogic.IsInteracting)
+            {
+                return ret;
+            }
+
             var logicInts = RealLogic.InteractInfos;
 
             foreach (var i in logicInts)
@@ -73,6 +79,12 @@ namespace My.Map.Scene
         public bool CanInteractEnable(float dist)
         {
             if (IsSwitching) return false;
+
+            if (RealLogic.IsInteracting)
+            {
+                return false;
+            }
+
             int enableOne = 0;
             var logicInts = RealLogic.InteractInfos;
 
@@ -97,6 +109,8 @@ namespace My.Map.Scene
             base.Bind(logic);
 
             RealLogic.OnStatusChange += OnStatusChanged;
+
+            RealLogic.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
         }
 
         public override void Unbind()
@@ -104,10 +118,16 @@ namespace My.Map.Scene
             if(RealLogic != null)
             {
                 RealLogic.OnStatusChange -= OnStatusChanged;
+                RealLogic.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
             }
 
             IsSwitching = false;
             base.Unbind();
+        }
+
+        public void OnEventAnimLayerUpdate()
+        {
+            
         }
 
         public void OnStatusChanged(StateChangeView changeView)

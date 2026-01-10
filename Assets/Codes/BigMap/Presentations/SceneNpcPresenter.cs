@@ -111,6 +111,10 @@ namespace My.Map.Scene
             if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
                 //if (dist > 0.5f) return false;
+                if (NpcEntity.InteractComp.IsInteracting)
+                {
+                    return false;
+                }
 
                 var logicInts = NpcEntity.InteractComp.InteractInfos;
                 int enableOne = 0;

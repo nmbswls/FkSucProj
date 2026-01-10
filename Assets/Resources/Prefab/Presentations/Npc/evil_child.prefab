@@ -70,7 +70,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 28288635016822338}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aae91b5eeb011ec41ad090ec552d5c6e, type: 3}
+  m_Script: {fileID: 11500000, guid: ba3e617cc2e13904699d53503c931326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponAnim: {fileID: 0}
@@ -257,10 +257,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6559154155947139825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0de6285771de77f4cb9ec8d5152fb115, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ded39603a22b4644bbdfde35369b81e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnitPresenter: {fileID: 6462304013100160239}
+  UnitPresenter: {fileID: 0}
   WeaponOnes: []
 --- !u!1 &6716341979371502919
 GameObject:
@@ -377,7 +377,9 @@ MonoBehaviour:
   wallsLayer:
     serializedVersion: 2
     m_Bits: 0
+  BindEffectRoot: {fileID: 0}
   MainFlasher: {fileID: 0}
+  SpecialAnimClips: []
 --- !u!114 &-5488420210160331190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -570,11 +572,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7241549019643066927}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aae91b5eeb011ec41ad090ec552d5c6e, type: 3}
+  m_Script: {fileID: 11500000, guid: ba3e617cc2e13904699d53503c931326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponAnim: {fileID: 0}
-  WeaponCtrl: {fileID: 637426610165199311}
+  WeaponCtrl: {fileID: 0}
   HitId: 0
 --- !u!50 &8922505477894234475
 Rigidbody2D:

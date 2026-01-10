@@ -32,6 +32,9 @@ namespace My.Config
             UnsetLocalSwitch,
 
             OpenDialog,
+
+            SelfAnim,
+            Wait,
         }
 
         public EOutputType OutputType;

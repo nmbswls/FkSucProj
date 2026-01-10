@@ -42,6 +42,11 @@ public partial class DialoguePlayer : MonoBehaviour
     private int stepIndex;
     private bool isPlaying;
 
+    public bool IsPlaying
+    {
+        get { return isPlaying; }
+    }
+
     // À≥–Ú÷¥––”Œ±Í
     private int currentCmdIndex;
 

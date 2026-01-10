@@ -4,6 +4,7 @@ using My.Config;
 using My.Map.Entity;
 using UnityEngine;
 using static My.GameLogicManager;
+using static UnityEditor.Rendering.CameraUI;
 
 namespace My.Map
 {
@@ -16,6 +17,8 @@ namespace My.Map
         bool TryTriggerInteract(int interactId);
 
         bool CheckTriggerInteract(int interactId);
+
+        bool IsInteracting { get; }
     }
 
 
@@ -32,6 +35,8 @@ namespace My.Map
         bool CheckLocalSwitch(string switchName);
 
         void SetLocalSwitch(string switchName, bool isOn);
+
+        void DoAnimation(string animName);
     }
 
 
@@ -42,15 +47,84 @@ namespace My.Map
         private List<MapInteractInfo> interactInfos = new();
         public List<MapInteractInfo> InteractInfos { get { return interactInfos; } }
 
+        private bool _isInteracting = false;
+        public bool IsInteracting { get { return _isInteracting; } }
+
+        private int _currOutputIdx = 0;
+        private MapInteractInfo? _currInteract = null;
+        private float _pendingParam1 = 0;
+
         public EntityInteractComp(IEntityInteractable owner)
         {
             this.Owner = owner;
         }
 
-        public void RegisterInteractInfo(List<MapInteractInfo> interactInfos)
+        public void RefreshInteractInfo(List<MapInteractInfo> interactInfos)
         {
             this.interactInfos.Clear();
             this.interactInfos.AddRange(interactInfos);
+
+            if(_isInteracting)
+            {
+                Debug.LogError("RefreshInteractInfo when interacting.");
+                DoInteractEnd();
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dt"></param>
+        public void TickInteract(float dt)
+        {
+            if(_isInteracting)
+            {
+                if(_currOutputIdx < _currInteract.Outputs.Count)
+                {
+                    DoInteractEnd();
+                    return;
+                }
+
+                bool pendingFinish = false;
+                switch (_currInteract.Outputs[_currOutputIdx].OutputType)
+                {
+                    case LogicInteractOutput.EOutputType.Wait:
+                        {
+                            _pendingParam1 += dt;
+
+                            if (_pendingParam1 > _currInteract.Outputs[_currOutputIdx].Param1 * 0.001f)
+                            {
+                                pendingFinish = true;
+                            }
+                        }
+                        break;
+                    case LogicInteractOutput.EOutputType.SelfAnim:
+                        {
+                            _pendingParam1 += dt;
+
+                            if (_pendingParam1 > _currInteract.Outputs[_currOutputIdx].Param1 * 0.001f)
+                            {
+                                pendingFinish = true;
+                            }
+                        }
+                        break;
+                    default:
+                        {
+                            pendingFinish = true;
+                            break;
+                        }
+                }
+
+                if (pendingFinish)
+                {
+                    _currOutputIdx += 1;
+                    _pendingParam1 = 0;
+
+                    HandleInteractOutputs();
+                }
+            }
+            // 处理
         }
 
 
@@ -115,7 +189,7 @@ namespace My.Map
         {
             if(!CheckTriggerInteract(interactId))
             {
-                //return false;
+                return false;
             }
 
             var interactItem = interactInfos.Find((item) => item.InteractId == interactId);
@@ -124,33 +198,54 @@ namespace My.Map
                 return false;
             }
 
+            _isInteracting = true;
+            _currOutputIdx = 0;
+            _currInteract = interactItem;
 
-            foreach (var output in interactItem.Outputs)
+            HandleInteractOutputs();
+
+            return true;
+        }
+
+        private void HandleInteractOutputs()
+        {
+            if(_currInteract == null)
             {
+                DoInteractEnd();
+                return;
+            }
+
+            bool errOccur = false;
+
+            while(_currOutputIdx < _currInteract.Outputs.Count)
+            {
+                bool pending = false;
+                var output = _currInteract.Outputs[_currOutputIdx];
                 switch (output.OutputType)
                 {
-                    case Config.LogicInteractOutput.EOutputType.ChangeSelfStatus:
+                    case LogicInteractOutput.EOutputType.ChangeSelfStatus:
                         {
-                            if(Owner is not LogicEntityInteractPoint intPoint)
+                            if (Owner is not LogicEntityInteractPoint intPoint)
                             {
                                 Debug.Log("TryTriggerInteract not valid change self status");
-                                return false;
+                                errOccur = true;
+                                break;
                             }
                             intPoint.ChangeSelfStatus((int)output.Param1);
                         }
                         break;
-                    case Config.LogicInteractOutput.EOutputType.Teleport:
+                    case LogicInteractOutput.EOutputType.Teleport:
                         {
                             string areaName = output.Param3;
                             string namedP = output.Param4;
 
                             // 原地传送
-                            if(areaName == Owner.LogicManager.AreaManager.AreaId)
+                            if (areaName == Owner.LogicManager.AreaManager.AreaId)
                             {
-                                if(string.IsNullOrEmpty(namedP))
+                                if (string.IsNullOrEmpty(namedP))
                                 {
                                     var p = Owner.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(namedP);
-                                    if(p == null)
+                                    if (p == null)
                                     {
                                         break;
                                     }
@@ -163,12 +258,13 @@ namespace My.Map
                             }
                         }
                         break;
-                    case Config.LogicInteractOutput.EOutputType.ActivateEventGroup:
+                    case LogicInteractOutput.EOutputType.ActivateEventGroup:
                         {
-                            if( Owner is not EventGroupLogicEntity egPoint)
+                            if (Owner is not EventGroupLogicEntity egPoint)
                             {
                                 Debug.Log("TryTriggerInteract ActivateEventGroup valid egpoint");
-                                return false;
+                                errOccur = true;
+                                break;
                             }
 
                             egPoint.ActivateSleepyMembers();
@@ -177,20 +273,21 @@ namespace My.Map
                     case LogicInteractOutput.EOutputType.SpecialMoveTo:
                         {
                             var player = Owner.LogicManager.playerLogicEntity;
-                            
+
                             // 尝试获取覆盖的值
                             var pName = Owner.GetRuntimeVariable(output.Param3);
-                            if(string.IsNullOrEmpty(pName))
+                            if (string.IsNullOrEmpty(pName))
                             {
                                 pName = output.Param3;
                             }
 
                             var p = Owner.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(pName);
-                            if(p == null)
+                            if (p == null)
                             {
                                 Debug.Log("special move no point found");
-                                return false;
-                            } 
+                                errOccur = true;
+                                break;
+                            }
 
                             float delay = output.Param1 * 0.001f;
                             LogicFightEffectContext ctx = new LogicFightEffectContext(Owner.LogicManager, new EffectSourceInfo()
@@ -207,7 +304,7 @@ namespace My.Map
                             {
 
                             });
-                            Owner.LogicManager.HandleLogicFightEffect(new MapAbilityEffectTeleportToCfg() { PendingTime = delay}, ctx);
+                            Owner.LogicManager.HandleLogicFightEffect(new MapAbilityEffectTeleportToCfg() { PendingTime = delay }, ctx);
 
                         }
                         break;
@@ -251,9 +348,51 @@ namespace My.Map
                         }
                         break;
 
+                    #region pending 持续性的
+
+                    case LogicInteractOutput.EOutputType.Wait:
+                        {
+                            pending = true;
+                            _pendingParam1 = 0;
+                        }
+                        break;
+                    case LogicInteractOutput.EOutputType.SelfAnim:
+                        {
+                            pending = true;
+                            _pendingParam1 = 0;
+
+                            var animName = output.Param3;
+                            Owner.DoAnimation(animName);
+                        }
+                        break;
+
+                    #endregion
+
+
                 }
+
+                if (pending)
+                {
+                    break;
+                }
+                _currOutputIdx += 1;
             }
-            return true;
+
+            if (errOccur || _currOutputIdx >= _currInteract.Outputs.Count)
+            {
+                DoInteractEnd();
+            }
+        }
+
+        private void DoInteractEnd()
+        {
+            Debug.Log($"DoInteractEnd. {_currInteract.InteractId}");
+
+            _isInteracting = false;
+            _currOutputIdx = 0;
+            _currInteract = null;
+
+            _pendingParam1 = 0;
         }
     }
 
