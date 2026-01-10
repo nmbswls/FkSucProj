@@ -4,6 +4,7 @@ using UnityEngine;
 using My.Map.Scene;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Logic;
 
 
 namespace My.MapExport

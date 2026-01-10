@@ -38,6 +38,13 @@ namespace My.Dialog
     }
 
     [Serializable]
+    public class DialogCommandData4JumpTo : DialogCommandData
+    {
+        public string TargetStepId;
+    }
+
+
+    [Serializable]
     public class DialogCommandData4SetImage : DialogCommandData
     {
         public string ImageName;

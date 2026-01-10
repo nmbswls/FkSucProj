@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using My.Map;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,6 +41,8 @@ namespace My.UI
 
         // 选择状态
         private bool showingChoices;
+        private float choiceLimitTime;
+        private float choiceLimitTimeLeft;
         private Action<int> onChoiceSelected;
 
         public PortraitManager portraits;
@@ -60,6 +63,18 @@ namespace My.UI
                     tick -= charInterval;
                     StepTypewriter();
                     if (!typing) break;
+                }
+            }
+
+            if(showingChoices)
+            {
+                if(choiceLimitTime > 0)
+                {
+                    choiceLimitTimeLeft -= LogicTime.deltaTime;
+                    if(choiceLimitTimeLeft <= 0)
+                    {
+                        OnChoiceClick(0);
+                    }
                 }
             }
         }
@@ -148,10 +163,14 @@ namespace My.UI
         }
 
         // 选择系统（非协程）
-        public void StartChoices(List<string> options, Action<int> onSelected)
+        public void StartChoices(List<string> options, Action<int> onSelected, float limitTime = 0)
         {
             showingChoices = true;
             onChoiceSelected = onSelected;
+
+            choiceLimitTime = limitTime;
+            choiceLimitTimeLeft = limitTime;
+
             if (choicePanel) choicePanel.SetActive(true);
 
             // 清空旧按钮
@@ -181,6 +200,10 @@ namespace My.UI
             if (choicePanel) choicePanel.SetActive(false);
             var cb = onChoiceSelected;
             onChoiceSelected = null;
+
+            choiceLimitTime = 0;
+            choiceLimitTimeLeft = 0;
+
             cb?.Invoke(index);
         }
     }

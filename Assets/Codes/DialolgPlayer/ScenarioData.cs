@@ -3,62 +3,62 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class ScenarioData
-{
-    public string id;
-    public List<StepData> steps = new List<StepData>();
-}
+//[Serializable]
+//public class ScenarioData
+//{
+//    public string id;
+//    public List<StepData> steps = new List<StepData>();
+//}
 
-[Serializable]
-public class StepData
-{
-    public string label; // 可选，作为跳转锚点
-    public List<CommandData> commands = new List<CommandData>();
-}
+//[Serializable]
+//public class StepData
+//{
+//    public string label; // 可选，作为跳转锚点
+//    public List<CommandData> commands = new List<CommandData>();
+//}
 
 
-[Serializable]
-public class ChoiceOption
-{
-    public string id;                 // 用于合并 OR：允许多个同 id 的选项
-    public string text;               // 或使用 textKey
-    public string textKey;
-    public string jumpLabel;
+//[Serializable]
+//public class ChoiceOption
+//{
+//    public string id;                 // 用于合并 OR：允许多个同 id 的选项
+//    public string text;               // 或使用 textKey
+//    public string textKey;
+//    public string jumpLabel;
 
-    // AND 条件子句：每个字符串一个子句，全部满足才显示
-    // 形如：condType#p1|p2|p3|p4
-    public class OneClause
-    {
-        public string type;
-        public List<string> ps;
-    }
-    public List<OneClause> condClauses;  // null 或 空列表代表无条件
-}
+//    // AND 条件子句：每个字符串一个子句，全部满足才显示
+//    // 形如：condType#p1|p2|p3|p4
+//    public class OneClause
+//    {
+//        public string type;
+//        public List<string> ps;
+//    }
+//    public List<OneClause> condClauses;  // null 或 空列表代表无条件
+//}
 
-[Serializable]
-public class CommandData
-{
-    public string type; // 例如 "TypeText","ShowPortrait","CameraMove"...
-    public bool wait = true;
-    // 通用参数容器：可用键值字典或 JSON 可序列化的简单对象
-    public SerializableDict<string, string> s; // 字符串参数（id、keys、names）
-    public SerializableDict<string, float> f;  // 浮点参数（duration、fade、fov等）
-    public SerializableDict<string, int> i;    // 整数参数（索引、计数）
-    public List<ChoiceOption> choiceOptions; // Choice 专用
-}
+//[Serializable]
+//public class CommandData
+//{
+//    public string type; // 例如 "TypeText","ShowPortrait","CameraMove"...
+//    public bool wait = true;
+//    // 通用参数容器：可用键值字典或 JSON 可序列化的简单对象
+//    public SerializableDict<string, string> s; // 字符串参数（id、keys、names）
+//    public SerializableDict<string, float> f;  // 浮点参数（duration、fade、fov等）
+//    public SerializableDict<string, int> i;    // 整数参数（索引、计数）
+//    public List<ChoiceOption> choiceOptions; // Choice 专用
+//}
 
-// 简单可序列化字典（JsonUtility 不支持 Dictionary，可用自定义包装）
-[Serializable]
-public class SerializableDict<TKey, TValue>
-{
-    public List<TKey> keys = new List<TKey>();
-    public List<TValue> values = new List<TValue>();
-    public void Add(TKey k, TValue v) { keys.Add(k); values.Add(v); }
-    public bool TryGetValue(TKey k, out TValue v)
-    {
-        int idx = keys.IndexOf(k);
-        if (idx >= 0) { v = values[idx]; return true; }
-        v = default; return false;
-    }
-}
+//// 简单可序列化字典（JsonUtility 不支持 Dictionary，可用自定义包装）
+//[Serializable]
+//public class SerializableDict<TKey, TValue>
+//{
+//    public List<TKey> keys = new List<TKey>();
+//    public List<TValue> values = new List<TValue>();
+//    public void Add(TKey k, TValue v) { keys.Add(k); values.Add(v); }
+//    public bool TryGetValue(TKey k, out TValue v)
+//    {
+//        int idx = keys.IndexOf(k);
+//        if (idx >= 0) { v = values[idx]; return true; }
+//        v = default; return false;
+//    }
+//}

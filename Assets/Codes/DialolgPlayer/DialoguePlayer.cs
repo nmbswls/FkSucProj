@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using My.Dialog;
 using My.UI;
 using UnityEngine;
 
@@ -17,7 +18,6 @@ public class DialogueRuntime
     // 本地化函数：传入 key 返回文本；如果不用本地化，可置空或返回 key
     public Func<string, string> Localize;
 
-    // 剧情跳转：供命令或 UI 回调触发跳转（可由外部绑定为 player.JumpToLabel）
     public Action<string> JumpTo;
 }
 
@@ -35,8 +35,10 @@ public partial class DialoguePlayer : MonoBehaviour
 
     // 播放态
     private Action? OnPlayEnd;
-    private ScenarioData dataRef;
+
+    private DialogueData dataRef;
     private DialogueRuntime runtimeRef;
+
     private int stepIndex;
     private bool isPlaying;
 
@@ -53,7 +55,7 @@ public partial class DialoguePlayer : MonoBehaviour
     private bool waitingForNextStep;
 
     // label 索引
-    private readonly Dictionary<string, int> labelToStep = new Dictionary<string, int>();
+    //private readonly Dictionary<string, int> labelToStep = new Dictionary<string, int>();
 
     // 跳转标记（用于在命令回调后切 Step）
     private bool pendingJump;
@@ -128,30 +130,30 @@ public partial class DialoguePlayer : MonoBehaviour
         this.OnPlayEnd = null;
     }
 
-    private void BuildLabelIndex(ScenarioData data)
+    private void BuildLabelIndex(DialogueData data)
     {
-        labelToStep.Clear();
-        for (int i = 0; i < data.steps.Count; i++)
-        {
-            var lab = data.steps[i].label;
-            if (!string.IsNullOrEmpty(lab))
-            {
-                labelToStep[lab] = i; // 后者覆盖前者
-            }
-            if (data.steps[i].commands != null)
-            {
-                foreach (var c in data.steps[i].commands)
-                {
-                    if (c.type == "Label" && c.s != null && c.s.TryGetValue("label", out var lbl))
-                    {
-                        labelToStep[lbl] = i;
-                    }
-                }
-            }
-        }
+        //labelToStep.Clear();
+        //for (int i = 0; i < data.Steps.Count; i++)
+        //{
+        //    var lab = data.Steps[i].Id;
+        //    if (!string.IsNullOrEmpty(lab))
+        //    {
+        //        labelToStep[lab] = i; // 后者覆盖前者
+        //    }
+        //    if (data.Steps[i].Commands != null)
+        //    {
+        //        foreach (var c in data.Steps[i].Commands)
+        //        {
+        //            //if (c.type == "Label" && c.s != null && c.s.TryGetValue("label", out var lbl))
+        //            //{
+        //            //    labelToStep[lbl] = i;
+        //            //}
+        //        }
+        //    }
+        //}
     }
 
-    public void PlayFromData(ScenarioData data, DialogueRuntime runtime, Action? onPlayEnd)
+    public void PlayFromData(DialogueData data, DialogueRuntime runtime, Action? onPlayEnd)
     {
         runtimeRef = runtime;
         dataRef = data;
@@ -165,22 +167,24 @@ public partial class DialoguePlayer : MonoBehaviour
         this.OnPlayEnd = onPlayEnd;
     }
 
-    public void JumpToLabel(string label)
+    public void JumpToStep(string stepId)
     {
-        if (labelToStep.TryGetValue(label, out int step))
+        var stepIdx = dataRef.Steps.FindIndex((item) => item.Id == stepId);
+        if(stepIdx == -1)
         {
-            stepIndex = step;
-            pendingJump = true;
+            //Debug.LogWarning($"JumpToStep fail: {stepId}");
+            this.stepIndex = -1;
+            this.pendingJump = true;
+            return;
         }
-        else
-        {
-            Debug.LogWarning($"Label not found: {label}");
-        }
+
+        this.stepIndex = stepIdx;
+        this.pendingJump = true;
     }
 
     private void StartStepFromData()
     {
-        if (dataRef == null || stepIndex < 0 || stepIndex >= dataRef.steps.Count)
+        if (dataRef == null || stepIndex < 0 || stepIndex >= dataRef.Steps.Count)
         {
             Stop();
             return;
@@ -206,8 +210,8 @@ public partial class DialoguePlayer : MonoBehaviour
             return;
         }
 
-        var step = dataRef.steps[stepIndex];
-        var commands = step.commands ?? new List<CommandData>();
+        var step = dataRef.Steps[stepIndex];
+        var commands = step.Commands ?? new List<DialogCommandData>();
 
         // 所有命令执行完毕，进入“等待下一 Step”
         if (currentCmdIndex >= commands.Count)
@@ -227,7 +231,7 @@ public partial class DialoguePlayer : MonoBehaviour
         ExecuteDataCommand(cd);
     }
 
-    private void ExecuteDataCommand(CommandData cd)
+    private void ExecuteDataCommand(DialogCommandData cd)
     {
         // 为了防止“瞬间回调连锁推进”，我们在每个完成回调前引入最小一帧延迟
         void SafeComplete()
@@ -241,21 +245,15 @@ public partial class DialoguePlayer : MonoBehaviour
             driver.Run(0f, _ => { }, () => CommandCompletedFromData(cd));
         }
 
-        switch (cd.type)
+        switch (cd)
         {
-            case "TypeText":
+            case DialogCommandData4Text cd4Text:
                 {
-                    string name = TryS(cd, "name");
-                    string text = TryS(cd, "text");
-                    string textKey = TryS(cd, "textKey");
-                    if (!string.IsNullOrEmpty(textKey) && runtimeRef?.Localize != null)
-                    {
-                        text = runtimeRef.Localize(textKey);
-                    }
-                    string voice = TryS(cd, "voice");
+                    string name = cd4Text.Speaker;
+                    string text = cd4Text.Content;
 
                     // 让 TypeText 播完后“不直接推进下一条”，而是进入“等待继续”阶段
-                    ui.StartTypeText(name, text ?? "", voice, SkipMode, () =>
+                    ui.StartTypeText(name, text ?? "", string.Empty, SkipMode, () =>
                     {
                         // 一句对白结束 -> 进入等待继续（等待用户/Auto/Skip）
                         commandRunning = false;
@@ -266,86 +264,78 @@ public partial class DialoguePlayer : MonoBehaviour
                     break;
                 }
 
-            case "ShowPortrait":
-                {
-                    string slot = TryS(cd, "slot", "Left");
-                    string charId = TryS(cd, "characterId");
-                    string expr = TryS(cd, "expressionId", "default");
-                    float fade = TryF(cd, "fade", 0.3f);
-                    ui.portraits.Show(slot, charId, expr, fade, driver, SafeComplete);
-                    break;
-                }
+            //case "ShowPortrait":
+            //    {
+            //        string slot = TryS(cd, "slot", "Left");
+            //        string charId = TryS(cd, "characterId");
+            //        string expr = TryS(cd, "expressionId", "default");
+            //        float fade = TryF(cd, "fade", 0.3f);
+            //        ui.portraits.Show(slot, charId, expr, fade, driver, SafeComplete);
+            //        break;
+            //    }
 
-            case "ChangeExpression":
-                {
-                    string slot = TryS(cd, "slot", "Left");
-                    string expr = TryS(cd, "expressionId", "default");
-                    float fade = TryF(cd, "fade", 0.2f);
-                    ui.portraits.ChangeExpression(slot, expr, fade, driver, SafeComplete);
-                    break;
-                }
+            //case "ChangeExpression":
+            //    {
+            //        string slot = TryS(cd, "slot", "Left");
+            //        string expr = TryS(cd, "expressionId", "default");
+            //        float fade = TryF(cd, "fade", 0.2f);
+            //        ui.portraits.ChangeExpression(slot, expr, fade, driver, SafeComplete);
+            //        break;
+            //    }
 
-            case "HidePortrait":
-                {
-                    string slot = TryS(cd, "slot", "Left");
-                    float fade = TryF(cd, "fade", 0.3f);
-                    ui.portraits.Hide(slot, fade, driver, SafeComplete);
-                    break;
-                }
+            //case "HidePortrait":
+            //    {
+            //        string slot = TryS(cd, "slot", "Left");
+            //        float fade = TryF(cd, "fade", 0.3f);
+            //        ui.portraits.Hide(slot, fade, driver, SafeComplete);
+            //        break;
+            //    }
 
-            case "CameraMove":
-                {
-                    // 如果你没有实现摄像机动画，仍然用短延迟完成，避免瞬间连锁推进
-                    // cam?.MoveTo(..., () => SafeComplete());
-                    driver.Run(0.01f, _ => { }, SafeComplete);
-                    break;
-                }
+            //case "CameraMove":
+            //    {
+            //        // 如果你没有实现摄像机动画，仍然用短延迟完成，避免瞬间连锁推进
+            //        // cam?.MoveTo(..., () => SafeComplete());
+            //        driver.Run(0.01f, _ => { }, SafeComplete);
+            //        break;
+            //    }
 
-            case "CameraZoom":
-                {
-                    driver.Run(0.01f, _ => { }, SafeComplete);
-                    break;
-                }
+            //case "CameraZoom":
+            //    {
+            //        driver.Run(0.01f, _ => { }, SafeComplete);
+            //        break;
+            //    }
 
-            case "CameraShake":
-                {
-                    driver.Run(0.01f, _ => { }, SafeComplete);
-                    break;
-                }
+            //case "CameraShake":
+            //    {
+            //        driver.Run(0.01f, _ => { }, SafeComplete);
+            //        break;
+            //    }
 
-            case "PlaySE":
-                {
-                    string name = TryS(cd, "name");
-                    // audioBus?.PlaySE(name);
-                    driver.Run(0f, _ => { }, SafeComplete);
-                    break;
-                }
+            //case "PlaySE":
+            //    {
+            //        string name = TryS(cd, "name");
+            //        // audioBus?.PlaySE(name);
+            //        driver.Run(0f, _ => { }, SafeComplete);
+            //        break;
+            //    }
 
-            case "Wait":
-                {
-                    float t = TryF(cd, "time", 0.3f);
-                    driver.Run(t, _ => { }, SafeComplete);
-                    break;
-                }
+            //case "Wait":
+            //    {
+            //        float t = TryF(cd, "time", 0.3f);
+            //        driver.Run(t, _ => { }, SafeComplete);
+            //        break;
+            //    }
 
-            case "Choice":
+            case DialogCommandData4Choice cd4Choice:
                 {
                     var options = new List<string>();
                     var jumpLabels = new List<string>();
-                    if (cd.choiceOptions != null)
+                    if (cd4Choice.Options != null)
                     {
-                        foreach (var choice in cd.choiceOptions)
+                        foreach (var choice in cd4Choice.Options)
                         {
-                            //string txt = null;
-                            //if (row.TryGetValue("text", out var t1)) txt = t1;
-                            //if (row.TryGetValue("textKey", out var tk))
-                            //{
-                            //    if (runtimeRef?.Localize != null) txt = runtimeRef.Localize(tk);
-                            //    else txt ??= tk;
-                            //}
-                            //row.TryGetValue("jumpLabel", out var jl);
-                            options.Add(choice.text ?? "");
-                            jumpLabels.Add(choice.jumpLabel ?? "");
+                            options.Add(choice.Text ?? "");
+                            jumpLabels.Add(choice.TargetStepId ?? "");
                         }
                     }
 
@@ -357,7 +347,7 @@ public partial class DialoguePlayer : MonoBehaviour
                             var label = jumpLabels[index];
                             if (!string.IsNullOrEmpty(label))
                             {
-                                JumpToLabel(label);
+                                JumpToStep(label);
                             }
                         }
                         SafeComplete();
@@ -365,46 +355,45 @@ public partial class DialoguePlayer : MonoBehaviour
                     break;
                 }
 
-            case "Jump":
+            case DialogCommandData4JumpTo cd4JumpTo:
                 {
-                    string label = TryS(cd, "label");
-                    if (!string.IsNullOrEmpty(label)) JumpToLabel(label);
+                    if (!string.IsNullOrEmpty(cd4JumpTo.TargetStepId)) JumpToStep(cd4JumpTo.TargetStepId);
                     SafeComplete();
                     break;
                 }
-            case "GiveItem":
-                {
-                    string itemId = TryS(cd, "itemId");
-                    int amount = cd.i != null && cd.i.TryGetValue("amount", out var iv) ? iv : (int)TryF(cd, "amount", 1f);
-                    Debug.Log("give item from dialog " + dataRef.id + " " + itemId + " " + amount);
+            //case "GiveItem":
+            //    {
+            //        string itemId = TryS(cd, "itemId");
+            //        int amount = cd.i != null && cd.i.TryGetValue("amount", out var iv) ? iv : (int)TryF(cd, "amount", 1f);
+            //        Debug.Log("give item from dialog " + dataRef.id + " " + itemId + " " + amount);
 
-                    SafeComplete();
-                    break;
-                }
-            case "EnterEncounter":
-                {
-                    Debug.Log("EnterEncounter item from dialog ");
+            //        SafeComplete();
+            //        break;
+            //    }
+            //case "EnterEncounter":
+            //    {
+            //        Debug.Log("EnterEncounter item from dialog ");
 
-                    string id = TryS(cd, "id");
-                    string defeat = TryS(cd, "defeat");
+            //        string id = TryS(cd, "id");
+            //        string defeat = TryS(cd, "defeat");
 
-                    bool defeated = false;
-                    if(defeat == "True")
-                    {
-                        defeated = true;
-                    }
-                    MainGameManager.Instance.EnterEncounter(0, "dialog", defeated);
+            //        bool defeated = false;
+            //        if(defeat == "True")
+            //        {
+            //            defeated = true;
+            //        }
+            //        MainGameManager.Instance.EnterEncounter(0, "dialog", defeated);
 
-                    SafeComplete();
-                    break;
-                }
-            case "BlackMask":
-                {
-                    ui.BlackMask.gameObject.SetActive(true);
-                    SafeComplete();
-                    break;
-                }
-            case "Label":
+            //        SafeComplete();
+            //        break;
+            //    }
+            //case "BlackMask":
+            //    {
+            //        ui.BlackMask.gameObject.SetActive(true);
+            //        SafeComplete();
+            //        break;
+            //    }
+            //case "Label":
             default:
                 {
                     // 不阻塞
@@ -414,7 +403,7 @@ public partial class DialoguePlayer : MonoBehaviour
         }
     }
 
-    private void CommandCompletedFromData(CommandData cd)
+    private void CommandCompletedFromData(DialogCommandData cd)
     {
         if (!commandRunning)
         {
@@ -445,26 +434,6 @@ public partial class DialoguePlayer : MonoBehaviour
         {
             DoContinue();
         }
-    }
-
-    // 工具
-    private static string TryS(CommandData c, string key, string def = "")
-    {
-        if (c.s != null && c.s.TryGetValue(key, out var v)) return v;
-        return def;
-    }
-    private static float TryF(CommandData c, string key, float def = 0f)
-    {
-        if (c.f != null && c.f.TryGetValue(key, out var v)) return v;
-        return def;
-    }
-    private static Vector3 ParseVec3(string s)
-    {
-        var p = s.Split(',');
-        float x = p.Length > 0 && float.TryParse(p[0], out var vx) ? vx : 0;
-        float y = p.Length > 1 && float.TryParse(p[1], out var vy) ? vy : 0;
-        float z = p.Length > 2 && float.TryParse(p[2], out var vz) ? vz : 0;
-        return new Vector3(x, y, z);
     }
 }
 

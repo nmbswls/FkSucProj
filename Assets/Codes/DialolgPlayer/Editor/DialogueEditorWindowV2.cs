@@ -1015,6 +1015,9 @@ namespace My.Dialog
                             {
                                 var runTextCommand = new DialogCommandData4Text();
 
+                                runTextCommand.Speaker = textCommand.Speaker;
+                                runTextCommand.Content = textCommand.Content;
+
                                 runCommand = runTextCommand;
                             }
                             break;
@@ -1027,10 +1030,21 @@ namespace My.Dialog
                                 runCommand = runSetImageCommand;
                             }
                             break;
+                        case EditorDialogueCommand4JumpTo jumpToCommand:
+                            {
+                                var runJumpToCommand = new DialogCommandData4JumpTo();
 
+                                runJumpToCommand.TargetStepId = jumpToCommand.TargetStepId;
+
+                                runCommand = runJumpToCommand;
+                            }
+                            break;
                         case EditorChoiceCommand choiceCommand:
                             {
                                 var runChoiceCommand = new DialogCommandData4Choice();
+                                runChoiceCommand.TimeLimit = choiceCommand.TimeLimit;
+
+                                runChoiceCommand.Options.AddRange(choiceCommand.Options);
 
                                 runCommand = runChoiceCommand;
                             }

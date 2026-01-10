@@ -246,8 +246,8 @@ namespace My.Map
                         break;
                     case Config.LogicInteractOutput.EOutputType.OpenDialog:
                         {
-                            //string switchName = output.Param3;
-                            //Owner.SetLocalSwitch(switchName, false);
+                            string dialogId = output.Param3;
+                            Owner.LogicManager.viewer.PlayDialog(dialogId);
                         }
                         break;
 

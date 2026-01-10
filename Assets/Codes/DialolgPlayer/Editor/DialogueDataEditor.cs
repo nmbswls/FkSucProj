@@ -17,6 +17,7 @@ namespace My.Dialog
     {
         public string Id;
         public string Note;
+        public bool IsExpanded;
 
         [SerializeReference]
         public List<EditorDialogCommand> Commands = new List<EditorDialogCommand>();
@@ -49,15 +50,24 @@ namespace My.Dialog
     {
         public Sprite Image;
         public enum ImgPos { Left, Center, Right, Background }
-        public ImgPos position;
+        public ImgPos Position;
 
         public override string GetSummary() => $"[SetImage]";
     }
 
     [Serializable]
+    public class EditorDialogueCommand4JumpTo : EditorDialogCommand
+    {
+        public string TargetStepId;
+
+        public override string GetSummary() => $"[Jump]";
+    }
+
+
+    [Serializable]
     public class EditorChoiceCommand : EditorDialogCommand
     {
-        public float timeLimit = 0;
+        public float TimeLimit = 0;
         public List<DialogChoiceOption> Options = new List<DialogChoiceOption>();
 
         public override string GetSummary() => $"[Choice]";

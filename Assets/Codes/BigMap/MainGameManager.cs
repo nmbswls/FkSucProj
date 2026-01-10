@@ -4,6 +4,7 @@ using Map.Scene;
 using Map.Scene.UI;
 using Map.SmallGame.Zha;
 using My;
+using My.Dialog;
 using My.Encounter;
 using My.Input;
 using My.Map;
@@ -16,6 +17,7 @@ using My.Map.Scene;
 using My.Map.View;
 using My.Saving;
 using My.UI;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -227,39 +229,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             gameLogicManager.Tick(LogicTime.deltaTime);
             interactSystem.Tick(LogicTime.deltaTime);
-            
-
-            if(UnityEngine.Input.GetKeyDown(KeyCode.L))
-            {
-                //// 本地化
-                //if (locJson)
-                //{
-                //    Loc.LoadFromText(locJson.text);
-                //}
-                var txt = "[Step intro]\r\nCameraMove pos=0,0,-10 duration=0\r\nCameraZoom fov=60 duration=0\r\nShowPortrait slot=Left characterId=hero expressionId=default fade=0.25\r\nShowPortrait slot=Right characterId=companion expressionId=smile fade=0.25\r\n\r\nHero: 终于到了约定的地点。\r\nCompanion: 你比我想象的准时。\r\n\r\n[Choice]\r\n- 立刻出发 -> branch_go\r\n- 再收集些情报 -> branch_info \r\n\r\n[Step branch_go]\r\nGiveItem itemId=Herb amount=1\r\nCompanion: 好，那就现在行动！\r\nChangeExpression slot=Right expressionId=smile fade=0.2\r\nCameraZoom fov=50 duration=0.4\r\nPlaySE name=step_confirm\r\nHero: 跟紧我。\r\nJump label=ending\r\n\r\n[Step branch_info]\r\nHero: 谨慎总是没错的。先打听一下附近的情况。\r\nChangeExpression slot=Left expressionId=think fade=0.2\r\nCameraMove pos=-0.3,0,-10 duration=0.4\r\nPlaySE name=ui_select\r\nCompanion: 那我联系一下线人。\r\nJump label=ending\r\n\r\n[Step ending]\r\nHidePortrait slot=Right fade=0.25\r\nChangeExpression slot=Left expressionId=default fade=0.2\r\nHero: 准备完毕，出发。\r\nEnterEncounter\r\nPlaySE name=ui_close";
-
-
-                var data = TxtDialogueScriptParser.Parse(txt, "intro_from_txt");
-
-                var dialogPanel = UIManager.Instance.ShowPanel("DialoguePanel") as DialogueUI;
-
-                var runtime = new DialogueRuntime
-                {
-                    ui = dialogPanel,
-                    //cam = cam,
-                    //audio = audio,
-                    driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
-                    //Localize = Loc.Tr,
-                    JumpTo = label => dialoguePlayer.JumpToLabel(label)
-                };
-
-                dialoguePlayer.ui = dialogPanel;
-                dialoguePlayer.PlayFromData(data, runtime, () =>
-                {
-                    // do dialog finish events;
-                    UIManager.Instance.HidePanel("DialoguePanel");
-                });
-            }
         }
 
         if(switchAreaFlag)
@@ -432,7 +401,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         PauseCloseupWindow.Show(showName, duration);
     }
-
 
     public void DoDeepZhaquSmallGame(long targetUnitId, object extraParam)
     {
@@ -620,29 +588,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         await Task.Delay(5000);
 
-        var dialog = Resources.Load<TextAsset>($"Dialogue/defeated_01");
-
-        var data = TxtDialogueScriptParser.Parse(dialog.text, "defeated_01");
-
-        var dialogPanel = UIManager.Instance.ShowPanel("DialoguePanel") as DialogueUI;
-
-        var runtime = new DialogueRuntime
-        {
-            ui = dialogPanel,
-            //cam = cam,
-            //audio = audio,
-            driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
-            //Localize = Loc.Tr,
-            JumpTo = label => dialoguePlayer.JumpToLabel(label)
-        };
-
-        dialoguePlayer.ui = dialogPanel;
-        dialoguePlayer.PlayFromData(data, runtime, () =>
-        {
-            // do dialog finish events;
-            UIManager.Instance.HidePanel("DialoguePanel");
-        });
-        //await InnerEnterEncounter(0, "defeated");
+        PlayDialog("defeated_01");
     }
 
     private const string SAVE_FILE_NAME = "mysave.json";
@@ -693,36 +639,38 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
 
-
-    public void PlayerDialog(string dialogId)
+    public void PlayDialog(string dialogId)
     {
-        var dialogAsset = Resources.Load<TextAsset>($"Dialog/{dialogId}");
+        var dialogAsset = Resources.Load<TextAsset>($"Dialog/output/{dialogId}");
         if(dialogAsset == null)
         {
             Debug.Log("PlayerDialog not found dialog " + dialogId);
             return;
         }
 
-        ////var data = TxtDialogueScriptParser.Parse(txt, "intro_from_txt");
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto
+        };
 
-        //var dialogPanel = UIManager.Instance.ShowPanel("DialoguePanel") as DialogueUI;
+        var dialogData = JsonConvert.DeserializeObject<DialogueData>(dialogAsset.text, settings);
 
-        //var runtime = new DialogueRuntime
-        //{
-        //    ui = dialogPanel,
-        //    //cam = cam,
-        //    //audio = audio,
-        //    driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
-        //    //Localize = Loc.Tr,
-        //    JumpTo = label => dialoguePlayer.JumpToLabel(label)
-        //};
+        var dialogPanel = UIManager.Instance.ShowPanel("DialoguePanel") as DialogueUI;
 
-        //dialoguePlayer.ui = dialogPanel;
-        //dialoguePlayer.PlayFromData(data, runtime, () =>
-        //{
-        //    // do dialog finish events;
-        //    UIManager.Instance.HidePanel("DialoguePanel");
-        //});
+        var runtime = new DialogueRuntime
+        {
+            ui = dialogPanel,
+            driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
+            JumpTo = label => dialoguePlayer.JumpToStep(label)
+        };
+
+        dialoguePlayer.ui = dialogPanel;
+        dialoguePlayer.PlayFromData(dialogData, runtime, () =>
+        {
+            UIManager.Instance.HidePanel("DialoguePanel");
+
+            // do end events;
+        });
     }
 }
 

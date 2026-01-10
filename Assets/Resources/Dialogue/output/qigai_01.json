@@ -1,0 +1,79 @@
+{
+  "DialogId": "1",
+  "Steps": [
+    {
+      "Id": "begin",
+      "Note": "出门选项",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "Speaker": "莉莉丝",
+          "Content": "附近有小巷子...",
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "Speaker": "莉莉丝",
+          "Content": "要不要邀请他去那里？",
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Choice, Assembly-CSharp",
+          "TimeLimit": 0.0,
+          "Options": [
+            {
+              "Text": "好的",
+              "TargetStepId": "ok",
+              "ShowWhenFail": false,
+              "Conditions1": []
+            },
+            {
+              "Text": "算了",
+              "TargetStepId": "no",
+              "ShowWhenFail": false,
+              "Conditions1": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "ok",
+      "Note": "同意",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "Speaker": "",
+          "Content": "那就去那里吧。",
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "Speaker": "莉莉丝",
+          "Content": "放轻松，交给我就行。",
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4JumpTo, Assembly-CSharp",
+          "TargetStepId": "end"
+        }
+      ]
+    },
+    {
+      "Id": "no",
+      "Note": "算了",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "Speaker": "",
+          "Content": "还是算了吧",
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4JumpTo, Assembly-CSharp",
+          "TargetStepId": "end"
+        }
+      ]
+    }
+  ]
+}

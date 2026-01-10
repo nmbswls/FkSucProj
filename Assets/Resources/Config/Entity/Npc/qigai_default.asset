@@ -139,10 +139,10 @@ MonoBehaviour:
       Param3: p4
       Param4: 
       DelayTime: 0
-    - OutputType: 6
+    - OutputType: 12
       Param1: 0
       Param2: 0
-      Param3: p4
+      Param3: qigai_01
       Param4: 
       DelayTime: 0
   IgnoreAttractLevel: 2

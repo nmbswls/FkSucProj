@@ -14,12 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DialogId: 
   Steps:
-  - Id: 1
-    Note: 
-    IsExpanded: 1
+  - Id: begin
+    Note: "\u51FA\u95E8\u9009\u9879"
+    IsExpanded: 0
     Commands:
     - rid: 4055725892305158146
+    - rid: 4055725892305158149
     - rid: 4055725892305158147
+  - Id: ok
+    Note: "\u540C\u610F"
+    IsExpanded: 1
+    Commands:
+    - rid: 4055725892305158150
+    - rid: 4055725892305158151
+    - rid: 4055725892305158153
+  - Id: no
+    Note: "\u7B97\u4E86"
+    IsExpanded: 1
+    Commands:
+    - rid: 4055725892305158152
+    - rid: 4055725892305158154
   references:
     version: 2
     RefIds:
@@ -27,23 +41,58 @@ MonoBehaviour:
       type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
         IsFolded: 0
-        Speaker: d
-        Content: ddd
+        Speaker: "\u8389\u8389\u4E1D"
+        Content: "\u9644\u8FD1\u6709\u5C0F\u5DF7\u5B50..."
         VoiceLine: {fileID: 0}
     - rid: 4055725892305158147
       type: {class: EditorChoiceCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
         IsFolded: 0
-        timeLimit: 0
+        TimeLimit: 0
         Options:
-        - Text: New Option
-          TargetStepId: 
+        - Text: "\u597D\u7684"
+          TargetStepId: yes
           ShowWhenFail: 0
-          Conditions1:
-          - rid: 4055725892305158148
-    - rid: 4055725892305158148
-      type: {class: ConditionLocalVariableInt, ns: My.Dialog, asm: Assembly-CSharp}
+          Conditions1: []
+        - Text: "\u7B97\u4E86"
+          TargetStepId: no
+          ShowWhenFail: 0
+          Conditions1: []
+    - rid: 4055725892305158149
+      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
-        VariableKey: 
-        Compare: 0
-        Value: 0
+        IsFolded: 0
+        Speaker: "\u8389\u8389\u4E1D"
+        Content: "\u8981\u4E0D\u8981\u9080\u8BF7\u4ED6\u53BB\u90A3\u91CC\uFF1F"
+        VoiceLine: {fileID: 0}
+    - rid: 4055725892305158150
+      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        Speaker: 
+        Content: "\u90A3\u5C31\u53BB\u90A3\u91CC\u5427\u3002"
+        VoiceLine: {fileID: 0}
+    - rid: 4055725892305158151
+      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        Speaker: "\u8389\u8389\u4E1D"
+        Content: "\u653E\u8F7B\u677E\uFF0C\u4EA4\u7ED9\u6211\u5C31\u884C\u3002"
+        VoiceLine: {fileID: 0}
+    - rid: 4055725892305158152
+      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        Speaker: 
+        Content: "\u8FD8\u662F\u7B97\u4E86\u5427"
+        VoiceLine: {fileID: 0}
+    - rid: 4055725892305158153
+      type: {class: EditorDialogueCommand4JumpTo, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        TargetStepId: end
+    - rid: 4055725892305158154
+      type: {class: EditorDialogueCommand4JumpTo, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        TargetStepId: end
