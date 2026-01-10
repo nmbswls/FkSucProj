@@ -16,7 +16,7 @@ MonoBehaviour:
   Steps:
   - Id: 1
     Note: 
-    IsExpanded: 1
+    IsExpanded: 0
     Commands:
     - IsFolded: 1
       CommandData:
@@ -30,6 +30,13 @@ MonoBehaviour:
     - IsFolded: 0
       CommandData:
         rid: 4055725877278277653
+  - Id: 2
+    Note: 
+    IsExpanded: 1
+    Commands:
+    - IsFolded: 0
+      CommandData:
+        rid: 4055725892305158145
   references:
     version: 2
     RefIds:
@@ -57,16 +64,22 @@ MonoBehaviour:
         Options:
         - Text: "\u8D70\u5427\uFF01"
           TargetStepId: 1
+          ShowWhenFail: 0
+          Conditions1:
+          - rid: 4055725877278277657
+          - rid: 4055725877278277658
+          - rid: 4055725877278277659
+        - Text: Hi
+          TargetStepId: 1
+          ShowWhenFail: 0
           Conditions1:
           - rid: 4055725877278277657
           - rid: 4055725877278277658
           - rid: 4055725877278277659
         - Text: New Option
           TargetStepId: 1
-          Conditions1:
-          - rid: 4055725877278277657
-          - rid: 4055725877278277658
-          - rid: 4055725877278277659
+          ShowWhenFail: 0
+          Conditions1: []
     - rid: 4055725877278277657
       type: {class: ConditionLocalVariableInt, ns: My.Dialog, asm: Assembly-CSharp}
       data:
@@ -83,3 +96,9 @@ MonoBehaviour:
       type: {class: ConditionCheckPlayerLevel, ns: My.Dialog, asm: Assembly-CSharp}
       data:
         PlayerLevel: 0
+    - rid: 4055725892305158145
+      type: {class: DialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        Speaker: 
+        Content: "\u5E26\u5F97\u5230"
+        VoiceLine: {fileID: 0}

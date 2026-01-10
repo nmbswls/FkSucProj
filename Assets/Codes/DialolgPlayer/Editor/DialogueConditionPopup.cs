@@ -43,34 +43,6 @@ namespace My.Dialog
 
             EditorGUI.BeginChangeCheck(); // 开始检测修改
 
-            // --- 类型 1: Int 变量 ---
-            //if (_condition is ConditionLocalVariableInt intCond)
-            //{
-            //    intCond.VariableKey = EditorGUILayout.TextField("Variable Key", intCond.VariableKey);
-            //    intCond.Compare = (ConditionLocalVariableInt.CompareType)EditorGUILayout.EnumPopup("Operator", intCond.Compare);
-            //    intCond.Value = EditorGUILayout.IntField("Value", intCond.Value);
-
-            //    // 显示人性化的预览
-            //    string opSymbol = GetOpSymbol(intCond.Compare);
-            //    EditorGUILayout.Space();
-            //    //EditorGUILayout.HelpBox($"Logic: if ( {intCond.VariableKey} {opSymbol} {intCond.Value} )", MessageType.Info);
-            //}
-            //// --- 类型 2: String 变量 ---
-            //else if (_condition is ConditionLocalVariableString strCond)
-            //{
-            //    strCond.VariableKey = EditorGUILayout.TextField("Variable Key", strCond.VariableKey);
-            //    strCond.Compare = (ConditionLocalVariableString.CompareType)EditorGUILayout.EnumPopup("Operator", strCond.Compare);
-            //    strCond.Value = EditorGUILayout.TextField("Value", strCond.Value);
-
-            //    string opSymbol = strCond.Compare == ConditionLocalVariableString.CompareType.Equals ? "==" : "!=";
-            //    EditorGUILayout.Space();
-            //    //EditorGUILayout.HelpBox($"Logic: if ( {strCond.VariableKey} {opSymbol} \"{strCond.Value}\" )", MessageType.Info);
-            //}
-            //else
-            //{
-            //    EditorGUILayout.LabelField("Unknown Condition Type");
-            //}
-
             // 2. 通用反射绘制字段
             foreach (var field in _fields)
             {

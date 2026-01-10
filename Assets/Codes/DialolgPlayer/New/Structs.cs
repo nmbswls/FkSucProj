@@ -51,6 +51,7 @@ namespace My.Dialog
     {
         public string Text;
         public string TargetStepId;
+        public bool ShowWhenFail;
 
         [SerializeReference]
         public List<DialogCondition> Conditions1 = new List<DialogCondition>();

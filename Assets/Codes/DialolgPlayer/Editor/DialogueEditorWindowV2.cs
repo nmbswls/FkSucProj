@@ -272,7 +272,7 @@ namespace My.Dialog
                 // 获取刚刚添加的元素 (位于数组末尾)
                 var newStepProp = listProp.GetArrayElementAtIndex(listProp.arraySize - 1);
 
-                newStepProp.FindPropertyRelative("Id").stringValue = (listProp.arraySize + 1).ToString();
+                newStepProp.FindPropertyRelative("Id").stringValue = (listProp.arraySize).ToString();
                 newStepProp.FindPropertyRelative("Note").stringValue = "";
 
                 SerializedProperty commandsProp = newStepProp.FindPropertyRelative("Commands");
@@ -611,14 +611,10 @@ namespace My.Dialog
             for (int i = 0; i < optionsProp.arraySize; i++)
             {
                 SerializedProperty optionProp = optionsProp.GetArrayElementAtIndex(i);
-
-                // --- 计算当前 Option 的总高度 (Header + 2个属性 + 间距) ---
-                // 这里只是简单的估算，如果 ConditionList 是动态高度，需要更复杂的计算
-                // 假设每个 Option 目前占 3行属性 + 1行Header
-                //float optionBlockHeight = (standardHeight + space) * 4 + 10;
                 SerializedProperty condsProp = optionProp.FindPropertyRelative("Conditions1");
 
-                float fixedPartHeight = (standardHeight + space) * 4 + 15f;
+                // 基础高度 4行 + 15
+                float fixedPartHeight = (standardHeight + space) * 5 + 15f;
                 float conditionsPartHeight = 0f;
                 // 2.2 累加每个 Condition 的高度
                 if (condsProp.arraySize > 0)
@@ -644,7 +640,8 @@ namespace My.Dialog
                     optionsProp.DeleteArrayElementAtIndex(i);
                     return; // 立即返回，等待下一帧重绘
                 }
-                currentY += standardHeight + space;
+
+                currentY += standardHeight + space + 5;
 
                 // --- 绘制 Text 属性 ---
                 Rect textRect = new Rect(rect.x + 5, currentY, rect.width - 10, standardHeight);
@@ -656,13 +653,18 @@ namespace My.Dialog
                 EditorGUI.PropertyField(targetRect, optionProp.FindPropertyRelative("TargetStepId"));
                 currentY += standardHeight + space;
 
+                // --- 绘制 show on fail 属性 ---
+                Rect showFailRect = new Rect(rect.x + 5, currentY, rect.width - 10, standardHeight);
+                EditorGUI.PropertyField(showFailRect, optionProp.FindPropertyRelative("ShowWhenFail"));
+                currentY += standardHeight + space;
+
                 // --- 调用修改后的 Condition 绘制函数 ---
                 Rect conditionStartRect = new Rect(rect.x, currentY, rect.width, 0); // 高度给0没事，函数只用 y
                 // --- (暂时注释掉 ConditionList，确保基础能显示再放开) ---
                 float conditionHeight = DrawConditionListForProperty(conditionStartRect, optionProp);
-                currentY += conditionHeight + +space; // 加上间距
-                // 假设 ConditionList 占了一行的高度
-                currentY += standardHeight + space;
+                currentY += conditionHeight + space; // 加上间距
+
+                currentY += 10;
             }
 
             // 3. 绘制 "Add Option" 按钮
@@ -698,20 +700,22 @@ namespace My.Dialog
             {
                 SerializedProperty optionProp = optionsProp.GetArrayElementAtIndex(i);
                 // 每个 Option 的 Box Padding
-                h += 10;
+                h += 20;
+
                 // Text + TargetStepId 属性高度
                 h += EditorGUI.GetPropertyHeight(optionProp.FindPropertyRelative("Text"));
                 h += EditorGUI.GetPropertyHeight(optionProp.FindPropertyRelative("TargetStepId"));
-                h += 4; // spacing
+                h += EditorGUI.GetPropertyHeight(optionProp.FindPropertyRelative("ShowWhenFail"));
+                h += 6; // spacing
 
                 // Header 行
                 h += EditorGUIUtility.singleLineHeight + 2;
 
                 // Condition 列表高度
                 SerializedProperty condsProp = optionProp.FindPropertyRelative("Conditions1");
-                h += EditorGUIUtility.singleLineHeight + 4; // "Conditions:" title row
+                h += EditorGUIUtility.singleLineHeight + 2; // "Conditions:" title row
                                                             // 每个 Condition 一行
-                h += (condsProp.arraySize * (30 + 2));
+                h += (condsProp.arraySize * (EditorGUIUtility.singleLineHeight + 2));
             }
 
             h += EditorGUIUtility.singleLineHeight + 10;
@@ -755,10 +759,6 @@ namespace My.Dialog
                     });
                 }
 
-                // 注意：这里 Lambda 里的 optionProp 必须是有效的
-                //menu.AddItem(new GUIContent("Int Variable Check"), false, () => AddCondition(optionProp, new ConditionLocalVariableInt()));
-                //menu.AddItem(new GUIContent("String Variable Check"), false, () => AddCondition(optionProp, new ConditionLocalVariableString()));
-                //menu.AddItem(new GUIContent("Player Level Check"), false, () => AddCondition(optionProp, new ConditionCheckPlayerLevel()));
                 menu.ShowAsContext();
             }
 
