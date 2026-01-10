@@ -31,17 +31,118 @@ MonoBehaviour:
   NpcTag: 
   InteractList:
   - InteractId: 0
-    Label: "\u7ED9\u4E88"
-    UnLabel: "\u7ED9\u4E88"
+    Label: "\u7ED9\u4E881g"
+    UnLabel: "\u7ED9\u4E881g"
     HideWhenFail: 0
     NeedDist: 0
-    CheckCommonCond: []
-    CheckInteractCond: []
-    Outputs:
-    - OutputType: 2
+    CheckCommonCond:
+    - Type: 4
+      Param1: 1
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: gold
+      Param6: 
+    CheckInteractCond:
+    - CheckType: 3
       Param1: 0
       Param2: 0
-      Param3: 1
+      Param3: p1
+      Param4: 
+    Outputs:
+    - OutputType: 10
+      Param1: 0
+      Param2: 0
+      Param3: p1
+      Param4: 
+      DelayTime: 0
+  - InteractId: 1
+    Label: "\u7ED9\u4E883g"
+    UnLabel: "\u7ED9\u4E883g"
+    HideWhenFail: 0
+    NeedDist: 0
+    CheckCommonCond:
+    - Type: 4
+      Param1: 3
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: gold
+      Param6: 
+    CheckInteractCond:
+    - CheckType: 3
+      Param1: 0
+      Param2: 0
+      Param3: p2
+      Param4: 
+    Outputs:
+    - OutputType: 10
+      Param1: 0
+      Param2: 0
+      Param3: p2
+      Param4: 
+      DelayTime: 0
+  - InteractId: 2
+    Label: "\u7ED9\u4E885g"
+    UnLabel: "\u7ED9\u4E885g"
+    HideWhenFail: 0
+    NeedDist: 0
+    CheckCommonCond:
+    - Type: 4
+      Param1: 5
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: gold
+      Param6: 
+    CheckInteractCond:
+    - CheckType: 3
+      Param1: 0
+      Param2: 0
+      Param3: p3
+      Param4: 
+    Outputs:
+    - OutputType: 10
+      Param1: 0
+      Param2: 0
+      Param3: p3
+      Param4: 
+      DelayTime: 0
+  - InteractId: 3
+    Label: "\u529D\u8BF1"
+    UnLabel: "\u529D\u8BF1"
+    HideWhenFail: 0
+    NeedDist: 0
+    CheckCommonCond:
+    - Type: 4
+      Param1: 5
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: gold
+      Param6: 
+    CheckInteractCond:
+    - CheckType: 3
+      Param1: 0
+      Param2: 0
+      Param3: p4
+      Param4: 
+    - CheckType: 2
+      Param1: 0
+      Param2: 0
+      Param3: p3
+      Param4: 
+    Outputs:
+    - OutputType: 10
+      Param1: 0
+      Param2: 0
+      Param3: p4
+      Param4: 
+      DelayTime: 0
+    - OutputType: 6
+      Param1: 0
+      Param2: 0
+      Param3: p4
       Param4: 
       DelayTime: 0
   IgnoreAttractLevel: 2

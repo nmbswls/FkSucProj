@@ -100,11 +100,17 @@ namespace My.Map
             EnemySightThreatTick();
             ReevaluatePrimaryTarget();
 
+            // 保底进行脱战
             if(CombatState == ECombatState.CombatRecover)
             {
-                if(LogicTime.time - lastTryRecoverTime > 1.0f)
+                TryRecover();
+            }
+
+            if(CombatState == ECombatState.InCombat)
+            {
+                if(PrimaryTargetId != 0)
                 {
-                    CombatState = ECombatState.NotCombat;
+                    UnitEntity.UpdateLookIntent(PrimaryTargetId, null);
                 }
             }
         }
@@ -114,6 +120,7 @@ namespace My.Map
             if(CombatState == ECombatState.CombatRecover)
             {
                 lastTryRecoverTime = LogicTime.time;
+                CombatState = ECombatState.NotCombat;
             }
         }
 

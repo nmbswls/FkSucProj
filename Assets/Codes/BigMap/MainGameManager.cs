@@ -691,6 +691,39 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         Debug.Log($"ApplyDataToGame finish, 时间: {data.Meta.SaveTime}");
     }
+
+
+
+    public void PlayerDialog(string dialogId)
+    {
+        var dialogAsset = Resources.Load<TextAsset>($"Dialog/{dialogId}");
+        if(dialogAsset == null)
+        {
+            Debug.Log("PlayerDialog not found dialog " + dialogId);
+            return;
+        }
+
+        ////var data = TxtDialogueScriptParser.Parse(txt, "intro_from_txt");
+
+        //var dialogPanel = UIManager.Instance.ShowPanel("DialoguePanel") as DialogueUI;
+
+        //var runtime = new DialogueRuntime
+        //{
+        //    ui = dialogPanel,
+        //    //cam = cam,
+        //    //audio = audio,
+        //    driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
+        //    //Localize = Loc.Tr,
+        //    JumpTo = label => dialoguePlayer.JumpToLabel(label)
+        //};
+
+        //dialoguePlayer.ui = dialogPanel;
+        //dialoguePlayer.PlayFromData(data, runtime, () =>
+        //{
+        //    // do dialog finish events;
+        //    UIManager.Instance.HidePanel("DialoguePanel");
+        //});
+    }
 }
 
 

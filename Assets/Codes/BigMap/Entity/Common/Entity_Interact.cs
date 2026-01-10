@@ -232,6 +232,25 @@ namespace My.Map
                             Owner.LogicManager.playerDataManager.TryGiveItem(itemId, count, 0);
                         }
                         break;
+                    case Config.LogicInteractOutput.EOutputType.SetLocalSwitch:
+                        {
+                            string switchName = output.Param3;
+                            Owner.SetLocalSwitch(switchName, true);
+                        }
+                        break;
+                    case Config.LogicInteractOutput.EOutputType.UnsetLocalSwitch:
+                        {
+                            string switchName = output.Param3;
+                            Owner.SetLocalSwitch(switchName, false);
+                        }
+                        break;
+                    case Config.LogicInteractOutput.EOutputType.OpenDialog:
+                        {
+                            //string switchName = output.Param3;
+                            //Owner.SetLocalSwitch(switchName, false);
+                        }
+                        break;
+
                 }
             }
             return true;

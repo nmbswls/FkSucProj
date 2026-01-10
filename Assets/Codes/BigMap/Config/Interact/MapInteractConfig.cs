@@ -28,6 +28,10 @@ namespace My.Config
 
             StartStealth,
 
+            SetLocalSwitch,
+            UnsetLocalSwitch,
+
+            OpenDialog,
         }
 
         public EOutputType OutputType;

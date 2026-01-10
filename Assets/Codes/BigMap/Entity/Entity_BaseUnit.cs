@@ -97,7 +97,7 @@ namespace My.Map
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
             this.MoveBehaveInfo = new();
 
-            //this.FaceDir = bindingRecord.FaceDir;
+            ForceSetFace(bindingRecord.FaceDir);
         }
 
         public override void Initialize()
