@@ -80,7 +80,7 @@ namespace My.Map
         {
             if(_isInteracting)
             {
-                if(_currOutputIdx < _currInteract.Outputs.Count)
+                if(_currOutputIdx >= _currInteract.Outputs.Count)
                 {
                     DoInteractEnd();
                     return;
