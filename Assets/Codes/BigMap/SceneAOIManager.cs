@@ -217,6 +217,12 @@ public class SceneAOIManager : MonoBehaviour
         {
             return;
         }
+
+        if(!MainGameManager.Instance.gameLogicManager.Initialized)
+        {
+            return;
+        }
+
         if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null) return;
         if (string.IsNullOrEmpty(AreaId)) return;
 
