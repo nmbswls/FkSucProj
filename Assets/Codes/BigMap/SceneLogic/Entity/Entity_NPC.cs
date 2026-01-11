@@ -205,6 +205,9 @@ namespace My.Map
             }
         }
 
+        private float _checkAlertTimer;
+
+
         protected override void TickActivateState(float dt)
         {
             base.TickActivateState(dt);
@@ -221,6 +224,8 @@ namespace My.Map
                 UpdateHMode();
 
                 TickHMode();
+
+                TickEvilAlert();
             }
 
             InteractComp?.TickInteract(dt);
@@ -278,6 +283,35 @@ namespace My.Map
                 if (hVal >= hValMax)
                 {
                     OnNpcBlurt();
+                }
+            }
+        }
+
+        /// <summary>
+        /// tick Ð°¶ñ¸æ¾¯
+        /// </summary>
+        protected void TickEvilAlert()
+        {
+            if(LogicTime.time - _checkAlertTimer < 0.5f)
+            {
+                return;
+            }
+
+            _checkAlertTimer = LogicTime.time;
+
+            if (VisibilityComp.IsTargetVisible(LogicManager.playerLogicEntity.Id))
+            {
+                if(LogicManager.playerLogicEntity.IsQueenMode)
+                {
+                    LogicManager.AreaManager.EntityTryAlert(this.Id);
+                }
+            }
+
+            {
+                var shieldVal = attributeStore.GetAttr(AttrIdConsts.UnitHShield);
+                if (shieldVal <= 0)
+                {
+                    LogicManager.AreaManager.TryClearPendingAlert(this.Id);
                 }
             }
         }

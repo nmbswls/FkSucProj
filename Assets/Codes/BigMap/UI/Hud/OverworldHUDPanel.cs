@@ -44,6 +44,9 @@ namespace My.UI
 
         public TextMeshProUGUI PlayerQueenStatusText;
 
+        public RectTransform AlertHint;
+        public TextMeshProUGUI AlertValText;
+
 
         public override void Setup(object data = null)
         {
@@ -95,6 +98,8 @@ namespace My.UI
                     EnterBuildMode();
                 }
             }
+
+            AlertValText.text = MainGameManager.Instance.gameLogicManager.AreaManager.AreaAlertValue.ToString();
         }
 
         public override void Show()
