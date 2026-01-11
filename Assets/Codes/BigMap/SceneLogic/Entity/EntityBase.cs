@@ -26,6 +26,8 @@ namespace My.Map
         PatrolGroup,
         EventGroup,
         HomePlacement,
+
+        EncounterCtrl,
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner
