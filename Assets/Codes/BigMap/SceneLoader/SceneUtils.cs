@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.WSA;
+using static My.Dialog.DialogCommandData4SetImage;
 using static UnityEngine.GraphicsBuffer;
 
 public class DefaultSceneVisionSenser2D : IVisionSenser2D
@@ -218,6 +219,19 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         }
 
         return retList;
+    }
+
+
+    /// <summary>
+    /// ºÏ≤È «∑Ò”Î
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    public bool CheckIsInAlertArea(Vector2 pos)
+    {
+        var hitCol = Physics2D.OverlapPoint(pos, 1 << LayerMask.NameToLayer("AlertArea"));
+        if (hitCol == null) return false;
+        return true;
     }
 }
 

@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6212abf8aa90cb84b9a9eccb7abfa07f, type: 3}
   m_Name: 1
   m_EditorClassIdentifier: 
-  AreaId: 
+  AreaId: 1
   Buckets:
   - Chunk:
-      X: 0
+      X: -1
       Y: 0
     StaticItems:
     - ItemId: 101
-      Key: 1/P1
-      Position: {x: 4, y: 0.5, z: 0}
+      Key: P/Room_01
+      Position: {x: -6.32, y: 3.16, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
@@ -31,447 +31,66 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    FovStaticSegments:
-    - segmentId: 1
-      a: {x: 3, y: -1.5}
-      b: {x: 5, y: -1.5}
-      bounds:
-        m_Center: {x: 4, y: -1.5, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 2
-      a: {x: 5, y: -1.5}
-      b: {x: 5, y: 2.5}
-      bounds:
-        m_Center: {x: 5, y: 0.5, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 3
-      a: {x: 5, y: 2.5}
-      b: {x: 3, y: 2.5}
-      bounds:
-        m_Center: {x: 4, y: 2.5, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 4
-      a: {x: 3, y: 2.5}
-      b: {x: 3, y: -1.5}
-      bounds:
-        m_Center: {x: 3, y: 0.5, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 5
-      a: {x: 3, y: -1.5}
-      b: {x: 5, y: -1.5}
-      bounds:
-        m_Center: {x: 4, y: -1.5, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 6
-      a: {x: 5, y: -1.5}
-      b: {x: 5, y: 2.5}
-      bounds:
-        m_Center: {x: 5, y: 0.5, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 7
-      a: {x: 5, y: 2.5}
-      b: {x: 3, y: 2.5}
-      bounds:
-        m_Center: {x: 4, y: 2.5, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 8
-      a: {x: 3, y: 2.5}
-      b: {x: 3, y: -1.5}
-      bounds:
-        m_Center: {x: 3, y: 0.5, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 29
-      a: {x: 5.62, y: 5.7999997}
-      b: {x: 5.4860253, y: 6.2999997}
-      bounds:
-        m_Center: {x: 5.553013, y: 6.0499997, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 30
-      a: {x: 5.4860253, y: 6.2999997}
-      b: {x: 5.12, y: 6.666025}
-      bounds:
-        m_Center: {x: 5.303013, y: 6.483012, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 31
-      a: {x: 5.12, y: 6.666025}
-      b: {x: 4.62, y: 6.7999997}
-      bounds:
-        m_Center: {x: 4.87, y: 6.733012, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 32
-      a: {x: 4.62, y: 6.7999997}
-      b: {x: 4.12, y: 6.666025}
-      bounds:
-        m_Center: {x: 4.37, y: 6.733012, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 33
-      a: {x: 4.12, y: 6.666025}
-      b: {x: 3.7539744, y: 6.2999997}
-      bounds:
-        m_Center: {x: 3.9369872, y: 6.483012, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 34
-      a: {x: 3.7539744, y: 6.2999997}
-      b: {x: 3.62, y: 5.7999997}
-      bounds:
-        m_Center: {x: 3.6869872, y: 6.0499997, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 35
-      a: {x: 3.62, y: 5.7999997}
-      b: {x: 3.7539747, y: 5.2999997}
-      bounds:
-        m_Center: {x: 3.6869874, y: 5.5499997, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
-    - segmentId: 36
-      a: {x: 3.7539747, y: 5.2999997}
-      b: {x: 4.12, y: 4.9339743}
-      bounds:
-        m_Center: {x: 3.9369874, y: 5.116987, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
-    - segmentId: 37
-      a: {x: 4.12, y: 4.9339743}
-      b: {x: 4.62, y: 4.7999997}
-      bounds:
-        m_Center: {x: 4.37, y: 4.866987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 38
-      a: {x: 4.62, y: 4.7999997}
-      b: {x: 5.12, y: 4.9339743}
-      bounds:
-        m_Center: {x: 4.87, y: 4.866987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 39
-      a: {x: 5.12, y: 4.9339743}
-      b: {x: 5.4860253, y: 5.3}
-      bounds:
-        m_Center: {x: 5.303013, y: 5.116987, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301296, z: 0}
-    - segmentId: 40
-      a: {x: 5.4860253, y: 5.3}
-      b: {x: 5.62, y: 5.7999997}
-      bounds:
-        m_Center: {x: 5.553013, y: 5.55, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.24999976, z: 0}
+    - ItemId: 104
+      Key: P/Ruin_01
+      Position: {x: -1.54, y: 1.75, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 2
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: Clear_Ruin_02
+        Param6: 
+    FovStaticSegments: []
   - Chunk:
-      X: -1
+      X: 0
       Y: 0
     StaticItems:
     - ItemId: 102
-      Key: 1/P1
-      Position: {x: -4.28, y: -0.09, z: 0}
+      Key: P/Build_01
+      Position: {x: 0.01, y: -0.01, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
-        Type: 0
-        Param1: 0
+        Type: 2
+        Param1: 1
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: Clear_Ruin_01
         Param6: 
-    FovStaticSegments:
-    - segmentId: 9
-      a: {x: -5.28, y: -2.09}
-      b: {x: -3.2800002, y: -2.09}
-      bounds:
-        m_Center: {x: -4.28, y: -2.09, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 10
-      a: {x: -3.2800002, y: -2.09}
-      b: {x: -3.2800002, y: 1.91}
-      bounds:
-        m_Center: {x: -3.2800002, y: -0.089999974, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 11
-      a: {x: -3.2800002, y: 1.91}
-      b: {x: -5.28, y: 1.91}
-      bounds:
-        m_Center: {x: -4.28, y: 1.91, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 12
-      a: {x: -5.28, y: 1.91}
-      b: {x: -5.28, y: -2.09}
-      bounds:
-        m_Center: {x: -5.28, y: -0.089999974, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 13
-      a: {x: -5.28, y: -2.09}
-      b: {x: -3.2800002, y: -2.09}
-      bounds:
-        m_Center: {x: -4.28, y: -2.09, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 14
-      a: {x: -3.2800002, y: -2.09}
-      b: {x: -3.2800002, y: 1.91}
-      bounds:
-        m_Center: {x: -3.2800002, y: -0.089999974, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 15
-      a: {x: -3.2800002, y: 1.91}
-      b: {x: -5.28, y: 1.91}
-      bounds:
-        m_Center: {x: -4.28, y: 1.91, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 16
-      a: {x: -5.28, y: 1.91}
-      b: {x: -5.28, y: -2.09}
-      bounds:
-        m_Center: {x: -5.28, y: -0.089999974, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 53
-      a: {x: -1.9300001, y: 5.95}
-      b: {x: -2.0639746, y: 6.45}
-      bounds:
-        m_Center: {x: -1.9969873, y: 6.2, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 54
-      a: {x: -2.0639746, y: 6.45}
-      b: {x: -2.43, y: 6.8160253}
-      bounds:
-        m_Center: {x: -2.2469873, y: 6.633013, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 55
-      a: {x: -2.43, y: 6.8160253}
-      b: {x: -2.93, y: 6.95}
-      bounds:
-        m_Center: {x: -2.68, y: 6.883013, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 56
-      a: {x: -2.93, y: 6.95}
-      b: {x: -3.43, y: 6.8160253}
-      bounds:
-        m_Center: {x: -3.18, y: 6.883013, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 57
-      a: {x: -3.43, y: 6.8160253}
-      b: {x: -3.7960255, y: 6.45}
-      bounds:
-        m_Center: {x: -3.6130128, y: 6.633013, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 58
-      a: {x: -3.7960255, y: 6.45}
-      b: {x: -3.93, y: 5.95}
-      bounds:
-        m_Center: {x: -3.8630128, y: 6.2, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 59
-      a: {x: -3.93, y: 5.95}
-      b: {x: -3.7960253, y: 5.45}
-      bounds:
-        m_Center: {x: -3.8630128, y: 5.7, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
-    - segmentId: 60
-      a: {x: -3.7960253, y: 5.45}
-      b: {x: -3.43, y: 5.0839744}
-      bounds:
-        m_Center: {x: -3.6130128, y: 5.266987, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
-    - segmentId: 61
-      a: {x: -3.43, y: 5.0839744}
-      b: {x: -2.93, y: 4.95}
-      bounds:
-        m_Center: {x: -3.18, y: 5.016987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 62
-      a: {x: -2.93, y: 4.95}
-      b: {x: -2.43, y: 5.0839744}
-      bounds:
-        m_Center: {x: -2.68, y: 5.016987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 63
-      a: {x: -2.43, y: 5.0839744}
-      b: {x: -2.0639744, y: 5.45}
-      bounds:
-        m_Center: {x: -2.2469873, y: 5.266987, z: 0}
-        m_Extent: {x: 0.18301284, y: 0.18301272, z: 0}
-    - segmentId: 64
-      a: {x: -2.0639744, y: 5.45}
-      b: {x: -1.9300001, y: 5.95}
-      bounds:
-        m_Center: {x: -1.9969872, y: 5.7, z: 0}
-        m_Extent: {x: 0.06698716, y: 0.25, z: 0}
-  - Chunk:
-      X: 0
-      Y: -1
-    StaticItems:
     - ItemId: 103
-      Key: 1/Room01
-      Position: {x: 4.11, y: 6.31, z: -0.5}
+      Key: P/Ruin_01
+      Position: {x: 2.26, y: 1.3, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
-        Type: 0
+        Type: 2
         Param1: 0
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: Clear_Ruin_03
         Param6: 
-    FovStaticSegments:
-    - segmentId: 17
-      a: {x: 5.65, y: 5.81}
-      b: {x: 5.5160255, y: 6.31}
-      bounds:
-        m_Center: {x: 5.5830126, y: 6.06, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 18
-      a: {x: 5.5160255, y: 6.31}
-      b: {x: 5.15, y: 6.6760254}
-      bounds:
-        m_Center: {x: 5.3330126, y: 6.4930124, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 19
-      a: {x: 5.15, y: 6.6760254}
-      b: {x: 4.65, y: 6.81}
-      bounds:
-        m_Center: {x: 4.9, y: 6.7430124, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 20
-      a: {x: 4.65, y: 6.81}
-      b: {x: 4.15, y: 6.6760254}
-      bounds:
-        m_Center: {x: 4.4, y: 6.7430124, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 21
-      a: {x: 4.15, y: 6.6760254}
-      b: {x: 3.7839746, y: 6.31}
-      bounds:
-        m_Center: {x: 3.9669874, y: 6.4930124, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 22
-      a: {x: 3.7839746, y: 6.31}
-      b: {x: 3.65, y: 5.81}
-      bounds:
-        m_Center: {x: 3.7169874, y: 6.06, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 23
-      a: {x: 3.65, y: 5.81}
-      b: {x: 3.783975, y: 5.31}
-      bounds:
-        m_Center: {x: 3.7169876, y: 5.56, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
-    - segmentId: 24
-      a: {x: 3.783975, y: 5.31}
-      b: {x: 4.15, y: 4.9439745}
-      bounds:
-        m_Center: {x: 3.9669876, y: 5.1269875, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
-    - segmentId: 25
-      a: {x: 4.15, y: 4.9439745}
-      b: {x: 4.65, y: 4.81}
-      bounds:
-        m_Center: {x: 4.4, y: 4.8769875, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 26
-      a: {x: 4.65, y: 4.81}
-      b: {x: 5.15, y: 4.9439745}
-      bounds:
-        m_Center: {x: 4.9, y: 4.8769875, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 27
-      a: {x: 5.15, y: 4.9439745}
-      b: {x: 5.5160255, y: 5.3100004}
-      bounds:
-        m_Center: {x: 5.3330126, y: 5.1269875, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301296, z: 0}
-    - segmentId: 28
-      a: {x: 5.5160255, y: 5.3100004}
-      b: {x: 5.65, y: 5.81}
-      bounds:
-        m_Center: {x: 5.5830126, y: 5.5600004, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.24999976, z: 0}
-  - Chunk:
-      X: -1
-      Y: -1
-    StaticItems:
-    - ItemId: 104
-      Key: 1/Room01
-      Position: {x: -3.44, y: 6.46, z: -0.5}
+    - ItemId: 105
+      Key: P/Ruin_01
+      Position: {x: 0, y: 0, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
-        Type: 0
+        Type: 2
         Param1: 0
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: Clear_Ruin_01
         Param6: 
-    FovStaticSegments:
-    - segmentId: 41
-      a: {x: -1.9300001, y: 5.95}
-      b: {x: -2.0639746, y: 6.45}
-      bounds:
-        m_Center: {x: -1.9969873, y: 6.2, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 42
-      a: {x: -2.0639746, y: 6.45}
-      b: {x: -2.43, y: 6.8160253}
-      bounds:
-        m_Center: {x: -2.2469873, y: 6.633013, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 43
-      a: {x: -2.43, y: 6.8160253}
-      b: {x: -2.93, y: 6.95}
-      bounds:
-        m_Center: {x: -2.68, y: 6.883013, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 44
-      a: {x: -2.93, y: 6.95}
-      b: {x: -3.43, y: 6.8160253}
-      bounds:
-        m_Center: {x: -3.18, y: 6.883013, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 45
-      a: {x: -3.43, y: 6.8160253}
-      b: {x: -3.7960255, y: 6.45}
-      bounds:
-        m_Center: {x: -3.6130128, y: 6.633013, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 46
-      a: {x: -3.7960255, y: 6.45}
-      b: {x: -3.93, y: 5.95}
-      bounds:
-        m_Center: {x: -3.8630128, y: 6.2, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 47
-      a: {x: -3.93, y: 5.95}
-      b: {x: -3.7960253, y: 5.45}
-      bounds:
-        m_Center: {x: -3.8630128, y: 5.7, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
-    - segmentId: 48
-      a: {x: -3.7960253, y: 5.45}
-      b: {x: -3.43, y: 5.0839744}
-      bounds:
-        m_Center: {x: -3.6130128, y: 5.266987, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
-    - segmentId: 49
-      a: {x: -3.43, y: 5.0839744}
-      b: {x: -2.93, y: 4.95}
-      bounds:
-        m_Center: {x: -3.18, y: 5.016987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 50
-      a: {x: -2.93, y: 4.95}
-      b: {x: -2.43, y: 5.0839744}
-      bounds:
-        m_Center: {x: -2.68, y: 5.016987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 51
-      a: {x: -2.43, y: 5.0839744}
-      b: {x: -2.0639744, y: 5.45}
-      bounds:
-        m_Center: {x: -2.2469873, y: 5.266987, z: 0}
-        m_Extent: {x: 0.18301284, y: 0.18301272, z: 0}
-    - segmentId: 52
-      a: {x: -2.0639744, y: 5.45}
-      b: {x: -1.9300001, y: 5.95}
-      bounds:
-        m_Center: {x: -1.9969872, y: 5.7, z: 0}
-        m_Extent: {x: 0.06698716, y: 0.25, z: 0}
+    FovStaticSegments: []
   EntityRefreshInfo:
-  - UniqId: 90001
+  - UniqId: 5
     AppearCond:
       Type: 0
       Param1: 0
@@ -491,8 +110,8 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055725832105623553
-  - UniqId: 40003
+      rid: 1421625909611593733
+  - UniqId: 4
     AppearCond:
       Type: 0
       Param1: 0
@@ -512,8 +131,8 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055725832105623554
-  - UniqId: 40002
+      rid: 1421625909611593734
+  - UniqId: 3
     AppearCond:
       Type: 0
       Param1: 0
@@ -533,8 +152,8 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055725832105623555
-  - UniqId: 40001
+      rid: 1421625909611593735
+  - UniqId: 2
     AppearCond:
       Type: 0
       Param1: 0
@@ -554,15 +173,15 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055725832105623556
-  - UniqId: 1100
+      rid: 1421625909611593736
+  - UniqId: 1
     AppearCond:
-      Type: 0
-      Param1: 0
+      Type: 2
+      Param1: 1
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: fix_teleport
       Param6: 
     DisappearCond:
       Type: 0
@@ -575,268 +194,88 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055725832105623557
-  - UniqId: 1003
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 4055725832105623558
-  - UniqId: 1002
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 4055725832105623559
-  - UniqId: 1001
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 4055725832105623560
+      rid: 1421625909611593737
   NamedPoints:
-  - Name: 1
+  - Name: p1
     PointType: 0
-    Position: {x: 2.42, y: 6.73, z: 0}
+    Position: {x: 0, y: 0, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_point_01
+  - Name: born_01
+    PointType: 1
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: hole_01_p
     PointType: 0
-    Position: {x: -5, y: 7.45, z: 0}
+    Position: {x: -3.98, y: 3.49, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_point_02
+  - Name: hole_02_p
     PointType: 0
-    Position: {x: -1.49, y: 7.37, z: 0}
+    Position: {x: -4.82, y: 3.5, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_point_03
-    PointType: 0
-    Position: {x: -1.54, y: 4.58, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_point_04
-    PointType: 0
-    Position: {x: -4.69, y: 4.42, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: walker_born_01
-    PointType: 4
-    Position: {x: -9.3, y: 0.15, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: walker_born_02
-    PointType: 4
-    Position: {x: 22.46, y: -17.11, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: walker_born_03
-    PointType: 4
-    Position: {x: 24.4, y: 12.99, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_001
-    PointType: 0
-    Position: {x: 23.17, y: 3.45, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_002
-    PointType: 0
-    Position: {x: 23, y: -3.33, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_003
-    PointType: 0
-    Position: {x: -0.14, y: -0.18, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_004
-    PointType: 0
-    Position: {x: 6.41, y: -9.78, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_005
-    PointType: 0
-    Position: {x: 7.31, y: 9.94, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_006
-    PointType: 0
-    Position: {x: 14.67, y: 9.94, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  NamedPaths:
-  - Name: walker_01
-    Points:
-    - walker_born_01
-    - p_003
-    - walker_born_02
-    Tag: walker
-  - Name: walker_02
-    Points:
-    - walker_born_01
-    - p_005
-    - p_006
-    - walker_born_03
-    Tag: walker
-  - Name: walker_03
-    Points:
-    - walker_born_02
-    - p_002
-    - p_001
-    - walker_born_03
-    Tag: walker
+  NamedPaths: []
   references:
     version: 2
     RefIds:
-    - rid: 4055725832105623553
-      type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
+    - rid: 1421625909611593733
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: 
-        Position: {x: -6.09, y: 5.01}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 3
-        MoveSpeed: 0.2
-        Waypoints:
-        - patrol_point_01
-        - patrol_point_02
-        - patrol_point_03
-        - patrol_point_04
-        LoopMode: 2
-        GroupUnits:
-        - GroupIdx: 0
-          InitInfo:
-            rid: 4055725832105623561
-        - GroupIdx: 1
-          InitInfo:
-            rid: 4055725832105623562
-    - rid: 4055725832105623554
-      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: obj_01
-        Position: {x: -1.034, y: 0.554}
+        CfgId: lock_door_01
+        Position: {x: -6.11, y: 2.866}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055725832105623555
-      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+        Variables:
+          keys: []
+          values: []
+    - rid: 1421625909611593734
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: obj_01
-        Position: {x: -1.605, y: 0.409}
+        CfgId: bridge_block
+        Position: {x: 3.165, y: -1.268}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055725832105623556
-      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+        Variables:
+          keys: []
+          values: []
+    - rid: 1421625909611593735
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: obj_01
-        Position: {x: -1.034, y: 0}
+        CfgId: hole
+        Position: {x: -4.95, y: 3.52}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055725832105623557
-      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+        Variables:
+          keys:
+          - tp_name
+          values:
+          - hole_01_p
+    - rid: 1421625909611593736
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: qigai_default
-        Position: {x: 0.76, y: -2.34}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 3
-        MoveMode: 0
-        EnmityConfId: default_peace
-        IsPeace: 1
-        InitUnsensored: 0
-    - rid: 4055725832105623558
-      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: dig_01
-        Position: {x: 5.07, y: -3.09}
+        CfgId: hole
+        Position: {x: -3.89, y: 3.52}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055725832105623559
-      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+        Variables:
+          keys:
+          - tp_name
+          values:
+          - hole_02_p
+    - rid: 1421625909611593737
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: box_01
-        Position: {x: 4.99, y: 5.56}
+        CfgId: teleport
+        Position: {x: -0.96, y: 4.26}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055725832105623560
-      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: box_01
-        Position: {x: -2.42, y: 2.51}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 0
-    - rid: 4055725832105623561
-      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: hunhun
-        Position: {x: 0.2, y: 0.2}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 3
-        MoveMode: 4
-        EnmityConfId: default_monster
-        IsPeace: 0
-        InitUnsensored: 0
-    - rid: 4055725832105623562
-      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: hunhun
-        Position: {x: -0.2, y: 0.2}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 3
-        MoveMode: 4
-        EnmityConfId: default_monster
-        IsPeace: 0
-        InitUnsensored: 0
+        Variables:
+          keys: []
+          values: []

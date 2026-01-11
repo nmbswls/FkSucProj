@@ -88,7 +88,7 @@ namespace My.UI
                 overworldSkillPreviewUI.TickPreviewState();
             }
 
-            if (WorldAreaManager.Instance.currentWorld.worldName == "home" && UnityEngine.Input.GetKeyDown(KeyCode.B))
+            if (WorldAreaManager.Instance.cacheAreaInfo.IsHome && UnityEngine.Input.GetKeyDown(KeyCode.B))
             {
                 if(HudMode == EHudMode.Normal)
                 {

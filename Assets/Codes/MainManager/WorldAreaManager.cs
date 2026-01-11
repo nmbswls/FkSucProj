@@ -6,20 +6,22 @@ using System;
 using System.Linq;
 using My.Map.Scene;
 using UnityEngine.UI;
+using My.Config;
+using cfg.demo;
 
 public class WorldAreaManager : MonoBehaviour
 {
     public static WorldAreaManager Instance { get; private set; }
 
-    [Header("Runtime")]
-    public WorldAreaInfo currentWorld;
+    public int currentAreaId;
+    public MapAreaInfo? cacheAreaInfo;
     public WorldAreaRoot currentRoot;
 
 
     public readonly List<Scene> loadedSubScenes = new List<Scene>();
 
-    public event Action<WorldAreaInfo> OnWorldLoaded;
-    public event Action<WorldAreaInfo> OnWorldUnloaded;
+    public event Action<int> OnWorldLoaded;
+    public event Action<int> OnWorldUnloaded;
     public event Action<string, float> OnLoadingProgress; // 子场景名，进度0-1
 
     public ObstacleSegmentProvider SegmentProvider;
@@ -34,16 +36,16 @@ public class WorldAreaManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public bool IsWorldLoaded => currentWorld != null;
+    public bool IsWorldLoaded => currentAreaId != 0;
 
-    public void LoadWorld(WorldAreaInfo areaInfo, bool setActive = true, Action<WorldAreaInfo>? onComplete = null)
+    public void LoadWorld(int areaId, bool setActive = true, Action<int, bool>? onComplete = null)
     {
-        StartCoroutine(CoLoadWorld(areaInfo, setActive, onComplete));
+        StartCoroutine(CoLoadWorld(areaId, setActive, onComplete));
     }
 
     public void UnloadCurrentWorld(Action? onUnload)
     {
-        if (currentWorld == null) return;
+        if (currentAreaId == 0) return;
         StartCoroutine(CoUnloadWorld(onUnload));
         MainGameManager.Instance.SceneFadeManager.OnLeaveArea();
         currentRoot = null;
@@ -51,46 +53,67 @@ public class WorldAreaManager : MonoBehaviour
 
     public void Reload()
     {
-        if (currentWorld == null) return;
-        LoadWorld(currentWorld);
+        if (currentAreaId == 0) return;
+        LoadWorld(currentAreaId);
     }
 
-    private IEnumerator CoLoadWorld(WorldAreaInfo areaInfo, bool setActive, Action<WorldAreaInfo>? onComplete)
+    private IEnumerator CoLoadWorld(int areaId, bool setActive, Action<int, bool>? onComplete)
     {
         // 先卸载旧的
-        if (currentWorld != null)
+        if (currentAreaId != 0)
             yield return CoUnloadWorld(null);
 
-        currentWorld = areaInfo;
         loadedSubScenes.Clear();
 
-        // 异步依次加载子场景（也可并行）
-        foreach (var sceneName in areaInfo.subScenes)
+        var areaCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(areaId);
+        if(areaCfg == null)
         {
-            if (!IsInBuildSettings(sceneName))
+            Debug.LogError("CoLoadWorld not found.");
+            // todo 处理异常情况
+            // 保底
+            yield break;
+        }
+
+        if(string.IsNullOrEmpty(areaCfg.SceneName))
+        {
+            Debug.LogError("CoLoadWorld area SceneName empty.");
+            // todo 处理异常情况
+            // 保底
+            yield break;
+        }
+
+        currentAreaId = areaId;
+        cacheAreaInfo = areaCfg;
+
+        do
+        {
+            if (!IsInBuildSettings(areaCfg.SceneName))
             {
-                Debug.LogError($"SubSceneManager: scene '{sceneName}' not in Build Settings.");
+                Debug.LogError($"SubSceneManager: scene '{areaCfg.SceneName}' not in Build Settings.");
                 continue;
             }
-            var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-            if (op == null) { Debug.LogError($"LoadSceneAsync returned null for {sceneName}"); continue; }
+            var op = SceneManager.LoadSceneAsync(areaCfg.SceneName, LoadSceneMode.Additive);
+            if (op == null) { Debug.LogError($"LoadSceneAsync returned null for {areaCfg.SceneName}"); continue; }
             op.allowSceneActivation = true;
 
             while (!op.isDone)
             {
-                OnLoadingProgress?.Invoke(sceneName, op.progress);
+                OnLoadingProgress?.Invoke(areaCfg.SceneName, op.progress);
                 yield return null;
             }
 
-            var scene = SceneManager.GetSceneByName(sceneName);
+            var scene = SceneManager.GetSceneByName(areaCfg.SceneName);
             if (scene.IsValid()) loadedSubScenes.Add(scene);
-            else Debug.LogError($"Loaded scene invalid: {sceneName}");
+            else Debug.LogError($"Loaded scene invalid: {areaCfg.SceneName}");
         }
+        while (false);
+
+        
         GameObject onlyRoot = null;
         // 设置激活场景（影响 Instantiate 的默认归属、Lighting、NavMesh 等）
-        if (setActive && !string.IsNullOrEmpty(areaInfo.activeSubScene))
+        if (setActive)
         {
-            var active = loadedSubScenes.FirstOrDefault(s => s.name == areaInfo.activeSubScene);
+            var active = loadedSubScenes.FirstOrDefault();
             if (active.IsValid())
             {
                 SceneManager.SetActiveScene(active);
@@ -114,11 +137,11 @@ public class WorldAreaManager : MonoBehaviour
             }
         }
 
-        OnWorldLoaded?.Invoke(areaInfo);
-        Debug.Log($"SubSceneManager: World '{areaInfo.worldName}' loaded with {loadedSubScenes.Count} sub-scenes.");
+        OnWorldLoaded?.Invoke(areaId);
+        Debug.Log($"SubSceneManager: World '{areaCfg.SceneName}' loaded with {loadedSubScenes.Count} sub-scenes.");
 
         SegmentProvider.OnAreaEnter();
-        onComplete?.Invoke(areaInfo);
+        onComplete?.Invoke(currentAreaId, true);
     }
 
     private IEnumerator CoUnloadWorld(Action? onUnload)
@@ -135,9 +158,9 @@ public class WorldAreaManager : MonoBehaviour
         }
         loadedSubScenes.Clear();
 
-        var last = currentWorld;
-        currentWorld = null;
-        OnWorldUnloaded?.Invoke(last);
+        var lastAreaId = currentAreaId;
+        currentAreaId = 0;
+        OnWorldUnloaded?.Invoke(lastAreaId);
         Debug.Log("SubSceneManager: world unloaded.");
 
         onUnload?.Invoke();

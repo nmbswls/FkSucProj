@@ -1,5 +1,7 @@
+using cfg.demo;
 using Map.Entity;
 using Map.Logic.Events;
+using My.Config;
 using My.Map.Entity;
 using My.MapExport;
 using System;
@@ -11,6 +13,7 @@ using UnityEditor;
 using UnityEngine;
 using static My.MapExport.MapExportDatabase;
 using static UnityEngine.EventSystems.EventTrigger;
+using static UnityEngine.Rendering.VolumeComponent;
 
 namespace My.Map.Logic
 {
@@ -56,7 +59,8 @@ namespace My.Map.Logic
         public LogicEntityRepository Repo;
         public LongLivedRegistry LongLived { get; } = new();
 
-        public string AreaId = string.Empty;
+        public int AreaId = 0;
+        protected MapAreaInfo cacheMapAreaCfg;
         public MapExportDatabase cacheDatabase;
 
         public Dictionary<string, LogicRoomInfo> RuntimeRoomInfos = new();
@@ -96,9 +100,10 @@ namespace My.Map.Logic
         /// <summary>
         /// 初始化地区
         /// </summary>
-        public async Task InitilizeArea(string areaId)
+        public async Task InitilizeArea(int areaId)
         {
             this.AreaId = areaId;
+            cacheMapAreaCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(areaId);
 
             UnitGridIndex.Clear();
             RoomGridIndex.Clear();
@@ -133,8 +138,9 @@ namespace My.Map.Logic
                 var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, innerListener);
                 subs.Add(sub);
             }
-
             Repo = null;
+
+            var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(areaId);
 
             // 加载 cacheDatabase
             cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
@@ -161,7 +167,7 @@ namespace My.Map.Logic
                 //}
             }
 
-            if(areaId == "home")
+            if(mapCfg != null && mapCfg.IsHome)
             {
                 var homeRefreshs = logicManager.homeDataManager.GetAllValidLogicEntites();
                 EntityRefreshInfo.AddRange(homeRefreshs);
@@ -411,6 +417,9 @@ namespace My.Map.Logic
             TickRefreshWalker();
 
             TickLowFreqTickRecord();
+
+            // 检查邪恶告警
+            TickEvilAlerts();
         }
 
         private float _lowFreqTickTimer = 0;

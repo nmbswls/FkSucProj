@@ -20,7 +20,7 @@ public class SceneAOIManager : MonoBehaviour
 {
     public static SceneAOIManager Instance;
 
-    public string AreaId { get; set; }
+    public int AreaId { get; set; }
 
     [Header("Player & AOI")]
     public float aoiRadius = 20f;   // 动态对象可见半径（圆或方形）
@@ -82,7 +82,7 @@ public class SceneAOIManager : MonoBehaviour
     }
 
 
-    public void InitArea(string areaId)
+    public void InitArea(int areaId)
     {
         this.AreaId = areaId;
         ExportDb = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
@@ -182,7 +182,7 @@ public class SceneAOIManager : MonoBehaviour
         // 4) 清理地图相关引用
         try
         {
-            AreaId = null;
+            AreaId = 0;
             ExportDb = null;
         }
         catch (System.Exception ex)
@@ -224,7 +224,7 @@ public class SceneAOIManager : MonoBehaviour
         }
 
         if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null) return;
-        if (string.IsNullOrEmpty(AreaId)) return;
+        if (AreaId == 0) return;
 
         // 1) 动态实体 AOI 刷新（网格桶 + 半径范围）
         RefreshDynamicAOI(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, LogicTime.deltaTime);

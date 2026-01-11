@@ -1,6 +1,7 @@
 
 using Config;
 using Map.Logic.Events;
+using My.Config;
 using My.Home;
 using My.Map;
 using My.Map.Drop;
@@ -41,8 +42,8 @@ namespace My
 
     public class SwitchAreaIntent
     {
-        public string? OldAreaName;
-        public string NewAreaName;
+        public int? OldAreaId;
+        public int NewAreaId;
         public bool Reset;
         public LogicEntityRecord4Player SavedRecord;
 
@@ -105,8 +106,6 @@ namespace My
 
         public void OnGameInit(SaveData saveData)
         {
-            LoadGameConfigs();
-
             playerDataManager = new(this);
             playerDataManager.InitPlayerData(saveData);
 
@@ -149,7 +148,7 @@ namespace My
 
             SwitchAreaIntent = new SwitchAreaIntent()
             {
-                NewAreaName = "home",
+                NewAreaId = 1,
                 Reset = true,
             };
 
@@ -174,9 +173,12 @@ namespace My
         /// <param name="areaName"></param>
         public async Task OnSwitchAreaFinish(SwitchAreaIntent intent)
         {
-            await AreaManager.InitilizeArea(intent.NewAreaName);
 
-            if(intent.NewAreaName == "home")
+            var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(intent.NewAreaId);
+
+            await AreaManager.InitilizeArea(intent.NewAreaId);
+
+            if(mapCfg != null && mapCfg.IsHome)
             {
                 homeDataManager.OnPlayerEnterHome();
             }
@@ -248,7 +250,7 @@ namespace My
         /// 玩家进入/切换场景
         /// </summary>
         /// <param name="areaName"></param>
-        public void PlayerSwitchArea(string areaName, bool reset, string? targetPoint = null)
+        public void PlayerSwitchArea(int areaId, bool reset, string? targetPoint = null)
         {
             if(SwitchAreaIntent != null)
             {
@@ -256,8 +258,8 @@ namespace My
                 return;
             }
             var intent = new SwitchAreaIntent();
-            intent.NewAreaName = areaName;
-            intent.OldAreaName = AreaManager.AreaId;
+            intent.NewAreaId = areaId;
+            intent.OldAreaId = AreaManager.AreaId;
             intent.Reset = reset;
             intent.SavedRecord = new()
             {
@@ -621,13 +623,19 @@ namespace My
 
                 // 死亡
                 // 检查是否有map事件hook
+                int reviveAreaId = GetCurrentReviveArea();
 
                 // 回城
-                PlayerSwitchArea("home", true);
+                PlayerSwitchArea(reviveAreaId, true);
             }
         }
 
         #endregion
+
+        public int GetCurrentReviveArea()
+        {
+            return 1;
+        }
 
         public bool HandleUseItem(long userUnit, long cnt, ItemUseCfg useCfg)
         {
@@ -669,18 +677,7 @@ namespace My
         }
 
 
-        private cfg.Tables _gameConfigs = null;
-
-        public cfg.Tables Cfgs { get { return _gameConfigs; } }
-        private void LoadGameConfigs()
-        {
-            string gameConfDir = "Config/Json"; // 替换为gen.bat中outputDataDir指向的目录
-
-            _gameConfigs = new cfg.Tables((file) => {
-                var configAsset = Resources.Load<TextAsset>($"{gameConfDir}/{file}");
-                return JSON.Parse(configAsset.text);
-            });
-        }
+       
     }
 
 }

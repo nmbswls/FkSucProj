@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "据点",
+    "desc": "据点",
+    "scene_name": "",
+    "is_home": true,
+    "always_alert": false
+  },
+  {
+    "id": 100,
+    "name": "新手村",
+    "desc": "出门第一张地图",
+    "scene_name": "Main_Area_01",
+    "is_home": false,
+    "always_alert": true
+  },
+  {
+    "id": 101,
+    "name": "村子2",
+    "desc": "村子2",
+    "scene_name": "Main_Area_02",
+    "is_home": false,
+    "always_alert": true
+  }
+]

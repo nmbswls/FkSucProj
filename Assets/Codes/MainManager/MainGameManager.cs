@@ -4,6 +4,7 @@ using Map.Scene;
 using Map.Scene.UI;
 using Map.SmallGame.Zha;
 using My;
+using My.Config;
 using My.Dialog;
 using My.Encounter;
 using My.Input;
@@ -67,6 +68,8 @@ public interface IVisionSenser2D
     List<ILogicEntity> OverlapBoxAllEntity(Vector2 orgPos, Vector2 dir, Vector2 size, EntityFilterParam? filter);
 
     List<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter);
+
+    bool CheckIsInAlertArea(Vector2 orgPos);
 }
 
 
@@ -128,6 +131,9 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public async Task InitStartGame(string startParams, Action? onComplete)
     {
         AITemplateConfigLoader.Load("");
+
+        CfgMgr.LoadGameConfigs();
+
         gameLogicManager = new();
         gameLogicManager.viewer = this;
         gameLogicManager.visionSenser = VisionSenser2D;
@@ -176,7 +182,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             Debug.LogError("LoadGameMain intent null");
             return;
         }
-        var areaInfo = Resources.Load<WorldAreaInfo>($"Area/{intent.NewAreaName}");
 
         // 逻辑上将玩家放入场景
         await gameLogicManager.OnSwitchAreaFinish(intent);
@@ -189,7 +194,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         //}
         
         bool loaded = false;
-        WorldAreaManager.Instance.LoadWorld(areaInfo, onComplete: (w) => { loaded = true; });
+        WorldAreaManager.Instance.LoadWorld(intent.NewAreaId, onComplete: (w, suc) => { loaded = true; });
 
         // 等待场景加载
         while(!loaded)
@@ -203,7 +208,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         // 整理职责
         FovGenerator.OnAreaEnter();
-        SceneAOIManager.Instance.InitArea(areaInfo.worldName);
+        SceneAOIManager.Instance.InitArea(intent.NewAreaId);
         SceneFadeManager.OnEnterArea(WorldAreaManager.Instance.currentRoot.gameObject);
 
         UIOrchestrator.Instance.InitGameLogicEventListener();
