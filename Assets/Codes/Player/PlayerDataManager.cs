@@ -16,7 +16,10 @@ namespace My.Player
         public long ItemInstanceIdCounter = 100;
         public PlayerInventoryModel inventoryModel;
 
-
+        /// <summary>
+        /// 养成
+        /// </summary>
+        public PlayerProgressionSystem ProgressionSystem { get; private set; }
         /// <summary>
         /// 游戏变量表
         /// </summary>
@@ -50,10 +53,14 @@ namespace My.Player
 
             VariableDict["fix_teleport"] = true;
             VariableDict["a1"] = true;
+
+            ProgressionSystem = new();
         }
         public void InitPlayerData(SaveData savingData)
         {
             InitBagInfo();
+
+            ProgressionSystem.InitializeSystem(savingData);
         }
 
         public void InitBagInfo()

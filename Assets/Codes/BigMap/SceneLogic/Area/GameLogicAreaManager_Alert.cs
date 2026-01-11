@@ -27,10 +27,12 @@ namespace My.Map.Logic
             public bool IsValid;
         }
 
-        public float AlertTryInterval = 8.0f;
+        public float GlobalAlertMinInterval = 5.0f;
+        public float UnitAlertTryInterval = 12.0f;
         public float AlertDuration = 5.0f;
 
         public long AreaAlertValue = 0;
+        public float LastAlertUpdateTime = 0;
 
         protected Dictionary<long, float> EntityLastTryAlertTimes = new();
         protected List<AlertRecord> alertRecords = new();
@@ -57,6 +59,12 @@ namespace My.Map.Logic
         /// <param name="entityId"></param>
         public void EntityTryAlert(long entityId)
         {
+
+            if(LogicTime.time - LastAlertUpdateTime < GlobalAlertMinInterval)
+            {
+                return;
+            }
+
             var entity = GetLogicEntiy(entityId);
             if(entity == null)
             {
@@ -64,7 +72,7 @@ namespace My.Map.Logic
             }
 
             EntityLastTryAlertTimes.TryGetValue(entityId, out var lastAlertTime);
-            if(lastAlertTime != 0 && LogicTime.time -  lastAlertTime < AlertTryInterval)
+            if(lastAlertTime != 0 && LogicTime.time -  lastAlertTime < UnitAlertTryInterval)
             {
                 return;
             }
