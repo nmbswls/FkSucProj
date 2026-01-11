@@ -15,6 +15,7 @@ using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.Map.View;
+using My.MiniGame;
 using My.Saving;
 using My.UI;
 using Newtonsoft.Json;
@@ -249,14 +250,17 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         if(Input.GetKeyDown(KeyCode.V))
         {
-            _ = OnSaveClicked().ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
-                }
+            //_ = OnSaveClicked().ContinueWith(t =>
+            //{
+            //    if (t.IsFaulted)
+            //    {
+            //        Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+            //    }
 
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            //}, TaskScheduler.FromCurrentSynchronizationContext());
+
+
+            DeepAbsorbPanel.Show(0, 5, 3);
         }
     }
 

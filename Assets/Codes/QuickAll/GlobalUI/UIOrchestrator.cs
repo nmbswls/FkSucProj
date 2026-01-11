@@ -1,5 +1,6 @@
 using Map.Logic.Events;
 using My.Map.View;
+using My.MiniGame;
 using My.Player.Bag;
 using System;
 using System.Collections;
@@ -168,6 +169,14 @@ namespace My.UI
                 pooled = false,
             });
 
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "DeepAbsorbPanel",
+                resourcePath = "UI/Prefabs/DeepAbsorbPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+            
         }
 
         public static void RegisterGroups()
