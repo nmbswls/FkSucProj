@@ -39,10 +39,15 @@ namespace My
         [Header("Settings")]
         public GameObject logItemPrefab;
         public float spawnInterval = 0.3f; // 每一条日志弹出的间隔时间
+        public int maxActiveItems = 5;
+        public Transform logItemContainer;
 
         // 核心：任务队列
         private Queue<LogData> logQueue = new Queue<LogData>();
         private bool isProcessing = false;
+
+        // 活动条目列表（用于管理上浮和数量限制）
+        private List<UIGainSideNotifyItem> activeItems = new List<UIGainSideNotifyItem>();
 
         private void Awake()
         {
@@ -67,16 +72,10 @@ namespace My
         {
             isProcessing = true;
 
-            // 只要队列里还有东西，就一直循环
             while (logQueue.Count > 0)
             {
-                // 1. 取出数据
                 LogData data = logQueue.Dequeue();
-
-                // 2. 生成 UI
                 CreateLogItem(data);
-
-                // 3. 强制间隔（这就是节奏控制的关键）
                 yield return new WaitForSeconds(spawnInterval);
             }
 
@@ -85,16 +84,61 @@ namespace My
 
         private void CreateLogItem(LogData data)
         {
-            GameObject obj = Instantiate(logItemPrefab, transform);
+
+            // 1. 清理已销毁的空对象
+            // (Item自己销毁后 List 里会留 null，需要先清掉防止报错)
+            for (int i = activeItems.Count - 1; i >= 0; i--)
+            {
+                if (activeItems[i] == null) activeItems.RemoveAt(i);
+            }
+
+            // 2. 检查数量限制 (超出则移除最老的)
+            while (activeItems.Count >= maxActiveItems)
+            {
+                // activeItems[0] 是最老的（最早添加的）
+                UIGainSideNotifyItem oldItem = activeItems[0];
+                activeItems.RemoveAt(0); // 从列表移除引用
+
+                if (oldItem != null)
+                {
+                    // 调用 Item 自身的快速退出方法
+                    oldItem.ForceExit();
+                }
+            }
+
+            //// 3. 通知剩下的老条目往上走
+            //// 遍历所有活着的条目，让它们的目标 Y 坐标增加一个高度
+            //foreach (var item in activeItems)
+            //{
+            //    if (item != null) item.AddHeightOffset(itemHeight);
+            //}
+
+            // 4. 生成新条目
+            GameObject obj = Instantiate(logItemPrefab, logItemContainer);
             obj.SetActive(true);
-            // 确保顺序：新来的在最下面（或者最上面，取决于你的偏好）
+
+            // 初始化 RectTransform，确保它是从容器底部开始
+            // 这里的坐标系逻辑依赖于你之前说的“脱离LayoutGroup”方案
+            RectTransform rt = obj.GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                // 确保 Anchor/Pivot 是右下角 (1, 0)
+                rt.anchorMin = new Vector2(1, 0);
+                rt.anchorMax = new Vector2(1, 0);
+                rt.pivot = new Vector2(1, 0);
+                rt.anchoredPosition = Vector2.zero; // 重置位置到原点
+            }
+
+            // 保证层级在最下（如果你希望新消息盖在旧消息上，用 SetAsLastSibling；反之 SetAsFirstSibling）
             obj.transform.SetAsLastSibling();
 
-            // 初始化内容
-            UIGainSideNotifyItem item = obj.GetComponent<UIGainSideNotifyItem>();
-            if (item != null)
+            // 5. 初始化脚本并加入列表
+            UIGainSideNotifyItem newItem = obj.GetComponent<UIGainSideNotifyItem>();
+            if (newItem != null)
             {
-                item.Setup(data.message, data.icon);
+                newItem.Initialize(data.message, data.icon);
+                // 加入列表末尾
+                activeItems.Add(newItem);
             }
         }
 

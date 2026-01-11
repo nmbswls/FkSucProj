@@ -55,7 +55,7 @@ namespace My
             // 计算一个控制点，使路径呈弧形
             // 控制点取在中点上方或侧方一定距离
             Vector3 midPoint = (startPos + endPos) / 2;
-            Vector3 controlPoint = midPoint + (Vector3.up * 200f) + (Vector3.right * 100f); // 根据屏幕调整数值
+            Vector3 controlPoint = midPoint + (Vector3.up * 2f) + (Vector3.right * 1f); // 根据屏幕调整数值
 
             while (timer < flyDuration)
             {

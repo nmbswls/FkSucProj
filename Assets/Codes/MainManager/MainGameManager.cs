@@ -260,7 +260,12 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             //}, TaskScheduler.FromCurrentSynchronizationContext());
 
 
-            DeepAbsorbPanel.Show(0, 5, 3);
+            //DeepAbsorbPanel.Show(0, 5, 3);
+
+            if (UIGainRewardCoordinator.Instance != null)
+            {
+                UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
+            }
         }
     }
 
