@@ -31,10 +31,11 @@ MonoBehaviour:
       CheckInteractCond: []
       Outputs:
       - OutputType: 5
-        Param1: 0
+        Param1: 100
         Param2: 0
-        Param3: 1
+        Param3: 100
         Param4: 
+        DelayTime: 0
     HasBlock: 0
   InitState: 0
   StateChangeRules:
@@ -42,3 +43,7 @@ MonoBehaviour:
     CommonConds: []
     NeedSelfFlag: []
     ToStatus: 1
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName: 
+      ChangingEffect: 

@@ -223,7 +223,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
 
 
     /// <summary>
-    /// 检查是否与
+    /// 检查是否与alert area洛
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>

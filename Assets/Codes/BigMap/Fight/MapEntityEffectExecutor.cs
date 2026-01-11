@@ -264,11 +264,6 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (ctx.TargetId == 0)
-            {
-                return;
-            }
-
             var playerEntity = ctx.Env.GetLogicEntity(ctx.TargetId) as PlayerLogicEntity;
 
             if(realCfg.InEnter)

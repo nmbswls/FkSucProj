@@ -184,10 +184,6 @@ namespace My.UI
                 {
                     skillId = "queen_pull_all";
                 }
-                else if (keyName == QuickPlayerInputBinder.EInputKey.Q.ToString())
-                {
-                    skillId = "player_enter_queen";
-                }
                 else if(keyName == QuickPlayerInputBinder.EInputKey.MouseLeft.ToString())
                 {
                     skillId = "queen_attack";
@@ -202,6 +198,10 @@ namespace My.UI
                 else if (keyName == QuickPlayerInputBinder.EInputKey.MouseRight.ToString())
                 {
                     skillId = "player_normal_defend";
+                }
+                else if (keyName == QuickPlayerInputBinder.EInputKey.Q.ToString())
+                {
+                    skillId = "player_enter_queen";
                 }
             }
 

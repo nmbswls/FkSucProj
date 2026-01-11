@@ -69,7 +69,7 @@ public interface IVisionSenser2D
 
     List<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter);
 
-    bool CheckIsInAlertArea(Vector2 orgPos);
+    bool CheckIsInAlertArea(Vector2 pos);
 }
 
 

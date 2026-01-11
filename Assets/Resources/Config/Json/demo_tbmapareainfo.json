@@ -3,7 +3,7 @@
     "id": 1,
     "name": "据点",
     "desc": "据点",
-    "scene_name": "",
+    "scene_name": "Main_Home",
     "is_home": true,
     "always_alert": false
   },
