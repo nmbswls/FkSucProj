@@ -152,6 +152,14 @@ namespace My
                 NewAreaName = "home",
                 Reset = true,
             };
+
+            playerDataManager.inventoryModel.EventOnGainItem += (itemId, count) =>
+            {
+                if(UIGainSideNotifyPanel.Instance != null)
+                {
+                    UIGainSideNotifyPanel.Instance.EnqueueLog("gain " + itemId, null);
+                }
+            };
         }
 
 

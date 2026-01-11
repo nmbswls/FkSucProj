@@ -126,7 +126,7 @@ namespace My.MiniGame
 
         private void OnMiniGameNewTurn()
         {
-            DOVirtual.DelayedCall(0.8f, () =>
+            DOVirtual.DelayedCall(0.5f, () =>
             {
                 QteBar.ResetGame();
 
@@ -142,7 +142,12 @@ namespace My.MiniGame
 
             DOVirtual.DelayedCall(1.2f, () =>
             {
-                canvasGroup.DOFade(0, 0.3f).OnComplete(() =>
+                if(UIGainRewardCoordinator.Instance != null)
+                {
+                    UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
+                }
+
+                canvasGroup.DOFade(0, 0.2f).OnComplete(() =>
                 {
                     UIManager.Instance.HidePanel("DeepAbsorbPanel");
                 });

@@ -190,6 +190,17 @@ namespace Config
 
                 {
                     var item = new FakeItemConf();
+                    item.ItemId = "1";
+                    item.ItemType = EItemType.Normal;
+                    item.StackType = EStackType.Size1;
+                    item.SpriteName = "1";
+
+                    _dict[item.ItemId] = item;
+                }
+
+
+                {
+                    var item = new FakeItemConf();
                     item.ItemId = "small_stone";
                     item.ItemType = EItemType.Normal;
                     item.StackType = EStackType.Size1;

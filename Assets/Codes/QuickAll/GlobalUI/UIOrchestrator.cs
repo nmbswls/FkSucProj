@@ -176,7 +176,21 @@ namespace My.UI
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
-            
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "GainItemSideNtfPanel",
+                resourcePath = "UI/Prefabs/Common/GainItemSideNtfPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "UIGainRewardCoordinator",
+                resourcePath = "UI/Prefabs/Common/UIGainRewardCoordinator",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
         }
 
         public static void RegisterGroups()
@@ -395,6 +409,13 @@ namespace My.UI
             }
         }
 
+
+        private void EnsureCommonUI()
+        {
+            UIManager.Instance.ShowPanel("GainItemSideNtfPanel");
+            UIManager.Instance.ShowPanel("UIGainRewardCoordinator");
+        }
+
         private async Task EnterOverworldAsync(object ctx)
         {
             // 关闭战斗相关
@@ -402,6 +423,8 @@ namespace My.UI
             UIManager.Instance.ShowPanel("SceneMask");
             UIManager.Instance.ShowPanel("SmallIconLayer");
             UIManager.Instance.ShowPanel("InteractMenu");
+
+            EnsureCommonUI();
             
             MainGameManager.Instance.inputBinder.ApplyInputMode(InputMode.Overworld);
             await Task.CompletedTask;
@@ -416,7 +439,8 @@ namespace My.UI
             UIManager.Instance.ShowPanel("EncounterBattleHud", ctx, UILayer.HUD);
             //UIManager.Instance.ApplyInputMode(UIInputMode.Battle);
             //UIManager.Instance.HideLoading();
-            
+
+            EnsureCommonUI();
 
             MainGameManager.Instance.inputBinder.ApplyInputMode(InputMode.Battle);
             await Task.CompletedTask;

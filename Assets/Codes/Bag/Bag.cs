@@ -5,6 +5,7 @@ using SuperScrollView;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Text;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
@@ -633,6 +634,8 @@ namespace My.Player.Bag
         public Dictionary<string, float> ItemUseCd = new();
 
         public Dictionary<string, long> CurrencyBag = new();
+
+        public event Action<string, long> EventOnGainItem;
         public PlayerInventoryModel(PlayerDataManager dataManager)
         {
             this.DataManager = dataManager;
@@ -812,6 +815,9 @@ namespace My.Player.Bag
             }
 
             var put = bag.TryGiveItem(itemId, amount);
+
+            EventOnGainItem?.Invoke(itemId, put);
+
             return put;
         }
 
