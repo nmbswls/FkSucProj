@@ -54,7 +54,7 @@ namespace My.Player
             VariableDict["fix_teleport"] = true;
             VariableDict["a1"] = true;
 
-            ProgressionSystem = new();
+            ProgressionSystem = new(logicManager);
         }
         public void InitPlayerData(SaveData savingData)
         {

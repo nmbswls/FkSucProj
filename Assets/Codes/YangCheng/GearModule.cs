@@ -4,7 +4,7 @@ using System;
 
 namespace My
 {
-    public class PlayerEquipment : IProgressionSource
+    public class PlayerGear : IProgressionSource
     {
         public event Action<IProgressionSource> OnStatsChanged;
 
@@ -15,7 +15,7 @@ namespace My
 
         public EProgressionModule ModuleName => EProgressionModule.Level;
 
-        public PlayerEquipment()
+        public PlayerGear()
         {
             //_growthRates = new Dictionary<int, float> { { StatID.Health, 100 }, { StatID.Attack, 10 } };
             //_baseStats = new Dictionary<int, float> { { StatID.Health, 500 }, { StatID.Attack, 50 } };

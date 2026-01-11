@@ -73,6 +73,13 @@ namespace My
 
         // 调试用
         public Dictionary<int, float> GetRawDict() => _map;
+
+        // 新增：暴露迭代器供外部遍历
+        // 注意：尽量避免直接暴露 Dictionary，防止外部修改
+        public Dictionary<int, float>.Enumerator GetEnumerator()
+        {
+            return _map.GetEnumerator();
+        }
     }
 
 
@@ -142,27 +149,54 @@ namespace My
             OnStatsChanged?.Invoke(this);
         }
 
+
         public void EvaluateStats(StatMap targetMap)
         {
-            if (_isDirty)
-            {
-                _cache.Clear();
-                foreach (var child in _children) child.EvaluateStats(_cache);
-                _isDirty = false;
-            }
+            // 外部请求数据时，确保缓存是最新的
+            RebuildCache();
             targetMap.MergeFrom(_cache);
         }
 
-        // 仅用于调试或根节点查询
+        //// 仅用于调试或根节点查询
+        //public float GetValue(int id)
+        //{
+        //    if (_isDirty)
+        //    {
+        //        // 触发内部重算但不导出到外部
+        //        StatMap temp = new StatMap();
+        //        EvaluateStats(temp);
+        //    }
+        //    return _cache.Get(id);
+        //}
+
+        // 2. 优化 GetValue：不再产生 GC
         public float GetValue(int id)
         {
-            if (_isDirty)
-            {
-                // 触发内部重算但不导出到外部
-                StatMap temp = new StatMap();
-                EvaluateStats(temp);
-            }
+            RebuildCache(); // 确保脏标记被清除，缓存最新
             return _cache.Get(id);
+        }
+
+        // 1. 提取重算逻辑
+        private void RebuildCache()
+        {
+            if (!_isDirty) return;
+
+            _cache.Clear();
+            foreach (var child in _children)
+            {
+                child.EvaluateStats(_cache);
+            }
+            _isDirty = false;
+            // 这里计算完后，_cache 里就是最新的全量数据
+        }
+
+
+        // 3. 新增：允许外部直接访问缓存（只读引用）
+        // 对于“大地图”这种需要遍历所有属性的系统，这个最关键
+        public StatMap GetRawCache()
+        {
+            RebuildCache();
+            return _cache;
         }
     }
 }
