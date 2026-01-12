@@ -290,7 +290,7 @@ namespace My.Map
         public ControlledMoveCtx? controlledMoveCtx;
 
         // ³å·æ
-        public void StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onEndEffects, bool withEffect = false)
+        public void StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onEndEffects, bool withEffect = false, bool withGhost = false)
         {
             ApplyControlledMove(ControlledMoveCtx.EType.Dash, dashDir, dashTime, speed, onEndEffects: onEndEffects);
             controlledMoveCtx.WithEffect = withEffect;

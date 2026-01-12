@@ -344,8 +344,8 @@ GameObject:
   - component: {fileID: 8552881982338698837}
   - component: {fileID: 5981833247523422262}
   - component: {fileID: 6462304013100160239}
-  - component: {fileID: 8125375396503032286}
   - component: {fileID: -5488420210160331190}
+  - component: {fileID: 7663609590893745940}
   m_Layer: 20
   m_Name: qigai_default
   m_TagString: Untagged
@@ -453,8 +453,35 @@ MonoBehaviour:
   MainFlasher: {fileID: 0}
   SpecialAnimClips:
   - {fileID: 7400000, guid: cc762838fe4675149bbb8008cbc69e50, type: 2}
---- !u!58 &8125375396503032286
-CircleCollider2D:
+--- !u!114 &-5488420210160331190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716341979371502919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4323e88b6a4a5fd4bbcc6661912a6709, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxMoveSpeed: 5
+  damping: 0
+  enableSeparation: 0
+  separationRadius: 0.4
+  separationStrength: 1
+  separationDeadZone: 0.12
+  separationQueryMask:
+    serializedVersion: 2
+    m_Bits: 1048576
+  separationTag: 
+  dynamicBlockQueryMask:
+    serializedVersion: 2
+    m_Bits: 524288
+  nonPenPadding: 0.05
+  dynamicQueryExtra: 1
+--- !u!61 &7663609590893745940
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -486,35 +513,18 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Radius: 0.1
---- !u!114 &-5488420210160331190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6716341979371502919}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4323e88b6a4a5fd4bbcc6661912a6709, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxMoveSpeed: 5
-  damping: 0
-  enableSeparation: 0
-  separationRadius: 0.4
-  separationStrength: 1
-  separationDeadZone: 0.12
-  separationQueryMask:
-    serializedVersion: 2
-    m_Bits: 1048576
-  separationTag: 
-  dynamicBlockQueryMask:
-    serializedVersion: 2
-    m_Bits: 524288
-  nonPenPadding: 0.05
-  dynamicQueryExtra: 1
+  m_Size: {x: 0.6, y: 0.3}
+  m_EdgeRadius: 0
 --- !u!1 &6957938098442146527
 GameObject:
   m_ObjectHideFlags: 0

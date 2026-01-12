@@ -383,7 +383,6 @@ namespace My.Map
                 FilterType = EEntityType.Npc,
             });
 
-            NpcUnitLogicEntity bestWitness = null;
             float bestScore = 0f;
 
             foreach (var e in list)
@@ -408,7 +407,7 @@ namespace My.Map
                     continue;
                 }
 
-                TryAddSightThreat(bestWitness.combatStateComp.PrimaryTargetId);
+                TryAddSightThreat(witness.combatStateComp.PrimaryTargetId);
             }
         }
 
