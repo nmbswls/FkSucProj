@@ -1528,7 +1528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2c86c1621dc49f4da16a9dc7505a104, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentWorld: {fileID: 0}
+  currentAreaId: 0
   currentRoot: {fileID: 0}
   SegmentProvider: {fileID: 1193154578}
 --- !u!114 &1193154578

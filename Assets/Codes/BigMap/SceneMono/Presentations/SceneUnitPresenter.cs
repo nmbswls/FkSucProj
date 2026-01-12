@@ -170,8 +170,31 @@ namespace My.Map.Scene
             {
                 if (WeaponRoot != null)
                 {
-                    float angle = Mathf.Atan2(UnitEntity.FaceDir.y, UnitEntity.FaceDir.x) * Mathf.Rad2Deg; // ”Î +X ÷·º–Ω«
-                    WeaponRoot.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.forward); // »∆ Z ÷·
+                    float angle = 0;
+                    if (UnitEntity.FaceDir.x >= 0)
+                    {
+                        angle = Mathf.Atan2(UnitEntity.FaceDir.y, UnitEntity.FaceDir.x) * Mathf.Rad2Deg; // ”Î +X ÷·º–Ω«
+                    }
+                    else
+                    {
+                        angle = Mathf.Atan2(UnitEntity.FaceDir.y, -UnitEntity.FaceDir.x) * Mathf.Rad2Deg; // ”Î +X ÷·º–Ω«
+                    }
+
+                    for (int i = 0; i < WeaponRoot.childCount; i++)
+                    {
+                        var child = WeaponRoot.GetChild(i);
+                        child.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.forward); // »∆ Z ÷·
+                    }
+
+
+                    if (UnitEntity.FaceDir.x >= 0)
+                    {
+                        WeaponRoot.localScale = new Vector3(Mathf.Abs(WeaponRoot.localScale.x), WeaponRoot.localScale.y, WeaponRoot.localScale.z);
+                    }
+                    else
+                    {
+                        WeaponRoot.localScale = new Vector3(-Mathf.Abs(WeaponRoot.localScale.x), WeaponRoot.localScale.y, WeaponRoot.localScale.z);
+                    }
                 }
 
                 if(AgentView != null)

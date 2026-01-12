@@ -1532,6 +1532,7 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_01";
             spec.TypeTag = AbilityTypeTag.Combat;
+            spec.MaxStepDistance = 0.5f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1554,14 +1555,14 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.12"
+                    RawVal = "0.25"
                 },
             };
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon01",
-                Duration = 0.15f,
+                Duration = 0.32f,
                 OnHitEffects = new()
                 {
 
@@ -1594,6 +1595,7 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_02";
             spec.TypeTag = AbilityTypeTag.Combat;
+            spec.MaxStepDistance = 0.5f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1623,7 +1625,7 @@ namespace My.Map.Entity
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon02",
-                Duration = 0.12f,
+                Duration = 0.32f,
                 OnHitEffects = new()
                 {
 
@@ -1656,6 +1658,7 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_03";
             spec.TypeTag = AbilityTypeTag.Combat;
+            spec.MaxStepDistance = 0.5f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1685,7 +1688,7 @@ namespace My.Map.Entity
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon03",
-                Duration = 0.35f,
+                Duration = 0.4f,
                 OnHitEffects = new()
                 {
 
@@ -1719,7 +1722,7 @@ namespace My.Map.Entity
 
             spec.Id = "default_push";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.5f;
+            spec.MaxStepDistance = 0f;
             //spec.CoolDown = 0.2f;
             //spec.DesiredUseDistance = 0.5f;
 

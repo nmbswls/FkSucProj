@@ -48,6 +48,8 @@ namespace My.Map
                 case AttrIdConsts.Basic_JianShang:
                 case AttrIdConsts.Special_JianShang:
                 case AttrIdConsts.JianSu:
+                case AttrIdConsts.Basic_KnockResistent:
+
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
