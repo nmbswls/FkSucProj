@@ -220,6 +220,10 @@ namespace My.Map
         public float accel = 20f;
 
         public float moveSpeed = 4.0f;
+        protected virtual float GetBaseMoveSpeed()
+        {
+            return moveSpeed;
+        }
         public float GetCurrSpeed()
         {
             var jiansu = GetAttr(AttrIdConsts.JianSu);
@@ -227,7 +231,7 @@ namespace My.Map
             {
                 jiansu = 9000;
             }
-            return moveSpeed * (10000 - jiansu) * 0.0001f;
+            return GetBaseMoveSpeed() * (10000 - jiansu) * 0.0001f;
         }
 
         //public class DashIntent

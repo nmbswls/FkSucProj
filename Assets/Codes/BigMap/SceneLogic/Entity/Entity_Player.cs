@@ -79,7 +79,6 @@ namespace My.Map
 
         protected override void InitAttribute()
         {
-            moveSpeed = 2.0f;
             // ÊýÖµÀà
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
             attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 1000_000);
@@ -740,6 +739,18 @@ namespace My.Map
                 return 2;
             }
             return 3;
+        }
+
+        protected override float GetBaseMoveSpeed()
+        {
+            if(IsQueenMode)
+            {
+                return 1.2f;
+            }
+            else
+            {
+                return 2.5f;
+            }
         }
     }
 }

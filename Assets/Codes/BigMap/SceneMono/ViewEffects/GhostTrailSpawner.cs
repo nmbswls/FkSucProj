@@ -24,7 +24,8 @@ namespace My.Map
         private readonly Queue<GameObject> _pool = new Queue<GameObject>();
         private Vector3 _lastPos;
 
-        private SpriteRenderer _targetSR;
+        //private SpriteRenderer _targetSR;
+        private List<SpriteRenderer> _targetSrList = new();
 
         void Awake()
         {
@@ -35,13 +36,13 @@ namespace My.Map
                 return;
             }
 
-            _targetSR = target.GetComponent<SpriteRenderer>();
-            if (_targetSR == null)
+            for(int i=0;i<target.transform.childCount;i++)
             {
-                Debug.LogError("GhostTrailSpawner2D: target must have a SpriteRenderer.");
-                enabled = false;
-                return;
+                var sr = target.transform.GetChild(i).GetComponent<SpriteRenderer>();
+                if (sr == null) continue;
+                _targetSrList.Add(sr);
             }
+           
 
             _lastPos = target.transform.position;
 
@@ -93,24 +94,41 @@ namespace My.Map
 
         void SpawnGhost()
         {
-            if (target == null || _targetSR == null) return; // 目标已销毁或缺组件
+            if (target == null || _targetSrList.Count == 0) return; // 目标已销毁或缺组件
             var ghost = GetGhostFromPool();
             if (!ghost) ghost = CreateGhostInstance();
 
             var sr = ghost.GetComponent<SpriteRenderer>();
             if (sr == null) return;
 
+            SpriteRenderer activeSr = null;
+            foreach(var targetSr in _targetSrList)
+            {
+                if(targetSr.gameObject.activeSelf)
+                {
+                    activeSr = targetSr;
+                    break;
+                }
+            }
+
+            if (activeSr == null) return;
             // 拷贝属性
-            sr.sprite = _targetSR.sprite;
-            sr.flipX = _targetSR.flipX;
-            sr.flipY = _targetSR.flipY;
-            sr.sortingLayerID = _targetSR.sortingLayerID;
-            sr.sortingOrder = _targetSR.sortingOrder - 1;
-            sr.color = _targetSR.color;
+            sr.sprite = activeSr.sprite;
+            sr.flipX = activeSr.flipX;
+            sr.flipY = activeSr.flipY;
+            sr.sortingLayerID = activeSr.sortingLayerID;
+            sr.sortingOrder = activeSr.sortingOrder - 1;
+            sr.color = activeSr.color;
 
             // 位置与朝向
             ghost.transform.SetPositionAndRotation(target.transform.position, target.transform.rotation);
-            ghost.transform.localScale = target.transform.localScale;
+            ghost.transform.position += activeSr.transform.localPosition;
+            ghost.transform.localScale = activeSr.transform.localScale;
+
+            if(target.transform.localScale.x < 0)
+            {
+                ghost.transform.localScale = new Vector3(-ghost.transform.localScale.x, ghost.transform.localScale.y, ghost.transform.localScale.z);
+            }
             ghost.SetActive(true);
 
             // 重置淡出
