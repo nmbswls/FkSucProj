@@ -37,6 +37,7 @@ namespace My.Map.Entity
         public const string SuperArmor = "SuperArmor";
         public const string ImmumeKaiYou = "ImmumeKaiYou";
 
+        public const string ImmuneEvilShock = "ImmuneEvilShock";
 
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes";

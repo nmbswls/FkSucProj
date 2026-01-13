@@ -22,13 +22,8 @@ namespace My.Map.Entity
         OnHit,
     }
 
+
     [Serializable]
-    public class BuffTriggerOutput
-    {
-
-    }
-
-
     public class BuffTriggerRuleConfig
     {
         public ETriggerType TriggerType;
@@ -139,7 +134,42 @@ namespace My.Map.Entity
                     },
                     DefaultDuration = -1,
                 };
-                
+
+                _library["immune_evil_shock"] = new BuffDefinition()
+                {
+                    BuffId = "immune_evil_shock",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneEvilShock, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                };
+
+                _library["evil_shock"] = new BuffDefinition()
+                {
+                    BuffId = "evil_shock",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 }
+                    },
+                    OnAttachEffects = new()
+                    { 
+                        new MapFightEffectEasyEffect()
+                        {
+                            EffectText = "¾ªÏÅ"
+                        },
+                    },
+                    OnDetachEffects = new()
+                    {
+                        new MapFightEffectTriggerAlert()
+                        {
+                            AlertDuration = 15f,
+                        }
+                    },
+                    DefaultDuration = -1,
+                };
 
                 _library["beizha"] = new BuffDefinition()
                 {
@@ -550,7 +580,9 @@ namespace My.Map.Entity
 
         public List<OneModPair> ModifierAttrs = new();
 
+        [SerializeReference]
         public List<MapFightEffectCfg> OnAttachEffects = null;
+        [SerializeReference]
         public List<MapFightEffectCfg> OnDetachEffects = null;
 
         public BuffDurationEffet DurationEffect;
@@ -631,6 +663,14 @@ namespace My.Map.Entity
         public void Tick(float dt)
         {
             TickLifetime(dt);
+        }
+
+        public void Clear()
+        {
+            _buffs.Clear();
+            _frameEvents.Clear();
+            _addRequests.Clear();
+            _removeRequests.Clear();
         }
 
         //public void ExecuteBuffTriggerEffect(BuffInstance buffInst, BuffEffectCfg cfg)

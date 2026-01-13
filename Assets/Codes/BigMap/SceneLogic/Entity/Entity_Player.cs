@@ -27,6 +27,9 @@ namespace My.Map
         public long? gcCuaseId;
         public bool isSelfGc;
 
+        public bool IsRetreating;
+        public float RetreatingStartTime;
+        public static float RetreatDuration = 5.0f;
 
         public event Action<long> EventOnAttachmentUpdate;
 
@@ -64,6 +67,8 @@ namespace My.Map
             TickPlayerGcYishang();
 
             TickAttachingObj(dt);
+
+            TickRetreating();
         }
 
 
@@ -620,6 +625,36 @@ namespace My.Map
             // 通知上层改变view
             EventOnAttachmentUpdate?.Invoke(0);
         }
+
+        /// <summary>
+        /// 执行撤退
+        /// </summary>
+        private void TickRetreating()
+        {
+            if(!IsRetreating)
+            {
+                return;
+            }
+
+            if (LogicTime.time - RetreatingStartTime > RetreatDuration)
+            {
+                IsRetreating = false;
+
+                LogicManager.OnBigMapRetreatSuccess();
+            }
+        }
+
+        public void TryStartRetreating()
+        {
+            if (IsRetreating)
+            {
+                return;
+            }
+
+            IsRetreating = true;
+            RetreatingStartTime = LogicTime.time;
+        }
+        
 
         /// <summary>
         /// 

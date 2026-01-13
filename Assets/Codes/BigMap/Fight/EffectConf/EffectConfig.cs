@@ -34,5 +34,19 @@ using UnityEngine;
         public string MatchSkill;
         public string MatchPhase;
     }
+
+
+    [Serializable]
+    public class MapFightEffectTriggerAlert : MapFightEffectCfg
+    {
+        public float AlertDuration;
+        public long AlertPower;
+    }
+
+    [Serializable]
+    public class MapFightEffectEasyEffect : MapFightEffectCfg
+    {
+        public string EffectText;
+    }
 }
 

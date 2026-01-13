@@ -20,6 +20,8 @@ namespace Map.Logic.Events
         Attract,
         VariableChange,
         OnDie,
+
+        CostPendingAlert,
     }
 
 

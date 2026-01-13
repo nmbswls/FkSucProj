@@ -1,13 +1,14 @@
 
+using System.Drawing;
 using Config.Unit;
 using My.Input;
+using My.Map;
 using My.Map.Entity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using static Config.Unit.EntitySkillCfg;
-using static My.Input.QuickPlayerInputBinder;
-using static UnityEngine.Rendering.DebugUI.Table;
 
 
 namespace My.UI
@@ -47,6 +48,10 @@ namespace My.UI
         public RectTransform AlertHint;
         public TextMeshProUGUI AlertValText;
 
+        public RectTransform RetreatHint;
+        public Image RetreatHintBar;
+        public TextMeshProUGUI RetreatHintText;
+
 
         public override void Setup(object data = null)
         {
@@ -84,6 +89,24 @@ namespace My.UI
                 PlayerSanText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSan) * 0.001f)).ToString();
 
                 PlayerQueenStatusText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsQueenMode ? "Queen" : "Normal";
+
+                if(MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsRetreating)
+                {
+                    float pastTime = LogicTime.time - MainGameManager.Instance.gameLogicManager.playerLogicEntity.RetreatingStartTime;
+                    float maxTime = PlayerLogicEntity.RetreatDuration;
+
+                    float rate = pastTime / maxTime;
+                    rate = Mathf.Clamp(rate, 0f, 1f);
+
+                    RetreatHintBar.fillAmount = rate;
+                    RetreatHintText.text = ((int)(rate * 100) * 0.01f).ToString();
+
+                    RetreatHint.gameObject.SetActive(true);
+                }
+                else
+                {
+                    RetreatHint.gameObject.SetActive(false);
+                }
             }
 
             if(HudMode == EHudMode.PreviewSkill)
@@ -100,6 +123,7 @@ namespace My.UI
             }
 
             AlertValText.text = MainGameManager.Instance.gameLogicManager.AreaManager.AreaAlertValue.ToString();
+
         }
 
         public override void Show()
@@ -415,6 +439,18 @@ namespace My.UI
 
 
         #endregion
+
+        public GameObject simpleFloatTextPrefab;
+        public void DoPendingAlertReduce(long val)
+        {
+            // 1. 生成预制体
+            GameObject go = Instantiate(simpleFloatTextPrefab, AlertHint.transform.position, Quaternion.identity, AlertHint.transform);
+            go.SetActive(true);
+
+            // 2. 获取脚本并初始化
+            HudSimpleFloatingText popup = go.GetComponent<HudSimpleFloatingText>();
+            popup.Setup("-"+val, AlertHint.transform.position, UnityEngine.Color.black);
+        }
     }
 
 }

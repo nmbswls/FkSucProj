@@ -100,7 +100,7 @@ namespace My.Map.Logic
         /// <summary>
         /// 初始化地区
         /// </summary>
-        public async Task InitilizeArea(int areaId)
+        public void InitilizeArea(int areaId)
         {
             this.AreaId = areaId;
             cacheMapAreaCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(areaId);
@@ -183,6 +183,32 @@ namespace My.Map.Logic
             checkRefreshTimer = LogicTime.time;
         }
 
+        public void CleanArea()
+        {
+            UnitGridIndex.Clear();
+            RoomGridIndex.Clear();
+
+            interestPoints.Clear();
+            runtimeStates.Clear();
+
+            spawnEntityQ.Clear();
+            despawnEntityQ.Clear();
+            wakeEntityQ.Clear();
+            sleepEntityQ.Clear();
+
+            foreach (var sub in subs)
+            {
+                logicManager.LogicEventBus.Unsubscribe(sub);
+            }
+            subs.Clear();
+
+            EntityRefreshInfo.Clear();
+
+            Repo.Clear();
+            LongLived.Clear();
+        }
+
+
         public void SaveRecords()
         {
             if(Repo != null)
@@ -235,7 +261,15 @@ namespace My.Map.Logic
                 }
             }
 
-            
+            switch(ev.Type)
+            {
+                case EMapLogicEventType.OnDie:
+                    {
+                        var realEv = (MLEUnitDeadEvent)ev;
+                        AlertOnEntityDie(realEv.EntityId);
+                    }
+                    break;
+            }
         }
 
         
@@ -891,6 +925,9 @@ namespace My.Map.Logic
 
             return newEnt;
         }
+
+
+
     }
 }
 

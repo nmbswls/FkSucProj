@@ -191,6 +191,15 @@ namespace My.UI
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "BigMapFinishPanel",
+                resourcePath = "UI/Prefabs/BigMapFinishPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+            
         }
 
         public static void RegisterGroups()
@@ -543,6 +552,8 @@ namespace My.UI
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnHit, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.AddBuff, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, adapter));
+
+            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.CostPendingAlert, adapter));
         }
 
         public void OnMapLogicEvent(IMapLogicEvent ev)
@@ -555,6 +566,16 @@ namespace My.UI
                         if(addBuffEv.BuffId == "be_fcked")
                         {
                             BeFckedWindowPanel.ShowFckedWindow(addBuffEv.CasterId, 100);
+                        }
+                    }
+                    break;
+
+                case EMapLogicEventType.CostPendingAlert:
+                    {
+                        var realEv = (MLECostPendingAlertEvent)ev;
+                        if (OverworldHUDPanel.Instance != null)
+                        {
+                            OverworldHUDPanel.Instance.DoPendingAlertReduce(realEv.Value);
                         }
                     }
                     break;

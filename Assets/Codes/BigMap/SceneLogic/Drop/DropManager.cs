@@ -74,6 +74,11 @@ namespace My.Map.Drop
             _drops.TryGetValue(id, out var dropData);
             return dropData;
         }
+
+        public void Clear()
+        {
+            _drops.Clear();
+        }
     }
 
     public class DropData

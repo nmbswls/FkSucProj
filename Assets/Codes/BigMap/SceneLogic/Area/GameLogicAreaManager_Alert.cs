@@ -5,10 +5,12 @@ using My.MapExport;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.PlayerSettings;
 
 namespace My.Map.Logic
 {
@@ -18,112 +20,224 @@ namespace My.Map.Logic
     /// </summary>
     public partial class GameLogicAreaManager
     {
-        public class AlertRecord
-        {
-            public long SrcEntityId;
-            public float HappenTime;
-            public Vector2 HappenPos;
+        //public class AlertRecord
+        //{
+        //    public long SrcEntityId;
+        //    public float HappenTime;
+        //    public Vector2 HappenPos;
 
-            public bool IsValid;
-        }
+        //    public bool IsValid;
+        //}
 
-        public float GlobalAlertMinInterval = 5.0f;
-        public float UnitAlertTryInterval = 12.0f;
-        public float AlertDuration = 5.0f;
+        //public float GlobalAlertMinInterval = 5.0f;
+        //public float UnitAlertTryInterval = 12.0f;
+        //public float AlertDuration = 5.0f;
 
         public long AreaAlertValue = 0;
-        public float LastAlertUpdateTime = 0;
+        //public float LastAlertUpdateTime = 0;
 
-        protected Dictionary<long, float> EntityLastTryAlertTimes = new();
-        protected List<AlertRecord> alertRecords = new();
+        //protected Dictionary<long, float> EntityLastTryAlertTimes = new();
+        //protected List<AlertRecord> alertRecords = new();
+
+        protected Dictionary<long, WeakReference<BaseUnitLogicEntity>> alertingLogicEntities = new();
+        private Dictionary<long, List<(float, float)>> entityPendingAlerts = new();
+
+        public float EvilAlertBalanceInterval = 0.25f;
+        public float EvilApplyDelay = 5.0f;
+
+        private float _lastAddUnitAlertTimer = 0f; 
+        private float _lastClearDiedAlertTimer = 0f;
+        private float _lastApplyPendingTimer = 0f;
 
         protected void TickEvilAlerts()
         {
-            float currTime = LogicTime.time;
+            TickAddPendingEvilAlerts();
+            TickSafeClearDeadEntities();
+            TickPendingEvilApply();
+        }
 
-            for (int i = alertRecords.Count - 1; i >= 0; i--)
+        private void TickAddPendingEvilAlerts()
+        {
+            if (_lastAddUnitAlertTimer == 0)
             {
-                if (currTime - alertRecords[i].HappenTime > AlertDuration)
-                {
-                    alertRecords[i].IsValid = true;
+                _lastAddUnitAlertTimer = LogicTime.time;
+            }
 
-                    TryAddEvilAlert(5);
-                    alertRecords.RemoveAt(i);
+            if (LogicTime.time - _lastAddUnitAlertTimer < EvilAlertBalanceInterval)
+            {
+                return;
+            }
+
+            var addTimes = (int)((LogicTime.time - _lastAddUnitAlertTimer) / EvilAlertBalanceInterval);
+
+            var speed = CalculateAddEvilSpeedByCnt();
+            float addVal = (long)(speed * EvilAlertBalanceInterval * addTimes);
+
+
+            _lastAddUnitAlertTimer += EvilAlertBalanceInterval * addTimes;
+
+            foreach (var alerting in alertingLogicEntities)
+            {
+                if (!entityPendingAlerts.TryGetValue(alerting.Key, out var pendingList))
+                {
+                    pendingList = new();
+                    entityPendingAlerts[alerting.Key] = pendingList;
+                }
+
+                pendingList.Add(new (addVal, LogicTime.time));
+            }
+        }
+
+        private void TickSafeClearDeadEntities()
+        {
+            if (_lastAddUnitAlertTimer == 0)
+            {
+                _lastAddUnitAlertTimer = LogicTime.time;
+            }
+
+            if (LogicTime.time - _lastAddUnitAlertTimer < 5.0f)
+            {
+                return;
+            }
+
+            List<long> needClear = null;
+            foreach (var alerting in alertingLogicEntities)
+            {
+                if (!alerting.Value.TryGetTarget(out var entity))
+                {
+                    if (needClear == null) needClear = new();
+                    needClear.Add(alerting.Key);
+                    continue;
+                }
+
+                if(entity.IsDead)
+                {
+                    if (needClear == null) needClear = new();
+                    needClear.Add(alerting.Key);
+                    continue;
+                }
+            }
+
+            if (needClear != null && needClear.Count > 0)
+            {
+                foreach(var oneClear in needClear)
+                {
+                    alertingLogicEntities.Remove(oneClear);
                 }
             }
         }
+
+        private void TickPendingEvilApply()
+        {
+            if (_lastAddUnitAlertTimer == 0)
+            {
+                _lastAddUnitAlertTimer = LogicTime.time;
+            }
+
+            if (LogicTime.time - _lastAddUnitAlertTimer < 1.0f)
+            {
+                return;
+            }
+
+            // 结算并清理警戒度
+            foreach(var oneKey in entityPendingAlerts.Keys.ToList())
+            {
+                var ll = entityPendingAlerts[oneKey];
+                float sum = 0;
+                while(ll.Count > 0)
+                {
+                    if (LogicTime.time - ll[0].Item2 < EvilApplyDelay)
+                    {
+                        break;
+                    }
+
+                    sum += ll[0].Item1;
+
+                    ll.RemoveAt(0);
+                }
+
+
+                AreaAlertValue += (long)sum;
+
+                if(ll.Count == 0)
+                {
+                    entityPendingAlerts.Remove(oneKey);
+                }
+            }
+        }
+
+        public long CalculateAddEvilSpeedByCnt()
+        {
+            int cnt = alertingLogicEntities.Count;
+            if(cnt == 0)
+            {
+                return 0;
+            }
+
+            if(cnt < 3)
+            {
+                return 1000;
+            }
+
+            if(cnt < 10)
+            {
+                return 2000;
+            }
+
+            return 5000;
+        }
+
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="entityId"></param>
-        public void EntityTryAlert(long entityId)
+        public void EntityTryRegisterAlert(BaseUnitLogicEntity unitEntity)
         {
-
-            if(LogicTime.time - LastAlertUpdateTime < GlobalAlertMinInterval)
-            {
-                return;
-            }
-
-            var entity = GetLogicEntiy(entityId);
-            if(entity == null)
-            {
-                return;
-            }
-
-            EntityLastTryAlertTimes.TryGetValue(entityId, out var lastAlertTime);
-            if(lastAlertTime != 0 && LogicTime.time -  lastAlertTime < UnitAlertTryInterval)
-            {
-                return;
-            }
-
-            if(!cacheMapAreaCfg.AlwaysAlert)
-            {
-                var inAlert = logicManager.visionSenser.CheckIsInAlertArea(entity.Pos);
-                if(!inAlert)
-                {
-                    return;
-                }
-            }
-
-            EntityLastTryAlertTimes[entityId] = LogicTime.time;
-
-            alertRecords.Add(new AlertRecord()
-            {
-                SrcEntityId = entityId,
-                HappenPos = entity.Pos,
-                HappenTime = LogicTime.time,
-            });
+            alertingLogicEntities[unitEntity.Id] = new WeakReference<BaseUnitLogicEntity>(unitEntity);
         }
 
-        /// <summary>
-        /// 清理alert信息
-        /// </summary>
-        /// <param name="entityId"></param>
-        public void TryClearPendingAlert(long entityId)
+
+        public void EntityTryUnregisterAlert(long unitId)
         {
-            bool changed = false;
-            for (int i = alertRecords.Count - 1; i >= 0; i--)
-            {
-                var alertRecord = alertRecords[i];
-                if(alertRecord.SrcEntityId == entityId)
-                {
-                    alertRecords.RemoveAt(i);
-                    changed = true;
-                    break;
-                }
-            }
+            alertingLogicEntities.Remove(unitId);
         }
 
         /// <summary>
         /// 添加邪恶值
         /// </summary>
         /// <param name="addVal"></param>
-        public void TryAddEvilAlert(long addVal)
+        public void TryAddEvilAlertDirect(long addVal)
         {
             AreaAlertValue += 5;
 
             // 计算衰减
+        }
+
+        public void AlertOnEntityDie(long entityId)
+        {
+            if(entityPendingAlerts.TryGetValue(entityId, out var pendingList))
+            {
+                float sum = 0;
+                foreach(var pair in pendingList)
+                {
+                    sum += pair.Item1;
+                }
+
+                long totalLost = (long)sum;
+                if(totalLost > 0)
+                {
+                    logicManager.LogicEventBus.Publish(new MLECostPendingAlertEvent()
+                    {
+                        Ctx = new()
+                        {
+                        },
+                        Value = totalLost,
+                    });
+                }
+                entityPendingAlerts.Remove(entityId);
+            }
+            
         }
     }
 }

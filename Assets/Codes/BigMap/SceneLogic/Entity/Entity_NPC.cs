@@ -225,7 +225,7 @@ namespace My.Map
 
                 TickHMode();
 
-                TickEvilAlert();
+                CheckSeeEvil();
             }
 
             InteractComp?.TickInteract(dt);
@@ -287,34 +287,37 @@ namespace My.Map
             }
         }
 
-        /// <summary>
-        /// tick 邪恶告警
-        /// </summary>
-        protected void TickEvilAlert()
+        public void CheckSeeEvil()
         {
-            if(LogicTime.time - _checkAlertTimer < 0.5f)
+            if (LogicTime.time - _checkAlertTimer < 0.5f)
             {
                 return;
             }
 
             _checkAlertTimer = LogicTime.time;
 
+            if (isEvilAlerting) return;
+
+            bool seeEvil = false;
             if (VisibilityComp.IsTargetVisible(LogicManager.playerLogicEntity.Id))
             {
-                if(LogicManager.playerLogicEntity.IsQueenMode)
+                if (LogicManager.playerLogicEntity.IsQueenMode)
                 {
-                    LogicManager.AreaManager.EntityTryAlert(this.Id);
+                    seeEvil = true;
+                    
                 }
             }
 
+            if (seeEvil)
             {
-                var shieldVal = attributeStore.GetAttr(AttrIdConsts.UnitHShield);
-                if (shieldVal <= 0)
+                if(!CheckHasState(AttrIdConsts.ImmuneEvilShock))
                 {
-                    LogicManager.AreaManager.TryClearPendingAlert(this.Id);
+                    LogicManager.globalBuffManager.AddBuff(this.Id, "immune_evil_shock", overrideDuration: 20.0f);
+                    LogicManager.globalBuffManager.AddBuff(this.Id, "evil_shock", overrideDuration: 3.0f);
                 }
             }
         }
+
 
         /// <summary>
         /// 检查事件 

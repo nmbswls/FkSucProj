@@ -1133,6 +1133,58 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4TriggerAlert : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectTriggerAlert;
+            if (realCfg == null)
+            {
+                Debug.LogError("MapFightEffectTriggerAlert cfg error");
+                return;
+            }
+
+            if (ctx.SourceInfo.SrcEntityId == 0)
+            {
+                return;
+            }
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+
+            if (actor == null || actor is not BaseUnitLogicEntity unitEntity)
+            {
+                return;
+            }
+            Debug.Log($"AbilityEffectExecutor4TriggerAlert try apply {ctx.SourceInfo.SrcEntityId}");
+            unitEntity.StartEvilAlert(realCfg.AlertDuration);
+        }
+    }
+
+    public class AbilityEffectExecutor4EasyEffect : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectEasyEffect;
+            if (realCfg == null)
+            {
+                Debug.LogError("MapFightEffectEasyEffect cfg error");
+                return;
+            }
+
+            if (ctx.SourceInfo.SrcEntityId == 0)
+            {
+                return;
+            }
+            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (actor == null)
+            {
+                return;
+            }
+
+            ctx.Env.viewer.ShowFakeFxEffect(realCfg.EffectText, actor.Pos);
+        }
+    }
+
+
     public class AbilityEffectExecutor4TeleportTo : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)

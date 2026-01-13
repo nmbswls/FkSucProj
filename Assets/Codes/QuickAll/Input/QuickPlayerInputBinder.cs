@@ -48,7 +48,15 @@ namespace My.Input
         [SerializeField] private string battleMapName = "BattleMap";
         [SerializeField] private string uiMenuMapName = "UIMenuMap";
 
-        public enum InputMode { Overworld, Battle, Menu, Dialog }
+        public enum InputMode 
+        { 
+            None,
+            Overworld, 
+            Battle, 
+            Menu, 
+            Dialog 
+        }
+
         private InputMode mode;
 
         public Vector2 LastPos;

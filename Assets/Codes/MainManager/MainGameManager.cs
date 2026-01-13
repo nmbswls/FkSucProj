@@ -20,6 +20,7 @@ using My.MiniGame;
 using My.Saving;
 using My.UI;
 using Newtonsoft.Json;
+using SuperScrollView;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -271,6 +272,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             {
                 UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
             }
+
+            OverworldHUDPanel.Instance.DoPendingAlertReduce(100);
         }
     }
 
@@ -315,6 +318,13 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public async Task AsyncSwitchArea()
     {
         gameLogicManager.Initialized = false;
+        gameLogicManager.NeedBalancing = false;
+        gameLogicManager.IsBalancing = false;
+
+        gameLogicManager.DelayedEffectQueue.Clear();
+        gameLogicManager.AreaManager.CleanArea();
+        gameLogicManager.globalBuffManager.Clear();
+        gameLogicManager.globalDropCollection.Clear();
 
         UIManager.Instance.ShowLoading("switching");
 

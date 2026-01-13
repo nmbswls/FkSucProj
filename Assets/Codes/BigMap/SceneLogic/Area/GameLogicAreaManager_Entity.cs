@@ -25,6 +25,13 @@ namespace My.Map.Logic
 
             public void RegisterRecord(LogicEntityRecord r) => Records[r.Id] = r;
             public void RemoveRecord(long id) => Records.Remove(id);
+
+            public void Clear()
+            {
+
+                Records.Clear();
+                Loaded.Clear();
+            }
         }
 
         public class LongLivedRegistry
@@ -34,6 +41,11 @@ namespace My.Map.Logic
             public void Unregister(long id) => _map.Remove(id);
             public bool TryGet(long id, out ILogicEntity ent) => _map.TryGetValue(id, out ent);
             public IEnumerable<ILogicEntity> All => _map.Values;
+
+            public void Clear()
+            {
+                _map.Clear();
+            }
         }
 
         public class SceneRefreshInfoRuntime

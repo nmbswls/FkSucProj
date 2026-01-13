@@ -162,6 +162,8 @@ namespace My.Map
                     });
                 }
             }
+
+            TickUnitEvilAlert();
         }
 
         protected virtual void TickActivateState(float dt)
@@ -527,6 +529,8 @@ namespace My.Map
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneKnock, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Stun, initialBase: 0);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.ImmuneEvilShock, initialBase: 0);
         }
 
 
@@ -758,7 +762,6 @@ namespace My.Map
             }    
         }
 
-
         public class UnitBagContainer : IItemContainer
         {
             public GameLogicManager logicManager;
@@ -875,7 +878,6 @@ namespace My.Map
         protected UnitBagContainer dropBagContainer = null;
 
 
-
         /// <summary>
         /// 强制死亡
         /// </summary>
@@ -885,8 +887,6 @@ namespace My.Map
             this.attributeStore.SetResource(AttrIdConsts.HP, 0);
             OnUnitDie(99);
         }
-
-        
 
         public bool IsAttaching = false;
 
@@ -1001,7 +1001,72 @@ namespace My.Map
                     }
             }
         }
+
+        #region alert
+
+        protected bool isEvilAlerting;
+        protected float evilAlertStartTime;
+        protected float evilAlertDuration;
+
+        
+        /// <summary>
+        /// 开始告警
+        /// </summary>
+        /// <param name="duration"></param>
+        public void StartEvilAlert(float duration)
+        {
+            if(isEvilAlerting)
+            {
+                return;
+            }
+
+            evilAlertStartTime = LogicTime.time;
+            evilAlertDuration = duration;
+
+            LogicManager.AreaManager.EntityTryRegisterAlert(this);
+        }
+
+
+
+        protected void TickUnitEvilAlert()
+        {
+            if (!isEvilAlerting)
+            {
+                return;
+            }
+
+            bool finished = false;
+            if(IsAttaching)
+            {
+                finished = true;
+            }
+
+            if(LogicTime.time > evilAlertStartTime + evilAlertDuration)
+            {
+                finished = true;
+                
+            }
+
+            if(IsDead)
+            {
+                finished = true;
+            }
+
+            if(finished)
+            {
+                isEvilAlerting = false;
+
+                evilAlertStartTime = 0;
+                evilAlertDuration = 0;
+
+                LogicManager.AreaManager.EntityTryUnregisterAlert(this.Id);
+            }
+        }
+
+
+        #endregion
     }
+
 
 }
 

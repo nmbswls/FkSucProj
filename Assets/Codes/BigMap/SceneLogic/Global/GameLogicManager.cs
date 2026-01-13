@@ -57,6 +57,10 @@ namespace My
 
         public bool Initialized { get; set; }
 
+        public bool NeedBalancing { get; set; }
+        public bool IsBalancing { get; set; }
+
+
         public PlayerLogicEntity playerLogicEntity;
 
         private List<LogicEntityRecord> pendingNewEntities = new();
@@ -176,7 +180,7 @@ namespace My
 
             var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(intent.NewAreaId);
 
-            await AreaManager.InitilizeArea(intent.NewAreaId);
+            AreaManager.InitilizeArea(intent.NewAreaId);
 
             if(mapCfg != null && mapCfg.IsHome)
             {
@@ -272,11 +276,34 @@ namespace My
 
             SwitchAreaIntent = intent;
 
+            DelayedEffectQueue.Clear();
+
+            AreaManager.CleanArea();
+            globalBuffManager.Clear();
+            globalDropCollection.Clear();
+
             EventOnPlayerSwitchArea?.Invoke();
         }
         public void Tick(float dt)
         {
             if (!Initialized)
+            {
+                return;
+            }
+
+            if(NeedBalancing)
+            {
+                NeedBalancing = false;
+                DelayedEffectQueue.Clear();
+
+                AreaManager.CleanArea();
+                globalBuffManager.Clear();
+                globalDropCollection.Clear();
+
+                BigMapFinishPanel.Create();
+            }
+
+            if(IsBalancing)
             {
                 return;
             }
@@ -676,7 +703,13 @@ namespace My
             return false;
         }
 
-
+        /// <summary>
+        /// Íê³É³·ÍË
+        /// </summary>
+        public void OnBigMapRetreatSuccess()
+        {
+            NeedBalancing = true;
+        }
        
     }
 

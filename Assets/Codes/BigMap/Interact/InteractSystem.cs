@@ -111,6 +111,10 @@ public class SceneInteractSystem
         {
             return;
         }
+        if (MainGameManager.Instance.gameLogicManager.IsBalancing)
+        {
+            return;
+        }
 
         Vector2 center = presenter.transform.position;
         int count = Physics2D.OverlapCircleNonAlloc(center, _checkRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));

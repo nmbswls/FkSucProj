@@ -261,6 +261,13 @@ public class ConsoleGM : MonoBehaviour
                 MainGameManager.Instance.gameLogicManager.playerDataManager.TryGiveItem(itemId, val, 0);
 
             });
+
+        Register("rr", "³·ÍË",
+            null,
+            args =>
+            {
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.TryStartRetreating();
+            });
     }
 
     void OnDestroy()

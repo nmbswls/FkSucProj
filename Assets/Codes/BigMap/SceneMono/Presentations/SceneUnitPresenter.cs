@@ -535,7 +535,7 @@ namespace My.Map.Scene
                 mainCol.enabled = false;
             }
             else
-            {
+            { 
                 mainCol.enabled = true;
                 Vector3 diff = UnityEngine.Random.insideUnitCircle * 0.05f;
                 this.transform.position = this.transform.position + diff;

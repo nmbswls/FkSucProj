@@ -32,6 +32,13 @@ namespace Map.Logic.Events
         public Vector2 Pos;
     }
 
+    public partial struct MLECostPendingAlertEvent : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.CostPendingAlert; } }
+
+        public long Value;
+    }
 
     #endregion
 

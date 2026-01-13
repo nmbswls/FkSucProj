@@ -138,6 +138,16 @@ namespace My
                             executor = new AbilityEffectExecutor4NextPhase();
                         }
                         break;
+                    case MapFightEffectTriggerAlert:
+                        {
+                            executor = new AbilityEffectExecutor4TriggerAlert();
+                        }
+                        break;
+                    case MapFightEffectEasyEffect:
+                        {
+                            executor = new AbilityEffectExecutor4EasyEffect();
+                        }
+                        break;
                     case MapAbilityEffectTeleportToCfg:
                         {
                             executor = new AbilityEffectExecutor4TeleportTo();
