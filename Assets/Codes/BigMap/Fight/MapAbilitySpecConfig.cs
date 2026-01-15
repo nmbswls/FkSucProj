@@ -132,7 +132,7 @@ namespace My.Map.Entity
         public string AbilityTag;
 
         public bool IsDodge;
-        
+        public bool AdjustFaceDir;
 
         // ai ฯเนุ
         

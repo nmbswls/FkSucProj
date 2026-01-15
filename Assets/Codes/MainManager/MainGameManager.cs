@@ -111,6 +111,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public DialoguePlayer dialoguePlayer;
 
+    public PlayerRumorTextSpawner RumorTextSpawner;
 
     private void Awake()
     {
@@ -274,6 +275,15 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             }
 
             OverworldHUDPanel.Instance.DoPendingAlertReduce(100);
+        }
+
+        if (playerScenePresenter == null || !playerScenePresenter.IsInBusyZone)
+        {
+            RumorTextSpawner.IsActive = false;
+        }
+        else
+        {
+            RumorTextSpawner.IsActive = true;
         }
     }
 

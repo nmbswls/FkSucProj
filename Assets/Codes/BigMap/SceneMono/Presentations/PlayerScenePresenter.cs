@@ -3,9 +3,11 @@ using Map.Entity;
 using Map.Logic;
 using Map.Scene;
 using My.Map.Entity;
+using My.Map.View;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -53,6 +55,8 @@ namespace My.Map.Scene
             {
                 MoveTrailSpawner.IsShowing = false;
             }
+
+            CheckTickZoneArea();
         }
 
 
@@ -259,6 +263,50 @@ namespace My.Map.Scene
                 }
             }
 
+        }
+
+
+        private float _checkAreaTiker = 0;
+        private Collider2D[] zoneTriggerCache = new Collider2D[16];
+
+        public bool IsInBusyZone = false;
+        private void CheckTickZoneArea()
+        {
+            if(LogicTime.time - _checkAreaTiker < 1.0f)
+            {
+                return;
+            }
+
+            _checkAreaTiker = LogicTime.time;
+
+            bool isInBusy = false;
+            bool isInAlert = false;
+
+            int count = Physics2D.OverlapPointNonAlloc(PlayerEntity.Pos, zoneTriggerCache, 1 << LayerMask.NameToLayer("Zone"));
+            for (int i = 0; i < count; i++)
+            {
+                var col = zoneTriggerCache[i];
+                if(col == null) continue;
+
+                ZoneInfoProvider infoProvider = col.GetComponentInParent<ZoneInfoProvider>();
+                if (infoProvider == null) continue;
+
+                if(infoProvider.ZoneType == ZoneInfoProvider.EZoneType.BusyZone)
+                {
+                    isInBusy = true;
+                }
+            }
+
+            if(isInAlert)
+            {
+                MainGameManager.Instance.gameLogicManager.AreaManager.PlayerInAlertArea = true;
+            }
+            else
+            {
+                MainGameManager.Instance.gameLogicManager.AreaManager.PlayerInAlertArea = false;
+            }
+
+            IsInBusyZone = isInBusy;
         }
     }
 

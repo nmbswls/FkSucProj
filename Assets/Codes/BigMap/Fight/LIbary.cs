@@ -1533,6 +1533,7 @@ namespace My.Map.Entity
             spec.Id = "queen_attack_01";
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.MaxStepDistance = 0.5f;
+            spec.AdjustFaceDir = true;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1596,6 +1597,7 @@ namespace My.Map.Entity
             spec.Id = "queen_attack_02";
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.MaxStepDistance = 0.5f;
+            spec.AdjustFaceDir = true;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1659,6 +1661,7 @@ namespace My.Map.Entity
             spec.Id = "queen_attack_03";
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.MaxStepDistance = 0.5f;
+            spec.AdjustFaceDir = true;
 
             spec.Phases.Add(new MapAbilityPhase()
             {

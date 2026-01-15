@@ -225,6 +225,16 @@ namespace My.Map.Entity
                 return false;
             }
 
+            // 检查强制转向
+            if(abilityConf.AdjustFaceDir)
+            {
+                if(castVec1 != null)
+                {
+                    var dir = castVec1.Value - EntityOwner.Pos;
+                    EntityOwner.ForceSetFace(dir);
+                }
+            }
+
             CurrentCtx = new AbilityRunningContext
             {
                 Actor = EntityOwner,

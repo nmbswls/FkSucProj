@@ -166,7 +166,7 @@ namespace My.Map.Scene
             //}
 
             // 不锁面向时 调整
-            if (UnitEntity.GetAttr(AttrIdConsts.LockFace) == 0)
+            //if (UnitEntity.GetAttr(AttrIdConsts.LockFace) == 0)
             {
                 if (WeaponRoot != null)
                 {
@@ -532,7 +532,7 @@ namespace My.Map.Scene
         {
             if(UnitEntity.CheckHasState(AttrIdConsts.Ghost))
             {
-                mainCol.enabled = false;
+                //mainCol.enabled = false;
             }
             else
             { 

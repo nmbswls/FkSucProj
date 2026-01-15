@@ -33,6 +33,8 @@ namespace My.Map.Logic
         //public float UnitAlertTryInterval = 12.0f;
         //public float AlertDuration = 5.0f;
 
+        public bool PlayerInAlertArea { get; set; } = true;
+
         public long MaxAlertValue = 10000;
         public long AreaAlertValue = 0;
 

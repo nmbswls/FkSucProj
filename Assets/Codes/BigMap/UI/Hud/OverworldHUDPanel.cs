@@ -266,7 +266,22 @@ namespace My.UI
             }
             else
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId);
+                var mousePos = MainGameManager.Instance.inputBinder.LastPos;
+                Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
+                var playerDiff = wp - MainGameManager.Instance.playerScenePresenter.transform.position;
+                playerDiff.z = 0;
+
+                Vector2? castDir = null;
+                if(playerDiff.magnitude < 0.1f)
+                {
+                    castDir = null;
+                }
+                else
+                {
+                    castDir = new Vector2(playerDiff.x, playerDiff.y);
+                }
+
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: wp);
             }
 
             return true;
@@ -414,8 +429,6 @@ namespace My.UI
                     break;
 
             }
-
-            var truncatedPoint = 
 
             MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(skillName, castDir: point1);
             UpdateHudMode(EHudMode.Normal);

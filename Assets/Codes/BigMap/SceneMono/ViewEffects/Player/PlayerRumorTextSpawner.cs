@@ -6,10 +6,8 @@ namespace My.Map.View
 {
     public class PlayerRumorTextSpawner : MonoBehaviour
     {
-        [Header("Target")]
-        public Transform playerTransform;
         [Tooltip("文本生成的初始位置相对玩家头顶的偏移")]
-        public Vector3 spawnOffset = new Vector3(0f, 2.0f, 0f);
+        public Vector3 spawnOffset = new Vector3(0f, 0.1f, 0f);
 
         [Header("Spawn Settings")]
         [Tooltip("每秒生成的文本数量")]
@@ -25,6 +23,7 @@ namespace My.Map.View
         {
             "what？",
             "why！",
+            "whhhh",
         };
 
         [Header("Prefab & Pool")]
@@ -32,6 +31,9 @@ namespace My.Map.View
         [Tooltip("是否使用对象池提高性能")]
         public bool usePool = true;
         public int poolSize = 24;
+
+
+        public bool IsActive = false;
 
         private float _timer;
         private readonly List<GameObject> _active = new List<GameObject>();
@@ -43,11 +45,18 @@ namespace My.Map.View
             {
                 _pool = new TextBubblePool(textBubblePrefab, poolSize, this.transform);
             }
+
+            if(textBubblePrefab)
+            {
+                textBubblePrefab.SetActive(false);
+            }
         }
 
         private void Update()
         {
-            if (playerTransform == null || textBubblePrefab == null || rumorLines.Count == 0) return;
+            var playerPresenter = MainGameManager.Instance.playerScenePresenter;
+
+            if (playerPresenter == null || textBubblePrefab == null || rumorLines.Count == 0) return;
 
             _timer += Time.deltaTime;
             float interval = 1f / Mathf.Max(0.0001f, spawnRate);
@@ -69,9 +78,12 @@ namespace My.Map.View
 
         private void TrySpawn()
         {
+            if (!IsActive) return;
+
             if (_active.Count >= maxActiveTexts) return;
 
-            Vector3 basePos = playerTransform.position + spawnOffset;
+            var playerPresenter = MainGameManager.Instance.playerScenePresenter;
+            Vector3 basePos = playerPresenter.transform.position + spawnOffset;
             Vector3 randomOffset = new Vector3(
                 Random.Range(-horizontalSpread, horizontalSpread),
                 Random.Range(-verticalJitter, verticalJitter),
@@ -79,8 +91,10 @@ namespace My.Map.View
             );
             Vector3 spawnPos = basePos + randomOffset;
 
-            GameObject go = usePool ? _pool.Get() : Instantiate(textBubblePrefab, spawnPos, Quaternion.identity, this.transform);
+            GameObject go = usePool ? _pool.Get() : Instantiate(textBubblePrefab, spawnPos, Quaternion.identity, playerPresenter.transform);
+            go.transform.SetParent(playerPresenter.transform);
             go.transform.position = spawnPos;
+            textBubblePrefab.SetActive(true);
 
             TMP_Text tmp = go.GetComponent<TMP_Text>();
             if (tmp != null)
@@ -111,12 +125,6 @@ namespace My.Map.View
             }
 
             _active.Add(go);
-        }
-
-        // 可在需要时手动刷新玩家引用
-        public void SetPlayer(Transform t)
-        {
-            playerTransform = t;
         }
     }
 

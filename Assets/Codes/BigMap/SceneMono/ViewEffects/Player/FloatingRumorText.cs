@@ -91,7 +91,7 @@ namespace My.Map.View
                 toCam.y = 0f;
                 if (toCam.sqrMagnitude > 0.0001f)
                 {
-                    transform.rotation = Quaternion.LookRotation(toCam);
+                    //transform.rotation = Quaternion.LookRotation(toCam);
                 }
             }
 

@@ -463,7 +463,7 @@ namespace My.Map
                 return true;
             }
 
-            return true;
+            return false;
         }
     }
 }

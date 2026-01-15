@@ -42,6 +42,7 @@ namespace My.Map.View
         public void Release(GameObject go)
         {
             go.SetActive(false);
+            go.transform.SetParent(_parent);
             _pool.Enqueue(go);
         }
     }
