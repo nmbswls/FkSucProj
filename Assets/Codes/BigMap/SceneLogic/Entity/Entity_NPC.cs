@@ -184,8 +184,6 @@ namespace My.Map
             AIBrain.InitilaizeAll(this, LogicManager.visionSenser, Pos);
         }
 
-        
-
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
             base.OnUnitDie(reason, lastIntent);
@@ -437,6 +435,35 @@ namespace My.Map
         public void DoAnimation(string animName)
         {
             AddAnimLayer(animName);
+        }
+
+        /// <summary>
+        /// 检查是否可以被处决
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckCanExecute()
+        {
+            if(cacheCfg.ImmuneExecute)
+            {
+                return false;
+            }
+
+            if(IsHMode)
+            {
+                return true;
+            }
+
+            // 低血量也可以斩杀
+            var currHp = attributeStore.GetAttr(AttrIdConsts.HP);
+            var maxHp = attributeStore.GetAttr(AttrIdConsts.HP_MAX);
+
+            float rate = currHp * 1.0f / maxHp;
+            if(rate < 0.2f)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

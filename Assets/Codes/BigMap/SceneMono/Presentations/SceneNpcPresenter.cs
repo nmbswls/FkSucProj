@@ -98,19 +98,18 @@ namespace My.Map.Scene
             }
         }
 
-        public bool CanInteractEnable(float dist)
+        public bool CanInteractEnable()
         {
 
             if (NpcEntity.IsAttaching) return false;
 
             if (NpcEntity.IsHMode)
             {
-                return true;
+                //return true;
             }
 
             if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
-                //if (dist > 0.5f) return false;
                 if (NpcEntity.InteractComp.IsInteracting)
                 {
                     return false;
@@ -120,10 +119,6 @@ namespace My.Map.Scene
                 int enableOne = 0;
                 foreach (var i in logicInts)
                 {
-                    if (i.NeedDist != 0 && dist >= i.NeedDist)
-                    {
-                        continue;
-                    }
                     bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
                     if (canInt || !i.HideWhenFail)
                     {
@@ -151,11 +146,6 @@ namespace My.Map.Scene
                         return true;
                     }
 
-                    return false;
-                }
-
-                if (dist > 2f)
-                {
                     return false;
                 }
 
@@ -244,7 +234,7 @@ namespace My.Map.Scene
         /// 2 ��
         /// </summary>
         /// <returns></returns>
-        public List<SceneInteractSelection> GetInteractSelections(float dist)
+        public List<SceneInteractSelection> GetInteractSelections()
         {
             var ret = new List<SceneInteractSelection>();
             if (NpcEntity.IsAttaching) return ret;
@@ -252,24 +242,7 @@ namespace My.Map.Scene
             {
                 if (NpcEntity.IsHMode)
                 {
-                    if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.IsSkillReady("h_mode_execute"))
-                    {
-                        ret.Add(new SceneInteractSelection()
-                        {
-                            SelectId = 99,
-                            SelectContent = "եȡ",
-                            Selectable = true
-                        }); ;
-                    }
-                    else
-                    {
-                        ret.Add(new SceneInteractSelection()
-                        {
-                            SelectId = 99,
-                            SelectContent = "եȡ(cd)",
-                            Selectable = false
-                        }); ;
-                    }
+                    
                 }
             }
 
@@ -279,10 +252,6 @@ namespace My.Map.Scene
                 var logicInts = NpcEntity.InteractComp.InteractInfos;
                 foreach (var i in logicInts)
                 {
-                    if (i.NeedDist != 0 && dist >= i.NeedDist)
-                    {
-                        continue;
-                    }
                     bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
                     if (canInt || !i.HideWhenFail)
                     {

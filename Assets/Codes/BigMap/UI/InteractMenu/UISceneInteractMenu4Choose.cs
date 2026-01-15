@@ -12,6 +12,9 @@ using UnityEngine.UIElements;
 
 namespace My.UI
 {
+    /// <summary>
+    /// 细节选择列表
+    /// </summary>
     public class UISceneInteractMenu4Choose : MonoBehaviour
     {
         [Header("SuperScrollView")]
@@ -19,6 +22,7 @@ namespace My.UI
         public RectTransform viewport;          // ScrollRect 的 Viewport，控制可见高度=5*itemHeight
         public float itemHeight = 32f;          // 与Prefab高度一致
         public string itemPrefabName = "TabItem"; // 在 SuperScrollView 的 ItemPrefabMgr 里注册的名字
+        public CanvasGroup RootCanvasGroup;
 
         [Header("Data")]
         public List<(long, string, bool)> data = new List<(long, string, bool)>();
@@ -53,7 +57,21 @@ namespace My.UI
         {
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="block"></param>
+        public void SetBlockInteract(bool block)
+        {
+            if(block)
+            {
+                RootCanvasGroup.alpha = 0.6f;
+            }
+            else
+            {
+                RootCanvasGroup.alpha = 1;
+            }
+        }
 
         public void MoveCursor(int delta)
         {
@@ -68,20 +86,6 @@ namespace My.UI
             ScrollToCenter(currentIndex);
         }
 
-        //private void ConfirmCurrent()
-        //{
-        //    selectedIndex = currentIndex;
-        //    RefreshVisibleItems();
-
-        //    // 如需对外发事件，可在此回调
-        //    EvOnTabConfirmed?.Invoke(selectedIndex);
-        //}
-
-        //private void Cancel()
-        //{
-        //    // 如需对外发事件，可在此回调
-        //    EvOnCanceled?.Invoke();
-        //}
 
         // SuperScrollView 回调：为给定 index 提供/刷新 item
         private LoopListViewItem2 OnGetItemByIndex(LoopListView2 view, int index)

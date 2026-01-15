@@ -42,10 +42,9 @@ namespace My.Map.Scene
             RealLogic.TryTriggerInteract(selectionId);
         }
 
-        public List<SceneInteractSelection> GetInteractSelections(float dist)
+        public List<SceneInteractSelection> GetInteractSelections()
         {
             var ret = new List<SceneInteractSelection>();
-            //if (dist > 0.5f) return ret;
             if (IsSwitching) return ret;
 
             if(RealLogic.IsInteracting)
@@ -57,11 +56,6 @@ namespace My.Map.Scene
 
             foreach (var i in logicInts)
             {
-
-                if(dist >= i.NeedDist)
-                {
-                    continue;
-                }
 
                 bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
                 
@@ -76,7 +70,7 @@ namespace My.Map.Scene
             return ret;
         }
 
-        public bool CanInteractEnable(float dist)
+        public bool CanInteractEnable()
         {
             if (IsSwitching) return false;
 
@@ -90,10 +84,6 @@ namespace My.Map.Scene
 
             foreach (var i in logicInts)
             {
-                if (dist >= i.NeedDist)
-                {
-                    continue;
-                }
                 bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
                 if(canInt || !i.HideWhenFail)
                 {

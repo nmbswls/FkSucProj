@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using My.Map;
+using My.Map.Scene;
 using My.UI;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
@@ -14,12 +16,12 @@ public interface ISceneInteractable
 
     Vector2 Pos { get; }
 
-    bool CanInteractEnable(float dist);
+    bool CanInteractEnable();
     void TriggerInteract(int selectionId);
 
     Vector3 GetHintAnchorPosition();
 
-    List<SceneInteractSelection> GetInteractSelections(float dist);
+    List<SceneInteractSelection> GetInteractSelections();
 }
 
 public class SceneInteractSelection
@@ -31,12 +33,15 @@ public class SceneInteractSelection
 
 public class SceneInteractSystem
 {
+    public static float CheckInterval = 0.2f;
 
-    private float _checkRadius = 3f;
-    private float _checkAngle = 60f;
+    private float _normalCheckRadius = 0.5f;
+    private float _checkAngle = 90f;
 
     private float _interactTimer = 0f;
+    private float _executeCheckRadius = 3f;
 
+    private float _maxCheckableRadius = 5.0f;
 
     public SceneInteractSystem()
     {
@@ -50,56 +55,39 @@ public class SceneInteractSystem
         public float distance;
         public Vector2 pos;
     }
-    private readonly List<IntResultItem> candidates = new List<IntResultItem>(64);
+    private readonly List<IntResultItem> normalCandidates = new List<IntResultItem>(64);
+
     private List<IntResultItem> currInteractPoints = new();
     public List<long> closeUnitCache = new();
     //public ISceneInteractable? currnteractObj;
 
+    /// <summary>
+    /// 当前可处决对象
+    /// </summary>
+    private SceneNpcPresenter? currExecuteTarget = null;
+    private readonly List<SceneNpcPresenter> executeCandidates = new List<SceneNpcPresenter>(64);
+
+
     public void Tick(float dt)
+    {
+        TickNormalInteract(dt);
+    }
+
+
+    protected void TickNormalInteract(float dt)
     {
         _interactTimer -= dt;
         if (_interactTimer > 0)
         {
             return;
         }
-
-        _interactTimer = 0.2f;
-        UpdateNormalInteractRangeObjs();
-
-        bool allSame = true;
-
-        if (currInteractPoints.Count == candidates.Count)
-        {
-            for(int i=0;i<currInteractPoints.Count;i++)
-            {
-                if (currInteractPoints[i].interactable != candidates[i].interactable)
-                {
-                    allSame = false;
-                }
-            }
-        }
-        else
-        {
-            allSame = false;
-        }
-
-        if(allSame)
-        {
-            return;
-        }
-        currInteractPoints.Clear();
-        foreach(var one in candidates)
-        {
-            currInteractPoints.Add(one);
-        }
-
-        SceneInteractMenuPanel.Instance?.RefreshInteractObjs(currInteractPoints); 
-    }
+        _interactTimer = CheckInterval;
 
 
-    public void UpdateNormalInteractRangeObjs()
-    {
-        candidates.Clear();
+        //UpdateNormalInteractRangeObjs();
+
+        normalCandidates.Clear();
+        executeCandidates.Clear();
 
         var presenter = MainGameManager.Instance.playerScenePresenter;
         if (presenter == null || presenter.GetLogicEntity() == null)
@@ -107,7 +95,7 @@ public class SceneInteractSystem
             return;
         }
 
-        if(MainGameManager.Instance.dialoguePlayer.IsPlaying)
+        if (MainGameManager.Instance.dialoguePlayer.IsPlaying)
         {
             return;
         }
@@ -117,7 +105,7 @@ public class SceneInteractSystem
         }
 
         Vector2 center = presenter.transform.position;
-        int count = Physics2D.OverlapCircleNonAlloc(center, _checkRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
+        int count = Physics2D.OverlapCircleNonAlloc(center, _maxCheckableRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
 
         // 遍历命中，筛选实现了接口的对象
         for (int i = 0; i < count; i++)
@@ -147,22 +135,48 @@ public class SceneInteractSystem
                 }
             }
 
+            // 角度不满足 一切交互都不进行
             if (!canInt)
             {
                 continue;
             }
 
-            //// 计算距离（以角色位置 center 为基准）
-            //// 距离点可以用碰撞体最近点，能更准确反映“与角色的最短距离”
-            //Vector2 nearest = col.ClosestPoint(center);
-            //float dist = (nearest - center).sqrMagnitude;
+            // 优先判断处决
+            do
+            {
+                if (interactable is not SceneNpcPresenter npcPresenter)
+                {
+                    break;
+                }
 
-            if (!interactable.CanInteractEnable(dist))
+                if(dist > _executeCheckRadius)
+                {
+                    break;
+                }
+
+                if(!npcPresenter.NpcEntity.CheckCanExecute())
+                {
+                    break;
+                }
+
+                executeCandidates.Add(npcPresenter);
+
+                continue;
+            }
+            while (false);
+            
+            // 检查普通交互
+            if(dist > _normalCheckRadius)
             {
                 continue;
             }
 
-            candidates.Add(new IntResultItem
+            if (!interactable.CanInteractEnable())
+            {
+                continue;
+            }
+
+            normalCandidates.Add(new IntResultItem
             {
                 interactable = interactable,
                 distance = dist,
@@ -171,7 +185,64 @@ public class SceneInteractSystem
         }
 
         // 根据距离从近到远排序
-        candidates.Sort((a, b) => a.distance.CompareTo(b.distance));
+        // 还要考虑角度权重？
+        normalCandidates.Sort((a, b) => a.distance.CompareTo(b.distance));
+
+        //executeCandidates.Sort((a, b) => {
+        //    return 1;
+        //});
+
+        bool withExecute = false;
+        if (executeCandidates.Count > 0)
+        {
+            withExecute = true;
+            currExecuteTarget = executeCandidates.First();
+        }
+        else
+        {
+            currExecuteTarget = null;
+        }
+
+
+        bool allSame = true;
+
+        if (currInteractPoints.Count == normalCandidates.Count)
+        {
+            for (int i = 0; i < currInteractPoints.Count; i++)
+            {
+                if (currInteractPoints[i].interactable != normalCandidates[i].interactable)
+                {
+                    allSame = false;
+                }
+            }
+        }
+        else
+        {
+            allSame = false;
+        }
+
+        if (!allSame)
+        {
+            currInteractPoints.Clear();
+            foreach (var one in normalCandidates)
+            {
+                currInteractPoints.Add(one);
+            }
+
+            SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(currInteractPoints);
+        }
+
+        // 更新交互锁定
+        SceneInteractMenuPanel.Instance?.UpdateNormalInteractBlock(withExecute);
+
+        //
+        //OverworldHUDPanel.Instance.
     }
     
+
+
+    public void UpdateNormalInteractRangeObjs()
+    {
+        
+    }
 }

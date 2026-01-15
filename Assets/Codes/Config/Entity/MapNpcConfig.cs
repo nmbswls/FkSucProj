@@ -16,5 +16,6 @@ namespace Config.Unit
         public List<MapInteractInfo> InteractList = new();
 
         public int IgnoreAttractLevel = 0;
+        public bool ImmuneExecute;
     }
 }

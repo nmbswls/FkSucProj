@@ -20,7 +20,7 @@ namespace My
 
         public List<ISceneInteractable> bindingSceneInteractables = new();
 
-        public bool CanInteractEnable(float dist)
+        public bool CanInteractEnable()
         {
             return false;
         }
@@ -34,7 +34,7 @@ namespace My
             return transform.position;
         }
 
-        public List<SceneInteractSelection> GetInteractSelections(float dist)
+        public List<SceneInteractSelection> GetInteractSelections()
         {
             return new();
         }

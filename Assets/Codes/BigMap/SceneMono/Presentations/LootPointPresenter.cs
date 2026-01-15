@@ -74,10 +74,9 @@ namespace My.Map.Scene
             }
         }
 
-        public List<SceneInteractSelection> GetInteractSelections(float dist)
+        public List<SceneInteractSelection> GetInteractSelections()
         {
             var ret = new List<SceneInteractSelection>();
-            if (dist > 0.5f) return ret;
             if (LootEntity.IsLocked)
             {
                 ret.Add(new SceneInteractSelection()
@@ -103,9 +102,8 @@ namespace My.Map.Scene
 
         }
 
-        public bool CanInteractEnable(float dist)
+        public bool CanInteractEnable()
         {
-            if (dist > 0.5f) return false;
             return true;
         }
     }

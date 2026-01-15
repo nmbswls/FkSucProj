@@ -9,10 +9,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static My.Input.QuickPlayerInputBinder;
 using static SceneInteractSystem;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace My.UI
 {
+
+    /// <summary>
+    /// 交互面板
+    /// </summary>
     public class SceneInteractMenuPanel : PanelBase, IInputConsumer, IRefreshable
     {
         public static SceneInteractMenuPanel Instance
@@ -28,311 +34,341 @@ namespace My.UI
             }
         }
 
-        public UISceneInteractMenu4Choose ChooseObjMenu;
+
+        /// <summary>
+        /// UI组件
+        /// </summary>
+        /// 
+        public RectTransform ObjDetailHint;
+
+        public RectTransform ObjFloatingNameBox;
+        public TextMeshProUGUI ObjFloatingNameText;
+        public RectTransform ObjSwitchHint;
         public UISceneInteractMenu4Choose ChooseInteractMenu;
 
-        public enum EShowStatus
-        {
-            Hide,
-            ShowObj,
-            ShowInteract,
-        }
-        public EShowStatus ShowStatus;
+        public bool WithHigherInteract;
 
-        public List<IntResultItem> CurrInteractPoint = new();
-        public ISceneInteractable? currBindPoint = null;
-        public float? currBindPointDist = null;
+        /// <summary>
+        /// 当前活跃可交互列表
+        /// </summary>
+        public List<IntResultItem> ActiveInteractableList = new();
+        public ISceneInteractable? currFocusInteractable = null;
 
         public void Awake()
         {
-            ChooseObjMenu.EvOnTabConfirmed += (idx) =>
-            {
-                if (idx < 0 || idx >= CurrInteractPoint.Count)
-                {
-                    Debug.LogError("Invalid chosse");
-                    return;
-                }
-
-                if (currBindPoint == CurrInteractPoint[idx].interactable)
-                {
-                    return;
-                }
-
-                currBindPoint = CurrInteractPoint[idx].interactable;
-                currBindPointDist = CurrInteractPoint[idx].distance;
-                ShowDirectInteractMenuOnObj(currBindPoint, currBindPointDist.Value);
-            };
-
-
 
             ChooseInteractMenu.EvOnTabConfirmed += (idx) =>
             {
 
             };
-            ChooseObjMenu.EvOnCanceled += () =>
-            {
-            };
+            //ChooseObjMenu.EvOnCanceled += () =>
+            //{
+            //};
 
             ChooseInteractMenu.gameObject.SetActive(false);
-            ChooseObjMenu.gameObject.SetActive(false);
+            //ChooseObjMenu.gameObject.SetActive(false);
         }
 
         private float _interactViewUpdateTimer = 0;
+        private Vector2? ActiveClosePanelPos = null; // 主动关闭交互面板的位置
 
 
         public void Update()
         {
-            //HandleInput();
+            TryUpdateInteractSelections();
 
-            UpdateChooseObjMenu();
+            RefreshFocusInteractable();
 
-            if (ChooseInteractMenu.gameObject.activeSelf && currBindPoint != null)
+            if(currFocusInteractable != null)
             {
-
-                var hintPos = currBindPoint.GetHintAnchorPosition();
+                // 更新详情条位置
+                var hintPos = currFocusInteractable.GetHintAnchorPosition();
                 Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
-
-                // 如果是 Screen Space - Camera 或 World Space，用 RectTransformUtility：
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     UIManager.Instance.RootCanvas.transform as RectTransform,
                     screenPos,
                     UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
                     out Vector2 localPos
                 );
-                ChooseInteractMenu.transform.localPosition = localPos;
+                ObjDetailHint.transform.localPosition = localPos;
+            }
+        }
 
-                if(_interactViewUpdateTimer + 1.0f  > LogicTime.time)
-                {
-                    return;
-                }
-                _interactViewUpdateTimer = LogicTime.time;
+        private float _refreshSelectionTimer = 0;
 
-                var dif = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos - currBindPoint.Pos;
+        /// <summary>
+        /// 尝试更新已存在的交互
+        /// 主要用于更新cd等
+        /// </summary>
+        private void TryUpdateInteractSelections()
+        {
+            if(LogicTime.time - _refreshSelectionTimer < 0.2f)
+            {
+                return;
+            }
 
-                
+            _refreshSelectionTimer = LogicTime.time;
+
+            if(currFocusInteractable == null)
+            {
+                return;
+            }
+            
+            //if (ChooseInteractMenu.gameObject.activeSelf)
+            //{
+
+
+            //    var dif = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos - currFocusInteractable.Pos;
+
+            //    var innerList = new List<(long, string, bool)>();
+            //    var selections = currFocusInteractable.GetInteractSelections(dif.magnitude);
+            //    foreach (var one in selections)
+            //    {
+            //        innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));
+            //    }
+
+            //    bool same = true;
+            //    if (innerList.Count != ChooseInteractMenu.data.Count)
+            //    {
+            //        same = false;
+            //    }
+            //    else
+            //    {
+            //        for (int i = 0; i < innerList.Count; i++)
+            //        {
+            //            if (innerList[i].Item1 != ChooseInteractMenu.data[i].Item1
+            //                || innerList[i].Item2 != ChooseInteractMenu.data[i].Item2
+            //                 || innerList[i].Item3 != ChooseInteractMenu.data[i].Item3)
+            //            {
+            //                same = false;
+            //                break;
+            //            }
+            //        }
+            //    }
+
+            //    if (!same)
+            //    {
+            //        ChooseInteractMenu.SetData(innerList);
+            //    }
+            //}
+        }
+
+        /// <summary>
+        /// 切换下一个focus目标
+        /// </summary>
+        public void CycleNextFocusTarget()
+        {
+            if (ActiveInteractableList.Count <= 1) return; // 只有一个或没有，不用切
+
+            // 1. 这是一个好的时机对列表进行一次排序
+            // 让切换顺序符合直觉（比如按从左到右，或由近到远）
+            // 注意：不要每帧排序，只在切换时排序
+            SortCandidatesByDistance();
+
+            int currentIndex = -1;
+            if (currFocusInteractable != null)
+            {
+                currentIndex = ActiveInteractableList.FindIndex(x => x.interactable == currFocusInteractable);
+            }
+
+            int nextIndex = 0;
+            if (currentIndex == -1)
+            {
+                nextIndex = 0;
+            }
+            else
+            {
+                nextIndex = (currentIndex + 1) % ActiveInteractableList.Count;
+            }
+
+            currFocusInteractable = ActiveInteractableList[nextIndex].interactable;
+            UpdateFocusInteractableView();
+        }
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        private void SortCandidatesByDistance()
+        {
+            var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+
+            //ActiveInteractableList.Sort();
+        }
+
+        /// <summary>
+        /// 保底刷新交互列表
+        /// </summary>
+        public void RefreshFocusInteractable()
+        {
+            if (currFocusInteractable == null && ActiveInteractableList.Count > 0)
+            {
+                currFocusInteractable = ActiveInteractableList[0].interactable;
+                UpdateFocusInteractableView();
+            }
+            // 如果列表空了，彻底关闭UI
+            else if (currFocusInteractable != null && ActiveInteractableList.Count == 0)
+            {
+                currFocusInteractable = null;
+                UpdateFocusInteractableView();
+            }
+        }
+
+        /// <summary>
+        /// 更新视图
+        /// </summary>
+        private void UpdateFocusInteractableView()
+        {
+            if(currFocusInteractable == null)
+            {
+                ObjDetailHint.gameObject.SetActive(false);
+            }
+            else
+            {
+                ObjDetailHint.gameObject.SetActive(true);
+
+                // 更新详情条位置
+                var hintPos = currFocusInteractable.GetHintAnchorPosition();
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    UIManager.Instance.RootCanvas.transform as RectTransform,
+                    screenPos,
+                    UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
+                    out Vector2 localPos
+                );
+                ObjDetailHint.transform.localPosition = localPos;
+
+                var selections = currFocusInteractable.GetInteractSelections();
 
                 var innerList = new List<(long, string, bool)>();
-                var selections = currBindPoint.GetInteractSelections(dif.magnitude);
                 foreach (var one in selections)
                 {
                     innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));
                 }
+                ChooseInteractMenu.SetData(innerList);
 
-                bool same = true;
-                if (innerList.Count != ChooseInteractMenu.data.Count)
-                {
-                    same = false;
-                }
-                else
-                {
-                    for(int i=0;i<innerList.Count;i++)
-                    {
-                        if (innerList[i].Item1 != ChooseInteractMenu.data[i].Item1
-                            || innerList[i].Item2 != ChooseInteractMenu.data[i].Item2
-                             || innerList[i].Item3 != ChooseInteractMenu.data[i].Item3)
-                        {
-                            same = false;
-                            break;
-                        }
-                    }
-                }
-
-                if(!same)
-                {
-                    ChooseInteractMenu.SetData(innerList);
-                }
+                ObjFloatingNameText.text = currFocusInteractable.ShowName;
             }
         }
 
-        private void ShowSceneObjChooseMenu()
-        {
-            this.ChooseInteractMenu.gameObject.SetActive(false);
-
-            ChooseObjMenu.gameObject.SetActive(true);
-            var innerList = new List<(long, string, bool)>();
-
-            foreach (var one in CurrInteractPoint)
-            {
-                innerList.Add(new(one.interactable.Id, one.interactable.ShowName, true));
-            }
-            ChooseObjMenu.SetData(innerList);
-
-        }
-
-        /// <summary>
-        /// 刷新详细交互小界面
-        /// </summary>
-        /// <param name="interactObj"></param>
-        private void ShowDirectInteractMenuOnObj(ISceneInteractable interactObj, float dist)
-        {
-            this.ChooseObjMenu.gameObject.SetActive(false);
-            ChooseInteractMenu.gameObject.SetActive(true);
-
-            this.ShowStatus = EShowStatus.ShowInteract;
-            this.currBindPoint = interactObj;
-
-            var selections = interactObj.GetInteractSelections(dist);
-
-            var hintPos = interactObj.GetHintAnchorPosition();
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
-
-            // 如果是 Screen Space - Camera 或 World Space，用 RectTransformUtility：
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                UIManager.Instance.RootCanvas.transform as RectTransform,
-                screenPos,
-                UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
-                out Vector2 localPos
-            );
-            ChooseInteractMenu.transform.localPosition = localPos;
-
-            var innerList = new List<(long, string, bool)>();
-            foreach(var one in selections)
-            {
-                innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));
-            }
-            ChooseInteractMenu.SetData(innerList);
-        }
-
-
-        private void UpdateChooseObjMenu()
-        {
-            if (MainGameManager.Instance.playerScenePresenter != null)
-            {
-                var hintPos = MainGameManager.Instance.playerScenePresenter.transform.position;
-                Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
-
-                // 如果是 Screen Space - Camera 或 World Space，用 RectTransformUtility：
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    UIManager.Instance.RootCanvas.transform as RectTransform,
-                    screenPos,
-                    UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
-                    out Vector2 localPos
-                );
-                ChooseObjMenu.transform.localPosition = localPos;
-            }
-            else
-            {
-                ChooseObjMenu.transform.position = new Vector2(-1000, -1000);
-            }
-        }
 
         /// <summary>
         /// 刷新交互物
         /// </summary>
-        /// <param name="interactPoints"></param>
-        public void RefreshInteractObjs(List<IntResultItem> interactPoints)
+        /// <param name="interactables"></param>
+        public void RefreshActiveInteractableObjs(List<IntResultItem> interactables)
         {
-            this.CurrInteractPoint.Clear();
-            if(interactPoints.Count > 0)
+            // 仅维护当前
+            this.ActiveInteractableList.Clear();
+            if(interactables.Count > 0)
             {
-                var firstPoint = interactPoints[0];
-                this.CurrInteractPoint.Add(firstPoint);
+                //var firstPoint = interactables[0];
+                //this.ActiveInteractableList.Add(firstPoint);
 
 
-                for (int i= 1; i < interactPoints.Count; i++)
+                //for (int i= 1; i < interactables.Count; i++)
+                //{
+                //    if ((interactables[i].pos - firstPoint.pos).sqrMagnitude < 0.3f * 0.3f)
+                //    {
+                //        this.ActiveInteractableList.AddRange(interactables);
+                //    }
+                //}
+
+                foreach (var oneInt in interactables) 
                 {
-                    if ((interactPoints[i].pos - firstPoint.pos).sqrMagnitude < 0.3f * 0.3f)
-                    {
-                        this.CurrInteractPoint.AddRange(interactPoints);
-                    }
+                    this.ActiveInteractableList.Add(oneInt);
                 }
             }
 
-            // 无可交互物 全部隐藏
-            if (CurrInteractPoint.Count == 0)
+            currFocusInteractable = null;
+            //// 当可交互列表
+            //if (currFocusInteractable != null)
+            //{
+            //    var currentIndex = ActiveInteractableList.FindIndex(x => x.interactable == currFocusInteractable);
+            //    if(currentIndex == -1)
+            //    {
+            //        currFocusInteractable = null;
+            //    }
+            //}
+
+            // 刷新focus对象
+            RefreshFocusInteractable();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="block"></param>
+        public void UpdateNormalInteractBlock(bool block)
+        {
+            this.WithHigherInteract = block;
+
+            if(block)
             {
-                ShowStatus = EShowStatus.Hide;
-                ChooseObjMenu.gameObject.SetActive(false);
-                ChooseInteractMenu.gameObject.SetActive(false);
-            }
-            else if (CurrInteractPoint.Count == 1)
-            {
-                ShowStatus = EShowStatus.ShowInteract;
-                ShowDirectInteractMenuOnObj(CurrInteractPoint.First().interactable, CurrInteractPoint.First().distance);
+                ChooseInteractMenu.SetBlockInteract(true);
             }
             else
             {
-                ShowStatus = EShowStatus.ShowObj;
-                ShowSceneObjChooseMenu();
+                ChooseInteractMenu.SetBlockInteract(false);
             }
         }
 
         public bool OnConfirm()
         {
-            // 在物体界面选择 进入详细交互
-            if (ShowStatus == EShowStatus.ShowObj)
+            if(WithHigherInteract)
             {
-                int idx = ChooseObjMenu.CurrentIndex;
-                var chosenInteract = CurrInteractPoint[idx].interactable;
+                return false;
+            }
 
-                this.currBindPoint = chosenInteract;
-                this.currBindPointDist = CurrInteractPoint[idx].distance;
-                ShowDirectInteractMenuOnObj(chosenInteract, currBindPointDist.Value);
-                return true;
-            }
-            else if (ShowStatus == EShowStatus.ShowInteract)
+            if(currFocusInteractable == null)
             {
-                int idx = ChooseInteractMenu.CurrentIndex;
-                if (currBindPoint == null)
-                {
-                    Debug.LogError("nooooo bind interact");
-                    return false;
-                }
-                int content =(int) ChooseInteractMenu.data[idx].Item1;
-                currBindPoint.TriggerInteract(content);
+                return false;
             }
-            return false;
+
+            int idx = ChooseInteractMenu.CurrentIndex;
+            int content = (int)ChooseInteractMenu.data[idx].Item1;
+            currFocusInteractable.TriggerInteract(content);
+
+            return true;
         }
 
         public bool OnCancel()
         {
-            if (ShowStatus == EShowStatus.ShowInteract && CurrInteractPoint.Count > 1)
-            {
-                this.currBindPoint = null;
-                ChooseObjMenu.gameObject.SetActive(false);
-                ChooseInteractMenu.gameObject.SetActive(false);
-                return false;
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool OnNavigate(Vector2 dir)
         {
-            //throw new System.NotImplementedException();
             return false;
         }
 
 
-
+        /// <summary>
+        /// 监听滚轮事件
+        /// </summary>
+        /// <param name="deltaY"></param>
+        /// <returns></returns>
         public bool OnScroll(float deltaY)
         {
+            if (WithHigherInteract)
+            {
+                return false;
+            }
+
+            if (currFocusInteractable == null)
+            {
+                return false;
+            }
+
+
             if (Mathf.Abs(deltaY) > 0.01f)
             {
                 if (deltaY > 0f)
                 {
-                    if (ShowStatus == EShowStatus.ShowObj)
-                    {
-                        ChooseObjMenu.MoveCursor(-1);  // 上滚：索引减
-                    }
-                    else if (ShowStatus == EShowStatus.ShowInteract)
-                    {
-                        ChooseInteractMenu.MoveCursor(-1);  // 上滚：索引减
-                    }
+                    ChooseInteractMenu.MoveCursor(-1);  // 上滚：索引减
                 }
                 else
                 {
-                    if (ShowStatus == EShowStatus.ShowObj)
-                    {
-                        ChooseObjMenu.MoveCursor(1);  // 上滚：索引减
-                    }
-                    else if (ShowStatus == EShowStatus.ShowInteract)
-                    {
-                        ChooseInteractMenu.MoveCursor(1);  // 上滚：索引减
-                    }
-
+                    ChooseInteractMenu.MoveCursor(1);  // 上滚：索引减
                 }
             }
             return true;
@@ -361,6 +397,15 @@ namespace My.UI
         public bool OnHotkey(string keyName)
         {
             //throw new System.NotImplementedException();
+            if(keyName == EInputKey.Tab.ToString())
+            {
+                if(ActiveInteractableList.Count > 1)
+                {
+                    CycleNextFocusTarget();
+
+                    return true;
+                }
+            }
             return false;
         }
     }
