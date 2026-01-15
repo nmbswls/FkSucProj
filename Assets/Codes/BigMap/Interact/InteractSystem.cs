@@ -75,6 +75,30 @@ public class SceneInteractSystem
         TickNormalInteract(dt);
     }
 
+    public bool IsInteractEnableState()
+    {
+        var presenter = MainGameManager.Instance.playerScenePresenter;
+        if (presenter == null || presenter.GetLogicEntity() == null)
+        {
+            return false;
+        }
+
+        if (MainGameManager.Instance.dialoguePlayer.IsPlaying)
+        {
+            return false;
+        }
+        if (MainGameManager.Instance.gameLogicManager.IsBalancing)
+        {
+            return false;
+        }
+
+        if(!MainGameManager.Instance.gameLogicManager.Initialized)
+        {
+            return false;
+        }
+
+        return true;
+    }
 
     protected void TickNormalInteract(float dt)
     {
@@ -86,27 +110,17 @@ public class SceneInteractSystem
         _interactTimer = CheckInterval;
 
 
-        //UpdateNormalInteractRangeObjs();
-        SceneInteractMenuPanel.Instance?.UpdateNormalInteractBlock(false);
+        if(!IsInteractEnableState())
+        {
+            SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(new());
+            SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(null);
+            return;
+        }
 
         normalCandidates.Clear();
         executeCandidates.Clear();
 
         var presenter = MainGameManager.Instance.playerScenePresenter;
-        if (presenter == null || presenter.GetLogicEntity() == null)
-        {
-            return;
-        }
-
-        if (MainGameManager.Instance.dialoguePlayer.IsPlaying)
-        {
-            return;
-        }
-        if (MainGameManager.Instance.gameLogicManager.IsBalancing)
-        {
-            return;
-        }
-
         Vector2 center = presenter.transform.position;
         int count = Physics2D.OverlapCircleNonAlloc(center, _maxCheckableRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
 
@@ -240,11 +254,7 @@ public class SceneInteractSystem
             SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(currInteractPoints);
         }
 
-        // 更新交互锁定
-        SceneInteractMenuPanel.Instance?.UpdateNormalInteractBlock(withExecute);
-
-        //
-        //OverworldHUDPanel.Instance.
+        SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(currExecuteTarget);
     }
     
 

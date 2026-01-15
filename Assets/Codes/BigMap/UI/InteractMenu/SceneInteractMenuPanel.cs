@@ -1,5 +1,6 @@
 using DG.Tweening;
 using My.Map;
+using My.Map.Scene;
 using SuperScrollView;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,11 +60,17 @@ namespace My.UI
 
         public bool WithHigherInteract;
 
+
+        public RectTransform HModeExecuteHint;
+
         /// <summary>
         /// 当前活跃可交互列表
         /// </summary>
         public List<IntResultItem> ActiveInteractableList = new();
         public ISceneInteractable? currFocusInteractable = null;
+
+        public SceneNpcPresenter? currExecuteTarget = null;
+
 
         public void Awake()
         {
@@ -79,6 +86,8 @@ namespace My.UI
             ObjHintIconForbid.SetActive(false);
 
             ObjSwitchHint.gameObject.SetActive(false);
+
+            HModeExecuteHint.gameObject.SetActive(false);
         }
 
         private float _interactViewUpdateTimer = 0;
@@ -104,6 +113,22 @@ namespace My.UI
                 );
                 ObjDetailHint.transform.localPosition = localPos;
             }
+
+            if(currExecuteTarget != null)
+            {
+                // 更新详情条位置
+                var hintPos = currExecuteTarget.GetHintAnchorPosition();
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    UIManager.Instance.RootCanvas.transform as RectTransform,
+                    screenPos,
+                    UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
+                    out Vector2 localPos
+                );
+                HModeExecuteHint.transform.localPosition = localPos;
+            }
+
+            TickRefreshNormalInteractBlock();
         }
 
         private float _refreshSelectionTimer = 0;
@@ -204,6 +229,41 @@ namespace My.UI
             var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
 
             //ActiveInteractableList.Sort();
+        }
+
+        /// <summary>
+        /// 检查锁交互面板
+        /// </summary>
+        private void TickRefreshNormalInteractBlock()
+        {
+            var playerEntity = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            if(playerEntity == null) return;
+
+
+            bool blocked = false;
+
+            bool selfInteract = false;
+            if(playerEntity.IsInStealth())
+            {
+                selfInteract = true;
+            }
+
+            if (playerEntity.AtttachingObjList.Count > 0)
+            {
+                selfInteract = true;
+            }
+
+            if(selfInteract)
+            {
+                blocked = true;
+            }
+
+            if (currExecuteTarget != null)
+            {
+                blocked = true;
+            }
+
+            UpdateNormalInteractBlock(blocked);
         }
 
         /// <summary>
@@ -329,6 +389,50 @@ namespace My.UI
 
             // 刷新focus对象
             RefreshFocusInteractable();
+        }
+
+
+        /// <summary>
+        /// 刷新处决列表
+        /// </summary>
+        public void RefreshExecuteTarget(SceneNpcPresenter npcPresenter)
+        {
+            if(npcPresenter == currExecuteTarget)
+            {
+                return;
+            }
+
+            currExecuteTarget = npcPresenter;
+
+            if(currExecuteTarget == null)
+            {
+                HModeExecuteHint.gameObject.SetActive(false);
+            }
+            else
+            {
+                HModeExecuteHint.gameObject.SetActive(true);
+
+                // 更新详情条位置
+                var hintPos = currExecuteTarget.GetHintAnchorPosition();
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    UIManager.Instance.RootCanvas.transform as RectTransform,
+                    screenPos,
+                    UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
+                    out Vector2 localPos
+                );
+                HModeExecuteHint.transform.localPosition = localPos;
+            }
+            
+
+            if (currExecuteTarget != null)
+            {
+                UpdateNormalInteractBlock(true);
+            }
+            else
+            {
+                UpdateNormalInteractBlock(false);
+            }
         }
 
         /// <summary>
