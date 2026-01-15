@@ -1238,6 +1238,7 @@ namespace My.Map.Entity
                 case MapAbilityEffectCastSkillCfg:
                 case MapFightEffectQueueModeCfg:
                 case MapFightEffectBroadcastAttractCfg:
+                case MapFightEffectTriggerAlert:
                     {
                         long srcEntity = CasterId;
 

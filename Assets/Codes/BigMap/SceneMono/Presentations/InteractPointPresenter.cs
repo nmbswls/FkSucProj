@@ -16,6 +16,8 @@ namespace My.Map.Scene
         public GameObject MainBlock;
         public List<GameObject> Blocks;
 
+        public Transform InteractPivot;
+
         public Vector2 Pos => transform.position;
 
         public event Action<bool> EventOnInteractStateChanged;
@@ -33,7 +35,16 @@ namespace My.Map.Scene
 
         public Vector3 GetHintAnchorPosition()
         {
+            if(InteractPivot != null)
+            {
+                return InteractPivot.transform.position;
+            }
             return GetWorldPosition();
+        }
+
+        public float GetHintOffsetInfos()
+        {
+            return RealLogic.cacheCfg.NameOffset;
         }
 
 

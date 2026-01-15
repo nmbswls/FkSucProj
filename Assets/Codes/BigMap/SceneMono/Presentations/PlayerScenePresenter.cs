@@ -142,15 +142,15 @@ namespace My.Map.Scene
 
         public bool CanInteractEnable()
         {
-            if(PlayerEntity.IsInStealth())
-            {
-                return true;
-            }
+            //if(PlayerEntity.IsInStealth())
+            //{
+            //    return true;
+            //}
 
-            if (PlayerEntity.AtttachingObjList.Count > 0)
-            {
-                return true;
-            }
+            //if (PlayerEntity.AtttachingObjList.Count > 0)
+            //{
+            //    return true;
+            //}
 
             return false;
         }
@@ -165,6 +165,11 @@ namespace My.Map.Scene
             {
                 PlayerEntity.abilityController.TryUseAbility("hit_attach");
             }
+        }
+
+        public float GetHintOffsetInfos()
+        {
+            return -1;
         }
 
         public Vector3 GetHintAnchorPosition()

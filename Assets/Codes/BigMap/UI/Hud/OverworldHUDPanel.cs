@@ -47,6 +47,8 @@ namespace My.UI
 
         public RectTransform AlertHint;
         public TextMeshProUGUI AlertValText;
+        public Image FilledAlertBar;
+        public Image TempAlertBar;
 
         public RectTransform RetreatHint;
         public Image RetreatHintBar;
@@ -124,6 +126,17 @@ namespace My.UI
 
             AlertValText.text = MainGameManager.Instance.gameLogicManager.AreaManager.AreaAlertValue.ToString();
 
+            var tempVal = MainGameManager.Instance.gameLogicManager.AreaManager.GetTempAlertValue();
+            var filledVal = MainGameManager.Instance.gameLogicManager.AreaManager.AreaAlertValue;
+
+            var filledRate = filledVal * 1.0f / MainGameManager.Instance.gameLogicManager.AreaManager.MaxAlertValue;
+            filledRate = Mathf.Clamp(filledRate, 0, 1);
+
+            var totalRate = (filledVal + tempVal) * 1.0f / MainGameManager.Instance.gameLogicManager.AreaManager.MaxAlertValue;
+            totalRate = Mathf.Clamp(totalRate, 0, 1);
+
+            FilledAlertBar.fillAmount = filledRate;
+            TempAlertBar.fillAmount = totalRate;
         }
 
         public override void Show()

@@ -1012,6 +1012,7 @@ namespace My.Map
         protected float evilAlertStartTime;
         protected float evilAlertDuration;
 
+        public bool IsEvilAlert { get { return isEvilAlerting; } }
         
         /// <summary>
         /// ¿ªÊ¼¸æ¾¯
@@ -1026,6 +1027,7 @@ namespace My.Map
 
             evilAlertStartTime = LogicTime.time;
             evilAlertDuration = duration;
+            isEvilAlerting = true;
 
             LogicManager.AreaManager.EntityTryRegisterAlert(this);
         }

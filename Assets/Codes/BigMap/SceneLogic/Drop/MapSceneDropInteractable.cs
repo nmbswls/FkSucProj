@@ -108,6 +108,10 @@ namespace My.Map.Scene
             return true;
         }
 
+        public float GetHintOffsetInfos()
+        {
+            return -1;
+        }
 
         public void DoRecycle()
         {

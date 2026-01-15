@@ -29,6 +29,11 @@ namespace My.Map.Scene
             return transform.position;
         }
 
+        public float GetHintOffsetInfos()
+        {
+            return -1;
+        }
+
         public List<SceneInteractSelection> GetInteractSelections()
         {
             var ret = new List<SceneInteractSelection>();

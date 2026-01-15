@@ -18,6 +18,8 @@ namespace Config.Map
         public string ShowName;
         public string PrefabName;
 
+        public float NameOffset = -1f;
+
         [Serializable]
         public class StatusInfo
         {

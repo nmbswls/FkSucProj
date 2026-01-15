@@ -14,7 +14,14 @@ namespace My.Map.Scene
     public class SceneNpcPresenter : SceneUnitPresenter, ISceneInteractable
     {
         public Vector2 Pos => transform.position;
-        public string ShowName => gameObject.name;
+        public string ShowName {
+            get
+            {
+                return NpcEntity.cacheCfg.ShowName;
+            } 
+        }
+
+
         public NpcUnitLogicEntity NpcEntity
         {
             get
@@ -228,6 +235,10 @@ namespace My.Map.Scene
             return transform.position + new Vector3(0, 0.25f, 0);
         }
 
+        public float GetHintOffsetInfos()
+        {
+            return -1;
+        }
 
         /// <summary>
         /// 1 shendu

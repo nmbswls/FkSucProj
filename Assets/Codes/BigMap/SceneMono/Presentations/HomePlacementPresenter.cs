@@ -38,5 +38,10 @@ namespace My
         {
             return new();
         }
+
+        public float GetHintOffsetInfos()
+        {
+            return -1;
+        }
     }
 }

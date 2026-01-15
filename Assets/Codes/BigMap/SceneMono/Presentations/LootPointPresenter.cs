@@ -36,6 +36,11 @@ namespace My.Map.Scene
             return GetWorldPosition() + new Vector3(0, 0.1f, 0);
         }
 
+        public float GetHintOffsetInfos()
+        {
+            return -1;
+        }
+
         /// <summary>
         /// ´¥·¢½»»¥
         /// </summary>

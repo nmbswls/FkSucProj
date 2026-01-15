@@ -20,12 +20,20 @@ namespace My.UI
         [Header("SuperScrollView")]
         public LoopListView2 listView;          // 拖入场景中的 LoopListView2
         public RectTransform viewport;          // ScrollRect 的 Viewport，控制可见高度=5*itemHeight
-        public float itemHeight = 32f;          // 与Prefab高度一致
+        private float itemHeight = 32f;          // 与Prefab高度一致
         public string itemPrefabName = "TabItem"; // 在 SuperScrollView 的 ItemPrefabMgr 里注册的名字
         public CanvasGroup RootCanvasGroup;
 
+        public struct ChooseItem
+        {
+            public int SelectId;
+            public string Content;
+            public bool Selectable;
+        }
+
+
         [Header("Data")]
-        public List<(long, string, bool)> data = new List<(long, string, bool)>();
+        public List<ChooseItem> data = new List<ChooseItem>();
 
 
         public RectTransform ScrollView;
@@ -33,9 +41,6 @@ namespace My.UI
         private int selectedIndex = -1; // 按F确认后的选中项（-1 表示尚未确认）
 
         public int CurrentIndex { get { return currentIndex; } }
-
-        public event Action<int> EvOnTabConfirmed;
-        public event Action EvOnCanceled;
 
         private void Awake()
         {
@@ -73,6 +78,10 @@ namespace My.UI
             }
         }
 
+        /// <summary>
+        /// 移动cursor
+        /// </summary>
+        /// <param name="delta"></param>
         public void MoveCursor(int delta)
         {
             if (data.Count == 0) return;
@@ -102,7 +111,9 @@ namespace My.UI
 
             bool isCurrent = (index == currentIndex);
             bool isSelected = (index == selectedIndex);
-            viewComp.Bind(data[index].Item2, isCurrent, isSelected, data[index].Item3);
+            viewComp.Bind(data[index].Content, isCurrent, isSelected, data[index].Selectable, data.Count == 1);
+
+            viewComp.gameObject.SetActive(true);
 
             // 固定高度（与 itemHeight 保持一致）
             var rt = item.GetComponent<RectTransform>();
@@ -126,7 +137,7 @@ namespace My.UI
 
                 bool isCurrent = (idx == currentIndex);
                 bool isSelected = (idx == selectedIndex);
-                viewComp.Bind(data[idx].Item2, isCurrent, isSelected, data[idx].Item3);
+                viewComp.Bind(data[idx].Content, isCurrent, isSelected, data[idx].Selectable, data.Count == 1);
             }
         }
 
@@ -148,9 +159,9 @@ namespace My.UI
         public int SelectedIndex => selectedIndex;
 
         // 动态设置数据并重建
-        public void SetData(List<(long, string, bool)> newData, int initialIndex = 0)
+        public void SetData(List<ChooseItem> newData, int initialIndex = 0)
         {
-            data = newData ?? new List<(long, string, bool)>();
+            data = newData ?? new List<ChooseItem>();
             currentIndex = Mathf.Clamp(initialIndex, 0, Mathf.Max(0, data.Count - 1));
             selectedIndex = -1;
             listView.SetListItemCount(data.Count, false);
@@ -161,6 +172,18 @@ namespace My.UI
             //this.viewport.sizeDelta = new(this.viewport.sizeDelta.x, 222);
         }
 
+        public void ItemOnClick(int idx)
+        {
+            // 2. 尝试获取当前可见的 Item
+            LoopListViewItem2 item = listView.GetShownItemByItemIndex(idx);
+
+            if (item != null)
+            {
+                // CASE A: Item 已经在屏幕上了
+                var myItem = item.GetComponent<UISceneInteractMenu4ChooseItem>();
+                myItem.DoHintConfirm();
+            }
+        }
     }
 
 }

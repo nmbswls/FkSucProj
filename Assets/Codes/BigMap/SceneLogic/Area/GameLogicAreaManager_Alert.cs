@@ -33,11 +33,9 @@ namespace My.Map.Logic
         //public float UnitAlertTryInterval = 12.0f;
         //public float AlertDuration = 5.0f;
 
+        public long MaxAlertValue = 10000;
         public long AreaAlertValue = 0;
-        //public float LastAlertUpdateTime = 0;
 
-        //protected Dictionary<long, float> EntityLastTryAlertTimes = new();
-        //protected List<AlertRecord> alertRecords = new();
 
         protected Dictionary<long, WeakReference<BaseUnitLogicEntity>> alertingLogicEntities = new();
         private Dictionary<long, List<(float, float)>> entityPendingAlerts = new();
@@ -54,6 +52,21 @@ namespace My.Map.Logic
             TickAddPendingEvilAlerts();
             TickSafeClearDeadEntities();
             TickPendingEvilApply();
+        }
+
+        /// <summary>
+        /// 获取合法entity
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<BaseUnitLogicEntity> GetAlertingLogicEntities()
+        {
+            foreach(var oneVal in alertingLogicEntities.Values)
+            {
+                if(oneVal.TryGetTarget(out var entity))
+                {
+                    yield return entity;
+                }
+            }
         }
 
         private void TickAddPendingEvilAlerts()
@@ -90,15 +103,17 @@ namespace My.Map.Logic
 
         private void TickSafeClearDeadEntities()
         {
-            if (_lastAddUnitAlertTimer == 0)
+            if (_lastClearDiedAlertTimer == 0)
             {
-                _lastAddUnitAlertTimer = LogicTime.time;
+                _lastClearDiedAlertTimer = LogicTime.time;
             }
 
-            if (LogicTime.time - _lastAddUnitAlertTimer < 5.0f)
+            if (LogicTime.time - _lastClearDiedAlertTimer < 5.0f)
             {
                 return;
             }
+
+            _lastClearDiedAlertTimer = LogicTime.time;
 
             List<long> needClear = null;
             foreach (var alerting in alertingLogicEntities)
@@ -129,18 +144,20 @@ namespace My.Map.Logic
 
         private void TickPendingEvilApply()
         {
-            if (_lastAddUnitAlertTimer == 0)
+            if (_lastApplyPendingTimer == 0)
             {
-                _lastAddUnitAlertTimer = LogicTime.time;
+                _lastApplyPendingTimer = LogicTime.time;
             }
 
-            if (LogicTime.time - _lastAddUnitAlertTimer < 1.0f)
+            if (LogicTime.time - _lastApplyPendingTimer < 0.3f)
             {
                 return;
             }
 
+            _lastApplyPendingTimer = LogicTime.time;
+
             // 结算并清理警戒度
-            foreach(var oneKey in entityPendingAlerts.Keys.ToList())
+            foreach (var oneKey in entityPendingAlerts.Keys.ToList())
             {
                 var ll = entityPendingAlerts[oneKey];
                 float sum = 0;
@@ -173,18 +190,22 @@ namespace My.Map.Logic
             {
                 return 0;
             }
-
-            if(cnt < 3)
+            if (cnt < 1)
             {
-                return 1000;
+                return 50;
+            }
+
+            if (cnt < 3)
+            {
+                return 100;
             }
 
             if(cnt < 10)
             {
-                return 2000;
+                return 200;
             }
 
-            return 5000;
+            return 500;
         }
 
 
@@ -214,6 +235,24 @@ namespace My.Map.Logic
             // 计算衰减
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public long GetTempAlertValue()
+        {
+            float tempSum = 0;
+            foreach (var pendingList in entityPendingAlerts.Values)
+            {
+                foreach(var onePending in pendingList)
+                {
+                    tempSum += onePending.Item1;
+                }
+            }
+
+            return (long)tempSum;
+        }
+
         public void AlertOnEntityDie(long entityId)
         {
             if(entityPendingAlerts.TryGetValue(entityId, out var pendingList))
@@ -237,7 +276,6 @@ namespace My.Map.Logic
                 }
                 entityPendingAlerts.Remove(entityId);
             }
-            
         }
     }
 }

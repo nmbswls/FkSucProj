@@ -15,6 +15,7 @@ MonoBehaviour:
   CfgId: teleport
   ShowName: "\u4F20\u9001\u88C5\u7F6E"
   PrefabName: 
+  NameOffset: 60
   MainStatusInfo:
     StatusId: 0
     InteractInfos: []

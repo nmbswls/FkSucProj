@@ -159,6 +159,8 @@ namespace My.Map
         /// </summary>
         public long LifeBindEntityId { get; set; }
 
+        public bool MarkDespawn { get; set; }
+
 
         #region Í¨ÓÃ×Ö¶Î
 
@@ -411,11 +413,14 @@ namespace My.Map
 
         public virtual void OnSpawn(LogicEntityRecord data)
         {
+            MarkDespawn = false;
         }
 
         public virtual void OnDespawn(out LogicEntityRecord? snapshot)
         {
             snapshot = null;
+
+            MarkDespawn = true;
         }
 
         public void OnWake()

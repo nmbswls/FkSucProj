@@ -1144,17 +1144,17 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (ctx.SourceInfo.SrcEntityId == 0)
+            if (ctx.TargetId == 0)
             {
                 return;
             }
-            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            var actor = ctx.Env.GetLogicEntity(ctx.TargetId);
 
             if (actor == null || actor is not BaseUnitLogicEntity unitEntity)
             {
                 return;
             }
-            Debug.Log($"AbilityEffectExecutor4TriggerAlert try apply {ctx.SourceInfo.SrcEntityId}");
+            Debug.Log($"AbilityEffectExecutor4TriggerAlert try apply {ctx.TargetId}");
             unitEntity.StartEvilAlert(realCfg.AlertDuration);
         }
     }

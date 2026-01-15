@@ -21,6 +21,8 @@ public interface ISceneInteractable
 
     Vector3 GetHintAnchorPosition();
 
+    float GetHintOffsetInfos();
+
     List<SceneInteractSelection> GetInteractSelections();
 }
 
@@ -85,6 +87,7 @@ public class SceneInteractSystem
 
 
         //UpdateNormalInteractRangeObjs();
+        SceneInteractMenuPanel.Instance?.UpdateNormalInteractBlock(false);
 
         normalCandidates.Clear();
         executeCandidates.Clear();
@@ -165,13 +168,18 @@ public class SceneInteractSystem
             }
             while (false);
             
-            // 检查普通交互
-            if(dist > _normalCheckRadius)
+            
+            
+
+            if (!interactable.CanInteractEnable())
             {
                 continue;
             }
 
-            if (!interactable.CanInteractEnable())
+            var closest = col.ClosestPoint(center);
+            var closestDist = (closest - center).magnitude;
+            // 检查普通交互
+            if (closestDist > _normalCheckRadius)
             {
                 continue;
             }

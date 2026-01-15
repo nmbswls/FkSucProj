@@ -1,3 +1,4 @@
+using DG.Tweening;
 using SuperScrollView;
 using System;
 using System.Collections;
@@ -15,35 +16,65 @@ namespace My.UI
         public Image bgImage;
         public Image pointerImage; // 左侧指示箭头（可选）
 
-        [Header("Colors")]
-        public Color normalColor = new Color(0.2f, 0.2f, 0.2f, 1);
-        public Color highlightColor = new Color(0.35f, 0.35f, 0.35f, 1);
-        public Color selectedColor = new Color(0.15f, 0.4f, 0.15f, 1);
-        public Color textNormal = Color.white;
-        public Color textSelected = Color.yellow;
+        public GameObject SelectHintBg;
+        public Image SelectHintBgImage;
+        public GameObject SelectHintArrow;
+        public GameObject SelectButtonHint;
 
-        public void Bind(string title, bool isCurrent, bool isSelected, bool selectable)
+        //[Header("Colors")]
+        //public Color normalColor = new Color(0.2f, 0.2f, 0.2f, 1);
+        //public Color highlightColor = new Color(0.35f, 0.35f, 0.35f, 1);
+        //public Color selectedColor = new Color(0.15f, 0.4f, 0.15f, 1);
+        //public Color textNormal = Color.white;
+        //public Color textSelected = Color.yellow;
+
+        public Color pressedColor = new Color(0, 0, 0.5f); // 深蓝色
+        public float duration = 0.15f; // 单程时间（变过去的时间）
+
+        private Color originalColor; // 记录原始颜色（天蓝色）
+
+        public void Awake()
+        {
+            originalColor = SelectHintBgImage.color;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void DoHintConfirm()
+        {
+            SelectHintBgImage.DOKill();
+            SelectHintBgImage.color = originalColor;
+
+            // 3. 执行变色
+            // 0.15秒变深，LoopType.Yoyo 代表变完自动变回来，一共执行2次（去1回1）
+            SelectHintBgImage.DOColor(pressedColor, duration)
+                       .SetLoops(2, LoopType.Yoyo)
+                       .SetEase(Ease.InOutQuad);
+        }
+
+        public void Bind(string title, bool isCurrent, bool isSelected, bool selectable, bool isSingle)
         {
             titleText.text = title;
 
             // 视觉规则：
-            // - isSelected：表示“按F确认”的被选中项（绿色底+黄字）
-            // - isCurrent：当前游标项（滚轮移动的焦点，高亮灰）
-            // 二者都 true 时以 selected 优先，且可显示指示器
-            if (isSelected)
+            if (isCurrent)
             {
-                bgImage.color = selectedColor;
-                titleText.color = textSelected;
-            }
-            else if (isCurrent)
-            {
-                bgImage.color = highlightColor;
-                titleText.color = textNormal;
+                SelectHintBg.SetActive(true);
+                if(isSingle)
+                {
+                    SelectHintArrow.SetActive(false);
+                }
+                else
+                {
+                    SelectHintArrow.SetActive(true); 
+                }
+                SelectButtonHint.SetActive(true);
             }
             else
             {
-                bgImage.color = normalColor;
-                titleText.color = textNormal;
+                SelectHintBg.SetActive(false);
+                SelectHintArrow.SetActive(false);
+                SelectButtonHint.SetActive(false);
             }
 
             if (pointerImage)

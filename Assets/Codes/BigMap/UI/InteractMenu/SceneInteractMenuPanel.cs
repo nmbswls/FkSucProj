@@ -1,3 +1,4 @@
+using DG.Tweening;
 using My.Map;
 using SuperScrollView;
 using System.Collections;
@@ -10,7 +11,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using static My.Input.QuickPlayerInputBinder;
+using static My.UI.UISceneInteractMenu4Choose;
 using static SceneInteractSystem;
+using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.Rendering.DebugUI;
 
 namespace My.UI
@@ -41,9 +44,17 @@ namespace My.UI
         /// 
         public RectTransform ObjDetailHint;
 
+        [Header("根canvas group")]
+        public CanvasGroup ObjDetailHintCG;
+
+        public RectTransform CenterHint;
+        public GameObject ObjHintIconEnable;
+        public GameObject ObjHintIconForbid;
+
         public RectTransform ObjFloatingNameBox;
         public TextMeshProUGUI ObjFloatingNameText;
         public RectTransform ObjSwitchHint;
+
         public UISceneInteractMenu4Choose ChooseInteractMenu;
 
         public bool WithHigherInteract;
@@ -56,17 +67,18 @@ namespace My.UI
 
         public void Awake()
         {
+            ObjDetailHint.gameObject.SetActive(false);
 
-            ChooseInteractMenu.EvOnTabConfirmed += (idx) =>
-            {
+            //// 对 UI 元素进行呼吸
+            //ObjHintCircle.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.8f)
+            //        .SetLoops(-1, LoopType.Yoyo)
+            //        .SetEase(Ease.InOutSine)
+            //        .SetUpdate(true); // 即使游戏暂停(Time.timeScale=0)也能继续呼吸
 
-            };
-            //ChooseObjMenu.EvOnCanceled += () =>
-            //{
-            //};
+            ObjHintIconEnable.SetActive(true);
+            ObjHintIconForbid.SetActive(false);
 
-            ChooseInteractMenu.gameObject.SetActive(false);
-            //ChooseObjMenu.gameObject.SetActive(false);
+            ObjSwitchHint.gameObject.SetActive(false);
         }
 
         private float _interactViewUpdateTimer = 0;
@@ -102,7 +114,7 @@ namespace My.UI
         /// </summary>
         private void TryUpdateInteractSelections()
         {
-            if(LogicTime.time - _refreshSelectionTimer < 0.2f)
+            if(LogicTime.time - _refreshSelectionTimer < 1f)
             {
                 return;
             }
@@ -113,44 +125,43 @@ namespace My.UI
             {
                 return;
             }
-            
-            //if (ChooseInteractMenu.gameObject.activeSelf)
-            //{
 
+            var innerList = new List<ChooseItem>();
+            var selections = currFocusInteractable.GetInteractSelections();
+            foreach (var one in selections)
+            {
+                innerList.Add(new ChooseItem()
+                    {
+                        SelectId = one.SelectId,
+                        Content = one.SelectContent,
+                        Selectable = one.Selectable
+                    }
+                );
+            }
 
-            //    var dif = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos - currFocusInteractable.Pos;
+            bool same = true;
+            if (innerList.Count != ChooseInteractMenu.data.Count)
+            {
+                same = false;
+            }
+            else
+            {
+                for (int i = 0; i < innerList.Count; i++)
+                {
+                    if (innerList[i].SelectId != ChooseInteractMenu.data[i].SelectId
+                        || innerList[i].Content != ChooseInteractMenu.data[i].Content
+                         || innerList[i].Selectable != ChooseInteractMenu.data[i].Selectable)
+                    {
+                        same = false;
+                        break;
+                    }
+                }
+            }
 
-            //    var innerList = new List<(long, string, bool)>();
-            //    var selections = currFocusInteractable.GetInteractSelections(dif.magnitude);
-            //    foreach (var one in selections)
-            //    {
-            //        innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));
-            //    }
-
-            //    bool same = true;
-            //    if (innerList.Count != ChooseInteractMenu.data.Count)
-            //    {
-            //        same = false;
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0; i < innerList.Count; i++)
-            //        {
-            //            if (innerList[i].Item1 != ChooseInteractMenu.data[i].Item1
-            //                || innerList[i].Item2 != ChooseInteractMenu.data[i].Item2
-            //                 || innerList[i].Item3 != ChooseInteractMenu.data[i].Item3)
-            //            {
-            //                same = false;
-            //                break;
-            //            }
-            //        }
-            //    }
-
-            //    if (!same)
-            //    {
-            //        ChooseInteractMenu.SetData(innerList);
-            //    }
-            //}
+            if (!same)
+            {
+                ChooseInteractMenu.SetData(innerList);
+            }
         }
 
         /// <summary>
@@ -206,7 +217,7 @@ namespace My.UI
                 UpdateFocusInteractableView();
             }
             // 如果列表空了，彻底关闭UI
-            else if (currFocusInteractable != null && ActiveInteractableList.Count == 0)
+            else if (ActiveInteractableList.Count == 0)
             {
                 currFocusInteractable = null;
                 UpdateFocusInteractableView();
@@ -239,14 +250,40 @@ namespace My.UI
 
                 var selections = currFocusInteractable.GetInteractSelections();
 
-                var innerList = new List<(long, string, bool)>();
+                var innerList = new List<ChooseItem>();
                 foreach (var one in selections)
                 {
-                    innerList.Add(new(one.SelectId, one.SelectContent, one.Selectable));
+                    innerList.Add(new ChooseItem()
+                        {
+                            SelectId = one.SelectId,
+                            Content = one.SelectContent,
+                            Selectable = one.Selectable
+                        }
+                    );
                 }
                 ChooseInteractMenu.SetData(innerList);
 
                 ObjFloatingNameText.text = currFocusInteractable.ShowName;
+
+                // 有可切换项时 切换
+                if(ActiveInteractableList.Count > 1)
+                {
+                    ObjSwitchHint.gameObject.SetActive(true);
+                }
+                else
+                {
+                    ObjSwitchHint.gameObject.SetActive(false);
+                }
+
+                var nameOffset = currFocusInteractable.GetHintOffsetInfos();
+                if(nameOffset < 0)
+                {
+                    ObjFloatingNameBox.transform.localPosition = new Vector3(0, 40.0f, 0);
+                }
+                else
+                {
+                    ObjFloatingNameBox.transform.localPosition = new Vector3(0, nameOffset, 0);
+                }
             }
         }
 
@@ -261,22 +298,22 @@ namespace My.UI
             this.ActiveInteractableList.Clear();
             if(interactables.Count > 0)
             {
-                //var firstPoint = interactables[0];
-                //this.ActiveInteractableList.Add(firstPoint);
+                var firstPoint = interactables[0];
+                this.ActiveInteractableList.Add(firstPoint);
 
 
-                //for (int i= 1; i < interactables.Count; i++)
-                //{
-                //    if ((interactables[i].pos - firstPoint.pos).sqrMagnitude < 0.3f * 0.3f)
-                //    {
-                //        this.ActiveInteractableList.AddRange(interactables);
-                //    }
-                //}
-
-                foreach (var oneInt in interactables) 
+                for (int i = 1; i < interactables.Count; i++)
                 {
-                    this.ActiveInteractableList.Add(oneInt);
+                    if ((interactables[i].pos - firstPoint.pos).sqrMagnitude < 0.3f * 0.3f)
+                    {
+                        this.ActiveInteractableList.AddRange(interactables);
+                    }
                 }
+
+                //foreach (var oneInt in interactables) 
+                //{
+                //    this.ActiveInteractableList.Add(oneInt);
+                //}
             }
 
             currFocusInteractable = null;
@@ -304,14 +341,26 @@ namespace My.UI
 
             if(block)
             {
-                ChooseInteractMenu.SetBlockInteract(true);
+                ObjDetailHintCG.alpha = 0.6f;
+
+                ObjHintIconEnable.SetActive(false);
+                ObjHintIconForbid.SetActive(true);
+                //ChooseInteractMenu.SetBlockInteract(true);
             }
             else
             {
-                ChooseInteractMenu.SetBlockInteract(false);
+                ObjDetailHintCG.alpha = 1f;
+
+                ObjHintIconEnable.SetActive(true);
+                ObjHintIconForbid.SetActive(false);
+                //ChooseInteractMenu.SetBlockInteract(false);
             }
         }
 
+        /// <summary>
+        /// 确认
+        /// </summary>
+        /// <returns></returns>
         public bool OnConfirm()
         {
             if(WithHigherInteract)
@@ -325,8 +374,10 @@ namespace My.UI
             }
 
             int idx = ChooseInteractMenu.CurrentIndex;
-            int content = (int)ChooseInteractMenu.data[idx].Item1;
-            currFocusInteractable.TriggerInteract(content);
+            ChooseInteractMenu.ItemOnClick(idx);
+
+            int selectId = (int)ChooseInteractMenu.data[idx].SelectId;
+            currFocusInteractable.TriggerInteract(selectId);
 
             return true;
         }
