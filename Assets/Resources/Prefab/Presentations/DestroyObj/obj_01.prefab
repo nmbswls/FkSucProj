@@ -259,8 +259,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 0}
-  icon: {fileID: 5403844535667785093}
   highlightFx: {fileID: 0}
+  MainView:
+  - {fileID: 5403844535667785093}
+  ShadowView: {fileID: 2089461419393550378}
   MainFlasher: {fileID: 7409131252583100693}
 --- !u!61 &1575818182025682829
 BoxCollider2D:

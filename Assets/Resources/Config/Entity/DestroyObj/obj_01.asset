@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CfgId: obj_01
   IsHitCountMode: 1
-  HitCount: 3
-  DropBundleId: obj
+  HitCount: 1
+  DropBundleId: 200
   IsPrecious: 0
   HasOwner: 0

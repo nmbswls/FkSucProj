@@ -15,6 +15,6 @@ MonoBehaviour:
   CfgId: good_obj_01
   IsHitCountMode: 1
   HitCount: 3
-  DropBundleId: good_obj
+  DropBundleId: 201
   IsPrecious: 1
   HasOwner: 1

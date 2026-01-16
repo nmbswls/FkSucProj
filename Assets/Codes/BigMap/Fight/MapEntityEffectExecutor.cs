@@ -300,7 +300,7 @@ namespace My.Map.Entity
                 var targetUnit = ctx.Env.GetLogicEntity(ctx.TargetId) as BaseUnitLogicEntity;
                 if (targetUnit == null)
                 {
-                    Debug.LogError("AbilityFightExecutor4KnockBack target not found.");
+                    Debug.LogWarning("AbilityFightExecutor4KnockBack target not found.");
                     return;
                 }
 

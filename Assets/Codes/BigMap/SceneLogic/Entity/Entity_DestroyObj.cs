@@ -21,6 +21,7 @@ namespace My.Map.Entity
         public override EEntityType Type => EEntityType.DestroyObj;
 
         public event Action<long> EventOnHit;
+        public event Action<long> EventOnBrack;
 
         public override void Initialize()
         {
@@ -94,6 +95,8 @@ namespace My.Map.Entity
                     Pos = Pos,
                 });
             }
+
+            EventOnBrack?.Invoke(this.Id);
         }
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
@@ -116,7 +119,15 @@ namespace My.Map.Entity
 
         public void CreateDrop()
         {
-
+            int dropId = cacheConfig.DropBundleId;
+            var dropItems = DropUtils.GetBundleDropItems(dropId);
+            if (dropItems != null && dropItems.Count > 0)
+            {
+                foreach(var dropOne in dropItems)
+                {
+                    LogicManager.globalDropCollection.CreateDrop(dropOne.Item1, dropOne.Item2, this.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, false, this.Pos);
+                }
+            }
         }
     }
 }

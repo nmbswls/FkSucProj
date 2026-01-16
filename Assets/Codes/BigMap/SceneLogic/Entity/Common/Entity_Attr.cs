@@ -455,7 +455,7 @@ namespace My.Map
         {
             if (!resources.TryGetValue(resourceId, out var r)) 
             {
-                Debug.LogError("ApplyResourceChange not find " + resourceId);
+                Debug.LogWarning("ApplyResourceChange not find " + resourceId);
                 return; 
             }
 

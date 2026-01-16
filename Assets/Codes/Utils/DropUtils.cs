@@ -56,9 +56,14 @@ namespace My
                 if (rand < leftWeight)
                 {
                     totalTimes += 1;
-                    continue;
                 }
 
+                if (totalTimes <= 0) continue;
+                if(totalTimes > 100)
+                {
+                    Debug.LogError("create drop too many items raw times " + totalTimes);
+                    totalTimes = 100;
+                }
                 groupDropItemMap.TryGetValue(groupId, out var groupItems);
                 if (groupItems == null)
                 {
@@ -73,7 +78,7 @@ namespace My
                     continue;
                 }
 
-                for(int c = 0; c< totalWeight; c++)
+                for(int c = 0; c< totalTimes; c++)
                 {
                     int randVal = UnityEngine.Random.Range(0, totalWeight);
 

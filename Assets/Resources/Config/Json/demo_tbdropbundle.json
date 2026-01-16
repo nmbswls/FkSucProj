@@ -28,5 +28,25 @@
     "drop_group_weights": [
       10000
     ]
+  },
+  {
+    "id": 200,
+    "name": "破坏物（灰箱子）",
+    "drop_group_ids": [
+      2000
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 201,
+    "name": "破坏物（金箱子）",
+    "drop_group_ids": [
+      2001
+    ],
+    "drop_group_weights": [
+      10000
+    ]
   }
 ]

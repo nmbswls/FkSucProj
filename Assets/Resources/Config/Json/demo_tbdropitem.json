@@ -50,5 +50,57 @@
       2,
       5
     ]
+  },
+  {
+    "id": 200001,
+    "name": "破坏灰箱",
+    "group_id": 2000,
+    "weight_in_group": 10,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      50,
+      65
+    ]
+  },
+  {
+    "id": 200002,
+    "name": "破坏灰箱",
+    "group_id": 2000,
+    "weight_in_group": 90,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      10,
+      15
+    ]
+  },
+  {
+    "id": 200011,
+    "name": "破坏灰箱",
+    "group_id": 2001,
+    "weight_in_group": 90,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      50,
+      65
+    ]
+  },
+  {
+    "id": 200012,
+    "name": "破坏灰箱",
+    "group_id": 2001,
+    "weight_in_group": 10,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      10,
+      15
+    ]
   }
 ]
