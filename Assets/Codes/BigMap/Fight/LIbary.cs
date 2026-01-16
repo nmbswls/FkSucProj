@@ -241,6 +241,17 @@ namespace My.Map.Entity
                     cfg.TargetType = ETargetType.LockTarget;
                     _skillDict[cfg.SkillId] = cfg;
                 }
+
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_dark_dance";
+                    cfg.MainAbilityId = "player_dark_dance";
+                    cfg.CoolDown = 20.0f;
+
+                    cfg.TargetType = ETargetType.Self;
+                    _skillDict[cfg.SkillId] = cfg;
+                }
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -414,7 +425,12 @@ namespace My.Map.Entity
                     var ab = CreateNpcCloseKaiyou();
                     _abilityDict[ab.Id] = ab;
                 }
-                
+
+
+                {
+                    var ab = CreatePlayerDarkDance();
+                    _abilityDict[ab.Id] = ab;
+                }
             }
 
             _abilityDict.TryGetValue(abilityName, out var abConfig);
@@ -1772,6 +1788,12 @@ namespace My.Map.Entity
                         AddValue = 1000,
                         IsEnmity = true,
                     },
+                    new MapAbilityEffectCostResourceCfg()
+                    {
+                        ResourceId = AttrIdConsts.HP,
+                        CostValue = 1,
+                        IsEnmity = true,
+                    },
                     new MapFightEffectKnockBackCfg()
                     {
                         KnockBackForce = 0.6f,
@@ -2587,6 +2609,42 @@ namespace My.Map.Entity
                 addEffect1.AddValue = 3000;
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addEffect1, Kind = PhaseEventKind.OnEnter });
             }
+            return spec;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private static MapAbilitySpecConfig CreatePlayerDarkDance()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_dark_dance";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Execute",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
+
+            {
+                var buffEffect = new MapAbilityEffectAddBuffCfg();
+                buffEffect.TargetType = 1;
+                buffEffect.BuffId = "dark_dance";
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = buffEffect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
             return spec;
         }
     }

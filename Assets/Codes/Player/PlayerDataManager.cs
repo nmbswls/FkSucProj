@@ -45,6 +45,8 @@ namespace My.Player
             "default_push",
             "player_normal_defend",
             "crazy_fire",
+
+            "player_dark_dance"
         };
 
         public PlayerDataManager(GameLogicManager logicManager)

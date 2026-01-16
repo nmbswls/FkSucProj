@@ -15,14 +15,20 @@ namespace My.Map.Scene
 
         public void OnTriggerEnter2D(Collider2D other)
         {
-            var unitComp = other.GetComponentInParent<SceneUnitPresenter>();
-            if (unitComp == null) return;
-            if(unitComp.GetLogicEntity() == null)
+            var scenePresenter = other.GetComponentInParent<IScenePresentation>();
+            if (scenePresenter == null) return;
+            if(scenePresenter.GetLogicEntity() == null)
             {
                 Debug.LogError("MapUnitWeaponOne OnTriggerEnter2D triiger no binding logic");
                 return;
             }
-            WeaponCtrl.OnWeaponTriggerHit(HitId, unitComp.GetLogicEntity().Id);
+
+            if(scenePresenter is not SceneUnitPresenter
+                && scenePresenter is not SceneDestroyObjPresenter)
+            {
+                return;
+            }
+            WeaponCtrl.OnWeaponTriggerHit(HitId, scenePresenter.GetLogicEntity().Id);
         }
 
         private void Update()
@@ -31,6 +37,11 @@ namespace My.Map.Scene
             {
                 ClearWeapon(HitId);
             }
+        }
+
+        public void OnWeaponDirUpdate()
+        {
+
         }
 
         public void ShowWeapon(long hitId, float duration)

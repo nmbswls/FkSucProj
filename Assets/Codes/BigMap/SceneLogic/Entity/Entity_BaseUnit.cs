@@ -88,6 +88,8 @@ namespace My.Map
         public event Action<long> EventOnDie;
         public event Action<long> EventOnAttachStatusChanged;
         public event Action<long> EventOnGhostChange;
+        public event Action<long> EventOnInvisibleChange;
+        
 
         public UnitVisibilityComp VisibilityComp;
 
@@ -97,7 +99,7 @@ namespace My.Map
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
             this.MoveBehaveInfo = new();
 
-            ForceSetFace(bindingRecord.FaceDir);
+            ForceSetFaceTarget(bindingRecord.FaceDir, true);
         }
 
         public override void Initialize()
@@ -173,6 +175,7 @@ namespace My.Map
 
             entityMotorComp?.Tick(dt);
 
+            UpdateFaceTargetAngle();
             UpdateFaceDir();
         }
         public override void OnEnterAOI()
@@ -196,6 +199,7 @@ namespace My.Map
             {
                 Ctx = new()
                 {
+                    
                     HappenPos = Pos,
                     SourceEntity = LogicManager.playerLogicEntity,
                 },
@@ -226,12 +230,20 @@ namespace My.Map
         }
         public float GetCurrSpeed()
         {
-            var jiansu = GetAttr(AttrIdConsts.JianSu);
-            if(jiansu > 10000)
+            var basicMove = GetAttr(AttrIdConsts.Basic_MoveSpeed);
+            long rate = 10000 + basicMove;
+
+            if (rate > 50000)
             {
-                jiansu = 9000;
+                rate = 50000;
             }
-            return GetBaseMoveSpeed() * (10000 - jiansu) * 0.0001f;
+
+            if(rate < 5000)
+            {
+                rate = 5000;
+            }
+
+            return GetBaseMoveSpeed() * (rate) * 0.0001f;
         }
 
         //public class DashIntent
@@ -717,7 +729,6 @@ namespace My.Map
                             }
 
                             UnitOnHit(intent.delta, intent.srcEntityId);
-
                         }
 
                         if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
@@ -755,15 +766,18 @@ namespace My.Map
 
             EventOnHit?.Invoke(this.Id);
 
-            // ÉËº¦Âß¼­
-            if(srcEntityId != null)
+            if (Math.Abs(delta) > 1)
             {
-                var srcNpc = LogicManager.GetLogicEntity(srcEntityId.Value) as NpcUnitLogicEntity;
-                if(srcNpc != null)
+                // ÉËº¦Âß¼­
+                if (srcEntityId != null)
                 {
-                    srcNpc.combatStateComp.OnGiveDamage(this.Id, Math.Abs(delta));
+                    var srcNpc = LogicManager.GetLogicEntity(srcEntityId.Value) as NpcUnitLogicEntity;
+                    if (srcNpc != null)
+                    {
+                        srcNpc.combatStateComp.OnGiveDamage(this.Id, Math.Abs(delta));
+                    }
                 }
-            }    
+            }
         }
 
         public class UnitBagContainer : IItemContainer
@@ -771,12 +785,12 @@ namespace My.Map
             public GameLogicManager logicManager;
             private bool Inialized = false;
             private List<ItemStack> containItems = new List<ItemStack>();
-            public string DropId;
+            public int DropId;
             public int MaxSlots;
 
             public Dictionary<int, float> ItemSearchProgress = new();
 
-            public UnitBagContainer(GameLogicManager logicManager, string dropId, int maxSlots)
+            public UnitBagContainer(GameLogicManager logicManager, int dropId, int maxSlots)
             {
                 this.logicManager = logicManager;
                 this.DropId = dropId;
@@ -797,7 +811,7 @@ namespace My.Map
                             containItems.Add(null);
                         }
 
-                        var items = logicManager.DropTable.GetBundleDropItems(DropId);
+                        var items = DropUtils.GetBundleDropItems(DropId);
                         for (int i = 0; i < items.Count; i++)
                         {
                             containItems[i] = FakeItemDatabase.CreateItemStack(items[i].Item1, items[i].Item2);
@@ -972,6 +986,11 @@ namespace My.Map
                 case AttrIdConsts.Ghost:
                     {
                         EventOnGhostChange?.Invoke(this.Id);
+                    }
+                    break;
+                case AttrIdConsts.Invisible:
+                    {
+                        EventOnInvisibleChange?.Invoke(this.Id);
                     }
                     break;
             }

@@ -840,7 +840,7 @@ namespace My.Map.Entity.AI
                 var firstTran = trans[0];
                 var node = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
 
-                _brain.NpcEntity.ForceSetFace(_brain.NpcEntity.DesiredFaceDir);
+                _brain.NpcEntity.ForceSetFaceTarget(_brain.NpcEntity.DesiredFaceDir, false);
 
                 // 一定无目标参数
                 if (_brain.NpcEntity.ablilityManager.UseSkill(firstTran.triggerInput.SkillId))
@@ -1301,6 +1301,96 @@ namespace My.Map.Entity.AI
             //    _brain.blackboard.CanLeaveAttract = true;
             //}
 
+        }
+
+        public override void OnExitState()
+        {
+            base.OnExitState();
+        }
+    }
+
+
+    [Serializable]
+    public class AIActionCfgPeacefulEscape : AIActionCfg
+    {
+        public override bool IsDecorate => true;
+    }
+
+    /// <summary>
+    /// 用于逃亡状态
+    /// </summary>
+    public class AIActionPeacefulEscape : AIAction
+    {
+        public override string Name => "PeacefulEscape";
+
+        private float _startEscapeTimer = 0;
+        private float _lastCheckPlayerCloseTimer = 0;
+
+        private Vector2? NextEscapePoint;
+
+        public AIActionCfgPeacefulEscape realCfg { get { return (AIActionCfgPeacefulEscape)cfg; } }
+        public AIActionPeacefulEscape(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
+
+        public override void OnEnterState()
+        {
+            base.OnEnterState();
+        }
+
+        public override float RateScore()
+        {
+            // 2级以上吸引时 才会主动移动
+            return 1;
+        }
+
+
+        public override void Start()
+        {
+            base.Start();
+
+            _startEscapeTimer = LogicTime.time;
+            _brain.blackboard.LockPeacefulEscape = true;
+        }
+
+        /// <summary>
+        /// On PerformAction we do nothing
+        /// </summary>
+        public override void Tick()
+        {
+            RefreshPeacefulEscape();
+
+            if(NextEscapePoint != null)
+            {
+                _brain.NpcEntity.entityMotorComp.MoveTo(NextEscapePoint.Value);
+            }
+
+            if(LogicTime.time - _startEscapeTimer > 3.0f)
+            {
+                _brain.blackboard.LockPeacefulEscape = false; 
+            }
+        }
+
+        private void RefreshPeacefulEscape()
+        {
+            var diff = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
+            // 太近了 
+            if(diff.magnitude > 2.0f)
+            {
+                return;
+            }
+
+            var randomOffset = UnityEngine.Random.insideUnitCircle * 3.0f;
+            var nextPos = _brain.NpcEntity.Pos + randomOffset;
+
+            Vector3? nextValidPos = _brain.NpcEntity.LogicManager.navProvider.GetClosestValidPos(nextPos);
+            if(nextValidPos != null)
+            {
+                NextEscapePoint = new Vector2(nextValidPos.Value.x, nextValidPos.Value.y);
+                return;
+            }
+
+            NextEscapePoint = _brain.NpcEntity.Pos;
         }
 
         public override void OnExitState()

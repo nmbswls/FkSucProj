@@ -15,7 +15,7 @@ namespace My.Map
 
         void Awake()
         {
-            if (!sr) sr = GetComponent<SpriteRenderer>();
+            if (!sr) sr = GetComponentInChildren<SpriteRenderer>();
             // 每实例克隆材质，避免全局修改
             mat = Instantiate(sr.sharedMaterial);
             sr.material = mat;

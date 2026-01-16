@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "城市杂物箱",
+    "drop_group_ids": [
+      100
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 2,
+    "name": "城市杂物箱（大）",
+    "drop_group_ids": [
+      100
+    ],
+    "drop_group_weights": [
+      30000
+    ]
+  },
+  {
+    "id": 100,
+    "name": "挖掘点（小）",
+    "drop_group_ids": [
+      200
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  }
+]

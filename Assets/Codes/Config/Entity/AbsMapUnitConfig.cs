@@ -110,6 +110,6 @@ namespace Config.Unit
 
         public List<string> SkillList = new();
 
-        public string DropId;
+        public int DefaultDropId;
     }
 }

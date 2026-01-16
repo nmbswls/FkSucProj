@@ -485,7 +485,6 @@ namespace My.Input
 
             if (!LogicTime.paused && !player.PlayerEntity.CheckHasState(AttrIdConsts.LockFace))
             {
-
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
 
@@ -493,7 +492,7 @@ namespace My.Input
                 {
                     return;
                 }
-                player.PlayerEntity.ForceSetFace(castDir);
+                player.PlayerEntity.ForceSetFaceTarget(castDir, false);
             }
         }
 

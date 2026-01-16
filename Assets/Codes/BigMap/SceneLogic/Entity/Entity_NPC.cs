@@ -10,6 +10,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 using My.Map.Entity.AI;
 using System;
 using static My.Map.Fight.FightStruct;
+using static UnityEditor.PlayerSettings;
 
 
 namespace My.Map
@@ -189,7 +190,7 @@ namespace My.Map
             base.OnUnitDie(reason, lastIntent);
 
             // 初始化掉落包
-            dropBagContainer = new(this.LogicManager, unitCfg.DropId, 12);
+            dropBagContainer = new(this.LogicManager, unitCfg.DefaultDropId, 12);
 
 
             if (lastIntent != null && lastIntent.srcEntityId != null)
@@ -326,6 +327,35 @@ namespace My.Map
             if (EnmityComp != null)
             {
                 EnmityComp.OnMapLogicEvent(evt);
+            }
+
+            switch(evt)
+            {
+                case MLEObjWithOwnerDestroyedEvent objDestroyedEv:
+                    {
+                        var diff = objDestroyedEv.Pos - this.Pos;
+                        if(diff.magnitude > 5.0f)
+                        {
+                            break;
+                        }
+                        var angle = Vector2.Angle(diff, FaceDir);
+                        if (angle > 90 * 0.5f)
+                        {
+                            break;
+                        }
+
+                        Debug.Log("npc on event interest");
+                        LogicManager.viewer.ShowFakeFxEffect("目击", Pos);
+
+                        if (AIBrain != null)
+                        {
+                            AIBrain.blackboard.AttractTrigger = true;
+                            AIBrain.blackboard.AttractPos = Vector2.zero;
+                            AIBrain.blackboard.AttractSrcId = LogicManager.playerLogicEntity?.Id ?? 0;
+                            AIBrain.blackboard.AttractLevel = 1;
+                        }
+                    }
+                    break;
             }
         }
 

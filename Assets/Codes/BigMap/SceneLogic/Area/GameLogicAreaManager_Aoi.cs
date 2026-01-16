@@ -51,19 +51,34 @@ namespace My.Map.Logic
         // 简易范围查询（方形近似）
         public void Query(Vector2 center, float radius, List<TKey> result)
         {
-            if (result == null)
-            {
-                ;
-            }
+            // 如果 result 为 null 或不安全，最好做防御性检查
+            if (result == null) return;
             result.Clear();
-            int r = Mathf.CeilToInt(radius / cellSize);
-            var c0 = PosToCell(center, cellSize);
-            for (int y = c0.y - r; y <= c0.y + r; y++)
-                for (int x = c0.x - r; x <= c0.x + r; x++)
+
+            // 1. 计算查询范围的 AABB (Min Max)
+            // 这样做能精准覆盖所有可能涉及的格子，无论 center 在格子的哪个位置
+            Vector2 minPos = center - new Vector2(radius, radius);
+            Vector2 maxPos = center + new Vector2(radius, radius);
+
+            // 2. 将 AABB 转换为格子坐标范围
+            var minCell = PosToCell(minPos, cellSize);
+            var maxCell = PosToCell(maxPos, cellSize);
+
+            // 3. 遍历这个矩形范围内的所有格子
+            for (int y = minCell.y; y <= maxCell.y; y++)
+            {
+                for (int x = minCell.x; x <= maxCell.x; x++)
                 {
-                    if (!cellToIds.TryGetValue((x, y), out var lst)) continue;
-                    foreach (var id in lst) result.Add(id);
+                    if (cellToIds.TryGetValue((x, y), out var lst))
+                    {
+                        
+                        foreach (var id in lst)
+                        {
+                            result.Add(id);
+                        }
+                    }
                 }
+            }
         }
 
         public void Clear()

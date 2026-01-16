@@ -18,6 +18,6 @@ namespace Config.Unit
         public int MaxCount = 1;
         public float GatherTime = 1.5f;
 
-        public string DropBundleId;
+        public int DropBundleId;
     }
 }

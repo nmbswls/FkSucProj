@@ -465,7 +465,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
                 if(UnityEngine.Random.Range(0, 10000) < 2000)
                 {
                     Debug.Log("OnSmallGameFinish deep zha create dig.");
-                    gameLogicManager.AreaManager.CreateOneDig(entity.Pos, "dig_01", "dig_treasure");
+                    gameLogicManager.AreaManager.CreateOneDig(entity.Pos, "dig_01", 100);
                 }
             }
         }
@@ -766,5 +766,13 @@ public class UnityNavProvider : INavProvider
         return hitNav;
     }
 
-
+    public Vector3? GetClosestValidPos(Vector3 pos)
+    {
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(pos, out hit, 2.0f, NavMesh.AllAreas))
+        {
+            return pos;
+        }
+        return null;
+    }
 }

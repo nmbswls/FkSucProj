@@ -3,6 +3,7 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using My.Map;
+using My.Map.Entity;
 
 namespace Map.Logic.Events
 {
@@ -29,6 +30,16 @@ namespace Map.Logic.Events
         public EMapLogicEventType Type { get { return EMapLogicEventType.OnDie; } }
 
         public long EntityId;
+        public Vector2 Pos;
+    }
+
+    public partial struct MLEObjWithOwnerDestroyedEvent : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.ObjWithOwnerDestroyed; } }
+
+        public long EntityId;
+        public string ObjCfgId;
         public Vector2 Pos;
     }
 

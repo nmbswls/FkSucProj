@@ -237,7 +237,12 @@ namespace My.Map.Logic
             if(ev.Ctx.IsMapLocal)
             {
                 var pos = ev.Ctx.HappenPos;
-                UnitGridIndex.Query(pos, GridCellSize, queryBufInt);
+                float range = GridCellSize;
+                if(ev.Ctx.InterestRange > 0)
+                {
+                    range = ev.Ctx.InterestRange; 
+                }
+                UnitGridIndex.Query(pos, range, queryBufInt);
 
                 if (ev.Ctx.TargetId != 0)
                 {

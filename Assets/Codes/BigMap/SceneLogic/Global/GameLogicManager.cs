@@ -101,7 +101,6 @@ namespace My
         public HomeDataManager homeDataManager;
         public ShopDataManager shopDataManager;
 
-        public GlobalDropTable DropTable;
 
         public MapControlEventManager controlEventManager;
         public FactionRelationManager factionRelationManager;
@@ -148,7 +147,7 @@ namespace My
             controlEventManager = new(this);
             controlEventManager.Initialize();
 
-            DropTable = Resources.Load<GlobalDropTable>("Config/DropTable");
+            DropUtils.InitializeDropGroups();
 
             SwitchAreaIntent = new SwitchAreaIntent()
             {
@@ -680,7 +679,7 @@ namespace My
                     break;
                 case FakeItemConf.EItemUseType.GiveDrop:
                     {
-                        string dropId = useCfg.Param5;
+                        int dropId = (int)useCfg.Param1;
                         if(cnt > 100)
                         {
                             Debug.Log($"HandleUseItem too much bundle {cnt}");
@@ -690,7 +689,7 @@ namespace My
                         int it = 0;
                         while(it++ < cnt)
                         {
-                            var items = DropTable.GetBundleDropItems(dropId);
+                            var items = DropUtils.GetBundleDropItems(dropId);
                             for (int i = 0; i < items.Count; i++)
                             {
                                 playerDataManager.TryGiveItem(items[i].Item1, items[i].Item2, 0);

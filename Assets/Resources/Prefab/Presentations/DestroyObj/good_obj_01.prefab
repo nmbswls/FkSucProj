@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: e2c573f07f6d7471d9cad8cb2a5fece0, type: 3}
-  m_Color: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 1}
+  m_Color: {r: 1, g: 0.84313726, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -220,10 +220,10 @@ GameObject:
   - component: {fileID: 8836453253430724474}
   - component: {fileID: 3440551889488513337}
   - component: {fileID: 1575818182025682829}
-  - component: {fileID: 4994017547108479065}
-  - component: {fileID: 5886429267181355788}
+  - component: {fileID: 7324963053366309620}
+  - component: {fileID: 3751931292028168171}
   m_Layer: 15
-  m_Name: obj_01
+  m_Name: good_obj_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -259,7 +259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 0}
-  icon: {fileID: 5403844535667785093}
+  icon: {fileID: 0}
   highlightFx: {fileID: 0}
   MainFlasher: {fileID: 7409131252583100693}
 --- !u!61 &1575818182025682829
@@ -307,19 +307,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.4, y: 0.2}
   m_EdgeRadius: 0
---- !u!210 &4994017547108479065
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2910257100462989336}
-  m_Enabled: 1
-  m_SortingLayerID: -1764243111
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
---- !u!114 &5886429267181355788
+--- !u!114 &7324963053366309620
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -333,6 +321,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseOrder: 0
   pivot: {fileID: 0}
+--- !u!210 &3751931292028168171
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2910257100462989336}
+  m_Enabled: 1
+  m_SortingLayerID: -1764243111
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!1 &5996381432160253684
 GameObject:
   m_ObjectHideFlags: 0

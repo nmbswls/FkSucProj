@@ -240,6 +240,10 @@ namespace My.UI
                 {
                     skillId = "player_enter_queen";
                 }
+                else if(keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
+                {
+                    skillId = "player_dark_dance";
+                }
             }
 
             return skillId;

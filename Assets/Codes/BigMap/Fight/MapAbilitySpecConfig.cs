@@ -110,8 +110,15 @@ namespace My.Map.Entity
     public class MapAbilitySpecConfig : ScriptableObject
     {
         public string Id;
+
+        /// <summary>
+        /// 主tag
+        /// </summary>
         public AbilityTypeTag TypeTag = AbilityTypeTag.Combat;
 
+        /// <summary>
+        /// 上前垫步
+        /// </summary>
         public float MaxStepDistance = 0.0f;
 
         // 阶段定义

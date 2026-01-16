@@ -39,6 +39,7 @@ namespace My.Map
                 case AttrIdConsts.ImmuneKnock:
                 case AttrIdConsts.ImmumeKaiYou:
                 case AttrIdConsts.ImmuneEvilShock:
+                case AttrIdConsts.Invisible:
                     return EAttrType.State;
 
                 case AttrIdConsts.Attack:
@@ -48,9 +49,8 @@ namespace My.Map
                 case AttrIdConsts.Basic_HungerCost:
                 case AttrIdConsts.Basic_JianShang:
                 case AttrIdConsts.Special_JianShang:
-                case AttrIdConsts.JianSu:
                 case AttrIdConsts.Basic_KnockResistent:
-
+                case AttrIdConsts.Basic_MoveSpeed:
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
@@ -427,7 +427,7 @@ namespace My.Map
                 final = (baseComputed + e.addSum);
             }
 
-            Debug.Log($"entity {Owner.Id} RecomputeNumeric {attrId} update {final}");
+            //Debug.Log($"entity {Owner.Id} RecomputeNumeric {attrId} update {final}");
 
 
             if (Math.Abs(final - e.finalValue) > epsilon)

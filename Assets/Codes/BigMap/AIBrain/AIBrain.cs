@@ -50,6 +50,8 @@ namespace My.Map.Entity.AI
 
         public Vector2 EnterAttractPos; // 
         public int CurrentAttractLevel; // 当前吸引等级
+
+        public bool LockPeacefulEscape = false;
     }
 
 

@@ -16,11 +16,15 @@ public partial class Tables
 {
     public demo.TbReward TbReward {get; }
     public demo.TbMapAreaInfo TbMapAreaInfo {get; }
+    public demo.TbDropBundle TbDropBundle {get; }
+    public demo.TbDropItem TbDropItem {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
         TbReward = new demo.TbReward(loader("demo_tbreward"));
         TbMapAreaInfo = new demo.TbMapAreaInfo(loader("demo_tbmapareainfo"));
+        TbDropBundle = new demo.TbDropBundle(loader("demo_tbdropbundle"));
+        TbDropItem = new demo.TbDropItem(loader("demo_tbdropitem"));
         ResolveRef();
     }
     
@@ -28,6 +32,8 @@ public partial class Tables
     {
         TbReward.ResolveRef(this);
         TbMapAreaInfo.ResolveRef(this);
+        TbDropBundle.ResolveRef(this);
+        TbDropItem.ResolveRef(this);
     }
 }
 

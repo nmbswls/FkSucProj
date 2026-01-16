@@ -77,7 +77,7 @@ namespace My.Map.Entity
 
             var dropId = cacheConfig.DropBundleId;
             
-            var items = LogicManager.DropTable.GetBundleDropItems(dropId);
+            var items = DropUtils.GetBundleDropItems(dropId);
 
             foreach (var item in items)
             {

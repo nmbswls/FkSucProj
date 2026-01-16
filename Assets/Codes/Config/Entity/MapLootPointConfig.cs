@@ -52,6 +52,6 @@ namespace Config.Map
         /// <summary>
         /// ∂‘”¶drop id
         /// </summary>
-        public string DefaultDropId;
+        public int DefaultDropId;
     }
 }

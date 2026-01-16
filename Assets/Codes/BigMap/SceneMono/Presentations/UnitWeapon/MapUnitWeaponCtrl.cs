@@ -71,6 +71,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         {
             return;
         }
+        
         Debug.Log("OnWeaponTriggerHit hit with id " + entityId);
         UnitPresenter.OnWeaponHitCallback(hitId, entityId);
     }

@@ -103,18 +103,28 @@ namespace My.Map
         protected Vector2 _faceDir = Vector2.right;
         public Vector2 FaceDir { get { return _faceDir; } }
 
-        public void ForceSetFace(Vector2 faceDir)
+        /// <summary>
+        /// 强制更改面向
+        /// </summary>
+        /// <param name="faceDir"></param>
+        /// <param name="immediately"></param>
+        public void ForceSetFaceTarget(Vector2 faceDir, bool immediately)
         {
-            _currentAngle = AngleFromDir(faceDir);
-            _targetAngle = _currentAngle;
+            var angle  = AngleFromDir(faceDir);
+            _targetAngle = angle;
 
-            _faceDir = faceDir;
+            if(immediately)
+            {
+                _currentAngle = angle;
+                _faceDir = faceDir;
+            }
         }
+
         /// <summary>
         /// 更新面向状态
         /// 由外部逻辑驱动look intent的维护，该函数为底层调整面向函数
         /// </summary>
-        protected void UpdateFaceDir()
+        protected void UpdateFaceTargetAngle()
         {
             // 检查状态
             if (attributeStore.CheckHasState(AttrIdConsts.LockFace))
@@ -162,6 +172,14 @@ namespace My.Map
 
             _targetAngle = AngleFromDir(lookDir.Value);
 
+            
+        }
+
+        /// <summary>
+        /// 更新面向
+        /// </summary>
+        protected void UpdateFaceDir()
+        {
             // 死区：小角差直接保持，减少抖动
             float angleDelta = Mathf.DeltaAngle(_currentAngle, _targetAngle);
             if (Mathf.Abs(angleDelta) < deadzoneAngle)
@@ -180,6 +198,7 @@ namespace My.Map
 
             _faceDir = DirFromAngle(_currentAngle);
         }
+
 
         // 工具函数
         protected static float AngleFromDir(Vector2 dir)

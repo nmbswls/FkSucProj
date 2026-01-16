@@ -380,6 +380,7 @@ namespace My.Map.Scene
             InitWeaponInfo();
 
             OnEventGhostChange(this.Id);
+            OnEventInvisibleChange(this.Id);
         }
 
         protected override void RegisterEvents()
@@ -392,6 +393,7 @@ namespace My.Map.Scene
             UnitEntity.EventOnEndStealth += OnEventEndStealth;
             UnitEntity.EventOnAttachStatusChanged += OnEventConvertAttach;
             UnitEntity.EventOnGhostChange += OnEventGhostChange;
+            UnitEntity.EventOnInvisibleChange += OnEventInvisibleChange;
             UnitEntity.EventOnBuffRegister += OnEventBuffRegister;
             UnitEntity.EventOnBuffUnregister += OnEventBuffUnregister;
 
@@ -416,6 +418,7 @@ namespace My.Map.Scene
             UnitEntity.EventOnEndStealth -= OnEventEndStealth;
             UnitEntity.EventOnAttachStatusChanged -= OnEventConvertAttach;
             UnitEntity.EventOnGhostChange -= OnEventGhostChange;
+            UnitEntity.EventOnInvisibleChange -= OnEventInvisibleChange;
             UnitEntity.EventOnBuffRegister -= OnEventBuffRegister;
             UnitEntity.EventOnBuffUnregister -= OnEventBuffUnregister;
         }
@@ -454,10 +457,10 @@ namespace My.Map.Scene
 
         protected virtual void OnEventStartStealth(long entityId)
         {
-            if (mainCol != null)
-            {
-                mainCol.enabled = false;
-            }
+            //if (mainCol != null)
+            //{
+            //    mainCol.enabled = false;
+            //}
 
             var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
             if (pres != null)
@@ -469,10 +472,11 @@ namespace My.Map.Scene
 
         protected virtual void OnEventEndStealth(long entityId)
         {
-            if (mainCol != null)
-            {
-                mainCol.enabled = true;
-            }
+            //if (mainCol != null)
+            //{
+            //    mainCol.enabled = true;
+            //}
+
             var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
             if (pres != null)
             {
@@ -498,7 +502,10 @@ namespace My.Map.Scene
             if(!string.IsNullOrEmpty(buffInst.Def.EffectId))
             {
                 var effectCtx = MapSceneEffectManager.Instance.ShowSceneEffect(this.transform.position, -1, buffInst.Def.EffectId, UnitEntity.Id);
-                _bindingEffectsCtxId[buffInst.InstanceId] = effectCtx.UniqId;
+                if(effectCtx != null)
+                {
+                    _bindingEffectsCtxId[buffInst.InstanceId] = effectCtx.UniqId;
+                }
             }
             
         }
@@ -541,6 +548,26 @@ namespace My.Map.Scene
                 this.transform.position = this.transform.position + diff;
             }
         }
+
+        protected virtual void OnEventInvisibleChange(long entityId)
+        {
+            if (UnitEntity.CheckHasState(AttrIdConsts.Invisible))
+            {
+                if(UnitEntity.FactionId == EFactionId.Player)
+                {
+                    SetFadeAlpha(0.5f);
+                }
+                else
+                {
+                    SetFadeAlpha(0);
+                }
+            }
+            else
+            {
+                SetFadeAlpha(1);
+            }
+        }
+
         #endregion
 
         #region  ‹øÿ“∆∂Ø

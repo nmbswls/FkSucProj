@@ -26,6 +26,9 @@ namespace My.Map.Entity
 
         // 简单连通性/直线可达测试
         bool Linecast(Vector3 from, Vector3 to, out Vector3 hitPoint);
+
+
+        Vector3? GetClosestValidPos(Vector3 pos);
     }
 
     public struct NavPath

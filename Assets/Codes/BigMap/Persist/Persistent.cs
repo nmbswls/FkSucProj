@@ -46,7 +46,7 @@ namespace My.Map.Logic
     public class LogicEntityRecord4LootPoint : LogicEntityRecord
     {
         public bool ItemInitialized = false;
-        public string DynamicDropId;
+        public int DynamicDropId;
         public List<ItemStack> InnerItems = new();
     }
 

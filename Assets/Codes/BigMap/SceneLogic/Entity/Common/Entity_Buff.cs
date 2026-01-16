@@ -286,7 +286,7 @@ namespace My.Map.Entity
                 {
                     BuffId = "jian_su_self",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.JianSu, ModifierValue = 8000 } },
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -8000 } },
                     DefaultDuration = -1,
                 };
 
@@ -336,7 +336,7 @@ namespace My.Map.Entity
 
                     ModifierAttrs = new()
                     {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.JianSu, ModifierValue = 5000 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -5000 },
                     },
                 };
 
@@ -380,6 +380,7 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Ghost, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Invisible, ModifierValue = 1 },
                     },
                 };
 
@@ -394,7 +395,7 @@ namespace My.Map.Entity
                     ModifierAttrs = new()
                     {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_JianShang, ModifierValue = 5000 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.JianSu, ModifierValue = 3000 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -3000 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneKnock, ModifierValue = 1 },
                     },
 
@@ -518,7 +519,6 @@ namespace My.Map.Entity
                     ModifierAttrs = new()
                     {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
-                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
                     },
                     DefaultDuration = 0.5f,
 
@@ -531,7 +531,21 @@ namespace My.Map.Entity
                         }
                     },
                 };
+
+                _library["dark_dance"] = new BuffDefinition()
+                {
+                    BuffId = "dark_dance",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Invisible, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = 5000 },
+                    },
+                    EffectId = "dark_dance_aura",
+                    DefaultDuration = 5f,
+                };
             }
+
 
             _library.TryGetValue(buffId, out BuffDefinition def);
             return def;

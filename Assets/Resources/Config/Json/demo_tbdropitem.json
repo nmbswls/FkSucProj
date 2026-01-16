@@ -1,0 +1,54 @@
+[
+  {
+    "id": 10001,
+    "name": "城市杂物箱1",
+    "group_id": 100,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      100,
+      150
+    ]
+  },
+  {
+    "id": 10002,
+    "name": "城市杂物箱2",
+    "group_id": 100,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "wood_board"
+    ],
+    "item_count_range_list": [
+      2,
+      5
+    ]
+  },
+  {
+    "id": 20001,
+    "name": "城市杂物箱1",
+    "group_id": 200,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      100,
+      150
+    ]
+  },
+  {
+    "id": 20002,
+    "name": "城市杂物箱2",
+    "group_id": 200,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "wood_board"
+    ],
+    "item_count_range_list": [
+      2,
+      5
+    ]
+  }
+]

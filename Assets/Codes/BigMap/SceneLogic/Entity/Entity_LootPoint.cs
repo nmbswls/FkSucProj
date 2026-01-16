@@ -30,8 +30,8 @@ namespace My.Map
             var realRec = (LogicEntityRecord4LootPoint)bindingRecord;
             if(!realRec.ItemInitialized)
             {
-                var dropId = realRec.DynamicDropId;
-                if (string.IsNullOrEmpty(dropId))
+                int dropId = realRec.DynamicDropId;
+                if (dropId == 0)
                 {
                     dropId = cacheConfig.DefaultDropId;
                 }
@@ -66,7 +66,7 @@ namespace My.Map
                 this.MaxSlots = maxSlots;
             }
 
-            public void InitByDropId(string dropId)
+            public void InitByDropId(int dropId)
             {
                 if (LootInialized)
                 {
@@ -80,7 +80,7 @@ namespace My.Map
                     containItems.Add(null);
                 }
 
-                var items = logicManager.DropTable.GetBundleDropItems(dropId);
+                var items = DropUtils.GetBundleDropItems(dropId);
                 for (int i = 0; i < items.Count; i++)
                 {
                     containItems[i] = FakeItemDatabase.CreateItemStack(items[i].Item1, items[i].Item2);

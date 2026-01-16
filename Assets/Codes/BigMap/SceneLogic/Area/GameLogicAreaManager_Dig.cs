@@ -42,7 +42,7 @@ namespace My.Map.Logic
         /// <param name="pos"></param>
         /// <param name="digId"></param>
         /// <param name="digInfo"></param>
-        public void CreateOneDig(Vector2 pos, string digId, string dropId)
+        public void CreateOneDig(Vector2 pos, string digId, int dropId)
         {
             if(emptySlots.Count == 0)
             {

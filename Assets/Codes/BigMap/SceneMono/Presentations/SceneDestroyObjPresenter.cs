@@ -22,6 +22,28 @@ namespace My.Map.Scene
             base.Tick(dt);
         }
 
+        protected override void RegisterEvents()
+        {
+            base.RegisterEvents();
+            DestroyObjEntity.EventOnHit += OnEventDestroyObjHit;
+        }
+
+        protected override void UnregisterEvents()
+        {
+            base.UnregisterEvents();
+            DestroyObjEntity.EventOnHit += OnEventDestroyObjHit;
+        }
+
+        protected virtual void OnEventDestroyObjHit(long entityId)
+        {
+            PresenterOnHit();
+        }
+
+        public SpriteWhiteFlasher MainFlasher;
+        public void PresenterOnHit()
+        {
+            MainFlasher?.TriggerFlash();
+        }
     }
 }
 

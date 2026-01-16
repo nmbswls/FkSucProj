@@ -9,11 +9,11 @@ namespace My.Map.Entity
     public static class AttrIdConsts
     {
         public const string Attack = "Attack";
-        public const string JianSu = "JianSu";
         public const string Special_JianShang = "Special_JianShang";
         public const string Special_YiShang = "Special_YiShang";
         public const string PlayerGcThreshold = "PlayerGcThreshold";
         public const string Basic_JianShang = "Basic_JianShang";
+        public const string Basic_MoveSpeed = "Basic_MoveSpeed";
 
         public const string Player_AttrctPower = "Player_AttrctPower";
 

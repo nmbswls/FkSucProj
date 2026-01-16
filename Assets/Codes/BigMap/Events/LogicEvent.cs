@@ -22,6 +22,7 @@ namespace Map.Logic.Events
         OnDie,
 
         CostPendingAlert,
+        ObjWithOwnerDestroyed,
     }
 
 
@@ -34,6 +35,7 @@ namespace Map.Logic.Events
         public long TargetId;
 
         public bool IsMapLocal;
+        public float InterestRange;
     }
 
     //public enum Delivery { Immediate, QueuedFrame, Deferred }
