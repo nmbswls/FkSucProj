@@ -14,10 +14,10 @@ using My.Map.Entity;
 
 namespace My.Map
 {
-    public class EventGroupLogicEntity : LogicEntityBase
+    public class EventGroupLogicEntity : LogicEntityInteractPoint
     {
 
-        public EventGroupConfig cacheCfg;
+        public MapEventGroupConfig cacheCfg;
 
         public LogicEntityRecord4EventGroup RealRecord { get { return (LogicEntityRecord4EventGroup)BindingRecord; } }
 
@@ -39,7 +39,7 @@ namespace My.Map
             public int TriggerIdx = 0;
             public int TriggerTimes = 0;
 
-            public EventGroupConfig.GroupEventTrigger cacheTriggerConf;
+            public MapEventGroupConfig.GroupEventListener cacheTriggerConf;
         }
         protected List<GroupEventTriggerState> TriggerInfos = new();
 
@@ -80,7 +80,7 @@ namespace My.Map
             foreach (var t in TriggerInfos)
             {
                 if (t.TriggerTimes > 0) continue;
-                if(t.cacheTriggerConf.TriggerType == EventGroupConfig.GroupEventTrigger.ETriggerType.Cleared)
+                if(t.cacheTriggerConf.TriggerType == MapEventGroupConfig.GroupEventListener.ETriggerType.Cleared)
                 {
                     // À¿Õˆ±Íº«
                     var idStrs = t.cacheTriggerConf.Param3.Split(",");
@@ -104,7 +104,7 @@ namespace My.Map
                         HandleOutput(t.cacheTriggerConf);
                     }
                 }
-                else if(t.cacheTriggerConf.TriggerType != EventGroupConfig.GroupEventTrigger.ETriggerType.MemberIntStatus)
+                else if(t.cacheTriggerConf.TriggerType != MapEventGroupConfig.GroupEventListener.ETriggerType.MemberIntStatus)
                 {
                     int member = (int)t.cacheTriggerConf.Param1;
                     int status = (int)t.cacheTriggerConf.Param2;
@@ -130,7 +130,7 @@ namespace My.Map
             }
         }
 
-        public void HandleOutput(EventGroupConfig.GroupEventTrigger triggerCfg)
+        public void HandleOutput(MapEventGroupConfig.GroupEventListener triggerCfg)
         {
             Debug.Log($"EventGroupLogicEntity HandleOutput {this.Id} for {triggerCfg.TriggerType}");
 
@@ -140,7 +140,7 @@ namespace My.Map
                 {
                     switch (output.OutputType)
                     {
-                        case EventGroupConfig.GroupEventOutput.EOutputType.UpdateInteractStatus:
+                        case MapEventGroupConfig.GroupEventOutput.EOutputType.UpdateInteractStatus:
                             {
                                 int memberId = (int)output.Param1;
                                 int status = (int)output.Param2;
@@ -162,7 +162,7 @@ namespace My.Map
                                 intPoint.ChangeSelfStatus(status);
                             }
                             break;
-                        case EventGroupConfig.GroupEventOutput.EOutputType.ActivateUnits:
+                        case MapEventGroupConfig.GroupEventOutput.EOutputType.ActivateUnits:
                             {
                                 var idStrs = output.Param3.Split(",");
                                 bool allCleared = true;
@@ -183,7 +183,7 @@ namespace My.Map
                                 }
                             }
                             break;
-                        case EventGroupConfig.GroupEventOutput.EOutputType.RemoveEntities:
+                        case MapEventGroupConfig.GroupEventOutput.EOutputType.RemoveEntities:
                             {
                                 var idStrs = output.Param3.Split(",");
                                 bool allCleared = true;
@@ -252,7 +252,7 @@ namespace My.Map
         {
             foreach (var t in TriggerInfos)
             {
-                if (t.cacheTriggerConf.TriggerType != EventGroupConfig.GroupEventTrigger.ETriggerType.AnyEnmity)
+                if (t.cacheTriggerConf.TriggerType != MapEventGroupConfig.GroupEventListener.ETriggerType.AnyEnmity)
                 {
                     continue;
                 }

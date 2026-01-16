@@ -1090,13 +1090,13 @@ namespace My.Map.Entity.AI
             }
             _brain.blackboard.CanLeaveAttract = false;
 
-            _brain.NpcEntity.UpdateLookIntent(_brain.blackboard.AttractSrcId, null);
+            _brain.NpcEntity.RegisterGaze(_brain.blackboard.AttractSrcId, Vector2.zero, EGazePriority.Suspicion, 0);
         }
 
         public override void Stop(AIActionStatus endStatus)
         {
             base.Stop(endStatus);
-            _brain.NpcEntity.ClearLookIntent();
+            _brain.NpcEntity.UnregisterGaze(_brain.blackboard.AttractSrcId);
         }
 
         /// <summary>

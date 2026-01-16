@@ -110,7 +110,7 @@ namespace My.Map
             {
                 if(PrimaryTargetId != 0)
                 {
-                    UnitEntity.UpdateLookIntent(PrimaryTargetId, null);
+                    UnitEntity.RegisterGaze(PrimaryTargetId, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Combat, 2f);
                 }
             }
         }

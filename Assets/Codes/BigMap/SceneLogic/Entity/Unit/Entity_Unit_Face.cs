@@ -1,107 +1,79 @@
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using My.Map.Entity;
 using UnityEditor.Rendering.LookDev;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map
 {
 
+    public static class SceneAngleUtil
+    {
+        // 工具函数
+        public static float AngleFromDir(Vector2 dir)
+        {
+            if (dir.sqrMagnitude < 1e-8f) return 0f;
+            return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        }
+
+        public static Vector2 DirFromAngle(float angleDeg)
+        {
+            float rad = angleDeg * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+        }
+
+        public static Vector2 NormalizeSafe(Vector2 v)
+        {
+            float m = v.magnitude;
+            return m > 1e-8f ? v / m : Vector2.zero;
+        }
+
+        public static float MoveTowardsAngle(float current, float target, float maxDelta)
+        {
+            float delta = Mathf.DeltaAngle(current, target);
+            delta = Mathf.Clamp(delta, -maxDelta, maxDelta);
+            return current + delta;
+        }
+
+        public static float SmoothDampAngle(float current, float target, ref float currentVelocity, float smoothTime)
+        {
+            return Mathf.SmoothDampAngle(current, target, ref currentVelocity, smoothTime);
+        }
+    }
+
+
     public partial class BaseUnitLogicEntity
     {
-
-        /// <summary>
-        /// 受外部控制面向
-        /// </summary>
-        public bool ControlledFacing { get; set; } = false;
 
         public float deadzoneAngle = 3f;     // 小角度不转动（度）
         public float smoothTime = 0.05f;     // 平滑时间（秒）
         protected float _angularVel;       // SmoothDampAngle 用
 
-
-        // 注视intent
-        public class UnitLookIntent
-        {
-            public long? LockEntityId;
-            public Vector2? LockPos;
-            public int Priority = 1;
-        }
-
-        public UnitLookIntent? lastestLookIntent;
-
-        private float? interruptedAngle { get; set; }
-
         /// <summary>
-        /// 更新视线intent
+        /// 面向到底怎么调 
+        ///   1 default面向和速度保持？
         /// </summary>
-        /// <param name="intent"></param>
-        public void UpdateLookIntent(long? lockEntity, Vector2? lockPos)
+        protected Vector2 faceDir = Vector2.zero;
+        public Vector2 FaceDir
         {
-            if(lockEntity == null && lockPos == null) return;
-
-            if(this.lastestLookIntent != null && this.lastestLookIntent.LockEntityId != null && this.lastestLookIntent.LockEntityId == lockEntity)
+            get { return faceDir; }
+            set
             {
-                return;
-            }
-
-            var oldIntent = this.lastestLookIntent;
-            if(oldIntent != null && oldIntent.LockEntityId != null)
-            {
-                var playerEntity = LogicManager.GetLogicEntity(oldIntent.LockEntityId.Value) as PlayerLogicEntity;
-                playerEntity.OnGazeLeave(this.Id);
-            }
-            this.lastestLookIntent = new UnitLookIntent()
-            {
-                LockEntityId = lockEntity,
-                LockPos = lockPos
-            };
-
-            if(lockEntity != null)
-            {
-                var playerEntity = LogicManager.GetLogicEntity(lockEntity.Value) as PlayerLogicEntity;
-                playerEntity.OnGazeEnter(this.Id);
+                faceDir = value;
+                _currentAngle = SceneAngleUtil.AngleFromDir(faceDir);
+                _targetAngle = _currentAngle;
             }
         }
-
-        public void ClearLookIntent()
-        {
-            var oldIntent = this.lastestLookIntent;
-            if (oldIntent != null && oldIntent.LockEntityId != null)
-            {
-                var playerEntity = LogicManager.GetLogicEntity(oldIntent.LockEntityId.Value) as PlayerLogicEntity;
-                playerEntity.OnGazeLeave(this.Id);
-            }
-            this.lastestLookIntent = null;
-            if(interruptedAngle != null)
-            {
-                _targetAngle = interruptedAngle.Value;
-                interruptedAngle = null;
-            }
-        }
-
-        #region face
-
-        //protected Vector2 faceDir = Vector2.zero;
-        //public Vector2 FaceDir
-        //{
-        //    get { return faceDir; }
-        //    set
-        //    {
-        //        faceDir = value;
-        //        _currentAngle = AngleFromDir(faceDir);
-        //        _targetAngle = _currentAngle;
-        //    }
-        //}
 
         // 内部状态
         protected float _currentAngle { get; set; }     // 当前朝向角度（度，0=向右）
         protected float _targetAngle;
 
-        public Vector2 DesiredFaceDir { get { return DirFromAngle(_targetAngle); } }
+        public Vector2 DesiredFaceDir { get { return SceneAngleUtil.DirFromAngle(_targetAngle); } }
 
-        protected Vector2 _faceDir = Vector2.right;
-        public Vector2 FaceDir { get { return _faceDir; } }
 
         /// <summary>
         /// 强制更改面向
@@ -110,69 +82,14 @@ namespace My.Map
         /// <param name="immediately"></param>
         public void ForceSetFaceTarget(Vector2 faceDir, bool immediately)
         {
-            var angle  = AngleFromDir(faceDir);
+            var angle = SceneAngleUtil.AngleFromDir(faceDir);
             _targetAngle = angle;
 
-            if(immediately)
+            if (immediately)
             {
                 _currentAngle = angle;
-                _faceDir = faceDir;
+                this.faceDir = faceDir;
             }
-        }
-
-        /// <summary>
-        /// 更新面向状态
-        /// 由外部逻辑驱动look intent的维护，该函数为底层调整面向函数
-        /// </summary>
-        protected void UpdateFaceTargetAngle()
-        {
-            // 检查状态
-            if (attributeStore.CheckHasState(AttrIdConsts.LockFace))
-            {
-                return;
-            }
-
-            // 外部控制 不处理
-            if (ControlledFacing)
-            {
-                return;
-            }
-
-            
-            if(lastestLookIntent == null)
-            {
-                interruptedAngle = null;
-                return;
-            }
-
-            // 当前有intent
-            if (interruptedAngle == null)
-            {
-                interruptedAngle = _targetAngle;
-            }
-            Vector2? lookDir = null;
-
-
-            if (lastestLookIntent.LockEntityId != null)
-            {
-                var srcEntity = LogicManager.GetLogicEntity(lastestLookIntent.LockEntityId.Value);
-                lookDir = srcEntity.Pos - this.Pos;
-            }
-            else if (lastestLookIntent.LockPos != null)
-            {
-                lookDir = lastestLookIntent.LockPos - this.Pos;
-            }
-
-            if(lookDir == null)
-            {
-                return;
-            }
-
-            lookDir = lookDir.Value.normalized;
-
-            _targetAngle = AngleFromDir(lookDir.Value);
-
-            
         }
 
         /// <summary>
@@ -188,50 +105,15 @@ namespace My.Map
             // 单次最大角步长（限速）
             //float maxStep = maxAngularSpeed * Time.deltaTime;
             float maxStep = 10000;
-            float clampedTarget = MoveTowardsAngle(_currentAngle, _targetAngle, maxStep);
+            float clampedTarget = SceneAngleUtil.MoveTowardsAngle(_currentAngle, _targetAngle, maxStep);
 
             // 仅保留一次平滑：对限速后的目标做 SmoothDampAngle
-            float newAngle = SmoothDampAngle(_currentAngle, clampedTarget, ref _angularVel, smoothTime);
+            float newAngle = SceneAngleUtil.SmoothDampAngle(_currentAngle, clampedTarget, ref _angularVel, smoothTime);
 
             // 更新状态与朝向向量
             _currentAngle = newAngle;
 
-            _faceDir = DirFromAngle(_currentAngle);
+            faceDir = SceneAngleUtil.DirFromAngle(_currentAngle);
         }
-
-
-        // 工具函数
-        protected static float AngleFromDir(Vector2 dir)
-        {
-            if (dir.sqrMagnitude < 1e-8f) return 0f;
-            return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        }
-
-        protected static Vector2 DirFromAngle(float angleDeg)
-        {
-            float rad = angleDeg * Mathf.Deg2Rad;
-            return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-        }
-
-        protected static Vector2 NormalizeSafe(Vector2 v)
-        {
-            float m = v.magnitude;
-            return m > 1e-8f ? v / m : Vector2.zero;
-        }
-
-        protected static float MoveTowardsAngle(float current, float target, float maxDelta)
-        {
-            float delta = Mathf.DeltaAngle(current, target);
-            delta = Mathf.Clamp(delta, -maxDelta, maxDelta);
-            return current + delta;
-        }
-
-        protected static float SmoothDampAngle(float current, float target, ref float currentVelocity, float smoothTime)
-        {
-            return Mathf.SmoothDampAngle(current, target, ref currentVelocity, smoothTime);
-        }
-
-
-        #endregion
     }
 }

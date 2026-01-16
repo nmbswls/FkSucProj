@@ -257,9 +257,9 @@ namespace Config
     public static class MapEventGroupCfgLoader
     {
 
-        private static Dictionary<string, EventGroupConfig> _byId = new Dictionary<string, EventGroupConfig>();
+        private static Dictionary<string, MapEventGroupConfig> _byId = new Dictionary<string, MapEventGroupConfig>();
 
-        public static EventGroupConfig Get(string cfgId)
+        public static MapEventGroupConfig Get(string cfgId)
         {
             if (_byId.TryGetValue(cfgId, out var data))
                 return data;
@@ -270,9 +270,9 @@ namespace Config
         }
 
 
-        private static EventGroupConfig Load(string cfgId)
+        private static MapEventGroupConfig Load(string cfgId)
         {
-            var data = Resources.Load<EventGroupConfig>($"Config/Entity/EventGroup/{cfgId}");
+            var data = Resources.Load<MapEventGroupConfig>($"Config/Entity/EventGroup/{cfgId}");
             if (data == null)
                 Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/EventGroup/{cfgId}");
             return data;

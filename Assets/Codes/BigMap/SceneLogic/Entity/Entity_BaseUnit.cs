@@ -99,7 +99,7 @@ namespace My.Map
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
             this.MoveBehaveInfo = new();
 
-            ForceSetFaceTarget(bindingRecord.FaceDir, true);
+            //ForceSetFaceTarget(bindingRecord.FaceDir, true);
         }
 
         public override void Initialize()
@@ -126,6 +126,8 @@ namespace My.Map
             VisibilityComp.Initialize(this);
 
             entityMotorComp = new(this, LogicManager.navProvider);
+
+            InitGazeModule();
         }
 
         public override void Tick(float dt)
@@ -175,7 +177,8 @@ namespace My.Map
 
             entityMotorComp?.Tick(dt);
 
-            UpdateFaceTargetAngle();
+            UpdateGazeModule();
+            //UpdateFaceTargetAngle();
             UpdateFaceDir();
         }
         public override void OnEnterAOI()

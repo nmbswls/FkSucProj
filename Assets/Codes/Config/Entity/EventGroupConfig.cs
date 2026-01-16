@@ -11,10 +11,8 @@ namespace Config.Map
 
     [CreateAssetMenu(menuName = "GP/Config/Entity/EventGroup")]
     [Serializable]
-    public  class EventGroupConfig : ScriptableObject
+    public  class MapEventGroupConfig : MapInteractPointConfig
     {
-        public string CfgId;
-
         [Serializable]
         public class MemberInfo
         {
@@ -46,7 +44,7 @@ namespace Config.Map
         }
 
         [Serializable]
-        public class GroupEventTrigger
+        public class GroupEventListener
         {
             public enum ETriggerType
             {
@@ -65,6 +63,6 @@ namespace Config.Map
             public List<GroupEventOutput> Outputs = new();
         }
 
-        public List<GroupEventTrigger> EventTriggers = new();
+        public List<GroupEventListener> EventTriggers = new();
     }
 }
