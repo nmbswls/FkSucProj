@@ -87,7 +87,7 @@ namespace My.Map
 
         // 生命周期钩子
         void OnSpawn(LogicEntityRecord data);    // 从记录创建完整实例
-        void OnDespawn(out LogicEntityRecord? snapshot); // 输出快照，供下次重建
+        void OnDespawn(ref LogicEntityRecord? snapshot); // 输出快照，供下次重建
         void OnWake();   // 从Sleep进入Active，开启AI、感知、昂贵系统
         void OnSleep();  // 从Active降级为Sleep，关闭昂贵系统，保留轻量逻辑
         void Tick(float dt);
@@ -416,11 +416,16 @@ namespace My.Map
             MarkDespawn = false;
         }
 
-        public virtual void OnDespawn(out LogicEntityRecord? snapshot)
+        public virtual void OnDespawn(ref LogicEntityRecord snapshot)
         {
-            snapshot = null;
-
+            RefreshEntityRecordInfo(snapshot);
             MarkDespawn = true;
+        }
+
+        protected virtual void RefreshEntityRecordInfo(LogicEntityRecord input)
+        {
+            //input.Id = this.Id;
+            //input.EntityType = this.en
         }
 
         public void OnWake()

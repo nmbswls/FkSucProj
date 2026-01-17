@@ -380,19 +380,15 @@ namespace My.Map
             
         }
 
-        public override void OnDespawn(out LogicEntityRecord? snapshot)
+        public override void OnDespawn(ref LogicEntityRecord snapshot)
         {
-            base.OnDespawn(out snapshot);
+            base.OnDespawn(ref snapshot);
         }
 
-        protected override LogicEntityRecord CreateRecordByType()
-        {
-            return new LogicEntityRecord4EventGroup();
-        }
 
-        protected override void FillInteractPointRecord(LogicEntityRecord4InteractPoint input)
+        protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
         {
-            base.FillInteractPointRecord(input);
+            base.RefreshEntityRecordInfo(input);
 
             var realRecord = input as LogicEntityRecord4EventGroup;
             if (realRecord != null)

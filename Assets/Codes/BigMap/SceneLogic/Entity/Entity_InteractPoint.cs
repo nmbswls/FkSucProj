@@ -196,24 +196,15 @@ namespace My.Map.Entity
 
         }
 
-        public override void OnDespawn(out LogicEntityRecord? snapshot)
+        public override void OnDespawn(ref LogicEntityRecord snapshot)
         {
-
-            base.OnDespawn(out snapshot);
-
-            var realSnapshot = CreateRecordByType();
-            FillInteractPointRecord(realSnapshot as LogicEntityRecord4InteractPoint);
-
-            snapshot = realSnapshot;
+            base.OnDespawn(ref snapshot);
         }
     
-        protected virtual LogicEntityRecord CreateRecordByType()
-        {
-            return new LogicEntityRecord4InteractPoint();
-        }
 
-        protected virtual void FillInteractPointRecord(LogicEntityRecord4InteractPoint input)
+        protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
         {
+            base.RefreshEntityRecordInfo(input);
         }
     }
 

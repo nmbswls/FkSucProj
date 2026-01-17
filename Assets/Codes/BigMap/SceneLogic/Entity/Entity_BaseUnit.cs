@@ -651,13 +651,13 @@ namespace My.Map
 
         #endregion
 
-        public override void OnDespawn(out LogicEntityRecord? snapshot)
+        public override void OnDespawn(ref LogicEntityRecord? snapshot)
         {
-            snapshot = BindingRecord;
+            base.OnDespawn(ref snapshot);
 
             //
             // 当死亡状态下的unit被回收时，执行destroy 且如果有掠夺品 需要创建新掠夺物
-            if(IsDead)
+            if (IsDead)
             {
                 DoEntityDestroyed("dead_despawn");
 
@@ -665,9 +665,9 @@ namespace My.Map
                 List<ItemStack> items = new();
                 if (dropBagContainer != null)
                 {
-                    foreach(var slot in dropBagContainer.InnerItems)
+                    foreach (var slot in dropBagContainer.InnerItems)
                     {
-                        if(slot != null && slot.Count > 0)
+                        if (slot != null && slot.Count > 0)
                         {
                             hasDrop = true;
                             items.Add(slot);
@@ -675,7 +675,7 @@ namespace My.Map
                     }
                 }
 
-                if(hasDrop)
+                if (hasDrop)
                 {
                     Debug.Log("entity remove on die create loot point." + Id);
 
@@ -692,6 +692,13 @@ namespace My.Map
                     LogicManager.AddNewEntityRecord(rec);
                 }
             }
+        }
+
+        protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
+        {
+            base.RefreshEntityRecordInfo(input);
+
+            var realInput = input as LogicEntityRecord4UnitBase;
         }
 
         /// <summary>

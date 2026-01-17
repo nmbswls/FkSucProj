@@ -800,12 +800,12 @@ namespace My.Map.Logic
         private void DespawnEntity(long id)
         {
             if (!Repo.IsLoaded(id)) return;
-            
+
+            var record = Repo.Records[id];
             var ent = Repo.GetLoaded(id);
 
-            ent.OnDespawn(out var snap);
+            ent.OnDespawn(ref record);
             Repo.Loaded.Remove(id);
-            if (snap != null) Repo.Records[id] = snap;
 
             //ent.EventOnDestroyed -= OnEventEntityDestroyed;
             logicManager.RecycleEntity(ent);
