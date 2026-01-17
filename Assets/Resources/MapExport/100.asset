@@ -471,6 +471,48 @@ MonoBehaviour:
         m_Center: {x: -1.9969872, y: 5.7, z: 0}
         m_Extent: {x: 0.06698716, y: 0.25, z: 0}
   EntityRefreshInfo:
+  - UniqId: 100002
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 4055726059099521340
+  - UniqId: 100001
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 4055726059099521341
   - UniqId: 90001
     AppearCond:
       Type: 0
@@ -491,7 +533,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625185
+      rid: 4055726059099521342
   - UniqId: 40004
     AppearCond:
       Type: 0
@@ -512,7 +554,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625186
+      rid: 4055726059099521343
   - UniqId: 40003
     AppearCond:
       Type: 0
@@ -533,7 +575,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625187
+      rid: 4055726059099521344
   - UniqId: 40002
     AppearCond:
       Type: 0
@@ -554,7 +596,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625188
+      rid: 4055726059099521345
   - UniqId: 40001
     AppearCond:
       Type: 0
@@ -575,7 +617,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625189
+      rid: 4055726059099521346
   - UniqId: 1101
     AppearCond:
       Type: 0
@@ -596,7 +638,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625190
+      rid: 4055726059099521347
   - UniqId: 1100
     AppearCond:
       Type: 0
@@ -617,7 +659,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625191
+      rid: 4055726059099521348
   - UniqId: 1003
     AppearCond:
       Type: 0
@@ -638,7 +680,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625192
+      rid: 4055726059099521349
   - UniqId: 1002
     AppearCond:
       Type: 0
@@ -659,7 +701,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625193
+      rid: 4055726059099521350
   - UniqId: 1001
     AppearCond:
       Type: 0
@@ -680,7 +722,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 4055726025270625194
+      rid: 4055726059099521351
   NamedPoints:
   - Name: 1
     PointType: 0
@@ -776,7 +818,29 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 4055726025270625185
+    - rid: 4055726059099521340
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: retreat_point
+        Position: {x: -7.02, y: -10.79}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4055726059099521341
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: retreat_point
+        Position: {x: -7.02, y: 5.93}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4055726059099521342
       type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -794,11 +858,11 @@ MonoBehaviour:
         GroupUnits:
         - GroupIdx: 0
           InitInfo:
-            rid: 4055726025270625195
+            rid: 4055726059099521352
         - GroupIdx: 1
           InitInfo:
-            rid: 4055726025270625196
-    - rid: 4055726025270625186
+            rid: 4055726059099521353
+    - rid: 4055726059099521343
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: good_obj_01
@@ -806,7 +870,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055726025270625187
+    - rid: 4055726059099521344
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -814,7 +878,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055726025270625188
+    - rid: 4055726059099521345
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -822,7 +886,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055726025270625189
+    - rid: 4055726059099521346
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -830,7 +894,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055726025270625190
+    - rid: 4055726059099521347
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hunhun
@@ -843,7 +907,7 @@ MonoBehaviour:
         IsPeace: 0
         InitUnsensored: 0
         InitNoLogic: 0
-    - rid: 4055726025270625191
+    - rid: 4055726059099521348
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: qigai_default
@@ -856,7 +920,7 @@ MonoBehaviour:
         IsPeace: 1
         InitUnsensored: 0
         InitNoLogic: 0
-    - rid: 4055726025270625192
+    - rid: 4055726059099521349
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: dig_01
@@ -864,7 +928,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055726025270625193
+    - rid: 4055726059099521350
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -872,7 +936,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055726025270625194
+    - rid: 4055726059099521351
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -880,7 +944,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4055726025270625195
+    - rid: 4055726059099521352
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hunhun
@@ -893,7 +957,7 @@ MonoBehaviour:
         IsPeace: 0
         InitUnsensored: 0
         InitNoLogic: 0
-    - rid: 4055726025270625196
+    - rid: 4055726059099521353
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hunhun

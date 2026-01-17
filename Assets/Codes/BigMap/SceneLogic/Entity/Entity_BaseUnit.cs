@@ -749,9 +749,15 @@ namespace My.Map
                                     var xixueVal = (long)(dmg * (double)(xixue / 10000));
                                     entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false, EDmgFlag.Xixue, srcEntityId: Id);
                                 }
+
+                                if(entity is BaseUnitLogicEntity srcUnit)
+                                {
+                                    srcUnit.UnitOnApplyHit();
+                                }
                             }
 
                             UnitOnHit(intent.delta, intent.srcEntityId);
+
                         }
 
                         if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
@@ -802,6 +808,15 @@ namespace My.Map
                 }
             }
         }
+
+        /// <summary>
+        /// µ¥Î»Ö´ÐÐ¹¥»÷
+        /// </summary>
+        protected virtual void UnitOnApplyHit()
+        {
+            //LogicManager.viewer.StartHitStop(0.03f);
+        }
+
 
         public class UnitBagContainer : IItemContainer
         {

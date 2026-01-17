@@ -37,6 +37,7 @@ namespace My.Map.Scene
         public void PresenterOnHit()
         {
             MainFlasher?.TriggerFlash();
+
         }
 
         protected override void OnFadeStateUpdate()

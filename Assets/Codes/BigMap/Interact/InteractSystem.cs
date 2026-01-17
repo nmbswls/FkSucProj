@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Map.SmallGame.Zha;
 using My.Map;
 using My.Map.Scene;
+using My.MiniGame;
 using My.UI;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
@@ -93,6 +95,16 @@ public class SceneInteractSystem
         }
 
         if(!MainGameManager.Instance.gameLogicManager.Initialized)
+        {
+            return false;
+        }
+
+
+        if(LootPointUIPanel.Instance != null)
+        {
+            return false;
+        }
+        if (DeepAbsorbPanel.Instance != null)
         {
             return false;
         }

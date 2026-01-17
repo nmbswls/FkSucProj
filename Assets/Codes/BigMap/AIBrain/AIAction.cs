@@ -369,7 +369,6 @@ namespace My.Map.Entity.AI
 
             if(_recoverTimer + _brain.brainConfig.ExitCombatMinRecoverTime > LogicTime.time)
             {
-                _brain.NpcEntity.combatStateComp.TryRecover();
                 return;
             }
 
@@ -379,6 +378,12 @@ namespace My.Map.Entity.AI
             {
                 if (_brain.NpcEntity.unitCfg.RecoverReturn)
                 {
+                    if(LogicTime.time - _recoverTimer > 30f)
+                    {
+                        recovered = true;
+                        break;
+                    }
+
                     if (_brain.blackboard.LastLeaveMoveModePos == null)
                     {
                         recovered = true;
@@ -405,7 +410,7 @@ namespace My.Map.Entity.AI
             }
             while (false);
 
-            if(!recovered)
+            if(recovered)
             {
                 _brain.NpcEntity.combatStateComp.TryRecover();
             }
@@ -1091,7 +1096,7 @@ namespace My.Map.Entity.AI
             }
             _brain.blackboard.CanLeaveAttract = false;
 
-            _brain.NpcEntity.RegisterGaze(_brain.blackboard.AttractSrcId, Vector2.zero, EGazePriority.Suspicion, 0);
+            _brain.NpcEntity.RegisterGaze("Attract", _brain.blackboard.AttractSrcId, Vector2.zero, EGazePriority.Suspicion, 0);
         }
 
         public override void Stop(AIActionStatus endStatus)

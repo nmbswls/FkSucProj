@@ -99,7 +99,7 @@ namespace My.Map
             ReevaluatePrimaryTarget();
 
             // 保底进行脱战
-            if(CombatState == ECombatState.CombatRecover)
+            if(LogicTime.time - lastTryRecoverTime > 60.0f && CombatState == ECombatState.CombatRecover)
             {
                 TryRecover();
             }
@@ -108,8 +108,12 @@ namespace My.Map
             {
                 if(PrimaryTargetId != 0)
                 {
-                    UnitEntity.RegisterGaze(PrimaryTargetId, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Combat, 2f);
+                    UnitEntity.RegisterGaze("Combat", PrimaryTargetId, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Combat, 2f);
                 }
+            }
+            else
+            {
+                UnitEntity.UnregisterGazeBySourceTag("Combat");
             }
 
             TryExitCombat();
@@ -120,7 +124,7 @@ namespace My.Map
         {
             if(CombatState == ECombatState.CombatRecover)
             {
-                lastTryRecoverTime = LogicTime.time;
+                Debug.Log($"entity:{UnitEntity.Id} recover from");
                 CombatState = ECombatState.NotCombat;
             }
         }
@@ -260,6 +264,8 @@ namespace My.Map
             {
                 PrimaryTargetId = bestTid;
                 // 可选：事件或日志记录主目标变化
+                UnitEntity.UnregisterGazeBySourceTag("Combat");
+                UnitEntity.RegisterGaze("Combat", PrimaryTargetId, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Combat, 2f);
             }
         }
 
@@ -348,7 +354,7 @@ namespace My.Map
             //Events.RaiseEnterCombat(primaryTargetId);
             // TODO: 启动AI/导航追击 PrimaryTargetId
 
-            Debug.Log($"EnterCombat unit:{UnitEntity.Id} enemy {primaryTargetId}");
+            Debug.Log($"d unit:{UnitEntity.Id} enemy {primaryTargetId}");
 
             UnitEntity.LogicManager.OnUnitCombatStateUpdate(this.UnitEntity);
         }
@@ -357,6 +363,9 @@ namespace My.Map
         {
             CombatState = ECombatState.CombatRecover;
             PrimaryTargetId = 0;
+
+            UnitEntity.UnregisterGazeBySourceTag("Combat");
+
             damageThreat.Clear();
             sightThreat.Clear();
 

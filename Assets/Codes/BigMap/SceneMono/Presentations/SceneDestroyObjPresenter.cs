@@ -17,6 +17,8 @@ namespace My.Map.Scene
         public SpriteRenderer[] MainView;
         public SpriteRenderer ShadowView;
 
+        public Collider2D MainCol;
+
         public DestroyObjLogicEntity DestroyObjEntity { get { return (DestroyObjLogicEntity)_logic; } }
 
 
@@ -79,6 +81,11 @@ namespace My.Map.Scene
                 {
                     ShadowView.enabled = false ;
                 });
+            }
+
+            if(MainCol != null)
+            {
+                MainCol.enabled = false;
             }
             //if (ViewRoot != null)
             //{

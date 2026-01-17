@@ -36,6 +36,8 @@ namespace My.Config
             SelfAnim,
             Wait,
 
+            StartRetreat,
+
             EGMemberChangeState = 100,
             EGMemberActivate = 101,
         }
@@ -54,10 +56,12 @@ namespace My.Config
     {
         public enum ECheckType
         {
-            None,
+            None = 0,
             NotHide,
             HasLocalSwitch,
             NoLocalSwitch,
+
+            PlayerNotRetreating,
         }
 
         public ECheckType CheckType;

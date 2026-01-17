@@ -711,6 +711,25 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         UIOrchestrator.Instance.TryEnterLootDetailMode(lootObj);
     }
+
+    public void StartHitStop(float duration)
+    {
+        StartCoroutine(HitStop(duration));
+    }
+
+    // 简单的全局顿帧协程
+    protected IEnumerator HitStop(float duration)
+    {
+        // 瞬间静止
+        float original = Time.timeScale;
+        Time.timeScale = 0.05f; // 不要设为0，防止除以0的错误，保留一点点动态
+
+        // 等待真实时间 (不受 timeScale 影响)
+        yield return new WaitForSecondsRealtime(duration);
+
+        // 恢复
+        Time.timeScale = original;
+    }
 }
 
 

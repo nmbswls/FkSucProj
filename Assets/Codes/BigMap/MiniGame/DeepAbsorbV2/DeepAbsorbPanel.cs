@@ -27,6 +27,21 @@ namespace My.MiniGame
             return panel;
         }
 
+
+        public static DeepAbsorbPanel Instance
+        {
+            get
+            {
+                var panel = UIManager.Instance.GetShowingPanel("DeepAbsorbPanel");
+                if (panel != null && panel is DeepAbsorbPanel panel2)
+                {
+                    return panel2;
+                }
+                return null;
+            }
+        }
+
+
         [SerializeField] private DeepAbsorbQteBar QteBar;
         [SerializeField] private TMP_Text promptText; // ¿ÉÓÃ Text Ìæ´ú
 

@@ -180,4 +180,6 @@ public interface ISceneAbilityViewer
     void PlayDialog(string dialogId, long? srcEntityId = null);
 
     void StartLoot(ILootableObj lootObj);
+
+    void StartHitStop(float duration);
 }

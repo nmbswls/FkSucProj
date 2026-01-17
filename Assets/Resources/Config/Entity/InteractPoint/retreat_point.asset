@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
-  m_Name: teleport
+  m_Name: retreat_point
   m_EditorClassIdentifier: 
-  CfgId: teleport
-  ShowName: "\u4F20\u9001\u88C5\u7F6E"
+  CfgId: retreat_point
+  ShowName: "\u63A5\u89E6\u70B9"
   PrefabName: 
-  NameOffset: 60
+  NameOffset: 40
   MainStatusInfo:
     StatusId: 0
     Desp: 
@@ -26,18 +26,23 @@ MonoBehaviour:
     Desp: 
     InteractInfos:
     - InteractId: 1
-      Label: "\u4F20\u9001"
-      UnLabel: "\u4F20\u9001"
+      Label: "\u64A4\u79BB"
+      UnLabel: "\u64A4\u79BB"
       HideWhenFail: 0
-      NeedDist: 1.4
+      NeedDist: 0
       Passive: 0
       CheckCommonCond: []
-      CheckInteractCond: []
-      Outputs:
-      - OutputType: 5
-        Param1: 100
+      CheckInteractCond:
+      - CheckType: 4
+        Param1: 0
         Param2: 0
-        Param3: 100
+        Param3: 
+        Param4: 
+      Outputs:
+      - OutputType: 15
+        Param1: 0
+        Param2: 0
+        Param3: 
         Param4: 
         DelayTime: 0
     HasBlock: 0

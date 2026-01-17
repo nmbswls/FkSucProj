@@ -71,13 +71,13 @@ namespace My.Map
         ///   1.吸引点（声音、其他）
         ///   2.
         /// </summary>
-        public void RegisterGaze(long lockTargetId, Vector2 lockPosition, EGazePriority priority, float duration = 2f)
+        public void RegisterGaze(string sourceTag, long lockTargetId, Vector2 lockPosition, EGazePriority priority, float duration = 2f)
         {
             GazeRequest existing = null;
             // 检查所有锁定目标的视线类型
             if (lockTargetId != 0)
             {
-                existing = _requests.FirstOrDefault(r => r.LockTargetId == lockTargetId);
+                existing = _requests.FirstOrDefault(r => r.LockTargetId == lockTargetId && r.SourceTag == sourceTag);
             }
 
             if (existing != null)
@@ -91,6 +91,7 @@ namespace My.Map
                 // 新增请求
                 _requests.Add(new GazeRequest() 
                 {
+                    SourceTag = sourceTag,
                     TargetPos = lockPosition,
                     LockTargetId = lockTargetId,
                     Priority = (int)priority,
@@ -109,6 +110,14 @@ namespace My.Map
                 return;
             }
             _requests.RemoveAll(r => r.LockTargetId == lockTargetId);
+        }
+
+        /// <summary>
+        /// 移除特定的视线请求（例如战斗结束，不再看玩家）
+        /// </summary>
+        public void UnregisterGazeBySourceTag(string sourceTag)
+        {
+            _requests.RemoveAll(r => r.SourceTag == sourceTag);
         }
 
         // --- 2. 内部逻辑 ---

@@ -183,6 +183,15 @@ namespace My.Map
                             }
                         }
                         break;
+                    case InteractCheckCond.ECheckType.PlayerNotRetreating:
+                        {
+                            if (Owner.LogicManager.playerLogicEntity.IsRetreating)
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
+                        
                 }
             }
 
@@ -352,6 +361,12 @@ namespace My.Map
                             Owner.LogicManager.viewer.PlayDialog(dialogId);
                         }
                         break;
+                    case Config.LogicInteractOutput.EOutputType.StartRetreat:
+                        {
+                            Owner.LogicManager.playerLogicEntity.TryStartRetreating();
+                        }
+                        break;
+                        
 
                     #region groupœ‡πÿ
 
