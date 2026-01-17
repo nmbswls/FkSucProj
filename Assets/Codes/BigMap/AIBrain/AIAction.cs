@@ -1057,6 +1057,7 @@ namespace My.Map.Entity.AI
     {
 
         private float lastAttractTime = 0;
+
         protected Vector2? attractSourcePos;
         private float attractLastTime = 3.0f;
 

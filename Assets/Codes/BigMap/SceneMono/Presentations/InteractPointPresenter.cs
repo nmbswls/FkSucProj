@@ -67,7 +67,10 @@ namespace My.Map.Scene
 
             foreach (var i in logicInts)
             {
-
+                if (i.Passive)
+                {
+                    continue;
+                }
                 bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
                 
                 ret.Add(new SceneInteractSelection()
@@ -95,6 +98,12 @@ namespace My.Map.Scene
 
             foreach (var i in logicInts)
             {
+
+                if (i.Passive)
+                {
+                    continue;
+                }
+
                 bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
                 if(canInt || !i.HideWhenFail)
                 {

@@ -1586,7 +1586,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 0.3f,
+                        KnockBackForce = 0.6f,
                     },
                 }
             };
@@ -1650,7 +1650,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 0.3f,
+                        KnockBackForce = 0.6f,
                     },
                 }
             };
@@ -1714,7 +1714,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
-                        KnockBackForce = 0.3f,
+                        KnockBackForce = 1f,
                     },
                 }
             };

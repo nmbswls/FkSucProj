@@ -749,7 +749,7 @@ namespace My.Map.Entity
             if (!window.HitRecord.Contains(hitEntityId))
             {
                 window.HitRecord.Add(hitEntityId);
-                Debug.Log("OnWeaponHitCallback " + "hittttttttttttttttttttttttttttttttttttttttttttttttttttttt " + hitEntityId);
+                //Debug.Log("OnWeaponHitCallback " + "hittttttttttttttttttttttttttttttttttttttttttttttttttttttt " + hitEntityId);
 
                 if (window.OnHitEffects != null)
                 {
@@ -769,8 +769,8 @@ namespace My.Map.Entity
 
                             newCtx.TargetId = hitEntity.Id;
                             newCtx.TriggerPos = EntityOwner.Pos;
-                            newCtx.CastVec1 = hitEntity.Pos - EntityOwner.Pos;
-
+                            //newCtx.CastVec1 = hitEntity.Pos - EntityOwner.Pos;
+                            newCtx.CastVec1 =  EntityOwner.FaceDir;
 
                             EntityOwner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
                         }

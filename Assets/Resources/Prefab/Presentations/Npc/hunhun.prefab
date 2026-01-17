@@ -217,6 +217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitPresenter: {fileID: 0}
   WeaponOnes: []
+  ySortOrder: {fileID: 0}
 --- !u!1 &6716341979371502919
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,8 +229,8 @@ GameObject:
   - component: {fileID: 8552881982338698837}
   - component: {fileID: 5981833247523422262}
   - component: {fileID: 6462304013100160239}
-  - component: {fileID: 8125375396503032286}
   - component: {fileID: -5488420210160331190}
+  - component: {fileID: 3593087959906674923}
   m_Layer: 20
   m_Name: hunhun
   m_TagString: Untagged
@@ -305,7 +306,6 @@ MonoBehaviour:
   ViewPoint: {fileID: 0}
   faceIndicator: {fileID: 8013608194804928167}
   EyePos: {fileID: 1352328000936773924}
-  WeaponRoot: {fileID: 7921256209700466238}
   WeaponCtrl: {fileID: 637426610165199311}
   navAgent: {fileID: 4754350832141041876}
   rb: {fileID: 0}
@@ -335,8 +335,35 @@ MonoBehaviour:
   BindEffectRoot: {fileID: 0}
   MainFlasher: {fileID: 0}
   SpecialAnimClips: []
---- !u!58 &8125375396503032286
-CircleCollider2D:
+--- !u!114 &-5488420210160331190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716341979371502919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4323e88b6a4a5fd4bbcc6661912a6709, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxMoveSpeed: 5
+  damping: 0
+  enableSeparation: 0
+  separationRadius: 0.4
+  separationStrength: 1
+  separationDeadZone: 0.12
+  separationQueryMask:
+    serializedVersion: 2
+    m_Bits: 1048576
+  separationTag: 
+  dynamicBlockQueryMask:
+    serializedVersion: 2
+    m_Bits: 524288
+  nonPenPadding: 0.05
+  dynamicQueryExtra: 1
+--- !u!70 &3593087959906674923
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -368,35 +395,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.1
---- !u!114 &-5488420210160331190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6716341979371502919}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4323e88b6a4a5fd4bbcc6661912a6709, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxMoveSpeed: 5
-  damping: 0
-  enableSeparation: 0
-  separationRadius: 0.4
-  separationStrength: 1
-  separationDeadZone: 0.12
-  separationQueryMask:
-    serializedVersion: 2
-    m_Bits: 1048576
-  separationTag: 
-  dynamicBlockQueryMask:
-    serializedVersion: 2
-    m_Bits: 524288
-  nonPenPadding: 0.05
-  dynamicQueryExtra: 1
+  m_Size: {x: 0.3, y: 0.15}
+  m_Direction: 1
 --- !u!1 &6957938098442146527
 GameObject:
   m_ObjectHideFlags: 0
@@ -551,7 +551,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponAnim: {fileID: 0}
+  weaponAnimancer: {fileID: 0}
   WeaponCtrl: {fileID: 0}
+  innerShowClip: {fileID: 0}
   HitId: 0
 --- !u!61 &6015670598200374622
 BoxCollider2D:
@@ -879,7 +881,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3326938578291675276}
-  - component: {fileID: 6196464334545034632}
+  - component: {fileID: 5444736661789311617}
   m_Layer: 12
   m_Name: target
   m_TagString: Untagged
@@ -896,13 +898,13 @@ Transform:
   m_GameObject: {fileID: 8827776686763438421}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.187, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8552881982338698837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!70 &6196464334545034632
+--- !u!70 &5444736661789311617
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -931,11 +933,11 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.3, y: 0.5}
+  m_Offset: {x: 0, y: 0.13}
+  m_Size: {x: 0.25, y: 0.36}
   m_Direction: 0
 --- !u!1 &9142082666380213813
 GameObject:

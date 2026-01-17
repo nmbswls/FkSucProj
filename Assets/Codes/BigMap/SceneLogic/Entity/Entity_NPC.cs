@@ -24,7 +24,7 @@ namespace My.Map
 
         public NpcCombatStateComp combatStateComp;
 
-        public bool IsHMode;
+        private bool hShieldBroken = false;
         private float _lastHModeTimer;
 
         public event Action EventOnHModeChange;
@@ -66,10 +66,6 @@ namespace My.Map
             this.MoveBehaveInfo.PatrolGroupRelativePos = npcRecord.PatrolGroupRelativePos;
             this.MoveBehaveInfo.DisappearOnArrive = npcRecord.DisappearOnArrive;
             this.MoveBehaveInfo.MovePath = npcRecord.MovePath;
-
-
-
-            this.EmnityConfId = npcRecord.EnmityConfId;
         }
 
         public override EEntityType Type => EEntityType.Npc;
@@ -219,9 +215,6 @@ namespace My.Map
                 EnmityComp?.Tick(dt);
                 combatStateComp?.Tick(dt);
 
-                // 这个一定是属于npc的 其他unit不应该有 
-                UpdateHMode();
-
                 TickHMode();
 
                 CheckSeeEvil();
@@ -238,10 +231,14 @@ namespace My.Map
         {
             base.OnResourceAttriChanged(attrId, before, after, intent);
 
-            // 4.3 死亡判断窗口：仅在含伤害时检查
             switch (attrId)
             {
                 case AttrIdConsts.UnitHVal:
+                    {
+                        _lastHModeTimer = LogicTime.time;
+                    }
+                    break;
+                case AttrIdConsts.UnitHShield:
                     {
                         _lastHModeTimer = LogicTime.time;
                     }
@@ -255,28 +252,27 @@ namespace My.Map
         /// </summary>
         protected void TickHMode()
         {
-            if(!IsHMode)
+            bool currHmode = IsInHMode();
+
+            // 五分钟后恢复意志
+            if (hShieldBroken && LogicTime.time - _lastHModeTimer > 5 * 60)
+            {
+                ForceSetResource(AttrIdConsts.UnitHShield, 10000);
+            }
+
+            if(!hShieldBroken)
             {
                 var hVal = GetAttr(AttrIdConsts.UnitHShield);
-                if(hVal <= 0)
+                if (hVal <= 0)
                 {
-                    IsHMode = true;
+                    hShieldBroken = true;
                     _lastHModeTimer = LogicTime.time;
-
-                    EventOnHModeChange?.Invoke();
                 }
             }
-            else
-            {
-                // 五分钟后恢复意志
-                if(LogicTime.time - _lastHModeTimer > 5 * 60)
-                {
-                    IsHMode = false;
-                    ForceSetResource(AttrIdConsts.UnitHShield, 10000);
-                    EventOnHModeChange?.Invoke();
-                    return;
-                }
 
+            // h模式下 检查射精
+            if(currHmode)
+            {
                 var hValMax = GetHValMax();
                 var hVal = GetAttr(AttrIdConsts.UnitHVal);
                 if (hVal >= hValMax)
@@ -369,12 +365,14 @@ namespace My.Map
             return EnmityComp.CheckIsEmnityFaction(factionId);
         }
 
-        public void UpdateHMode()
+        public bool IsInHMode()
         {
             if(cacheCfg.AlwaysHMode)
             {
-                IsHMode = true;
+                return true;
             }
+
+            return hShieldBroken;
         }
 
         protected override void OnConvertToAttachment()
@@ -478,7 +476,7 @@ namespace My.Map
                 return false;
             }
 
-            if(IsHMode)
+            if(hShieldBroken)
             {
                 return true;
             }

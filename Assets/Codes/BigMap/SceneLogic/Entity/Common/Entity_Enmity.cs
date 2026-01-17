@@ -70,6 +70,44 @@ namespace My.Map.Entity
                 _infos = new();
 
                 {
+                    // 默认的基础敌对
+                    var conf = new UnitEnmityConf();
+                    conf.Id = "default";
+                    conf.BaseEnmity = 0;
+                    _infos[conf.Id] = conf;
+                }
+
+                {
+                    // 默认的基础敌对
+                    var conf = new UnitEnmityConf();
+                    conf.Id = "city_bad";
+                    conf.BaseEnmity = 0;
+                    _infos[conf.Id] = conf;
+                }
+                
+
+                {
+                    var conf = new UnitEnmityConf();
+                    conf.Id = "default_npc";
+                    conf.BaseEnmity = 0;
+                    conf.Behaves = new List<UnitEnmityBehave>()
+                    {
+                        new UnitEnmityBehave()
+                        {
+                            EnmityType = EEnmityBehaveType.Loot,
+                            Param1 = 40
+                        },
+
+                        new UnitEnmityBehave()
+                        {
+                            EnmityType = EEnmityBehaveType.EnterRoom,
+                            Param1 = 20,
+                        },
+                    };
+
+                    _infos[conf.Id] = conf;
+                }
+                {
                     var conf = new UnitEnmityConf();
                     conf.Id = "default_npc";
                     conf.BaseEnmity = 0;
@@ -147,37 +185,40 @@ namespace My.Map.Entity
         {
             this.UnitEntity = unit;
 
-            string eId = unit.EmnityConfId;
-            if (string.IsNullOrEmpty(unit.EmnityConfId))
+            string enmityCfgId = unit.unitCfg.EnmityCfgId;
+            if (string.IsNullOrEmpty(enmityCfgId))
             {
-                if (unit is NpcUnitLogicEntity npcEntity)
-                {
-                    eId = "default_npc";
-                }
+                enmityCfgId = "default";
             }
 
-            enmityConf = UnitEnmityConfLoader.Get(eId);
+            enmityConf = UnitEnmityConfLoader.Get(enmityCfgId);
         }
 
         public void Tick(float dt)
         {
             //TryApplyShareEnmity();
-            if(UnitEntity.unitCfg.AlwaysHMode)
+            //if(enmityConf.BaseEnmity)
+            //{
+            //    IsEnmityState = true;
+            //}
+
+            //if(UnitEntity.VisibilityComp.IsTargetVisible(UnitEntity.LogicManager.playerLogicEntity.Id))
+            //{
+
+            //    if(!UnitEntity.IsTargetInvisibleFromSelf(UnitEntity.LogicManager.playerLogicEntity.Id))
+            //    {
+            //        if (UnitEntity.LogicManager.playerLogicEntity.WillBeGazed())
+            //        {
+            //            //IsEnmityState = true;
+            //        }
+            //    }
+
+            //}
+
+            var totalEnmity = enmityConf.BaseEnmity + CurrEnmityVal;
+            if (totalEnmity >= 100.0f && !IsEnmityState)
             {
                 IsEnmityState = true;
-            }
-
-            if(UnitEntity.VisibilityComp.IsTargetVisible(UnitEntity.LogicManager.playerLogicEntity.Id))
-            {
-
-                if(!UnitEntity.IsTargetInvisibleFromSelf(UnitEntity.LogicManager.playerLogicEntity.Id))
-                {
-                    if (UnitEntity.LogicManager.playerLogicEntity.WillBeGazed())
-                    {
-                        //IsEnmityState = true;
-                    }
-                }
-                
             }
         }
 
@@ -222,11 +263,6 @@ namespace My.Map.Entity
 
             if (changed)
             {
-                if (CurrEnmityVal >= 100.0f && !IsEnmityState)
-                {
-                    IsEnmityState = true;
-                }
-
                 // 更新最后更新时间
                 LastTriggerEnmityTime = LogicTime.time;
             }

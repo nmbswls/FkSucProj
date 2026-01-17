@@ -40,6 +40,8 @@ namespace My.Map
                 case AttrIdConsts.ImmumeKaiYou:
                 case AttrIdConsts.ImmuneEvilShock:
                 case AttrIdConsts.Invisible:
+                case AttrIdConsts.Sleep:
+
                     return EAttrType.State;
 
                 case AttrIdConsts.Attack:

@@ -114,6 +114,8 @@ namespace My.Map
             _currentAngle = newAngle;
 
             faceDir = SceneAngleUtil.DirFromAngle(_currentAngle);
+
+            _defaultLookDir = faceDir;
         }
     }
 }

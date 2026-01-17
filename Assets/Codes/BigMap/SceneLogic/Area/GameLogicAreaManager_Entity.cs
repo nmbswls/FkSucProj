@@ -175,6 +175,7 @@ namespace My.Map.Logic
                         unitRecord.MoveBehaveType = initInfo4Unit.MoveMode;
                         unitRecord.EnmityConfId = initInfo4Unit.EnmityConfId;
                         unitRecord.Unsensored = initInfo4Unit.InitUnsensored;
+                        unitRecord.MarkNoLogic = initInfo4Unit.InitNoLogic;
 
                         record = unitRecord;
                         break;
@@ -220,7 +221,6 @@ namespace My.Map.Logic
                 record.Position = initInfo.Position;
                 record.BelongRoomId = initInfo.BindRoomId;
                 record.FactionId = initInfo.OrgFactionId;
-
             }
             return record;
         }

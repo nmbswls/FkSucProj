@@ -77,6 +77,7 @@ namespace My.Config
         public string UnLabel; // »ÒÉ«Ñ¡Ïî
         public bool HideWhenFail = true;
         public float NeedDist = 0.4f;
+        public bool Passive = false;
 
         public List<CommonCheckCond> CheckCommonCond = new();
         public List<InteractCheckCond> CheckInteractCond = new();

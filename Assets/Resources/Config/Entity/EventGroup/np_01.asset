@@ -13,105 +13,197 @@ MonoBehaviour:
   m_Name: np_01
   m_EditorClassIdentifier: 
   CfgId: np_01
-  StaticGroupEntites:
-  - GroupId: 1
+  ShowName: 
+  PrefabName: 
+  NameOffset: -1
+  MainStatusInfo:
+    StatusId: 0
+    Desp: "\u9ED8\u8BA4\uFF0C\u4E00\u7FA4\u4EBA\u56F4\u7740\u5C11\u5973"
+    InteractInfos:
+    - InteractId: 0
+      Label: 
+      UnLabel: 
+      HideWhenFail: 1
+      NeedDist: 0
+      Passive: 1
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs: []
+    - InteractId: 1
+      Label: "\u8BF1\u60D1"
+      UnLabel: 
+      HideWhenFail: 1
+      NeedDist: 0
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 12
+        Param1: 0
+        Param2: 0
+        Param3: 
+        Param4: 
+        DelayTime: 0
+    - InteractId: 2
+      Label: "\u9547\u538B"
+      UnLabel: 
+      HideWhenFail: 1
+      NeedDist: 0
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 12
+        Param1: 0
+        Param2: 0
+        Param3: 
+        Param4: 
+        DelayTime: 0
+    HasBlock: 0
+  ExtraStatusInfos:
+  - StatusId: 9
+    Desp: "\u66B4\u529B\uFF0C\u5C11\u5973\u54ED\uFF0C\u654C\u4EBA\u56F4\u653B"
+    InteractInfos:
+    - InteractId: 1
+      Label: 
+      UnLabel: 
+      HideWhenFail: 0
+      NeedDist: 0
+      Passive: 1
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 101
+        Param1: 0
+        Param2: 0
+        Param3: 
+        Param4: 
+        DelayTime: 0
+      - OutputType: 100
+        Param1: 0
+        Param2: 9
+        Param3: 
+        Param4: 
+        DelayTime: 0
+    - InteractId: 2
+      Label: 
+      UnLabel: 
+      HideWhenFail: 0
+      NeedDist: 0
+      Passive: 1
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 1
+        Param1: 10
+        Param2: 0
+        Param3: 
+        Param4: 
+        DelayTime: 0
+    HasBlock: 0
+  - StatusId: 10
+    Desp: "\u6E05\u7406\u5B8C\u6BD5 \u53EA\u5269\u5C11\u5973"
+    InteractInfos:
+    - InteractId: 1
+      Label: "\u521D\u59CB\u5316"
+      UnLabel: 
+      HideWhenFail: 0
+      NeedDist: 0
+      Passive: 1
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 100
+        Param1: 0
+        Param2: 10
+        Param3: 
+        Param4: 
+        DelayTime: 0
+    HasBlock: 0
+  InitState: 0
+  StateChangeRules:
+  - FromStatus: 0
+    CommonConds: []
+    NeedSelfFlag:
+    - peace_mothod
+    ToStatus: 10
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName: 
+      ChangingEffect: 
+  - FromStatus: 0
+    CommonConds: []
+    NeedSelfFlag:
+    - force_mothod
+    ToStatus: 9
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName: 
+      ChangingEffect: 
+  GroupMemberInfos:
+  - MemberId: 1
     InitInfo:
-      rid: 1421625818343277514
-  - GroupId: 2
+      rid: 4055726025270625168
+  - MemberId: 2
     InitInfo:
-      rid: 1421625818343277518
-  - GroupId: 3
+      rid: 4055726025270625169
+  - MemberId: 3
     InitInfo:
-      rid: 1421625818343277520
-  - GroupId: 4
+      rid: 4055726025270625170
+  - MemberId: 4
     InitInfo:
-      rid: 1421625818343277522
-  - GroupId: 5
-    InitInfo:
-      rid: 1421625818343277523
-  EventTriggers:
-  - TriggerType: 1
-    Param1: 0
-    Param2: 0
-    Param3: 1,2,3,4
-    Param4: 
-    Outputs:
-    - OutputType: 1
-      Param1: 5
-      Param2: 2
-      Param3: 
-      Param4: 
-  - TriggerType: 2
-    Param1: 0
+      rid: 4055726025270625171
+  InnerTriggers:
+  - TriggerId: 100
+    TriggerType: 2
+    MaxTriggerCnt: 0
+    MinTriggerInterval: 0
+    Param1: 2
     Param2: 0
     Param3: 
     Param4: 
     Outputs:
-    - OutputType: 2
-      Param1: 0
-      Param2: 0
-      Param3: 1,2,3,4
-      Param4: 
     - OutputType: 1
-      Param1: 5
-      Param2: 1
+      Param1: 10
+      Param2: 0
       Param3: 
       Param4: 
+      DelayTime: 0
+  - TriggerId: 101
+    TriggerType: 1
+    MaxTriggerCnt: 1
+    MinTriggerInterval: 0
+    Param1: 9
+    Param2: 1
+    Param3: 
+    Param4: 
+    Outputs: []
+  - TriggerId: 201
+    TriggerType: 1
+    MaxTriggerCnt: 1
+    MinTriggerInterval: 0
+    Param1: 10
+    Param2: 1
+    Param3: 
+    Param4: 
+    Outputs: []
+  EventGroupStateInfos:
+  - StateId: 0
+    EnsureMemberIds: 01000000020000000300000004000000
+    ActiveTriggerIds: 
+  - StateId: 9
+    EnsureMemberIds: 01000000020000000300000004000000
+    ActiveTriggerIds: 6400000065000000
+  - StateId: 10
+    EnsureMemberIds: 01000000
+    ActiveTriggerIds: 
   references:
     version: 2
     RefIds:
-    - rid: 1421625818343277514
-      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: hunhun
-        Position: {x: 0.2, y: 0}
-        FaceDir: {x: 0, y: 1}
-        BindRoomId: 
-        OrgFactionId: 3
-        MoveMode: 0
-        EnmityConfId: 
-        IsPeace: 0
-        InitUnsensored: 0
-    - rid: 1421625818343277518
-      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: hunhun
-        Position: {x: -0.2, y: 0}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 3
-        MoveMode: 0
-        EnmityConfId: 
-        IsPeace: 0
-        InitUnsensored: 0
-    - rid: 1421625818343277520
-      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: hunhun
-        Position: {x: 0.4, y: 0}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 3
-        MoveMode: 0
-        EnmityConfId: 
-        IsPeace: 0
-        InitUnsensored: 0
-    - rid: 1421625818343277522
-      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: hunhun
-        Position: {x: -0.4, y: 0}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 3
-        MoveMode: 0
-        EnmityConfId: 
-        IsPeace: 0
-        InitUnsensored: 0
-    - rid: 1421625818343277523
+    - rid: 4055726025270625168
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: fck_girl_01
+        CfgId: fcked_girl_01
         Position: {x: 0, y: 0.3}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
@@ -119,3 +211,39 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
+    - rid: 4055726025270625169
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: -0.5, y: -0.5}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+    - rid: 4055726025270625170
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: 0, y: -0.5}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+    - rid: 4055726025270625171
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: 0.5, y: -0.5}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0

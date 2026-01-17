@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using My.Map;
+using My.Map.Entity;
 using My.Map.Scene;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
@@ -12,6 +14,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     public SceneUnitPresenter UnitPresenter;
 
     public List<MapUnitWeaponOne> WeaponOnes = new();
+    public YSortOrder ySortOrder;
 
     public void Awake()
     {
@@ -36,6 +39,21 @@ public class MapUnitWeaponCtrl : MonoBehaviour
 
     void Update()
     {
+
+        
+        bool isFacingUp = UnitPresenter.UnitEntity.FaceDir.y > 0.1f;
+        if(ySortOrder != null)
+        {
+            // 1. ¥¶¿Ì≤„º∂
+            ySortOrder.baseOrder = isFacingUp ?
+                -1 :
+                +1;
+        }
+
+        foreach (var weaponOne in WeaponOnes)
+        {
+            weaponOne.OnWeaponAimDirUpdate(UnitPresenter.UnitEntity.FaceDir);
+        }
     }
 
     /// <summary>
@@ -65,14 +83,19 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         findIt.ClearWeapon(hitId);
     }
 
-    public void OnWeaponTriggerHit(long hitId, long entityId)
+    public void OnWeaponTriggerHit(long hitId, ILogicEntity logicEntity)
     {
-        if(entityId == UnitPresenter.UnitEntity.Id)
+        if(logicEntity == null || logicEntity.Id == UnitPresenter.UnitEntity.Id)
         {
             return;
         }
         
-        Debug.Log("OnWeaponTriggerHit hit with id " + entityId);
-        UnitPresenter.OnWeaponHitCallback(hitId, entityId);
+        Debug.Log("OnWeaponTriggerHit hit with id " + logicEntity.Id);
+
+        if(logicEntity.GetAttr(AttrIdConsts.NoSelect) > 0)
+        {
+            return;
+        }
+        UnitPresenter.OnWeaponHitCallback(hitId, logicEntity.Id);
     }
 }

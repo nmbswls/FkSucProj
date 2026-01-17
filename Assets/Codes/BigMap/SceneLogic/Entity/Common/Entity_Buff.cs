@@ -135,6 +135,21 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["system_no_logic"] = new BuffDefinition()
+                {
+                    BuffId = "system_no_logic",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoSelect, ModifierValue = 1 } ,
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Sleep, ModifierValue = 1 } ,
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 } ,
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 } ,
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 } ,
+                    },
+                    DefaultDuration = -1,
+                };
+
+
                 _library["immune_evil_shock"] = new BuffDefinition()
                 {
                     BuffId = "immune_evil_shock",

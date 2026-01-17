@@ -48,7 +48,7 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         }
 
         Vector2 dirToTarget = toTarget.normalized;
-        float angle = Mathf.Abs(Vector2.SignedAngle(selfUnit.UnitEntity.FaceDir, toTarget));
+        float angle = Mathf.Abs(Vector2.SignedAngle(selfUnit.UnitEntity.CurrentLook, toTarget));
 
         // ±³ÏòÓ²ÏÞÖÆ
         if (angle >= HardBackLimitDeg)

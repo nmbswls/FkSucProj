@@ -38,7 +38,7 @@ namespace My.Map.Scene
         public GameObject faceIndicator;
         public Transform EyePos;
 
-        public Transform WeaponRoot;
+        //public Transform WeaponRoot;
         public MapUnitWeaponCtrl WeaponCtrl; // 武器控制器
 
         // 控制移动组件
@@ -168,38 +168,9 @@ namespace My.Map.Scene
             // 不锁面向时 调整
             //if (UnitEntity.GetAttr(AttrIdConsts.LockFace) == 0)
             {
-                if (WeaponRoot != null)
-                {
-                    float angle = 0;
-                    if (UnitEntity.FaceDir.x >= 0)
-                    {
-                        angle = Mathf.Atan2(UnitEntity.FaceDir.y, UnitEntity.FaceDir.x) * Mathf.Rad2Deg; // 与 +X 轴夹角
-                    }
-                    else
-                    {
-                        angle = Mathf.Atan2(UnitEntity.FaceDir.y, -UnitEntity.FaceDir.x) * Mathf.Rad2Deg; // 与 +X 轴夹角
-                    }
-
-                    for (int i = 0; i < WeaponRoot.childCount; i++)
-                    {
-                        var child = WeaponRoot.GetChild(i);
-                        child.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.forward); // 绕 Z 轴
-                    }
-
-
-                    if (UnitEntity.FaceDir.x >= 0)
-                    {
-                        WeaponRoot.localScale = new Vector3(Mathf.Abs(WeaponRoot.localScale.x), WeaponRoot.localScale.y, WeaponRoot.localScale.z);
-                    }
-                    else
-                    {
-                        WeaponRoot.localScale = new Vector3(-Mathf.Abs(WeaponRoot.localScale.x), WeaponRoot.localScale.y, WeaponRoot.localScale.z);
-                    }
-                }
-
                 if(AgentView != null)
                 {
-                    if (UnitEntity.FaceDir.x >= 0)
+                    if (UnitEntity.CurrentLook.x >= 0)
                     {
                         AgentView.localScale = new Vector3(Mathf.Abs(AgentView.localScale.x), AgentView.localScale.y, AgentView.localScale.z);
                     }
@@ -248,16 +219,7 @@ namespace My.Map.Scene
             }
             else
             {
-                Vector2 targetMoveVel;
-                if (UnitEntity.entityMotorComp.State == EMotorState.Free)
-                {
-                    targetMoveVel = UnitEntity.entityMotorComp.FreeMoveInput * UnitEntity.GetCurrSpeed();
-                }
-                else
-                {
-                    targetMoveVel = UnitEntity.entityMotorComp.GetDesiredVelocity();
-                }
-
+                Vector2 targetMoveVel = UnitEntity.entityMotorComp.GetDesiredVelocity();
                 return targetMoveVel + UnitEntity.externalVel;
             }
 
@@ -358,7 +320,7 @@ namespace My.Map.Scene
         protected void UpdateFaceDirIndicator()
         {
             if (faceIndicator == null) return;
-            float targetAngle = Mathf.Atan2(UnitEntity.FaceDir.y, UnitEntity.FaceDir.x) * Mathf.Rad2Deg;
+            float targetAngle = Mathf.Atan2(UnitEntity.CurrentLook.y, UnitEntity.CurrentLook.x) * Mathf.Rad2Deg;
             float currentAngle = faceIndicator.transform.eulerAngles.z;
 
             float desired = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref angularVel, smoothTime);

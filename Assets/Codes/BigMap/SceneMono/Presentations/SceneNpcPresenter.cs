@@ -110,10 +110,7 @@ namespace My.Map.Scene
 
             if (NpcEntity.IsAttaching) return false;
 
-            if (NpcEntity.IsHMode)
-            {
-                //return true;
-            }
+            
 
             if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
@@ -126,6 +123,10 @@ namespace My.Map.Scene
                 int enableOne = 0;
                 foreach (var i in logicInts)
                 {
+                    if(i.Passive)
+                    {
+                        continue;
+                    }
                     bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
                     if (canInt || !i.HideWhenFail)
                     {
@@ -147,9 +148,8 @@ namespace My.Map.Scene
 
                 if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
                 {
-                    if(NpcEntity.IsHMode)
+                    if(NpcEntity.IsInHMode())
                     {
-
                         return true;
                     }
 
@@ -251,7 +251,7 @@ namespace My.Map.Scene
             if (NpcEntity.IsAttaching) return ret;
             //if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
             {
-                if (NpcEntity.IsHMode)
+                //if (NpcEntity.IsHMode)
                 {
                     
                 }
@@ -263,6 +263,12 @@ namespace My.Map.Scene
                 var logicInts = NpcEntity.InteractComp.InteractInfos;
                 foreach (var i in logicInts)
                 {
+
+                    if (i.Passive)
+                    {
+                        continue;
+                    }
+
                     bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
                     if (canInt || !i.HideWhenFail)
                     {

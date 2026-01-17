@@ -176,5 +176,5 @@ public interface ISceneAbilityViewer
 
     void ShowPauseCloseupWindow(string showName, float duration);
 
-    void PlayDialog(string dialogId);
+    void PlayDialog(string dialogId, long? srcEntityId = null);
 }

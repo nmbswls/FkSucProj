@@ -24,7 +24,7 @@ namespace Config.Map
         public class StatusInfo
         {
             public int StatusId;
-
+            public string Desp;
             public List<MapInteractInfo> InteractInfos = new();
 
             public bool HasBlock = false;

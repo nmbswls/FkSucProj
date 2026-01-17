@@ -49,6 +49,8 @@ namespace My.Map
         private GazeRequest? _activeRequest = null;
         private Vector2 _currentLook;
 
+        public Vector2 CurrentLook { get { return _currentLook; } }
+
         private void InitGazeModule()
         {
             _defaultLookDir = Vector2.right;

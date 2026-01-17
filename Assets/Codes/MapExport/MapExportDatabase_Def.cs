@@ -86,6 +86,7 @@ namespace My.MapExport
 
         public string BindRoomId;
         public EFactionId OrgFactionId;
+
     }
 
     [Serializable]
@@ -97,6 +98,7 @@ namespace My.MapExport
         public bool IsPeace;
 
         public bool InitUnsensored;
+        public bool InitNoLogic;
     }
 
     [Serializable]

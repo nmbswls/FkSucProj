@@ -234,7 +234,7 @@ namespace My.Map.Entity
         private void TickFree()
         {
             DesiredVelocity = Vector3.zero;
-            DesiredVelocity = FreeMoveInput;
+            DesiredVelocity = FreeMoveInput * UnitEntity.GetCurrSpeed();
             // 可渐停：从当前速度到0
             Velocity = Vector3.zero;
         }

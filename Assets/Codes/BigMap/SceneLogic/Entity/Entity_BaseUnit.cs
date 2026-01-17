@@ -53,7 +53,8 @@ namespace My.Map
         public float viewRadius = 8f;
         public float fovDegrees = 90f;
 
-
+        public bool MarkNoLogic; // 
+        public bool MarkUnsensored;
         public LogicEntityRecord4UnitBase UnitBaseRecord 
         { 
             get 
@@ -78,8 +79,6 @@ namespace My.Map
 
         public AbsMapUnitConfig unitCfg;
 
-        public string EmnityConfId;
-
         /// <summary>
         /// event
         /// </summary>
@@ -100,6 +99,10 @@ namespace My.Map
             this.MoveBehaveInfo = new();
 
             //ForceSetFaceTarget(bindingRecord.FaceDir, true);
+            if(MarkNoLogic)
+            {
+                logicManager.globalBuffManager.AddBuff(this.Id, "system_no_logic");
+            }
         }
 
         public override void Initialize()
@@ -128,6 +131,11 @@ namespace My.Map
             entityMotorComp = new(this, LogicManager.navProvider);
 
             InitGazeModule();
+
+            if(MarkNoLogic)
+            {
+
+            }
         }
 
         public override void Tick(float dt)
@@ -1022,7 +1030,7 @@ namespace My.Map
                             {
                                 basicJs = 9900;
                             }
-                            dmg = (long)(dmg * basicJs * 0.0001);
+                            dmg = (long)(dmg * (10000 - basicJs) * 0.0001);
                             return -dmg;
                         }
                         return delta;

@@ -156,6 +156,7 @@ namespace My.Map.Entity.AI
                         config.States.Add(attractedState);
                     }
 
+
                     {
                         var returnState = new AIBehaviorConfig.StateInfo()
                         {

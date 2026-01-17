@@ -19,6 +19,8 @@ public class DialogueRuntime
     public Func<string, string> Localize;
 
     public Action<string> JumpTo;
+
+    public long? SrcEntityId;
 }
 
 public partial class DialoguePlayer : MonoBehaviour

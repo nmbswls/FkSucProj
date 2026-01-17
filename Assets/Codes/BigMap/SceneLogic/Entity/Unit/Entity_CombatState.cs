@@ -93,8 +93,6 @@ namespace My.Map
             DecayDamageThreat(dt);
             DecaySightThreat(dt);
 
-            TryExitCombat();
-
             AllySenseThreatTick();
 
             EnemySightThreatTick();
@@ -113,6 +111,9 @@ namespace My.Map
                     UnitEntity.RegisterGaze(PrimaryTargetId, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Combat, 2f);
                 }
             }
+
+            TryExitCombat();
+
         }
 
         public void TryRecover()
@@ -393,6 +394,7 @@ namespace My.Map
                 }
                 if (witness.CombatState != ECombatState.InCombat) 
                     continue;
+                if (witness.IsInHMode()) continue;
 
                 //float confidence = ComputeWitnessConfidence(witness);
                 //if (confidence < minConfidence) continue;
@@ -437,7 +439,7 @@ namespace My.Map
         private void EnemySightThreatTick()
         {
 
-            if(_enmitySightTimer + 1.0f > LogicTime.time)
+            if(_enmitySightTimer + 0.3f > LogicTime.time)
             {
                 return;
             }
@@ -451,10 +453,22 @@ namespace My.Map
             {
                 var seeOneEntity = UnitEntity.LogicManager.GetLogicEntity(seeOne.TargetId, false);
                 if (seeOneEntity == null) continue;
-                if(!UnitEntity.CheckIsEmnityFaction(seeOneEntity.FactionId))
+
+                if (UnitEntity is NpcUnitLogicEntity npcUnit && npcUnit.IsInHMode())
                 {
-                    continue;
+                    if(seeOneEntity.Type != EEntityType.Player)
+                    {
+                        continue;
+                    }
                 }
+                else 
+                {
+                    if (!UnitEntity.CheckIsEmnityFaction(seeOneEntity.FactionId))
+                    {
+                        continue;
+                    }
+                }
+                
 
                 // todo 获取最佳目标
                 if (seeOne.IsInView && seeOne.LastSeenTime + 0.5f > LogicTime.time)

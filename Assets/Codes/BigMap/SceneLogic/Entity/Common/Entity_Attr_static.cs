@@ -36,6 +36,7 @@ namespace My.Map.Entity
         public const string HideView = "HideView";
         public const string SuperArmor = "SuperArmor";
         public const string ImmumeKaiYou = "ImmumeKaiYou";
+        public const string Sleep = "Sleep";
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";
 

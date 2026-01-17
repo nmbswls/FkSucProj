@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
+  m_Name: fcked_girl_01
+  m_EditorClassIdentifier: 
+  CfgId: fcked_girl_01
+  ShowName: "\u53D7\u56F0\u5C11\u5973"
+  PrefabName: 
+  NameOffset: 60
+  MainStatusInfo:
+    StatusId: 0
+    Desp: "\u4E3B\u72B6\u6001"
+    InteractInfos: []
+    HasBlock: 0
+  ExtraStatusInfos:
+  - StatusId: 9
+    Desp: 
+    InteractInfos: []
+    HasBlock: 0
+  - StatusId: 10
+    Desp: 
+    InteractInfos:
+    - InteractId: 0
+      Label: "\u4EA4\u8C08"
+      UnLabel: 
+      HideWhenFail: 0
+      NeedDist: 0
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond:
+      - CheckType: 3
+        Param1: 0
+        Param2: 0
+        Param3: give_reward
+        Param4: 
+      Outputs:
+      - OutputType: 10
+        Param1: 0
+        Param2: 0
+        Param3: give_reward
+        Param4: 
+        DelayTime: 0
+      - OutputType: 12
+        Param1: 0
+        Param2: 0
+        Param3: fck_girl_thank
+        Param4: 
+        DelayTime: 0
+    HasBlock: 0
+  InitState: 0
+  StateChangeRules: []

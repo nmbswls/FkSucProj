@@ -58,6 +58,8 @@ namespace My.Map.Logic
         public bool Unsensored;
         public bool MarkDefeated; // 击败标记
         public bool MarkAttaching;
+
+        public bool MarkNoLogic; // 非逻辑状态
     }
 
     // 逻辑实体的轻量描述（可存持久化）

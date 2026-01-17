@@ -673,7 +673,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
 
-    public void PlayDialog(string dialogId)
+    public void PlayDialog(string dialogId, long? srcEntityId = null)
     {
         var dialogAsset = Resources.Load<TextAsset>($"Dialogue/output/{dialogId}");
         if(dialogAsset == null)
@@ -695,7 +695,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             ui = dialogPanel,
             driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
-            JumpTo = label => dialoguePlayer.JumpToStep(label)
+            JumpTo = label => dialoguePlayer.JumpToStep(label),
+            SrcEntityId = srcEntityId,
         };
 
         dialoguePlayer.ui = dialogPanel;

@@ -103,6 +103,7 @@ namespace Config.Unit
 
 
         public EFactionId DefaultFactionId;
+        public string EnmityCfgId;
 
         [Header(" Ù–‘ƒ£∞Â")]
 
@@ -111,5 +112,7 @@ namespace Config.Unit
         public List<string> SkillList = new();
 
         public int DefaultDropId;
+
+
     }
 }
