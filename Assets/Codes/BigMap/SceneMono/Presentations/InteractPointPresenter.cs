@@ -109,7 +109,7 @@ namespace My.Map.Scene
         {
             base.Bind(logic);
 
-            RealLogic.OnStatusChange += OnStatusChanged;
+            RealLogic.EventOnStatusChange += OnStatusChanged;
 
             RealLogic.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
         }
@@ -118,7 +118,7 @@ namespace My.Map.Scene
         {
             if(RealLogic != null)
             {
-                RealLogic.OnStatusChange -= OnStatusChanged;
+                RealLogic.EventOnStatusChange -= OnStatusChanged;
                 RealLogic.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
             }
 

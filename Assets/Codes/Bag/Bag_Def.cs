@@ -69,6 +69,8 @@ namespace Config
             None,
             AddHunger,
             GiveDrop,
+
+            UseAbility,
         }
 
         [Serializable]

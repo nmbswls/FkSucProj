@@ -16,53 +16,67 @@ namespace Config.Map
         [Serializable]
         public class MemberInfo
         {
-            public int GroupId;
+            public int MemberId;
             
             [SerializeReference]
             public EntityInitInfo InitInfo;
         }
 
-        // 受管理信息
-        public List<MemberInfo> StaticGroupEntites = new List<MemberInfo>();
+        public List<MemberInfo> GroupMemberInfos = new List<MemberInfo>();
+
+        //[Serializable]
+        //public class GroupEventOutput
+        //{
+        //    public enum EOutputType
+        //    {
+        //        None,
+        //        UpdateInteractStatus,
+        //        ActivateUnits,
+        //        RemoveEntities,
+        //    }
+
+        //    public EOutputType OutputType;
+        //    public long Param1;
+        //    public long Param2;
+        //    public string Param3;
+        //    public string Param4;
+        //}
 
         [Serializable]
-        public class GroupEventOutput
-        {
-            public enum EOutputType
-            {
-                None,
-                UpdateInteractStatus,
-                ActivateUnits,
-                RemoveEntities,
-            }
-
-            public EOutputType OutputType;
-            public long Param1;
-            public long Param2;
-            public string Param3;
-            public string Param4;
-        }
-
-        [Serializable]
-        public class GroupEventListener
+        public class GroupInnerTrigger
         {
             public enum ETriggerType
             {
                 None,
-                Cleared,
+                SelfStatus,
+                MemberCleared,
                 AnyEnmity,
-                MemberIntStatus,
+                GroupInteractableStatus,
             }
-
+            public int TriggerId;
             public ETriggerType TriggerType;
+            public int MaxTriggerCnt;
+            public float MinTriggerInterval;
+
             public long Param1;
             public long Param2;
             public string Param3;
             public string Param4;
 
-            public List<GroupEventOutput> Outputs = new();
+            public List<LogicInteractOutput> Outputs = new();
         }
 
-        public List<GroupEventListener> EventTriggers = new();
+        public List<GroupInnerTrigger> InnerTriggers = new();
+
+
+        [Serializable]
+        public class EventGroupStateInfo
+        {
+            public int StateId;
+            public List<int> EnsureMemberIds = new();
+            public List<int> ActiveTriggerIds = new();
+        }
+
+        public List<EventGroupStateInfo> EventGroupStateInfos = new();
     }
 }

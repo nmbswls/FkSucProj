@@ -125,6 +125,11 @@ namespace My.Map
                 }
             }
             // 处理
+
+            if(!_isInteracting)
+            {
+
+            }
         }
 
 
@@ -348,6 +353,74 @@ namespace My.Map
                         }
                         break;
 
+                    #region group相关
+
+                    case Config.LogicInteractOutput.EOutputType.EGMemberChangeState:
+                        {
+
+                            var ownerEG = Owner as EventGroupLogicEntity;
+                            if (ownerEG == null)
+                            {
+                                Debug.LogError("EGMemberChangeState owner not event group ");
+                                break;
+                            }
+
+                            int memberId = (int)output.Param1;
+                            int status = (int)output.Param2;
+
+                            ownerEG.MemberId2EntityMap.TryGetValue(memberId, out var entityId);
+                            if (entityId == 0)
+                            {
+                                Debug.Log("HandleOutput EGMemberChangeState UpdateInteractStatus fail e");
+                                continue;
+                            }
+
+                            var intPoint = Owner.LogicManager.GetLogicEntity(entityId) as LogicEntityInteractPoint;
+                            if (intPoint == null)
+                            {
+                                Debug.Log("HandleOutput UpdateInteractStatus no entity e");
+                                continue;
+                            }
+
+                            intPoint.ChangeSelfStatus(status);
+                        }
+                        break;
+                    case Config.LogicInteractOutput.EOutputType.EGMemberActivate:
+                        {
+
+                            var ownerEG = Owner as EventGroupLogicEntity;
+                            if (ownerEG == null)
+                            {
+                                Debug.LogError("EGMemberChangeState owner not event group ");
+                                break;
+                            }
+
+                            ownerEG.ActivateSleepyMembers();
+                            //int memberId = (int)output.Param1;
+                            //int status = (int)output.Param2;
+
+                            //ownerEG.MemberId2EntityMap.TryGetValue(memberId, out var entityId);
+                            //if (entityId == 0)
+                            //{
+                            //    Debug.Log("HandleOutput EGMemberChangeState UpdateInteractStatus fail e");
+                            //    continue;
+                            //}
+
+                            //var unit = Owner.LogicManager.GetLogicEntity(entityId) as BaseUnitLogicEntity;
+                            //if (unit == null)
+                            //{
+                            //    Debug.Log("HandleOutput UpdateInteractStatus no entity e");
+                            //    continue;
+                            //}
+
+                            //unit.IsActive = true;
+                        }
+                        break;
+
+                    #endregion
+
+
+
                     #region pending 持续性的
 
                     case LogicInteractOutput.EOutputType.Wait:
@@ -382,6 +455,11 @@ namespace My.Map
             {
                 DoInteractEnd();
             }
+        }
+
+        public void HandleOneDirectOutput()
+        {
+
         }
 
         private void DoInteractEnd()

@@ -112,11 +112,13 @@ namespace My.Map.Logic
     public class LogicEntityRecord4EventGroup : LogicEntityRecord4InteractPoint
     {
         /// <summary>
-        /// 受管理member集合
+        /// 已创建的集合
         /// </summary>
-        public Dictionary<int, long> MemberEntityMap = new();
-        public List<int> SleepMemberIds = new();
+        public Dictionary<int, long> MemberId2EntityMap = new();
 
-        public List<int> DestroyedMemberIds = new();
+        public List<int> CurrActiveMembers = new();
+        
+        //public List<int> SleepMemberIds = new();
+        //public List<int> DestroyedMemberIds = new();
     }
 }

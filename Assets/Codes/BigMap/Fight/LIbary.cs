@@ -1786,13 +1786,13 @@ namespace My.Map.Entity
                     {
                         ResourceId = AttrIdConsts.UnitHVal,
                         AddValue = 1000,
-                        IsEnmity = true,
+                        IsEnmity = false,
                     },
                     new MapAbilityEffectCostResourceCfg()
                     {
                         ResourceId = AttrIdConsts.HP,
                         CostValue = 1,
-                        IsEnmity = true,
+                        IsEnmity = false,
                     },
                     new MapFightEffectKnockBackCfg()
                     {

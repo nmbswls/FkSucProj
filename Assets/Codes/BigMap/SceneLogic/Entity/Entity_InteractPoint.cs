@@ -27,7 +27,7 @@ namespace My.Map.Entity
 
         public EntityInteractComp InteractComp;
 
-        public event Action<StateChangeView> OnStatusChange;
+        public event Action<StateChangeView> EventOnStatusChange;
 
 
         public LogicEntityInteractPoint(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -179,7 +179,8 @@ namespace My.Map.Entity
                 InteractComp.RefreshInteractInfo(new());
             }
 
-            OnStatusChange?.Invoke(changeView);
+            OnStatusChange(oldStat);
+            EventOnStatusChange?.Invoke(changeView);
         }
 
         public void DoAnimation(string animName)
@@ -189,7 +190,33 @@ namespace My.Map.Entity
 
             AddAnimLayer(animName);
         }
+
+        protected virtual void OnStatusChange(int preStage)
+        {
+
+        }
+
+        public override void OnDespawn(out LogicEntityRecord? snapshot)
+        {
+
+            base.OnDespawn(out snapshot);
+
+            var realSnapshot = CreateRecordByType();
+            FillInteractPointRecord(realSnapshot as LogicEntityRecord4InteractPoint);
+
+            snapshot = realSnapshot;
+        }
+    
+        protected virtual LogicEntityRecord CreateRecordByType()
+        {
+            return new LogicEntityRecord4InteractPoint();
+        }
+
+        protected virtual void FillInteractPointRecord(LogicEntityRecord4InteractPoint input)
+        {
+        }
     }
+
 
 
 }

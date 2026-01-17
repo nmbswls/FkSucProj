@@ -14,7 +14,7 @@ namespace My.Config
     {
         public enum EOutputType
         {
-            Invalid,
+            Invalid = 0,
             ChangeSelfStatus,
             FinishTask,
             GiveItems,
@@ -35,6 +35,9 @@ namespace My.Config
 
             SelfAnim,
             Wait,
+
+            EGMemberChangeState = 100,
+            EGMemberActivate = 101,
         }
 
         public EOutputType OutputType;
