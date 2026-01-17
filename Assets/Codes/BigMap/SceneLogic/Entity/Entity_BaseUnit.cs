@@ -217,6 +217,11 @@ namespace My.Map
                 EntityId = this.Id,
                 Pos = Pos,
             });
+
+            {
+                LogicManager.globalBuffManager.AddBuff(this.Id, "unsensored");
+                this.MarkUnsensored = true;
+            }
         }
 
 
@@ -833,9 +838,6 @@ namespace My.Map
                         for (int i = 0; i < items.Count; i++)
                         {
                             containItems[i] = FakeItemDatabase.CreateItemStack(items[i].Item1, items[i].Item2);
-
-                            //var itemConf = FakeItemDatabase.GetIcon();
-                            ItemSearchProgress[i] = 1.5f;
                         }
                     }
                     return containItems;

@@ -1,6 +1,7 @@
 using Map.Entity;
 using Map.Logic.Events;
 using My.Map.Entity;
+using My.MiniGame;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -32,6 +33,11 @@ namespace My.Map.Scene
 
         public List<AnimationClip> SpecialAnimClips;
         private Dictionary<string, AnimationClip> _animCacheDict = new();
+
+        public static int DeepAbsorbInteractGoodId = 99;
+        public static int DeepAbsorbInteractBadId = 100;
+        public static int PickDropInteractId = 101;
+        public static int BackHit = 102;
 
         protected override void Awake()
         {
@@ -110,74 +116,53 @@ namespace My.Map.Scene
 
             if (NpcEntity.IsAttaching) return false;
 
-            
-
-            if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+            if(UnitEntity.IsDead)
             {
-                if (NpcEntity.InteractComp.IsInteracting)
-                {
-                    return false;
-                }
-
-                var logicInts = NpcEntity.InteractComp.InteractInfos;
-                int enableOne = 0;
-                foreach (var i in logicInts)
-                {
-                    if(i.Passive)
-                    {
-                        continue;
-                    }
-                    bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
-                    if (canInt || !i.HideWhenFail)
-                    {
-                        enableOne += 1;
-                    }
-                }
-
-                if (enableOne > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-
-                if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
-                {
-                    if(NpcEntity.IsInHMode())
-                    {
-                        return true;
-                    }
-
-                    return false;
-                }
-
-                if (UnitEntity.CheckHasBuff("unsensored"))
-                {
-                    if (UnitEntity.GetAttr(AttrIdConsts.DeepZhaChance) == 0)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
-                    {
-                        return false;
-                    }
-                }
-
                 return true;
             }
 
-            //if(NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) > 0)
-            //{
-            //    return true;
-            //}
+            // 针对晕眩类型 如果可榨取
+            if (UnitEntity.MarkUnsensored)
+            {
+                return true;
+            }
+
+            do
+            {
+                if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+                {
+                    if (!NpcEntity.InteractComp.IsInteracting)
+                    {
+                        break;
+                    }
+
+                    var logicInts = NpcEntity.InteractComp.InteractInfos;
+                    int enableOne = 0;
+                    foreach (var i in logicInts)
+                    {
+                        if (i.Passive)
+                        {
+                            continue;
+                        }
+                        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
+                        if (canInt || !i.HideWhenFail)
+                        {
+                            enableOne += 1;
+                        }
+                    }
+
+                    if (enableOne > 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            while (false);
+
+            if (!MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 150f))
+            {
+                return true;
+            }
 
             return false;
         }
@@ -185,47 +170,59 @@ namespace My.Map.Scene
         public void TriggerInteract(int selectionId)
         {
 
-            if(selectionId == 99)
+            if (selectionId < 50 && MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
             {
-                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.UseSkill("h_mode_execute", target:NpcEntity);
+                NpcEntity.InteractComp.TryTriggerInteract(selectionId);
                 return;
             }
 
-            if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+            if(selectionId == DeepAbsorbInteractGoodId)
             {
-                if (selectionId < NpcEntity.cacheCfg.InteractList.Count)
+               DeepAbsorbPanel.Show(0, 5, 3);
+                //MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
+            }
+            else if(selectionId == PickDropInteractId)
+            {
+                var container = NpcEntity.GetLootItemContainer();
+                if (container != null)
                 {
-
-                    NpcEntity.InteractComp.TryTriggerInteract(selectionId);
+                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("use_loot_point", target: NpcEntity,
+                    overrideParams: new Dictionary<string, string>()
+                    {
+                        ["PhaseExecutingTime"] = "0"
+                    }, phaseOverrideAnims: new Dictionary<string, string>()
+                    {
+                        ["Executing"] = string.Empty,
+                    });
                 }
             }
-            else
+            else if(selectionId == BackHit)
             {
-                if (selectionId == 1)
-                {
-                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
-                }
-                else if (selectionId == 2)
-                {
-                    if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
-                    {
-                        return;
-                    }
+                //if (selectionId == 1)
+                //{
+                //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
+                //}
+                //else if (selectionId == 2)
+                //{
+                //    if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
+                //    {
+                //        return;
+                //    }
 
-                    if (NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) == 0)
-                    {
-                        //return;
-                    }
+                //    if (NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) == 0)
+                //    {
+                //        //return;
+                //    }
 
-                    // 显示层事件
-                    MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
-                    {
-                        Name = "AbsorbDizzy",
-                        Param3 = this.Id,
-                    });
+                //    // 显示层事件
+                //    MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+                //    {
+                //        Name = "AbsorbDizzy",
+                //        Param3 = this.Id,
+                //    });
 
-                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
-                }
+                //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
+                //}
             }
 
         }
@@ -249,26 +246,65 @@ namespace My.Map.Scene
         {
             var ret = new List<SceneInteractSelection>();
             if (NpcEntity.IsAttaching) return ret;
-            //if (NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+
+            if (UnitEntity.IsDead)
             {
-                //if (NpcEntity.IsHMode)
+                ret.Add(new SceneInteractSelection()
                 {
-                    
-                }
+                    SelectId = PickDropInteractId,
+                    SelectContent = "搜刮",
+                    Selectable = true
+                }); 
             }
 
 
-            if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+            if (UnitEntity.MarkUnsensored)
             {
+                if (UnitEntity.GetAttr(AttrIdConsts.DeepZhaChance) != 0)
+                {
+                    ret.Add(new SceneInteractSelection()
+                    {
+                        SelectId = DeepAbsorbInteractGoodId,
+                        SelectContent = "深度榨取",
+                        Selectable = true
+                    });
+                }
+                else
+                {
+                    ret.Add(new SceneInteractSelection()
+                    {
+                        SelectId = DeepAbsorbInteractBadId,
+                        SelectContent = "深度榨取(无）",
+                        Selectable = false
+                    });
+                }
+            }
+
+            do
+            {
+                if (!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+                {
+                    break;
+                }
+
+                if(UnitEntity.IsDead)
+                {
+                    break;
+                }
+
+                if (!NpcEntity.InteractComp.IsInteracting)
+                {
+                    break;
+                }
+
                 var logicInts = NpcEntity.InteractComp.InteractInfos;
+                int enableOne = 0;
                 foreach (var i in logicInts)
                 {
-
                     if (i.Passive)
                     {
                         continue;
                     }
-
                     bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
                     if (canInt || !i.HideWhenFail)
                     {
@@ -276,30 +312,21 @@ namespace My.Map.Scene
                         {
                             SelectId = i.InteractId,
                             SelectContent = i.Label,
+                            Selectable = true
                         });
                     }
                 }
             }
-            else
+            while (false);
+
+            if (!MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 150f))
             {
-                if (UnitEntity.CheckHasBuff("unsensored"))
+                ret.Add(new SceneInteractSelection()
                 {
-                    ret.Add(new SceneInteractSelection()
-                    {
-                        SelectId = 1,
-                        SelectContent = "Int",
-
-                    });
-                }
-                else
-                {
-                    ret.Add(new SceneInteractSelection()
-                    {
-                        SelectId = 2,
-                        SelectContent = "Int",
-
-                    });
-                }
+                    SelectId = BackHit,
+                    SelectContent = "被刺",
+                    Selectable = true
+                }); ;
             }
 
             return ret;

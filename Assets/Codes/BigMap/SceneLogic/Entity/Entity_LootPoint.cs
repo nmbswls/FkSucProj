@@ -114,10 +114,7 @@ namespace My.Map
             {
                 get
                 {
-
-                    
                     return containItems;
-
                 }
             }
 

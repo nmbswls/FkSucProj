@@ -476,6 +476,16 @@ namespace My.Map
                 return false;
             }
 
+            if(IsDead)
+            {
+                return false;
+            }
+
+            if(MarkDestroyed)
+            {
+                return false;
+            }
+
             if(hShieldBroken)
             {
                 return true;
