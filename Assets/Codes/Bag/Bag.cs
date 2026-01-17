@@ -893,5 +893,7 @@ namespace My.Player.Bag
         event Action<int> EnOnUnrealed;
 
         IItemContainer GetLootItemContainer();
+
+        void TryUseLootPoint();
     }
 }

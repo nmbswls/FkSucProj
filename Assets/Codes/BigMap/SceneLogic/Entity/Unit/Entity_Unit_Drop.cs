@@ -11,6 +11,12 @@ namespace My.Map
     public partial class BaseUnitLogicEntity : ILootableObj
     {
 
+        public void TryUseLootPoint()
+        {
+            LogicManager.viewer.ShowFakeFxEffect("หัฃก", Pos);
+            LogicManager.viewer.StartLoot(this);
+        }
+
         public List<ItemStack> LootItems
         {
             get

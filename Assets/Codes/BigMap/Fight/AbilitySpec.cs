@@ -1,5 +1,6 @@
 using Map.Entity;
 using My.Map.Fight;
+using My.Player.Bag;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -177,4 +178,6 @@ public interface ISceneAbilityViewer
     void ShowPauseCloseupWindow(string showName, float duration);
 
     void PlayDialog(string dialogId, long? srcEntityId = null);
+
+    void StartLoot(ILootableObj lootObj);
 }

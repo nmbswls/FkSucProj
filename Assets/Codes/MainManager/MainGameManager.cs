@@ -17,6 +17,7 @@ using My.Map.Logic;
 using My.Map.Scene;
 using My.Map.View;
 using My.MiniGame;
+using My.Player.Bag;
 using My.Saving;
 using My.UI;
 using Newtonsoft.Json;
@@ -704,6 +705,11 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             UIManager.Instance.HidePanel("DialoguePanel");
         });
+    }
+
+    public void StartLoot(ILootableObj lootObj)
+    {
+        UIOrchestrator.Instance.TryEnterLootDetailMode(lootObj);
     }
 }
 

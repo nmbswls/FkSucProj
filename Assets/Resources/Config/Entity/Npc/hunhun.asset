@@ -29,7 +29,7 @@ MonoBehaviour:
   EnmityCfgId: city_bad
   Hp: 100
   SkillList: []
-  DefaultDropId: 0
+  DefaultDropId: 1
   NpcTag: 
   InteractList: []
   IgnoreAttractLevel: 0

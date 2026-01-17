@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Config;
 using My.Map.Logic;
+using My.Player.Bag;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
@@ -54,9 +55,9 @@ namespace My.Map.Entity
                 return;
             }
             var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
-            if (targetEntity != null && targetEntity is LootPointLogicEntity lootPoint)
+            if (targetEntity != null && targetEntity is ILootableObj lootObj)
             {
-                lootPoint.TryUseLootPoint();
+                lootObj.TryUseLootPoint();
             }
             else
             {
