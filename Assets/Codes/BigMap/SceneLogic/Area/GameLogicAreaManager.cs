@@ -606,6 +606,13 @@ namespace My.Map.Logic
                         }
                     }
 
+                    bool busy = CheckLogicBusyAlive(loadedEntity);
+                    if(busy)
+                    {
+                        break;
+                    }
+
+
                     st.State = LogicLifeState.Cooldown;
                     st.Timer = settings.ExitCooldown;
                     break;
@@ -672,6 +679,25 @@ namespace My.Map.Logic
                     }
                     break;
             }
+        }
+
+        /// <summary>
+        /// 检查物体是否处于逻辑忙状态
+        /// 逻辑忙的物体不会被卸载
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private bool CheckLogicBusyAlive(ILogicEntity entity)
+        {
+            if(entity is LogicEntityInteractPoint intPoint)
+            {
+                if(intPoint.IsInteracting)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void EnqueueSpawn(long id)

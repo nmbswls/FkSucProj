@@ -6,6 +6,7 @@ using My.Map.Logic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static Config.Map.MapInteractPointConfig;
 using static UnityEditor.Rendering.CameraUI;
@@ -16,12 +17,11 @@ namespace My.Map.Entity
 
     public class LogicEntityInteractPoint : LogicEntityBase, IWithInteract, IEntityInteractable
     {
-        public LogicEntityRecord4InteractPoint RealRecord { get { return (LogicEntityRecord4InteractPoint)BindingRecord; } }
-
         // ״̬
         //public bool Appear = false;
         public int CurrStatusId = 0;
         private bool IsSwitching = false;
+        public Dictionary<string, string> DynamicVariables = new();
 
         public MapInteractPointConfig cacheCfg;
 
@@ -34,7 +34,9 @@ namespace My.Map.Entity
         {
             cacheCfg = MapInteractPointLoader.Get(CfgId);
 
-            //InitStatusChangeListner();
+            var realRecord = bindingRecord as LogicEntityRecord4InteractPoint;
+            CurrStatusId = realRecord.Status;
+            DynamicVariables.AddRange(realRecord.DynamicVariables);
         }
 
         public override EEntityType Type => EEntityType.InteractPoint;
@@ -42,8 +44,6 @@ namespace My.Map.Entity
         public override void Initialize()
         {
             base.Initialize();
-
-            CurrStatusId = RealRecord.Status;
 
             InteractComp = new(this);
 
@@ -58,7 +58,7 @@ namespace My.Map.Entity
 
         public string GetRuntimeVariable(string paramName)
         {
-            RealRecord.DynamicVariables.TryGetValue(paramName, out var value);
+            DynamicVariables.TryGetValue(paramName, out var value);
             return value;
         }
 
@@ -205,6 +205,10 @@ namespace My.Map.Entity
         protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
         {
             base.RefreshEntityRecordInfo(input);
+
+            var realRecord = input as LogicEntityRecord4InteractPoint;
+            realRecord.Status = CurrStatusId;
+            realRecord.DynamicVariables.AddRange(DynamicVariables);
         }
     }
 

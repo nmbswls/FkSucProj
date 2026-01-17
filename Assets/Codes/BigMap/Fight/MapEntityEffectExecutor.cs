@@ -332,7 +332,7 @@ namespace My.Map.Entity
                 var srcUnit = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
                 if (srcUnit == null)
                 {
-                    Debug.LogError("AbilityFightExecutor4KnockBack target not found.");
+                    //Debug.LogError("AbilityFightExecutor4KnockBack target not found.");
                     return;
                 }
 
