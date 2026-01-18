@@ -132,34 +132,7 @@ namespace My.Map.Entity
 
             if (navProvider.TryBuildPath(UnitEntity.Pos, destination, out var newPath) && newPath.Length > 0)
             {
-                int startIndex = 0;
-
-                // 遍历新路径的前几个点
-                for (int i = 0; i < newPath.Waypoints.Length; i++)
-                {
-                    Vector2 wp = newPath.Waypoints[i];
-                    float distToWp = Vector2.Distance(UnitEntity.Pos, wp);
-
-                    // 如果这个路点离我非常近（比如小于切角半径 SwitchRadius），
-                    // 或者比 SwitchRadius 稍大一点点（防止回头跑），
-                    // 就认为这个点“我已经到了”或“可以直接忽略”。
-                    // 这里建议使用稍大一点的容差，比如 SwitchRadius * 1.2f
-                    if (distToWp < SwitchRadius)
-                    {
-                        startIndex = i + 1; // 跳过这个点，直接去下一个
-                    }
-                    else
-                    {
-                        // 遇到第一个“足够远”的点，停止修剪，以此为起点
-                        break;
-                    }
-                }
-
-                // 应用新路径
-                _path = newPath;
-
-                // 如果所有点都被剪掉了（说明离终点极近），就设为最后一个点
-                _pathIndex = Mathf.Min(startIndex, _path.Length - 1);
+                TruncateNewPath(newPath);
 
                 // 只有当路径发生剧烈变化时，才重置某些状态
                 // 否则保持 State = EMotorState.Pathing 不变
@@ -172,8 +145,8 @@ namespace My.Map.Entity
                 _replanCooldownLeft = 0f;
 
                 //EnterPathing(destination);
-                //this._stopDistance = stopDistance;
-                //this._moveSpeedRate = moveSpeedRate;
+                this._stopDistance = stopDistance;
+                this._moveSpeedRate = moveSpeedRate;
             }
             else
             {
@@ -197,6 +170,16 @@ namespace My.Map.Entity
         /// <param name="moveSpeedRate"></param>
         public void TryMoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
         {
+
+            if(target == _followTarget)
+            {
+                _followPrediction = followPrediction;
+                _followOffset = offset;
+                this._stopDistance = stopDistance;
+                this._moveSpeedRate = moveSpeedRate;
+                return;
+            }
+
             _followTarget = target;
             _followPrediction = followPrediction;
             _followOffset = offset;
@@ -356,8 +339,9 @@ namespace My.Map.Entity
                     if (navProvider.Linecast(UnitEntity.Pos, goal, out var hit))
                     {
                         // 有阻挡：重新规划
-                        navProvider.TryReplan(UnitEntity.Pos, goal, out _path);
-                        _pathIndex = 0;
+                        navProvider.TryReplan(UnitEntity.Pos, goal, out var newPath);
+
+                        TruncateNewPath(newPath);
                     }
                     else
                     {
@@ -371,6 +355,15 @@ namespace My.Map.Entity
                     //OnLostTarget?.Invoke(); 
                     EnterFree();
                     return;
+                }
+            }
+
+            if (_path.Length > 0 && _pathIndex >= 0)
+            {
+                var wp = _path.Waypoints[_pathIndex];
+                if (Arrived(UnitEntity.Pos, wp, ArriveTolerance))
+                {
+                    _pathIndex++;
                 }
             }
         }
@@ -408,14 +401,8 @@ namespace My.Map.Entity
             Vector3 dir;
             if (_path.Length > 0 && _pathIndex >= 0)
             {
-                var wp = _path.Waypoints[_pathIndex];
-                if (Arrived(UnitEntity.Pos, wp, ArriveTolerance))
-                {
-                    _pathIndex++;
-                    if (_pathIndex >= _path.Length) dir = (_currentGoal - UnitEntity.Pos).normalized;
-                    else dir = (_path.Waypoints[_pathIndex] - UnitEntity.Pos).normalized;
-                }
-                else dir = (wp - UnitEntity.Pos).normalized;
+                if (_pathIndex >= _path.Length) dir = (_currentGoal - UnitEntity.Pos).normalized;
+                else dir = (_path.Waypoints[_pathIndex] - UnitEntity.Pos).normalized;
             }
             else
             {
@@ -528,6 +515,42 @@ namespace My.Map.Entity
             }
         }
 
+        /// <summary>
+        /// 裁剪路径
+        /// </summary>
+        /// <param name="newPath"></param>
+        /// <param name="startIndex"></param>
+        private void TruncateNewPath(NavPath newPath)
+        {
+            int startIndex = 0;
+
+            // 遍历新路径的前几个点
+            for (int i = 0; i < newPath.Waypoints.Length; i++)
+            {
+                Vector2 wp = newPath.Waypoints[i];
+                float distToWp = Vector2.Distance(UnitEntity.Pos, wp);
+
+                // 如果这个路点离我非常近（比如小于切角半径 SwitchRadius），
+                // 或者比 SwitchRadius 稍大一点点（防止回头跑），
+                // 就认为这个点“我已经到了”或“可以直接忽略”。
+                // 这里建议使用稍大一点的容差，比如 SwitchRadius * 1.2f
+                if (distToWp < SwitchRadius)
+                {
+                    startIndex = i + 1; // 跳过这个点，直接去下一个
+                }
+                else
+                {
+                    // 遇到第一个“足够远”的点，停止修剪，以此为起点
+                    break;
+                }
+            }
+
+            // 应用新路径
+            _path = newPath;
+
+            // 如果所有点都被剪掉了（说明离终点极近），就设为最后一个点
+            _pathIndex = Mathf.Min(startIndex, _path.Length - 1);
+        }
 
         private void EnterFree()
         {
