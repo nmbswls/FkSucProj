@@ -75,12 +75,15 @@ namespace My.Map.Scene
                 }
                 bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
                 
-                ret.Add(new SceneInteractSelection()
+                if(canInt)
                 {
-                    SelectId = i.InteractId,
-                    SelectContent = canInt ? i.Label : i.UnLabel,
-                    Selectable = canInt,
-                });
+                    ret.Add(new SceneInteractSelection()
+                    {
+                        SelectId = i.InteractId,
+                        SelectContent = canInt ? i.Label : i.UnLabel,
+                        Selectable = canInt,
+                    });
+                }
             }
             
             return ret;
