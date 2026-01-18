@@ -568,7 +568,7 @@ namespace My.Map.Entity
                 CurrentCtx.DebugSavedAnimTagTimer += dt;
                 if (CurrentCtx.DebugSavedAnimTagTimer > 0.2f)
                 {
-                    EntityOwner.viewer.ShowFakeFxEffect(CurrentCtx.DebugSavedAnimTag, EntityOwner.Pos);
+                    //EntityOwner.viewer.ShowFakeFxEffect(CurrentCtx.DebugSavedAnimTag, EntityOwner.Pos);
                     CurrentCtx.DebugSavedAnimTagTimer = 0;
                 }
             }
