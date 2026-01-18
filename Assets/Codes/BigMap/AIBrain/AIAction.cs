@@ -714,7 +714,7 @@ namespace My.Map.Entity.AI
             }
 
             // 给一个保底cd
-            if(_lastEndTime != 0 && LogicTime.time - _lastEndTime < 2.0f)
+            if(_lastEndTime != 0 && LogicTime.time - _lastEndTime < 4.0f)
             {
                 return 0;
             }

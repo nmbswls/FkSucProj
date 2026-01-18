@@ -79,9 +79,15 @@ namespace My.Map.Entity
                 return;
             }
 
+            string bulletId = realCfg.BulletId;
+            if (realCfg.OverrideBulletId.ValType == EOneVariatyType.String)
+            {
+                bulletId = ctx.GetVariatyRawVal(realCfg.OverrideBulletId);
+            }
+
             var pData = new ProjectileData()
             {
-                id = realCfg.BulletId,
+                id = bulletId,
                 maxLifetime = realCfg.lifeTime,
 
                 TriggerOnLifeEnd = realCfg.TriggerOnLifeEnd,

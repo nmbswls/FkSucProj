@@ -30,6 +30,7 @@ MonoBehaviour:
   Hp: 100
   SkillList:
   - default_npc_attack
+  - npc_shoot_01
   DefaultDropId: 1
   NpcTag: 
   InteractList: []

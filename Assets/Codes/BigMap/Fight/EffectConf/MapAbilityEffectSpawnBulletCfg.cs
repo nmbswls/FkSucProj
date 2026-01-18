@@ -12,6 +12,7 @@ namespace My.Map.Entity
     public class MapAbilityEffectSpawnBulletCfg : MapFightEffectCfg
     {
         public string BulletId;
+        public OneVariaty OverrideBulletId;
         /// <summary>
         /// ‘À∂ØπÏº£
         /// </summary>

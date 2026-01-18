@@ -263,7 +263,30 @@ namespace My.Map.Entity
                     cfg.TargetType = ETargetType.Rect;
                     _skillDict[cfg.SkillId] = cfg;
                 }
-                
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "npc_shoot_01";
+                    cfg.MainAbilityId = "default_range_attack";
+                    cfg.CoolDown = 10.0f;
+                    cfg.DesiredUseDistance = 5.0f;
+                    cfg.Priority = 5;
+
+                    cfg.TargetType = ETargetType.Point;
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "npc_shoot_02";
+                    cfg.MainAbilityId = "default_range_attack";
+                    cfg.CoolDown = 10.0f;
+                    cfg.DesiredUseDistance = 5.0f;
+                    cfg.Priority = 5;
+
+                    cfg.TargetType = ETargetType.Point;
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -327,6 +350,11 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreateDefaultMonsterAttack();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateDefaultRangeAttack();
                     _abilityDict[ab.Id] = ab;
                 }
                 {
@@ -1197,6 +1225,11 @@ namespace My.Map.Entity
                         ResourceId  = AttrIdConsts.HP,
                         CostValue = 500,
                         IsEnmity = true,
+                    },
+                    new MapFightEffectKnockBackCfg()
+                    {
+                        KnockBackForce = 0.4f,
+                        DirType = MapFightEffectKnockBackCfg.EKnockBackType.CastDir,
                     }
                 }
             };
@@ -1205,6 +1238,97 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
         }
+
+
+        private static MapAbilitySpecConfig CreateDefaultRangeAttack()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "default_range_attack";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.4",
+                    ReferName = "PreTime"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    ReferName = "ShootTime"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = "ProjectileOne",
+                MotionData = new LinearMotionData()
+                {
+                    speed = 9f,
+                },
+
+                lockViewAngle = false,
+
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+
+                lifeTime = 0.6f,
+
+
+                TriggerOnCollide = true,
+                TriggerOnLifeEnd = true,
+
+                HitEffects = new()
+                {
+                    new MapAbilityEffectHitBoxCfg()
+                    {
+                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                        Radius = 1.0f,
+                        CampFilterType = ECampFilterType.NotSelf,
+
+                        OnHitEffects = new()
+                        {
+                            new MapAbilityEffectAddResourceCfg()
+                            {
+                                ResourceId  = AttrIdConsts.UnitHVal,
+                                AddValue = 50000,
+                            }
+                        }
+                    }
+                },
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.25",
+                    ReferName = "PostTime"
+                },
+            });
+
+            return spec;
+        }
+
 
         private static MapAbilitySpecConfig CreateDefaultEnemyQinfan()
         {
