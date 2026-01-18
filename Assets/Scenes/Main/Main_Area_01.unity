@@ -1333,7 +1333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Grid: {fileID: 1824115761}
-  TileGround: {fileID: 5303069922607462035}
+  TileGround: {fileID: 1900067646}
   TileHole: {fileID: 0}
   PlayerBornPos: {fileID: 422780440}
   StaticPrefabRoot: {fileID: 857680099}
@@ -1769,7 +1769,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2

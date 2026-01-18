@@ -1009,7 +1009,7 @@ namespace My.Map.Entity.AI
                 return 0;
             }
 
-            if (_brain.blackboard.Distance > _brain.brainConfig.GoodBattleDistance + 1.0f)
+            if (_brain.blackboard.Distance > _brain.brainConfig.BadBattleDistance)
             {
                 return 1;
             }
@@ -1021,7 +1021,7 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
-            //_brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
+            _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, stopDistance: 1f);
         }
 
         public override void Tick()
@@ -1038,15 +1038,15 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            if (_brain.blackboard.Distance < _brain.brainConfig.BadBattleDistance)
+            if (_brain.blackboard.Distance <= _brain.brainConfig.BadBattleDistance)
             {
-                //Stop(AIActionStatus.Success);
+                _brain.NpcEntity.entityMotorComp.StopMove();
+                Stop(AIActionStatus.Success);
                 return;
             }
 
             var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
             Debug.Log("AIActionCombatQuickCloser quick close " + _brain.PlayerEntity.Pos);
-            //var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, _brain.PlayerEntity.Pos, goodDistance);
             _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, stopDistance : 1f);
         }
 
