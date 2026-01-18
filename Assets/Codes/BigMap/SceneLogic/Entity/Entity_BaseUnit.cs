@@ -69,6 +69,9 @@ namespace My.Map
         }
 
         public UnitMoveBehaveInfo MoveBehaveInfo;
+
+        public CompFightMeleeSlot MeleeSlotManager;
+
         //public Vector2? LastInterruptPos;
 
         public EntityMotorComp entityMotorComp;
@@ -135,6 +138,8 @@ namespace My.Map
             {
                 LogicManager.globalBuffManager.RequestAddBuff(this.Id, "system_no_logic");
             }
+
+            //MeleeSlotManager.InitializeSlots();
         }
 
         public override void Tick(float dt)
@@ -175,6 +180,8 @@ namespace My.Map
             }
 
             TickUnitEvilAlert();
+
+            MeleeSlotManager?.UpdateSlotPositions();
         }
 
         protected virtual void TickActivateState(float dt)

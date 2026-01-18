@@ -897,7 +897,7 @@ namespace My.Map.Entity.AI
         public override string Name => "DistanceControl";
 
 
-        private float _Timer;
+        private float _timer;
         private float _lastSlowTime;
 
         public AIActionCfgDistanceControl realCfg { get { return (AIActionCfgDistanceControl)cfg; } }
@@ -918,8 +918,8 @@ namespace My.Map.Entity.AI
                 return 0;
             }
             
-            // 距离够了 不用移动
-            if(_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance)
+            // 距离太远
+            if(_brain.blackboard.Distance > _brain.brainConfig.BadBattleDistance)
             {
                 return 0;
             }
@@ -931,9 +931,10 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
+            //var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
+            //_brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
 
-            var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
-            _brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
+            _timer = LogicTime.time;
         }
 
         public override void Tick()
@@ -951,29 +952,54 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            // 距离够了 不用移动
-            if (_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance || _brain.blackboard.Distance > _brain.brainConfig.BadBattleDistance)
+            if (_brain.blackboard.Distance > _brain.brainConfig.BadBattleDistance)
             {
-                //Stop(AIActionStatus.Success);
+                Stop(AIActionStatus.Success);
                 return;
             }
-            var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
 
-            if (_brain.NpcEntity.entityMotorComp.CheckIsFollowTarget(targetEntity.Id))
+            if(LogicTime.time - _timer < 1f)
             {
                 return;
             }
-            _brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
+            _timer = LogicTime.time;
 
-            Debug.Log("DistanceControl TryMoveFollow player");
+            // 距离太近 后退一步
+            if (_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance)
+            {
+                var diff = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
+                Debug.Log("DistanceControl TryMoveTo player");
+                _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.NpcEntity.Pos + (-diff.normalized) * 0.5f,  moveSpeedRate: 0.5f);
+            }
+            else if(_brain.blackboard.Distance < _brain.brainConfig.BadBattleDistance)
+            {
+                Debug.Log("DistanceControl TryMoveTo player");
+                var diff = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
+                // 计算切线方向 (左手定则或右手定则)
+                Vector2 tangentDir = new Vector3(-diff.y, diff.x);
+                // 根据时间计算偏移量 (-1 到 1 之间波动)
+                float sineValue = Mathf.Sin(LogicTime.time * 1.0f + 0.0f);
+                var _strafeAmplitude = 0.5f;
+                // 最终目标点 = 槽位中心 + 切线方向偏移
+                //Vector3 finalTargetPos = baseSlotPos + (tangentDir * sineValue * _strafeAmplitude);
 
+                //_brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
+                _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.NpcEntity.Pos + (tangentDir * sineValue * _strafeAmplitude), moveSpeedRate: 0.5f);
+            }
+            //var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
+
+            //if (_brain.NpcEntity.entityMotorComp.CheckIsFollowTarget(targetEntity.Id))
+            //{
+            //    return;
+            //}
+            //_brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
+
+           
         }
 
         public override void Stop(AIActionStatus endStatus)
         {
             base.Stop(endStatus);
-
-            //_brain.NpcEntity.entityMotorComp.StopMove();
         }
 
         public override bool CanInterrupt(string reason, bool hard) => true;

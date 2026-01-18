@@ -1268,6 +1268,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
+                    RawVal = "0.3",
                     ReferName = "ShootTime"
                 },
             };
