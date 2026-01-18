@@ -231,7 +231,7 @@ namespace My.Map
 
             bool errOccur = false;
 
-            while(_currOutputIdx < _currInteract.Outputs.Count)
+            while(_currInteract != null && _currOutputIdx < _currInteract.Outputs.Count)
             {
                 bool pending = false;
                 var output = _currInteract.Outputs[_currOutputIdx];
@@ -468,7 +468,7 @@ namespace My.Map
                 _currOutputIdx += 1;
             }
 
-            if (errOccur || _currOutputIdx >= _currInteract.Outputs.Count)
+            if (_currInteract == null || errOccur || _currOutputIdx >= _currInteract.Outputs.Count)
             {
                 DoInteractEnd();
             }
@@ -481,7 +481,8 @@ namespace My.Map
 
         private void DoInteractEnd()
         {
-            Debug.Log($"DoInteractEnd. {_currInteract.InteractId}");
+            if (_currInteract == null) return;
+            Debug.Log($"DoInteractEnd. {_currInteract?.InteractId}");
 
             _isInteracting = false;
             _currOutputIdx = 0;

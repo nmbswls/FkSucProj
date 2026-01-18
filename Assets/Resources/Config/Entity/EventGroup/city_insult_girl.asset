@@ -158,9 +158,9 @@ MonoBehaviour:
     TriggerType: 2
     MaxTriggerCnt: 0
     MinTriggerInterval: 0
-    Param1: 2
-    Param2: 0
-    Param3: 
+    Param1: 10
+    Param2: 10
+    Param3: 2,3,4
     Param4: 
     Outputs:
     - OutputType: 1

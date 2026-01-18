@@ -259,7 +259,7 @@ namespace My.Map.Scene
                     MainGameManager.Instance.playerScenePresenter.UnitEntity.viewRadius, MainGameManager.Instance.playerScenePresenter.UnitEntity.fovDegrees);
             }
 
-            if (visible)
+            if (visible && !UnitEntity.MarkDestroyed)
             {
                 if(ViewRoot != null)
                 {
@@ -476,7 +476,7 @@ namespace My.Map.Scene
 
             if (ViewRoot != null)
             {
-
+                ViewRoot.gameObject.SetActive(false);
                 //ViewRoot.DOColor(new Color(1, 1, 1, 0), 0.5f);
             }
         }

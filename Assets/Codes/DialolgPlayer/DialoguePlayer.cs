@@ -462,7 +462,7 @@ public partial class DialoguePlayer : MonoBehaviour
         ui.ShowNextIndicator(true);
         ui.autoTimer = 0f;
 
-        if (SkipMode)
+        //if (SkipMode)
         {
             DoContinue();
         }

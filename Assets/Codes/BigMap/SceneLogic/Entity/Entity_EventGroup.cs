@@ -52,7 +52,7 @@ namespace My.Map
 
         public Dictionary<int, long> MemberId2EntityMap = new();
         protected HashSet<int> CurrActiveMemberSet = new();
-
+        protected List<int> _tmpMemberList = new();
         /// <summary>
         /// ´æ´¢¸÷´¥·¢Æ÷
         /// </summary>
@@ -122,6 +122,8 @@ namespace My.Map
                 return;
             }
 
+
+            _tmpMemberList.Clear();
             foreach (var mId in CurrActiveMemberSet)
             {
                 if (!stateExtraInfo.EnsureMemberIds.Contains(mId))
@@ -129,12 +131,17 @@ namespace My.Map
                     MemberId2EntityMap.TryGetValue(mId, out var entityId);
                     if (entityId != 0)
                     {
-                        LogicManager.AreaManager.RequestEntityDestroy(entityId, "event_group_remove");
-                        CurrActiveMemberSet.Remove(mId);
+                        var entity = LogicManager.GetLogicEntity(entityId, false) as LogicEntityBase;
+                        entity?.DoEntityDestroyed("event_group_remove");
+                        _tmpMemberList.Add(mId);
                     }
                 }
             }
 
+            foreach(var id in _tmpMemberList)
+            {
+                CurrActiveMemberSet.Remove(id);
+            }
 
             foreach (var mId in stateExtraInfo.EnsureMemberIds)
             {
@@ -334,7 +341,7 @@ namespace My.Map
                     continue;
                 }
 
-                var entity = LogicManager.GetLogicEntity(mId);
+                var entity = LogicManager.GetLogicEntity(entityId);
                 if(entity == null)
                 {
                     continue;
@@ -347,6 +354,8 @@ namespace My.Map
 
                 Debug.Log($"ActivateSleepyMembers active entity:{unitEntity.Id}");
                 unitEntity.IsActive = true;
+                unitEntity.MarkNoLogic = false;
+                LogicManager.globalBuffManager.RemoveAllBuffById(unitEntity.Id, "system_no_logic");
             }
         }
 

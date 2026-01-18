@@ -146,14 +146,18 @@ namespace My.Map.Scene
         {
             //MainGameManager.Instance.interactSystem.UpdateInteractRangeObjs
             var status = RealLogic.GetCurrentStatusInfo();
-            if (status.HasBlock)
+            if(MainBlock != null)
             {
-                MainBlock.SetActive(true);
+                if (status.HasBlock)
+                {
+                    MainBlock?.SetActive(true);
+                }
+                else
+                {
+                    MainBlock?.SetActive(false);
+                }
             }
-            else
-            {
-                MainBlock.SetActive(false);
-            }
+            
 
             if(changeView != null && changeView.ChangingDuration > 0)
             {

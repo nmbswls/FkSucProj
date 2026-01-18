@@ -300,12 +300,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 9010000572920847535}
   highlightFx: {fileID: 0}
-  ViewRoot: {fileID: 0}
+  ViewRoot: {fileID: 9010000572920847535}
   ShadowView: {fileID: 4981057556401203160}
   AgentView: {fileID: 746965970174307247}
-  ViewPoint: {fileID: 0}
+  ViewPoint: {fileID: 9010000572920847535}
   faceIndicator: {fileID: 8013608194804928167}
-  EyePos: {fileID: 1352328000936773924}
+  HitPivot: {fileID: 0}
+  HeadHintPivot: {fileID: 0}
   WeaponCtrl: {fileID: 637426610165199311}
   navAgent: {fileID: 4754350832141041876}
   rb: {fileID: 0}
@@ -333,6 +334,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   BindEffectRoot: {fileID: 0}
+  MainAgentAnimator: {fileID: 0}
+  AnimHolder: {fileID: 0}
   MainFlasher: {fileID: 0}
   SpecialAnimClips: []
 --- !u!114 &-5488420210160331190
