@@ -16,6 +16,8 @@ namespace My.Map.Scene
         public GameObject MainBlock;
         public List<GameObject> Blocks;
 
+        public Transform[] StatusViews;
+
         public Transform InteractPivot;
 
         public Vector2 Pos => transform.position;

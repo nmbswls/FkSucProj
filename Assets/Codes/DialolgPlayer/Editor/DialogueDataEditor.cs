@@ -55,6 +55,26 @@ namespace My.Dialog
         public override string GetSummary() => $"[SetImage]";
     }
 
+
+    [Serializable]
+    public class EditorSimpleFuncCommand : EditorDialogCommand
+    {
+        public enum ESimpleFuncType
+        {
+            None,
+            SrcLocalSwitch
+        }
+        public ESimpleFuncType SimpleFuncType;
+        public long Param1;
+        public long Param2;
+        public int Param3;
+        public int Param4;
+        public string Param5;
+        public string Param6;
+        public override string GetSummary() => $"[Func] {SimpleFuncType}";
+    }
+
+
     [Serializable]
     public class EditorDialogueCommand4JumpTo : EditorDialogCommand
     {

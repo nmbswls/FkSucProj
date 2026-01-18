@@ -161,6 +161,7 @@ namespace My.Map
                 LogicManager.globalBuffManager.RequestAddBuff(Id, "unsensored");
             }
 
+
             InteractComp = new(this);
             InteractComp.RefreshInteractInfo(cacheCfg.InteractList);
         }

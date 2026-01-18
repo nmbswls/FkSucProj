@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 834e569363032a84684e80f019fd7faa, type: 3}
-  m_Name: np_01
+  m_Name: city_insult_girl
   m_EditorClassIdentifier: 
   CfgId: np_01
   ShowName: 
@@ -41,7 +41,7 @@ MonoBehaviour:
       - OutputType: 12
         Param1: 0
         Param2: 0
-        Param3: 
+        Param3: insult_girl_peace
         Param4: 
         DelayTime: 0
     - InteractId: 2
@@ -56,7 +56,7 @@ MonoBehaviour:
       - OutputType: 12
         Param1: 0
         Param2: 0
-        Param3: 
+        Param3: insult_girl_force
         Param4: 
         DelayTime: 0
     HasBlock: 0
@@ -203,7 +203,7 @@ MonoBehaviour:
     - rid: 4055726025270625168
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: fcked_girl_01
+        CfgId: insult_girl_01
         Position: {x: 0, y: 0.3}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
@@ -223,6 +223,7 @@ MonoBehaviour:
         EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
+        InitNoLogic: 0
     - rid: 4055726025270625170
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
@@ -235,6 +236,7 @@ MonoBehaviour:
         EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
+        InitNoLogic: 0
     - rid: 4055726025270625171
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
@@ -247,3 +249,4 @@ MonoBehaviour:
         EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
+        InitNoLogic: 0

@@ -158,7 +158,7 @@ namespace My.MapExport
     }
 
     [Serializable]
-    public class EntityInitInfo4EventGroup : EntityInitInfo4Unit
+    public class EntityInitInfo4EventGroup : EntityInitInfo4InteractPoint
     {
         public override EEntityType EntityType => EEntityType.EventGroup;
     }

@@ -203,7 +203,13 @@ namespace My.Map.Logic
                 case EEntityType.EventGroup:
                     {
                         var egRecord = new LogicEntityRecord4EventGroup();
-                        var cfg = MapEventGroupCfgLoader.Get(egRecord.CfgId);
+                        var cfg = MapEventGroupCfgLoader.Get(initInfo.CfgId);
+                        var initInfo4IP = (EntityInitInfo4InteractPoint)initInfo;
+                        for (int i = 0; i < initInfo4IP.Variables.keys.Count; i++)
+                        {
+                            egRecord.DynamicVariables.Add(initInfo4IP.Variables.keys[i], initInfo4IP.Variables.values[i]);
+                        }
+                        record = egRecord;
                     }
                     break;
                 default:

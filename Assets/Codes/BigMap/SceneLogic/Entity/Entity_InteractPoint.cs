@@ -32,11 +32,14 @@ namespace My.Map.Entity
 
         public LogicEntityInteractPoint(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
-            cacheCfg = MapInteractPointLoader.Get(CfgId);
-
             var realRecord = bindingRecord as LogicEntityRecord4InteractPoint;
             CurrStatusId = realRecord.Status;
             DynamicVariables.AddRange(realRecord.DynamicVariables);
+        }
+
+        protected virtual void LoadCfg()
+        {
+            cacheCfg = MapInteractPointLoader.Get(CfgId);
         }
 
         public override EEntityType Type => EEntityType.InteractPoint;
@@ -44,6 +47,8 @@ namespace My.Map.Entity
         public override void Initialize()
         {
             base.Initialize();
+
+            LoadCfg();
 
             InteractComp = new(this);
 
@@ -96,14 +101,14 @@ namespace My.Map.Entity
                     }
                 }
 
-                //foreach (var needFlag in rule.NeedSelfFlag)
-                //{
-                //    if(!this.RealRecord.CustomFlags.Contains(needFlag))
-                //    {
-                //        poassed = false;
-                //        break;
-                //    }
-                //}
+                foreach (var needFlag in rule.NeedSelfFlag)
+                {
+                    if (!this.CheckLocalSwitch(needFlag))
+                    {
+                        poassed = false;
+                        break;
+                    }
+                }
 
                 if (poassed)
                 {

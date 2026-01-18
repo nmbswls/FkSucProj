@@ -98,11 +98,10 @@ namespace My.Map
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
             this.MoveBehaveInfo = new();
 
-            //ForceSetFaceTarget(bindingRecord.FaceDir, true);
-            if(MarkNoLogic)
-            {
-                logicManager.globalBuffManager.AddBuff(this.Id, "system_no_logic");
-            }
+            MarkUnsensored = unitRecord.Unsensored;
+            MarkNoLogic = unitRecord.MarkNoLogic;
+            IsAttaching = unitRecord.MarkAttaching;
+            IsDead = unitRecord.MarkDefeated;
         }
 
         public override void Initialize()
@@ -134,7 +133,7 @@ namespace My.Map
 
             if(MarkNoLogic)
             {
-
+                LogicManager.globalBuffManager.AddBuff(this.Id, "system_no_logic");
             }
         }
 

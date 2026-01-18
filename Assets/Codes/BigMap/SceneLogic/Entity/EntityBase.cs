@@ -104,6 +104,10 @@ namespace My.Map
         void OnMapLogicEvent(IMapLogicEvent ev);
 
         void TeleportTo(Vector2 pos);
+
+        bool CheckLocalSwitch(string switchName);
+
+        void SetLocalSwitch(string switchName, bool isOn);
     }
 
     public static class LogicEvents

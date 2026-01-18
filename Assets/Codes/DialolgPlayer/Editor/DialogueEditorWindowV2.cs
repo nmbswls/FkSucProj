@@ -1030,6 +1030,21 @@ namespace My.Dialog
                                 runCommand = runSetImageCommand;
                             }
                             break;
+
+                        case EditorSimpleFuncCommand simleFuncCommand:
+                            {
+                                var runCommand2 = new DialogCommandData4SimpleFunc();
+                                runCommand2.SimpleFuncType = (DialogCommandData4SimpleFunc.ESimpleFuncType)simleFuncCommand.SimpleFuncType;
+                                runCommand2.Param1 = simleFuncCommand.Param1;
+                                runCommand2.Param2 = simleFuncCommand.Param2;
+                                runCommand2.Param3 = simleFuncCommand.Param3;
+                                runCommand2.Param4 = simleFuncCommand.Param4;
+                                runCommand2.Param5 = simleFuncCommand.Param5;
+                                runCommand2.Param6 = simleFuncCommand.Param6;
+
+                                runCommand = runCommand2;
+                            }
+                            break;
                         case EditorDialogueCommand4JumpTo jumpToCommand:
                             {
                                 var runJumpToCommand = new DialogCommandData4JumpTo();

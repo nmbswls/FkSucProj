@@ -24,8 +24,6 @@ namespace My.Map
 
         public EventGroupLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
-            cacheCfg = MapEventGroupCfgLoader.Get(cfgId);
-
             var groupRecord = (LogicEntityRecord4EventGroup)BindingRecord;
             foreach (var pair in groupRecord.MemberId2EntityMap) 
             {
@@ -37,6 +35,12 @@ namespace My.Map
                 CurrActiveMemberSet.Add(id);
             }
         }
+
+        protected override void LoadCfg()
+        {
+            cacheCfg = MapEventGroupCfgLoader.Get(CfgId);
+        }
+
 
         ///// <summary>
         ///// »º´æ
@@ -141,6 +145,7 @@ namespace My.Map
                 {
                     var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(mInfo.InitInfo);
                     record.LifeBindEntityId = this.Id;
+                    record.Position = this.Pos + mInfo.InitInfo.Position;
                     MemberId2EntityMap[mId] = record.Id;
                     LogicManager.AddNewEntityRecord(record);
 

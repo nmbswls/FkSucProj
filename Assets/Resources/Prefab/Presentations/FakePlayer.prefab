@@ -451,7 +451,7 @@ MonoBehaviour:
     Clip: {fileID: 7400000, guid: 987b9e353b63ed5448291f4b933972de, type: 2}
     Speed: 1
   - Name: attack_02
-    Clip: {fileID: 7400000, guid: d7bb58d19d79dd748a978aaec1bc8930, type: 2}
+    Clip: {fileID: 7400000, guid: 297e970d53ee0de40a7b058173164ba2, type: 2}
     Speed: 1
 --- !u!1 &1221229975014566784
 GameObject:

@@ -333,6 +333,30 @@ public partial class DialoguePlayer : MonoBehaviour
             //        break;
             //    }
 
+            case DialogCommandData4SimpleFunc cd4Func:
+                {
+                    switch(cd4Func.SimpleFuncType)
+                    {
+                        case DialogCommandData4SimpleFunc.ESimpleFuncType.SrcLocalSwitch:
+                            {
+                                var srcId = runtimeRef.SrcEntityId;
+                                if(srcId == null || srcId == 0)
+                                {
+                                    break;
+                                }
+
+                                var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(srcId.Value);
+                                if (entity == null) break;
+
+                                string switchName = cd4Func.Param5;
+                                entity.SetLocalSwitch(switchName, true);
+
+                            }
+                            break;
+                    }
+                }
+                break;
+
             case DialogCommandData4Choice cd4Choice:
                 {
                     var options = new List<string>();

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
-  m_Name: fcked_girl_01
+  m_Name: insult_girl_01
   m_EditorClassIdentifier: 
-  CfgId: fcked_girl_01
+  CfgId: city_insult_girl
   ShowName: "\u53D7\u56F0\u5C11\u5973"
   PrefabName: 
   NameOffset: 60

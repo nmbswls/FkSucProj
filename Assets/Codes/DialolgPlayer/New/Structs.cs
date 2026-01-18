@@ -53,6 +53,24 @@ namespace My.Dialog
     }
 
     [Serializable]
+    public class DialogCommandData4SimpleFunc : DialogCommandData
+    {
+        public enum ESimpleFuncType
+        {
+            None,
+            SrcLocalSwitch,
+        }
+        public ESimpleFuncType SimpleFuncType;
+        public long Param1;
+        public long Param2;
+        public int Param3;
+        public int Param4;
+        public string Param5;
+        public string Param6;
+    }
+
+
+    [Serializable]
     public class DialogCommandData4Choice : DialogCommandData
     {
         public float TimeLimit = 0;

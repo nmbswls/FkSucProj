@@ -1,0 +1,27 @@
+{
+  "DialogId": "insult_girl_peace",
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "main",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "Speaker": "",
+          "Content": "和平解决把",
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 1,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "peace_mothod",
+          "Param6": ""
+        }
+      ]
+    }
+  ]
+}

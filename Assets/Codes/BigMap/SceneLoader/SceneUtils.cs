@@ -6,8 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.WSA;
-using static My.Dialog.DialogCommandData4SetImage;
-using static UnityEngine.GraphicsBuffer;
 
 public class DefaultSceneVisionSenser2D : IVisionSenser2D
 {
