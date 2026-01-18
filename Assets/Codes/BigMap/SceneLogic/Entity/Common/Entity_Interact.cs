@@ -358,7 +358,7 @@ namespace My.Map
                     case Config.LogicInteractOutput.EOutputType.OpenDialog:
                         {
                             string dialogId = output.Param3;
-                            Owner.LogicManager.viewer.PlayDialog(dialogId);
+                            Owner.LogicManager.viewer.PlayDialog(dialogId, Owner.Id);
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.StartRetreat:
@@ -387,14 +387,16 @@ namespace My.Map
                             if (entityId == 0)
                             {
                                 Debug.Log("HandleOutput EGMemberChangeState UpdateInteractStatus fail e");
-                                continue;
+                                errOccur = true;
+                                break;
                             }
 
                             var intPoint = Owner.LogicManager.GetLogicEntity(entityId) as LogicEntityInteractPoint;
                             if (intPoint == null)
                             {
                                 Debug.Log("HandleOutput UpdateInteractStatus no entity e");
-                                continue;
+                                errOccur = true;
+                                break;
                             }
 
                             intPoint.ChangeSelfStatus(status);

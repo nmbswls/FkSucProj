@@ -80,7 +80,7 @@ MonoBehaviour:
         Param4: 
         DelayTime: 0
       - OutputType: 100
-        Param1: 0
+        Param1: 1
         Param2: 9
         Param3: 
         Param4: 
@@ -114,7 +114,7 @@ MonoBehaviour:
       CheckInteractCond: []
       Outputs:
       - OutputType: 100
-        Param1: 0
+        Param1: 1
         Param2: 10
         Param3: 
         Param4: 

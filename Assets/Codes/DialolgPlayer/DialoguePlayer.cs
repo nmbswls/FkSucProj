@@ -354,6 +354,7 @@ public partial class DialoguePlayer : MonoBehaviour
                             }
                             break;
                     }
+                    SafeComplete();
                 }
                 break;
 
