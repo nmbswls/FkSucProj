@@ -34,7 +34,7 @@ namespace My.Map.Entity.AI
                         if(target == null)
                         {
                             Debug.LogError("GetSkillUseParams not found primary target");
-                            return (caster.Pos + caster.FaceDir, null);
+                            return (caster.Pos + caster.FinalLook, null);
                         }
                         return (target.Pos, target.Id);
                     }
@@ -845,7 +845,7 @@ namespace My.Map.Entity.AI
                 var firstTran = trans[0];
                 var node = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
 
-                _brain.NpcEntity.ForceSetFaceTarget(_brain.NpcEntity.DesiredFaceDir, false);
+                //_brain.NpcEntity.ForceSetFaceTarget(_brain.NpcEntity.DesiredFaceDir, false);
 
                 // 一定无目标参数
                 if (_brain.NpcEntity.ablilityManager.UseSkill(firstTran.triggerInput.SkillId))

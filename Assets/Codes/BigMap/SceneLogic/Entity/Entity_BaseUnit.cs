@@ -186,8 +186,6 @@ namespace My.Map
             entityMotorComp?.Tick(dt);
 
             UpdateGazeModule();
-            //UpdateFaceTargetAngle();
-            UpdateFaceDir();
         }
         public override void OnEnterAOI()
         {

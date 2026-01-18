@@ -116,7 +116,7 @@ namespace My.Map.Scene
                 return;
             }
 
-            var playerFaceDir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.FaceDir;
+            var playerFaceDir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.CurrentLook;
             float angle = Mathf.Atan2(playerFaceDir.y, playerFaceDir.x) * Mathf.Rad2Deg; // ”Î +X ÷·º–Ω«
             orientationDegrees = angle;
             bool needUpdate = false;

@@ -445,7 +445,7 @@ namespace My.Input
                     Vector2 dir = Vector2.one;
                     if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.entityMotorComp.FreeMoveInput.magnitude < 0.01f)
                     {
-                        dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FaceDir;
+                        dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FinalLook;
                     }
                     else
                     {

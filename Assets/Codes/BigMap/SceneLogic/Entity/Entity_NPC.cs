@@ -334,8 +334,8 @@ namespace My.Map
                         {
                             break;
                         }
-                        var angle = Vector2.Angle(diff, FaceDir);
-                        if (angle > 90 * 0.5f)
+                        var angle = Vector2.Angle(diff, CurrentLook);
+                        if (angle > 120 * 0.5f)
                         {
                             break;
                         }

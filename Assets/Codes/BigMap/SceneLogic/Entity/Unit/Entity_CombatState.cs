@@ -181,7 +181,7 @@ namespace My.Map
             foreach (var kv in damageThreat)
             {
                 var targetEntity = UnitEntity.LogicManager.GetLogicEntity(kv.Key, false);
-                if(targetEntity != null && UnitEntity.LogicManager.visionSenser.CanSee(UnitEntity.Pos, UnitEntity.FaceDir, targetEntity.Pos, 6.0f, 140f))
+                if(targetEntity != null && UnitEntity.LogicManager.visionSenser.CanSee(UnitEntity.Pos, UnitEntity.CurrentLook, targetEntity.Pos, 6.0f, 140f))
                 {
                     tempVisibleTargets.Add(kv.Key);
                 }
@@ -429,7 +429,7 @@ namespace My.Map
             float distWeight = Mathf.Clamp01(1f - (dist / allySenseRadius)); // 0~1
 
             Vector2 dir = (witness.Pos - UnitEntity.Pos).normalized;
-            float angle = Vector3.Angle(UnitEntity.FaceDir, dir);
+            float angle = Vector3.Angle(UnitEntity.CurrentLook, dir);
             float fovWeight = angle <= fovAngle * 0.5f ? 1f : 0.7f;
 
            // bool hasLoS = true;

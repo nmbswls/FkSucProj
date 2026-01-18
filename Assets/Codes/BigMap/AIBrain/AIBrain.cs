@@ -334,8 +334,8 @@ namespace My.Map.Entity.AI
 		protected virtual void UpdateBlackboardData()
         {
             blackboard.Distance = Vector2.Distance(NpcEntity.Pos, PlayerEntity.Pos);
-            blackboard.AngleToPlayer = Vector2.SignedAngle(NpcEntity.FaceDir, (PlayerEntity.Pos - NpcEntity.Pos));
-            blackboard.CanSee = Vision.CanSee(NpcEntity.Pos, NpcEntity.FaceDir, PlayerEntity.Pos, brainConfig.VisionRange, brainConfig.VisionFOV);
+            blackboard.AngleToPlayer = Vector2.SignedAngle(NpcEntity.CurrentLook, (PlayerEntity.Pos - NpcEntity.Pos));
+            blackboard.CanSee = Vision.CanSee(NpcEntity.Pos, NpcEntity.CurrentLook, PlayerEntity.Pos, brainConfig.VisionRange, brainConfig.VisionFOV);
 
             // 有问题 会丢事件
             if (blackboard.CanSee)

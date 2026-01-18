@@ -243,13 +243,13 @@ namespace My.Map.Scene
             var diff = MainGameManager.Instance.playerScenePresenter.transform.position - transform.position;
             diff.z = 0;
 
-            if (diff.magnitude < 1.0f)
+            if (diff.magnitude < 0.6f)
             {
                 visible = true;
             }
             if (!visible)
             {
-                visible = MainGameManager.Instance.VisionSenser2D.CanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.FaceDir,
+                visible = MainGameManager.Instance.VisionSenser2D.CanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.CurrentLook,
                     transform.position,
                     MainGameManager.Instance.playerScenePresenter.UnitEntity.viewRadius, MainGameManager.Instance.playerScenePresenter.UnitEntity.fovDegrees);
             }

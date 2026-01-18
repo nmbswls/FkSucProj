@@ -157,7 +157,7 @@ public class SceneInteractSystem
             }
             else
             {
-                var angle = Vector2.Angle(diff, presenter.PlayerEntity.FaceDir);
+                var angle = Vector2.Angle(diff, presenter.PlayerEntity.CurrentLook);
                 if (angle < _checkAngle * 0.5f)
                 {
                     canInt = true;

@@ -41,7 +41,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     {
 
         
-        bool isFacingUp = UnitPresenter.UnitEntity.FaceDir.y > 0.1f;
+        bool isFacingUp = UnitPresenter.UnitEntity.CurrentLook.y > 0.1f;
         if(ySortOrder != null)
         {
             // 1. ¥¶¿Ì≤„º∂
@@ -52,7 +52,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
 
         foreach (var weaponOne in WeaponOnes)
         {
-            weaponOne.OnWeaponAimDirUpdate(UnitPresenter.UnitEntity.FaceDir);
+            weaponOne.OnWeaponAimDirUpdate(UnitPresenter.UnitEntity.CurrentLook);
         }
     }
 

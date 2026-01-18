@@ -246,7 +246,7 @@ namespace My.Map.Entity
                 viewer = EntityOwner.viewer,
                 RunningVariables = runningOverrides,
                 CastVec1 = castVec1,
-                FaceDir = EntityOwner.DesiredFaceDir,
+                FaceDir = EntityOwner.FinalLook,
                 Position = EntityOwner.Pos,
 
                 PhaseOverrideAnims = phaseOverrideAnims,
@@ -265,7 +265,7 @@ namespace My.Map.Entity
 
             if(abilityConf.MaxStepDistance > 0)
             {
-                EntityOwner.StartDash(EntityOwner.DesiredFaceDir, 0.1f, abilityConf.MaxStepDistance / 0.1f, null);
+                EntityOwner.StartDash(EntityOwner.FinalLook, 0.1f, abilityConf.MaxStepDistance / 0.1f, null);
             }
 
             Debug.Log($"entity {EntityOwner.Id} TryStart {abilityConf.Id}");
@@ -383,7 +383,7 @@ namespace My.Map.Entity
 
             if (phase.ShowRangePreview)
             {
-                var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(phase.PreviewIntent.ShapeInfo,  EntityOwner.Pos, EntityOwner.FaceDir, phaseDur, phase.PreviewIntent.FaceOffset);
+                var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(phase.PreviewIntent.ShapeInfo,  EntityOwner.Pos, EntityOwner.FinalLook, phaseDur, phase.PreviewIntent.FaceOffset);
                 CurrentCtx.PhaseIntentEffectId = eId;
             }
 
@@ -594,7 +594,7 @@ namespace My.Map.Entity
             {
                 if(CurrentCtx.PhaseIntentEffectId != 0)
                 {
-                    EntityOwner.LogicManager.viewer.UpdateRangeWarnEffect(CurrentCtx.PhaseIntentEffectId, EntityOwner.Pos, EntityOwner.FaceDir);
+                    EntityOwner.LogicManager.viewer.UpdateRangeWarnEffect(CurrentCtx.PhaseIntentEffectId, EntityOwner.Pos, EntityOwner.FinalLook);
                 }
             }
 
@@ -770,7 +770,7 @@ namespace My.Map.Entity
                             newCtx.TargetId = hitEntity.Id;
                             newCtx.TriggerPos = EntityOwner.Pos;
                             //newCtx.CastVec1 = hitEntity.Pos - EntityOwner.Pos;
-                            newCtx.CastVec1 =  EntityOwner.FaceDir;
+                            newCtx.CastVec1 =  EntityOwner.FinalLook;
 
                             EntityOwner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
                         }

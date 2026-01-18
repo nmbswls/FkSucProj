@@ -1295,7 +1295,7 @@ namespace My.Map.Entity
                 }
                 else if(diff.magnitude < 1.0f)
                 {
-                    var signedAngle = Vector2.SignedAngle(diff, npcUnit.FaceDir);
+                    var signedAngle = Vector2.SignedAngle(diff, npcUnit.CurrentLook);
                     if(signedAngle < 45)
                     {
                         absorb = true;
@@ -1312,7 +1312,7 @@ namespace My.Map.Entity
                 }
                 else
                 {
-                    var dropPos = npcUnit.Pos + npcUnit.FaceDir * 0.5f;
+                    var dropPos = npcUnit.Pos + npcUnit.CurrentLook * 0.5f;
                     for(int i=0; i< 4;i++)
                     {
                         ctx.Env.globalDropCollection.CreateDrop("j_drop_small", 1, dropPos + UnityEngine.Random.insideUnitCircle * 0.5f, true, npcUnit.Pos);
