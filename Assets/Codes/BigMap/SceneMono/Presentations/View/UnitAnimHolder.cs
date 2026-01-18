@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using My.Map.Logic;
 using UnityEngine;
 
-public class UnitAnimHolder
+public class UnitAnimHolder : MonoBehaviour
 {
     public class OneWrapper
     {

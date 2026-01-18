@@ -171,7 +171,7 @@ namespace My.Map.Entity
         public void TryMoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
         {
 
-            if(target == _followTarget)
+            if(State == EMotorState.Following && target == _followTarget)
             {
                 _followPrediction = followPrediction;
                 _followOffset = offset;

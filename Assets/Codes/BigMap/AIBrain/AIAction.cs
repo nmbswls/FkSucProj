@@ -952,13 +952,17 @@ namespace My.Map.Entity.AI
             }
 
             // 距离够了 不用移动
-            if (_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance)
+            if (_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance || _brain.blackboard.Distance > _brain.brainConfig.BadBattleDistance)
             {
-                Stop(AIActionStatus.Success);
+                //Stop(AIActionStatus.Success);
                 return;
             }
-
             var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
+
+            if (_brain.NpcEntity.entityMotorComp.CheckIsFollowTarget(targetEntity.Id))
+            {
+                return;
+            }
             _brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
 
             Debug.Log("DistanceControl TryMoveFollow player");
@@ -969,7 +973,7 @@ namespace My.Map.Entity.AI
         {
             base.Stop(endStatus);
 
-            _brain.NpcEntity.entityMotorComp.StopMove();
+            //_brain.NpcEntity.entityMotorComp.StopMove();
         }
 
         public override bool CanInterrupt(string reason, bool hard) => true;
@@ -1017,7 +1021,7 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
-            _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
+            //_brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
         }
 
         public override void Tick()
@@ -1034,16 +1038,16 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            if (_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance)
+            if (_brain.blackboard.Distance < _brain.brainConfig.BadBattleDistance)
             {
-                Stop(AIActionStatus.Success);
+                //Stop(AIActionStatus.Success);
                 return;
             }
 
             var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
             Debug.Log("AIActionCombatQuickCloser quick close " + _brain.PlayerEntity.Pos);
             //var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, _brain.PlayerEntity.Pos, goodDistance);
-            _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
+            _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, stopDistance : 1f);
         }
 
         public override void Stop(AIActionStatus endStatus)
