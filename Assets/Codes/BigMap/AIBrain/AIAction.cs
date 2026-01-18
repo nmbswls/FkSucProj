@@ -672,6 +672,64 @@ namespace My.Map.Entity.AI
 
 
     [Serializable]
+    public class AIActionCfgEscapeMain : AIActionCfg
+    {
+        public override bool IsDecorate => true;
+    }
+    public class AIActionEscapeMain : AIAction
+    {
+        public AIActionEscapeMain(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
+        {
+        }
+
+        public override string Name => "EscapeMain";
+
+        public override float RateScore()
+        {
+            return 1;
+        }
+
+        public override void Tick()
+        {
+            if (_brain.NpcEntity.CombatState != ECombatState.InCombat)
+            {
+                return;
+            }
+
+            if (_brain.blackboard.LastLeaveMoveModePos != null && _brain.brainConfig.ExitCombatBoundary)
+            {
+                if ((_brain.NpcEntity.Pos - _brain.blackboard.LastLeaveMoveModePos.Value).magnitude > _brain.brainConfig.ExitCombatBoundaryRange)
+                {
+                    _brain.NpcEntity.combatStateComp.ExitCombat();
+                }
+            }
+        }
+
+        public override void Stop(AIActionStatus endStatus)
+        {
+            base.Stop(endStatus);
+
+            // 离开前停止移动
+            _brain.NpcEntity.entityMotorComp.StopMove();
+
+            // 保底清理一次attract 避免立刻就被魅惑
+            _brain.blackboard.AttractTrigger = false;
+        }
+
+        public override void OnEnterState()
+        {
+            base.OnEnterState();
+        }
+
+        public override void OnExitState()
+        {
+            base.OnEnterState();
+
+        }
+    }
+
+
+    [Serializable]
     public class AIActionCfgTryUseSkill : AIActionCfg 
     {
         public override bool IsDecorate => false;
@@ -1064,7 +1122,7 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            if (_brain.blackboard.Distance <= _brain.brainConfig.BadBattleDistance)
+            if (_brain.blackboard.Distance <= _brain.brainConfig.BadBattleDistance - 0.3f)
             {
                 _brain.NpcEntity.entityMotorComp.StopMove();
                 Stop(AIActionStatus.Success);

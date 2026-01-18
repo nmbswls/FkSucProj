@@ -17,8 +17,8 @@ public class AIBrainParamsConfig : ScriptableObject
     public float ExitCombatBoundaryRange = 6.0f;
     public float ExitCombatMinRecoverTime = 1f;
 
-    public float GoodBattleDistance = 1.5f;
-    public float BadBattleDistance = 4.0f;
+    public float GoodBattleDistance = 2f;
+    public float BadBattleDistance = 3.0f;
 
     public string SpecialAnimTag1;
     public string SpecialAnimTag2;

@@ -453,6 +453,9 @@ MonoBehaviour:
   - Name: attack_02
     Clip: {fileID: 7400000, guid: 297e970d53ee0de40a7b058173164ba2, type: 2}
     Speed: 1
+  - Name: push
+    Clip: {fileID: 7400000, guid: 398c7c02e2a6d554894dade9aafe8b63, type: 2}
+    Speed: 1
 --- !u!1 &1221229975014566784
 GameObject:
   m_ObjectHideFlags: 0
@@ -2393,6 +2396,7 @@ GameObject:
   - component: {fileID: 8228162856476840408}
   - component: {fileID: 2425733097804743784}
   - component: {fileID: 1025529177923844628}
+  - component: {fileID: 4343448589452285408}
   m_Layer: 13
   m_Name: Push
   m_TagString: Untagged
@@ -2426,7 +2430,7 @@ Animator:
   m_GameObject: {fileID: 4787604529858390943}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2cd2c4359d6afea4488975e0e84dc0e9, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2450,9 +2454,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponAnim: {fileID: 0}
-  weaponAnimancer: {fileID: 0}
+  weaponAnimancer: {fileID: 4343448589452285408}
   WeaponCtrl: {fileID: 0}
-  innerShowClip: {fileID: 0}
+  innerShowClip: {fileID: 7400000, guid: 48a1d626e56310c46b0738fedf317dc8, type: 2}
   HitId: 0
 --- !u!61 &2425733097804743784
 BoxCollider2D:
@@ -2526,6 +2530,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &4343448589452285408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787604529858390943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad50f81b1d25c441943c37a89ba23f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Animator: {fileID: 52621759635963629}
+  _ActionOnDisable: 0
 --- !u!1 &4968086638263366619
 GameObject:
   m_ObjectHideFlags: 0

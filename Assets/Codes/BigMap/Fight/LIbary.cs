@@ -1897,10 +1897,11 @@ namespace My.Map.Entity
                 PhaseName = "Pre",
                 LockMovement = true,
                 LockRotation = true,
+                AnimTag = "push",
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.15"
+                    RawVal = "0.2"
                 },
             });
 
@@ -1910,11 +1911,10 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 ImmuneKnock = true,
-                AnimTag = "Push",
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "0.24"
                 },
             };
 
@@ -1991,7 +1991,7 @@ namespace My.Map.Entity
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Hit_01",
-                Duration = 0.12f,
+                Duration = 0.24f,
                 OnHitEffects = new()
                 {
 
