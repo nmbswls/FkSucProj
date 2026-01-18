@@ -142,13 +142,13 @@ namespace My.Map
             base.Tick(dt);
             // 计时、条件检查、冷却等
 
-            if(IsActive && !IsDead)
+            if(!MarkNoLogic && !IsDead)
             {
                 TickActivateState(dt);
             }
 
-
             UpdateControlledMove(dt);
+
             // 外力自然衰减（除非在Dash中保持常速）
             if (controlledMoveCtx == null)
             {
@@ -1101,10 +1101,14 @@ namespace My.Map
             if(LogicTime.time > evilAlertStartTime + evilAlertDuration)
             {
                 finished = true;
-                
             }
 
             if(IsDead)
+            {
+                finished = true;
+            }
+
+            if(MarkNoLogic)
             {
                 finished = true;
             }

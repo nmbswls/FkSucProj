@@ -9,7 +9,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map.Scene
 {
-    public class SceneEventGroupPresenter : ScenePresentationBase<EventGroupLogicEntity>
+    public class SceneEventGroupPresenter : InteractPointPresenter
     {
 
         public EventGroupLogicEntity EventGroupEntity { get { return (EventGroupLogicEntity)_logic; } }

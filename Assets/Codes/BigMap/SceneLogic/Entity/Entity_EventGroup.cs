@@ -149,7 +149,7 @@ namespace My.Map
                     MemberId2EntityMap[mId] = record.Id;
                     LogicManager.AddNewEntityRecord(record);
 
-                    Debug.LogError($"event group:{Id} create member:{mId} entity:{record.Id}");
+                    Debug.Log($"event group:{Id} create member:{mId} entity:{record.Id}");
                     
 
                     CurrActiveMemberSet.Add(mId);
