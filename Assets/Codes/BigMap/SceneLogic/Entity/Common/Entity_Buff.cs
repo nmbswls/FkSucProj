@@ -803,7 +803,7 @@ namespace My.Map.Entity
 
         public long AddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
-            var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId);
+            var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId, false);
             if (targetEntity == null)
             {
                 Debug.Log($"RemoveAllBuffById not found {entityId} ");
@@ -826,7 +826,7 @@ namespace My.Map.Entity
 
         public void RemoveAllBuffById(long entityId, string buffId, int layer = 1, long? casterId = null, long? srcBuffId = null)
         {
-            var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId);
+            var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId, false);
             if(targetEntity == null)
             {
                 Debug.Log($"RemoveAllBuffById not found {entityId} ");

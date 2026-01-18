@@ -133,7 +133,7 @@ namespace My.Map
 
             if(MarkNoLogic)
             {
-                LogicManager.globalBuffManager.AddBuff(this.Id, "system_no_logic");
+                LogicManager.globalBuffManager.RequestAddBuff(this.Id, "system_no_logic");
             }
         }
 

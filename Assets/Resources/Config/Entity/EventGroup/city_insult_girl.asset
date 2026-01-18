@@ -223,7 +223,7 @@ MonoBehaviour:
         EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
-        InitNoLogic: 0
+        InitNoLogic: 1
     - rid: 4055726025270625170
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
@@ -236,7 +236,7 @@ MonoBehaviour:
         EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
-        InitNoLogic: 0
+        InitNoLogic: 1
     - rid: 4055726025270625171
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
@@ -249,4 +249,4 @@ MonoBehaviour:
         EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
-        InitNoLogic: 0
+        InitNoLogic: 1
