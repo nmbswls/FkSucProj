@@ -130,7 +130,6 @@ namespace My.Map.Entity
         public event Action EventOnInputCancelPhaseStart;
 
 
-
         public bool IsRunning { get { return _running; } }
 
         public bool IsActionable()
@@ -303,6 +302,7 @@ namespace My.Map.Entity
             if (!string.IsNullOrEmpty(animTag))
             {
                 CurrentCtx.DebugSavedAnimTag = animTag;
+                EntityOwner.PlayerAnim(animTag, 0);
                 //var executor = GetExecutor(e);
                 //new PlayAnimEffect { AnimTag = phase.AnimTag }.Apply(Current, Ctx);
             }

@@ -1,3 +1,4 @@
+using Animancer;
 using DG.Tweening;
 using Map.Entity;
 using Map.Logic;
@@ -116,6 +117,8 @@ namespace My.Map.Scene
             }
 
             MainFlasher = GetComponentInChildren<SpriteWhiteFlasher>();
+
+            InitAnimComps();
         }
 
         private float _tickMoveStateTimer;
@@ -361,6 +364,9 @@ namespace My.Map.Scene
             UnitEntity.EventOnBuffRegister += OnEventBuffRegister;
             UnitEntity.EventOnBuffUnregister += OnEventBuffUnregister;
 
+            UnitEntity.EventOnAnimPlay += OnEventAnimPlay;
+            
+
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
             //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
@@ -385,6 +391,8 @@ namespace My.Map.Scene
             UnitEntity.EventOnInvisibleChange -= OnEventInvisibleChange;
             UnitEntity.EventOnBuffRegister -= OnEventBuffRegister;
             UnitEntity.EventOnBuffUnregister -= OnEventBuffUnregister;
+
+            UnitEntity.EventOnAnimPlay -= OnEventAnimPlay;
         }
 
 
@@ -414,9 +422,23 @@ namespace My.Map.Scene
             }
         }
 
-        protected virtual void OnEventUnitHit(long entityId)
+        protected virtual void OnEventUnitHit(long entityId, long? srcId)
         {
             PresenterOnHit();
+
+            var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.5f, "Hit/Style01", this.Id);
+            if(ctx != null)
+            {
+                ctx.BindingUnitVec = new Vector2(0, 0.05f);
+                var dir = UnityEngine.Random.insideUnitCircle.normalized;
+                if(srcId != null)
+                {
+                    var pres = SceneAOIManager.Instance.GetActivePresentation(srcId.Value);
+                    dir = pres.GetWorldPosition() - this.GetWorldPosition();
+                }
+
+                ctx.EffectGo.transform.right = -dir;
+            }
         }
 
         protected virtual void OnEventStartStealth(long entityId)
@@ -481,6 +503,7 @@ namespace My.Map.Scene
                 _bindingEffectsCtxId.Remove(buffInstId);
             }
         }
+
 
         protected virtual void OnEventConvertAttach(long entityId)
         {

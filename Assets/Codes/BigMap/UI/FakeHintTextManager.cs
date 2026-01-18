@@ -97,6 +97,7 @@ public class FakeHintTextManager : MonoBehaviour
         txt.alignment = TextAnchor.MiddleCenter;
         txt.horizontalOverflow = HorizontalWrapMode.Overflow;
         txt.verticalOverflow = VerticalWrapMode.Overflow;
+        txt.raycastTarget = false;
 
         var rt = go.GetComponent<RectTransform>();
         rt.anchorMin = rt.anchorMax = new Vector2(0, 0); // ÆÁÄ»ÏñËØ¶¨Î»

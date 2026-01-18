@@ -1561,6 +1561,8 @@ namespace My.Map.Entity
                     ValType = EOneVariatyType.Float,
                     RawVal = "0.15"
                 },
+
+                AnimTag = "attack_01",
             });
 
             var mainPhase = new MapAbilityPhase()
@@ -1572,14 +1574,14 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.25"
+                    RawVal = "0.2"
                 },
             };
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon01",
-                Duration = 0.32f,
+                Duration = 0.2f,
                 OnHitEffects = new()
                 {
 
@@ -1623,8 +1625,9 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "0.15"
                 },
+                AnimTag = "attack_01",
             });
 
             var mainPhase = new MapAbilityPhase()
@@ -1636,14 +1639,14 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.25"
+                    RawVal = "0.2"
                 },
             };
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon02",
-                Duration = 0.32f,
+                Duration = 0.2f,
                 OnHitEffects = new()
                 {
 
@@ -1664,7 +1667,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "0.25"
                 },
             };
             spec.Phases.Add(postPhase);
@@ -1689,6 +1692,8 @@ namespace My.Map.Entity
                     ValType = EOneVariatyType.Float,
                     RawVal = "0.3"
                 },
+
+                AnimTag = "attack_01",
             });
 
             var mainPhase = new MapAbilityPhase()

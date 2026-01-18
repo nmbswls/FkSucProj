@@ -144,6 +144,7 @@ namespace My.Map
         public EDmgFlag deltaFlags;
         public Dictionary<string, long> extraAttrs = null;
 
+        public Vector2? HitDir;
         public long finalDelta;
     }
 

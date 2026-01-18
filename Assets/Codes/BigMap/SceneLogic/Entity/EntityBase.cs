@@ -146,6 +146,7 @@ namespace My.Map
         public event Action<long, Vector2, Vector2> EventOnEntityMove;
         public event Action<long> EventOnDestroyed;
         public event Action EventOnAnimLayerUpdate;
+        public event Action<string, int> EventOnAnimPlay;
         public Vector2 Pos { get; protected set; } = Vector2.zero;
 
         public ISceneAbilityViewer? viewer; // 表现层接口
@@ -523,6 +524,12 @@ namespace My.Map
 
             EventOnAnimLayerUpdate?.Invoke();
         }
+
+        public void PlayerAnim(string animName, int layer = 0)
+        {
+            EventOnAnimPlay?.Invoke(animName, layer);
+        }
+
 
         public Dictionary<long, BuffInstance> BuffContainer { get; protected set; } = new();
         public event Action<BuffInstance> EventOnBuffRegister;

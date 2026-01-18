@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Numerics;
+using Animancer;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,6 +13,28 @@ namespace My.Map.Scene
         public Transform BindEffectRoot;
 
         private float _pendingOffsetZ = 0;
+
+        public AnimancerComponent MainAgentAnimator;
+        public UnitAnimHolder AnimHolder;
+
+        private AnimationClip _Idle;
+        private void InitAnimComps()
+        {
+            if(AnimHolder != null)
+            {
+                var clipInfo = AnimHolder.AnimClips.Find(item => item.Name == "idle");
+
+                if (clipInfo != null)
+                {
+                    _Idle = clipInfo.Clip;
+                }
+
+            }
+
+            //OnEventAnimPlay("attack_01", 0);
+        }
+
+
         public void UpdateOffsetZView()
         {
             if (AgentView == null) return;
@@ -38,6 +61,9 @@ namespace My.Map.Scene
         {
             MainFlasher?.TriggerFlash();
 
+            if(HitPivot != null)
+            {
+            }
         }
 
         protected override void OnFadeStateUpdate()
@@ -56,6 +82,36 @@ namespace My.Map.Scene
 
         protected virtual void UpdateBindingEffect()
         {
+
+        }
+
+
+
+        protected virtual void OnEventAnimPlay(string animName, int layer)
+        {
+            if (layer == 0)
+            {
+                if (AnimHolder == null)
+                {
+                    return;
+                }
+
+                var clipInfo = AnimHolder.AnimClips.Find(item=>item.Name == animName);
+
+                if(clipInfo == null)
+                {
+                    Debug.LogError("OnEventAnimPlay no clip " + animName);
+                    return;
+                }
+                //var animancer = AgentView.GetComponent<AnimancerComponent>();
+                //List<AnimationClip> clips = new();
+                //animancer.GetAnimationClips(clips);
+
+                var state = MainAgentAnimator.Play(clipInfo.Clip);
+                state.Speed = clipInfo.Speed;
+
+                state.Events.OnEnd = () => MainAgentAnimator.Play(_Idle);
+            }
 
         }
 

@@ -82,7 +82,7 @@ namespace My.Map
         /// <summary>
         /// event
         /// </summary>
-        public event Action<long> EventOnHit;
+        public event Action<long, long?> EventOnHit;
         public event Action<long> EventOnEnmityBehave;
         public event Action<long> EventOnDie;
         public event Action<long> EventOnAttachStatusChanged;
@@ -754,7 +754,7 @@ namespace My.Map
                                 }
                             }
 
-                            UnitOnHit(intent.delta, intent.srcEntityId);
+                            UnitOnHit(intent.delta, intent.srcEntityId, intent.HitDir);
 
                         }
 
@@ -774,7 +774,7 @@ namespace My.Map
         }
 
 
-        protected virtual void UnitOnHit(long delta, long? srcEntityId)
+        protected virtual void UnitOnHit(long delta, long? srcEntityId, Vector2? hitDir)
         {
             // ´¥·¢onhit
             foreach (var b in BuffContainer.Values)
@@ -791,7 +791,7 @@ namespace My.Map
                 });
             }
 
-            EventOnHit?.Invoke(this.Id);
+            EventOnHit?.Invoke(this.Id, srcEntityId);
 
             if (Math.Abs(delta) > 1)
             {
@@ -812,7 +812,7 @@ namespace My.Map
         /// </summary>
         protected virtual void UnitOnApplyHit()
         {
-            //LogicManager.viewer.StartHitStop(0.03f);
+            LogicManager.viewer.StartHitStop(0.03f);
         }
 
 

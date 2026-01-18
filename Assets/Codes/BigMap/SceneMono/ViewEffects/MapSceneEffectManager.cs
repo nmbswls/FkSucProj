@@ -19,6 +19,7 @@ public class MapSceneEffectManager : MonoBehaviour
         public float CleanUpTimer;
 
         public long? BindingUnit = null;
+        public Vector3 BindingUnitVec;
     }
 
     public List<EffectCtx> ctxs = new();
@@ -54,7 +55,7 @@ public class MapSceneEffectManager : MonoBehaviour
                         ctxs[i].EffectGo.SetActive(true);
                     }
 
-                    ctxs[i].EffectGo.transform.position = pres.GetWorldPosition();
+                    ctxs[i].EffectGo.transform.position = pres.GetWorldPosition() + ctxs[i].BindingUnitVec;
                 }
                 else
                 {
