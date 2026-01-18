@@ -467,12 +467,15 @@ namespace My.UI
         /// <returns></returns>
         public bool OnConfirm()
         {
-            if(WithHigherInteract)
+
+            if(currExecuteTarget != null)
             {
-                return false;
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.UseSkill("h_mode_execute", target:currExecuteTarget.NpcEntity);
+                return true;
             }
 
-            if(currFocusInteractable == null)
+
+            if (currFocusInteractable == null)
             {
                 return false;
             }

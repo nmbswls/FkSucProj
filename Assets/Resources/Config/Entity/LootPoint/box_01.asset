@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: box_01
   m_EditorClassIdentifier: 
   CfgId: box_01
+  ShowName: "\u7BB1\u5B50"
+  PrefabName: 
   DefaultLocked: 0
   UnlockItemCost: []
   LootOpenTime: 0.2
@@ -23,4 +25,4 @@ MonoBehaviour:
     Param2: 0
     Param3: chanzi
     Param4: 
-  DefaultDropId: box_01_drop
+  DefaultDropId: 0

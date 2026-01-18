@@ -430,7 +430,7 @@ namespace My.Map
 
         protected virtual long GetHValMax()
         {
-            return 10000;
+            return 100_000;
         }
 
         protected virtual void OnNpcBlurt()

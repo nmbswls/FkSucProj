@@ -26,7 +26,7 @@ namespace My.Map.Scene
         [Header("Dynamic Non-Penetration")]
         public LayerMask dynamicBlockQueryMask;   
         public float nonPenPadding = 0.05f;     // ◊Ó–°º‰œ∂£¨ºı“ªµ„±‹√‚∂∂∂Ø
-        public float dynamicQueryExtra = 1.0f;  // ≤È—Ø∞Îæ∂»ﬂ”‡
+        public float dynamicQueryExtra = 0.2f;  // ≤È—Ø∞Îæ∂»ﬂ”‡
 
         private Rigidbody2D rb;
         private Collider2D selfCollider;
@@ -206,6 +206,13 @@ namespace My.Map.Scene
                     if (!col) continue;
                     var otherRb = col.attachedRigidbody;
                     if (!otherRb || otherRb == rb) continue;
+                    var sceneDynamic = col.GetComponent<IScenePresentation>();
+                    if (sceneDynamic == null) continue;
+
+                    if(sceneDynamic.GetLogicEntity().CheckHasState(AttrIdConsts.Ghost))
+                    {
+                        continue;
+                    }
 
                     float otherR = GetApproxRadius(col);
 

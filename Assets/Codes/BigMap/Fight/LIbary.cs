@@ -252,6 +252,18 @@ namespace My.Map.Entity
                     cfg.TargetType = ETargetType.Self;
                     _skillDict[cfg.SkillId] = cfg;
                 }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "default_npc_attack";
+                    cfg.MainAbilityId = "attack";
+                    cfg.CoolDown = 5.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+
+                    cfg.TargetType = ETargetType.Rect;
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -429,6 +441,11 @@ namespace My.Map.Entity
 
                 {
                     var ab = CreatePlayerDarkDance();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateNpcStaticDoing();
                     _abilityDict[ab.Id] = ab;
                 }
             }
@@ -1171,14 +1188,14 @@ namespace My.Map.Entity
                 Shape = MapAbilityEffectHitBoxCfg.EShape.Square,
                 TargetEntityType = EEntityType.Player,
                 Width = 1.2f,
-                Length = 1f,
+                Length = 1.2f,
 
                 OnHitEffects = new()
                 {
                     new MapAbilityEffectCostResourceCfg()
                     {
                         ResourceId  = AttrIdConsts.HP,
-                        CostValue = 5,
+                        CostValue = 500,
                         IsEnmity = true,
                     }
                 }
@@ -1790,7 +1807,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectAddResourceCfg()
                     {
                         ResourceId = AttrIdConsts.UnitHVal,
-                        AddValue = 1000,
+                        AddValue = 10000,
                         IsEnmity = false,
                     },
                     new MapAbilityEffectCostResourceCfg()
@@ -2553,10 +2570,12 @@ namespace My.Map.Entity
                 ImmuneKnock = true,
                 ForbidDodge = true,
 
+                EnterDebugString = "Âú",
+
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.8"
+                    RawVal = "1"
                 },
             };
             spec.Phases.Add(mainPhase);
@@ -2569,6 +2588,37 @@ namespace My.Map.Entity
             return spec;
         }
 
+
+        private static MapAbilitySpecConfig CreateNpcStaticDoing()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "npc_static_doing";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockRotation = true,
+                ImmuneKnock = true,
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit | EAbilityInterruptMask.Cast,
+
+                AnimTag = "special_doing",
+
+                HoldingPhase = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "99.0"
+                },
+            };
+
+            spec.Phases.Add(mainPhase);
+
+            return spec;
+
+        }
 
         private static MapAbilitySpecConfig CreateNpcCloseKaiyou()
         {

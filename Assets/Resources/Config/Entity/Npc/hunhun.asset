@@ -28,7 +28,8 @@ MonoBehaviour:
   DefaultFactionId: 3
   EnmityCfgId: city_bad
   Hp: 100
-  SkillList: []
+  SkillList:
+  - default_npc_attack
   DefaultDropId: 1
   NpcTag: 
   InteractList: []

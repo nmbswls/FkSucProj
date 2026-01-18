@@ -53,6 +53,7 @@ namespace My.Map
     {
         long Id { get; }
         long GetAttr(string attrId);
+        bool CheckHasState(string attrId);
 
         void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null);
 

@@ -333,6 +333,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitPresenter: {fileID: 0}
   WeaponOnes: []
+  ySortOrder: {fileID: 0}
 --- !u!1 &6716341979371502919
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,8 +422,8 @@ MonoBehaviour:
   AgentView: {fileID: 746965970174307247}
   ViewPoint: {fileID: 0}
   faceIndicator: {fileID: 1072811390564661643}
-  EyePos: {fileID: 1352328000936773924}
-  WeaponRoot: {fileID: 7921256209700466238}
+  HitPivot: {fileID: 0}
+  HeadHintPivot: {fileID: 0}
   WeaponCtrl: {fileID: 637426610165199311}
   navAgent: {fileID: 4754350832141041876}
   rb: {fileID: 0}
@@ -450,6 +451,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   BindEffectRoot: {fileID: 0}
+  MainAgentAnimator: {fileID: 0}
+  AnimHolder: {fileID: 0}
   MainFlasher: {fileID: 0}
   SpecialAnimClips:
   - {fileID: 7400000, guid: cc762838fe4675149bbb8008cbc69e50, type: 2}
@@ -479,7 +482,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 524288
   nonPenPadding: 0.05
-  dynamicQueryExtra: 1
+  dynamicQueryExtra: 0.2
 --- !u!61 &7663609590893745940
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -679,7 +682,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponAnim: {fileID: 0}
+  weaponAnimancer: {fileID: 0}
   WeaponCtrl: {fileID: 0}
+  innerShowClip: {fileID: 0}
   HitId: 0
 --- !u!61 &6015670598200374622
 BoxCollider2D:

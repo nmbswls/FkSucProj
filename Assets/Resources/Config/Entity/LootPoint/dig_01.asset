@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: dig_01
   m_EditorClassIdentifier: 
   CfgId: dig_01
+  ShowName: "\u6316\u6398\u70B9"
+  PrefabName: 
   DefaultLocked: 0
   UnlockItemCost: []
   LootOpenTime: 1
@@ -23,4 +25,4 @@ MonoBehaviour:
     Param2: 0
     Param3: chanzi
     Param4: 
-  DefaultDropId: dig_01_drop
+  DefaultDropId: 0

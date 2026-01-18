@@ -1651,7 +1651,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1572864
   nonPenPadding: 0.05
-  dynamicQueryExtra: 1
+  dynamicQueryExtra: 0.2
 --- !u!70 &5309535767887573840
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

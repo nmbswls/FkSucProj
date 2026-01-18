@@ -158,8 +158,8 @@ MonoBehaviour:
     TriggerType: 2
     MaxTriggerCnt: 0
     MinTriggerInterval: 0
-    Param1: 10
-    Param2: 10
+    Param1: 2
+    Param2: 2
     Param3: 2,3,4
     Param4: 
     Outputs:
@@ -196,7 +196,7 @@ MonoBehaviour:
     ActiveTriggerIds: 6400000065000000
   - StateId: 10
     EnsureMemberIds: 01000000
-    ActiveTriggerIds: 
+    ActiveTriggerIds: c9000000
   references:
     version: 2
     RefIds:

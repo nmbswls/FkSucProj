@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: spoil_small
   m_EditorClassIdentifier: 
   CfgId: spoil_small
+  ShowName: "\u6218\u5229\u54C1"
+  PrefabName: 
   DefaultLocked: 0
   UnlockItemCost: []
   LootOpenTime: 0.2
@@ -23,4 +25,4 @@ MonoBehaviour:
     Param2: 0
     Param3: chanzi
     Param4: 
-  DefaultDropId: box_01_drop
+  DefaultDropId: 0

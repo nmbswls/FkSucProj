@@ -18,7 +18,7 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
-        public string ShowName => gameObject.name;
+        public string ShowName => LootEntity.cacheConfig.ShowName;
 
         public LootPointLogicEntity LootEntity { get { return (LootPointLogicEntity)_logic; } }
         public override void ApplyState(object state)
