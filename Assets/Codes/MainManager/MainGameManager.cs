@@ -72,6 +72,8 @@ public interface IVisionSenser2D
     List<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter);
 
     bool CheckIsInAlertArea(Vector2 pos);
+
+    void OverlapCheckDynamicObs(Vector2 orgPos, float radius, List<(Vector2, Vector2)> retList);
 }
 
 
@@ -285,6 +287,13 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         else
         {
             RumorTextSpawner.IsActive = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(UnityEngine.Input.mousePosition);
+            mouseWorld.z = 0;
+            gameLogicManager.playerLogicEntity.entityMotorComp.TryMoveTo(mouseWorld);
         }
     }
 

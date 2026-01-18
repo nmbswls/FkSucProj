@@ -492,7 +492,8 @@ namespace My.Input
                 {
                     return;
                 }
-                player.PlayerEntity.ForceSetFaceTarget(castDir, false);
+
+                player.PlayerEntity.ForceSetFaceTarget(castDir, true);
             }
         }
 

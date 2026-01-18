@@ -275,7 +275,7 @@ namespace My.Map
             if (LogicTime.time - enterCombatTime < minCombatDuration) return;
 
             bool giverSilent = (LogicTime.time - lastDamageGivenTime) >= outCombatDelay;
-            bool takerSilent = (LogicTime.time - lastDamageTakenTime) >=outCombatDelay;
+            bool takerSilent = (LogicTime.time - lastDamageTakenTime) >= outCombatDelay;
             bool noThreat = damageThreat.Count == 0 && sightThreat.Count == 0;
 
             bool hardLeashExceeded = false;

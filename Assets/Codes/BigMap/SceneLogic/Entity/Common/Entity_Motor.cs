@@ -1,13 +1,10 @@
 
 
 
-using System.Security.Cryptography;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static My.Map.BaseUnitLogicEntity;
-using static UnityEditor.PlayerSettings;
-using static UnityEngine.CullingGroup;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map.Entity
 {
@@ -89,11 +86,11 @@ namespace My.Map.Entity
         public Vector2 DesiredVelocity { get; private set; }
         public Quaternion DesiredRotation { get; private set; }
 
-       
+
         
-
-
         public float ArriveTolerance = 0.1f;
+        public float SwitchRadius = 0.5f;
+
         public bool AllowReplan = true;
         public float ReplanCooldown = 0.2f;
         public float Acceleration = 99;
@@ -122,13 +119,61 @@ namespace My.Map.Entity
             return true;
         }
 
-        public void MoveTo(Vector2 destination, float stopDistance = 0.35f, float moveSpeedRate = 1.0f)
+        public void TryMoveTo(Vector2 destination, float stopDistance = 0.35f, float moveSpeedRate = 1.0f)
         {
-            if (navProvider.TryBuildPath(UnitEntity.Pos, destination, out _path) && _path.Length > 0)
+
+            if(State == EMotorState.Pathing)
             {
-                EnterPathing(destination);
-                this._stopDistance = stopDistance;
-                this._moveSpeedRate = moveSpeedRate;
+                if (Vector2.Distance(destination, _currentGoal) < ArriveTolerance)
+                {
+                    return;
+                }
+            }
+
+            if (navProvider.TryBuildPath(UnitEntity.Pos, destination, out var newPath) && newPath.Length > 0)
+            {
+                int startIndex = 0;
+
+                // 遍历新路径的前几个点
+                for (int i = 0; i < newPath.Waypoints.Length; i++)
+                {
+                    Vector2 wp = newPath.Waypoints[i];
+                    float distToWp = Vector2.Distance(UnitEntity.Pos, wp);
+
+                    // 如果这个路点离我非常近（比如小于切角半径 SwitchRadius），
+                    // 或者比 SwitchRadius 稍大一点点（防止回头跑），
+                    // 就认为这个点“我已经到了”或“可以直接忽略”。
+                    // 这里建议使用稍大一点的容差，比如 SwitchRadius * 1.2f
+                    if (distToWp < SwitchRadius)
+                    {
+                        startIndex = i + 1; // 跳过这个点，直接去下一个
+                    }
+                    else
+                    {
+                        // 遇到第一个“足够远”的点，停止修剪，以此为起点
+                        break;
+                    }
+                }
+
+                // 应用新路径
+                _path = newPath;
+
+                // 如果所有点都被剪掉了（说明离终点极近），就设为最后一个点
+                _pathIndex = Mathf.Min(startIndex, _path.Length - 1);
+
+                // 只有当路径发生剧烈变化时，才重置某些状态
+                // 否则保持 State = EMotorState.Pathing 不变
+                if (State != EMotorState.Pathing)
+                {
+                    State = EMotorState.Pathing;
+                }
+
+                _currentGoal = destination;
+                _replanCooldownLeft = 0f;
+
+                //EnterPathing(destination);
+                //this._stopDistance = stopDistance;
+                //this._moveSpeedRate = moveSpeedRate;
             }
             else
             {
@@ -142,13 +187,16 @@ namespace My.Map.Entity
             }
         }
 
-
-        public void MoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
+        /// <summary>
+        /// 进行跟随
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="followPrediction"></param>
+        /// <param name="offset"></param>
+        /// <param name="stopDistance"></param>
+        /// <param name="moveSpeedRate"></param>
+        public void TryMoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
         {
-            if(target == null)
-            {
-                ;
-            }
             _followTarget = target;
             _followPrediction = followPrediction;
             _followOffset = offset;
@@ -185,6 +233,20 @@ namespace My.Map.Entity
 
             // 将期望旋转/速度转化为最终物理位姿（在FixedUpdate中执行）
             //DesiredRotation = ComputeDesiredRotationFromVelocity(DesiredVelocity, Rotation, _settings.AngularSpeedDeg, dt);
+            if(State == EMotorState.Pathing)
+            {
+                TickPathingState();
+            }
+            else if(State == EMotorState.Following)
+            {
+                TickFollowingState();
+            }
+
+            if (DesiredVelocity.sqrMagnitude < 0.01f)
+            {
+                _currentVelocityRef = Vector2.zero;
+                _lastAvoidanceVelocity = Vector2.zero;
+            }
         }
 
         /// <summary>
@@ -193,7 +255,6 @@ namespace My.Map.Entity
         /// <returns></returns>
         public Vector2 GetDesiredVelocity()
         {
-            // 根据状态机计算 DesiredVelocity / DesiredRotation
             switch (State)
             {
                 case EMotorState.Free:
@@ -201,11 +262,11 @@ namespace My.Map.Entity
                     break;
 
                 case EMotorState.Pathing:
-                    TickPathing();
+                    UpdatePathingVelocity();
                     break;
 
                 case EMotorState.Following:
-                    TickFollowing();
+                    UpdateFollowingVelocity();
                     break;
             }
             return DesiredVelocity;
@@ -233,50 +294,57 @@ namespace My.Map.Entity
 
         private void TickFree()
         {
-            DesiredVelocity = Vector3.zero;
             DesiredVelocity = FreeMoveInput * UnitEntity.GetCurrSpeed();
             // 可渐停：从当前速度到0
             Velocity = Vector3.zero;
         }
 
-
-        private void TickPathing()
+        /// <summary>
+        /// 
+        /// </summary>
+        private void TickPathingState()
         {
-            // 没路径点时直线前往_currentGoal
+            // 1. 终点判定
             if (_path.Length == 0)
             {
-                if (Arrived(UnitEntity.Pos, _currentGoal, ArriveTolerance))
+                // 直线移动模式的终点判断
+                if (Vector2.Distance(UnitEntity.Pos, _currentGoal) <= ArriveTolerance)
                 {
-                    DesiredVelocity = Vector3.zero;
-                    //OnReachedDestination?.Invoke();
                     EnterFree();
-                    return;
                 }
-                MoveToward(_currentGoal);
                 return;
             }
 
-            // 有路径
-            // 确定当前子路点
-            var waypoint = _path.Waypoints[_pathIndex];
-            // 若到达子路点，推进索引
-            if (Arrived(UnitEntity.Pos, waypoint, ArriveTolerance))
-            {
-                _pathIndex++;
-                if (_pathIndex >= _path.Length)
-                {
-                    //OnReachedDestination?.Invoke();
-                    EnterFree();
-                    return;
-                }
-                waypoint = _path.Waypoints[_pathIndex];
-            }
+            // 2. 路径点切换判定 (Switch Logic)
+            // 获取当前要去的路点
+            Vector2 currentWaypoint = _path.Waypoints[_pathIndex];
+            float dist = Vector2.Distance(UnitEntity.Pos, currentWaypoint);
 
-            // 朝子路点移动
-            MoveToward(waypoint);
+            // 判断是否是最后一个点
+            bool isFinalPoint = _pathIndex >= _path.Length - 1;
+
+            // 切换条件：
+            // A. 如果是中间点：使用宽松的 SwitchRadius (切角)
+            // B. 如果是终点：使用严格的 ArriveTolerance
+            float threshold = isFinalPoint ? ArriveTolerance : SwitchRadius;
+
+            if (dist <= threshold)
+            {
+                if (isFinalPoint)
+                {
+                    // 真的到了终点
+                    EnterFree();
+                }
+                else
+                {
+                    // 切换到下一个点
+                    _pathIndex++;
+                }
+            }
         }
 
-        private void TickFollowing()
+
+        private void TickFollowingState()
         {
             // 1) 更新目标点（带预测与重规划）
             if (AllowReplan && _replanCooldownLeft <= 0f)
@@ -298,14 +366,35 @@ namespace My.Map.Entity
                     }
                     _replanCooldownLeft = ReplanCooldown;
                 }
-                else 
-                { 
+                else
+                {
                     //OnLostTarget?.Invoke(); 
-                    EnterFree(); 
-                    return; 
+                    EnterFree();
+                    return;
                 }
             }
+        }
 
+        private void UpdatePathingVelocity()
+        {
+            // 没路径点时直线前往_currentGoal
+            if (_path.Length == 0)
+            {
+                MoveToward(_currentGoal);
+                return;
+            }
+
+            // 有路径
+            // 确定当前子路点
+            var waypoint = _path.Waypoints[_pathIndex];
+            // 朝子路点移动
+            MoveToward(waypoint);
+
+            //DesiredVelocity = ApplyAvoidanceToVelocity(DesiredVelocity);
+        }
+
+        private void UpdateFollowingVelocity()
+        {
             float d = (UnitEntity.Pos - _currentGoal).magnitude;
 
             // 2) 牵引半径与停止距离
@@ -476,6 +565,118 @@ namespace My.Map.Entity
 
         private static bool Arrived(Vector2 pos, Vector2 dst, float tol) => (pos - dst).magnitude <= tol;
 
+        public float AvoidanceRadius = 0.2f;   // 侦测半径：多远开始避让
+        public float AvoidanceWeight = 0.5f;   // 避障权重：越大躲得越狠
+        protected List<(Vector2, Vector2)> avoidanceCache = new();
+        public float lookAheadDistance = 0.3f;
+        public float bodyRadius = 0.3f;
+        public float sideRayAngle = 45f;
+        public float avoidanceStrength = 1.0f;
+        public float velocitySmoothTime = 0.1f;
+        private Vector2 _currentVelocityRef;
+        private Vector2 _lastAvoidanceVelocity;
+        /// <summary>
+        /// 计算避障速度
+        /// </summary>
+        /// <returns></returns>
+        private Vector2 ApplyAvoidanceToVelocity(Vector2 desiredVelocity)
+        {
+            // 1. 停止判定与状态重置
+            if (desiredVelocity.sqrMagnitude < 0.01f)
+            {
+                _currentVelocityRef = Vector2.zero;
+                _lastAvoidanceVelocity = Vector2.zero;
+                return Vector2.zero;
+            }
+
+            Vector2 moveDir = desiredVelocity.normalized;
+            Vector2 origin = (Vector2)UnitEntity.Pos + (moveDir * bodyRadius * 0.5f);
+
+            // 射线检测
+            RaycastHit2D hit = Physics2D.Raycast(origin, moveDir, lookAheadDistance, 1 << LayerMask.NameToLayer("DynamicObs"));
+
+#if UNITY_EDITOR
+            if (hit.collider != null) Debug.DrawLine(origin, hit.point, Color.red);
+            else Debug.DrawLine(origin, origin + moveDir * lookAheadDistance, Color.green);
+#endif
+
+            Vector2 targetVelocity = desiredVelocity;
+
+            // 2. 避障逻辑 (切向滑动)
+            if (hit.collider != null)
+            {
+                float dot = Vector2.Dot(moveDir, hit.normal);
+                if (dot < 0)
+                {
+                    // 切向投影：消除撞墙分量
+                    Vector2 slideVelocity = desiredVelocity - (hit.normal * dot * desiredVelocity.magnitude);
+
+                    // 稍微推离墙壁
+                    Vector2 pushOutVector = hit.normal * (1.0f - (hit.distance / lookAheadDistance)) * 2.0f;
+
+                    targetVelocity = slideVelocity + pushOutVector;
+
+                    // 死锁打破
+                    if (dot < -0.9f)
+                    {
+                        Vector2 tangent = new Vector2(-hit.normal.y, hit.normal.x);
+                        targetVelocity += tangent * 1.5f;
+                    }
+                }
+            }
+
+            // 3. 保持速度大小 (建议开启，手感更好)
+            targetVelocity = targetVelocity.normalized * desiredVelocity.magnitude;
+
+            // 4. 平滑处理 (含冷启动修复)
+            bool isColdStart = _lastAvoidanceVelocity.sqrMagnitude < 0.01f;
+            Vector2 finalVelocity;
+
+            if (isColdStart)
+            {
+                // 冷启动：直接赋值，跳过平滑
+                finalVelocity = targetVelocity;
+                _currentVelocityRef = Vector2.zero;
+            }
+            else
+            {
+                // 运行中：应用平滑，防止突变抖动
+                finalVelocity = Vector2.SmoothDamp(
+                    _lastAvoidanceVelocity,
+                    targetVelocity,
+                    ref _currentVelocityRef,
+                    velocitySmoothTime
+                );
+            }
+
+            _lastAvoidanceVelocity = finalVelocity;
+            return finalVelocity;
+        }
+
+        private Vector2 CastRay(Vector2 origin, Vector2 dir, float distance)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(origin, dir, distance, 1 << LayerMask.NameToLayer("DynamicObs"));
+
+            // 调试绘制
+#if UNITY_EDITOR
+            if (hit.collider != null) Debug.DrawLine(origin, hit.point, Color.red);
+            else Debug.DrawLine(origin, origin + dir * distance, Color.green);
+#endif
+
+            if (hit.collider != null)
+            {
+                // 计算斥力：
+                // 1. 越近斥力越大 (1.0 - fraction)
+                // 2. 方向是 碰撞法线 (hit.normal) 或者 简单的反向 (-dir)
+                // 这里推荐使用 hit.normal，因为它是滑墙的关键，它会指引你沿着墙面切线走
+                float repulsionStrength = 1.0f - (hit.distance / distance);
+
+                // 为了防止正对墙面时法线完全反向导致停止，我们可以混合一点反射向量
+                return hit.normal * repulsionStrength;
+            }
+
+            return Vector2.zero;
+        }
     }
 
 

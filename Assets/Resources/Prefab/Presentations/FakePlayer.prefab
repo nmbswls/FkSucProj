@@ -1567,7 +1567,8 @@ MonoBehaviour:
   AgentView: {fileID: 3626497417264651404}
   ViewPoint: {fileID: 840578726685308991}
   faceIndicator: {fileID: 0}
-  EyePos: {fileID: 8623213792691732422}
+  HitPivot: {fileID: 0}
+  HeadHintPivot: {fileID: 0}
   WeaponCtrl: {fileID: 9213344019219386193}
   navAgent: {fileID: 0}
   rb: {fileID: 0}
@@ -1660,7 +1661,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.0049888114}
-  m_Size: {x: 0.23406434, y: 0.103362195}
+  m_Size: {x: 0.23, y: 0.1}
   m_Direction: 1
 --- !u!1 &3910214180353856904
 GameObject:

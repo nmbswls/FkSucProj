@@ -36,7 +36,9 @@ namespace My.Map.Scene
 
         public Transform ViewPoint;
         public GameObject faceIndicator;
-        public Transform EyePos;
+
+        public Transform HitPivot;
+        public Transform HeadHintPivot;
 
         //public Transform WeaponRoot;
         public MapUnitWeaponCtrl WeaponCtrl; // ÎäÆ÷¿ØÖÆÆ÷
@@ -61,11 +63,6 @@ namespace My.Map.Scene
             }
         }
 
-
-        public Vector2 GetEyePos()
-        {
-            return EyePos.transform.position;
-        }
 
         protected override void Awake()
         {
@@ -106,6 +103,11 @@ namespace My.Map.Scene
                     if (UnitEntity == null) return false;
                     return UnitEntity.CheckHasState(AttrIdConsts.Ghost);
                 };
+                CharacterController.SyncPos = (pos) =>
+                {
+                    UnitEntity.SetPosition(pos);
+                };
+                
             }
 
             if(AgentView != null)
@@ -635,6 +637,7 @@ namespace My.Map.Scene
         {
             return targetCol;
         }
+
     }
 }
 

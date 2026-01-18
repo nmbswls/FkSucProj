@@ -221,6 +221,18 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         return retList;
     }
 
+    public void OverlapCheckDynamicObs(Vector2 orgPos, float radius, List<(Vector2, Vector2)> retList)
+    {
+        retList.Clear();
+        var hitCount = Physics2D.OverlapCapsuleNonAlloc(orgPos, new Vector2(0.46f, 0.2f), CapsuleDirection2D.Horizontal, 0, hits, 1 << LayerMask.NameToLayer("DynamicObs"));
+        for (int i = 0; i < hitCount; i++)
+        {
+            var col = hits[i];
+            var closestP = col.ClosestPoint(orgPos);
+            retList.Add((col.transform.position, closestP));
+        }
+    }
+
 
     /// <summary>
     /// ºÏ≤È «∑Ò”Îalert area¬Â

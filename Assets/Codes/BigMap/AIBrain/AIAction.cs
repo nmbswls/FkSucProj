@@ -320,7 +320,7 @@ namespace My.Map.Entity.AI
 
                 if (!_brain.NpcEntity.entityMotorComp.CheckIsMovingTo(_brain.blackboard.LastLeaveMoveModePos.Value))
                 {
-                    _brain.NpcEntity.entityMotorComp.MoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
+                    _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
                 }
 
                 var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.NpcEntity.Pos;
@@ -392,7 +392,7 @@ namespace My.Map.Entity.AI
 
                     if (!_brain.NpcEntity.entityMotorComp.CheckIsMovingTo(_brain.blackboard.LastLeaveMoveModePos.Value))
                     {
-                        _brain.NpcEntity.entityMotorComp.MoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
+                        _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.blackboard.LastLeaveMoveModePos.Value);
                     }
 
                     var diff = _brain.blackboard.LastLeaveMoveModePos.Value - _brain.NpcEntity.Pos;
@@ -482,7 +482,7 @@ namespace My.Map.Entity.AI
             if(!_brain.NpcEntity.entityMotorComp.CheckIsFollowTarget(_brain.NpcEntity.MoveBehaveInfo.FollowPatrolId))
             {
                 var followedEntity = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.MoveBehaveInfo.FollowPatrolId);
-                _brain.NpcEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, _brain.NpcEntity.MoveBehaveInfo.PatrolGroupRelativePos);
+                _brain.NpcEntity.entityMotorComp.TryMoveFollow(followedEntity, 0.5f, _brain.NpcEntity.MoveBehaveInfo.PatrolGroupRelativePos);
             }
         }
     }
@@ -544,7 +544,7 @@ namespace My.Map.Entity.AI
             // 不断移动
             if(_currPathPoint != null && !_brain.NpcEntity.entityMotorComp.CheckIsMovingTo(_currPathPoint.Value))
             {
-                _brain.NpcEntity.entityMotorComp.MoveTo(_currPathPoint.Value);
+                _brain.NpcEntity.entityMotorComp.TryMoveTo(_currPathPoint.Value);
             }
 
             if(_currPathPoint != null)
@@ -607,7 +607,7 @@ namespace My.Map.Entity.AI
             var followedEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
             if (!_brain.NpcEntity.entityMotorComp.CheckIsFollowTarget(followedEntity.Id))
             {
-                _brain.NpcEntity.entityMotorComp.MoveFollow(followedEntity, 0.5f, Vector2.zero, 0.35f);
+                _brain.NpcEntity.entityMotorComp.TryMoveFollow(followedEntity, 0.5f, Vector2.zero, 0.35f);
             }
         }
     }
@@ -768,7 +768,7 @@ namespace My.Map.Entity.AI
 
             var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.NpcEntity.Pos, _brain.PlayerEntity.Pos, best.cacheConfig.DesiredUseDistance);
             Debug.Log($"AIActionTryUseSkill move pos {targetPos}");
-            _brain.NpcEntity.entityMotorComp.MoveTo(targetPos);
+            _brain.NpcEntity.entityMotorComp.TryMoveTo(targetPos);
         }
 
         public override void Tick()
@@ -819,7 +819,7 @@ namespace My.Map.Entity.AI
                 }
                 else
                 {
-                    _brain.NpcEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _config.DesiredUseDistance, 1.2f);
+                    _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, _config.DesiredUseDistance, 1.2f);
                 }
             }
             // 正在使用技能
@@ -933,7 +933,7 @@ namespace My.Map.Entity.AI
 
 
             var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
-            _brain.NpcEntity.entityMotorComp.MoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
+            _brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
         }
 
         public override void Tick()
@@ -959,7 +959,9 @@ namespace My.Map.Entity.AI
             }
 
             var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
-            _brain.NpcEntity.entityMotorComp.MoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
+            _brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
+
+            Debug.Log("DistanceControl TryMoveFollow player");
 
         }
 
@@ -1015,7 +1017,7 @@ namespace My.Map.Entity.AI
         {
             base.Start();
 
-            _brain.NpcEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
+            _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
         }
 
         public override void Tick()
@@ -1039,8 +1041,9 @@ namespace My.Map.Entity.AI
             }
 
             var targetEntity = _brain.NpcEntity.LogicManager.playerLogicEntity;
+            Debug.Log("AIActionCombatQuickCloser quick close " + _brain.PlayerEntity.Pos);
             //var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.UnitEntity.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, _brain.PlayerEntity.Pos, goodDistance);
-            _brain.NpcEntity.entityMotorComp.MoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
+            _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, _brain.brainConfig.GoodBattleDistance);
         }
 
         public override void Stop(AIActionStatus endStatus)
@@ -1135,7 +1138,7 @@ namespace My.Map.Entity.AI
                 // 2级以上 
                 if(srcPlayer != null)
                 {
-                    _brain.NpcEntity.entityMotorComp.MoveTo(srcPlayer.Pos, moveSpeedRate: 0.9f);
+                    _brain.NpcEntity.entityMotorComp.TryMoveTo(srcPlayer.Pos, moveSpeedRate: 0.9f);
                     _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract fast", _brain.NpcEntity.Pos);
                 }
             }
@@ -1144,7 +1147,7 @@ namespace My.Map.Entity.AI
                 // 2级以上 
                 if (srcPlayer != null)
                 {
-                    _brain.NpcEntity.entityMotorComp.MoveTo(srcPlayer.Pos, moveSpeedRate: 0.1f);
+                    _brain.NpcEntity.entityMotorComp.TryMoveTo(srcPlayer.Pos, moveSpeedRate: 0.1f);
                     _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract slow", _brain.NpcEntity.Pos);
                 }
             }
@@ -1368,7 +1371,7 @@ namespace My.Map.Entity.AI
 
             if(NextEscapePoint != null)
             {
-                _brain.NpcEntity.entityMotorComp.MoveTo(NextEscapePoint.Value);
+                _brain.NpcEntity.entityMotorComp.TryMoveTo(NextEscapePoint.Value);
             }
 
             if(LogicTime.time - _startEscapeTimer > 3.0f)

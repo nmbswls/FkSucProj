@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using My.Map.Entity;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace My.Map.Scene
 {
@@ -37,6 +39,8 @@ namespace My.Map.Scene
         public Func<Vector2, Vector2>? ClampValidPos { get; set; }
 
         public Func<bool> IsGhoseMove { get; set; }
+
+        public Action<Vector2> SyncPos { get; set; }
         void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
@@ -89,6 +93,9 @@ namespace My.Map.Scene
             if(!ghost)
             {
                 targetPos = ProjectAgainstDynamics(targetPos, radius, dynamicBlockQueryMask);
+
+                //var aviodVec = CalculateAvoidanceForce();
+                //targetPos += aviodVec * Time.fixedDeltaTime;
             }
 
             if(ClampValidPos != null)
@@ -99,6 +106,11 @@ namespace My.Map.Scene
             //TryMoveWithStaticSkin();
 
             rb.MovePosition(targetPos);
+
+            if(SyncPos != null)
+            {
+                SyncPos(rb.position);
+            }
         }
 
         Vector2 ComputeSeparationVelocity()
@@ -129,6 +141,9 @@ namespace My.Map.Scene
             Vector2 sepDir = (sum / used).normalized;
             return sepDir * separationStrength;
         }
+
+        
+
 
         //Vector2 ProjectAgainstDynamics(Vector2 tgt, float selfR, LayerMask mask)
         //{

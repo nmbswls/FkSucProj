@@ -1,4 +1,4 @@
-
+ï»¿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,64 +12,98 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 namespace My.Map
 {
 
+    public static class SceneAngleUtil
+    {
+        public static float AngleFromDir(Vector2 dir)
+        {
+            if (dir.sqrMagnitude < 1e-8f) return 0f;
+            return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        }
+
+        public static Vector2 DirFromAngle(float angleDeg)
+        {
+            float rad = angleDeg * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+        }
+
+        public static Vector2 NormalizeSafe(Vector2 v)
+        {
+            float m = v.magnitude;
+            return m > 1e-8f ? v / m : Vector2.zero;
+        }
+
+        public static float MoveTowardsAngle(float current, float target, float maxDelta)
+        {
+            float delta = Mathf.DeltaAngle(current, target);
+            delta = Mathf.Clamp(delta, -maxDelta, maxDelta);
+            return current + delta;
+        }
+
+        public static float SmoothDampAngle(float current, float target, ref float currentVelocity, float smoothTime)
+        {
+            return Mathf.SmoothDampAngle(current, target, ref currentVelocity, smoothTime);
+        }
+    }
+
+
     public partial class BaseUnitLogicEntity
     {
 
+        public bool DefaultControlledByVelocity { get; set; } = true;
+
         /// <summary>
-        /// ÊÜÍâ²¿¿ØÖÆÃæÏò
+        /// å—å¤–éƒ¨æ§åˆ¶é¢å‘
         /// </summary>
 
-        public float FaceTurnSpeed = 5f;        // ÊÓÏß×ªÏòËÙ¶È
-        public float FaceResetDelay = 1.0f;     // ÎŞÄ¿±êºó¶à¾Ã¸´Î»
+        public float FaceTurnSpeed = 5f;        // è§†çº¿è½¬å‘é€Ÿåº¦
+        public float FaceResetDelay = 1.0f;     // æ— ç›®æ ‡åå¤šä¹…å¤ä½
 
         public enum EGazePriority
         {
-            Idle = 0,       // ÏĞÖÃ/Ñ²ÂßÊ±µÄËæÒâÉ¨ÊÓ
-            Distraction = 5,// »·¾³ÔëÒô¡¢ÎüÒı£¨ÈÓÊ¯Í·¡¢¿ÚÉÚ£©
-            Suspicion = 10, // ¾¯¾õ£¨¿´µ½²ĞÓ°¡¢Ìıµ½½Å²½£©
-            Combat = 20,    // Õ½¶·Ëø¶¨£¨¾ø¶ÔÓÅÏÈ£©
-            Override = 99   // ¾çÇéÇ¿ÖÆ/ËÀÍö
+            Idle = 0,       // é—²ç½®/å·¡é€»æ—¶çš„éšæ„æ‰«è§†
+            Distraction = 5,// ç¯å¢ƒå™ªéŸ³ã€å¸å¼•ï¼ˆæ‰”çŸ³å¤´ã€å£å“¨ï¼‰
+            Suspicion = 10, // è­¦è§‰ï¼ˆçœ‹åˆ°æ®‹å½±ã€å¬åˆ°è„šæ­¥ï¼‰
+            Combat = 20,    // æˆ˜æ–—é”å®šï¼ˆç»å¯¹ä¼˜å…ˆï¼‰
+            Override = 99   // å‰§æƒ…å¼ºåˆ¶/æ­»äº¡
         }
 
-        // ×¢ÊÓintent
+        // æ³¨è§†intent
         public class FaceRequest
         {
             public string SourceTag;
             public long LockTargetId;
             public Vector2 TargetPos;
             public int Priority = 1;
-            public float Weight;            // È¨ÖØ (0-1)£¬ÓÃÓÚÆ½»¬¹ı¶É
-            public float ExpirationTime;    // ¹ıÆÚÊ±¼ä´Á£¬-1´ú±íÓÀ¾ÃÓĞĞ§Ö±µ½ÊÖ¶¯ÒÆ³ı
+            public float Weight;            // æƒé‡ (0-1)ï¼Œç”¨äºå¹³æ»‘è¿‡æ¸¡
+            public float ExpirationTime;    // è¿‡æœŸæ—¶é—´æˆ³ï¼Œ-1ä»£è¡¨æ°¸ä¹…æœ‰æ•ˆç›´åˆ°æ‰‹åŠ¨ç§»é™¤
         }
 
-        // ´æ´¢ËùÓĞ»îÔ¾µÄÊÓÏßÇëÇó
+        // å­˜å‚¨æ‰€æœ‰æ´»è·ƒçš„è§†çº¿è¯·æ±‚
         private List<FaceRequest> _requests = new List<FaceRequest>();
 
         /// <summary>
-        /// Ç¿ÖÆ¸ü¸ÄÃæÏò
+        /// å¼ºåˆ¶æ›´æ”¹é¢å‘
         /// </summary>
         /// <param name="faceDir"></param>
         /// <param name="immediately"></param>
         public void ForceSetFaceTarget(Vector2 faceDir, bool immediately)
         {
-            var angle = SceneAngleUtil.AngleFromDir(faceDir);
-            //_targetAngle = angle;
+            _defaultFaceDir = faceDir;
 
             if (immediately)
             {
-                _currentAngle = angle;
-                this._defaultFaceDir = faceDir;
+                ApplyGazeRotation(true);
             }
         }
 
-        protected float _currentAngle { get; set; }
-        // Ä¬ÈÏµÄÏòÇ°¿´·½Ïò
-        private Vector2 _defaultFaceDir; // ÓÉÍâ²¿ÊµÊ±¸üĞÂ
+        //protected float _currentAngle { get; set; }
+        // é»˜è®¤çš„å‘å‰çœ‹æ–¹å‘
+        private Vector2 _defaultFaceDir; // ç”±å¤–éƒ¨å®æ—¶æ›´æ–°
         private FaceRequest? _activeRequest = null;
         private Vector2 _currentLook;
         private Vector2 _targetLookDir;
 
-        public Vector2 FinalLook { get { return _targetLookDir; } }
+        public Vector2 FinalLook { get { return _currentLook; } }
         public Vector2 CurrentLook { get { return _currentLook; } }
 
         private void InitGazeModule()
@@ -81,7 +115,7 @@ namespace My.Map
 
         private void UpdateGazeModule()
         {
-            if(entityMotorComp.DesiredVelocity.magnitude > 0.1f)
+            if(DefaultControlledByVelocity && entityMotorComp.DesiredVelocity.magnitude > 0.1f)
             {
                 _defaultFaceDir = entityMotorComp.DesiredVelocity.normalized;
             }
@@ -93,15 +127,15 @@ namespace My.Map
 
 
         /// <summary>
-        /// Ìí¼Ó»ò¸üĞÂÒ»¸öÊÓÏßÇëÇó
-        /// ÓÉ¸÷Ä£¿éµ÷ÓÃ
-        ///   1.ÎüÒıµã£¨ÉùÒô¡¢ÆäËû£©
+        /// æ·»åŠ æˆ–æ›´æ–°ä¸€ä¸ªè§†çº¿è¯·æ±‚
+        /// ç”±å„æ¨¡å—è°ƒç”¨
+        ///   1.å¸å¼•ç‚¹ï¼ˆå£°éŸ³ã€å…¶ä»–ï¼‰
         ///   2.
         /// </summary>
         public void RegisterGaze(string sourceTag, long lockTargetId, Vector2 lockPosition, EGazePriority priority, float duration = 2f)
         {
             FaceRequest existing = null;
-            // ¼ì²éËùÓĞËø¶¨Ä¿±êµÄÊÓÏßÀàĞÍ
+            // æ£€æŸ¥æ‰€æœ‰é”å®šç›®æ ‡çš„è§†çº¿ç±»å‹
             if (lockTargetId != 0)
             {
                 existing = _requests.FirstOrDefault(r => r.LockTargetId == lockTargetId && r.SourceTag == sourceTag);
@@ -109,13 +143,13 @@ namespace My.Map
 
             if (existing != null)
             {
-                // ¸üĞÂÏÖÓĞÇëÇó
+                // æ›´æ–°ç°æœ‰è¯·æ±‚
                 existing.Priority = (int)priority;
                 existing.ExpirationTime = duration > 0 ? Time.time + duration : -1;
             }
             else
             {
-                // ĞÂÔöÇëÇó
+                // æ–°å¢è¯·æ±‚
                 _requests.Add(new FaceRequest() 
                 {
                     SourceTag = sourceTag,
@@ -128,7 +162,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ÒÆ³ıÌØ¶¨µÄÊÓÏßÇëÇó£¨ÀıÈçÕ½¶·½áÊø£¬²»ÔÙ¿´Íæ¼Ò£©
+        /// ç§»é™¤ç‰¹å®šçš„è§†çº¿è¯·æ±‚ï¼ˆä¾‹å¦‚æˆ˜æ–—ç»“æŸï¼Œä¸å†çœ‹ç©å®¶ï¼‰
         /// </summary>
         public void UnregisterGaze(long? lockTargetId)
         {
@@ -140,18 +174,18 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ÒÆ³ıÌØ¶¨µÄÊÓÏßÇëÇó£¨ÀıÈçÕ½¶·½áÊø£¬²»ÔÙ¿´Íæ¼Ò£©
+        /// ç§»é™¤ç‰¹å®šçš„è§†çº¿è¯·æ±‚ï¼ˆä¾‹å¦‚æˆ˜æ–—ç»“æŸï¼Œä¸å†çœ‹ç©å®¶ï¼‰
         /// </summary>
         public void UnregisterGazeBySourceTag(string sourceTag)
         {
             _requests.RemoveAll(r => r.SourceTag == sourceTag);
         }
 
-        // --- 2. ÄÚ²¿Âß¼­ ---
+        // --- 2. å†…éƒ¨é€»è¾‘ ---
 
         private void CleanUpExpiredRequests()
         {
-            // ÒÆ³ı¹ıÆÚÇëÇó
+            // ç§»é™¤è¿‡æœŸè¯·æ±‚
             for (int i = _requests.Count - 1; i >= 0; i--)
             {
                 if (_requests[i].ExpirationTime > 0 && Time.time > _requests[i].ExpirationTime)
@@ -169,8 +203,8 @@ namespace My.Map
                 return;
             }
 
-            // ºËĞÄÂß¼­£ºÑ¡ÔñÓÅÏÈ¼¶×î¸ßµÄÇëÇó
-            // Èç¹ûÓÅÏÈ¼¶ÏàÍ¬£¬¿ÉÒÔÑ¡Ôñ×î½üÌí¼ÓµÄ£¬»òÕß¾àÀë×î½üµÄ
+            // æ ¸å¿ƒé€»è¾‘ï¼šé€‰æ‹©ä¼˜å…ˆçº§æœ€é«˜çš„è¯·æ±‚
+            // å¦‚æœä¼˜å…ˆçº§ç›¸åŒï¼Œå¯ä»¥é€‰æ‹©æœ€è¿‘æ·»åŠ çš„ï¼Œæˆ–è€…è·ç¦»æœ€è¿‘çš„
             _activeRequest = _requests.OrderByDescending(r => r.Priority).First();
 
 
@@ -185,9 +219,9 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Ö´ĞĞĞı×ª
+        /// æ‰§è¡Œæ—‹è½¬
         /// </summary>
-        private void ApplyGazeRotation()
+        private void ApplyGazeRotation(bool force = false)
         {
             if (_activeRequest != null)
             {
@@ -195,12 +229,20 @@ namespace My.Map
             }
             else
             {
-                // Èç¹ûÃ»ÓĞÇëÇó£¬Ä¬ÈÏ¿´ÉíÌåÇ°·½
+                // å¦‚æœæ²¡æœ‰è¯·æ±‚ï¼Œé»˜è®¤çœ‹èº«ä½“å‰æ–¹
                 _targetLookDir = _defaultFaceDir;
             }
 
-            // Æ½»¬²åÖµ¼ÆËãµ±Ç°¿´ÏòµÄµã
-            _currentLook = Vector2.Lerp(_currentLook, _targetLookDir, Time.deltaTime * FaceTurnSpeed);
+            if(force)
+            {
+                _currentLook = _targetLookDir;
+            }
+            else
+            {
+
+                // å¹³æ»‘æ’å€¼è®¡ç®—å½“å‰çœ‹å‘çš„ç‚¹
+                _currentLook = Vector2.Lerp(_currentLook, _targetLookDir, Time.deltaTime * FaceTurnSpeed);
+            }
         }
     }
 }

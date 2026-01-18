@@ -75,6 +75,8 @@ namespace My.Map
         public override void Initialize()
         {
             base.Initialize();
+
+            DefaultControlledByVelocity = false;
         }
 
         protected override void InitAttribute()
