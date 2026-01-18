@@ -1627,7 +1627,7 @@ namespace My.Map.Entity
                     ValType = EOneVariatyType.Float,
                     RawVal = "0.15"
                 },
-                AnimTag = "attack_01",
+                AnimTag = "attack_02",
             });
 
             var mainPhase = new MapAbilityPhase()

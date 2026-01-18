@@ -280,14 +280,15 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             OverworldHUDPanel.Instance.DoPendingAlertReduce(100);
         }
 
-        if (playerScenePresenter == null || !playerScenePresenter.IsInBusyZone)
-        {
-            RumorTextSpawner.IsActive = false;
-        }
-        else
-        {
-            RumorTextSpawner.IsActive = true;
-        }
+        //if (playerScenePresenter == null || !playerScenePresenter.IsInBusyZone)
+        //{
+        //    RumorTextSpawner.IsActive = false;
+        //}
+        //else
+        //{
+        //    RumorTextSpawner.IsActive = true;
+        //}
+        RumorTextSpawner.IsActive = false;
 
         if (Input.GetKeyDown(KeyCode.M))
         {

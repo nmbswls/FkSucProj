@@ -28,9 +28,10 @@ namespace My.Map.Scene
                 {
                     _Idle = clipInfo.Clip;
                 }
-
+                var state = MainAgentAnimator.Play(_Idle);
+                state.Events.Clear();
             }
-
+            
             //OnEventAnimPlay("attack_01", 0);
         }
 
@@ -107,7 +108,7 @@ namespace My.Map.Scene
                 //List<AnimationClip> clips = new();
                 //animancer.GetAnimationClips(clips);
 
-                var state = MainAgentAnimator.Play(clipInfo.Clip);
+                var state = MainAgentAnimator.Play(clipInfo.Clip, 0, FadeMode.FromStart);
                 state.Speed = clipInfo.Speed;
 
                 state.Events.OnEnd = () => MainAgentAnimator.Play(_Idle);

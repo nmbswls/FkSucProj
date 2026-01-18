@@ -96,6 +96,12 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         {
             return;
         }
+
+        if(logicEntity.GetAttr(AttrIdConsts.HP) <= 0)
+        {
+            return;
+        }
+
         UnitPresenter.OnWeaponHitCallback(hitId, logicEntity.Id);
     }
 }

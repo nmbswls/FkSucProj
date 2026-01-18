@@ -223,6 +223,15 @@ namespace My.Map.Scene
 
                 //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
                 //}
+
+                // ÏÔÊ¾²ãÊÂ¼þ
+                MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+                {
+                    Name = "AbsorbDizzy",
+                    Param3 = this.Id,
+                });
+
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
             }
 
         }
