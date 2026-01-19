@@ -61,14 +61,22 @@ public class QuickDebugShow : MonoBehaviour
             //    hpBars[k].Val.text += " a";
             //}
 
-            if (hpBars[k].bindingUnit.UnitEntity.CombatState == My.Map.NpcCombatStateComp.ECombatState.InCombat)
+            if(hpBars[k].bindingUnit.UnitEntity.CheckHasBuff("evil_shock"))
             {
-                hpBars[k].Val.text += " b";
+                hpBars[k].Val.text += " shock";
             }
-            else if(hpBars[k].bindingUnit.UnitEntity.CombatState == My.Map.NpcCombatStateComp.ECombatState.CombatRecover)
+            else
             {
-                hpBars[k].Val.text += " r";
+                if (hpBars[k].bindingUnit.UnitEntity.CombatState == My.Map.NpcCombatStateComp.ECombatState.InCombat)
+                {
+                    hpBars[k].Val.text += " b";
+                }
+                else if (hpBars[k].bindingUnit.UnitEntity.CombatState == My.Map.NpcCombatStateComp.ECombatState.CombatRecover)
+                {
+                    hpBars[k].Val.text += " r";
+                }
             }
+            
 
             try
             {
