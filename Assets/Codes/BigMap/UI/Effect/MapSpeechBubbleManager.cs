@@ -55,7 +55,7 @@ namespace My.UI
         /// <summary>
         /// 让某个目标说话（自动加入队列）
         /// </summary>
-        public void Say(IScenePresentation target, string text, float duration = 2f, float interval = 0.5f)
+        public void Say(IScenePresentation target, string text, float duration = 2f, int priority = 1,  float extraInterval = 0)
         {
             if (target == null) return;
 
@@ -68,7 +68,7 @@ namespace My.UI
             }
 
             // 往他的频道里塞一句话
-            activeChannels[id].Enqueue(text, duration, interval);
+            activeChannels[id].Enqueue(text, duration, priority, extraInterval);
         }
 
         public void StopAllSaying(long id)
@@ -111,13 +111,20 @@ namespace My.UI
             private MapSpeechBubble currentBubble;
 
             // 简单数据结构
-            struct Cmd { public string text; public float duration; public float interval; }
+            struct Cmd 
+            { 
+                public string text; 
+                public float duration;
+                public int priority;
+                public float extraInterval; 
+            }
             private Queue<Cmd> queue = new Queue<Cmd>();
 
             // 状态变量
             private float timer;
             private bool isShowingBubble; // true=显示中, false=间隔等待中
             private Cmd currentCmd;
+            private float popInterval = 0.3f;
 
             public CharacterChannel(MapSpeechBubbleManager mgr, IScenePresentation t)
             {
@@ -125,9 +132,16 @@ namespace My.UI
                 target = t;
             }
 
-            public void Enqueue(string text, float duration, float interval)
+            public void Enqueue(string text, float duration, int priority, float extraInterval = 0)
             {
-                queue.Enqueue(new Cmd { text = text, duration = duration, interval = interval });
+                if(queue.Count > 0)
+                {
+                    while(queue.Count > 0 && queue.Peek().priority < priority)
+                    {
+                        queue.Dequeue();
+                    }
+                }
+                queue.Enqueue(new Cmd { text = text, duration = duration, priority = priority, extraInterval = extraInterval });
             }
 
             // 返回 true 表示频道空闲可以移除了
@@ -184,7 +198,7 @@ namespace My.UI
                         // === 刚刚结束显示 ===
 
                         // 检查是否有后续间隔
-                        if (currentCmd.interval > 0)
+                        if (popInterval + currentCmd.extraInterval > 0)
                         {
                             // 进入间隔期：回收气泡，设置间隔计时
                             if (currentBubble != null)
@@ -193,7 +207,7 @@ namespace My.UI
                                 currentBubble = null;
                             }
                             isShowingBubble = false;
-                            timer = currentCmd.interval;
+                            timer = popInterval + currentCmd.extraInterval;
                         }
                         else
                         {

@@ -818,7 +818,7 @@ namespace My.Map
         /// </summary>
         protected virtual void UnitOnApplyHit()
         {
-            LogicManager.viewer.StartHitStop(0.03f);
+            //LogicManager.viewer.StartHitStop(0.03f);
         }
 
 

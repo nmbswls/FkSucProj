@@ -473,7 +473,7 @@ namespace My.Map.Entity.AI
                                         CheckState = NpcCombatStateComp.ECombatState.InCombat,
                                     }
                                 },
-                            TrueState = "Combat",
+                            TrueState = "Escape",
                         });
 
                         //idleState.Transitions.Add(new AITransition()
@@ -555,7 +555,7 @@ namespace My.Map.Entity.AI
                                         CheckState = NpcCombatStateComp.ECombatState.InCombat,
                                     }
                                 },
-                            TrueState = "Combat",
+                            TrueState = "Escape",
                         });
 
                         config.States.Add(returnState);
@@ -632,7 +632,7 @@ namespace My.Map.Entity.AI
                             Name = "Escape",
                         };
 
-                        combatState.ActionNames.Add("EscapeMain");
+                        combatState.ActionNames.Add("PeacefulEscape");
 
 
                         combatState.Transitions.Add(new AITransition()
@@ -732,7 +732,10 @@ namespace My.Map.Entity.AI
                         config.Actions.Add(actionCfg);
                     }
 
-
+                    {
+                        var actionCfg = new AIActionCfgPeacefulEscape();
+                        config.Actions.Add(actionCfg);
+                    }
 
                     {
                         var actionCfg = new AIActionCfgMoveDoPath()

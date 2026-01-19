@@ -214,6 +214,12 @@ namespace My.Map.Entity.AI
                         action = new AIActionXianZhuShou(brain, cfg);
                     }
                     break;
+
+                case AIActionCfgPeacefulEscape:
+                    {
+                        action = new AIActionPeacefulEscape(brain, cfg);
+                    }
+                    break;
                 default:
                     {
                         Debug.LogError("");
@@ -238,6 +244,10 @@ namespace My.Map.Entity.AI
 
             brainConfig = AIBrainParamsConfigLoader.Load(npcEntity.unitCfg.AIBrainParamsCfgId);
 
+            if(npcEntity.cacheCfg.IsPeace)
+            {
+                confId = "basic_unit_peace";
+            }
             var conf = AITemplateConfigLoader.Load(confId);
 
             foreach(var actionCfg in conf.Actions)

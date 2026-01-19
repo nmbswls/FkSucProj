@@ -640,6 +640,11 @@ namespace My.Map.Entity.AI
 
             if (_brain.blackboard.LastLeaveMoveModePos != null && _brain.brainConfig.ExitCombatBoundary)
             {
+                if(_brain.NpcEntity.IsEvilAlert)
+                {
+                    return;
+                }
+
                 if ((_brain.NpcEntity.Pos - _brain.blackboard.LastLeaveMoveModePos.Value).magnitude > _brain.brainConfig.ExitCombatBoundaryRange)
                 {
                     _brain.NpcEntity.combatStateComp.ExitCombat();
@@ -1425,6 +1430,8 @@ namespace My.Map.Entity.AI
 
         private Vector2? NextEscapePoint;
 
+        private float _escapeReachTalkTimer = 0;
+
         public AIActionCfgPeacefulEscape realCfg { get { return (AIActionCfgPeacefulEscape)cfg; } }
         public AIActionPeacefulEscape(MapUnitAIBrain aIBrain, AIActionCfg cfg) : base(aIBrain, cfg)
         {
@@ -1448,6 +1455,7 @@ namespace My.Map.Entity.AI
 
             _startEscapeTimer = LogicTime.time;
             _brain.blackboard.LockPeacefulEscape = true;
+            NextEscapePoint = null;
         }
 
         /// <summary>
@@ -1457,9 +1465,25 @@ namespace My.Map.Entity.AI
         {
             RefreshPeacefulEscape();
 
-            if(NextEscapePoint != null)
+            // 有目标点 且没有进入到达说话状态
+            if(NextEscapePoint != null && _escapeReachTalkTimer == 0)
             {
                 _brain.NpcEntity.entityMotorComp.TryMoveTo(NextEscapePoint.Value);
+                var diff = NextEscapePoint.Value - _brain.NpcEntity.Pos;
+                if (diff.magnitude < 0.3f)
+                {
+                    _escapeReachTalkTimer = LogicTime.time;
+                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "害怕", 2f);
+                }
+            }
+
+            if(_escapeReachTalkTimer != 0)
+            {
+                if(LogicTime.time - _escapeReachTalkTimer > 5.0f)
+                {
+                    _escapeReachTalkTimer = LogicTime.time;
+                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "害怕", 2f);
+                }
             }
 
             if(LogicTime.time - _startEscapeTimer > 3.0f)
@@ -1477,8 +1501,8 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            var randomOffset = UnityEngine.Random.insideUnitCircle * 3.0f;
-            var nextPos = _brain.NpcEntity.Pos + randomOffset;
+            var randomOffset = UnityEngine.Random.insideUnitCircle * 1.0f;
+            var nextPos = _brain.NpcEntity.Pos + randomOffset - diff;
 
             Vector3? nextValidPos = _brain.NpcEntity.LogicManager.navProvider.GetClosestValidPos(nextPos);
             if(nextValidPos != null)
@@ -1488,6 +1512,8 @@ namespace My.Map.Entity.AI
             }
 
             NextEscapePoint = _brain.NpcEntity.Pos;
+            _escapeReachTalkTimer = 0;
+
         }
 
         public override void OnExitState()

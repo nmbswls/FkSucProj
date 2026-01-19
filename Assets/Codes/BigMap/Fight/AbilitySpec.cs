@@ -182,4 +182,6 @@ public interface ISceneAbilityViewer
     void StartLoot(ILootableObj lootObj);
 
     void StartHitStop(float duration);
+
+    void ShowMapSpeachBubble(long entityId, string content, float duration, int priority = 1, float extraInteval = 0);
 }

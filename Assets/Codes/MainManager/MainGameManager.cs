@@ -734,6 +734,13 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         HitStopManager.Instance.TriggerHitStop(duration);
     }
+
+    public void ShowMapSpeachBubble(long entityId, string content, float duration, int priority = 1, float extraInteval = 0)
+    {
+        var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
+        if (pres == null) return;
+        MapSpeechBubbleManager.Instance.Say(pres, content, duration, priority);
+    }
 }
 
 

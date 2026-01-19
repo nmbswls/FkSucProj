@@ -472,7 +472,18 @@ namespace My.Map
                 }
                 else 
                 {
-                    if (!UnitEntity.CheckIsEmnityFaction(seeOneEntity.FactionId))
+                    bool baseEnmity = false;
+                    if (UnitEntity.CheckIsEmnityFaction(seeOneEntity.FactionId))
+                    {
+                        baseEnmity = true;
+                    }
+
+                    if(seeOneEntity is PlayerLogicEntity playerEntity && playerEntity.IsQueenMode)
+                    {
+                        baseEnmity = true;
+                    }
+
+                    if(!baseEnmity)
                     {
                         continue;
                     }

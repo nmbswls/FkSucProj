@@ -774,6 +774,8 @@ namespace My.Map.Entity
 
                             EntityOwner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
                         }
+
+                        MainGameManager.Instance.StartHitStop(0.04f);
                     }
                     else
                     {
