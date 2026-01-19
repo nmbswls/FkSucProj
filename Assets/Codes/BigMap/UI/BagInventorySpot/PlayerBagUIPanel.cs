@@ -208,11 +208,35 @@ namespace My.UI.Bag
                 return;
             }
 
-            MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("use_item", overrideParams: new Dictionary<string, string>()
+            if (itemConf.UseCfg1.UseType == FakeItemConf.EItemUseType.UseAbility)
             {
-                ["PhaseExecutingTime"] = itemConf.UseCfg1.UseTime.ToString(),
-                ["ItemId"] = stack.ItemID,
-            }); ;
+                //
+                UIManager.Instance.HidePanel("PlayerBag");
+
+                var skillName = itemConf.UseCfg1.Param5;
+                if (string.IsNullOrEmpty(skillName)) 
+                {
+                    Debug.LogError($"UseItem skill name invalid");
+                    return;
+                }
+                OverworldHUDPanel.Instance.PeeviewUseSkill(skillName, (ret) =>
+                {
+                    if(itemConf.UseCfg1.CostOnUse)
+                    {
+                        bag.TryCostItem(stack.ItemID, 1);
+                    }
+                });
+                //MainGameManager.Instance.gameLogicManager.playerDataManager
+            }
+            else
+            {
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("use_item", overrideParams: new Dictionary<string, string>()
+                {
+                    ["PhaseExecutingTime"] = itemConf.UseCfg1.UseTime.ToString(),
+                    ["ItemId"] = stack.ItemID,
+                }); ;
+            }
+            
             //UIBus.RaiseInventoryChanged(index);
             OnInventoryAllChanged();
         }

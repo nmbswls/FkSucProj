@@ -1,4 +1,5 @@
 
+using System;
 using System.Drawing;
 using Config.Unit;
 using My.Input;
@@ -250,7 +251,7 @@ namespace My.UI
         }
 
 
-        private bool TryRouteUseSkill(string keyName)
+        private bool PeeviewUseSkillByKey(string keyName)
         {
             var skillId = GetSkillIdByKey(keyName);
 
@@ -259,10 +260,47 @@ namespace My.UI
                 return false;
             }
 
+            PeeviewUseSkill(skillId);
+            //var skillConf = SkillLibrary.GetSkillConfig(skillId);
+            //if (skillConf.TargetType == ETargetType.Self)
+            //{
+            //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, target: MainGameManager.Instance.gameLogicManager.playerLogicEntity);
+            //}
+            //else if (skillConf.TargetType != ETargetType.NoTarget)
+            //{
+            //    EnterSkillPreviewMode(skillId);
+            //}
+            //else
+            //{
+            //    var mousePos = MainGameManager.Instance.inputBinder.LastPos;
+            //    Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
+            //    var playerDiff = wp - MainGameManager.Instance.playerScenePresenter.transform.position;
+            //    playerDiff.z = 0;
+
+            //    Vector2? castDir = null;
+            //    if(playerDiff.magnitude < 0.1f)
+            //    {
+            //        castDir = null;
+            //    }
+            //    else
+            //    {
+            //        castDir = new Vector2(playerDiff.x, playerDiff.y);
+            //    }
+
+            //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: wp);
+            //}
+
+            return true;
+        }
+
+
+        public void PeeviewUseSkill(string skillId, Action<bool> onConfirm = null)
+        {
             var skillConf = SkillLibrary.GetSkillConfig(skillId);
             if (skillConf.TargetType == ETargetType.Self)
             {
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, target: MainGameManager.Instance.gameLogicManager.playerLogicEntity);
+                onConfirm?.Invoke(true);
             }
             else if (skillConf.TargetType != ETargetType.NoTarget)
             {
@@ -276,7 +314,7 @@ namespace My.UI
                 playerDiff.z = 0;
 
                 Vector2? castDir = null;
-                if(playerDiff.magnitude < 0.1f)
+                if (playerDiff.magnitude < 0.1f)
                 {
                     castDir = null;
                 }
@@ -286,17 +324,17 @@ namespace My.UI
                 }
 
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: wp);
+                onConfirm?.Invoke(true);
             }
-
-            return true;
         }
+
 
         public bool OnNavigate(Vector2 dir) => false;
         public bool OnHotkey(string keyName)
         {
             if(HudMode == EHudMode.Normal)
             {
-                return TryRouteUseSkill(keyName);
+                return PeeviewUseSkillByKey(keyName);
             }
             
             return false;
@@ -336,23 +374,20 @@ namespace My.UI
             {
                 if(button == 0)
                 {
-                    TryRouteUseSkill(QuickPlayerInputBinder.EInputKey.MouseLeft.ToString());
+                    PeeviewUseSkillByKey(QuickPlayerInputBinder.EInputKey.MouseLeft.ToString());
                 }
                 else if(button == 1)
                 {
-                    TryRouteUseSkill(QuickPlayerInputBinder.EInputKey.MouseRight.ToString());
+                    PeeviewUseSkillByKey(QuickPlayerInputBinder.EInputKey.MouseRight.ToString());
                 }
             }
             else if (HudMode == EHudMode.PreviewSkill)
             {
-                Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
-                wp.z = 0; // 将 z 固定到你的世界平面（例如 0）
-
                 // 左键
                 if (button == 0)
                 {
-                    ConfirmSkillCast(overworldSkillPreviewUI.PreviewSkillName, wp, Vector2.zero);
-
+                    overworldSkillPreviewUI.ConfirmSkillCast(mousePos);
+                    UpdateHudMode(EHudMode.Normal);
                 }
                 else if (button == 1)
                 {
@@ -402,41 +437,14 @@ namespace My.UI
 
         #region 技能预览
 
-        protected void EnterSkillPreviewMode(string skillId)
+        protected void EnterSkillPreviewMode(string skillId, Action<bool> onConfirm = null)
         {
             UpdateHudMode(EHudMode.PreviewSkill);
-            overworldSkillPreviewUI.Initialize(skillId);
+            overworldSkillPreviewUI.Initialize(skillId, onConfirm);
         }
 
 
-        public void ConfirmSkillCast(string skillName, Vector2 point1, Vector2 point2)
-        {
-            if (HudMode != EHudMode.PreviewSkill)
-            {
-                return;
-            }
-
-            var skillConfig = SkillLibrary.GetSkillConfig(skillName);
-            switch (skillConfig.TargetType)
-            {
-                case EntitySkillCfg.ETargetType.Point:
-                case EntitySkillCfg.ETargetType.Circle:
-                    {
-                        // 施法距离
-                        var dist = skillConfig.Range1;
-                        var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
-                        if (dist < (point1 - playerPos).magnitude)
-                        {
-                            point1 = playerPos + (point1 - playerPos).normalized * dist;
-                        }
-                    }
-                    break;
-
-            }
-
-            MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(skillName, castDir: point1);
-            UpdateHudMode(EHudMode.Normal);
-        }
+        
 
         public void CancelSkillCast()
         {

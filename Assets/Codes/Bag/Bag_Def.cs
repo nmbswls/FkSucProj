@@ -396,7 +396,29 @@ namespace Config
 
                     _dict[item.ItemId] = item;
                 }
-                
+
+
+                {
+                    var item = new FakeItemConf();
+                    item.ItemId = "evil_scroll_01";
+                    item.ItemType = EItemType.Normal;
+                    item.StackType = EStackType.Size1;
+                    item.SpriteName = "evil_scroll_01";
+
+
+                    item.UseCfg1 = new ItemUseCfg()
+                    {
+                        Usable = true,
+                        UseCd = 5.0f,
+                        UseTime = 0,
+                        CostOnUse = true,
+
+                        UseType = EItemUseType.UseAbility,
+                        Param5 = "queen_pull_all",
+                    };
+
+                    _dict[item.ItemId] = item;
+                }
             }
 
             _dict.TryGetValue(itemId, out var conf);

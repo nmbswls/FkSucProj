@@ -1,5 +1,6 @@
 
 
+using System;
 using Config.Unit;
 using My.Map;
 using My.Map.Entity;
@@ -7,6 +8,7 @@ using TMPro;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static My.UI.OverworldHUDPanel;
 
 namespace My.UI
 {
@@ -30,6 +32,8 @@ namespace My.UI
 
         protected GameObject PreviewCastRange;
 
+        protected Action<bool> cbOnConfirm;
+
         private void Awake()
         {
             var go1 = GameObject.Instantiate(PreviewCirclePrefab, MainGameManager.Instance.SceneEffectLayer);
@@ -47,11 +51,12 @@ namespace My.UI
             }
         }
 
-        public void Initialize(string skillId)
+        public void Initialize(string skillId, Action<bool> onConfirm = null)
         {
             this.PreviewSkillName = skillId;
             SkillConfig = SkillLibrary.GetSkillConfig(skillId);
 
+            this.cbOnConfirm = onConfirm;
 
             PreviewCircle.gameObject.SetActive(false);
             PreviewRect.gameObject.SetActive(false);
@@ -100,6 +105,8 @@ namespace My.UI
 
             PreviewSkillName = null;
             SkillConfig = null;
+
+            cbOnConfirm = null;
         }
 
 
@@ -166,6 +173,37 @@ namespace My.UI
 
                 }
             }
+        }
+
+
+        public void ConfirmSkillCast(Vector2 mousePos)
+        {
+            if (PreviewSkillName == null)
+            {
+                return;
+            }
+            Vector2 wp = Camera.main.ScreenToWorldPoint(mousePos);
+            var skillConfig = SkillLibrary.GetSkillConfig(PreviewSkillName);
+            switch (skillConfig.TargetType)
+            {
+                case EntitySkillCfg.ETargetType.Point:
+                case EntitySkillCfg.ETargetType.Circle:
+                    {
+                        //  ©∑®æ‡¿Î
+                        var dist = skillConfig.Range1;
+                        var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
+                        if (dist < (wp - playerPos).magnitude)
+                        {
+                            wp = playerPos + (wp - playerPos).normalized * dist;
+                        }
+                    }
+                    break;
+
+            }
+
+            MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(PreviewSkillName, castDir: wp);
+
+            cbOnConfirm?.Invoke(true);
         }
     }
 }

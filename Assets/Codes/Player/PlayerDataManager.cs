@@ -80,6 +80,8 @@ namespace My.Player
             mainBag.NormalSlots[2] = FakeItemDatabase.CreateItemStack("bangbangtang", 3);
             mainBag.NormalSlots[6] = FakeItemDatabase.CreateItemStack("chanzi", 1);
 
+            mainBag.NormalSlots[12] = FakeItemDatabase.CreateItemStack("evil_scroll_01", 5);
+            
             //inventoryModel.NormalSlots[1] = new ItemStack() { ItemID = "qiezi", Count = 3 };
             //inventoryModel.NormalSlots[2] = new ItemStack() { ItemID = "bangbangtang", Count = 3 };
 
