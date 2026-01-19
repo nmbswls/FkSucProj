@@ -196,6 +196,7 @@ namespace My.Map.Logic
                     MovePath = path.Name,
 
                     EnmityConfId = "default_npc",
+                    IsForeigner = true,
                 };
 
                 logicManager.AddNewEntityRecord(rec);

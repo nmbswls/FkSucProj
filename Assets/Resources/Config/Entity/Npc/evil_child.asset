@@ -15,20 +15,23 @@ MonoBehaviour:
   UnitName: evil_child
   ViewSprite: {fileID: 0}
   PrefabName: 
+  ShowName: '?'
   MoveStyle: 1
   MoveSpeed: 1
-  IsPeace: 0
+  IsPeace: 1
   CombatStretegyTemplateId: 
   BattleBoundary: 10
   RecoverReturn: 1
   HasHMode: 1
   AlwaysHMode: 1
-  AITemplateMode: 
-  AITemplateName: 
+  AIBrainParamsCfgId: default
   DefaultFactionId: 3
+  EnmityCfgId: 
   Hp: 100
   SkillList:
   - evil_child_insertion
-  DropId: citizen_01
+  DefaultDropId: 0
   NpcTag: 
   InteractList: []
+  IgnoreAttractLevel: 0
+  ImmuneExecute: 0

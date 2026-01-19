@@ -290,7 +290,7 @@ namespace My.Map
             }
 
             
-            if ((giverSilent && takerSilent && noThreat) || hardLeashExceeded)
+            if ((giverSilent && takerSilent && noThreat && !UnitEntity.IsEvilAlert) || hardLeashExceeded)
             {
                 string reason = "Silent";
                 //if (Vector3.Distance(selfTf.position, HomePos) < 1.5f &&

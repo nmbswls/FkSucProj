@@ -91,7 +91,9 @@ namespace My.Map.Logic
         public bool DisappearOnArrive;
         public string MovePath = null;
         public int CurrPathIdx = 0;
-        public float CurrPathProgress = 0; 
+        public float CurrPathProgress = 0;
+
+        public bool IsForeigner;
     }
 
 

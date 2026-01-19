@@ -701,7 +701,7 @@ namespace My.Map.Entity.AI
                 return;
             }
 
-            if (_brain.blackboard.LastLeaveMoveModePos != null && _brain.brainConfig.ExitCombatBoundary)
+            if (!_brain .NpcEntity.IsEvilAlert && _brain.blackboard.LastLeaveMoveModePos != null && _brain.brainConfig.ExitCombatBoundary)
             {
                 if ((_brain.NpcEntity.Pos - _brain.blackboard.LastLeaveMoveModePos.Value).magnitude > _brain.brainConfig.ExitCombatBoundaryRange)
                 {
@@ -1468,12 +1468,17 @@ namespace My.Map.Entity.AI
             // 有目标点 且没有进入到达说话状态
             if(NextEscapePoint != null && _escapeReachTalkTimer == 0)
             {
-                _brain.NpcEntity.entityMotorComp.TryMoveTo(NextEscapePoint.Value);
+                _brain.NpcEntity.entityMotorComp.TryMoveTo(NextEscapePoint.Value, moveSpeedRate:1);
                 var diff = NextEscapePoint.Value - _brain.NpcEntity.Pos;
                 if (diff.magnitude < 0.3f)
                 {
                     _escapeReachTalkTimer = LogicTime.time;
                     _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "害怕", 2f);
+
+                    if(_brain.NpcEntity.NpcRecord.IsForeigner)
+                    {
+                        _brain.NpcEntity.DoEntityDestroyed("escape_foreigner");
+                    }
                 }
             }
 
@@ -1486,7 +1491,7 @@ namespace My.Map.Entity.AI
                 }
             }
 
-            if(LogicTime.time - _startEscapeTimer > 3.0f)
+            if(LogicTime.time - _startEscapeTimer > 5.0f)
             {
                 _brain.blackboard.LockPeacefulEscape = false; 
             }
@@ -1494,26 +1499,38 @@ namespace My.Map.Entity.AI
 
         private void RefreshPeacefulEscape()
         {
-            var diff = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
-            // 太近了 
-            if(diff.magnitude > 2.0f)
+
+            if(_brain.NpcEntity.NpcRecord.IsForeigner && NextEscapePoint == null)
             {
-                return;
+                var oneExitPoint = _brain.NpcEntity.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName("walker_born_01");
+                if(oneExitPoint != null)
+                {
+                    NextEscapePoint = new Vector2(oneExitPoint.Value.Position.x, oneExitPoint.Value.Position.y);
+                }
+            }
+            else
+            {
+                var diff = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
+
+                // 太近了 
+                if (diff.magnitude < 2.0f)
+                {
+                    var randomOffset = UnityEngine.Random.insideUnitCircle * 1.0f;
+                    var nextPos = _brain.NpcEntity.Pos + randomOffset - diff;
+
+                    Vector3? nextValidPos = _brain.NpcEntity.LogicManager.navProvider.GetClosestValidPos(nextPos);
+                    if (nextValidPos != null)
+                    {
+                        NextEscapePoint = new Vector2(nextValidPos.Value.x, nextValidPos.Value.y);
+                        return;
+                    }
+
+                    NextEscapePoint = _brain.NpcEntity.Pos;
+                    _escapeReachTalkTimer = 0;
+                }
             }
 
-            var randomOffset = UnityEngine.Random.insideUnitCircle * 1.0f;
-            var nextPos = _brain.NpcEntity.Pos + randomOffset - diff;
-
-            Vector3? nextValidPos = _brain.NpcEntity.LogicManager.navProvider.GetClosestValidPos(nextPos);
-            if(nextValidPos != null)
-            {
-                NextEscapePoint = new Vector2(nextValidPos.Value.x, nextValidPos.Value.y);
-                return;
-            }
-
-            NextEscapePoint = _brain.NpcEntity.Pos;
-            _escapeReachTalkTimer = 0;
-
+            
         }
 
         public override void OnExitState()
