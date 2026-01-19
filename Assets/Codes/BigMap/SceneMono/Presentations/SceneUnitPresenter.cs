@@ -256,7 +256,7 @@ namespace My.Map.Scene
             {
                 visible = MainGameManager.Instance.VisionSenser2D.CanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.CurrentLook,
                     transform.position,
-                    MainGameManager.Instance.playerScenePresenter.UnitEntity.viewRadius, MainGameManager.Instance.playerScenePresenter.UnitEntity.fovDegrees);
+                    8f, 120f);
             }
 
             if (visible && !UnitEntity.MarkDestroyed)

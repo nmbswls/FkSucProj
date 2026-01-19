@@ -270,14 +270,13 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             //}, TaskScheduler.FromCurrentSynchronizationContext());
 
 
-            //DeepAbsorbPanel.Show(0, 5, 3);
 
-            if (UIGainRewardCoordinator.Instance != null)
-            {
-                UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
-            }
+            //if (UIGainRewardCoordinator.Instance != null)
+            //{
+            //    UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
+            //}
 
-            OverworldHUDPanel.Instance.DoPendingAlertReduce(100);
+            MapSpeechBubbleManager.Instance.Say(playerScenePresenter, "怎么会？");
         }
 
         //if (playerScenePresenter == null || !playerScenePresenter.IsInBusyZone)
@@ -715,6 +714,15 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             UIManager.Instance.HidePanel("DialoguePanel");
         });
+
+        if(srcEntityId != null)
+        {
+            var entity = gameLogicManager.GetLogicEntity(srcEntityId.Value);
+            if(entity != null && entity is BaseUnitLogicEntity unitEntity)
+            {
+                unitEntity.RegisterGaze("Dialog", gameLogicManager.playerLogicEntity.Id, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Interact);
+            }
+        }
     }
 
     public void StartLoot(ILootableObj lootObj)

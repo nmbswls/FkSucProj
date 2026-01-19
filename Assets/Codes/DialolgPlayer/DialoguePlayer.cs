@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using My;
 using My.Dialog;
+using My.Map;
 using My.UI;
 using UnityEngine;
 
@@ -126,6 +128,15 @@ public partial class DialoguePlayer : MonoBehaviour
 
     public void Stop()
     {
+        if (runtimeRef != null && runtimeRef.SrcEntityId != null)
+        {
+            var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(runtimeRef.SrcEntityId.Value);
+            if (entity != null && entity is BaseUnitLogicEntity unitEntity)
+            {
+                unitEntity.UnregisterGazeBySourceTag("Dialog");
+            }
+        }
+
         isPlaying = false;
         waitingForContinue = false;
         waitingForNextStep = false;
@@ -135,6 +146,8 @@ public partial class DialoguePlayer : MonoBehaviour
 
         this.OnPlayEnd?.Invoke();
         this.OnPlayEnd = null;
+
+        LogicTime.ClearPauseSource("Dialog");
     }
 
     private void BuildLabelIndex(DialogueData data)

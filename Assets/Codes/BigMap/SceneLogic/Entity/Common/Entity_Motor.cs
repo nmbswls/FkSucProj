@@ -196,7 +196,6 @@ namespace My.Map.Entity
             else
             {
                 EnterFree();
-                //OnLostTarget?.Invoke();
             }
         }
 
@@ -223,12 +222,6 @@ namespace My.Map.Entity
             else if(State == EMotorState.Following)
             {
                 TickFollowingState();
-            }
-
-            if (DesiredVelocity.sqrMagnitude < 0.01f)
-            {
-                _currentVelocityRef = Vector2.zero;
-                _lastAvoidanceVelocity = Vector2.zero;
             }
         }
 
@@ -596,110 +589,6 @@ namespace My.Map.Entity
         public float sideRayAngle = 45f;
         public float avoidanceStrength = 1.0f;
         public float velocitySmoothTime = 0.1f;
-        private Vector2 _currentVelocityRef;
-        private Vector2 _lastAvoidanceVelocity;
-        /// <summary>
-        /// 计算避障速度
-        /// </summary>
-        /// <returns></returns>
-        private Vector2 ApplyAvoidanceToVelocity(Vector2 desiredVelocity)
-        {
-            // 1. 停止判定与状态重置
-            if (desiredVelocity.sqrMagnitude < 0.01f)
-            {
-                _currentVelocityRef = Vector2.zero;
-                _lastAvoidanceVelocity = Vector2.zero;
-                return Vector2.zero;
-            }
-
-            Vector2 moveDir = desiredVelocity.normalized;
-            Vector2 origin = (Vector2)UnitEntity.Pos + (moveDir * bodyRadius * 0.5f);
-
-            // 射线检测
-            RaycastHit2D hit = Physics2D.Raycast(origin, moveDir, lookAheadDistance, 1 << LayerMask.NameToLayer("DynamicObs"));
-
-#if UNITY_EDITOR
-            if (hit.collider != null) Debug.DrawLine(origin, hit.point, Color.red);
-            else Debug.DrawLine(origin, origin + moveDir * lookAheadDistance, Color.green);
-#endif
-
-            Vector2 targetVelocity = desiredVelocity;
-
-            // 2. 避障逻辑 (切向滑动)
-            if (hit.collider != null)
-            {
-                float dot = Vector2.Dot(moveDir, hit.normal);
-                if (dot < 0)
-                {
-                    // 切向投影：消除撞墙分量
-                    Vector2 slideVelocity = desiredVelocity - (hit.normal * dot * desiredVelocity.magnitude);
-
-                    // 稍微推离墙壁
-                    Vector2 pushOutVector = hit.normal * (1.0f - (hit.distance / lookAheadDistance)) * 2.0f;
-
-                    targetVelocity = slideVelocity + pushOutVector;
-
-                    // 死锁打破
-                    if (dot < -0.9f)
-                    {
-                        Vector2 tangent = new Vector2(-hit.normal.y, hit.normal.x);
-                        targetVelocity += tangent * 1.5f;
-                    }
-                }
-            }
-
-            // 3. 保持速度大小 (建议开启，手感更好)
-            targetVelocity = targetVelocity.normalized * desiredVelocity.magnitude;
-
-            // 4. 平滑处理 (含冷启动修复)
-            bool isColdStart = _lastAvoidanceVelocity.sqrMagnitude < 0.01f;
-            Vector2 finalVelocity;
-
-            if (isColdStart)
-            {
-                // 冷启动：直接赋值，跳过平滑
-                finalVelocity = targetVelocity;
-                _currentVelocityRef = Vector2.zero;
-            }
-            else
-            {
-                // 运行中：应用平滑，防止突变抖动
-                finalVelocity = Vector2.SmoothDamp(
-                    _lastAvoidanceVelocity,
-                    targetVelocity,
-                    ref _currentVelocityRef,
-                    velocitySmoothTime
-                );
-            }
-
-            _lastAvoidanceVelocity = finalVelocity;
-            return finalVelocity;
-        }
-
-        private Vector2 CastRay(Vector2 origin, Vector2 dir, float distance)
-        {
-            RaycastHit2D hit = Physics2D.Raycast(origin, dir, distance, 1 << LayerMask.NameToLayer("DynamicObs"));
-
-            // 调试绘制
-#if UNITY_EDITOR
-            if (hit.collider != null) Debug.DrawLine(origin, hit.point, Color.red);
-            else Debug.DrawLine(origin, origin + dir * distance, Color.green);
-#endif
-
-            if (hit.collider != null)
-            {
-                // 计算斥力：
-                // 1. 越近斥力越大 (1.0 - fraction)
-                // 2. 方向是 碰撞法线 (hit.normal) 或者 简单的反向 (-dir)
-                // 这里推荐使用 hit.normal，因为它是滑墙的关键，它会指引你沿着墙面切线走
-                float repulsionStrength = 1.0f - (hit.distance / distance);
-
-                // 为了防止正对墙面时法线完全反向导致停止，我们可以混合一点反射向量
-                return hit.normal * repulsionStrength;
-            }
-
-            return Vector2.zero;
-        }
     }
 
 

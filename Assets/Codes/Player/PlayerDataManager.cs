@@ -16,6 +16,8 @@ namespace My.Player
         public long ItemInstanceIdCounter = 100;
         public PlayerInventoryModel inventoryModel;
 
+        public string[] QuickSlotItemSet = new string[10];
+
         /// <summary>
         /// Ñø³É
         /// </summary>
@@ -57,7 +59,10 @@ namespace My.Player
             VariableDict["a1"] = true;
 
             ProgressionSystem = new(logicManager);
+
+            QuickSlotItemSet[0] = "feidao";
         }
+
         public void InitPlayerData(SaveData savingData)
         {
             InitBagInfo();

@@ -884,11 +884,9 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        MoveMode: 0
-        EnmityConfId: 
-        IsPeace: 0
-        InitUnsensored: 0
-        InitNoLogic: 0
+        Variables:
+          keys: []
+          values: []
 --- !u!1001 &370217662
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3807,6 +3805,30 @@ PrefabInstance:
     - target: {fileID: 2910257100462989336, guid: 6ccb446a0919d0e46b1ae325b0055469, type: 3}
       propertyPath: m_Name
       value: obj_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603974510506295091, guid: 6ccb446a0919d0e46b1ae325b0055469, type: 3}
+      propertyPath: m_Shape
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603974510506295091, guid: 6ccb446a0919d0e46b1ae325b0055469, type: 3}
+      propertyPath: m_Extents.x
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603974510506295091, guid: 6ccb446a0919d0e46b1ae325b0055469, type: 3}
+      propertyPath: m_Extents.y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603974510506295091, guid: 6ccb446a0919d0e46b1ae325b0055469, type: 3}
+      propertyPath: m_Extents.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603974510506295091, guid: 6ccb446a0919d0e46b1ae325b0055469, type: 3}
+      propertyPath: m_MoveThreshold
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603974510506295091, guid: 6ccb446a0919d0e46b1ae325b0055469, type: 3}
+      propertyPath: m_TimeToStationary
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7409131252583100693, guid: 6ccb446a0919d0e46b1ae325b0055469, type: 3}
       propertyPath: peakAmount

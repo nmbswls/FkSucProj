@@ -59,6 +59,9 @@ namespace My.UI
         private Dictionary<long, SceneAlertUIStruct> _evilAlertRecords = new Dictionary<long, SceneAlertUIStruct>();
 
 
+
+
+
         public Canvas TopCanvas;
         public void Awake()
         {

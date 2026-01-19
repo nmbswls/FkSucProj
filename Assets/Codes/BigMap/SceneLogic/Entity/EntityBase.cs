@@ -392,6 +392,11 @@ namespace My.Map
 
         public virtual void Tick(float dt) 
         {
+            if (!MarkDestroyed)
+            {
+                attributeStore.Commit();
+            }
+
             TickLifeTime(dt);
         }
 
@@ -432,6 +437,12 @@ namespace My.Map
         {
             //input.Id = this.Id;
             //input.EntityType = this.en
+            input.Position = this.Pos;
+
+            if(MarkDestroyed)
+            {
+                input.MarkDestroyed = true;
+            }
         }
 
         public void OnWake()

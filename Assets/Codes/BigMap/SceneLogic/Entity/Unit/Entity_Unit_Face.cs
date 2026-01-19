@@ -63,6 +63,7 @@ namespace My.Map
             Idle = 0,       // 闲置/巡逻时的随意扫视
             Distraction = 5,// 环境噪音、吸引（扔石头、口哨）
             Suspicion = 10, // 警觉（看到残影、听到脚步）
+            Interact = 15,
             Combat = 20,    // 战斗锁定（绝对优先）
             Override = 99   // 剧情强制/死亡
         }

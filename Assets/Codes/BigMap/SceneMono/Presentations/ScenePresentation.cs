@@ -24,6 +24,8 @@ public interface IScenePresentation
     bool CheckValid();
 
     void SetFadeAlpha(float fadeAlpha);
+
+    Transform PivotHeader { get; }
 }
 
 public interface ISceneTargettable
@@ -43,6 +45,9 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     private bool _visible;
     protected AnimancerComponent _Animancer;
 
+    [Header("通用pivot")]
+    [SerializeField]private Transform pivotHeader;
+    public Transform PivotHeader { get { return pivotHeader; } }
 
     protected virtual void Awake()
     { 
@@ -170,6 +175,14 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     }
 
     protected virtual void OnFadeStateUpdate()
+    {
+
+    }
+
+    #region 头顶气泡
+
+    #endregion
+    public void AddHeadTalkBubble(string content, float duration)
     {
 
     }

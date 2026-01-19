@@ -31,6 +31,7 @@ namespace My.Map.Logic
         //public bool AlwaysActive;
 
         public List<string> LocalSwitches = null;
+        public bool MarkDestroyed = false; // 为true 则不落库 等待时机摧毁
     }
 
     [Serializable]

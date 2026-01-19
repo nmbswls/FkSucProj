@@ -17,7 +17,7 @@ namespace My.Map.Scene
         public SpriteRenderer[] MainView;
         public SpriteRenderer ShadowView;
 
-        public Collider2D MainCol;
+        public Collider2D MainBlock;
 
         public DestroyObjLogicEntity DestroyObjEntity { get { return (DestroyObjLogicEntity)_logic; } }
 
@@ -61,10 +61,15 @@ namespace My.Map.Scene
             DestroyObjEntity.EventOnHit += OnEventDestroyObjHit;
         }
 
+        protected override void OnEventEntityDestroyed(long entityId)
+        {
+
+        }
+
+
         protected virtual void OnEventDestroyObjBrack(long entityId)
         {
             MainGameManager.Instance.ShowFakeFxEffect("ÆÆËé", this.transform.position);
-
 
             if (MainView != null)
             {
@@ -83,14 +88,10 @@ namespace My.Map.Scene
                 });
             }
 
-            if(MainCol != null)
+            if(MainBlock != null)
             {
-                MainCol.enabled = false;
+                MainBlock.gameObject.SetActive(false);
             }
-            //if (ViewRoot != null)
-            //{
-            //    ViewRoot.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-            //}
         }
 
         protected virtual void OnEventDestroyObjHit(long entityId)

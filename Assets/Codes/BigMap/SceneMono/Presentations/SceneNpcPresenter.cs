@@ -159,7 +159,7 @@ namespace My.Map.Scene
             }
             while (false);
 
-            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.CurrentLook, 1.0f, 150f))
+            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
             {
                 return true;
             }
@@ -328,7 +328,7 @@ namespace My.Map.Scene
             }
             while (false);
 
-            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.CurrentLook, 1.0f, 150f))
+            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
             {
                 ret.Add(new SceneInteractSelection()
                 {

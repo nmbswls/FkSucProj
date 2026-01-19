@@ -23,9 +23,13 @@ namespace My.Map.Entity
         public event Action<long> EventOnHit;
         public event Action<long> EventOnBrack;
 
+        private float _brackTimer;
+
         public override void Initialize()
         {
             base.Initialize();
+
+            _brackTimer = 0;
         }
 
         protected override void InitAttribute()
@@ -39,9 +43,10 @@ namespace My.Map.Entity
         public override void Tick(float dt)
         {
             base.Tick(dt);
-            if (!MarkDestroyed)
+
+            if(_brackTimer != 0 && LogicTime.time > _brackTimer)
             {
-                attributeStore.Commit();
+                DoEntityDestroyed("brack_recycle");
             }
         }
 
@@ -75,7 +80,14 @@ namespace My.Map.Entity
 
         private void OnDestroyObjBrack()
         {
-            DoEntityDestroyed("destroyobj");
+            if(_brackTimer != 0)
+            {
+                return;
+            }
+
+            _brackTimer = LogicTime.time;
+
+            //DoEntityDestroyed("destroyobj");
             CreateDrop();
 
             if(cacheConfig.HasOwner && cacheConfig.IsPrecious)
@@ -107,7 +119,7 @@ namespace My.Map.Entity
                     {
                         OnDestroyObjOnHit(intent.srcEntityId);
 
-                        if (before > 0 && after <= 0/* && intent.deltaFlags > 0*/)
+                        if (after <= 0/* && intent.deltaFlags > 0*/)
                         {
                             OnDestroyObjBrack();
                             break;
@@ -128,6 +140,24 @@ namespace My.Map.Entity
                     LogicManager.globalDropCollection.CreateDrop(dropOne.Item1, dropOne.Item2, this.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, false, this.Pos);
                 }
             }
+        }
+
+        public override void OnDespawn(ref LogicEntityRecord snapshot)
+        {
+            base.OnDespawn(ref snapshot);
+        }
+
+        protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
+        {
+            base.RefreshEntityRecordInfo(input);
+
+            if(_brackTimer > 0)
+            {
+                MarkDestroyed = true;
+            }
+
+            //input.Id = this.Id;
+            //input.EntityType = this.en
         }
     }
 }
