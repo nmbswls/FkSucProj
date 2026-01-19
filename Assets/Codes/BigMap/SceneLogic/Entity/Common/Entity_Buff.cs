@@ -176,6 +176,7 @@ namespace My.Map.Entity
                             EffectText = "¾ªÏÅ"
                         },
                     },
+                    HeadHintPriority = 1,
                     OnDetachEffects = new()
                     {
                         new MapFightEffectTriggerAlert()
@@ -597,6 +598,7 @@ namespace My.Map.Entity
         public string AuraBuffId;
 
         public string EffectId;
+        public int HeadHintPriority = 0;
 
         public float ZOffsetOverride;
 
