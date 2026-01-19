@@ -61,8 +61,8 @@ MonoBehaviour:
   - "\u770B\u554A\uFF0C\u90A3\u8FB9\u90A3\u4E2A\u5973\u5B69..."
   spawnInterval: 1.5
   scaleRange: {x: 0.8, y: 1.2}
-  edgeThickness: 250
-  verticalPadding: 100
+  edgeThickness: 150
+  verticalPadding: 50
 --- !u!1 &244426143268431269
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,11 +369,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'New Text
-
-    d
-
-    d'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
   m_sharedMaterial: {fileID: 2549557310159315146, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}

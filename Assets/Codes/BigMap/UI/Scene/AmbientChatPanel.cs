@@ -29,12 +29,15 @@ namespace My.Map
 
         void Update()
         {
-            timer += Time.deltaTime;
-            if (timer >= spawnInterval)
+            if(MainGameManager.Instance.playerScenePresenter != null && MainGameManager.Instance.playerScenePresenter.IsInBusyZone)
             {
-                SpawnBubble();
-                // 随机化间隔，让出现节奏不规律
-                timer = Random.Range(0f, 0.2f);
+                timer += Time.deltaTime;
+                if (timer >= spawnInterval)
+                {
+                    SpawnBubble();
+                    // 随机化间隔，让出现节奏不规律
+                    timer = Random.Range(0f, 0.2f);
+                }
             }
         }
 

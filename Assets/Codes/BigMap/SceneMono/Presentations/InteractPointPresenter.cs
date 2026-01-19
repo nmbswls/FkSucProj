@@ -110,7 +110,7 @@ namespace My.Map.Scene
                 }
 
                 bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
-                if(canInt || !i.HideWhenFail)
+                if(canInt)
                 {
                     enableOne += 1;
                 }
