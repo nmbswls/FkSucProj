@@ -492,7 +492,8 @@ public class SceneAOIManager : MonoBehaviour
         {
             MainGameManager.Instance.playerScenePresenter = pres as PlayerScenePresenter;
             // °ó¶¨Ïà»ú
-            MainGameManager.Instance.CameraCtrl.Target = MainGameManager.Instance.playerScenePresenter.ViewPoint;
+            //MainGameManager.Instance.CameraCtrl.Target = MainGameManager.Instance.playerScenePresenter.ViewPoint;
+            MainGameManager.Instance.MainMapVCam.Follow = MainGameManager.Instance.playerScenePresenter.ViewPoint;
         }
 
         if (entry.canceledDuringCreate || !entry.isShown)

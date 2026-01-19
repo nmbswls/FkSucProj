@@ -30,7 +30,9 @@ namespace My.Map.Encounter
             SceneManager.SetActiveScene(battleScene);
 
             // todo virtual camera
-            MainGameManager.Instance.CameraCtrl.enabled = false;
+            //MainGameManager.Instance.CameraCtrl.enabled = false;
+            MainGameManager.Instance.MainMapVCam.enabled = false;
+
             Camera.main.transform.position = new Vector2(1000, 1000);
 
             // “˛≤ÿ¥ÛµÿÕº ‰»Î
@@ -45,7 +47,9 @@ namespace My.Map.Encounter
             while (!op.isDone) await Task.Yield();
 
             // todo virtual camera
-            MainGameManager.Instance.CameraCtrl.enabled = true;
+            //MainGameManager.Instance.CameraCtrl.enabled = true;
+            MainGameManager.Instance.MainMapVCam.enabled = false;
+
             Camera.main.transform.position = MainGameManager.Instance.playerScenePresenter.transform.position;
 
             // ª÷∏¥ ‰»Î

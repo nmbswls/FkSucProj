@@ -1,3 +1,4 @@
+using Cinemachine;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
@@ -35,6 +36,7 @@ using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using static MapSceneEffectManager;
+using static Unity.VisualScripting.Member;
 using static UnityEngine.UI.ContentSizeFitter;
 
 
@@ -109,13 +111,14 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public QuickPlayerInputBinder inputBinder;
 
     public CameraFollow CameraCtrl;
+    public CinemachineVirtualCamera MainMapVCam;
 
     public UnityNavProvider NavProvider;
 
     public DialoguePlayer dialoguePlayer;
 
     public PlayerRumorTextSpawner RumorTextSpawner;
-
+    public CinemachineImpulseSource VcamInpulseSource;
     private void Awake()
     {
         Instance = this;
@@ -131,6 +134,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         interactSystem = new();
 
         NavProvider = new();
+
+        VcamInpulseSource = GetComponent<CinemachineImpulseSource>();
     }
 
     public async Task InitStartGame(string startParams, Action? onComplete)
@@ -733,6 +738,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public void StartHitStop(float duration)
     {
         HitStopManager.Instance.TriggerHitStop(duration);
+
+        VcamInpulseSource.GenerateImpulse(0.06f);
     }
 
     public void ShowMapSpeachBubble(long entityId, string content, float duration, int priority = 1, float extraInteval = 0)

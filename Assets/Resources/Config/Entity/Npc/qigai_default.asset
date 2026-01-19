@@ -15,8 +15,9 @@ MonoBehaviour:
   UnitName: qigai_default
   ViewSprite: {fileID: 21300000, guid: e779ad32171e85f49bbebec977f04411, type: 3}
   PrefabName: 
+  ShowName: '?'
   MoveStyle: 1
-  MoveSpeed: 0.5
+  MoveSpeed: 1
   IsPeace: 1
   CombatStretegyTemplateId: 
   BattleBoundary: 10
@@ -25,9 +26,10 @@ MonoBehaviour:
   AlwaysHMode: 0
   AIBrainParamsCfgId: qigai
   DefaultFactionId: 3
+  EnmityCfgId: 
   Hp: 100
   SkillList: []
-  DropId: default
+  DefaultDropId: 0
   NpcTag: 
   InteractList:
   - InteractId: 0
@@ -35,6 +37,7 @@ MonoBehaviour:
     UnLabel: "\u7ED9\u4E881g"
     HideWhenFail: 1
     NeedDist: 0
+    Passive: 0
     CheckCommonCond: []
     CheckInteractCond:
     - CheckType: 3
@@ -60,6 +63,7 @@ MonoBehaviour:
     UnLabel: "\u7ED9\u4E883g"
     HideWhenFail: 1
     NeedDist: 0
+    Passive: 0
     CheckCommonCond: []
     CheckInteractCond:
     - CheckType: 3
@@ -90,6 +94,7 @@ MonoBehaviour:
     UnLabel: "\u7ED9\u4E885g"
     HideWhenFail: 1
     NeedDist: 0
+    Passive: 0
     CheckCommonCond: []
     CheckInteractCond:
     - CheckType: 3
@@ -120,6 +125,7 @@ MonoBehaviour:
     UnLabel: "\u529D\u8BF1"
     HideWhenFail: 0
     NeedDist: 0
+    Passive: 0
     CheckCommonCond: []
     CheckInteractCond:
     - CheckType: 3
