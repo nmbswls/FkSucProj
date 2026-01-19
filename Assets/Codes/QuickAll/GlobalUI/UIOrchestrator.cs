@@ -1,4 +1,5 @@
 using Map.Logic.Events;
+using My.Map;
 using My.Map.View;
 using My.MiniGame;
 using My.Player.Bag;
@@ -199,8 +200,19 @@ namespace My.UI
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "AmbientChatPanel",
+                resourcePath = "UI/Prefabs/AmbientChatPanel",
+                defaultLayer = UILayer.Scene,
+                pooled = true,
+            });
             
         }
+
+
+
 
         public static void RegisterGroups()
         {
@@ -432,6 +444,7 @@ namespace My.UI
             UIManager.Instance.ShowPanel("SceneMask");
             UIManager.Instance.ShowPanel("SmallIconLayer");
             UIManager.Instance.ShowPanel("InteractMenu");
+            UIManager.Instance.ShowPanel("AmbientChatPanel");
 
             EnsureCommonUI();
             
