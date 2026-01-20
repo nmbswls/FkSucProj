@@ -278,16 +278,6 @@ namespace My.Map.Logic
         }
 
         
-        /// <summary>
-        /// 更新实体位置
-        /// </summary>
-        /// <param name="entityId"></param>
-        /// <param name="newPos"></param>
-        public void UpdatePosition(long entityId, Vector2 newPos)
-        {
-            UnitGridIndex.AddOrMove(entityId, newPos);
-        }
-
         // 初始化：注册所有记录进索引
         public void BuildIndexFromRecords()
         {
@@ -310,55 +300,7 @@ namespace My.Map.Logic
         #endregion
 
 
-        public enum LogicLifeState
-        {
-            NotLoaded,   // 未加载，仅有Record
-            Warmup,      // 预热加载中（Spawn中/完成但未Wake）
-            Active,      // 完全活跃
-            Cooldown,    // 冷却计时（离开后延迟降级）
-            Sleep        // 休眠（轻量态）
-        }
-
-
-        [Serializable]
-        public class Settings
-        {
-            public float WarmupToActiveRadiusBias = -10f; // 例：在距兴趣点半径减10m时转Active
-            public float ExitCooldown = 2.0f;             // 离开后保持Active的时间
-            public float SleepToDespawnDelay = 8.0f;      // 休眠保持多久后可真正卸载（可选）
-            public int MaxSpawnPerFrame = 8;              // 每帧最大重建数
-            public int MaxDespawnPerFrame = 6;            // 每帧最大卸载数
-            public int MaxWakePerFrame = 16;              // 每帧最大Wake数
-            public int MaxSleepPerFrame = 16;             // 每帧最大Sleep数
-        }
-
-        // 实体运行态
-        private class OneEntityRuntimeState
-        {
-            public long Id;
-            public LogicLifeState State;
-            public float Timer;            // 冷却/延迟计时
-            public int InterestRefCount;   // 当前落入任一兴趣半径的引用计数
-            public bool NearAnyWarmup;     // 是否落入任一Warmup半径
-            public float ForceActiveUntil;
-
-            public bool IsMarkDestroy;        // 运行时死亡标记
-            public float DeathRemainTimer;    // 尸体/残留计时
-        }
-
-        private readonly Dictionary<long, OneEntityRuntimeState> runtimeStates = new();
-        private readonly Dictionary<int, InterestPoint> interestPoints = new();
-
-        // 工作队列（限流）
-        private readonly Queue<long> spawnEntityQ = new();
-        private readonly Queue<long> despawnEntityQ = new();
-        private readonly Queue<long> wakeEntityQ = new();
-        private readonly Queue<long> sleepEntityQ = new();
-        //private readonly Queue<(long, int)> destroyEntityQ = new();
-        private readonly Queue<(long, string)> corpseCleanupQ = new();
-
-        // 复用容器
-        private readonly List<long> queryBufInt = new(256);
+        
 
         public ILogicEntity GetLogicEntiy(long instId, bool ensureExist = true)
         {
@@ -398,56 +340,7 @@ namespace My.Map.Logic
             // 检查刷新
             CheckRefreshAppearAndDisappear(dt);
 
-            // 1) 重新评估AOI：计算每个实体与兴趣点关系（按区域近似）
-            // 做法：对每个兴趣点查询 Warmup/Active 两种半径并合并标记，避免O(N*M)
-            var warmIds = new HashSet<long>();
-            var activeIds = new HashSet<long>();
-
-            foreach (var ip in interestPoints.Values)
-            {
-                // 预热查询
-                UnitGridIndex.Query(ip.Pos(), ip.WarmupRadius,  queryBufInt);
-                foreach (var id in queryBufInt) warmIds.Add(id);
-
-                // Active半径（可用Bias或单独半径）
-                float activeR = Mathf.Max(0.1f, ip.LogicRadius);
-                UnitGridIndex.Query(ip.Pos(), activeR,  queryBufInt);
-                foreach (var id in queryBufInt) activeIds.Add(id);
-            }
-
-            // 2) 根据集合更新每个实体状态
-            // 为了避免遍历全库，这里仅对“受影响集合”以及“已加载/已有状态”的实体进行处理。
-            // 简易实现：合并三类集合
-            var affected = new HashSet<long>(warmIds);
-            foreach (var id in activeIds) affected.Add(id);
-            foreach (var id in runtimeStates.Keys) affected.Add(id);
-
-            foreach (var id in affected)
-            {
-                bool inWarm = warmIds.Contains(id);
-                bool inActive = activeIds.Contains(id);
-
-                if (!runtimeStates.TryGetValue(id, out var st))
-                {
-                    st = new OneEntityRuntimeState { Id = id, State = LogicLifeState.NotLoaded };
-                    runtimeStates[id] = st;
-                }
-
-                // 记录兴趣关系
-                st.NearAnyWarmup = inWarm;
-                st.InterestRefCount = inActive ? 1 : 0;
-
-                StepStateMachine(st, dt);
-            }
-
-            //// 处理死亡状态
-            //ProcessDieQueue();
-
-            // 处理其他加载卸载等
-            ProcessQueues(dt);
-
-            // 处理尸体回收
-            ProcessCorpse(dt);
+            TickEntityLifeCycle(dt);
 
             TickRefreshWalker();
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace My.Map
 {
@@ -13,7 +14,10 @@ namespace My.Map
     {
         [Header("UI 组件")]
         public TextMeshProUGUI contentText;
+        public Image MainBubble;
+
         public CanvasGroup canvasGroup;
+
         public RectTransform rectTransform;
 
         [Header("基础动画参数")]
@@ -36,12 +40,41 @@ namespace My.Map
         // 内部变量
         private bool isInitialized = false;
 
+        public int Style = 0;
+        public Transform NormalCornor;
+        public Transform SpeModeCornor;
+
+        public Color NormalBgColor;
+        public Color SpeModeBgColor;
+        public Color NormalTextColor;
+        public Color SpeModeTextColor;
+
+        private List<TextMeshProUGUI> cornerTextList = new();
+
+        private void Awake()
+        {
+            for(int i=0;i< NormalCornor.childCount;i++)
+            {
+                var comp = NormalCornor.GetChild(i).GetComponent<TextMeshProUGUI>();
+                if (comp == null) continue;
+                cornerTextList.Add(comp);
+            }
+            for (int i = 0; i < SpeModeCornor.childCount; i++)
+            {
+                var comp = SpeModeCornor.GetChild(i).GetComponent<TextMeshProUGUI>();
+                if (comp == null) continue;
+                cornerTextList.Add(comp);
+            }
+        }
+
         // ---------------------------------------------------------
         // 初始化与生命周期
         // ---------------------------------------------------------
-        public void Setup(string text, Vector2 startPos, float scale, Vector2 globalScaleRange, int side)
+        public void Setup(string text, Vector2 startPos, float scale, Vector2 globalScaleRange, int side, int style = 0)
         {
             // 1. 基础设置
+            this.Style = style;
+
             contentText.text = text;
             rectTransform.anchoredPosition = startPos;
             transform.localScale = Vector3.one * scale;
@@ -51,7 +84,7 @@ namespace My.Map
 
             // 3. 计算颜色分层 (近实远虚)
             float normalizedScale = Mathf.InverseLerp(globalScaleRange.x, globalScaleRange.y, scale);
-            float targetAlpha = Mathf.Lerp(0.3f, 0.85f, normalizedScale);
+            float targetAlpha = Mathf.Lerp(0.7f, 1f, normalizedScale);
 
             // 初始设为全透明
             canvasGroup.alpha = 0;
@@ -61,6 +94,8 @@ namespace My.Map
 
             // 4. 开始 DoTween 动画序列
             AnimateBubble(targetAlpha);
+
+            RefreshStyle();
         }
 
         void Update()
@@ -68,7 +103,11 @@ namespace My.Map
             // 每一帧更新顶底数据，产生沸腾效果
             if (isInitialized && contentText != null)
             {
-                ApplyVertexJitter();
+                ApplyVertexJitter(contentText);
+                foreach(var oneText in cornerTextList)
+                {
+                    ApplyVertexJitter(oneText);
+                }
             }
         }
 
@@ -103,11 +142,11 @@ namespace My.Map
             {
                 case 0: // 左侧：向右看
                     rectTransform.localRotation = Quaternion.Euler(0, sideRotationAngle, 0);
-                    contentText.alignment = TextAlignmentOptions.MidlineLeft;
+                    //contentText.alignment = TextAlignmentOptions.MidlineLeft;
                     break;
                 case 1: // 右侧：向左看
                     rectTransform.localRotation = Quaternion.Euler(0, -sideRotationAngle, 0);
-                    contentText.alignment = TextAlignmentOptions.MidlineRight;
+                    //contentText.alignment = TextAlignmentOptions.MidlineRight;
                     break;
                 case 2: // 上方
                     rectTransform.localRotation = Quaternion.Euler(10, 0, 0);
@@ -118,14 +157,38 @@ namespace My.Map
             }
         }
 
+
+        void RefreshStyle()
+        {
+            NormalCornor.gameObject.SetActive(false);
+            SpeModeCornor.gameObject.SetActive(false);
+
+            if (Style == 0)
+            {
+                NormalCornor.gameObject.SetActive(true);
+                MainBubble.color = new Color();
+
+                MainBubble.color = NormalBgColor;
+                contentText.color = NormalTextColor;
+            }
+            else
+            {
+                SpeModeCornor.gameObject.SetActive(true);
+                MainBubble.color = new Color();
+
+                MainBubble.color = SpeModeBgColor;
+                contentText.color = SpeModeTextColor;
+            }
+        }
+
         // ---------------------------------------------------------
         // 核心特效：顶点噪点 (原 TextJitterEffect 逻辑)
         // ---------------------------------------------------------
-        void ApplyVertexJitter()
+        void ApplyVertexJitter(TextMeshProUGUI textPro)
         {
             // 强制刷新网格信息
-            contentText.ForceMeshUpdate();
-            TMP_TextInfo textInfo = contentText.textInfo;
+            textPro.ForceMeshUpdate();
+            TMP_TextInfo textInfo = textPro.textInfo;
 
             // 遍历所有字符
             for (int i = 0; i < textInfo.characterCount; i++)
@@ -167,7 +230,7 @@ namespace My.Map
             }
 
             // 将修改后的顶点数据推送到Mesh
-            contentText.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
+            textPro.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
         }
     }
 }

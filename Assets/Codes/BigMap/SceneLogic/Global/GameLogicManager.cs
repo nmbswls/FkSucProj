@@ -239,8 +239,8 @@ namespace My
             {
                 Id = 1,
                 Pos = () => playerLogicEntity.Pos,
-                LogicRadius = 80f,
-                WarmupRadius = 120f
+                LogicRadius = 40f,
+                WarmupRadius = 60f
             });
 
             shopDataManager.RefreshOnNightStart();

@@ -57,6 +57,7 @@ namespace My.Map.Logic
         public Dictionary<int, SceneRefreshInfoRuntime> RefreshInfoRuntimes = new();
         public Dictionary<long, int> Record2RefreshInfo = new();
 
+        private Dictionary<EEntityType, List<long>> Type2EntityList = new();
 
         /// <summary>
         /// 检查刷新和消失
@@ -84,7 +85,6 @@ namespace My.Map.Logic
 
                 HandleOneRefreshInfo(EntityRefreshInfo[tickDynamicObjIdx]);
             }
-
         }
 
         /// <summary>

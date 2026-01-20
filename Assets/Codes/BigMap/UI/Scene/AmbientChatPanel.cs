@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using My.UI;
 using UnityEngine;
 
@@ -8,113 +9,169 @@ namespace My.Map
 {
     public class AmbientChatPanel : PanelBase
     {
+        [System.Serializable]
+        public class ChatSlot
+        {
+            public Vector2 position;   // 基础锚点位置
+            public int side;           // 0=左, 1=右
+            public float cooldownTimer; // 冷却倒计时
+        }
+
         [Header("配置")]
         public GameObject bubblePrefab;
-        public RectTransform spawnContainer; // 必须拖入那个全屏的 ChatContainer
+        public RectTransform spawnContainer;
 
-        [Header("文案内容")]
+        [Header("文案")]
         [TextArea] public string[] chatterLines;
 
-        [Header("生成设置")]
-        public float spawnInterval = 0.5f; // 生成频率高一点，才有氛围
-        public Vector2 scaleRange = new Vector2(0.7f, 1.1f);
+        [Header("生成规则")]
+        public float spawnInterval = 0.6f;
+        public Vector2 scaleRange = new Vector2(0.8f, 1.2f);
 
-        [Header("边缘控制 (关键)")]
-        [Tooltip("边缘区域的厚度（像素），数值越小越贴边")]
-        public float edgeThickness = 250f;
-        [Tooltip("上下边缘的留白，防止文字被刘海或任务栏挡住")]
-        public float verticalPadding = 100f;
+        [Header("插槽设置 (Slot Settings)")]
+        [Tooltip("气泡垂直方向的间距，大约是气泡的高度")]
+        public float slotHeightSpacing = 120f;
+        [Tooltip("边缘距离")]
+        public float edgePadding = 150f;
+        [Tooltip("选中插槽后的随机偏移范围")]
+        public float positionJitter = 30f;
+        [Tooltip("插槽冷却时间（秒），防止同一位置连续生成")]
+        public float slotCooldown = 3.0f;
 
-        private float timer;
+        private List<ChatSlot> slots = new List<ChatSlot>();
+        private float spawnTimer;
+
+        void Start()
+        {
+            // 游戏开始时计算所有可用的插槽位置
+            GenerateSlots();
+        }
 
         void Update()
         {
-            if(MainGameManager.Instance.playerScenePresenter != null && MainGameManager.Instance.playerScenePresenter.IsInBusyZone)
+            // 1. 更新所有插槽的冷却时间
+            UpdateSlotsCooldown();
+
+            // 2. 生成逻辑
+            spawnTimer += Time.deltaTime;
+            if (spawnTimer >= spawnInterval)
             {
-                timer += Time.deltaTime;
-                if (timer >= spawnInterval)
+                TrySpawnBubble();
+                // 稍微随机化下一次生成的时间点，避免太机械
+                spawnTimer = Random.Range(-0.1f, 0.1f);
+            }
+        }
+
+        // 预计算屏幕两侧的生成点
+        void GenerateSlots()
+        {
+            slots.Clear();
+            float containerHeight = spawnContainer.rect.height;
+            float containerWidth = spawnContainer.rect.width;
+
+            // 计算每一侧能放多少个插槽
+            // 我们留出上下 10% 的余量，不让气泡生成在屏幕最顶端或最底端
+            float availableHeight = containerHeight * 0.8f;
+            int slotCountPerSide = Mathf.FloorToInt(availableHeight / slotHeightSpacing);
+
+            float startY = -availableHeight / 2; // 从下方开始
+
+            // 生成左侧插槽
+            for (int i = 0; i < slotCountPerSide; i++)
+            {
+                float y = startY + (i * slotHeightSpacing);
+                // 左侧 X 坐标
+                float leftX = -containerWidth / 2 + edgePadding;
+
+                slots.Add(new ChatSlot
                 {
-                    SpawnBubble();
-                    // 随机化间隔，让出现节奏不规律
-                    timer = Random.Range(0f, 0.2f);
+                    position = new Vector2(leftX, y),
+                    side = 0,
+                    cooldownTimer = 0f
+                });
+
+                // 右侧 X 坐标 (对称生成)
+                float rightX = containerWidth / 2 - edgePadding;
+                slots.Add(new ChatSlot
+                {
+                    position = new Vector2(rightX, y),
+                    side = 1,
+                    cooldownTimer = 0f
+                });
+            }
+        }
+
+        void UpdateSlotsCooldown()
+        {
+            foreach (var slot in slots)
+            {
+                if (slot.cooldownTimer > 0)
+                {
+                    slot.cooldownTimer -= Time.deltaTime;
                 }
             }
         }
 
-        void SpawnBubble()
+        void TrySpawnBubble()
         {
             if (chatterLines.Length == 0) return;
 
-            // 1. 决定生成在哪一侧 (0=左, 1=右, 2=上, 3=下)
-            // 暗喻幻想风格主要集中在左右两侧，上下较少。我们增加左右的权重。
-            int side = GetWeightedSide();
+            // 1. 获取所有“空闲”的插槽 (冷却时间 <= 0)
+            var availableSlots = slots.Where(s => s.cooldownTimer <= 0).ToList();
 
-            // 2. 计算坐标
-            Vector2 spawnPos = CalculateEdgePosition(side);
+            // 如果没有空闲位置，这一帧就不生成（避免重叠的关键！）
+            if (availableSlots.Count == 0) return;
 
-            // 3. 实例化
+            // 2. 随机选一个插槽
+            ChatSlot selectedSlot = availableSlots[Random.Range(0, availableSlots.Count)];
+
+            // 3. 激活插槽冷却 (重置计时器)
+            selectedSlot.cooldownTimer = slotCooldown;
+
+            // 4. 计算最终位置 (基础位置 + 随机偏移 Jitter)
+            // 这样即使选中同一个插槽，每次位置也会有微妙不同
+            Vector2 finalPos = selectedSlot.position + Random.insideUnitCircle * positionJitter;
+
+            // 5. 生成实体
+            SpawnBubbleAt(finalPos, selectedSlot.side);
+        }
+
+        void SpawnBubbleAt(Vector2 pos, int side)
+        {
             GameObject go = Instantiate(bubblePrefab, spawnContainer);
-            // 设为第一个子物体，保证新生成的在最下面（或者是SetAsLastSibling覆盖上面，看喜好）
-            go.transform.SetAsLastSibling();
+            go.transform.SetAsLastSibling(); // 保证在最上层 (或者 FirstSibling 在最底层)
 
             AmbientBubble bubble = go.GetComponent<AmbientBubble>();
-
-            // 4. 设置属性
             string content = chatterLines[Random.Range(0, chatterLines.Length)];
             float scale = Random.Range(scaleRange.x, scaleRange.y);
 
-            // 传入 side 参数，告诉气泡它在哪一侧，以便它自己旋转角度
-            bubble.Setup(content, spawnPos, scale, scaleRange, side);
+            // 调用之前的 Setup 方法
+            var rand = UnityEngine.Random.Range(0, 100);
+            bubble.Setup(content, pos, scale, scaleRange, side, rand < 50 ? 0 : 1);
         }
 
-        // 增加左右两侧的出现概率 (左:35%, 右:35%, 上:15%, 下:15%)
-        int GetWeightedSide()
+        // 编辑器辅助：画出插槽位置，方便调试
+        void OnDrawGizmosSelected()
         {
-            float r = Random.value;
-            if (r < 0.35f) return 0; // 左
-            if (r < 0.70f) return 1; // 右
-            if (r < 0.85f) return 2; // 上
-            return 3;                // 下
-        }
+            if (spawnContainer == null) return;
 
-        Vector2 CalculateEdgePosition(int side)
-        {
-            float width = spawnContainer.rect.width;
-            float height = spawnContainer.rect.height;
+            Gizmos.color = Color.yellow;
 
-            // 容器中心是 (0,0)
-            float halfW = width / 2;
-            float halfH = height / 2;
+            // 既然在编辑器模式下可能还没运行Start，我们简单模拟一下位置
+            if (!Application.isPlaying) return;
 
-            float x = 0;
-            float y = 0;
-
-            switch (side)
+            foreach (var slot in slots)
             {
-                case 0: // 左侧边缘区域
-                        // x 在 [-halfW] 到 [-halfW + thickness] 之间
-                    x = Random.Range(-halfW, -halfW + edgeThickness);
-                    y = Random.Range(-halfH + verticalPadding, halfH - verticalPadding);
-                    break;
+                // 将 RectTransform 的局部坐标转换为世界坐标绘制
+                Vector3 worldPos = spawnContainer.TransformPoint(slot.position);
 
-                case 1: // 右侧边缘区域
-                        // x 在 [halfW - thickness] 到 [halfW] 之间
-                    x = Random.Range(halfW - edgeThickness, halfW);
-                    y = Random.Range(-halfH + verticalPadding, halfH - verticalPadding);
-                    break;
+                if (slot.cooldownTimer > 0)
+                    Gizmos.color = Color.red; // 冷却中显示红色
+                else
+                    Gizmos.color = Color.green; // 可用显示绿色
 
-                case 2: // 上方边缘区域
-                    x = Random.Range(-halfW + edgeThickness, halfW - edgeThickness); // 避开四个角落
-                    y = Random.Range(halfH - edgeThickness, halfH);
-                    break;
-
-                case 3: // 下方边缘区域
-                    x = Random.Range(-halfW + edgeThickness, halfW - edgeThickness);
-                    y = Random.Range(-halfH, -halfH + edgeThickness);
-                    break;
+                Gizmos.DrawWireSphere(worldPos, 20f);
             }
-
-            return new Vector2(x, y);
         }
     }
 }
