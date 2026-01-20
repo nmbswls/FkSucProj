@@ -15,6 +15,7 @@ MonoBehaviour:
   UnitName: civil
   ViewSprite: {fileID: 21300000, guid: f2f9800a1d8f6624db87fcc401513e95, type: 3}
   PrefabName: 
+  ShowName: '?'
   MoveStyle: 1
   MoveSpeed: 1
   IsPeace: 1
@@ -25,8 +26,20 @@ MonoBehaviour:
   AlwaysHMode: 0
   AIBrainParamsCfgId: default
   DefaultFactionId: 3
+  EnmityCfgId: 
   Hp: 100
   SkillList: []
-  DropId: default
+  DefaultDropId: 0
   NpcTag: Normal
-  InteractList: []
+  InteractList:
+  - InteractId: 0
+    Label: "\u4F60\u597D"
+    UnLabel: 
+    HideWhenFail: 0
+    NeedDist: 0
+    Passive: 0
+    CheckCommonCond: []
+    CheckInteractCond: []
+    Outputs: []
+  IgnoreAttractLevel: 0
+  ImmuneExecute: 0
