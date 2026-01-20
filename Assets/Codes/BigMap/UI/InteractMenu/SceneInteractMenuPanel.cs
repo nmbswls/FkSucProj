@@ -90,6 +90,24 @@ namespace My.UI
             HModeExecuteHint.gameObject.SetActive(false);
         }
 
+        private void Start()
+        {
+            ObjDetailHint.gameObject.SetActive(false);
+
+            //// 对 UI 元素进行呼吸
+            //ObjHintCircle.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.8f)
+            //        .SetLoops(-1, LoopType.Yoyo)
+            //        .SetEase(Ease.InOutSine)
+            //        .SetUpdate(true); // 即使游戏暂停(Time.timeScale=0)也能继续呼吸
+
+            ObjHintIconEnable.SetActive(true);
+            ObjHintIconForbid.SetActive(false);
+
+            ObjSwitchHint.gameObject.SetActive(false);
+
+            HModeExecuteHint.gameObject.SetActive(false);
+        }
+
         private float _interactViewUpdateTimer = 0;
         private Vector2? ActiveClosePanelPos = null; // 主动关闭交互面板的位置
 
