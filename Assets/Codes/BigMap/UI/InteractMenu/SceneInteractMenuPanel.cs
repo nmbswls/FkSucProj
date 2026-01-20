@@ -283,24 +283,28 @@ namespace My.UI
         /// </summary>
         public void RefreshFocusInteractable()
         {
-            if (currFocusInteractable == null && ActiveInteractableList.Count > 0)
+            if(ActiveInteractableList.Count > 0)
             {
-                currFocusInteractable = ActiveInteractableList[0].interactable;
-                UpdateFocusInteractableView();
-            }
-            // 如果列表空了，彻底关闭UI
-            else if (ActiveInteractableList.Count == 0)
-            {
-                if (currFocusInteractable != null)
+                if(currFocusInteractable == ActiveInteractableList[0].interactable)
                 {
-                    if(currFocusInteractable is SceneNpcPresenter npcPresenter)
-                    {
-                        npcPresenter.InteractDetailMode = false;
-                    }
+                    return;
                 }
 
+                if (currFocusInteractable != null)
+                {
+                    OnInteractUnFocus(currFocusInteractable);
+                }
+
+                currFocusInteractable = ActiveInteractableList[0].interactable;
+            }
+            else
+            {
+                if(currFocusInteractable == null)
+                {
+                    return;
+                }
+                OnInteractUnFocus(currFocusInteractable);
                 currFocusInteractable = null;
-                UpdateFocusInteractableView();
             }
         }
 
@@ -396,7 +400,6 @@ namespace My.UI
                 //}
             }
 
-            currFocusInteractable = null;
             //// 当可交互列表
             //if (currFocusInteractable != null)
             //{
@@ -480,6 +483,15 @@ namespace My.UI
                 //ChooseInteractMenu.SetBlockInteract(false);
             }
         }
+
+        private void OnInteractUnFocus(ISceneInteractable interactable)
+        {
+            if (currFocusInteractable is SceneNpcPresenter npcPresenter)
+            {
+                npcPresenter.InteractDetailMode = false;
+            }
+        }
+
 
         /// <summary>
         /// 确认
