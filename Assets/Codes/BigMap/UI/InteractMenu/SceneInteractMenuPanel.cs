@@ -411,7 +411,7 @@ namespace My.UI
 
             if(this.ActiveInteractableList.Count != 0)
             {
-                if(LogicTime.time - refreshIntent.HappenTime < 0.5f)
+                if(LogicTime.time - refreshIntent.HappenTime < 0.2f)
                 {
                     return;
                 }

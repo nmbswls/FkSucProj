@@ -80,7 +80,7 @@ public class SceneInteractSystem
         TickNormalInteract(dt);
     }
 
-    public void SetInteractPause(float duration = 0.3f)
+    public void SetInteractPause(float duration = 0.8f)
     {
         _pauseInteractTimer = LogicTime.time + duration;
     }
