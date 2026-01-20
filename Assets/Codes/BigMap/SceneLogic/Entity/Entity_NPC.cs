@@ -308,8 +308,8 @@ namespace My.Map
             {
                 if(!CheckHasState(AttrIdConsts.ImmuneEvilShock))
                 {
-                    LogicManager.globalBuffManager.AddBuff(this.Id, "immune_evil_shock", overrideDuration: 20.0f);
-                    LogicManager.globalBuffManager.AddBuff(this.Id, "evil_shock", overrideDuration: 3.0f);
+                    LogicManager.globalBuffManager.RequestAddBuff(this.Id, "immune_evil_shock", overrideDuration: 20.0f);
+                    LogicManager.globalBuffManager.RequestAddBuff(this.Id, "evil_shock", overrideDuration: 3.0f);
                 }
             }
         }

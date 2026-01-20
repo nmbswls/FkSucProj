@@ -684,7 +684,7 @@ namespace My.Player.Bag
                             {
                                 insertion.BuffTickTimer += itemConf.SpecialBuffInterval;
 
-                                DataManager.logicManager.globalBuffManager.AddBuff(DataManager.logicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
+                                DataManager.logicManager.globalBuffManager.RequestAddBuff(DataManager.logicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
                             }
                         }
                     }
@@ -711,7 +711,7 @@ namespace My.Player.Bag
                             {
                                 insertion.BuffTickTimer += itemConf.SpecialBuffInterval;
 
-                                DataManager.logicManager.globalBuffManager.AddBuff(DataManager.logicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
+                                DataManager.logicManager.globalBuffManager.RequestAddBuff(DataManager.logicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
                             }
                         }
                     }

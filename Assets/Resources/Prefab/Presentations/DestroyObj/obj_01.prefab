@@ -327,11 +327,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 0}
+  pivotHeader: {fileID: 0}
   highlightFx: {fileID: 0}
   MainView:
   - {fileID: 5403844535667785093}
   ShadowView: {fileID: 2089461419393550378}
-  MainBlock: {fileID: 0}
+  MainBlock: {fileID: 7062826125619073308}
   MainFlasher: {fileID: 7409131252583100693}
 --- !u!210 &4994017547108479065
 SortingGroup:

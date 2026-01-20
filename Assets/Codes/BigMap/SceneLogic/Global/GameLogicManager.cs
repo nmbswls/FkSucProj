@@ -35,7 +35,7 @@ namespace My
     public interface ILogicEntityFactory
     {
         // 根据Record创建运行时实例
-        ILogicEntity CreateEntityByRecord(LogicEntityRecord record);
+        LogicEntityBase CreateEntityByRecord(LogicEntityRecord record);
         // 可选对象池：回收实例
         void RecycleEntity(ILogicEntity entity);
     }
@@ -307,7 +307,6 @@ namespace My
                 return;
             }
 
-            globalBuffManager.Tick(dt);
             globalThrowManager.Tick(dt);
             playerDataManager.Tick(dt);
 
@@ -329,7 +328,6 @@ namespace My
             }
 
 
-
             AreaManager.Tick(dt);
 
             globalDropCollection?.Tick(dt);
@@ -337,6 +335,9 @@ namespace My
             TickPendingEffect();
 
             TickPeaceMode();
+
+            // 帧末再处理buff
+            globalBuffManager.Tick(dt);
         }
 
         public void AddNewEntityRecord(LogicEntityRecord record)
@@ -457,7 +458,7 @@ namespace My
         public ProjectileHolder projectileHolder;
 
         // 根据Record创建运行时实例
-        public ILogicEntity CreateEntityByRecord(LogicEntityRecord record)
+        public LogicEntityBase CreateEntityByRecord(LogicEntityRecord record)
         {
             LogicEntityBase newEntity = null;
             switch (record.EntityType)
@@ -559,7 +560,6 @@ namespace My
 
             if (newEntity != null)
             {
-                newEntity.Initialize();
                 newEntity.viewer = this.viewer;
 
                 EventOnLogicEntitySpawned?.Invoke(newEntity);

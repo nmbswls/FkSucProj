@@ -278,10 +278,6 @@ namespace My.Map.Logic
         }
 
         
-
-        
-
-
         /// <summary>
         /// 更新实体位置
         /// </summary>
@@ -817,8 +813,9 @@ namespace My.Map.Logic
             if (!Repo.Records.TryGetValue(entityId, out var rec)) return null;
 
             var ent = logicManager.CreateEntityByRecord(rec);
-            ent.OnSpawn(rec);
             Repo.Loaded[entityId] = ent;
+            ent.Initialize();
+            ent.OnSpawn(rec);
 
             return ent;
         }

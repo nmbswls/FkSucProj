@@ -58,7 +58,8 @@ namespace My.Map.Scene
         protected override void UnregisterEvents()
         {
             base.UnregisterEvents();
-            DestroyObjEntity.EventOnHit += OnEventDestroyObjHit;
+            DestroyObjEntity.EventOnHit -= OnEventDestroyObjHit;
+            DestroyObjEntity.EventOnBrack -= OnEventDestroyObjBrack;
         }
 
         protected override void OnEventEntityDestroyed(long entityId)

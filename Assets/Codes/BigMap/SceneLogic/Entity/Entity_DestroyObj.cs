@@ -40,9 +40,9 @@ namespace My.Map.Entity
             attributeStore.Commit();
         }
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
-            base.Tick(dt);
+            base.OnTick(dt);
 
             if(_brackTimer != 0 && LogicTime.time > _brackTimer)
             {

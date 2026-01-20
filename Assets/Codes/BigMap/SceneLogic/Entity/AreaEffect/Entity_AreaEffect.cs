@@ -38,9 +38,9 @@ namespace My.Map
             cacheCfg = MapAreaEffectLoader.Get(CfgId);
         }
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
-            base.Tick(dt);
+            base.OnTick(dt);
         }
 
         public void UpdateAffectedLogics(List<ILogicEntity> inEnties)

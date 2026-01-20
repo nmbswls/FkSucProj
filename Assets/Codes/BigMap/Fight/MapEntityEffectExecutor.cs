@@ -380,7 +380,7 @@ namespace My.Map.Entity
 
             var duration = realCfg.Duration;
 
-            ctx.Env.globalBuffManager.AddBuff(actor.Id, "lock_move", overrideDuration: duration);
+            ctx.Env.globalBuffManager.RequestAddBuff(actor.Id, "lock_move", overrideDuration: duration);
             ctx.Env.viewer.DoPlayerSpecialMove(target.Pos, actor.Pos, duration, () =>
             {
                 unitEntity.TeleportTo(target.Pos);

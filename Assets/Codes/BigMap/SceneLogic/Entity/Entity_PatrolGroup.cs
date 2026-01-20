@@ -56,8 +56,10 @@ namespace My.Map
         private Vector2? currMoveDir;
         private float? currMoveDist;
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
+            base.OnTick(dt);
+
             foreach(var uid in PatrolUnitIds)
             {
                 var entity = LogicManager.AreaManager.GetLogicEntiy(uid, false);

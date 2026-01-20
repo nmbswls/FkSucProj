@@ -145,6 +145,7 @@ namespace My.Map
         public EFactionId FactionId { get; set; }
 
         public bool IsActive { get; set; } = true;
+        public bool IsDirty { get; set; } // 实体脏标记位 寻找时机写回record
 
         public bool MarkDestroyed { get; set; }
 
@@ -160,12 +161,18 @@ namespace My.Map
 
         public float LifeTime;
 
+
+
+        #region 生命周期
+
         /// <summary>
         /// todo 拆分到外部维护
         /// </summary>
         public long LifeBindEntityId { get; set; }
-
         public bool MarkDespawn { get; set; }
+        public bool MarkSleep { get; set; }
+
+        #endregion
 
 
         #region 通用字段
@@ -390,7 +397,19 @@ namespace My.Map
         }
 
 
-        public virtual void Tick(float dt) 
+        public void Tick(float dt) 
+        {
+            OnPreTick(dt);
+
+            OnTick(dt);
+        }
+
+        protected virtual void OnPreTick(float dt)
+        {
+
+        }
+
+        protected virtual void OnTick(float dt)
         {
             if (!MarkDestroyed)
             {

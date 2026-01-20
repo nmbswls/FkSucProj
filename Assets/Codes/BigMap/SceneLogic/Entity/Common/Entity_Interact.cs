@@ -313,7 +313,7 @@ namespace My.Map
 
 
                             //Debug.Log("special move yo");
-                            Owner.LogicManager.globalBuffManager.AddBuff(player.Id, "lock_move", overrideDuration: delay);
+                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: delay);
                             Owner.LogicManager.viewer.DoPlayerSpecialMove(p.Value.Position, player.Pos, delay, () =>
                             {
 

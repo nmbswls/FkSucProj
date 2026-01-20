@@ -38,9 +38,9 @@ namespace My.Map.Entity
             attributeStore.Commit();
         }
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
-            base.Tick(dt);
+            base.OnTick(dt);
 
             if(LeftCount < cacheConfig.MaxCount)
             {

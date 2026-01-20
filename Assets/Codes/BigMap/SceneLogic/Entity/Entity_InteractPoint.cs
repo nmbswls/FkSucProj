@@ -143,9 +143,9 @@ namespace My.Map.Entity
             CheckStatusCondition(); 
         }
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
-            base.Tick(dt);
+            base.OnTick(dt);
 
             // µÍÆµ¼ì²é×´Ì¬ÇÐ»»
             LowFreqCheckStatusChange();

@@ -805,7 +805,7 @@ namespace My.Map.Entity
 
         public long AddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
-            var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId, false);
+            var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId);
             if (targetEntity == null)
             {
                 Debug.Log($"RemoveAllBuffById not found {entityId} ");

@@ -136,15 +136,15 @@ namespace My.Map
 
             if(MarkNoLogic)
             {
-                LogicManager.globalBuffManager.RequestAddBuff(this.Id, "system_no_logic");
+                LogicManager.globalBuffManager.AddBuff(this.Id, "system_no_logic");
             }
 
             //MeleeSlotManager.InitializeSlots();
         }
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
-            base.Tick(dt);
+            base.OnTick(dt);
             // 计时、条件检查、冷却等
 
             if(!MarkNoLogic && !IsDead)
@@ -223,7 +223,7 @@ namespace My.Map
             });
 
             {
-                LogicManager.globalBuffManager.AddBuff(this.Id, "unsensored");
+                LogicManager.globalBuffManager.RequestAddBuff(this.Id, "unsensored");
                 this.MarkUnsensored = true;
             }
         }

@@ -89,9 +89,9 @@ namespace My.Map
         }
         private float _lastEnsureMemberTimer = 0;
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
-            base.Tick(dt);
+            base.OnTick(dt);
 
             TickAllMemberStatus();
 

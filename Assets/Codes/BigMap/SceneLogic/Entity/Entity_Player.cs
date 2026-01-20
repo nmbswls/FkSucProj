@@ -49,9 +49,9 @@ namespace My.Map
             }
         }
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
-            base.Tick(dt);
+            base.OnTick(dt);
 
             //ø€ºı÷µ
             TickResourceChange();
