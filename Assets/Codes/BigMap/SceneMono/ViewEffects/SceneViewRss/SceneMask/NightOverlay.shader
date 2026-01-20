@@ -84,8 +84,9 @@ Shader "Custom/NightOverlay"
                 //col.a *= i.color.a;
                 if(col.a < 0.5)
                 {
-                    col.a = 0.5;
-                    }
+                    col.a = 0.2;
+                }
+                //return float4(maskRGB, 1);
                 return col;
             }
             ENDHLSL

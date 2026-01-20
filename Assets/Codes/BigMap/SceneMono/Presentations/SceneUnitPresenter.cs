@@ -275,20 +275,30 @@ namespace My.Map.Scene
             {
                 return;
             }
-            bool visible = false;
-            var diff = MainGameManager.Instance.playerScenePresenter.transform.position - transform.position;
-            diff.z = 0;
 
-            if (diff.magnitude < 0.6f)
+
+            bool visible = false;
+            if(MainGameManager.Instance.playerScenePresenter.PlayerEntity.IsQueenMode)
             {
                 visible = true;
             }
-            if (!visible)
+            else
             {
-                visible = MainGameManager.Instance.VisionSenser2D.CanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.CurrentLook,
-                    transform.position,
-                    8f, 120f);
+                var diff = MainGameManager.Instance.playerScenePresenter.transform.position - transform.position;
+                diff.z = 0;
+
+                if (diff.magnitude < 0.6f)
+                {
+                    visible = true;
+                }
+                if (!visible)
+                {
+                    visible = MainGameManager.Instance.VisionSenser2D.CanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.CurrentLook,
+                        transform.position,
+                        8f, 120f);
+                }
             }
+            
 
             if (visible && !UnitEntity.MarkDestroyed)
             {

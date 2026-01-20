@@ -9985,9 +9985,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NpcPrefab: {fileID: 1982374904}
-  MaxNpcCount: 50
-  SpawnInterval: 0.5
-  PathRandomWidth: 0.5
+  MaxNpcCount: 100
+  SpawnInterval: 1
+  PathRandomWidth: 1
 --- !u!1 &1178323299
 GameObject:
   m_ObjectHideFlags: 0

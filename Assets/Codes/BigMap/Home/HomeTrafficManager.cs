@@ -15,7 +15,7 @@ namespace My.Map
         public GameObject NpcPrefab;
         public int MaxNpcCount = 80;
         public float SpawnInterval = 0.5f;
-        public float PathRandomWidth = 0.5f;
+        public float PathRandomWidth = 1f;
 
         // 所有端点列表（既是起点也是终点）
         private List<HomeTrafficNode> _endPoints = new List<HomeTrafficNode>();
