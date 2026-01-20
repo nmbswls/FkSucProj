@@ -39,7 +39,7 @@ public class SceneInteractSystem
 {
     public static float CheckInterval = 0.2f;
 
-    private float _normalCheckRadius = 0.5f;
+    private float _normalCheckRadius = 1f;
     private float _checkAngle = 90f;
 
     private float _interactTimer = 0f;
