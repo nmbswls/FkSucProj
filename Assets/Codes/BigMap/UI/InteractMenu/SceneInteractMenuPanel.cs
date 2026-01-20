@@ -67,7 +67,7 @@ namespace My.UI
         /// 当前活跃可交互列表
         /// </summary>
         public List<IntResultItem> ActiveInteractableList = new();
-        public ISceneInteractable? currFocusInteractable = null;
+        public ISceneInteractable? currFocusInteractable { get; set; } = null;
 
         public SceneNpcPresenter? currExecuteTarget = null;
 
@@ -132,7 +132,10 @@ namespace My.UI
         }
 
         private float _refreshSelectionTimer = 0;
-
+        public void ResetRefreshSelection()
+        {
+            _refreshSelectionTimer = 0;
+        }
         /// <summary>
         /// 尝试更新已存在的交互
         /// 主要用于更新cd等
@@ -217,6 +220,15 @@ namespace My.UI
                 nextIndex = (currentIndex + 1) % ActiveInteractableList.Count;
             }
 
+
+            if (currFocusInteractable != null)
+            {
+                if (currFocusInteractable is SceneNpcPresenter npcPresenter)
+                {
+                    npcPresenter.InteractDetailMode = false;
+                }
+            }
+
             currFocusInteractable = ActiveInteractableList[nextIndex].interactable;
             UpdateFocusInteractableView();
         }
@@ -279,6 +291,14 @@ namespace My.UI
             // 如果列表空了，彻底关闭UI
             else if (ActiveInteractableList.Count == 0)
             {
+                if (currFocusInteractable != null)
+                {
+                    if(currFocusInteractable is SceneNpcPresenter npcPresenter)
+                    {
+                        npcPresenter.InteractDetailMode = false;
+                    }
+                }
+
                 currFocusInteractable = null;
                 UpdateFocusInteractableView();
             }

@@ -2,6 +2,7 @@ using Map.Entity;
 using Map.Logic.Events;
 using My.Map.Entity;
 using My.MiniGame;
+using My.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -34,10 +35,13 @@ namespace My.Map.Scene
         public List<AnimationClip> SpecialAnimClips;
         private Dictionary<string, AnimationClip> _animCacheDict = new();
 
+        public static int EnterDetailMode = 98;
         public static int DeepAbsorbInteractGoodId = 99;
         public static int DeepAbsorbInteractBadId = 100;
         public static int PickDropInteractId = 101;
         public static int BackHit = 102;
+
+        public bool InteractDetailMode { get; set; }
 
         protected override void Awake()
         {
@@ -55,6 +59,7 @@ namespace My.Map.Scene
         public override void Tick(float dt)
         {
             base.Tick(dt);
+
         }
 
         public override void Bind(ILogicEntity logic)
@@ -94,6 +99,22 @@ namespace My.Map.Scene
         }
 
 
+        public override bool CheckCanActiveMove()
+        {
+            var ret = base.CheckCanActiveMove();
+            if(!ret)
+            {
+                return ret;
+            }
+
+            if(InteractDetailMode)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public void OnEventAnimLayerUpdate()
         {
             if (UnitEntity.AnimLayers.Count > 0)
@@ -131,7 +152,12 @@ namespace My.Map.Scene
             {
                 if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
                 {
-                    if (!NpcEntity.InteractComp.IsInteracting)
+                    if (NpcEntity.InteractComp.IsInteracting)
+                    {
+                        break;
+                    }
+
+                    if (UnitEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
                     {
                         break;
                     }
@@ -169,8 +195,23 @@ namespace My.Map.Scene
 
         public void TriggerInteract(int selectionId)
         {
+            if(selectionId == EnterDetailMode)
+            {
+                if(UnitEntity.CombatState == NpcCombatStateComp.ECombatState.NotCombat)
+                {
+                    InteractDetailMode = true;
+                    NpcEntity.RegisterGaze("Interact", UnitEntity.LogicManager.playerLogicEntity.Id, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Override, 0);
 
-            if (selectionId < 50 && MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+                    // todo 抛出事件
+                    if(SceneInteractMenuPanel.Instance != null)
+                    {
+                        SceneInteractMenuPanel.Instance.ResetRefreshSelection();
+                    }
+                }
+                return;
+            }
+
+            if (selectionId < 50 && UnitEntity.CombatState == NpcCombatStateComp.ECombatState.NotCombat)
             {
                 NpcEntity.InteractComp.TryTriggerInteract(selectionId);
                 return;
@@ -289,8 +330,14 @@ namespace My.Map.Scene
                 }
             }
 
+           
+
+
             do
             {
+
+
+
                 if (!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
                 {
                     break;
@@ -301,28 +348,63 @@ namespace My.Map.Scene
                     break;
                 }
 
-                if (!NpcEntity.InteractComp.IsInteracting)
+                if (UnitEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
                 {
                     break;
                 }
 
-                var logicInts = NpcEntity.InteractComp.InteractInfos;
-                int enableOne = 0;
-                foreach (var i in logicInts)
+                if (NpcEntity.InteractComp.IsInteracting)
                 {
-                    if (i.Passive)
+                    break;
+                }
+
+                if (!InteractDetailMode)
+                {
+                    var logicInts = NpcEntity.InteractComp.InteractInfos;
+                    bool hasEnabled = false;
+                    foreach (var i in logicInts)
                     {
-                        continue;
+                        if (i.Passive)
+                        {
+                            continue;
+                        }
+                        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
+                        if (canInt || !i.HideWhenFail)
+                        {
+                            hasEnabled = true; 
+                            break;
+                        }
                     }
-                    bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
-                    if (canInt || !i.HideWhenFail)
+
+                    if(hasEnabled)
                     {
                         ret.Add(new SceneInteractSelection()
                         {
-                            SelectId = i.InteractId,
-                            SelectContent = i.Label,
+                            SelectId = EnterDetailMode,
+                            SelectContent = "互动",
                             Selectable = true
                         });
+                    }
+                }
+                else
+                {
+                    var logicInts = NpcEntity.InteractComp.InteractInfos;
+                    foreach (var i in logicInts)
+                    {
+                        if (i.Passive)
+                        {
+                            continue;
+                        }
+                        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
+                        if (canInt || !i.HideWhenFail)
+                        {
+                            ret.Add(new SceneInteractSelection()
+                            {
+                                SelectId = i.InteractId,
+                                SelectContent = i.Label,
+                                Selectable = true
+                            });
+                        }
                     }
                 }
             }

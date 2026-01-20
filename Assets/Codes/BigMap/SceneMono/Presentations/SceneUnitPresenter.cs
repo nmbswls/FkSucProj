@@ -215,9 +215,9 @@ namespace My.Map.Scene
         public Vector2 GetFixedDesiredVel()
         {
             if(UnitEntity == null) return Vector2.zero;
+
             float arriveRaiuds = 0.12f;
-            if (UnitEntity.IsDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
-                || UnitEntity.controlledMoveCtx != null)
+            if (!CheckCanActiveMove())
             {
                 //UnitEntity.activeMoveVec = Vector2.zero;
                 return UnitEntity.externalVel;
@@ -229,6 +229,37 @@ namespace My.Map.Scene
             }
 
         }
+
+        public virtual bool CheckCanActiveMove()
+        {
+            if(UnitEntity.MarkDestroyed)
+            {
+                return false;
+            }
+
+            if(UnitEntity.MarkDespawn)
+            {
+                return false;
+            }
+
+            if(UnitEntity.IsDead)
+            {
+                return false;
+            }
+
+            if(UnitEntity.CheckHasState(AttrIdConsts.Unmovable))
+            {
+                return false;
+            }
+
+            if(UnitEntity.controlledMoveCtx != null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
 
         private bool _visibleNow = false;
         private float _updateVisibleTimer = 0;
