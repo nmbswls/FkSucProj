@@ -25,8 +25,9 @@ namespace My
             return false;
         }
 
-        public void TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId)
         {
+            return true;
         }
 
         public Vector3 GetHintAnchorPosition()

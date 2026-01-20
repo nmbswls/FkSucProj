@@ -1,3 +1,4 @@
+using Animancer.Examples.FineControl;
 using DG.Tweening;
 using My.Map;
 using My.Map.Scene;
@@ -74,20 +75,7 @@ namespace My.UI
 
         public void Awake()
         {
-            ObjDetailHint.gameObject.SetActive(false);
 
-            //// 对 UI 元素进行呼吸
-            //ObjHintCircle.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.8f)
-            //        .SetLoops(-1, LoopType.Yoyo)
-            //        .SetEase(Ease.InOutSine)
-            //        .SetUpdate(true); // 即使游戏暂停(Time.timeScale=0)也能继续呼吸
-
-            ObjHintIconEnable.SetActive(true);
-            ObjHintIconForbid.SetActive(false);
-
-            ObjSwitchHint.gameObject.SetActive(false);
-
-            HModeExecuteHint.gameObject.SetActive(false);
         }
 
         private void Start()
@@ -147,6 +135,8 @@ namespace My.UI
             }
 
             TickRefreshNormalInteractBlock();
+
+            TickRefreshActiveInteract();
         }
 
         private float _refreshSelectionTimer = 0;
@@ -314,6 +304,8 @@ namespace My.UI
                 }
 
                 currFocusInteractable = ActiveInteractableList[0].interactable;
+
+                UpdateFocusInteractableView();
             }
             else
             {
@@ -323,6 +315,8 @@ namespace My.UI
                 }
                 OnInteractUnFocus(currFocusInteractable);
                 currFocusInteractable = null;
+
+                UpdateFocusInteractableView();
             }
         }
 
@@ -389,6 +383,13 @@ namespace My.UI
             }
         }
 
+        public class RefreshInteractObjIntent
+        {
+            public float HappenTime;
+            public List<IntResultItem> Interactables;
+        }
+
+        private RefreshInteractObjIntent refreshIntent;
 
         /// <summary>
         /// 刷新交互物
@@ -396,19 +397,40 @@ namespace My.UI
         /// <param name="interactables"></param>
         public void RefreshActiveInteractableObjs(List<IntResultItem> interactables)
         {
+            refreshIntent = new()
+            {
+                HappenTime = LogicTime.time,
+                Interactables = interactables
+            };
+        }
+
+        private void TickRefreshActiveInteract()
+        {
+            if (refreshIntent == null) return;
+
+
+            if(this.ActiveInteractableList.Count != 0)
+            {
+                if(LogicTime.time - refreshIntent.HappenTime < 0.5f)
+                {
+                    return;
+                }
+            }
+
+
             // 仅维护当前
             this.ActiveInteractableList.Clear();
-            if(interactables.Count > 0)
+            if (refreshIntent.Interactables.Count > 0)
             {
-                var firstPoint = interactables[0];
+                var firstPoint = refreshIntent.Interactables[0];
                 this.ActiveInteractableList.Add(firstPoint);
 
 
-                for (int i = 1; i < interactables.Count; i++)
+                for (int i = 1; i < refreshIntent.Interactables.Count; i++)
                 {
-                    if ((interactables[i].pos - firstPoint.pos).sqrMagnitude < 0.3f * 0.3f)
+                    if ((refreshIntent.Interactables[i].pos - firstPoint.pos).sqrMagnitude < 0.3f * 0.3f)
                     {
-                        this.ActiveInteractableList.AddRange(interactables);
+                        this.ActiveInteractableList.AddRange(refreshIntent.Interactables);
                     }
                 }
 
@@ -430,6 +452,7 @@ namespace My.UI
 
             // 刷新focus对象
             RefreshFocusInteractable();
+            refreshIntent = null;
         }
 
 
@@ -507,6 +530,7 @@ namespace My.UI
             if (currFocusInteractable is SceneNpcPresenter npcPresenter)
             {
                 npcPresenter.InteractDetailMode = false;
+                npcPresenter.UnitEntity.UnregisterGazeBySourceTag("Interact");
             }
         }
 
@@ -534,10 +558,31 @@ namespace My.UI
             ChooseInteractMenu.ItemOnClick(idx);
 
             int selectId = (int)ChooseInteractMenu.data[idx].SelectId;
-            currFocusInteractable.TriggerInteract(selectId);
+            var closed = currFocusInteractable.TriggerInteract(selectId);
+
+            if(closed)
+            {
+                //OnInteractUnFocus(currFocusInteractable);
+                //currFocusInteractable = null;
+
+                //UpdateFocusInteractableView();
+
+                MainGameManager.Instance.interactSystem.SetInteractPause();
+            }
 
             return true;
         }
+
+        //private IEnumerator InnerFadeConfirm()
+        //{
+        //    yield return new WaitForSeconds(0.5f);
+
+        //    OnInteractUnFocus(currFocusInteractable);
+        //    currFocusInteractable = null;
+
+        //    UpdateFocusInteractableView();
+        //}
+
 
         public bool OnCancel()
         {

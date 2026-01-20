@@ -45,7 +45,7 @@ namespace My.Map.Scene
         /// 触发交互
         /// </summary>
         /// <param name="triggerIdx"></param>
-        public void TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId)
         {
             // 只有一个触发点
             if (selectionId == 1)
@@ -54,7 +54,7 @@ namespace My.Map.Scene
                 if (!LootEntity.IsLocked)
                 {
                     MainGameManager.Instance.ShowFakeFxEffect("没锁呀", _logic.Pos);
-                    return;
+                    return true;
                 }
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("unlock_loot_point", target: LootEntity); ;
             }
@@ -64,7 +64,7 @@ namespace My.Map.Scene
                 if (LootEntity.IsLocked)
                 {
                     MainGameManager.Instance.ShowFakeFxEffect("locked", _logic.Pos);
-                    return;
+                    return true;
                 }
 
                 float useTime = LootEntity.cacheConfig.LootOpenTime;
@@ -77,6 +77,7 @@ namespace My.Map.Scene
                         ["Executing"] = LootEntity.cacheConfig.LootOverrideAnim
                     });
             }
+            return false;
         }
 
         public List<SceneInteractSelection> GetInteractSelections()

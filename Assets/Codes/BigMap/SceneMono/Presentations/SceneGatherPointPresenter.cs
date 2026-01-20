@@ -62,7 +62,7 @@ namespace My.Map.Scene
             base.Tick(dt);
         }
 
-        public void TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId)
         {
             //GatherPointEntity.DoGather();
             MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("default_interact",  overrideParams: new Dictionary<string, string>()
@@ -71,6 +71,8 @@ namespace My.Map.Scene
                 ["EntityId"] = this.Id.ToString(),
                 ["SelectId"] = "1",
             });
+
+            return true;
         }
     }
 }

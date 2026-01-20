@@ -17,5 +17,7 @@ namespace Config.Unit
 
         public int IgnoreAttractLevel = 0;
         public bool ImmuneExecute;
+
+        public bool AutoStopForPlayer = true;
     }
 }

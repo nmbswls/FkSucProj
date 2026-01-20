@@ -159,16 +159,20 @@ namespace My.Map.Scene
             return false;
         }
 
-        public void TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId)
         {
             if (selectionId == 1)
             {
                 PlayerEntity.EndStealth();
+                return true;
             }
             else if (selectionId == 2)
             {
                 PlayerEntity.abilityController.TryUseAbility("hit_attach");
+                return true;
             }
+
+            return false;
         }
 
         public float GetHintOffsetInfos()

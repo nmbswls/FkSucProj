@@ -19,7 +19,7 @@ public interface ISceneInteractable
     Vector2 Pos { get; }
 
     bool CanInteractEnable();
-    void TriggerInteract(int selectionId);
+    bool TriggerInteract(int selectionId);
 
     Vector3 GetHintAnchorPosition();
 
@@ -65,6 +65,9 @@ public class SceneInteractSystem
     public List<long> closeUnitCache = new();
     //public ISceneInteractable? currnteractObj;
 
+    private float _pauseInteractTimer;
+
+
     /// <summary>
     /// 当前可处决对象
     /// </summary>
@@ -75,6 +78,11 @@ public class SceneInteractSystem
     public void Tick(float dt)
     {
         TickNormalInteract(dt);
+    }
+
+    public void SetInteractPause(float duration = 0.3f)
+    {
+        _pauseInteractTimer = LogicTime.time + duration;
     }
 
     public bool IsInteractEnableState()
@@ -109,6 +117,11 @@ public class SceneInteractSystem
             return false;
         }
 
+        if(LogicTime.time < _pauseInteractTimer)
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -126,6 +139,8 @@ public class SceneInteractSystem
         {
             SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(new());
             SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(null);
+            currInteractPoints.Clear();
+            currExecuteTarget = null;
             return;
         }
 
@@ -193,7 +208,6 @@ public class SceneInteractSystem
                 continue;
             }
             while (false);
-            
             
             
 

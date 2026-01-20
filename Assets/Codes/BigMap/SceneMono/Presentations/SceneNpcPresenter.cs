@@ -102,15 +102,46 @@ namespace My.Map.Scene
         public override bool CheckCanActiveMove()
         {
             var ret = base.CheckCanActiveMove();
-            if(!ret)
+            if (!ret)
             {
                 return ret;
             }
 
-            if(InteractDetailMode)
+            if (InteractDetailMode)
             {
                 return false;
             }
+
+            // 检查玩家靠近主动停靠
+            do
+            {
+                if(NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+                {
+                    break;
+                }
+
+                if(NpcEntity.CheckIsEmnity())
+                {
+                    break;
+                }
+
+                if(!NpcEntity.cacheCfg.AutoStopForPlayer)
+                {
+                    break;
+                }
+
+                if(MainGameManager.Instance.playerScenePresenter == null)
+                {
+                    break;
+                }
+
+                var diff = MainGameManager.Instance.playerScenePresenter.Pos - this.Pos;
+                if (diff.sqrMagnitude < 1.0f)
+                {
+                    return false;
+                }
+            }
+            while (false);
 
             return true;
         }
@@ -193,7 +224,7 @@ namespace My.Map.Scene
             return false;
         }
 
-        public void TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId)
         {
             if(selectionId == EnterDetailMode)
             {
@@ -208,13 +239,13 @@ namespace My.Map.Scene
                         SceneInteractMenuPanel.Instance.ResetRefreshSelection();
                     }
                 }
-                return;
+                return false;
             }
 
             if (selectionId < 50 && UnitEntity.CombatState == NpcCombatStateComp.ECombatState.NotCombat)
             {
                 NpcEntity.InteractComp.TryTriggerInteract(selectionId);
-                return;
+                return true;
             }
 
             if(selectionId == DeepAbsorbInteractGoodId)
@@ -275,6 +306,7 @@ namespace My.Map.Scene
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
             }
 
+            return true;
         }
 
         public Vector3 GetHintAnchorPosition()

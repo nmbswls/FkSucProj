@@ -89,10 +89,11 @@ namespace My.Map.Scene
             return ret;
         }
 
-        public void TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId)
         {
             Debug.Log("手动拾取触发");
             MainGameManager.Instance.gameLogicManager.globalDropCollection.PickDrop(DropData.Id);
+            return true;
         }
 
         public bool CanInteractEnable()

@@ -50,9 +50,9 @@ namespace My.Map.Scene
         }
 
 
-        public void TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId)
         {
-            RealLogic.TryTriggerInteract(selectionId);
+            return RealLogic.TryTriggerInteract(selectionId);
         }
 
         public List<SceneInteractSelection> GetInteractSelections()
