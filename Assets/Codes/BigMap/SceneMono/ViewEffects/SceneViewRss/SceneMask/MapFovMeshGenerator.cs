@@ -100,6 +100,31 @@ namespace My.Map.Scene
 
         private void Update()
         {
+            if(NeedMask)
+            {
+                if(!CircleFovShape.activeSelf)
+                {
+                    CircleFovShape.SetActive(true);
+                }
+
+                if(!FovShapeMesh.gameObject.activeSelf)
+                {
+                    FovShapeMesh.gameObject.SetActive(true);
+                }
+
+            }
+            else
+            {
+                if (CircleFovShape.activeSelf)
+                {
+                    CircleFovShape.SetActive(false);
+                }
+
+                if (FovShapeMesh.gameObject.activeSelf)
+                {
+                    FovShapeMesh.gameObject.SetActive(false);
+                }
+            }
         }
         public void OnAreaEnter()
         {

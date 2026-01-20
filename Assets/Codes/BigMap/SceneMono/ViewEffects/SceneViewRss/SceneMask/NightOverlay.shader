@@ -81,8 +81,11 @@ Shader "Custom/NightOverlay"
                 col.a = alpha;
 
                 // 支持顶点色影响强度（用于 UI 或 Sprite 的逐片段调控）
-                col.a *= i.color.a;
-
+                //col.a *= i.color.a;
+                if(col.a < 0.5)
+                {
+                    col.a = 0.5;
+                    }
                 return col;
             }
             ENDHLSL

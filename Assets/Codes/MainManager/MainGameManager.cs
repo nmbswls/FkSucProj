@@ -119,6 +119,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public PlayerRumorTextSpawner RumorTextSpawner;
     public CinemachineImpulseSource VcamInpulseSource;
+    public PostProcessVignette postProcessVignette;
     private void Awake()
     {
         Instance = this;
@@ -299,6 +300,20 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(UnityEngine.Input.mousePosition);
             mouseWorld.z = 0;
             gameLogicManager.playerLogicEntity.entityMotorComp.TryMoveTo(mouseWorld);
+        }
+
+        if(playerScenePresenter != null)
+        {
+            if(playerScenePresenter.PlayerEntity.IsQueenMode)
+            {
+                postProcessVignette.SetDangerState(true);
+                FovGenerator.NeedMask = false;
+            }
+            else
+            {
+                postProcessVignette.SetDangerState(false);
+                FovGenerator.NeedMask = true;
+            }
         }
     }
 
