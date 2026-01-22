@@ -5,16 +5,19 @@ using UnityEngine;
 namespace My.Map
 {
 
+    /// <summary>
+    /// æ“ä½œç‚¹ 
+    /// </summary>
     public class HomeActionSpot : MonoBehaviour
     {
-        // 1. ÈÚºÏ SpotType£º¶¨ÒåÕâ¸öµã¾ßÌåµÄĞĞÎªÀàĞÍ
+        // 1. èåˆ SpotTypeï¼šå®šä¹‰è¿™ä¸ªç‚¹å…·ä½“çš„è¡Œä¸ºç±»å‹
         public enum SpotType
         {
-            Work,       // ²ú³öĞÍ¹¤×÷£¨¾âÄ¾¡¢´òÌú£©
-            Social,     // Éç½»/ĞİÏ¢£¨×øÒÎ×Ó¡¢ºÈ¾Æ£©
-            Worship,    // ×Ú½ÌĞĞÎª
-            Queue,      // ÅÅ¶Óµã
-            Gate        // ´«ËÍÃÅ/³öÈë¿Ú
+            Work,       // äº§å‡ºå‹å·¥ä½œï¼ˆé”¯æœ¨ã€æ‰“é“ï¼‰
+            Social,     // ç¤¾äº¤/ä¼‘æ¯ï¼ˆåæ¤…å­ã€å–é…’ï¼‰
+            Worship,    // å®—æ•™è¡Œä¸º
+            Queue,      // æ’é˜Ÿç‚¹
+            Gate        // ä¼ é€é—¨/å‡ºå…¥å£
         }
 
         [System.Serializable]
@@ -25,19 +28,19 @@ namespace My.Map
             public Vector3 Offset;
         }
 
-        [Header("ºËĞÄÅäÖÃ")]
-        public SpotType Type = SpotType.Work; // Õâ¸öµãÊÇ¸ÉÂïµÄ£¿
-        public string AnimationTrigger = "Working"; // ÔÚÕâÀï²¥Ê²Ã´¶¯»­£¿
+        [Header("æ ¸å¿ƒé…ç½®")]
+        public SpotType Type = SpotType.Work; // è¿™ä¸ªç‚¹æ˜¯å¹²å˜›çš„ï¼Ÿ
+        public string AnimationTrigger = "Working"; // åœ¨è¿™é‡Œæ’­ä»€ä¹ˆåŠ¨ç”»ï¼Ÿ
 
-        [Header("ÈİÁ¿ÅäÖÃ")]
+        [Header("å®¹é‡é…ç½®")]
         public int MaxCapacity = 1;
         public bool IsQueueMode = false;
         public float Spacing = 1.0f;
 
-        // ÔËĞĞÊ±Êı¾İ
+        // è¿è¡Œæ—¶æ•°æ®
         private List<RuntimeSlot> _slots = new List<RuntimeSlot>();
 
-        // ËùÊôÉèÊ©£¨¿ÉÑ¡£¬Èç¹ûÊÇÂ·±ßµÄÒ°ÒÎ×Ó¿ÉÄÜÃ»ÓĞ Facility£©
+        // æ‰€å±è®¾æ–½ï¼ˆå¯é€‰ï¼Œå¦‚æœæ˜¯è·¯è¾¹çš„é‡æ¤…å­å¯èƒ½æ²¡æœ‰ Facilityï¼‰
         public HomeFacility ParentFacility { get; private set; }
 
         void Awake()
@@ -48,7 +51,7 @@ namespace My.Map
 
         void Start()
         {
-            // ×Ô¶¯ÏòÈ«¾Ö¹ÜÀíÆ÷×¢²á×Ô¼º£¨ÕâÑù¼È¿ÉÒÔÍ¨¹ıÉèÊ©ÕÒ£¬Ò²¿ÉÒÔÍ¨¹ıÈ«¾ÖÀàĞÍÕÒ£©
+            // è‡ªåŠ¨å‘å…¨å±€ç®¡ç†å™¨æ³¨å†Œè‡ªå·±ï¼ˆè¿™æ ·æ—¢å¯ä»¥é€šè¿‡è®¾æ–½æ‰¾ï¼Œä¹Ÿå¯ä»¥é€šè¿‡å…¨å±€ç±»å‹æ‰¾ï¼‰
             //WorldManager.Instance.RegisterGlobalSpot(this);
         }
 
@@ -70,9 +73,9 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ³¢ÊÔ»ñÈ¡Ò»¸ö¿Õ²ÛÎ»
+        /// å°è¯•è·å–ä¸€ä¸ªç©ºæ§½ä½
         /// </summary>
-        /// <returns>·µ»Ø²ÛÎ»Ë÷Òı£¬-1±íÊ¾ÂúÁË</returns>
+        /// <returns>è¿”å›æ§½ä½ç´¢å¼•ï¼Œ-1è¡¨ç¤ºæ»¡äº†</returns>
         public int TryGetFreeSlotIndex()
         {
             for (int i = 0; i < _slots.Count; i++)
@@ -83,7 +86,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Õ¼ÓÃ²ÛÎ»
+        /// å ç”¨æ§½ä½
         /// </summary>
         public Vector3 OccupySlot(int index, HomeSimpleNpc npc)
         {
@@ -92,12 +95,12 @@ namespace My.Map
             _slots[index].IsOccupied = true;
             _slots[index].CurrentOwner = npc;
 
-            // ·µ»Ø¸Ã²ÛÎ»µÄÊÀ½ç×ø±ê
+            // è¿”å›è¯¥æ§½ä½çš„ä¸–ç•Œåæ ‡
             return transform.position + transform.rotation * _slots[index].Offset;
         }
 
         /// <summary>
-        /// ÊÍ·Å²ÛÎ»
+        /// é‡Šæ”¾æ§½ä½
         /// </summary>
         public void ReleaseSlot(int index)
         {
@@ -108,7 +111,7 @@ namespace My.Map
 
         public float QueueSpacing = 1f;
 
-        // ¿ÉÊÓ»¯µ÷ÊÔ
+        // å¯è§†åŒ–è°ƒè¯•
         void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.cyan;

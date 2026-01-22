@@ -158,7 +158,7 @@ namespace My.Map
         // 尝试找设施任务
         private void TryFindTask(HomeFacility.FacilityType fType, HomeActionSpot.SpotType sType, float duration)
         {
-            HomeFacility facility = HomeFacilityManager.Instance.GetRandomFacility(fType);
+            HomeFacility facility = HomeSceneManager.Instance.GetRandomFacility(fType);
             if (facility == null) return; // 没找到设施，下一帧继续 Idle
 
             HomeActionSpot spot;
@@ -174,7 +174,7 @@ namespace My.Map
         // 尝试找全局任务
         private void TryFindGlobalTask(HomeActionSpot.SpotType sType, float duration)
         {
-            HomeActionSpot spot = HomeFacilityManager.Instance.GetRandomGlobalSpot(sType);
+            HomeActionSpot spot = HomeSceneManager.Instance.GetRandomGlobalSpot(sType);
             if (spot == null) return;
 
             int slotIndex = spot.TryGetFreeSlotIndex();
