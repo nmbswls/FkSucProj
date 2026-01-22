@@ -1,18 +1,337 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class HomeSimpleNpc : MonoBehaviour
+
+namespace My.Map
 {
-    // Start is called before the first frame update
-    void Start()
+    public class HomeSimpleNpc : MonoBehaviour, ISceneInteractable
     {
-        
-    }
+        public enum MobState
+        {
+            Idle,           // 闲置/决策中
+            MovingToSpot,   // 正在走向目标点
+            Working,        // 到达点位，正在播放工作动画
+            Interacting     // 被玩家暂停（对话中）
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        [Header("状态监控")]
+        public MobState CurrentState = MobState.Idle;
+
+        [Header("配置参数")]
+        public float WalkSpeed = 3.5f;
+        public float DecisionInterval = 2.0f; // 闲置多久后做决策
+
+        // --- 内部组件 ---
+        private NavMeshAgent _agent;
+        private Animator _anim;
+
+        // --- 运行时数据 ---
+        private float _timer = 0f;          // 通用计时器
+        private float _workDuration = 0f;   // 当前任务需要工作多久
+        private MobState _previousState;    // 交互前的状态备份
+
+        // --- 当前任务数据 ---
+        private HomeActionSpot _targetSpot; // 目标点
+        private int _targetSlotIndex = -1;   // 目标槽位
+        private Vector3 _targetPos;          // 目标具体坐标
+
+        public long Id => gameObject.GetInstanceID();
+
+        public string ShowName => "人";
+
+        public Vector2 Pos => transform.position;
+
+        void Start()
+        {
+            _agent = GetComponent<NavMeshAgent>();
+            _anim = GetComponent<Animator>();
+            _agent.speed = WalkSpeed;
+
+            // 初始状态
+            SwitchState(MobState.Idle);
+        }
+
+        void Update()
+        {
+            // 1. 优先处理交互状态 (Interacting)
+            if (CurrentState == MobState.Interacting)
+            {
+                HandleInteractionLogic();
+                return; // 交互时阻断其他逻辑
+            }
+
+            // 2. 状态机分发
+            switch (CurrentState)
+            {
+                case MobState.Idle:
+                    TickIdle();
+                    break;
+                case MobState.MovingToSpot:
+                    TickMoving();
+                    break;
+                case MobState.Working:
+                    TickWorking();
+                    break;
+            }
+
+            // 3. 动画参数更新
+            UpdateAnimationParams();
+        }
+
+        // --- 状态逻辑 Tick ---
+
+        private void TickIdle()
+        {
+            _timer += Time.deltaTime;
+
+            // 还没到决策时间，继续发呆
+            if (_timer < DecisionInterval) return;
+
+            // --- 决策时刻 ---
+            _timer = 0; // 重置计时器
+
+            // 简单的概率决策：70% 去工作，30% 去休息
+            if (Random.value < 0.7f)
+            {
+                TryFindTask(HomeFacility.FacilityType.LumberMill, HomeActionSpot.SpotType.Work, 15f);
+            }
+            else
+            {
+                TryFindGlobalTask(HomeActionSpot.SpotType.Social, 10f);
+            }
+        }
+
+        private void TickMoving()
+        {
+            // 检查目标点是否还在（防止设施被销毁）
+            if (_targetSpot == null)
+            {
+                StopTaskAndIdle();
+                return;
+            }
+
+            // 检查寻路是否结束
+            if (!_agent.pathPending && _agent.remainingDistance <= 0.5f)
+            {
+                // 到达目的地，开始工作
+                StartWorking();
+            }
+        }
+
+        private void TickWorking()
+        {
+            // 确保面对正确方向
+            if (_targetSpot != null)
+            {
+                // 简单的插值旋转
+                transform.rotation = Quaternion.Slerp(transform.rotation, _targetSpot.transform.rotation, Time.deltaTime * 5f);
+            }
+
+            // 计时
+            _timer += Time.deltaTime;
+
+            // 工作时间结束
+            if (_timer >= _workDuration)
+            {
+                StopTaskAndIdle();
+            }
+        }
+
+        private void HandleInteractionLogic()
+        {
+            // 交互时的逻辑，比如始终看向玩家
+            if(MainGameManager.Instance != null && MainGameManager.Instance.playerScenePresenter != null)
+            {
+                Vector3 dir = MainGameManager.Instance.playerScenePresenter.transform.position - transform.position;
+                dir.y = 0;
+                //if (dir != Vector3.zero)
+                //{
+                //    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 5f);
+                //}
+            }
+        }
+
+        // --- 行为控制方法 ---
+
+        // 尝试找设施任务
+        private void TryFindTask(HomeFacility.FacilityType fType, HomeActionSpot.SpotType sType, float duration)
+        {
+            HomeFacility facility = HomeFacilityManager.Instance.GetRandomFacility(fType);
+            if (facility == null) return; // 没找到设施，下一帧继续 Idle
+
+            HomeActionSpot spot;
+            int slotIndex;
+            Vector3 pos;
+
+            if (facility.TryGetSpot(sType, out spot, out slotIndex, out pos))
+            {
+                AcceptTask(spot, slotIndex, pos, duration);
+            }
+        }
+
+        // 尝试找全局任务
+        private void TryFindGlobalTask(HomeActionSpot.SpotType sType, float duration)
+        {
+            HomeActionSpot spot = HomeFacilityManager.Instance.GetRandomGlobalSpot(sType);
+            if (spot == null) return;
+
+            int slotIndex = spot.TryGetFreeSlotIndex();
+            if (slotIndex != -1)
+            {
+                // 计算坐标偏移
+                Vector3 offset = spot.IsQueueMode ? -spot.transform.forward * (slotIndex * spot.Spacing) : Vector3.zero;
+                Vector3 pos = spot.transform.position + spot.transform.rotation * offset;
+
+                AcceptTask(spot, slotIndex, pos, duration);
+            }
+        }
+
+        // 接受任务并开始移动
+        private void AcceptTask(HomeActionSpot spot, int slotIndex, Vector3 pos, float duration)
+        {
+            // 1. 占坑
+            spot.OccupySlot(slotIndex, this);
+            _targetSpot = spot;
+            _targetSlotIndex = slotIndex;
+            _targetPos = pos;
+            _workDuration = duration;
+
+            // 2. 设置寻路
+            _agent.SetDestination(pos);
+            _agent.isStopped = false;
+
+            // 3. 切换状态
+            SwitchState(MobState.MovingToSpot);
+        }
+
+        // 到达后开始工作
+        private void StartWorking()
+        {
+            _agent.isStopped = true;
+            _timer = 0f; // 重置计时器用于工作倒计时
+
+            // 播放特定动画
+            if (_targetSpot != null && !string.IsNullOrEmpty(_targetSpot.AnimationTrigger))
+            {
+                _anim.SetTrigger(_targetSpot.AnimationTrigger);
+            }
+
+            SwitchState(MobState.Working);
+        }
+
+        // 结束任务并回到空闲
+        private void StopTaskAndIdle()
+        {
+            // 1. 释放坑位
+            ReleaseCurrentSpot();
+
+            // 2. 动画复位
+            _anim.SetTrigger("StopWork");
+
+            // 3. 回到 Idle
+            _agent.isStopped = true;
+            SwitchState(MobState.Idle);
+        }
+
+        // --- 交互系统接口 ---
+
+        public void StartInteraction()
+        {
+            if (CurrentState == MobState.Interacting) return;
+
+            _previousState = CurrentState;
+
+            // 物理刹车
+            if (_agent.isOnNavMesh) _agent.isStopped = true;
+
+            // 动画重置为站立
+            _anim.SetTrigger("StopWork");
+
+            CurrentState = MobState.Interacting;
+        }
+
+        public void EndInteraction()
+        {
+            if (CurrentState != MobState.Interacting) return;
+
+            // 恢复之前的状态
+            CurrentState = _previousState;
+
+            // 根据恢复的状态做额外处理
+            if (CurrentState == MobState.MovingToSpot)
+            {
+                // 恢复移动
+                _agent.isStopped = false;
+                // 确保动画是移动状态（UpdateAnimationParams 会处理，这里通常不需要手动 Trigger）
+            }
+            else if (CurrentState == MobState.Working)
+            {
+                // 恢复动作
+                _agent.isStopped = true;
+                if (_targetSpot != null) _anim.SetTrigger(_targetSpot.AnimationTrigger);
+            }
+        }
+
+        // --- 辅助方法 ---
+
+        private void SwitchState(MobState newState)
+        {
+            CurrentState = newState;
+
+            // 进入 Idle 时重置计时器，防止立即触发决策
+            if (newState == MobState.Idle)
+            {
+                _timer = 0f;
+            }
+        }
+
+        private void ReleaseCurrentSpot()
+        {
+            if (_targetSpot != null && _targetSlotIndex != -1)
+            {
+                _targetSpot.ReleaseSlot(_targetSlotIndex);
+                _targetSpot = null;
+                _targetSlotIndex = -1;
+            }
+        }
+
+        private void UpdateAnimationParams()
+        {
+            float speed = _agent.velocity.magnitude;
+            _anim.SetFloat("Speed", speed);
+        }
+
+        private void OnDestroy()
+        {
+            ReleaseCurrentSpot();
+        }
+
+        public bool CanInteractEnable()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool TriggerInteract(int selectionId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Vector3 GetHintAnchorPosition()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public float GetHintOffsetInfos()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public List<SceneInteractSelection> GetInteractSelections()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
+
