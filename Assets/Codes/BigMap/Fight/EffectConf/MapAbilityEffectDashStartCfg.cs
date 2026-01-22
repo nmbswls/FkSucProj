@@ -10,16 +10,24 @@ namespace My.Map.Entity
     [Serializable]
     public class MapAbilityEffectDashStartCfg : MapFightEffectCfg
     {
-        public float DashDuration;
 
-        public bool IsFixPointMode; // 冲刺到施放点就停下
-        public float DashOverrideHitRadius = 0;
+        public enum EDashMode
+        {
+            Default, // 速度 时间
+            FixDistance, // 
+            LockTarget,
+        }
 
-        public bool IsLockTarget;
-        //public bool IsCastDir;
+        public EDashMode DashMode;
 
         public float DashSpeed;
+        public float DashDuration;
+        public float MaxDistance;
+
+        public float DashOverrideHitRadius = 0;
+
         public bool IsGhost;
+        public bool NextPhaseOnHit;
 
         [SerializeReference]
         public List<MapFightEffectCfg> OnHitEffects;

@@ -10619,8 +10619,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f0ca25ef03d0e142865a29128ba4c68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FacilityRoot: {fileID: 0}
+  ActionSlotRoot: {fileID: 0}
   previewTilemapController: {fileID: 1167651921}
   BuildGrid: {fileID: 1169312632}
+  homeSimpleNpc: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

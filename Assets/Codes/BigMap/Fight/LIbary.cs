@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
 using static Config.Unit.EntitySkillCfg;
+using static My.Map.Entity.MapAbilityEffectDashStartCfg;
 using static System.Net.WebRequestMethods;
 
 
@@ -287,6 +288,18 @@ namespace My.Map.Entity
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "chongzhuang_slime";
+                    cfg.MainAbilityId = "chongzhuang";
+                    cfg.CoolDown = 5.0f;
+                    cfg.DesiredUseDistance = 1.5f;
+                    cfg.Priority = 5;
+
+                    cfg.TargetType = ETargetType.Point;
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
@@ -476,6 +489,11 @@ namespace My.Map.Entity
                     var ab = CreateNpcStaticDoing();
                     _abilityDict[ab.Id] = ab;
                 }
+                {
+                    var ab = CreateChongZhuangAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                
             }
 
             _abilityDict.TryGetValue(abilityName, out var abConfig);
@@ -1537,14 +1555,15 @@ namespace My.Map.Entity
             {
                 var dashEffect = new MapAbilityEffectDashStartCfg()
                 {
-                    IsFixPointMode = true,
+                    //IsFixPointMode = true,
+                    DashMode = EDashMode.LockTarget,
                     DashSpeed = 8f,
                     DashOverrideHitRadius = 0.8f,
 
-                    IsLockTarget = true,
                     OnHitEffects = new()
                     {
                         // 提前进入下一phase
+                        // 这个应该放入配置
                         new MapAbilityEffectNextPhaseCfg()
                         {
                             MatchPhase = "Dashing",
@@ -2297,9 +2316,6 @@ namespace My.Map.Entity
 
             spec.Id = "evil_child_attach";
             spec.TypeTag = AbilityTypeTag.Combat;
-            //spec.MaxStepDistance = 0.5f;
-            //spec.CoolDown = 0.2f;
-            //spec.DesiredUseDistance = 0.5f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -2822,6 +2838,87 @@ namespace My.Map.Entity
                 buffEffect.TargetType = 1;
                 buffEffect.BuffId = "dark_dance";
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = buffEffect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateChongZhuangAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "chongzhuang";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                EnterDebugString = "冲",
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.0"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                AnimTag = "catch",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.6"
+                },
+            };
+
+            {
+                var dashEffect = new MapAbilityEffectDashStartCfg()
+                {
+                    IsFixPointMode = false,
+                    DashSpeed = 3f,
+                    IsLockTarget = true,
+                    OnHitEffects = new()
+                    {
+                        // 提前进入下一phase
+                        new MapAbilityEffectNextPhaseCfg()
+                        {
+                            MatchPhase = "Dashing",
+                            MatchSkill = "default_dash_slash"
+                        },
+                    },
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
+            }
+
+            {
+                var hitEffect = new MapAbilityEffectUseWeaponCfg()
+                {
+                    WeaponName = "Catch",
+                    Duration = 0.6f,
+                    MaxHit = 1,
+                    OnHitEffects = new()
+                    {
+                        new MapAbilityEffectApplyDamageCfg()
+                        {
+                            BaseDamage = 7000,
+                            KnockBackForce = 0.5f,
+                        },
+
+                        new MapAbilityEffectCostResourceCfg()
+                        {
+                            ResourceId = AttrIdConsts.PlayerClothes,
+                            CostValue = 5000,
+                        },
+                    }
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
             }
 
             spec.Phases.Add(mainPhase);
