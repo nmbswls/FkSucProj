@@ -97,7 +97,7 @@ namespace My
 
         public GameLogicAreaManager AreaManager;
 
-        public PlayerDataManager playerDataManager;
+        public PlayerSystemManager playerDataManager;
         public HomeDataManager homeDataManager;
         public ShopDataManager shopDataManager;
 
@@ -386,7 +386,7 @@ namespace My
         private HashSet<long> InBattleUnitDict = new();
         public void OnUnitCombatStateUpdate(BaseUnitLogicEntity unit)
         {
-            if(unit.CombatState == NpcCombatStateComp.ECombatState.InCombat)
+            if(unit.IsInCombat)
             {
                 InBattleUnitDict.Add(unit.Id);
             }
@@ -418,7 +418,7 @@ namespace My
             foreach(var id in InBattleUnitDict)
             {
                 var logicEntity = AreaManager.GetLogicEntiy(id, false);
-                if (logicEntity == null || logicEntity is not BaseUnitLogicEntity unitEntity || unitEntity.CombatState != NpcCombatStateComp.ECombatState.InCombat)
+                if (logicEntity == null || logicEntity is not BaseUnitLogicEntity unitEntity || !unitEntity.IsInCombat)
                 {
                     inbattleCache.Add(id);
                 }

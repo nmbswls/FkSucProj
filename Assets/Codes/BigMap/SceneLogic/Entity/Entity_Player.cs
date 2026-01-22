@@ -41,11 +41,11 @@ namespace My.Map
 
         public override EEntityType Type => EEntityType.Player;
 
-        public override NpcCombatStateComp.ECombatState CombatState 
+        public override bool IsInCombat
         {
             get
             {
-                return NpcCombatStateComp.ECombatState.NotCombat;
+                return false;
             }
         }
 

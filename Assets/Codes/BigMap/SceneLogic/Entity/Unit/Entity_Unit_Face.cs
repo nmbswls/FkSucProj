@@ -116,9 +116,9 @@ namespace My.Map
 
         private void UpdateGazeModule()
         {
-            if(DefaultControlledByVelocity && entityMotorComp.DesiredVelocity.magnitude > 0.1f)
+            if(DefaultControlledByVelocity && MotorSystem.DesiredVelocity.magnitude > 0.1f)
             {
-                _defaultFaceDir = entityMotorComp.DesiredVelocity.normalized;
+                _defaultFaceDir = MotorSystem.DesiredVelocity.normalized;
             }
 
             CleanUpExpiredRequests();

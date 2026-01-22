@@ -1,4 +1,6 @@
 
+using My.Player;
+using My.Saving;
 using SuperScrollView;
 using System;
 using System.Collections.Generic;
@@ -390,4 +392,50 @@ namespace My.Quest
             }
         }
     }
+
+
+    public class PlayerQuestSystem : IPlayerSystem
+    {
+        protected GameLogicManager Ctx { get; private set; }
+
+        private Dictionary<int, QuestInstance> _questInfoMap = new();
+        private HashSet<int> _finishQuestSet;
+
+        public void InitQuestSystem(SaveData savingData)
+        {
+            TryRefreshQuest();
+        }
+
+        /// <summary>
+        /// 清理过期
+        /// 
+        /// </summary>
+        public void TryRefreshQuest()
+        {
+            //
+            //_questInfoMap.Add
+        }
+
+        public QuestInstance GetQuest(int questId)
+        {
+            _questInfoMap.TryGetValue(questId, out var result);
+            return result;
+        }
+
+        private QuestInstance CreateQuestInstanceFromCfg(QuestData cfg)
+        {
+            return new QuestInstance(cfg, Ctx);
+        }
+
+        public bool CheckQuestFinish(int questId)
+        {
+            return false;
+        }
+
+        public bool CheckQuestRunning(int questId)
+        {
+            return false;
+        }
+    }
+
 }

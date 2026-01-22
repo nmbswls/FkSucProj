@@ -9,7 +9,13 @@ using UnityEngine;
 
 namespace My.Player
 {
-    public class PlayerDataManager
+
+    public interface IPlayerSystem
+    {
+
+    }
+
+    public class PlayerSystemManager
     {
         public GameLogicManager logicManager { get;private set; }
 
@@ -51,7 +57,7 @@ namespace My.Player
             "player_dark_dance"
         };
 
-        public PlayerDataManager(GameLogicManager logicManager)
+        public PlayerSystemManager(GameLogicManager logicManager)
         {
             this.logicManager = logicManager;
 

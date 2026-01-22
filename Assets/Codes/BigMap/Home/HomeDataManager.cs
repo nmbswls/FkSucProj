@@ -18,7 +18,7 @@ namespace My.Home
     public class HomeDataManager
     {
 
-        public GameLogicManager LogicManager;
+        public GameLogicManager LogicManager { get; private set; }
 
         [Serializable]
         public class HomePlacementInfo
@@ -48,7 +48,6 @@ namespace My.Home
         public HomeDataManager(GameLogicManager logicManager)
         {
             this.LogicManager = logicManager;
-
         }
 
 

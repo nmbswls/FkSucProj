@@ -2,6 +2,7 @@
 
 
 using System.Collections.Generic;
+using My.Map.Entity;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.RuleTile.TilingRuleOutput;
@@ -41,25 +42,30 @@ namespace My.Map.Entity
         Following,
     }
 
-    public enum MoveCommandKind
+
+    public interface IWithMotor
     {
-        Free,
-        MoveTo,
-        Follow,
-        Stop,
+        EMotorState MotorState { get; }
+
+        bool CheckIsFollowTarget(long targetId);
+
+        void TryMoveTo(Vector2 destination, float stopDistance = 0.35f, float moveSpeedRate = 1.0f);
+
+        void TryMoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f);
+
+        void StopMove();
+
+        Vector2 GetDesiredVelocity();
+
+        Vector2 FreeMoveInput { get; set; }
     }
 
-    public class MoveIntent
+    public class EntityMotorSystem : IWithMotor
     {
-    }
-
-
-    public class EntityMotorComp
-    {
-        public BaseUnitLogicEntity UnitEntity;
+        protected LogicEntityBase Owner { get; set; }
         public INavProvider navProvider;
 
-        public EMotorState State { get; private set; } = EMotorState.Free;
+        public EMotorState MotorState { get; private set; } = EMotorState.Free;
 
         private NavPath _path;
         private int _pathIndex;
@@ -96,25 +102,25 @@ namespace My.Map.Entity
         public float Acceleration = 99;
         public float Deceleration = 99;
 
-        public Vector2 FreeMoveInput = Vector2.zero;
+        public Vector2 FreeMoveInput { get; set; } = Vector2.zero;
 
 
-        public EntityMotorComp(BaseUnitLogicEntity unit, INavProvider navProvider)
+        public EntityMotorSystem(LogicEntityBase entity, INavProvider navProvider)
         {
-            this.UnitEntity = unit;
+            this.Owner = entity;
             this.navProvider = navProvider;
         }
 
         public bool CheckIsFollowTarget(long targetId)
         {
-            if (State != EMotorState.Following) return false;
+            if (MotorState != EMotorState.Following) return false;
             if (_followTarget == null || _followTarget.Id != targetId) return false;
             return true;
         }
 
         public bool CheckIsMovingTo(Vector2 targetPos)
         {
-            if (State != EMotorState.Pathing) return false;
+            if (MotorState != EMotorState.Pathing) return false;
             if (_currentGoal == null || _currentGoal != targetPos) return false;
             return true;
         }
@@ -122,7 +128,7 @@ namespace My.Map.Entity
         public void TryMoveTo(Vector2 destination, float stopDistance = 0.35f, float moveSpeedRate = 1.0f)
         {
 
-            if(State == EMotorState.Pathing)
+            if(MotorState == EMotorState.Pathing)
             {
                 if (Vector2.Distance(destination, _currentGoal) < ArriveTolerance)
                 {
@@ -130,15 +136,15 @@ namespace My.Map.Entity
                 }
             }
 
-            if (navProvider.TryBuildPath(UnitEntity.Pos, destination, out var newPath) && newPath.Length > 0)
+            if (navProvider.TryBuildPath(Owner.Pos, destination, out var newPath) && newPath.Length > 0)
             {
                 TruncateNewPath(newPath);
 
                 // 只有当路径发生剧烈变化时，才重置某些状态
                 // 否则保持 State = EMotorState.Pathing 不变
-                if (State != EMotorState.Pathing)
+                if (MotorState != EMotorState.Pathing)
                 {
-                    State = EMotorState.Pathing;
+                    MotorState = EMotorState.Pathing;
                 }
 
                 _currentGoal = destination;
@@ -171,7 +177,7 @@ namespace My.Map.Entity
         public void TryMoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
         {
 
-            if(State == EMotorState.Following && target == _followTarget)
+            if(MotorState == EMotorState.Following && target == _followTarget)
             {
                 _followPrediction = followPrediction;
                 _followOffset = offset;
@@ -190,7 +196,7 @@ namespace My.Map.Entity
             if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var goal))
             {
                 _currentGoal = goal;
-                navProvider.TryBuildPath(UnitEntity.Pos, goal,  out _path);
+                navProvider.TryBuildPath(Owner.Pos, goal,  out _path);
                 EnterFollowing();
             }
             else
@@ -215,11 +221,11 @@ namespace My.Map.Entity
 
             // 将期望旋转/速度转化为最终物理位姿（在FixedUpdate中执行）
             //DesiredRotation = ComputeDesiredRotationFromVelocity(DesiredVelocity, Rotation, _settings.AngularSpeedDeg, dt);
-            if(State == EMotorState.Pathing)
+            if(MotorState == EMotorState.Pathing)
             {
                 TickPathingState();
             }
-            else if(State == EMotorState.Following)
+            else if(MotorState == EMotorState.Following)
             {
                 TickFollowingState();
             }
@@ -231,7 +237,7 @@ namespace My.Map.Entity
         /// <returns></returns>
         public Vector2 GetDesiredVelocity()
         {
-            switch (State)
+            switch (MotorState)
             {
                 case EMotorState.Free:
                     TickFree();
@@ -251,7 +257,7 @@ namespace My.Map.Entity
 
         private void TrackStuck(float dt)
         {
-            var moved = (UnitEntity.Pos - _lastPosition);
+            var moved = (Owner.Pos - _lastPosition);
             if (moved.magnitude < 0.01f && DesiredVelocity.magnitude > 0.1f)
             {
                 _stuckTimer += dt;
@@ -270,7 +276,7 @@ namespace My.Map.Entity
 
         private void TickFree()
         {
-            DesiredVelocity = FreeMoveInput * UnitEntity.GetCurrSpeed();
+            DesiredVelocity = FreeMoveInput * Owner.GetCurrSpeed();
             // 可渐停：从当前速度到0
             Velocity = Vector3.zero;
         }
@@ -284,7 +290,7 @@ namespace My.Map.Entity
             if (_path.Length == 0)
             {
                 // 直线移动模式的终点判断
-                if (Vector2.Distance(UnitEntity.Pos, _currentGoal) <= ArriveTolerance)
+                if (Vector2.Distance(Owner.Pos, _currentGoal) <= ArriveTolerance)
                 {
                     EnterFree();
                 }
@@ -294,7 +300,7 @@ namespace My.Map.Entity
             // 2. 路径点切换判定 (Switch Logic)
             // 获取当前要去的路点
             Vector2 currentWaypoint = _path.Waypoints[_pathIndex];
-            float dist = Vector2.Distance(UnitEntity.Pos, currentWaypoint);
+            float dist = Vector2.Distance(Owner.Pos, currentWaypoint);
 
             // 判断是否是最后一个点
             bool isFinalPoint = _pathIndex >= _path.Length - 1;
@@ -329,10 +335,10 @@ namespace My.Map.Entity
                 {
                     _currentGoal = goal;
                     // 若直线可达且距离不大，禁用路径改用直线Steering
-                    if (navProvider.Linecast(UnitEntity.Pos, goal, out var hit))
+                    if (navProvider.Linecast(Owner.Pos, goal, out var hit))
                     {
                         // 有阻挡：重新规划
-                        navProvider.TryReplan(UnitEntity.Pos, goal, out var newPath);
+                        navProvider.TryReplan(Owner.Pos, goal, out var newPath);
 
                         TruncateNewPath(newPath);
                     }
@@ -354,7 +360,7 @@ namespace My.Map.Entity
             if (_path.Length > 0 && _pathIndex >= 0)
             {
                 var wp = _path.Waypoints[_pathIndex];
-                if (Arrived(UnitEntity.Pos, wp, ArriveTolerance))
+                if (Arrived(Owner.Pos, wp, ArriveTolerance))
                 {
                     _pathIndex++;
                 }
@@ -381,7 +387,7 @@ namespace My.Map.Entity
 
         private void UpdateFollowingVelocity()
         {
-            float d = (UnitEntity.Pos - _currentGoal).magnitude;
+            float d = (Owner.Pos - _currentGoal).magnitude;
 
             // 2) 牵引半径与停止距离
             if (d <= _stopDistance)
@@ -394,12 +400,12 @@ namespace My.Map.Entity
             Vector3 dir;
             if (_path.Length > 0 && _pathIndex >= 0)
             {
-                if (_pathIndex >= _path.Length) dir = (_currentGoal - UnitEntity.Pos).normalized;
-                else dir = (_path.Waypoints[_pathIndex] - UnitEntity.Pos).normalized;
+                if (_pathIndex >= _path.Length) dir = (_currentGoal - Owner.Pos).normalized;
+                else dir = (_path.Waypoints[_pathIndex] - Owner.Pos).normalized;
             }
             else
             {
-                dir = (_currentGoal - UnitEntity.Pos).normalized; // 直线
+                dir = (_currentGoal - Owner.Pos).normalized; // 直线
             }
 
             // 4) 速度匹配逻辑
@@ -424,20 +430,20 @@ namespace My.Map.Entity
             if (d > D_far)
             {
                 // 远距：追赶，略高于目标速度，但不超过MaxSpeed
-                v_des = Mathf.Min(UnitEntity.GetCurrSpeed(), targetSpeed + 1.5f);
+                v_des = Mathf.Min(Owner.GetCurrSpeed(), targetSpeed + 1.5f);
             }
             else if (d > D_mid)
             {
                 // 中距：部分同步 + 距离误差比例项
                 float k_p = 0.5f;
-                v_des = Mathf.Clamp(targetSpeed + k_p * (d - D_mid), 0f, UnitEntity.GetCurrSpeed());
+                v_des = Mathf.Clamp(targetSpeed + k_p * (d - D_mid), 0f, Owner.GetCurrSpeed());
             }
             else
             {
                 // 近距缓冲：线性衰减至停止距离
                 float k_close = 2.0f;
                 float distToStopEdge = Mathf.Max(0f, d - _stopDistance);
-                float maxCloseSpeed = Mathf.Min(UnitEntity.GetCurrSpeed(), distToStopEdge * k_close);
+                float maxCloseSpeed = Mathf.Min(Owner.GetCurrSpeed(), distToStopEdge * k_close);
                 v_des = maxCloseSpeed;
                 // 当预计会反超或贴脸时，提高制动
                 // 可临时提升Deceleration或将加速度目标设为0
@@ -449,7 +455,7 @@ namespace My.Map.Entity
             float decel = Deceleration;
 
             // 若内积显示会反超，使用更高decel逼近
-            var toGoal = (_currentGoal - UnitEntity.Pos).normalized;
+            var toGoal = (_currentGoal - Owner.Pos).normalized;
             bool likelyOvershoot = Vector3.Dot(toGoal, (Velocity).normalized) < 0f || (currentSpeed > v_des && d < D_mid);
             float accelUsed = likelyOvershoot ? 0f : accel;
             float decelUsed = likelyOvershoot ? decel * 1.5f : decel;
@@ -472,9 +478,9 @@ namespace My.Map.Entity
 
         private void MoveToward(Vector2 target)
         {
-            var to = (target - UnitEntity.Pos);
+            var to = (target - Owner.Pos);
             var dir = to.normalized;
-            var desiredSpeed = UnitEntity.GetCurrSpeed() * _moveSpeedRate;
+            var desiredSpeed = Owner.GetCurrSpeed() * _moveSpeedRate;
 
             // 加速度/减速度控制
             //var currentSpeed = target.magnitude;
@@ -486,7 +492,7 @@ namespace My.Map.Entity
         {
             _replanCooldownLeft = ReplanCooldown;
             Vector3 goal = _currentGoal;
-            if (State == EMotorState.Following)
+            if (MotorState == EMotorState.Following)
             {
                 if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var newGoal))
                 {
@@ -500,7 +506,7 @@ namespace My.Map.Entity
                 }
             }
 
-            if (navProvider.TryReplan(UnitEntity.Pos, goal, out var newPath))
+            if (navProvider.TryReplan(Owner.Pos, goal, out var newPath))
             {
                 _path = newPath;
                 _pathIndex = 0;
@@ -521,7 +527,7 @@ namespace My.Map.Entity
             for (int i = 0; i < newPath.Waypoints.Length; i++)
             {
                 Vector2 wp = newPath.Waypoints[i];
-                float distToWp = Vector2.Distance(UnitEntity.Pos, wp);
+                float distToWp = Vector2.Distance(Owner.Pos, wp);
 
                 // 如果这个路点离我非常近（比如小于切角半径 SwitchRadius），
                 // 或者比 SwitchRadius 稍大一点点（防止回头跑），
@@ -547,7 +553,7 @@ namespace My.Map.Entity
 
         private void EnterFree()
         {
-            State = EMotorState.Free;
+            MotorState = EMotorState.Free;
             _path = default;
             _pathIndex = 0;
             //_knockbackTimeLeft = 0f;
@@ -563,7 +569,7 @@ namespace My.Map.Entity
         /// <param name="destination"></param>
         private void EnterPathing(Vector3 destination)
         {
-            State = EMotorState.Pathing;
+            MotorState = EMotorState.Pathing;
             _pathIndex = 0;
             _currentGoal = destination;
             _replanCooldownLeft = 0f;
@@ -572,7 +578,7 @@ namespace My.Map.Entity
 
         private void EnterFollowing()
         {
-            State = EMotorState.Following;
+            MotorState = EMotorState.Following;
             _pathIndex = 0;
             _replanCooldownLeft = 0f;
             //OnStateChanged?.Invoke(State);
@@ -593,3 +599,68 @@ namespace My.Map.Entity
 
 
 }
+
+
+namespace My.Map
+{
+    public abstract partial class LogicEntityBase
+    {
+        protected EntityMotorSystem MotorSystem { get; set; }
+
+        public EMotorState MotorState { get { return MotorSystem.MotorState; } }
+
+        public bool CheckIsFollowTarget(long targetId)
+        {
+            return MotorSystem.CheckIsFollowTarget(targetId);
+        }
+
+        public void TryMoveTo(Vector2 destination, float stopDistance = 0.35f, float moveSpeedRate = 1.0f)
+        {
+            MotorSystem.TryMoveTo(destination, stopDistance, moveSpeedRate);
+        }
+
+        public void TryMoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
+        {
+            MotorSystem.TryMoveFollow(target, followPrediction, offset, stopDistance, moveSpeedRate);
+        }
+
+        public void StopMove()
+        {
+            MotorSystem.StopMove();
+        }
+
+        public Vector2 GetDesiredVelocity()
+        {
+            return MotorSystem.GetDesiredVelocity();
+        }
+
+        public Vector2 FreeMoveInput { get { return MotorSystem.FreeMoveInput; } set { MotorSystem.FreeMoveInput = value; } }
+
+
+        public float moveSpeed = 4.0f;
+        protected virtual float GetBaseMoveSpeed()
+        {
+            return moveSpeed;
+        }
+
+        public float GetCurrSpeed()
+        {
+            var basicMove = GetAttr(AttrIdConsts.Basic_MoveSpeed);
+            long rate = 10000 + basicMove;
+
+            if (rate > 50000)
+            {
+                rate = 50000;
+            }
+
+            if (rate < 5000)
+            {
+                rate = 5000;
+            }
+
+            return GetBaseMoveSpeed() * (rate) * 0.0001f;
+        }
+    }
+
+}
+

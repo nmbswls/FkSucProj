@@ -622,10 +622,9 @@ namespace My.Player.Bag
 
 
 
-    [System.Serializable]
     public class PlayerInventoryModel
     {
-        public PlayerDataManager DataManager;
+        public PlayerSystemManager DataManager;
         public PlayerBag MainBag;
 
         public Dictionary<int, PlayerBag> SpeBags = new Dictionary<int, PlayerBag>();
@@ -636,7 +635,7 @@ namespace My.Player.Bag
         public Dictionary<string, long> CurrencyBag = new();
 
         public event Action<string, long> EventOnGainItem;
-        public PlayerInventoryModel(PlayerDataManager dataManager)
+        public PlayerInventoryModel(PlayerSystemManager dataManager)
         {
             this.DataManager = dataManager;
 

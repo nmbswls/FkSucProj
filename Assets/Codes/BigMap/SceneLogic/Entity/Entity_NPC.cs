@@ -11,18 +11,16 @@ using My.Map.Entity.AI;
 using System;
 using static My.Map.Fight.FightStruct;
 using static UnityEditor.PlayerSettings;
+using My.Map.Unit;
 
 
 namespace My.Map
 {
     public partial class NpcUnitLogicEntity : BaseUnitLogicEntity, IEntityInteractable
     {
-        public MapNpcConfig cacheCfg;
+        public MapNpcConfig NpcConfig { get { return (MapNpcConfig)unitCfg; } }
 
-        public UnitEnmityComp EnmityComp;
-        public MapUnitAIBrain? AIBrain;
-
-        public NpcCombatStateComp combatStateComp;
+        public AIBrainV2? AIBrain;
 
         private bool hShieldBroken = false;
         private float _lastHModeTimer;
@@ -36,11 +34,19 @@ namespace My.Map
             return string.Empty;
         }
 
-        public override NpcCombatStateComp.ECombatState CombatState
+        public override bool IsInCombat
         {
             get
             {
-                return combatStateComp.CombatState;
+                if(AIBrain == null)
+                {
+                    return false;
+                }
+                if(AIBrain.CurrentState == null)
+                {
+                    return false;
+                }
+                return AIBrain.CurrentState == AIBrain.StateCombat;
             }
         }
 
@@ -54,8 +60,7 @@ namespace My.Map
 
         public NpcUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
-            cacheCfg = MapNpcConfigLoader.Get(CfgId);
-            this.unitCfg = cacheCfg;
+            unitCfg = MapNpcConfigLoader.Get(CfgId);
 
             var npcRecord = (LogicEntityRecord4Npc)bindingRecord;
 
@@ -149,11 +154,6 @@ namespace My.Map
         {
             base.Initialize();
 
-            EnmityComp = new();
-            EnmityComp.Initialize(this);
-
-            combatStateComp = new(this);
-
             InitAiBrain();
 
             if (NpcRecord.Unsensored)
@@ -163,7 +163,7 @@ namespace My.Map
 
 
             InteractComp = new(this);
-            InteractComp.RefreshInteractInfo(cacheCfg.InteractList);
+            InteractComp.RefreshInteractInfo(NpcConfig.InteractList);
         }
 
         protected override void InitAttribute()
@@ -175,11 +175,18 @@ namespace My.Map
 
         }
 
+        public override bool IsOmniVision()
+        {
+            if (AIBrain == null) return false;
+
+            if (AIBrain.CurrentState == AIBrain.StateCombat) return true;
+            if (AIBrain.CurrentState == AIBrain.StateFlee) return true;
+            return false;
+        }
+
         protected virtual void InitAiBrain()
         {
-            AIBrain = new();
-            //var cacheCfg = MapMonsterConfigLoader.Get(CfgId);
-            AIBrain.InitilaizeAll(this, LogicManager.visionSenser, Pos);
+            AIBrain = AIBrainFactory.CreateAIBrain(this);
         }
 
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
@@ -213,8 +220,6 @@ namespace My.Map
                 AIBrain?.Tick(dt);
 
                 TickAttractState();
-                EnmityComp?.Tick(dt);
-                combatStateComp?.Tick(dt);
 
                 TickHMode();
 
@@ -295,7 +300,7 @@ namespace My.Map
             if (isEvilAlerting) return;
 
             bool seeEvil = false;
-            if (VisibilityComp.IsTargetVisible(LogicManager.playerLogicEntity.Id))
+            if (VisionSystem.IsTargetVisible(LogicManager.playerLogicEntity.Id))
             {
                 if (LogicManager.playerLogicEntity.IsQueenMode)
                 {
@@ -321,9 +326,9 @@ namespace My.Map
         /// <param name="evt"></param>
         public override void OnMapLogicEvent(IMapLogicEvent evt)
         {
-            if (EnmityComp != null)
+            if (EnmitySystem != null)
             {
-                EnmityComp.OnMapLogicEvent(evt);
+                EnmitySystem.OnMapLogicEvent(evt);
             }
 
             switch(evt)
@@ -343,32 +348,14 @@ namespace My.Map
 
                         Debug.Log("npc on event interest");
                         LogicManager.viewer.ShowFakeFxEffect("Ä¿»÷", Pos);
-
-                        if (AIBrain != null)
-                        {
-                            AIBrain.blackboard.AttractTrigger = true;
-                            AIBrain.blackboard.AttractPos = Vector2.zero;
-                            AIBrain.blackboard.AttractSrcId = LogicManager.playerLogicEntity?.Id ?? 0;
-                            AIBrain.blackboard.AttractLevel = 1;
-                        }
                     }
                     break;
             }
         }
 
-        public override bool CheckIsEmnity()
-        {
-            return EnmityComp.CheckIsEmnity();
-        }
-
-        public override bool CheckIsEmnityFaction(EFactionId factionId)
-        {
-            return EnmityComp.CheckIsEmnityFaction(factionId);
-        }
-
         public bool IsInHMode()
         {
-            if(cacheCfg.AlwaysHMode)
+            if(NpcConfig.AlwaysHMode)
             {
                 return true;
             }
@@ -457,7 +444,7 @@ namespace My.Map
 
             if(srcEntityId != null)
             {
-                combatStateComp.OnTakeDamage(srcEntityId.Value, Math.Abs(delta));
+                AggroSystem.OnTakeDamage(srcEntityId.Value, Math.Abs(delta));
             }
         }
 
@@ -472,7 +459,7 @@ namespace My.Map
         /// <returns></returns>
         public bool CheckCanExecute()
         {
-            if(cacheCfg.ImmuneExecute)
+            if(NpcConfig.ImmuneExecute)
             {
                 return false;
             }

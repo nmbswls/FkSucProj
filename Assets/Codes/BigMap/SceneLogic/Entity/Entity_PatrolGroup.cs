@@ -65,7 +65,7 @@ namespace My.Map
                 var entity = LogicManager.AreaManager.GetLogicEntiy(uid, false);
                 if(entity != null && entity is BaseUnitLogicEntity unitEntity)
                 {
-                    if(unitEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+                    if(unitEntity.IsInCombat)
                     {
                         return;
                     }

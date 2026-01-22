@@ -132,7 +132,7 @@ namespace My.Map.Logic
                         continue;
                     }
 
-                    if (unitNpc.combatStateComp.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+                    if (unitNpc.IsInCombat)
                     {
                         continue;
                     }

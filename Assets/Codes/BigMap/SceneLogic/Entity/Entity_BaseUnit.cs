@@ -8,14 +8,11 @@ using System.Collections.Generic;
 using My.Map.Entity.AI;
 using My.Map.Entity;
 using My.Map.Logic;
-using static My.Map.Entity.MapEntityAbilityExecutor;
-using static UnityEngine.Rendering.VolumeComponent;
-using static My.Map.NpcCombatStateComp;
 using static My.GameLogicManager;
 using UnityEditor.Experimental.GraphView;
 using static My.Map.Fight.FightStruct;
-using static UnityEngine.GraphicsBuffer;
 using My.Player.Bag;
+using My.Map.Unit;
 
 
 namespace My.Map
@@ -46,7 +43,7 @@ namespace My.Map
     }
 
     public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity,
-        IUnitVisibility, IUnitWithBattle
+        IUnitWithVision
     {
         public MapEntitySkillManager ablilityManager;
         public MapEntityAbilityExecutor abilityController;
@@ -63,7 +60,10 @@ namespace My.Map
             } 
         }
 
-        public abstract ECombatState CombatState
+        /// <summary>
+        /// 
+        /// </summary>
+        public abstract bool IsInCombat
         {
             get;
         }
@@ -74,7 +74,6 @@ namespace My.Map
 
         //public Vector2? LastInterruptPos;
 
-        public EntityMotorComp entityMotorComp;
 
         public bool IsDead = false;
 
@@ -93,7 +92,6 @@ namespace My.Map
         public event Action<long> EventOnInvisibleChange;
         
 
-        public UnitVisibilityComp VisibilityComp;
 
         protected float externalDecay = 30f;          // 外力自然衰减（每秒）
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -111,11 +109,8 @@ namespace My.Map
         {
             base.Initialize();
 
-            // get meta info
-            InitAbility();
-
             // 优先应用覆盖值
-            if(UnitBaseRecord.FactionId != EFactionId.None)
+            if (UnitBaseRecord.FactionId != EFactionId.None)
             {
                 this.FactionId = UnitBaseRecord.FactionId;
             }
@@ -127,10 +122,13 @@ namespace My.Map
                 }
             }
 
-            VisibilityComp = new();
-            VisibilityComp.Initialize(this);
+            // get meta info
+            InitAbility();
 
-            entityMotorComp = new(this, LogicManager.navProvider);
+            InitEnmitySystem();
+            InitAggroSystem();
+            InitVisionSystem();
+
 
             InitGazeModule();
 
@@ -170,7 +168,7 @@ namespace My.Map
 
             if(!MarkDestroyed && !IsAttaching && !IsDead && !CheckHasState(AttrIdConsts.Unmovable))
             {
-                if(entityMotorComp.FreeMoveInput.magnitude > 0.1f)
+                if(MotorSystem.FreeMoveInput.magnitude > 0.1f)
                 {
                     TryInterrupt(new InterruptRequest()
                     {
@@ -187,12 +185,26 @@ namespace My.Map
         protected virtual void TickActivateState(float dt)
         {
 
-            VisibilityComp?.TryUpdateNoticeList();
-
-            entityMotorComp?.Tick(dt);
 
             UpdateGazeModule();
+
+            AggroSystem?.Tick(dt);
+            VisionSystem?.TryUpdateNoticeList();
+            EnmitySystem?.Tick(dt);
         }
+
+        protected override bool IsMovable()
+        {
+            return true;
+        }
+
+
+        public virtual bool IsOmniVision()
+        {
+            return false;
+        }
+
+
         public override void OnEnterAOI()
         {
             if(MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup)
@@ -243,28 +255,8 @@ namespace My.Map
 
         public float accel = 20f;
 
-        public float moveSpeed = 4.0f;
-        protected virtual float GetBaseMoveSpeed()
-        {
-            return moveSpeed;
-        }
-        public float GetCurrSpeed()
-        {
-            var basicMove = GetAttr(AttrIdConsts.Basic_MoveSpeed);
-            long rate = 10000 + basicMove;
-
-            if (rate > 50000)
-            {
-                rate = 50000;
-            }
-
-            if(rate < 5000)
-            {
-                rate = 5000;
-            }
-
-            return GetBaseMoveSpeed() * (rate) * 0.0001f;
-        }
+        
+        
 
         //public class DashIntent
         //{
@@ -656,10 +648,6 @@ namespace My.Map
             LogicManager.globalThrowManager.TryInterruptThrowByLauncher(this, req);
         }
 
-        public bool IsTargetVisible(long targetId)
-        {
-            return VisibilityComp.IsTargetVisible (targetId);
-        }
 
         #endregion
 
@@ -807,7 +795,7 @@ namespace My.Map
                     var srcNpc = LogicManager.GetLogicEntity(srcEntityId.Value) as NpcUnitLogicEntity;
                     if (srcNpc != null)
                     {
-                        srcNpc.combatStateComp.OnGiveDamage(this.Id, Math.Abs(delta));
+                        srcNpc.AggroSystem.OnTakeDamage(this.Id, Math.Abs(delta));
                     }
                 }
             }
@@ -979,7 +967,7 @@ namespace My.Map
         {
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "as_attaching");
 
-            entityMotorComp.StopMove();
+            MotorSystem.StopMove();
 
             TryInterrupt(new InterruptRequest()
             {
@@ -996,7 +984,7 @@ namespace My.Map
         {
             LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "as_attaching");
 
-            entityMotorComp.StopMove();
+            MotorSystem.StopMove();
 
             ApplyKnockBack(UnityEngine.Random.insideUnitCircle, 1.0f);
 
@@ -1133,6 +1121,16 @@ namespace My.Map
 
 
         #endregion
+
+
+        /// <summary>
+        /// 获取感知参数
+        /// </summary>
+        /// <returns></returns>
+        public (float, float) GetViewRangeAndAngle()
+        {
+            return (5.0f, 120f);
+        }
     }
 
 

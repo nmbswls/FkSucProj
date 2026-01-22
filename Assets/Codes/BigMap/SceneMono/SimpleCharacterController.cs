@@ -126,7 +126,7 @@ namespace My.Map.Scene
                 if (!col) continue;
                 var other = col.attachedRigidbody;
                 if (!other || other == rb) continue;
-                if (other.tag != separationTag) continue;
+                if (!string.IsNullOrEmpty(separationTag) && other.tag != separationTag) continue;
 
                 Vector2 dir = rb.position - other.position;
                 float dist = dir.magnitude;

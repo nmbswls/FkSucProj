@@ -1,32 +1,27 @@
 using Config;
 using Map.Logic.Events;
 using My.Map.Entity;
+using My.Map.Unit;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.PlayerSettings;
-using static UnityEngine.EventSystems.EventTrigger;
-using static UnityEngine.GraphicsBuffer;
 
-namespace My.Map.Entity
+namespace My.Map.Unit
 {
 
-    public interface IUnitVisibility
+    public interface IUnitWithVision
     {
         bool IsTargetVisible(long targetId);
-
     }
-
 
     /// <summary>
     /// 注意力列表
     /// </summary>
-    public class UnitVisibilityComp : IUnitVisibility
+    public class UnitVisionSystem : IUnitWithVision
     {
-        public BaseUnitLogicEntity UnitEntity;
+        protected BaseUnitLogicEntity UnitEntity { get; set; }
 
 
         private float EntryExpireAfter = 2.0f;
@@ -50,11 +45,10 @@ namespace My.Map.Entity
         private float _clearInvalidTimer = 0;
         private List<long> cacheListLong = new();
 
-        public void Initialize(BaseUnitLogicEntity unit)
+        public UnitVisionSystem(BaseUnitLogicEntity unit)
         {
             this.UnitEntity = unit;
         }
-
 
         /// <summary>
         /// 更新注意力列表
@@ -75,6 +69,9 @@ namespace My.Map.Entity
             _lastUpdateTime = LogicTime.time;
 
 
+            var noticeParams = UnitEntity.GetViewRangeAndAngle();
+            float range = noticeParams.Item1;
+            float fov = noticeParams.Item2;
             //VisibilityList.Clear();
             /// 维护了NoticeRecords 
             UnitEntity.LogicManager.AreaManager.UnitGridIndex.Query(UnitEntity.Pos, 16, cacheListLong);
@@ -92,15 +89,21 @@ namespace My.Map.Entity
                     continue;
                 }
 
-                //if(!UnitEntity.CheckIsEmnityFaction(otherUnit.FactionId))
-                //{
-                //    continue;
-                //}
-
-                if (!UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, otherUnit.Id))
+                if(UnitEntity.IsOmniVision())
                 {
-                    continue;
+                    if (!UnitEntity.LogicManager.visionSenser.SimpleCanSee(UnitEntity.Pos, UnitEntity.CurrentLook, otherUnit.Pos, range, 360f))
+                    {
+                        continue;
+                    }
                 }
+                else
+                {
+                    if (!UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, otherUnit.Id))
+                    {
+                        continue;
+                    }
+                }
+
 
                 // 有记录 更新
                 if (!VisibleMap.TryGetValue(id, out var noticeRecord))
@@ -203,9 +206,26 @@ namespace My.Map.Entity
             for (int i = 0; i < toRemove.Count; i++)
                 VisibleMap.Remove(toRemove[i]);
         }
-
     }
 
 
 }
 
+namespace My.Map
+{
+
+    public abstract partial class BaseUnitLogicEntity
+    {
+        public UnitVisionSystem VisionSystem { get; set; }
+
+        public void InitVisionSystem()
+        {
+            VisionSystem = new(this);
+        }
+
+        public bool IsTargetVisible(long targetId)
+        {
+            return VisionSystem.IsTargetVisible(targetId);
+        }
+    }
+}

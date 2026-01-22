@@ -224,7 +224,7 @@ namespace My.Map.Scene
             }
             else
             {
-                Vector2 targetMoveVel = UnitEntity.entityMotorComp.GetDesiredVelocity();
+                Vector2 targetMoveVel = UnitEntity.GetDesiredVelocity();
                 return targetMoveVel + UnitEntity.externalVel;
             }
 
@@ -293,7 +293,7 @@ namespace My.Map.Scene
                 }
                 if (!visible)
                 {
-                    visible = MainGameManager.Instance.VisionSenser2D.CanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.CurrentLook,
+                    visible = MainGameManager.Instance.VisionSenser2D.SimpleCanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.CurrentLook,
                         transform.position,
                         8f, 120f);
                 }

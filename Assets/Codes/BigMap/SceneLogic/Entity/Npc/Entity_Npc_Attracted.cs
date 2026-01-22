@@ -22,7 +22,7 @@ namespace My.Map
 
             int attractLevel = playerEntity.GetAttractLevel();
 
-            if (cacheCfg.IgnoreAttractLevel >= attractLevel)
+            if (NpcConfig.IgnoreAttractLevel >= attractLevel)
             {
                 return;
             }
@@ -31,10 +31,11 @@ namespace My.Map
             {
                 if (AIBrain != null)
                 {
-                    AIBrain.blackboard.AttractTrigger = true;
-                    AIBrain.blackboard.AttractPos = pos;
-                    AIBrain.blackboard.AttractSrcId = attractSrc?.Id ?? 0;
-                    AIBrain.blackboard.AttractLevel = attractLevel;
+                    AIBrain.AttractTrigger = true;
+                    AIBrain.AddAttractInfo(attractSrc?.Id ?? 0, pos, attractLevel);
+                    //AIBrain.blackboard.AttractPos = pos;
+                    //AIBrain.blackboard.AttractSrcId = attractSrc?.Id ?? 0;
+                    //AIBrain.blackboard.AttractLevel = attractLevel;
                 }
             }
         }

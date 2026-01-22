@@ -19,7 +19,7 @@ namespace My.Map.Scene
         public string ShowName {
             get
             {
-                return NpcEntity.cacheCfg.ShowName;
+                return NpcEntity.NpcConfig.ShowName;
             } 
         }
 
@@ -115,7 +115,7 @@ namespace My.Map.Scene
             // 检查玩家靠近主动停靠
             do
             {
-                if(NpcEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+                if(NpcEntity.IsInCombat)
                 {
                     break;
                 }
@@ -125,7 +125,7 @@ namespace My.Map.Scene
                     break;
                 }
 
-                if(!NpcEntity.cacheCfg.AutoStopForPlayer)
+                if(!NpcEntity.NpcConfig.AutoStopForPlayer)
                 {
                     break;
                 }
@@ -188,7 +188,7 @@ namespace My.Map.Scene
                         break;
                     }
 
-                    if (UnitEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+                    if (UnitEntity.IsInCombat)
                     {
                         break;
                     }
@@ -216,7 +216,7 @@ namespace My.Map.Scene
             }
             while (false);
 
-            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
+            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
             {
                 return true;
             }
@@ -228,7 +228,7 @@ namespace My.Map.Scene
         {
             if(selectionId == EnterDetailMode)
             {
-                if(UnitEntity.CombatState == NpcCombatStateComp.ECombatState.NotCombat)
+                if(!UnitEntity.IsInCombat)
                 {
                     InteractDetailMode = true;
                     NpcEntity.RegisterGaze("Interact", UnitEntity.LogicManager.playerLogicEntity.Id, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Override, 0);
@@ -242,7 +242,7 @@ namespace My.Map.Scene
                 return false;
             }
 
-            if (selectionId < 50 && UnitEntity.CombatState == NpcCombatStateComp.ECombatState.NotCombat)
+            if (selectionId < 50 && !UnitEntity.IsInCombat)
             {
                 NpcEntity.InteractComp.TryTriggerInteract(selectionId);
                 return true;
@@ -380,7 +380,7 @@ namespace My.Map.Scene
                     break;
                 }
 
-                if (UnitEntity.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
+                if (UnitEntity.IsInCombat)
                 {
                     break;
                 }
@@ -442,7 +442,7 @@ namespace My.Map.Scene
             }
             while (false);
 
-            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !InteractDetailMode && !MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
+            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !InteractDetailMode && !MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
             {
                 ret.Add(new SceneInteractSelection()
                 {

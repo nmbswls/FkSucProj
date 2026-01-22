@@ -3,9 +3,6 @@ using System;
 using System.Collections.Generic;
 using My.Map.Entity;
 using UnityEngine;
-using static My.Map.BaseUnitLogicEntity;
-using static My.Map.NpcCombatStateComp;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map
 {

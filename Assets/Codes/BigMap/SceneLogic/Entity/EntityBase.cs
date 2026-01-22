@@ -125,7 +125,7 @@ namespace My.Map
         void RemoveAnimLayer(string animName);
     }
 
-    public abstract class LogicEntityBase : ILogicEntity, IEntityBuffOwner, IEntityAttributeOwner, IWithAnim
+    public abstract partial class LogicEntityBase : ILogicEntity, IEntityBuffOwner, IEntityAttributeOwner, IWithAnim, IWithMotor
     {
 
         public GlobalBuffManager BuffManager
@@ -231,6 +231,10 @@ namespace My.Map
             attributeStore.EvOnStatusAttrChanged += OnStatusAttriChanged;
             attributeStore.EvOnResourceAttrChanged += OnResourceAttriChanged;
 
+            if(IsMovable())
+            {
+                MotorSystem = new(this, LogicManager.navProvider);
+            }
             InitAttribute();
         }
 
@@ -257,6 +261,10 @@ namespace My.Map
             //attributeStore.Commit();
         }
 
+        protected virtual bool IsMovable()
+        {
+            return false;
+        }
 
         /// <summary>
         /// 对外属性接口
@@ -417,6 +425,8 @@ namespace My.Map
             }
 
             TickLifeTime(dt);
+
+            MotorSystem?.Tick(dt);
         }
 
 

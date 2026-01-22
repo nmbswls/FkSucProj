@@ -21,26 +21,37 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
     private const float MaxExpandedHalfFovDeg = 120f;
     private const float RayLateralSpread = 0.2f;   // 近身多射线左右偏移（米）
 
-    public bool CanUnitSee(long selfEId, long targetEId)
+    /// <summary>
+    /// 针对单位间的可见性
+    ///   假设单位半径不至于太大
+    /// </summary>
+    /// <param name="selfEntityId"></param>
+    /// <param name="targetEntityId"></param>
+    /// <returns></returns>
+    public bool CanUnitSee(long selfEntityId, long targetEntityId)
     {
-        var selfP = SceneAOIManager.Instance.GetActivePresentation(selfEId);
-        if(selfP == null || selfP is not SceneUnitPresenter selfUnit)
+        var selfPresenter = SceneAOIManager.Instance.GetActivePresentation(selfEntityId);
+        if(selfPresenter == null || selfPresenter is not SceneUnitPresenter selfUnit)
         {
             return false;
         }
-        var targetP = SceneAOIManager.Instance.GetActivePresentation(targetEId);
-        if (targetP == null)
+        var targetPresenter = SceneAOIManager.Instance.GetActivePresentation(targetEntityId);
+        if (targetPresenter == null)
         {
             return false;
         }
         Vector2 eyePos = selfUnit.GetWorldPosition();
-        Vector2 p1 = targetP.GetWorldPosition();
+        Vector2 p1 = targetPresenter.GetWorldPosition();
         // 方向与距离
         Vector2 toTarget = p1 - eyePos;
         float dist = toTarget.magnitude;
-        if (dist <= 0.0001f) return true;
+        // 贴身 必定看见
+        if (dist <= 0.05f) return true;
 
-        if(dist > DefaultRange)
+        var seeParams = selfUnit.UnitEntity.GetViewRangeAndAngle();
+        float range = seeParams.Item1;
+        float fovAngle = seeParams.Item2;
+        if (dist > range)
         {
             return false;
         }
@@ -48,24 +59,25 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         Vector2 dirToTarget = toTarget.normalized;
         float angle = Mathf.Abs(Vector2.SignedAngle(selfUnit.UnitEntity.CurrentLook, toTarget));
 
+        float baseHalfFov = Mathf.Abs(fovAngle) * 0.5f;
+
         // 背向硬限制
         if (angle >= HardBackLimitDeg)
             return false;
 
         // 目标半径（来自 CapsuleCollider2D）
-        float targetRadius = 0.2f;
+        float targetRadius = 0.25f;
         // todo 实现不同半径
 
         // 半径角容忍
-        float radiusAngleDeg = Mathf.Atan2(targetRadius, Mathf.Max(dist, 0.0001f)) * Mathf.Rad2Deg;
+        float radiusAngleDeg = Mathf.Atan2(targetRadius, Mathf.Max(dist, 0.05f)) * Mathf.Rad2Deg;
         radiusAngleDeg = Mathf.Min(radiusAngleDeg, RadiusAngleMaxDeg);
 
         // 仅前半圆应用半径角容忍（避免影响背向）
         if (angle > 120f)
             radiusAngleDeg = 0f;
 
-        // 近身策略性扩展（仅前向权重）
-        float baseHalfFov = Mathf.Abs(DefaultFovAngle) * 0.5f;
+        // 近身策略性扩展（仅前向权重）  
         bool nearMode = dist <= CloseDistance;
         float frontWeight = Mathf.Max(0f, Mathf.Cos(angle * Mathf.Deg2Rad)); // 前方≈1，侧向≈0，后方≈0
         float extraNear = nearMode ? (ExtraAngleNearDeg * frontWeight * Mathf.Clamp01((CloseDistance - dist) / Mathf.Max(CloseDistance, 0.0001f))) : 0f;
@@ -95,15 +107,13 @@ public class DefaultSceneVisionSenser2D : IVisionSenser2D
         return false;
     }
 
-    private bool IsLineClear2D(Vector2 origin, Vector2 dir, float dist)
+    public bool IsLineClear2D(Vector2 origin, Vector2 dir, float dist)
     {
         RaycastHit2D hit = Physics2D.Raycast(origin, dir, dist, ObstacleMask);
         return hit.collider == null;
     }
 
-
-
-    public bool CanSee(Vector2 selftPos, Vector2 selfFace, Vector2 targetPos, float range, float fov)
+    public bool SimpleCanSee(Vector2 selftPos, Vector2 selfFace, Vector2 targetPos, float range, float fov)
     {
         Vector2 to = targetPos - selftPos;
         if (to.magnitude > range) return false;

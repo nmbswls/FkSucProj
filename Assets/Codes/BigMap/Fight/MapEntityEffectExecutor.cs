@@ -171,9 +171,9 @@ namespace My.Map.Entity
                         {
                             if(caster != null && caster is NpcUnitLogicEntity npcUnit)
                             {
-                                if(npcUnit.combatStateComp.PrimaryTargetId != 0)
+                                if(npcUnit.AggroSystem.CurrentTargetId != 0)
                                 {
-                                    homingTarget = npcUnit.combatStateComp.PrimaryTargetId;
+                                    homingTarget = npcUnit.AggroSystem.CurrentTargetId;
                                 }
                             }
                         }

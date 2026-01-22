@@ -65,7 +65,7 @@ public interface IVisionSenser2D
 {
 
     bool CanUnitSee(long selfEId, long targetEId);
-    bool CanSee(Vector2 selftPos, Vector2 selfFace, Vector2 targetPos, float range, float fov);
+    bool SimpleCanSee(Vector2 selftPos, Vector2 selfFace, Vector2 targetPos, float range, float fov);
 
     Vector2 ChoosePointAwayFromTarget(Vector2 orgPos, Vector2 centerPos, float awayDist);
 
@@ -141,7 +141,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public async Task InitStartGame(string startParams, Action? onComplete)
     {
-        AITemplateConfigLoader.Load("");
 
         CfgMgr.LoadGameConfigs();
 
@@ -299,7 +298,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(UnityEngine.Input.mousePosition);
             mouseWorld.z = 0;
-            gameLogicManager.playerLogicEntity.entityMotorComp.TryMoveTo(mouseWorld);
+            gameLogicManager.playerLogicEntity.TryMoveTo(mouseWorld);
         }
 
         if(playerScenePresenter != null)
