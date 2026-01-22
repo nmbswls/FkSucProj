@@ -1556,7 +1556,7 @@ namespace My.Map.Entity
                 var dashEffect = new MapAbilityEffectDashStartCfg()
                 {
                     //IsFixPointMode = true,
-                    DashMode = EDashMode.LockTarget,
+                    DashMode = EDashMode.ToTarget,
                     DashSpeed = 8f,
                     DashOverrideHitRadius = 0.8f,
 
@@ -2347,9 +2347,8 @@ namespace My.Map.Entity
             {
                 var dashEffect = new MapAbilityEffectDashStartCfg()
                 {
-                    IsFixPointMode = true,
                     DashSpeed = 6f,
-                    IsLockTarget = true,
+                    DashMode = EDashMode.ToTarget,
                     OnHitEffects = new()
                     {
                         // 提前进入下一phase
@@ -2881,9 +2880,9 @@ namespace My.Map.Entity
             {
                 var dashEffect = new MapAbilityEffectDashStartCfg()
                 {
-                    IsFixPointMode = false,
                     DashSpeed = 3f,
-                    IsLockTarget = true,
+                    DashDuration = 0.6f,
+                    DashMode = EDashMode.ToTarget,
                     OnHitEffects = new()
                     {
                         // 提前进入下一phase

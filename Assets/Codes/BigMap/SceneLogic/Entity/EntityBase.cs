@@ -225,7 +225,7 @@ namespace My.Map
 
         public virtual void Initialize()
         {
-
+            LoadCfg();
             attributeStore = new(this);
 
             attributeStore.EvOnStatusAttrChanged += OnStatusAttriChanged;
@@ -236,6 +236,11 @@ namespace My.Map
                 MotorSystem = new(this, LogicManager.navProvider);
             }
             InitAttribute();
+        }
+
+        protected virtual void LoadCfg()
+        {
+
         }
 
         public void TeleportTo(Vector2 pos)

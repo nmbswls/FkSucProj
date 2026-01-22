@@ -15,7 +15,7 @@ MonoBehaviour:
   UnitName: slime_red
   ViewSprite: {fileID: 21300000, guid: e779ad32171e85f49bbebec977f04411, type: 3}
   PrefabName: 
-  ShowName: '?'
+  ShowName: "\u53F2\u83B1\u59C6"
   MoveStyle: 1
   MoveSpeed: 1
   IsPeace: 0
@@ -35,4 +35,4 @@ MonoBehaviour:
   InteractList: []
   IgnoreAttractLevel: 0
   ImmuneExecute: 0
-  AutoStopForPlayer: 1
+  AutoStopForPlayer: 0

@@ -214,6 +214,10 @@ namespace My
         /// </summary>
         private void InitFacilities()
         {
+            if(FacilityRoot == null)
+            {
+                return;
+            }
             for (int i = 0; i < FacilityRoot.childCount; i++)
             {
                 var tr = FacilityRoot.GetChild(i);
@@ -234,6 +238,8 @@ namespace My
 
         private void InitGlobalActionSpots()
         {
+            if (ActionSlotRoot == null) return;
+
             for (int i = 0; i < ActionSlotRoot.childCount; i++)
             {
                 var tr = ActionSlotRoot.GetChild(i);

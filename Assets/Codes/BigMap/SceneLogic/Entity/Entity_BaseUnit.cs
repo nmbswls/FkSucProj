@@ -125,14 +125,17 @@ namespace My.Map
             // get meta info
             InitAbility();
 
-            InitEnmitySystem();
-            InitAggroSystem();
-            InitVisionSystem();
-
+            if(Type != EEntityType.Player)
+            {
+                InitEnmitySystem();
+                InitAggroSystem();
+                InitVisionSystem();
+            }
 
             InitGazeModule();
 
-            if(MarkNoLogic)
+
+            if (MarkNoLogic)
             {
                 LogicManager.globalBuffManager.AddBuff(this.Id, "system_no_logic");
             }

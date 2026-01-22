@@ -13,9 +13,9 @@ namespace My.Map.Entity
 
         public enum EDashMode
         {
-            Default, // 速度 时间
-            FixDistance, // 
-            LockTarget,
+            FixTime, 
+            FixDistance,
+            ToTarget,
         }
 
         public EDashMode DashMode;

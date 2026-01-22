@@ -2171,7 +2171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: P/HomeFacility_Good
+  Key: P/Home/Facility_Good
   AppearCond:
     Type: 0
     Param1: 0

@@ -10,6 +10,7 @@ using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem.HID;
 using static My.GameLogicManager;
 using static My.Map.BaseUnitLogicEntity;
+using static My.Map.Entity.MapAbilityEffectDashStartCfg;
 using static My.Map.Fight.FightStruct;
 using static My.Map.PlayerLogicEntity;
 using static UnityEngine.GraphicsBuffer;
@@ -434,7 +435,7 @@ namespace My.Map.Entity
 
             Vector2? dashEndP = null;
             // 尝试获取目标位置
-            if (realCfg.IsLockTarget && ctx.TargetId != 0)
+            if(realCfg.DashMode == EDashMode.ToTarget && ctx.TargetId != 0)
             {
                 var target = ctx.Env.GetLogicEntity(ctx.TargetId);
                 if (target != null)
@@ -461,7 +462,7 @@ namespace My.Map.Entity
                 Vector2 or0gPos = actor.Pos;
                 var diff = (dashEndP.Value - or0gPos);
 
-                if (realCfg.IsFixPointMode)
+                if (realCfg.DashMode == EDashMode.FixDistance)
                 {
                     dir = diff.normalized;
                     duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
