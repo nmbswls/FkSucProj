@@ -67,6 +67,8 @@ namespace My
         public Grid BuildGrid;
         private HashSet<Vector3Int> occupied = new HashSet<Vector3Int>();
 
+
+
         public bool IsOccupied(Vector3Int cell) => occupied.Contains(cell);
 
 
@@ -104,6 +106,17 @@ namespace My
 
             InitFacilities();
             InitGlobalActionSpots();
+
+            var prefab = Resources.Load<GameObject>("Home/SimpleNpc/1");
+
+            for(int i=0;i<5;i++)
+            {
+                var go = GameObject.Instantiate(prefab, this.transform);
+                go.SetActive(true);
+
+                var simpleNpc = go.GetComponent<HomeSimpleNpc>();
+                homeSimpleNpc.Add(simpleNpc);
+            }
         }
 
         protected void InitBuildMask()
@@ -187,7 +200,7 @@ namespace My
 
         }
 
-
+        public List<HomeSimpleNpc> homeSimpleNpc = new List<HomeSimpleNpc>();
 
         // 索引1：按设施类型存储设施
         private Dictionary<HomeFacility.FacilityType, List<HomeFacility>> _facilities = new Dictionary<HomeFacility.FacilityType, List<HomeFacility>>();

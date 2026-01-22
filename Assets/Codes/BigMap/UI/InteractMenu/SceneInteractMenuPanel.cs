@@ -532,6 +532,10 @@ namespace My.UI
                 npcPresenter.InteractDetailMode = false;
                 npcPresenter.UnitEntity.UnregisterGazeBySourceTag("Interact");
             }
+            else if(currFocusInteractable is HomeSimpleNpc simpleNpc)
+            {
+                simpleNpc.EndInteraction();
+            }
         }
 
 

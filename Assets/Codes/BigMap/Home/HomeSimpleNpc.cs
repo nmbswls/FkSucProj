@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using My.Map.Entity;
+using My.Map.Scene;
 using UnityEngine;
 using UnityEngine.AI;
+using static My.UI.UISceneInteractMenu4Choose;
 
 
 namespace My.Map
@@ -10,59 +13,64 @@ namespace My.Map
     {
         public enum MobState
         {
-            Idle,           // ÏĞÖÃ/¾ö²ßÖĞ
-            MovingToSpot,   // ÕıÔÚ×ßÏòÄ¿±êµã
-            Working,        // µ½´ïµãÎ»£¬ÕıÔÚ²¥·Å¹¤×÷¶¯»­
-            Interacting     // ±»Íæ¼ÒÔİÍ££¨¶Ô»°ÖĞ£©
+            Idle,           // é—²ç½®/å†³ç­–ä¸­
+            MovingToSpot,   // æ­£åœ¨èµ°å‘ç›®æ ‡ç‚¹
+            Working,        // åˆ°è¾¾ç‚¹ä½ï¼Œæ­£åœ¨æ’­æ”¾å·¥ä½œåŠ¨ç”»
+            Interacting     // è¢«ç©å®¶æš‚åœï¼ˆå¯¹è¯ä¸­ï¼‰
         }
 
-        [Header("×´Ì¬¼à¿Ø")]
+        public Transform HintPivot;
+
+        [Header("çŠ¶æ€ç›‘æ§")]
         public MobState CurrentState = MobState.Idle;
 
-        [Header("ÅäÖÃ²ÎÊı")]
+        [Header("é…ç½®å‚æ•°")]
         public float WalkSpeed = 3.5f;
-        public float DecisionInterval = 2.0f; // ÏĞÖÃ¶à¾Ãºó×ö¾ö²ß
+        public float DecisionInterval = 2.0f; // é—²ç½®å¤šä¹…ååšå†³ç­–
 
-        // --- ÄÚ²¿×é¼ş ---
-        private NavMeshAgent _agent;
+        // --- å†…éƒ¨ç»„ä»¶ ---
+        //private NavMeshAgent _agent;
         private Animator _anim;
 
-        // --- ÔËĞĞÊ±Êı¾İ ---
-        private float _timer = 0f;          // Í¨ÓÃ¼ÆÊ±Æ÷
-        private float _workDuration = 0f;   // µ±Ç°ÈÎÎñĞèÒª¹¤×÷¶à¾Ã
-        private MobState _previousState;    // ½»»¥Ç°µÄ×´Ì¬±¸·İ
+        // --- è¿è¡Œæ—¶æ•°æ® ---
+        private float _timer = 0f;          // é€šç”¨è®¡æ—¶å™¨
+        private float _workDuration = 0f;   // å½“å‰ä»»åŠ¡éœ€è¦å·¥ä½œå¤šä¹…
+        private MobState _previousState;    // äº¤äº’å‰çš„çŠ¶æ€å¤‡ä»½
 
-        // --- µ±Ç°ÈÎÎñÊı¾İ ---
-        private HomeActionSpot _targetSpot; // Ä¿±êµã
-        private int _targetSlotIndex = -1;   // Ä¿±ê²ÛÎ»
-        private Vector3 _targetPos;          // Ä¿±ê¾ßÌå×ø±ê
+        // --- å½“å‰ä»»åŠ¡æ•°æ® ---
+        private HomeActionSpot _targetSpot; // ç›®æ ‡ç‚¹
+        private int _targetSlotIndex = -1;   // ç›®æ ‡æ§½ä½
+        private Vector3 _targetPos;          // ç›®æ ‡å…·ä½“åæ ‡
+
+
+        public EntityMotorSystem MotorSystem;
 
         public long Id => gameObject.GetInstanceID();
 
-        public string ShowName => "ÈË";
+        public string ShowName => "äºº";
 
         public Vector2 Pos => transform.position;
 
         void Start()
         {
-            _agent = GetComponent<NavMeshAgent>();
+            //_agent = GetComponent<NavMeshAgent>();
             _anim = GetComponent<Animator>();
-            _agent.speed = WalkSpeed;
+            //_agent.speed = WalkSpeed;
 
-            // ³õÊ¼×´Ì¬
+            // åˆå§‹çŠ¶æ€
             SwitchState(MobState.Idle);
         }
 
         void Update()
         {
-            // 1. ÓÅÏÈ´¦Àí½»»¥×´Ì¬ (Interacting)
+            // 1. ä¼˜å…ˆå¤„ç†äº¤äº’çŠ¶æ€ (Interacting)
             if (CurrentState == MobState.Interacting)
             {
                 HandleInteractionLogic();
-                return; // ½»»¥Ê±×è¶ÏÆäËûÂß¼­
+                return; // äº¤äº’æ—¶é˜»æ–­å…¶ä»–é€»è¾‘
             }
 
-            // 2. ×´Ì¬»ú·Ö·¢
+            // 2. çŠ¶æ€æœºåˆ†å‘
             switch (CurrentState)
             {
                 case MobState.Idle:
@@ -76,23 +84,23 @@ namespace My.Map
                     break;
             }
 
-            // 3. ¶¯»­²ÎÊı¸üĞÂ
+            // 3. åŠ¨ç”»å‚æ•°æ›´æ–°
             UpdateAnimationParams();
         }
 
-        // --- ×´Ì¬Âß¼­ Tick ---
+        // --- çŠ¶æ€é€»è¾‘ Tick ---
 
         private void TickIdle()
         {
             _timer += Time.deltaTime;
 
-            // »¹Ã»µ½¾ö²ßÊ±¼ä£¬¼ÌĞø·¢´ô
+            // è¿˜æ²¡åˆ°å†³ç­–æ—¶é—´ï¼Œç»§ç»­å‘å‘†
             if (_timer < DecisionInterval) return;
 
-            // --- ¾ö²ßÊ±¿Ì ---
-            _timer = 0; // ÖØÖÃ¼ÆÊ±Æ÷
+            // --- å†³ç­–æ—¶åˆ» ---
+            _timer = 0; // é‡ç½®è®¡æ—¶å™¨
 
-            // ¼òµ¥µÄ¸ÅÂÊ¾ö²ß£º70% È¥¹¤×÷£¬30% È¥ĞİÏ¢
+            // ç®€å•çš„æ¦‚ç‡å†³ç­–ï¼š70% å»å·¥ä½œï¼Œ30% å»ä¼‘æ¯
             if (Random.value < 0.7f)
             {
                 TryFindTask(HomeFacility.FacilityType.LumberMill, HomeActionSpot.SpotType.Work, 15f);
@@ -105,34 +113,50 @@ namespace My.Map
 
         private void TickMoving()
         {
-            // ¼ì²éÄ¿±êµãÊÇ·ñ»¹ÔÚ£¨·ÀÖ¹ÉèÊ©±»Ïú»Ù£©
+            // æ£€æŸ¥ç›®æ ‡ç‚¹æ˜¯å¦è¿˜åœ¨ï¼ˆé˜²æ­¢è®¾æ–½è¢«é”€æ¯ï¼‰
             if (_targetSpot == null)
             {
                 StopTaskAndIdle();
                 return;
             }
 
-            // ¼ì²éÑ°Â·ÊÇ·ñ½áÊø
-            if (!_agent.pathPending && _agent.remainingDistance <= 0.5f)
+            do
             {
-                // µ½´ïÄ¿µÄµØ£¬¿ªÊ¼¹¤×÷
-                StartWorking();
+                if (MainGameManager.Instance.playerScenePresenter == null)
+                {
+                    break;
+                }
+
+                var diff = MainGameManager.Instance.playerScenePresenter.Pos - this.Pos;
+                if (diff.sqrMagnitude < 1.0f)
+                {
+                    return;
+                }
             }
+            while (false);
+
+
+            // æ£€æŸ¥å¯»è·¯æ˜¯å¦ç»“æŸ
+            //if (!_agent.pathPending && _agent.remainingDistance <= 0.5f)
+            //{
+            //    // åˆ°è¾¾ç›®çš„åœ°ï¼Œå¼€å§‹å·¥ä½œ
+            //    StartWorking();
+            //}
         }
 
         private void TickWorking()
         {
-            // È·±£Ãæ¶ÔÕıÈ··½Ïò
+            // ç¡®ä¿é¢å¯¹æ­£ç¡®æ–¹å‘
             if (_targetSpot != null)
             {
-                // ¼òµ¥µÄ²åÖµĞı×ª
+                // ç®€å•çš„æ’å€¼æ—‹è½¬
                 transform.rotation = Quaternion.Slerp(transform.rotation, _targetSpot.transform.rotation, Time.deltaTime * 5f);
             }
 
-            // ¼ÆÊ±
+            // è®¡æ—¶
             _timer += Time.deltaTime;
 
-            // ¹¤×÷Ê±¼ä½áÊø
+            // å·¥ä½œæ—¶é—´ç»“æŸ
             if (_timer >= _workDuration)
             {
                 StopTaskAndIdle();
@@ -141,7 +165,7 @@ namespace My.Map
 
         private void HandleInteractionLogic()
         {
-            // ½»»¥Ê±µÄÂß¼­£¬±ÈÈçÊ¼ÖÕ¿´ÏòÍæ¼Ò
+            // äº¤äº’æ—¶çš„é€»è¾‘ï¼Œæ¯”å¦‚å§‹ç»ˆçœ‹å‘ç©å®¶
             if(MainGameManager.Instance != null && MainGameManager.Instance.playerScenePresenter != null)
             {
                 Vector3 dir = MainGameManager.Instance.playerScenePresenter.transform.position - transform.position;
@@ -153,13 +177,13 @@ namespace My.Map
             }
         }
 
-        // --- ĞĞÎª¿ØÖÆ·½·¨ ---
+        // --- è¡Œä¸ºæ§åˆ¶æ–¹æ³• ---
 
-        // ³¢ÊÔÕÒÉèÊ©ÈÎÎñ
+        // å°è¯•æ‰¾è®¾æ–½ä»»åŠ¡
         private void TryFindTask(HomeFacility.FacilityType fType, HomeActionSpot.SpotType sType, float duration)
         {
             HomeFacility facility = HomeSceneManager.Instance.GetRandomFacility(fType);
-            if (facility == null) return; // Ã»ÕÒµ½ÉèÊ©£¬ÏÂÒ»Ö¡¼ÌĞø Idle
+            if (facility == null) return; // æ²¡æ‰¾åˆ°è®¾æ–½ï¼Œä¸‹ä¸€å¸§ç»§ç»­ Idle
 
             HomeActionSpot spot;
             int slotIndex;
@@ -171,7 +195,7 @@ namespace My.Map
             }
         }
 
-        // ³¢ÊÔÕÒÈ«¾ÖÈÎÎñ
+        // å°è¯•æ‰¾å…¨å±€ä»»åŠ¡
         private void TryFindGlobalTask(HomeActionSpot.SpotType sType, float duration)
         {
             HomeActionSpot spot = HomeSceneManager.Instance.GetRandomGlobalSpot(sType);
@@ -180,7 +204,7 @@ namespace My.Map
             int slotIndex = spot.TryGetFreeSlotIndex();
             if (slotIndex != -1)
             {
-                // ¼ÆËã×ø±êÆ«ÒÆ
+                // è®¡ç®—åæ ‡åç§»
                 Vector3 offset = spot.IsQueueMode ? -spot.transform.forward * (slotIndex * spot.Spacing) : Vector3.zero;
                 Vector3 pos = spot.transform.position + spot.transform.rotation * offset;
 
@@ -188,31 +212,26 @@ namespace My.Map
             }
         }
 
-        // ½ÓÊÜÈÎÎñ²¢¿ªÊ¼ÒÆ¶¯
+        // æ¥å—ä»»åŠ¡å¹¶å¼€å§‹ç§»åŠ¨
         private void AcceptTask(HomeActionSpot spot, int slotIndex, Vector3 pos, float duration)
         {
-            // 1. Õ¼¿Ó
+            // 1. å å‘
             spot.OccupySlot(slotIndex, this);
             _targetSpot = spot;
             _targetSlotIndex = slotIndex;
             _targetPos = pos;
             _workDuration = duration;
 
-            // 2. ÉèÖÃÑ°Â·
-            _agent.SetDestination(pos);
-            _agent.isStopped = false;
-
-            // 3. ÇĞ»»×´Ì¬
+            // 3. åˆ‡æ¢çŠ¶æ€
             SwitchState(MobState.MovingToSpot);
         }
 
-        // µ½´ïºó¿ªÊ¼¹¤×÷
+        // åˆ°è¾¾åå¼€å§‹å·¥ä½œ
         private void StartWorking()
         {
-            _agent.isStopped = true;
-            _timer = 0f; // ÖØÖÃ¼ÆÊ±Æ÷ÓÃÓÚ¹¤×÷µ¹¼ÆÊ±
+            _timer = 0f; // é‡ç½®è®¡æ—¶å™¨ç”¨äºå·¥ä½œå€’è®¡æ—¶
 
-            // ²¥·ÅÌØ¶¨¶¯»­
+            // æ’­æ”¾ç‰¹å®šåŠ¨ç”»
             if (_targetSpot != null && !string.IsNullOrEmpty(_targetSpot.AnimationTrigger))
             {
                 _anim.SetTrigger(_targetSpot.AnimationTrigger);
@@ -221,21 +240,20 @@ namespace My.Map
             SwitchState(MobState.Working);
         }
 
-        // ½áÊøÈÎÎñ²¢»Øµ½¿ÕÏĞ
+        // ç»“æŸä»»åŠ¡å¹¶å›åˆ°ç©ºé—²
         private void StopTaskAndIdle()
         {
-            // 1. ÊÍ·Å¿ÓÎ»
+            // 1. é‡Šæ”¾å‘ä½
             ReleaseCurrentSpot();
 
-            // 2. ¶¯»­¸´Î»
+            // 2. åŠ¨ç”»å¤ä½
             _anim.SetTrigger("StopWork");
 
-            // 3. »Øµ½ Idle
-            _agent.isStopped = true;
+            // 3. å›åˆ° Idle
             SwitchState(MobState.Idle);
         }
 
-        // --- ½»»¥ÏµÍ³½Ó¿Ú ---
+        // --- äº¤äº’ç³»ç»Ÿæ¥å£ ---
 
         public void StartInteraction()
         {
@@ -243,10 +261,7 @@ namespace My.Map
 
             _previousState = CurrentState;
 
-            // ÎïÀíÉ²³µ
-            if (_agent.isOnNavMesh) _agent.isStopped = true;
-
-            // ¶¯»­ÖØÖÃÎªÕ¾Á¢
+            // åŠ¨ç”»é‡ç½®ä¸ºç«™ç«‹
             _anim.SetTrigger("StopWork");
 
             CurrentState = MobState.Interacting;
@@ -256,31 +271,28 @@ namespace My.Map
         {
             if (CurrentState != MobState.Interacting) return;
 
-            // »Ö¸´Ö®Ç°µÄ×´Ì¬
+            // æ¢å¤ä¹‹å‰çš„çŠ¶æ€
             CurrentState = _previousState;
 
-            // ¸ù¾İ»Ö¸´µÄ×´Ì¬×ö¶îÍâ´¦Àí
+            // æ ¹æ®æ¢å¤çš„çŠ¶æ€åšé¢å¤–å¤„ç†
             if (CurrentState == MobState.MovingToSpot)
             {
-                // »Ö¸´ÒÆ¶¯
-                _agent.isStopped = false;
-                // È·±£¶¯»­ÊÇÒÆ¶¯×´Ì¬£¨UpdateAnimationParams »á´¦Àí£¬ÕâÀïÍ¨³£²»ĞèÒªÊÖ¶¯ Trigger£©
+                // ç¡®ä¿åŠ¨ç”»æ˜¯ç§»åŠ¨çŠ¶æ€ï¼ˆUpdateAnimationParams ä¼šå¤„ç†ï¼Œè¿™é‡Œé€šå¸¸ä¸éœ€è¦æ‰‹åŠ¨ Triggerï¼‰
             }
             else if (CurrentState == MobState.Working)
             {
-                // »Ö¸´¶¯×÷
-                _agent.isStopped = true;
+                // æ¢å¤åŠ¨ä½œ
                 if (_targetSpot != null) _anim.SetTrigger(_targetSpot.AnimationTrigger);
             }
         }
 
-        // --- ¸¨Öú·½·¨ ---
+        // --- è¾…åŠ©æ–¹æ³• ---
 
         private void SwitchState(MobState newState)
         {
             CurrentState = newState;
 
-            // ½øÈë Idle Ê±ÖØÖÃ¼ÆÊ±Æ÷£¬·ÀÖ¹Á¢¼´´¥·¢¾ö²ß
+            // è¿›å…¥ Idle æ—¶é‡ç½®è®¡æ—¶å™¨ï¼Œé˜²æ­¢ç«‹å³è§¦å‘å†³ç­–
             if (newState == MobState.Idle)
             {
                 _timer = 0f;
@@ -299,8 +311,8 @@ namespace My.Map
 
         private void UpdateAnimationParams()
         {
-            float speed = _agent.velocity.magnitude;
-            _anim.SetFloat("Speed", speed);
+            //float speed = _agent.velocity.magnitude;
+            //_anim.SetFloat("Speed", speed);
         }
 
         private void OnDestroy()
@@ -310,27 +322,38 @@ namespace My.Map
 
         public bool CanInteractEnable()
         {
-            throw new System.NotImplementedException();
+            return true;
         }
 
         public bool TriggerInteract(int selectionId)
         {
-            throw new System.NotImplementedException();
+            StartInteraction();
+            return true;
         }
 
         public Vector3 GetHintAnchorPosition()
         {
-            throw new System.NotImplementedException();
+            if(HintPivot != null)
+            {
+                return HintPivot.transform.position;
+            }
+            return transform.position;
         }
 
         public float GetHintOffsetInfos()
         {
-            throw new System.NotImplementedException();
+            return 0;
         }
 
         public List<SceneInteractSelection> GetInteractSelections()
         {
-            throw new System.NotImplementedException();
+            var ret = new List<SceneInteractSelection>();
+            ret.Add(new SceneInteractSelection()
+            {
+                SelectId = 1,
+                SelectContent = "äº’åŠ¨",
+            });
+            return ret;
         }
     }
 }
