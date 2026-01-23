@@ -145,7 +145,7 @@ namespace My.Map
                     currActiveMemberSet.Add(memberInfo.MemberId);
 
                     // 强制激活一次
-                    LogicManager.GetLogicEntity(MemberId2EntityMap[mId]);
+                    LogicManager.GetLogicEntity(MemberId2EntityMap[memberInfo.MemberId]);
                 }
             }
 
