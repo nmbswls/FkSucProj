@@ -50,6 +50,10 @@ namespace My.Home
             this.LogicManager = logicManager;
         }
 
+        public int DailyNormalHTimes = 0;
+
+        private Dictionary<string, long> basicProduceOutput;
+        private List<string> extraProduceEvents;
 
         public void OnPlayerEnterHome()
         {
@@ -199,6 +203,19 @@ namespace My.Home
             }
 
             return retList;
+        }
+
+        public void RefreshProduceValue()
+        {
+            basicProduceOutput["gold"] = 10; 
+        }
+
+        public void DoDayEndBalance()
+        {
+            DailyNormalHTimes = 0;
+
+            // 进行基础生产
+            // 找到建筑物 放入
         }
     }
 }
