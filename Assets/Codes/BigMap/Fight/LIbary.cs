@@ -2889,7 +2889,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.5"
+                    RawVal = "0.2"
                 },
             };
 
@@ -2897,8 +2897,9 @@ namespace My.Map.Entity
                 var dashEffect = new MapAbilityEffectDashStartCfg()
                 {
                     DashMode = EDashMode.FixDistance,
-                    MaxDistance = 1.5f,
-                    DashSpeed = 3f,
+                    MaxDistance = 1.2f,
+                    DashSpeed = 9f,
+                    DashWeaponName = "Catch",
                     OnHitEffects = new()
                     {
                         //// 提前进入下一phase
