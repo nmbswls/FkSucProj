@@ -252,7 +252,10 @@ namespace My.Map.Unit
             {
                 return true;
             }
-
+            if (UnitEntity.FactionId == EFactionId.Beast && factionId == EFactionId.Player)
+            {
+                return true;
+            }
             return false;
         }
     }

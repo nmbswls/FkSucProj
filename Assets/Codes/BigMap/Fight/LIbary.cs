@@ -1532,7 +1532,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.5"
+                    RawVal = "1"
                 },
             };
 
@@ -1548,7 +1548,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.5"
+                    RawVal = "0.6"
                 },
             };
 
@@ -1557,38 +1557,47 @@ namespace My.Map.Entity
                 {
                     //IsFixPointMode = true,
                     DashMode = EDashMode.ToTarget,
-                    DashSpeed = 8f,
+                    DashSpeed = 5f,
+                    MaxDistance = 3.0f,
                     DashOverrideHitRadius = 0.8f,
+                    
+                    DashWeaponName = "Charge",
+                    NextPhaseOnHit = true,
 
                     OnHitEffects = new()
                     {
                         // 提前进入下一phase
                         // 这个应该放入配置
-                        new MapAbilityEffectNextPhaseCfg()
+                        //new MapAbilityEffectNextPhaseCfg()
+                        //{
+                        //    MatchPhase = "Dashing",
+                        //    MatchSkill = "default_dash_slash"
+                        //},
+                        new MapAbilityEffectApplyDamageCfg()
                         {
-                            MatchPhase = "Dashing",
-                            MatchSkill = "default_dash_slash"
+                            BaseDamage = 25000,
+                            KnockBackForce = 0.8f,
                         },
                     },
                 };
 
-                var hitEffect = new MapAbilityEffectUseWeaponCfg()
-                {
-                    WeaponName = "Charge",
-                    Duration = 0.45f,
-                    OnHitEffects = new()
-                    {
+                //var hitEffect = new MapAbilityEffectUseWeaponCfg()
+                //{
+                //    WeaponName = "Charge",
+                //    Duration = 0.45f,
+                //    OnHitEffects = new()
+                //    {
 
-                        new MapAbilityEffectApplyDamageCfg()
-                        {
-                            BaseDamage = 25000,
-                            KnockBackForce = 0.3f,
-                        },
-                    }
-                };
+                //        new MapAbilityEffectApplyDamageCfg()
+                //        {
+                //            BaseDamage = 25000,
+                //            KnockBackForce = 0.3f,
+                //        },
+                //    }
+                //};
 
                 dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter});
-                dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+                //dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
             }
 
 
@@ -2347,37 +2356,44 @@ namespace My.Map.Entity
             {
                 var dashEffect = new MapAbilityEffectDashStartCfg()
                 {
-                    DashSpeed = 6f,
                     DashMode = EDashMode.ToTarget,
+                    DashSpeed = 6f,
+                    MaxDistance = 3.0f,
+                    DashWeaponName = "Catch",
+
                     OnHitEffects = new()
                     {
                         // 提前进入下一phase
                         new MapAbilityEffectNextPhaseCfg()
                         {
-                            MatchPhase = "Dashing",
-                            MatchSkill = "default_dash_slash"
+                            MatchPhase = "Executing",
+                            MatchSkill = "evil_child_attach"
+                        },
+                        new MapAbilityEffectConvertAttachCfg()
+                        {
+                            AttachId = "evil_child_attach",
                         },
                     },
                 };
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
             }
 
-            {
-                var hitEffect = new MapAbilityEffectUseWeaponCfg()
-                {
-                    WeaponName = "Catch",
-                    Duration = 0.4f,
-                    MaxHit = 1,
-                    OnHitEffects = new()
-                    {
-                        new MapAbilityEffectConvertAttachCfg()
-                        {
-                            AttachId = "evil_child_attach",
-                        },
-                    }
-                };
-                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
-            }
+            //{
+            //    var hitEffect = new MapAbilityEffectUseWeaponCfg()
+            //    {
+            //        WeaponName = "Catch",
+            //        Duration = 0.4f,
+            //        MaxHit = 1,
+            //        OnHitEffects = new()
+            //        {
+            //            new MapAbilityEffectConvertAttachCfg()
+            //            {
+            //                AttachId = "evil_child_attach",
+            //            },
+            //        }
+            //    };
+            //    mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+            //}
             
             spec.Phases.Add(mainPhase);
             return spec;
@@ -2873,37 +2889,24 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.6"
+                    RawVal = "0.5"
                 },
             };
 
             {
                 var dashEffect = new MapAbilityEffectDashStartCfg()
                 {
+                    DashMode = EDashMode.FixDistance,
+                    MaxDistance = 1.5f,
                     DashSpeed = 3f,
-                    DashDuration = 0.6f,
-                    DashMode = EDashMode.ToTarget,
                     OnHitEffects = new()
                     {
-                        // 提前进入下一phase
-                        new MapAbilityEffectNextPhaseCfg()
-                        {
-                            MatchPhase = "Dashing",
-                            MatchSkill = "default_dash_slash"
-                        },
-                    },
-                };
-                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
-            }
-
-            {
-                var hitEffect = new MapAbilityEffectUseWeaponCfg()
-                {
-                    WeaponName = "Catch",
-                    Duration = 0.6f,
-                    MaxHit = 1,
-                    OnHitEffects = new()
-                    {
+                        //// 提前进入下一phase
+                        //new MapAbilityEffectNextPhaseCfg()
+                        //{
+                        //    MatchPhase = "Dashing",
+                        //    MatchSkill = "default_dash_slash"
+                        //},
                         new MapAbilityEffectApplyDamageCfg()
                         {
                             BaseDamage = 7000,
@@ -2915,10 +2918,34 @@ namespace My.Map.Entity
                             ResourceId = AttrIdConsts.PlayerClothes,
                             CostValue = 5000,
                         },
-                    }
+                    },
                 };
-                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
             }
+
+            //{
+            //    var hitEffect = new MapAbilityEffectUseWeaponCfg()
+            //    {
+            //        WeaponName = "Catch",
+            //        Duration = 0.6f,
+            //        MaxHit = 1,
+            //        OnHitEffects = new()
+            //        {
+            //            new MapAbilityEffectApplyDamageCfg()
+            //            {
+            //                BaseDamage = 7000,
+            //                KnockBackForce = 0.5f,
+            //            },
+
+            //            new MapAbilityEffectCostResourceCfg()
+            //            {
+            //                ResourceId = AttrIdConsts.PlayerClothes,
+            //                CostValue = 5000,
+            //            },
+            //        }
+            //    };
+            //    mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+            //}
 
             spec.Phases.Add(mainPhase);
             return spec;

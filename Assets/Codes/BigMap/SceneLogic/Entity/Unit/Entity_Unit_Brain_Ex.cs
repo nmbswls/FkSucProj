@@ -278,13 +278,10 @@ namespace My.Map.Unit
 
             // 检查是否要中止使用技能
             ChecCanCastSkill();
+            TickCastSkill(distToTarget);
 
             // 使用技能视图接近
-            if (currIntentSkillCfg != null)
-            {
-                TickCastSkill(distToTarget);
-            }
-            else
+            if (currIntentSkillCfg == null)
             {
                 // 超过远距离
                 if (_brain.Config.CombatFarDistance > 0 && distToTarget > _brain.Config.CombatFarDistance)
@@ -311,17 +308,6 @@ namespace My.Map.Unit
                     // 最终目标点 = 槽位中心 + 切线方向偏移
                     _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.Pos + (tangentDir * sineValue * _strafeAmplitude), moveSpeedRate: 0.25f);
                 }
-
-                //// 情况 B: 在攻击范围内
-                //if (distToTarget <= _brain.Config.AttackRange)
-                //{
-                //    PerformAttackBehavior(dt: Time.deltaTime);
-                //}
-                //// 情况 C: 在追击范围内，但够不着
-                //else
-                //{
-                //    PerformChaseBehavior();
-                //}
             }
         }
 
@@ -380,7 +366,7 @@ namespace My.Map.Unit
             if (currIntentSkillCfg == null)
             {
                 var anyReady = _brain.NpcEntity.ablilityManager.CheckAnyReadySkill();
-                if (anyReady)
+                if (!anyReady)
                 {
                     return;
                 }

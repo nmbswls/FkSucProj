@@ -21,8 +21,8 @@ namespace My.Map.Unit
         public float WanderInterval = 5.0f;
 
         public bool IsPeace; // 和平单位只会逃
-        public float CombatCloseDistance = 5.0f;
-        public float CombatFarDistance = 2.0f;
+        public float CombatCloseDistance = 2.0f;
+        public float CombatFarDistance = 5.0f;
 
         public string SpecialAnimTag1;
         public string SpecialAnimTag2;
@@ -47,8 +47,12 @@ namespace My.Map.Unit
                 {
                     //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
                     var config = new AIBrainConfig();
-                    config.SpecialAnimTag1 = "a_qigai_qitao";
-                    _configs["qigai"] = config;
+                    _configs["basic_unit_peace"] = config;
+                }
+                {
+                    //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
+                    var config = new AIBrainConfig();
+                    _configs["default"] = config;
                 }
             }
 
@@ -134,6 +138,8 @@ namespace My.Map.Unit
             StateReturn = new AIStateReturn(this);
             StateFlee = new AIStateFlee(this);
             StateSearch = new AIStateSearch(this);
+
+            ChangeState(StateIdle);
         }
 
         public void TriggerUpdateImmediately()

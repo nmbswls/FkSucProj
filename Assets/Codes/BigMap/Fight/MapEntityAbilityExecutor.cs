@@ -8,6 +8,7 @@ using Unity.Burst.Intrinsics;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using static My.GameLogicManager;
+using static My.Map.BaseUnitLogicEntity;
 using static My.Map.Fight.FightStruct;
 using static Unity.Collections.Unicode;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -167,8 +168,6 @@ namespace My.Map.Entity
         }
 
         
-        
-
         public virtual bool TryUseAbility(string abilityName, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> overrideParams = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
         {
             var config = AbilityLibrary.GetAbilityConfig(abilityName);
@@ -722,6 +721,13 @@ namespace My.Map.Entity
         public void ApplyUseWeaponHitBox(string weaponName, float openTime, List<MapFightEffectCfg> hitCfgs)
         {
             // 统一为hitwindow处理
+            var win = CreateHitWindow(weaponName, openTime, hitCfgs);
+            CurrentCtx.phaseHitWindows.Add(win.hitId, win);
+        }
+
+
+        public AbilityHitWindow CreateHitWindow(string weaponName, float openTime, List<MapFightEffectCfg> hitCfgs)
+        {
             long hitId = ++HitWiindowIdCounter;
 
             var hitWin = new AbilityHitWindow()
@@ -732,9 +738,14 @@ namespace My.Map.Entity
                 durationTime = openTime,
                 OnHitEffects = hitCfgs,
             };
-            CurrentCtx.phaseHitWindows.Add(hitId, hitWin);
-
             EventOnApplyUseWeapon?.Invoke(hitId, weaponName, openTime);
+
+            return hitWin;
+        }
+
+        public void CloseHitWindow(string weaponName, long hitId)
+        {
+            EventOnCloseHitWindow?.Invoke(weaponName, hitId);
         }
 
         public void OnUseWeaponHitCallback(long hitId, long hitEntityId)

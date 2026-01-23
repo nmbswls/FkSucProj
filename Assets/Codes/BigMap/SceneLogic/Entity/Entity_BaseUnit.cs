@@ -319,14 +319,23 @@ namespace My.Map
 
             public Action<int>? onMoveEnd;
             public bool WithEffect = false;
+
+            public AbilityHitWindow? HitWindow;
         }
         public ControlledMoveCtx? controlledMoveCtx;
 
         // 冲锋
-        public void StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onEndEffects, bool withEffect = false, bool withGhost = false)
+        public void StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onHitEffects, bool withEffect = false, bool withGhost = false, string dashWeaponName = "")
         {
-            ApplyControlledMove(ControlledMoveCtx.EType.Dash, dashDir, dashTime, speed, onEndEffects: onEndEffects);
+            ApplyControlledMove(ControlledMoveCtx.EType.Dash, dashDir, dashTime, speed);
             controlledMoveCtx.WithEffect = withEffect;
+
+            if(!string.IsNullOrEmpty(dashWeaponName))
+            {
+                // 统一为hitwindow处理
+                var newWin = abilityController.CreateHitWindow(dashWeaponName, dashTime, onHitEffects);
+                controlledMoveCtx.HitWindow = newWin;
+            }
         }
 
         public void ApplyKnockBack(Vector2 dir, float knockDist, float decayRate = 8f, Action<int>? onKnockEnd = null)
@@ -354,7 +363,7 @@ namespace My.Map
         /// <param name="speed"></param>
         /// <param name="onEndEffects"></param>
         /// <param name="minEndSpeed"></param>
-        public void ApplyControlledMove(ControlledMoveCtx.EType type, Vector2 dir, float duration = -1, float? originSpeed = null, float decayRate = 8f, List<MapFightEffectCfg> onEndEffects = null, float minEndSpeed = 0)
+        public void ApplyControlledMove(ControlledMoveCtx.EType type, Vector2 dir, float duration = -1, float? originSpeed = null, float decayRate = 8f, List<MapFightEffectCfg> onHitEffects = null, float minEndSpeed = 0)
         {
             if(controlledMoveCtx != null)
             {
@@ -372,7 +381,7 @@ namespace My.Map
             ctx.MoveDir = dir;
             ctx.OriginSpeed = originSpeed ?? 0;
 
-            ctx.OnHitUnitEffects = onEndEffects;
+            ctx.OnHitUnitEffects = onHitEffects;
 
             ctx.DecayPowerRate = decayRate;
 
@@ -486,6 +495,12 @@ namespace My.Map
             if (reason != 0)
             {
                 //
+            }
+
+            if(controlledMoveCtx.HitWindow != null)
+            {
+                //
+                abilityController.CloseHitWindow(controlledMoveCtx.HitWindow.weaponName, controlledMoveCtx.HitWindow.hitId);
             }
 
             //controlledMoveCtx?.onCollide?.Invoke();

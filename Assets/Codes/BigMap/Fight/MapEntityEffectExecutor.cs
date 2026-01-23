@@ -430,18 +430,37 @@ namespace My.Map.Entity
                 return;
             }
 
-            Vector2 dir;
-            float duration;
+            
 
             Vector2? dashEndP = null;
             // 尝试获取目标位置
-            if(realCfg.DashMode == EDashMode.ToTarget && ctx.TargetId != 0)
+            if(realCfg.DashMode == EDashMode.ToTarget)
             {
-                var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+                var target = ctx.Env.GetLogicEntity(ctx.TargetId, false);
                 if (target != null)
                 {
                     dashEndP = target.Pos;
                 }
+            }
+            else if(realCfg.DashMode == EDashMode.FixDistance)
+            {
+                var dashDir = realCfg.UseTempDir ? unitEntity.CurrentLook : unitEntity.FinalLook;
+                var dist = realCfg.MaxDistance;
+                if(dist < 0.5f)
+                {
+                    dist = 0.5f;
+                }
+                dashEndP = unitEntity.Pos + dashDir.normalized * dist;
+            }
+            else if (realCfg.DashMode == EDashMode.FixTime)
+            {
+                var dashDir = realCfg.UseTempDir ? unitEntity.CurrentLook : unitEntity.FinalLook;
+                var dist = realCfg.DashSpeed * realCfg.DashDuration;
+                if (dist < 0.5f)
+                {
+                    dist = 0.5f;
+                }
+                dashEndP = unitEntity.Pos + dashDir.normalized * dist;
             }
 
             // 获取目标失败 从施法参数中获取
@@ -450,6 +469,9 @@ namespace My.Map.Entity
                 dashEndP = ctx.CastVec1;
             }
 
+            Vector2 dir;
+            float duration;
+
             // 仍没有 进行保底哦位移
             if (dashEndP == null)
             {
@@ -457,24 +479,13 @@ namespace My.Map.Entity
                 duration = 0.01f;
                 Debug.Log("dash baodi");
             }
-            else
-            {
-                Vector2 or0gPos = actor.Pos;
-                var diff = (dashEndP.Value - or0gPos);
 
-                if (realCfg.DashMode == EDashMode.FixDistance)
-                {
-                    dir = diff.normalized;
-                    duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
-                }
-                else
-                {
-                    dir = diff.normalized;
-                    duration = realCfg.DashDuration;
-                }
-            }
+            Vector2 or0gPos = actor.Pos;
+            var diff = (dashEndP.Value - or0gPos);
+            dir = diff.normalized;
+            duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
 
-            unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, true);
+            unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, true, dashWeaponName: realCfg.DashWeaponName);
         }
     }
 
@@ -520,7 +531,7 @@ namespace My.Map.Entity
 
             var diff = targetPos - unitEntity.Pos;
             var speed = diff.magnitude / duration;
-            unitEntity.ApplyControlledMove(ControlledMoveCtx.EType.Pull, diff.normalized, originSpeed: diff.magnitude * 8f, onEndEffects : null, minEndSpeed : 0.1f);
+            unitEntity.ApplyControlledMove(ControlledMoveCtx.EType.Pull, diff.normalized, originSpeed: diff.magnitude * 8f, onHitEffects: null, minEndSpeed : 0.1f);
         }
     }
 

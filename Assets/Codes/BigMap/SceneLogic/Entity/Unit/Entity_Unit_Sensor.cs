@@ -135,12 +135,13 @@ namespace My.Map.Unit
             var targetPos = target.Pos;
             var dist = (targetPos - UnitEntity.Pos).magnitude;
 
-            var cansee = UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, target.Id);
-            if(!cansee)
-            {
-                MarkHidden(entry, LogicTime.time);
-            }
-            
+            bool cansee = true;
+            //var cansee = UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, target.Id);
+            //if(!cansee)
+            //{
+            //    MarkHidden(entry, LogicTime.time);
+            //}
+
 
             // 隐身覆盖（机制级躲藏）
             var stealth = target.stealthInfo;

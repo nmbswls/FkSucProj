@@ -229,7 +229,7 @@ namespace My.Map.Unit
             {
                 CurrentTargetId = bestTarget;
                 if (CurrentTargetId != 0)
-                    _unit.RegisterGaze("Aggro", CurrentTargetId, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Combat, 2f);
+                    _unit.RegisterGaze("Aggro", CurrentTargetId, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Combat, 0f);
             }
         }
     }

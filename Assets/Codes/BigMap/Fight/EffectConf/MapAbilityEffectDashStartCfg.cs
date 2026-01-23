@@ -20,6 +20,9 @@ namespace My.Map.Entity
 
         public EDashMode DashMode;
 
+        public bool UseTempDir = false;
+        public string DashWeaponName = string.Empty;
+
         public float DashSpeed;
         public float DashDuration;
         public float MaxDistance;
