@@ -37,6 +37,7 @@ namespace My.Config
             Wait,
 
             StartRetreat,
+            TriggerSpawner,
 
             EGMemberChangeState = 100,
             EGMemberActivate = 101,

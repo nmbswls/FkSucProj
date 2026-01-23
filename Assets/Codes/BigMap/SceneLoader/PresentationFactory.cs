@@ -89,6 +89,10 @@ public static class PresentationConfig
                 return $"Prefab/Presentations/FakePlayer";
             case EEntityType.EventGroup:
                 return $"Prefab/Presentations/EventGroup";
+            case EEntityType.DynamicSpawner:
+                {
+                    return $"Prefab/Presentations/DynamicSpawner";
+                }
             // ...
             default: return "Prefab/Presentations/Default";
         }

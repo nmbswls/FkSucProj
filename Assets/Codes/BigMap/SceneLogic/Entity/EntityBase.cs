@@ -28,6 +28,7 @@ namespace My.Map
         HomePlacement,
 
         EncounterCtrl,
+        DynamicSpawner,
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner

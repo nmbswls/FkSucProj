@@ -647,6 +647,8 @@ namespace My.Map.Entity
             {
                 DashDuration = 0.3f,
                 DashSpeed = 8f,
+                DashMode = EDashMode.FixTime,
+                DirMode = EDirMode.CastDir,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 
@@ -1560,7 +1562,8 @@ namespace My.Map.Entity
                     DashSpeed = 5f,
                     MaxDistance = 3.0f,
                     DashOverrideHitRadius = 0.8f,
-                    
+                    DirMode = EDirMode.LookDir,
+
                     DashWeaponName = "Charge",
                     NextPhaseOnHit = true,
 
@@ -2360,7 +2363,7 @@ namespace My.Map.Entity
                     DashSpeed = 6f,
                     MaxDistance = 3.0f,
                     DashWeaponName = "Catch",
-
+                    DirMode = EDirMode.LookDir,
                     OnHitEffects = new()
                     {
                         // 提前进入下一phase
@@ -2889,7 +2892,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "0.3"
                 },
             };
 
@@ -2897,9 +2900,10 @@ namespace My.Map.Entity
                 var dashEffect = new MapAbilityEffectDashStartCfg()
                 {
                     DashMode = EDashMode.FixDistance,
-                    MaxDistance = 1.2f,
+                    MaxDistance = 1.5f,
                     DashSpeed = 9f,
                     DashWeaponName = "Catch",
+                    DirMode = EDirMode.LookDir,
                     OnHitEffects = new()
                     {
                         //// 提前进入下一phase

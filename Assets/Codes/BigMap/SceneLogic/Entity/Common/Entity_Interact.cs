@@ -366,7 +366,24 @@ namespace My.Map
                             Owner.LogicManager.playerLogicEntity.TryStartRetreating();
                         }
                         break;
-                        
+                    case Config.LogicInteractOutput.EOutputType.TriggerSpawner:
+                        {
+                            //Owner.GetRuntimeVariable();
+                            int staticId = (int)output.Param1;
+
+                            Owner.LogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var info);
+                            if(info == null)
+                            {
+                                break;
+                            }
+                            var spanwer = Owner.LogicManager.GetLogicEntity(info.EntityInstId);
+                            if(spanwer == null || spanwer is not DynamicSpawnerLogicEntity spawner)
+                            {
+                                break;
+                            }
+                            spawner.RefreshSpawner();
+                        }
+                        break;
 
                     #region groupœ‡πÿ
 

@@ -444,7 +444,23 @@ namespace My.Map.Entity
             }
             else if(realCfg.DashMode == EDashMode.FixDistance)
             {
-                var dashDir = realCfg.UseTempDir ? unitEntity.CurrentLook : unitEntity.FinalLook;
+                Vector2 dashDir = Vector2.right;
+                if (realCfg.DirMode == EDirMode.CastDir)
+                {
+                    if(ctx.CastVec1 != null)
+                    {
+                        dashDir = ctx.CastVec1.Value - actor.Pos;
+                    }
+                }
+                else if(realCfg.DirMode == EDirMode.LookDir)
+                {
+                    dashDir = unitEntity.FinalLook;
+                }
+                else if(realCfg.DirMode == EDirMode.TmpLookDir)
+                {
+                    dashDir = unitEntity.CurrentLook;
+                }
+
                 var dist = realCfg.MaxDistance;
                 if(dist < 0.5f)
                 {
@@ -454,7 +470,22 @@ namespace My.Map.Entity
             }
             else if (realCfg.DashMode == EDashMode.FixTime)
             {
-                var dashDir = realCfg.UseTempDir ? unitEntity.CurrentLook : unitEntity.FinalLook;
+                Vector2 dashDir = Vector2.right;
+                if (realCfg.DirMode == EDirMode.CastDir)
+                {
+                    if (ctx.CastVec1 != null)
+                    {
+                        dashDir = ctx.CastVec1.Value - actor.Pos;
+                    }
+                }
+                else if (realCfg.DirMode == EDirMode.LookDir)
+                {
+                    dashDir = unitEntity.FinalLook;
+                }
+                else if (realCfg.DirMode == EDirMode.TmpLookDir)
+                {
+                    dashDir = unitEntity.CurrentLook;
+                }
                 var dist = realCfg.DashSpeed * realCfg.DashDuration;
                 if (dist < 0.5f)
                 {
@@ -485,7 +516,7 @@ namespace My.Map.Entity
             dir = diff.normalized;
             duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
 
-            unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, true, dashWeaponName: realCfg.DashWeaponName);
+            unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, realCfg.IsGhost, dashWeaponName: realCfg.DashWeaponName);
         }
     }
 

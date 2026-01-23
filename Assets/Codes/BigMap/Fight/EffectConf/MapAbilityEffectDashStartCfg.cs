@@ -20,7 +20,14 @@ namespace My.Map.Entity
 
         public EDashMode DashMode;
 
-        public bool UseTempDir = false;
+        public enum EDirMode
+        {
+            CastDir,
+            LookDir,
+            TmpLookDir,
+        }
+
+        public EDirMode DirMode;
         public string DashWeaponName = string.Empty;
 
         public float DashSpeed;
@@ -29,7 +36,7 @@ namespace My.Map.Entity
 
         public float DashOverrideHitRadius = 0;
 
-        public bool IsGhost;
+        public bool IsGhost = true;
         public bool NextPhaseOnHit;
 
         [SerializeReference]

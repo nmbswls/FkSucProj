@@ -283,7 +283,35 @@ namespace Config
             _byId.Clear();
         }
     }
+    public static class MapDynamicSpawnerCfgLoader
+    {
 
+        private static Dictionary<string, MapDynamicSpawnerConfig> _byId = new Dictionary<string, MapDynamicSpawnerConfig>();
+
+        public static MapDynamicSpawnerConfig Get(string cfgId)
+        {
+            if (_byId.TryGetValue(cfgId, out var data))
+                return data;
+
+            var loadOne = Load(cfgId);
+            _byId[cfgId] = loadOne;
+            return loadOne;
+        }
+
+
+        private static MapDynamicSpawnerConfig Load(string cfgId)
+        {
+            var data = Resources.Load<MapDynamicSpawnerConfig>($"Config/Entity/DynamicSpawner/{cfgId}");
+            if (data == null)
+                Debug.LogError($"MapDynamicSpawnerCfgLoader not found at Resources/Config/Entity/DynamicSpawner/{cfgId}");
+            return data;
+        }
+
+        public static void Clear()
+        {
+            _byId.Clear();
+        }
+    }
 
     #region build
 
