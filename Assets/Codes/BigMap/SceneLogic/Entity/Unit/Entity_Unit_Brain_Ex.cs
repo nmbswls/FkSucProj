@@ -213,6 +213,91 @@ namespace My.Map.Unit
         }
     }
 
+    // --- Idle 状态 ---
+    public class AIStateAttracted : AIBaseState
+    {
+        public override string StateName => "Attracted";
+
+        private float attractDuration = 0;
+
+        public AIStateAttracted(AIBrainV2 brain) : base(brain)
+        {
+        }
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+
+        }
+
+        public override void OnUpdate()
+        {
+            if(_brain.LatestAttrctInfo.)
+
+            if (LogicTime.time - lastAttractTime > 3.0f)
+            {
+                _brain.blackboard.CanLeaveAttract = true;
+                return;
+            }
+            PlayerLogicEntity srcPlayer = null;
+
+            _brain.blackboard.CurrentAttractLevel = 0;
+            if (_brain.blackboard.AttractSrcId != 0)
+            {
+                srcPlayer = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.blackboard.AttractSrcId) as PlayerLogicEntity;
+                if (srcPlayer != null)
+                {
+                    _brain.blackboard.CurrentAttractLevel = srcPlayer.GetAttractLevel();
+                }
+            }
+
+            // 进行移动
+            if (_brain.blackboard.CurrentAttractLevel >= 3)
+            {
+                // 2级以上 
+                if (srcPlayer != null)
+                {
+                    _brain.NpcEntity.entityMotorComp.TryMoveTo(srcPlayer.Pos, moveSpeedRate: 0.9f);
+                    _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract fast", _brain.NpcEntity.Pos);
+                }
+            }
+            else if (_brain.blackboard.CurrentAttractLevel >= 2)
+            {
+                // 2级以上 
+                if (srcPlayer != null)
+                {
+                    _brain.NpcEntity.entityMotorComp.TryMoveTo(srcPlayer.Pos, moveSpeedRate: 0.1f);
+                    _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract slow", _brain.NpcEntity.Pos);
+                }
+            }
+            else
+            {
+                _brain.NpcEntity.entityMotorComp.StopMove();
+            }
+
+            // 条件满足时执行揩油
+            if (_brain.blackboard.CurrentAttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
+            {
+                if (srcPlayer != null && !srcPlayer.CheckHasState(AttrIdConsts.ImmumeKaiYou))
+                {
+                    var diff = srcPlayer.Pos - _brain.NpcEntity.Pos;
+                    if (diff.magnitude < 0.5f)
+                    {
+                        _brain.NpcEntity.abilityController.TryUseAbility("close_kaiyou", target: srcPlayer);
+                    }
+                }
+            }
+        }
+
+        public override void OnExit()
+        {
+            base.OnExit();
+            _idlePolicy.OnExit(_brain);
+            _brain.HomePos = _brain.NpcEntity.Pos; // 更新复位坐标点
+        }
+    }
+
+
     public class AIStateCombat : AIBaseState
     {
         private float _attackTimer; // 攻击冷却计时器

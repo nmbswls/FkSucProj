@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 namespace My.Map.Unit
@@ -181,8 +180,10 @@ namespace My.Map.Unit
 
         public bool AttractTrigger;
         public class AttrctInfo
-        { }
-        public AttrctInfo? attrctInfo;
+        {
+            public float HappenTime;
+        }
+        public AttrctInfo? LatestAttrctInfo;
         public void AddAttractInfo(long attractSrcId, Vector2 attractPos, int attractLevel)
         {
 
