@@ -1,7 +1,9 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using My.Config;
+using My.MapExport;
 using UnityEngine;
 
 namespace My
@@ -19,6 +21,8 @@ namespace My
         //public GameObject prefab; // 实际放置的 Prefab
         public Sprite previewSprite; // 预览用图标（可选）
 
+        public bool IsFixed = false; // 固定设施 
+
         [Header("Footprint Config")]
         // pivot 为占格的参考点（相对左下角为 0,0）
         public Vector2Int pivot = new Vector2Int(0, 0);
@@ -34,8 +38,17 @@ namespace My
         [HideInInspector] public List<Vector2Int> footprintR270;
 
 
-        [SerializeReference]
-        public List<MapInteractInfo> InteractInfoList = new();
+        /// <summary>
+        /// 每个放置物，都可以对应一些交互物
+        /// </summary>
+        [Serializable]
+        public class BindingEntityInfo
+        {
+            public int MemberId = 0;
+            [SerializeReference]
+            public EntityInitInfo InitInfo;
+        }
+        public List<BindingEntityInfo> BindingEntityInfoList = new();
 
 
         private void OnValidate()

@@ -12,31 +12,25 @@ namespace My.Map
 
         }
 
-        public void ApplyAttracted(Vector2 pos, float power, IAttractSource? attractSrc)
+        public void ApplyAttracted(Vector2 pos, float power, ILogicEntity? attractSrc)
         {
-
+            // 仅处理玩家产生的吸引
             if(attractSrc == null || attractSrc is not PlayerLogicEntity playerEntity)
             {
                 return;
             }
 
-            int attractLevel = playerEntity.GetAttractLevel();
+            int attractLevel = playerEntity.AttractLevel;
 
-            if (NpcConfig.IgnoreAttractLevel >= attractLevel)
+            if (attractLevel == 0 || NpcConfig.IgnoreAttractLevel >= attractLevel)
             {
                 return;
             }
 
-            if (attractLevel > 0)
+            if (AIBrain != null && AIBrain.CurrentState.CanBeAttract)
             {
-                if (AIBrain != null)
-                {
-                    AIBrain.AttractTrigger = true;
-                    AIBrain.AddAttractInfo(attractSrc?.Id ?? 0, pos, attractLevel);
-                    //AIBrain.blackboard.AttractPos = pos;
-                    //AIBrain.blackboard.AttractSrcId = attractSrc?.Id ?? 0;
-                    //AIBrain.blackboard.AttractLevel = attractLevel;
-                }
+                AIBrain.AttractTrigger = true;
+                AIBrain.AddAttractInfo(pos, attractLevel, attractSrc?.Id ?? 0);
             }
         }
     }

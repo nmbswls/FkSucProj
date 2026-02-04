@@ -2796,7 +2796,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.8"
+                    RawVal = "0.2"
                 },
             };
             spec.Phases.Add(mainPhase);

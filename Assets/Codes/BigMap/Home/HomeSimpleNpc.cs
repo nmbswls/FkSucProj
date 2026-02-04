@@ -42,6 +42,7 @@ namespace My.Map
         private int _targetSlotIndex = -1;   // 目标槽位
         private Vector3 _targetPos;          // 目标具体坐标
 
+        public LogicEntityMpbNpc FakeInnerEntity;
 
         public EntityMotorSystem MotorSystem;
 
@@ -53,12 +54,17 @@ namespace My.Map
 
         void Start()
         {
+
+            FakeInnerEntity = new(MainGameManager.Instance.gameLogicManager, 0, string.Empty, transform.position, new Logic.LogicEntityRecord());
+
             //_agent = GetComponent<NavMeshAgent>();
             _anim = GetComponent<Animator>();
             //_agent.speed = WalkSpeed;
 
             // 初始状态
             SwitchState(MobState.Idle);
+
+            
         }
 
         void Update()
@@ -86,6 +92,8 @@ namespace My.Map
 
             // 3. 动画参数更新
             UpdateAnimationParams();
+
+            FakeInnerEntity?.Tick(LogicTime.deltaTime);
         }
 
         // --- 状态逻辑 Tick ---
@@ -135,13 +143,11 @@ namespace My.Map
             }
             while (false);
 
-
-            // 检查寻路是否结束
-            //if (!_agent.pathPending && _agent.remainingDistance <= 0.5f)
-            //{
-            //    // 到达目的地，开始工作
-            //    StartWorking();
-            //}
+            var targetDiff = _targetSpot.transform.position - this.transform.position;
+            if (targetDiff.magnitude < 0.2f)
+            {
+                StartWorking();
+            }
         }
 
         private void TickWorking()

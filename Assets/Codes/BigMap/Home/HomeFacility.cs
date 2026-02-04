@@ -18,6 +18,11 @@ namespace My.Map
         {
             // 自动抓取子物体里的所有点
             _mySpots = GetComponentsInChildren<HomeActionSpot>().ToList();
+
+            if (HomeSceneManager.Instance != null)
+            {
+                HomeSceneManager.Instance.RegisterFacility(this);
+            }
         }
 
         /// <summary>

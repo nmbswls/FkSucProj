@@ -63,7 +63,7 @@ namespace My
 
         public PlayerLogicEntity playerLogicEntity;
 
-        private List<LogicEntityRecord> pendingNewEntities = new();
+        private List<(LogicEntityRecord, bool)> pendingNewEntities = new();
 
         public event Action<ILogicEntity> EventOnLogicEntitySpawned;
         public event Action<ILogicEntity> EventOnLogicEntityDespawned;
@@ -322,7 +322,7 @@ namespace My
             {
                 foreach (var entityRecord in pendingNewEntities)
                 {
-                    AreaManager.RegisterEntityRecord(entityRecord);
+                    AreaManager.RegisterEntityRecord(entityRecord.Item1, entityRecord.Item2);
                 }
                 pendingNewEntities.Clear();
             }
@@ -340,9 +340,9 @@ namespace My
             globalBuffManager.Tick(dt);
         }
 
-        public void AddNewEntityRecord(LogicEntityRecord record)
+        public void AddNewEntityRecord(LogicEntityRecord record, bool isCreate = false)
         {
-            pendingNewEntities.Add(record);
+            pendingNewEntities.Add((record, isCreate));
         }
 
 

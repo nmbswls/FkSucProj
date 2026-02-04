@@ -59,6 +59,8 @@ namespace My.Map.Logic
 
         private Dictionary<EEntityType, List<long>> Type2EntityList = new();
 
+        public HashSet<long> NewCreateEntityMark = new();
+
         /// <summary>
         /// 检查刷新和消失
         /// </summary>
@@ -253,7 +255,7 @@ namespace My.Map.Logic
         /// </summary>
         /// <param name="rec"></param>
         /// <returns></returns>
-        public void RegisterEntityRecord(LogicEntityRecord rec)
+        public void RegisterEntityRecord(LogicEntityRecord rec, bool isCreate = false)
         {
             // 交由仓库管理
             Repo.RegisterRecord(rec);
@@ -276,6 +278,11 @@ namespace My.Map.Logic
                     // 初始状态：可选择 Active 或 Sleep
                     runtimeStates[rec.Id] = new OneEntityRuntimeState { Id = rec.Id, State = LogicLifeState.Active };
                 }
+            }
+
+            if(isCreate)
+            {
+                NewCreateEntityMark.Add(rec.Id);
             }
         }
 

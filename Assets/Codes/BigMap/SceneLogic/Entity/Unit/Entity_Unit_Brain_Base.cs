@@ -96,7 +96,8 @@ namespace My.Map.Unit
         public AIStateCombat StateCombat; 
         public AIStateReturn StateReturn;
         public AIStateFlee StateFlee;
-        public AIStateSearch StateSearch; 
+        public AIStateSearch StateSearch;
+        public AIStateAttracted StateAttracted;
 
         // 黑板 (Blackboard) - 状态间共享数据
         public Vector2? HomePos;
@@ -137,6 +138,7 @@ namespace My.Map.Unit
             StateReturn = new AIStateReturn(this);
             StateFlee = new AIStateFlee(this);
             StateSearch = new AIStateSearch(this);
+            StateAttracted = new AIStateAttracted(this);
 
             ChangeState(StateIdle);
         }
@@ -182,11 +184,30 @@ namespace My.Map.Unit
         public class AttrctInfo
         {
             public float HappenTime;
+            public Vector2 HappenPos;
+            public int AttractLevel;
+            public long AttractSrcId;
         }
         public AttrctInfo? LatestAttrctInfo;
-        public void AddAttractInfo(long attractSrcId, Vector2 attractPos, int attractLevel)
+        public void AddAttractInfo(Vector2 attractPos, int attractLevel, long attractSrcId)
         {
+            if(LatestAttrctInfo != null)
+            {
+                if(attractLevel < LatestAttrctInfo.AttractLevel)
+                {
+                    Debug.Log("AddAttractInfo attract level not bigger");
+                    return;
+                }
+            }
+            this.AttractTrigger = true;
 
+            var attractInfo = new AttrctInfo();
+            attractInfo.HappenTime = LogicTime.time;
+            attractInfo.HappenPos = attractPos;
+            attractInfo.AttractLevel = attractLevel;
+            attractInfo.AttractSrcId = attractSrcId;
+
+            LatestAttrctInfo = attractInfo;
         }
     }
 
@@ -198,9 +219,26 @@ namespace My.Map.Unit
         protected float startTime;
         protected float Duration => LogicTime.time - startTime;
 
+        public virtual bool CanBeAttract { get { return false; } }
+
         public AIBaseState(AIBrainV2 brain) { _brain = brain; }
 
         public virtual void OnEnter() { startTime = Time.time; }
+
+        public void Update()
+        {
+            OnUpdate();
+
+            if(CanBeAttract)
+            {
+                if(_brain.AttractTrigger)
+                {
+                    _brain.AttractTrigger = false;
+
+                    _brain.ChangeState(_brain.StateAttracted);
+                }
+            }
+        }
         public abstract void OnUpdate();
         public virtual void OnExit() { }
         public virtual void OnFixedUpdate() { }

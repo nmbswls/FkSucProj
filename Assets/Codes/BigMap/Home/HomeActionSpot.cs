@@ -47,6 +47,11 @@ namespace My.Map
         {
             ParentFacility = GetComponentInParent<HomeFacility>();
             InitializeSlots();
+
+            if (HomeSceneManager.Instance != null)
+            {
+                HomeSceneManager.Instance.RegisterGlobalSpot(this);
+            }
         }
 
         void Start()

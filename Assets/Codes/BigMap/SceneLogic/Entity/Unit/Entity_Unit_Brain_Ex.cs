@@ -4,6 +4,7 @@ using Config.Unit;
 using My.Map.Entity;
 using My.Map.Fight;
 using UnityEngine;
+using static My.Map.BaseUnitLogicEntity;
 
 namespace My.Map.Unit
 {
@@ -168,6 +169,7 @@ namespace My.Map.Unit
         private IIdlePolicy _idlePolicy;
 
         public override string StateName => "Idle";
+        public override bool CanBeAttract => true;
 
         public AIStateIdle(AIBrainV2 brain) : base(brain)
         {
@@ -196,6 +198,9 @@ namespace My.Map.Unit
                 return;
             }
 
+
+            if(_brain.AttractTrigger)
+
             if (_brain.SuspiciousPos != Vector3.zero)
             {
 
@@ -218,8 +223,6 @@ namespace My.Map.Unit
     {
         public override string StateName => "Attracted";
 
-        private float attractDuration = 0;
-
         public AIStateAttracted(AIBrainV2 brain) : base(brain)
         {
         }
@@ -228,62 +231,61 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
-        }
-
-        public override void OnUpdate()
-        {
-            if(_brain.LatestAttrctInfo.)
-
-            if (LogicTime.time - lastAttractTime > 3.0f)
+            if (_brain.LatestAttrctInfo == null || LogicTime.time - _brain.LatestAttrctInfo.HappenTime > 5.0f)
             {
-                _brain.blackboard.CanLeaveAttract = true;
                 return;
             }
-            PlayerLogicEntity srcPlayer = null;
+            _brain.NpcEntity.RegisterGaze("Attracted", _brain.LatestAttrctInfo.AttractSrcId, _brain.LatestAttrctInfo.HappenPos, EGazePriority.Interact, 0);
+        }
 
-            _brain.blackboard.CurrentAttractLevel = 0;
-            if (_brain.blackboard.AttractSrcId != 0)
+        private float _enterAttractedTimer = 0;
+        public override void OnUpdate()
+        {
+            if(_brain.LatestAttrctInfo == null || LogicTime.time - _brain.LatestAttrctInfo.HappenTime > 5.0f)
             {
-                srcPlayer = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.blackboard.AttractSrcId) as PlayerLogicEntity;
-                if (srcPlayer != null)
+                _brain.ChangeState(_brain.StateReturn);
+                return;
+            }
+
+
+            IAttractSource attractSource = null;
+            if (_brain.LatestAttrctInfo.AttractSrcId != 0)
+            {
+                attractSource = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.LatestAttrctInfo.AttractSrcId) as IAttractSource;
+                if (attractSource != null)
                 {
-                    _brain.blackboard.CurrentAttractLevel = srcPlayer.GetAttractLevel();
+                    _brain.LatestAttrctInfo.HappenPos = attractSource.Pos;
+                    _brain.LatestAttrctInfo.AttractLevel = attractSource.AttractLevel;
                 }
             }
+
 
             // 进行移动
-            if (_brain.blackboard.CurrentAttractLevel >= 3)
+            if (_brain.LatestAttrctInfo.AttractLevel >= 3)
             {
-                // 2级以上 
-                if (srcPlayer != null)
-                {
-                    _brain.NpcEntity.entityMotorComp.TryMoveTo(srcPlayer.Pos, moveSpeedRate: 0.9f);
-                    _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract fast", _brain.NpcEntity.Pos);
-                }
+                _brain.NpcEntity.TryMoveTo(_brain.LatestAttrctInfo.HappenPos, moveSpeedRate: 0.9f);
+                //_brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract fast", _brain.NpcEntity.Pos);
             }
-            else if (_brain.blackboard.CurrentAttractLevel >= 2)
+            else if (_brain.LatestAttrctInfo.AttractLevel >= 2)
             {
                 // 2级以上 
-                if (srcPlayer != null)
-                {
-                    _brain.NpcEntity.entityMotorComp.TryMoveTo(srcPlayer.Pos, moveSpeedRate: 0.1f);
-                    _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract slow", _brain.NpcEntity.Pos);
-                }
+                _brain.NpcEntity.TryMoveTo(attractSource.Pos, moveSpeedRate: 0.1f);
+                _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract slow", _brain.NpcEntity.Pos);
             }
             else
             {
-                _brain.NpcEntity.entityMotorComp.StopMove();
+                _brain.NpcEntity.StopMove();
             }
 
             // 条件满足时执行揩油
-            if (_brain.blackboard.CurrentAttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
+            if (_brain.LatestAttrctInfo.AttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
             {
-                if (srcPlayer != null && !srcPlayer.CheckHasState(AttrIdConsts.ImmumeKaiYou))
+                if (attractSource is PlayerLogicEntity playerEntity && !playerEntity.CheckHasState(AttrIdConsts.ImmumeKaiYou))
                 {
-                    var diff = srcPlayer.Pos - _brain.NpcEntity.Pos;
-                    if (diff.magnitude < 0.5f)
+                    var diff = playerEntity.Pos - _brain.NpcEntity.Pos;
+                    if (diff.magnitude < 0.8f)
                     {
-                        _brain.NpcEntity.abilityController.TryUseAbility("close_kaiyou", target: srcPlayer);
+                        _brain.NpcEntity.abilityController.TryUseAbility("close_kaiyou", target: playerEntity);
                     }
                 }
             }
@@ -292,8 +294,8 @@ namespace My.Map.Unit
         public override void OnExit()
         {
             base.OnExit();
-            _idlePolicy.OnExit(_brain);
-            _brain.HomePos = _brain.NpcEntity.Pos; // 更新复位坐标点
+
+            _brain.NpcEntity.UnregisterGazeBySourceTag("Attracted");
         }
     }
 
@@ -578,6 +580,7 @@ namespace My.Map.Unit
         public AIStateReturn(AIBrainV2 brain) : base(brain) {  }
 
         public override string StateName => "Return";
+        public override bool CanBeAttract => true;
 
         private float _homeLessMinStayTime = 5.0f;
 

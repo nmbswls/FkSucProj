@@ -17,6 +17,8 @@ namespace My.Map
         long Id { get; }
 
         Vector2 Pos { get; }
+
+        int AttractLevel { get; }
     }
 
     public class AttractPointLogicEntity : LogicEntityBase, IAttractSource
@@ -35,6 +37,7 @@ namespace My.Map
 
         public override EEntityType Type => EEntityType.AttractPoint;
 
+        public int AttractLevel => 1;
 
         public override void Initialize()
         {

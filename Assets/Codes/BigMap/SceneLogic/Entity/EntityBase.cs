@@ -29,6 +29,8 @@ namespace My.Map
 
         EncounterCtrl,
         DynamicSpawner,
+
+        MobNpc,
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner

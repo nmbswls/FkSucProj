@@ -17,10 +17,8 @@ namespace My.Home
 
     public class HomeDataManager
     {
-
         public GameLogicManager LogicManager { get; private set; }
 
-        [Serializable]
         public class HomePlacementInfo
         {
             public long InstId;
@@ -29,15 +27,20 @@ namespace My.Home
             public EPlacementRotation Rot;
 
             public HomePlacementDetailInfo Info;
+
+            public Dictionary<int, long> BindingRecordMap = new();
+
+            public int ArrangePeopleNum;
         }
 
-        [Serializable]
         public class HomePlacementDetailInfo
         { }
 
+
+        private Dictionary<string, HomePlacementInfo> fixFacilityMap = new();
+
         public long HomePlacementIdCounter = 100;
 
-        
 
         public List<HomePlacementInfo> PlacementInfos = new();
 
@@ -57,14 +60,42 @@ namespace My.Home
 
         public void OnPlayerEnterHome()
         {
-            //{
-            //    var record = new LogicEntityRecord4InteractPoint();
-            //    record.Id = GameLogicManager.LogicEntityIdInst++;
-            //    record.EntityType = EEntityType.InteractPoint;
-            //    record.CfgId = "teleport";
-            //    record.Position = new Vector2(2.0f, 2.0f);
+            // 初始化placement
+            foreach (var one in PlacementInfos)
+            {
+                // 创建
+                HomePlaceableObject cfg = HomePlacementCfgtLoader.Get(one.Id);
 
-            //    LogicManager.AddNewEntityRecord(record);
+                if(cfg.IsFixed)
+                {
+                    fixFacilityMap[cfg.id] = one;
+                }
+
+                foreach (var bindingOne in cfg.BindingEntityInfoList)
+                {
+                    var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(bindingOne.InitInfo);
+
+                    LogicManager.AddNewEntityRecord(record);
+
+                    one.BindingRecordMap[bindingOne.MemberId] = record.Id;
+                }
+            }
+
+            List<string> fixedFacilityIds= new() { "lab", "teleporter" };
+            List<Vector3Int> fixedFacilityPos = new();
+            //foreach (var facilityId in fixedFacilityList)
+            //{
+            //    if(fixFacilityMap.ContainsKey(facilityId))
+            //    {
+            //        continue;
+            //    }
+
+            //    var newPlacement = new HomePlacementInfo()
+            //    {
+            //        Id = facilityId,
+            //        PivotPos = 
+            //    };
+
             //}
         }
 

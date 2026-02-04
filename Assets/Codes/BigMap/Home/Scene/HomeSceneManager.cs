@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Config;
 using My.Home;
 using My.Map;
 using UnityEngine;
@@ -97,15 +98,15 @@ namespace My
 
         public void InitHomePlacements()
         {
-            foreach(var on in DataSource.PlacementInfos)
+            foreach(var one in DataSource.PlacementInfos)
             {
-                // ´´½¨
+                
             }
 
             InitBuildMask();
 
-            InitFacilities();
-            InitGlobalActionSpots();
+            //InitFacilities();
+            //InitGlobalActionSpots();
 
             var prefab = Resources.Load<GameObject>("Home/SimpleNpc/1");
 

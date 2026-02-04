@@ -476,6 +476,12 @@ public class SceneAOIManager : MonoBehaviour
         try
         {
             pres = await _presentationFactory.SpawnAsync(logic); // === 新增 ===
+            if(MainGameManager.Instance.gameLogicManager.AreaManager.NewCreateEntityMark.Contains(logic.Id))
+            {
+                MainGameManager.Instance.gameLogicManager.AreaManager.NewCreateEntityMark.Remove(logic.Id);
+
+                MainGameManager.Instance.ShowFakeFxEffect("创建", logic.Pos);
+            }
         }
         catch (System.Exception ex)
         {

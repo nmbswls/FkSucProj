@@ -49,6 +49,28 @@ namespace My.Map
             }
         }
 
+        public int AttractLevel 
+        { 
+            get 
+            {
+                var clothesVal = GetAttr(AttrIdConsts.PlayerClothes);
+                if (clothesVal > 80000)
+                {
+                    return 0;
+                }
+
+                if (clothesVal > 50000)
+                {
+                    return 1;
+                }
+                if (clothesVal > 20000)
+                {
+                    return 2;
+                }
+                return 3;
+            } 
+        }
+
         protected override void OnTick(float dt)
         {
             base.OnTick(dt);
@@ -721,28 +743,6 @@ namespace My.Map
         }
 
 
-        public int GetAttractLevel()
-        {
-            return 1;
-
-
-            var clothesVal = GetAttr(AttrIdConsts.PlayerClothes);
-            if(clothesVal > 80000)
-            {
-                return 0;
-            }
-
-            if(clothesVal > 50000)
-            {
-                return 1;
-            }
-            if (clothesVal > 20000)
-            {
-                return 2;
-            }
-            return 3;
-        }
-
         protected override float GetBaseMoveSpeed()
         {
             if(IsQueenMode)
@@ -754,7 +754,6 @@ namespace My.Map
                 return 2.5f;
             }
         }
-
 
     }
 }
