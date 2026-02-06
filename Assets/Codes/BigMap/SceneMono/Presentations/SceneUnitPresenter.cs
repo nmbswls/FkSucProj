@@ -469,18 +469,29 @@ namespace My.Map.Scene
         {
             PresenterOnHit();
 
-            var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.5f, "Hit/Style01", this.Id);
-            if(ctx != null)
+            if(UnitEntity.Type == EEntityType.Player)
             {
-                ctx.BindingUnitVec = new Vector2(0, 0.05f);
-                var dir = UnityEngine.Random.insideUnitCircle.normalized;
-                if(srcId != null)
+                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.1f, "Hit/player_shield", this.Id);
+                if (ctx != null)
                 {
-                    var pres = SceneAOIManager.Instance.GetActivePresentation(srcId.Value);
-                    dir = pres.GetWorldPosition() - this.GetWorldPosition();
+                    ctx.BindingUnitVec = new Vector2(0, 0.555f);
                 }
+            }
+            else
+            {
+                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.5f, "Hit/Style01", this.Id);
+                if (ctx != null)
+                {
+                    ctx.BindingUnitVec = new Vector2(0, 0.05f);
+                    var dir = UnityEngine.Random.insideUnitCircle.normalized;
+                    if (srcId != null)
+                    {
+                        var pres = SceneAOIManager.Instance.GetActivePresentation(srcId.Value);
+                        dir = pres.GetWorldPosition() - this.GetWorldPosition();
+                    }
 
-                ctx.EffectGo.transform.right = -dir;
+                    ctx.EffectGo.transform.right = -dir;
+                }
             }
         }
 
