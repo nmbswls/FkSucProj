@@ -81,7 +81,10 @@ namespace My.Map.Unit
 
         public void OnTick(AIBrainV2 brain, float dt)
         {
-            // 可以加一些随机转头逻辑
+            // 随机转头逻辑
+
+            // 站着需要经常
+            brain.HomePos = brain.NpcEntity.Pos;
         }
 
         public void OnExit(AIBrainV2 brain) { }
@@ -100,6 +103,10 @@ namespace My.Map.Unit
 
         public void OnTick(AIBrainV2 brain, float dt)
         {
+
+
+            // 站着需要经常
+            brain.HomePos = brain.NpcEntity.Pos;
         }
 
         protected void TickWanderPoint(AIBrainV2 brain)
@@ -146,6 +153,9 @@ namespace My.Map.Unit
                 _index = (_index + 1) % points.Count;
                 MoveToNext(brain);
             }
+
+            // 站着需要经常
+            brain.HomePos = brain.NpcEntity.Pos;
         }
 
         public void OnExit(AIBrainV2 brain)
@@ -613,7 +623,39 @@ namespace My.Map.Unit
         {
             if (_brain.Aggro.HasHostile)
             {
-                // 回家路上被打，是否反击？看设计。这里假设继续跑。
+                if (_brain.Config.IsPeace)
+                {
+                    _brain.ChangeState(_brain.StateFlee);
+                }
+                else
+                {
+                    _brain.ChangeState(_brain.StateCombat);
+                }
+                return;
+            }
+
+
+            if (_brain.AttractTrigger)
+            {
+                _brain.ChangeState(_brain.StateAttracted);
+                return;
+            }
+
+            if (_brain.SuspiciousPos != Vector3.zero)
+            {
+                _brain.ChangeState(_brain.StateSearch);
+                return;
+            }
+
+            // 检查是否需要进入通缉状态
+            if (_brain.Config.IsGuard)
+            {
+                int wantedVal = _brain.LogicManager.WantedManager.CurrentWantedVal;
+                if (wantedVal > 0 && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
+                {
+                    _brain.ChangeState(_brain.StateChaseWanted);
+                    return;
+                }
             }
 
             if (_brain.HomePos != null)
