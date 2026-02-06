@@ -47,22 +47,19 @@ namespace My.Map
         {
             ParentFacility = GetComponentInParent<HomeFacility>();
             InitializeSlots();
+        }
 
+        void Start()
+        {
             if (HomeSceneManager.Instance != null)
             {
                 HomeSceneManager.Instance.RegisterGlobalSpot(this);
             }
         }
 
-        void Start()
-        {
-            // 自动向全局管理器注册自己（这样既可以通过设施找，也可以通过全局类型找）
-            //WorldManager.Instance.RegisterGlobalSpot(this);
-        }
-
         void OnDestroy()
         {
-            //WorldManager.Instance.UnregisterGlobalSpot(this);
+            
         }
 
         void InitializeSlots()

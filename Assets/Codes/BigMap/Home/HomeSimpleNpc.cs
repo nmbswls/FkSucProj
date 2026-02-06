@@ -57,14 +57,13 @@ namespace My.Map
 
             FakeInnerEntity = new(MainGameManager.Instance.gameLogicManager, 0, string.Empty, transform.position, new Logic.LogicEntityRecord());
 
+            FakeInnerEntity.Initialize();
             //_agent = GetComponent<NavMeshAgent>();
             _anim = GetComponent<Animator>();
             //_agent.speed = WalkSpeed;
 
             // 初始状态
             SwitchState(MobState.Idle);
-
-            
         }
 
         void Update()

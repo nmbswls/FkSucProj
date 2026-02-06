@@ -110,13 +110,15 @@ namespace My
 
             var prefab = Resources.Load<GameObject>("Home/SimpleNpc/1");
 
-            for(int i=0;i<5;i++)
+            for (int i = 0; i < 5; i++)
             {
                 var go = GameObject.Instantiate(prefab, this.transform);
                 go.SetActive(true);
 
                 var simpleNpc = go.GetComponent<HomeSimpleNpc>();
                 homeSimpleNpc.Add(simpleNpc);
+
+                simpleNpc.CurrentState = HomeSimpleNpc.MobState.Idle;
             }
         }
 

@@ -187,11 +187,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8694658611099338041}
-  - component: {fileID: 4548976129026873501}
   - component: {fileID: 2590517015377699594}
   - component: {fileID: 2309036857234544741}
   m_Layer: 15
-  m_Name: Build_01
+  m_Name: Lab1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,27 +213,6 @@ Transform:
   - {fileID: 2939306281834641171}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4548976129026873501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3470399130860178139}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Key: P/Build_01
-  AppearCond:
-    Type: 0
-    Param1: 0
-    Param2: 0
-    Param3: 0
-    Param4: 0
-    Param5: 
-    Param6: 
 --- !u!114 &2590517015377699594
 MonoBehaviour:
   m_ObjectHideFlags: 0

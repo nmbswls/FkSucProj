@@ -4,6 +4,7 @@ using My.Map;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static MapSceneEffectManager;
 
 public class MapSceneEffectManager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class MapSceneEffectManager : MonoBehaviour
         public int UniqId;
         public string EffectName;
         public GameObject EffectGo;
+        public MapSceneEffectCtrl EffectCtrl;
         public float CleanUpTimer;
 
         public long? BindingUnit = null;
@@ -106,7 +108,15 @@ public class MapSceneEffectManager : MonoBehaviour
         ctx.EffectName = effectName;
         ctx.EffectGo = newGo;
         ctx.BindingUnit = bindingUnitId;
-        if(duration < 0)
+
+        var ctrl = newGo.GetComponent<MapSceneEffectCtrl>();
+        if(ctrl != null)
+        {
+            ctx.EffectCtrl = ctrl;
+            ctx.EffectCtrl.Show();
+        }
+
+        if (duration < 0)
         {
             ctx.CleanUpTimer = -1;
         }

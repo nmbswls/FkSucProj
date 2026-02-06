@@ -10,6 +10,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.MapExport;
 using My.Saving;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static My.MapExport.MapExportDatabase;
 
@@ -49,8 +50,6 @@ namespace My.Home
         public List<string> RepairedFacilityList = new();
 
         public event Action<HomePlacementInfo> EvOnPlacementUpdate;
-
-        public Dictionary<long, long> Placement2EntityMap = new();
 
         public HomeDataManager(GameLogicManager logicManager)
         {
@@ -112,6 +111,39 @@ namespace My.Home
 
         }
 
+        /// <summary>
+        /// 修复 直接不对了
+        /// </summary>
+        /// <param name="facilityId"></param>
+        /// <param name="repairPos"></param>
+        public void DoRepairFacility(string facilityId, Vector2 repairPos)
+        {
+            if(!RepairedFacilityList.Contains(facilityId))
+            {
+                return;
+            }
+
+            RepairedFacilityList.Add(facilityId);
+
+            var facilityCfg = MapFixFacilityCfgLoader.Get(facilityId);
+            if(facilityCfg == null)
+            {
+                return;
+            }
+
+            var placement = facilityCfg.PlacementId;
+
+            var placementCfg = HomePlacementCfgtLoader.Get(placement);
+            if (placementCfg == null)
+            {
+                return;
+            }
+
+            var buildPos = repairPos + facilityCfg.PlaceOffset;
+            var cellPos = HomeSceneManager.Instance.WorldToCell(buildPos);
+            AddPlacement(placement, cellPos, EPlacementRotation.R0);
+        }
+
 
         public bool CheckHasPlacement(string id)
         {
@@ -127,43 +159,61 @@ namespace My.Home
             newInfo.PivotPos = pivorPos;
             newInfo.Rot = rot;
             newInfo.InstId = HomePlacementIdCounter++;
-
-
             PlacementInfos.Add(newInfo);
 
-            var record = new LogicEntityRecord()
+            var placementCfg = HomePlacementCfgtLoader.Get(id);
+            if(placementCfg.BindingEntityInfoList.Count > 0)
             {
-                Id = GameLogicManager.LogicEntityIdInst++,
-                EntityType = EEntityType.HomePlacement,
-                CfgId = id,
-                Position = new Vector2(pivorPos.x * 1f, pivorPos.y * 1.0f),
-            };
+                foreach(var oneEntity in placementCfg.BindingEntityInfoList)
+                {
+                    int memberId = oneEntity.MemberId;
 
-            Vector2 faceDir = Vector2.right;
-            switch (rot)
-            {
-                case EPlacementRotation.R90:
+                    var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(oneEntity.InitInfo);
+                    if(record == null)
                     {
-                        faceDir = new Vector2(0, 1);
+                        Debug.LogError("AddPlacement create entity fail.");
+                        continue;
                     }
-                    break;
-                case EPlacementRotation.R180:
-                    {
-                        faceDir = new Vector2(-1, 0);
-                    }
-                    break;
-                case EPlacementRotation.R270:
-                    {
-                        faceDir = new Vector2(0, -1);
-                    }
-                    break;
+
+                    newInfo.BindingRecordMap[memberId] = record.Id;
+
+                    LogicManager.AddNewEntityRecord(record);
+                }
             }
 
-            record.FaceDir = faceDir;
+            //var record = new LogicEntityRecord()
+            //{
+            //    Id = GameLogicManager.LogicEntityIdInst++,
+            //    EntityType = EEntityType.HomePlacement,
+            //    CfgId = id,
+            //    Position = new Vector2(pivorPos.x * 1f, pivorPos.y * 1.0f),
+            //};
 
-            LogicManager.AddNewEntityRecord(record);
+            //Vector2 faceDir = Vector2.right;
+            //switch (rot)
+            //{
+            //    case EPlacementRotation.R90:
+            //        {
+            //            faceDir = new Vector2(0, 1);
+            //        }
+            //        break;
+            //    case EPlacementRotation.R180:
+            //        {
+            //            faceDir = new Vector2(-1, 0);
+            //        }
+            //        break;
+            //    case EPlacementRotation.R270:
+            //        {
+            //            faceDir = new Vector2(0, -1);
+            //        }
+            //        break;
+            //}
 
-            Placement2EntityMap[newInfo.InstId] = record.Id;
+            //record.FaceDir = faceDir;
+
+            //LogicManager.AddNewEntityRecord(record);
+
+            //Placement2EntityMap[newInfo.InstId] = record.Id;
 
             EvOnPlacementUpdate?.Invoke(newInfo);
         }

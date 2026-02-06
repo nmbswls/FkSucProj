@@ -313,6 +313,36 @@ namespace Config
         }
     }
 
+    public static class MapFixFacilityCfgLoader
+    {
+
+        private static Dictionary<string, MapFixFacilityConfig> _byId = new Dictionary<string, MapFixFacilityConfig>();
+
+        public static MapFixFacilityConfig Get(string cfgId)
+        {
+            if (_byId.TryGetValue(cfgId, out var data))
+                return data;
+
+            var loadOne = Load(cfgId);
+            _byId[cfgId] = loadOne;
+            return loadOne;
+        }
+
+
+        private static MapFixFacilityConfig Load(string cfgId)
+        {
+            var data = Resources.Load<MapFixFacilityConfig>($"Config/Entity/FixFacility/{cfgId}");
+            if (data == null)
+                Debug.LogError($"MapFixFacilityCfgLoader not found at Resources/Config/Entity/FixFacility/{cfgId}");
+            return data;
+        }
+
+        public static void Clear()
+        {
+            _byId.Clear();
+        }
+    }
+
     #region build
 
     public static class HomePlacementCfgtLoader

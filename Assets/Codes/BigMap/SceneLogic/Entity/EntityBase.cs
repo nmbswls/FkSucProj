@@ -31,6 +31,7 @@ namespace My.Map
         DynamicSpawner,
 
         MobNpc,
+        FixFacility,
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner
@@ -429,7 +430,7 @@ namespace My.Map
         {
             if (!MarkDestroyed)
             {
-                attributeStore.Commit();
+                attributeStore?.Commit();
             }
 
             TickLifeTime(dt);

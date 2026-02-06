@@ -13,5 +13,10 @@ namespace My.Map
         }
 
         public override EEntityType Type => EEntityType.MobNpc;
+
+        protected override bool IsMovable()
+        {
+            return true;
+        }
     }
 }

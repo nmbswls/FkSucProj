@@ -268,6 +268,18 @@ public class ConsoleGM : MonoBehaviour
             {
                 MainGameManager.Instance.gameLogicManager.playerLogicEntity.TryStartRetreating();
             });
+
+        Register("hit", "hitt",
+            null,
+            args =>
+            {
+                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, 0.2f, "Hit/player_shield", MainGameManager.Instance.gameLogicManager.playerLogicEntity.Id);
+                if (ctx != null)
+                {
+                    ctx.BindingUnitVec = new Vector2(0, 0.555f);
+                }
+            });
+        
     }
 
     void OnDestroy()
