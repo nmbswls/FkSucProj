@@ -96,6 +96,7 @@ namespace My
         public MapExportDatabase cacheMapDb;
 
         public GameLogicAreaManager AreaManager;
+        public WantedManager WantedManager;
 
         public PlayerSystemManager playerDataManager;
         public HomeDataManager homeDataManager;
@@ -111,6 +112,9 @@ namespace My
         {
             playerDataManager = new(this);
             playerDataManager.InitPlayerData(saveData);
+
+
+
 
             LogicEventBus = new();
             AreaManager = new(this, new GameLogicAreaManager.Settings()
@@ -135,6 +139,7 @@ namespace My
             shopDataManager = new(this);
 
             homeDataManager = new(this);
+            homeDataManager.LoadHomeData(saveData);
             homeDataManager.EvOnPlacementUpdate += (placementInfo) =>
             {
                 

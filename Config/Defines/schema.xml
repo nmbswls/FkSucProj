@@ -1,0 +1,22 @@
+<module name="demo">
+
+    <enum name="ECommonCheckType">
+		<var name="None" value="0"/>
+        <var name="TaskFinish" value="1"/>
+        <var name="CheckVariable" value="2"/>
+        <var name="OwnItem" value="4"/>
+    </enum>
+
+    <!-- 2. 定义复杂结构 Bean (列表中的元素结构) -->
+    <!-- 这个结构体代表"一个奖励" -->
+    <bean name="CommonCheckCond" tags="sep=,">
+        <var name="type" type="ECommonCheckType" comment="类型"/>
+        <var name="param1" type="long" comment="p1"/>
+        <var name="param2" type="long" comment="p2"/>
+		<var name="param3" type="long" comment="p3"/>
+		<var name="param4" type="long" comment="p4"/>
+		<var name="param5" type="string" comment="p5"/>
+		<var name="param6" type="string" comment="p6"/>
+    </bean>
+
+</module>

@@ -177,7 +177,7 @@ public interface ISceneAbilityViewer
 
     void ShowPauseCloseupWindow(string showName, float duration);
 
-    void PlayDialog(string dialogId, long? srcEntityId = null);
+    void PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false);
 
     void StartLoot(ILootableObj lootObj);
 

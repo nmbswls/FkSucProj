@@ -9,6 +9,7 @@ using My.Map;
 using My.Map.Entity;
 using My.Map.Logic;
 using My.MapExport;
+using My.Saving;
 using UnityEngine;
 using static My.MapExport.MapExportDatabase;
 
@@ -18,6 +19,8 @@ namespace My.Home
     public class HomeDataManager
     {
         public GameLogicManager LogicManager { get; private set; }
+
+        public long HomePlacementIdCounter = 100;
 
         public class HomePlacementInfo
         {
@@ -37,12 +40,13 @@ namespace My.Home
         { }
 
 
-        private Dictionary<string, HomePlacementInfo> fixFacilityMap = new();
-
-        public long HomePlacementIdCounter = 100;
-
-
         public List<HomePlacementInfo> PlacementInfos = new();
+
+        /// <summary>
+        /// 已完成修复的facility列表
+        /// 以唯一id存储 
+        /// </summary>
+        public List<string> RepairedFacilityList = new();
 
         public event Action<HomePlacementInfo> EvOnPlacementUpdate;
 
@@ -58,34 +62,38 @@ namespace My.Home
         private Dictionary<string, long> basicProduceOutput;
         private List<string> extraProduceEvents;
 
-        public void OnPlayerEnterHome()
+        /// <summary>
+        /// 从存档中加载
+        /// </summary>
+        /// <param name="saveData"></param>
+        public void LoadHomeData(SaveData saveData)
         {
-            // 初始化placement
-            foreach (var one in PlacementInfos)
-            {
-                // 创建
-                HomePlaceableObject cfg = HomePlacementCfgtLoader.Get(one.Id);
+            //// 初始化placement
+            //foreach (var one in PlacementInfos)
+            //{
+            //    // 创建
+            //    HomePlaceableObject cfg = HomePlacementCfgtLoader.Get(one.Id);
 
-                if(cfg.IsFixed)
-                {
-                    fixFacilityMap[cfg.id] = one;
-                }
+            //    if(cfg.IsFixed)
+            //    {
+            //        fixFacilityMap[cfg.id] = one;
+            //    }
 
-                foreach (var bindingOne in cfg.BindingEntityInfoList)
-                {
-                    var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(bindingOne.InitInfo);
+            //    foreach (var bindingOne in cfg.BindingEntityInfoList)
+            //    {
+            //        var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(bindingOne.InitInfo);
 
-                    LogicManager.AddNewEntityRecord(record);
+            //        LogicManager.AddNewEntityRecord(record);
 
-                    one.BindingRecordMap[bindingOne.MemberId] = record.Id;
-                }
-            }
+            //        one.BindingRecordMap[bindingOne.MemberId] = record.Id;
+            //    }
+            //}
 
-            List<string> fixedFacilityIds= new() { "lab", "teleporter" };
-            List<Vector3Int> fixedFacilityPos = new();
+            //List<string> fixedFacilityIds= new() { "lab", "teleporter" };
+            //List<Vector3Int> fixedFacilityPos = new();
             //foreach (var facilityId in fixedFacilityList)
             //{
-            //    if(fixFacilityMap.ContainsKey(facilityId))
+            //    if (fixFacilityMap.ContainsKey(facilityId))
             //    {
             //        continue;
             //    }
@@ -93,10 +101,15 @@ namespace My.Home
             //    var newPlacement = new HomePlacementInfo()
             //    {
             //        Id = facilityId,
-            //        PivotPos = 
+            //        PivotPos =
             //    };
 
             //}
+        }
+
+        public void OnPlayerEnterHome()
+        {
+
         }
 
 

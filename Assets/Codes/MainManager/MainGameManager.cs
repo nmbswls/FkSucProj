@@ -702,7 +702,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     }
 
 
-    public void PlayDialog(string dialogId, long? srcEntityId = null)
+    public void PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false)
     {
         var dialogAsset = Resources.Load<TextAsset>($"Dialogue/output/{dialogId}");
         if(dialogAsset == null)
@@ -731,10 +731,16 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         dialoguePlayer.ui = dialogPanel;
         dialoguePlayer.PlayFromData(dialogData, runtime, () =>
         {
+            LogicTime.ClearPauseSource("Dialog");
             UIManager.Instance.HidePanel("DialoguePanel");
         });
 
-        if(srcEntityId != null)
+        if(pause)
+        {
+            LogicTime.RequestPause("Dialog");
+        }
+
+        if (srcEntityId != null)
         {
             var entity = gameLogicManager.GetLogicEntity(srcEntityId.Value);
             if(entity != null && entity is BaseUnitLogicEntity unitEntity)

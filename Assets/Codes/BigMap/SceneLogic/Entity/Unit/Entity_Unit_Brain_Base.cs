@@ -27,6 +27,8 @@ namespace My.Map.Unit
         public string SpecialAnimTag2;
         public string SpecialAnimTag3;
         public string SpecialAnimTag4;
+
+        public bool IsGuard;
     }
 
     public static class AIBrainParamsConfigLoader
@@ -98,6 +100,8 @@ namespace My.Map.Unit
         public AIStateFlee StateFlee;
         public AIStateSearch StateSearch;
         public AIStateAttracted StateAttracted;
+        public AIStateChaseWanted StateChaseWanted;
+
 
         // 黑板 (Blackboard) - 状态间共享数据
         public Vector2? HomePos;
@@ -139,6 +143,11 @@ namespace My.Map.Unit
             StateFlee = new AIStateFlee(this);
             StateSearch = new AIStateSearch(this);
             StateAttracted = new AIStateAttracted(this);
+
+            if(Config.IsGuard)
+            {
+                StateChaseWanted = new AIStateChaseWanted(this);
+            }
 
             ChangeState(StateIdle);
         }
@@ -208,6 +217,15 @@ namespace My.Map.Unit
             attractInfo.AttractSrcId = attractSrcId;
 
             LatestAttrctInfo = attractInfo;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public int GetAreaWantedVal()
+        {
+            return LogicManager.WantedManager.CurrentWantedVal;
         }
     }
 

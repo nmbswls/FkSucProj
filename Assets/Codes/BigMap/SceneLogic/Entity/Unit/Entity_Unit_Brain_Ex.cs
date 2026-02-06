@@ -200,12 +200,28 @@ namespace My.Map.Unit
 
 
             if(_brain.AttractTrigger)
+            {
+                _brain.ChangeState(_brain.StateAttracted);
+                return;
+            }
 
             if (_brain.SuspiciousPos != Vector3.zero)
             {
-
+                _brain.ChangeState(_brain.StateSearch);
+                return;
             }
 
+            // 检查是否需要进入通缉状态
+            if(_brain.Config.IsGuard)
+            {
+                int wantedVal = _brain.LogicManager.WantedManager.CurrentWantedVal;
+                if (wantedVal > 0 && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
+                {
+                    _brain.ChangeState(_brain.StateChaseWanted);
+                    return;
+                }
+            }
+            
             // 3. 执行闲置策略
             _idlePolicy.OnTick(_brain, Time.deltaTime);
         }
@@ -743,6 +759,105 @@ namespace My.Map.Unit
                     }
                     break;
             }
+        }
+    }
+
+    public class AIStateChaseWanted : AIBaseState
+    {
+        public override string StateName => "ChaseWanted";
+
+        private float chaseChillTimer = 0;
+        private long wantedUnitId;
+
+        public AIStateChaseWanted(AIBrainV2 brain) : base(brain)
+        {
+        }
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+
+            chaseChillTimer = 0;
+            wantedUnitId = _brain.NpcEntity.LogicManager.playerLogicEntity.Id;
+
+            _brain.NpcEntity.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "抓你。", 2.0f);
+        }
+
+        public override void OnUpdate()
+        {
+            int wantedVal = _brain.GetAreaWantedVal();
+            if (wantedVal < 0)
+            {
+                if(chaseChillTimer == 0)
+                {
+                    chaseChillTimer = LogicTime.time + 1.0f;
+                    _brain.NpcEntity.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "没事了。", 2.0f);
+                }
+            }
+            else
+            {
+                chaseChillTimer = 0;
+            }
+
+            // 时间到了 可以退出
+            if(chaseChillTimer != 0 && LogicTime.time > chaseChillTimer)
+            {
+                _brain.ChangeState(_brain.StateIdle);
+                return;
+            }
+
+            // 什么时候退出追逐？
+            bool lostTarget = false;
+            Vector2 searchPos = _brain.NpcEntity.Pos;
+            if (_brain.NpcEntity.VisionSystem.VisibleMap.TryGetValue(wantedUnitId, out var visibilityEntry))
+            {
+                if(!visibilityEntry.IsInView)
+                {
+                    lostTarget = true;
+                    searchPos = visibilityEntry.LastKnownPos;
+                }
+            }
+            else
+            {
+                lostTarget = true;
+                searchPos = _brain.NpcEntity.Pos;
+            }
+
+            // 丢失目标 进行search
+            if (lostTarget)
+            {
+                _brain.ChangeState(_brain.StateSearch);
+                _brain.SuspiciousPos = searchPos;
+                return;
+            }
+
+            var searchTarget = _brain.NpcEntity.LogicManager.GetLogicEntity(wantedUnitId, false);
+            if(searchTarget == null)
+            {
+                _brain.ChangeState(_brain.StateIdle);
+                return;
+            }
+
+            // 移动
+            _brain.NpcEntity.TryMoveTo(searchTarget.Pos, moveSpeedRate: 1f);
+
+            var diff = searchTarget.Pos - _brain.NpcEntity.Pos;
+            // 
+            if(diff.magnitude < 0.3f)
+            {
+                // 出现对话
+                _brain.NpcEntity.LogicManager.viewer.PlayDialog("wanted_catch", srcEntityId: _brain.NpcEntity.Id, pause:true);
+
+                _brain.ChangeState(_brain.StateIdle);
+                return;
+            }
+        }
+
+        public override void OnExit()
+        {
+            base.OnExit();
+
+            _brain.NpcEntity.UnregisterGazeBySourceTag("ChaseWanted");
         }
     }
 }

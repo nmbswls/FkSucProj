@@ -18,6 +18,7 @@ public partial class Tables
     public demo.TbMapAreaInfo TbMapAreaInfo {get; }
     public demo.TbDropBundle TbDropBundle {get; }
     public demo.TbDropItem TbDropItem {get; }
+    public demo.TbFixedFacility TbFixedFacility {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -25,6 +26,7 @@ public partial class Tables
         TbMapAreaInfo = new demo.TbMapAreaInfo(loader("demo_tbmapareainfo"));
         TbDropBundle = new demo.TbDropBundle(loader("demo_tbdropbundle"));
         TbDropItem = new demo.TbDropItem(loader("demo_tbdropitem"));
+        TbFixedFacility = new demo.TbFixedFacility(loader("demo_tbfixedfacility"));
         ResolveRef();
     }
     
@@ -34,6 +36,7 @@ public partial class Tables
         TbMapAreaInfo.ResolveRef(this);
         TbDropBundle.ResolveRef(this);
         TbDropItem.ResolveRef(this);
+        TbFixedFacility.ResolveRef(this);
     }
 }
 
