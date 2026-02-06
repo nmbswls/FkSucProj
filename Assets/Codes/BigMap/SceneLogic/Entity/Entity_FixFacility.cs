@@ -10,17 +10,16 @@ using UnityEngine;
 
 namespace My.Map
 {
-    public class LogicEntityFixFacility : LogicEntityBase
+    public class LogicEntityFacilityRuin : LogicEntityBase
     {
 
-        public MapFixFacilityConfig Cfg;
+        public MapFacilityRuinConfig Cfg;
 
-        public LogicEntityFixFacility(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
+        public LogicEntityFacilityRuin(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
         }
 
-        public override EEntityType Type => EEntityType.FixFacility;
-
+        public override EEntityType Type => EEntityType.FacilityRuin;
 
 
         public bool IsRepaired = false;
@@ -36,7 +35,7 @@ namespace My.Map
             Cfg = MapFixFacilityCfgLoader.Get(CfgId);
         }
 
-        protected virtual void OnTick(float dt)
+        protected override void OnTick(float dt)
         {
             base.OnTick(dt);
 
@@ -75,10 +74,13 @@ namespace My.Map
         }
 
 
+        public void TryManualRepair()
+        {
+            OnRepairFinish();
+        }
+
         public void OnRepairFinish()
         {
-            string outputPlacement = Cfg.PlacementId;
-
             // ±ê¼Ç
             IsRepaired = true;
 

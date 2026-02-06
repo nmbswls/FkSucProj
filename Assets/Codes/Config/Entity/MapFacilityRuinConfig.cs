@@ -10,7 +10,7 @@ namespace Config.Map
 {
     [CreateAssetMenu(menuName = "GP/Config/Entity/FixFacility")]
     [Serializable]
-    public class MapFixFacilityConfig : ScriptableObject
+    public class MapFacilityRuinConfig : ScriptableObject
     {
         public string CfgId;
 

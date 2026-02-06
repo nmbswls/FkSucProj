@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Config;
 using Map.Logic.Events;
 using My.Map;
@@ -23,6 +24,7 @@ namespace My.Home
 
         public long HomePlacementIdCounter = 100;
 
+        public float GridSize = 1;
         public class HomePlacementInfo
         {
             public long InstId;
@@ -111,6 +113,19 @@ namespace My.Home
 
         }
 
+        public Vector3Int WorldToCell(Vector3 worldPos)
+        {
+            int x = Mathf.FloorToInt(worldPos.x / GridSize);
+            int y = Mathf.FloorToInt(worldPos.y / GridSize);
+
+            return new Vector3Int(x, y, 0);
+        }
+
+        public Vector3 CellToWorld(Vector3Int cellPos)
+        {
+            return new Vector3(cellPos.x * GridSize, cellPos.y * GridSize, 0);
+        }
+
         /// <summary>
         /// 修复 直接不对了
         /// </summary>
@@ -118,7 +133,7 @@ namespace My.Home
         /// <param name="repairPos"></param>
         public void DoRepairFacility(string facilityId, Vector2 repairPos)
         {
-            if(!RepairedFacilityList.Contains(facilityId))
+            if(RepairedFacilityList.Contains(facilityId))
             {
                 return;
             }
@@ -133,14 +148,15 @@ namespace My.Home
 
             var placement = facilityCfg.PlacementId;
 
-            var placementCfg = HomePlacementCfgtLoader.Get(placement);
+            var placementCfg = MapHomePlacementEntityCfgtLoader.Get(placement);
             if (placementCfg == null)
             {
+                Debug.LogError($"DoRepairFacility PlacementEntity cfg not found {placement}" );
                 return;
             }
 
-            var buildPos = repairPos + facilityCfg.PlaceOffset;
-            var cellPos = HomeSceneManager.Instance.WorldToCell(buildPos);
+            var buildPos = repairPos;
+            var cellPos = WorldToCell(buildPos);
             AddPlacement(placement, cellPos, EPlacementRotation.R0);
         }
 
@@ -161,25 +177,33 @@ namespace My.Home
             newInfo.InstId = HomePlacementIdCounter++;
             PlacementInfos.Add(newInfo);
 
-            var placementCfg = HomePlacementCfgtLoader.Get(id);
-            if(placementCfg.BindingEntityInfoList.Count > 0)
-            {
-                foreach(var oneEntity in placementCfg.BindingEntityInfoList)
-                {
-                    int memberId = oneEntity.MemberId;
+            Vector2 recordPos = CellToWorld(pivorPos);
 
-                    var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(oneEntity.InitInfo);
-                    if(record == null)
-                    {
-                        Debug.LogError("AddPlacement create entity fail.");
-                        continue;
-                    }
+            var initInfo = new EntityInitInfo4HomePlacement();
+            initInfo.CfgId = id;
+            initInfo.Position = recordPos;
+            var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
 
-                    newInfo.BindingRecordMap[memberId] = record.Id;
 
-                    LogicManager.AddNewEntityRecord(record);
-                }
-            }
+            //var placementCfg = HomePlacementCfgtLoader.Get(id);
+            //if(placementCfg.BindingEntityInfoList.Count > 0)
+            //{
+            //    foreach(var oneEntity in placementCfg.BindingEntityInfoList)
+            //    {
+            //        int memberId = oneEntity.MemberId;
+
+            //        var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(oneEntity.InitInfo);
+            //        if(record == null)
+            //        {
+            //            Debug.LogError("AddPlacement create entity fail.");
+            //            continue;
+            //        }
+
+            //        newInfo.BindingRecordMap[memberId] = record.Id;
+
+            //        LogicManager.AddNewEntityRecord(record);
+            //    }
+            //}
 
             //var record = new LogicEntityRecord()
             //{
@@ -211,7 +235,7 @@ namespace My.Home
 
             //record.FaceDir = faceDir;
 
-            //LogicManager.AddNewEntityRecord(record);
+            LogicManager.AddNewEntityRecord(record, isCreate: true);
 
             //Placement2EntityMap[newInfo.InstId] = record.Id;
 

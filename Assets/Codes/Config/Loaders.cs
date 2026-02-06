@@ -316,9 +316,9 @@ namespace Config
     public static class MapFixFacilityCfgLoader
     {
 
-        private static Dictionary<string, MapFixFacilityConfig> _byId = new Dictionary<string, MapFixFacilityConfig>();
+        private static Dictionary<string, MapFacilityRuinConfig> _byId = new Dictionary<string, MapFacilityRuinConfig>();
 
-        public static MapFixFacilityConfig Get(string cfgId)
+        public static MapFacilityRuinConfig Get(string cfgId)
         {
             if (_byId.TryGetValue(cfgId, out var data))
                 return data;
@@ -329,11 +329,11 @@ namespace Config
         }
 
 
-        private static MapFixFacilityConfig Load(string cfgId)
+        private static MapFacilityRuinConfig Load(string cfgId)
         {
-            var data = Resources.Load<MapFixFacilityConfig>($"Config/Entity/FixFacility/{cfgId}");
+            var data = Resources.Load<MapFacilityRuinConfig>($"Config/Entity/FacilityRuin/{cfgId}");
             if (data == null)
-                Debug.LogError($"MapFixFacilityCfgLoader not found at Resources/Config/Entity/FixFacility/{cfgId}");
+                Debug.LogError($"MapFixFacilityCfgLoader not found at Resources/Config/Entity/FacilityRuin/{cfgId}");
             return data;
         }
 
@@ -363,7 +363,7 @@ namespace Config
 
         private static HomePlaceableObject Load(string cfgId)
         {
-            var data = Resources.Load<HomePlaceableObject>($"Config/Placement/{cfgId}");
+            var data = Resources.Load<HomePlaceableObject>($"Config/Entity/Placement/{cfgId}");
             if (data == null)
                 Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Placement/{cfgId}");
             return data;

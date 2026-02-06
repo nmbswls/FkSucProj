@@ -118,6 +118,8 @@ namespace My
                 var simpleNpc = go.GetComponent<HomeSimpleNpc>();
                 homeSimpleNpc.Add(simpleNpc);
 
+                simpleNpc.transform.position = new Vector3(-2, -2, 0);
+
                 simpleNpc.CurrentState = HomeSimpleNpc.MobState.Idle;
             }
         }
@@ -138,15 +140,7 @@ namespace My
         }
 
 
-        public Vector3Int WorldToCell(Vector3 worldPos)
-        {
-            return BuildGrid.WorldToCell(worldPos);
-        }
-
-        public Vector3 CellToWorld(Vector3Int cellPos)
-        {
-            return BuildGrid.CellToWorld(cellPos);
-        }
+        
 
         public bool CanPlace(HomePlaceableObject obj, EPlacementRotation rot, Vector3Int pivotCell)
         {

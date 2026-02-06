@@ -95,7 +95,7 @@ namespace My.Map.Logic
         /// <param name="refreshInfo"></param>
         public void HandleOneRefreshInfo(DynamicEntityRefreshInfo refreshInfo)
         {
-            if (RefreshInfoRuntimes.TryGetValue(refreshInfo.UniqId, out var refreshRuntime))
+            if (RefreshInfoRuntimes.TryGetValue(refreshInfo.StaticId, out var refreshRuntime))
             {
                 if(!refreshInfo.WillRespawn)
                 {
@@ -126,13 +126,13 @@ namespace My.Map.Logic
             }
 
             RegisterEntityRecord(record);
-            RefreshInfoRuntimes[refreshInfo.UniqId] = new SceneRefreshInfoRuntime()
+            RefreshInfoRuntimes[refreshInfo.StaticId] = new SceneRefreshInfoRuntime()
             {
                 EntityInstId = record.Id,
                 LastRespawnTime = LogicTime.time,
             };
 
-            Record2RefreshInfo[record.Id] = refreshInfo.UniqId;
+            Record2RefreshInfo[record.Id] = refreshInfo.StaticId;
         }
 
 

@@ -556,6 +556,12 @@ namespace My
                         newEntity = egEntity;
                     }
                     break;
+                case EEntityType.FacilityRuin:
+                    {
+                        var newGatherPoint = new LogicEntityFacilityRuin(this, record.Id, record.CfgId, record.Position, record);
+                        newEntity = newGatherPoint;
+                    }
+                    break;
                 default:
                     {
                         ;

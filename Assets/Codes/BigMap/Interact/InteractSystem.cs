@@ -12,8 +12,6 @@ using static UnityEditor.PlayerSettings;
 
 public interface ISceneInteractable
 {
-    long Id { get; }
-
     string ShowName { get; }
 
     Vector2 Pos { get; }

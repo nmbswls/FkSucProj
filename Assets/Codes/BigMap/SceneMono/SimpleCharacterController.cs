@@ -207,9 +207,7 @@ namespace My.Map.Scene
                     var otherRb = col.attachedRigidbody;
                     if (!otherRb || otherRb == rb) continue;
                     var sceneDynamic = col.GetComponent<IScenePresentation>();
-                    if (sceneDynamic == null) continue;
-
-                    if(sceneDynamic.GetLogicEntity().CheckHasState(AttrIdConsts.Ghost))
+                    if (sceneDynamic != null && sceneDynamic.GetLogicEntity().CheckHasState(AttrIdConsts.Ghost))
                     {
                         continue;
                     }

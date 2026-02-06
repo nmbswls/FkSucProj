@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Animancer;
 using My.Map.Entity;
 using My.Map.Scene;
 using UnityEngine;
@@ -25,12 +26,13 @@ namespace My.Map
         public MobState CurrentState = MobState.Idle;
 
         [Header("配置参数")]
-        public float WalkSpeed = 3.5f;
+        public float WalkSpeed = 1.5f;
         public float DecisionInterval = 2.0f; // 闲置多久后做决策
 
         // --- 内部组件 ---
         //private NavMeshAgent _agent;
-        private Animator _anim;
+        //private Animator _anim;
+        private AnimancerComponent _anim;
 
         // --- 运行时数据 ---
         private float _timer = 0f;          // 通用计时器
@@ -52,18 +54,48 @@ namespace My.Map
 
         public Vector2 Pos => transform.position;
 
+        public SimpleCharacterController CharacterController;
+
         void Start()
         {
 
             FakeInnerEntity = new(MainGameManager.Instance.gameLogicManager, 0, string.Empty, transform.position, new Logic.LogicEntityRecord());
 
             FakeInnerEntity.Initialize();
+            FakeInnerEntity.moveSpeed = 1.0f;
             //_agent = GetComponent<NavMeshAgent>();
-            _anim = GetComponent<Animator>();
+            _anim = GetComponent<AnimancerComponent>();
             //_agent.speed = WalkSpeed;
 
             // 初始状态
             SwitchState(MobState.Idle);
+
+            if (!CharacterController)
+            {
+                CharacterController = GetComponent<SimpleCharacterController>();
+                CharacterController.GetDisiredVelFunc = GetFixedDesiredVel;
+                CharacterController.ClampValidPos = (desired) =>
+                {
+                    return WorldAreaManager.Instance.ClampPathToWalkable(transform.position, desired);
+                };
+                CharacterController.IsGhoseMove = () =>
+                {
+                    return false;
+                };
+                CharacterController.SyncPos = (pos) =>
+                {
+                    FakeInnerEntity.SetPosition(pos);
+                };
+
+            }
+        }
+
+        public Vector2 GetFixedDesiredVel()
+        {
+            if (FakeInnerEntity == null) return Vector2.zero;
+
+            Vector2 targetMoveVel = FakeInnerEntity.GetDesiredVelocity();
+            return targetMoveVel;
         }
 
         void Update()
@@ -93,6 +125,8 @@ namespace My.Map
             UpdateAnimationParams();
 
             FakeInnerEntity?.Tick(LogicTime.deltaTime);
+
+
         }
 
         // --- 状态逻辑 Tick ---
@@ -135,12 +169,17 @@ namespace My.Map
                 }
 
                 var diff = MainGameManager.Instance.playerScenePresenter.Pos - this.Pos;
-                if (diff.sqrMagnitude < 1.0f)
+                if (diff.sqrMagnitude > 1.0f)
                 {
-                    return;
+                    break;
                 }
+
+                FakeInnerEntity?.StopMove();
+                return;
             }
             while (false);
+
+            FakeInnerEntity?.TryMoveTo(_targetSpot.transform.position);
 
             var targetDiff = _targetSpot.transform.position - this.transform.position;
             if (targetDiff.magnitude < 0.2f)
@@ -151,6 +190,12 @@ namespace My.Map
 
         private void TickWorking()
         {
+            if (_targetSpot == null)
+            {
+                StopTaskAndIdle();
+                return;
+            }
+
             // 确保面对正确方向
             if (_targetSpot != null)
             {
@@ -239,7 +284,7 @@ namespace My.Map
             // 播放特定动画
             if (_targetSpot != null && !string.IsNullOrEmpty(_targetSpot.AnimationTrigger))
             {
-                _anim.SetTrigger(_targetSpot.AnimationTrigger);
+                //_anim?.SetTrigger(_targetSpot.AnimationTrigger);
             }
 
             SwitchState(MobState.Working);
@@ -252,7 +297,7 @@ namespace My.Map
             ReleaseCurrentSpot();
 
             // 2. 动画复位
-            _anim.SetTrigger("StopWork");
+            //_anim?.SetTrigger("StopWork");
 
             // 3. 回到 Idle
             SwitchState(MobState.Idle);
@@ -267,7 +312,7 @@ namespace My.Map
             _previousState = CurrentState;
 
             // 动画重置为站立
-            _anim.SetTrigger("StopWork");
+            //_anim?.SetTrigger("StopWork");
 
             CurrentState = MobState.Interacting;
         }
@@ -287,7 +332,7 @@ namespace My.Map
             else if (CurrentState == MobState.Working)
             {
                 // 恢复动作
-                if (_targetSpot != null) _anim.SetTrigger(_targetSpot.AnimationTrigger);
+                //if (_targetSpot != null) _anim.SetTrigger(_targetSpot.AnimationTrigger);
             }
         }
 

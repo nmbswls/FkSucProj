@@ -93,6 +93,10 @@ public static class PresentationConfig
                 {
                     return $"Prefab/Presentations/DynamicSpawner";
                 }
+            case EEntityType.FacilityRuin:
+                {
+                    return $"Prefab/Presentations/FacilityRuin/{cfgId}";
+                }
             // ...
             default: return "Prefab/Presentations/Default";
         }

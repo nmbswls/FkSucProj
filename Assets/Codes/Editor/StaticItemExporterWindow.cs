@@ -444,19 +444,21 @@ public class StaticItemExporterWindow : EditorWindow
             chunkItems.FovStaticSegments = kv.Value;
         }
 
-        HashSet<int> refreshKeys = new();
+        int staticIdCounter = 100;
+        HashSet<string> uniqNames = new();
         foreach (var dynamicGen in dynamicGenerator)
         {
             var refreshInfo = dynamicGen.RefreshInfo;
-            if(refreshKeys.Contains(refreshInfo.UniqId))
+            if(!string.IsNullOrEmpty(refreshInfo.UniqName) && uniqNames.Contains(refreshInfo.UniqName))
             {
-                Debug.LogError($"duplicate key {refreshInfo.UniqId} in {dynamicGen.gameObject.name}");
+                Debug.LogError($"duplicate key {refreshInfo.UniqName} in {dynamicGen.gameObject.name}");
                 continue;
             }
+            refreshInfo.StaticId = staticIdCounter++;
             refreshInfo.InitInfo.Position = dynamicGen.transform.position;
             //refreshInfo.InitInfo.FaceDir = dynamicGen.transform.position;
 
-            refreshKeys.Add(refreshInfo.UniqId);
+            uniqNames.Add(refreshInfo.UniqName);
             asset.EntityRefreshInfo.Add(refreshInfo);
         }
 

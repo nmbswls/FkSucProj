@@ -47,7 +47,7 @@ namespace My.UI
 
         public GameObject InteractHintPrefab;
         public GameObject EvilAlertPrefab;
-        private Dictionary<long, SceneInteractUIHinter> sceneInteractHintDicts = new();
+        private Dictionary<ISceneInteractable, SceneInteractUIHinter> sceneInteractHintDicts = new();
         private Queue<SceneInteractUIHinter> _hintPool = new();
 
         public class SceneAlertUIStruct
@@ -57,9 +57,6 @@ namespace My.UI
             public NpcUnitLogicEntity bindingNpc;
         }
         private Dictionary<long, SceneAlertUIStruct> _evilAlertRecords = new Dictionary<long, SceneAlertUIStruct>();
-
-
-
 
 
         public Canvas TopCanvas;
@@ -206,7 +203,7 @@ namespace My.UI
 
                 hint.sceneInteract = interactPoint;
                 hint.gameObject.SetActive(true);
-                sceneInteractHintDicts[interactPoint.Id] = hint;
+                sceneInteractHintDicts[interactPoint] = hint;
 
                 hint.transform.position = scenePresentation.GetWorldPosition();
                 hint.transform.localPosition = new Vector3(hint.transform.localPosition.x, hint.transform.localPosition.y, 0);
@@ -217,12 +214,12 @@ namespace My.UI
         {
             if (scenePresentation is ISceneInteractable interactPoint)
             {
-                sceneInteractHintDicts.TryGetValue(scenePresentation.Id, out var hintItem);
+                sceneInteractHintDicts.TryGetValue(interactPoint, out var hintItem);
                 if (hintItem != null)
                 {
                     hintItem.Clear();
                     hintItem.gameObject.SetActive(false);
-                    sceneInteractHintDicts.Remove(scenePresentation.Id);
+                    sceneInteractHintDicts.Remove(interactPoint);
 
                     if (_hintPool.Count < 10)
                     {

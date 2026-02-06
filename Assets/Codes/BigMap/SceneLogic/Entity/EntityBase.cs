@@ -30,8 +30,8 @@ namespace My.Map
         EncounterCtrl,
         DynamicSpawner,
 
-        MobNpc,
-        FixFacility,
+        MobNpc = 100,
+        FacilityRuin,
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner
@@ -495,7 +495,10 @@ namespace My.Map
         {
             this.Pos = pos;
             // callback –Œ Ω
-            LogicManager.AreaManager.UpdatePosition(this.Id, pos);
+            if(this.Id != 0)
+            {
+                LogicManager.AreaManager.UpdatePosition(this.Id, pos);
+            }
         }
 
 

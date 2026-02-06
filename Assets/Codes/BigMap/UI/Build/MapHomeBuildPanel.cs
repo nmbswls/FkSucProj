@@ -159,8 +159,8 @@ namespace My.UI
             Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(UnityEngine.Input.mousePosition);
             mouseWorld.z = 0;
             
-            var cell = HomeSceneManager.Instance.WorldToCell(mouseWorld);
-            var worldPivot = HomeSceneManager.Instance.CellToWorld(cell);
+            var cell = HomeSceneManager.Instance.DataSource.WorldToCell(mouseWorld);
+            var worldPivot = HomeSceneManager.Instance.DataSource.CellToWorld(cell);
 
             
             bool valid = HomeSceneManager.Instance.CanPlace(currentPlacement, rot, cell);
@@ -193,7 +193,7 @@ namespace My.UI
 
         public void TryConfirmPlace(Vector3 worldPos)
         {
-            var cell = HomeSceneManager.Instance.WorldToCell(worldPos);
+            var cell = HomeSceneManager.Instance.DataSource.WorldToCell(worldPos);
             bool valid = HomeSceneManager.Instance.CanPlace(currentPlacement, rot, cell);
 
             if (valid) HomeSceneManager.Instance.TryPlace(currentPlacement, rot, cell, false);

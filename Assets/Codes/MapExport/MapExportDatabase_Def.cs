@@ -55,7 +55,15 @@ namespace My.MapExport
     [Serializable]
     public class DynamicEntityRefreshInfo
     {
-        public int UniqId; // 场景内唯一id 用于检查是否已创建 自动分配
+        /// <summary>
+        /// 自动赋值
+        /// </summary>
+        public int StaticId; // 场景内唯一id 用于检查是否已创建 自动分配
+
+        /// <summary>
+        /// 唯一名字
+        /// </summary>
+        public string UniqName;
 
         /// <summary>
         /// 出现条件
@@ -162,6 +170,13 @@ namespace My.MapExport
     {
         public override EEntityType EntityType => EEntityType.EventGroup;
     }
+
+    [Serializable]
+    public class EntityInitInfo4FacilityRuin : EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.FacilityRuin;
+    }
+
 
     [Serializable]
     public class EntityInitInfo4PatrolGroup : EntityInitInfo
