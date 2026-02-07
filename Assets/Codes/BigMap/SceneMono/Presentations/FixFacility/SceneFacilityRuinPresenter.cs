@@ -23,6 +23,8 @@ namespace My.Map.Scene
         [SerializeField]
         private SpriteRenderer[] _sprites;
 
+        public Transform HintPivot;
+
         
         [ContextMenu("Auto Collect Child Sprites")]
         private void CollectSprites()
@@ -136,6 +138,10 @@ namespace My.Map.Scene
 
         public Vector3 GetHintAnchorPosition()
         {
+            if(HintPivot != null)
+            {
+                return HintPivot.position;
+            }
             return transform.position;
         }
 

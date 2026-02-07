@@ -150,7 +150,7 @@ namespace My.UI
         /// </summary>
         private void TryUpdateInteractSelections()
         {
-            if(LogicTime.time - _refreshSelectionTimer < 1f)
+            if(LogicTime.time - _refreshSelectionTimer < 0.3f)
             {
                 return;
             }
@@ -411,7 +411,7 @@ namespace My.UI
 
             if(this.ActiveInteractableList.Count != 0)
             {
-                if(LogicTime.time - refreshIntent.HappenTime < 0.2f)
+                if(LogicTime.time - refreshIntent.HappenTime < 0.1f)
                 {
                     return;
                 }

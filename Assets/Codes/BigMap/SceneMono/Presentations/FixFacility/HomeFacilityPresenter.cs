@@ -52,8 +52,16 @@ namespace My
 #endif
         }
 
+        private Dictionary<int, float> _interactCdTimer = new();
+
         public bool CanSubInteractEnable(int subIdx)
         {
+            _interactCdTimer.TryGetValue(subIdx, out var lastCd);
+            if(lastCd != 0 && LogicTime.time - lastCd < 1.0f)
+            {
+                return false;
+            }
+
             var innerCfg = FacilityEntity.InnerFacilityRef.CfgRef;
             if(innerCfg == null)
             {
@@ -68,6 +76,7 @@ namespace My
 
             return true;
         }
+
 
         public List<SceneInteractSelection> GetSubInteractSelections(int subIdx)
         {
@@ -85,6 +94,7 @@ namespace My
         public bool SubTriggerInteract(int subIdx, int selectionId)
         {
             MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"Œ“ «{FacilityEntity.InnerFacilityRef.Id}°£", 1f);
+            _interactCdTimer[subIdx] = LogicTime.time;
             return true;
         }
 

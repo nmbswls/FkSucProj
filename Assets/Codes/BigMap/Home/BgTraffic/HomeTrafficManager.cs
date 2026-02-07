@@ -57,26 +57,29 @@ namespace My.Map
         {
             if (_endPoints.Count < 2) return; // 至少要有两个端点才能走
 
-            var npc = _pool.Find(x => !x.IsActive);
-            if (npc == null) return;
-            npc.gameObject.SetActive(true);
             // 1. 随机选一个出生点 (StartNode)
             var startNode = _endPoints[Random.Range(0, _endPoints.Count)];
 
             // 2. 寻找一条通往“其他端点”的路
             Queue<Vector3> route = GenerateRouteToAnyExit(startNode);
 
-            if (route != null && route.Count > 0)
+            if (route == null || route.Count == 0)
             {
-                Vector3 offset = new Vector3(
+                return;
+            }
+
+            var npc = _pool.Find(x => !x.IsActive);
+            if (npc == null) return;
+            npc.gameObject.SetActive(true);
+
+            Vector3 offset = new Vector3(
                     Random.Range(-PathRandomWidth, PathRandomWidth),
                     Random.Range(-PathRandomWidth, PathRandomWidth),
                     0
                 );
 
-                // 加上偏移量
-                npc.Init(startNode.transform.position + offset, route, offset);
-            }
+            // 加上偏移量
+            npc.Init(startNode.transform.position + offset, route, offset);
         }
 
         Queue<Vector3> GenerateRouteToAnyExit(HomeTrafficNode startNode)
