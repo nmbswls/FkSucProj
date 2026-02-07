@@ -44,6 +44,10 @@ MonoBehaviour:
         Param3: insult_girl_peace
         Param4: 
         DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
     - InteractId: 2
       Label: "\u9547\u538B"
       UnLabel: 
@@ -59,6 +63,10 @@ MonoBehaviour:
         Param3: insult_girl_force
         Param4: 
         DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
     HasBlock: 0
   ExtraStatusInfos:
   - StatusId: 9
@@ -79,12 +87,20 @@ MonoBehaviour:
         Param3: 
         Param4: 
         DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
       - OutputType: 100
-        Param1: 1
-        Param2: 9
+        Param1: 9
+        Param2: 0
         Param3: 
         Param4: 
         DelayTime: 0
+        TargetType: 1
+        MemberId: 1
+        StaticName: 
+        DynamicEntityVariable: 
     - InteractId: 2
       Label: 
       UnLabel: 
@@ -100,6 +116,10 @@ MonoBehaviour:
         Param3: 
         Param4: 
         DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
     HasBlock: 0
   - StatusId: 10
     Desp: "\u6E05\u7406\u5B8C\u6BD5 \u53EA\u5269\u5C11\u5973"
@@ -113,12 +133,16 @@ MonoBehaviour:
       CheckCommonCond: []
       CheckInteractCond: []
       Outputs:
-      - OutputType: 100
-        Param1: 1
-        Param2: 10
+      - OutputType: 1
+        Param1: 10
+        Param2: 0
         Param3: 
         Param4: 
         DelayTime: 0
+        TargetType: 1
+        MemberId: 1
+        StaticName: 
+        DynamicEntityVariable: 
     HasBlock: 0
   InitState: 0
   StateChangeRules:
@@ -169,6 +193,10 @@ MonoBehaviour:
       Param3: 
       Param4: 
       DelayTime: 0
+      TargetType: 0
+      MemberId: 0
+      StaticName: 
+      DynamicEntityVariable: 
   - TriggerId: 101
     TriggerType: 1
     MaxTriggerCnt: 1

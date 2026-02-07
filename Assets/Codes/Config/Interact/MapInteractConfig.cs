@@ -50,6 +50,18 @@ namespace My.Config
         public string Param4;
 
         public float DelayTime;
+
+        public enum ETargetType
+        {
+            Default,
+            GroupMember,
+            StaticName,
+            DynamicEntity,
+        }
+        public ETargetType TargetType;
+        public int MemberId;
+        public string StaticName;
+        public string DynamicEntityVariable;
     }
 
     [Serializable]

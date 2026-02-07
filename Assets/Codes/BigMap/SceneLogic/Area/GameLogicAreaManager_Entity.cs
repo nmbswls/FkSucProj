@@ -55,6 +55,7 @@ namespace My.Map.Logic
             public float LastDestroyTime;
         }
         public Dictionary<int, SceneRefreshInfoRuntime> RefreshInfoRuntimes = new();
+
         public Dictionary<long, int> Record2RefreshInfo = new();
 
         private Dictionary<EEntityType, List<long>> Type2EntityList = new();

@@ -70,6 +70,15 @@ namespace My.Map.Logic
 
         public InnerListener innerListener;
         public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
+
+        public Dictionary<string, int> StaticName2RefreshIdMap = new();
+
+        public int GetStaticIdByUniqName(string name)
+        {
+            StaticName2RefreshIdMap.TryGetValue(name, out var id);
+            return id;
+        }
+
         public GameLogicAreaManager(GameLogicManager logicManager, Settings settings)
         {
             this.settings = settings;
@@ -147,6 +156,17 @@ namespace My.Map.Logic
 
             EntityRefreshInfo.Clear();
             EntityRefreshInfo.AddRange(cacheDatabase.EntityRefreshInfo);
+
+            StaticName2RefreshIdMap.Clear();
+            foreach (var oneStaticInfo in EntityRefreshInfo)
+            {
+                if(string.IsNullOrEmpty(oneStaticInfo.UniqName))
+                {
+                    continue;
+                }
+                StaticName2RefreshIdMap[oneStaticInfo.UniqName] = oneStaticInfo.StaticId;
+            }
+
             // º”‘ÿrepo
             if (Repo == null)
             {

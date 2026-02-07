@@ -86,6 +86,8 @@ namespace My.Map
                     return;
                 }
 
+
+
                 bool pendingFinish = false;
                 switch (_currInteract.Outputs[_currOutputIdx].OutputType)
                 {
@@ -133,6 +135,7 @@ namespace My.Map
         }
 
 
+        
         public bool CheckTriggerInteract(int interactId)
         {
             var interactItem = interactInfos.Find((item) => item.InteractId == interactId);
@@ -199,6 +202,59 @@ namespace My.Map
             return passed;
         }
 
+        /// <summary>
+        /// 获取交互作用目标
+        /// 仅针对部分output有效果
+        /// </summary>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        private long GetInteractTarget(LogicInteractOutput output)
+        {
+            switch(output.TargetType)
+            {
+                case LogicInteractOutput.ETargetType.DynamicEntity:
+                    {
+                        var vName = output.DynamicEntityVariable;
+                        var idStr = Owner.GetRuntimeVariable(vName);
+                        long.TryParse(idStr, out var targetId);
+                        return targetId;
+                    }
+                    break;
+                case LogicInteractOutput.ETargetType.StaticName:
+                    {
+                        var staticName = output.StaticName;
+                        var staticid = Owner.LogicManager.AreaManager.GetStaticIdByUniqName(staticName);
+
+                        Owner.LogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticid, out var refreshRuntime);
+                        if(refreshRuntime == null)
+                        {
+                            return 0;
+                        }
+
+                        return refreshRuntime.EntityInstId;
+                    }
+                    break;
+                case LogicInteractOutput.ETargetType.GroupMember:
+                    {
+                        var ownerEG = Owner as EventGroupLogicEntity;
+                        if (ownerEG == null)
+                        {
+                            Debug.LogError("EGMemberChangeState owner not event group ");
+                            return 0;
+                        }
+
+                        int memberId = output.MemberId;
+
+                        ownerEG.MemberId2EntityMap.TryGetValue(memberId, out var entityId);
+                        return entityId;
+                    }
+                case LogicInteractOutput.ETargetType.Default:
+                    {
+                        return Owner.Id;
+                    }
+            }
+            return 0;
+        }
         public bool TryTriggerInteract(int interactId)
         {
             if(!CheckTriggerInteract(interactId))
@@ -239,13 +295,32 @@ namespace My.Map
                 {
                     case LogicInteractOutput.EOutputType.ChangeSelfStatus:
                         {
-                            if (Owner is not LogicEntityInteractPoint intPoint)
+
+                            var targetEntityId = GetInteractTarget(output);
+                            if(targetEntityId == 0)
                             {
-                                Debug.Log("TryTriggerInteract not valid change self status");
+                                Debug.Log("TryTriggerInteract ChangeSelfStatus not valid target");
                                 errOccur = true;
                                 break;
                             }
-                            intPoint.ChangeSelfStatus((int)output.Param1);
+
+                            LogicEntityInteractPoint toChangeEntity = null;
+                            if (targetEntityId == Owner.Id)
+                            {
+                                toChangeEntity = Owner as LogicEntityInteractPoint;
+                            }
+                            else
+                            {
+                                toChangeEntity = Owner.LogicManager.GetLogicEntity(targetEntityId, false) as LogicEntityInteractPoint;
+                            }
+
+                            if (toChangeEntity == null)
+                            {
+                                Debug.Log("TryTriggerInteract target not interact point");
+                                errOccur = true;
+                                break;
+                            }
+                            toChangeEntity.ChangeSelfStatus((int)output.Param1);
                         }
                         break;
                     case LogicInteractOutput.EOutputType.Teleport:
@@ -387,38 +462,6 @@ namespace My.Map
 
                     #region group相关
 
-                    case Config.LogicInteractOutput.EOutputType.EGMemberChangeState:
-                        {
-
-                            var ownerEG = Owner as EventGroupLogicEntity;
-                            if (ownerEG == null)
-                            {
-                                Debug.LogError("EGMemberChangeState owner not event group ");
-                                break;
-                            }
-
-                            int memberId = (int)output.Param1;
-                            int status = (int)output.Param2;
-
-                            ownerEG.MemberId2EntityMap.TryGetValue(memberId, out var entityId);
-                            if (entityId == 0)
-                            {
-                                Debug.Log("HandleOutput EGMemberChangeState UpdateInteractStatus fail e");
-                                errOccur = true;
-                                break;
-                            }
-
-                            var intPoint = Owner.LogicManager.GetLogicEntity(entityId) as LogicEntityInteractPoint;
-                            if (intPoint == null)
-                            {
-                                Debug.Log("HandleOutput UpdateInteractStatus no entity e");
-                                errOccur = true;
-                                break;
-                            }
-
-                            intPoint.ChangeSelfStatus(status);
-                        }
-                        break;
                     case Config.LogicInteractOutput.EOutputType.EGMemberActivate:
                         {
 
