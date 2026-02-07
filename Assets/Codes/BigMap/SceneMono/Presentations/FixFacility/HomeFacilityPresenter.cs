@@ -54,6 +54,18 @@ namespace My
 
         public bool CanSubInteractEnable(int subIdx)
         {
+            var innerCfg = FacilityEntity.InnerFacilityRef.CfgRef;
+            if(innerCfg == null)
+            {
+                return false;
+            }
+
+            var func = innerCfg.SubFuncInfos.Find(item=>item.SubHandleIdx == subIdx);
+            if(func == null)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -74,6 +86,33 @@ namespace My
         {
             MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"Œ“ «{FacilityEntity.InnerFacilityRef.Id}°£", 1f);
             return true;
+        }
+
+        public override void Bind(ILogicEntity logic)
+        {
+            base.Bind(logic);
+
+            //Vector2 faceDir = Vector2.right;
+            //switch (rot)
+            //{
+            //    case EPlacementRotation.R90:
+            //        {
+            //            faceDir = new Vector2(0, 1);
+            //        }
+            //        break;
+            //    case EPlacementRotation.R180:
+            //        {
+            //            faceDir = new Vector2(-1, 0);
+            //        }
+            //        break;
+            //    case EPlacementRotation.R270:
+            //        {
+            //            faceDir = new Vector2(0, -1);
+            //        }
+            //        break;
+            //}
+
+            //record.FaceDir = faceDir;
         }
     }
 }

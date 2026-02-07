@@ -10,12 +10,12 @@ namespace My
 {
     public enum EPlacementRotation { R0, R90, R180, R270 }
 
-    [CreateAssetMenu(menuName = "GP/Build/PlaceableObject")]
-    public class HomePlaceableObject : ScriptableObject
+    [CreateAssetMenu(menuName = "GP/Build/HomeFacilityCfg")]
+    public class HomeFacilityCfg : ScriptableObject
     {
         [Header("Meta")]
-        public string id;
-        public string name;
+        public string CfgId;
+        public string Name;
 
         public Sprite sprite;
         //public GameObject prefab; // 实际放置的 Prefab
@@ -36,6 +36,23 @@ namespace My
         [HideInInspector] public List<Vector2Int> footprintR90;
         [HideInInspector] public List<Vector2Int> footprintR180;
         [HideInInspector] public List<Vector2Int> footprintR270;
+
+
+        public enum EFacilityFuncType
+        { 
+            None,
+        }
+
+        [Serializable]
+        public class SubFuncStruct
+        {
+            public int SubHandleIdx;
+            public EFacilityFuncType FuncType;
+            public int FuncParam1;
+            public int FuncParam2;
+        }
+
+        public List<SubFuncStruct> SubFuncInfos = new();
 
 
         /// <summary>

@@ -42,6 +42,8 @@ namespace My.Home
             public int ArrangePeopleNum;
 
             public bool Removed = false;
+
+            public HomeFacilityCfg CfgRef;
         }
 
         public class HomePlacementDetailInfo
@@ -166,16 +168,18 @@ namespace My.Home
 
             var placement = facilityCfg.PlacementId;
 
-            var placementCfg = MapHomePlacementEntityCfgtLoader.Get(placement);
-            if (placementCfg == null)
-            {
-                Debug.LogError($"DoRepairFacility PlacementEntity cfg not found {placement}" );
-                return;
-            }
+            //var placementCfg = MapHomePlacementEntityCfgtLoader.Get(placement);
+            //if (placementCfg == null)
+            //{
+            //    Debug.LogError($"DoRepairFacility PlacementEntity cfg not found {placement}" );
+            //    return;
+            //}
+
+            var pCfg = HomeFacilityCfgtLoader.Get(placement);
 
             var buildPos = repairPos;
             var cellPos = WorldToCell(buildPos);
-            AddPlacement(placement, cellPos, EPlacementRotation.R0);
+            AddPlacement(pCfg, cellPos, EPlacementRotation.R0);
         }
 
 
@@ -186,13 +190,14 @@ namespace My.Home
 
 
 
-        public void AddPlacement(string id, Vector3Int pivorPos, EPlacementRotation rot)
+        public void AddPlacement(HomeFacilityCfg cfg, Vector3Int pivorPos, EPlacementRotation rot)
         {
             var newInfo = new HomeFacilityInstance();
-            newInfo.Id = id;
+            newInfo.Id = cfg.CfgId;
             newInfo.PivotPos = pivorPos;
             newInfo.Rot = rot;
             newInfo.InstId = HomePlacementIdCounter++;
+            newInfo.CfgRef = cfg;
             PlacementInfos.Add(newInfo);
 
             homePlacementMap[newInfo.InstId] = newInfo;
@@ -200,13 +205,13 @@ namespace My.Home
             Vector2 recordPos = CellToWorld(pivorPos);
 
             var initInfo = new EntityInitInfo4HomePlacement();
-            initInfo.CfgId = id;
+            initInfo.CfgId = cfg.CfgId;
             initInfo.Position = recordPos;
             initInfo.BindingFacilityId = newInfo.InstId;
+
             var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
 
 
-            //var placementCfg = HomePlacementCfgtLoader.Get(id);
             //if(placementCfg.BindingEntityInfoList.Count > 0)
             //{
             //    foreach(var oneEntity in placementCfg.BindingEntityInfoList)
@@ -234,28 +239,6 @@ namespace My.Home
             //    Position = new Vector2(pivorPos.x * 1f, pivorPos.y * 1.0f),
             //};
 
-            //Vector2 faceDir = Vector2.right;
-            //switch (rot)
-            //{
-            //    case EPlacementRotation.R90:
-            //        {
-            //            faceDir = new Vector2(0, 1);
-            //        }
-            //        break;
-            //    case EPlacementRotation.R180:
-            //        {
-            //            faceDir = new Vector2(-1, 0);
-            //        }
-            //        break;
-            //    case EPlacementRotation.R270:
-            //        {
-            //            faceDir = new Vector2(0, -1);
-            //        }
-            //        break;
-            //}
-
-            //record.FaceDir = faceDir;
-
             LogicManager.AddNewEntityRecord(record, isCreate: true);
 
             //Placement2EntityMap[newInfo.InstId] = record.Id;
@@ -277,7 +260,7 @@ namespace My.Home
 
 
 
-        public List<HomePlaceableObject> GetAllBuilableItems()
+        public List<HomeFacilityCfg> GetAllBuilableItems()
         {
             List<string> names = new List<string>()
             {
@@ -291,11 +274,11 @@ namespace My.Home
                 "big_03",
             };
 
-            List<HomePlaceableObject> ret = new();
+            List<HomeFacilityCfg> ret = new();
 
             foreach (var name in names)
             {
-                var conf = HomePlacementCfgtLoader.Get(name);
+                var conf = HomeFacilityCfgtLoader.Get(name);
                 ret.Add(conf);
             }
 

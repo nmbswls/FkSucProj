@@ -13,7 +13,7 @@ namespace My.UI
         public Image background;
         public TextMeshProUGUI title;
 
-        private HomePlaceableObject? data;
+        private HomeFacilityCfg? data;
         public Action onClick;
 
         public Color baseColor;
@@ -31,7 +31,7 @@ namespace My.UI
             }
         }
 
-        public void Bind(HomePlaceableObject d, bool selected)
+        public void Bind(HomeFacilityCfg d, bool selected)
         {
             data = d;
             title.text = d.name;

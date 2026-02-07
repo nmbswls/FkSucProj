@@ -23,7 +23,7 @@ namespace My.UI
         public BuildPreviewController preview;
 
 
-        public HomePlaceableObject? currentPlacement;
+        public HomeFacilityCfg? currentPlacement;
         private EPlacementRotation rot = EPlacementRotation.R0;
 
         public LoopListView2 buildItemsList;
@@ -34,7 +34,7 @@ namespace My.UI
         private int selectedIndex = -1; // 确认选择项
 
 
-        protected List<HomePlaceableObject> buildingItemDatas = new();
+        protected List<HomeFacilityCfg> buildingItemDatas = new();
 
         public void Awake()
         {
@@ -132,7 +132,7 @@ namespace My.UI
         /// </summary>
         /// <param name="index"></param>
         /// <param name="data"></param>
-        private void NotifySelectionChanged(int index, HomePlaceableObject data)
+        private void NotifySelectionChanged(int index, HomeFacilityCfg data)
         {
             
             Debug.Log($"MapHomeBuildPanel Selection changed: index={index}, data={(data == null ? "null" : data.name)}");

@@ -20,7 +20,7 @@ namespace My
             ghostGo.gameObject.SetActive(false);
         }
 
-        public void InitPreview(HomePlaceableObject obj)
+        public void InitPreview(HomeFacilityCfg obj)
         {
 
             if (ghostRenderer != null)

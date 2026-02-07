@@ -223,37 +223,6 @@ namespace Config
         }
     }
 
-    public static class MapHomePlacementEntityCfgtLoader
-    {
-
-        private static Dictionary<string, MapHomePlacementEntityConfig> _byId = new Dictionary<string, MapHomePlacementEntityConfig>();
-
-        public static MapHomePlacementEntityConfig Get(string cfgId)
-        {
-            if (_byId.TryGetValue(cfgId, out var data))
-                return data;
-
-            var loadOne = Load(cfgId);
-            _byId[cfgId] = loadOne;
-            return loadOne;
-        }
-
-
-        private static MapHomePlacementEntityConfig Load(string cfgId)
-        {
-            var data = Resources.Load<MapHomePlacementEntityConfig>($"Config/Entity/HomePlacement/{cfgId}");
-            if (data == null)
-                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/HomePlacement/{cfgId}");
-            return data;
-        }
-
-        public static void Clear()
-        {
-            _byId.Clear();
-        }
-    }
-
-
     public static class MapEventGroupCfgLoader
     {
 
@@ -345,12 +314,12 @@ namespace Config
 
     #region build
 
-    public static class HomePlacementCfgtLoader
+    public static class HomeFacilityCfgtLoader
     {
 
-        private static Dictionary<string, HomePlaceableObject> _byId = new Dictionary<string, HomePlaceableObject>();
+        private static Dictionary<string, HomeFacilityCfg> _byId = new Dictionary<string, HomeFacilityCfg>();
 
-        public static HomePlaceableObject Get(string cfgId)
+        public static HomeFacilityCfg Get(string cfgId)
         {
             if (_byId.TryGetValue(cfgId, out var data))
                 return data;
@@ -361,9 +330,9 @@ namespace Config
         }
 
 
-        private static HomePlaceableObject Load(string cfgId)
+        private static HomeFacilityCfg Load(string cfgId)
         {
-            var data = Resources.Load<HomePlaceableObject>($"Config/Entity/Placement/{cfgId}");
+            var data = Resources.Load<HomeFacilityCfg>($"Config/Placement/{cfgId}");
             if (data == null)
                 Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Placement/{cfgId}");
             return data;

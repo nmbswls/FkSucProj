@@ -142,7 +142,7 @@ namespace My
 
         
 
-        public bool CanPlace(HomePlaceableObject obj, EPlacementRotation rot, Vector3Int pivotCell)
+        public bool CanPlace(HomeFacilityCfg obj, EPlacementRotation rot, Vector3Int pivotCell)
         {
             foreach (var offset in obj.GetFootprint(rot))
             {
@@ -162,18 +162,18 @@ namespace My
         /// <param name="rot"></param>
         /// <param name="pivotCell"></param>
         /// <param name="isMove"></param>
-        public void TryPlace(HomePlaceableObject obj, EPlacementRotation rot, Vector3Int pivotCell, bool isMove)
+        public void TryPlace(HomeFacilityCfg obj, EPlacementRotation rot, Vector3Int pivotCell, bool isMove)
         {
             // 实例化实际对象
             //var go = Instantiate(GetPrefabFor(obj, rot));
             //go.transform.position = CellToWorld(pivotCell);
             if(isMove)
             {
-                DataSource.MovePlacement(obj.id, pivotCell, rot);
+                DataSource.MovePlacement(obj.CfgId, pivotCell, rot);
             }
             else
             {
-                DataSource.AddPlacement(obj.id, pivotCell, rot);
+                DataSource.AddPlacement(obj, pivotCell, rot);
             }
 
             // var chunkPos = SceneAOIManager.Instance.WorldToChunk(CellToWorld(pivotCell));
