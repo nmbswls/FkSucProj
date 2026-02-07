@@ -455,7 +455,11 @@ namespace My.Map.Scene
             return ret;
         }
 
-        
+
+        public bool IsAutoInteract()
+        {
+            return false;
+        }
     }
 }
 

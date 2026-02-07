@@ -312,6 +312,11 @@ namespace My.Map.Scene
 
             IsInBusyZone = isInBusy;
         }
+
+        public bool IsAutoInteract()
+        {
+            return false;
+        }
     }
 
 }

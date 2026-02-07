@@ -74,6 +74,11 @@ namespace My.Map.Scene
 
             return true;
         }
+
+        public bool IsAutoInteract()
+        {
+            return false;
+        }
     }
 }
 

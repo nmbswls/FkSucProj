@@ -123,6 +123,11 @@ namespace My.Map.Scene
 
             gameObject.SetActive(false);
         }
+
+        public bool IsAutoInteract()
+        {
+            return false;
+        }
     }
 }
 

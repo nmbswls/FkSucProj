@@ -56,6 +56,11 @@ namespace My.Map.Scene
         {
             return Owner.SubTriggerInteract(HandleIdx, selectionId);
         }
+
+        public bool IsAutoInteract()
+        {
+            return false;
+        }
     }
 }
 

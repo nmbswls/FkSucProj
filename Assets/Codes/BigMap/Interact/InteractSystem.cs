@@ -24,6 +24,8 @@ public interface ISceneInteractable
     float GetHintOffsetInfos();
 
     List<SceneInteractSelection> GetInteractSelections();
+
+    bool IsAutoInteract();
 }
 
 public class SceneInteractSelection
@@ -207,8 +209,6 @@ public class SceneInteractSystem
             }
             while (false);
             
-            
-
             if (!interactable.CanInteractEnable())
             {
                 continue;
@@ -219,6 +219,14 @@ public class SceneInteractSystem
             // 检查普通交互
             if (closestDist > _normalCheckRadius)
             {
+                continue;
+            }
+
+            // 自动触发 直接自动触发
+            if (interactable.IsAutoInteract())
+            {
+                Debug.Log("trigger auto interact.");
+                interactable.TriggerInteract(1);
                 continue;
             }
 

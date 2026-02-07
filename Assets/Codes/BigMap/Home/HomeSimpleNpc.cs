@@ -405,6 +405,11 @@ namespace My.Map
             });
             return ret;
         }
+
+        public bool IsAutoInteract()
+        {
+            return false;
+        }
     }
 }
 

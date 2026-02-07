@@ -33,6 +33,8 @@ namespace My.Map.Scene
             }
         }
 
+        public Collider2D AutoTriggerArea;
+
         public LogicEntityInteractPoint RealLogic { get { return (LogicEntityInteractPoint)_logic; } }
 
         public Vector3 GetHintAnchorPosition()
@@ -117,6 +119,16 @@ namespace My.Map.Scene
             }
 
             return enableOne > 0;
+        }
+
+        public bool IsAutoInteract()
+        {
+            var statInfo = RealLogic.GetCurrentStatusInfo();
+            if(statInfo == null)
+            {
+                return false;
+            }
+            return statInfo.AutoTrigger;
         }
 
         public override void Bind(ILogicEntity logic)

@@ -28,6 +28,7 @@ namespace Config.Map
             public List<MapInteractInfo> InteractInfos = new();
 
             public bool HasBlock = false;
+            public bool AutoTrigger = false;
         }
 
         public StatusInfo MainStatusInfo;
