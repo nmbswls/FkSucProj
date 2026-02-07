@@ -9,9 +9,13 @@ using UnityEngine;
 
 namespace My.Map.Scene
 {
-    public class SceneFacilityRuinPresenter : ScenePresentationBase<LogicEntityFacilityRuin>, ISubInteractHolder
+    public class SceneFacilityRuinPresenter : ScenePresentationBase<LogicEntityFacilityRuin>, ISceneInteractable
     {
         public LogicEntityFacilityRuin FacilityRuinEntity { get { return (LogicEntityFacilityRuin)_logic; } }
+
+        public string ShowName => "废墟";
+
+        public Vector2 Pos => transform.position;
 
         public GameObject MainBlock;
 
@@ -19,24 +23,7 @@ namespace My.Map.Scene
         [SerializeField]
         private SpriteRenderer[] _sprites;
 
-        /// <summary>
-        /// handle 处理者
-        /// </summary>
-        public SubInteractHandle[] Handles;
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            if (Handles != null)
-            {
-                foreach (var handle in Handles)
-                {
-                    handle.Owner = this;
-                }
-            }
-        }
-
+        
         [ContextMenu("Auto Collect Child Sprites")]
         private void CollectSprites()
         {
@@ -54,7 +41,6 @@ namespace My.Map.Scene
         public override void Tick(float dt)
         {
             base.Tick(dt);
-
         }
 
         public override void Bind(ILogicEntity logic)
@@ -117,14 +103,16 @@ namespace My.Map.Scene
             }
         }
 
-        public bool CanSubInteractEnable(int subIdx)
+
+
+        public bool CanInteractEnable()
         {
             if(FacilityRuinEntity.IsRepaired)
             {
                 return false;
             }
 
-            if (FacilityRuinEntity.Cfg.AutoRepair)
+            if(FacilityRuinEntity.Cfg.AutoRepair)
             {
                 return false;
             }
@@ -132,22 +120,53 @@ namespace My.Map.Scene
             return true;
         }
 
-        public List<SceneInteractSelection> GetSubInteractSelections(int subIdx)
+        public bool TriggerInteract(int selectionId)
+        {
+            if (FacilityRuinEntity.Cfg.AutoRepair)
+            {
+                MainGameManager.Instance.ShowMapSpeachBubble(FacilityRuinEntity.Id, "没修好。", 1f);
+            }
+            else
+            {
+                FacilityRuinEntity.TryManualRepair();
+            }
+
+            return true;
+        }
+
+        public Vector3 GetHintAnchorPosition()
+        {
+            return transform.position;
+        }
+
+        public List<SceneInteractSelection> GetInteractSelections()
         {
             var ret = new List<SceneInteractSelection>();
 
-            ret.Add(new SceneInteractSelection()
+
+            if (FacilityRuinEntity.Cfg.AutoRepair)
             {
-                SelectId = 1,
-                SelectContent = "修复",
-            });
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 1,
+                    SelectContent = "查看",
+                });
+            }
+            else
+            {
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 1,
+                    SelectContent = "修理",
+                });
+            }
+
             return ret;
         }
 
-        public bool SubTriggerInteract(int subIdx, int selectionId)
+        public float GetHintOffsetInfos()
         {
-            FacilityRuinEntity.TryManualRepair();
-            return true;
+            return -1;
         }
     }
 }

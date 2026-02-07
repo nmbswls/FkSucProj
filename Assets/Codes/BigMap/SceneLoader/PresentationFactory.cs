@@ -81,7 +81,7 @@ public static class PresentationConfig
                 {
                     return $"Prefab/Presentations/PatrolGroup";
                 }
-            case EEntityType.HomePlacement:
+            case EEntityType.HomeFacility:
                 {
                     return $"Prefab/Presentations/HomePlacement/{cfgId}";
                 }

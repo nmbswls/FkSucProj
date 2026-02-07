@@ -489,6 +489,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 0}
   pivotHeader: {fileID: 0}
+  ViewRoot: {fileID: 0}
+  _sprites: []
+  Handles:
+  - {fileID: 1835137824017116745}
 --- !u!1 &5646382003257544820
 GameObject:
   m_ObjectHideFlags: 0

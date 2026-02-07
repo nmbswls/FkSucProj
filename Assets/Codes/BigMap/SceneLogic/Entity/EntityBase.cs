@@ -25,13 +25,14 @@ namespace My.Map
         AttractPoint,
         PatrolGroup,
         EventGroup,
-        HomePlacement,
 
         EncounterCtrl,
         DynamicSpawner,
 
         MobNpc = 100,
         FacilityRuin,
+        HomeFacility,
+
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner

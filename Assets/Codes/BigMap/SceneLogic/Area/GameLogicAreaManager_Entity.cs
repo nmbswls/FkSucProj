@@ -214,6 +214,15 @@ namespace My.Map.Logic
                         record = egRecord;
                     }
                     break;
+                case EEntityType.HomeFacility:
+                    {
+                        var realRecord = new LogicEntityRecord4HomeFacility();
+
+                        var initInfo4HomeFacility = (EntityInitInfo4HomePlacement)initInfo;
+                        realRecord.BindingFacilityId = initInfo4HomeFacility.BindingFacilityId;
+                        record = realRecord;
+                        break;
+                    }
                 default:
                     {
                         record = new LogicEntityRecord();
@@ -240,7 +249,7 @@ namespace My.Map.Logic
             {
                 case EEntityType.Player:
                 case EEntityType.PatrolGroup:
-                case EEntityType.HomePlacement:
+                case EEntityType.HomeFacility:
                     {
                         return true;
                     }

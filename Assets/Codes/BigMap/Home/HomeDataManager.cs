@@ -25,7 +25,10 @@ namespace My.Home
         public long HomePlacementIdCounter = 100;
 
         public float GridSize = 1;
-        public class HomePlacementInfo
+        /// <summary>
+        /// 
+        /// </summary>
+        public class HomeFacilityInstance
         {
             public long InstId;
             public string Id;
@@ -37,13 +40,28 @@ namespace My.Home
             public Dictionary<int, long> BindingRecordMap = new();
 
             public int ArrangePeopleNum;
+
+            public bool Removed = false;
         }
 
         public class HomePlacementDetailInfo
         { }
 
 
-        public List<HomePlacementInfo> PlacementInfos = new();
+        public List<HomeFacilityInstance> PlacementInfos = new();
+
+        private Dictionary<long, HomeFacilityInstance> homePlacementMap = new();
+
+        /// <summary>
+        /// 查找设施
+        /// </summary>
+        /// <param name="placementId"></param>
+        /// <returns></returns>
+        public HomeFacilityInstance FindPlacementById(long placementId)
+        {
+            homePlacementMap.TryGetValue(placementId, out var placement);
+            return placement;
+        }
 
         /// <summary>
         /// 已完成修复的facility列表
@@ -51,7 +69,7 @@ namespace My.Home
         /// </summary>
         public List<string> RepairedFacilityList = new();
 
-        public event Action<HomePlacementInfo> EvOnPlacementUpdate;
+        public event Action<HomeFacilityInstance> EvOnPlacementUpdate;
 
         public HomeDataManager(GameLogicManager logicManager)
         {
@@ -170,18 +188,21 @@ namespace My.Home
 
         public void AddPlacement(string id, Vector3Int pivorPos, EPlacementRotation rot)
         {
-            var newInfo = new HomePlacementInfo();
+            var newInfo = new HomeFacilityInstance();
             newInfo.Id = id;
             newInfo.PivotPos = pivorPos;
             newInfo.Rot = rot;
             newInfo.InstId = HomePlacementIdCounter++;
             PlacementInfos.Add(newInfo);
 
+            homePlacementMap[newInfo.InstId] = newInfo;
+
             Vector2 recordPos = CellToWorld(pivorPos);
 
             var initInfo = new EntityInitInfo4HomePlacement();
             initInfo.CfgId = id;
             initInfo.Position = recordPos;
+            initInfo.BindingFacilityId = newInfo.InstId;
             var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
 
 

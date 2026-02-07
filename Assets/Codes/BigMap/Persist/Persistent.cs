@@ -126,4 +126,13 @@ namespace My.Map.Logic
         //public List<int> SleepMemberIds = new();
         //public List<int> DestroyedMemberIds = new();
     }
+
+    /// <summary>
+    /// …Ë ©
+    /// </summary>
+    [Serializable]
+    public class LogicEntityRecord4HomeFacility : LogicEntityRecord4InteractPoint
+    {
+        public long BindingFacilityId;
+    }
 }

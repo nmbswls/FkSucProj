@@ -8,20 +8,32 @@ using static UnityEditor.Progress;
 using My.Player.Bag;
 using Map.Logic.Events;
 using My.Map.Logic;
+using static My.Home.HomeDataManager;
 
 
 namespace My.Map
 {
-    public class HomePlacementLogicEntity : LogicEntityBase
+    public class HomeFacilityLogicEntity : LogicEntityBase
     {
 
-        public string DropId;
-        public HomePlacementLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
+        public HomeFacilityLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
-            
+            var realRecord = (LogicEntityRecord4HomeFacility)bindingRecord;
+            HomePlacementId = realRecord.BindingFacilityId;
         }
 
-        public override EEntityType Type => EEntityType.HomePlacement;
+
+        public override EEntityType Type => EEntityType.HomeFacility;
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            InnerFacilityRef = LogicManager.homeDataManager.FindPlacementById(HomePlacementId);
+
+        }
+        public long HomePlacementId;
+        public HomeFacilityInstance InnerFacilityRef;
 
     }
      

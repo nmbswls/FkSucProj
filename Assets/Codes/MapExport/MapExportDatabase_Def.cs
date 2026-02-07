@@ -162,7 +162,9 @@ namespace My.MapExport
     [Serializable]
     public class EntityInitInfo4HomePlacement : EntityInitInfo
     {
-        public override EEntityType EntityType => EEntityType.HomePlacement;
+        public override EEntityType EntityType => EEntityType.HomeFacility;
+
+        public long BindingFacilityId;
     }
 
     [Serializable]

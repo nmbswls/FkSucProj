@@ -542,9 +542,9 @@ namespace My
                     }
                     break;
 
-                case EEntityType.HomePlacement:
+                case EEntityType.HomeFacility:
                     {
-                        var homePlacement = new HomePlacementLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                        var homePlacement = new HomeFacilityLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                         newEntity = homePlacement;
                     }
                     break;
