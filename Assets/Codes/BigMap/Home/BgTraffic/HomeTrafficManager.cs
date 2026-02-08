@@ -53,6 +53,20 @@ namespace My.Map
             }
         }
 
+        private List<Vector2> roundOffsetList = new()
+        {
+            new Vector2(0.2f, -0.2f),
+            new Vector2(0.2f, 0.2f),
+            new Vector2(0.2f, 0),
+            new Vector2(0f, -0f),
+            new Vector2(0f, -0.2f),
+            new Vector2(0f, 0.2f),
+            new Vector2(-0.2f, 0.2f),
+            new Vector2(-0.2f, 0),
+            new Vector2(-0.2f, -0.2f),
+        };
+        private int roundIdx = 0;
+
         void TrySpawnNpc()
         {
             if (_endPoints.Count < 2) return; // 至少要有两个端点才能走
@@ -68,15 +82,14 @@ namespace My.Map
                 return;
             }
 
+            roundIdx += 1;
+            var offsetIdx = roundIdx % roundOffsetList.Count;
+
             var npc = _pool.Find(x => !x.IsActive);
             if (npc == null) return;
             npc.gameObject.SetActive(true);
 
-            Vector3 offset = new Vector3(
-                    Random.Range(-PathRandomWidth, PathRandomWidth),
-                    Random.Range(-PathRandomWidth, PathRandomWidth),
-                    0
-                );
+            Vector3 offset = roundOffsetList[offsetIdx];
 
             // 加上偏移量
             npc.Init(startNode.transform.position + offset, route, offset);

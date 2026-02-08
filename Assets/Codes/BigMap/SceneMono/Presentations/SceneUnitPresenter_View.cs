@@ -1,9 +1,7 @@
 
 
 using System.Collections.Generic;
-using System.Numerics;
 using Animancer;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace My.Map.Scene
@@ -58,11 +56,38 @@ namespace My.Map.Scene
         }
 
         public SpriteWhiteFlasher MainFlasher;
-        public void PresenterOnHit()
+        public void PresenterOnHit(long? srcId)
         {
-            MainFlasher?.TriggerFlash();
+            
+            if (UnitEntity.Type == EEntityType.Player)
+            {
+                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.3f, "Hit/player_shield", this.Id);
+                if (ctx != null)
+                {
+                    ctx.BindingUnitVec = new Vector2(0, 0.555f);
+                }
+            }
+            else
+            {
+                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.5f, "Hit/Style01", this.Id);
+                if (ctx != null)
+                {
+                    ctx.BindingUnitVec = new Vector2(0, 0.05f);
+                    var dir = UnityEngine.Random.insideUnitCircle.normalized;
+                    if (srcId != null)
+                    {
+                        var pres = SceneAOIManager.Instance.GetActivePresentation(srcId.Value);
+                        dir = pres.GetWorldPosition() - this.GetWorldPosition();
+                    }
 
-            if(HitPivot != null)
+                    ctx.EffectGo.transform.right = -dir;
+                }
+
+                MainFlasher?.TriggerFlash();
+            }
+
+
+            if (HitPivot != null)
             {
             }
         }
