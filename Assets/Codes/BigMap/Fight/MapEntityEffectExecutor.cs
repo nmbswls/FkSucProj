@@ -272,7 +272,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            var playerEntity = ctx.Env.GetLogicEntity(ctx.TargetId) as PlayerLogicEntity;
+            var playerEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as PlayerLogicEntity;
 
             if(realCfg.InEnter)
             {
