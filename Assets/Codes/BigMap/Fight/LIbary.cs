@@ -604,6 +604,8 @@ namespace My.Map.Entity
             spec.AttractPower = 10.0f;
             spec.AttractRange = 2.0f;
 
+            spec.CastType = ECastType.NoTarget;
+
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Executing",
@@ -634,6 +636,10 @@ namespace My.Map.Entity
 
             spec.Id = "queen_shoot";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.NoTarget; // 向面前射出子弹
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+            spec.DesiredUseDistance = 5.0f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -719,6 +725,8 @@ namespace My.Map.Entity
 
             spec.Id = "crazy_fire";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.NoTarget;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1071,6 +1079,8 @@ namespace My.Map.Entity
             spec.Id = "zhaqu";
             spec.TypeTag = AbilityTypeTag.Combat;
 
+            spec.CastType = ECastType.LockTarget;
+
             spec.Phases.Add(new MapAbilityPhase()
             {
                 PhaseName = "Pre",
@@ -1144,6 +1154,8 @@ namespace My.Map.Entity
 
             spec.Id = "deep_zhaqu";
             spec.TypeTag = AbilityTypeTag.Interaction;
+
+            spec.CastType = ECastType.LockTarget;
 
             var mainPhase = new MapAbilityPhase()
             {
@@ -1338,9 +1350,10 @@ namespace My.Map.Entity
 
             spec.Id = "default_enemy_qinfan";
             spec.TypeTag = AbilityTypeTag.HMode;
-            //spec.CoolDown = 6.0f;
-            //spec.DesiredUseDistance = 0.8f;
-            //spec.Priority = 100;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 0.8f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
             var mainPhase = new MapAbilityPhase()
             {
@@ -1488,6 +1501,11 @@ namespace My.Map.Entity
 
             spec.Id = "default_dash_slash";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.Point;
+            spec.DesiredUseDistance = 2.8f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
             //spec.CoolDown = 8.0f;
             //spec.DesiredUseDistance = 2.0f;
             //spec.Priority = 100;
@@ -1609,6 +1627,11 @@ namespace My.Map.Entity
 
             spec.Id = "basic_aoe_slash";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.0f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
             //spec.DesiredUseDistance = 1.0f;
             //spec.Priority = 20;
 
@@ -1701,8 +1724,17 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_01";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.DefaultStepDistance = 0.5f;
+
+            spec.DefaultStepDistance = 0.3f;
             spec.AdjustFaceDir = true;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.0f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.AddTargetCorrection = true;
+            spec.GoodCorrectionnDist = 1.0f;
+            spec.MaxCorrectionValue = 0.8f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1767,8 +1799,17 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_02";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.DefaultStepDistance = 0.5f;
+            spec.DefaultStepDistance = 0.3f;
             spec.AdjustFaceDir = true;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.0f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.AddTargetCorrection = true;
+            spec.GoodCorrectionnDist = 1.0f;
+            spec.MaxCorrectionValue = 0.8f;
+
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1832,8 +1873,16 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_03";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.DefaultStepDistance = 0.5f;
+            spec.DefaultStepDistance = 0.3f;
             spec.AdjustFaceDir = true;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.0f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.AddTargetCorrection = true;
+            spec.GoodCorrectionnDist = 1.0f;
+            spec.MaxCorrectionValue = 0.8f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1974,6 +2023,11 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.DefaultStepDistance = 0.4f;
 
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.0f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+
             spec.Phases.Add(new MapAbilityPhase()
             {
                 PhaseName = "Pre",
@@ -2037,6 +2091,10 @@ namespace My.Map.Entity
             spec.Id = "guard_attack_02";
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.DefaultStepDistance = 0.4f;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.0f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -2162,7 +2220,8 @@ namespace My.Map.Entity
 
             spec.Id = "queen_counter_payback";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.DefaultStepDistance = 0.4f;
+
+            spec.CastType = ECastType.LockTarget;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -2315,6 +2374,10 @@ namespace My.Map.Entity
             spec.Id = "evil_child_attach";
             spec.TypeTag = AbilityTypeTag.Combat;
 
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 2.9f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
             spec.Phases.Add(new MapAbilityPhase()
             {
                 PhaseName = "Pre",
@@ -2397,6 +2460,7 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.Combat;
 
             spec.CastType = ECastType.LockTarget;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
             //spec.MaxStepDistance = 0.5f;
             //spec.CoolDown = 0.2f;
@@ -2649,7 +2713,6 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.Utility;
             spec.CastType = ECastType.LockTarget;
 
-
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Executing",
@@ -2779,6 +2842,9 @@ namespace My.Map.Entity
             spec.Id = "close_kaiyou";
             spec.TypeTag = AbilityTypeTag.Utility;
 
+            spec.CastType = ECastType.LockTarget;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Execute",
@@ -2830,6 +2896,8 @@ namespace My.Map.Entity
             spec.Id = "player_dark_dance";
             spec.TypeTag = AbilityTypeTag.Utility;
 
+
+
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Execute",
@@ -2863,6 +2931,7 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.Combat;
 
             spec.CastType = ECastType.Directional;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
