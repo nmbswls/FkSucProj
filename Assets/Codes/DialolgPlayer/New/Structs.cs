@@ -30,12 +30,32 @@ namespace My.Dialog
     }
 
     [Serializable]
+    public class OneTextLine
+    {
+        public string Speaker;
+        public string Content;
+        public string VoiceLine;
+    }
+
+
+    [Serializable]
     public class DialogCommandData4Text : DialogCommandData
     {
         public string Speaker;
         public string Content;
         public string VoiceLine;
     }
+
+    /// <summary>
+    /// 带有简单开叉的文本
+    /// </summary>
+    [Serializable]
+    public class DialogCommandData4BranchText : DialogCommandData
+    {
+        public List<string> SimpleBranch;
+        public List<DialogCommandData4Text> SimpleText;
+    }
+
 
     [Serializable]
     public class DialogCommandData4JumpTo : DialogCommandData
