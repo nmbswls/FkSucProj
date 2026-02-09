@@ -44,7 +44,7 @@ namespace My.Map
 
         List<string> AnimOverrideList { get; }
 
-        List<ILogicEntity> FindEntityInRange(Vector2 pos, float radius);
+        IEnumerable<ILogicEntity> FindEntityInRange(Vector2 pos, float radius);
 
         GlobalBuffManager BuffManager { get; }
 
@@ -510,18 +510,9 @@ namespace My.Map
             AnimOverrideList.Add(animOverride);
         }
 
-        public List<ILogicEntity> FindEntityInRange(Vector2 pos, float radius)
+        public IEnumerable<ILogicEntity> FindEntityInRange(Vector2 pos, float radius)
         {
-            var l = new List<long>();
-            LogicManager.AreaManager.UnitGridIndex.Query(pos, radius, l);
-
-            var ret = new List<ILogicEntity>();
-            foreach (var id in l)
-            {
-                var entity = LogicManager.AreaManager.GetLogicEntiy(id);
-                ret.Add(entity);
-            }
-            return ret;
+            return LogicManager.FindEntityInRange(pos, radius);
         }
 
         public bool CheckHasBuff(string buffId)

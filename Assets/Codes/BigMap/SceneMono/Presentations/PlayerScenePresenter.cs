@@ -3,16 +3,107 @@ using Map.Entity;
 using Map.Logic;
 using Map.Scene;
 using My.Map.Entity;
-using My.Map.View;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
 namespace My.Map.Scene
 {
+
+    public class PlayerAimHelper
+    {
+        private Collider2D[] hits = new Collider2D[16];
+
+
+        // 配置参数：根据手感调整这些值
+
+        private const float SearchRadius = 5.0f; // 技能的最大射程（硬限制）
+        private const float MaxAimAngle = 60f;   // 索敌扇形角度的一半（60度 = 总共120度扇形）
+        private const float MouseHoverThreshold = 0.8f; // 鼠标精准悬停的判定半径
+
+        public long GetSmartMainTargetId(Vector2 playerPos, Vector2 mouseWorldPos)
+        {
+            int layerMask = 1 << LayerMask.NameToLayer("MapTarget");
+
+            // 1. 获取射程内所有目标
+            var count = Physics2D.OverlapCircleNonAlloc(playerPos, SearchRadius, hits, layerMask);
+
+            long bestTargetId = 0;
+            float bestScore = float.MinValue;
+
+            // 计算玩家到鼠标的“朝向向量”
+            Vector2 aimDir = (mouseWorldPos - playerPos).normalized;
+
+            for (int i = 0; i < count; i++)
+            {
+                var col = hits[i];
+                if (col == null) continue;
+
+                var presentation = col.GetComponentInParent<IScenePresentation>();
+                if (presentation == null) continue;
+                var logic = presentation.GetLogicEntity();
+                if (logic is not BaseUnitLogicEntity unitEntity) continue;
+                if (unitEntity.FactionId == EFactionId.Player || unitEntity.IsDead) continue;
+
+                Vector2 targetPos = unitEntity.Pos;
+
+                // --- 核心评分逻辑修改 ---
+
+                //// 1. 优先判定：是否鼠标直接点在怪身上？(最高优先级)
+                //float distToMouse = Vector2.Distance(mouseWorldPos, targetPos);
+                //if (distToMouse <= MouseHoverThreshold)
+                //{
+                //    // 如果鼠标直接悬停，直接给最大分，距离越近分越高，确保多个重叠时选最准的
+                //    float manualScore = 1000f - distToMouse;
+                //    if (manualScore > bestScore)
+                //    {
+                //        bestScore = manualScore;
+                //        bestTargetId = unitEntity.Id;
+                //    }
+                //    continue; // 既然直接悬停了，就不用走下面的常规逻辑了
+                //}
+
+                // 2. 常规判定：基于玩家距离和朝向
+                Vector2 toTargetDir = targetPos - playerPos;
+                float distToPlayer = toTargetDir.magnitude;
+
+                // 归一化方向用于计算角度
+                Vector2 toTargetDirNorm = toTargetDir / distToPlayer; // 简单的归一化
+
+                // 计算夹角 (0度表示正对鼠标方向，180度表示在背后)
+                float angle = Vector2.Angle(aimDir, toTargetDirNorm);
+
+                // 【筛选 1】角度剔除：如果怪在侧面或背后（超出扇形），直接不考虑
+                // 除非怪非常非常近（贴脸），为了防止漏怪，可以允许贴脸怪无视角度
+                if (angle > MaxAimAngle && distToPlayer > 1.0f)
+                {
+                    continue;
+                }
+
+                // 【评分】离玩家越近，分数越高 (这是你要的核心逻辑)
+                // 基础分是 (射程 - 距离)，距离越小分越高
+                float score = SearchRadius - distToPlayer;
+
+                // 【微调】角度越正，稍微加一点点分 (防止两个怪距离一样时，选歪的那个)
+                // 这里的权重给很小 (0.2f)，保证主要还是看距离
+                score += (1.0f - (angle / MaxAimAngle)) * 0.5f;
+
+                //if (unitEntity.IsBoss) score += 2.0f; // Boss 依然稍微优先
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestTargetId = unitEntity.Id;
+                }
+            }
+
+            System.Array.Clear(hits, 0, count);
+            return bestTargetId;
+        }
+    }
+
+
     public class PlayerScenePresenter : SceneUnitPresenter, ISceneInteractable
     {
 
@@ -20,9 +111,13 @@ namespace My.Map.Scene
 
         public MapGlobalNoiseEmitter NoiseEmitter;
 
+        public PlayerAimHelper AimHelper;
+
         protected override void Awake()
         {
             base.Awake();
+
+            AimHelper = new();
         }
 
         public PlayerLogicEntity PlayerEntity
@@ -225,7 +320,8 @@ namespace My.Map.Scene
             base.RegisterEvents();
 
             PlayerEntity.EventOnAttachmentUpdate += OnEventAttachmentUpdate;
-            PlayerEntity.EventOnAttachmentUpdate += OnEventAttachmentUpdate;
+
+            PlayerEntity.EventOnRequestAimHelper += OnRequestAimHelper;
         }
 
         protected override void UnregisterEvents()
@@ -233,6 +329,7 @@ namespace My.Map.Scene
             base.UnregisterEvents();
 
             PlayerEntity.EventOnAttachmentUpdate -= OnEventAttachmentUpdate;
+            PlayerEntity.EventOnRequestAimHelper -= OnRequestAimHelper;
         }
 
         private void OnEventAttachmentUpdate(long e)
@@ -316,6 +413,15 @@ namespace My.Map.Scene
         public bool IsAutoInteract()
         {
             return false;
+        }
+
+        private void OnRequestAimHelper()
+        {
+            var mainTargetId = AimHelper.GetSmartMainTargetId(PlayerEntity.Pos, MainGameManager.Instance.inputBinder.LastPos);
+
+            Debug.Log($"OnRequestAimHelper update targetId:{mainTargetId}" );
+
+            PlayerEntity.UpdateSupportTargetId(mainTargetId);
         }
     }
 

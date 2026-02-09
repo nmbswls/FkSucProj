@@ -444,7 +444,7 @@ namespace My.Map
 
             if(srcEntityId != null)
             {
-                AggroSystem.OnTakeDamage(srcEntityId.Value, Math.Abs(delta));
+                AggroSystem?.OnTakeDamage(srcEntityId.Value, Math.Abs(delta));
             }
         }
 

@@ -116,10 +116,6 @@ namespace My.Map.Entity
         /// </summary>
         public AbilityTypeTag TypeTag = AbilityTypeTag.Combat;
 
-        /// <summary>
-        /// 上前垫步
-        /// </summary>
-        public float MaxStepDistance = 0.0f;
 
         // 阶段定义
         public List<MapAbilityPhase> Phases = new List<MapAbilityPhase>();
@@ -147,5 +143,35 @@ namespace My.Map.Entity
         public bool CauseAttract = false;
         public float AttractPower = 0;
         public float AttractRange = 2.0f;
+
+        public enum ECastType
+        {
+            NoTarget,
+            Point,
+            Circle,
+            Directional,
+            LockTarget,
+        }
+        public ECastType CastType;
+        public float Range1;
+        public float Range2;
+
+
+        /// <summary>
+        /// 施法吸附
+        /// </summary>
+        public float DefaultStepDistance = 0.0f;
+        public bool AddTargetCorrection = false; // 是否增加吸附
+        public float MaxCorrectionValue = 0.5f;
+        public float GoodCorrectionnDist = 0.8f;
+
+        /// <summary>
+        /// 选择策略
+        /// </summary>
+        public FightStruct.ETargetSelectPolicy TargetSelectPolicy = FightStruct.ETargetSelectPolicy.None;
+
+
+        public float DesiredUseAngle = 5;
+        public float DesiredUseDistance = 1.0f;
     }
 }

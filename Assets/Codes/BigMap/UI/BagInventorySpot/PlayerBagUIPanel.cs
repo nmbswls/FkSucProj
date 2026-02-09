@@ -219,7 +219,7 @@ namespace My.UI.Bag
                     Debug.LogError($"UseItem skill name invalid");
                     return;
                 }
-                OverworldHUDPanel.Instance.PeeviewUseSkill(skillName, (ret) =>
+                OverworldHUDPanel.Instance.OnClickUseSkill(skillName, (ret) =>
                 {
                     if(itemConf.UseCfg1.CostOnUse)
                     {

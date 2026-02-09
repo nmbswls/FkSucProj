@@ -321,18 +321,18 @@ namespace My.Map.Logic
                 Record2RefreshInfo.Remove(recId);
             }
         }
-
-        public List<ILogicEntity> FindEntityInRange(Vector2 pos, float radius)
+        private List<ILogicEntity> _cacheEntityList = new();
+        public IEnumerable<ILogicEntity> FindEntityInRange(Vector2 pos, float radius)
         {
             UnitGridIndex.Query(pos, radius, queryBufInt);
 
-            var ret = new List<ILogicEntity>();
+            _cacheEntityList.Clear();
             foreach (var id in queryBufInt)
             {
                 var entity = GetLogicEntiy(id);
-                ret.Add(entity);
+                _cacheEntityList.Add(entity);
             }
-            return ret;
+            return _cacheEntityList;
         }
     }
 }

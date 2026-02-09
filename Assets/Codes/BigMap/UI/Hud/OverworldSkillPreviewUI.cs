@@ -8,6 +8,7 @@ using TMPro;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static My.Map.Entity.MapAbilitySpecConfig;
 using static My.UI.OverworldHUDPanel;
 
 namespace My.UI
@@ -24,7 +25,8 @@ namespace My.UI
 
         public TextMeshProUGUI HintText;
         public string PreviewSkillName;
-        protected EntitySkillCfg SkillConfig;
+        protected EntitySkillCfg skillCfg;
+        protected MapAbilitySpecConfig mainAbilityCfg;
 
 
         protected SceneRangeWarnCtrl PreviewCircle;
@@ -53,8 +55,9 @@ namespace My.UI
 
         public void Initialize(string skillId, Action<bool> onConfirm = null)
         {
-            this.PreviewSkillName = skillId;
-            SkillConfig = SkillLibrary.GetSkillConfig(skillId);
+            //this.PreviewSkillName = skillId;
+            this.skillCfg = SkillLibrary.GetSkillConfig(skillId);
+            this.mainAbilityCfg = AbilityLibrary.GetAbilityConfig(skillCfg.MainAbilityId);
 
             this.cbOnConfirm = onConfirm;
 
@@ -62,38 +65,39 @@ namespace My.UI
             PreviewRect.gameObject.SetActive(false);
             PreviewCastRange.SetActive(false);
 
-            if (SkillConfig.TargetType == EntitySkillCfg.ETargetType.NoTarget)
+
+            if (mainAbilityCfg.CastType == ECastType.NoTarget)
             {
-                if(SkillConfig.Range1 > 1e-1)
-                {
-                    PreviewCastRange.SetActive(true);
-                }
+                HUDPanel.CancelSkillCast();
+                return;
             }
-            else if (SkillConfig.TargetType == EntitySkillCfg.ETargetType.Point)
+
+
+            if (mainAbilityCfg.CastType == ECastType.Point)
             {
-                if(SkillConfig.Range1 > 1e-1)
+                if(mainAbilityCfg.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
-                    PreviewCastRange.transform.localScale = Vector3.one * SkillConfig.Range1;
+                    PreviewCastRange.transform.localScale = Vector3.one * mainAbilityCfg.Range1;
                 }
                 PreviewCircle.gameObject.SetActive(true);
                 PreviewCircle.transform.localScale = Vector3.one * 0.1f;
             }
-            else if(SkillConfig.TargetType == EntitySkillCfg.ETargetType.Circle)
+            else if(mainAbilityCfg.CastType == ECastType.Circle)
             {
-                if (SkillConfig.Range1 > 1e-1)
+                if (mainAbilityCfg.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
-                    PreviewCastRange.transform.localScale = Vector3.one * SkillConfig.Range1;
+                    PreviewCastRange.transform.localScale = Vector3.one * mainAbilityCfg.Range1;
                 }
                 
                 PreviewCircle.gameObject.SetActive(true);
-                PreviewCircle.transform.localScale = Vector3.one * SkillConfig.Range2;
+                PreviewCircle.transform.localScale = Vector3.one * mainAbilityCfg.Range2;
             }
-            else if(SkillConfig.TargetType == EntitySkillCfg.ETargetType.Rect)
+            else if(mainAbilityCfg.CastType == ECastType.Directional)
             {
                 PreviewRect.gameObject.SetActive(true);
-                PreviewRect.transform.localScale = new Vector3(SkillConfig.Range1, SkillConfig.Range2, 1);
+                PreviewRect.transform.localScale = new Vector3(mainAbilityCfg.Range1, 0.1f, 1);
             }
         }
 
@@ -104,7 +108,9 @@ namespace My.UI
             PreviewCastRange.SetActive(false);
 
             PreviewSkillName = null;
-            SkillConfig = null;
+
+            skillCfg = null;
+            mainAbilityCfg = null;
 
             cbOnConfirm = null;
         }
@@ -129,20 +135,20 @@ namespace My.UI
 
                 if(PreviewRect.gameObject.activeSelf)
                 {
-                    if(SkillConfig.TargetType == EntitySkillCfg.ETargetType.Rect)
+                    if(mainAbilityCfg.CastType == ECastType.Directional)
                     {
                         PreviewRect.transform.position = playerPos;
                     }
                 }
 
-                if(PreviewCircle.gameObject.activeSelf)
-                {
-                    if (SkillConfig.TargetType == EntitySkillCfg.ETargetType.NoTarget
-                        && SkillConfig.Range1 > 1e-1)
-                    {
-                        PreviewCircle.transform.position = playerPos;
-                    }
-                }
+                //if(PreviewCircle.gameObject.activeSelf)
+                //{
+                //    if (SkillConfig.TargetType == ECastType.NoTarget
+                //        && SkillConfig.Range1 > 1e-1)
+                //    {
+                //        PreviewCircle.transform.position = playerPos;
+                //    }
+                //}
             }
 
             // 不在ui上时 移动
@@ -152,15 +158,14 @@ namespace My.UI
                 Vector3 wp = Camera.main.ScreenToWorldPoint(sp);
                 wp.z = 0; // 将 z 固定到你的世界平面（例如 0）
 
-                
 
-                switch (SkillConfig.TargetType)
+                switch (mainAbilityCfg.CastType)
                 {
-                    case EntitySkillCfg.ETargetType.Point:
-                    case EntitySkillCfg.ETargetType.Circle:
+                    case ECastType.Point:
+                    case ECastType.Circle:
                         {
                             // 施法距离
-                            var dist = SkillConfig.Range1;
+                            var dist = mainAbilityCfg.Range1;
 
                             if (dist < (wp - playerPos).magnitude)
                             {
@@ -183,14 +188,13 @@ namespace My.UI
                 return;
             }
             Vector2 wp = Camera.main.ScreenToWorldPoint(mousePos);
-            var skillConfig = SkillLibrary.GetSkillConfig(PreviewSkillName);
-            switch (skillConfig.TargetType)
+            switch (mainAbilityCfg.CastType)
             {
-                case EntitySkillCfg.ETargetType.Point:
-                case EntitySkillCfg.ETargetType.Circle:
+                case ECastType.Point:
+                case ECastType.Circle:
                     {
                         // 施法距离
-                        var dist = skillConfig.Range1;
+                        var dist = mainAbilityCfg.Range1;
                         var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
                         if (dist < (wp - playerPos).magnitude)
                         {
@@ -201,9 +205,11 @@ namespace My.UI
 
             }
 
-            MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility(PreviewSkillName, castDir: wp);
+            MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(PreviewSkillName, castVec: wp);
 
             cbOnConfirm?.Invoke(true);
+
+            HUDPanel.UpdateHudMode(EHudMode.Normal);
         }
     }
 }

@@ -374,6 +374,37 @@ namespace My.Map.Entity
             return chosen != null;
         }
 
+
+        /// <summary>
+        /// 获取入口真实combo节点
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="chosen"></param>
+        /// <returns></returns>
+        public EntitySkillComboGraph.ComboNode GetEntryComboNode(SkillInput input)
+        {
+            if (_graph == null) return null;
+            var transitions = _graph.GetTransitions(0);
+            float best = float.NegativeInfinity;
+            EntitySkillComboGraph.Transition chosenTransition = null;
+            foreach (var t in transitions)
+            {
+                if (t.requireHitConfirm && !_ctx.hitConfirmed) continue;
+                if (!input.Matches(t.triggerInput)) continue;
+
+                float score = t.scoreBias;
+                if (score > best)
+                {
+                    best = score;
+                    chosenTransition = t;
+                }
+            }
+
+            var toNode = _graph.GetNode(chosenTransition.toNodeId);
+            return toNode;
+        }
+
+
         public void OnHitConfirm()
         {
             _ctx.hitConfirmed = true;

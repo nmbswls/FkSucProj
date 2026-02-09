@@ -1,8 +1,10 @@
 
 
+using System.Collections.Generic;
 using Config.Unit;
 using My.Map.Entity;
 using My.Map.Fight;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static My.Map.BaseUnitLogicEntity;
 
@@ -11,30 +13,39 @@ namespace My.Map.Unit
 
     public static class AIActionUtils
     {
-        public static (Vector2?, long?) GetSkillUseParams(EntitySkillCfg skillConf, NpcUnitLogicEntity caster)
+        public static (Vector2?, ILogicEntity?) GetSkillCastParams(MapAbilitySpecConfig abilityCfg, NpcUnitLogicEntity caster, long policyTargetId)
         {
             //
-            switch (skillConf.SelectPolicy)
+            switch (abilityCfg.CastType)
             {
-                case FightStruct.ESelectPolicy.None:
+                case MapAbilitySpecConfig.ECastType.NoTarget:
                     {
                         return (null, null);
                     }
                     break;
-                case FightStruct.ESelectPolicy.PrimaryTarget:
+                case MapAbilitySpecConfig.ECastType.Point:
+                case MapAbilitySpecConfig.ECastType.Circle:
+                case MapAbilitySpecConfig.ECastType.Directional:
                     {
-                        var target = caster.LogicManager.GetLogicEntity(caster.AggroSystem.CurrentTargetId, false);
+                        var target = caster.LogicManager.GetLogicEntity(policyTargetId, false);
                         if (target == null)
                         {
                             Debug.LogError("GetSkillUseParams not found primary target");
-                            return (caster.Pos + caster.FinalLook, null);
+                            return (caster.Pos + caster.FinalLook.normalized * abilityCfg.Range1 * 0.7f, null);
                         }
-                        return (target.Pos, target.Id);
+                        return (target.Pos, null);
                     }
                     break;
-                case FightStruct.ESelectPolicy.Random:
+                    
+                case MapAbilitySpecConfig.ECastType.LockTarget:
                     {
-                        return (null, null);
+                        var target = caster.LogicManager.GetLogicEntity(policyTargetId, false);
+                        if (target == null)
+                        {
+                            Debug.LogError("GetSkillUseParams not found primary target");
+                            return (null, null);
+                        }
+                        return (null, target);
                     }
                     break;
                 default:
@@ -329,15 +340,17 @@ namespace My.Map.Unit
     public class AIStateCombat : AIBaseState
     {
         private float _attackTimer; // 攻击冷却计时器
-        //private long _currentTarget; // 缓存当前目标 (防止一帧内变化)
         private BaseUnitLogicEntity _currentTarget;
 
         public float OverTimeLimit = 15f;
 
+        private float attackRestTimer = 0; // 暂停攻击逻辑
+        private EntitySkillCfg? intentSkillCfgOrigin;
+        private MapAbilitySpecConfig? intentAbilityCfgCurrent;
         private bool hasCastAbility;
-        private EntitySkillCfg? currIntentSkillCfg;
         private float castOverTimer;
-        private string currComboAbilityName;
+
+        //private string currComboAbilityName;
 
         public override string StateName => "Combat";
 
@@ -351,11 +364,92 @@ namespace My.Map.Unit
             _attackTimer = 1f; // 刚进入战斗通常可以立即攻击，或者根据设计设为 0.5f 延迟
             _brain.NpcEntity.StopMove(); // 先停一下，重新评估路径
 
-            // 播放战斗姿态动画
-            // _brain.NpcEntity.PlayAnim("BattleStance");
+            ResetAttackState();
+
+            attackRestTimer = LogicTime.time + 5.0f; // 进入状态时先休眠一会
         }
 
-        public override void OnUpdate()
+        private void ResetAttackState()
+        {
+            attackRestTimer = LogicTime.time;
+            intentSkillCfgOrigin = null;
+            intentAbilityCfgCurrent = null;
+            hasCastAbility = false;
+            castOverTimer = 0;
+        }
+
+        /// <summary>
+        /// 检查选择使用技能
+        /// </summary>
+        private void TryChooseOriginSkillUse()
+        {
+            if(intentSkillCfgOrigin != null)
+            {
+                return;
+            }
+
+            if(attackRestTimer != 0 && LogicTime.time - attackRestTimer < 3.0f)
+            {
+                return;
+            }
+
+            var anyReady = _brain.NpcEntity.ablilityManager.CheckAnyReadySkill();
+            if (!anyReady)
+            {
+                return;
+            }
+
+            var skills = _brain.NpcEntity.ablilityManager.GetAllReadySkills();
+
+            if (skills.Count == 0)
+            {
+                return;
+            }
+
+            skills.Sort((itemA, itemB) =>
+            {
+                if (itemA.cacheConfig.Priority != itemB.cacheConfig.Priority)
+                {
+                    return itemB.cacheConfig.Priority.CompareTo(itemA.cacheConfig.Priority);
+                }
+                return itemA.lastUseTime.CompareTo(itemB.lastUseTime);
+            });
+
+            var best = skills[0];
+
+            var skillCfg = SkillLibrary.GetSkillConfig(best.SkillName);
+            if (skillCfg == null)
+            {
+                return;
+            }
+
+
+            if(skillCfg.IsCombo)
+            {
+                var comboNode = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetEntryComboNode(new SkillInput() { SkillId = skillCfg.SkillId });
+                intentAbilityCfgCurrent = AbilityLibrary.GetAbilityConfig(comboNode.AbilityId);
+            }
+            else
+            {
+                intentAbilityCfgCurrent = AbilityLibrary.GetAbilityConfig(skillCfg.MainAbilityId);
+            }
+
+            if(intentAbilityCfgCurrent == null)
+            {
+                Debug.LogError($"skill not found good ability {skillCfg.SkillId}.");
+                return;
+            }
+
+            hasCastAbility = false;
+            castOverTimer = LogicTime.time + OverTimeLimit;
+            intentSkillCfgOrigin = skillCfg;
+        }
+
+        /// <summary>
+        /// 检查是否要退出战斗状态
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckLeaveCombat()
         {
             // --- 1. 获取目标 (数据验证) ---
             var targetId = _brain.Aggro.CurrentTargetId;
@@ -366,9 +460,14 @@ namespace My.Map.Unit
             if (_currentTarget == null)
             {
                 HandleTargetLost();
-                return;
+                return true;
             }
 
+            if(_brain.NpcEntity.IsTargetInvisibleFromSelf(_currentTarget.Id))
+            {
+                HandleTargetLost();
+                return true;
+            }
 
             float distToTarget = Vector3.Distance(_brain.NpcEntity.Pos, _currentTarget.Pos);
             if (distToTarget > _brain.Config.ChaseRange)
@@ -376,26 +475,34 @@ namespace My.Map.Unit
                 // 放弃追击，清除仇恨，回家
                 _brain.Aggro.ClearTarget();
                 _brain.ChangeState(_brain.StateReturn);
+                return true;
+            }
+
+            return false;
+        }
+
+        public override void OnUpdate()
+        {
+            // 检查是否退出战斗状态
+            if(CheckLeaveCombat())
+            {
                 return;
             }
 
-            // --- 2. 自身状态检测 (生存本能) ---
-            // 假设 Entity 有 HP 属性，低于 20% 逃跑
-            /* 
-            if (_brain.NpcEntity.HPPercentage < 0.2f)
-            {
-                _brain.ChangeState(_brain.StateFlee);
-                return;
-            }
-            */
+            // 检查中止技能释放
+            ChecStopCastSkill();
 
             // 检查是否要中止使用技能
-            ChecCanCastSkill();
-            TickCastSkill(distToTarget);
+            TryChooseOriginSkillUse();
 
-            // 使用技能视图接近
-            if (currIntentSkillCfg == null)
+            TickCastSkill();
+
+            // 没有技能需要释放时 进行走位
+            if (intentSkillCfgOrigin == null)
             {
+                var diff = _currentTarget.Pos - _brain.NpcEntity.Pos;
+                var distToTarget = diff.magnitude;
+
                 // 超过远距离
                 if (_brain.Config.CombatFarDistance > 0 && distToTarget > _brain.Config.CombatFarDistance)
                 {
@@ -405,13 +512,11 @@ namespace My.Map.Unit
                 // 低于最近距离
                 else if (_brain.Config.CombatCloseDistance > 0 && distToTarget <= _brain.Config.CombatCloseDistance)
                 {
-                    var diff = _brain.NpcEntity.Pos - _currentTarget.Pos;
                     _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.Pos + (diff.normalized) * 0.5f, moveSpeedRate: 0.5f);
                 }
                 else
                 {
                     Debug.Log("DistanceControl TryMoveTo player");
-                    var diff = _currentTarget.Pos - _brain.NpcEntity.Pos;
                     // 计算切线方向 (左手定则或右手定则)
                     Vector2 tangentDir = new Vector3(-diff.y, diff.x);
                     // 根据时间计算偏移量 (-1 到 1 之间波动)
@@ -430,121 +535,59 @@ namespace My.Map.Unit
             _brain.NpcEntity.StopMove(); // 退出战斗时刹车
         }
 
-        private void ChecCanCastSkill()
+        private void ChecStopCastSkill()
         {
 
-            if(currIntentSkillCfg == null)
+            if(intentSkillCfgOrigin == null)
             {
                 return;
             }
 
-            bool stopSkill = false;
-            do
-            {
-                if (_currentTarget == null)
-                {
-                    stopSkill = true;
-                    break;
-                }
+            //bool stopSkill = false;
+            //do
+            //{
+            //    // 禁止操作时 跳出
+            //    if (_brain.NpcEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
+            //    {
+            //        stopSkill = true;
+            //        break;
+            //    }
 
-                // 禁止操作时 跳出
-                if (_brain.NpcEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
-                {
-                    stopSkill = true;
-                    break;
-                }
-
-                if (_brain.NpcEntity.IsTargetInvisibleFromSelf(_currentTarget.Id))
-                {
-                    stopSkill = true;
-                    break;
-                }
-            }
-            while (false);
+            //    if (_brain.NpcEntity.IsTargetInvisibleFromSelf(_currentTarget.Id))
+            //    {
+            //        stopSkill = true;
+            //        break;
+            //    }
+            //}
+            //while (false);
             
-            if(stopSkill)
-            {
-                currIntentSkillCfg = null;
-                _brain.NpcEntity.StopMove();
-            }
+            //if(stopSkill)
+            //{
+            //    currIntentSkillCfg = null;
+            //    _brain.NpcEntity.StopMove();
+            //}
         }
 
 
         /// <summary>
-        /// 检查使用技能
+        /// 使用技能过程中
         /// </summary>
-        private void TickCastSkill(float dist)
+        private void TickCastSkill()
         {
-
-            if (currIntentSkillCfg == null)
+            if (intentSkillCfgOrigin == null)
             {
-                var anyReady = _brain.NpcEntity.ablilityManager.CheckAnyReadySkill();
-                if (!anyReady)
-                {
-                    return;
-                }
-
-                var skills = _brain.NpcEntity.ablilityManager.GetAllReadySkills();
-
-                if (skills.Count == 0)
-                {
-                    return;
-                }
-
-                skills.Sort((itemA, itemB) =>
-                {
-                    if (itemA.cacheConfig.Priority != itemB.cacheConfig.Priority)
-                    {
-                        return itemB.cacheConfig.Priority.CompareTo(itemA.cacheConfig.Priority);
-                    }
-                    return itemA.lastUseTime.CompareTo(itemB.lastUseTime);
-                });
-
-                var best = skills[0];
-
-                var skillCfg = SkillLibrary.GetSkillConfig(best.SkillName);
-                if(skillCfg == null)
-                {
-                    return;
-                }
-                castOverTimer = LogicTime.time + OverTimeLimit;
-                hasCastAbility = false;
-                currComboAbilityName = string.Empty;
-
-                currIntentSkillCfg = skillCfg;
-
-                var targetPos = _brain.Vision.ChoosePointAwayFromTarget(_brain.NpcEntity.Pos, _currentTarget?.Pos ??_brain.NpcEntity.Pos, best.cacheConfig.DesiredUseDistance);
-                Debug.Log($"ChecCastSkill move pos {targetPos}");
-                _brain.NpcEntity.TryMoveTo(targetPos);
+                return;
             }
-            else
+
+            // 正在释放技能时，检查是否进行连击
+            if(hasCastAbility)
             {
-                // 未使用技能
-                if (!hasCastAbility)
+                do
                 {
-                    // 距离满足施法条件 使用
-                    if (currIntentSkillCfg.DesiredUseDistance == 0 || dist < currIntentSkillCfg.DesiredUseDistance)
-                    {
-                        var dir = _currentTarget.Pos - _brain.NpcEntity.Pos;
-
-                        (Vector2? vec, long? targetId) = AIActionUtils.GetSkillUseParams(currIntentSkillCfg, _brain.NpcEntity);
-                        _brain.NpcEntity.ablilityManager.UseSkill(currIntentSkillCfg.SkillId, castVec: vec, target: targetId != null ? _brain.NpcEntity.LogicManager.GetLogicEntity(targetId.Value, false) : null);
-
-                        hasCastAbility = true;
-                        return;
-                    }
-                    else
-                    {
-                        _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, currIntentSkillCfg.DesiredUseDistance, 1.2f);
-                    }
-                }
-                // 正在使用技能
-                else
-                {
-                    // 继续等待actiona
+                    // 继续等待action
                     if (!_brain.NpcEntity.abilityController.IsActionable())
                     {
-                        return;
+                        break;
                     }
 
                     var trans = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetPossibleTransition();
@@ -553,28 +596,150 @@ namespace My.Map.Unit
                     {
                         if (!_brain.NpcEntity.abilityController.IsRunning)
                         {
-                            //Stop(AIActionStatus.Success);
-                            currIntentSkillCfg = null;
+                            // 重置技能释放
+                            ResetAttackState();
                         }
-                        return;
+                        break;
                     }
 
                     var firstTran = trans[0];
-                    var node = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
-
-                    //_brain.NpcEntity.ForceSetFaceTarget(_brain.NpcEntity.DesiredFaceDir, false);
-
-                    // 一定无目标参数
-                    if (_brain.NpcEntity.ablilityManager.UseSkill(firstTran.triggerInput.SkillId))
+                    var goodNode = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetComboNode(firstTran.toNodeId);
+                    if(goodNode == null)
                     {
-                        // 修改技能释放条件
-                        castOverTimer = LogicTime.time + OverTimeLimit;
-                        currComboAbilityName = node.AbilityId;
+                        ResetAttackState();
+                        break;
                     }
-                    Debug.Log($"AIActionTryUseSkill try to do derived " + currComboAbilityName);
+
+                    intentAbilityCfgCurrent = AbilityLibrary.GetAbilityConfig(goodNode.AbilityId);
+                    hasCastAbility = false;
+                    castOverTimer = LogicTime.time + OverTimeLimit;
+
                 }
+                while (false);
             }
 
+
+            // 还在技能走位阶段
+            if (!hasCastAbility)
+            {
+                var targetId = EntityAbilityHelper.GetTargetByPolicy(intentAbilityCfgCurrent.TargetSelectPolicy, _brain.NpcEntity);
+
+                bool canCast = false;
+                do
+                {
+                    if (targetId == 0)
+                    {
+                        canCast = true;
+                        break;
+                    }
+                    var target = _brain.LogicManager.GetLogicEntity(targetId, false) as BaseUnitLogicEntity;
+                    if (target == null)
+                    {
+                        canCast = true;
+                        break;
+                    }
+
+                    switch (intentAbilityCfgCurrent.CastType)
+                    {
+                        case MapAbilitySpecConfig.ECastType.NoTarget:
+                        case MapAbilitySpecConfig.ECastType.LockTarget:
+
+                            {
+                                // 无目标类型的技能 盯紧目标点
+                                _brain.NpcEntity.RegisterGaze("Combat", targetId, target.Pos, EGazePriority.CastSkill, 0.5f);
+
+                                var diff = target.Pos - _brain.NpcEntity.Pos;
+                                if (diff.magnitude < 0.05f)
+                                {
+                                    canCast = true;
+                                    break;
+                                }
+
+                                var angle = Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook);
+                                if(angle < 5 
+                                    && diff.magnitude < intentAbilityCfgCurrent.DesiredUseDistance)
+                                {
+                                    canCast = true;
+                                    break;
+                                }
+
+                                if (diff.magnitude > intentAbilityCfgCurrent.DesiredUseDistance)
+                                {
+                                    _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, 0.5f, 1.2f);
+                                }
+                            }
+                            break;
+                        
+                        case MapAbilitySpecConfig.ECastType.Point:
+                        case MapAbilitySpecConfig.ECastType.Directional:
+                            {
+                                // 无目标类型的技能 盯紧目标点
+                                _brain.NpcEntity.RegisterGaze("Combat", 0, target.Pos, EGazePriority.CastSkill, 0.5f);
+                                var diff = target.Pos - _brain.NpcEntity.Pos;
+                                if (diff.magnitude < 0.05f)
+                                {
+                                    canCast = true;
+                                    break;
+                                }
+
+                                var angle = Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook);
+                                if (angle < 5
+                                    && diff.magnitude < intentAbilityCfgCurrent.Range1)
+                                {
+                                    canCast = true;
+                                    break;
+                                }
+
+                                if (diff.magnitude > intentAbilityCfgCurrent.Range1)
+                                {
+                                    _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, 0.5f, 1.2f);
+                                }
+                            }
+                            break;
+                        
+                        case MapAbilitySpecConfig.ECastType.Circle:
+                            {
+                                // todo 对施法点做周围探测 尽量覆盖更多单位
+                                var adjustedCastVec = target.Pos + UnityEngine.Random.insideUnitCircle * 0.5f;
+                                var diff = adjustedCastVec - _brain.NpcEntity.Pos;
+                                if (diff.magnitude < 0.05f)
+                                {
+                                    canCast = true;
+                                    break;
+                                }
+                                // 无目标类型的技能 盯紧目标点
+                                _brain.NpcEntity.RegisterGaze("Combat", 0, adjustedCastVec, EGazePriority.CastSkill, 0.5f);
+
+                                var angle = Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook);
+                                if (angle < 5
+                                    && diff.magnitude < intentAbilityCfgCurrent.Range1)
+                                {
+                                    canCast = true;
+                                    break;
+                                }
+
+                                if (diff.magnitude > intentAbilityCfgCurrent.Range1)
+                                {
+                                    _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, 0.5f, 1.2f);
+                                }
+                            }
+                            break;
+
+                    }
+
+                }
+                while (false);
+
+
+                if(canCast)
+                {
+                    (Vector2? vecParam, ILogicEntity? targetParam) = AIActionUtils.GetSkillCastParams(intentAbilityCfgCurrent, _brain.NpcEntity, targetId);
+                    _brain.NpcEntity.ablilityManager.UseSkill(intentSkillCfgOrigin.SkillId, castVec: vecParam, target: targetParam);
+
+                    hasCastAbility = true;
+                    return;
+                }
+            }
         }
 
         private void HandleTargetLost()

@@ -260,72 +260,37 @@ namespace My.UI
                 return false;
             }
 
-            PeeviewUseSkill(skillId);
-            //var skillConf = SkillLibrary.GetSkillConfig(skillId);
-            //if (skillConf.TargetType == ETargetType.Self)
-            //{
-            //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, target: MainGameManager.Instance.gameLogicManager.playerLogicEntity);
-            //}
-            //else if (skillConf.TargetType != ETargetType.NoTarget)
-            //{
-            //    EnterSkillPreviewMode(skillId);
-            //}
-            //else
-            //{
-            //    var mousePos = MainGameManager.Instance.inputBinder.LastPos;
-            //    Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
-            //    var playerDiff = wp - MainGameManager.Instance.playerScenePresenter.transform.position;
-            //    playerDiff.z = 0;
-
-            //    Vector2? castDir = null;
-            //    if(playerDiff.magnitude < 0.1f)
-            //    {
-            //        castDir = null;
-            //    }
-            //    else
-            //    {
-            //        castDir = new Vector2(playerDiff.x, playerDiff.y);
-            //    }
-
-            //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: wp);
-            //}
+            OnClickUseSkill(skillId);
 
             return true;
         }
 
 
-        public void PeeviewUseSkill(string skillId, Action<bool> onConfirm = null)
+        public void OnClickUseSkill(string skillId, Action<bool> onConfirm = null)
         {
             var skillConf = SkillLibrary.GetSkillConfig(skillId);
-            if (skillConf.TargetType == ETargetType.Self)
+            if(skillConf.IsCombo)
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, target: MainGameManager.Instance.gameLogicManager.playerLogicEntity);
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec:null, target:null);
                 onConfirm?.Invoke(true);
+                return;
             }
-            else if (skillConf.TargetType != ETargetType.NoTarget)
+
+            var mainAbilityCfg = AbilityLibrary.GetAbilityConfig(skillConf.MainAbilityId);
+            if(mainAbilityCfg == null)
             {
-                EnterSkillPreviewMode(skillId);
+                Debug.LogError($"skill not found main ability:{skillConf.MainAbilityId}");
+                onConfirm?.Invoke(false);
+                return;
             }
-            else
+            if(mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.NoTarget)
             {
-                var mousePos = MainGameManager.Instance.inputBinder.LastPos;
-                Vector3 wp = Camera.main.ScreenToWorldPoint(mousePos);
-                var playerDiff = wp - MainGameManager.Instance.playerScenePresenter.transform.position;
-                playerDiff.z = 0;
-
-                Vector2? castDir = null;
-                if (playerDiff.magnitude < 0.1f)
-                {
-                    castDir = null;
-                }
-                else
-                {
-                    castDir = new Vector2(playerDiff.x, playerDiff.y);
-                }
-
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: wp);
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: null, target: null);
                 onConfirm?.Invoke(true);
+                return;
             }
+
+            EnterSkillPreviewMode(skillId);
         }
 
 
@@ -387,7 +352,6 @@ namespace My.UI
                 if (button == 0)
                 {
                     overworldSkillPreviewUI.ConfirmSkillCast(mousePos);
-                    UpdateHudMode(EHudMode.Normal);
                 }
                 else if (button == 1)
                 {

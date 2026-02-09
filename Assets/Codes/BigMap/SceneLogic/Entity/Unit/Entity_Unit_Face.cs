@@ -65,6 +65,7 @@ namespace My.Map
             Suspicion = 10, // 警觉（看到残影、听到脚步）
             Interact = 15,
             Combat = 20,    // 战斗锁定（绝对优先）
+            CastSkill = 21,
             Override = 99   // 剧情强制/死亡
         }
 
@@ -219,6 +220,16 @@ namespace My.Map
             }
         }
 
+        private float GetFaceTurnSpeed()
+        {
+            if(CheckHasState(AttrIdConsts.FastTurn))
+            {
+                return FaceTurnSpeed * 3;
+            }
+            return FaceTurnSpeed;
+        }
+
+
         /// <summary>
         /// 执行旋转
         /// </summary>
@@ -242,7 +253,7 @@ namespace My.Map
             {
 
                 // 平滑插值计算当前看向的点
-                _currentLook = Vector2.Lerp(_currentLook, _targetLookDir, Time.deltaTime * FaceTurnSpeed);
+                _currentLook = Vector2.Lerp(_currentLook, _targetLookDir, LogicTime.deltaTime * GetFaceTurnSpeed());
             }
         }
     }

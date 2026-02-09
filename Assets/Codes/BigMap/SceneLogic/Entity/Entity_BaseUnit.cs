@@ -572,11 +572,14 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.Invisible, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.SuperArmor, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.ImmumeKaiYou, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.FastTurn, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneKnock, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Stun, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneEvilShock, initialBase: 0);
+
+            
         }
 
 

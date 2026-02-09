@@ -97,6 +97,13 @@ namespace My.Map.Entity
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 } },
                     DefaultDuration = -1,
                 };
+                _library["fast_turn"] = new BuffDefinition()
+                {
+                    BuffId = "fast_turn",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.FastTurn, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                };
 
                 _library["immune_knock"] = new BuffDefinition()
                 {
@@ -1290,7 +1297,9 @@ namespace My.Map.Entity
                     break;
             }
         }
-        
+
+        private HashSet<long> _cacheFrameAffected = new();
+
         protected void TickAuraEffect()
         {
             if (!Def.IsAura)
@@ -1303,11 +1312,15 @@ namespace My.Map.Entity
                 return;
             }
             auraRuntimeInfo.lastAuraTick = LogicTime.time;
-            var currAffectOnes = BuffOwner.FindEntityInRange(BuffOwner.Pos, Def.AuraRange);
+            _cacheFrameAffected.Clear();
+            foreach (var one in BuffOwner.FindEntityInRange(BuffOwner.Pos, Def.AuraRange))
+            {
+                _cacheFrameAffected.Add(one.Id);
+            }
             foreach (var affectedId in auraRuntimeInfo.AffectedEntites.ToList())
             {
                 // 当帧不再受光环里
-                if (currAffectOnes.Find(item => item.Id == affectedId) == null)
+                if (!_cacheFrameAffected.Contains(affectedId))
                 {
                     // 移除光环效果
                     BuffOwner.BuffManager.RemoveAllBuffById(affectedId, Def.AuraBuffId, casterId:this.BuffOwner.Id, srcBuffId: this.InstanceId);
@@ -1315,14 +1328,14 @@ namespace My.Map.Entity
                 }
             }
 
-            foreach (var currAffectOne in currAffectOnes)
+            foreach (var currAffectId in _cacheFrameAffected)
             {
-                var exist = auraRuntimeInfo.AffectedEntites.Find((item) => item == currAffectOne.Id);
+                var exist = auraRuntimeInfo.AffectedEntites.Find((item) => item == currAffectId);
                 if (exist == -1)
                 {
                     // 移除光环效果
-                    BuffOwner.BuffManager.RequestAddBuff(currAffectOne.Id, Def.AuraBuffId, 1, casterId: this.BuffOwner.Id, srcBuffId: this.InstanceId);
-                    auraRuntimeInfo.AffectedEntites.Add(currAffectOne.Id);
+                    BuffOwner.BuffManager.RequestAddBuff(currAffectId, Def.AuraBuffId, 1, casterId: this.BuffOwner.Id, srcBuffId: this.InstanceId);
+                    auraRuntimeInfo.AffectedEntites.Add(currAffectId);
                 }
             }
         }

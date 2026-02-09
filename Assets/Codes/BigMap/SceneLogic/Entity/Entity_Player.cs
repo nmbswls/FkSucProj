@@ -17,6 +17,9 @@ using static My.Map.Fight.FightStruct;
 
 namespace My.Map
 {
+
+    
+
     public class PlayerLogicEntity : BaseUnitLogicEntity, IAttractSource
     {
 
@@ -32,6 +35,7 @@ namespace My.Map
         public static float RetreatDuration = 5.0f;
 
         public event Action<long> EventOnAttachmentUpdate;
+        public event Action EventOnRequestAimHelper;
 
         public PlayerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
@@ -752,6 +756,31 @@ namespace My.Map
             else
             {
                 return 2.5f;
+            }
+        }
+
+        public override void InitAggroSystem()
+        {
+
+        }
+
+        private long SupportTargetId;
+        public void UpdateSupportTargetId(long supportTargetId)
+        {
+            this.SupportTargetId = supportTargetId;
+        }
+
+        public void RequestAimHelper()
+        {
+            EventOnRequestAimHelper?.Invoke();
+        }
+
+        public override long CurrentTargetId
+        {
+            get
+            {
+                RequestAimHelper();
+                return SupportTargetId;
             }
         }
 

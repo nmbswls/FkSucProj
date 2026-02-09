@@ -23,7 +23,10 @@ namespace My.Map.Fight
             public float Angle;
         }
 
-        public enum ESelectPolicy
+        /// <summary>
+        /// 目标选择策略
+        /// </summary>
+        public enum ETargetSelectPolicy
         {
             None,
             PrimaryTarget,

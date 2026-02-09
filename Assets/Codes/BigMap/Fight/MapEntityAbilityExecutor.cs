@@ -1,4 +1,5 @@
 using My.Map;
+using My.Map.Fight;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,63 @@ namespace My.Map.Entity
 
         // 来源是weapon 还是 技能？
     }
+
+    public static class EntityAbilityHelper
+    {
+
+        /// <summary>
+        /// 根据目标筛选类型 
+        /// </summary>
+        /// <param name="targetSelectPolicy"></param>
+        /// <param name="casterUnit"></param>
+        /// <returns></returns>
+        public static long GetTargetByPolicy(FightStruct.ETargetSelectPolicy targetSelectPolicy, BaseUnitLogicEntity casterUnit)
+        {
+            switch(targetSelectPolicy)
+            {
+                case ETargetSelectPolicy.Self:
+                    {
+                        return casterUnit.Id;
+                    }
+                    break;
+                case ETargetSelectPolicy.PrimaryTarget:
+                    {
+                        return casterUnit.CurrentTargetId;
+                    }
+                    break;
+                case ETargetSelectPolicy.LowHpAlly:
+                    {
+                        var rangeAllies = casterUnit.FindEntityInRange(casterUnit.Pos, 3.0f);
+                        List<(BaseUnitLogicEntity, long)> candidates = new();
+                        foreach(var oneEntity in rangeAllies)
+                        {
+                            if(oneEntity is not BaseUnitLogicEntity unitEntity)
+                            {
+                                continue;
+                            }
+                            if(oneEntity.FactionId != casterUnit.FactionId)
+                            {
+                                continue;
+                            }
+                            candidates.Add((unitEntity, unitEntity.GetAttr(AttrIdConsts.HP)));
+                        }
+
+                        candidates.Sort((itemA, itemB) => { return itemA.Item2.CompareTo(itemB.Item2); });
+
+                        if(candidates.Count > 0)
+                        {
+                            return candidates[0].Item1.Id;
+                        }
+
+                        return 0;
+                    }
+                    break;
+            }
+
+            return 0;
+        }
+    }
+
 
     public class MapEntityAbilityExecutor
     {
@@ -233,6 +291,7 @@ namespace My.Map.Entity
                 }
             }
 
+
             CurrentCtx = new AbilityRunningContext
             {
                 Actor = EntityOwner,
@@ -261,14 +320,73 @@ namespace My.Map.Entity
             
             EventOnUseAbility?.Invoke(abilityConf.Id);
 
-            if(abilityConf.MaxStepDistance > 0)
-            {
-                EntityOwner.StartDash(EntityOwner.FinalLook, 0.1f, abilityConf.MaxStepDistance / 0.1f, null);
-            }
+            CheckApplyAdditiveMove(abilityConf);
 
             Debug.Log($"entity {EntityOwner.Id} TryStart {abilityConf.Id}");
 
             return true;
+        }
+
+        private void CheckApplyAdditiveMove(MapAbilitySpecConfig abilityConf)
+        {
+            bool withTargetCorrection = false;
+            Vector2? correctPoint = null;
+            do
+            {
+
+                if (!abilityConf.AddTargetCorrection)
+                {
+                    break;
+                }
+
+                var mainTargetId = EntityOwner.CurrentTargetId;
+                if(mainTargetId == 0)
+                {
+                    break;
+                }
+                var mainTarget = EntityOwner.LogicManager.GetLogicEntity(mainTargetId, false);
+                if(mainTarget == null || mainTarget is not BaseUnitLogicEntity mainTargetUnit)
+                {
+                    break;
+                }
+                if(mainTargetUnit.IsDead || mainTargetUnit.MarkDestroyed)
+                {
+                    break;
+                }
+
+                withTargetCorrection = true;
+                var diff = mainTarget.Pos - EntityOwner.Pos;
+                // 不需要吸附
+                if (diff.magnitude < abilityConf.GoodCorrectionnDist)
+                {
+                    correctPoint = null;
+                }
+                else
+                {
+                    correctPoint = EntityOwner.Pos + diff.normalized * abilityConf.MaxCorrectionValue;
+                }
+            }
+            while (false);
+            
+            // 没有吸附时才处理默认垫步
+            if(!withTargetCorrection)
+            {
+                if (abilityConf.DefaultStepDistance > 0)
+                {
+                    correctPoint = EntityOwner.Pos + EntityOwner.FinalLook * abilityConf.DefaultStepDistance;
+                }
+            }
+
+            if(correctPoint != null)
+            {
+                var dashDir = correctPoint.Value - EntityOwner.Pos;
+                if(dashDir.magnitude < 0.05f)
+                {
+                    return;
+                }
+                float correctionTime = 0.15f;
+                EntityOwner.StartDash(dashDir.normalized, correctionTime, dashDir.magnitude / correctionTime, null);
+            }
         }
 
 

@@ -18,6 +18,8 @@ namespace Config.Unit
         public bool IsPassive;
         public string PassiveBuffId;
 
+        public bool IsCombo;
+
         public bool NeedHMode;
 
         public bool InterruptCombo = true;
@@ -27,12 +29,13 @@ namespace Config.Unit
         public float CoolDown = 5.0f;
         public int StackCount = 0;
 
+
         public int Priority = 10;
         public float DesiredUseAngle;
         public float DesiredUseDistance;
 
         public float BufferCacheTime = 0.1f;
-        public FightStruct.ESelectPolicy SelectPolicy; // 1-敌人主目标 2-自身 3-血量最低友方 4 血量最低敌方 5 随机 
+
 
         public enum ECastConditionType
         {
@@ -55,18 +58,18 @@ namespace Config.Unit
 
         public List<CastCondition> CastConditions = new();
 
-        public enum ETargetType
-        {
-            NoTarget,
-            Point,
-            Circle,
-            Rect,
-            LockTarget,
-            Self,
-        }
-        public ETargetType TargetType;
-        public float Range1;
-        public float Range2;
+        //public enum ETargetType
+        //{
+        //    NoTarget,
+        //    Point,
+        //    Circle,
+        //    Rect,
+        //    LockTarget,
+        //    Self,
+        //}
+        //public ETargetType TargetType;
+        //public float Range1;
+        //public float Range2;
     }
 
 

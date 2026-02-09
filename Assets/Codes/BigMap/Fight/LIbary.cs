@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
 using static Config.Unit.EntitySkillCfg;
+using static My.Config.LogicInteractOutput;
 using static My.Map.Entity.MapAbilityEffectDashStartCfg;
+using static My.Map.Entity.MapAbilitySpecConfig;
 using static System.Net.WebRequestMethods;
 
 
@@ -31,7 +33,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "queen_attack_01";
                     cfg.CoolDown = 0.2f;
                     cfg.DesiredUseDistance = 0.8f;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
 
                     _skillDict[cfg.SkillId] = cfg;
@@ -43,7 +44,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "default_dash";
                     cfg.CoolDown = 1.0f;
                     cfg.DesiredUseDistance = 999f;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
                     cfg.BufferCacheTime = 0.2f;
 
                     _skillDict[cfg.SkillId] = cfg;
@@ -55,7 +55,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "queen_shoot";
                     cfg.CoolDown = 5.0f;
                     cfg.DesiredUseDistance = 5.0f;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -65,7 +64,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "default_push";
                     cfg.CoolDown = 0.6f;
                     cfg.DesiredUseDistance = 1.0f;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -76,7 +74,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "default_dash_slash";
                     cfg.CoolDown = 8.0f;
                     cfg.DesiredUseDistance = 2.0f;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -86,7 +83,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "basic_aoe_slash";
                     cfg.CoolDown = 6.0f;
                     cfg.DesiredUseDistance = 1.0f;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -96,7 +92,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "default_enemy_qinfan";
                     cfg.CoolDown = 6.0f;
                     cfg.DesiredUseDistance = 0.8f;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
                     cfg.NeedHMode = true;
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -106,7 +101,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "guard_attack";
                     cfg.CoolDown = 1.0f;
                     cfg.DesiredUseDistance = 0.8f;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -117,7 +111,6 @@ namespace My.Map.Entity
                     cfg.CoolDown = 21.0f;
                     cfg.DesiredUseDistance = 5f;
                     cfg.Priority = 2000;
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -130,8 +123,7 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 0f;
                     cfg.Priority = 1;
                     //cfg.tar
-                    cfg.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
-                    cfg.TargetType = EntitySkillCfg.ETargetType.NoTarget;
+                    
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -145,8 +137,7 @@ namespace My.Map.Entity
                     cfg.Priority = 1;
 
                     cfg.StackCount = 5;
-                    cfg.TargetType = EntitySkillCfg.ETargetType.Point;
-                    cfg.Range1 = 5.0f;
+                    
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -159,10 +150,7 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 5f;
                     cfg.Priority = 1;
 
-                    cfg.TargetType = ETargetType.Circle;
-                    cfg.Range1 = 2.5f;
-                    cfg.Range2 = 2.0f;
-
+                    
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
@@ -185,7 +173,6 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 0.3f;
                     cfg.Priority = 1;
 
-                    cfg.TargetType = ETargetType.LockTarget;
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -209,26 +196,16 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 1.0f;
                     cfg.Priority = 1;
 
-                    cfg.TargetType = ETargetType.Self;
                     cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.NoQueenMode});
                     _skillDict[cfg.SkillId] = cfg;
                 }
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_quit_queen";
-                    cfg.MainAbilityId = "player_quit_queen";
-
-                    cfg.TargetType = ETargetType.Self;
-                    cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.QueenMode });
-                    _skillDict[cfg.SkillId] = cfg;
-                }
+                
 
                 {
                     var cfg = new EntitySkillCfg();
                     cfg.SkillId = "player_ziwei";
                     cfg.MainAbilityId = "player_ziwei";
 
-                    cfg.TargetType = ETargetType.Self;
                     cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.NoQueenMode });
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -239,7 +216,6 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "h_mode_execute";
                     cfg.CoolDown = 10.0f;
 
-                    cfg.TargetType = ETargetType.LockTarget;
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
@@ -250,7 +226,7 @@ namespace My.Map.Entity
                     cfg.MainAbilityId = "player_dark_dance";
                     cfg.CoolDown = 20.0f;
 
-                    cfg.TargetType = ETargetType.Self;
+                    //cfg.TargetType = ETargetType.Self;
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
@@ -261,7 +237,6 @@ namespace My.Map.Entity
                     cfg.CoolDown = 5.0f;
                     cfg.DesiredUseDistance = 1.0f;
 
-                    cfg.TargetType = ETargetType.Rect;
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
@@ -273,7 +248,6 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 5.0f;
                     cfg.Priority = 5;
 
-                    cfg.TargetType = ETargetType.Point;
                     _skillDict[cfg.SkillId] = cfg;
                 }
                 {
@@ -284,7 +258,6 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 5.0f;
                     cfg.Priority = 5;
 
-                    cfg.TargetType = ETargetType.Point;
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
@@ -296,7 +269,6 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 1.5f;
                     cfg.Priority = 5;
 
-                    cfg.TargetType = ETargetType.Point;
                     _skillDict[cfg.SkillId] = cfg;
                 }
                 
@@ -1203,6 +1175,11 @@ namespace My.Map.Entity
 
             spec.Id = "attack";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
             //spec.DesiredUseDistance = 0.5f;
 
             //spec.CoolDown = 2.0f;
@@ -1266,6 +1243,10 @@ namespace My.Map.Entity
 
             spec.Id = "default_range_attack";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.Directional;
+            spec.Range1 = 6.0f;
+
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -1472,10 +1453,9 @@ namespace My.Map.Entity
 
             spec.Id = "spawn_attract";
             spec.TypeTag = AbilityTypeTag.Utility;
-            //spec.CoolDown = 10.0f;
-            //spec.StackCount = 5;
-            //spec.TargetType = MapAbilitySpecConfig.ETargetType.Point;
-            //spec.Range1 = 5.0f;
+
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 5.0f;
 
             var mainPhase = new MapAbilityPhase()
             {
@@ -1721,7 +1701,7 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_01";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.5f;
+            spec.DefaultStepDistance = 0.5f;
             spec.AdjustFaceDir = true;
 
             spec.Phases.Add(new MapAbilityPhase()
@@ -1787,7 +1767,7 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_02";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.5f;
+            spec.DefaultStepDistance = 0.5f;
             spec.AdjustFaceDir = true;
 
             spec.Phases.Add(new MapAbilityPhase()
@@ -1852,7 +1832,7 @@ namespace My.Map.Entity
 
             spec.Id = "queen_attack_03";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.5f;
+            spec.DefaultStepDistance = 0.5f;
             spec.AdjustFaceDir = true;
 
             spec.Phases.Add(new MapAbilityPhase()
@@ -1919,7 +1899,7 @@ namespace My.Map.Entity
 
             spec.Id = "default_push";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0f;
+            spec.DefaultStepDistance = 0f;
             //spec.CoolDown = 0.2f;
             //spec.DesiredUseDistance = 0.5f;
 
@@ -1992,7 +1972,7 @@ namespace My.Map.Entity
 
             spec.Id = "guard_attack_01";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.4f;
+            spec.DefaultStepDistance = 0.4f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -2056,7 +2036,7 @@ namespace My.Map.Entity
 
             spec.Id = "guard_attack_02";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.4f;
+            spec.DefaultStepDistance = 0.4f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -2122,6 +2102,8 @@ namespace My.Map.Entity
             spec.Id = "queen_counter";
             spec.TypeTag = AbilityTypeTag.Combat;
 
+            //spec.SelectPolicy = FightStruct.ESelectPolicy.PrimaryTarget;
+
             spec.Phases.Add(new MapAbilityPhase()
             {
                 PhaseName = "Prepare",
@@ -2180,7 +2162,7 @@ namespace My.Map.Entity
 
             spec.Id = "queen_counter_payback";
             spec.TypeTag = AbilityTypeTag.Combat;
-            spec.MaxStepDistance = 0.4f;
+            spec.DefaultStepDistance = 0.4f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -2249,6 +2231,10 @@ namespace My.Map.Entity
 
             spec.Id = "queen_pull_all";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.Circle;
+            spec.Range1 = 2.5f;
+            spec.Range2 = 2.0f;
 
             spec.Phases.Add(new MapAbilityPhase()
             {
@@ -2409,6 +2395,9 @@ namespace My.Map.Entity
 
             spec.Id = "evil_child_insertion";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.LockTarget;
+
             //spec.MaxStepDistance = 0.5f;
             //spec.CoolDown = 0.2f;
             //spec.DesiredUseDistance = 0.5f;
@@ -2550,6 +2539,8 @@ namespace My.Map.Entity
 
             spec.Id = "player_enter_queen";
             spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+
 
             var mainPhase = new MapAbilityPhase()
             {
@@ -2656,6 +2647,8 @@ namespace My.Map.Entity
 
             spec.Id = "h_mode_execute";
             spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CastType = ECastType.LockTarget;
+
 
             var mainPhase = new MapAbilityPhase()
             {
@@ -2868,6 +2861,8 @@ namespace My.Map.Entity
 
             spec.Id = "chongzhuang";
             spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.Directional;
 
             spec.Phases.Add(new MapAbilityPhase()
             {

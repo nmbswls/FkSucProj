@@ -32,6 +32,7 @@ namespace My.Map.Entity
             ToCastPos,
             ToTriggerPos,
             Random,
+            CastDir,
         }
         public ESpawnDir SpawnDir = ESpawnDir.NoDir;
 
@@ -39,7 +40,7 @@ namespace My.Map.Entity
         /// 追踪相关
         /// </summary>
         public bool isHoming; // 是否制导
-        public FightStruct.ESelectPolicy homingSelectPolicy;
+        public FightStruct.ETargetSelectPolicy homingSelectPolicy;
         public float homingTime = 999; // 制导时间
 
         public bool showRangeWarn;

@@ -168,7 +168,7 @@ namespace My.Map.Entity
             {
                 switch(realCfg.homingSelectPolicy)
                 {
-                    case Fight.FightStruct.ESelectPolicy.PrimaryTarget:
+                    case ETargetSelectPolicy.PrimaryTarget:
                         {
                             if(caster != null && caster is NpcUnitLogicEntity npcUnit)
                             {

@@ -244,7 +244,16 @@ namespace My.Map
     {
         public UnitAggroSystem AggroSystem { get; set; }
 
-        public void InitAggroSystem()
+        public virtual long CurrentTargetId 
+        { 
+            get 
+            { 
+                return AggroSystem?.CurrentTargetId ?? 0; 
+            } 
+        }
+        
+
+        public virtual void InitAggroSystem()
         {
             AggroSystem = new(this);
         }

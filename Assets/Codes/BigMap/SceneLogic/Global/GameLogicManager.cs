@@ -720,7 +720,12 @@ namespace My
         {
             NeedBalancing = true;
         }
-       
+
+
+        public IEnumerable<ILogicEntity> FindEntityInRange(Vector2 pos, float radius)
+        {
+            return AreaManager.FindEntityInRange(pos, radius);
+        }
     }
 
 }
