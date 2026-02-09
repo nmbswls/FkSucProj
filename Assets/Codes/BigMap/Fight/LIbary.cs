@@ -1258,7 +1258,7 @@ namespace My.Map.Entity
 
             spec.CastType = ECastType.Directional;
             spec.Range1 = 6.0f;
-
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
             spec.Phases.Add(new MapAbilityPhase()
             {

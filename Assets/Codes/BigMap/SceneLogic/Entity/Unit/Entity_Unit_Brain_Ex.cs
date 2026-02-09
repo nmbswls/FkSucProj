@@ -500,23 +500,26 @@ namespace My.Map.Unit
             // 没有技能需要释放时 进行走位
             if (intentSkillCfgOrigin == null)
             {
-                var diff = _currentTarget.Pos - _brain.NpcEntity.Pos;
+                var diff = _brain.NpcEntity.Pos - _currentTarget.Pos;
                 var distToTarget = diff.magnitude;
 
                 // 超过远距离
                 if (_brain.Config.CombatFarDistance > 0 && distToTarget > _brain.Config.CombatFarDistance)
                 {
+                    Debug.Log("fast mo TryMoveTo player");
                     // 快速移动
                     _brain.NpcEntity.TryMoveTo(_currentTarget.Pos);
                 }
                 // 低于最近距离
                 else if (_brain.Config.CombatCloseDistance > 0 && distToTarget <= _brain.Config.CombatCloseDistance)
                 {
+                    Debug.Log("too close");
+
                     _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.Pos + (diff.normalized) * 0.5f, moveSpeedRate: 0.5f);
                 }
                 else
                 {
-                    Debug.Log("DistanceControl TryMoveTo player");
+                    Debug.Log("keep distance");
                     // 计算切线方向 (左手定则或右手定则)
                     Vector2 tangentDir = new Vector3(-diff.y, diff.x);
                     // 根据时间计算偏移量 (-1 到 1 之间波动)
@@ -598,6 +601,7 @@ namespace My.Map.Unit
                         {
                             // 重置技能释放
                             ResetAttackState();
+                            return;
                         }
                         break;
                     }
@@ -607,7 +611,7 @@ namespace My.Map.Unit
                     if(goodNode == null)
                     {
                         ResetAttackState();
-                        break;
+                        return;
                     }
 
                     intentAbilityCfgCurrent = AbilityLibrary.GetAbilityConfig(goodNode.AbilityId);
@@ -735,7 +739,7 @@ namespace My.Map.Unit
                 {
                     (Vector2? vecParam, ILogicEntity? targetParam) = AIActionUtils.GetSkillCastParams(intentAbilityCfgCurrent, _brain.NpcEntity, targetId);
                     _brain.NpcEntity.ablilityManager.UseSkill(intentSkillCfgOrigin.SkillId, castVec: vecParam, target: targetParam);
-
+                    _brain.NpcEntity.StopMove();
                     hasCastAbility = true;
                     return;
                 }
