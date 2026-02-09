@@ -566,7 +566,7 @@ namespace My.Map.Entity
         /// <param name="castVec1"></param>
         /// <param name="castVec2"></param>
         /// <param name="targetId"></param>
-        public bool UseSkill(string skillId, Vector2? castVec = null, ILogicEntity target = null)
+        public bool UseSkill(string skillId, Vector2? inputVec = null, Vector2 ? castVec = null, ILogicEntity target = null)
         {
             SkillRuntimes.TryGetValue(skillId, out SkillRuntime skillRuntime);
             if(skillRuntime == null)
@@ -625,7 +625,7 @@ namespace My.Map.Entity
                 }
             }
 
-            if (!Executor.TryUseAbility(realAbilityId, castDir: castVec, target: target))
+            if (!Executor.TryUseAbility(realAbilityId, castVec: castVec, target: target))
             {
                 Debug.Log("UseSkill fail");
                 comboOrchestrator.TransitCombo(0);

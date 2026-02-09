@@ -38,7 +38,7 @@ namespace My.Map.Entity
         public void TryShoot(Vector2 shootDir)
         {
             //Debug.Log("PlayerAbilityController TryShoot " + shootDir);
-            TryUseAbility("player_shoot", castDir: shootDir, overrideParams: new Dictionary<string, string>()
+            TryUseAbility("player_shoot", castVec: shootDir, overrideParams: new Dictionary<string, string>()
             {
             }); ;
         }
@@ -46,7 +46,7 @@ namespace My.Map.Entity
         public void TrySlash(Vector2 shootDir)
         {
             //Debug.Log("PlayerAbilityController TryShoot " + shootDir);
-            TryUseAbility("default_weapon", castDir: shootDir, overrideParams: new Dictionary<string, string>()
+            TryUseAbility("default_weapon", castVec: shootDir, overrideParams: new Dictionary<string, string>()
             {
             }); ;
         }
@@ -54,7 +54,7 @@ namespace My.Map.Entity
         public void TryDash(Vector2 shootDir)
         {
             //Debug.Log("PlayerAbilityController TryShoot " + shootDir);
-            TryUseAbility("default_dash", castDir: shootDir, overrideParams: new Dictionary<string, string>()
+            TryUseAbility("default_dash", castVec: shootDir, overrideParams: new Dictionary<string, string>()
             {
             }); ;
         }

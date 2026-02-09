@@ -976,7 +976,7 @@ namespace My.Map.Entity
 
 
             // 使用技能
-            unitEntity.ablilityManager.UseSkill(realCfg.SkillId, castVec, realCfg.UseTargetAsTarget ? targetEntity : null);
+            unitEntity.ablilityManager.UseSkill(realCfg.SkillId, castVec: castVec, target : realCfg.UseTargetAsTarget ? targetEntity : null);
         }
     }
     

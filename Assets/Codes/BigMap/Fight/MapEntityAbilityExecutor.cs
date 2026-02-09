@@ -106,6 +106,7 @@ namespace My.Map.Entity
             public ILogicEntity Actor;         // 施动者
             public ILogicEntity Target;        // 目标对象（如门或敌人），可为空
             public Vector2 FaceDir;           // 面朝方向
+            public Vector2? InputVec;           // 额外输入方向
             public Vector2? CastVec1;           // 面朝方向
             public Vector2? Position;         // 施放位置（如脚下或点击点）
             public Dictionary<string, object> UserData = new();
@@ -226,7 +227,7 @@ namespace My.Map.Entity
         }
 
         
-        public virtual bool TryUseAbility(string abilityName, Vector2? castDir = null, ILogicEntity target = null, Dictionary<string, string> overrideParams = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
+        public virtual bool TryUseAbility(string abilityName, Vector2? inputVec = null, Vector2? castVec = null, ILogicEntity target = null, Dictionary<string, string> overrideParams = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
         {
             var config = AbilityLibrary.GetAbilityConfig(abilityName);
             if (config == null)
@@ -234,7 +235,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            return TryStart(config, castVec1: castDir, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims, groupOwnerName: groupOwnerName);
+            return TryStart(config, inputVec: inputVec, castVec1: castVec, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims, groupOwnerName: groupOwnerName);
         }
 
         public void Tick(float dt)
@@ -253,7 +254,7 @@ namespace My.Map.Entity
         /// <param name="runningOverrides"></param>
         /// <param name="phaseOverrideAnims"></param>
         /// <returns></returns>
-        protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? castVec1 = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
+        protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? inputVec = null, Vector2? castVec1 = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null)
         {
 
             if(abilityConf.IsDodge)
@@ -302,6 +303,7 @@ namespace My.Map.Entity
                 AbilityConfig = abilityConf,
                 viewer = EntityOwner.viewer,
                 RunningVariables = runningOverrides,
+                InputVec = inputVec,
                 CastVec1 = castVec1,
                 FaceDir = EntityOwner.FinalLook,
                 Position = EntityOwner.Pos,
