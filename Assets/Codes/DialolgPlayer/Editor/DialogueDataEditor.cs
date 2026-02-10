@@ -36,14 +36,42 @@ namespace My.Dialog
     // --- 具体子类示例 ---
 
     [Serializable]
-    public class EditorDialogueTextCommand : EditorDialogCommand
+    public class EditorDialogueCommand4Text : EditorDialogCommand
     {
+        [Serializable]
+        public class TextLine
+        {
+            public string Speaker;
+            [TextArea(2, 5)] public string Content;
+            public AudioClip VoiceLine;
+        }
+
+        public List<TextLine> TextLines = new();
+
         public string Speaker;
         [TextArea(2, 5)] public string Content;
         public AudioClip VoiceLine;
 
         public override string GetSummary() => $"[Talk]";
     }
+
+    [Serializable]
+    public class EditorDialogueCommand4SimpleBranch : EditorDialogCommand
+    {
+        [Serializable]
+        public class TextLine
+        {
+            public string Speaker;
+            [TextArea(2, 5)] public string Content;
+            public AudioClip VoiceLine;
+        }
+
+        public List<string> SimpleOptions = new();
+        public List<List<TextLine>> SimpleBranchTextLines = new();
+
+        public override string GetSummary() => $"[Talk]";
+    }
+
 
     [Serializable]
     public class EditorSetImageCommand : EditorDialogCommand

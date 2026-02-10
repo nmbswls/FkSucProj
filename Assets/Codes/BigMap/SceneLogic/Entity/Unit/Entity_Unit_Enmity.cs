@@ -147,6 +147,46 @@ namespace My.Map.Unit
             enmityConf = UnitEnmityCfgLoader.Get(enmityCfgId);
         }
 
+        /// <summary>
+        /// 增加临时仇恨
+        /// 只针对玩家
+        /// </summary>
+        /// <returns></returns>
+        public void AddTempEnmity(float addVal)
+        {
+            CurrEnmityVal += addVal;
+            LastTriggerEnmityTime = LogicTime.time;
+        }
+
+
+        /// <summary>
+        /// 检查临时敌意
+        /// </summary>
+        private void TickTempEnmity()
+        {
+            if (LogicTime.time - LastTriggerEnmityTime < 5.0f)
+            {
+                return;
+            }
+
+            if(UnitEntity.IsInCombat)
+            {
+                return;
+            }
+
+            if(UnitEntity.CurrentTargetId != 0 && UnitEntity.CurrentTargetId == UnitEntity.LogicManager.playerLogicEntity.Id)
+            {
+                return;
+            }
+
+            CurrEnmityVal = 0;
+            LastTriggerEnmityTime = 0;
+        }
+
+        public void Tick(float dt)
+        {
+            TickTempEnmity();
+        }
 
         /// <summary>
         /// 检查是否与目标敌对
@@ -183,15 +223,13 @@ namespace My.Map.Unit
                 return true;
             }
 
+            if(CurrEnmityVal > 0)
+            {
+                return true;
+            }
+
             return false;
         }
-
-
-        public void Tick(float dt)
-        {
-            
-        }
-
 
         /// <summary>
         /// 监听地图事件
@@ -207,35 +245,31 @@ namespace My.Map.Unit
                     {
                         if (commonEv.Name == "Loot")
                         {
-                            EFactionId lootFaction = (EFactionId)commonEv.Param3;
-                            if (lootFaction != UnitEntity.FactionId)
-                            {
-                                break;
-                            }
+                            //EFactionId lootFaction = (EFactionId)commonEv.Param3;
+                            //if (lootFaction != UnitEntity.FactionId)
+                            //{
+                            //    break;
+                            //}
 
-                            Debug.Log("check loot if same faction");
-                            if (enmityConf.Behaves != null)
-                            {
-                                foreach (var behav in enmityConf.Behaves)
-                                {
-                                    if (behav.EnmityType == EEnmityBehaveType.Loot)
-                                    {
-                                        CurrEnmityVal += behav.Param1;
-                                        changed = true;
-                                    }
-                                }
-                            }
+                            //Debug.Log("check loot if same faction");
+                            //if (enmityConf.Behaves != null)
+                            //{
+                            //    foreach (var behav in enmityConf.Behaves)
+                            //    {
+                            //        if (behav.EnmityType == EEnmityBehaveType.Loot)
+                            //        {
+                            //            CurrEnmityVal += behav.Param1;
+                            //            changed = true;
+                            //        }
+                            //    }
+                            //}
 
                         }
                     }
                     break;
             }
 
-            if (changed)
-            {
-                // 更新最后更新时间
-                LastTriggerEnmityTime = LogicTime.time;
-            }
+            
         }
 
 
@@ -271,7 +305,7 @@ namespace My.Map
     {
         public UnitEnmitySystem EnmitySystem { get; set; }
 
-        public void InitEnmitySystem()
+        public virtual void InitEnmitySystem()
         {
             EnmitySystem = new(this);
         }

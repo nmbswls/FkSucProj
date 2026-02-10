@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using My;
 using My.Dialog;
 using My.Map;
+using My.Map.Logic;
 using My.UI;
 using UnityEngine;
 
@@ -101,10 +102,10 @@ public partial class DialoguePlayer : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0))
-        {
-            DoContinue();
-        }
+        //if (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0))
+        //{
+        //    DoContinue();
+        //}
     }
 
     private void DoContinue()
@@ -269,18 +270,48 @@ public partial class DialoguePlayer : MonoBehaviour
         {
             case DialogCommandData4Text cd4Text:
                 {
-                    string name = cd4Text.Speaker;
-                    string text = cd4Text.Content;
-
+                    //string name = cd4Text.Speaker;
+                    //string text = cd4Text.Content;
+                    var textLines = cd4Text.TextLines;
                     // 让 TypeText 播完后“不直接推进下一条”，而是进入“等待继续”阶段
-                    ui.StartTypeText(name, text ?? "", string.Empty, SkipMode, () =>
+                    ui.StartTypeTextBatch(textLines, () =>
                     {
-                        // 一句对白结束 -> 进入等待继续（等待用户/Auto/Skip）
                         commandRunning = false;
                         waitingForContinue = true;
                         ui.ShowNextIndicator(true);
                         ui.autoTimer = 0f;
+
+                        // 直接下一步
+                        DoContinue();
                     });
+                    break;
+                }
+            case DialogCommandData4BranchText cd4BranchText:
+                {
+                    // Choice 阻塞，等待用户选择；选择后推进并可能 Jump
+                    ui.StartChoices(cd4BranchText.SimpleBranch, index =>
+                    {
+                        if (index >= 0 && index < cd4BranchText.SimpleTextLines.Count)
+                        {
+                            var textLines = cd4BranchText.SimpleTextLines[index];
+                            // 让 TypeText 播完后“不直接推进下一条”，而是进入“等待继续”阶段
+                            ui.StartTypeTextBatch(textLines, () =>
+                            {
+                                commandRunning = false;
+                                waitingForContinue = true;
+                                ui.ShowNextIndicator(true);
+                                ui.autoTimer = 0f;
+
+                                // 直接下一步
+                                DoContinue();
+                            });
+                        }
+                        else
+                        {
+                            SafeComplete();
+                        }
+                    });
+
                     break;
                 }
 
@@ -364,6 +395,20 @@ public partial class DialoguePlayer : MonoBehaviour
                                 string switchName = cd4Func.Param5;
                                 entity.SetLocalSwitch(switchName, true);
 
+                            }
+                            break;
+                        case DialogCommandData4SimpleFunc.ESimpleFuncType.AddTmpEnmity:
+                            {
+                                var srcId = runtimeRef.SrcEntityId;
+                                if (srcId == null || srcId == 0)
+                                {
+                                    break;
+                                }
+
+                                var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(srcId.Value);
+                                if (entity == null || entity is not BaseUnitLogicEntity unitEntity) break;
+
+                                unitEntity?.EnmitySystem.AddTempEnmity(srcId.Value);
                             }
                             break;
                     }

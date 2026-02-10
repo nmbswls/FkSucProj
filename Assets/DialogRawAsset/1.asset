@@ -38,7 +38,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 4055725892305158146
-      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
         IsFolded: 0
         Speaker: "\u8389\u8389\u4E1D"
@@ -59,28 +59,28 @@ MonoBehaviour:
           ShowWhenFail: 0
           Conditions1: []
     - rid: 4055725892305158149
-      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
         IsFolded: 0
         Speaker: "\u8389\u8389\u4E1D"
         Content: "\u8981\u4E0D\u8981\u9080\u8BF7\u4ED6\u53BB\u90A3\u91CC\uFF1F"
         VoiceLine: {fileID: 0}
     - rid: 4055725892305158150
-      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
         IsFolded: 0
         Speaker: 
         Content: "\u90A3\u5C31\u53BB\u90A3\u91CC\u5427\u3002"
         VoiceLine: {fileID: 0}
     - rid: 4055725892305158151
-      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
         IsFolded: 0
         Speaker: "\u8389\u8389\u4E1D"
         Content: "\u653E\u8F7B\u677E\uFF0C\u4EA4\u7ED9\u6211\u5C31\u884C\u3002"
         VoiceLine: {fileID: 0}
     - rid: 4055725892305158152
-      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
         IsFolded: 0
         Speaker: 

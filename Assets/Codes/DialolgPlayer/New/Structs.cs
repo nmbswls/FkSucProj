@@ -41,6 +41,8 @@ namespace My.Dialog
     [Serializable]
     public class DialogCommandData4Text : DialogCommandData
     {
+        public List<OneTextLine> TextLines = new();
+
         public string Speaker;
         public string Content;
         public string VoiceLine;
@@ -53,7 +55,7 @@ namespace My.Dialog
     public class DialogCommandData4BranchText : DialogCommandData
     {
         public List<string> SimpleBranch;
-        public List<DialogCommandData4Text> SimpleText;
+        public List<List<OneTextLine>> SimpleTextLines;
     }
 
 
@@ -79,6 +81,8 @@ namespace My.Dialog
         {
             None,
             SrcLocalSwitch,
+
+            AddTmpEnmity,
         }
         public ESimpleFuncType SimpleFuncType;
         public long Param1;

@@ -24,7 +24,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 4055726077229662314
-      type: {class: EditorDialogueTextCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
         IsFolded: 0
         Speaker: 

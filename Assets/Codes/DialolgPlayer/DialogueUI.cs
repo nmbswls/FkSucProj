@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using My.Dialog;
 using My.Map;
 using TMPro;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace My.UI
 
         public GameObject nextIndicator;
         public Transform BlackMask;
+        public Button ClickArea;
 
         [Header("Choice UI")]
         public GameObject choicePanel;
@@ -34,9 +36,14 @@ namespace My.UI
         [Header("Auto")]
         public float autoDelay = 0.8f;
         [HideInInspector] public float autoTimer = 0f;
+        public bool IsFastMode = false;
+
 
         // 打字机状态
-        private string currentFullText;
+        public List<OneTextLine> readingData;
+        public int currentLineIndex = 0;
+
+        private string currentFullText; // 当前行的文本
         private int currentIndex;
         private float tick;
         private bool typing;
@@ -53,6 +60,9 @@ namespace My.UI
         public void Awake()
         {
             choiceButtonPrefab.gameObject.SetActive(false);
+
+            ClickArea.onClick.RemoveAllListeners();
+            ClickArea.onClick.AddListener(TryDoContinue);
         }
 
         private void Update()
@@ -82,9 +92,76 @@ namespace My.UI
             }
         }
 
-        public void StartTypeText(string speaker, string content, string voice, bool fast, Action onComplete)
+        /// <summary>
+        /// 尝试进行continue
+        /// </summary>
+        private void TryDoContinue()
         {
-            if(string.IsNullOrEmpty(speaker))
+            if(readingData == null || readingData.Count == 0)
+            {
+                return;
+            }
+
+            if(currentLineIndex >= readingData.Count)
+            {
+                return;
+            }
+
+            // 正在打字
+            if(typing)
+            {
+                //前1秒锁定
+                if (tick < 1f)
+                {
+                    return;
+                }
+
+                // 否则立即显示全量
+                contentText.text = currentFullText ?? "";
+                FinishTyping();
+                return;
+            }
+
+            currentLineIndex += 1;
+            if (currentLineIndex < readingData.Count)
+            {
+                StartTypeOneLine(readingData[currentLineIndex]);
+            }
+            else
+            {
+                var cb = onTypingComplete;
+                onTypingComplete = null;
+                cb?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// 执行一批文本的显示逻辑
+        /// </summary>
+        /// <param name="textLines"></param>
+        /// <param name="onComplete"></param>
+        public void StartTypeTextBatch(List<OneTextLine> textLines, Action onComplete)
+        {
+            if(textLines == null || textLines.Count == 0)
+            {
+                typing = false;
+                onComplete?.Invoke();
+                return;
+            }
+            this.readingData = textLines;
+            this.currentLineIndex = 0;
+
+            // 立即触发第一行打字
+            StartTypeOneLine(textLines[0]);
+        }
+
+        /// <summary>
+        /// 执行一行文本的打字
+        /// </summary>
+        /// <param name="line"></param>
+        private void StartTypeOneLine(OneTextLine line)
+        {
+            if (string.IsNullOrEmpty(line.Speaker))
             {
                 nameTextContainer.gameObject.SetActive(false);
             }
@@ -93,26 +170,55 @@ namespace My.UI
                 nameTextContainer.gameObject.SetActive(true);
             }
 
-            if (nameText) nameText.text = speaker;
-            ShowNextIndicator(false);
+            if (nameText) nameText.text = line.Speaker;
 
             //if (!string.IsNullOrEmpty(voice) && audioBus != null)
             //{
             //    audioBus.PlayVoice(voice);
             //}
 
-            onTypingComplete = onComplete;
-
-            if (fast)
+            if (IsFastMode)
             {
-                if (contentText) contentText.text = content;
+                if (contentText) contentText.text = line.Content;
                 FinishTyping();
             }
             else
             {
-                StartTypewriter(content);
+                StartTypewriter(line.Content);
             }
         }
+
+        //public void StartTypeText(string speaker, string content, string voice, bool fast, Action onComplete)
+        //{
+        //    if(string.IsNullOrEmpty(speaker))
+        //    {
+        //        nameTextContainer.gameObject.SetActive(false);
+        //    }
+        //    else
+        //    {
+        //        nameTextContainer.gameObject.SetActive(true);
+        //    }
+
+        //    if (nameText) nameText.text = speaker;
+        //    ShowNextIndicator(false);
+
+        //    //if (!string.IsNullOrEmpty(voice) && audioBus != null)
+        //    //{
+        //    //    audioBus.PlayVoice(voice);
+        //    //}
+
+        //    onTypingComplete = onComplete;
+
+        //    if (fast)
+        //    {
+        //        if (contentText) contentText.text = content;
+        //        FinishTyping();
+        //    }
+        //    else
+        //    {
+        //        StartTypewriter(content);
+        //    }
+        //}
 
         private void StartTypewriter(string fullText)
         {
@@ -164,9 +270,9 @@ namespace My.UI
         {
             typing = false;
             ShowNextIndicator(true);
-            var cb = onTypingComplete;
-            onTypingComplete = null;
-            cb?.Invoke();
+            //var cb = onTypingComplete;
+            //onTypingComplete = null;
+            //cb?.Invoke();
         }
 
         public void ShowNextIndicator(bool show)

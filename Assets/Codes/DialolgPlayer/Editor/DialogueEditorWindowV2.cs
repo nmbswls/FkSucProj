@@ -241,9 +241,12 @@ namespace My.Dialog
                             if(cmdIndex > 0)
                             {
                                 var lastCmdElement = freshCommandsProp.GetArrayElementAtIndex(cmdIndex - 1);
-                                if(lastCmdElement.managedReferenceValue is EditorDialogueTextCommand lastDialogCmd)
+                                if(lastCmdElement.managedReferenceValue is EditorDialogueCommand4Text lastDialogCmd)
                                 {
-                                    newSpeaker = lastDialogCmd.Speaker;
+                                    if(lastDialogCmd.TextLines.Count > 0)
+                                    {
+                                        newSpeaker = lastDialogCmd.TextLines[0].Speaker;
+                                    }
                                 }
                             }
                             freshCommandsProp.InsertArrayElementAtIndex(cmdIndex);
@@ -254,9 +257,12 @@ namespace My.Dialog
                             var newElement = freshCommandsProp.GetArrayElementAtIndex(cmdIndex);
 
                             // 6. 赋值
-                            var commandText = new EditorDialogueTextCommand();
-                            commandText.Speaker = newSpeaker;
+                            var commandText = new EditorDialogueCommand4Text();
+                            var firstLine = new EditorDialogueCommand4Text.TextLine();
+                            firstLine.Speaker = newSpeaker;
                             newElement.managedReferenceValue = commandText;
+
+                            commandText.TextLines.Add(firstLine);
 
                             serializedObject.ApplyModifiedProperties();
                             innerListCache.Clear();
@@ -413,40 +419,12 @@ namespace My.Dialog
                     EditorGUI.LabelField(new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight), summary);
                     DrawChoiceCommandProperty(contentRect, element);
                 }
-                else if (cmdData is EditorDialogueTextCommand)
+                else if (cmdData is EditorDialogueCommand4Text)
                 {
                     // === 剧本模式绘制 ===
 
-                    // 1. 定义第一行的高度 (名字+文本内容)
-                    // 注意：如果是 ReorderableList，rect.height 通常是 ElementHeight 计算出来的总高度
-                    // 我们假设第一行占据主要高度，底部留一行给其他属性，或者根据实际情况动态布局
-                    // 这里为了简单，假设 textRect 占据大部分高度，留出单行高度给底部属性
-
-                    // 预留底部高度给其他属性 (假设其他属性加起来占一行，如果有多行需要调整 ElementHeight 的计算逻辑)
-                    // 如果你的 ElementHeight 已经是动态计算好的，这里可以直接用。
-                    // 暂且假设第一行固定高度或者占满剩余空间减去底部
-
                     float extraFieldsHeight = 0f;
 
-                    // 我们先统计一下有多少个额外字段，以便预留空间（可选优化，简单的做法是直接画在下方）
-                    // 但在这个 Draw 方法里，rect 是外部传入的，所以我们只能在 rect 范围内画。
-                    // **前提：** 你的 ElementHeightCallback 必须已经为这些额外字段预留了高度。
-
-                    // --- 第一行：名字 + 内容 ---
-                    // 假设第一行高度是总高度减去额外字段所需的预估高度，或者固定一个最小高度
-                    // 更加稳健的做法：规定第一行高度 = 总高度 - (剩余属性数量 * 单行高度)
-                    // 但最简单的还是：第一行就是主视觉，额外属性画在最底下
-
-                    // 这里采用：第一行占据顶部，下方留出空间给其他属性
-                    // 比如我们留出 20像素 (一行的高度) 给其他属性，如果属性很多，这里需要调整
-
-                    // *重要*：为了让 TextArea 撑满，我们需要知道其他属性占了多高。
-                    // 这里为了不让代码太复杂，我们先画名字和内容，让它们占据顶部区域。
-
-                    // 这一段逻辑依赖于你的 GetElementHeight 是怎么算的。
-                    // 假设 totalHeight = textAreaHeight + otherPropertiesHeight
-
-                    // 咱们先简单处理：先画名字和内容，然后手动在该行下方画其他属性
 
                     // 1. 获取特定属性
                     var speakerProp = element.FindPropertyRelative("Speaker");
@@ -1011,12 +989,12 @@ namespace My.Dialog
 
                     switch(srcCommand)
                     {
-                        case EditorDialogueTextCommand textCommand:
+                        case EditorDialogueCommand4Text textCommand:
                             {
                                 var runTextCommand = new DialogCommandData4Text();
 
-                                runTextCommand.Speaker = textCommand.Speaker;
-                                runTextCommand.Content = textCommand.Content;
+                                //runTextCommand.Speaker = textCommand.Speaker;
+                                //runTextCommand.Content = textCommand.Content;
 
                                 runCommand = runTextCommand;
                             }

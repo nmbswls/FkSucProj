@@ -761,7 +761,10 @@ namespace My.Map
 
         public override void InitAggroSystem()
         {
+        }
 
+        public override void InitEnmitySystem()
+        {
         }
 
         private long SupportTargetId;
