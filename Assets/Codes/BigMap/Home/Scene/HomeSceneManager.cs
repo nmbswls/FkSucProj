@@ -110,18 +110,18 @@ namespace My
 
             var prefab = Resources.Load<GameObject>("Home/SimpleNpc/1");
 
-            for (int i = 0; i < 5; i++)
-            {
-                var go = GameObject.Instantiate(prefab, this.transform);
-                go.SetActive(true);
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    var go = GameObject.Instantiate(prefab, this.transform);
+            //    go.SetActive(true);
 
-                var simpleNpc = go.GetComponent<HomeSimpleNpc>();
-                homeSimpleNpc.Add(simpleNpc);
+            //    var simpleNpc = go.GetComponent<HomeSimpleNpc>();
+            //    homeSimpleNpc.Add(simpleNpc);
 
-                simpleNpc.transform.position = new Vector3(-2, -2, 0);
+            //    simpleNpc.transform.position = new Vector3(-2, -2, 0);
 
-                simpleNpc.CurrentState = HomeSimpleNpc.MobState.Idle;
-            }
+            //    simpleNpc.CurrentState = HomeSimpleNpc.MobState.Idle;
+            //}
         }
 
         protected void InitBuildMask()

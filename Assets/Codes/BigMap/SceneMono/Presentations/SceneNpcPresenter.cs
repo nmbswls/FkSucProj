@@ -130,7 +130,7 @@ namespace My.Map.Scene
                     break;
                 }
 
-                if(MainGameManager.Instance.playerScenePresenter == null)
+                if(MainGameManager.Instance.playerScenePresenter == null || NpcEntity.AIBrain.CurrentState != NpcEntity.AIBrain.StateIdle)
                 {
                     break;
                 }

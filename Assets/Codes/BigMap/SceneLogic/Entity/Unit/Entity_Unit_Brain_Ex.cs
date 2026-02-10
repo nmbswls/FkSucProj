@@ -1054,7 +1054,7 @@ namespace My.Map.Unit
 
             var diff = searchTarget.Pos - _brain.NpcEntity.Pos;
             // 
-            if(diff.magnitude < 0.8f)
+            if(diff.magnitude < 0.5f)
             {
                 // 出现对话
                 _brain.NpcEntity.LogicManager.viewer.PlayDialog("wanted_arrest", srcEntityId: _brain.NpcEntity.Id, pause:true);
