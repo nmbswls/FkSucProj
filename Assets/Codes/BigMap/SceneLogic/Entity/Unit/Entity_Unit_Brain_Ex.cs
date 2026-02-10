@@ -1057,7 +1057,7 @@ namespace My.Map.Unit
             if(diff.magnitude < 0.3f)
             {
                 // 出现对话
-                _brain.NpcEntity.LogicManager.viewer.PlayDialog("wanted_catch", srcEntityId: _brain.NpcEntity.Id, pause:true);
+                _brain.NpcEntity.LogicManager.viewer.PlayDialog("wanted_arrest", srcEntityId: _brain.NpcEntity.Id, pause:true);
 
                 _brain.ChangeState(_brain.StateIdle);
                 return;

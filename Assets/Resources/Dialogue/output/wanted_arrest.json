@@ -1,0 +1,106 @@
+{
+  "DialogId": "wanted_arrest",
+  "Steps": [
+    {
+      "Id": "origin",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Choice, Assembly-CSharp",
+          "TimeLimit": 0.0,
+          "Options": [
+            {
+              "Text": "诱惑",
+              "TargetStepId": "youhuo",
+              "ShowWhenFail": false,
+              "Conditions1": []
+            },
+            {
+              "Text": "抵抗",
+              "TargetStepId": "dikang",
+              "ShowWhenFail": false,
+              "Conditions1": []
+            },
+            {
+              "Text": "乖乖服从",
+              "TargetStepId": "fucong",
+              "ShowWhenFail": false,
+              "Conditions1": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "youhuo",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 3,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4JumpTo, Assembly-CSharp",
+          "TargetStepId": "end"
+        }
+      ]
+    },
+    {
+      "Id": "dikang",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 2,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4JumpTo, Assembly-CSharp",
+          "TargetStepId": "end"
+        }
+      ]
+    },
+    {
+      "Id": "fucong",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4JumpTo, Assembly-CSharp",
+          "TargetStepId": "end"
+        }
+      ]
+    }
+  ]
+}
