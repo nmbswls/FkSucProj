@@ -265,6 +265,8 @@ namespace My
 
             public Vector2? CastVec2;          // 施法参数2
 
+            public Vector2? InputVec;          // 输入 只有主动施法才会赋值
+
             // 变量集合
             public Dictionary<string, string> RunningVariables = new();
             public Dictionary<string, long> RunningStorage = new();

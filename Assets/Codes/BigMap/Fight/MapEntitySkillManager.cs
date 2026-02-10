@@ -625,7 +625,7 @@ namespace My.Map.Entity
                 }
             }
 
-            if (!Executor.TryUseAbility(realAbilityId, castVec: castVec, target: target))
+            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target))
             {
                 Debug.Log("UseSkill fail");
                 comboOrchestrator.TransitCombo(0);

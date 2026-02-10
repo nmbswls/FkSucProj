@@ -25,6 +25,7 @@ namespace My.Map.Entity
             CastDir,
             LookDir,
             TmpLookDir,
+            InputDir,
         }
 
         public EDirMode DirMode;

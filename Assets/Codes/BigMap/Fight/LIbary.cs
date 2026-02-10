@@ -622,7 +622,7 @@ namespace My.Map.Entity
                 DashDuration = 0.3f,
                 DashSpeed = 8f,
                 DashMode = EDashMode.FixTime,
-                DirMode = EDirMode.CastDir,
+                DirMode = EDirMode.InputDir,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 

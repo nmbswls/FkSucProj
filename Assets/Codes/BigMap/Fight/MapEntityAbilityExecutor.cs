@@ -668,6 +668,8 @@ namespace My.Map.Entity
                 ctx.CastVec1 = this.EntityOwner.Pos + this.CurrentCtx.FaceDir;
             }
 
+            ctx.InputVec = this.CurrentCtx.InputVec;
+
             ctx.TriggerPos = this.CurrentCtx.Position;
 
             ctx.RunningVariables = this.CurrentCtx.RunningVariables;

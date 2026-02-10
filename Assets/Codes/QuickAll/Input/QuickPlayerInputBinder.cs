@@ -452,7 +452,7 @@ namespace My.Input
                         dir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.FreeMoveInput;
                     }
 
-                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", dir + MainGameManager.Instance.playerScenePresenter.PlayerEntity.Pos);
+                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", inputVec : dir);
                 }
             }
             else if(keyName == EInputKey.Tab.ToString())

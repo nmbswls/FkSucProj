@@ -430,8 +430,6 @@ namespace My.Map.Entity
                 return;
             }
 
-            
-
             Vector2? dashEndP = null;
             // 尝试获取目标位置
             if(realCfg.DashMode == EDashMode.ToTarget)
@@ -460,6 +458,13 @@ namespace My.Map.Entity
                 {
                     dashDir = unitEntity.CurrentLook;
                 }
+                else if (realCfg.DirMode == EDirMode.InputDir)
+                {
+                    if (ctx.InputVec != null)
+                    {
+                        dashDir = ctx.InputVec.Value;
+                    }
+                }
 
                 var dist = realCfg.MaxDistance;
                 if(dist < 0.5f)
@@ -486,6 +491,14 @@ namespace My.Map.Entity
                 {
                     dashDir = unitEntity.CurrentLook;
                 }
+                else if (realCfg.DirMode == EDirMode.InputDir)
+                {
+                    if (ctx.InputVec != null)
+                    {
+                        dashDir = ctx.InputVec.Value;
+                    }
+                }
+
                 var dist = realCfg.DashSpeed * realCfg.DashDuration;
                 if (dist < 0.5f)
                 {
