@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace My.Map
 {
-    [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(Animator))]
     public class HomeBgNpc : MonoBehaviour
     {
@@ -20,7 +19,7 @@ namespace My.Map
 
         void Awake()
         {
-            _sr = GetComponent<SpriteRenderer>();
+            _sr = GetComponentInChildren<SpriteRenderer>();
             _anim = GetComponent<Animator>();
         }
 
