@@ -226,7 +226,7 @@ namespace My.Map.Unit
                 return;
             }
 
-            if (_brain.SuspiciousPos != Vector3.zero)
+            if (_brain.SuspiciousPos != null)
             {
                 _brain.ChangeState(_brain.StateSearch);
                 return;

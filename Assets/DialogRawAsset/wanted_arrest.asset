@@ -26,16 +26,19 @@ MonoBehaviour:
     Commands:
     - rid: 8250388048327737346
     - rid: 8250388048327737347
+    - rid: 8250388048327737350
   - Id: dikang
     Note: 
     IsExpanded: 1
     Commands:
     - rid: 8250388048327737348
     - rid: 8250388048327737349
+    - rid: 8250388048327737351
   - Id: fucong
     Note: 
     IsExpanded: 1
-    Commands: []
+    Commands:
+    - rid: 8250388048327737352
   references:
     version: 2
     RefIds:
@@ -50,9 +53,6 @@ MonoBehaviour:
         - Speaker: "\u5B88\u536B"
           Content: "\u4E0D\u8981\u8F7B\u4E3E\u5984\u52A8"
           VoiceLine: {fileID: 0}
-        Speaker: 
-        Content: 
-        VoiceLine: {fileID: 0}
     - rid: 8250388048327737345
       type: {class: EditorChoiceCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
@@ -74,19 +74,16 @@ MonoBehaviour:
     - rid: 8250388048327737346
       type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
-        IsFolded: 0
+        IsFolded: 1
         TextLines:
         - Speaker: "\u8389\u8389\u4E1D"
           Content: "\u6211\u53EF\u4EE5\u7528\u522B\u7684\u65B9\u5F0F\u507F\u8FD8\u3002"
           VoiceLine: {fileID: 0}
-        Speaker: 
-        Content: 
-        VoiceLine: {fileID: 0}
     - rid: 8250388048327737347
       type: {class: EditorSimpleFuncCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
-        IsFolded: 0
-        SimpleFuncType: 0
+        IsFolded: 1
+        SimpleFuncType: 3
         Param1: 0
         Param2: 0
         Param3: 0
@@ -104,17 +101,29 @@ MonoBehaviour:
         - Speaker: "\u5B88\u536B"
           Content: "\u627E\u6B7B\uFF01"
           VoiceLine: {fileID: 0}
-        Speaker: 
-        Content: 
-        VoiceLine: {fileID: 0}
     - rid: 8250388048327737349
       type: {class: EditorSimpleFuncCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
-        IsFolded: 1
-        SimpleFuncType: 0
+        IsFolded: 0
+        SimpleFuncType: 2
         Param1: 0
         Param2: 0
         Param3: 0
         Param4: 0
         Param5: 
         Param6: 
+    - rid: 8250388048327737350
+      type: {class: EditorDialogueCommand4JumpTo, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        TargetStepId: end
+    - rid: 8250388048327737351
+      type: {class: EditorDialogueCommand4JumpTo, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        TargetStepId: end
+    - rid: 8250388048327737352
+      type: {class: EditorDialogueCommand4JumpTo, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        TargetStepId: end
