@@ -151,6 +151,7 @@ namespace My.UI
             this.readingData = textLines;
             this.currentLineIndex = 0;
 
+            this.onTypingComplete = onComplete;
             // 立即触发第一行打字
             StartTypeOneLine(textLines[0]);
         }

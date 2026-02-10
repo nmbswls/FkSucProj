@@ -7,7 +7,18 @@
       "Commands": [
         {
           "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
-          "TextLines": [],
+          "TextLines": [
+            {
+              "Speaker": "守卫",
+              "Content": "你被逮捕了！",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "守卫",
+              "Content": "不要轻举妄动",
+              "VoiceLine": null
+            }
+          ],
           "Speaker": null,
           "Content": null,
           "VoiceLine": null
@@ -44,7 +55,13 @@
       "Commands": [
         {
           "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
-          "TextLines": [],
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "我可以用别的方式偿还。",
+              "VoiceLine": null
+            }
+          ],
           "Speaker": null,
           "Content": null,
           "VoiceLine": null
@@ -71,7 +88,18 @@
       "Commands": [
         {
           "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
-          "TextLines": [],
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "相抓我？",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "守卫",
+              "Content": "找死！",
+              "VoiceLine": null
+            }
+          ],
           "Speaker": null,
           "Content": null,
           "VoiceLine": null
