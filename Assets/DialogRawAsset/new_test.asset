@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce2afe3d388cbe14d9d792f23eb3d4ae, type: 3}
+  m_Name: new_test
+  m_EditorClassIdentifier: 
+  DialogId: 
+  Steps:
+  - Id: 1
+    Note: 
+    IsExpanded: 1
+    Commands:
+    - rid: 8250388039077986389
+  references:
+    version: 2
+    RefIds:
+    - rid: 8250388039077986389
+      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        TextLines:
+        - Speaker: 
+          Content: 
+          VoiceLine: {fileID: 0}
+        - Speaker: 
+          Content: 
+          VoiceLine: {fileID: 0}
+        - Speaker: 
+          Content: 
+          VoiceLine: {fileID: 0}
+        Speaker: 
+        Content: 
+        VoiceLine: {fileID: 0}

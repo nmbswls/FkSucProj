@@ -66,10 +66,16 @@ namespace My.Dialog
             public AudioClip VoiceLine;
         }
 
-        public List<string> SimpleOptions = new();
-        public List<List<TextLine>> SimpleBranchTextLines = new();
+        [System.Serializable]
+        public class BranchData
+        {
+            public string OptionText;
+            public List<TextLine> ResultLines = new List<TextLine>();
+        }
 
-        public override string GetSummary() => $"[Talk]";
+        public List<BranchData> Branches = new List<BranchData>();
+
+        public override string GetSummary() => $"[Branch] {Branches.Count} Options";
     }
 
 

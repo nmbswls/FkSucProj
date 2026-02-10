@@ -14,6 +14,7 @@ using My.Quest;
 using UnityEditor.U2D.Aseprite;
 using Newtonsoft.Json;
 using System.IO;
+using static UnityEditor.Rendering.FilterWindow;
 
 namespace My.Dialog
 {
@@ -354,6 +355,17 @@ namespace My.Dialog
                     // 必须传入 innerDataProp，因为 ChoiceCommand 的字段 (如 Options) 在这一层
                     return GetChoiceCommandHeight(wrapperProp);
                 }
+                // 专门针对 进行定制计算
+                if (wrapperProp.managedReferenceValue is EditorDialogueCommand4Text)
+                {
+                    return GetDialogueTextCommandHeight(wrapperProp);
+                }
+
+                if (wrapperProp.managedReferenceValue is EditorDialogueCommand4SimpleBranch)
+                {
+                    return GetSimpleBranchHeight(wrapperProp);
+                }
+                
 
                 // 普通 Command 使用通用计算，也建议传入 innerDataProp
                 return GetGenericCommandHeight(wrapperProp);
@@ -370,6 +382,165 @@ namespace My.Dialog
             innerListCache[key] = list;
             return list;
         }
+
+        // --- 辅助：绘制单行 TextLine ---
+        // 返回值：如果点击了删除按钮返回 true，否则 false
+        private bool DrawSingleTextLine(Rect rect, SerializedProperty lineProp, int lineIndex)
+        {
+            var speakerProp = lineProp.FindPropertyRelative("Speaker");
+            var contentProp = lineProp.FindPropertyRelative("Content");
+            var voiceProp = lineProp.FindPropertyRelative("VoiceLine");
+
+            // 布局常量
+            float speakerWidth = 80f;
+            float spacing = 2f;
+            float lineHeight = EditorGUIUtility.singleLineHeight;
+
+            // 1. Speaker (左上)
+            Rect speakerRect = new Rect(rect.x, rect.y, speakerWidth, lineHeight);
+            EditorGUI.PropertyField(speakerRect, speakerProp, GUIContent.none);
+
+            Rect speakerLabelRect = new Rect(rect.x, rect.y + lineHeight, speakerWidth, lineHeight);
+            EditorGUI.LabelField(speakerLabelRect, "Speaker", EditorStyles.miniLabel);
+
+            // 2. Content (右上 TextArea)
+            // 计算 TextArea 高度：总高度 - Voice行 - 间距
+            float textAreaHeight = rect.height - lineHeight - spacing * 2;
+            Rect textRect = new Rect(rect.x + speakerWidth + 5, rect.y, rect.width - speakerWidth - 25, textAreaHeight); // -25留给删除按钮
+            contentProp.stringValue = EditorGUI.TextArea(textRect, contentProp.stringValue, EditorStyles.textArea);
+
+            // 3. Voice (下方)
+            Rect voiceRect = new Rect(textRect.x, rect.y + textAreaHeight + spacing, textRect.width, lineHeight);
+            EditorGUI.PropertyField(voiceRect, voiceProp, GUIContent.none);
+
+            // 4. 删除按钮 (右侧垂直居中)
+            Rect removeRect = new Rect(rect.width + rect.x - 20, rect.y, 20, lineHeight);
+            if (GUI.Button(removeRect, "-", EditorStyles.miniButton))
+            {
+                return true;
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// 绘制简单分支
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="element"></param>
+        private void DrawSimpleBranchElement(Rect rect, SerializedProperty element)
+        {
+            var branchesProp = element.FindPropertyRelative("Branches");
+            float singleLine = EditorGUIUtility.singleLineHeight;
+            float spacing = 2f;
+            float branchSpacing = 6f; // 分支块之间的距离
+
+            // 1. 顶部标题
+            Rect headerRect = new Rect(rect.x, rect.y, rect.width, singleLine);
+            EditorGUI.LabelField(headerRect, "Branch Options", EditorStyles.boldLabel);
+
+            float currentY = rect.y + singleLine + spacing;
+
+            // 2. 遍历所有分支
+            for (int i = 0; i < branchesProp.arraySize; i++)
+            {
+                var branchProp = branchesProp.GetArrayElementAtIndex(i);
+                var optionTextProp = branchProp.FindPropertyRelative("OptionText");
+                var resultLinesProp = branchProp.FindPropertyRelative("ResultLines");
+
+                // --- 计算当前 Branch 的总高度用于画背景框 ---
+                // 为了省事，我们这里必须再算一遍高度，或者如果你缓存了高度最好。
+                // 这里简化处理：我们用 currentY 动态布局，最后不画总框，而是画头部框。
+
+                // --- 绘制分支容器背景 (可选) ---
+                // 我们可以先计算这个分支占多高，然后画个 Box。
+                // 简单起见，我们对每一行都缩进，视觉上分组。
+
+                // A. 绘制 Option 输入栏
+                Rect branchHeaderRect = new Rect(rect.x, currentY, rect.width, singleLine + 4);
+                GUI.Box(branchHeaderRect, GUIContent.none, EditorStyles.helpBox); // 头部背景
+
+                Rect labelRect = new Rect(rect.x + 4, currentY + 2, 80, singleLine);
+                EditorGUI.LabelField(labelRect, $"Option {i + 1}:");
+
+                Rect optionTextRect = new Rect(rect.x + 90, currentY + 2, rect.width - 120, singleLine);
+                optionTextProp.stringValue = EditorGUI.TextField(optionTextRect, optionTextProp.stringValue);
+
+                // 删除整个分支按钮
+                Rect removeBranchRect = new Rect(rect.x + rect.width - 25, currentY + 2, 20, singleLine);
+                if (GUI.Button(removeBranchRect, "X"))
+                {
+                    branchesProp.DeleteArrayElementAtIndex(i);
+                    break;
+                }
+
+                currentY += singleLine + 8f; // 头部结束，下移
+
+                // --- B. 绘制内部对话列表 ---
+                // 缩进一点
+                float indent = 15f;
+                float innerWidth = rect.width - indent;
+                float innerX = rect.x + indent;
+
+                if (resultLinesProp.arraySize > 0)
+                {
+                    for (int j = 0; j < resultLinesProp.arraySize; j++)
+                    {
+                        var lineProp = resultLinesProp.GetArrayElementAtIndex(j);
+                        var contentProp = lineProp.FindPropertyRelative("Content");
+
+                        // 算高度
+                        float lineHeight = CalculateSingleTextLineHeight(contentProp.stringValue, innerWidth - 90);
+
+                        Rect lineRect = new Rect(innerX, currentY, innerWidth, lineHeight);
+
+                        // 画背景区分
+                        GUI.Box(lineRect, GUIContent.none, EditorStyles.helpBox);
+
+                        // 留点 padding
+                        Rect lineContentRect = new Rect(innerX + 2, currentY + 2, innerWidth - 4, lineHeight - 4);
+
+                        // 调用辅助绘制方法
+                        if (DrawSingleTextLine(lineContentRect, lineProp, j))
+                        {
+                            resultLinesProp.DeleteArrayElementAtIndex(j);
+                            break;
+                        }
+
+                        currentY += lineHeight + spacing;
+                    }
+                }
+                else
+                {
+                    Rect emptyRect = new Rect(innerX, currentY, innerWidth, singleLine);
+                    EditorGUI.LabelField(emptyRect, "No dialogue lines for this option.", EditorStyles.miniLabel);
+                    currentY += singleLine + spacing;
+                }
+
+                // C. "Add Line" 按钮 (针对这个分支)
+                Rect addLineRect = new Rect(innerX + 20, currentY, innerWidth - 40, singleLine);
+                if (GUI.Button(addLineRect, "+ Add Result Line"))
+                {
+                    resultLinesProp.InsertArrayElementAtIndex(resultLinesProp.arraySize);
+                    // 初始化
+                    var newItem = resultLinesProp.GetArrayElementAtIndex(resultLinesProp.arraySize - 1);
+                    newItem.FindPropertyRelative("Speaker").stringValue = "";
+                    newItem.FindPropertyRelative("Content").stringValue = "";
+                }
+                currentY += singleLine + branchSpacing * 2; // 分支结束，多留点空隙
+            }
+
+            // 3. 底部 "Add New Branch" 按钮
+            Rect addBranchRect = new Rect(rect.x + 20, currentY, rect.width - 40, singleLine);
+            if (GUI.Button(addBranchRect, "+ Add New Branch Option"))
+            {
+                branchesProp.InsertArrayElementAtIndex(branchesProp.arraySize);
+                var newBranch = branchesProp.GetArrayElementAtIndex(branchesProp.arraySize - 1);
+                newBranch.FindPropertyRelative("OptionText").stringValue = "New Option";
+                newBranch.FindPropertyRelative("ResultLines").ClearArray();
+            }
+        }
+
 
         // --- 核心修改：统一绘制入口 ---
         private void DrawCommandElement(Rect rect, SerializedProperty element, int idx)
@@ -419,81 +590,91 @@ namespace My.Dialog
                     EditorGUI.LabelField(new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight), summary);
                     DrawChoiceCommandProperty(contentRect, element);
                 }
+                else if (cmdData is EditorDialogueCommand4SimpleBranch)
+                {
+                    // 留出头部 Summary 的空间
+                    Rect contentRect = new Rect(contentAreaRect.x, contentAreaRect.y + EditorGUIUtility.singleLineHeight + 2, contentAreaRect.width, contentAreaRect.height);
+
+                    // 简单绘制一个 Summary Label
+                    EditorGUI.LabelField(new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight), summary);
+
+                    DrawSimpleBranchElement(contentRect, element);
+                }
                 else if (cmdData is EditorDialogueCommand4Text)
                 {
-                    // === 剧本模式绘制 ===
+                    // === 绘制多行剧本模式 ===
 
-                    float extraFieldsHeight = 0f;
+                    // 1. 绘制顶部标题
+                    Rect headerRect = new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, EditorGUIUtility.singleLineHeight);
+                    EditorGUI.LabelField(headerRect, "Dialogue Group", EditorStyles.boldLabel);
 
+                    var linesProp = element.FindPropertyRelative("TextLines");
 
-                    // 1. 获取特定属性
-                    var speakerProp = element.FindPropertyRelative("Speaker");
-                    var contentProp = element.FindPropertyRelative("Content");
+                    // 起始绘制 Y 坐标（标题下方）
+                    float currentY = contentAreaRect.y + EditorGUIUtility.singleLineHeight + spacing;
 
-                    // 2. 绘制第一行 (Speaker + Content)
-                    // 为了防止内容覆盖下面的属性，我们需要估算一个高度。
-                    // 这里假设 TextArea 的高度是根据内容自动撑开的 (通常在 ElementHeight 里计算)
-                    // 在这里我们让 TextRect 占据 rect 的绝大部分，只在底部留出空间。
-
-                    // 此时我们用一种自动布局的方式来遍历剩余属性，这样比较通用
-
-                    float singleLine = EditorGUIUtility.singleLineHeight;
-                    float verticalSpacing = 2f;
-
-                    // 临时创建一个 iterator 副本用于计算剩余属性的高度
-                    var iterator = element.Copy();
-                    var endProperty = iterator.GetEndProperty();
-                    int extraFieldCount = 0;
-
-                    iterator.NextVisible(true); // 进入子节点
-                    while (!SerializedProperty.EqualContents(iterator, endProperty))
+                    // 2. 遍历每一行对话
+                    for (int i = 0; i < linesProp.arraySize; i++)
                     {
-                        if (iterator.name != "Speaker" && iterator.name != "Content" && iterator.name != "m_Script")
+                        var lineProp = linesProp.GetArrayElementAtIndex(i);
+                        var speakerProp = lineProp.FindPropertyRelative("Speaker");
+                        var contentProp = lineProp.FindPropertyRelative("Content");
+                        var voiceProp = lineProp.FindPropertyRelative("VoiceLine");
+
+                        // --- 计算当前行的高度 ---
+                        // 注意：这里需要重新计算一次高度，确保绘制位置准确
+                        float textAreaWidth = contentAreaRect.width - 90; // 减去 Speaker 的宽度
+                        float textHeight = EditorStyles.textArea.CalcHeight(new GUIContent(contentProp.stringValue), textAreaWidth);
+                        textHeight = Mathf.Max(textHeight, EditorGUIUtility.singleLineHeight * 2); // 最小高度
+
+                        float singleLineBlockHeight = textHeight + EditorGUIUtility.singleLineHeight + spacing * 2;
+
+                        // --- 绘制背景框 (可选，区分每一句) ---
+                        Rect itemRect = new Rect(contentAreaRect.x, currentY, contentAreaRect.width, singleLineBlockHeight);
+                        GUI.Box(itemRect, GUIContent.none, EditorStyles.helpBox); // 画个框框起来
+
+                        // Padding inside the box
+                        float itemX = itemRect.x + 2;
+                        float itemY = itemRect.y + 2;
+                        float itemW = itemRect.width - 4;
+
+                        // A. 绘制 Speaker (左侧)
+                        Rect speakerRect = new Rect(itemX, itemY, 80, EditorGUIUtility.singleLineHeight);
+                        EditorGUI.PropertyField(speakerRect, speakerProp, GUIContent.none);
+                        // 可以在 Speaker 下方加个 label 提示
+                        Rect speakerLabelRect = new Rect(itemX, itemY + EditorGUIUtility.singleLineHeight, 80, EditorGUIUtility.singleLineHeight);
+                        EditorGUI.LabelField(speakerLabelRect, "Speaker", EditorStyles.miniLabel);
+
+                        // B. 绘制 Content (右侧 TextArea)
+                        Rect textRect = new Rect(itemX + 85, itemY, itemW - 85, textHeight);
+                        contentProp.stringValue = EditorGUI.TextArea(textRect, contentProp.stringValue, EditorStyles.textArea);
+
+                        // C. 绘制 VoiceLine (TextArea 下方)
+                        Rect voiceRect = new Rect(itemX + 85, itemY + textHeight + 2, itemW - 85 - 25, EditorGUIUtility.singleLineHeight);
+                        EditorGUI.PropertyField(voiceRect, voiceProp, GUIContent.none);
+
+                        // D. 内部删除按钮 (删除这一行 TextLine)
+                        Rect removeLineRect = new Rect(itemX + itemW - 20, itemY + textHeight + 2, 20, EditorGUIUtility.singleLineHeight);
+                        if (GUI.Button(removeLineRect, "-", EditorStyles.miniButton))
                         {
-                            extraFieldCount++;
+                            linesProp.DeleteArrayElementAtIndex(i);
+                            // 删除后需要立即退出循环或重新绘制，防止报错
+                            break;
                         }
-                        if (!iterator.NextVisible(false)) break;
+
+                        // 更新 Y 坐标供下一个元素使用
+                        currentY += singleLineBlockHeight + spacing;
                     }
 
-                    float bottomAreaHeight = extraFieldCount * (singleLine + verticalSpacing);
-
-                    // 计算上半部分给 TextArea 的高度
-                    float topAreaHeight = contentAreaRect.height - bottomAreaHeight - verticalSpacing;
-                    if (topAreaHeight < singleLine) topAreaHeight = singleLine; // 最小保底
-
-                    // --- 绘制 Speaker 和 Content ---
-                    Rect topRowRect = new Rect(contentAreaRect.x, contentAreaRect.y, contentAreaRect.width, topAreaHeight);
-
-                    Rect speakerRect = new Rect(topRowRect.x, topRowRect.y, 80, topRowRect.height);
-                    Rect textRect = new Rect(topRowRect.x + 85, topRowRect.y, topRowRect.width - 85, topRowRect.height);
-
-                    EditorGUI.PropertyField(speakerRect, speakerProp, GUIContent.none);
-                    contentProp.stringValue = EditorGUI.TextArea(textRect, contentProp.stringValue, EditorStyles.textArea);
-
-                    // --- 绘制剩余字段 ---
-                    if (extraFieldCount > 0)
+                    // 3. 绘制 "Add Line" 按钮
+                    Rect addBtnRect = new Rect(contentAreaRect.x + 40, currentY, contentAreaRect.width - 80, EditorGUIUtility.singleLineHeight);
+                    if (GUI.Button(addBtnRect, "+ Add Dialogue Line"))
                     {
-                        // 起始 Y 坐标：在上半部分下方
-                        float currentY = contentAreaRect.y + topAreaHeight + verticalSpacing;
-
-                        iterator = element.Copy(); // 重置迭代器
-                        iterator.NextVisible(true); // 进入内部
-
-                        while (!SerializedProperty.EqualContents(iterator, endProperty))
-                        {
-                            // 跳过已绘制字段和脚本引用
-                            if (iterator.name != "Speaker" && iterator.name != "Content" && iterator.name != "m_Script")
-                            {
-                                Rect fieldRect = new Rect(contentAreaRect.x, currentY, contentAreaRect.width, singleLine);
-
-                                // 绘制属性 (包含 label)
-                                EditorGUI.PropertyField(fieldRect, iterator, true);
-
-                                currentY += singleLine + verticalSpacing;
-                            }
-
-                            if (!iterator.NextVisible(false)) break; // 不再进入更深层级
-                        }
+                        linesProp.InsertArrayElementAtIndex(linesProp.arraySize);
+                        // 初始化新元素（可选）
+                        var newItem = linesProp.GetArrayElementAtIndex(linesProp.arraySize - 1);
+                        newItem.FindPropertyRelative("Speaker").stringValue = "";
+                        newItem.FindPropertyRelative("Content").stringValue = "";
                     }
                 }
                 else
@@ -796,6 +977,136 @@ namespace My.Dialog
                 // 清除缓存以重算高度
                 innerListCache.Clear();
             }
+        }
+
+        // --- 新增：专门计算 ---
+        private float GetDialogueTextCommandHeight(SerializedProperty element)
+        {
+            float totalHeight = 0f;
+            float singleLine = EditorGUIUtility.singleLineHeight;
+            float verticalSpacing = 2f; // 垂直间距
+            float boxPadding = 4f;      // 每条对话框内部上下的 padding
+
+            // A. 顶部标题栏 ("Dialogue Group")
+            totalHeight += singleLine + verticalSpacing;
+
+            // B. 遍历 Lines 列表计算每一行的高度
+            var linesProp = element.FindPropertyRelative("TextLines");
+            if (linesProp != null && linesProp.arraySize > 0)
+            {
+                for (int i = 0; i < linesProp.arraySize; i++)
+                {
+                    var lineProp = linesProp.GetArrayElementAtIndex(i);
+                    var contentProp = lineProp.FindPropertyRelative("Content");
+
+                    // --- 核心：模拟 Draw 时的 TextArea 高度计算 ---
+                    // 宽度估算：ListView总宽 - (Speaker宽度 + Padding)
+                    // 注意：currentViewWidth 在 Layout 阶段可能不准，减去 120 是一个保守估计
+                    // (Speaker 80 + Icon 20 + ScrollBar/Padding 20)
+                    float textAreaWidth = EditorGUIUtility.currentViewWidth - 120;
+                    if (textAreaWidth < 100) textAreaWidth = 100; // 防止太窄报错
+
+                    string textContent = contentProp.stringValue;
+                    // 计算文字高度
+                    float textHeight = EditorStyles.textArea.CalcHeight(new GUIContent(textContent), textAreaWidth);
+                    // 限制最小高度 (TextArea(2, 5) 至少两行)
+                    textHeight = Mathf.Max(textHeight, singleLine * 2);
+
+                    // 单个 Item 的高度组成：
+                    // PaddingTop(2) + Content/Speaker(MaxHeight) + PaddingMid(2) + VoiceLine(SingleLine) + PaddingBot(2)
+                    // 左侧 Speaker 高度通常只有一行，右侧 Content 是主要高度决定者
+
+                    float itemContentHeight = Mathf.Max(textHeight, singleLine); // 取 Speaker 和 Content 较高的那个
+
+                    // 加上 VoiceLine 的一行
+                    float itemTotalHeight = itemContentHeight + verticalSpacing + singleLine + (boxPadding * 2);
+
+                    totalHeight += itemTotalHeight + verticalSpacing; // 加上这个 Item 的高度和它下方的间距
+                }
+            }
+            else
+            {
+                // 如果没有对话，留出一行提示 "Empty List"
+                totalHeight += singleLine + verticalSpacing;
+            }
+
+            // C. 底部 "+ Add Line" 按钮的高度
+            totalHeight += singleLine + verticalSpacing * 2;
+
+            return totalHeight;
+        }
+
+
+        // --- 辅助：计算单行 TextLine 的高度 ---
+        private float CalculateSingleTextLineHeight(string content, float availableWidth)
+        {
+            float minHeight = EditorGUIUtility.singleLineHeight * 2; // TextArea 最小高度
+            float textHeight = EditorStyles.textArea.CalcHeight(new GUIContent(content), availableWidth);
+
+            // 布局结构：Speaker(同高) + Content(max) + VoiceLine(一行) + padding
+            float contentHeight = Mathf.Max(textHeight, minHeight);
+
+            // 这里的数字要和 Draw 里的布局对应：
+            // ContentHeight + VoiceLineHeight(single) + Spacing * 3
+            return contentHeight + EditorGUIUtility.singleLineHeight + 6f;
+        }
+        // --- 新增：专门计算 ---
+        private float GetSimpleBranchHeight(SerializedProperty element)
+        {
+            float totalHeight = 0f;
+            float singleLine = EditorGUIUtility.singleLineHeight;
+            float verticalSpacing = 4f; // 分支之间的间距
+            float branchPadding = 6f;   // 分支内部上下 padding
+
+            // 标题 "Branches"
+            totalHeight += singleLine + verticalSpacing;
+
+            var branchesProp = element.FindPropertyRelative("Branches");
+
+            if (branchesProp.arraySize > 0)
+            {
+                for (int i = 0; i < branchesProp.arraySize; i++)
+                {
+                    var branchProp = branchesProp.GetArrayElementAtIndex(i);
+                    var resultLinesProp = branchProp.FindPropertyRelative("ResultLines");
+
+                    // A. 分支选项文本高度 ("Option Text")
+                    float currentBranchHeight = singleLine + verticalSpacing;
+
+                    // B. 计算内部每一行对话的高度
+                    // 这里的宽度需要再减小，因为嵌套了一层 Box
+                    float nestedWidth = EditorGUIUtility.currentViewWidth - 140;
+
+                    if (resultLinesProp.arraySize > 0)
+                    {
+                        for (int j = 0; j < resultLinesProp.arraySize; j++)
+                        {
+                            var lineProp = resultLinesProp.GetArrayElementAtIndex(j);
+                            var contentProp = lineProp.FindPropertyRelative("Content");
+
+                            float lineH = CalculateSingleTextLineHeight(contentProp.stringValue, nestedWidth);
+                            currentBranchHeight += lineH + 2f; // +2f 是行间距
+                        }
+                    }
+                    else
+                    {
+                        currentBranchHeight += singleLine; // 空列表提示
+                    }
+
+                    // C. 底部 "Add Line" 按钮
+                    currentBranchHeight += singleLine + verticalSpacing;
+
+                    // D. 分支容器的 Padding
+                    currentBranchHeight += branchPadding * 2;
+
+                    totalHeight += currentBranchHeight + verticalSpacing;
+                }
+            }
+
+            // 底部 "Add New Branch" 按钮
+            totalHeight += singleLine + verticalSpacing * 2;
+
+            return totalHeight;
         }
 
         // --- 之前的通用 Command 逻辑 ---
