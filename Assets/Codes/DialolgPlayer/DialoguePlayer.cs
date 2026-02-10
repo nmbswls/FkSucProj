@@ -381,7 +381,7 @@ public partial class DialoguePlayer : MonoBehaviour
                 {
                     switch(cd4Func.SimpleFuncType)
                     {
-                        case DialogCommandData4SimpleFunc.ESimpleFuncType.SrcLocalSwitch:
+                        case EDialogSimpleFuncType.SrcLocalSwitch:
                             {
                                 var srcId = runtimeRef.SrcEntityId;
                                 if(srcId == null || srcId == 0)
@@ -397,7 +397,7 @@ public partial class DialoguePlayer : MonoBehaviour
 
                             }
                             break;
-                        case DialogCommandData4SimpleFunc.ESimpleFuncType.AddTmpEnmity:
+                        case EDialogSimpleFuncType.AddTmpEnmity:
                             {
                                 var srcId = runtimeRef.SrcEntityId;
                                 if (srcId == null || srcId == 0)
@@ -409,6 +409,11 @@ public partial class DialoguePlayer : MonoBehaviour
                                 if (entity == null || entity is not BaseUnitLogicEntity unitEntity) break;
 
                                 unitEntity?.EnmitySystem.AddTempEnmity(srcId.Value);
+                            }
+                            break;
+                        case EDialogSimpleFuncType.ClearWanted:
+                            {
+                                MainGameManager.Instance.gameLogicManager.WantedManager.CurrentWantedVal = 0;
                             }
                             break;
                     }

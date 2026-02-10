@@ -15,6 +15,7 @@ MonoBehaviour:
   UnitName: default_guard_01
   ViewSprite: {fileID: 21300000, guid: e779ad32171e85f49bbebec977f04411, type: 3}
   PrefabName: 
+  ShowName: '?'
   MoveStyle: 1
   MoveSpeed: 2.5
   IsPeace: 0
@@ -23,9 +24,8 @@ MonoBehaviour:
   RecoverReturn: 1
   HasHMode: 1
   AlwaysHMode: 0
-  AITemplateMode: 
-  AITemplateName: 
   DefaultFactionId: 3
+  EnmityCfgId: 
   Hp: 250
   SkillList:
   - default_dash_slash
@@ -33,6 +33,10 @@ MonoBehaviour:
   - default_enemy_qinfan
   - guard_attack
   - crazy_fire
-  DropId: citizen_01
+  DefaultDropId: 0
   NpcTag: 
   InteractList: []
+  IgnoreAttractLevel: 0
+  ImmuneExecute: 0
+  AutoStopForPlayer: 1
+  AIBrainCfgId: default_guard

@@ -1,5 +1,7 @@
 
 
+using My.Map;
+
 namespace My
 {
     public class WantedManager
@@ -7,5 +9,25 @@ namespace My
 
         public int CurrentWantedVal;
         public float LastWantedTime;
+
+        public void AddWantedVal(int val)
+        {
+            this.CurrentWantedVal += val * 1000;
+            LastWantedTime = LogicTime.time;
+        }
+
+        /// <summary>
+        /// ¼ì²éË¥¼õ
+        /// </summary>
+        /// <param name="dt"></param>
+        public void Tick(float dt)
+        {
+            if(LogicTime.time - LastWantedTime < 30.0f)
+            {
+                return;
+            }
+
+            CurrentWantedVal -= (int)(dt * 10 * 1000);
+        }
     }
 }

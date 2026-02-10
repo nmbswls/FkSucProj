@@ -48,9 +48,9 @@ namespace My.Dialog
 
         public List<TextLine> TextLines = new();
 
-        public string Speaker;
-        [TextArea(2, 5)] public string Content;
-        public AudioClip VoiceLine;
+        //public string Speaker;
+        //[TextArea(2, 5)] public string Content;
+        //public AudioClip VoiceLine;
 
         public override string GetSummary() => $"[Talk]";
     }
@@ -93,12 +93,8 @@ namespace My.Dialog
     [Serializable]
     public class EditorSimpleFuncCommand : EditorDialogCommand
     {
-        public enum ESimpleFuncType
-        {
-            None,
-            SrcLocalSwitch
-        }
-        public ESimpleFuncType SimpleFuncType;
+        
+        public EDialogSimpleFuncType SimpleFuncType;
         public long Param1;
         public long Param2;
         public int Param3;

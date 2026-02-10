@@ -19,5 +19,8 @@ namespace Config.Unit
         public bool ImmuneExecute;
 
         public bool AutoStopForPlayer = true;
+
+        public string AIBrainCfgId = "default";
+
     }
 }

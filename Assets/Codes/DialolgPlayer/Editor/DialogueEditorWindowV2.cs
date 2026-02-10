@@ -224,7 +224,7 @@ namespace My.Dialog
 
                     // 按钮 1: "Add Dialogue Line" (占据主要宽度)
                     Rect quickAddRect = new Rect(rect.x + 15, buttonsY, rect.width - 30 - 35, buttonHeight);
-                    if (GUI.Button(quickAddRect, "Add Dialogue Line"))
+                    if (GUI.Button(quickAddRect, "Add Dialogue Lines"))
                     {
                         // 请将 ShowTextCommand 替换为你项目中实际的对话类名 (例如 DialogCommandShowText)
                         {
@@ -1323,7 +1323,7 @@ namespace My.Dialog
                         case EditorSimpleFuncCommand simleFuncCommand:
                             {
                                 var runCommand2 = new DialogCommandData4SimpleFunc();
-                                runCommand2.SimpleFuncType = (DialogCommandData4SimpleFunc.ESimpleFuncType)simleFuncCommand.SimpleFuncType;
+                                runCommand2.SimpleFuncType = simleFuncCommand.SimpleFuncType;
                                 runCommand2.Param1 = simleFuncCommand.Param1;
                                 runCommand2.Param2 = simleFuncCommand.Param2;
                                 runCommand2.Param3 = simleFuncCommand.Param3;

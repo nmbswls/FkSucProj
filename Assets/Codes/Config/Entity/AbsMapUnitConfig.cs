@@ -101,7 +101,6 @@ namespace Config.Unit
         public bool HasHMode = true;
         public bool AlwaysHMode = false;
 
-        public string AIBrainParamsCfgId = "default";
 
 
 

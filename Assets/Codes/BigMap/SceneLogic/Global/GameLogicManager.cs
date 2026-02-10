@@ -152,6 +152,8 @@ namespace My
             controlEventManager = new(this);
             controlEventManager.Initialize();
 
+            WantedManager = new();
+
             DropUtils.InitializeDropGroups();
 
             SwitchAreaIntent = new SwitchAreaIntent()
@@ -343,6 +345,8 @@ namespace My
 
             // Ö¡Ä©ÔÙ´¦Àíbuff
             globalBuffManager.Tick(dt);
+
+            WantedManager?.Tick(dt);
         }
 
         public void AddNewEntityRecord(LogicEntityRecord record, bool isCreate = false)

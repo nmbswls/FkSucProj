@@ -53,7 +53,8 @@ namespace My.Map.Unit
                 {
                     //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
                     var config = new AIBrainConfig();
-                    _configs["default"] = config;
+                    _configs["default_guard"] = config;
+                    config.IsGuard = true;
                 }
             }
 
@@ -125,6 +126,10 @@ namespace My.Map.Unit
             if (npcOwner.NpcConfig.IsPeace)
             {
                 cfgId = "basic_unit_peace";
+            }
+            if(!string.IsNullOrEmpty(npcOwner.NpcConfig.AIBrainCfgId))
+            {
+                cfgId = npcOwner.NpcConfig.AIBrainCfgId;
             }
             Config = AIBrainParamsConfigLoader.Load(cfgId);
 

@@ -74,17 +74,20 @@ namespace My.Dialog
         public ImgPos Position;
     }
 
+    public enum EDialogSimpleFuncType
+    {
+        None,
+        SrcLocalSwitch,
+
+        AddTmpEnmity,
+        ClearWanted,
+    }
+
+
     [Serializable]
     public class DialogCommandData4SimpleFunc : DialogCommandData
     {
-        public enum ESimpleFuncType
-        {
-            None,
-            SrcLocalSwitch,
-
-            AddTmpEnmity,
-        }
-        public ESimpleFuncType SimpleFuncType;
+        public EDialogSimpleFuncType SimpleFuncType;
         public long Param1;
         public long Param2;
         public int Param3;

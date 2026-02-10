@@ -236,7 +236,7 @@ namespace My.Map.Unit
             if(_brain.Config.IsGuard)
             {
                 int wantedVal = _brain.LogicManager.WantedManager.CurrentWantedVal;
-                if (wantedVal > 0 && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
+                if (wantedVal > 20000 && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
                 {
                     _brain.ChangeState(_brain.StateChaseWanted);
                     return;
@@ -820,7 +820,7 @@ namespace My.Map.Unit
             if (_brain.Config.IsGuard)
             {
                 int wantedVal = _brain.LogicManager.WantedManager.CurrentWantedVal;
-                if (wantedVal > 0 && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
+                if (wantedVal > 20000 && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
                 {
                     _brain.ChangeState(_brain.StateChaseWanted);
                     return;

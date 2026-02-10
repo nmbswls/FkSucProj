@@ -279,7 +279,14 @@ public class ConsoleGM : MonoBehaviour
                     ctx.BindingUnitVec = new Vector2(0, 0.555f);
                 }
             });
-        
+
+        Register("wanted", "Í¨¼©",
+            null,
+            args =>
+            {
+                MainGameManager.Instance.gameLogicManager.WantedManager.AddWantedVal(50000);
+            });
+
     }
 
     void OnDestroy()
