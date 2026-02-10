@@ -1050,11 +1050,11 @@ namespace My.Map.Unit
             }
 
             // 移动
-            _brain.NpcEntity.TryMoveTo(searchTarget.Pos, moveSpeedRate: 1f);
+            _brain.NpcEntity.TryMoveTo(searchTarget.Pos, stopDistance:0.1f, moveSpeedRate: 1f);
 
             var diff = searchTarget.Pos - _brain.NpcEntity.Pos;
             // 
-            if(diff.magnitude < 0.3f)
+            if(diff.magnitude < 0.8f)
             {
                 // 出现对话
                 _brain.NpcEntity.LogicManager.viewer.PlayDialog("wanted_arrest", srcEntityId: _brain.NpcEntity.Id, pause:true);

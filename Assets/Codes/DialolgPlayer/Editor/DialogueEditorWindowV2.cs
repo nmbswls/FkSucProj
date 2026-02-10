@@ -1304,8 +1304,14 @@ namespace My.Dialog
                             {
                                 var runTextCommand = new DialogCommandData4Text();
 
-                                //runTextCommand.Speaker = textCommand.Speaker;
-                                //runTextCommand.Content = textCommand.Content;
+                                foreach(var line in textCommand.TextLines)
+                                {
+                                    runTextCommand.TextLines.Add(new OneTextLine()
+                                    {
+                                        Speaker = line.Speaker,
+                                        Content = line.Content,
+                                    });
+                                }
 
                                 runCommand = runTextCommand;
                             }
