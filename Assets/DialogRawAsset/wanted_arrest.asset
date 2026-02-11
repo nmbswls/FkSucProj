@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: wanted_arrest
   m_EditorClassIdentifier: 
   DialogId: 
+  LockTime: 0
   Steps:
   - Id: origin
     Note: 
