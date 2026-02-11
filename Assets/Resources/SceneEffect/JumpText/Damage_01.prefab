@@ -57,7 +57,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8623078618439313755, guid: 21a5fd57c8c888d44ab11a871c740c02, type: 2}
+  - {fileID: 8538190908439236108, guid: c7df671f511488e419406dc4ec28023d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -99,10 +99,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 234
+  m_text: 12
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21a5fd57c8c888d44ab11a871c740c02, type: 2}
-  m_sharedMaterial: {fileID: 8623078618439313755, guid: 21a5fd57c8c888d44ab11a871c740c02, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c7df671f511488e419406dc4ec28023d, type: 2}
+  m_sharedMaterial: {fileID: 8538190908439236108, guid: c7df671f511488e419406dc4ec28023d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -224,7 +224,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8623078618439313755, guid: 21a5fd57c8c888d44ab11a871c740c02, type: 2}
+  - {fileID: 8538190908439236108, guid: c7df671f511488e419406dc4ec28023d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -266,7 +266,7 @@ GameObject:
   - component: {fileID: 1135465339883881377}
   - component: {fileID: 1752357798003200609}
   m_Layer: 0
-  m_Name: Damage Number (Mesh)
+  m_Name: Damage_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -318,7 +318,7 @@ MonoBehaviour:
     farScale: 0.5
   cameraOverride: {fileID: 0}
   enableNumber: 1
-  number: 234
+  number: 12
   numberSettings:
     bold: 0
     italic: 0
@@ -456,24 +456,24 @@ MonoBehaviour:
   shakeOffsetFadeIn: {x: 0, y: 2.5}
   shakeFrequencyFadeIn: 4
   durationFadeOut: 0.2
-  enableOffsetFadeOut: 1
+  enableOffsetFadeOut: 0
   offsetFadeOut: {x: 0.5, y: 0}
-  enableScaleFadeOut: 0
-  scaleFadeOut: {x: 2, y: 2}
+  enableScaleFadeOut: 1
+  scaleFadeOut: {x: 0.6, y: 1.4}
   enableCrossScaleFadeOut: 0
   crossScaleFadeOut: {x: 1, y: 1.5}
-  enableShakeFadeOut: 0
-  shakeOffsetFadeOut: {x: 0, y: 1.5}
-  shakeFrequencyFadeOut: 4
-  enableLerp: 1
+  enableShakeFadeOut: 1
+  shakeOffsetFadeOut: {x: 0, y: -1}
+  shakeFrequencyFadeOut: 2
+  enableLerp: 0
   lerpSettings:
     speed: 5
-    minX: -0.4
-    maxX: 0.4
-    minY: 0.5
-    maxY: 1
+    minX: -0.1
+    maxX: 0.1
+    minY: 0.6
+    maxY: 0.8
     randomFlip: 0
-  enableVelocity: 0
+  enableVelocity: 1
   velocitySettings:
     minX: -1
     maxX: 1
@@ -496,9 +496,9 @@ MonoBehaviour:
   minRotation: -4
   maxRotation: 4
   rotationRandomFlip: 0
-  enableRotateOverTime: 0
-  minRotationSpeed: -15
-  maxRotationSpeed: 15
+  enableRotateOverTime: 1
+  minRotationSpeed: -10
+  maxRotationSpeed: 10
   rotationSpeedRandomFlip: 0
   rotateOverTime:
     serializedVersion: 2
@@ -513,17 +513,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.4
+      time: 0.2
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.8
-      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -547,8 +538,8 @@ MonoBehaviour:
     fromNumber: 0
     toNumber: 1000
     fromScale: 1
-    toScale: 2
-  enableScaleOverTime: 0
+    toScale: 1.25
+  enableScaleOverTime: 1
   scaleOverTime:
     serializedVersion: 2
     m_Curve:
@@ -563,7 +554,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0.7
+      value: 0.8
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -593,17 +584,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.7
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
         time: 1
-        value: 0
+        value: 0.5
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -618,15 +600,6 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.5
         value: 1
         inSlope: 0
         outSlope: 0
@@ -713,12 +686,12 @@ MonoBehaviour:
   enablePush: 0
   pushSettings:
     radius: 4
-    pushOffset: 0.8
+    pushOffset: 0.5
   updateDelay: 0.0125
   enablePooling: 0
   poolSize: 50
   disableOnSceneLoad: 1
-  editorLastFont: Basic-Outline
+  editorLastFont: Smear Outline
   position: {x: 0, y: 0, z: 0}
 --- !u!210 &1752357798003200609
 SortingGroup:
@@ -785,7 +758,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8623078618439313755, guid: 21a5fd57c8c888d44ab11a871c740c02, type: 2}
+  - {fileID: 8538190908439236108, guid: c7df671f511488e419406dc4ec28023d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

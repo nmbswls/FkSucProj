@@ -9,6 +9,7 @@ namespace My.Dialog
     public class EditorDialogueData : ScriptableObject
     {
         public string DialogId;
+        public bool LockTime;
         public List<EditorStepData> Steps = new List<EditorStepData>();
     }
 
