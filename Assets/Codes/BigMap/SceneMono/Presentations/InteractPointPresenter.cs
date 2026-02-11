@@ -200,13 +200,14 @@ namespace My.Map.Scene
 
         protected override void OnFadeStateUpdate()
         {
-            if(_mainSpriteArr != null)
-            {
-                foreach(var s in _mainSpriteArr)
-                {
-                    s.color = new Color(s.color.r, s.color.g, s.color.b, _currFadeAlpha);
-                }
-            }
+            base.OnFadeStateUpdate();
+            //if(_mainSpriteArr != null)
+            //{
+            //    foreach(var s in _mainSpriteArr)
+            //    {
+            //        s.color = new Color(s.color.r, s.color.g, s.color.b, _currFadeAlpha);
+            //    }
+            //}
         }
     }
 }

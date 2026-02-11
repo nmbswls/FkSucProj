@@ -394,7 +394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8ebff5bf9e2e24b84fdad08a5d674a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sr: {fileID: 0}
+  sr: {fileID: 8866554067678978095}
   peakAmount: 0.9
 --- !u!95 &2905468353745998255
 Animator:
@@ -1168,7 +1168,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5a66d2a094155164087e2f2e00e9ddf4, type: 2}
+  - {fileID: 2100000, guid: 86fa59a3905004440ae38a2ccfe07836, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1587,6 +1587,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 0}
+  _shadowView: {fileID: 0}
+  _mainSpriteArr:
+  - {fileID: 8866554067678978095}
   pivotHeader: {fileID: 1156057673152699277}
   highlightFx: {fileID: 0}
   ViewRoot: {fileID: 1816564416192949448}
@@ -1595,7 +1598,6 @@ MonoBehaviour:
   ViewPoint: {fileID: 840578726685308991}
   faceIndicator: {fileID: 0}
   HitPivot: {fileID: 0}
-  HeadHintPivot: {fileID: 0}
   WeaponCtrl: {fileID: 9213344019219386193}
   navAgent: {fileID: 0}
   rb: {fileID: 0}

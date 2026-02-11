@@ -1,4 +1,5 @@
 using Cinemachine;
+using DamageNumbersPro;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
@@ -120,6 +121,11 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public PlayerRumorTextSpawner RumorTextSpawner;
     public CinemachineImpulseSource VcamInpulseSource;
     public PostProcessVignette postProcessVignette;
+
+    //Assign prefab in inspector.
+    public DamageNumber numberPrefab1;
+    public DamageNumber numberPrefab2;
+
     private void Awake()
     {
         Instance = this;
@@ -280,6 +286,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             //{
             //    UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
             //}
+
+            ShowDamageNumber(playerScenePresenter.PivotHeader.position, "?");
 
             MapSpeechBubbleManager.Instance.Say(playerScenePresenter, "怎么会？");
         }
@@ -767,6 +775,12 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
         if (pres == null) return;
         MapSpeechBubbleManager.Instance.Say(pres, content, duration, priority);
+    }
+
+
+    public void ShowDamageNumber(Vector2 worldPos, string content)
+    {
+        numberPrefab1.Spawn(worldPos, content);
     }
 }
 

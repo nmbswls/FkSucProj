@@ -16,7 +16,7 @@ MonoBehaviour:
   Steps:
   - Id: origin
     Note: 
-    IsExpanded: 0
+    IsExpanded: 1
     Commands:
     - rid: 8250388039077986389
     - rid: 8250388048327737345
@@ -45,7 +45,7 @@ MonoBehaviour:
     - rid: 8250388039077986389
       type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:
-        IsFolded: 1
+        IsFolded: 0
         TextLines:
         - Speaker: "\u5B88\u536B"
           Content: "\u4F60\u88AB\u902E\u6355\u4E86\uFF01"

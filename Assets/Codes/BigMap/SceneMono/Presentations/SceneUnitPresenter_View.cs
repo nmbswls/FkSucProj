@@ -95,14 +95,15 @@ namespace My.Map.Scene
         protected override void OnFadeStateUpdate()
         {
             //_currFadeAlpha = Mathf.Lerp(_currFadeAlpha, _targetFadeAlpha, 2 * LogicTime.deltaTime);
+            base.OnFadeStateUpdate();
 
-            if(srs != null)
-            {
-                foreach(var sr in srs)
-                {
-                    sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, _currFadeAlpha);
-                }
-            }
+            //if (srs != null)
+            //{
+            //    foreach(var sr in srs)
+            //    {
+            //        sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, _currFadeAlpha);
+            //    }
+            //}
         }
 
 

@@ -41,7 +41,6 @@ namespace My.Map.Scene
         public GameObject faceIndicator;
 
         public Transform HitPivot;
-        public Transform HeadHintPivot;
 
         //public Transform WeaponRoot;
         public MapUnitWeaponCtrl WeaponCtrl; // ÎäÆ÷¿ØÖÆÆ÷

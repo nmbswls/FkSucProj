@@ -1616,6 +1616,8 @@ MonoBehaviour:
   RumorTextSpawner: {fileID: 941114311}
   VcamInpulseSource: {fileID: 885418550}
   postProcessVignette: {fileID: 885418551}
+  numberPrefab1: {fileID: 1135465339883881377, guid: 502e4ee5e133e2843b0c5d49f972b4dc, type: 3}
+  numberPrefab2: {fileID: 0}
   DynamicRoot: {fileID: 63059760}
 --- !u!4 &885418544
 Transform:
