@@ -166,13 +166,10 @@ namespace My.Map
             InteractComp.RefreshInteractInfo(NpcConfig.InteractList);
         }
 
-        protected override void InitAttribute()
+        protected override void RegisterSpecAttrs()
         {
             var cacheCfg = MapNpcConfigLoader.Get(CfgId);
             moveSpeed = cacheCfg.MoveSpeed;
-
-            base.InitAttribute();
-
         }
 
         public override bool IsOmniVision()

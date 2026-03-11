@@ -1,18 +1,14 @@
-using Config.Unit;
-using Config;
-using UnityEngine;
-using Map.Logic.Events;
 using System;
-using Map.Entity.AI;
 using System.Collections.Generic;
-using My.Map.Entity.AI;
+using Config;
+using Config.Unit;
+using Map.Logic.Events;
 using My.Map.Entity;
 using My.Map.Logic;
-using static My.GameLogicManager;
-using UnityEditor.Experimental.GraphView;
-using static My.Map.Fight.FightStruct;
-using My.Player.Bag;
 using My.Map.Unit;
+using My.Player.Bag;
+using UnityEngine;
+using static My.Map.Fight.FightStruct;
 
 
 namespace My.Map
@@ -543,26 +539,24 @@ namespace My.Map
         protected override void InitAttribute()
         {
             // 数值类
-            attributeStore.RegisterNumeric("Attack", initialBase: 100);
-            attributeStore.RegisterNumeric("Strength", initialBase: 10);
-            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 100_000);
-            attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
-
+            RegisterUnitCommonNumeris();
+            
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 100_000);
 
-            RegisterCommonStates();
-
+            RegisterUnitCommonStates();
 
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
 
+            RegisterSpecAttrs();
+
             attributeStore.Commit();
         }
 
-        protected void RegisterCommonStates()
+        protected void RegisterUnitCommonStates()
         {
             attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
@@ -578,12 +572,21 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.Stun, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneEvilShock, initialBase: 0);
-
-            
         }
 
-
+        protected void RegisterUnitCommonNumeris()
+        {
+            attributeStore.RegisterNumeric("Attack", initialBase: 100);
+            attributeStore.RegisterNumeric("Strength", initialBase: 10);
+            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 100_000);
+            attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
+        }
         
+
+        protected virtual void RegisterSpecAttrs()
+        {
+
+        }
 
         public void OnThrownInterrupt()
         {

@@ -128,6 +128,17 @@ public class MapSceneEffectManager : MonoBehaviour
         return ctx;
     }
 
+    /// <summary>
+    /// 获取已有场景效果
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public EffectCtx? FindSceneEffect(int id)
+    {
+        var findIt = ctxs.Find((item) => item.UniqId == id);
+        return findIt;
+    }
+
     public void ForceDestroy(int id)
     {
         var findIt = ctxs.Find((item) => item.UniqId == id);

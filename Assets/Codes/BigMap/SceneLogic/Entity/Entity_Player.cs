@@ -105,17 +105,16 @@ namespace My.Map
             DefaultControlledByVelocity = false;
         }
 
-        protected override void InitAttribute()
+        protected override void RegisterSpecAttrs()
         {
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
-            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 1000_000);
-            attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
+
 
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
 
-            RegisterCommonStates();
+            RegisterUnitCommonStates();
 
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 1000_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100_000, 100_000);
@@ -124,12 +123,12 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100_000, 100_000);
-
+            attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 100_000);
+            
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 0);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 3);
 
-            attributeStore.Commit();
         }
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)

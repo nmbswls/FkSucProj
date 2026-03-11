@@ -1,4 +1,5 @@
 
+using My.Def.Quest;
 using My.Player;
 using My.Saving;
 using SuperScrollView;
@@ -9,111 +10,7 @@ using UnityEngine;
 namespace My.Quest
 {
 
-    /// <summary>
-    /// 任务枚举
-    /// </summary>
-    public enum ConditionType 
-    { 
-        Kill, 
-        HasState, 
-        And,
-        Or, 
-        Not 
-    }
-
-    //[Serializable]
-    //public class QuestOutput
-    //{ }
-
-    [Serializable]
-    public class ConditionData
-    {
-        public ConditionType type;
-        public ConditionData[] children;
-
-        public int RequireProgress;
-
-        public int Param1;
-        public int Param2;
-        public long Param3;
-        public long Param4;
-        public string Param5;
-        public string Param6;
-
-        public bool negate;
-    }
-
-    [Serializable]
-    public class ObjectiveData
-    {
-        public int objectiveId;
-
-        [Tooltip("UI显示的描述")]
-        public string text;
-
-        [Tooltip("达成条件")]
-        public ConditionData condition;
-
-        [Tooltip("是否初始隐藏")]
-        public bool isHidden;
-
-        [Tooltip("是否可选")]
-        public bool isOption;
-
-        [Header("标签系统")]
-        [Tooltip("当此目标完成时，给任务实例打上这些标签 (Internal Tags)")]
-        public string[] completionTags;
-    }
-
-
-
-    [Serializable]
-    public class StepOutcomeData
-    {
-        public string outcomeName;    // 比如 "正面突击"
-        public string description;    // UI描述 "击杀守卫"
-
-        public int completeId;
-        public int[] NeedObjectiveIds;
-        public int nextStepId;     // 达成后跳转的ID列表
-    }
-
-
-    [Serializable]
-    public class QuestStepData
-    {
-        public int stepId;
-        public bool isRoot;           // 是否是起始步骤
-        public bool isAuto;           // 是否是起始步骤
-
-        [Header("完成路径")]
-        public StepOutcomeData[] outcomes;
-
-        [Header("目标")]
-        public ObjectiveData[] objectives;
-
-        [Header("失败条件 (可选)")]
-        public ConditionData failCondition;
-    }
-
-    [CreateAssetMenu(menuName = "Quest/Quest Data")]
-    public class QuestData : ScriptableObject
-    {
-        public int questId;
-        public string title;
-        public int InitStepId;
-        [TextArea] public string description;
-
-        public QuestStepData[] steps;
-
-        // 辅助方法：构建ID索引
-        public Dictionary<int, QuestStepData> BuildStepMap()
-        {
-            var map = new Dictionary<int, QuestStepData>();
-            foreach (var s in steps) map[s.stepId] = s;
-            return map;
-        }
-    }
+    
 
 
 
@@ -148,9 +45,9 @@ namespace My.Quest
 
         public long GetCurrProgress()
         {
-            switch (Data.condition.type)
+            switch (Data.condition.ConditionCfg)
             {
-                case ConditionType.Kill:
+                case QuestConditionHasItem hasItemCond:
                     {
                         return ProgressVal;
                     }
@@ -295,7 +192,7 @@ namespace My.Quest
             _stepMap.TryGetValue(Data.InitStepId, out var initStep);
             if(initStep == null)
             {
-                Debug.LogError($"QuestInstance init fail no init step found {data.questId} {Data.InitStepId}");
+                Debug.LogError($"QuestInstance init fail no init step found {data.QuestId} {Data.InitStepId}");
                 return;
             }
 

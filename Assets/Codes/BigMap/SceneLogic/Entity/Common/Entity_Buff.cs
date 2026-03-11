@@ -338,6 +338,28 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+
+                // 玩家发情护盾
+                _library["gc_self_yishang"] = new BuffDefinition()
+                {
+                    BuffId = "gc_self_yishang",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    DefaultDuration = -1,
+
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.HitEffect,
+                        ParamStr = "Hit / player_shield",
+                        ParamFloat1 = 0.3f,
+                    },
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Special_YiShang, ModifierValue = 1000 },
+                    },
+                };
+
+
                 // 玩家gc易伤
                 _library["gc_self_yishang"] = new BuffDefinition()
                 {
@@ -350,6 +372,9 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Special_YiShang, ModifierValue = 1000 },
                     },
                 };
+
+
+
 
                 _library["gc_self_debuff"] = new BuffDefinition()
                 {
@@ -579,12 +604,19 @@ namespace My.Map.Entity
     {
         Invalid,
         AnimOverride,
+        HitEffect, // ParamStr:效果名  ParamFloat1:单次时间
     }
+
+    [Serializable]
     public class BuffDurationEffet
     {
         public EBuffDurationType DurationType;
 
         public string ParamStr;
+        public float ParamFloat1;
+
+        public bool CommonFlag1;
+        public bool CommonFlag2;
     }
 
 

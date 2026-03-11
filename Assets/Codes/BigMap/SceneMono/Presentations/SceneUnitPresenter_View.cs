@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using Animancer;
 using UnityEngine;
+using static MapSceneEffectManager;
 
 namespace My.Map.Scene
 {
@@ -56,18 +57,33 @@ namespace My.Map.Scene
         }
 
         public SpriteWhiteFlasher MainFlasher;
+        private int lastHitOverrideCtxId = 0;
         public void PresenterOnHit(long? srcId)
         {
-            
-            if (UnitEntity.Type == EEntityType.Player)
+            bool overrideHit = false;
+            foreach(var buff in UnitEntity.BuffContainer.Values)
             {
-                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.3f, "Hit/player_shield", this.Id);
-                if (ctx != null)
+                if(buff.Def.DurationEffect.DurationType == Entity.EBuffDurationType.HitEffect)
                 {
-                    ctx.BindingUnitVec = new Vector2(0, 0.555f);
+
+                    var existCtx = MapSceneEffectManager.Instance.FindSceneEffect(lastHitOverrideCtxId);
+
+                    if(existCtx == null)
+                    {
+                        existCtx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, buff.Def.DurationEffect.ParamFloat1, buff.Def.DurationEffect.ParamStr, this.Id);
+                        if (existCtx != null)
+                        {
+                            existCtx.BindingUnitVec = new Vector2(0, 0.555f);
+                        }
+                    }
+                    else
+                    {
+                        existCtx.EffectCtrl.Show();
+                    }
                 }
             }
-            else
+            
+            if (!overrideHit)
             {
                 var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.5f, "Hit/Style01", this.Id);
                 if (ctx != null)
