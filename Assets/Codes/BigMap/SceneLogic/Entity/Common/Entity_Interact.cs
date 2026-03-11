@@ -379,7 +379,7 @@ namespace My.Map
                             }
 
                             float delay = output.Param1 * 0.001f;
-                            LogicFightEffectContext ctx = new LogicFightEffectContext(Owner.LogicManager, new EffectSourceInfo()
+                            LogicFightEffectContext ctx = new LogicFightEffectContext(Owner.LogicManager, EFightCtxType.None, new EffectSourceInfo()
                             {
                                 SrcType = ESourceType.Mechanism
                             });

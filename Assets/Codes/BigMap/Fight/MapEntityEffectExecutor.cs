@@ -103,7 +103,8 @@ namespace My.Map.Entity
                 lockAngle = realCfg.lockViewAngle
             };
 
-            pData.PassHitResult = realCfg.BulletHitResult;
+            pData.EntityHitResult = realCfg.BulletHitResult;
+            pData.ExplodeEffects = realCfg.ExplodeEffects;
             pData.motionData = realCfg.MotionData;
 
             ILogicEntity? caster = null;

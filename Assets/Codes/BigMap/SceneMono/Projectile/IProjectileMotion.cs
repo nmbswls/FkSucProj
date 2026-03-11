@@ -186,7 +186,8 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
         {
             if(ownerProj.bindingProjInfo.pData.TriggerOnCollide)
             {
-                ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, _pos, null);
+                MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(ownerProj.bindingProjInfo.instId, ownerProj.transform.position);
+                //ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, _pos, null);
                 Debug.Log("Handle Hit _pos " + _pos);
             }
             return true;
@@ -209,7 +210,7 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
             if (_hitCD.TryGetValue(entityId, out float next) && _time < next) return false;
             //_hitCD[id] = _time + PD.hitCooldown;
 
-            ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, unitPresent);
+            ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, hitDir: _dir, unitPresent);
 
             _penetrationLeft--;
             if (_penetrationLeft <= 0) return true;
@@ -221,6 +222,7 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
 
 /// <summary>
 /// instance motion
+/// 立即触发的子弹
 /// </summary>
 public class MapProjectileInstanceMotion : IMapProjectileMotion
 {
@@ -279,7 +281,7 @@ public class MapProjectileInstanceMotion : IMapProjectileMotion
             _finished = true;
             if (ownerProj.bindingProjInfo.pData.TriggerOnLifeEnd)
             {
-                ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
+                MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(ownerProj.bindingProjInfo.instId, ownerProj.transform.position);
             }
             return;
         }
@@ -288,7 +290,8 @@ public class MapProjectileInstanceMotion : IMapProjectileMotion
         if(_time >= D.prepareTime)
         {
             _finished = true;
-            ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
+            //ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
+            MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(ownerProj.bindingProjInfo.instId, ownerProj.transform.position);
             return;
         }
 

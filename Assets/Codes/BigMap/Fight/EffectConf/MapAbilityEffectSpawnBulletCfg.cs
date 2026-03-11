@@ -60,6 +60,8 @@ namespace My.Map.Entity
         /// </summary>
         public FightStruct.HitResult BulletHitResult;
 
+        public List<MapFightEffectCfg> ExplodeEffects = null;
+
 
         public bool TriggerOnLifeEnd;
         public bool TriggerOnCollide;

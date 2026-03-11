@@ -42,11 +42,11 @@ public static class ProjectileUtil
     }
 
 
-    public static void HandleHitOutput(LogicProjectileInfo logicProjectile, Vector2 hitPosition, Vector2 hitDir, SceneUnitPresenter? hitOne)
+    public static void HandleHitOutput(LogicProjectileInfo logicProjectile, Vector2 hitPosition, Vector2 hitDir, SceneUnitPresenter hitOne)
     {
-        if(logicProjectile.pData.PassHitResult != null)
+        if(logicProjectile.pData.EntityHitResult != null)
         {
-            foreach (var ef in logicProjectile.pData.PassHitResult.OnHitEffects)
+            foreach (var ef in logicProjectile.pData.EntityHitResult.OnHitEffects)
             {
                 var srcInfo = new EffectSourceInfo()
                 {
@@ -57,14 +57,14 @@ public static class ProjectileUtil
                 };
 
 
-                var efCtx = new LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, srcInfo);
+                var efCtx = new LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, EFightCtxType.Bullet, srcInfo);
                 efCtx.TriggerPos = hitPosition;
                 efCtx.CastVec1 = hitPosition - logicProjectile.spawnPos;
-
+                efCtx.TargetId = hitOne.Id;
                 MainGameManager.Instance.gameLogicManager.HandleLogicFightEffect(ef, efCtx);
             }
 
-            if(!logicProjectile.pData.PassHitResult.IgnoreHit)
+            if (!logicProjectile.pData.EntityHitResult.IgnoreHit)
             {
                 if (hitOne != null && hitOne.UnitEntity != null)
                 {

@@ -252,6 +252,7 @@ namespace My
             Bullet,
             HitBox,
             HitWeapon,
+            Buff,
         }
 
         public class LogicFightEffectContext

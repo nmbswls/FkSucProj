@@ -693,7 +693,7 @@ namespace My.Map.Scene
 
                                 foreach (var hitEffect in window.OnHitEffects)
                                 {
-                                    GameLogicManager.LogicFightEffectContext newCtx = new(UnitEntity.LogicManager, srcInfo);
+                                    GameLogicManager.LogicFightEffectContext newCtx = new(UnitEntity.LogicManager, EFightCtxType.HitBox, srcInfo);
 
                                     newCtx.TargetId = hitEntity.Id;
                                     newCtx.TriggerPos = UnitEntity.Pos;

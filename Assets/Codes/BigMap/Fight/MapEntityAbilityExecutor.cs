@@ -655,7 +655,7 @@ namespace My.Map.Entity
                 SrcEntityId = this.EntityOwner.Id,
                 SrcFactionId = this.EntityOwner.FactionId,
             };
-            var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, sourceInfo);
+            var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, EFightCtxType.Ability, sourceInfo);
             ctx.TargetId = this.CurrentCtx.Target ?.Id ?? 0;
             ctx.TriggerPos = EntityOwner.Pos;
 
@@ -898,7 +898,7 @@ namespace My.Map.Entity
 
                         foreach (var hitEffect in window.OnHitEffects)
                         {
-                            GameLogicManager.LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, srcInfo);
+                            GameLogicManager.LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, EFightCtxType.HitBox, srcInfo);
 
                             newCtx.TargetId = hitEntity.Id;
                             newCtx.TriggerPos = EntityOwner.Pos;

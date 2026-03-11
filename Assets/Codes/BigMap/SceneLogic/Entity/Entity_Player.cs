@@ -508,7 +508,7 @@ namespace My.Map
                     SrcType = ESourceType.Mechanism,
                     SrcEntityId = this.Id,
                 };
-                GameLogicManager.LogicFightEffectContext ctx = new(LogicManager, sourceInfo)
+                GameLogicManager.LogicFightEffectContext ctx = new(LogicManager, EFightCtxType.None, sourceInfo)
                 {
                     TargetId = unit.Id,
                 };

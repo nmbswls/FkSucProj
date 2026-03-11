@@ -1318,7 +1318,7 @@ namespace My.Map.Entity
                             SrcEntityId = srcEntity,
                             SrcBuffId = InstanceId,
                         };
-                        var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, srcInfo);
+                        var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, EFightCtxType.Buff, srcInfo);
 
                         ctx.TriggerPos = BuffOwner.Pos;
                         ctx.TargetId = BuffOwner.Id;

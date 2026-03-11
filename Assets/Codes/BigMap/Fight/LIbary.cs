@@ -960,7 +960,7 @@ namespace My.Map.Entity
                         Radius = 0.8f,
                     },
 
-                    HitEffects = new()
+                    ExplodeEffects = new()
                     {
                         new MapAbilityEffectHitBoxCfg()
                         {
