@@ -3,6 +3,7 @@ using System;
 using My.Map;
 using System.Collections.Generic;
 using UnityEngine;
+using static My.GameLogicManager;
 
 namespace My
 
@@ -36,13 +37,33 @@ namespace My
 
         }
 
-        public void OnProjectileTriggered(long projectileId)
+        public void OnProjectileExplode(long projectileId, Vector2 explodePos)
         {
             ProjectileInfos.TryGetValue(projectileId, out var pInfo);
             if (pInfo != null)
             {
                 // give effect
                 //pInfo.
+                // º∆À„explode
+                if (pInfo.pData.ExplodeEffects != null)
+                {
+                    foreach (var ef in pInfo.pData.ExplodeEffects)
+                    {
+                        var srcInfo = new GameLogicManager.EffectSourceInfo()
+                        {
+                            SrcType = GameLogicManager.ESourceType.Bullet,
+                            SrcInstId = pInfo.instId,
+                            SrcEntityId = pInfo.ownerEntity.Id,
+                            SrcFactionId = pInfo.ownerEntity.FactionId,
+                        };
+
+
+                        var efCtx = new GameLogicManager.LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, EFightCtxType.Bullet, srcInfo);
+                        efCtx.TriggerPos = explodePos;
+
+                        MainGameManager.Instance.gameLogicManager.HandleLogicFightEffect(ef, efCtx);
+                    }
+                }
             }
         }
 

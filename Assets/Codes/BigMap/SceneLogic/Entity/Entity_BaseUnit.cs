@@ -772,7 +772,7 @@ namespace My.Map
                                 }
                             }
 
-                            UnitOnHit(intent.delta, intent.srcEntityId, intent.HitDir);
+                            UnitOnHpDamaged(intent.delta, intent.srcEntityId, intent.HitDir);
 
                         }
 
@@ -792,7 +792,7 @@ namespace My.Map
         }
 
 
-        protected virtual void UnitOnHit(long delta, long? srcEntityId, Vector2? hitDir)
+        protected virtual void UnitOnHpDamaged(long delta, long? srcEntityId, Vector2? hitDir)
         {
             // 触发onhit
             foreach (var b in BuffContainer.Values)
@@ -801,15 +801,15 @@ namespace My.Map
             }
 
             // 高于5.00的伤害才触发打断
-            if(Math.Abs(delta) > 500)
-            {
-                TryInterrupt(new InterruptRequest()
-                {
-                    source = EInterruptSource.Hit,
-                });
-            }
+            //if(Math.Abs(delta) > 500)
+            //{
+            //    TryInterrupt(new InterruptRequest()
+            //    {
+            //        source = EInterruptSource.Hit,
+            //    });
+            //}
 
-            EventOnHit?.Invoke(this.Id, srcEntityId);
+            //EventOnHit?.Invoke(this.Id, srcEntityId);
 
             if (Math.Abs(delta) > 1)
             {
@@ -823,6 +823,11 @@ namespace My.Map
                     }
                 }
             }
+        }
+
+        public virtual void ProcessHit(long? srcEntityId, Vector2? hitDir)
+        {
+            EventOnHit?.Invoke(this.Id, srcEntityId);
         }
 
         /// <summary>

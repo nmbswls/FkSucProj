@@ -11,6 +11,7 @@ using static Config.Unit.EntitySkillCfg;
 using static My.Config.LogicInteractOutput;
 using static My.Map.Entity.MapAbilityEffectDashStartCfg;
 using static My.Map.Entity.MapAbilitySpecConfig;
+using static My.Map.Fight.FightStruct;
 using static System.Net.WebRequestMethods;
 
 
@@ -684,24 +685,34 @@ namespace My.Map.Entity
                 TriggerOnCollide = true,
                 TriggerOnLifeEnd = true,
 
-                HitEffects = new()
+                BulletHitResult = new()
                 {
-                    new MapAbilityEffectHitBoxCfg()
+                    OnHitEffects = new()
                     {
-                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
-                        Radius = 1.0f,
-                        CampFilterType = ECampFilterType.NotSelf,
-
-                        OnHitEffects = new()
+                        new MapAbilityEffectHitBoxCfg()
                         {
-                            new MapAbilityEffectAddResourceCfg()
+                            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                            Radius = 1.0f,
+                            CampFilterType = ECampFilterType.NotSelf,
+
+                            HitResult = new()
                             {
-                                ResourceId  = AttrIdConsts.UnitHVal,
-                                AddValue = 50000,
-                            }
+                                OnHitEffects = new()
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId  = AttrIdConsts.UnitHVal,
+                                        AddValue = 50000,
+                                    }
+                                }
+                            },
+
                         }
-                    }
+                    },
                 },
+
+
+                
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 
@@ -782,24 +793,29 @@ namespace My.Map.Entity
                         Radius = 0.8f,
                     },
 
-                    HitEffects = new()
-                {
-                    new MapAbilityEffectHitBoxCfg()
+                    BulletHitResult = new()
                     {
-                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
-                        Radius = 1.0f,
-                        CampFilterType = ECampFilterType.NotSelf,
-
                         OnHitEffects = new()
                         {
-                            new MapAbilityEffectAddResourceCfg()
+                            new MapAbilityEffectHitBoxCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitHVal,
-                                AddValue = 50_000,
+                                Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                Radius = 1.0f,
+                                CampFilterType = ECampFilterType.NotSelf,
+
+                                OnHitEffects = new()
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId  = AttrIdConsts.UnitHVal,
+                                        AddValue = 50_000,
+                                    }
+                                }
                             }
-                        }
-                    }
-                },
+                        },
+                    },
+
+                    
                 };
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
             }
@@ -831,24 +847,33 @@ namespace My.Map.Entity
                         Radius = 0.8f,
                     },
 
-                    HitEffects = new()
-                {
-                    new MapAbilityEffectHitBoxCfg()
+                    BulletHitResult = new()
                     {
-                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
-                        Radius = 1.0f,
-                        CampFilterType = ECampFilterType.NotSelf,
-
                         OnHitEffects = new()
                         {
-                            new MapAbilityEffectAddResourceCfg()
+                            new MapAbilityEffectHitBoxCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitHVal,
-                                AddValue = 50000,
+                                Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                Radius = 1.0f,
+                                CampFilterType = ECampFilterType.NotSelf,
+
+                                HitResult = new()
+                                {
+                                    OnHitEffects = new()
+                                    {
+                                        new MapAbilityEffectAddResourceCfg()
+                                        {
+                                            ResourceId  = AttrIdConsts.UnitHVal,
+                                            AddValue = 50000,
+                                        }
+                                    }
+                                },
+
                             }
-                        }
+                        },
                     }
-                },
+
+                    
                 };
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
             }
@@ -879,24 +904,32 @@ namespace My.Map.Entity
                         Radius = 0.8f,
                     },
 
-                    HitEffects = new()
-                {
-                    new MapAbilityEffectHitBoxCfg()
+                    BulletHitResult = new()
                     {
-                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
-                        Radius = 1.0f,
-                        CampFilterType = ECampFilterType.NotSelf,
-
                         OnHitEffects = new()
                         {
-                            new MapAbilityEffectAddResourceCfg()
+                            new MapAbilityEffectHitBoxCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitHVal,
-                                AddValue = 50000,
+                                Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                Radius = 1.0f,
+                                CampFilterType = ECampFilterType.NotSelf,
+
+                                HitResult = new()
+                                {
+                                    OnHitEffects = new()
+                                    {
+                                        new MapAbilityEffectAddResourceCfg()
+                                        {
+                                            ResourceId  = AttrIdConsts.UnitHVal,
+                                            AddValue = 50000,
+                                        }
+                                    }
+                                },
+
                             }
-                        }
-                    }
-                },
+                        },
+                    },
+                    
                 };
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
             }
@@ -935,14 +968,18 @@ namespace My.Map.Entity
                             Radius = 1.0f,
                             CampFilterType = ECampFilterType.NotSelf,
 
-                            OnHitEffects = new()
+                            HitResult = new()
                             {
-                                new MapAbilityEffectAddResourceCfg()
+                                OnHitEffects = new()
                                 {
-                                    ResourceId  = AttrIdConsts.UnitHVal,
-                                    AddValue = 50000,
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId  = AttrIdConsts.UnitHVal,
+                                        AddValue = 50000,
+                                    }
                                 }
-                            }
+                            },
+                            
                         }
                     },
                 };
@@ -975,24 +1012,32 @@ namespace My.Map.Entity
                         Radius = 0.8f,
                     },
 
-                    HitEffects = new()
-                {
-                    new MapAbilityEffectHitBoxCfg()
+                    BulletHitResult = new()
                     {
-                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
-                        Radius = 1.0f,
-                        CampFilterType = ECampFilterType.NotSelf,
-
                         OnHitEffects = new()
                         {
-                            new MapAbilityEffectAddResourceCfg()
+                            new MapAbilityEffectHitBoxCfg()
                             {
-                                ResourceId  = AttrIdConsts.UnitHVal,
-                                AddValue = 50000,
+                                Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                Radius = 1.0f,
+                                CampFilterType = ECampFilterType.NotSelf,
+
+                                HitResult = new()
+                                {
+                                    OnHitEffects = new()
+                                    {
+                                        new MapAbilityEffectAddResourceCfg()
+                                        {
+                                            ResourceId  = AttrIdConsts.UnitHVal,
+                                            AddValue = 50000,
+                                        }
+                                    }
+                                },
+
                             }
-                        }
-                    }
-                },
+                        },
+                    },
+                    
                 };
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
             }
@@ -1227,20 +1272,25 @@ namespace My.Map.Entity
                 Width = 1.2f,
                 Length = 1.2f,
 
-                OnHitEffects = new()
+                HitResult = new()
                 {
-                    new MapAbilityEffectCostResourceCfg()
+                    KnockForce = 0.4f,
+                    OnHitEffects = new()
                     {
-                        ResourceId  = AttrIdConsts.HP,
-                        CostValue = 500,
-                        IsEnmity = true,
-                    },
-                    new MapFightEffectKnockBackCfg()
-                    {
-                        KnockBackForce = 0.4f,
-                        DirType = MapFightEffectKnockBackCfg.EKnockBackType.CastDir,
+                        new MapAbilityEffectCostResourceCfg()
+                        {
+                            ResourceId  = AttrIdConsts.HP,
+                            CostValue = 500,
+                            IsEnmity = true,
+                        },
+                        //new MapFightEffectKnockBackCfg()
+                        //{
+                        //    KnockBackForce = 0.4f,
+                        //    DirType = MapFightEffectKnockBackCfg.EKnockBackType.CastDir,
+                        //}
                     }
-                }
+                },
+                
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
 
@@ -1305,24 +1355,31 @@ namespace My.Map.Entity
                 TriggerOnCollide = true,
                 TriggerOnLifeEnd = true,
 
-                HitEffects = new()
+                BulletHitResult = new()
                 {
-                    new MapAbilityEffectHitBoxCfg()
+                    OnHitEffects = new()
                     {
-                        Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
-                        Radius = 1.0f,
-                        CampFilterType = ECampFilterType.NotSelf,
-
-                        OnHitEffects = new()
+                        new MapAbilityEffectHitBoxCfg()
                         {
-                            new MapAbilityEffectAddResourceCfg()
+                            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                            Radius = 1.0f,
+                            CampFilterType = ECampFilterType.NotSelf,
+
+                            HitResult = new()
                             {
-                                ResourceId  = AttrIdConsts.UnitHVal,
-                                AddValue = 50000,
-                            }
+                                OnHitEffects = new()
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId  = AttrIdConsts.UnitHVal,
+                                        AddValue = 50000,
+                                    }
+                                }
+                            },
                         }
-                    }
+                    },
                 },
+                
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(mainPhase);
@@ -1402,8 +1459,11 @@ namespace My.Map.Entity
                 throwEffect.Duration = 20f;
                 throwEffect.ThrowFailEffect = failEffect;
 
-
-                hitCfg.OnHitEffects = new() { throwEffect };
+                hitCfg.HitResult = new()
+                {
+                    OnHitEffects = new() { throwEffect },
+                };
+                
             }
 
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnExit });
@@ -1691,7 +1751,10 @@ namespace My.Map.Entity
                         KnockBackForce = 0.8f,
                     };
 
-                    hitCfg.OnHitEffects = new() { dmgEffect };
+                    hitCfg.HitResult = new()
+                    {
+                       OnHitEffects = new() { dmgEffect }
+                    };
                 }
 
                 slashPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnEnter });

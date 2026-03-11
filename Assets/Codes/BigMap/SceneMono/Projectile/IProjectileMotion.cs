@@ -121,7 +121,8 @@ public class MapProjectileLinearMotion : IMapProjectileMotion
             _finished = true;
             if (ownerProj.bindingProjInfo.pData.TriggerOnLifeEnd)
             {
-                ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
+                MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(ownerProj.bindingProjInfo.instId, ownerProj.transform.position);
+                //ProjectileUtil.HandleExplodeEffect(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
             }
             return; 
         }

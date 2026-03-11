@@ -13,6 +13,7 @@ using static My.Map.BaseUnitLogicEntity;
 using static My.Map.Entity.MapAbilityEffectDashStartCfg;
 using static My.Map.Fight.FightStruct;
 using static My.Map.PlayerLogicEntity;
+using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 using static UnityEngine.GraphicsBuffer;
 
 namespace My.Map.Entity
@@ -102,7 +103,7 @@ namespace My.Map.Entity
                 lockAngle = realCfg.lockViewAngle
             };
 
-            pData.OnHitEffects.AddRange(realCfg.HitEffects);
+            pData.PassHitResult = realCfg.BulletHitResult;
             pData.motionData = realCfg.MotionData;
 
             ILogicEntity? caster = null;
@@ -623,32 +624,68 @@ namespace My.Map.Entity
             }
 
             List<ILogicEntity> candidates = null;
-            var castDir = ctx.CastVec1 - ctx.TriggerPos;
+            
+            Vector2 hitBoxDir = Vector2.right; // 碰撞盒方向 影响判定区域计算
+            Vector2 realCenter = ctx.TriggerPos.Value; // 碰撞中心 影响判定区计算
 
-            Vector2 realCenter = Vector2.zero;
-            // 通过hitbox 找到目标
-            if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
+            switch (ctx.CtxType)
             {
-                realCenter = ctx.TriggerPos.Value + castDir.Value * realCfg.Length * 0.5f;
+                // 对于技能 碰撞方向为施法方向/面向
+                case EFightCtxType.Ability:
+                    {
+                        hitBoxDir = ctx.CastVec1.Value - ctx.TriggerPos.Value;
+                        // 计算offset
+                        if(realCfg.IsDirRevert)
+                        {
+                            hitBoxDir = -hitBoxDir;
+                        }
+
+                        // 计算中心，对于技能 可能中心点在自身 也可能在施法点
+                        if (realCfg.CenterPosType == 0)
+                        {
+                            realCenter = ctx.TriggerPos.Value;
+                        }
+                        else
+                        {
+                            realCenter = ctx.CastVec1.Value;
+                        }
+                        break;
+                    }
+                // 对于子弹 碰撞方向为子弹施法方向
+                case EFightCtxType.Bullet:
+                    {
+                        hitBoxDir = ctx.CastVec1.Value;
+                        if (realCfg.IsDirRevert)
+                        {
+                            hitBoxDir = -hitBoxDir;
+                        }
+                        break;
+                    }
+            }
+
+            
+            if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Direction)
+            {
+                var checkOrigin = realCenter + hitBoxDir * realCfg.Length * 0.5f;
 
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
 
-                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, castDir.Value, new Vector2(realCfg.Width, realCfg.Length), filter);
-                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: castDir);
+                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(checkOrigin, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter);
+                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: hitBoxDir);
+            }
+            else if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
+            {
+                EntityFilterParam filter = new EntityFilterParam();
+                filter.CampFilterType = realCfg.CampFilterType;
+                filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
+
+                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter);
+                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: hitBoxDir);
             }
             else if(realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Circle)
             {
-                if(realCfg.CenterPosType == 0)
-                {
-                    realCenter = ctx.TriggerPos.Value;
-                }
-                else
-                {
-                    realCenter = ctx.CastVec1.Value;
-                }
-
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
@@ -668,20 +705,39 @@ namespace My.Map.Entity
 
                     Debug.Log("AbilityEffectExecutor4HitBox find logic target " + candidate.Id);
 
-                    foreach (var e in realCfg.OnHitEffects) 
+                    Vector2 hitDir = Vector2.right;  // 逻辑碰撞方向 作为参数传入子事件
+                    if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Direction)
                     {
-                        LogicFightEffectContext newCtx = new(ctx.Env, ctx.SourceInfo);
-
-                        //newCtx.TriggerPos = ctx.TriggerPos;
-                        //newCtx.CastVec1 = ctx.CastVec1;
-
-                        newCtx.TriggerPos = candidate.Pos;
-                        newCtx.CastVec1 = candidate.Pos - realCenter;
-                        newCtx.CastVec2 = Vector2.zero;
-
-                        newCtx.TargetId = candidate.Id;
-                        ctx.Env.HandleLogicFightEffect(e, newCtx);
+                        hitDir = hitBoxDir;
                     }
+                    else if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
+                    {
+                        hitDir = candidate.Pos - realCenter;
+                    }
+                    else if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Circle)
+                    {
+                        hitDir = candidate.Pos - realCenter;
+                    }
+
+                    if(realCfg.HitResult != null)
+                    {
+                        foreach (var e in realCfg.HitResult.OnHitEffects)
+                        {
+                            LogicFightEffectContext newCtx = new(ctx.Env, EFightCtxType.HitBox, ctx.SourceInfo);
+
+                            //newCtx.TriggerPos = ctx.TriggerPos;
+                            //newCtx.CastVec1 = ctx.CastVec1;
+
+                            newCtx.TriggerPos = candidate.Pos;
+                            newCtx.CastVec1 = hitDir; // 对于hitbox类型 施法方向为受击方向
+                            newCtx.CastVec2 = Vector2.zero;
+
+                            newCtx.TargetId = candidate.Id;
+                            ctx.Env.HandleLogicFightEffect(e, newCtx);
+                        }
+                    }
+
+                    
                 }
             }
         }

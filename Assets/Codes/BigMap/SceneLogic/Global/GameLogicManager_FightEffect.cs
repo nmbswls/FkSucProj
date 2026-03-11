@@ -215,7 +215,7 @@ namespace My
 
         public enum ESourceType
         {
-            Unknown,
+            None,
             Ability,
             Buff,
             BuffTrigger,
@@ -227,6 +227,7 @@ namespace My
             Bullet,
             Mechanism,
             Throw,
+            HitBox,
         }
 
         /// <summary>
@@ -244,13 +245,24 @@ namespace My
             public EFactionId SrcFactionId;
         }
 
+        public enum EFightCtxType
+        {
+            None,
+            Ability,
+            Bullet,
+            HitBox,
+            HitWeapon,
+        }
 
         public class LogicFightEffectContext
         {
+
             public GameLogicManager Env { get; protected set; }
-            public LogicFightEffectContext(GameLogicManager env, EffectSourceInfo sourceInfo)
+            public EFightCtxType CtxType { get; set; }
+            public LogicFightEffectContext(GameLogicManager env, EFightCtxType ctxType, EffectSourceInfo sourceInfo)
             {
                 this.Env = env;
+                this.CtxType = ctxType;
                 this.SourceInfo = sourceInfo;
             }
 

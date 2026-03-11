@@ -1,12 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using My.Map.Entity;
 using My.Map.Fight;
 using UnityEngine;
 
 
+/// <summary>
+/// 子弹配置数据
+/// </summary>
 public class ProjectileData
 {
     public string id;
@@ -34,7 +35,12 @@ public class ProjectileData
 
     public bool TriggerOnLifeEnd;
     public bool TriggerOnCollide;
-    public List<MapFightEffectCfg> OnHitEffects = new() ;
+
+    // 击中单位效果
+    public FightStruct.HitResult EntityHitResult = null;
+
+    // 爆炸效果
+    public List<MapFightEffectCfg> ExplodeEffects = null;
 
     public bool lockAngle = false;
 }
@@ -42,7 +48,7 @@ public class ProjectileData
 
 public enum EMotionType
 {
-    Invalid,
+    Invalid, 
     Linear,
     Parabola,
     Homing,

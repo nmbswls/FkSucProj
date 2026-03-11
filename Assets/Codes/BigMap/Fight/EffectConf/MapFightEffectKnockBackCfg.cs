@@ -18,6 +18,7 @@ namespace My.Map.Entity
         {
             None,
             CastDir,
+            AwayFromSrc,
             Random,
         }
         public EKnockBackType DirType; // 在不同触发语境下 该值的含义不同

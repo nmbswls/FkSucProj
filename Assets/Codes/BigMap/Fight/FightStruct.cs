@@ -1,5 +1,8 @@
 
 using System;
+using My.Map.Entity;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace My.Map.Fight
 {
@@ -65,6 +68,17 @@ namespace My.Map.Fight
             public int priority;     // 来源优先级（例如：Stun=100, Hit=50, InputCancel=30）
             public object payload;   // 可选：时长、方向、效果ID等
         }
+
+        [Serializable]
+        public class HitResult
+        {
+            public bool IgnoreHit;
+            public float KnockForce;
+
+            [SerializeReference]
+            public List<MapFightEffectCfg> OnHitEffects = new();
+        }
+
     }
-    
+
 }

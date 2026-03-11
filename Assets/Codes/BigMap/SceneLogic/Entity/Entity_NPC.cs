@@ -435,9 +435,9 @@ namespace My.Map
         }
 
 
-        protected override void UnitOnHit(long delta, long? srcEntityId, Vector2? hitDir)
+        protected override void UnitOnHpDamaged(long delta, long? srcEntityId, Vector2? hitDir)
         {
-            base.UnitOnHit(delta, srcEntityId, hitDir);
+            base.UnitOnHpDamaged(delta, srcEntityId, hitDir);
 
             if(srcEntityId != null)
             {
