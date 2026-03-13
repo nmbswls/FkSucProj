@@ -702,6 +702,24 @@ namespace My.Map.Entity
                 {
                     //var executor = GetExecutor(s.Source.Effect);
                     //executor?.Apply(s.Source.Effect, CurrentCtx);
+                    if(!string.IsNullOrEmpty(s.Source.CheckNeedBuff))
+                    {
+                        if (!EntityOwner.CheckHasBuff(s.Source.CheckNeedBuff))
+                        {
+                            Debug.Log($"tick ability skip need buff :{s.Source.Effect.EffectType}");
+                            continue;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(s.Source.CheckNoBuff))
+                    {
+                        if (EntityOwner.CheckHasBuff(s.Source.CheckNoBuff))
+                        {
+                            Debug.Log($"tick ability skip no buff :{s.Source.Effect.EffectType}");
+                            continue;
+                        }
+                    }
+
                     var effectCtx = GenerateEfffectContextByAbility();
                     EntityOwner.LogicManager.HandleLogicFightEffect(s.Source.Effect, effectCtx);
                     s.Left--;

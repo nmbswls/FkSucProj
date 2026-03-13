@@ -35,6 +35,7 @@ namespace My.Map.Entity
                     cfg.CoolDown = 0.2f;
                     cfg.DesiredUseDistance = 0.8f;
 
+                    cfg.IconPath = "icon_01";
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -113,6 +114,8 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 5f;
                     cfg.Priority = 2000;
 
+                    cfg.IconPath = "icon_01";
+
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
@@ -138,10 +141,25 @@ namespace My.Map.Entity
                     cfg.Priority = 1;
 
                     cfg.StackCount = 5;
-                    
+
+                    cfg.IconPath = "icon_01";
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_ziwei";
+                    cfg.MainAbilityId = "player_ziwei";
+                    cfg.CoolDown = 1.0f;
+                    cfg.DesiredUseDistance = 0f;
+                    cfg.Priority = 1;
+
+                    cfg.IconPath = "icon_01";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                
 
                 {
                     var cfg = new EntitySkillCfg();
@@ -151,7 +169,8 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 5f;
                     cfg.Priority = 1;
 
-                    
+                    cfg.IconPath = "icon_01";
+
                     _skillDict[cfg.SkillId] = cfg;
                 }
 

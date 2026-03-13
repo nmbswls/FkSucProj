@@ -54,8 +54,14 @@ namespace My.Player
             "player_normal_defend",
             "crazy_fire",
 
-            "player_dark_dance"
+            "player_dark_dance",
+
+            "player_ziwei",
         };
+
+        public string[] NormalSkillSlots = new string[5];
+        public string[] HumanSkillSlots = new string[5];
+        public string[] FaQingSkillSlots = new string[5];
 
         public PlayerSystemManager(GameLogicManager logicManager)
         {
@@ -67,6 +73,14 @@ namespace My.Player
             ProgressionSystem = new(logicManager);
 
             QuickSlotItemSet[0] = "feidao";
+
+            NormalSkillSlots[0] = "spawn_attract";
+            NormalSkillSlots[1] = "queen_pull_all";
+
+            HumanSkillSlots[0] = "fix_clothes";
+            HumanSkillSlots[1] = "player_dark_dance";
+
+            FaQingSkillSlots[0] = "player_ziwei";
         }
 
         public void InitPlayerData(SaveData savingData)

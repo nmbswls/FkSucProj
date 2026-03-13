@@ -23,6 +23,9 @@ namespace Map.Logic.Events
 
         CostPendingAlert,
         ObjWithOwnerDestroyed,
+        PlayerFaQingStatusChange,
+        PlayerExposeStatusChange,
+        
     }
 
 

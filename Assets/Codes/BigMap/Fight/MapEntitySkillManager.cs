@@ -442,6 +442,15 @@ namespace My.Map.Entity
 
     }
 
+    public class SkillRuntime
+    {
+        public string SkillName;
+        public float lastUseTime;
+        public float cooldown;
+        public float stackCount;
+
+        public EntitySkillCfg cacheConfig;
+    }
 
     public class MapEntitySkillManager
     {
@@ -459,15 +468,7 @@ namespace My.Map.Entity
         public MapEntityAbilityExecutor Executor;
         public ComboOrchestrator comboOrchestrator;
 
-        public class SkillRuntime
-        {
-            public string SkillName;
-            public float lastUseTime;
-            public float cooldown;
-            public float stackCount;
-
-            public EntitySkillCfg cacheConfig;
-        }
+        
 
 
         public Dictionary<string, SkillRuntime> SkillRuntimes = new();

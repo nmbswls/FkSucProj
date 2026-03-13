@@ -26,6 +26,7 @@ using UnityEngine;
     {
         public EAbilityEffectType EffectType;
         public float PendingTime;
+
     }
 
     [Serializable]

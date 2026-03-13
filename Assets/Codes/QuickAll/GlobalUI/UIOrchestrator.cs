@@ -567,6 +567,8 @@ namespace My.UI
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, adapter));
 
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.CostPendingAlert, adapter));
+            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.PlayerFaQingStatusChange, adapter));
+            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.PlayerExposeStatusChange, adapter));
         }
 
         public void OnMapLogicEvent(IMapLogicEvent ev)
@@ -590,6 +592,37 @@ namespace My.UI
                         {
                             OverworldHUDPanel.Instance.DoPendingAlertReduce(realEv.Value);
                         }
+                    }
+                    break;
+                case EMapLogicEventType.PlayerFaQingStatusChange:
+                    {
+                        var realEv = (MLEPlayerFaQingStatusChangeEvent)ev;
+                        var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                        
+                        if(player.IsFaQing)
+                        {
+                            // 开始发情 需要播效果
+                        }
+
+
+                        if (OverworldHUDPanel.Instance != null)
+                        {
+                            OverworldHUDPanel.Instance.SkilBar.Refresh(true);
+                        }
+
+                    }
+                    break;
+
+                case EMapLogicEventType.PlayerExposeStatusChange:
+                    {
+                        var realEv = (MLEPlayerExposeStatusChangeEvent)ev;
+                        var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+
+                        if (OverworldHUDPanel.Instance != null)
+                        {
+                            OverworldHUDPanel.Instance.SkilBar.Refresh(true);
+                        }
+
                     }
                     break;
             }

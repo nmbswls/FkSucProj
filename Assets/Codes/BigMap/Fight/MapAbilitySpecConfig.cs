@@ -44,6 +44,12 @@ namespace My.Map.Entity
         public string ReferName;
     }
 
+    public enum EPhaseEffectFlag
+    {
+        None,
+        PlayerHunterMode,
+        PlayerNonHunterMode,
+    }
 
     [Serializable]
     public class PhaseEffectEvent
@@ -54,6 +60,9 @@ namespace My.Map.Entity
         public MapFightEffectCfg Effect;                // 具体效果
         public int Repeat = 0;                // 可选：重复次数
         public float RepeatInterval = 0f;     // 可选：重复间隔（适合持续伤害/持续采样）
+
+        public string CheckNeedBuff;
+        public string CheckNoBuff;
     }
 
     

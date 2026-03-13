@@ -51,6 +51,20 @@ namespace Map.Logic.Events
         public long Value;
     }
 
+    public partial struct MLEPlayerFaQingStatusChangeEvent : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.PlayerFaQingStatusChange; } }
+    }
+
+    public partial struct MLEPlayerExposeStatusChangeEvent : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.PlayerExposeStatusChange; } }
+    }
+    
+
+
     #endregion
 
     #region buff

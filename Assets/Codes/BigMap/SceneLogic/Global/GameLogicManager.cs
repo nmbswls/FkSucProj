@@ -478,6 +478,27 @@ namespace My
                         playerLogicEntity.viewer = this.viewer;
 
                         newEntity = playerLogicEntity;
+
+                        playerLogicEntity.EventOnFaQingStateChange += () =>
+                        {
+                            LogicEventBus.Publish(new MLEPlayerFaQingStatusChangeEvent()
+                            {
+                                Ctx = new()
+                                {
+                                },
+                            });
+                        };
+
+                        playerLogicEntity.EventOnExposeStateChange += () =>
+                        {
+                            LogicEventBus.Publish(new MLEPlayerExposeStatusChangeEvent()
+                            {
+                                Ctx = new()
+                                {
+                                },
+                            });
+                        };
+                        
                     }
                     break;
                 

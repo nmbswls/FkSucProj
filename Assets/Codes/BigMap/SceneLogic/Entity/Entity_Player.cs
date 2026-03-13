@@ -23,10 +23,21 @@ namespace My.Map
     public class PlayerLogicEntity : BaseUnitLogicEntity, IAttractSource
     {
 
+        /// <summary>
+        /// 带得到
+        /// </summary>
         public bool IsQueenMode;
+        public bool IsPendingGc; // 是否等待触发gc
 
 
-        public bool isPendingGc; // 是否等待触发gc
+        public bool IsFaQing = false; // 是否发情中
+        public float LastFaQingTimer; // 进入发情时间
+
+        
+        public bool IsExposed = false; // 暴露状态
+        public float LastExposeTimer; // 进入暴露时间
+
+
         public long? gcCuaseId;
         public bool isSelfGc;
 
@@ -36,6 +47,12 @@ namespace My.Map
 
         public event Action<long> EventOnAttachmentUpdate;
         public event Action EventOnRequestAimHelper;
+
+        public event Action EventOnFaQingStateChange;
+        public event Action EventOnExposeStateChange;
+
+        private float _lowFreqStateTimer;
+        private float _highFreqStateTimer;
 
         public PlayerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
@@ -79,18 +96,9 @@ namespace My.Map
         {
             base.OnTick(dt);
 
-            //扣减值
-            TickResourceChange();
+            TickPlayerStateLowFreq();
 
-            TickRefreshSpiritMonster();
-
-            //TickMoveNoiseEffect(now, dt);
-            TickAddAuraHVal(dt);
-
-            TickBeingGazedInfo();
-
-            TickGc();
-            TickPlayerGcYishang();
+            TickPlayerStateHighFreq();
 
             TickAttachingObj(dt);
 
@@ -113,8 +121,6 @@ namespace My.Map
 
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
-
-            RegisterUnitCommonStates();
 
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 1000_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100_000, 100_000);
@@ -140,14 +146,14 @@ namespace My.Map
             {
                 case AttrIdConsts.PlayerPleasure:
                     {
-                        if(isPendingGc)
+                        if(IsPendingGc)
                         {
                             break;
                         }
                         var gcThreshold = attributeStore.GetAttr(AttrIdConsts.PlayerGcThreshold);
                         if (before < gcThreshold && after >= gcThreshold)
                         {
-                            isPendingGc = true;
+                            IsPendingGc = true;
                             if(intent.deltaFlags.HasFlag(EDmgFlag.ZiWei))
                             {
                                 isSelfGc = true;
@@ -351,52 +357,108 @@ namespace My.Map
             return graph;
         }
 
-        private float _tickResourceTimeSec = 0;
-        public void TickResourceChange()
+        
+
+        /// <summary>
+        /// 低频进行player相关逻辑
+        /// </summary>
+        private void TickPlayerStateLowFreq()
         {
-            if(_tickResourceTimeSec == 0)
-            {
-                _tickResourceTimeSec = (int)LogicTime.time;
-                return;
-            }
-
-            if(LogicTime.time < _tickResourceTimeSec + 1.0f)
+            if (LogicTime.time < _lowFreqStateTimer + 1.0f)
             {
                 return;
             }
 
-            _tickResourceTimeSec += 1.0f;
+            _lowFreqStateTimer += 1.0f;
 
+            TickResourceChange(1.0f);
+
+            TickRefreshSpiritMonster();
+
+            TickApplyAuraHVal();
+        }
+
+
+        private void TickPlayerStateHighFreq()
+        {
+            if (LogicTime.time < _highFreqStateTimer + 0.2f)
+            {
+                return;
+            }
+
+            _highFreqStateTimer += 0.2f;
+
+            TickPlayerGcYishang();
+
+            TickBeingGazedInfo();
+
+            // 检查玩家衣着暴露
+            TickPlayerExpose();
+
+            // 检查是否进入高潮
+            TickGc();
+
+            TickFaQing();
+        }
+
+        /// <summary>
+        /// 检查玩家状态变化
+        /// </summary>
+        private void TickResourceChange(float interval)
+        {
             var baseGc = attributeStore.GetAttr(AttrIdConsts.Basic_PleasureAdd);
             ApplyResourceChange(AttrIdConsts.PlayerPleasure, baseGc, false, EDmgFlag.None, null);
 
             var baseHungerCost = attributeStore.GetAttr(AttrIdConsts.Basic_HungerCost);
             ApplyResourceChange(AttrIdConsts.PlayerHunger, -baseHungerCost, false, EDmgFlag.None, null);
 
-            if(GetAttr(AttrIdConsts.PlayerHunger) <= 0)
+            if (GetAttr(AttrIdConsts.PlayerHunger) <= 0)
             {
                 ApplyResourceChange(AttrIdConsts.HP, -500, false, EDmgFlag.None, null);
                 LogicManager.viewer.ShowFakeFxEffect("饿", this.Pos);
             }
+
+            long autoFaqing = 0;
+            var san = GetAttr(AttrIdConsts.PlayerSan);
+            if (san < 25_000)
+            {
+                autoFaqing = 5;
+            }
+            else if(san < 50_000)
+            {
+                autoFaqing = 2;
+            }
+            else if (san < 75_000)
+            {
+                autoFaqing = 1;
+            }
+
+            var addFaqing = (int)(autoFaqing * (interval * 1000) / 1000);
+            if(addFaqing > 0)
+            {
+                ApplyResourceChange(AttrIdConsts.PlayerFaQingVal, addFaqing, false, EDmgFlag.None, null);
+
+            }
         }
+
 
         /// <summary>
         /// 更新身上的高潮易伤
         /// </summary>
-        public void TickPlayerGcYishang()
+        private void TickPlayerGcYishang()
         {
             BuffInstance buffInst = null;
             foreach (var buff in BuffContainer)
             {
-                if (buff.Value.BuffId == "gc_self_yishang") 
+                if (buff.Value.BuffId == "gc_self_yishang")
                 {
                     buffInst = buff.Value;
                 }
             }
 
-            if(buffInst != null)
+            if (buffInst != null)
             {
-                if(buffInst.Layer > 0)
+                if (buffInst.Layer > 0)
                 {
                     buffInst.Layer -= (int)(Math.Ceiling(LogicTime.time * 20));
                     buffInst.Layer = Math.Max(0, buffInst.Layer);
@@ -404,20 +466,53 @@ namespace My.Map
                     buffInst.OnBuffAddOrUpdate(false);
                 }
 
-                if(buffInst.Layer <= 0)
+                if (buffInst.Layer <= 0)
                 {
                     LogicManager.globalBuffManager.RequestRemoveBuff(this, buffInst.InstanceId);
                 }
             }
         }
 
-        public void TickGc()
+        /// <summary>
+        /// 检查是否进入暴露状态
+        /// </summary>
+        private void TickPlayerExpose()
         {
-            if(!isPendingGc)
+            var clothes = GetAttr(AttrIdConsts.PlayerClothes);
+
+            if(IsExposed)
+            {
+                if(clothes > 0)
+                {
+                    IsExposed = false;
+                    LogicManager.globalBuffManager.AddBuff(this.Id, "player_clothes_expose");
+
+                    EventOnExposeStateChange?.Invoke();
+                }
+            }
+            else
+            {
+                if (clothes <= 0)
+                {
+                    IsExposed = true;
+                    LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "player_clothes_expose");
+
+                    EventOnExposeStateChange?.Invoke();
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 检查高潮状态
+        /// </summary>
+        private void TickGc()
+        {
+            if(!IsPendingGc)
             {
                 return;
             }
-            isPendingGc = false;
+            IsPendingGc = false;
 
             var gcLiquidEntity = new LogicEntityRecord();
             gcLiquidEntity.Id = GameLogicManager.LogicEntityIdInst++;
@@ -429,6 +524,7 @@ namespace My.Map
 
             LogicManager.AddNewEntityRecord(gcLiquidEntity);
 
+            // 添加自身debuff
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_debuff");
 
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_yishang", layer: 100);
@@ -444,6 +540,59 @@ namespace My.Map
             LogicManager.viewer.ShowPauseCloseupWindow("gc", 1.0f);
         }
 
+        /// <summary>
+        /// 检查是否进入发情状态
+        /// </summary>
+        private void TickFaQing()
+        {
+            
+            if (IsFaQing)
+            {
+                bool canLeave = false;
+
+                if (LogicTime.time - LastFaQingTimer > 60.0f)
+                {
+                    canLeave = true;
+                }
+
+                // 发情状态下，有以下情况会进行脱离：
+                //     1.高潮脱离 走另一条路线
+                //     2.靠理智强行（待定）
+                //     3.时间脱离
+
+                if (canLeave)
+                {
+                    LogicManager.globalBuffManager.RemoveAllBuffById(Id, "player_faqing");
+                    IsFaQing = false;
+                    Debug.Log("player leave faqing");
+
+                    EventOnFaQingStateChange?.Invoke();
+                }
+            }
+            // 检查进入发情
+            else
+            {
+
+                bool checkEnter = false;
+
+                var faqingVal = GetAttr(AttrIdConsts.PlayerFaQingVal);
+                if(faqingVal > 100_000)
+                {
+                    checkEnter = true;
+                }
+
+                if(checkEnter)
+                {
+                    LogicManager.globalBuffManager.RequestAddBuff(Id, "player_faqing");
+                    IsFaQing = true;
+                    Debug.Log("player enter faqing");
+
+                    EventOnFaQingStateChange?.Invoke();
+                }
+            }
+        }
+
+
         public override void OnStatusAttriChanged(string attrId, bool isOn)
         {
             base.OnStatusAttriChanged(attrId, isOn);
@@ -452,6 +601,11 @@ namespace My.Map
                 case AttrIdConsts.HideView:
                     {
                         
+                    }
+                    break;
+                case AttrIdConsts.PlayerClothes:
+                    {
+
                     }
                     break;
             }
@@ -468,22 +622,11 @@ namespace My.Map
             
         }
 
+
         /// <summary>
-        /// 为周围看着自己的打
+        /// 检查向周围传播hval
         /// </summary>
-        protected void TickAddAuraHVal(float dt)
-        {
-            if (LogicTime.time < applyHValTimer)
-            {
-                return;
-            }
-            applyHValTimer = LogicTime.time + 1f;
-
-            ApplyAuraHVal();
-        }
-
-
-        protected void ApplyAuraHVal()
+        protected void TickApplyAuraHVal()
         {
             float auraRange = 3.0f;
             // 
@@ -523,21 +666,13 @@ namespace My.Map
 
         #region watch
 
-        public Dictionary<long, float> BeingGazedTrack = new();
-
-        public float _watchTimer = 0;
+        private Dictionary<long, float> BeingGazedTrack = new();
 
         /// <summary>
         /// tick 被注视效果
         /// </summary>
-        public void TickBeingGazedInfo()
+        private void TickBeingGazedInfo()
         { 
-            if(LogicTime.time < _watchTimer)
-            {
-                return;
-            }
-
-            _watchTimer = LogicTime.time + 1f;
 
             foreach(var key in BeingGazedTrack.Keys.ToList())
             {
@@ -683,7 +818,7 @@ namespace My.Map
         
 
         /// <summary>
-        /// 
+        /// 检查身上的attack物体
         /// </summary>
         private void TickAttachingObj(float dt)
         {

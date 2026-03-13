@@ -29,6 +29,8 @@ namespace Config.Unit
         public float CoolDown = 5.0f;
         public int StackCount = 0;
 
+        public string IconPath;
+
 
         public int Priority = 10;
         public float DesiredUseAngle;

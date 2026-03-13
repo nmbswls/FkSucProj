@@ -31,7 +31,6 @@ namespace My.UI
         }
 
 
-
         public BottomProgressPanel bottomProgressPanel;
 
         public MapHomeBuildPanel homeBuildPanel;
@@ -55,11 +54,17 @@ namespace My.UI
         public Image RetreatHintBar;
         public TextMeshProUGUI RetreatHintText;
 
+        public GameObject botHintTextPrefab;
+        public OverworldSkillBar SkilBar;
+        //public OverworldSkillBar ItemBar;
+
 
         public override void Setup(object data = null)
         {
             bottomProgressPanel.gameObject.SetActive(false);
             //BottomProgressPanel.Setup();
+
+            SkilBar.InitSkills(this);
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
@@ -452,6 +457,17 @@ namespace My.UI
             // 2. 获取脚本并初始化
             HudSimpleFloatingText popup = go.GetComponent<HudSimpleFloatingText>();
             popup.Setup("-"+val, AlertHint.transform.position, UnityEngine.Color.black);
+        }
+
+        public void ShowBottomHintText(long val)
+        {
+            //// 1. 生成预制体
+            //GameObject go = Instantiate(simpleFloatTextPrefab, AlertHint.transform.position, Quaternion.identity, AlertHint.transform);
+            //go.SetActive(true);
+
+            //// 2. 获取脚本并初始化
+            //HudSimpleFloatingText popup = go.GetComponent<HudSimpleFloatingText>();
+            //popup.Setup("-" + val, AlertHint.transform.position, UnityEngine.Color.black);
         }
     }
 
