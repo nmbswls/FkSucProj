@@ -122,14 +122,13 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
 
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 1000_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerSan, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100_000, 100_000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 100_000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 0);
             
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 0);
@@ -437,7 +436,6 @@ namespace My.Map
             if(addFaqing > 0)
             {
                 ApplyResourceChange(AttrIdConsts.PlayerFaQingVal, addFaqing, false, EDmgFlag.None, null);
-
             }
         }
 
@@ -576,7 +574,7 @@ namespace My.Map
                 bool checkEnter = false;
 
                 var faqingVal = GetAttr(AttrIdConsts.PlayerFaQingVal);
-                if(faqingVal > 100_000)
+                if(faqingVal >= 100_000)
                 {
                     checkEnter = true;
                 }
@@ -588,6 +586,8 @@ namespace My.Map
                     Debug.Log("player enter faqing");
 
                     EventOnFaQingStateChange?.Invoke();
+
+                    attributeStore.SetResource(AttrIdConsts.PlayerFaQingVal, 0);
                 }
             }
         }
@@ -611,6 +611,27 @@ namespace My.Map
             }
         }
 
+
+        public override long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent)
+        {
+            long delta = intent.delta;
+            switch (attrId)
+            {
+                case AttrIdConsts.PlayerFaQingVal:
+                    {
+                        if(IsFaQing)
+                        {
+                            return 0;
+                        }
+                        return delta;
+                    }
+                    break;
+                default:
+                    {
+                        return base.CalculateResourceCostAmount(attrId, intent);
+                    }
+            }
+        }
 
         private float lastRefreshSpiritTime; // 上次更新时间
 

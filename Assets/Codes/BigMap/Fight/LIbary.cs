@@ -79,6 +79,19 @@ namespace My.Map.Entity
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_small_staggering";
+                    cfg.MainAbilityId = "player_small_staggering";
+                    cfg.CoolDown = 8.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+
+                    cfg.IconPath = "cost_yellow";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
                 {
                     var cfg = new EntitySkillCfg();
                     cfg.SkillId = "basic_aoe_slash";
@@ -400,6 +413,10 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreateDefaultPushAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreatePlayerSmallStarggering();
                     _abilityDict[ab.Id] = ab;
                 }
 
@@ -822,13 +839,16 @@ namespace My.Map.Entity
                                 Radius = 1.0f,
                                 CampFilterType = ECampFilterType.NotSelf,
 
-                                OnHitEffects = new()
+                                HitResult = new()
                                 {
-                                    new MapAbilityEffectAddResourceCfg()
-                                    {
-                                        ResourceId  = AttrIdConsts.UnitHVal,
-                                        AddValue = 50_000,
-                                    }
+                                     OnHitEffects = new()
+                                     {
+                                        new MapAbilityEffectAddResourceCfg()
+                                        {
+                                            ResourceId  = AttrIdConsts.UnitHVal,
+                                            AddValue = 50_000,
+                                        }
+                                     }
                                 }
                             }
                         },
@@ -2097,6 +2117,68 @@ namespace My.Map.Entity
         }
 
 
+        private static MapAbilitySpecConfig CreatePlayerSmallStarggering()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_small_staggering";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0f;
+            //spec.CoolDown = 0.2f;
+            //spec.DesiredUseDistance = 0.5f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.24"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectHitBoxCfg()
+            {
+                Shape = MapAbilityEffectHitBoxCfg.EShape.Direction,
+                Width = 0.8f,
+                Length = 0.6f,
+
+                HitResult = new()
+                {
+                    OnHitEffects = new()
+                    {
+                        
+                        new MapAbilityEffectAddBuffCfg()
+                        {
+                            BuffId = "force_stun",
+                            Duration = 3.0f,
+                        },
+                    }
+                }
+                
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+            
+        }
+
         private static MapAbilitySpecConfig CreateDefaultGuardAttack1()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
@@ -2415,17 +2497,20 @@ namespace My.Map.Entity
                     IncludeEnmity = true,
                     CenterPosType = 1,
 
-                    OnHitEffects = new()
+                    HitResult = new()
                     {
-                        new MapAbilityEffectControlledMoveCfg()
+                        OnHitEffects = new()
                         {
-                            TargetType = 0,
-                            UseCastVec = true,
-                            FixedDuration = 0.45f,
-                            IsEnmity = true,
-                            ControlForce = 10.0f,
-                        }
-                    },
+                            new MapAbilityEffectControlledMoveCfg()
+                            {
+                                TargetType = 0,
+                                UseCastVec = true,
+                                FixedDuration = 0.45f,
+                                IsEnmity = true,
+                                ControlForce = 10.0f,
+                            }
+                        },
+                    }
                 };
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnEnter });
             }
@@ -2823,6 +2908,9 @@ namespace My.Map.Entity
 
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addStunEffect, Kind = PhaseEventKind.OnEnter });
             }
+
+
+
             {
 
                 var closeToEffect = new MapFightEffectSpecialMoveToCfg()

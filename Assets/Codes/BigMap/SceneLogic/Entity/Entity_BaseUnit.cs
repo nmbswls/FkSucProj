@@ -547,10 +547,6 @@ namespace My.Map
             RegisterUnitCommonStates();
 
             // ×ÊÔ´Àà
-            attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
-            attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
-            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
-
             RegisterSpecAttrs();
 
             attributeStore.Commit();
@@ -1059,19 +1055,7 @@ namespace My.Map
             {
                 case AttrIdConsts.HP:
                     {
-                        if (delta < 0)
-                        {
-                            var dmg = Math.Abs(delta);
-
-                            var basicJs = attributeStore.GetAttr(AttrIdConsts.Basic_JianShang);
-                            if (basicJs > 9900)
-                            {
-                                basicJs = 9900;
-                            }
-                            dmg = (long)(dmg * (10000 - basicJs) * 0.0001);
-                            return -dmg;
-                        }
-                        return delta;
+                        return CalculateUnitHpChange(attrId, intent);
                     }
                     break;
                 default:
@@ -1079,6 +1063,24 @@ namespace My.Map
                         return base.CalculateResourceCostAmount(attrId, intent);
                     }
             }
+        }
+
+        protected virtual long CalculateUnitHpChange(string attrId, ResourceDeltaIntent intent)
+        {
+            long delta = intent.delta;
+            if (delta < 0)
+            {
+                var dmg = Math.Abs(delta);
+
+                var basicJs = attributeStore.GetAttr(AttrIdConsts.Basic_JianShang);
+                if (basicJs > 9900)
+                {
+                    basicJs = 9900;
+                }
+                dmg = (long)(dmg * (10000 - basicJs) * 0.0001);
+                return -dmg;
+            }
+            return delta;
         }
 
         #region alert

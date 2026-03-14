@@ -129,6 +129,16 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["player_faqing"] = new BuffDefinition()
+                {
+                    BuffId = "player_faqing",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    //ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmumeKaiYou, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+                
+
                 _library["force_stun"] = new BuffDefinition()
                 {
                     BuffId = "force_stun",
@@ -640,6 +650,8 @@ namespace My.Map.Entity
         public int HeadHintPriority = 0;
 
         public float ZOffsetOverride;
+
+        public bool IsHidden;
 
         [Serializable]
         public class OneModPair

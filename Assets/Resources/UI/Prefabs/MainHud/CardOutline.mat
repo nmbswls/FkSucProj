@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CardOutline
-  m_Shader: {fileID: 4800000, guid: ea37d81c65ecb2a49baa72d34a13d821, type: 3}
+  m_Shader: {fileID: 4800000, guid: 10dc3bfa4582646408febd4147e3e14e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 9a38d34966735d24e9cda5ecb0a183bc, type: 3}
+        m_Texture: {fileID: 2800000, guid: c69c901870779c44a925f6422454d886, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:

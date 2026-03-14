@@ -208,6 +208,16 @@ public class ConsoleGM : MonoBehaviour
                 player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, val, false, FightStruct.EDmgFlag.None, null);
             });
 
+        Register("faqing", "强制发情",
+            null,
+            args =>
+            {
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+
+                player.ApplyResourceChange(AttrIdConsts.PlayerFaQingVal, 200_000, false, FightStruct.EDmgFlag.None, null);
+            });
+
+
         Register("gptest", "创建测试用gather point",
             null,
             args =>

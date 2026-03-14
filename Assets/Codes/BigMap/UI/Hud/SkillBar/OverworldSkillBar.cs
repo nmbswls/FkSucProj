@@ -37,15 +37,17 @@ namespace My.UI
         {
             capacity = rows * columns;
 
-            for(int i=0;i<capacity;i++)
+            SkillSlotTemplate.gameObject.SetActive(false);
+
+            for (int i=0;i<capacity;i++)
             {
                 var slotGo = GameObject.Instantiate(SkillSlotTemplate, grid.transform);
                 var slotComp = slotGo.GetComponent<OverworldSkillBarSlot>();
                 slots.Add(slotComp);
 
+                slotGo.SetActive(true);
                 slotComp.Setup(this, i);
             }
-
 
             //for (int i = 0; i < pageSpotContainer.transform.childCount; i++)
             //{
@@ -106,22 +108,7 @@ namespace My.UI
 
             var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
 
-            // 启用技能组
-            if (player.IsFaQing)
-            {
-                showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.FaQingSkillSlots;
-            }
-            else
-            {
-                if (player.IsExposed)
-                {
-                    showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.NormalSkillSlots;
-                }
-                else
-                {
-                    showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.HumanSkillSlots;
-                }
-            }
+            var showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.GetSkillSlotsByState();
 
             if (showSkills == null)
             {

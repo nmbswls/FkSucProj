@@ -49,6 +49,7 @@ namespace My.Player
             "h_mode_execute",
 
             "queen_counter",
+            "player_small_staggering",
 
             "default_push",
             "player_normal_defend",
@@ -77,7 +78,7 @@ namespace My.Player
             NormalSkillSlots[0] = "spawn_attract";
             NormalSkillSlots[1] = "queen_pull_all";
 
-            HumanSkillSlots[0] = "fix_clothes";
+            HumanSkillSlots[0] = "player_small_staggering";
             HumanSkillSlots[1] = "player_dark_dance";
 
             FaQingSkillSlots[0] = "player_ziwei";
@@ -108,10 +109,14 @@ namespace My.Player
             //inventoryModel.NormalSlots[6] = new ItemStack() { ItemID = "chanzi", Count = 1 };
         }
 
+
         public void Tick(float dt)
         {
             inventoryModel.Tick(dt);
         }
+
+
+
 
         public bool CheckHasParam(string id)
         {
@@ -170,6 +175,43 @@ namespace My.Player
         public long TryGiveItem(string itemId, long count, int bagId)
         {
             return inventoryModel.GiveItem(itemId, count, bagId);
+        }
+
+        /// <summary>
+        /// 获取当前状态的技能组
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetSkillSlotsByState()
+        {
+            var player = logicManager.playerLogicEntity;
+            string[] showSkills = null;
+            // 启用技能组
+            if (player.IsFaQing)
+            {
+                showSkills = FaQingSkillSlots;
+            }
+            else
+            {
+                if (player.IsExposed)
+                {
+                    showSkills = NormalSkillSlots;
+                }
+                else
+                {
+                    showSkills = HumanSkillSlots;
+                }
+            }
+            return showSkills;
+        }
+
+        /// <summary>
+        /// 获取当前状态的技能组
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetItemSlotsByState()
+        {
+            var player = logicManager.playerLogicEntity;
+            return QuickSlotItemSet;
         }
     }
 }

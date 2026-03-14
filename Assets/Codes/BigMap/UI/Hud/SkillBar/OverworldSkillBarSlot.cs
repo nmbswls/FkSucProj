@@ -1,6 +1,7 @@
 
 using DG.Tweening;
 using My.Map.Entity;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,13 +21,14 @@ namespace My.UI
         public GameObject lockOverlay;
         public Image emptyIcon;
         public GameObject Outline;
+        public TextMeshProUGUI KeyName;
 
         public SkillRuntime skillData;
 
         public RectTransform shineRect;   // 高光图片的RectTransform
 
-        private Vector2 shineStartPos = new Vector2(-30, -30);
-        private Vector2 shineEndPos = new Vector2(30, 30);
+        private Vector2 shineStartPos = new Vector2(-25, 25);
+        private Vector2 shineEndPos = new Vector2(25, -25);
         private float shineDuration = 0.4f;// 扫光耗时
 
         public void Setup(OverworldSkillBar bar, int slotIdx)
@@ -48,6 +50,8 @@ namespace My.UI
                     OwnerBar.OnSkillSlotClicked(SlotIdx);
                 });
             }
+
+            KeyName.text = (slotIdx + 1).ToString();
         }
 
         public void BindingSkill(SkillRuntime skillData, bool hint = false)
@@ -76,11 +80,11 @@ namespace My.UI
             sequence.AppendCallback(() =>
             {
                 shineRect.gameObject.SetActive(true);
-                shineRect.anchoredPosition = shineStartPos;
+                shineRect.localPosition = shineStartPos;
             });
 
             // 5. 高光扫过动画：从左下移动到右上
-            sequence.Append(shineRect.DOAnchorPos(shineEndPos, shineDuration)
+            sequence.Append(shineRect.DOLocalMove(shineEndPos, shineDuration)
                     .SetEase(Ease.Linear)); // 扫光一般用匀速(Linear)
 
             // 6. 扫光结束后，隐藏高光物体

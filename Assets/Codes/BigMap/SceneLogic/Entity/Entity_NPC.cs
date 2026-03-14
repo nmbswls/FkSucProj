@@ -170,6 +170,11 @@ namespace My.Map
         {
             var cacheCfg = MapNpcConfigLoader.Get(CfgId);
             moveSpeed = cacheCfg.MoveSpeed;
+
+            // ×ÊÔ´Àà
+            attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
+            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
         }
 
         public override bool IsOmniVision()

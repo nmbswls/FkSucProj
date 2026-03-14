@@ -209,47 +209,41 @@ namespace My.UI
         public string GetSkillIdByKey(string keyName)
         {
             string skillId = string.Empty;
-            if(MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsQueenMode)
+            var playerData = MainGameManager.Instance.gameLogicManager.playerDataManager.NormalSkillSlots;
+
+            var showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.GetSkillSlotsByState();
+
+            bool isSkillSlot = false;
+            int skillSLotIdx = -1;
+            if(keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
             {
-                if (keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
-                {
-                    skillId = "crazy_fire";
-                }
-                else if (keyName == QuickPlayerInputBinder.EInputKey.Num2.ToString())
-                {
-                    skillId = "spawn_attract";
-                }
-                else if (keyName == QuickPlayerInputBinder.EInputKey.Num3.ToString())
-                {
-                    skillId = "queen_counter";
-                }
-                else if (keyName == QuickPlayerInputBinder.EInputKey.Num4.ToString())
-                {
-                    skillId = "queen_pull_all";
-                }
-                else if(keyName == QuickPlayerInputBinder.EInputKey.MouseLeft.ToString())
-                {
-                    skillId = "queen_attack";
-                }
+                skillSLotIdx = 0;
+                isSkillSlot = true;
             }
-            else
+            else if (keyName == QuickPlayerInputBinder.EInputKey.Num2.ToString())
             {
-                if (keyName == QuickPlayerInputBinder.EInputKey.MouseLeft.ToString())
-                {
-                    skillId = "default_push";
-                }
-                else if (keyName == QuickPlayerInputBinder.EInputKey.MouseRight.ToString())
-                {
-                    skillId = "player_normal_defend";
-                }
-                else if (keyName == QuickPlayerInputBinder.EInputKey.Q.ToString())
-                {
-                    skillId = "player_enter_queen";
-                }
-                else if(keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
-                {
-                    skillId = "player_dark_dance";
-                }
+                skillSLotIdx = 1;
+                isSkillSlot = true;
+            }
+            else if (keyName == QuickPlayerInputBinder.EInputKey.Num3.ToString())
+            {
+                skillSLotIdx = 2;
+                isSkillSlot = true;
+            }
+            else if (keyName == QuickPlayerInputBinder.EInputKey.Num4.ToString())
+            {
+                skillSLotIdx = 3;
+                isSkillSlot = true;
+            }
+            else if (keyName == QuickPlayerInputBinder.EInputKey.Num5.ToString())
+            {
+                skillSLotIdx = 4;
+                isSkillSlot = true;
+            }
+            
+            if(isSkillSlot)
+            {
+                return showSkills[skillSLotIdx];
             }
 
             return skillId;

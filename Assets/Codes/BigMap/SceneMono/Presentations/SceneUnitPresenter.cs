@@ -68,6 +68,8 @@ namespace My.Map.Scene
 
         protected override void Awake()
         {
+            base.Awake();
+
             if (!rb)
             {
                 rb = GetComponent<Rigidbody2D>();
