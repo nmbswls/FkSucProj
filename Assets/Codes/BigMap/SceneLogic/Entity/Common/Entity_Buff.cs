@@ -137,7 +137,30 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                     IsHidden = true,
                 };
+
+                // 当该buff被移除时 恢复一定衣装
+                // 暴露状态下 向周围扩散h值
+                _library["player_clothes_expose"] = new BuffDefinition()
+                {
+                    BuffId = "player_clothes_expose",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    //ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmumeKaiYou, ModifierValue = 1 } },
+
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
                 
+
+                _library["player_push_surround_debuff"] = new BuffDefinition()
+                {
+                    BuffId = "player_push_surround_debuff",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -3000 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+                
+
 
                 _library["force_stun"] = new BuffDefinition()
                 {

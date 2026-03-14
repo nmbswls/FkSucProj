@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using My.Map.Entity;
 using My.Map.Fight;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -70,16 +71,16 @@ public class MapProjectileManager : MonoBehaviour
     public List<GameObject> PrefabList = new();
     private Dictionary<string, GameObject> a = new();
 
-    public MapProjectile Spawn(LogicProjectileInfo logicProjectile, Transform homingTarget = null)
+    public MapProjectile Spawn(LogicProjectileInfo logicProjectile)
     {
         var projectilePrefab = Resources.Load<GameObject>($"Prefab/Projectile/{logicProjectile.pData.id}");
         // var firstPrefab = PrefabList.FirstOrDefault();
         var newGo = GameObject.Instantiate(projectilePrefab, transform);
         //newGo.name = "Projectile";
         //var go = new GameObject($"Projectile_{logicProjectile.pData.id}");
-        var p = newGo.AddComponent<MapProjectile>();
+        var p = newGo.GetOrAddComponent<MapProjectile>();
 
-        p.Launch(logicProjectile, homingTarget);
+        p.Launch(logicProjectile);
         return p;
     }
 }

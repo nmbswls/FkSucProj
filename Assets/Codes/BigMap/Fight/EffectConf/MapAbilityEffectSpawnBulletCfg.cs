@@ -33,6 +33,7 @@ namespace My.Map.Entity
             ToTriggerPos,
             Random,
             CastDir,
+            AlignHoming,
         }
         public ESpawnDir SpawnDir = ESpawnDir.NoDir;
 

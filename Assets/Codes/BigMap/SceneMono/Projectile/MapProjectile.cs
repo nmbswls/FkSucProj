@@ -8,7 +8,6 @@ public class MapProjectile : MonoBehaviour
 
     public int WarnEffectId;
 
-
     public Transform ViewRoot;
 
     private IMapProjectileMotion _motion;
@@ -136,6 +135,8 @@ public class MapProjectile : MonoBehaviour
         // 清理旧的
         //foreach (Transform child in transform) Destroy(child.gameObject);
 
+        _body = ViewRoot.Find("body");
+
         //// Body
         //if (bindingProjInfo.data.bodyPrefab != null)
         //    _body = Instantiate(bindingProjInfo.data.bodyPrefab, transform).transform;
@@ -171,29 +172,29 @@ public class MapProjectile : MonoBehaviour
     // 供抛物Motion调用：每帧更新可视
     public void UpdateParabolaVisual(Vector2 groundPos, float z, Vector2 forward)
     {
-        //var md = (ParabolaMotionData)data.motionData;
-        //// body 抬升
-        //Vector2 bodyPos = new Vector2(groundPos.x, groundPos.y + z * md.lift);
-        //if (_body != null) _body.position = bodyPos;
+        var md = (ParabolaMotionData)bindingProjInfo.pData.motionData;
+        // body 抬升
+        Vector2 bodyPos = new Vector2(groundPos.x, groundPos.y + z * md.lift);
+        if (_body != null) _body.position = bodyPos;
 
         //// 朝向
-        //if (data.rotateBodyToVelocity && _body != null && forward.sqrMagnitude > 0.0001f)
+        //if (bindingProjInfo.pData.rotateBodyToVelocity && _body != null && forward.sqrMagnitude > 0.0001f)
         //    _body.right = forward;
 
-        //// shadow 在地面
-        //if (_shadow != null)
-        //{
-        //    _shadow.position = groundPos;
-        //    float zAbs = Mathf.Max(0f, z);
-        //    float scale = md.shadowScaleByZ.Evaluate(zAbs);
-        //    _shadow.localScale = Vector3.one * scale;
+        // shadow 在地面
+        if (_shadow != null)
+        {
+            _shadow.position = groundPos;
+            float zAbs = Mathf.Max(0f, z);
+            float scale = md.shadowScaleByZ.Evaluate(zAbs);
+            _shadow.localScale = Vector3.one * scale;
 
-        //    if (_shadowSR != null)
-        //    {
-        //        float a = md.shadowAlphaByZ.Evaluate(zAbs);
-        //        var c = _shadowSR.color; c.a = a; _shadowSR.color = c;
-        //    }
-        //}
+            if (_shadowSR != null)
+            {
+                float a = md.shadowAlphaByZ.Evaluate(zAbs);
+                var c = _shadowSR.color; c.a = a; _shadowSR.color = c;
+            }
+        }
     }
 
     private void Despawn()

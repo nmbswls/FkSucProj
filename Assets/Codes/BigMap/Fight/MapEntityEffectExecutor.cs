@@ -157,6 +157,11 @@ namespace My.Map.Entity
                         dir = Vector2.zero;
                     }
                     break;
+                case MapAbilityEffectSpawnBulletCfg.ESpawnDir.AlignHoming:
+                    {
+                        dir = Vector2.zero;
+                    }
+                    break;
             }
 
             if(dir == null)
@@ -172,13 +177,14 @@ namespace My.Map.Entity
                 {
                     case ETargetSelectPolicy.PrimaryTarget:
                         {
-                            if(caster != null && caster is NpcUnitLogicEntity npcUnit)
+                            var casterUnit = caster as BaseUnitLogicEntity;
+
+                            if (casterUnit != null)
                             {
-                                if(npcUnit.AggroSystem.CurrentTargetId != 0)
-                                {
-                                    homingTarget = npcUnit.AggroSystem.CurrentTargetId;
-                                }
+                                var mainTargetId = casterUnit.CurrentTargetId;
+                                homingTarget = mainTargetId;
                             }
+
                         }
                         break;
                 }

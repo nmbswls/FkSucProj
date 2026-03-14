@@ -58,6 +58,8 @@ namespace My.Player
             "player_dark_dance",
 
             "player_ziwei",
+            "player_push_surround",
+            "player_trace_bullet_01",
         };
 
         public string[] NormalSkillSlots = new string[5];
@@ -80,6 +82,9 @@ namespace My.Player
 
             HumanSkillSlots[0] = "player_small_staggering";
             HumanSkillSlots[1] = "player_dark_dance";
+            HumanSkillSlots[2] = "player_push_surround";
+            HumanSkillSlots[3] = "player_trace_bullet_01";
+            
 
             FaQingSkillSlots[0] = "player_ziwei";
         }

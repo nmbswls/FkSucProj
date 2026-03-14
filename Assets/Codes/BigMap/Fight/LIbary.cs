@@ -80,6 +80,32 @@ namespace My.Map.Entity
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_push_surround";
+                    cfg.MainAbilityId = "player_push_surround";
+                    cfg.CoolDown = 8.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+
+                    cfg.IconPath = "icon_01";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_trace_bullet_01";
+                    cfg.MainAbilityId = "player_trace_bullet_01";
+                    cfg.CoolDown = 8.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+
+                    cfg.IconPath = "icon_01";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+
                 {
                     var cfg = new EntitySkillCfg();
                     cfg.SkillId = "player_small_staggering";
@@ -394,6 +420,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreatePlayerTraceBullet1Ability();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateDefaultDashSlash();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -421,6 +452,10 @@ namespace My.Map.Entity
                 }
                 {
                     var ab = CreatePlayerSmallStarggering();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreatePlayerPushSurround();
                     _abilityDict[ab.Id] = ab;
                 }
 
@@ -1598,6 +1633,89 @@ namespace My.Map.Entity
             return spec;
         }
 
+
+        private static MapAbilitySpecConfig CreatePlayerTraceBullet1Ability()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_trace_bullet_01";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.Range1 = 5.0f;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
+
+            {
+                var newEffect = new MapAbilityEffectSpawnBulletCfg()
+                {
+                    BulletId = "player_trace_bullet_01",
+                    MotionData = new ParabolaMotionData()
+                    {
+                        horizontalSpeed = 9f,
+                        arcHeight = 3.0f,
+                    },
+
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+
+                    isHoming = true,
+                    homingSelectPolicy = ETargetSelectPolicy.PrimaryTarget,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.Random,
+
+                    showRangeWarn = true,
+
+
+                    lifeTime = 999f,
+                    //BulletShape = new FightStruct.Shape()
+                    //{
+                    //    Type = FightStruct.EShapeType.Circle,
+                    //    Radius = 0.8f,
+                    //},
+
+                    //BulletHitResult = new()
+                    //{
+                    //    OnHitEffects = new()
+                    //    {
+                    //        new MapAbilityEffectHitBoxCfg()
+                    //        {
+                    //            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                    //            Radius = 1.0f,
+                    //            CampFilterType = ECampFilterType.NotSelf,
+
+                    //            HitResult = new()
+                    //            {
+                    //                 OnHitEffects = new()
+                    //                 {
+                    //                    new MapAbilityEffectAddResourceCfg()
+                    //                    {
+                    //                        ResourceId  = AttrIdConsts.UnitHVal,
+                    //                        AddValue = 50_000,
+                    //                    }
+                    //                 }
+                    //            }
+                    //        }
+                    //    },
+                    //},
+
+
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
         private static MapAbilitySpecConfig CreateDefaultDashSlash()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
@@ -2140,7 +2258,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.3"
+                    RawVal = "0.12"
                 },
             });
 
@@ -2182,6 +2300,74 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
             
+        }
+
+        private static MapAbilitySpecConfig CreatePlayerPushSurround()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_push_surround";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0f;
+            spec.CastType = ECastType.NoTarget;
+            //spec.CoolDown = 0.2f;
+            //spec.DesiredUseDistance = 0.5f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                AnimTag = "×¼±¸",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectHitBoxCfg()
+            {
+                Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                Radius = 1.5f,
+                CampFilterType = ECampFilterType.NotSelf,
+
+                HitResult = new()
+                {
+                    OnHitEffects = new()
+                    {
+                        new MapAbilityEffectAddBuffCfg()
+                        {
+                            BuffId = "player_push_surround_debuff",
+                            Duration = 5.0f,
+                        },
+                        new MapFightEffectKnockBackCfg()
+                        {
+                            KnockBackForce = 1.5f,
+                            DirType = MapFightEffectKnockBackCfg.EKnockBackType.CastDir,
+                        },
+                    }
+                }
+
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+
         }
 
         private static MapAbilitySpecConfig CreateDefaultGuardAttack1()

@@ -365,6 +365,8 @@ public class MapProjectileParabolaMotion : IMapProjectileMotion
     private float _lifetime;
     private bool _finished;
 
+    private float _exposeHeight = 0.3f;
+
     public bool IsFinished => _finished;
     public Vector2 Position => _pos;           // 地面位置（阴影位置）
     public Vector2 Forward => _vxy.sqrMagnitude > 0.0001f ? _vxy.normalized : Vector2.right;
@@ -373,8 +375,17 @@ public class MapProjectileParabolaMotion : IMapProjectileMotion
     {
         this.Owner = owner;
         //_ctx = ctx;
-        //_pos = ctx.spawnPos;
+        _pos = owner.bindingProjInfo.spawnPos; ;
         var dir = Owner.bindingProjInfo.initialDir.sqrMagnitude > 0.0001f ? Owner.bindingProjInfo.initialDir.normalized : Vector2.right;
+        if(PD.isHoming)
+        {
+            long homingTarget = owner.bindingProjInfo.homingTargetId ?? 0;
+            var homingTargetEntity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(homingTarget, false);
+            if(homingTargetEntity != null)
+            {
+                dir = homingTargetEntity.Pos - _pos;
+            }
+        }
         _vxy = dir * Mathf.Max(0.01f, D.horizontalSpeed);
 
         if (D.overrideVzByFlightTime && D.flightTime > 0.02f)
@@ -389,6 +400,7 @@ public class MapProjectileParabolaMotion : IMapProjectileMotion
 
         // 设置视觉（阴影/抬升）由外层Projectile负责（根据Motion类型）
         Owner.ConfigureParabolaVisual(D);
+
     }
 
     public void Tick(float dt)
@@ -411,7 +423,7 @@ public class MapProjectileParabolaMotion : IMapProjectileMotion
         // 视觉更新
         Owner.UpdateParabolaVisual(_pos, _z, Forward);
 
-        if (_z <= 0f)
+        if (_z <= _exposeHeight)
         {
             Explode();
         }
