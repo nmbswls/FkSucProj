@@ -226,6 +226,12 @@ namespace My.Map.Logic
 
             Repo.Clear();
             LongLived.Clear();
+
+            RefreshInfoRuntimes.Clear();
+            Type2EntityList.Clear();
+
+            NewCreateEntityMark.Clear();
+            Record2RefreshInfo.Clear();
         }
 
 

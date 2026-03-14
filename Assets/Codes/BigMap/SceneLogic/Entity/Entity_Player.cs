@@ -942,6 +942,16 @@ namespace My.Map
             }
         }
 
+
+        public override void ProcessHit(long? srcEntityId, Vector2? hitDir)
+        {
+            base.ProcessHit(srcEntityId, hitDir);
+
+            if (IsInStealth())
+            {
+                EndStealth();
+            }
+        }
     }
 }
 
