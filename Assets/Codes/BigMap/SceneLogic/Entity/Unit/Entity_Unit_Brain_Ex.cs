@@ -463,7 +463,7 @@ namespace My.Map.Unit
                 return true;
             }
 
-            if(_brain.NpcEntity.IsTargetInvisibleFromSelf(_currentTarget.Id))
+            if(!_brain.NpcEntity.IsTargetInvisibleFromSelf(_currentTarget.Id))
             {
                 HandleTargetLost();
                 return true;

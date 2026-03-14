@@ -63,9 +63,9 @@ namespace My.Map.Scene
             bool overrideHit = false;
             foreach(var buff in UnitEntity.BuffContainer.Values)
             {
+                if (buff.Def.DurationEffect == null) continue;
                 if(buff.Def.DurationEffect.DurationType == Entity.EBuffDurationType.HitEffect)
                 {
-
                     var existCtx = MapSceneEffectManager.Instance.FindSceneEffect(lastHitOverrideCtxId);
 
                     if(existCtx == null)

@@ -152,7 +152,7 @@ namespace My.Map.Unit
                 bool ignoreStealth =
                     stealth.SeeUnits != null &&
                     stealth.SeeUnits.TryGetValue(UnitEntity.Id, out var untilTs) &&
-                    now < untilTs;
+                    now < untilTs + 60.0f;
 
                 ignoreStealth |= (dist <= 1e-1);
 
