@@ -742,6 +742,15 @@ namespace My.Map.Entity
                             newCtx.TargetId = candidate.Id;
                             ctx.Env.HandleLogicFightEffect(e, newCtx);
                         }
+
+                        if (!realCfg.HitResult.IgnoreHit)
+                        {
+                            if (candidate is BaseUnitLogicEntity unitEntity)
+                            {
+                                // 对目标执行一次hit result
+                                unitEntity.ProcessHit(ctx.SourceInfo.SrcEntityId, hitDir);
+                            }
+                        }
                     }
 
                     

@@ -721,7 +721,14 @@ namespace My.Map.Scene
                             {
                                 Debug.Log($"OnWeaponHitCallback hit target not found or dead {hitEntityId}");
                             }
+
+                            if (hitEntity is BaseUnitLogicEntity unitHitTarget)
+                            {
+                                // 对目标执行一次hit result
+                                unitHitTarget.ProcessHit(UnitEntity.Id, UnitEntity.FinalLook);
+                            }
                         }
+
                     }
                     return;
                 }

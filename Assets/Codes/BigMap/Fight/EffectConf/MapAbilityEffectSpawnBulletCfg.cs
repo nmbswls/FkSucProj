@@ -48,7 +48,7 @@ namespace My.Map.Entity
 
         // 最长时间
         public float lifeTime;
-        public FightStruct.Shape BulletShape;
+        public FightStruct.Shape BulletShape = new();
 
 
         [SerializeReference]

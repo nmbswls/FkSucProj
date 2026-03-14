@@ -29,7 +29,7 @@ public class ProjectileData
     public EMotionType motiontype;
     public MotionDataBase motionData;    // 指向具体运动SO（Linear/Parabola/Homing）
 
-    public FightStruct.Shape ProjShape;
+    public FightStruct.Shape ProjShape = new();
 
     public bool isHoming;
     public float homingTime = 999; // 制导时间
