@@ -213,7 +213,7 @@ MonoBehaviour:
   shakeFrequencyFadeOut: 4
   enableLerp: 1
   lerpSettings:
-    speed: 3
+    speed: 8
     minX: -0.2
     maxX: 0.2
     minY: 0.3
@@ -288,19 +288,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  enableScaleByNumber: 1
+  enableScaleByNumber: 0
   scaleByNumberSettings:
     fromNumber: 0
     toNumber: 1000
     fromScale: 1
     toScale: 1.5
-  enableScaleOverTime: 0
+  enableScaleOverTime: 1
   scaleOverTime:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.6934204
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -308,8 +308,17 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.32436457
+      value: 0.97708476
+      inSlope: 0.50487417
+      outSlope: 0.50487417
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 1
-      value: 0.7
+      value: 1.0773804
       inSlope: 0
       outSlope: 0
       tangentMode: 0
