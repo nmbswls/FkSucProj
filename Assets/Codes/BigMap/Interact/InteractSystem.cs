@@ -144,10 +144,11 @@ public class SceneInteractSystem
             return;
         }
 
+        var presenter = MainGameManager.Instance.playerScenePresenter;
+
         normalCandidates.Clear();
         executeCandidates.Clear();
 
-        var presenter = MainGameManager.Instance.playerScenePresenter;
         Vector2 center = presenter.transform.position;
         int count = Physics2D.OverlapCircleNonAlloc(center, _maxCheckableRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
 
@@ -290,6 +291,10 @@ public class SceneInteractSystem
     }
     
 
+    protected bool CheckSelfInteract()
+    {
+        return false;
+    }
 
     public void UpdateNormalInteractRangeObjs()
     {

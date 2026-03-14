@@ -48,8 +48,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 4968533738407725753}
+  _shadowView: {fileID: 0}
+  _mainSpriteArr:
+  - {fileID: 5861190294749452032}
+  pivotHeader: {fileID: 0}
   highlightFx: {fileID: 0}
+  MainBlock: {fileID: 0}
   Blocks: []
+  StatusViews: []
+  InteractPivot: {fileID: 0}
+  AutoTriggerArea: {fileID: 0}
 --- !u!1 &2009391284575613198
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,7 +380,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 86fa59a3905004440ae38a2ccfe07836, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

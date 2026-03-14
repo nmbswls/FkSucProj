@@ -202,7 +202,7 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
     protected virtual void OnFadeStateUpdate()
     {
         // 优化：所有部件共用同一个值，所以只要设置一次 MPB
-        _mpb.SetFloat(FadeProp, _currFadeAlpha);
+        _mpb.SetFloat(FadeProp, 1 - _currFadeAlpha);
 
         // 3. 遍历应用
         for (int i = 0; i < _mainSpriteArr.Length; i++)
@@ -210,7 +210,7 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
             // 获取当前可能已有的属性（防止覆盖其他属性）
             _mainSpriteArr[i].GetPropertyBlock(_mpb);
             // 更新 Fade 值
-            _mpb.SetFloat(FadeProp, _currFadeAlpha);
+            _mpb.SetFloat(FadeProp, 1 - _currFadeAlpha);
             // 应用回去
             _mainSpriteArr[i].SetPropertyBlock(_mpb);
         }
