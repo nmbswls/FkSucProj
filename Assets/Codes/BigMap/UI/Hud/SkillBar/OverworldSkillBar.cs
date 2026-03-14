@@ -47,6 +47,8 @@ namespace My.UI
 
                 slotGo.SetActive(true);
                 slotComp.Setup(this, i);
+
+                slotComp.shineRect.gameObject.SetActive(false);
             }
 
             //for (int i = 0; i < pageSpotContainer.transform.childCount; i++)

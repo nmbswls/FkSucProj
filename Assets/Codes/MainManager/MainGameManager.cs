@@ -122,9 +122,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     public CinemachineImpulseSource VcamInpulseSource;
     public PostProcessVignette postProcessVignette;
 
-    //Assign prefab in inspector.
-    public DamageNumber numberPrefab1;
-    public DamageNumber numberPrefab2;
 
     private void Awake()
     {
@@ -287,9 +284,9 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             //    UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
             //}
 
-            ShowDamageNumber(playerScenePresenter.PivotHeader.position, "?");
+            ShowDamageNumber(playerScenePresenter.PivotHeader.position, "?", playerScenePresenter.PivotHeader);
 
-            MapSpeechBubbleManager.Instance.Say(playerScenePresenter, "怎么会？");
+            //MapSpeechBubbleManager.Instance.Say(playerScenePresenter, "怎么会？");
         }
 
         //if (playerScenePresenter == null || !playerScenePresenter.IsInBusyZone)
@@ -777,10 +774,25 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         MapSpeechBubbleManager.Instance.Say(pres, content, duration, priority);
     }
 
-
-    public void ShowDamageNumber(Vector2 worldPos, string content)
+    /// <summary>
+    /// 显示跳字
+    /// </summary>
+    /// <param name="worldPos"></param>
+    /// <param name="content"></param>
+    /// <param name="bindTrans"></param>
+    public void ShowDamageNumber(Vector2 worldPos, string content, Transform? bindTrans = null)
     {
-        numberPrefab1.Spawn(worldPos, content);
+        var dmgResource = SimpleResManager.Load<DamageNumber>($"SceneEffect/JumpText/Heal_01");
+        //var dmgResource = SimpleResManager.Load<DamageNumber>($"SceneEffect/JumpText/Damage_01");
+
+        if (bindTrans == null)
+        {
+            dmgResource.Spawn(worldPos, content);
+        }
+        else
+        {
+            dmgResource.Spawn(worldPos, content, bindTrans);
+        }
     }
 }
 

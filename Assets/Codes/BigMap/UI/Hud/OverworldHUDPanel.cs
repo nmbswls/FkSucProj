@@ -1,15 +1,11 @@
 
 using System;
-using System.Drawing;
-using Config.Unit;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static Config.Unit.EntitySkillCfg;
 
 
 namespace My.UI
@@ -285,6 +281,13 @@ namespace My.UI
             if(mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.NoTarget)
             {
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: null, target: null);
+                onConfirm?.Invoke(true);
+                return;
+            }
+            else if(mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.ToFace)
+            {
+                var player = MainGameManager.Instance.playerScenePresenter.PlayerEntity;
+                player.ablilityManager.UseSkill(skillId, castVec: player.Pos + player.CurrentLook * 1.0f, target: null);
                 onConfirm?.Invoke(true);
                 return;
             }

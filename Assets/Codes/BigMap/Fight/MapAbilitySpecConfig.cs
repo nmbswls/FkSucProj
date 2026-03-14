@@ -160,6 +160,7 @@ namespace My.Map.Entity
             Circle,
             Directional,
             LockTarget,
+            ToFace,
         }
         public ECastType CastType;
         public float Range1;

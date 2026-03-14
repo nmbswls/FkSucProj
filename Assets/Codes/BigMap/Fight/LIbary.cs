@@ -84,9 +84,8 @@ namespace My.Map.Entity
                     var cfg = new EntitySkillCfg();
                     cfg.SkillId = "player_small_staggering";
                     cfg.MainAbilityId = "player_small_staggering";
-                    cfg.CoolDown = 8.0f;
+                    cfg.CoolDown = 1.0f;
                     cfg.DesiredUseDistance = 1.0f;
-
                     cfg.IconPath = "cost_yellow";
 
                     _skillDict[cfg.SkillId] = cfg;
@@ -168,7 +167,7 @@ namespace My.Map.Entity
                     cfg.DesiredUseDistance = 0f;
                     cfg.Priority = 1;
 
-                    cfg.IconPath = "icon_01";
+                    cfg.IconPath = "cost_yellow";
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -239,6 +238,8 @@ namespace My.Map.Entity
                     cfg.SkillId = "player_ziwei";
                     cfg.MainAbilityId = "player_ziwei";
 
+                    cfg.IconPath = "cost_yellow";
+
                     cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.NoQueenMode });
                     _skillDict[cfg.SkillId] = cfg;
                 }
@@ -258,6 +259,9 @@ namespace My.Map.Entity
                     cfg.SkillId = "player_dark_dance";
                     cfg.MainAbilityId = "player_dark_dance";
                     cfg.CoolDown = 20.0f;
+
+
+                    cfg.IconPath = "icon_01";
 
                     //cfg.TargetType = ETargetType.Self;
                     _skillDict[cfg.SkillId] = cfg;
@@ -2124,6 +2128,7 @@ namespace My.Map.Entity
             spec.Id = "player_small_staggering";
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.DefaultStepDistance = 0f;
+            spec.CastType = ECastType.ToFace;
             //spec.CoolDown = 0.2f;
             //spec.DesiredUseDistance = 0.5f;
 
@@ -2157,12 +2162,12 @@ namespace My.Map.Entity
                 Shape = MapAbilityEffectHitBoxCfg.EShape.Direction,
                 Width = 0.8f,
                 Length = 0.6f,
+                CampFilterType = ECampFilterType.NotSelf,
 
                 HitResult = new()
                 {
                     OnHitEffects = new()
                     {
-                        
                         new MapAbilityEffectAddBuffCfg()
                         {
                             BuffId = "force_stun",

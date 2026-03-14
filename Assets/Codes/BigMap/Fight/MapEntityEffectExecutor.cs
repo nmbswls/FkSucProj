@@ -674,7 +674,7 @@ namespace My.Map.Entity
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
 
                 candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(checkOrigin, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter);
-                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: hitBoxDir);
+                DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, checkOrigin, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: hitBoxDir);
             }
             else if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
             {

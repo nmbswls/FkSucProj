@@ -400,6 +400,9 @@ namespace My.Map.Scene
 
             UnitEntity.EventOnDie += OnEventUnitDie;
             UnitEntity.EventOnHit += OnEventUnitHit;
+            UnitEntity.EventOnHpChanged += HandleEventHpChanged;
+
+
             UnitEntity.EventOnStartStealth += OnEventStartStealth;
             UnitEntity.EventOnEndStealth += OnEventEndStealth;
             UnitEntity.EventOnAttachStatusChanged += OnEventConvertAttach;
@@ -428,6 +431,8 @@ namespace My.Map.Scene
 
             UnitEntity.EventOnDie -= OnEventUnitDie;
             UnitEntity.EventOnHit -= OnEventUnitHit;
+            UnitEntity.EventOnHpChanged -= HandleEventHpChanged;
+
             UnitEntity.EventOnStartStealth -= OnEventStartStealth;
             UnitEntity.EventOnEndStealth -= OnEventEndStealth;
             UnitEntity.EventOnAttachStatusChanged -= OnEventConvertAttach;
@@ -469,6 +474,11 @@ namespace My.Map.Scene
         protected virtual void OnEventUnitHit(long entityId, long? srcId)
         {
             PresenterOnHit(srcId);
+        }
+
+        protected virtual void HandleEventHpChanged(long entityId, long? srcId)
+        {
+            MainGameManager.Instance.ShowDamageNumber(PivotHeader.transform.position, "-1");
         }
 
         protected virtual void OnEventStartStealth(long entityId)

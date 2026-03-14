@@ -86,7 +86,7 @@ namespace My.Map
         public event Action<long> EventOnAttachStatusChanged;
         public event Action<long> EventOnGhostChange;
         public event Action<long> EventOnInvisibleChange;
-        
+        public event Action<long, long?> EventOnHpChanged;
 
 
         protected float externalDecay = 30f;          // 外力自然衰减（每秒）
@@ -768,7 +768,7 @@ namespace My.Map
                                 }
                             }
 
-                            UnitOnHpDamaged(intent.delta, intent.srcEntityId, intent.HitDir);
+                            UnitOnHpChanged(intent.delta, intent.srcEntityId, intent.HitDir, intent.isEnmity, intent.deltaFlags);
 
                         }
 
@@ -788,14 +788,17 @@ namespace My.Map
         }
 
 
-        protected virtual void UnitOnHpDamaged(long delta, long? srcEntityId, Vector2? hitDir)
+        protected virtual void UnitOnHpChanged(long delta, long? srcEntityId, Vector2? hitDir, bool isEnmity, EDmgFlag deltaFlags)
         {
-            // 触发onhit
-            foreach (var b in BuffContainer.Values)
+            if(isEnmity) //不是这样
             {
-                b.DoBuffTrigger(ETriggerType.OnHit);
+                // 触发onhit
+                foreach (var b in BuffContainer.Values)
+                {
+                    b.DoBuffTrigger(ETriggerType.OnHit);
+                }
             }
-
+            
             // 高于5.00的伤害才触发打断
             //if(Math.Abs(delta) > 500)
             //{
@@ -805,7 +808,7 @@ namespace My.Map
             //    });
             //}
 
-            //EventOnHit?.Invoke(this.Id, srcEntityId);
+            EventOnHpChanged?.Invoke(this.Id, srcEntityId);
 
             if (Math.Abs(delta) > 1)
             {

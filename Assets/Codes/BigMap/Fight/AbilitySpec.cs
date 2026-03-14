@@ -185,5 +185,5 @@ public interface ISceneAbilityViewer
 
     void ShowMapSpeachBubble(long entityId, string content, float duration, int priority = 1, float extraInteval = 0);
 
-    void ShowDamageNumber(Vector2 worldPos, string content);
+    //void ShowDamageNumber(Vector2 worldPos, string content);
 }
