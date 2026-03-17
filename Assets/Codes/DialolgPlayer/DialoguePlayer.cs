@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using My;
 using My.Dialog;
 using My.Map;
@@ -416,6 +417,21 @@ public partial class DialoguePlayer : MonoBehaviour
                                 MainGameManager.Instance.gameLogicManager.WantedManager.CurrentWantedVal = 0;
                             }
                             break;
+                        case EDialogSimpleFuncType.Charmed:
+                            {
+                                var srcId = runtimeRef.SrcEntityId;
+                                if (srcId == null || srcId == 0)
+                                {
+                                    break;
+                                }
+
+                                var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(srcId.Value);
+                                if (entity == null || entity is not NpcUnitLogicEntity npcEntity) break;
+
+                                npcEntity.ApplySocialCharmed(MainGameManager.Instance.gameLogicManager.playerLogicEntity);
+                            }
+                            break;
+                            
                     }
                     SafeComplete();
                 }

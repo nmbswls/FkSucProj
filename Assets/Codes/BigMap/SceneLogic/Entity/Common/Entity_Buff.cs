@@ -159,7 +159,16 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                     IsHidden = true,
                 };
-                
+
+
+                _library["social_charmed"] = new BuffDefinition()
+                {
+                    BuffId = "social_charmed",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() {
+                    },
+                    DefaultDuration = -1,
+                };
 
 
                 _library["force_stun"] = new BuffDefinition()

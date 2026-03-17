@@ -33,5 +33,12 @@ namespace My.Map
                 AIBrain.AddAttractInfo(pos, attractLevel, attractSrc?.Id ?? 0);
             }
         }
+
+        public void ApplySocialCharmed(PlayerLogicEntity srcPlayer)
+        {
+            AIBrain.CharmedTrigger = true;
+
+            LogicManager.globalBuffManager.AddBuff(this.Id, "social_charmed", overrideDuration : 15.0f, casterId: srcPlayer.Id);
+        }
     }
 }

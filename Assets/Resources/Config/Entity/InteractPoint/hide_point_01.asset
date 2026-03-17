@@ -14,13 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CfgId: hide_point_01
   ShowName: "\u704C\u6728"
+  PrefabName: 
+  NameOffset: -1
   MainStatusInfo:
     StatusId: 0
+    Desp: 
     InteractInfos:
     - InteractId: 1
       Label: Hide
       UnLabel: Hide(X)
       HideWhenFail: 1
+      NeedDist: 0.4
+      Passive: 0
       CheckCommonCond: []
       CheckInteractCond:
       - CheckType: 1
@@ -29,12 +34,18 @@ MonoBehaviour:
         Param3: 
         Param4: 
       Outputs:
-      - OutputType: 7
+      - OutputType: 9
         Param1: 0
         Param2: 0
         Param3: 
         Param4: 
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
     HasBlock: 1
+    AutoTrigger: 0
   ExtraStatusInfos: []
   InitState: 0
   StateChangeRules: []

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using My.Map.Entity;
 using UnityEngine;
 
 namespace My.Map.Unit
@@ -102,6 +103,7 @@ namespace My.Map.Unit
         public AIStateSearch StateSearch;
         public AIStateAttracted StateAttracted;
         public AIStateChaseWanted StateChaseWanted;
+        public AIStateCharmedFollow StateCharmedFollow;
 
 
         // 黑板 (Blackboard) - 状态间共享数据
@@ -148,8 +150,9 @@ namespace My.Map.Unit
             StateFlee = new AIStateFlee(this);
             StateSearch = new AIStateSearch(this);
             StateAttracted = new AIStateAttracted(this);
+            StateCharmedFollow = new AIStateCharmedFollow(this);
 
-            if(Config.IsGuard)
+            if (Config.IsGuard)
             {
                 StateChaseWanted = new AIStateChaseWanted(this);
             }
@@ -177,7 +180,18 @@ namespace My.Map.Unit
             {
                 CurrentState?.OnUpdate();
                 _lastBrainUpdate = LogicTime.time;
+
+
+                if (CurrentState == StateIdle)
+                {
+                    if (NpcEntity.CheckHasBuff("social_charmed"))
+                    {
+                        ChangeState(StateCharmedFollow);
+                    }
+                }
             }
+
+            
         }
 
         public void ChangeState(AIBaseState newState)
@@ -193,6 +207,8 @@ namespace My.Map.Unit
 
             _isChangingState = false;
         }
+
+        public bool CharmedTrigger;
 
         public bool AttractTrigger;
         public class AttrctInfo
@@ -261,10 +277,39 @@ namespace My.Map.Unit
                     _brain.ChangeState(_brain.StateAttracted);
                 }
             }
+
+            // 只要能上到charm 就能程序
+            if (_brain.CharmedTrigger)
+            {
+                _brain.CharmedTrigger = false;
+
+                _brain.ChangeState(_brain.StateCharmedFollow);
+            }
+
+            if(CanKaiYou())
+            {
+                //// 条件满足时执行揩油
+                //if (_brain.LatestAttrctInfo.AttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
+                //{
+                //    if (attractSource is PlayerLogicEntity playerEntity && !playerEntity.CheckHasState(AttrIdConsts.ImmumeKaiYou))
+                //    {
+                //        var diff = playerEntity.Pos - _brain.NpcEntity.Pos;
+                //        if (diff.magnitude < 0.8f)
+                //        {
+                //            _brain.NpcEntity.abilityController.TryUseAbility("close_kaiyou", target: playerEntity);
+                //        }
+                //    }
+                //}
+            }
         }
         public abstract void OnUpdate();
         public virtual void OnExit() { }
         public virtual void OnFixedUpdate() { }
+
+        public virtual bool CanKaiYou()
+        {
+            return false;
+        }
     }
 }
 

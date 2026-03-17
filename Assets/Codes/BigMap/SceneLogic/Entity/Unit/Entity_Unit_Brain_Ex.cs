@@ -336,6 +336,67 @@ namespace My.Map.Unit
         }
     }
 
+    public class AIStateCharmedFollow : AIBaseState
+    {
+        public override string StateName => "CharmedFollow";
+
+        private float _endCharmdTimer;
+
+        public AIStateCharmedFollow(AIBrainV2 brain) : base(brain)
+        {
+        }
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+
+            _brain.NpcEntity.RegisterGaze("Charmed", _brain.LatestAttrctInfo.AttractSrcId, _brain.LatestAttrctInfo.HappenPos, EGazePriority.Interact, 0);
+            _endCharmdTimer = 0;
+        }
+
+        private float _enterAttractedTimer = 0;
+        public override void OnUpdate()
+        {
+            var buffInstance = _brain.NpcEntity.FindBuffById("social_charmed");
+            if (buffInstance == null)
+            {
+                if (_endCharmdTimer == 0)
+                {
+                    _endCharmdTimer = LogicTime.time;
+                    //
+                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "我在做什么?", 2f);
+
+                    _brain.NpcEntity.StopMove();
+                }
+
+                if (LogicTime.time - _endCharmdTimer > 3.0f)
+                {
+                    _brain.ChangeState(_brain.StateReturn);
+                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "赶紧走", 2f);
+                }
+
+                return;
+            }
+
+            var srcEntityId = buffInstance.CasterId;
+            var srcEntity = _brain.LogicManager.GetLogicEntity(srcEntityId, false);
+            if(srcEntity == null)
+            {
+                _brain.ChangeState(_brain.StateReturn);
+                return;
+            }
+
+            _brain.NpcEntity.TryMoveFollow(srcEntity, 0, Vector2.zero, stopDistance:0.25f);
+        } 
+
+        public override void OnExit()
+        {
+            base.OnExit();
+
+            _brain.NpcEntity.UnregisterGazeBySourceTag("Charmed");
+        }
+    }
+
 
     public class AIStateCombat : AIBaseState
     {

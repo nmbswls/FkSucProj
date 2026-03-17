@@ -524,6 +524,15 @@ namespace My.Map
             return false;
         }
 
+        public BuffInstance? FindBuffById(string buffId)
+        {
+            foreach (var buff in BuffContainer)
+            {
+                if (buff.Value.BuffId == buffId) return buff.Value;
+            }
+            return null;
+        }
+
         public void RegisterBuff(BuffInstance buffInst)
         {
             BuffContainer.Add(buffInst.InstanceId, buffInst);

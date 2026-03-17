@@ -81,8 +81,20 @@ namespace My.Dialog
 
         AddTmpEnmity,
         ClearWanted,
+
+        Charmed,
     }
 
+
+    public enum EProbabilityType
+    { 
+        None,
+        Fixed,
+        CharmRule,
+    }
+
+
+    
 
     [Serializable]
     public class DialogCommandData4SimpleFunc : DialogCommandData
@@ -109,7 +121,15 @@ namespace My.Dialog
     public class DialogChoiceOption
     {
         public string Text;
+
         public string TargetStepId;
+
+        // 检查是否是有概率的选项
+        public EProbabilityType ProbabilityType;
+        public float ProbabilityParam1;
+
+        public string FailTargetStepId;
+
         public bool ShowWhenFail;
 
         [SerializeReference]
