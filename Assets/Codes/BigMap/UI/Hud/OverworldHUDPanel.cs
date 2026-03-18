@@ -3,6 +3,7 @@ using System;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Scene;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,6 +54,8 @@ namespace My.UI
         public GameObject botHintTextPrefab;
         public OverworldSkillBar SkilBar;
         //public OverworldSkillBar ItemBar;
+
+        private bool isHunterMode = false;
 
 
         public override void Setup(object data = null)
@@ -139,6 +142,9 @@ namespace My.UI
 
             FilledAlertBar.fillAmount = filledRate;
             TempAlertBar.fillAmount = totalRate;
+
+
+            
         }
 
         public override void Show()
@@ -301,6 +307,11 @@ namespace My.UI
         {
             if(HudMode == EHudMode.Normal)
             {
+                if(keyName == "Ctrl")
+                {
+                    SwitchHunterMode();
+                    return true;
+                }
                 return PeeviewUseSkillByKey(keyName);
             }
             
@@ -322,6 +333,7 @@ namespace My.UI
                 {
                     MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHold(skillId);
                 }
+
             }
 
             return false;
@@ -465,6 +477,22 @@ namespace My.UI
             //// 2. 获取脚本并初始化
             //HudSimpleFloatingText popup = go.GetComponent<HudSimpleFloatingText>();
             //popup.Setup("-" + val, AlertHint.transform.position, UnityEngine.Color.black);
+        }
+
+
+        public void SwitchHunterMode()
+        {
+            
+            if(isHunterMode)
+            {
+                SceneVolumnManager.EnterHuntingMode();
+                isHunterMode = false;
+            }
+            else
+            {
+                SceneVolumnManager.EnterHuntingMode();
+                isHunterMode = true;
+            }
         }
     }
 

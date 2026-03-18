@@ -59,6 +59,21 @@ namespace My.UI
         private Dictionary<long, SceneAlertUIStruct> _evilAlertRecords = new Dictionary<long, SceneAlertUIStruct>();
 
 
+        public class SceneNPCHStatUIStruct
+        {
+            public GameObject Go;
+            //public TextMeshProUGUI Val;
+            public NpcUnitLogicEntity bindingNpc;
+
+            public Image FaQingFireHint;
+            public TextMeshProUGUI NpcWillText;
+            public TextMeshProUGUI SJProgressText;
+
+        }
+
+        private Dictionary<long, SceneNPCHStatUIStruct> _statHStatUIRecords = new Dictionary<long, SceneNPCHStatUIStruct>();
+
+
         public Canvas TopCanvas;
         public void Awake()
         {
@@ -231,6 +246,14 @@ namespace My.UI
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 调整为监听模式
+        /// </summary>
+        public void OnSceneHunterModeUpdate()
+        {
+
         }
     }
 

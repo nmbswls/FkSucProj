@@ -72,16 +72,7 @@ namespace My.Map.Scene
 
         void Update()
         {
-            // 监听按键
-            if (UnityEngine.Input.GetKeyDown(KeyCode.V))
-            {
-                EnterHuntingMode(true);
-            }
-            else if (UnityEngine.Input.GetKeyUp(KeyCode.V))
-            {
-                EnterHuntingMode(false);
-            }
-
+            
             // 1. 独立处理：色彩滤镜的平滑渐变 (控制红光)
             if (colorAdjustments != null)
             {
