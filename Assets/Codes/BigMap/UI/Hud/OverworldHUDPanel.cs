@@ -486,6 +486,8 @@ namespace My.UI
             if(isHunterMode)
             {
                 SceneVolumnManager.EnterHuntingMode();
+
+                SceneSmallIconLayerPanel.Instance?.Switch();
                 isHunterMode = false;
             }
             else

@@ -254,6 +254,15 @@ namespace My.UI
         public void OnSceneHunterModeUpdate()
         {
 
+
+
+            SceneAOIManager.Instance
+            _statHStatUIRecords
+        }
+
+        protected void UpdateSSS()
+        {
+            Camera.main.WorldToViewportPoint
         }
     }
 
