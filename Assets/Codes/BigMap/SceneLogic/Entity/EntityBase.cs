@@ -107,6 +107,8 @@ namespace My.Map
 
         bool MarkDestroyed { get;}
 
+        bool MarkDespawn { get; }
+
         void OnMapLogicEvent(IMapLogicEvent ev);
 
         void TeleportTo(Vector2 pos);

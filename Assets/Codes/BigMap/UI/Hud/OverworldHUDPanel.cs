@@ -55,7 +55,7 @@ namespace My.UI
         public OverworldSkillBar SkilBar;
         //public OverworldSkillBar ItemBar;
 
-        private bool isHunterMode = false;
+        public bool IsHunterMode = false;
 
 
         public override void Setup(object data = null)
@@ -483,17 +483,17 @@ namespace My.UI
         public void SwitchHunterMode()
         {
             
-            if(isHunterMode)
+            if(IsHunterMode)
             {
-                SceneVolumnManager.EnterHuntingMode();
+                SceneVolumnManager.Instance.EnterHuntingMode(false);
 
-                SceneSmallIconLayerPanel.Instance?.Switch();
-                isHunterMode = false;
+                //SceneSmallIconLayerPanel.Instance?.Switch();
+                IsHunterMode = false;
             }
             else
             {
-                SceneVolumnManager.EnterHuntingMode();
-                isHunterMode = true;
+                SceneVolumnManager.Instance.EnterHuntingMode(true);
+                IsHunterMode = true;
             }
         }
     }

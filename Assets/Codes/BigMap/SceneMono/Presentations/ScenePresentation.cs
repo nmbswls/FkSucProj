@@ -103,7 +103,7 @@ public abstract class ScenePresentationBase<TLogic> : MonoBehaviour, IScenePrese
         RegisterEvents();
 
         // vieweventbus
-        SceneSmallIconLayerPanel.Instance?.OnScenePresentationBinded(this);
+        //SceneSmallIconLayerPanel.Instance?.OnScenePresentationBinded(this);
     }
 
     public virtual void Unbind()

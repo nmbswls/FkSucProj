@@ -56,6 +56,7 @@ namespace My.Map.Entity
         public const string UnitHVal = "UnitHVal";
         public const string UnitHShield = "UnitHShield";
         public const string StatUnstoppable = "StatUnstoppable";
+        public const string SJProgress = "SJProgress";
 
         public const string DamageXiXue = "DamageXiXue";
 

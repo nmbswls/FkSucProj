@@ -385,6 +385,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             await Task.Yield();
         }
 
+        // 抛出事件
         await SceneAOIManager.Instance.CleanupAllAsync();
 
         await LoadGameMain();

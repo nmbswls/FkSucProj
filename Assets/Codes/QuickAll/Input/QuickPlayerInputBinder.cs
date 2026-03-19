@@ -84,6 +84,8 @@ namespace My.Input
             Num8,
             Num9,
             Num10,
+
+            Ctrl,
         }
 
         //public static string MouseRight = "MouseRight";
@@ -167,6 +169,7 @@ namespace My.Input
 
             actions.OverworldMap.Scroll.performed += OnMouseScroll;
 
+            actions.OverworldMap.Ctrl.performed += OnHotKeyCtrl;
 
             actions.OverworldMap.HotKey1.performed += OnHotKey1;
             actions.OverworldMap.HotKey2.performed += OnHotKey2;
@@ -202,6 +205,8 @@ namespace My.Input
             actions.OverworldMap.Cancel.performed -= OnCancel;
 
             actions.OverworldMap.Scroll.performed -= OnMouseScroll;
+
+            actions.OverworldMap.Ctrl.performed -= OnHotKeyCtrl;
 
             actions.OverworldMap.HotKey1.performed -= OnHotKey1;
             actions.OverworldMap.HotKey2.performed -= OnHotKey2;
@@ -378,8 +383,9 @@ namespace My.Input
         public void OnHotKeyTab(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Tab.ToString());
 
         public void OnTabHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(ctx, EInputKey.Tab.ToString());
-        public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(ctx, EInputKey.Tab.ToString()); 
+        public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(ctx, EInputKey.Tab.ToString());
 
+        public void OnHotKeyCtrl(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Ctrl.ToString());
 
         public void OnKeyPress(InputAction.CallbackContext ctx, string keyName)
         {
