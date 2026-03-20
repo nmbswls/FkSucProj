@@ -41,6 +41,7 @@ namespace My.Map
                 case AttrIdConsts.ImmuneEvilShock:
                 case AttrIdConsts.Invisible:
                 case AttrIdConsts.Sleep:
+                case AttrIdConsts.NoKiller:
 
                     return EAttrType.State;
 

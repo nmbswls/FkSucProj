@@ -46,17 +46,17 @@ namespace My.UI
             if(hVal < 20_000)
             {
                 FaQingFireHint.color = Color.white;
-                FaQingFireHint.transform.localScale = Vector3.one * 0.3f;
+                FaQingFireHint.transform.localScale = Vector3.one * 0.6f;
             }
             else if(hVal < 40_000)
             {
                 FaQingFireHint.color = Color.white;
-                FaQingFireHint.transform.localScale = Vector3.one * 0.4f;
+                FaQingFireHint.transform.localScale = Vector3.one * 0.7f;
             }
             else if (hVal < 60_000)
             {
                 FaQingFireHint.color = Color.red;
-                FaQingFireHint.transform.localScale = Vector3.one * 0.6f;
+                FaQingFireHint.transform.localScale = Vector3.one * 0.8f;
             }
             else if (hVal < 80_000)
             {

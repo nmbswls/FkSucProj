@@ -563,6 +563,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.SuperArmor, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.ImmumeKaiYou, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.FastTurn, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.NoKiller, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneKnock, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Stun, initialBase: 0);

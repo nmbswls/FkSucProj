@@ -57,6 +57,8 @@ namespace My.UI
 
         public bool IsHunterMode = false;
 
+        public Image zhaZhiSwitchOne;
+        public Button BtnZhaZhiSwitch;
 
         public override void Setup(object data = null)
         {
@@ -81,6 +83,10 @@ namespace My.UI
 
         void Awake()
         {
+            BtnZhaZhiSwitch.onClick.AddListener(() =>
+            {
+                DoSwitchZhaZhiMode();
+            });
         }
 
         public void Update()
@@ -142,9 +148,6 @@ namespace My.UI
 
             FilledAlertBar.fillAmount = filledRate;
             TempAlertBar.fillAmount = totalRate;
-
-
-            
         }
 
         public override void Show()
@@ -494,6 +497,22 @@ namespace My.UI
             {
                 SceneVolumnManager.Instance.EnterHuntingMode(true);
                 IsHunterMode = true;
+            }
+        }
+
+        public void DoSwitchZhaZhiMode()
+        {
+            MainGameManager.Instance.gameLogicManager.playerLogicEntity.SwitchZhaZHiMode();
+
+            if(MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsZhaZhiMode)
+            {
+                var sprite = SimpleResManager.Load<Sprite>("Sprites/red_tip_01");
+                zhaZhiSwitchOne.sprite = sprite;
+            }
+            else
+            {
+                var sprite = SimpleResManager.Load<Sprite>("Sprites/red_tip_01_diable");
+                zhaZhiSwitchOne.sprite = sprite;
             }
         }
     }

@@ -138,6 +138,17 @@ namespace My.Map.Entity
                     IsHidden = true,
                 };
 
+                _library["player_zhazhi"] = new BuffDefinition()
+                {
+                    BuffId = "player_zhazhi",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoKiller, ModifierValue = 1,},
+                    new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_ExtraDmg, ModifierValue = -9000,}},
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+                
+
                 // 当该buff被移除时 恢复一定衣装
                 // 暴露状态下 向周围扩散h值
                 _library["player_clothes_expose"] = new BuffDefinition()

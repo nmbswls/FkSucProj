@@ -14,6 +14,7 @@ namespace My.Map.Entity
         public const string PlayerGcThreshold = "PlayerGcThreshold";
         public const string Basic_JianShang = "Basic_JianShang";
         public const string Basic_MoveSpeed = "Basic_MoveSpeed";
+        public const string Basic_ExtraDmg = "Basic_ExtraDmg";
 
         public const string Player_AttrctPower = "Player_AttrctPower";
 
@@ -40,6 +41,7 @@ namespace My.Map.Entity
         public const string FastTurn = "FastTurn";
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";
+        public const string NoKiller = "NoKiller";
 
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes";

@@ -37,6 +37,8 @@ namespace My.Map
         public bool IsExposed = false; // 暴露状态
         public float LastExposeTimer; // 进入暴露时间
 
+        public bool IsZhaZhiMode = false;
+
 
         public long? gcCuaseId;
         public bool isSelfGc;
@@ -950,6 +952,22 @@ namespace My.Map
             if (IsInStealth())
             {
                 EndStealth();
+            }
+        }
+
+        public void SwitchZhaZHiMode()
+        {
+            if(IsZhaZhiMode)
+            {
+                IsZhaZhiMode = !IsZhaZhiMode;
+
+                LogicManager.globalBuffManager.AddBuff(this.Id, "player_zhazhi");
+            }
+            else
+            {
+                IsZhaZhiMode = !IsZhaZhiMode;
+
+                LogicManager.globalBuffManager.AddBuff(this.Id, "player_zhazhi");
             }
         }
     }
