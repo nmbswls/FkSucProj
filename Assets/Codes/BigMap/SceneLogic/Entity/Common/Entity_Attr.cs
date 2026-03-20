@@ -54,6 +54,9 @@ namespace My.Map
                 case AttrIdConsts.Special_JianShang:
                 case AttrIdConsts.Basic_KnockResistent:
                 case AttrIdConsts.Basic_MoveSpeed:
+                case AttrIdConsts.Basic_ExtraDmg:
+                case AttrIdConsts.Spe_Player_ExtraDmg:
+                    
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
