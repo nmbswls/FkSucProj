@@ -34,20 +34,21 @@ namespace My
 
     public interface ILogicEntityFactory
     {
-        // ¸ù¾İRecord´´½¨ÔËĞĞÊ±ÊµÀı
+        // æ ¹æ®Recordåˆ›å»ºè¿è¡Œæ—¶å®ä¾‹
         LogicEntityBase CreateEntityByRecord(LogicEntityRecord record);
-        // ¿ÉÑ¡¶ÔÏó³Ø£º»ØÊÕÊµÀı
+        // å¯é€‰å¯¹è±¡æ± ï¼šå›æ”¶å®ä¾‹
         void RecycleEntity(ILogicEntity entity);
     }
 
     public class SwitchAreaIntent
     {
-        public int? OldAreaId;
-        public int NewAreaId;
+        public string? OldAreaName;
+        public string AreaName;
         public bool Reset;
         public LogicEntityRecord4Player SavedRecord;
 
         public string? TargetPoint;
+        public Vector2? TargetPos;
     }
 
     public partial class GameLogicManager : ILogicEntityFactory
@@ -69,13 +70,13 @@ namespace My
         public event Action<ILogicEntity> EventOnLogicEntityDespawned;
 
         /// <summary>
-        /// Í¨ÖªÉÏ²ãÍæ¼ÒĞèÒªÇĞ»»³¡¾°
+        /// é€šçŸ¥ä¸Šå±‚ç©å®¶éœ€è¦åˆ‡æ¢åœºæ™¯
         /// </summary>
         public event Action EventOnPlayerSwitchArea;
         public SwitchAreaIntent? SwitchAreaIntent;
         
 
-        public ISceneAbilityViewer? viewer; // ±íÏÖ²ã½Ó¿Ú
+        public ISceneAbilityViewer? viewer; // è¡¨ç°å±‚æ¥å£
         public IVisionSenser2D? visionSenser;
         public INavProvider? navProvider;
 
@@ -108,7 +109,7 @@ namespace My
 
         public bool PlayerPeaceMode { get; set; } = false;
 
-        public void OnGameInit(SaveData saveData)
+        public void OnGameLogicInit(SaveData saveData)
         {
             playerDataManager = new(this);
             playerDataManager.InitPlayerData(saveData);
@@ -156,11 +157,7 @@ namespace My
 
             DropUtils.InitializeDropGroups();
 
-            SwitchAreaIntent = new SwitchAreaIntent()
-            {
-                NewAreaId = 1,
-                Reset = true,
-            };
+            
 
             playerDataManager.inventoryModel.EventOnGainItem += (itemId, count) =>
             {
@@ -178,15 +175,16 @@ namespace My
         }
 
         /// <summary>
-        /// Íæ¼Ò½øÈë/ÇĞ»»³¡¾°
+        /// ç©å®¶è¿›å…¥/åˆ‡æ¢åœºæ™¯
         /// </summary>
         /// <param name="areaName"></param>
-        public async Task OnSwitchAreaFinish(SwitchAreaIntent intent)
+        public void DoSwitchArea(SwitchAreaIntent intent)
         {
 
-            var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(intent.NewAreaId);
+            var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(intent.AreaName);
 
-            AreaManager.InitilizeArea(intent.NewAreaId);
+
+            AreaManager.InitilizeMap(intent.AreaName);
 
             if(mapCfg != null && mapCfg.IsHome)
             {
@@ -204,22 +202,32 @@ namespace My
                 }
             }
 
-            // todo
-            //if(intent.NewAreaName == "home")
-            //{
-            //    PlayerPeaceMode = true;
-            //}
-            //else
-            //{
-            //    PlayerPeaceMode = false;
-            //}
 
-            var vec = Vector2.zero;
-            if(bornPos.Count != 0)
+            Vector2? pos = null;
+            if(intent.TargetPos != null)
             {
-                var randIdx = UnityEngine.Random.Range(0, bornPos.Count);
-                vec = bornPos[randIdx].Position;
+                pos = intent.TargetPos.Value;
             }
+            else if(!string.IsNullOrEmpty(intent.TargetPoint))
+            {
+                pos = AreaManager.cacheDatabase.FindNamedPointByName(intent.TargetPoint)?.Position ?? null;
+            }
+
+            if(pos == null)
+            {
+                if (bornPos.Count != 0)
+                {
+                    var randIdx = UnityEngine.Random.Range(0, bornPos.Count);
+                    pos = bornPos[randIdx].Position;
+                }
+            }
+            
+            if(pos == null)
+            {
+                Debug.LogError("switch area pos lose");
+                pos = Vector2.zero;
+            }
+            
 
             LogicEntityRecord4Player playerRecord;
             if (intent.Reset)
@@ -231,13 +239,13 @@ namespace My
                     CfgId = "0",
                     FactionId = EFactionId.Player,
 
-                    Position = vec,
+                    Position = pos.Value,
                 };
             }
             else
             {
                 playerRecord = intent.SavedRecord;
-                playerRecord.Position = vec;
+                playerRecord.Position = pos.Value;
             }
 
             AreaManager.RegisterEntityRecord(playerRecord);
@@ -252,15 +260,15 @@ namespace My
 
             shopDataManager.RefreshOnNightStart();
 
-            // Çå¿ÕÑÓ³ÙĞÅÏ¢
+            // æ¸…ç©ºå»¶è¿Ÿä¿¡æ¯
             DelayedEffectQueue.Clear();
         }
 
         /// <summary>
-        /// Íæ¼Ò½øÈë/ÇĞ»»³¡¾°
+        /// ç©å®¶è¿›å…¥/åˆ‡æ¢åœºæ™¯
         /// </summary>
         /// <param name="areaName"></param>
-        public void PlayerSwitchArea(int areaId, bool reset, string? targetPoint = null)
+        public void TryPlayerSwitchArea(string mapName, bool reset, string? targetPoint = null)
         {
             if(SwitchAreaIntent != null)
             {
@@ -268,8 +276,8 @@ namespace My
                 return;
             }
             var intent = new SwitchAreaIntent();
-            intent.NewAreaId = areaId;
-            intent.OldAreaId = AreaManager.AreaId;
+            intent.AreaName = mapName;
+            intent.OldAreaName = AreaManager.MapName;
             intent.Reset = reset;
             intent.SavedRecord = new()
             {
@@ -343,7 +351,7 @@ namespace My
 
             TickPeaceMode();
 
-            // Ö¡Ä©ÔÙ´¦Àíbuff
+            // å¸§æœ«å†å¤„ç†buff
             globalBuffManager.Tick(dt);
 
             WantedManager?.Tick(dt);
@@ -466,7 +474,7 @@ namespace My
 
         public ProjectileHolder projectileHolder;
 
-        // ¸ù¾İRecord´´½¨ÔËĞĞÊ±ÊµÀı
+        // æ ¹æ®Recordåˆ›å»ºè¿è¡Œæ—¶å®ä¾‹
         public LogicEntityBase CreateEntityByRecord(LogicEntityRecord record)
         {
             LogicEntityBase newEntity = null;
@@ -507,7 +515,7 @@ namespace My
                         var newLoot = new LootPointLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                         newLoot.EventOnLootPointUnlock += (lootPoint) =>
                         {
-                            //// ÊÇ·ñ½øÈëÄ£Ê½
+                            //// æ˜¯å¦è¿›å…¥æ¨¡å¼
                             //if (MainGameManager.Instance.interactSystem.currnteractObj != null && MainGameManager.Instance.interactSystem.currnteractObj.GetLogicEntity() == newLoot)
                             //{
                             //    MainUIManager.Instance.TryEnterLootDetailMode(newLoot);
@@ -516,7 +524,7 @@ namespace My
 
                         newLoot.EventOnLootPointUsed += (lootPoint) =>
                         {
-                            // ÊÇ·ñ½øÈëÄ£Ê½
+                            // æ˜¯å¦è¿›å…¥æ¨¡å¼
                             UIOrchestrator.Instance.TryEnterLootDetailMode(newLoot);
                         };
 
@@ -604,14 +612,14 @@ namespace My
             return newEntity;
         }
 
-        // ¿ÉÑ¡¶ÔÏó³Ø£º»ØÊÕÊµÀı
+        // å¯é€‰å¯¹è±¡æ± ï¼šå›æ”¶å®ä¾‹
         public void RecycleEntity(ILogicEntity entity)
         {
             EventOnLogicEntityDespawned?.Invoke(entity);
         }
 
         ///// <summary>
-        ///// Ë¢ĞÂentity
+        ///// åˆ·æ–°entity
         ///// </summary>
         ///// <param name="entityType"></param>
         ///// <param name="cfgId"></param>
@@ -631,7 +639,7 @@ namespace My
         }
 
         
-        #region È«¾Ö¾¯½ä
+        #region å…¨å±€è­¦æˆ’
 
         public int AlertVal = 0;
         public void AddAlertVal(int addVal)
@@ -656,7 +664,7 @@ namespace My
         #endregion
 
 
-        #region Õ½¶·»Øµ÷
+        #region æˆ˜æ–—å›è°ƒ
 
         public class BattleResult
         {
@@ -669,7 +677,7 @@ namespace My
         {
             if (result.IsWin)
             {
-                // »ØÑª
+                // å›è¡€
                 
                 foreach(var i in result.InvolvedEntites)
                 {
@@ -683,20 +691,30 @@ namespace My
             else
             {
 
-                // ËÀÍö
-                // ¼ì²éÊÇ·ñÓĞmapÊÂ¼şhook
-                int reviveAreaId = GetCurrentReviveArea();
+                // æ­»äº¡
+                // æ£€æŸ¥æ˜¯å¦æœ‰mapäº‹ä»¶hook
+                //var reviveMapName = GetCurrentReviveMap();
+                var bornP = playerDataManager.SavedBornPoint;
+                if(!string.IsNullOrEmpty(bornP))
+                {
+                    bornP = "initial";
+                }
 
-                // »Ø³Ç
-                PlayerSwitchArea(reviveAreaId, true);
+                var bornCfg = CfgMgr.Cfgs.TbBornPoint.GetOrDefault(bornP);
+                // å›åŸ
+                TryPlayerSwitchArea(bornCfg.MapName, true, bornCfg.NamedPoint);
             }
         }
 
         #endregion
 
-        public int GetCurrentReviveArea()
+        /// <summary>
+        /// todo ä¿å­˜åœ°å›¾åè¿˜æ˜¯å‡ºç”Ÿç‚¹åï¼Ÿ
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentReviveMap()
         {
-            return 1;
+            return playerDataManager.SavedBornPoint;
         }
 
         public bool HandleUseItem(long userUnit, long cnt, ItemUseCfg useCfg)
@@ -739,7 +757,7 @@ namespace My
         }
 
         /// <summary>
-        /// Íê³É³·ÍË
+        /// å®Œæˆæ’¤é€€
         /// </summary>
         public void OnBigMapRetreatSuccess()
         {

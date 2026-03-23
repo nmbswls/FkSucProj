@@ -19,6 +19,9 @@ public partial class Tables
     public demo.TbDropBundle TbDropBundle {get; }
     public demo.TbDropItem TbDropItem {get; }
     public demo.TbFixedFacility TbFixedFacility {get; }
+    public demo.TbBornPoint TbBornPoint {get; }
+    public demo.TbUnitNpc TbUnitNpc {get; }
+    public demo.TbUnitNpcAttr TbUnitNpcAttr {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -27,6 +30,9 @@ public partial class Tables
         TbDropBundle = new demo.TbDropBundle(loader("demo_tbdropbundle"));
         TbDropItem = new demo.TbDropItem(loader("demo_tbdropitem"));
         TbFixedFacility = new demo.TbFixedFacility(loader("demo_tbfixedfacility"));
+        TbBornPoint = new demo.TbBornPoint(loader("demo_tbbornpoint"));
+        TbUnitNpc = new demo.TbUnitNpc(loader("demo_tbunitnpc"));
+        TbUnitNpcAttr = new demo.TbUnitNpcAttr(loader("demo_tbunitnpcattr"));
         ResolveRef();
     }
     
@@ -37,6 +43,9 @@ public partial class Tables
         TbDropBundle.ResolveRef(this);
         TbDropItem.ResolveRef(this);
         TbFixedFacility.ResolveRef(this);
+        TbBornPoint.ResolveRef(this);
+        TbUnitNpc.ResolveRef(this);
+        TbUnitNpcAttr.ResolveRef(this);
     }
 }
 

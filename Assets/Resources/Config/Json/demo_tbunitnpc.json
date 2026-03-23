@@ -1,0 +1,36 @@
+[
+  {
+    "id": "initial_orc_01",
+    "name": "小怪1",
+    "desc": "描述1",
+    "prefab_name": "initial_orc",
+    "attr_template_id": 10000,
+    "emnity_cfg_id": "default_npc",
+    "move_style": 1,
+    "ai_brain_id": "default",
+    "skill_list": [
+      "default_npc_attack"
+    ],
+    "is_peace": false,
+    "defeat_drop_id": 1,
+    "always_h_mode": false,
+    "ignore_attract_level": 0
+  },
+  {
+    "id": "initial_orc_02",
+    "name": "小怪2",
+    "desc": "描述2",
+    "prefab_name": "initial_orc",
+    "attr_template_id": 10001,
+    "emnity_cfg_id": "default_npc",
+    "move_style": 1,
+    "ai_brain_id": "default",
+    "skill_list": [
+      "default_npc_attack"
+    ],
+    "is_peace": false,
+    "defeat_drop_id": 1,
+    "always_h_mode": false,
+    "ignore_attract_level": 0
+  }
+]

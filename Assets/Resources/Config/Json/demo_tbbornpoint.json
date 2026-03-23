@@ -1,0 +1,34 @@
+[
+  {
+    "id": "newbie_01",
+    "name": "新手村点1",
+    "desc": "",
+    "map_name": "newbie",
+    "unlock_conds": [],
+    "named_point": "born_newbie_01"
+  },
+  {
+    "id": "newbie_02",
+    "name": "新手村点2",
+    "desc": "",
+    "map_name": "newbie",
+    "unlock_conds": [],
+    "named_point": "born_newbie_02"
+  },
+  {
+    "id": "newbie_03",
+    "name": "新手村点3",
+    "desc": "",
+    "map_name": "newbie",
+    "unlock_conds": [],
+    "named_point": "born_newbie_03"
+  },
+  {
+    "id": "game_init",
+    "name": "",
+    "desc": "",
+    "map_name": "game_init",
+    "unlock_conds": [],
+    "named_point": "initial_p0"
+  }
+]

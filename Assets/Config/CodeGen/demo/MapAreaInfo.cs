@@ -17,7 +17,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
 {
     public MapAreaInfo(JSONNode _buf) 
     {
-        { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
+        { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
@@ -33,7 +33,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly int Id;
+    public readonly string Id;
     /// <summary>
     /// 名称
     /// </summary>

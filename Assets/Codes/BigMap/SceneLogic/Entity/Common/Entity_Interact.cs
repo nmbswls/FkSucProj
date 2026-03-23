@@ -325,11 +325,11 @@ namespace My.Map
                         break;
                     case LogicInteractOutput.EOutputType.Teleport:
                         {
-                            int areaId = (int)output.Param1;
+                            string mapName = output.Param3;
                             string namedP = output.Param4;
 
                             // Ô­µØ´«ËÍ
-                            if (areaId == Owner.LogicManager.AreaManager.AreaId)
+                            if (mapName == Owner.LogicManager.AreaManager.MapName)
                             {
                                 if (string.IsNullOrEmpty(namedP))
                                 {
@@ -343,7 +343,7 @@ namespace My.Map
                             }
                             else
                             {
-                                Owner.LogicManager.PlayerSwitchArea(areaId, false, namedP);
+                                Owner.LogicManager.TryPlayerSwitchArea(mapName, false, namedP);
                             }
                         }
                         break;

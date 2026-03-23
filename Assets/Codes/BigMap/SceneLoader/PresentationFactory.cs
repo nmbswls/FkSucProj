@@ -1,5 +1,6 @@
 using Config;
 using Map.Entity;
+using My.Config;
 using My.Map;
 using My.Map.Entity;
 using System.Collections.Generic;
@@ -53,8 +54,8 @@ public static class PresentationConfig
                 }
             case EEntityType.Npc:
                 {
-                    var cfg = MapNpcConfigLoader.Get(cfgId);
-                    string prefabName = cfg.PrefabName;
+                    var npcCfg = CfgMgr.Cfgs.TbUnitNpc.Get(cfgId);
+                    string prefabName = npcCfg.PrefabName;
                     if (string.IsNullOrEmpty(prefabName))
                     {
                         prefabName = cfgId;

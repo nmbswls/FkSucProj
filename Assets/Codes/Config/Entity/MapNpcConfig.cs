@@ -7,20 +7,20 @@ using UnityEngine;
 
 namespace Config.Unit
 {
-    [CreateAssetMenu(menuName = "GP/Config/Entity/Npc")]
-    [Serializable]
-    public class MapNpcConfig : AbsMapUnitConfig
-    {
-        public string NpcTag = string.Empty;
+    //[CreateAssetMenu(menuName = "GP/Config/Entity/Npc")]
+    //[Serializable]
+    //public class MapNpcConfig : AbsMapUnitConfig
+    //{
+    //    public string NpcTag = string.Empty;
 
-        public List<MapInteractInfo> InteractList = new();
+    //    public List<MapInteractInfo> InteractList = new();
 
-        public int IgnoreAttractLevel = 0;
-        public bool ImmuneExecute;
+    //    public int IgnoreAttractLevel = 0;
+    //    public bool ImmuneExecute;
 
-        public bool AutoStopForPlayer = true;
+    //    public bool AutoStopForPlayer = true;
 
-        public string AIBrainCfgId = "default";
+    //    public string AIBrainCfgId = "default";
 
-    }
+    //}
 }

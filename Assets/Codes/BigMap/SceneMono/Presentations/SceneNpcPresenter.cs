@@ -19,7 +19,7 @@ namespace My.Map.Scene
         public string ShowName {
             get
             {
-                return NpcEntity.NpcConfig.ShowName;
+                return NpcEntity.NpcConfig.Name;
             } 
         }
 
@@ -125,10 +125,6 @@ namespace My.Map.Scene
                     break;
                 }
 
-                if(!NpcEntity.NpcConfig.AutoStopForPlayer)
-                {
-                    break;
-                }
 
                 if(MainGameManager.Instance.playerScenePresenter == null || NpcEntity.AIBrain.CurrentState != NpcEntity.AIBrain.StateIdle)
                 {
@@ -181,38 +177,42 @@ namespace My.Map.Scene
 
             do
             {
-                if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+                if(!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
                 {
-                    if (NpcEntity.InteractComp.IsInteracting)
-                    {
-                        break;
-                    }
-
-                    if (UnitEntity.IsInCombat)
-                    {
-                        break;
-                    }
-
-                    var logicInts = NpcEntity.InteractComp.InteractInfos;
-                    int enableOne = 0;
-                    foreach (var i in logicInts)
-                    {
-                        if (i.Passive)
-                        {
-                            continue;
-                        }
-                        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
-                        if (canInt || !i.HideWhenFail)
-                        {
-                            enableOne += 1;
-                        }
-                    }
-
-                    if (enableOne > 0)
-                    {
-                        return true;
-                    }
+                    break;
                 }
+                //if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+                //{
+                //    if (NpcEntity.InteractComp.IsInteracting)
+                //    {
+                //        break;
+                //    }
+
+                //    if (UnitEntity.IsInCombat)
+                //    {
+                //        break;
+                //    }
+
+                //    var logicInts = NpcEntity.InteractComp.InteractInfos;
+                //    int enableOne = 0;
+                //    foreach (var i in logicInts)
+                //    {
+                //        if (i.Passive)
+                //        {
+                //            continue;
+                //        }
+                //        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
+                //        if (canInt || !i.HideWhenFail)
+                //        {
+                //            enableOne += 1;
+                //        }
+                //    }
+
+                //    if (enableOne > 0)
+                //    {
+                //        return true;
+                //    }
+                //}
             }
             while (false);
 
@@ -244,11 +244,12 @@ namespace My.Map.Scene
 
             if (selectionId < 50 && !UnitEntity.IsInCombat)
             {
-                NpcEntity.InteractComp.TryTriggerInteract(selectionId);
+                //NpcEntity.InteractComp.TryTriggerInteract(selectionId);
+                // NpcEntity
                 return true;
             }
 
-            if(selectionId == DeepAbsorbInteractGoodId)
+            if (selectionId == DeepAbsorbInteractGoodId)
             {
                DeepAbsorbPanel.Show(0, 5, 3);
                 //MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
@@ -367,78 +368,75 @@ namespace My.Map.Scene
 
             do
             {
-
-
-
                 if (!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
                 {
                     break;
                 }
 
-                if(UnitEntity.IsDead)
-                {
-                    break;
-                }
+                //if(UnitEntity.IsDead)
+                //{
+                //    break;
+                //}
 
-                if (UnitEntity.IsInCombat)
-                {
-                    break;
-                }
+                //if (UnitEntity.IsInCombat)
+                //{
+                //    break;
+                //}
 
-                if (NpcEntity.InteractComp.IsInteracting)
-                {
-                    break;
-                }
+                //if (NpcEntity.InteractComp.IsInteracting)
+                //{
+                //    break;
+                //}
 
-                if (!InteractDetailMode)
-                {
-                    var logicInts = NpcEntity.InteractComp.InteractInfos;
-                    bool hasEnabled = false;
-                    foreach (var i in logicInts)
-                    {
-                        if (i.Passive)
-                        {
-                            continue;
-                        }
-                        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
-                        if (canInt || !i.HideWhenFail)
-                        {
-                            hasEnabled = true; 
-                            break;
-                        }
-                    }
+                //if (!InteractDetailMode)
+                //{
+                //    var logicInts = NpcEntity.InteractComp.InteractInfos;
+                //    bool hasEnabled = false;
+                //    foreach (var i in logicInts)
+                //    {
+                //        if (i.Passive)
+                //        {
+                //            continue;
+                //        }
+                //        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
+                //        if (canInt || !i.HideWhenFail)
+                //        {
+                //            hasEnabled = true; 
+                //            break;
+                //        }
+                //    }
 
-                    if(hasEnabled)
-                    {
-                        ret.Add(new SceneInteractSelection()
-                        {
-                            SelectId = EnterDetailMode,
-                            SelectContent = "»¥¶¯",
-                            Selectable = true
-                        });
-                    }
-                }
-                else
-                {
-                    var logicInts = NpcEntity.InteractComp.InteractInfos;
-                    foreach (var i in logicInts)
-                    {
-                        if (i.Passive)
-                        {
-                            continue;
-                        }
-                        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
-                        if (canInt || !i.HideWhenFail)
-                        {
-                            ret.Add(new SceneInteractSelection()
-                            {
-                                SelectId = i.InteractId,
-                                SelectContent = i.Label,
-                                Selectable = true
-                            });
-                        }
-                    }
-                }
+                //    if(hasEnabled)
+                //    {
+                //        ret.Add(new SceneInteractSelection()
+                //        {
+                //            SelectId = EnterDetailMode,
+                //            SelectContent = "»¥¶¯",
+                //            Selectable = true
+                //        });
+                //    }
+                //}
+                //else
+                //{
+                //    var logicInts = NpcEntity.InteractComp.InteractInfos;
+                //    foreach (var i in logicInts)
+                //    {
+                //        if (i.Passive)
+                //        {
+                //            continue;
+                //        }
+                //        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
+                //        if (canInt || !i.HideWhenFail)
+                //        {
+                //            ret.Add(new SceneInteractSelection()
+                //            {
+                //                SelectId = i.InteractId,
+                //                SelectContent = i.Label,
+                //                Selectable = true
+                //            });
+                //        }
+                //    }
+                //}
             }
             while (false);
 

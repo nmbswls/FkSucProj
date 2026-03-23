@@ -75,7 +75,7 @@ namespace My.Map
 
         public int BindRoomId;
 
-        public AbsMapUnitConfig unitCfg;
+        //public AbsMapUnitConfig unitCfg;
 
         /// <summary>
         /// event
@@ -112,10 +112,10 @@ namespace My.Map
             }
             else
             {
-                if (unitCfg != null)
-                {
-                    this.FactionId = unitCfg.DefaultFactionId;
-                }
+                //if (unitCfg != null)
+                //{
+                //    this.FactionId = unitCfg.DefaultFactionId;
+                //}
             }
 
             // get meta info
@@ -515,19 +515,10 @@ namespace My.Map
             var comboGraph = GenerateComboGraph();
             ablilityManager = new MapEntitySkillManager(this, comboGraph);
 
-            if(unitCfg != null)
-            {
-                foreach(var skillId in unitCfg.SkillList)
-                {
-                    ablilityManager.RegisterSkill(skillId);
-                }
-            }
-
+            
             abilityController = new MapEntityAbilityExecutor(this);
 
             ablilityManager.Executor = abilityController;
-
-            
         }
 
         protected virtual EntitySkillComboGraph GenerateComboGraph()

@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace My.Saving
 {
@@ -33,6 +34,9 @@ namespace My.Saving
         public PlayerData Player;
         public List<InventoryItemData> Inventory;
         //public WorldData World;
+
+        public string CurrentMapId;
+        public Vector2 CurrentPos;
 
         public SaveData()
         {

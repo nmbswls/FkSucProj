@@ -25,7 +25,7 @@ namespace My.Player
         public string[] QuickSlotItemSet = new string[10];
 
         public string SavedBornPoint = "initial";
-
+        //public string SavedReviveMap = "initial";
 
         /// <summary>
         /// Ñø³É

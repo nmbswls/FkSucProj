@@ -7,6 +7,7 @@ using My.MapExport;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -59,8 +60,8 @@ namespace My.Map.Logic
         public LogicEntityRepository Repo;
         public LongLivedRegistry LongLived { get; } = new();
 
-        public int AreaId = 0;
-        protected MapAreaInfo cacheMapAreaCfg;
+        public string MapName = string.Empty;
+        protected MapAreaInfo cacheMapCfg;
         public MapExportDatabase cacheDatabase;
 
         public Dictionary<string, LogicRoomInfo> RuntimeRoomInfos = new();
@@ -109,10 +110,10 @@ namespace My.Map.Logic
         /// <summary>
         /// 初始化地区
         /// </summary>
-        public void InitilizeArea(int areaId)
+        public void InitilizeMap(string mapName)
         {
-            this.AreaId = areaId;
-            cacheMapAreaCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(areaId);
+            this.MapName = mapName;
+            cacheMapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(mapName);
 
             UnitGridIndex.Clear();
             RoomGridIndex.Clear();
@@ -147,12 +148,12 @@ namespace My.Map.Logic
                 var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, innerListener);
                 subs.Add(sub);
             }
+
             Repo = null;
 
-            var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(areaId);
 
             // 加载 cacheDatabase
-            cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
+            cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{mapName}");
 
             EntityRefreshInfo.Clear();
             EntityRefreshInfo.AddRange(cacheDatabase.EntityRefreshInfo);
@@ -171,23 +172,9 @@ namespace My.Map.Logic
             if (Repo == null)
             {
                 Repo = new();
-                //// fake repo
-                ////  goujian 房间列表
-                //int cnt = 0;
-                //foreach (var refreshInfo in cacheDatabase.EntityRefreshInfo)
-                //{
-                //    cnt++;
-                //    HandleOneRefreshInfo(refreshInfo);
-
-                //    if(cnt > 100)
-                //    {
-                //        cnt = 0;
-                //        await Task.Yield();
-                //    }
-                //}
             }
 
-            if(mapCfg != null && mapCfg.IsHome)
+            if(cacheMapCfg != null && cacheMapCfg.IsHome)
             {
                 var homeRefreshs = logicManager.homeDataManager.GetAllValidLogicEntites();
                 EntityRefreshInfo.AddRange(homeRefreshs);

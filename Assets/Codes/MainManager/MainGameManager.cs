@@ -38,6 +38,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using static MapSceneEffectManager;
 using static Unity.VisualScripting.Member;
+using static UnityEngine.Rendering.VolumeComponent;
 using static UnityEngine.UI.ContentSizeFitter;
 
 
@@ -90,7 +91,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
 
 
-    public PlayerScenePresenter playerScenePresenter;
+    public PlayerScenePresenter playerScenePresenter { get; set; }
 
     public SceneInteractSystem interactSystem;
 
@@ -164,7 +165,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         {
             Debug.Log("no saving found");
         }
-        gameLogicManager.OnGameInit(loadedData);
+        gameLogicManager.OnGameLogicInit(loadedData);
 
         gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>
         {
@@ -172,13 +173,22 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         };
 
         UIManager.Instance.ShowLoading("starting");
-        
 
-        // 3. [主线程] 应用数据 (Restore State)
-        if (loadedData != null)
+        var playerMap = loadedData.CurrentMapId;
+        Vector2 savedPos = loadedData.CurrentPos;
+
+        if(string.IsNullOrEmpty(playerMap))
         {
-            ApplyDataToGame(loadedData);
+            playerMap = "game_init";
         }
+
+
+        gameLogicManager.SwitchAreaIntent = new SwitchAreaIntent()
+        {
+            AreaName = playerMap,
+            Reset = true,
+            TargetPos = savedPos,
+        };
 
         // 
         await LoadGameMain();
@@ -196,34 +206,19 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             return;
         }
 
-        // 逻辑上将玩家放入场景
-        await gameLogicManager.OnSwitchAreaFinish(intent);
+        // 准备逻辑层
+        PrepareLogic(intent);
 
-        //if(playerScenePresenter == null)
-        //{
-        //    var playerGo = Resources.Load<GameObject>("Prefab/Presentations/FakePlayer");
-        //    var newGo = GameObject.Instantiate(playerGo, transform);
-        //    playerScenePresenter = newGo.GetComponent<PlayerScenePresenter>();
-        //}
-        
-        bool loaded = false;
-        WorldAreaManager.Instance.LoadWorld(intent.NewAreaId, onComplete: (w, suc) => { loaded = true; });
 
-        // 等待场景加载
-        while(!loaded)
-        {
-            await Task.Yield();
-        }
-
-        await Task.Delay(500);
-
+        await DoWorldLoadPhase(intent);
         //playerScenePresenter.Bind(gameLogicManager.playerLogicEntity);
 
         // 整理职责
         FovGenerator.OnAreaEnter();
-        SceneAOIManager.Instance.InitArea(intent.NewAreaId);
+        SceneAOIManager.Instance.InitMapArea(intent.AreaName);
         SceneFadeManager.OnEnterArea(WorldAreaManager.Instance.currentRoot.gameObject);
 
+        // ui准备
         UIOrchestrator.Instance.InitGameLogicEventListener();
 
         inputBinder.ApplyInputMode(QuickPlayerInputBinder.InputMode.Overworld);
@@ -240,6 +235,32 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         gameLogicManager.Initialized = true;
 
         Debug.Log("LoadGameMain finished");
+    }
+
+
+    protected void PrepareLogic(SwitchAreaIntent intent)
+    {
+        // 逻辑上将玩家放入场景
+        gameLogicManager.DoSwitchArea(intent);
+    }
+
+    /// <summary>
+    /// 进行世界加载流程
+    /// </summary>
+    /// <returns></returns>
+    protected async Task DoWorldLoadPhase(SwitchAreaIntent intent)
+    {
+
+        bool loaded = false;
+        WorldAreaManager.Instance.LoadWorld(intent.AreaName, onComplete: (w, suc) => { loaded = true; });
+
+        // 等待场景加载
+        while (!loaded)
+        {
+            await Task.Yield();
+        }
+
+        await Task.Delay(500);
     }
 
     void Update()
@@ -698,14 +719,6 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         Debug.Log("UI: 保存流程结束");
     }
 
-    /// <summary>
-    ///  将读出来的数据应用到游戏对象上
-    /// </summary>
-    /// <param name="data"></param>
-    private void ApplyDataToGame(SaveData data)
-    {
-        Debug.Log($"ApplyDataToGame finish, 时间: {data.Meta.SaveTime}");
-    }
 
 
     public void PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false)

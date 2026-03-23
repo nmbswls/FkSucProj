@@ -129,9 +129,9 @@ namespace My.Map.Unit
             {
                 cfgId = "basic_unit_peace";
             }
-            if(!string.IsNullOrEmpty(npcOwner.NpcConfig.AIBrainCfgId))
+            if(!string.IsNullOrEmpty(npcOwner.NpcConfig.AiBrainId))
             {
-                cfgId = npcOwner.NpcConfig.AIBrainCfgId;
+                cfgId = npcOwner.NpcConfig.AiBrainId;
             }
             Config = AIBrainParamsConfigLoader.Load(cfgId);
 

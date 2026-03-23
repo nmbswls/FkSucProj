@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6212abf8aa90cb84b9a9eccb7abfa07f, type: 3}
-  m_Name: 1
+  m_Name: game_init
   m_EditorClassIdentifier: 
   AreaId: 
   Buckets:
@@ -20,20 +20,7 @@ MonoBehaviour:
     StaticItems:
     - ItemId: 101
       Key: P/Home/Facility_Good
-      Position: {x: -9.58, y: -4.23, z: 0}
-      Rotation: {x: -0, y: -0, z: -0, w: 1}
-      Scale: {x: 1, y: 1, z: 1}
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: 
-        Param6: 
-    - ItemId: 102
-      Key: P/Home/Room_01
-      Position: {x: -6.32, y: 3.16, z: 0}
+      Position: {x: -4.73, y: 0, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
@@ -49,12 +36,12 @@ MonoBehaviour:
   - StaticId: 100
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: init_kills
       Param6: 
     DisappearCond:
       Type: 0
@@ -67,16 +54,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672905
+      rid: 8510164454421561351
   - StaticId: 101
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: game_init_wave_01
       Param6: 
     DisappearCond:
       Type: 0
@@ -89,16 +76,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672906
+      rid: 8510164454421561352
   - StaticId: 102
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: game_init_wave_01
       Param6: 
     DisappearCond:
       Type: 0
@@ -111,16 +98,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672907
+      rid: 8510164454421561353
   - StaticId: 103
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: game_init_wave_01
       Param6: 
     DisappearCond:
       Type: 0
@@ -133,16 +120,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672908
+      rid: 8510164454421561354
   - StaticId: 104
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: game_init_dialog
       Param6: 
     DisappearCond:
       Type: 0
@@ -155,16 +142,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672909
+      rid: 8510164454421561355
   - StaticId: 105
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: game_init_dialog
       Param6: 
     DisappearCond:
       Type: 0
@@ -177,38 +164,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672910
+      rid: 8510164454421561356
   - StaticId: 106
     UniqName: 
     AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 8250387953918672911
-  - StaticId: 107
-    UniqName: 
-    AppearCond:
       Type: 2
-      Param1: 1
+      Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: fix_teleport
+      Param5: game_init_dialog
       Param6: 
     DisappearCond:
       Type: 0
@@ -221,112 +186,73 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672912
+      rid: 8510164454421561357
   NamedPoints:
-  - Name: p1
-    PointType: 0
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: born_01
+  - Name: initial_p0
     PointType: 1
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: hole_01_p
-    PointType: 0
-    Position: {x: -3.851, y: 3.49, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: hole_02_p
-    PointType: 0
-    Position: {x: -4.933, y: 3.5, z: 0}
+    Position: {x: -4.92, y: -1.1, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   NamedPaths: []
   references:
     version: 2
     RefIds:
-    - rid: 8250387953918672905
-      type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: ruin_lab3
-        Position: {x: 1, y: -2}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 0
-    - rid: 8250387953918672906
-      type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: ruin_lab2
-        Position: {x: 2, y: 2}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 0
-    - rid: 8250387953918672907
-      type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: ruin_lab1
-        Position: {x: -2, y: 1}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 0
-    - rid: 8250387953918672908
+    - rid: 8510164454421561351
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: lock_door_01
-        Position: {x: -6.11, y: 2.866}
+        CfgId: initial_tp
+        Position: {x: -5.04, y: -5.41}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 8250387953918672909
-      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+    - rid: 8510164454421561352
+      type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: bridge_block
-        Position: {x: 3.165, y: -1.268}
+        CfgId: game_init_01
+        Position: {x: -3.24, y: -1.15}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        Variables:
-          keys: []
-          values: []
-    - rid: 8250387953918672910
-      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+    - rid: 8510164454421561353
+      type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: hole
-        Position: {x: -4.732, y: 3.52}
+        CfgId: game_init_01
+        Position: {x: -4.86, y: -2.65}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        Variables:
-          keys:
-          - tp_name
-          values:
-          - hole_01_p
-    - rid: 8250387953918672911
-      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+    - rid: 8510164454421561354
+      type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: hole
-        Position: {x: -4.035, y: 3.52}
+        CfgId: game_init_01
+        Position: {x: -6.74, y: -1.64}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        Variables:
-          keys:
-          - tp_name
-          values:
-          - hole_02_p
-    - rid: 8250387953918672912
-      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+    - rid: 8510164454421561355
+      type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: teleport
-        Position: {x: -0.96, y: 4.26}
+        CfgId: game_init_01
+        Position: {x: -3.24, y: -1.15}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        Variables:
-          keys: []
-          values: []
+    - rid: 8510164454421561356
+      type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: game_init_01
+        Position: {x: -4.86, y: -2.65}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 8510164454421561357
+      type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: game_init_01
+        Position: {x: -6.74, y: -1.64}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0

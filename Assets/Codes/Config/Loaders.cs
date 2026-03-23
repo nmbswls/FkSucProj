@@ -40,36 +40,36 @@ namespace Config
     }
 
 
-    public static class MapNpcConfigLoader
-    {
+    //public static class MapNpcConfigLoader
+    //{
 
-        private static Dictionary<string, MapNpcConfig> _byId = new Dictionary<string, MapNpcConfig>();
+    //    private static Dictionary<string, MapNpcConfig> _byId = new Dictionary<string, MapNpcConfig>();
 
-        public static MapNpcConfig Get(string cfgId)
-        {
-            if (_byId.TryGetValue(cfgId, out var data))
-                return data;
+    //    public static MapNpcConfig Get(string cfgId)
+    //    {
+    //        if (_byId.TryGetValue(cfgId, out var data))
+    //            return data;
 
-            var loadOne = Load(cfgId);
-            _byId[cfgId] = loadOne;
-            return loadOne;
-        }
+    //        var loadOne = Load(cfgId);
+    //        _byId[cfgId] = loadOne;
+    //        return loadOne;
+    //    }
 
 
-        // 传入名称，如 "Fireball"；路径相对 Resources 根（不含扩展名）
-        private static MapNpcConfig Load(string cfgId)
-        {
-            var data = Resources.Load<MapNpcConfig>($"Config/Entity/Npc/{cfgId}");
-            if (data == null)
-                Debug.LogError($"MapNpcConfigLoader not found at Resources/Config/Npc/{cfgId}");
-            return data;
-        }
+    //    // 传入名称，如 "Fireball"；路径相对 Resources 根（不含扩展名）
+    //    private static MapNpcConfig Load(string cfgId)
+    //    {
+    //        var data = Resources.Load<MapNpcConfig>($"Config/Entity/Npc/{cfgId}");
+    //        if (data == null)
+    //            Debug.LogError($"MapNpcConfigLoader not found at Resources/Config/Npc/{cfgId}");
+    //        return data;
+    //    }
 
-        public static void Clear()
-        {
-            _byId.Clear();
-        }
-    }
+    //    public static void Clear()
+    //    {
+    //        _byId.Clear();
+    //    }
+    //}
 
     
     public static class MapUnitStrategyTemplateLoader

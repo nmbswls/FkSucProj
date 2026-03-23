@@ -138,7 +138,8 @@ namespace My.Map.Unit
         {
             this.UnitEntity = unit;
 
-            string enmityCfgId = unit.unitCfg.EnmityCfgId;
+            //string enmityCfgId = unit.unitCfg.EnmityCfgId;
+            string enmityCfgId = unit.GetEnmityCfgId();
             if (string.IsNullOrEmpty(enmityCfgId))
             {
                 enmityCfgId = "default";
@@ -313,6 +314,11 @@ namespace My.Map
         public bool IsEnmityWith(BaseUnitLogicEntity otherUnit)
         {
             return EnmitySystem.IsEnmityWith(otherUnit);
+        }
+
+        public virtual string GetEnmityCfgId()
+        {
+            return string.Empty;
         }
     }
 }

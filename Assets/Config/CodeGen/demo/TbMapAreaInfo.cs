@@ -15,13 +15,13 @@ namespace cfg.demo
 {
 public partial class TbMapAreaInfo
 {
-    private readonly System.Collections.Generic.Dictionary<int, demo.MapAreaInfo> _dataMap;
+    private readonly System.Collections.Generic.Dictionary<string, demo.MapAreaInfo> _dataMap;
     private readonly System.Collections.Generic.List<demo.MapAreaInfo> _dataList;
     
     public TbMapAreaInfo(JSONNode _buf)
     {
         int count = _buf.Count;
-        _dataMap = new System.Collections.Generic.Dictionary<int, demo.MapAreaInfo>(count);
+        _dataMap = new System.Collections.Generic.Dictionary<string, demo.MapAreaInfo>(count);
         _dataList = new System.Collections.Generic.List<demo.MapAreaInfo>(count);
         
         foreach(JSONNode _ele in _buf.Children)
@@ -33,12 +33,12 @@ public partial class TbMapAreaInfo
         }
     }
 
-    public System.Collections.Generic.Dictionary<int, demo.MapAreaInfo> DataMap => _dataMap;
+    public System.Collections.Generic.Dictionary<string, demo.MapAreaInfo> DataMap => _dataMap;
     public System.Collections.Generic.List<demo.MapAreaInfo> DataList => _dataList;
 
-    public demo.MapAreaInfo GetOrDefault(int key) => _dataMap.TryGetValue(key, out var v) ? v : default;
-    public demo.MapAreaInfo Get(int key) => _dataMap[key];
-    public demo.MapAreaInfo this[int key] => _dataMap[key];
+    public demo.MapAreaInfo GetOrDefault(string key) => _dataMap.TryGetValue(key, out var v) ? v : default;
+    public demo.MapAreaInfo Get(string key) => _dataMap[key];
+    public demo.MapAreaInfo this[string key] => _dataMap[key];
 
     public void ResolveRef(Tables tables)
     {

@@ -13,13 +13,27 @@ using static My.Map.Fight.FightStruct;
 using static UnityEditor.PlayerSettings;
 using My.Map.Unit;
 using UnityEditor;
+using cfg.demo;
+using My.Config;
 
 
 namespace My.Map
 {
     public partial class NpcUnitLogicEntity : BaseUnitLogicEntity, IEntityInteractable
     {
-        public MapNpcConfig NpcConfig { get { return (MapNpcConfig)unitCfg; } }
+        public UnitNpc NpcConfig 
+        { 
+            get 
+            { 
+                if(cacheUnitNpcCfg == null)
+                {
+                    cacheUnitNpcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(CfgId);
+                }
+                return cacheUnitNpcCfg;
+            } 
+        }
+
+        private UnitNpc cacheUnitNpcCfg;
 
         public AIBrainV2? AIBrain;
 
@@ -28,7 +42,7 @@ namespace My.Map
 
         public event Action EventOnHModeChange;
 
-        public EntityInteractComp InteractComp;
+        //public EntityInteractComp InteractComp;
 
         public string GetRuntimeVariable(string paramName)
         {
@@ -61,8 +75,6 @@ namespace My.Map
 
         public NpcUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
-            unitCfg = MapNpcConfigLoader.Get(CfgId);
-
             var npcRecord = (LogicEntityRecord4Npc)bindingRecord;
 
             Debug.Log($"NpcUnitLogicEntity init {instId} {npcRecord.MoveBehaveType}");
@@ -79,6 +91,15 @@ namespace My.Map
         protected override void InitAbility()
         {
             base.InitAbility();
+
+            if (NpcConfig != null)
+            {
+                foreach (var skillId in NpcConfig.SkillList)
+                {
+                    ablilityManager.RegisterSkill(skillId);
+                }
+            }
+
 
             abilityController.EventOnInputCancelPhaseStart += () =>
             {
@@ -163,14 +184,18 @@ namespace My.Map
             }
 
 
-            InteractComp = new(this);
-            InteractComp.RefreshInteractInfo(NpcConfig.InteractList);
+            //InteractComp = new(this);
+
+            //InteractComp.RefreshInteractInfo();
+            //InteractComp.RefreshInteractInfo(NpcConfig.InteractList);
+
         }
 
         protected override void RegisterSpecAttrs()
         {
-            var cacheCfg = MapNpcConfigLoader.Get(CfgId);
-            moveSpeed = cacheCfg.MoveSpeed;
+            var attrCfg = CfgMgr.Cfgs.TbUnitNpcAttr.GetOrDefault(NpcConfig.AttrTemplateId);
+
+            moveSpeed = attrCfg.MoveSpeed;
 
             // 资源类
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
@@ -199,7 +224,7 @@ namespace My.Map
             base.OnUnitDie(reason, lastIntent);
 
             // 初始化掉落包
-            dropBagContainer = new(this.LogicManager, unitCfg.DefaultDropId, 12);
+            dropBagContainer = new(this.LogicManager, NpcConfig.DefeatDropId, 12);
 
 
             if (lastIntent != null && lastIntent.srcEntityId != null)
@@ -231,7 +256,7 @@ namespace My.Map
                 CheckSeeEvil();
             }
 
-            InteractComp?.TickInteract(dt);
+            //InteractComp?.TickInteract(dt);
             //TickGaze();
         }
 
@@ -464,10 +489,10 @@ namespace My.Map
         /// <returns></returns>
         public bool CheckCanExecute()
         {
-            if(NpcConfig.ImmuneExecute)
-            {
-                return false;
-            }
+            //if(NpcConfig.ImmuneExecute)
+            //{
+            //    return false;
+            //}
 
             if(IsDead)
             {
@@ -495,6 +520,11 @@ namespace My.Map
             }
 
             return false;
+        }
+
+        public override string GetEnmityCfgId()
+        {
+            return NpcConfig.EmnityCfgId;
         }
     }
 }

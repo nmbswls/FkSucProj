@@ -31,8 +31,8 @@ namespace My.UI
 
         private void DoConfirm()
         {
-            int tpAreaId = 1;
-            MainGameManager.Instance.gameLogicManager.PlayerSwitchArea(tpAreaId, true);
+            string tpMapName = "base_01";
+            MainGameManager.Instance.gameLogicManager.TryPlayerSwitchArea(tpMapName, true);
         }
     }
 }

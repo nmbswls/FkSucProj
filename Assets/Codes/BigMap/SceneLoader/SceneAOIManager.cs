@@ -20,7 +20,10 @@ public class SceneAOIManager : MonoBehaviour
 {
     public static SceneAOIManager Instance;
 
-    public int AreaId { get; set; }
+    public string MapName
+    {
+        get { return MainGameManager.Instance.gameLogicManager.AreaManager.MapName; }
+    }
 
     [Header("Player & AOI")]
     public float aoiRadius = 20f;   // 动态对象可见半径（圆或方形）
@@ -74,7 +77,7 @@ public class SceneAOIManager : MonoBehaviour
 
     private readonly Dictionary<long, AOIEntry> _aoiStates = new(); // id -> entry
 
-    protected MapExportDatabase ExportDb;
+    protected MapExportDatabase ExportDb { get { return MainGameManager.Instance.gameLogicManager.AreaManager.cacheDatabase; } }
     public IEnumerable<StaticPrefabItem> GetChunkPrefabs(ChunkCoord c)
     {
         var it = ExportDb.GetChunkStaticItems(c.X, c.Y);
@@ -82,10 +85,9 @@ public class SceneAOIManager : MonoBehaviour
     }
 
 
-    public void InitArea(int areaId)
+    public void InitMapArea(string mapName)
     {
-        this.AreaId = areaId;
-        ExportDb = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
+        //ExportDb = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
 
     }
 
@@ -182,8 +184,8 @@ public class SceneAOIManager : MonoBehaviour
         // 4) 清理地图相关引用
         try
         {
-            AreaId = 0;
-            ExportDb = null;
+
+
         }
         catch (System.Exception ex)
         {
@@ -224,7 +226,7 @@ public class SceneAOIManager : MonoBehaviour
         }
 
         if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null) return;
-        if (AreaId == 0) return;
+        if (string.IsNullOrEmpty(MapName)) return;
 
         // 1) 动态实体 AOI 刷新（网格桶 + 半径范围）
         RefreshDynamicAOI(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, LogicTime.deltaTime);

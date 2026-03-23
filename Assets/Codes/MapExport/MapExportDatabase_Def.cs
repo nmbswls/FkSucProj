@@ -179,6 +179,12 @@ namespace My.MapExport
         public override EEntityType EntityType => EEntityType.FacilityRuin;
     }
 
+    [Serializable]
+    public class EntityInitInfo4DynamicSpawner : EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.DynamicSpawner;
+    }
+    
 
     [Serializable]
     public class EntityInitInfo4PatrolGroup : EntityInitInfo

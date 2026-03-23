@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "base_01",
     "name": "据点",
     "desc": "据点",
     "scene_name": "Main_Home",
@@ -8,19 +8,27 @@
     "always_alert": false
   },
   {
-    "id": 100,
-    "name": "新手村",
-    "desc": "出门第一张地图",
+    "id": "village_01",
+    "name": "村子1",
+    "desc": "村子2",
     "scene_name": "Main_Area_01",
     "is_home": false,
     "always_alert": true
   },
   {
-    "id": 101,
+    "id": "village_02",
     "name": "村子2",
     "desc": "村子2",
     "scene_name": "Main_Area_02",
     "is_home": false,
     "always_alert": true
+  },
+  {
+    "id": "game_init",
+    "name": "出生点",
+    "desc": "出生点",
+    "scene_name": "Main_Init",
+    "is_home": false,
+    "always_alert": false
   }
 ]

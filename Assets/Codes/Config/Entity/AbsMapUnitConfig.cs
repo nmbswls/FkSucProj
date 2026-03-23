@@ -75,48 +75,48 @@ namespace Config.Unit
     }
 
 
-    [Serializable]
-    public abstract class AbsMapUnitConfig : ScriptableObject
-    {
-        public string UnitName;
-        public Sprite ViewSprite;
-        public string PrefabName;
-        public string ShowName = "?";
+    //[Serializable]
+    //public abstract class AbsMapUnitConfig : ScriptableObject
+    //{
+    //    public string UnitName;
+    //    public Sprite ViewSprite;
+    //    public string PrefabName;
+    //    public string ShowName = "?";
 
-        public enum EMapUnitMoveStyle
-        {
-            NoMove,
-            Normal,
-            Fly,
-            Ghost,
-        }
+    //    public enum EMapUnitMoveStyle
+    //    {
+    //        NoMove,
+    //        Normal,
+    //        Fly,
+    //        Ghost,
+    //    }
 
-        public EMapUnitMoveStyle MoveStyle;
-        public float MoveSpeed = 1.0f;
+    //    public EMapUnitMoveStyle MoveStyle;
+    //    public float MoveSpeed = 1.0f;
 
-        public bool IsPeace = false;
-        public string CombatStretegyTemplateId;
+    //    public bool IsPeace = false;
+    //    public string CombatStretegyTemplateId;
 
-        public float BattleBoundary = 10.0f;
-        public bool RecoverReturn = true;
+    //    public float BattleBoundary = 10.0f;
+    //    public bool RecoverReturn = true;
 
-        public bool HasHMode = true;
-        public bool AlwaysHMode = false;
-
-
+    //    public bool HasHMode = true;
+    //    public bool AlwaysHMode = false;
 
 
-        public EFactionId DefaultFactionId;
-        public string EnmityCfgId;
-
-        [Header("属性模板")]
-
-        public int Hp = 100;
-
-        public List<string> SkillList = new();
-
-        public int DefaultDropId;
 
 
-    }
+    //    public EFactionId DefaultFactionId;
+    //    public string EnmityCfgId;
+
+    //    [Header("属性模板")]
+
+    //    public int Hp = 100;
+
+    //    public List<string> SkillList = new();
+
+    //    public int DefaultDropId;
+
+
+    //}
 }

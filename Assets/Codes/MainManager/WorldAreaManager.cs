@@ -13,14 +13,14 @@ public class WorldAreaManager : MonoBehaviour
 {
     public static WorldAreaManager Instance { get; private set; }
 
-    public int currentAreaId;
+    public string currentMapName;
     public MapAreaInfo? cacheAreaInfo;
     public WorldAreaRoot currentRoot;
 
 
     public readonly List<Scene> loadedSubScenes = new List<Scene>();
 
-    public event Action<int> OnWorldLoaded;
+    public event Action<string> OnWorldLoaded;
     public event Action<int> OnWorldUnloaded;
     public event Action<string, float> OnLoadingProgress; // 子场景名，进度0-1
 
@@ -36,16 +36,16 @@ public class WorldAreaManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public bool IsWorldLoaded => currentAreaId != 0;
+    public bool IsWorldLoaded => currentMapName != string.Empty;
 
-    public void LoadWorld(int areaId, bool setActive = true, Action<int, bool>? onComplete = null)
+    public void LoadWorld(string mapName, bool setActive = true, Action<int, bool>? onComplete = null)
     {
-        StartCoroutine(CoLoadWorld(areaId, setActive, onComplete));
+        StartCoroutine(CoLoadWorld(mapName, setActive, onComplete));
     }
 
     public void UnloadCurrentWorld(Action? onUnload)
     {
-        if (currentAreaId == 0) return;
+        if (string.IsNullOrEmpty(currentMapName)) return;
         StartCoroutine(CoUnloadWorld(onUnload));
         MainGameManager.Instance.SceneFadeManager.OnLeaveArea();
         currentRoot = null;
@@ -53,19 +53,19 @@ public class WorldAreaManager : MonoBehaviour
 
     public void Reload()
     {
-        if (currentAreaId == 0) return;
-        LoadWorld(currentAreaId);
+        if (string.IsNullOrEmpty(currentMapName)) return;
+        LoadWorld(currentMapName);
     }
 
-    private IEnumerator CoLoadWorld(int areaId, bool setActive, Action<int, bool>? onComplete)
+    private IEnumerator CoLoadWorld(string mapName, bool setActive, Action<int, bool>? onComplete)
     {
         // 先卸载旧的
-        if (currentAreaId != 0)
+        if (!string.IsNullOrEmpty(currentMapName))
             yield return CoUnloadWorld(null);
 
         loadedSubScenes.Clear();
 
-        var areaCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(areaId);
+        var areaCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(mapName);
         if(areaCfg == null)
         {
             Debug.LogError("CoLoadWorld not found.");
@@ -82,7 +82,7 @@ public class WorldAreaManager : MonoBehaviour
             yield break;
         }
 
-        currentAreaId = areaId;
+        currentMapName = mapName;
         cacheAreaInfo = areaCfg;
 
         do
@@ -137,11 +137,11 @@ public class WorldAreaManager : MonoBehaviour
             }
         }
 
-        OnWorldLoaded?.Invoke(areaId);
+        OnWorldLoaded?.Invoke(mapName);
         Debug.Log($"SubSceneManager: World '{areaCfg.SceneName}' loaded with {loadedSubScenes.Count} sub-scenes.");
 
         SegmentProvider.OnAreaEnter();
-        onComplete?.Invoke(currentAreaId, true);
+        onComplete?.Invoke(0, true);
     }
 
     private IEnumerator CoUnloadWorld(Action? onUnload)
@@ -158,9 +158,9 @@ public class WorldAreaManager : MonoBehaviour
         }
         loadedSubScenes.Clear();
 
-        var lastAreaId = currentAreaId;
-        currentAreaId = 0;
-        OnWorldUnloaded?.Invoke(lastAreaId);
+        var lastAreaId = currentMapName;
+        currentMapName = null;
+        OnWorldUnloaded?.Invoke(0);
         Debug.Log("SubSceneManager: world unloaded.");
 
         onUnload?.Invoke();
