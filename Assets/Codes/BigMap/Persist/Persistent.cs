@@ -135,4 +135,12 @@ namespace My.Map.Logic
     {
         public long BindingFacilityId;
     }
+
+    // 
+    [Serializable]
+    public class LogicEntityRecord4DynamicSpawner : LogicEntityRecord
+    {
+        
+    }
 }
+

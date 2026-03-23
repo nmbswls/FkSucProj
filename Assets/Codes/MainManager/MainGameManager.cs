@@ -174,8 +174,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
         UIManager.Instance.ShowLoading("starting");
 
-        var playerMap = loadedData.CurrentMapId;
-        Vector2 savedPos = loadedData.CurrentPos;
+        var playerMap = loadedData?.CurrentMapId ?? string.Empty;
+        Vector2? savedPos = loadedData?.CurrentPos ?? Vector2.zero;
 
         if(string.IsNullOrEmpty(playerMap))
         {

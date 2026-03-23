@@ -181,6 +181,17 @@ namespace My.Map.Scene
                 {
                     break;
                 }
+
+                //if (NpcEntity.InteractComp.IsInteracting)
+                //{
+                //    break;
+                //}
+
+                if (UnitEntity.IsInCombat)
+                {
+                    break;
+                }
+
                 //if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
                 //{
                 //    if (NpcEntity.InteractComp.IsInteracting)
@@ -213,6 +224,8 @@ namespace My.Map.Scene
                 //        return true;
                 //    }
                 //}
+
+                return true;
             }
             while (false);
 

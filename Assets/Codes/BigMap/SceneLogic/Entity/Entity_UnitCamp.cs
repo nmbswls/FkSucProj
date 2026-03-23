@@ -14,7 +14,7 @@ namespace My.Map
 
         public DynamicSpawnerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
-            var record = (LogicEntityRecord4PatrolGroup)bindingRecord;
+            //var record = (LogicEntityRecord4DynamicSpawner)bindingRecord;
 
         }
 
@@ -135,6 +135,12 @@ namespace My.Map
                     MemberId2EntityMap.Remove(memberInfo.MemberId);
 
                     var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(memberInfo.InitInfo);
+                    if(record == null)
+                    {
+                        Debug.Log($"event group:{Id} not record create member:{memberInfo.MemberId} entity:{record.Id}");
+                        continue;
+                    }
+
                     record.LifeBindEntityId = this.Id;
                     record.Position = this.Pos + memberInfo.InitInfo.Position;
                     MemberId2EntityMap[memberInfo.MemberId] = record.Id;

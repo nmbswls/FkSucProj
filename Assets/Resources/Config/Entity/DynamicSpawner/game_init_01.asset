@@ -24,7 +24,7 @@ MonoBehaviour:
     - rid: 8510164454421561350
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: initial_orc
+        CfgId: initial_orc_01
         Position: {x: 0, y: 0}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 

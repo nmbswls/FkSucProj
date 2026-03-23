@@ -595,6 +595,12 @@ namespace My
                         newEntity = newGatherPoint;
                     }
                     break;
+                case EEntityType.DynamicSpawner:
+                    {
+                        var newGatherPoint = new DynamicSpawnerLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                        newEntity = newGatherPoint;
+                    }
+                    break;
                 default:
                     {
                         ;

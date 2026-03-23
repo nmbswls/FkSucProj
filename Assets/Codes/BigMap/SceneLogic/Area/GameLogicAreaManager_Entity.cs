@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Config;
+using My.Config;
 using My.MapExport;
 using UnityEngine;
 
@@ -172,6 +173,12 @@ namespace My.Map.Logic
                     {
                         var unitRecord = new LogicEntityRecord4Npc();
 
+                        var npcId = initInfo.CfgId;
+                        var npcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(npcId);
+                        if(npcCfg == null)
+                        {
+                            break;
+                        }
                         var initInfo4Unit = (EntityInitInfo4Unit)initInfo;
 
                         unitRecord.IsPeace = initInfo4Unit.IsPeace;
