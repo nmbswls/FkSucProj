@@ -1,35 +1,50 @@
 
 using System;
+using cfg.demo;
 using UnityEngine;
 
 namespace My
 
 {
-    /// <summary>
-    /// 所有条件归一化
-    /// </summary>
-    public enum ECommonCheckType
-    {
-        None,
-        TaskFinish,
-        CheckVariable,
-        HasPlacement,
+    ///// <summary>
+    ///// 所有条件归一化
+    ///// </summary>
+    //public enum ECommonCheckType
+    //{
+    //    None,
+    //    TaskFinish,
+    //    CheckVariable,
+    //    HasPlacement,
 
-        OwnItem, // p5 itemid p1 count
-    }
+    //    OwnItem, // p5 itemid p1 count
+    //}
 
 
-    [Serializable]
-    public class CommonCheckCond
-    {
-        public ECommonCheckType Type;
-        public long Param1;
-        public long Param2;
-        public long Param3;
-        public long Param4;
-        public string Param5;
-        public string Param6;
-    }
+    //[Serializable]
+    //public class CommonCheckCond
+    //{
+    //    public cfg.demo.ECommonCheckType Type;
+    //    public long Param1;
+    //    public long Param2;
+    //    public long Param3;
+    //    public long Param4;
+    //    public string Param5;
+    //    public string Param6;
+
+    //    public static CommonCheckCond ConverFromCfg(cfg.demo.CommonCheckCond cfgCond)
+    //    {
+    //        CommonCheckCond ret = new CommonCheckCond();
+    //        ret.Type = cfgCond.Type;
+    //        ret.Param1 = cfgCond.Param1;
+    //        ret.Param2 = cfgCond.Param2;
+    //        ret.Param3 = cfgCond.Param3;
+    //        ret.Param4 = cfgCond.Param4;
+    //        ret.Param5 = cfgCond.Param5;
+    //        ret.Param6 = cfgCond.Param6;
+    //        return ret;
+    //    }
+    //}
+
 
 
     public partial class GameLogicManager
@@ -39,12 +54,12 @@ namespace My
         {
             switch(cond.Type)
             {
-                case ECommonCheckType.None:
+                case cfg.demo.ECommonCheckType.None:
                     {
                         return true;
                     }
                     break;
-                case ECommonCheckType.CheckVariable:
+                case cfg.demo.ECommonCheckType.CheckVariable:
                     {
                         bool checkHas = false;
                         if(cond.Param1 > 0)
@@ -61,7 +76,7 @@ namespace My
                         }
                     }
                     break;
-                case ECommonCheckType.OwnItem:
+                case cfg.demo.ECommonCheckType.OwnItem:
                     {
                         string itemId = cond.Param5;
                         long itemCnt = cond.Param1;

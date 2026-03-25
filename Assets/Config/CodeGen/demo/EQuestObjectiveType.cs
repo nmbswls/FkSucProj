@@ -11,7 +11,7 @@
 
 namespace cfg.demo
 { 
-    public enum EQuestProgressType
+    public enum EQuestObjectiveType
     {
         /// <summary>
         /// P0: 

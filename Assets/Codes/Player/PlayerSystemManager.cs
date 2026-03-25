@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Config;
 using Map.Logic.Events;
 using My.Player.Bag;
+using My.Quest;
 using My.Saving;
 using UnityEngine;
 
@@ -12,7 +13,9 @@ namespace My.Player
 
     public interface IPlayerSystem
     {
+        void InitSystem(GameLogicManager ctx, SaveData savingData);
 
+        void Tick(float dt);
     }
 
     public class PlayerSystemManager
@@ -31,6 +34,8 @@ namespace My.Player
         /// 养成
         /// </summary>
         public PlayerProgressionSystem ProgressionSystem { get; private set; }
+
+        public PlayerQuestSystem QuestSystem { get; private set; }
         /// <summary>
         /// 游戏变量表
         /// </summary>
@@ -76,7 +81,8 @@ namespace My.Player
             VariableDict["fix_teleport"] = true;
             VariableDict["a1"] = true;
 
-            ProgressionSystem = new(logicManager);
+            ProgressionSystem = new();
+            QuestSystem = new();
 
             QuickSlotItemSet[0] = "feidao";
 
@@ -96,7 +102,8 @@ namespace My.Player
         {
             InitBagInfo();
 
-            ProgressionSystem.InitializeSystem(savingData);
+            ProgressionSystem.InitSystem(logicManager, savingData);
+            QuestSystem.InitSystem(logicManager, savingData);
         }
 
         public void InitBagInfo()
@@ -121,6 +128,9 @@ namespace My.Player
         public void Tick(float dt)
         {
             inventoryModel.Tick(dt);
+
+            ProgressionSystem.Tick(dt);
+            QuestSystem.Tick(dt);
         }
 
 

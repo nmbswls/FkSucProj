@@ -5,6 +5,7 @@ using My.Map.Scene;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Logic;
+using cfg.demo;
 
 
 namespace My.MapExport

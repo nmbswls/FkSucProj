@@ -17,17 +17,20 @@ public sealed partial class QuestStepObjective : Luban.BeanBase
 {
     public QuestStepObjective(JSONNode _buf) 
     {
-        { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
+        { if(!_buf["obj_id"].IsString) { throw new SerializationException(); }  ObjId = _buf["obj_id"]; }
         { if(!_buf["format_desc"].IsString) { throw new SerializationException(); }  FormatDesc = _buf["format_desc"]; }
         { if(!_buf["is_option"].IsBoolean) { throw new SerializationException(); }  IsOption = _buf["is_option"]; }
         { if(!_buf["is_hidden"].IsBoolean) { throw new SerializationException(); }  IsHidden = _buf["is_hidden"]; }
         { if(!_buf["completion_tag"].IsString) { throw new SerializationException(); }  CompletionTag = _buf["completion_tag"]; }
-        { if(!_buf["progress_type"].IsNumber) { throw new SerializationException(); }  ProgressType = (demo.EQuestProgressType)_buf["progress_type"].AsInt; }
-        { if(!_buf["progress_target"].IsNumber) { throw new SerializationException(); }  ProgressTarget = _buf["progress_target"]; }
-        { if(!_buf["progress_param_int1"].IsNumber) { throw new SerializationException(); }  ProgressParamInt1 = _buf["progress_param_int1"]; }
-        { if(!_buf["progress_param_int2"].IsNumber) { throw new SerializationException(); }  ProgressParamInt2 = _buf["progress_param_int2"]; }
-        { if(!_buf["progress_param_str1"].IsNumber) { throw new SerializationException(); }  ProgressParamStr1 = _buf["progress_param_str1"]; }
-        { if(!_buf["progress_param_complex"].IsString) { throw new SerializationException(); }  ProgressParamComplex = _buf["progress_param_complex"]; }
+        { if(!_buf["obj_type"].IsNumber) { throw new SerializationException(); }  ObjType = (demo.EQuestObjectiveType)_buf["obj_type"].AsInt; }
+        { if(!_buf["obj_progress"].IsNumber) { throw new SerializationException(); }  ObjProgress = _buf["obj_progress"]; }
+        { if(!_buf["obj_p0"].IsNumber) { throw new SerializationException(); }  ObjP0 = _buf["obj_p0"]; }
+        { if(!_buf["obj_p1"].IsNumber) { throw new SerializationException(); }  ObjP1 = _buf["obj_p1"]; }
+        { if(!_buf["obj_p2"].IsNumber) { throw new SerializationException(); }  ObjP2 = _buf["obj_p2"]; }
+        { if(!_buf["obj_p3"].IsNumber) { throw new SerializationException(); }  ObjP3 = _buf["obj_p3"]; }
+        { if(!_buf["obj_p4"].IsString) { throw new SerializationException(); }  ObjP4 = _buf["obj_p4"]; }
+        { if(!_buf["obj_p5"].IsString) { throw new SerializationException(); }  ObjP5 = _buf["obj_p5"]; }
+        { if(!_buf["obj_p_extra"].IsString) { throw new SerializationException(); }  ObjPExtra = _buf["obj_p_extra"]; }
     }
 
     public static QuestStepObjective DeserializeQuestStepObjective(JSONNode _buf)
@@ -38,7 +41,7 @@ public sealed partial class QuestStepObjective : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly string Id;
+    public readonly string ObjId;
     /// <summary>
     /// 格式化描述
     /// </summary>
@@ -56,29 +59,41 @@ public sealed partial class QuestStepObjective : Luban.BeanBase
     /// </summary>
     public readonly string CompletionTag;
     /// <summary>
-    /// 进度类型
+    /// 目标类型
     /// </summary>
-    public readonly demo.EQuestProgressType ProgressType;
+    public readonly demo.EQuestObjectiveType ObjType;
     /// <summary>
     /// 进度要求
     /// </summary>
-    public readonly long ProgressTarget;
+    public readonly long ObjProgress;
     /// <summary>
-    /// 进度参数1<br/>int
+    /// p0<br/>int
     /// </summary>
-    public readonly int ProgressParamInt1;
+    public readonly int ObjP0;
     /// <summary>
-    /// 进度参数2<br/>int
+    /// p1<br/>int
     /// </summary>
-    public readonly int ProgressParamInt2;
+    public readonly int ObjP1;
     /// <summary>
-    /// 进度参数1<br/>str
+    /// p2<br/>long
     /// </summary>
-    public readonly int ProgressParamStr1;
+    public readonly long ObjP2;
+    /// <summary>
+    /// p3<br/>long
+    /// </summary>
+    public readonly long ObjP3;
+    /// <summary>
+    /// p4<br/>long
+    /// </summary>
+    public readonly string ObjP4;
+    /// <summary>
+    /// p5<br/>long
+    /// </summary>
+    public readonly string ObjP5;
     /// <summary>
     /// 复杂进度参数
     /// </summary>
-    public readonly string ProgressParamComplex;
+    public readonly string ObjPExtra;
    
     public const int __ID__ = 561189910;
     public override int GetTypeId() => __ID__;
@@ -90,17 +105,20 @@ public sealed partial class QuestStepObjective : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
-        + "id:" + Id + ","
+        + "objId:" + ObjId + ","
         + "formatDesc:" + FormatDesc + ","
         + "isOption:" + IsOption + ","
         + "isHidden:" + IsHidden + ","
         + "completionTag:" + CompletionTag + ","
-        + "progressType:" + ProgressType + ","
-        + "progressTarget:" + ProgressTarget + ","
-        + "progressParamInt1:" + ProgressParamInt1 + ","
-        + "progressParamInt2:" + ProgressParamInt2 + ","
-        + "progressParamStr1:" + ProgressParamStr1 + ","
-        + "progressParamComplex:" + ProgressParamComplex + ","
+        + "objType:" + ObjType + ","
+        + "objProgress:" + ObjProgress + ","
+        + "objP0:" + ObjP0 + ","
+        + "objP1:" + ObjP1 + ","
+        + "objP2:" + ObjP2 + ","
+        + "objP3:" + ObjP3 + ","
+        + "objP4:" + ObjP4 + ","
+        + "objP5:" + ObjP5 + ","
+        + "objPExtra:" + ObjPExtra + ","
         + "}";
     }
 }

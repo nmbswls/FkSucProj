@@ -1,5 +1,6 @@
 
-using My.Def.Quest;
+using cfg;
+using My.Config;
 using My.Player;
 using My.Saving;
 using SuperScrollView;
@@ -9,10 +10,6 @@ using UnityEngine;
 
 namespace My.Quest
 {
-
-    
-
-
 
     // --- 步骤运行时 ---
 
@@ -24,10 +21,10 @@ namespace My.Quest
     public class ObjectiveRuntime
     {
         protected GameLogicManager ctx { get; set; }
-        public readonly ObjectiveData Data;
+        public readonly cfg.demo.QuestStepObjective Data;
         public long ProgressVal = 0;
 
-        public ObjectiveRuntime(ObjectiveData data, GameLogicManager ctx)
+        public ObjectiveRuntime(cfg.demo.QuestStepObjective data, GameLogicManager ctx)
         {
             Data = data;
             this.ctx = ctx;
@@ -35,7 +32,7 @@ namespace My.Quest
 
         public bool IsOptional()
         {
-            return Data.isOption;
+            return Data.IsOption;
         }
 
         public long GetRequireProgress()
@@ -45,16 +42,16 @@ namespace My.Quest
 
         public long GetCurrProgress()
         {
-            switch (Data.condition.ConditionCfg)
-            {
-                case QuestConditionHasItem hasItemCond:
-                    {
-                        return ProgressVal;
-                    }
-                    break;
-            }
+            //switch (Data.condition.ConditionCfg)
+            //{
+            //    case QuestConditionHasItem hasItemCond:
+            //        {
+            //            return ProgressVal;
+            //        }
+            //        break;
+            //}
 
-            return 0;
+            return ProgressVal;
         }
     }
 
@@ -62,29 +59,27 @@ namespace My.Quest
     public class StepRuntime
     {
         protected GameLogicManager ctx { get; set; }
-        public int CurrStepId = 0;
-        public readonly QuestStepData Data;
+        public string CurrStepId = string.Empty;
+        public readonly cfg.demo.QuestStepData CacheStepCfg;
 
-        private readonly ObjectiveRuntime[] _objectives;
-        private readonly ObjectiveRuntime[] _failObjectives;
-
-        private Dictionary<int, ObjectiveRuntime> objectiveMap = new();
+        private readonly ObjectiveRuntime[] _objectiveRuntimes;
+        private Dictionary<string, ObjectiveRuntime> objectiveMap = new();
 
         public bool IsCompleted { get; set; }
         public int CompletedOutcome { get; private set; }
 
-        public StepRuntime(QuestStepData data, GameLogicManager ctx)
+        public StepRuntime(cfg.demo.QuestStepData data, GameLogicManager ctx)
         {
-            CurrStepId = data.stepId;
-            Data = data;
+            CurrStepId = data.StepId;
+            CacheStepCfg = data;
 
             // 初始化 Outcomes
-            _objectives = new ObjectiveRuntime[data.objectives?.Length ?? 0];
-            for (int i = 0; i < _objectives.Length; i++)
+            _objectiveRuntimes = new ObjectiveRuntime[data.CfgObjectives.Count];
+            for (int i = 0; i < _objectiveRuntimes.Length; i++)
             {
-                _objectives[i] = new ObjectiveRuntime(data.objectives[i], ctx);
+                _objectiveRuntimes[i] = new ObjectiveRuntime(data.CfgObjectives[i], ctx);
 
-                objectiveMap[data.objectives[i].objectiveId] = _objectives[i];
+                objectiveMap[_objectiveRuntimes[i].Data.ObjId] = _objectiveRuntimes[i];
             }
 
             this.ctx = ctx;
@@ -102,9 +97,9 @@ namespace My.Quest
 
         public void Tick()
         {
-            if(Data.isAuto && !IsCompleted)
+            if(CacheStepCfg.AutoNext && !IsCompleted)
             {
-                for(int ii = 0; ii< Data.outcomes.Length; ii++)
+                for(int ii = 0; ii< CacheStepCfg.CfgOutcomes.Count; ii++)
                 {
                     var complete = CheckCompletion(ii);
 
@@ -124,7 +119,11 @@ namespace My.Quest
 
         public bool CheckCompletion(int index)
         {
-            var outcome = Data.outcomes[index];
+            if(index < 0 || index >= CacheStepCfg.CfgOutcomes.Count)
+            {
+                return false;
+            }
+            var outcome = CacheStepCfg.CfgOutcomes[index];
             bool allFinish = true;
             foreach (var needObj in outcome.NeedObjectiveIds)
             {
@@ -157,15 +156,12 @@ namespace My.Quest
 
         protected GameLogicManager ctx { get; set; }
 
-        public QuestData Data { get; private set; }
+        public cfg.demo.QuestData cacheCfg { get; private set; }
         public bool IsActive { get; private set; }
 
         
         // 当前活跃的步骤
         private StepRuntime _activeStep;
-
-        // 步骤查找表
-        private Dictionary<int, QuestStepData> _stepMap = new();
 
         // --- 内部标签集 (Internal Tags) ---
         // 这是子系统交互的关键
@@ -176,23 +172,16 @@ namespace My.Quest
         /// </summary>
         /// <param name="data"></param>
         /// <param name="ctx"></param>
-        public QuestInstance(QuestData data, GameLogicManager ctx)
+        public QuestInstance(cfg.demo.QuestData data, GameLogicManager ctx)
         {
             this.ctx = ctx;
 
-            Data = data;
-            _stepMap = data.BuildStepMap();
+            cacheCfg = data;
 
-
-            foreach(var step in Data.steps)
-            {
-                _stepMap[step.stepId] = step;
-            }
-
-            _stepMap.TryGetValue(Data.InitStepId, out var initStep);
+            var initStep = cacheCfg.GetStep(cacheCfg.InitStepId);
             if(initStep == null)
             {
-                Debug.LogError($"QuestInstance init fail no init step found {data.QuestId} {Data.InitStepId}");
+                Debug.LogError($"QuestInstance init fail no init step found quest:{data.QuestId} {cacheCfg.InitStepId}");
                 return;
             }
 
@@ -207,7 +196,7 @@ namespace My.Quest
         {
             if(_activeStep != null)
             {
-                for (int outcomeIdx = 0; outcomeIdx < _activeStep.Data.outcomes.Length; outcomeIdx++)
+                for (int outcomeIdx = 0; outcomeIdx < _activeStep.CacheStepCfg.Outcomes.Count; outcomeIdx++)
                 {
                     var complete = _activeStep.CheckCompletion(outcomeIdx);
 
@@ -241,6 +230,7 @@ namespace My.Quest
             // 2. 处理失败
             if(_activeStep != null && _activeStep.IsCompleted)
             {
+                _activeStep.Tick();
                 ResolveNextSteps();
             }
 
@@ -254,17 +244,17 @@ namespace My.Quest
         private void ResolveNextSteps()
         {
             var outcomeIdx = _activeStep.CompletedOutcome;
-            var outcome = _activeStep.Data.outcomes[outcomeIdx];
+            var outcome = _activeStep.CacheStepCfg.CfgOutcomes[outcomeIdx];
 
-            if (outcome == null || outcome.nextStepId == 0)
+            if (outcome == null || string.IsNullOrEmpty(outcome.NextStepId))
             {
                 Debug.LogError($"ResolveNextSteps not outcome found quest invalid");
                 return;
             }
-
-            if (_stepMap.TryGetValue(outcome.nextStepId, out var nextData))
+            var nextStep = cacheCfg.GetStep(outcome.NextStepId);
+            if (nextStep != null)
             {
-                var nextRuntime = new StepRuntime(nextData, ctx);
+                var nextRuntime = new StepRuntime(nextStep, ctx);
                 _activeStep = nextRuntime;
             }
         }
@@ -298,9 +288,43 @@ namespace My.Quest
         private Dictionary<int, QuestInstance> _questInfoMap = new();
         private HashSet<int> _finishQuestSet;
 
-        public void InitQuestSystem(SaveData savingData)
+        private List<cfg.demo.QuestData> _autoAcceptQuests = new();
+
+
+        public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
+            this.Ctx = ctx;
+
             TryRefreshQuest();
+
+            foreach(var q in CfgMgr.Cfgs.TbQuestData.DataList)
+            {
+                if(!q.IsAutoAccept)
+                {
+                    continue;
+                }
+
+                if(_finishQuestSet.Contains(q.QuestId))
+                {
+                    continue;
+                }
+
+                if(_questInfoMap.ContainsKey(q.QuestId))
+                {
+                    continue;
+                }
+                _autoAcceptQuests.Add(q);
+            }
+        }
+
+        public void Tick(float dt)
+        {
+            TickAutoAccept();
+
+            foreach(var quest in _questInfoMap.Values)
+            {
+                quest.LateTick();
+            }
         }
 
         /// <summary>
@@ -313,25 +337,54 @@ namespace My.Quest
             //_questInfoMap.Add
         }
 
+        public void TickAutoAccept()
+        {
+            for(int i = _autoAcceptQuests.Count; i>=0; i--)
+            {
+                var quest = _autoAcceptQuests[i];
+                bool allPassed = true;
+                foreach (var cond in quest.AcceeptCond)
+                {
+                    if (!Ctx.CheckCommonCond(cond))
+                    {
+                        allPassed = false;
+                        break;
+                    }
+                }
+                if (allPassed)
+                {
+                    AcceptQuest(quest);
+                    _autoAcceptQuests.Remove(quest);
+                }
+            }
+        }
+
         public QuestInstance GetQuest(int questId)
         {
             _questInfoMap.TryGetValue(questId, out var result);
             return result;
         }
 
-        private QuestInstance CreateQuestInstanceFromCfg(QuestData cfg)
+        public void AcceptQuest(cfg.demo.QuestData cfg)
         {
-            return new QuestInstance(cfg, Ctx);
+            var questInst = new QuestInstance(cfg, Ctx);
+            _questInfoMap[cfg.QuestId] = questInst;
         }
+
 
         public bool CheckQuestFinish(int questId)
         {
-            return false;
+            return _finishQuestSet.Contains(questId);
         }
 
         public bool CheckQuestRunning(int questId)
         {
-            return false;
+            return _questInfoMap.ContainsKey(questId);
+        }
+
+        public void InitSystem(GameLogicManager ctx)
+        {
+            throw new NotImplementedException();
         }
     }
 

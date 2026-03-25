@@ -1,5 +1,6 @@
 
 
+using cfg.demo;
 using UnityEngine;
 
 namespace My.Map

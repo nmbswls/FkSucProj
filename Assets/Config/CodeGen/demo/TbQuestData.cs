@@ -29,7 +29,7 @@ public partial class TbQuestData
             demo.QuestData _v;
             { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.QuestData.DeserializeQuestData(_ele);  }
             _dataList.Add(_v);
-            _dataMap.Add(_v.Id, _v);
+            _dataMap.Add(_v.QuestId, _v);
         }
     }
 

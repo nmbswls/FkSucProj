@@ -1,38 +1,58 @@
 [
   {
-    "id": "100_01",
+    "step_id": "100_s1",
     "quest_id": 100,
+    "desc": "击杀刷新怪物",
     "is_root": true,
     "auto_next": true,
     "push_npc_id": "",
-    "objectives": [],
-    "outcomes": []
+    "objectives": [
+      "100_s1_Main"
+    ],
+    "outcomes": [
+      "100_s1_Main"
+    ]
   },
   {
-    "id": "100_02",
+    "step_id": "100_s2",
     "quest_id": 100,
+    "desc": "击杀刷新头目",
     "is_root": false,
     "auto_next": true,
     "push_npc_id": "",
-    "objectives": [],
-    "outcomes": []
+    "objectives": [
+      "100_s2_Main"
+    ],
+    "outcomes": [
+      "100_s2_Main"
+    ]
   },
   {
-    "id": "101_01",
+    "step_id": "101_01",
     "quest_id": 101,
+    "desc": "",
     "is_root": true,
     "auto_next": true,
     "push_npc_id": "",
-    "objectives": [],
-    "outcomes": []
+    "objectives": [
+      "101_01"
+    ],
+    "outcomes": [
+      "101_01"
+    ]
   },
   {
-    "id": "102_01",
+    "step_id": "102_01",
     "quest_id": 102,
+    "desc": "",
     "is_root": true,
     "auto_next": true,
     "push_npc_id": "",
-    "objectives": [],
-    "outcomes": []
+    "objectives": [
+      "102_01"
+    ],
+    "outcomes": [
+      "102_01"
+    ]
   }
 ]

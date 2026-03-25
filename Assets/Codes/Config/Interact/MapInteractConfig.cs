@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using cfg.demo;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static My.Config.LogicInteractOutput;

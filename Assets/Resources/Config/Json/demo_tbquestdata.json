@@ -1,6 +1,6 @@
 [
   {
-    "id": 100,
+    "quest_id": 100,
     "name": "初始任务",
     "desc": "初始任务",
     "init_step_id": "100_01",
@@ -19,7 +19,7 @@
     "start_npc_id": ""
   },
   {
-    "id": 101,
+    "quest_id": 101,
     "name": "初始任务2",
     "desc": "初始任务2",
     "init_step_id": "101_01",
@@ -48,7 +48,7 @@
     "start_npc_id": ""
   },
   {
-    "id": 102,
+    "quest_id": 102,
     "name": "初始任务3",
     "desc": "初始任务3",
     "init_step_id": "102_01",

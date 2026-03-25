@@ -1,15 +1,34 @@
 [
   {
-    "id": "obj_100_s1_01",
-    "format_desc": "obj_100_s1_01",
+    "obj_id": "100_s1_Main",
+    "format_desc": "击杀XX",
     "is_option": false,
     "is_hidden": false,
     "completion_tag": "",
-    "progress_type": 1,
-    "progress_target": 3,
-    "progress_param_int1": 0,
-    "progress_param_int2": 0,
-    "progress_param_str1": 0,
-    "progress_param_complex": ""
+    "obj_type": 1,
+    "obj_progress": 3,
+    "obj_p0": 0,
+    "obj_p1": 0,
+    "obj_p2": 0,
+    "obj_p3": 0,
+    "obj_p4": "initial_orc_01",
+    "obj_p5": "",
+    "obj_p_extra": ""
+  },
+  {
+    "obj_id": "100_s2_Main",
+    "format_desc": "击杀XX",
+    "is_option": false,
+    "is_hidden": false,
+    "completion_tag": "",
+    "obj_type": 1,
+    "obj_progress": 1,
+    "obj_p0": 0,
+    "obj_p1": 0,
+    "obj_p2": 0,
+    "obj_p3": 0,
+    "obj_p4": "initial_orc_02",
+    "obj_p5": "",
+    "obj_p_extra": ""
   }
 ]

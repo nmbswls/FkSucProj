@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using My.Player;
 using My.Saving;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace My
     /// <summary>
     /// ϵͳ
     /// </summary>
-    public class PlayerProgressionSystem
+    public class PlayerProgressionSystem : IPlayerSystem
     {
 
         protected GameLogicManager LogicManager { get; private set; }
@@ -25,13 +26,10 @@ namespace My
 
         //public LevelProgression LevelData { get; private set; }
 
-        public PlayerProgressionSystem(GameLogicManager logicManager)
+        public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
-            this.LogicManager = LogicManager;
-        }
+            this.LogicManager = ctx;
 
-        public void InitializeSystem(SaveData savingData = null)
-        {
             TalentManager = new();
             TalentManager.Initialize();
 
@@ -45,6 +43,17 @@ namespace My
             ProgressionRoot.OnStatsChanged += (src) => {
                 RefreshPlayerBigMapAttr();
             };
+        }
+
+
+        public void InitializeSystem(SaveData savingData = null)
+        {
+            
+        }
+
+        public void Tick(float dt)
+        {
+
         }
 
         private Dictionary<int, float> _lastKnownValues = new Dictionary<int, float>();

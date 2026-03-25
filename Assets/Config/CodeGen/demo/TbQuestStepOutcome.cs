@@ -29,7 +29,7 @@ public partial class TbQuestStepOutcome
             demo.QuestStepOutcome _v;
             { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.QuestStepOutcome.DeserializeQuestStepOutcome(_ele);  }
             _dataList.Add(_v);
-            _dataMap.Add(_v.Id, _v);
+            _dataMap.Add(_v.OutcomeId, _v);
         }
     }
 

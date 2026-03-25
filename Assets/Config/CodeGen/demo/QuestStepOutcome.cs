@@ -17,9 +17,12 @@ public sealed partial class QuestStepOutcome : Luban.BeanBase
 {
     public QuestStepOutcome(JSONNode _buf) 
     {
-        { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
+        { if(!_buf["outcome_id"].IsString) { throw new SerializationException(); }  OutcomeId = _buf["outcome_id"]; }
         { var __json0 = _buf["need_objective_ids"]; if(!__json0.IsArray) { throw new SerializationException(); } NeedObjectiveIds = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  NeedObjectiveIds.Add(__v0); }   }
+        { if(!_buf["is_final"].IsBoolean) { throw new SerializationException(); }  IsFinal = _buf["is_final"]; }
+        { if(!_buf["is_fail"].IsBoolean) { throw new SerializationException(); }  IsFail = _buf["is_fail"]; }
         { if(!_buf["next_step_id"].IsString) { throw new SerializationException(); }  NextStepId = _buf["next_step_id"]; }
+        { var __json0 = _buf["finish_reward"]; if(!__json0.IsArray) { throw new SerializationException(); } FinishReward = new System.Collections.Generic.Dictionary<string, int>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string _k0;  { if(!__e0[0].IsString) { throw new SerializationException(); }  _k0 = __e0[0]; } int _v0;  { if(!__e0[1].IsNumber) { throw new SerializationException(); }  _v0 = __e0[1]; }  FinishReward.Add(_k0, _v0); }   }
     }
 
     public static QuestStepOutcome DeserializeQuestStepOutcome(JSONNode _buf)
@@ -30,15 +33,27 @@ public sealed partial class QuestStepOutcome : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly string Id;
+    public readonly string OutcomeId;
     /// <summary>
     /// 所需目标
     /// </summary>
     public readonly System.Collections.Generic.List<string> NeedObjectiveIds;
     /// <summary>
+    /// 是否是最后一步
+    /// </summary>
+    public readonly bool IsFinal;
+    /// <summary>
+    /// 是否是失败
+    /// </summary>
+    public readonly bool IsFail;
+    /// <summary>
     /// 下一步
     /// </summary>
     public readonly string NextStepId;
+    /// <summary>
+    /// 完成奖励
+    /// </summary>
+    public readonly System.Collections.Generic.Dictionary<string, int> FinishReward;
    
     public const int __ID__ = -764709521;
     public override int GetTypeId() => __ID__;
@@ -50,9 +65,12 @@ public sealed partial class QuestStepOutcome : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
-        + "id:" + Id + ","
+        + "outcomeId:" + OutcomeId + ","
         + "needObjectiveIds:" + Luban.StringUtil.CollectionToString(NeedObjectiveIds) + ","
+        + "isFinal:" + IsFinal + ","
+        + "isFail:" + IsFail + ","
         + "nextStepId:" + NextStepId + ","
+        + "finishReward:" + Luban.StringUtil.CollectionToString(FinishReward) + ","
         + "}";
     }
 }

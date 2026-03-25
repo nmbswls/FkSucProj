@@ -1,22 +1,42 @@
 [
   {
-    "id": "100_01",
-    "need_objective_ids": [],
-    "next_step_id": "100_02"
+    "outcome_id": "100_s1_Main",
+    "need_objective_ids": [
+      "100_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "100_s2",
+    "finish_reward": []
   },
   {
-    "id": "100_02",
-    "need_objective_ids": [],
-    "next_step_id": ""
+    "outcome_id": "100_s2_Main",
+    "need_objective_ids": [
+      "100_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": []
   },
   {
-    "id": "101_01",
-    "need_objective_ids": [],
-    "next_step_id": ""
+    "outcome_id": "101_01",
+    "need_objective_ids": [
+      "101_01"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": []
   },
   {
-    "id": "102_01",
-    "need_objective_ids": [],
-    "next_step_id": ""
+    "outcome_id": "102_01",
+    "need_objective_ids": [
+      "102_01"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": []
   }
 ]

@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using cfg.demo;
 using My.Player.Bag;
 
 namespace My

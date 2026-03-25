@@ -17,8 +17,9 @@ public sealed partial class QuestStepData : Luban.BeanBase
 {
     public QuestStepData(JSONNode _buf) 
     {
-        { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
+        { if(!_buf["step_id"].IsString) { throw new SerializationException(); }  StepId = _buf["step_id"]; }
         { if(!_buf["quest_id"].IsNumber) { throw new SerializationException(); }  QuestId = _buf["quest_id"]; }
+        { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { if(!_buf["is_root"].IsBoolean) { throw new SerializationException(); }  IsRoot = _buf["is_root"]; }
         { if(!_buf["auto_next"].IsBoolean) { throw new SerializationException(); }  AutoNext = _buf["auto_next"]; }
         { if(!_buf["push_npc_id"].IsString) { throw new SerializationException(); }  PushNpcId = _buf["push_npc_id"]; }
@@ -34,11 +35,15 @@ public sealed partial class QuestStepData : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly string Id;
+    public readonly string StepId;
     /// <summary>
     /// 所属任务
     /// </summary>
     public readonly int QuestId;
+    /// <summary>
+    /// 描述
+    /// </summary>
+    public readonly string Desc;
     /// <summary>
     /// 是否是根
     /// </summary>
@@ -70,8 +75,9 @@ public sealed partial class QuestStepData : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
-        + "id:" + Id + ","
+        + "stepId:" + StepId + ","
         + "questId:" + QuestId + ","
+        + "desc:" + Desc + ","
         + "isRoot:" + IsRoot + ","
         + "autoNext:" + AutoNext + ","
         + "pushNpcId:" + PushNpcId + ","
