@@ -1,0 +1,38 @@
+[
+  {
+    "id": "100_01",
+    "quest_id": 100,
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [],
+    "outcomes": []
+  },
+  {
+    "id": "100_02",
+    "quest_id": 100,
+    "is_root": false,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [],
+    "outcomes": []
+  },
+  {
+    "id": "101_01",
+    "quest_id": 101,
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [],
+    "outcomes": []
+  },
+  {
+    "id": "102_01",
+    "quest_id": 102,
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [],
+    "outcomes": []
+  }
+]

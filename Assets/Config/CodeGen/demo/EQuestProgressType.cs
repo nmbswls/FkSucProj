@@ -17,6 +17,9 @@ namespace cfg.demo
         /// P0: 
         /// </summary>
         KillMonster = 1,
+        /// <summary>
+        /// P0: 
+        /// </summary>
         OwnItem = 2,
     }
 

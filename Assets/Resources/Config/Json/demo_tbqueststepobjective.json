@@ -1,0 +1,15 @@
+[
+  {
+    "id": "obj_100_s1_01",
+    "format_desc": "obj_100_s1_01",
+    "is_option": false,
+    "is_hidden": false,
+    "completion_tag": "",
+    "progress_type": 1,
+    "progress_target": 3,
+    "progress_param_int1": 0,
+    "progress_param_int2": 0,
+    "progress_param_str1": 0,
+    "progress_param_complex": ""
+  }
+]

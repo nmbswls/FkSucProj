@@ -22,6 +22,10 @@ public partial class Tables
     public demo.TbBornPoint TbBornPoint {get; }
     public demo.TbUnitNpc TbUnitNpc {get; }
     public demo.TbUnitNpcAttr TbUnitNpcAttr {get; }
+    public demo.TbQuestData TbQuestData {get; }
+    public demo.TbQuestStepData TbQuestStepData {get; }
+    public demo.TbQuestStepOutcome TbQuestStepOutcome {get; }
+    public demo.TbQuestStepObjective TbQuestStepObjective {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -33,6 +37,10 @@ public partial class Tables
         TbBornPoint = new demo.TbBornPoint(loader("demo_tbbornpoint"));
         TbUnitNpc = new demo.TbUnitNpc(loader("demo_tbunitnpc"));
         TbUnitNpcAttr = new demo.TbUnitNpcAttr(loader("demo_tbunitnpcattr"));
+        TbQuestData = new demo.TbQuestData(loader("demo_tbquestdata"));
+        TbQuestStepData = new demo.TbQuestStepData(loader("demo_tbqueststepdata"));
+        TbQuestStepOutcome = new demo.TbQuestStepOutcome(loader("demo_tbqueststepoutcome"));
+        TbQuestStepObjective = new demo.TbQuestStepObjective(loader("demo_tbqueststepobjective"));
         ResolveRef();
     }
     
@@ -46,6 +54,10 @@ public partial class Tables
         TbBornPoint.ResolveRef(this);
         TbUnitNpc.ResolveRef(this);
         TbUnitNpcAttr.ResolveRef(this);
+        TbQuestData.ResolveRef(this);
+        TbQuestStepData.ResolveRef(this);
+        TbQuestStepOutcome.ResolveRef(this);
+        TbQuestStepObjective.ResolveRef(this);
     }
 }
 

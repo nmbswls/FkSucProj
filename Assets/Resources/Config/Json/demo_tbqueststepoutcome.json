@@ -1,0 +1,22 @@
+[
+  {
+    "id": "100_01",
+    "need_objective_ids": [],
+    "next_step_id": "100_02"
+  },
+  {
+    "id": "100_02",
+    "need_objective_ids": [],
+    "next_step_id": ""
+  },
+  {
+    "id": "101_01",
+    "need_objective_ids": [],
+    "next_step_id": ""
+  },
+  {
+    "id": "102_01",
+    "need_objective_ids": [],
+    "next_step_id": ""
+  }
+]
