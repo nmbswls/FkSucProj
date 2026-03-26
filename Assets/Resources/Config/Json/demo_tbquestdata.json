@@ -3,7 +3,7 @@
     "quest_id": 100,
     "name": "初始任务",
     "desc": "初始任务",
-    "init_step_id": "100_01",
+    "init_step_id": "100_s1",
     "finish_reward": [
       [
         "gold",

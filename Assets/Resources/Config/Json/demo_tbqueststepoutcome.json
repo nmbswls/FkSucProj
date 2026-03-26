@@ -20,21 +20,21 @@
     "finish_reward": []
   },
   {
-    "outcome_id": "101_01",
+    "outcome_id": "101_s1_Main",
     "need_objective_ids": [
-      "101_01"
+      "101_s1_Main"
     ],
-    "is_final": false,
+    "is_final": true,
     "is_fail": false,
     "next_step_id": "",
     "finish_reward": []
   },
   {
-    "outcome_id": "102_01",
+    "outcome_id": "102_s1_Main",
     "need_objective_ids": [
-      "102_01"
+      "102_s1_Main"
     ],
-    "is_final": false,
+    "is_final": true,
     "is_fail": false,
     "next_step_id": "",
     "finish_reward": []

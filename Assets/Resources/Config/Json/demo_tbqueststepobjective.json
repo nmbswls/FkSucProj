@@ -30,5 +30,37 @@
     "obj_p4": "initial_orc_02",
     "obj_p5": "",
     "obj_p_extra": ""
+  },
+  {
+    "obj_id": "101_s1_Main",
+    "format_desc": "",
+    "is_option": false,
+    "is_hidden": false,
+    "completion_tag": "",
+    "obj_type": 0,
+    "obj_progress": 0,
+    "obj_p0": 0,
+    "obj_p1": 0,
+    "obj_p2": 0,
+    "obj_p3": 0,
+    "obj_p4": "",
+    "obj_p5": "",
+    "obj_p_extra": ""
+  },
+  {
+    "obj_id": "102_s1_Main",
+    "format_desc": "",
+    "is_option": false,
+    "is_hidden": false,
+    "completion_tag": "",
+    "obj_type": 0,
+    "obj_progress": 0,
+    "obj_p0": 0,
+    "obj_p1": 0,
+    "obj_p2": 0,
+    "obj_p3": 0,
+    "obj_p4": "",
+    "obj_p5": "",
+    "obj_p_extra": ""
   }
 ]

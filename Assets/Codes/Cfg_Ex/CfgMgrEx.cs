@@ -16,7 +16,7 @@ namespace cfg.demo
 
     public partial class QuestData
     {
-        protected Dictionary<string, QuestStepData> _innerSteps { get; set; }
+        protected Dictionary<string, QuestStepData> _innerSteps { get; set; } = new();
         public void AddQuestStep(QuestStepData stepData)
         {
             _innerSteps[stepData.StepId] = stepData;

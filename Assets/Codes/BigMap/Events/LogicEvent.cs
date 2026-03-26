@@ -19,7 +19,7 @@ namespace Map.Logic.Events
         OnHit,
         Attract,
         VariableChange,
-        OnDie,
+        UnitDie,
 
         CostPendingAlert,
         ObjWithOwnerDestroyed,

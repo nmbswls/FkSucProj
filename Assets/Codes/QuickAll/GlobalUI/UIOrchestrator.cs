@@ -208,6 +208,15 @@ namespace My.UI
                 defaultLayer = UILayer.Scene,
                 pooled = true,
             });
+
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "QuestFloatingPanel",
+                resourcePath = "UI/Prefabs/QuestFloatingPanel",
+                defaultLayer = UILayer.HUD,
+                pooled = false,
+            });
             
         }
 
@@ -445,6 +454,8 @@ namespace My.UI
             UIManager.Instance.ShowPanel("SmallIconLayer");
             UIManager.Instance.ShowPanel("InteractMenu");
             UIManager.Instance.ShowPanel("AmbientChatPanel");
+            UIManager.Instance.ShowPanel("QuestFloatingPanel");
+            
 
             EnsureCommonUI();
             
@@ -564,7 +575,7 @@ namespace My.UI
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnHit, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.AddBuff, adapter));
-            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, adapter));
+            subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.UnitDie, adapter));
 
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.CostPendingAlert, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.PlayerFaQingStatusChange, adapter));

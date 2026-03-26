@@ -111,17 +111,14 @@ namespace My
 
         public void OnGameLogicInit(SaveData saveData)
         {
-            playerDataManager = new(this);
-            playerDataManager.InitPlayerData(saveData);
-
-
-
-
             LogicEventBus = new();
             AreaManager = new(this, new GameLogicAreaManager.Settings()
             {
 
             });
+
+            playerDataManager = new(this);
+            playerDataManager.InitPlayerData(saveData);
 
             UnitAttrSystemUnits.InitGameAttrs();
 

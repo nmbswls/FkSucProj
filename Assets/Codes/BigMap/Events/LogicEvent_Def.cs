@@ -24,13 +24,22 @@ namespace Map.Logic.Events
         public string Param6;
     }
 
-    public partial struct MLEUnitDeadEvent : IMapLogicEvent
+    public partial struct MLEPlayerKillEvent : IMapLogicEvent
     {
         public MapLogicEventContext Ctx { get; set; }
-        public EMapLogicEventType Type { get { return EMapLogicEventType.OnDie; } }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.UnitDie; } }
+
+    }
+
+
+    public partial struct MLEUnitDie : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.UnitDie; } }
 
         public long EntityId;
         public Vector2 Pos;
+        public ResourceDeltaIntent? LastIntent;
     }
 
     public partial struct MLEObjWithOwnerDestroyedEvent : IMapLogicEvent

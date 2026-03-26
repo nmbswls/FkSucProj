@@ -37,7 +37,11 @@ namespace My.Map.Scene
         public void Start()
         {
             GridIndex = new(2);
+        }
 
+
+        public void OnGameInit()
+        {
             MainGameManager.Instance.gameLogicManager.globalDropCollection.EvOnDropAdd += OnDropCreate;
             MainGameManager.Instance.gameLogicManager.globalDropCollection.EvOnDropRemove += OnDropRemoved;
         }

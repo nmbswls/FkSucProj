@@ -16,11 +16,13 @@ namespace cfg.demo
         /// <summary>
         /// P0: 
         /// </summary>
-        KillMonster = 1,
+        None = 0,
         /// <summary>
         /// P0: 
         /// </summary>
+        KillMonster = 1,
         OwnItem = 2,
+        PlayerKilled = 3,
     }
 
 } 

@@ -28,31 +28,31 @@
     ]
   },
   {
-    "step_id": "101_01",
+    "step_id": "101_s1",
     "quest_id": 101,
     "desc": "",
     "is_root": true,
     "auto_next": true,
     "push_npc_id": "",
     "objectives": [
-      "101_01"
+      "101_s1_Main"
     ],
     "outcomes": [
-      "101_01"
+      "101_s1_Main"
     ]
   },
   {
-    "step_id": "102_01",
+    "step_id": "102_s1",
     "quest_id": 102,
     "desc": "",
     "is_root": true,
     "auto_next": true,
     "push_npc_id": "",
     "objectives": [
-      "102_01"
+      "102_s1_Main"
     ],
     "outcomes": [
-      "102_01"
+      "102_s1_Main"
     ]
   }
 ]

@@ -53,7 +53,7 @@ namespace My.Map
                 subs.Add(sub);
             }
             {
-                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, innerListener);
+                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.UnitDie, innerListener);
                 subs.Add(sub);
             }
 

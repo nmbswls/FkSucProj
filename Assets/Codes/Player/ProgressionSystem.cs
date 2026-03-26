@@ -5,7 +5,7 @@ using My.Saving;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
-namespace My
+namespace My.Player
 {
 
 
@@ -46,11 +46,6 @@ namespace My
         }
 
 
-        public void InitializeSystem(SaveData savingData = null)
-        {
-            
-        }
-
         public void Tick(float dt)
         {
 
@@ -89,6 +84,17 @@ namespace My
         {
             return ProgressionRoot.GetValue(id);
         }
+
+
+        #region ¼àÌý
+
+        public void OnPlayerKillUnit()
+        {
+            
+        }
+
+        #endregion
+
 
     }
 

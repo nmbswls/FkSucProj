@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Config;
 using Map.Logic.Events;
+using My.Map.Logic;
 using My.Player.Bag;
 using My.Quest;
 using My.Saving;
@@ -74,6 +75,22 @@ namespace My.Player
         public string[] HumanSkillSlots = new string[5];
         public string[] FaQingSkillSlots = new string[5];
 
+        public class InnerListener : IMapLogicEventHandler
+        {
+            private PlayerSystemManager systemManager;
+            public InnerListener(PlayerSystemManager systemManager)
+            {
+                this.systemManager = systemManager;
+            }
+
+            public void Handle(in IMapLogicEvent evt)
+            {
+                systemManager.OnLogicEvent(evt);
+            }
+        }
+
+        private InnerListener innerListener;
+
         public PlayerSystemManager(GameLogicManager logicManager)
         {
             this.logicManager = logicManager;
@@ -96,6 +113,11 @@ namespace My.Player
             
 
             FaQingSkillSlots[0] = "player_ziwei";
+
+
+            innerListener = new(this);
+            logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, innerListener);
+            logicManager.LogicEventBus.Subscribe(EMapLogicEventType.UnitDie, innerListener);
         }
 
         public void InitPlayerData(SaveData savingData)
@@ -235,6 +257,45 @@ namespace My.Player
         public string GetPlayerBornPoint()
         {
             return SavedBornPoint;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="evt"></param>
+        public void OnLogicEvent(IMapLogicEvent evt)
+        {
+            //QuestSystem.OnLogicEvent(evt);
+
+            if(evt is MLEUnitDie deadEvent)
+            {
+                if(deadEvent.LastIntent == null)
+                {
+                    return;
+                }
+
+                if(deadEvent.LastIntent.srcEntityId != logicManager.playerLogicEntity.Id)
+                {
+                    return;
+                }
+
+                logicManager.AreaManager.Repo.Records.TryGetValue(deadEvent.EntityId, out var logicRecord);
+                if(logicRecord == null)
+                {
+                    return;
+                }
+
+                string cfgId = logicRecord.CfgId;
+                if(logicRecord.EntityType == Map.EEntityType.Npc)
+                {
+                    var e = new PlayerKillUnitEvent();
+                    e.UnitType = Map.EEntityType.Npc;
+                    e.KilledCfgId = cfgId;
+
+                    PlayerEventBus.Publish(e);
+                }
+                
+            }
         }
     }
 }

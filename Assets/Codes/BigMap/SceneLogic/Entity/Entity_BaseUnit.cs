@@ -221,7 +221,7 @@ namespace My.Map
 
             EventOnDie?.Invoke(this.Id);
 
-            LogicManager.LogicEventBus.Publish(new MLEUnitDeadEvent()
+            LogicManager.LogicEventBus.Publish(new MLEUnitDie()
             {
                 Ctx = new()
                 {
@@ -231,6 +231,7 @@ namespace My.Map
                 },
                 EntityId = this.Id,
                 Pos = Pos,
+                LastIntent = lastIntent
             });
 
             {

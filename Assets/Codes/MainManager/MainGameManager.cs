@@ -141,14 +141,14 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         NavProvider = new();
 
         VcamInpulseSource = GetComponent<CinemachineImpulseSource>();
+
+        gameLogicManager = new();
     }
 
     public async Task InitStartGame(string startParams, Action? onComplete)
     {
-
         CfgMgr.LoadGameConfigs();
 
-        gameLogicManager = new();
         gameLogicManager.viewer = this;
         gameLogicManager.visionSenser = VisionSenser2D;
         gameLogicManager.navProvider = NavProvider;
@@ -166,6 +166,10 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             Debug.Log("no saving found");
         }
         gameLogicManager.OnGameLogicInit(loadedData);
+
+
+        sceneDropManager.OnGameInit();
+
 
         gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>
         {

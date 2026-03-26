@@ -145,7 +145,7 @@ namespace My.Map.Logic
                 subs.Add(sub);
             }
             {
-                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.OnDie, innerListener);
+                var sub = logicManager.LogicEventBus.Subscribe(EMapLogicEventType.UnitDie, innerListener);
                 subs.Add(sub);
             }
 
@@ -281,9 +281,9 @@ namespace My.Map.Logic
 
             switch(ev.Type)
             {
-                case EMapLogicEventType.OnDie:
+                case EMapLogicEventType.UnitDie:
                     {
-                        var realEv = (MLEUnitDeadEvent)ev;
+                        var realEv = (MLEUnitDie)ev;
                         AlertOnEntityDie(realEv.EntityId);
                     }
                     break;
