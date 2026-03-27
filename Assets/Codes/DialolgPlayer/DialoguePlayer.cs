@@ -7,6 +7,7 @@ using My.Map;
 using My.Map.Logic;
 using My.UI;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 
 [Serializable]
@@ -25,6 +26,9 @@ public class DialogueRuntime
     public Action<string> JumpTo;
 
     public long? SrcEntityId;
+
+    public List<long> ControlledEntityList = new();
+
 }
 
 public partial class DialoguePlayer : MonoBehaviour
@@ -83,6 +87,8 @@ public partial class DialoguePlayer : MonoBehaviour
     {
         if (!isPlaying) return;
 
+        CheckPendingCommandEnd();
+        
         // 每句对白/等待点（waitingForContinue）或 Step 末尾（waitingForNextStep）时才响应输入/自动
         if (!waitingForContinue && !waitingForNextStep) return;
 
@@ -107,6 +113,82 @@ public partial class DialoguePlayer : MonoBehaviour
         //{
         //    DoContinue();
         //}
+
+        
+    }
+
+
+    private void CheckPendingCommandEnd()
+    {
+        if (dataRef == null)
+        {
+            return;
+        }
+        if(!commandRunning)
+        {
+            return;
+        }
+
+        if (stepIndex < 0 || stepIndex >= dataRef.Steps.Count)
+        {
+            return;
+        }
+        var step = dataRef.Steps[stepIndex];
+        var commands = step.Commands ?? new List<DialogCommandData>();
+        
+        if(currentCmdIndex >= commands.Count)
+        {
+            return;
+        }
+        var cd = commands[currentCmdIndex];
+        bool passed = false;
+        switch(cd)
+        {
+            case DialogCommandData4MoveEntity cmd4MoveEntity:
+                {
+                    var dialogActor = GetDialogueActorByStaticName(cmd4MoveEntity.StaticName);
+                    if(dialogActor == null)
+                    {
+                        passed = true;
+                        break;
+                    }
+
+                    if(dialogActor.DialogMoveFinished)
+                    {
+                        passed = true;
+                    }
+                }
+                break;
+        }
+
+        if(passed)
+        {
+            commandRunning = false;
+            waitingForContinue = true;
+            ui.ShowNextIndicator(true);
+            ui.autoTimer = 0f;
+
+            // 直接下一步
+            DoContinue();
+        }
+    }
+
+    private IDialogueActor GetDialogueActorByStaticName(string staticName)
+    {
+        var staticId = MainGameManager.Instance.gameLogicManager.AreaManager.GetStaticIdByUniqName(staticName);
+        MainGameManager.Instance.gameLogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var refreshInfo);
+        if (refreshInfo == null)
+        {
+            return null;
+        }
+
+        var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(refreshInfo.EntityInstId, true);
+        if (entity is not IDialogueActor dialogActor)
+        {
+            return null;
+        }
+
+        return dialogActor;
     }
 
     private void DoContinue()
@@ -139,6 +221,8 @@ public partial class DialoguePlayer : MonoBehaviour
             }
         }
 
+        OnDialogEnd();
+
         isPlaying = false;
         waitingForContinue = false;
         waitingForNextStep = false;
@@ -148,7 +232,6 @@ public partial class DialoguePlayer : MonoBehaviour
 
         this.OnPlayEnd?.Invoke();
         this.OnPlayEnd = null;
-
         LogicTime.ClearPauseSource("Dialog");
     }
 
@@ -187,6 +270,65 @@ public partial class DialoguePlayer : MonoBehaviour
         StartStepFromData();
 
         this.OnPlayEnd = onPlayEnd;
+
+        OnDialogStart();
+    }
+
+    /// <summary>
+    /// 触发回调
+    /// </summary>
+    private void OnDialogStart()
+    {
+        List<int> staticIds = new();
+        foreach(var actorName in dataRef.ControlledEntityNames)
+        {
+            var staticId = MainGameManager.Instance.gameLogicManager.AreaManager.GetStaticIdByUniqName(actorName);
+            MainGameManager.Instance.gameLogicManager.AreaManager.DialogForceStaticIds.Add(staticId);
+
+            staticIds.Add(staticId);
+        }
+
+        MainGameManager.Instance.gameLogicManager.AreaManager.ForceCheckRefreshInfos();
+
+        foreach (var staticId in staticIds)
+        {
+            MainGameManager.Instance.gameLogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var refreshRuntime);
+            if(refreshRuntime == null)
+            {
+                Debug.LogError($"Ensure dialog actor fail. {staticId}");
+                continue;
+            }
+
+            var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(refreshRuntime.EntityInstId, true);
+            if (entity is not IDialogueActor dialogActor)
+            {
+                Debug.LogError($"Ensure dialog actor not valid. {entity.Id} {entity.Type}");
+                continue;
+            }
+
+            dialogActor.OnDialogStart();
+
+            runtimeRef.ControlledEntityList.Add(entity.Id);
+        }
+    }
+
+    private void OnDialogEnd()
+    {
+        if(runtimeRef != null)
+        {
+            foreach(var eId in runtimeRef.ControlledEntityList)
+            {
+                var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(eId, true);
+
+                if(entity is not IDialogueActor dialogActor)
+                {
+                    Debug.LogError("??");
+                    continue;
+                }
+
+                dialogActor.OnDialogEnd();
+            }
+        }
     }
 
     public void JumpToStep(string stepId)
@@ -378,10 +520,41 @@ public partial class DialoguePlayer : MonoBehaviour
             //        break;
             //    }
 
+            case DialogCommandData4MoveEntity cd4MoveEntity:
+                {
+                    string staticName = cd4MoveEntity.StaticName;
+                    var staticId = MainGameManager.Instance.gameLogicManager.AreaManager.GetStaticIdByUniqName(staticName);
+                    MainGameManager.Instance.gameLogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var refreshInfo);
+                    if(refreshInfo == null)
+                    {
+                        break;
+                    }
+
+                    var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(refreshInfo.EntityInstId, true);
+                    if(entity is not IDialogueActor dialogActor)
+                    {
+                        break;
+                    }
+
+                    Vector2? forcedStartPos = null;
+                    if(cd4MoveEntity.ForceStartPos)
+                    {
+                        forcedStartPos = cd4MoveEntity.StartPos;
+                    }
+                    dialogActor.DoDialogMove(cd4MoveEntity.MovePos, cd4MoveEntity.MoveDuration, forcedStartPos);
+                }
+                break;
+
             case DialogCommandData4SimpleFunc cd4Func:
                 {
                     switch(cd4Func.SimpleFuncType)
                     {
+                        case EDialogSimpleFuncType.SetGlobalSwitch:
+                            {
+                                MainGameManager.Instance.gameLogicManager.playerDataManager.VariableDict[cd4Func.Param5] = true;
+                            }
+                            break;
+
                         case EDialogSimpleFuncType.SrcLocalSwitch:
                             {
                                 var srcId = runtimeRef.SrcEntityId;

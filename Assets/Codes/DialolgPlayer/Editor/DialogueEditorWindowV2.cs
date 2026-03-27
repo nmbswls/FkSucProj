@@ -1262,7 +1262,9 @@ namespace My.Dialog
             // 2. 将 ScriptableObject 转换为 运行时 DTO 对象
             //    这一步是为了剥离编辑器专用的数据（如 Rect 坐标），并将引用转为字符串
             DialogueData runtimeData = new DialogueData();
-            runtimeData.DialogId = source.name;
+            runtimeData.DialogId = source.DialogId;
+            runtimeData.LockTime = source.LockTime;
+            runtimeData.ControlledEntityNames.AddRange(source.ControlledEntityNames);
 
             foreach (var srcStep in source.Steps)
             {
@@ -1316,6 +1318,28 @@ namespace My.Dialog
                                 runCommand = runCommand2;
                             }
                             break;
+                        case EditorActorMoveCommand command4ActorMove:
+                            {
+                                var runCommand2 = new DialogCommandData4MoveEntity();
+                                runCommand2.StaticName = command4ActorMove.StaticName;
+                                runCommand2.MovePos = command4ActorMove.MovePos;
+                                runCommand2.ForceStartPos = command4ActorMove.ForceStartPos;
+                                runCommand2.StartPos = command4ActorMove.StartPos;
+                                runCommand2.MoveDuration = command4ActorMove.MoveDuration;
+
+                                runCommand = runCommand2;
+                            }
+                            break;
+                        case EditorActorAnimCommand command4ActorAnim:
+                            {
+                                var runCommand2 = new DialogCommandData4ActorAnim();
+                                runCommand2.AnimName = command4ActorAnim.AnimName;
+
+                                runCommand = runCommand2;
+                            }
+                            break;
+                            
+
                         case EditorDialogueCommand4JumpTo jumpToCommand:
                             {
                                 var runJumpToCommand = new DialogCommandData4JumpTo();

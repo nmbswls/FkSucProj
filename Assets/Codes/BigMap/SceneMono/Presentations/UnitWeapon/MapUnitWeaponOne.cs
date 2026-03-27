@@ -16,6 +16,12 @@ namespace My.Map.Scene
         public long HitId = 0;
         private float _durationTimer = 0;
 
+        public ParticleSystem slashEffect;
+        public void PlaySlash(int idx) 
+        { 
+            slashEffect.Play(); 
+        }
+
         public void OnTriggerEnter2D(Collider2D other)
         {
             var scenePresenter = other.GetComponentInParent<IScenePresentation>();
@@ -74,7 +80,7 @@ namespace My.Map.Scene
             bool isFacingUp = aimDir.y > 0.1f;
             // 2. 处理位移补偿 (关键!)
             // 假设原始 Pivot 在 (0, 0), 向上时移到 (0, 0.5)
-            Vector3 targetPos = isFacingUp ? new Vector3(0, 0.2f, 0) : Vector3.zero;
+            Vector3 targetPos = isFacingUp ? new Vector3(0, 0.1f, 0) : Vector3.zero;
             this.transform.localPosition = Vector3.Lerp(this.transform.localPosition, targetPos, Time.deltaTime * 10f);
         }
 

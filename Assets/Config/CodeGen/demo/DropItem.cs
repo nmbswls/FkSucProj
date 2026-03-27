@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class DropItem : Luban.BeanBase
 {
     public DropItem(JSONNode _buf) 
@@ -33,27 +34,27 @@ public sealed partial class DropItem : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly int Id;
+    public int Id;
     /// <summary>
     /// 名称
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// 所属掉落组
     /// </summary>
-    public readonly int GroupId;
+    public int GroupId;
     /// <summary>
     /// 组内权重
     /// </summary>
-    public readonly int WeightInGroup;
+    public int WeightInGroup;
     /// <summary>
     /// 道具列表
     /// </summary>
-    public readonly System.Collections.Generic.List<string> ItemIdList;
+    public System.Collections.Generic.List<string> ItemIdList;
     /// <summary>
     /// 道具数量波动
     /// </summary>
-    public readonly System.Collections.Generic.List<int> ItemCountRangeList;
+    public System.Collections.Generic.List<int> ItemCountRangeList;
    
     public const int __ID__ = 332813933;
     public override int GetTypeId() => __ID__;

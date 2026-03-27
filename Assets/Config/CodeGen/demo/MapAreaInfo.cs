@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class MapAreaInfo : Luban.BeanBase
 {
     public MapAreaInfo(JSONNode _buf) 
@@ -23,6 +24,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
         { if(!_buf["is_home"].IsBoolean) { throw new SerializationException(); }  IsHome = _buf["is_home"]; }
         { if(!_buf["always_alert"].IsBoolean) { throw new SerializationException(); }  AlwaysAlert = _buf["always_alert"]; }
+        { if(!_buf["default_disguise"].IsBoolean) { throw new SerializationException(); }  DefaultDisguise = _buf["default_disguise"]; }
     }
 
     public static MapAreaInfo DeserializeMapAreaInfo(JSONNode _buf)
@@ -33,27 +35,31 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly string Id;
+    public string Id;
     /// <summary>
     /// 名称
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// 描述
     /// </summary>
-    public readonly string Desc;
+    public string Desc;
     /// <summary>
     /// 场景名
     /// </summary>
-    public readonly string SceneName;
+    public string SceneName;
     /// <summary>
     /// 警戒标记
     /// </summary>
-    public readonly bool IsHome;
+    public bool IsHome;
     /// <summary>
     /// 警戒标记
     /// </summary>
-    public readonly bool AlwaysAlert;
+    public bool AlwaysAlert;
+    /// <summary>
+    /// 默认伪装
+    /// </summary>
+    public bool DefaultDisguise;
    
     public const int __ID__ = 1607084204;
     public override int GetTypeId() => __ID__;
@@ -71,6 +77,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         + "sceneName:" + SceneName + ","
         + "isHome:" + IsHome + ","
         + "alwaysAlert:" + AlwaysAlert + ","
+        + "defaultDisguise:" + DefaultDisguise + ","
         + "}";
     }
 }

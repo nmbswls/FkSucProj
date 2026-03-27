@@ -297,6 +297,32 @@ public class ConsoleGM : MonoBehaviour
                 MainGameManager.Instance.gameLogicManager.WantedManager.AddWantedVal(50000);
             });
 
+        Register("add_quest_value", "¿ªshop",
+            new[] { new CmdParam("quest_id", "int£¬Öµ"),
+            new CmdParam("amount", "int£¬Öµ")},
+            args =>
+            {
+                var questId = int.Parse(args[0]);
+                var amount = int.Parse(args[1]);
+
+                var quest = MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.GetQuest(questId);
+                if(quest == null)
+                {
+                    return;
+                }
+                if(quest.ActiveStep == null)
+                {
+                    return;
+                }
+
+                foreach(var obj in quest.ActiveStep.ObjectiveRuntimes)
+                {
+                    obj.ProgressVal += amount;
+                }
+
+                MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.RaiseQuestObjUpdateEvent(quest.cacheCfg.QuestId);
+            });
+
     }
 
     void OnDestroy()

@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class FixedFacility : Luban.BeanBase
 {
     public FixedFacility(JSONNode _buf) 
@@ -34,25 +35,25 @@ public sealed partial class FixedFacility : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly int Id;
+    public int Id;
     /// <summary>
     /// 名称
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// 描述
     /// </summary>
-    public readonly string Desc;
-    public readonly int PosX;
-    public readonly int PosY;
+    public string Desc;
+    public int PosX;
+    public int PosY;
     /// <summary>
     /// 解锁条件
     /// </summary>
-    public readonly System.Collections.Generic.List<demo.CommonCheckCond> UnlockConds;
+    public System.Collections.Generic.List<demo.CommonCheckCond> UnlockConds;
     /// <summary>
     /// 建造物质
     /// </summary>
-    public readonly System.Collections.Generic.Dictionary<string, int> BuildItems;
+    public System.Collections.Generic.Dictionary<string, int> BuildItems;
    
     public const int __ID__ = -882121396;
     public override int GetTypeId() => __ID__;

@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class DropBundle : Luban.BeanBase
 {
     public DropBundle(JSONNode _buf) 
@@ -31,19 +32,19 @@ public sealed partial class DropBundle : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly int Id;
+    public int Id;
     /// <summary>
     /// 名称
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// 掉落组列表
     /// </summary>
-    public readonly System.Collections.Generic.List<int> DropGroupIds;
+    public System.Collections.Generic.List<int> DropGroupIds;
     /// <summary>
     /// 掉落组权重<br/>超过10000的部分必掉<br/>低于10000的部分进行随机
     /// </summary>
-    public readonly System.Collections.Generic.List<int> DropGroupWeights;
+    public System.Collections.Generic.List<int> DropGroupWeights;
    
     public const int __ID__ = 1807392092;
     public override int GetTypeId() => __ID__;

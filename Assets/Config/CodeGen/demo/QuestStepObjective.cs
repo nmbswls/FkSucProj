@@ -13,11 +13,13 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class QuestStepObjective : Luban.BeanBase
 {
     public QuestStepObjective(JSONNode _buf) 
     {
         { if(!_buf["obj_id"].IsString) { throw new SerializationException(); }  ObjId = _buf["obj_id"]; }
+        { if(!_buf["custom_desc"].IsBoolean) { throw new SerializationException(); }  CustomDesc = _buf["custom_desc"]; }
         { if(!_buf["format_desc"].IsString) { throw new SerializationException(); }  FormatDesc = _buf["format_desc"]; }
         { if(!_buf["is_option"].IsBoolean) { throw new SerializationException(); }  IsOption = _buf["is_option"]; }
         { if(!_buf["is_hidden"].IsBoolean) { throw new SerializationException(); }  IsHidden = _buf["is_hidden"]; }
@@ -41,59 +43,63 @@ public sealed partial class QuestStepObjective : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly string ObjId;
+    public string ObjId;
+    /// <summary>
+    /// 自定义desc
+    /// </summary>
+    public bool CustomDesc;
     /// <summary>
     /// 格式化描述
     /// </summary>
-    public readonly string FormatDesc;
+    public string FormatDesc;
     /// <summary>
     /// 是否隐藏
     /// </summary>
-    public readonly bool IsOption;
+    public bool IsOption;
     /// <summary>
     /// 是否隐藏
     /// </summary>
-    public readonly bool IsHidden;
+    public bool IsHidden;
     /// <summary>
     /// 完成标记
     /// </summary>
-    public readonly string CompletionTag;
+    public string CompletionTag;
     /// <summary>
     /// 目标类型
     /// </summary>
-    public readonly demo.EQuestObjectiveType ObjType;
+    public demo.EQuestObjectiveType ObjType;
     /// <summary>
     /// 进度要求
     /// </summary>
-    public readonly long ObjProgress;
+    public long ObjProgress;
     /// <summary>
     /// p0<br/>int
     /// </summary>
-    public readonly int ObjP0;
+    public int ObjP0;
     /// <summary>
     /// p1<br/>int
     /// </summary>
-    public readonly int ObjP1;
+    public int ObjP1;
     /// <summary>
     /// p2<br/>long
     /// </summary>
-    public readonly long ObjP2;
+    public long ObjP2;
     /// <summary>
     /// p3<br/>long
     /// </summary>
-    public readonly long ObjP3;
+    public long ObjP3;
     /// <summary>
     /// p4<br/>long
     /// </summary>
-    public readonly string ObjP4;
+    public string ObjP4;
     /// <summary>
     /// p5<br/>long
     /// </summary>
-    public readonly string ObjP5;
+    public string ObjP5;
     /// <summary>
     /// 复杂进度参数
     /// </summary>
-    public readonly string ObjPExtra;
+    public string ObjPExtra;
    
     public const int __ID__ = 561189910;
     public override int GetTypeId() => __ID__;
@@ -106,6 +112,7 @@ public sealed partial class QuestStepObjective : Luban.BeanBase
     {
         return "{ "
         + "objId:" + ObjId + ","
+        + "customDesc:" + CustomDesc + ","
         + "formatDesc:" + FormatDesc + ","
         + "isOption:" + IsOption + ","
         + "isHidden:" + IsHidden + ","

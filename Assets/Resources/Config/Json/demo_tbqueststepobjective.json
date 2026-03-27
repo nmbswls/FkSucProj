@@ -1,6 +1,7 @@
 [
   {
     "obj_id": "100_s1_Main",
+    "custom_desc": false,
     "format_desc": "击杀XX",
     "is_option": false,
     "is_hidden": false,
@@ -17,6 +18,7 @@
   },
   {
     "obj_id": "100_s2_Main",
+    "custom_desc": false,
     "format_desc": "击杀XX",
     "is_option": false,
     "is_hidden": false,
@@ -33,6 +35,7 @@
   },
   {
     "obj_id": "101_s1_Main",
+    "custom_desc": false,
     "format_desc": "",
     "is_option": false,
     "is_hidden": false,
@@ -49,6 +52,7 @@
   },
   {
     "obj_id": "102_s1_Main",
+    "custom_desc": false,
     "format_desc": "",
     "is_option": false,
     "is_hidden": false,

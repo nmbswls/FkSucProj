@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class UnitNpc : Luban.BeanBase
 {
     public UnitNpc(JSONNode _buf) 
@@ -23,11 +24,14 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["prefab_name"].IsString) { throw new SerializationException(); }  PrefabName = _buf["prefab_name"]; }
         { if(!_buf["attr_template_id"].IsNumber) { throw new SerializationException(); }  AttrTemplateId = _buf["attr_template_id"]; }
         { if(!_buf["emnity_cfg_id"].IsString) { throw new SerializationException(); }  EmnityCfgId = _buf["emnity_cfg_id"]; }
+        { if(!_buf["faction_id"].IsNumber) { throw new SerializationException(); }  FactionId = _buf["faction_id"]; }
         { if(!_buf["move_style"].IsNumber) { throw new SerializationException(); }  MoveStyle = _buf["move_style"]; }
         { if(!_buf["ai_brain_id"].IsString) { throw new SerializationException(); }  AiBrainId = _buf["ai_brain_id"]; }
         { var __json0 = _buf["skill_list"]; if(!__json0.IsArray) { throw new SerializationException(); } SkillList = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  SkillList.Add(__v0); }   }
         { if(!_buf["is_peace"].IsBoolean) { throw new SerializationException(); }  IsPeace = _buf["is_peace"]; }
+        { if(!_buf["peace_dialog_id"].IsString) { throw new SerializationException(); }  PeaceDialogId = _buf["peace_dialog_id"]; }
         { if(!_buf["defeat_drop_id"].IsNumber) { throw new SerializationException(); }  DefeatDropId = _buf["defeat_drop_id"]; }
+        { if(!_buf["not_target"].IsBoolean) { throw new SerializationException(); }  NotTarget = _buf["not_target"]; }
         { if(!_buf["always_h_mode"].IsBoolean) { throw new SerializationException(); }  AlwaysHMode = _buf["always_h_mode"]; }
         { if(!_buf["ignore_attract_level"].IsNumber) { throw new SerializationException(); }  IgnoreAttractLevel = _buf["ignore_attract_level"]; }
     }
@@ -40,55 +44,64 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly string Id;
+    public string Id;
     /// <summary>
     /// 名称
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// 描述
     /// </summary>
-    public readonly string Desc;
+    public string Desc;
     /// <summary>
     /// 预制体
     /// </summary>
-    public readonly string PrefabName;
+    public string PrefabName;
     /// <summary>
     /// 属性id
     /// </summary>
-    public readonly int AttrTemplateId;
+    public int AttrTemplateId;
     /// <summary>
     /// 敌对类型
     /// </summary>
-    public readonly string EmnityCfgId;
+    public string EmnityCfgId;
+    /// <summary>
+    /// 阵营
+    /// </summary>
+    public int FactionId;
     /// <summary>
     /// 移动类型<br/>NoMove,<br/>Normal,<br/>Fly,<br/>Ghost,<br/>
     /// </summary>
-    public readonly int MoveStyle;
+    public int MoveStyle;
     /// <summary>
     /// ai配置id
     /// </summary>
-    public readonly string AiBrainId;
+    public string AiBrainId;
     /// <summary>
     /// 技能列表
     /// </summary>
-    public readonly System.Collections.Generic.List<string> SkillList;
+    public System.Collections.Generic.List<string> SkillList;
     /// <summary>
     /// 是否和平
     /// </summary>
-    public readonly bool IsPeace;
+    public bool IsPeace;
+    public string PeaceDialogId;
     /// <summary>
     /// 击败掉落
     /// </summary>
-    public readonly int DefeatDropId;
+    public int DefeatDropId;
+    /// <summary>
+    /// 非目标单位<br/>用于剧情npc等
+    /// </summary>
+    public bool NotTarget;
     /// <summary>
     /// 永远h
     /// </summary>
-    public readonly bool AlwaysHMode;
+    public bool AlwaysHMode;
     /// <summary>
     /// 忽略吸引等级
     /// </summary>
-    public readonly int IgnoreAttractLevel;
+    public int IgnoreAttractLevel;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -106,11 +119,14 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "prefabName:" + PrefabName + ","
         + "attrTemplateId:" + AttrTemplateId + ","
         + "emnityCfgId:" + EmnityCfgId + ","
+        + "factionId:" + FactionId + ","
         + "moveStyle:" + MoveStyle + ","
         + "aiBrainId:" + AiBrainId + ","
         + "skillList:" + Luban.StringUtil.CollectionToString(SkillList) + ","
         + "isPeace:" + IsPeace + ","
+        + "peaceDialogId:" + PeaceDialogId + ","
         + "defeatDropId:" + DefeatDropId + ","
+        + "notTarget:" + NotTarget + ","
         + "alwaysHMode:" + AlwaysHMode + ","
         + "ignoreAttractLevel:" + IgnoreAttractLevel + ","
         + "}";

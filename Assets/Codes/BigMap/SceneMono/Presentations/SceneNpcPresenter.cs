@@ -192,6 +192,11 @@ namespace My.Map.Scene
                     break;
                 }
 
+                if(NpcEntity.CheckHasState(AttrIdConsts.NoSelect))
+                {
+                    break;
+                }
+
                 //if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
                 //{
                 //    if (NpcEntity.InteractComp.IsInteracting)
@@ -229,7 +234,10 @@ namespace My.Map.Scene
             }
             while (false);
 
-            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
+            if (!UnitEntity.IsDead 
+                && !UnitEntity.MarkNoLogic
+                && !NpcEntity.CheckHasState(AttrIdConsts.NoSelect)
+                && !MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
             {
                 return true;
             }
@@ -453,7 +461,10 @@ namespace My.Map.Scene
             }
             while (false);
 
-            if (!UnitEntity.IsDead && !UnitEntity.MarkNoLogic && !InteractDetailMode && !MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
+            if (!UnitEntity.IsDead 
+                && !UnitEntity.MarkNoLogic
+                && !NpcEntity.CheckHasState(AttrIdConsts.NoSelect)
+                && !InteractDetailMode && !MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
             {
                 ret.Add(new SceneInteractSelection()
                 {

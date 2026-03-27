@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class BornPoint : Luban.BeanBase
 {
     public BornPoint(JSONNode _buf) 
@@ -33,27 +34,27 @@ public sealed partial class BornPoint : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly string Id;
+    public string Id;
     /// <summary>
     /// 名称
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// 描述
     /// </summary>
-    public readonly string Desc;
+    public string Desc;
     /// <summary>
     /// 所属地图
     /// </summary>
-    public readonly string MapName;
+    public string MapName;
     /// <summary>
     /// 解锁条件
     /// </summary>
-    public readonly System.Collections.Generic.List<demo.CommonCheckCond> UnlockConds;
+    public System.Collections.Generic.List<demo.CommonCheckCond> UnlockConds;
     /// <summary>
     /// 对应实际点名
     /// </summary>
-    public readonly string NamedPoint;
+    public string NamedPoint;
    
     public const int __ID__ = -1569619620;
     public override int GetTypeId() => __ID__;

@@ -1,0 +1,64 @@
+{
+  "DialogId": "",
+  "LockTime": false,
+  "ControlledEntityNames":["init_luca"],
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "0",
+              "Content": "初始对话1",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4MoveEntity, Assembly-CSharp",
+          "StaticName": "init_luca",
+          "MovePos": {
+            "x": -5.12,
+            "y": -1.82
+          },
+          "ForceStartPos": true,
+          "StartPos": {
+            "x": -5.0,
+            "y": -5.16
+          },
+          "MoveDuration": 3.0
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "1",
+              "Content": "初始对话2",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 5,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "init.dialog_01",
+          "Param6": ""
+        }
+      ]
+    }
+  ],
+  "ControlledEntityNames": []
+}

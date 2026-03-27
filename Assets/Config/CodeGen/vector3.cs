@@ -27,9 +27,9 @@ public partial struct vector3
         return new vector3(_buf);
     }
 
-    public readonly float X;
-    public readonly float Y;
-    public readonly float Z;
+    public float X;
+    public float Y;
+    public float Z;
    
 
     public  void ResolveRef(Tables tables)

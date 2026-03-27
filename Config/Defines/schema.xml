@@ -5,6 +5,7 @@
         <var name="TaskFinish" value="1"/>
         <var name="CheckVariable" value="2"/>
         <var name="OwnItem" value="4"/>
+		<var name="TaskStep" value="5"/>
     </enum>
 
     <!-- 2. 定义复杂结构 Bean (列表中的元素结构) -->

@@ -184,6 +184,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         if(string.IsNullOrEmpty(playerMap))
         {
             playerMap = "game_init";
+            savedPos = new Vector2(-4.92f, -1.1f);
         }
 
 

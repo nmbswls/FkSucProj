@@ -4,6 +4,7 @@ using Map.Logic;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Scene;
+using My.MiniGame;
 using My.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -446,26 +447,25 @@ namespace My.Input
         {
             if(keyName == EInputKey.Space.ToString())
             {
-                if (MainGameManager.Instance.playerScenePresenter != null)
-                {
-                    Vector2 dir = Vector2.one;
-                    if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.FreeMoveInput.magnitude < 0.01f)
-                    {
-                        dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FinalLook;
-                    }
-                    else
-                    {
-                        dir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.FreeMoveInput;
-                    }
+                //if (MainGameManager.Instance.playerScenePresenter != null)
+                //{
+                //    Vector2 dir = Vector2.one;
+                //    if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.FreeMoveInput.magnitude < 0.01f)
+                //    {
+                //        dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FinalLook;
+                //    }
+                //    else
+                //    {
+                //        dir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.FreeMoveInput;
+                //    }
 
-                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", inputVec : dir);
-                }
+                //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill("default_dash", inputVec : dir);
+                //}
             }
             else if(keyName == EInputKey.Tab.ToString())
             {
                 MapPlayerRadialMenu.ShowMenu();
             }
-
         }
 
 
@@ -473,6 +473,30 @@ namespace My.Input
         {
             if (MainGameManager.Instance.playerScenePresenter != null)
             {
+                if (MainGameManager.Instance.dialoguePlayer.IsPlaying)
+                {
+                    return;
+                }
+
+                if (MainGameManager.Instance.gameLogicManager.IsBalancing)
+                {
+                    return;
+                }
+
+                if (!MainGameManager.Instance.gameLogicManager.Initialized)
+                {
+                    return;
+                }
+
+
+                if (LootPointUIPanel.Instance != null)
+                {
+                    return;
+                }
+                if (DeepAbsorbPanel.Instance != null)
+                {
+                    return;
+                }
                 //MainGameManager.Instance.playerScenePresenter.freeMoveDir = dir;
                 //MainGameManager.Instance.playerScenePresenter.freeMoveDir = Vector2.ClampMagnitude(dir, 1f);
 

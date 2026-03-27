@@ -195,6 +195,16 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["not_fight_target"] = new BuffDefinition()
+                {
+                    BuffId = "not_fight_target",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoSelect, ModifierValue = 1 } ,
+                    },
+                    DefaultDuration = -1,
+                };
+
                 _library["system_no_logic"] = new BuffDefinition()
                 {
                     BuffId = "system_no_logic",

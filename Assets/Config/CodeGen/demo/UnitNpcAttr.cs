@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class UnitNpcAttr : Luban.BeanBase
 {
     public UnitNpcAttr(JSONNode _buf) 
@@ -30,15 +31,15 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly int Id;
+    public int Id;
     /// <summary>
     /// 生命
     /// </summary>
-    public readonly int Hp;
+    public int Hp;
     /// <summary>
     /// 移速
     /// </summary>
-    public readonly float MoveSpeed;
+    public float MoveSpeed;
    
     public const int __ID__ = -1255865693;
     public override int GetTypeId() => __ID__;

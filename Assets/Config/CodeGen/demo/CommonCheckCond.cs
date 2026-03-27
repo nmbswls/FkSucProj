@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class CommonCheckCond : Luban.BeanBase
 {
     public CommonCheckCond(JSONNode _buf) 
@@ -34,31 +35,31 @@ public sealed partial class CommonCheckCond : Luban.BeanBase
     /// <summary>
     /// 类型
     /// </summary>
-    public readonly demo.ECommonCheckType Type;
+    public demo.ECommonCheckType Type;
     /// <summary>
     /// p1
     /// </summary>
-    public readonly long Param1;
+    public long Param1;
     /// <summary>
     /// p2
     /// </summary>
-    public readonly long Param2;
+    public long Param2;
     /// <summary>
     /// p3
     /// </summary>
-    public readonly long Param3;
+    public long Param3;
     /// <summary>
     /// p4
     /// </summary>
-    public readonly long Param4;
+    public long Param4;
     /// <summary>
     /// p5
     /// </summary>
-    public readonly string Param5;
+    public string Param5;
     /// <summary>
     /// p6
     /// </summary>
-    public readonly string Param6;
+    public string Param6;
    
     public const int __ID__ = 827564148;
     public override int GetTypeId() => __ID__;

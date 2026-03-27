@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class Reward : Luban.BeanBase
 {
     public Reward(JSONNode _buf) 
@@ -33,27 +34,27 @@ public sealed partial class Reward : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly int Id;
+    public int Id;
     /// <summary>
     /// 名称
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// 描述
     /// </summary>
-    public readonly string Desc;
+    public string Desc;
     /// <summary>
     /// 个数
     /// </summary>
-    public readonly int Count;
+    public int Count;
     /// <summary>
     /// 列表1
     /// </summary>
-    public readonly System.Collections.Generic.List<int> L1;
+    public System.Collections.Generic.List<int> L1;
     /// <summary>
     /// map1
     /// </summary>
-    public readonly System.Collections.Generic.Dictionary<int, int> M1;
+    public System.Collections.Generic.Dictionary<int, int> M1;
    
     public const int __ID__ = -920121926;
     public override int GetTypeId() => __ID__;

@@ -48,6 +48,7 @@ namespace My.Map
 
         public bool MarkNoLogic; // 
         public bool MarkUnsensored;
+
         public LogicEntityRecord4UnitBase UnitBaseRecord 
         { 
             get 
@@ -179,6 +180,11 @@ namespace My.Map
             TickUnitEvilAlert();
 
             MeleeSlotManager?.UpdateSlotPositions();
+
+            if(DialogControlled)
+            {
+                CheckDialogActorBehaviour();
+            }
         }
 
         protected virtual void TickActivateState(float dt)

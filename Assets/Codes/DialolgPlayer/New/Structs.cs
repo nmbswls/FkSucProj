@@ -11,7 +11,10 @@ namespace My.Dialog
     public class DialogueData
     {
         public string DialogId;
+        public bool LockTime;
         public List<DialogueStepData> Steps = new List<DialogueStepData>();
+
+        public List<string> ControlledEntityNames = new();
     }
 
     [Serializable]
@@ -76,13 +79,15 @@ namespace My.Dialog
 
     public enum EDialogSimpleFuncType
     {
-        None,
+        None = 0,
         SrcLocalSwitch,
 
         AddTmpEnmity,
         ClearWanted,
 
         Charmed,
+
+        SetGlobalSwitch,
     }
 
 
@@ -94,7 +99,26 @@ namespace My.Dialog
     }
 
 
+    [Serializable]
+    public class DialogCommandData4MoveEntity : DialogCommandData
+    {
+        public string StaticName;
+        public Vector2 MovePos;
+
+        public bool ForceStartPos;
+        public Vector2 StartPos;
+
+        public float MoveDuration = 1.0f;
+    }
+
+    [Serializable]
+    public class DialogCommandData4ActorAnim : DialogCommandData
+    {
+        public string AnimName;
+    }
+
     
+
 
     [Serializable]
     public class DialogCommandData4SimpleFunc : DialogCommandData

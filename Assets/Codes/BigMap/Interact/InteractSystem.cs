@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Map.SmallGame.Zha;
 using My.Map;
+using My.Map.Entity;
 using My.Map.Scene;
 using My.MiniGame;
 using My.UI;
@@ -77,7 +78,7 @@ public class SceneInteractSystem
 
     public void Tick(float dt)
     {
-        TickNormalInteract(dt);
+        TickNormalInteract(dt);  
     }
 
     public void SetInteractPause(float duration = 0.8f)
@@ -148,6 +149,23 @@ public class SceneInteractSystem
 
         normalCandidates.Clear();
         executeCandidates.Clear();
+
+        // todo 补丁代码 自动触发
+        foreach (var entity in MainGameManager.Instance.gameLogicManager.AreaManager.Repo.Loaded.Values.ToList())
+        {
+            if(entity is LogicEntityInteractPoint intP)
+            {
+                var curState = intP.GetCurrentStatusInfo();
+                if (curState != null)
+                {
+                    if (curState.AutoTrigger && !intP.InteractComp.IsInteracting)
+                    {
+                        intP.InteractComp.TryTriggerInteract(0);
+                    }
+                }
+            }
+        }
+            
 
         Vector2 center = presenter.transform.position;
         int count = Physics2D.OverlapCircleNonAlloc(center, _maxCheckableRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));

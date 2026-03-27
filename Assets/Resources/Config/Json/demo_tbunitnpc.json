@@ -6,13 +6,16 @@
     "prefab_name": "initial_orc",
     "attr_template_id": 10000,
     "emnity_cfg_id": "default_npc",
+    "faction_id": 0,
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
       "default_npc_attack"
     ],
     "is_peace": false,
+    "peace_dialog_id": "",
     "defeat_drop_id": 1,
+    "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0
   },
@@ -23,13 +26,54 @@
     "prefab_name": "initial_orc",
     "attr_template_id": 10001,
     "emnity_cfg_id": "default_npc",
+    "faction_id": 0,
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
       "default_npc_attack"
     ],
     "is_peace": false,
+    "peace_dialog_id": "",
     "defeat_drop_id": 1,
+    "not_target": false,
+    "always_h_mode": false,
+    "ignore_attract_level": 0
+  },
+  {
+    "id": "initial_orc_big",
+    "name": "初始精英",
+    "desc": "描述2",
+    "prefab_name": "initial_orc_big",
+    "attr_template_id": 10001,
+    "emnity_cfg_id": "default_npc",
+    "faction_id": 0,
+    "move_style": 1,
+    "ai_brain_id": "default",
+    "skill_list": [
+      "default_npc_attack"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 1,
+    "not_target": false,
+    "always_h_mode": false,
+    "ignore_attract_level": 0
+  },
+  {
+    "id": "game_init_luca_injured",
+    "name": "初始受伤npc",
+    "desc": "",
+    "prefab_name": "game_init_luca_injured",
+    "attr_template_id": 0,
+    "emnity_cfg_id": "",
+    "faction_id": 0,
+    "move_style": 0,
+    "ai_brain_id": "default",
+    "skill_list": [],
+    "is_peace": true,
+    "peace_dialog_id": "game_init_luca_injured",
+    "defeat_drop_id": 0,
+    "not_target": true,
     "always_h_mode": false,
     "ignore_attract_level": 0
   }

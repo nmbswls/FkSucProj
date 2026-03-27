@@ -110,6 +110,7 @@ namespace My.Map
             };
         }
 
+
         protected override EntitySkillComboGraph GenerateComboGraph()
         {
             EntitySkillComboGraph graph = new();
@@ -184,6 +185,12 @@ namespace My.Map
             }
 
 
+
+            if (NpcConfig.NotTarget)
+            {
+                LogicManager.globalBuffManager.RequestAddBuff(this.Id, "not_fight_target");
+            }
+
             //InteractComp = new(this);
 
             //InteractComp.RefreshInteractInfo();
@@ -195,14 +202,16 @@ namespace My.Map
         {
             var attrCfg = CfgMgr.Cfgs.TbUnitNpcAttr.GetOrDefault(NpcConfig.AttrTemplateId);
 
-            moveSpeed = attrCfg.MoveSpeed;
+            if(attrCfg != null)
+            {
+                moveSpeed = attrCfg.MoveSpeed;
+            }
 
             // ×ÊÔ´Àà
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
             attributeStore.RegisterResource(AttrIdConsts.SJProgress, null, 100_000, 0);
-            
         }
 
         public override bool IsOmniVision()

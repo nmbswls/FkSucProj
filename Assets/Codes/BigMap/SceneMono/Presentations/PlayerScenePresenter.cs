@@ -46,6 +46,7 @@ namespace My.Map.Scene
                 if (logic is not BaseUnitLogicEntity unitEntity) continue;
                 if (unitEntity.FactionId == EFactionId.Player || unitEntity.IsDead) continue;
 
+                if (unitEntity.CheckHasState(AttrIdConsts.NoSelect)) continue;
                 Vector2 targetPos = unitEntity.Pos;
 
                 // --- ºËÐÄÆÀ·ÖÂß¼­ÐÞ¸Ä ---

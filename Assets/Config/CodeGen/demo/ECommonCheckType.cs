@@ -17,6 +17,7 @@ namespace cfg.demo
         TaskFinish = 1,
         CheckVariable = 2,
         OwnItem = 4,
+        TaskStep = 5,
     }
 
 } 

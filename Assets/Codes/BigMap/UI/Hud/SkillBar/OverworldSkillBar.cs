@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using DG.Tweening;
+using My.Input;
 
 namespace My.UI
 {
@@ -151,35 +152,16 @@ namespace My.UI
         /// <param name="slotIdx"></param>
         public void OnSkillSlotClicked(int slotIdx)
         {
+            var showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.GetSkillSlotsByState();
+
             if (showSkills == null)
             {
-                Debug.LogError("OnSkillSlotClicked no skill slots");
                 return;
             }
 
-            if (slotIdx < 0 || slotIdx >= showSkills.Length)
-            {
-                Debug.LogError("OnSkillSlotClicked slot index invalid");
-                return;
-            }
-            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-            player.ablilityManager.SkillRuntimes.TryGetValue(showSkills[slotIdx], out var skillRuntime);
-            if (skillRuntime == null)
-            {
-                Debug.LogError("OnSkillSlotClicked no skill instance found.");
-                return;
-            }
-
-            bool isReady = player.ablilityManager.IsSkillReady(showSkills[slotIdx]);
-            if(!isReady)
-            {
-                return;
-            }
-            HudPanel.OnClickUseSkill(skillRuntime.SkillName);
+            string key = ((QuickPlayerInputBinder.EInputKey)((int)QuickPlayerInputBinder.EInputKey.Num1 + slotIdx)).ToString();
+            HudPanel.PeeviewUseSkillByKey(key);
         }
-
-
-        
     }
 }
 

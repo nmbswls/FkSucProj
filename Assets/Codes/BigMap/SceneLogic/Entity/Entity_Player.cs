@@ -60,7 +60,6 @@ namespace My.Map
         {
 
         }
-        
 
         public override EEntityType Type => EEntityType.Player;
 
@@ -113,6 +112,11 @@ namespace My.Map
             base.Initialize();
 
             DefaultControlledByVelocity = false;
+
+            if (!MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            {
+                IsExposed = true;
+            }
         }
 
         protected override void RegisterSpecAttrs()
@@ -478,11 +482,19 @@ namespace My.Map
         /// </summary>
         private void TickPlayerExpose()
         {
+            if(!MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            {
+                return;
+            }
+
             var clothes = GetAttr(AttrIdConsts.PlayerClothes);
 
             if(IsExposed)
             {
-                if(clothes > 0)
+                
+
+
+                if (clothes > 0)
                 {
                     IsExposed = false;
                     LogicManager.globalBuffManager.AddBuff(this.Id, "player_clothes_expose");

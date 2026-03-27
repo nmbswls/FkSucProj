@@ -17,6 +17,12 @@ MonoBehaviour:
   - MemberId: 1
     InitInfo:
       rid: 8510164454421561350
+  - MemberId: 2
+    InitInfo:
+      rid: 8510164526873182387
+  - MemberId: 3
+    InitInfo:
+      rid: 8510164526873182389
   SpawnOnCreate: 1
   references:
     version: 2
@@ -25,7 +31,33 @@ MonoBehaviour:
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: initial_orc_01
-        Position: {x: 0, y: 0}
+        Position: {x: 0, y: -1}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+    - rid: 8510164526873182387
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: initial_orc_01
+        Position: {x: 1, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: initial_orc_01
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+    - rid: 8510164526873182389
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: initial_orc_01
+        Position: {x: -1, y: 0}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0

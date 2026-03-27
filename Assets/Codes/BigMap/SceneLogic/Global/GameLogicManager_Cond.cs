@@ -62,7 +62,7 @@ namespace My
                 case cfg.demo.ECommonCheckType.CheckVariable:
                     {
                         bool checkHas = false;
-                        if(cond.Param1 > 0)
+                        if(cond.Param1 == 0)
                         {
                             checkHas = true;
                         }
@@ -85,6 +85,33 @@ namespace My
                         {
                             return true;
                         }
+                    }
+                    break;
+
+                case cfg.demo.ECommonCheckType.TaskFinish:
+                    {
+                        int questId = (int)cond.Param1;
+                        if (playerDataManager.QuestSystem.CheckQuestFinish(questId))
+                        {
+                            return true;
+                        }
+                    }
+                    break;
+                case cfg.demo.ECommonCheckType.TaskStep:
+                    {
+                        int questId = (int)cond.Param1;
+                        string stepId = cond.Param5;
+                        var quest = playerDataManager.QuestSystem.GetQuest(questId);
+                        if(quest == null)
+                        {
+                            return false;
+                        }
+                        if (quest.ActiveStep == null || quest.ActiveStep.CacheStepCfg.StepId != stepId)
+                        {
+                            return false;
+                        }
+
+                        return true;
                     }
                     break;
 

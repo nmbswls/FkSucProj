@@ -118,7 +118,7 @@ namespace My.UI
 
         public void TickPreviewState()
         {
-            if (string.IsNullOrEmpty(PreviewSkillName))
+            if (skillCfg == null)
             {
                 return;
             }
@@ -183,7 +183,7 @@ namespace My.UI
 
         public void ConfirmSkillCast(Vector2 mousePos)
         {
-            if (PreviewSkillName == null)
+            if (skillCfg == null)
             {
                 return;
             }

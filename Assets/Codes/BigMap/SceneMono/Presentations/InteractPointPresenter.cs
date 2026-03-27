@@ -128,7 +128,7 @@ namespace My.Map.Scene
             {
                 return false;
             }
-            return statInfo.AutoTrigger;
+            return statInfo.AutoTriggerCollide;
         }
 
         public override void Bind(ILogicEntity logic)

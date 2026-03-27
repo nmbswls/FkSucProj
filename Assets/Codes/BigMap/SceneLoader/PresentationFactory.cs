@@ -40,6 +40,7 @@ public static class PresentationConfig
                     {
                         prefabName = cfgId;
                     }
+
                     return $"Prefab/Presentations/InteractPoint/{prefabName}"; 
                 }
             case EEntityType.LootPoint:

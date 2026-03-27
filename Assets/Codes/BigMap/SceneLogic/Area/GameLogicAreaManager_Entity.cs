@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Config;
 using My.Config;
 using My.MapExport;
@@ -74,7 +75,7 @@ namespace My.Map.Logic
                 return;
             }
 
-            if (LogicTime.time < checkRefreshTimer + 1)
+            if (LogicTime.time < checkRefreshTimer + 0.5)
             {
                 return;
             }
@@ -88,6 +89,22 @@ namespace My.Map.Logic
                 tickDynamicObjIdx = tickDynamicObjIdx % EntityRefreshInfo.Count;
 
                 HandleOneRefreshInfo(EntityRefreshInfo[tickDynamicObjIdx]);
+            }
+        }
+
+        /// <summary>
+        /// 检查强制刷新
+        /// </summary>
+        public void ForceCheckRefreshInfos()
+        {
+            foreach(var refreshInfo in EntityRefreshInfo)
+            {
+                if(!DialogForceStaticIds.Contains(refreshInfo.StaticId))
+                {
+                    continue;
+                }
+
+                HandleOneRefreshInfo(refreshInfo);
             }
         }
 
@@ -110,15 +127,20 @@ namespace My.Map.Logic
                 }
             }
 
-            // 检查条件
-            if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != 0)
+            // 排除特殊条件
+            // todo 抽象
+            if(!DialogForceStaticIds.Contains(refreshInfo.StaticId))
             {
-                if (!logicManager.CheckCommonCond(refreshInfo.AppearCond))
+                // 检查条件
+                if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != 0)
                 {
-                    return;
+                    if (!logicManager.CheckCommonCond(refreshInfo.AppearCond))
+                    {
+                        return;
+                    }
                 }
             }
-
+            
             LogicEntityRecord record = CreateEntityRecordFromInitInfo(refreshInfo.InitInfo);
 
             if(record == null)

@@ -2,6 +2,7 @@ using Animancer;
 using DG.Tweening;
 using Map.Entity;
 using Map.Logic;
+using My.Dialog;
 using My.Map.Entity;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,7 +27,9 @@ namespace My.Map.Scene
     /// <summary>
     /// 场景单位 基类
     /// </summary>
-    public abstract partial class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEntity>, IMapWeaponHolder, ISceneTargettable
+    public abstract partial class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEntity>,
+        IMapWeaponHolder, 
+        ISceneTargettable
     {
         [SerializeField] protected GameObject highlightFx;
 
@@ -219,6 +222,18 @@ namespace My.Map.Scene
         {
             if(UnitEntity == null) return Vector2.zero;
 
+            if(UnitEntity.DialogControlled)
+            {
+                if(!UnitEntity.IsDialogMoving)
+                {
+                    return Vector2.zero;
+                }
+                else
+                {
+                    return UnitEntity.GetDialogMoveVel();
+                }
+            }
+
             float arriveRaiuds = 0.12f;
             if (!CheckCanActiveMove())
             {
@@ -289,17 +304,17 @@ namespace My.Map.Scene
             {
                 var diff = MainGameManager.Instance.playerScenePresenter.transform.position - transform.position;
                 diff.z = 0;
-
-                if (diff.magnitude < 0.6f)
-                {
-                    visible = true;
-                }
-                if (!visible)
-                {
-                    visible = MainGameManager.Instance.VisionSenser2D.SimpleCanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.CurrentLook,
-                        transform.position,
-                        8f, 120f);
-                }
+                visible = true;
+                //if (diff.magnitude < 0.6f)
+                //{
+                //    visible = true;
+                //}
+                //if (!visible)
+                //{
+                //    visible = MainGameManager.Instance.VisionSenser2D.SimpleCanSee(MainGameManager.Instance.playerScenePresenter.transform.position, MainGameManager.Instance.playerScenePresenter.UnitEntity.CurrentLook,
+                //        transform.position,
+                //        8f, 120f);
+                //}
             }
             
 

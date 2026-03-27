@@ -10,50 +10,45 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
-  m_Name: initial_tp
+  m_Name: int_dialog_01
   m_EditorClassIdentifier: 
-  CfgId: initial_tp
-  ShowName: "\u901A\u7528\u4F20\u9001"
-  PrefabName: 
+  CfgId: int_dialog_01
+  ShowName: 0
+  PrefabName: empty
   NameOffset: 60
   MainStatusInfo:
     StatusId: 0
     Desp: 
-    InteractInfos: []
-    HasBlock: 0
-    AutoTrigger: 0
-  ExtraStatusInfos:
-  - StatusId: 1
-    Desp: 
     InteractInfos:
-    - InteractId: 1
-      Label: "\u4F20\u9001"
-      UnLabel: "\u4F20\u9001"
+    - InteractId: 0
+      Label: 
+      UnLabel: 
       HideWhenFail: 0
-      NeedDist: 1.4
-      Passive: 0
-      CheckCommonCond: []
+      NeedDist: 0
+      Passive: 1
+      CheckCommonCond:
+      - Type: 2
+        Param1: 1
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: init.dialog_01
+        Param6: 
       CheckInteractCond: []
       Outputs:
-      - OutputType: 5
+      - OutputType: 12
         Param1: 0
         Param2: 0
-        Param3: base_fight
-        Param4: entry_01
+        Param3: init_dialog_01
+        Param4: 
         DelayTime: 0
         TargetType: 0
         MemberId: 0
         StaticName: 
         DynamicEntityVariable: 
     HasBlock: 0
-    AutoTrigger: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 1
+  ExtraStatusInfos: []
   InitState: 0
-  StateChangeRules:
-  - FromStatus: 0
-    CommonConds: []
-    NeedSelfFlag: []
-    ToStatus: 1
-    ChangeView:
-      ChangingDuration: 0
-      ChangingAnimName: 
-      ChangingEffect: 
+  StateChangeRules: []

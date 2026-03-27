@@ -10,6 +10,7 @@ namespace My.Dialog
     {
         public string DialogId;
         public bool LockTime;
+        public List<string> ControlledEntityNames = new();
         public List<EditorStepData> Steps = new List<EditorStepData>();
     }
 
@@ -89,6 +90,31 @@ namespace My.Dialog
 
         public override string GetSummary() => $"[SetImage]";
     }
+
+    [Serializable]
+    public class EditorActorMoveCommand : EditorDialogCommand
+    {
+
+        public string StaticName;
+        public Vector2 MovePos;
+
+        public bool ForceStartPos;
+        public Vector2 StartPos;
+
+        public float MoveDuration = 1.0f;
+
+        public override string GetSummary() => $"[ActorMove] {StaticName}";
+    }
+
+    [Serializable]
+    public class EditorActorAnimCommand : EditorDialogCommand
+    {
+
+        public string AnimName;
+
+        public override string GetSummary() => $"[ActorAnim] {AnimName}";
+    }
+
 
 
     [Serializable]

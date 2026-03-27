@@ -479,7 +479,7 @@ namespace My
             {
                 case EEntityType.Player:
                     {
-                        playerLogicEntity = new PlayerLogicEntity(this, record.Id, "0", new Vector2(0, 0), record);
+                        playerLogicEntity = new PlayerLogicEntity(this, record.Id, "0", record.Position, record);
                         playerLogicEntity.viewer = this.viewer;
 
                         newEntity = playerLogicEntity;

@@ -29,6 +29,8 @@ namespace Config.Map
             public List<MapInteractInfo> InteractInfos = new();
 
             public bool HasBlock = false;
+            public bool AutoTriggerCollide = false;
+
             public bool AutoTrigger = false;
         }
 

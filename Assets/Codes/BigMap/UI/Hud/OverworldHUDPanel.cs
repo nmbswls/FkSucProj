@@ -1,5 +1,6 @@
 
 using System;
+using DG.Tweening;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
@@ -35,7 +36,9 @@ namespace My.UI
 
 
         public TextMeshProUGUI PlayerHpText;
+
         public TextMeshProUGUI PlayerClothesText;
+
         public TextMeshProUGUI PlayerPleasureText;
         public TextMeshProUGUI PlayerHungerText;
         public TextMeshProUGUI PlayerSanText;
@@ -60,12 +63,47 @@ namespace My.UI
         public Image zhaZhiSwitchOne;
         public Button BtnZhaZhiSwitch;
 
+        public RectTransform PlayerClothesRoot;
+        public CanvasGroup PlayerClothesCG;
+        public Image ClothesBar;
+
+        public RectTransform PlayerExposeRoot;
+        public CanvasGroup PlayerExposeCG;
+        public Image ExposeBar;
+
+        private bool isUIDisguiseMode = false;
+        private Tween disguiseSwitchTween = null;
+
         public override void Setup(object data = null)
         {
             bottomProgressPanel.gameObject.SetActive(false);
             //BottomProgressPanel.Setup();
 
             SkilBar.InitSkills(this);
+
+
+            bool disguising = false;
+
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            {
+                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
+                {
+                    disguising = true;
+                }
+            }
+            if (disguising)
+            {
+                PlayerClothesRoot.gameObject.SetActive(true);
+                PlayerExposeRoot.gameObject.SetActive(false);
+            }
+            else
+            {
+                PlayerClothesRoot.gameObject.SetActive(false);
+                PlayerExposeRoot.gameObject.SetActive(true);
+            }
+
+            PlayerClothesCG.alpha = 1;
+            PlayerExposeCG.alpha = 1;
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
@@ -95,7 +133,7 @@ namespace My.UI
             if (MainGameManager.Instance.gameLogicManager.playerLogicEntity != null)
             {
                 PlayerHpText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.HP) * 0.001f)).ToString();
-                PlayerClothesText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) * 0.001f)).ToString();
+                //PlayerClothesText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) * 0.001f)).ToString();
                 PlayerPleasureText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f)).ToString();
 
                 PlayerHungerText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerHunger) * 0.001f)).ToString();
@@ -148,7 +186,58 @@ namespace My.UI
 
             FilledAlertBar.fillAmount = filledRate;
             TempAlertBar.fillAmount = totalRate;
+
+            CheckDisguiseState();
         }
+
+        /// <summary>
+        /// 检查
+        /// </summary>
+        private void CheckDisguiseState()
+        {
+            bool disguising = false;
+
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            {
+                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
+                {
+                    disguising = true;
+                }
+            }
+            
+            if(isUIDisguiseMode == disguising)
+            {
+                return;
+            }
+
+            if(isUIDisguiseMode)
+            {
+                PlayerClothesRoot.gameObject.SetActive(true);
+                PlayerClothesCG.alpha = 0;
+                disguiseSwitchTween = DOTween.Sequence()
+                        .Append(PlayerClothesCG.DOFade(1, 0.3f))
+                        .Append(PlayerExposeCG.DOFade(0, 0.3f))
+                        .OnComplete(() =>
+                        {
+                            disguiseSwitchTween = null;
+                            PlayerExposeRoot.gameObject.SetActive(false);
+                        }).SetLink(gameObject);
+            }
+            else
+            {
+                PlayerExposeRoot.gameObject.SetActive(true);
+                PlayerExposeCG.alpha = 0;
+                disguiseSwitchTween = DOTween.Sequence()
+                        .Append(PlayerExposeCG.DOFade(1, 0.3f))
+                        .Append(PlayerClothesCG.DOFade(0, 0.3f))
+                        .OnComplete(() =>
+                        {
+                            disguiseSwitchTween = null;
+                            PlayerClothesRoot.gameObject.SetActive(false);
+                        }).SetLink(gameObject);
+            }
+        }
+
 
         public override void Show()
         {
@@ -220,33 +309,48 @@ namespace My.UI
 
             bool isSkillSlot = false;
             int skillSLotIdx = -1;
-            if(keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
+
+            if (keyName == QuickPlayerInputBinder.EInputKey.MouseLeft.ToString())
             {
                 skillSLotIdx = 0;
                 isSkillSlot = true;
             }
-            else if (keyName == QuickPlayerInputBinder.EInputKey.Num2.ToString())
+            else if(keyName == QuickPlayerInputBinder.EInputKey.MouseRight.ToString())
             {
                 skillSLotIdx = 1;
                 isSkillSlot = true;
             }
-            else if (keyName == QuickPlayerInputBinder.EInputKey.Num3.ToString())
+            if (keyName == QuickPlayerInputBinder.EInputKey.Space.ToString())
             {
                 skillSLotIdx = 2;
                 isSkillSlot = true;
             }
-            else if (keyName == QuickPlayerInputBinder.EInputKey.Num4.ToString())
+            if (keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
             {
                 skillSLotIdx = 3;
                 isSkillSlot = true;
             }
-            else if (keyName == QuickPlayerInputBinder.EInputKey.Num5.ToString())
+            else if (keyName == QuickPlayerInputBinder.EInputKey.Num2.ToString())
             {
                 skillSLotIdx = 4;
                 isSkillSlot = true;
             }
-            
-            if(isSkillSlot)
+            else if (keyName == QuickPlayerInputBinder.EInputKey.Num3.ToString())
+            {
+                skillSLotIdx = 5;
+                isSkillSlot = true;
+            }
+            else if (keyName == QuickPlayerInputBinder.EInputKey.Num4.ToString())
+            {
+                skillSLotIdx = 6;
+                isSkillSlot = true;
+            }
+            else if (keyName == QuickPlayerInputBinder.EInputKey.Num5.ToString())
+            {
+                skillSLotIdx = 7;
+                isSkillSlot = true;
+            }
+            if (isSkillSlot)
             {
                 return showSkills[skillSLotIdx];
             }
@@ -255,7 +359,7 @@ namespace My.UI
         }
 
 
-        private bool PeeviewUseSkillByKey(string keyName)
+        public bool PeeviewUseSkillByKey(string keyName)
         {
             var skillId = GetSkillIdByKey(keyName);
 
@@ -287,16 +391,28 @@ namespace My.UI
                 onConfirm?.Invoke(false);
                 return;
             }
-            if(mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.NoTarget)
+
+            Vector2 dir = Vector2.one;
+            if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.FreeMoveInput.magnitude < 0.01f)
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: null, target: null);
+                dir = MainGameManager.Instance.playerScenePresenter.PlayerEntity.FinalLook;
+            }
+            else
+            {
+                dir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.FreeMoveInput;
+            }
+
+
+            if (mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.NoTarget)
+            {
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: null, target: null, inputVec: dir);
                 onConfirm?.Invoke(true);
                 return;
             }
             else if(mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.ToFace)
             {
                 var player = MainGameManager.Instance.playerScenePresenter.PlayerEntity;
-                player.ablilityManager.UseSkill(skillId, castVec: player.Pos + player.CurrentLook * 1.0f, target: null);
+                player.ablilityManager.UseSkill(skillId, castVec: player.Pos + player.CurrentLook * 1.0f, target: null, inputVec: dir);
                 onConfirm?.Invoke(true);
                 return;
             }

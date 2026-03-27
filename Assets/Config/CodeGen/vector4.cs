@@ -28,10 +28,10 @@ public partial struct vector4
         return new vector4(_buf);
     }
 
-    public readonly float X;
-    public readonly float Y;
-    public readonly float Z;
-    public readonly float W;
+    public float X;
+    public float Y;
+    public float Z;
+    public float W;
    
 
     public  void ResolveRef(Tables tables)

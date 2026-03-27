@@ -61,7 +61,8 @@ namespace My.Map.Logic
         public LongLivedRegistry LongLived { get; } = new();
 
         public string MapName = string.Empty;
-        protected MapAreaInfo cacheMapCfg;
+        public MapAreaInfo cacheMapCfg { get; private set; }
+
         public MapExportDatabase cacheDatabase;
 
         public Dictionary<string, LogicRoomInfo> RuntimeRoomInfos = new();
@@ -71,6 +72,7 @@ namespace My.Map.Logic
 
         public InnerListener innerListener;
         public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
+        public List<int> DialogForceStaticIds = new();
 
         public Dictionary<string, int> StaticName2RefreshIdMap = new();
 
@@ -155,6 +157,7 @@ namespace My.Map.Logic
             // ╪сть cacheDatabase
             cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{mapName}");
 
+            DialogForceStaticIds.Clear();
             EntityRefreshInfo.Clear();
             EntityRefreshInfo.AddRange(cacheDatabase.EntityRefreshInfo);
 
@@ -208,6 +211,7 @@ namespace My.Map.Logic
                 logicManager.LogicEventBus.Unsubscribe(sub);
             }
             subs.Clear();
+            DialogForceStaticIds.Clear();
 
             EntityRefreshInfo.Clear();
 

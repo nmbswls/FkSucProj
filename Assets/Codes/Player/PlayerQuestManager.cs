@@ -25,13 +25,13 @@ namespace My.Player
     /// 单个目标
     /// 冗余装载配置中的数据
     /// </summary>
-    public class ObjectiveRuntime
+    public class QuestObjectiveRuntime
     {
         protected PlayerQuestSystem ctx { get; set; }
         public readonly cfg.demo.QuestStepObjective Data;
         public long ProgressVal = 0;
 
-        public ObjectiveRuntime(cfg.demo.QuestStepObjective data, PlayerQuestSystem ctx)
+        public QuestObjectiveRuntime(cfg.demo.QuestStepObjective data, PlayerQuestSystem ctx)
         {
             Data = data;
             this.ctx = ctx;
@@ -44,7 +44,7 @@ namespace My.Player
 
         public long GetRequireProgress()
         {
-            return 1;
+            return Data.ObjProgress;
         }
 
         public long GetCurrProgress()
@@ -74,10 +74,10 @@ namespace My.Player
         public string CurrStepId = string.Empty;
         public readonly cfg.demo.QuestStepData CacheStepCfg;
 
-        private readonly ObjectiveRuntime[] _objectiveRuntimes;
-        public ObjectiveRuntime[] ObjectiveRuntimes { get { return _objectiveRuntimes; } }
+        private readonly QuestObjectiveRuntime[] _objectiveRuntimes;
+        public QuestObjectiveRuntime[] ObjectiveRuntimes { get { return _objectiveRuntimes; } }
 
-        public Dictionary<string, ObjectiveRuntime> objectiveMap = new();
+        public Dictionary<string, QuestObjectiveRuntime> objectiveMap = new();
 
         public bool IsCompleted { get; set; }
         public string CompletedOutcomeId { get; private set; }
@@ -91,10 +91,10 @@ namespace My.Player
             CacheStepCfg = data;
 
             // 初始化 Outcomes
-            _objectiveRuntimes = new ObjectiveRuntime[data.CfgObjectives.Count];
+            _objectiveRuntimes = new QuestObjectiveRuntime[data.CfgObjectives.Count];
             for (int i = 0; i < _objectiveRuntimes.Length; i++)
             {
-                _objectiveRuntimes[i] = new ObjectiveRuntime(data.CfgObjectives[i], ctx);
+                _objectiveRuntimes[i] = new QuestObjectiveRuntime(data.CfgObjectives[i], ctx);
 
                 objectiveMap[_objectiveRuntimes[i].Data.ObjId] = _objectiveRuntimes[i];
             }
@@ -573,15 +573,33 @@ namespace My.Player
             PlayerEventBus.Subscribe<PlayerKilledEvent>(OnPlayerKilled);
         }
 
+        private List<int> _removedQuests = new();
 
         public void Tick(float dt)
         {
             TickAutoAccept();
 
-            foreach(var quest in _questInfoMap.Values)
+            _removedQuests.Clear();
+            foreach (var quest in _questInfoMap.Values)
             {
                 quest.LateTick();
+                if(!quest.IsActive)
+                {
+                    _finishQuestSet.Add(quest.cacheCfg.QuestId);
+                    _removedQuests.Add(quest.cacheCfg.QuestId);
+                }
             }
+
+            foreach(var removedId in _removedQuests)
+            {
+                _questInfoMap.Remove(removedId);
+
+                if(MarkQuestId == removedId)
+                {
+                    MarkQuestId = 0;
+                }
+            }
+
         }
 
         /// <summary>

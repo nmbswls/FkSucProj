@@ -71,9 +71,9 @@ namespace My.Player
             "player_trace_bullet_01",
         };
 
-        public string[] NormalSkillSlots = new string[5];
-        public string[] HumanSkillSlots = new string[5];
-        public string[] FaQingSkillSlots = new string[5];
+        public string[] NormalSkillSlots = new string[8];
+        public string[] HumanSkillSlots = new string[8];
+        public string[] FaQingSkillSlots = new string[8];
 
         public class InnerListener : IMapLogicEventHandler
         {
@@ -103,13 +103,20 @@ namespace My.Player
 
             QuickSlotItemSet[0] = "feidao";
 
-            NormalSkillSlots[0] = "spawn_attract";
-            NormalSkillSlots[1] = "queen_pull_all";
 
-            HumanSkillSlots[0] = "player_small_staggering";
-            HumanSkillSlots[1] = "player_dark_dance";
-            HumanSkillSlots[2] = "player_push_surround";
-            HumanSkillSlots[3] = "player_trace_bullet_01";
+            NormalSkillSlots[0] = "queen_attack";
+            HumanSkillSlots[0] = "default_push";
+
+            NormalSkillSlots[2] = "default_dash";
+            NormalSkillSlots[2] = "default_dash";
+
+            NormalSkillSlots[3] = "spawn_attract";
+            NormalSkillSlots[4] = "queen_pull_all";
+
+            HumanSkillSlots[3] = "player_small_staggering";
+            HumanSkillSlots[4] = "player_dark_dance";
+            HumanSkillSlots[5] = "player_push_surround";
+            HumanSkillSlots[6] = "player_trace_bullet_01";
             
 
             FaQingSkillSlots[0] = "player_ziwei";

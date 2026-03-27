@@ -90,7 +90,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.15, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9010000572920847535}
@@ -198,6 +198,7 @@ MonoBehaviour:
   WeaponCtrl: {fileID: 0}
   innerShowClip: {fileID: 0}
   HitId: 0
+  slashEffect: {fileID: 0}
 --- !u!50 &7161059122839833753
 Rigidbody2D:
   serializedVersion: 4
@@ -482,8 +483,8 @@ Transform:
   m_GameObject: {fileID: 7554357875758548976}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.08, y: -0.015, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalPosition: {x: 0.035, y: -0.015, z: 0}
+  m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 746965970174307247}

@@ -13,6 +13,7 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
+[System.Serializable]
 public sealed partial class QuestData : Luban.BeanBase
 {
     public QuestData(JSONNode _buf) 
@@ -35,35 +36,35 @@ public sealed partial class QuestData : Luban.BeanBase
     /// <summary>
     /// id
     /// </summary>
-    public readonly int QuestId;
+    public int QuestId;
     /// <summary>
     /// 名称
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// 描述
     /// </summary>
-    public readonly string Desc;
+    public string Desc;
     /// <summary>
     /// 初始step
     /// </summary>
-    public readonly string InitStepId;
+    public string InitStepId;
     /// <summary>
     /// 完成奖励
     /// </summary>
-    public readonly System.Collections.Generic.Dictionary<string, int> FinishReward;
+    public System.Collections.Generic.Dictionary<string, int> FinishReward;
     /// <summary>
     /// 是否自动接取
     /// </summary>
-    public readonly bool IsAutoAccept;
+    public bool IsAutoAccept;
     /// <summary>
     /// 解锁条件
     /// </summary>
-    public readonly System.Collections.Generic.List<demo.CommonCheckCond> AcceeptCond;
+    public System.Collections.Generic.List<demo.CommonCheckCond> AcceeptCond;
     /// <summary>
     /// 接取npcid
     /// </summary>
-    public readonly string StartNpcId;
+    public string StartNpcId;
    
     public const int __ID__ = 477752641;
     public override int GetTypeId() => __ID__;

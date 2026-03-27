@@ -147,6 +147,8 @@ namespace My.Map.Entity
         {
             base.OnTick(dt);
 
+            
+
             // µÍÆµ¼ì²é×´Ì¬ÇÐ»»
             LowFreqCheckStatusChange();
 

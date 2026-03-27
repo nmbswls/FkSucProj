@@ -5,7 +5,8 @@
     "desc": "据点",
     "scene_name": "Main_Home",
     "is_home": true,
-    "always_alert": false
+    "always_alert": false,
+    "default_disguise": false
   },
   {
     "id": "village_01",
@@ -13,7 +14,8 @@
     "desc": "村子2",
     "scene_name": "Main_Area_01",
     "is_home": false,
-    "always_alert": true
+    "always_alert": true,
+    "default_disguise": true
   },
   {
     "id": "village_02",
@@ -21,7 +23,8 @@
     "desc": "村子2",
     "scene_name": "Main_Area_02",
     "is_home": false,
-    "always_alert": true
+    "always_alert": true,
+    "default_disguise": true
   },
   {
     "id": "game_init",
@@ -29,6 +32,16 @@
     "desc": "出生点",
     "scene_name": "Main_Init",
     "is_home": false,
-    "always_alert": false
+    "always_alert": true,
+    "default_disguise": false
+  },
+  {
+    "id": "base_fight",
+    "name": "纷争据点",
+    "desc": "纷争据点",
+    "scene_name": "Main_Home_Fight",
+    "is_home": false,
+    "always_alert": true,
+    "default_disguise": false
   }
 ]

@@ -705,6 +705,11 @@ namespace My.Map.Entity
             {
                 foreach (var candidate in candidates)
                 {
+                    if(candidate.CheckHasState(AttrIdConsts.NoSelect))
+                    {
+                        continue; 
+                    }
+
                     if (realCfg.TargetEntityType != EEntityType.None && candidate.Type != realCfg.TargetEntityType)
                     {
                         continue;

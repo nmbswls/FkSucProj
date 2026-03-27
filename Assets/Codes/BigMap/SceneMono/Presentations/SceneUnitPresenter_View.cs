@@ -130,7 +130,7 @@ namespace My.Map.Scene
 
 
 
-        protected virtual void OnEventAnimPlay(string animName, int layer)
+        protected virtual void OnEventAnimPlay(string animName, int layer, bool clearAll)
         {
             if (layer == 0)
             {
@@ -146,16 +146,12 @@ namespace My.Map.Scene
                     Debug.LogError("OnEventAnimPlay no clip " + animName);
                     return;
                 }
-                //var animancer = AgentView.GetComponent<AnimancerComponent>();
-                //List<AnimationClip> clips = new();
-                //animancer.GetAnimationClips(clips);
 
                 var state = MainAgentAnimator.Play(clipInfo.Clip, 0, FadeMode.FromStart);
                 state.Speed = clipInfo.Speed;
 
                 state.Events.OnEnd = () => MainAgentAnimator.Play(_Idle);
             }
-
         }
 
 

@@ -15,14 +15,24 @@
       ]
     ],
     "is_auto_accept": true,
-    "acceept_cond": [],
+    "acceept_cond": [
+      {
+        "type": 2,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "init.dialog_01",
+        "param6": "0"
+      }
+    ],
     "start_npc_id": ""
   },
   {
     "quest_id": 101,
     "name": "初始任务2",
     "desc": "初始任务2",
-    "init_step_id": "101_01",
+    "init_step_id": "101_s1",
     "finish_reward": [
       [
         "gold",
@@ -51,7 +61,7 @@
     "quest_id": 102,
     "name": "初始任务3",
     "desc": "初始任务3",
-    "init_step_id": "102_01",
+    "init_step_id": "102_s1",
     "finish_reward": [
       [
         "gold",
