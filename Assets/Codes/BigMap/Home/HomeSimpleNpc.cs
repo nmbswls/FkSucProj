@@ -54,6 +54,8 @@ namespace My.Map
 
         public Vector2 Pos => transform.position;
 
+        public bool IsInteracting { get { return false; } }
+
         public SimpleCharacterController CharacterController;
 
         void Start()

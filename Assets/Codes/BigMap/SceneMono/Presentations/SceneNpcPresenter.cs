@@ -43,6 +43,8 @@ namespace My.Map.Scene
 
         public bool InteractDetailMode { get; set; }
 
+        public bool IsInteracting { get { return false; } }
+
         protected override void Awake()
         {
             base.Awake();
@@ -161,7 +163,6 @@ namespace My.Map.Scene
 
         public bool CanInteractEnable()
         {
-
             if (NpcEntity.IsAttaching) return false;
 
             if(UnitEntity.IsDead)
@@ -177,10 +178,10 @@ namespace My.Map.Scene
 
             do
             {
-                if(!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
-                {
-                    break;
-                }
+                //if(!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+                //{
+                //    break;
+                //}
 
                 //if (NpcEntity.InteractComp.IsInteracting)
                 //{
@@ -194,7 +195,7 @@ namespace My.Map.Scene
 
                 if(NpcEntity.CheckHasState(AttrIdConsts.NoSelect))
                 {
-                    break;
+                    //break;
                 }
 
                 //if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
@@ -229,6 +230,13 @@ namespace My.Map.Scene
                 //        return true;
                 //    }
                 //}
+
+                string currentDialogId = NpcEntity.GetCurrentDialogId();
+
+                if (string.IsNullOrEmpty(currentDialogId))
+                {
+                    return false;
+                }
 
                 return true;
             }
@@ -458,6 +466,18 @@ namespace My.Map.Scene
                 //        }
                 //    }
                 //}
+
+                string currentDialogId = NpcEntity.GetCurrentDialogId();
+
+                if (!string.IsNullOrEmpty(currentDialogId))
+                {
+                    ret.Add(new SceneInteractSelection()
+                    {
+                        SelectId = 1,
+                        SelectContent = "½»Ì¸",
+                        Selectable = true
+                    }); ;
+                }
             }
             while (false);
 

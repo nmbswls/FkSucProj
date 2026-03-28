@@ -27,6 +27,8 @@ namespace My.Map.Scene
 
         public Vector2 Pos => throw new System.NotImplementedException();
 
+        public bool IsInteracting { get { return false; } }
+
         public bool CanInteractEnable()
         {
             if (Owner == null) return false;

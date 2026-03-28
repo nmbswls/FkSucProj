@@ -17,6 +17,10 @@ public interface ISceneInteractable
 
     Vector2 Pos { get; }
 
+    //bool IsInteractFocus { get; set; }
+
+    bool IsInteracting { get; }
+
     bool CanInteractEnable();
     bool TriggerInteract(int selectionId);
 
@@ -40,7 +44,7 @@ public class SceneInteractSystem
 {
     public static float CheckInterval = 0.1f;
 
-    private float _normalCheckRadius = 1f;
+    private float _normalCheckRadius = 0.4f;
     private float _checkAngle = 90f;
 
     private float _interactTimer = 0f;

@@ -19,6 +19,7 @@ namespace My.Map.Scene
 
         public GatherPointLogicEntity GatherPointEntity { get { return (GatherPointLogicEntity)_logic; } }
 
+        public bool IsInteracting { get { return false; } }
         public bool CanInteractEnable()
         {
             return true;

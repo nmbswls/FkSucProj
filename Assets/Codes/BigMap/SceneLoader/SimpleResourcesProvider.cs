@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
+public interface IAnimancerPrewarmable
+{
+    AnimationClip[] GetClipsToPrewarm();
+}
+
 public class SimpleResourcesProvider : MonoBehaviour, IAssetProvider, IAssetProviderAsync
 {
     public GameObject Instantiate(string key)
@@ -31,6 +36,13 @@ public class SimpleResourcesProvider : MonoBehaviour, IAssetProvider, IAssetProv
             Debug.LogError($"SimpleResourcesProviderAsync: LoadAsync failed, key={key}"); // === 新增 ===
             return null; // === 新增 ===
         }
+
+        //var prewarmableComponents = prefab.GetComponentsInChildren<IAnimancerPrewarmable>(true);
+        //foreach (var comp in prewarmableComponents)
+        //{
+        //    AnimationClip[] clips = comp.GetClipsToPrewarm();
+        //    //AnimancerPrewarmService.Instance.EnqueueClips(clips);
+        //}
 
         return GameObject.Instantiate(prefab); // === 新增 ===
     }

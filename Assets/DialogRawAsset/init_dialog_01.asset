@@ -18,7 +18,7 @@ MonoBehaviour:
   Steps:
   - Id: 1
     Note: 
-    IsExpanded: 0
+    IsExpanded: 1
     Commands:
     - rid: 8510164526873182391
     - rid: 8510164526873182393

@@ -61,7 +61,7 @@
   },
   {
     "id": "game_init_luca_injured",
-    "name": "初始受伤npc",
+    "name": "卢卡",
     "desc": "",
     "prefab_name": "game_init_luca_injured",
     "attr_template_id": 0,

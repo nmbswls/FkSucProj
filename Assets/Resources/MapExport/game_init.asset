@@ -54,7 +54,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164526873182595
+      rid: 8510164526873182650
   - StaticId: 101
     UniqName: 
     AppearCond:
@@ -76,7 +76,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164526873182596
+      rid: 8510164526873182651
   - StaticId: 102
     UniqName: 
     AppearCond:
@@ -98,7 +98,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164526873182597
+      rid: 8510164526873182652
   - StaticId: 103
     UniqName: 
     AppearCond:
@@ -120,7 +120,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164526873182598
+      rid: 8510164526873182653
   - StaticId: 104
     UniqName: init_luca
     AppearCond:
@@ -142,7 +142,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164526873182599
+      rid: 8510164526873182654
   NamedPoints:
   - Name: initial_p0
     PointType: 1
@@ -153,7 +153,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 8510164526873182595
+    - rid: 8510164526873182650
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: int_dialog_01
@@ -164,7 +164,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 8510164526873182596
+    - rid: 8510164526873182651
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: game_init_tp
@@ -175,7 +175,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 8510164526873182597
+    - rid: 8510164526873182652
       type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: game_init_02
@@ -183,7 +183,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 8510164526873182598
+    - rid: 8510164526873182653
       type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: game_init_01
@@ -191,7 +191,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 8510164526873182599
+    - rid: 8510164526873182654
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: game_init_luca_injured

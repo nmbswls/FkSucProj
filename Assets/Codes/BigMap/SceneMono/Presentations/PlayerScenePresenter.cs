@@ -105,7 +105,7 @@ namespace My.Map.Scene
     }
 
 
-    public class PlayerScenePresenter : SceneUnitPresenter, ISceneInteractable
+    public class PlayerScenePresenter : SceneUnitPresenter, ISceneInteractable, IAnimancerPrewarmable
     {
 
         public GhostTrailSpawner MoveTrailSpawner;
@@ -132,6 +132,8 @@ namespace My.Map.Scene
         public string ShowName => "Self";
 
         public Vector2 Pos => transform.position;
+
+        public bool IsInteracting { get { return false; } }
 
         public override void Tick(float dt)
         {
@@ -418,11 +420,20 @@ namespace My.Map.Scene
 
         private void OnRequestAimHelper()
         {
-            var mainTargetId = AimHelper.GetSmartMainTargetId(PlayerEntity.Pos, MainGameManager.Instance.inputBinder.LastPos);
+            Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(MainGameManager.Instance.inputBinder.LastPos);
+            var mainTargetId = AimHelper.GetSmartMainTargetId(PlayerEntity.Pos, mouseWorldPos);
 
             Debug.Log($"OnRequestAimHelper update targetId:{mainTargetId}" );
 
             PlayerEntity.UpdateSupportTargetId(mainTargetId);
+        }
+
+        public AnimationClip[] preLoadAnimClips;
+
+
+        public AnimationClip[] GetClipsToPrewarm()
+        {
+            return preLoadAnimClips;
         }
     }
 

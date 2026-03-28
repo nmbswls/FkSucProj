@@ -44,12 +44,13 @@ namespace My.UI
         /// UI组件
         /// </summary>
         /// 
-        public RectTransform ObjDetailHint;
+        [Header("Normal Interact")]
+        public GameObject NormalInteractRoot; // 交互细节
+        public CanvasGroup NormalInteractCG;
 
-        [Header("根canvas group")]
-        public CanvasGroup ObjDetailHintCG;
+        public GameObject TopOpHint;
 
-        public RectTransform CenterHint;
+        public GameObject CenterHint;
         public GameObject ObjHintIconEnable;
         public GameObject ObjHintIconForbid;
 
@@ -57,8 +58,10 @@ namespace My.UI
         public TextMeshProUGUI ObjFloatingNameText;
         public RectTransform ObjSwitchHint;
 
+
         public UISceneInteractMenu4Choose ChooseInteractMenu;
 
+        [Header("其他")]
         public bool WithHigherInteract;
 
 
@@ -72,6 +75,8 @@ namespace My.UI
 
         public SceneNpcPresenter? currExecuteTarget = null;
 
+        public bool IsDetailMenuShown = false;
+
 
         public void Awake()
         {
@@ -80,24 +85,21 @@ namespace My.UI
 
         private void Start()
         {
-            ObjDetailHint.gameObject.SetActive(false);
+            NormalInteractRoot.gameObject.SetActive(false);
 
-            //// 对 UI 元素进行呼吸
-            //ObjHintCircle.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.8f)
-            //        .SetLoops(-1, LoopType.Yoyo)
-            //        .SetEase(Ease.InOutSine)
-            //        .SetUpdate(true); // 即使游戏暂停(Time.timeScale=0)也能继续呼吸
+            TopOpHint.SetActive(true);
 
+            CenterHint.SetActive(false);
             ObjHintIconEnable.SetActive(true);
             ObjHintIconForbid.SetActive(false);
 
             ObjSwitchHint.gameObject.SetActive(false);
+            ChooseInteractMenu.gameObject.SetActive(false);
+
+            IsDetailMenuShown = false;
 
             HModeExecuteHint.gameObject.SetActive(false);
         }
-
-        private float _interactViewUpdateTimer = 0;
-        private Vector2? ActiveClosePanelPos = null; // 主动关闭交互面板的位置
 
 
         public void Update()
@@ -117,7 +119,7 @@ namespace My.UI
                     UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
                     out Vector2 localPos
                 );
-                ObjDetailHint.transform.localPosition = localPos;
+                NormalInteractRoot.transform.localPosition = localPos;
             }
 
             if(currExecuteTarget != null)
@@ -158,6 +160,11 @@ namespace My.UI
             _refreshSelectionTimer = LogicTime.time;
 
             if(currFocusInteractable == null)
+            {
+                return;
+            }
+
+            if (!IsDetailMenuShown)
             {
                 return;
             }
@@ -327,11 +334,11 @@ namespace My.UI
         {
             if(currFocusInteractable == null)
             {
-                ObjDetailHint.gameObject.SetActive(false);
+                NormalInteractRoot.gameObject.SetActive(false);
             }
             else
             {
-                ObjDetailHint.gameObject.SetActive(true);
+                NormalInteractRoot.gameObject.SetActive(true);
 
                 // 更新详情条位置
                 var hintPos = currFocusInteractable.GetHintAnchorPosition();
@@ -342,27 +349,21 @@ namespace My.UI
                     UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
                     out Vector2 localPos
                 );
-                ObjDetailHint.transform.localPosition = localPos;
+                NormalInteractRoot.transform.localPosition = localPos;
 
-                var selections = currFocusInteractable.GetInteractSelections();
+                string topHint = " 交互";
 
-                var innerList = new List<ChooseItem>();
-                foreach (var one in selections)
-                {
-                    innerList.Add(new ChooseItem()
-                        {
-                            SelectId = one.SelectId,
-                            Content = one.SelectContent,
-                            Selectable = one.Selectable
-                        }
-                    );
-                }
-                ChooseInteractMenu.SetData(innerList);
+                IsDetailMenuShown = false;
+
+                TopOpHint.SetActive(true);
+                CenterHint.SetActive(false);
+                ChooseInteractMenu.gameObject.SetActive(false);
+                
 
                 ObjFloatingNameText.text = currFocusInteractable.ShowName;
 
                 // 有可切换项时 切换
-                if(ActiveInteractableList.Count > 1)
+                if (ActiveInteractableList.Count > 1)
                 {
                     ObjSwitchHint.gameObject.SetActive(true);
                 }
@@ -372,13 +373,13 @@ namespace My.UI
                 }
 
                 var nameOffset = currFocusInteractable.GetHintOffsetInfos();
-                if(nameOffset < 0)
+                if (nameOffset < 0)
                 {
-                    ObjFloatingNameBox.transform.localPosition = new Vector3(0, 40.0f, 0);
+                    //ObjFloatingNameBox.transform.localPosition = new Vector3(0, 40.0f, 0);
                 }
                 else
                 {
-                    ObjFloatingNameBox.transform.localPosition = new Vector3(0, nameOffset, 0);
+                    //ObjFloatingNameBox.transform.localPosition = new Vector3(0, nameOffset, 0);
                 }
             }
         }
@@ -509,7 +510,7 @@ namespace My.UI
 
             if(block)
             {
-                ObjDetailHintCG.alpha = 0.6f;
+                NormalInteractCG.alpha = 0.6f;
 
                 ObjHintIconEnable.SetActive(false);
                 ObjHintIconForbid.SetActive(true);
@@ -517,7 +518,7 @@ namespace My.UI
             }
             else
             {
-                ObjDetailHintCG.alpha = 1f;
+                NormalInteractCG.alpha = 1f;
 
                 ObjHintIconEnable.SetActive(true);
                 ObjHintIconForbid.SetActive(false);
@@ -558,20 +559,48 @@ namespace My.UI
                 return false;
             }
 
-            int idx = ChooseInteractMenu.CurrentIndex;
-            ChooseInteractMenu.ItemOnClick(idx);
-
-            int selectId = (int)ChooseInteractMenu.data[idx].SelectId;
-            var closed = currFocusInteractable.TriggerInteract(selectId);
-
-            if(closed)
+            if(!IsDetailMenuShown)
             {
-                //OnInteractUnFocus(currFocusInteractable);
-                //currFocusInteractable = null;
 
-                //UpdateFocusInteractableView();
+                IsDetailMenuShown = true;
 
-                MainGameManager.Instance.interactSystem.SetInteractPause();
+                // 给出selection
+                var selections = currFocusInteractable.GetInteractSelections();
+                var innerList = new List<ChooseItem>();
+                foreach (var one in selections)
+                {
+                    innerList.Add(new ChooseItem()
+                    {
+                        SelectId = one.SelectId,
+                        Content = one.SelectContent,
+                        Selectable = one.Selectable
+                    }
+                    );
+                }
+
+                ChooseInteractMenu.gameObject.SetActive(true);
+                ChooseInteractMenu.SetData(innerList);
+
+                TopOpHint.SetActive(false);
+                CenterHint.SetActive(true);
+            }
+            else
+            {
+                int idx = ChooseInteractMenu.CurrentIndex;
+                ChooseInteractMenu.ItemOnClick(idx);
+
+                int selectId = (int)ChooseInteractMenu.data[idx].SelectId;
+                var closed = currFocusInteractable.TriggerInteract(selectId);
+
+                if (closed)
+                {
+                    //OnInteractUnFocus(currFocusInteractable);
+                    //currFocusInteractable = null;
+
+                    //UpdateFocusInteractableView();
+
+                    MainGameManager.Instance.interactSystem.SetInteractPause();
+                }
             }
 
             return true;
@@ -590,6 +619,17 @@ namespace My.UI
 
         public bool OnCancel()
         {
+            if (IsDetailMenuShown)
+            {
+                IsDetailMenuShown = false;
+
+                TopOpHint.SetActive(true);
+                CenterHint.SetActive(false);
+                ChooseInteractMenu.gameObject.SetActive(false);
+
+                return true;
+            }
+
             return false;
         }
 

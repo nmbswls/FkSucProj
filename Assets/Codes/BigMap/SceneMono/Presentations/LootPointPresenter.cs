@@ -20,6 +20,8 @@ namespace My.Map.Scene
 
         public string ShowName => LootEntity.cacheConfig.ShowName;
 
+        public bool IsInteracting { get { return true; } }
+
         public LootPointLogicEntity LootEntity { get { return (LootPointLogicEntity)_logic; } }
         public override void ApplyState(object state)
         {

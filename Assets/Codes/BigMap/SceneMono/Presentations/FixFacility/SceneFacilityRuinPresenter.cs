@@ -25,7 +25,8 @@ namespace My.Map.Scene
 
         public Transform HintPivot;
 
-        
+        public bool IsInteracting { get { return false; } }
+
         [ContextMenu("Auto Collect Child Sprites")]
         private void CollectSprites()
         {

@@ -535,6 +535,15 @@ namespace My.Map
         {
             return NpcConfig.EmnityCfgId;
         }
+
+        /// <summary>
+        /// 获取当前对话
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentDialogId()
+        {
+            return NpcConfig.PeaceDialogId;
+        }
     }
 }
 

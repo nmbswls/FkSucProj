@@ -26,6 +26,8 @@ namespace My.Map.Scene
 
         private bool IsSwitching = false;  // ≤ª∫œ¿Ì
         private float switchingTimer = 0;
+
+        public bool IsInteracting { get { return RealLogic.InteractComp.IsInteracting; } }
         public virtual string ShowName { 
             get 
             {

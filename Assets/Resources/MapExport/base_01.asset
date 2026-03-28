@@ -20,20 +20,7 @@ MonoBehaviour:
     StaticItems:
     - ItemId: 101
       Key: P/Home/Facility_Good
-      Position: {x: -9.58, y: -4.23, z: 0}
-      Rotation: {x: -0, y: -0, z: -0, w: 1}
-      Scale: {x: 1, y: 1, z: 1}
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: 
-        Param6: 
-    - ItemId: 102
-      Key: P/Home/Room_01
-      Position: {x: -6.32, y: 3.16, z: 0}
+      Position: {x: -4.73, y: 0, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
@@ -49,12 +36,12 @@ MonoBehaviour:
   - StaticId: 100
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: aaa
       Param6: 
     DisappearCond:
       Type: 0
@@ -67,12 +54,12 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672905
+      rid: 8510164526873182615
   - StaticId: 101
     UniqName: 
     AppearCond:
-      Type: 0
-      Param1: 0
+      Type: 1
+      Param1: 100
       Param2: 0
       Param3: 0
       Param4: 0
@@ -89,16 +76,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672906
+      rid: 8510164526873182616
   - StaticId: 102
     UniqName: 
     AppearCond:
-      Type: 0
-      Param1: 0
+      Type: 5
+      Param1: 100
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: 100_s2
       Param6: 
     DisappearCond:
       Type: 0
@@ -111,16 +98,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672907
+      rid: 8510164526873182617
   - StaticId: 103
     UniqName: 
     AppearCond:
-      Type: 0
-      Param1: 0
+      Type: 5
+      Param1: 100
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: 100_s1
       Param6: 
     DisappearCond:
       Type: 0
@@ -133,16 +120,16 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672908
+      rid: 8510164526873182618
   - StaticId: 104
-    UniqName: 
+    UniqName: init_luca
     AppearCond:
-      Type: 0
+      Type: 5
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: 100_s1
       Param6: 
     DisappearCond:
       Type: 0
@@ -155,178 +142,65 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8250387953918672909
-  - StaticId: 105
-    UniqName: 
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 8250387953918672910
-  - StaticId: 106
-    UniqName: 
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 8250387953918672911
-  - StaticId: 107
-    UniqName: 
-    AppearCond:
-      Type: 2
-      Param1: 1
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: fix_teleport
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 8250387953918672912
+      rid: 8510164526873182619
   NamedPoints:
-  - Name: p1
-    PointType: 0
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: born_01
+  - Name: initial_p0
     PointType: 1
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: hole_01_p
-    PointType: 0
-    Position: {x: -3.851, y: 3.49, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: hole_02_p
-    PointType: 0
-    Position: {x: -4.933, y: 3.5, z: 0}
+    Position: {x: -4.92, y: -1.1, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   NamedPaths: []
   references:
     version: 2
     RefIds:
-    - rid: 8250387953918672905
-      type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: ruin_lab3
-        Position: {x: 1, y: -2}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 0
-    - rid: 8250387953918672906
-      type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: ruin_lab2
-        Position: {x: 2, y: 2}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 0
-    - rid: 8250387953918672907
-      type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: ruin_lab1
-        Position: {x: -2, y: 1}
-        FaceDir: {x: 0, y: 0}
-        BindRoomId: 
-        OrgFactionId: 0
-    - rid: 8250387953918672908
+    - rid: 8510164526873182615
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: lock_door_01
-        Position: {x: -6.11, y: 2.866}
+        CfgId: int_dialog_01
+        Position: {x: 0, y: 0}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 8250387953918672909
+    - rid: 8510164526873182616
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: bridge_block
-        Position: {x: 3.165, y: -1.268}
+        CfgId: game_init_tp
+        Position: {x: -5.04, y: -5.41}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 8250387953918672910
-      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+    - rid: 8510164526873182617
+      type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: hole
-        Position: {x: -4.732, y: 3.52}
+        CfgId: game_init_02
+        Position: {x: -4.86, y: -2.65}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        Variables:
-          keys:
-          - tp_name
-          values:
-          - hole_01_p
-    - rid: 8250387953918672911
-      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+    - rid: 8510164526873182618
+      type: {class: EntityInitInfo4DynamicSpawner, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: hole
-        Position: {x: -4.035, y: 3.52}
+        CfgId: game_init_01
+        Position: {x: -5, y: -1.64}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        Variables:
-          keys:
-          - tp_name
-          values:
-          - hole_02_p
-    - rid: 8250387953918672912
-      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+    - rid: 8510164526873182619
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: teleport
-        Position: {x: -0.96, y: 4.26}
+        CfgId: game_init_luca_injured
+        Position: {x: -5, y: -6.88}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        Variables:
-          keys: []
-          values: []
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0

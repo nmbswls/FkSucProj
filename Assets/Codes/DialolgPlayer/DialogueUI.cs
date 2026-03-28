@@ -9,14 +9,14 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    public class DialogueUI : PanelBase
+    public class DialogueUI : PanelBase // 假设 PanelBase 是您自己的基类
     {
-
         [Header("Refs")]
         public TextMeshProUGUI nameText;
         public TextMeshProUGUI contentText;
 
         public Transform nameTextContainer;
+        public Transform contentTextContainer;
 
         public GameObject nextIndicator;
         public Transform BlackMask;
@@ -29,7 +29,6 @@ namespace My.UI
 
         [Header("Typing")]
         public float charInterval = 0.03f;
-        //public AudioBus audioBus;
         public string typeSE = null;
         public int seEveryChars = 3;
 
@@ -38,14 +37,14 @@ namespace My.UI
         [HideInInspector] public float autoTimer = 0f;
         public bool IsFastMode = false;
 
-
         // 打字机状态
         public List<OneTextLine> readingData;
         public int currentLineIndex = 0;
 
-        private string currentFullText; // 当前行的文本
+        private string currentFullText;
         private int currentIndex;
         private float tick;
+        private float typingTimer; // 用于记录打字已经进行了多久，防止误触
         private bool typing;
         private Action onTypingComplete;
 
@@ -59,7 +58,7 @@ namespace My.UI
 
         public void Awake()
         {
-            choiceButtonPrefab.gameObject.SetActive(false);
+            if (choiceButtonPrefab) choiceButtonPrefab.gameObject.SetActive(false);
 
             ClickArea.onClick.RemoveAllListeners();
             ClickArea.onClick.AddListener(TryDoContinue);
@@ -70,7 +69,10 @@ namespace My.UI
             // 打字机推进
             if (typing)
             {
-                tick += Time.deltaTime;
+                float dt = Time.deltaTime;
+                tick += dt;
+                typingTimer += dt; // 累加打字总时长
+
                 while (tick >= charInterval)
                 {
                     tick -= charInterval;
@@ -79,15 +81,13 @@ namespace My.UI
                 }
             }
 
-            if(showingChoices)
+            // 选项限时逻辑
+            if (showingChoices && choiceLimitTime > 0)
             {
-                if(choiceLimitTime > 0)
+                choiceLimitTimeLeft -= Time.deltaTime; // 建议用 Time.deltaTime，或替换为您的 LogicTime.deltaTime
+                if (choiceLimitTimeLeft <= 0)
                 {
-                    choiceLimitTimeLeft -= LogicTime.deltaTime;
-                    if(choiceLimitTimeLeft <= 0)
-                    {
-                        OnChoiceClick(0);
-                    }
+                    OnChoiceClick(0); // 超时默认选择第一项
                 }
             }
         }
@@ -97,86 +97,77 @@ namespace My.UI
         /// </summary>
         private void TryDoContinue()
         {
-            if(readingData == null || readingData.Count == 0)
-            {
-                return;
-            }
+            // 如果正在展示选项，屏蔽点击，防止错误关闭或跳过
+            if (showingChoices) return;
 
-            if(currentLineIndex >= readingData.Count)
-            {
-                return;
-            }
+            if (readingData == null || readingData.Count == 0) return;
+            if (currentLineIndex >= readingData.Count) return;
 
-            // 正在打字
-            if(typing)
+            // 正在打字时点击：尝试快进全显
+            if (typing)
             {
-                //前1秒锁定
-                if (tick < 1f)
+                // 防误触：打字刚开始的 0.25 秒内点击无效（1秒通常太长，影响手感）
+                if (typingTimer < 0.25f)
                 {
                     return;
                 }
 
-                // 否则立即显示全量
+                // 立即显示全量
                 contentText.text = currentFullText ?? "";
                 FinishTyping();
                 return;
             }
 
-            currentLineIndex += 1;
+            // 打字已完成，进入下一行
+            currentLineIndex++;
             if (currentLineIndex < readingData.Count)
             {
                 StartTypeOneLine(readingData[currentLineIndex]);
             }
             else
             {
+                // 对话结束
                 var cb = onTypingComplete;
                 onTypingComplete = null;
                 cb?.Invoke();
+
+                nameTextContainer.gameObject.SetActive(false);
+                contentTextContainer.gameObject.SetActive(false);
             }
         }
 
         /// <summary>
         /// 执行一批文本的显示逻辑
         /// </summary>
-        /// <param name="textLines"></param>
-        /// <param name="onComplete"></param>
         public void StartTypeTextBatch(List<OneTextLine> textLines, Action onComplete)
         {
-            if(textLines == null || textLines.Count == 0)
+            if (textLines == null || textLines.Count == 0)
             {
                 typing = false;
                 onComplete?.Invoke();
                 return;
             }
+
             this.readingData = textLines;
             this.currentLineIndex = 0;
-
             this.onTypingComplete = onComplete;
-            // 立即触发第一行打字
+
             StartTypeOneLine(textLines[0]);
+
+            nameTextContainer.gameObject.SetActive(true);
+            contentTextContainer.gameObject.SetActive(true);
         }
 
         /// <summary>
         /// 执行一行文本的打字
         /// </summary>
-        /// <param name="line"></param>
         private void StartTypeOneLine(OneTextLine line)
         {
-            if (string.IsNullOrEmpty(line.Speaker))
-            {
-                nameTextContainer.gameObject.SetActive(false);
-            }
-            else
-            {
-                nameTextContainer.gameObject.SetActive(true);
-            }
+            bool hasSpeaker = !string.IsNullOrEmpty(line.Speaker);
+            if (nameTextContainer) nameTextContainer.gameObject.SetActive(hasSpeaker);
+            if (nameText) nameText.text = hasSpeaker ? line.Speaker : "";
 
-            if (nameText) nameText.text = line.Speaker;
-
-            //if (!string.IsNullOrEmpty(voice) && audioBus != null)
-            //{
-            //    audioBus.PlayVoice(voice);
-            //}
+            ShowNextIndicator(false);
 
             if (IsFastMode)
             {
@@ -189,44 +180,14 @@ namespace My.UI
             }
         }
 
-        //public void StartTypeText(string speaker, string content, string voice, bool fast, Action onComplete)
-        //{
-        //    if(string.IsNullOrEmpty(speaker))
-        //    {
-        //        nameTextContainer.gameObject.SetActive(false);
-        //    }
-        //    else
-        //    {
-        //        nameTextContainer.gameObject.SetActive(true);
-        //    }
-
-        //    if (nameText) nameText.text = speaker;
-        //    ShowNextIndicator(false);
-
-        //    //if (!string.IsNullOrEmpty(voice) && audioBus != null)
-        //    //{
-        //    //    audioBus.PlayVoice(voice);
-        //    //}
-
-        //    onTypingComplete = onComplete;
-
-        //    if (fast)
-        //    {
-        //        if (contentText) contentText.text = content;
-        //        FinishTyping();
-        //    }
-        //    else
-        //    {
-        //        StartTypewriter(content);
-        //    }
-        //}
-
         private void StartTypewriter(string fullText)
         {
             currentFullText = fullText ?? "";
             currentIndex = 0;
             tick = 0f;
+            typingTimer = 0f; // 重置防误触计时器
             typing = true;
+
             if (contentText) contentText.text = "";
         }
 
@@ -241,7 +202,7 @@ namespace My.UI
                 return;
             }
 
-            // 保持富文本标签完整：若遇到 '<'，直接跳到 '>' 后
+            // 保持富文本标签完整
             if (currentFullText[currentIndex] == '<')
             {
                 int close = currentFullText.IndexOf('>', currentIndex);
@@ -259,11 +220,6 @@ namespace My.UI
             {
                 contentText.text += currentFullText[currentIndex];
                 currentIndex++;
-                // 播放 SE（节流）
-                //if (!string.IsNullOrEmpty(typeSE) && audioBus != null && seEveryChars > 0)
-                //{
-                //    if (currentIndex % seEveryChars == 0) audioBus.PlaySE(typeSE);
-                //}
             }
         }
 
@@ -271,9 +227,6 @@ namespace My.UI
         {
             typing = false;
             ShowNextIndicator(true);
-            //var cb = onTypingComplete;
-            //onTypingComplete = null;
-            //cb?.Invoke();
         }
 
         public void ShowNextIndicator(bool show)
@@ -281,9 +234,10 @@ namespace My.UI
             if (nextIndicator) nextIndicator.SetActive(show);
         }
 
-        // 选择系统（非协程）
+        // 选择系统
         public void StartChoices(List<string> options, Action<int> onSelected, float limitTime = 0)
         {
+            ShowNextIndicator(false); // 弹出选项时隐藏下一步指示器
             showingChoices = true;
             onChoiceSelected = onSelected;
 
@@ -292,37 +246,46 @@ namespace My.UI
 
             if (choicePanel) choicePanel.SetActive(true);
 
-            // 清空旧按钮
+            // 清理旧按钮（排除预制体本身，以防预制体在同一节点下）
             if (choiceContainer)
             {
-                for (int i = choiceContainer.childCount - 1; i >= 0; i--)
+                foreach (Transform child in choiceContainer)
                 {
-                    Destroy(choiceContainer.GetChild(i).gameObject);
+                    if (child.gameObject != choiceButtonPrefab.gameObject)
+                    {
+                        Destroy(child.gameObject);
+                    }
                 }
             }
 
+            // 生成新选项
             for (int i = 0; i < options.Count; i++)
             {
                 var btn = Instantiate(choiceButtonPrefab, choiceContainer);
                 btn.gameObject.SetActive(true);
                 var tmp = btn.GetComponentInChildren<TextMeshProUGUI>();
                 if (tmp) tmp.text = options[i];
-                int index = i;
+
+                int index = i; // 捕获局部变量
                 btn.onClick.AddListener(() => OnChoiceClick(index));
             }
+
+            nameTextContainer.gameObject.SetActive(true);
+            contentTextContainer.gameObject.SetActive(true);
         }
 
         private void OnChoiceClick(int index)
         {
             if (!showingChoices) return;
             showingChoices = false;
+
             if (choicePanel) choicePanel.SetActive(false);
-            var cb = onChoiceSelected;
-            onChoiceSelected = null;
 
             choiceLimitTime = 0;
             choiceLimitTimeLeft = 0;
 
+            var cb = onChoiceSelected;
+            onChoiceSelected = null;
             cb?.Invoke(index);
         }
     }
