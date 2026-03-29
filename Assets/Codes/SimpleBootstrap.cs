@@ -9,10 +9,7 @@ public class WorldBootstrap : MonoBehaviour
 
     async void Start()
     {
-        await MainGameManager.Instance.InitStartGame("a", () =>
-        {
-            Debug.Log("InitializeGame finished");
-        });
+        
     }
 
 }
