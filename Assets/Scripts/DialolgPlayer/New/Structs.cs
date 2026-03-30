@@ -84,6 +84,7 @@ namespace My.Dialog
         Charmed,
 
         SetGlobalSwitch,
+        Teleport,
     }
 
 
@@ -128,6 +129,31 @@ namespace My.Dialog
         public string Param6;
     }
 
+    [Serializable]
+    public class DialogCommandData4PlayTimeline : DialogCommandData
+    {
+        public string TimelineId;
+        public bool WaitUntilFinished;
+    }
+
+    [Serializable]
+
+    public class DialogCommandData4WaitTimelineSignal : DialogCommandData
+    {
+        public string SignalName; // 等待的信号名称
+    }
+
+    [Serializable]
+    public class DialogCommandData4ResumeTimeline : DialogCommandData
+    {
+    }
+
+
+    [Serializable]
+    public class DialogCommandData4Wait : DialogCommandData
+    {
+        public float WaitTime;
+    }
 
     [Serializable]
     public class DialogCommandData4Choice : DialogCommandData
@@ -135,6 +161,8 @@ namespace My.Dialog
         public float TimeLimit = 0;
         public List<DialogChoiceOption> Options = new List<DialogChoiceOption>();
     }
+
+
 
 
     [Serializable]

@@ -1,6 +1,7 @@
 using DG.Tweening;
 using Map.Entity;
 using My.Map.Entity;
+using My.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,7 +27,31 @@ namespace My.Map.Scene
         public Transform HintPivot;
 
         public bool InteractFocused { get; set; }
-        public bool IsInteractDetail { get; set; }
+        public bool IsInteractDetail
+        {
+            get { return isInteractDetail; }
+            set
+            {
+                isInteractDetail = value;
+
+                if(isInteractDetail)
+                {
+                    var realPanel = UIManager.Instance.ShowPanel("RepairDetailPanel") as RepairDetailPanel;
+                    if(realPanel != null)
+                    {
+                        realPanel.UpdateBind(this);
+                    }
+                }
+                else
+                {
+                    UIManager.Instance.HidePanel("RepairDetailPanel");
+                }
+            }
+        }
+
+        private bool isInteractDetail;
+
+
 
         [ContextMenu("Auto Collect Child Sprites")]
         private void CollectSprites()

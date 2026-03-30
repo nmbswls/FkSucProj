@@ -150,4 +150,39 @@ namespace My.Dialog
         public override string GetSummary() => $"[Choice]";
     }
 
+
+    [Serializable]
+    public class EditorPlayerTimelineCommand : EditorDialogCommand
+    {
+
+        public string TimelineId;
+        public bool WaitUntilFinished;
+
+        public override string GetSummary() => $"[PlayerTimeline]";
+    }
+
+
+    [Serializable]
+
+    public class EditorWaitTimelineSignalCommand : EditorDialogCommand
+    {
+        public string SignalName; // 等待的信号名称
+
+        public override string GetSummary() => $"[WaitTimelineSignal]";
+    }
+
+    [Serializable]
+    public class EditorCommandResumeTimeline : EditorDialogCommand
+    {
+        public override string GetSummary() => $"[Resume]";
+    }
+
+    [Serializable]
+    public class EditorCommandWait : EditorDialogCommand
+    {
+        public float WaitTime;
+
+        public override string GetSummary() => $"[Wait]";
+    }
+
 }

@@ -31,7 +31,6 @@ namespace My.UI
             public bool Selectable;
         }
 
-
         [Header("Data")]
         public List<ChooseItem> data = new List<ChooseItem>();
 
@@ -41,6 +40,8 @@ namespace My.UI
         private int selectedIndex = -1; // 按F确认后的选中项（-1 表示尚未确认）
 
         public int CurrentIndex { get { return currentIndex; } }
+
+        public event Action<int> EventOnIndexUpdate;
 
         private void Awake()
         {
@@ -93,6 +94,8 @@ namespace My.UI
             RefreshVisibleItems();
             // 将当前项滚动至中间（5个视窗的第3个位置）
             ScrollToCenter(currentIndex);
+
+            EventOnIndexUpdate?.Invoke(currentIndex);
         }
 
 
@@ -170,6 +173,8 @@ namespace My.UI
 
             this.ScrollView.sizeDelta = new(this.ScrollView.sizeDelta.x, data.Count * itemHeight);
             //this.viewport.sizeDelta = new(this.viewport.sizeDelta.x, 222);
+
+            EventOnIndexUpdate?.Invoke(currentIndex);
         }
 
         public void ItemOnClick(int idx)
@@ -184,6 +189,8 @@ namespace My.UI
                 myItem.DoHintConfirm();
             }
         }
+
+        
     }
 
 }

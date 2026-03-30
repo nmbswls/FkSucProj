@@ -120,12 +120,13 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public CameraFollow CameraCtrl;
     public CinemachineVirtualCamera MainMapVCam;
+    public CinemachineBrain CineBrain;
 
     public UnityNavProvider NavProvider;
 
     public DialoguePlayer dialoguePlayer;
 
-   
+    public SceneAOIManager AOIManager;
 
 
     private void Awake()
@@ -203,9 +204,19 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         };
 
         // 
+        //MainMapVCam.PreviousStateIsValid = false;
+
         await LoadGameMain();
 
+        //MainMapVCam.PreviousStateIsValid = false;
+
+        while(!AOIManager.CheckNoLoading())
+        {
+            await Task.Delay(100);
+        }
+
         UIManager.Instance.HideLoading();
+        UIManager.Instance.FadeHideBlack(1.5f);
 
         Initialized = true;
     }
@@ -285,7 +296,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
             interactSystem.Tick(LogicTime.deltaTime);
         }
 
-        if(switchAreaFlag)
+        if(!dialoguePlayer.IsPlaying && switchAreaFlag)
         {
             _ = AsyncSwitchArea().ContinueWith(t =>
             {
@@ -426,6 +437,8 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         await LoadGameMain();
 
         UIManager.Instance.HideLoading();
+
+        UIManager.Instance.FadeHideBlack(1.5f);
     }
 
 
@@ -603,7 +616,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         ctx.IsDefeatMode = isDefeatMode;
 
         await EncounterBattleLoader.LoadBattleAsync(ctx);
-
+        UIManager.Instance.FadeHideBlack(1.5f);
 
         UIManager.Instance.HideLoading();
     }

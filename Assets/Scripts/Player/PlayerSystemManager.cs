@@ -171,7 +171,6 @@ namespace My.Player
 
 
 
-
         public bool CheckHasParam(string id)
         {
             VariableDict.TryGetValue(id, out var val);
@@ -268,10 +267,6 @@ namespace My.Player
             return QuickSlotItemSet;
         }
 
-        public string GetPlayerBornPoint()
-        {
-            return SavedBornPoint;
-        }
 
         /// <summary>
         /// 

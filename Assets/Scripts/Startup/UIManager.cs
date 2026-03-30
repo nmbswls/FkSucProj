@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using My.Input;
 using System.Linq;
+using DG.Tweening;
 
 namespace My.UI
 {
@@ -45,9 +46,10 @@ namespace My.UI
         private readonly Dictionary<string, PanelPool> pools = new();
         private readonly SortedDictionary<int, List<IPanel>> layerPanels = new();
 
+        public CanvasGroup TopBlackMaskCG;
+
 
         //  ‰»Îª∫¥Ê
-        private InputActionMap mapOverworld, mapBattle, mapUI;
         private InputAction uiConfirm, uiCancel, uiNavigate;
         private readonly List<(InputAction action, Action<InputAction.CallbackContext> handler)> handlers = new();
 
@@ -320,6 +322,64 @@ namespace My.UI
         {
             if (TryConsumeByLayers(c => c.OnHoldingEnd(holdingKey))) return true;
             return false;
+        }
+
+
+        private Tween coHideBlack;
+
+        /// <summary>
+        /// œ‘ æ∫⁄∆¡
+        /// </summary>
+        public void FadeShowBlack(float duration = 1.0f)
+        {
+            if (coHideBlack != null)
+            {
+                coHideBlack.Kill();
+                coHideBlack = null;
+            }
+
+
+            TopBlackMaskCG.gameObject.SetActive(true);
+            TopBlackMaskCG.alpha = 0.0f;
+
+            coHideBlack = TopBlackMaskCG.DOFade(1.0f, duration)
+                .OnComplete(() =>
+                {
+                    TopBlackMaskCG.gameObject.SetActive(true);
+                    TopBlackMaskCG.alpha = 1.0f;
+                })
+                .OnKill(() =>
+                {
+                    TopBlackMaskCG.gameObject.SetActive(true);
+                    TopBlackMaskCG.alpha = 1.0f;
+                }).SetLink(gameObject);
+        }
+
+        /// <summary>
+        /// ∫⁄∆¡œ˚ ß
+        /// </summary>
+        public void FadeHideBlack(float duration = 1.0f)
+        {
+            if (coHideBlack != null)
+            {
+                coHideBlack.Kill();
+                coHideBlack = null;
+            }
+            TopBlackMaskCG.gameObject.SetActive(true);
+            TopBlackMaskCG.alpha = 1.0f;
+
+            coHideBlack = TopBlackMaskCG.DOFade(0, duration)
+                .OnComplete(() =>
+                {
+                    TopBlackMaskCG.gameObject.SetActive(false);
+                    TopBlackMaskCG.alpha = 1.0f;
+                })
+                .OnKill(() =>
+                {
+                    TopBlackMaskCG.gameObject.SetActive(false);
+                    TopBlackMaskCG.alpha = 1.0f;
+                }).SetLink(gameObject);
+
         }
     }
 }

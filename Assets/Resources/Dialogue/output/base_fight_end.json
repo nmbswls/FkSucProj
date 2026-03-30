@@ -1,0 +1,129 @@
+{
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "切换场景，语句1",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "",
+              "Content": "切换场景，语句2",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "",
+              "Content": "切换场景，语句3",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4PlayTimeline, Assembly-CSharp",
+          "TimelineId": "tl_main",
+          "WaitUntilFinished": false
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4WaitTimelineSignal, Assembly-CSharp",
+          "SignalName": "b2"
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "播了一小段",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4ResumeTimeline, Assembly-CSharp"
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4WaitTimelineSignal, Assembly-CSharp",
+          "SignalName": "b2"
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "播放一段左到右",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4ResumeTimeline, Assembly-CSharp"
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4WaitTimelineSignal, Assembly-CSharp",
+          "SignalName": "b2"
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "播放一段右到左",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "",
+              "Content": "再说一些话",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "",
+              "Content": "结束了",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Wait, Assembly-CSharp",
+          "WaitTime": 1.0
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 6,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "base_01",
+          "Param6": "born_center"
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 5,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "base_clear",
+          "Param6": ""
+        }
+      ]
+    }
+  ]
+}

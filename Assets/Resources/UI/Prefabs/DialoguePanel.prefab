@@ -1048,6 +1048,7 @@ GameObject:
   - component: {fileID: 8069214417913805457}
   - component: {fileID: 5828993543447641335}
   - component: {fileID: 2318017736779646143}
+  - component: {fileID: 8079235891629910690}
   m_Layer: 5
   m_Name: BlackMask
   m_TagString: Untagged
@@ -1112,6 +1113,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &8079235891629910690
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4635484181232249351}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5006536923109335558
 GameObject:
   m_ObjectHideFlags: 0
@@ -1504,7 +1517,6 @@ MonoBehaviour:
   nameTextContainer: {fileID: 3933372139890293015}
   contentTextContainer: {fileID: 3836766500018072377}
   nextIndicator: {fileID: 0}
-  BlackMask: {fileID: 8069214417913805457}
   ClickArea: {fileID: 4274638466958885412}
   choicePanel: {fileID: 5665048729301383636}
   choiceButtonPrefab: {fileID: 2450425750857383058}
@@ -1518,6 +1530,7 @@ MonoBehaviour:
   readingData: []
   currentLineIndex: 0
   portraits: {fileID: 1069451328471873642}
+  BlackMask: {fileID: 8069214417913805457}
 --- !u!1 &8971271437696792163
 GameObject:
   m_ObjectHideFlags: 0

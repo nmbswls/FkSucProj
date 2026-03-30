@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using My.Dialog;
 using My.Map;
 using TMPro;
@@ -19,7 +20,6 @@ namespace My.UI
         public Transform contentTextContainer;
 
         public GameObject nextIndicator;
-        public Transform BlackMask;
         public Button ClickArea;
 
         [Header("Choice UI")]
@@ -62,7 +62,10 @@ namespace My.UI
 
             ClickArea.onClick.RemoveAllListeners();
             ClickArea.onClick.AddListener(TryDoContinue);
+
         }
+
+        
 
         private void Update()
         {

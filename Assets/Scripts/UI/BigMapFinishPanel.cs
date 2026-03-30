@@ -32,6 +32,7 @@ namespace My.UI
         private void DoConfirm()
         {
             string tpMapName = "base_01";
+            tpMapName = MainGameManager.Instance.gameLogicManager.GetCurrentReviveMap();
             MainGameManager.Instance.gameLogicManager.TryPlayerSwitchArea(tpMapName, true);
         }
     }

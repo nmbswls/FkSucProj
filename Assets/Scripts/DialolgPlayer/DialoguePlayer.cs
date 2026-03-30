@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using cfg.demo;
+using Cinemachine;
 using My;
 using My.Dialog;
 using My.Map;
@@ -81,9 +82,12 @@ public partial class DialoguePlayer : MonoBehaviour
     // 跳转标记（用于在命令回调后切 Step）
     private bool pendingJump;
 
-    private string currentCutsceneSceneName;
+    private string currCutsceneName;
     private GameObject cutsceneRootGo;
 
+    public PlayableDirector activeDirector; // 当前正在播放的 Timeline 只在cutscene存在时合法
+    private string waitingSignalName;       // 当前正在等待的 Timeline 信号
+    private Action onSignalReceivedCallback;// 收到信号后的回调
 
     private void Awake()
     {
@@ -118,13 +122,6 @@ public partial class DialoguePlayer : MonoBehaviour
             }
             return;
         }
-
-        //if (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0))
-        //{
-        //    DoContinue();
-        //}
-
-        
     }
 
 
@@ -240,35 +237,24 @@ public partial class DialoguePlayer : MonoBehaviour
         InputBlocker.Block(false);
         ui.ShowNextIndicator(false);
 
+        waitingSignalName = null;
+        onSignalReceivedCallback = null;
+
+
         this.OnPlayEnd?.Invoke();
         this.OnPlayEnd = null;
         LogicTime.ClearPauseSource("Dialog");
 
         MainGameManager.Instance.gameLogicManager.IsDialogPlayering = false;
+
+        // 停止时如果有独立演出场景还没卸载，需要安全清理
+        // 处理重复触发
+        if (!string.IsNullOrEmpty(currCutsceneName))
+        {
+            StartCoroutine(UnloadCutsceneSceneRoutine(null));
+        }
     }
 
-    private void BuildLabelIndex(DialogueData data)
-    {
-        //labelToStep.Clear();
-        //for (int i = 0; i < data.Steps.Count; i++)
-        //{
-        //    var lab = data.Steps[i].Id;
-        //    if (!string.IsNullOrEmpty(lab))
-        //    {
-        //        labelToStep[lab] = i; // 后者覆盖前者
-        //    }
-        //    if (data.Steps[i].Commands != null)
-        //    {
-        //        foreach (var c in data.Steps[i].Commands)
-        //        {
-        //            //if (c.type == "Label" && c.s != null && c.s.TryGetValue("label", out var lbl))
-        //            //{
-        //            //    labelToStep[lbl] = i;
-        //            //}
-        //        }
-        //    }
-        //}
-    }
 
     public void PlayFromData(DialogMetaInfo metaInfo, DialogueData data, DialogueRuntime runtime, Action? onPlayEnd)
     {
@@ -280,8 +266,7 @@ public partial class DialoguePlayer : MonoBehaviour
         stepIndex = 0;
         isPlaying = true;
         pendingJump = false;
-        InputBlocker.Block(true);
-        BuildLabelIndex(dataRef);
+        //InputBlocker.Block(true);
         StartStepFromData();
 
         this.OnPlayEnd = onPlayEnd;
@@ -331,6 +316,7 @@ public partial class DialoguePlayer : MonoBehaviour
 
         if(!string.IsNullOrEmpty(MetaInfo.CutsceneId))
         {
+
             StartCoroutine(LoadCutsceneSceneRoutine(MetaInfo.CutsceneId, true));
         }
     }
@@ -354,6 +340,8 @@ public partial class DialoguePlayer : MonoBehaviour
         }
 
         MainGameManager.Instance.gameLogicManager.playerDataManager.DialogTriggerSystem.AddTriggerCount(MetaInfo.DialogId);
+
+        MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
     }
 
     public void JumpToStep(string stepId)
@@ -538,12 +526,38 @@ public partial class DialoguePlayer : MonoBehaviour
             //        break;
             //    }
 
-            //case "Wait":
-            //    {
-            //        float t = TryF(cd, "time", 0.3f);
-            //        driver.Run(t, _ => { }, SafeComplete);
-            //        break;
-            //    }
+            case DialogCommandData4Wait cd4Wait:
+                {
+                    driver.Run(cd4Wait.WaitTime, _ => { }, SafeComplete);
+                    break;
+                }
+            case DialogCommandData4WaitTimelineSignal cdWaitSignal:
+                {
+                    // 设置要等待的信号名称，阻塞当前命令，直到 Timeline 触发该信号
+                    waitingSignalName = cdWaitSignal.SignalName;
+                    onSignalReceivedCallback = SafeComplete;
+                    break;
+                }
+
+            case DialogCommandData4ResumeTimeline cdResume:
+                {
+                    if (activeDirector != null && activeDirector.state == PlayState.Paused)
+                    {
+                        activeDirector.Play(); // 恢复播放
+                    }
+                    SafeComplete(); // 瞬间完成本命令，直接推到下一步（比如继续等待下一个信号）
+                    break;
+                }
+
+            case DialogCommandData4PlayTimeline cd4Timeline:
+                {
+                    // 在独立场景或当前场景寻找Timeline并播放
+                    PlayTimeline(cd4Timeline.TimelineId, cd4Timeline.WaitUntilFinished, SafeComplete);
+                    break;
+                }
+
+
+
 
             case DialogCommandData4MoveEntity cd4MoveEntity:
                 {
@@ -629,7 +643,15 @@ public partial class DialoguePlayer : MonoBehaviour
                                 npcEntity.ApplySocialCharmed(MainGameManager.Instance.gameLogicManager.playerLogicEntity);
                             }
                             break;
-                            
+                        case EDialogSimpleFuncType.Teleport:
+                            {
+                                string mapName = cd4Func.Param5;
+                                string targetPoint = cd4Func.Param6;
+
+                                MainGameManager.Instance.gameLogicManager.TryPlayerSwitchArea(mapName, false, targetPoint);
+                            }
+                            break;
+
                     }
                     SafeComplete();
                 }
@@ -750,13 +772,19 @@ public partial class DialoguePlayer : MonoBehaviour
 
     private IEnumerator LoadCutsceneSceneRoutine(string sceneName, bool hideMainScene)
     {
+        UIManager.Instance.FadeShowBlack(0.05f);
+
+        //var oldBlend = MainGameManager.Instance.CineBrain.m_DefaultBlend;
+        //MainGameManager.Instance.CineBrain.m_DefaultBlend = new CinemachineBlendDefinition(
+        //    CinemachineBlendDefinition.Style.Cut, 0f);
+
         // 如果已经有演出了，先卸载
-        if (!string.IsNullOrEmpty(currentCutsceneSceneName))
+        if (!string.IsNullOrEmpty(currCutsceneName))
         {
-            yield return SceneManager.UnloadSceneAsync(currentCutsceneSceneName);
+            yield return SceneManager.UnloadSceneAsync(currCutsceneName);
         }
 
-        currentCutsceneSceneName = sceneName;
+        currCutsceneName = sceneName;
 
         // 使用 Additive 模式加载独立演出场景
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
@@ -768,8 +796,12 @@ public partial class DialoguePlayer : MonoBehaviour
         // 可以选择隐藏主游戏的表现（比如禁用主相机、主环境）
         if (hideMainScene)
         {
-            MainGameManager.Instance.gameLogicManager.SetMainWorldVisible(false);
+            //MainGameManager.Instance.gameLogicManager.SetMainWorldVisible(false);
         }
+
+        // 暂停主时间
+        LogicTime.RequestPause("Dialog");
+
 
         // 将新加载的场景设为主场景，以便实例化和光照生效
         Scene cutscene = SceneManager.GetSceneByName(sceneName);
@@ -778,30 +810,53 @@ public partial class DialoguePlayer : MonoBehaviour
             SceneManager.SetActiveScene(cutscene);
         }
 
-        onComplete?.Invoke();
+        var rootGo = cutscene.GetRootGameObjects()[0];
+        cutsceneRootGo = rootGo;
+
+        // 
+        var mainVcam = cutsceneRootGo.transform.Find("VCam").GetComponent<CinemachineVirtualCamera>();
+        mainVcam.Priority = 100;
+
+        mainVcam.PreviousStateIsValid = false;
+
+        yield return new WaitForSeconds(2.0f);
+
+        UIManager.Instance.FadeHideBlack(1.0f);
     }
 
     private IEnumerator UnloadCutsceneSceneRoutine(Action onComplete)
     {
-        if (!string.IsNullOrEmpty(currentCutsceneSceneName))
+        //UIManager.Instance.FadeShowBlack(1.0f);
+
+        if (!string.IsNullOrEmpty(currCutsceneName))
         {
-            AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(currentCutsceneSceneName);
+            AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(currCutsceneName);
             while (asyncUnload != null && !asyncUnload.isDone)
             {
                 yield return null;
             }
-            currentCutsceneSceneName = null;
+            currCutsceneName = null;
         }
 
         // 恢复主场景环境
-        MainGameManager.Instance.gameLogicManager.SetMainWorldVisible(true);
+        //MainGameManager.Instance.gameLogicManager.SetMainWorldVisible(true);
 
         // 恢复主场景为 Active
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainGameScene")); // 根据你的实际主场景名字修改
+        //SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainGameScene")); // 根据你的实际主场景名字修改
 
         onComplete?.Invoke();
+
+        yield return new WaitForSeconds(2.0f);
+
+        UIManager.Instance.FadeHideBlack(1.0f);
     }
 
+    /// <summary>
+    /// 播放timeline
+    /// </summary>
+    /// <param name="timelineId"></param>
+    /// <param name="waitFinished"></param>
+    /// <param name="onComplete"></param>
     private void PlayTimeline(string timelineId, bool waitFinished, Action onComplete)
     {
         // 在当前加载的演出场景中寻找对应的 PlayableDirector
@@ -809,22 +864,22 @@ public partial class DialoguePlayer : MonoBehaviour
         GameObject timelineObj = GameObject.Find(timelineId);
         if (timelineObj != null)
         {
-            currentTimelineDirector = timelineObj.GetComponent<PlayableDirector>();
-            if (currentTimelineDirector != null)
+            activeDirector = timelineObj.GetComponent<PlayableDirector>();
+            if (activeDirector != null)
             {
-                currentTimelineDirector.Play();
+                activeDirector.Play();
 
                 if (waitFinished)
                 {
                     // 监听Timeline完成事件
-                    currentTimelineDirector.stopped += OnTimelineStopped;
+                    activeDirector.stopped += OnTimelineStopped;
 
                     void OnTimelineStopped(PlayableDirector director)
                     {
-                        if (director == currentTimelineDirector)
+                        if (director == activeDirector)
                         {
-                            currentTimelineDirector.stopped -= OnTimelineStopped;
-                            currentTimelineDirector = null;
+                            activeDirector.stopped -= OnTimelineStopped;
+                            activeDirector = null;
                             onComplete?.Invoke();
                         }
                     }
@@ -843,6 +898,35 @@ public partial class DialoguePlayer : MonoBehaviour
 
         // 如果不等待，或者没找到，直接完成当前命令
         onComplete?.Invoke();
+    }
+
+    /// <summary>
+    /// 供 Timeline 的 SignalReceiver 调用的公开方法
+    /// </summary>
+    public void ReceiveTimelineSignal(string signalName)
+    {
+        // 暂停当前的 Timeline
+        if (activeDirector != null && activeDirector.state == PlayState.Playing)
+        {
+            activeDirector.Pause();
+        }
+
+        // 检查 DialoguePlayer 是否正在等待这个信号
+        if (!string.IsNullOrEmpty(waitingSignalName) && waitingSignalName == signalName)
+        {
+            waitingSignalName = null;
+            var callback = onSignalReceivedCallback;
+            onSignalReceivedCallback = null;
+
+            // 收到信号，结束等待，推进 DialoguePlayer 往下走（通常下一步就是弹对白）
+            callback?.Invoke();
+        }
+    }
+
+    // 记得在你的 PlayTimeline 指令里，把 director 赋值给 activeDirector
+    public void SetActiveDirector(PlayableDirector director)
+    {
+        activeDirector = director;
     }
 
 

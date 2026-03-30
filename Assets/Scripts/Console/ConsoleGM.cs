@@ -323,6 +323,13 @@ public class ConsoleGM : MonoBehaviour
                 MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.RaiseQuestObjUpdateEvent(quest.cacheCfg.QuestId);
             });
 
+        Register("finish_quest", "直接完成任务",
+            new[] { new CmdParam("quest_id", "int，值") },
+            args =>
+            {
+                var questId = int.Parse(args[0]);
+                MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.ForceFinishQuest(questId);
+            });
     }
 
     void OnDestroy()

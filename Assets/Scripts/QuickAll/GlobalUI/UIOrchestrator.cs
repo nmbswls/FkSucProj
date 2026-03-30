@@ -226,6 +226,15 @@ namespace My.UI
                 defaultLayer = UILayer.HUD,
                 pooled = false,
             });
+
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "RepairDetailPanel",
+                resourcePath = "UI/Prefabs/RepairDetailRequirePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
             
         }
 

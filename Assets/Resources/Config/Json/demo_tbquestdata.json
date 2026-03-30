@@ -30,7 +30,7 @@
   },
   {
     "quest_id": 101,
-    "name": "初始任务2",
+    "name": "强盗？",
     "desc": "初始任务2",
     "init_step_id": "101_s1",
     "finish_reward": [

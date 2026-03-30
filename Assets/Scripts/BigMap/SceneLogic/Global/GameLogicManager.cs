@@ -718,7 +718,13 @@ namespace My
         /// <returns></returns>
         public string GetCurrentReviveMap()
         {
-            return playerDataManager.SavedBornPoint;
+            if(!playerDataManager.CheckHasParam("base_clear"))
+            {
+                return "game_init";
+            }
+
+            return "base_01";
+            //return playerDataManager.SavedBornPoint;
         }
 
         public bool HandleUseItem(long userUnit, long cnt, ItemUseCfg useCfg)

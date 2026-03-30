@@ -80,7 +80,7 @@ namespace My.UI
 
         public void Awake()
         {
-
+            ChooseInteractMenu.EventOnIndexUpdate += OnChooseInteractIndexUpdate;
         }
 
         private void Start()
@@ -554,6 +554,17 @@ namespace My.UI
             }
 
             interactable.InteractFocused = false;
+        }
+
+
+        private void OnChooseInteractIndexUpdate(int nowIdx)
+        {
+            if(nowIdx < 0 || nowIdx >= ChooseInteractMenu.data.Count)
+            {
+                return;
+            }
+
+            //ChooseInteractMenu.data[nowIdx];
         }
 
 

@@ -211,6 +211,7 @@ namespace My.Player
         private HashSet<string> _internalTags = new HashSet<string>();
 
         public bool ErrFlag;
+        public bool SuccessFlag;
         public bool FailFlag;
 
         private List<EPlayerEventType> _currentListernTypes = new();
@@ -239,6 +240,14 @@ namespace My.Player
             IsActive = true;
 
             RefreshEventListener();
+        }
+
+
+        public void ForceComplete()
+        {
+            _activeStep = null;
+            SuccessFlag = true;
+            OnQuestComplete();
         }
 
 
@@ -284,9 +293,10 @@ namespace My.Player
                     RefreshEventListener();
                 }
             }
-            else
+
+            if(_activeStep == null)
             {
-                Debug.Log("Quest Fully Completed!");
+                Debug.Log("Quest Fully Completed or err!");
                 IsActive = false;
             }
         }
@@ -333,6 +343,10 @@ namespace My.Player
                 if(outcomeCfg.IsFail)
                 {
                     FailFlag = true;
+                }
+                else
+                {
+                    SuccessFlag = true;
                 }
                 OnQuestComplete();
             }
@@ -575,6 +589,21 @@ namespace My.Player
 
         private List<int> _removedQuests = new();
 
+        /// <summary>
+        /// 强制完成
+        /// </summary>
+        /// <param name="questId"></param>
+        public void ForceFinishQuest(int questId)
+        {
+            if(_questInfoMap.TryGetValue(questId, out var questInst))
+            {
+                questInst.ForceComplete();
+            }
+            else
+            {
+                _finishQuestSet.Add(questId);
+            }
+        }
         public void Tick(float dt)
         {
             TickAutoAccept();

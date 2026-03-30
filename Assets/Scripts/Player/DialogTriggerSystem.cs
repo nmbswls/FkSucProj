@@ -99,7 +99,7 @@ namespace My.Player
                 if(passed)
                 {
                     // 
-                    LogicManager.viewer.PlayDialog(dialog.JsonDataName, null, dialog.LockGlobalTime);
+                    LogicManager.viewer.PlayDialog(dialog.DialogId, null, dialog.LockGlobalTime);
                     break;
                 }
             }

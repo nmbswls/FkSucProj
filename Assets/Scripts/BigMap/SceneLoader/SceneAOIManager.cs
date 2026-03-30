@@ -19,7 +19,7 @@ using static UnityEngine.Rendering.DebugUI.Table;
 
 public class SceneAOIManager : MonoBehaviour
 {
-    public static SceneAOIManager Instance;
+    public static SceneAOIManager Instance { get { return MainGameManager.Instance.AOIManager; } }
 
     public string MapName
     {
@@ -211,7 +211,6 @@ public class SceneAOIManager : MonoBehaviour
         if (_asset == null)
             Debug.LogError("AOIManager: assetProviderSource must implement IAssetProvider.");
 
-        Instance = this;
     }
 
     private void Update()
@@ -260,6 +259,18 @@ public class SceneAOIManager : MonoBehaviour
         }
     }
 
+    public bool CheckNoLoading()
+    {
+        foreach (var aoiState in _aoiStates.Values)
+        {
+            if (aoiState.creating)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public void RegisterEntity(ILogicEntity entity, Vector2 worldPos)
     {
@@ -507,6 +518,8 @@ public class SceneAOIManager : MonoBehaviour
             // °ó¶¨Ïà»ú
             //MainGameManager.Instance.CameraCtrl.Target = MainGameManager.Instance.playerScenePresenter.ViewPoint;
             MainGameManager.Instance.MainMapVCam.Follow = MainGameManager.Instance.playerScenePresenter.ViewPoint;
+
+            MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
         }
 
         if (entry.canceledDuringCreate || !entry.isShown)

@@ -1356,6 +1356,44 @@ namespace My.Dialog
                                 runCommand = runChoiceCommand;
                             }
                             break;
+
+
+                        case EditorPlayerTimelineCommand cmdPlayerTimeline:
+                            {
+                                var realCommand = new DialogCommandData4PlayTimeline();
+
+                                realCommand.TimelineId = cmdPlayerTimeline.TimelineId;
+                                realCommand.WaitUntilFinished = cmdPlayerTimeline.WaitUntilFinished;
+
+                                runCommand = realCommand;
+                            }
+                            break;
+
+                        case EditorWaitTimelineSignalCommand cmdWaitTimelineSignal:
+                            {
+                                var realCommand = new DialogCommandData4WaitTimelineSignal();
+
+                                realCommand.SignalName = cmdWaitTimelineSignal.SignalName;
+
+                                runCommand = realCommand;
+                            }
+                            break;
+                        case EditorCommandResumeTimeline cmdResumeTimeline:
+                            {
+                                var realCommand = new DialogCommandData4ResumeTimeline();
+
+                                runCommand = realCommand;
+                            }
+                            break;
+
+                        case EditorCommandWait cmdWait:
+                            {
+                                var realCommand = new DialogCommandData4Wait();
+                                realCommand.WaitTime = cmdWait.WaitTime;
+                                runCommand = realCommand;
+                            }
+                            break;
+
                     }
 
                     //// [难点1] 处理多态条件列表 (直接复制引用，依靠 Newtonsoft 序列化子类字段)

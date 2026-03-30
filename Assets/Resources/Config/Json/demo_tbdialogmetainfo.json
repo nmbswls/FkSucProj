@@ -20,11 +20,11 @@
     "is_auto_trigger": true,
     "only_once": true,
     "json_data_name": "base_fight_end",
-    "need_map": "",
+    "need_map": "base_fight",
     "trigger_cond": [
       {
         "type": 1,
-        "param1": 100,
+        "param1": 101,
         "param2": 0,
         "param3": 0,
         "param4": 0,
