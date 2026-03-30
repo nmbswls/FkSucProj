@@ -37,7 +37,11 @@ namespace My.Player
         public PlayerProgressionSystem ProgressionSystem { get; private set; }
 
         public PlayerQuestSystem QuestSystem { get; private set; }
+
+        public DialogTriggerSystem DialogTriggerSystem { get; private set; }
+
         /// <summary>
+        /// 
         /// 游戏变量表
         /// </summary>
         public Dictionary<string, bool> VariableDict = new();
@@ -100,6 +104,7 @@ namespace My.Player
 
             ProgressionSystem = new();
             QuestSystem = new();
+            DialogTriggerSystem = new();
 
             QuickSlotItemSet[0] = "feidao";
 
@@ -133,6 +138,7 @@ namespace My.Player
 
             ProgressionSystem.InitSystem(logicManager, savingData);
             QuestSystem.InitSystem(logicManager, savingData);
+            DialogTriggerSystem.InitSystem(logicManager, savingData);
         }
 
         public void InitBagInfo()
@@ -160,6 +166,7 @@ namespace My.Player
 
             ProgressionSystem.Tick(dt);
             QuestSystem.Tick(dt);
+            DialogTriggerSystem.Tick(dt);
         }
 
 

@@ -1,0 +1,42 @@
+[
+  {
+    "dialog_id": "init_dialog_01",
+    "is_auto_trigger": true,
+    "only_once": true,
+    "json_data_name": "init_dialog_01",
+    "need_map": "game_init",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [
+      "init_luca"
+    ],
+    "show_priority": 0,
+    "custom_variables": [],
+    "cutscene_id": ""
+  },
+  {
+    "dialog_id": "base_fight_end",
+    "is_auto_trigger": true,
+    "only_once": true,
+    "json_data_name": "base_fight_end",
+    "need_map": "",
+    "trigger_cond": [
+      {
+        "type": 1,
+        "param1": 100,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 0,
+    "custom_variables": [],
+    "cutscene_id": "scene_base_fight_end_show"
+  }
+]

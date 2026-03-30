@@ -1990,6 +1990,7 @@ namespace My.Map.Entity
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Weapon01",
+                AnimName = "player_weapon01_01",
                 Duration = 0.2f,
                 OnHitEffects = new()
                 {
@@ -2063,7 +2064,8 @@ namespace My.Map.Entity
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
-                WeaponName = "Weapon02",
+                WeaponName = "Weapon01",
+                AnimName = "player_weapon01_02",
                 Duration = 0.2f,
                 OnHitEffects = new()
                 {
@@ -2137,7 +2139,8 @@ namespace My.Map.Entity
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
-                WeaponName = "Weapon03",
+                WeaponName = "Weapon01",
+                AnimName = "player_weapon01_03",
                 Duration = 0.4f,
                 OnHitEffects = new()
                 {

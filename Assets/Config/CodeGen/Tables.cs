@@ -26,6 +26,7 @@ public partial class Tables
     public demo.TbQuestStepData TbQuestStepData {get; }
     public demo.TbQuestStepOutcome TbQuestStepOutcome {get; }
     public demo.TbQuestStepObjective TbQuestStepObjective {get; }
+    public demo.TbDialogMetaInfo TbDialogMetaInfo {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -41,6 +42,7 @@ public partial class Tables
         TbQuestStepData = new demo.TbQuestStepData(loader("demo_tbqueststepdata"));
         TbQuestStepOutcome = new demo.TbQuestStepOutcome(loader("demo_tbqueststepoutcome"));
         TbQuestStepObjective = new demo.TbQuestStepObjective(loader("demo_tbqueststepobjective"));
+        TbDialogMetaInfo = new demo.TbDialogMetaInfo(loader("demo_tbdialogmetainfo"));
         ResolveRef();
     }
     
@@ -58,6 +60,7 @@ public partial class Tables
         TbQuestStepData.ResolveRef(this);
         TbQuestStepOutcome.ResolveRef(this);
         TbQuestStepObjective.ResolveRef(this);
+        TbDialogMetaInfo.ResolveRef(this);
     }
 }
 

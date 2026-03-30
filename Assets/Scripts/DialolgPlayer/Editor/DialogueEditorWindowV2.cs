@@ -1262,9 +1262,6 @@ namespace My.Dialog
             // 2. 将 ScriptableObject 转换为 运行时 DTO 对象
             //    这一步是为了剥离编辑器专用的数据（如 Rect 坐标），并将引用转为字符串
             DialogueData runtimeData = new DialogueData();
-            runtimeData.DialogId = source.DialogId;
-            runtimeData.LockTime = source.LockTime;
-            runtimeData.ControlledEntityNames.AddRange(source.ControlledEntityNames);
 
             foreach (var srcStep in source.Steps)
             {

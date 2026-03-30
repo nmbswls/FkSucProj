@@ -1,12 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using cfg.demo;
 using My;
 using My.Dialog;
 using My.Map;
 using My.Map.Logic;
 using My.UI;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 using static UnityEngine.EventSystems.EventTrigger;
 
 
@@ -46,6 +50,8 @@ public partial class DialoguePlayer : MonoBehaviour
     // 播放态
     private Action? OnPlayEnd;
 
+    private DialogMetaInfo MetaInfo;
+
     private DialogueData dataRef;
     private DialogueRuntime runtimeRef;
 
@@ -74,6 +80,10 @@ public partial class DialoguePlayer : MonoBehaviour
 
     // 跳转标记（用于在命令回调后切 Step）
     private bool pendingJump;
+
+    private string currentCutsceneSceneName;
+    private GameObject cutsceneRootGo;
+
 
     private void Awake()
     {
@@ -260,8 +270,11 @@ public partial class DialoguePlayer : MonoBehaviour
         //}
     }
 
-    public void PlayFromData(DialogueData data, DialogueRuntime runtime, Action? onPlayEnd)
+    public void PlayFromData(DialogMetaInfo metaInfo, DialogueData data, DialogueRuntime runtime, Action? onPlayEnd)
     {
+        this.MetaInfo = metaInfo;
+        this.dataRef = data;
+
         runtimeRef = runtime;
         dataRef = data;
         stepIndex = 0;
@@ -281,8 +294,9 @@ public partial class DialoguePlayer : MonoBehaviour
     /// </summary>
     private void OnDialogStart()
     {
+
         List<int> staticIds = new();
-        foreach(var actorName in dataRef.ControlledEntityNames)
+        foreach(var actorName in MetaInfo.ControlledEntityList)
         {
             var staticId = MainGameManager.Instance.gameLogicManager.AreaManager.GetStaticIdByUniqName(actorName);
             MainGameManager.Instance.gameLogicManager.AreaManager.DialogForceStaticIds.Add(staticId);
@@ -314,6 +328,11 @@ public partial class DialoguePlayer : MonoBehaviour
         }
 
         MainGameManager.Instance.gameLogicManager.IsDialogPlayering = true;
+
+        if(!string.IsNullOrEmpty(MetaInfo.CutsceneId))
+        {
+            StartCoroutine(LoadCutsceneSceneRoutine(MetaInfo.CutsceneId, true));
+        }
     }
 
     private void OnDialogEnd()
@@ -333,6 +352,8 @@ public partial class DialoguePlayer : MonoBehaviour
                 dialogActor.OnDialogEnd();
             }
         }
+
+        MainGameManager.Instance.gameLogicManager.playerDataManager.DialogTriggerSystem.AddTriggerCount(MetaInfo.DialogId);
     }
 
     public void JumpToStep(string stepId)
@@ -723,6 +744,110 @@ public partial class DialoguePlayer : MonoBehaviour
             DoContinue();
         }
     }
+
+
+    #region 独立场景
+
+    private IEnumerator LoadCutsceneSceneRoutine(string sceneName, bool hideMainScene)
+    {
+        // 如果已经有演出了，先卸载
+        if (!string.IsNullOrEmpty(currentCutsceneSceneName))
+        {
+            yield return SceneManager.UnloadSceneAsync(currentCutsceneSceneName);
+        }
+
+        currentCutsceneSceneName = sceneName;
+
+        // 使用 Additive 模式加载独立演出场景
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        // 可以选择隐藏主游戏的表现（比如禁用主相机、主环境）
+        if (hideMainScene)
+        {
+            MainGameManager.Instance.gameLogicManager.SetMainWorldVisible(false);
+        }
+
+        // 将新加载的场景设为主场景，以便实例化和光照生效
+        Scene cutscene = SceneManager.GetSceneByName(sceneName);
+        if (cutscene.IsValid())
+        {
+            SceneManager.SetActiveScene(cutscene);
+        }
+
+        onComplete?.Invoke();
+    }
+
+    private IEnumerator UnloadCutsceneSceneRoutine(Action onComplete)
+    {
+        if (!string.IsNullOrEmpty(currentCutsceneSceneName))
+        {
+            AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(currentCutsceneSceneName);
+            while (asyncUnload != null && !asyncUnload.isDone)
+            {
+                yield return null;
+            }
+            currentCutsceneSceneName = null;
+        }
+
+        // 恢复主场景环境
+        MainGameManager.Instance.gameLogicManager.SetMainWorldVisible(true);
+
+        // 恢复主场景为 Active
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainGameScene")); // 根据你的实际主场景名字修改
+
+        onComplete?.Invoke();
+    }
+
+    private void PlayTimeline(string timelineId, bool waitFinished, Action onComplete)
+    {
+        // 在当前加载的演出场景中寻找对应的 PlayableDirector
+        // 这里假设你在演出的独立场景里的Director挂了标识或者能根据名字搜到
+        GameObject timelineObj = GameObject.Find(timelineId);
+        if (timelineObj != null)
+        {
+            currentTimelineDirector = timelineObj.GetComponent<PlayableDirector>();
+            if (currentTimelineDirector != null)
+            {
+                currentTimelineDirector.Play();
+
+                if (waitFinished)
+                {
+                    // 监听Timeline完成事件
+                    currentTimelineDirector.stopped += OnTimelineStopped;
+
+                    void OnTimelineStopped(PlayableDirector director)
+                    {
+                        if (director == currentTimelineDirector)
+                        {
+                            currentTimelineDirector.stopped -= OnTimelineStopped;
+                            currentTimelineDirector = null;
+                            onComplete?.Invoke();
+                        }
+                    }
+                    return; // 暂不调用 onComplete，等待 stopped 事件
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"TimelineId {timelineId} does not have a PlayableDirector.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"TimelineId {timelineId} not found in scene.");
+        }
+
+        // 如果不等待，或者没找到，直接完成当前命令
+        onComplete?.Invoke();
+    }
+
+
+    #endregion
+
 }
 
 // 简单输入屏蔽（保持原逻辑）

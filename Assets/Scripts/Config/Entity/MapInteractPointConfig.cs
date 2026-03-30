@@ -21,6 +21,8 @@ namespace Config.Map
 
         public float NameOffset = -1f;
 
+        public bool IsAlwaysActive = false;
+
         [Serializable]
         public class StatusInfo
         {

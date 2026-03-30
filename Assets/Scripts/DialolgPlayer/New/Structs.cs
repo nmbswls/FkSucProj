@@ -10,11 +10,7 @@ namespace My.Dialog
     [Serializable]
     public class DialogueData
     {
-        public string DialogId;
-        public bool LockTime;
         public List<DialogueStepData> Steps = new List<DialogueStepData>();
-
-        public List<string> ControlledEntityNames = new();
     }
 
     [Serializable]

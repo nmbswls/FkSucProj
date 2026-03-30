@@ -737,10 +737,18 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
 
     public void PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false)
     {
-        var dialogAsset = Resources.Load<TextAsset>($"Dialogue/output/{dialogId}");
+
+        var dialogMetaInfo = CfgMgr.Cfgs.TbDialogMetaInfo.Get(dialogId);
+        if (dialogMetaInfo == null)
+        {
+            Debug.LogError($"PlayDialog dialog not found {dialogId}.");
+            return;
+        }
+
+        var dialogAsset = Resources.Load<TextAsset>($"Dialogue/output/{dialogMetaInfo.JsonDataName}");
         if(dialogAsset == null)
         {
-            Debug.Log("PlayerDialog not found dialog " + dialogId);
+            Debug.LogError("PlayerDialog not found dialog " + dialogId);
             return;
         }
 
@@ -762,7 +770,7 @@ public class MainGameManager : MonoBehaviour, ISceneAbilityViewer
         };
 
         dialoguePlayer.ui = dialogPanel;
-        dialoguePlayer.PlayFromData(dialogData, runtime, () =>
+        dialoguePlayer.PlayFromData(dialogMetaInfo, dialogData, runtime, () =>
         {
             LogicTime.ClearPauseSource("Dialog");
             UIManager.Instance.HidePanel("DialoguePanel");

@@ -17,6 +17,7 @@ namespace My.Map.Scene
         private float _durationTimer = 0;
 
         public ParticleSystem[] slashEffects;
+        //public GameObject[] ColliderArray;
         public void PlaySlash(int idx) 
         {
             if (idx < 0 || idx >= slashEffects.Length) return;
@@ -93,39 +94,17 @@ namespace My.Map.Scene
             this._durationTimer = LogicTime.time + duration;
 
             // 先尝试获取 clip 长度（简单版：按 clip 名匹配）
-            if(weaponAnim != null)
-            {
-                //float clipLenSec = -1f;
-                //var rac = weaponAnim.runtimeAnimatorController;
-                //if (rac != null)
-                //{
-                //    foreach (var clip in rac.animationClips)
-                //    {
-                //        if (clip != null)
-                //        {
-                //            clipLenSec = clip.length;
-                //            break;
-                //        }
-                //    }
-                //}
-                //weaponAnim.speed = 1.0f;
-                //if (clipLenSec != -1)
-                //{
-                //    var speed = clipLenSec / duration;
-                //    weaponAnim.speed = speed;
-                //}
-                //weaponAnim.Play("Show", 0, 0f);
-            }
-
             if(weaponAnimancer != null)
             {
-                var clipLenSec = innerShowClip.length;
+                var clipRes = SimpleResManager.Load<AnimationClip>($"Anim/player/{weaponAnimName}");
+
+                var clipLenSec = clipRes.length;
                 var speed = 1.0f;
                 if (clipLenSec != -1)
                 {
                     speed = clipLenSec / duration;
                 }
-                var state = weaponAnimancer.Play(innerShowClip);
+                var state = weaponAnimancer.Play(clipRes);
                 state.Speed = speed;
             }
         }

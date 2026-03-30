@@ -160,23 +160,6 @@ public class SceneInteractSystem
         normalCandidates.Clear();
         executeCandidates.Clear();
 
-        // todo 补丁代码 自动触发
-        foreach (var entity in MainGameManager.Instance.gameLogicManager.AreaManager.Repo.Loaded.Values.ToList())
-        {
-            if(entity is LogicEntityInteractPoint intP)
-            {
-                var curState = intP.GetCurrentStatusInfo();
-                if (curState != null)
-                {
-                    if (curState.AutoTrigger && !intP.InteractComp.IsInteracting)
-                    {
-                        intP.InteractComp.TryTriggerInteract(0);
-                    }
-                }
-            }
-        }
-            
-
         Vector2 center = presenter.transform.position;
         int count = Physics2D.OverlapCircleNonAlloc(center, _maxCheckableRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
 

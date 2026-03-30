@@ -210,6 +210,15 @@ namespace My.Map.Scene
 
 
             UpdateOffsetZView();
+
+            if(UnitEntity.IsDialogMoving)
+            {
+                mainCol.enabled = false;
+            }
+            else
+            {
+                mainCol.enabled = true;
+            }
         }
 
         //private Vector2 smoothedTarget;
@@ -585,7 +594,7 @@ namespace My.Map.Scene
             }
             else
             { 
-                mainCol.enabled = true;
+                //mainCol.enabled = true;
                 Vector3 diff = UnityEngine.Random.insideUnitCircle * 0.05f;
                 this.transform.position = this.transform.position + diff;
             }
