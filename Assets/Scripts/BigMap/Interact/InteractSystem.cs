@@ -110,7 +110,7 @@ public class SceneInteractSystem
             return false;
         }
 
-        if(MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Normal)
+        if(MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
         {
             return false;
         }

@@ -79,7 +79,7 @@ namespace My
             {
                 SwitchAreaIntent = null;
                 SwitchStep = EMapSwitchStep.None;
-                MainStage = EMainGameStage.Normal;
+                MainStage = EMainGameStage.Running;
 
                 Debug.Log("LoadGameMain finished");
             }

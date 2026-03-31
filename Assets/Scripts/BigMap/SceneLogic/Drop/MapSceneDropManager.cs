@@ -50,7 +50,7 @@ namespace My.Map.Scene
 
         public void Update()
         {
-            if(MainGameManager.Instance.gameLogicManager.MainStage != EMainGameStage.Normal)
+            if(MainGameManager.Instance.gameLogicManager.MainStage != EMainGameStage.Running)
             {
                 return;
             }

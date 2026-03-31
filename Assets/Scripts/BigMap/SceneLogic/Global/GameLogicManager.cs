@@ -53,7 +53,8 @@ namespace My
         public enum EMainGameStage
         {
             UnInitialized,
-            Normal,
+            Initialized,
+            Running,
             SwitchingMap,
             Balance,
         }
@@ -162,6 +163,8 @@ namespace My
                     UIGainSideNotifyPanel.Instance.EnqueueLog("gain " + itemId, null);
                 }
             };
+
+            MainStage = EMainGameStage.Initialized;
         }
 
 

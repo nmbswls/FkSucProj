@@ -116,14 +116,16 @@ namespace My
 
         public async Task InitStartGame(string startParams, Action? onComplete)
         {
+            if(gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
+            {
+                return;
+            }
 
             gameLogicManager.viewer = this;
             gameLogicManager.visionSenser = VisionSenser2D;
             gameLogicManager.navProvider = NavProvider;
             gameLogicManager.EventOnLogicEntitySpawned += OnLogicEntitySpawned;
             gameLogicManager.EventOnLogicEntityDespawned += OnLogicEntityDespawned;
-
-
 
             // 2. [后台线程] 执行异步读取
             // 此时画面不会卡死，转圈圈动画会流畅播放
@@ -157,21 +159,18 @@ namespace My
             }
 
             gameLogicManager.PreparePlayerSwitchArea(playerMap, true, targetPos : savedPos);
-
-
-            
         }
 
 
 
         void Update()
         {
-            if (gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
+            if(gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
             {
                 gameLogicManager.Tick(LogicTime.deltaTime);
             }
 
-            if(gameLogicManager.MainStage == GameLogicManager.EMainGameStage.Normal)
+            if (gameLogicManager.MainStage == GameLogicManager.EMainGameStage.Running)
             {
                 interactSystem.Tick(LogicTime.deltaTime);
             }
