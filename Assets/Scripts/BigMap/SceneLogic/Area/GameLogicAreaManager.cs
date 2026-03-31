@@ -215,7 +215,10 @@ namespace My.Map.Logic
 
             EntityRefreshInfo.Clear();
 
-            Repo.Clear();
+            if(Repo != null)
+            {
+                Repo.Clear();
+            }
             LongLived.Clear();
 
             RefreshInfoRuntimes.Clear();
