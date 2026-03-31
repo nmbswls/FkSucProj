@@ -40,41 +40,39 @@ namespace My
         void RecycleEntity(ILogicEntity entity);
     }
 
-    public class SwitchAreaIntent
-    {
-        public string? OldAreaName;
-        public string AreaName;
-        public bool Reset;
-        public LogicEntityRecord4Player SavedRecord;
+    
 
-        public string? TargetPoint;
-        public Vector2? TargetPos;
-    }
+
 
     public partial class GameLogicManager : ILogicEntityFactory
     {
         public static long LogicEntityIdInst = 100;
         public static long ItemInstanceIdCounter = 100;
 
-        public bool Initialized { get; set; }
+
+        public enum EMainGameStage
+        {
+            UnInitialized,
+            Normal,
+            SwitchingMap,
+            Balance,
+        }
+
+        public EMainGameStage MainStage = EMainGameStage.UnInitialized;
 
         public bool NeedBalancing { get; set; }
         public bool IsBalancing { get; set; }
         public bool IsDialogPlayering { get; set; }
 
 
-        public PlayerLogicEntity playerLogicEntity;
+
+        public PlayerLogicEntity playerLogicEntity { get; set; }
 
         private List<(LogicEntityRecord, bool)> pendingNewEntities = new();
 
         public event Action<ILogicEntity> EventOnLogicEntitySpawned;
         public event Action<ILogicEntity> EventOnLogicEntityDespawned;
 
-        /// <summary>
-        /// 通知上层玩家需要切换场景
-        /// </summary>
-        public event Action EventOnPlayerSwitchArea;
-        public SwitchAreaIntent? SwitchAreaIntent;
         
 
         public ISceneAbilityViewer? viewer; // 表现层接口
@@ -266,7 +264,7 @@ namespace My
         /// 玩家进入/切换场景
         /// </summary>
         /// <param name="areaName"></param>
-        public void TryPlayerSwitchArea(string mapName, bool reset, string? targetPoint = null)
+        public void PreparePlayerSwitchArea(string mapName, bool reset, string? targetPoint = null, Vector2? targetPos = null, bool silent = false)
         {
             if(SwitchAreaIntent != null)
             {
@@ -277,6 +275,9 @@ namespace My
             intent.AreaName = mapName;
             intent.OldAreaName = AreaManager.MapName;
             intent.Reset = reset;
+            intent.Silent = silent;
+            intent.TargetPos = targetPos;
+
             intent.SavedRecord = new()
             {
                 Id = 1,
@@ -293,17 +294,30 @@ namespace My
             AreaManager.CleanArea();
             globalBuffManager.Clear();
             globalDropCollection.Clear();
-
-            EventOnPlayerSwitchArea?.Invoke();
         }
+
+
         public void Tick(float dt)
         {
-            if (!Initialized)
+            if (MainStage == EMainGameStage.SwitchingMap)
             {
+                TickStageSwitching();
                 return;
             }
 
-            if(NeedBalancing)
+            if (MainStage == EMainGameStage.Balance)
+            {
+                TickStageBalancing();
+                return;
+            }
+
+            if(SwitchAreaIntent != null)
+            {
+                StartMapSwitchingFlow();
+                return;
+            }
+
+            if (NeedBalancing)
             {
                 NeedBalancing = false;
                 DelayedEffectQueue.Clear();
@@ -313,10 +327,8 @@ namespace My
                 globalDropCollection.Clear();
 
                 BigMapFinishPanel.Create();
-            }
 
-            if(IsBalancing)
-            {
+                MainStage = EMainGameStage.Balance;
                 return;
             }
 
@@ -355,6 +367,15 @@ namespace My
             WantedManager?.Tick(dt);
         }
 
+
+        private void TickStageSwitching()
+        {
+
+        }
+        private void TickStageBalancing()
+        {
+
+        }
         public void AddNewEntityRecord(LogicEntityRecord record, bool isCreate = false)
         {
             pendingNewEntities.Add((record, isCreate));
@@ -706,7 +727,7 @@ namespace My
 
                 var bornCfg = CfgMgr.Cfgs.TbBornPoint.GetOrDefault(bornP);
                 // 回城
-                TryPlayerSwitchArea(bornCfg.MapName, true, bornCfg.NamedPoint);
+                PreparePlayerSwitchArea(bornCfg.MapName, true, bornCfg.NamedPoint);
             }
         }
 

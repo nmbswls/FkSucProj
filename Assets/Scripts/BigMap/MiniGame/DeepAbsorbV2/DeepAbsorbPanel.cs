@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Map.SmallGame.Zha;
 using My.Map.View;
 using My.UI;
 using TMPro;

@@ -343,7 +343,7 @@ namespace My.Map
                             }
                             else
                             {
-                                Owner.LogicManager.TryPlayerSwitchArea(mapName, false, namedP);
+                                Owner.LogicManager.PreparePlayerSwitchArea(mapName, false, namedP);
                             }
                         }
                         break;

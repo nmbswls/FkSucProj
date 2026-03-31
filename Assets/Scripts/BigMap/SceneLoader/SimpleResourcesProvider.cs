@@ -3,53 +3,60 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public interface IAnimancerPrewarmable
-{
-    AnimationClip[] GetClipsToPrewarm();
-}
 
-public class SimpleResourcesProvider : MonoBehaviour, IAssetProvider, IAssetProviderAsync
+namespace My
 {
-    public GameObject Instantiate(string key)
+
+    public interface IAnimancerPrewarmable
     {
-        var prefab = Resources.Load<GameObject>(key);
-        return GameObject.Instantiate(prefab);
+        AnimationClip[] GetClipsToPrewarm();
     }
 
-    public void Release(GameObject go)
+    public class SimpleResourcesProvider : MonoBehaviour, IAssetProvider, IAssetProviderAsync
     {
-        GameObject.Destroy(go);
-    }
-
-    public async Task<GameObject> InstantiateAsync(string key)
-    {
-        ResourceRequest req = Resources.LoadAsync<GameObject>(key); // === 新增 ===
-
-        while (!req.isDone) // === 新增 ===
+        public GameObject Instantiate(string key)
         {
-            await Task.Yield(); 
+            var prefab = Resources.Load<GameObject>(key);
+            return GameObject.Instantiate(prefab);
         }
 
-        var prefab = req.asset as GameObject; // === 新增 ===
-        if (prefab == null) // === 新增 ===
+        public void Release(GameObject go)
         {
-            Debug.LogError($"SimpleResourcesProviderAsync: LoadAsync failed, key={key}"); // === 新增 ===
-            return null; // === 新增 ===
+            GameObject.Destroy(go);
         }
 
-        //var prewarmableComponents = prefab.GetComponentsInChildren<IAnimancerPrewarmable>(true);
-        //foreach (var comp in prewarmableComponents)
-        //{
-        //    AnimationClip[] clips = comp.GetClipsToPrewarm();
-        //    //AnimancerPrewarmService.Instance.EnqueueClips(clips);
-        //}
+        public async Task<GameObject> InstantiateAsync(string key)
+        {
+            ResourceRequest req = Resources.LoadAsync<GameObject>(key); // === 新增 ===
 
-        return GameObject.Instantiate(prefab); // === 新增 ===
+            while (!req.isDone) // === 新增 ===
+            {
+                await Task.Yield();
+            }
+
+            var prefab = req.asset as GameObject; // === 新增 ===
+            if (prefab == null) // === 新增 ===
+            {
+                Debug.LogError($"SimpleResourcesProviderAsync: LoadAsync failed, key={key}"); // === 新增 ===
+                return null; // === 新增 ===
+            }
+
+            //var prewarmableComponents = prefab.GetComponentsInChildren<IAnimancerPrewarmable>(true);
+            //foreach (var comp in prewarmableComponents)
+            //{
+            //    AnimationClip[] clips = comp.GetClipsToPrewarm();
+            //    //AnimancerPrewarmService.Instance.EnqueueClips(clips);
+            //}
+
+            return GameObject.Instantiate(prefab); // === 新增 ===
+        }
+
+        public Task ReleaseAsync(GameObject go)
+        {
+            Release(go);
+            return Task.CompletedTask;
+        }
     }
 
-    public Task ReleaseAsync(GameObject go)
-    {
-        Release(go);
-        return Task.CompletedTask;
-    }
 }
+

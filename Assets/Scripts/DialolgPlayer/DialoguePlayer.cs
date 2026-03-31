@@ -648,7 +648,7 @@ public partial class DialoguePlayer : MonoBehaviour
                                 string mapName = cd4Func.Param5;
                                 string targetPoint = cd4Func.Param6;
 
-                                MainGameManager.Instance.gameLogicManager.TryPlayerSwitchArea(mapName, false, targetPoint);
+                                MainGameManager.Instance.gameLogicManager.PreparePlayerSwitchArea(mapName, false, targetPoint);
                             }
                             break;
 

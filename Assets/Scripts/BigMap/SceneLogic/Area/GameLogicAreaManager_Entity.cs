@@ -284,6 +284,15 @@ namespace My.Map.Logic
                         return true;
                     }
                     break;
+                case EEntityType.InteractPoint:
+                    {
+                        var cfg = MapInteractPointLoader.Get(rec.CfgId);
+                        if(cfg != null && cfg.IsAlwaysActive)
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
             }
             return false;
         }

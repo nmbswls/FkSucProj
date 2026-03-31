@@ -406,6 +406,8 @@ namespace My.Map.Unit
         public float OverTimeLimit = 15f;
 
         private float attackRestTimer = 0; // 暂停攻击逻辑
+
+
         private EntitySkillCfg? intentSkillCfgOrigin;
         private MapAbilitySpecConfig? intentAbilityCfgCurrent;
         private bool hasCastAbility;
@@ -427,7 +429,7 @@ namespace My.Map.Unit
 
             ResetAttackState();
 
-            attackRestTimer = LogicTime.time + 5.0f; // 进入状态时先休眠一会
+            attackRestTimer = LogicTime.time + 0.5f; // 进入状态时先休眠一会
         }
 
         private void ResetAttackState()
@@ -504,6 +506,8 @@ namespace My.Map.Unit
             hasCastAbility = false;
             castOverTimer = LogicTime.time + OverTimeLimit;
             intentSkillCfgOrigin = skillCfg;
+
+            Debug.Log($"npc:{_brain.NpcEntity.CfgId} {_brain.NpcEntity.Id} prepare to use skill {skillCfg.SkillId}.");
         }
 
         /// <summary>

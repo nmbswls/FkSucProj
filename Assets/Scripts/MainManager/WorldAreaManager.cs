@@ -8,6 +8,7 @@ using My.Map.Scene;
 using UnityEngine.UI;
 using My.Config;
 using cfg.demo;
+using My;
 
 public class WorldAreaManager : MonoBehaviour
 {
@@ -46,7 +47,11 @@ public class WorldAreaManager : MonoBehaviour
 
     public void UnloadCurrentWorld(Action? onUnload)
     {
-        if (string.IsNullOrEmpty(currentMapName)) return;
+        if (string.IsNullOrEmpty(currentMapName)) 
+        {
+            onUnload?.Invoke();
+            return;
+        }
         StartCoroutine(CoUnloadWorld(onUnload));
         MainGameManager.Instance.SceneFadeManager.OnLeaveArea();
         currentRoot = null;

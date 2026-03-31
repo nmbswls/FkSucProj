@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HighlightPlus;
-using Map.SmallGame.Zha;
 using My;
 using My.Map;
 using My.Map.Entity;
@@ -111,7 +110,7 @@ public class SceneInteractSystem
             return false;
         }
 
-        if(!MainGameManager.Instance.gameLogicManager.Initialized)
+        if(MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Normal)
         {
             return false;
         }

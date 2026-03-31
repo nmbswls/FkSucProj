@@ -20,6 +20,9 @@ namespace Config.Unit
 
         public bool IsCombo;
 
+        /// <summary>
+        /// 使用条件
+        /// </summary>
         public bool NeedHMode;
 
         public bool InterruptCombo = true;

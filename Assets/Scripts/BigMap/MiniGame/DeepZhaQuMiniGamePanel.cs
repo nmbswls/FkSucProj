@@ -7,7 +7,7 @@ using My.UI.Bag;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Map.SmallGame.Zha
+namespace My.Map.SmallGame.Zha
 {
     public class DeepZhaQuMiniGamePanel : PanelWithInput
     {

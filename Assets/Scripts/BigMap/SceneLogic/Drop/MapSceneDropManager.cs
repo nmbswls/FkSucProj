@@ -9,6 +9,7 @@ using System.Linq;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static My.GameLogicManager;
 using static UnityEditor.PlayerSettings;
 using static UnityEditor.Progress;
 
@@ -49,7 +50,7 @@ namespace My.Map.Scene
 
         public void Update()
         {
-            if(!MainGameManager.Instance.Initialized)
+            if(MainGameManager.Instance.gameLogicManager.MainStage != EMainGameStage.Normal)
             {
                 return;
             }
@@ -284,6 +285,11 @@ namespace My.Map.Scene
 
             _lastRecycleTime = LogicTime.time;
 
+
+        }
+
+        public void ClearAllDrop()
+        {
 
         }
     }

@@ -483,7 +483,7 @@ namespace My.Input
                     return;
                 }
 
-                if (!MainGameManager.Instance.gameLogicManager.Initialized)
+                if (MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Normal)
                 {
                     return;
                 }

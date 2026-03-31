@@ -574,6 +574,7 @@ namespace My.UI
 
         private MapLogicEventAdapter adapter;
         private List<MapLogicSubscription> subs = new();
+
         /// <summary>
         /// 逻辑事件处理
         /// </summary>

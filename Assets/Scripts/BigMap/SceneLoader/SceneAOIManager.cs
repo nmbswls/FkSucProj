@@ -89,7 +89,6 @@ public class SceneAOIManager : MonoBehaviour
     public void InitMapArea(string mapName)
     {
         //ExportDb = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
-
     }
 
     public async Task CleanupAllAsync()
@@ -200,7 +199,6 @@ public class SceneAOIManager : MonoBehaviour
         enabled = true;
     }
 
-
     private void Awake()
     {
         _presentationFactory = presentationFactorySource as IPresentationFactoryAsync;
@@ -215,16 +213,12 @@ public class SceneAOIManager : MonoBehaviour
 
     private void Update()
     {
-        if(!MainGameManager.Instance.Initialized)
-        {
-            return;
-        }
         if(!WorldAreaManager.Instance.IsWorldLoaded)
         {
             return;
         }
 
-        if(!MainGameManager.Instance.gameLogicManager.Initialized)
+        if(MainGameManager.Instance.gameLogicManager.MainStage == GameLogicManager.EMainGameStage.UnInitialized)
         {
             return;
         }
