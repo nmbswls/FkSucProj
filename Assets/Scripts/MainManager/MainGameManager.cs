@@ -111,7 +111,7 @@ namespace My
             gameLogicManager = new();
             gameLogicManager.EventOnSwitchStageUpdate += HandleOnSwitchStageUpdate;
 
-            Cursor.lockState = CursorLockMode.Confined;
+            //Cursor.lockState = CursorLockMode.Confined;
         }
 
         public async Task InitStartGame(string startParams, Action? onComplete)

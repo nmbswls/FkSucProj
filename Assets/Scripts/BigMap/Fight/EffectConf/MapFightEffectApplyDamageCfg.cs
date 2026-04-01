@@ -17,7 +17,7 @@ namespace My.Map.Entity
 
 
     [Serializable]
-    public class MapAbilityEffectApplyDamageCfg : MapFightEffectCfg
+    public class MapFightEffectApplyDamageCfg : MapFightEffectCfg
     {
         public long BaseDamage;
 

@@ -1076,7 +1076,7 @@ namespace My.Map.Entity
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
-            var realCfg = effectConf as MapAbilityEffectApplyDamageCfg;
+            var realCfg = effectConf as MapFightEffectApplyDamageCfg;
 
             if (realCfg == null)
             {

@@ -1009,12 +1009,13 @@ namespace My.Map.Unit
             {
                 case SearchPhase.MovingToPos:
                     // 检测是否到达可疑点
-                    if (Vector3.Distance(_brain.NpcEntity.Pos, searchOrgPoint) < 1.0f)
+                    if (Vector3.Distance(_brain.NpcEntity.Pos, searchOrgPoint) < 0.3f)
                     {
                         // 到达，开始四处张望
                         _phase = SearchPhase.LookingAround;
                         _lookAroundTimer = LogicTime.time + _brain.Config.SearchDuration;
                         _brain.NpcEntity.StopMove();
+                        break;
                     }
 
                     // 超时强制结束 (防止路不通一直走)

@@ -305,6 +305,19 @@ namespace My.Map.Entity
 
                 {
                     var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "default_orc_attack";
+                    cfg.MainAbilityId = "default_orc_attack";
+                    cfg.CoolDown = 2.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+
+                    cfg.AbilityExtraVariables["DefaultAttackPre"] = "0.5";
+                    cfg.AbilityExtraVariables["DefaultAttackTime"] = "0.4";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+                {
+                    var cfg = new EntitySkillCfg();
                     cfg.SkillId = "npc_shoot_01";
                     cfg.MainAbilityId = "default_range_attack";
                     cfg.CoolDown = 10.0f;
@@ -396,6 +409,11 @@ namespace My.Map.Entity
                     var ab = CreateDeepZhaQu();
                     _abilityDict[ab.Id] = ab;
                 }
+                {
+                    var ab = CreateDefaultOrcAttack();
+                    _abilityDict[ab.Id] = ab;
+                }
+                
                 {
                     var ab = CreateDefaultMonsterAttack();
                     _abilityDict[ab.Id] = ab;
@@ -1164,7 +1182,7 @@ namespace My.Map.Entity
                 OnHitEffects = new()
             {
 
-                new MapAbilityEffectApplyDamageCfg()
+                new MapFightEffectApplyDamageCfg()
                 {
                     BaseDamage = 25000,
                     KnockBackForce = 0.3f,
@@ -1303,6 +1321,85 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
         }
+
+        private static MapAbilitySpecConfig CreateDefaultOrcAttack()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "default_orc_attack";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            
+            // Ãß ÷∂Øª≠
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+
+                AnimTag = "default_attack",
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    ReferName = "DefaultAttackPre",
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "DefaultAttackTime"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectHitBoxCfg()
+            {
+                Shape = MapAbilityEffectHitBoxCfg.EShape.Direction,
+                TargetEntityType = EEntityType.Player,
+                CampFilterType = ECampFilterType.NotSelf,
+                Width = 1f,
+                Length = 1.2f,
+
+                HitResult = new()
+                {
+                    OnHitEffects = new()
+                    {
+                        new MapFightEffectApplyDamageCfg()
+                        {
+                            BaseDamage = 5000,
+                            ExtraDamageRate = new()
+                            {
+                                new AttrKvPair(){AttrId = AttrIdConsts.Attack, Val = 10000}
+                            },
+                            KnockBackForce = 0.4f,
+                        },
+                        //new MapAbilityEffectCostResourceCfg()
+                        //{
+                        //    ResourceId  = AttrIdConsts.HP,
+                        //    CostValue = 500,
+                        //    IsEnmity = true,
+                        //},
+                    }
+                },
+
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+
 
         private static MapAbilitySpecConfig CreateDefaultMonsterAttack()
         {
@@ -1795,7 +1892,7 @@ namespace My.Map.Entity
                         //    MatchPhase = "Dashing",
                         //    MatchSkill = "default_dash_slash"
                         //},
-                        new MapAbilityEffectApplyDamageCfg()
+                        new MapFightEffectApplyDamageCfg()
                         {
                             BaseDamage = 25000,
                             KnockBackForce = 0.8f,
@@ -1906,7 +2003,7 @@ namespace My.Map.Entity
                 hitCfg.TargetEntityType = EEntityType.Player;
 
                 {
-                    var dmgEffect = new MapAbilityEffectApplyDamageCfg()
+                    var dmgEffect = new MapFightEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
                         KnockBackForce = 0.8f,
@@ -1995,7 +2092,7 @@ namespace My.Map.Entity
                 OnHitEffects = new()
                 {
 
-                    new MapAbilityEffectApplyDamageCfg()
+                    new MapFightEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
                         KnockBackForce = 0.6f,
@@ -2070,7 +2167,7 @@ namespace My.Map.Entity
                 OnHitEffects = new()
                 {
 
-                    new MapAbilityEffectApplyDamageCfg()
+                    new MapFightEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
                         KnockBackForce = 0.6f,
@@ -2145,7 +2242,7 @@ namespace My.Map.Entity
                 OnHitEffects = new()
                 {
 
-                    new MapAbilityEffectApplyDamageCfg()
+                    new MapFightEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
                         KnockBackForce = 1f,
@@ -2418,7 +2515,7 @@ namespace My.Map.Entity
                 OnHitEffects = new()
                 {
 
-                    new MapAbilityEffectApplyDamageCfg()
+                    new MapFightEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
                         KnockBackForce = 0.3f,
@@ -2486,7 +2583,7 @@ namespace My.Map.Entity
                 OnHitEffects = new()
                 {
 
-                    new MapAbilityEffectApplyDamageCfg()
+                    new MapFightEffectApplyDamageCfg()
                     {
                         BaseDamage = 25000,
                         KnockBackForce = 0.3f,
@@ -3340,7 +3437,7 @@ namespace My.Map.Entity
                         //    MatchPhase = "Dashing",
                         //    MatchSkill = "default_dash_slash"
                         //},
-                        new MapAbilityEffectApplyDamageCfg()
+                        new MapFightEffectApplyDamageCfg()
                         {
                             BaseDamage = 7000,
                             KnockBackForce = 0.5f,

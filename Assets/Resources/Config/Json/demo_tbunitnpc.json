@@ -10,7 +10,7 @@
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
-      "default_npc_attack"
+      "default_orc_attack"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -30,7 +30,7 @@
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
-      "default_npc_attack"
+      "default_orc_attack"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -50,7 +50,7 @@
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
-      "default_npc_attack"
+      "default_orc_attack"
     ],
     "is_peace": false,
     "peace_dialog_id": "",

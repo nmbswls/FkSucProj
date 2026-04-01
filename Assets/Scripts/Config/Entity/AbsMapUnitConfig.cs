@@ -41,6 +41,7 @@ namespace Config.Unit
 
         public float BufferCacheTime = 0.1f;
 
+        public Dictionary<string, string> AbilityExtraVariables = new();
 
         public enum ECastConditionType
         {

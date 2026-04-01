@@ -67,6 +67,8 @@ namespace My
                      Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
                  }
 
+                 gameLogicManager.NextSwitchStep(EMapSwitchStep.Loading);
+
              }, TaskScheduler.FromCurrentSynchronizationContext()); ;
         }
 

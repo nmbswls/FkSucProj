@@ -214,10 +214,10 @@ MonoBehaviour:
   enableLerp: 1
   lerpSettings:
     speed: 8
-    minX: -0.2
-    maxX: 0.2
-    minY: 0.3
-    maxY: 0.6
+    minX: -0.1
+    maxX: 0.1
+    minY: 0
+    maxY: 0.1
     randomFlip: 0
   enableVelocity: 0
   velocitySettings:
@@ -613,8 +613,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 5
-  m_fontSizeBase: 5
+  m_fontSize: 3
+  m_fontSizeBase: 3
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

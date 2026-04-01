@@ -254,11 +254,10 @@ namespace My.UI
                 return;
             }
 
-            if(presenter.GetLogicEntity().Type == EEntityType.Player)
+            if(presenter.GetLogicEntity().Type != EEntityType.InteractPoint)
             {
                 return;
             }
-
 
             bool hasActiveUI = sceneInteractHintDicts.ContainsKey(interactblePresenter);
             Vector3 worldPos = Vector3.zero;

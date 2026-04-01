@@ -1369,7 +1369,7 @@ namespace My.Map.Entity
                 // buff´¥·¢Æ÷ÖÐ 
                 case MapAbilityEffectAddResourceCfg:
                 case MapAbilityEffectCostResourceCfg:
-                case MapAbilityEffectApplyDamageCfg:
+                case MapFightEffectApplyDamageCfg:
                 case MapAbilityEffectCastSkillCfg:
                 case MapFightEffectQueueModeCfg:
                 case MapFightEffectBroadcastAttractCfg:

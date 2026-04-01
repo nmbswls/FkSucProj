@@ -37,7 +37,7 @@ namespace My
                         }
                         break;
 
-                    case MapAbilityEffectApplyDamageCfg:
+                    case MapFightEffectApplyDamageCfg:
                         {
                             executor = new AbilityEffectExecutor4ApplyDamage();
                         }
