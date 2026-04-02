@@ -1358,7 +1358,8 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "DefaultAttackTime"
+                    RawVal = "0.3",
+                    ReferName = "DefaultAttackTime"
                 },
             };
 
@@ -2086,7 +2087,7 @@ namespace My.Map.Entity
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
-                WeaponName = "Weapon01",
+                WeaponName = "DevailClawAttack",
                 AnimName = "player_weapon01_01",
                 Duration = 0.2f,
                 OnHitEffects = new()
@@ -2161,7 +2162,7 @@ namespace My.Map.Entity
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
-                WeaponName = "Weapon01",
+                WeaponName = "DevailClawAttack",
                 AnimName = "player_weapon01_02",
                 Duration = 0.2f,
                 OnHitEffects = new()
@@ -2215,10 +2216,10 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.3"
+                    RawVal = "0.5"
                 },
 
-                AnimTag = "attack_01",
+                AnimTag = "queen_attack_03",
             });
 
             var mainPhase = new MapAbilityPhase()
@@ -2230,25 +2231,70 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.35"
+                    RawVal = "0.15"
                 },
             };
 
-            var newEffect = new MapAbilityEffectUseWeaponCfg()
-            {
-                WeaponName = "Weapon01",
-                AnimName = "player_weapon01_03",
-                Duration = 0.4f,
-                OnHitEffects = new()
-                {
+            //var newEffect = new MapAbilityEffectUseWeaponCfg()
+            //{
+            //    WeaponName = "Weapon01",
+            //    AnimName = "player_weapon01_03",
+            //    Duration = 0.4f,
+            //    OnHitEffects = new()
+            //    {
 
-                    new MapFightEffectApplyDamageCfg()
+            //        new MapFightEffectApplyDamageCfg()
+            //        {
+            //            BaseDamage = 25000,
+            //            KnockBackForce = 1f,
+            //        },
+            //    }
+            //};
+
+            var newEffect = new MapAbilityEffectHitBoxCfg()
+            {
+                Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+
+                Radius = 2.5f,
+                CenterOffset = 1.3f,
+                CampFilterType = ECampFilterType.NotSelf,
+
+                HitResult = new()
+                {
+                    OnHitEffects = new()
                     {
-                        BaseDamage = 25000,
-                        KnockBackForce = 1f,
-                    },
+                        new MapAbilityEffectAddBuffCfg()
+                        {
+                            BuffId = "force_stun",
+                            Duration = 1.0f,
+                        },
+                        new MapFightEffectApplyDamageCfg()
+                        {
+                            BaseDamage = 25000,
+                            KnockBackForce = 1f,
+                        },
+                    }
                 }
+
             };
+
+
+            //var newEffect = new MapAbilityEffectUseWeaponCfg()
+            //{
+            //    WeaponName = "Weapon01",
+            //    AnimName = "player_weapon01_03",
+            //    Duration = 0.4f,
+            //    OnHitEffects = new()
+            //    {
+
+            //        new MapFightEffectApplyDamageCfg()
+            //        {
+            //            BaseDamage = 25000,
+            //            KnockBackForce = 1f,
+            //        },
+            //    }
+            //};
+
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(mainPhase);
 

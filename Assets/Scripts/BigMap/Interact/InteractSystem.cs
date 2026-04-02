@@ -68,6 +68,7 @@ public class SceneInteractSystem
         public Vector2 pos;
     }
     private readonly List<IntResultItem> normalCandidates = new List<IntResultItem>(64);
+    private readonly HashSet<ISceneInteractable> normalCandidatedSet = new HashSet<ISceneInteractable>();
 
     private List<IntResultItem> currInteractPoints = new();
     public List<long> closeUnitCache = new();
@@ -157,6 +158,7 @@ public class SceneInteractSystem
         var presenter = MainGameManager.Instance.playerScenePresenter;
 
         normalCandidates.Clear();
+        normalCandidatedSet.Clear();
         executeCandidates.Clear();
 
         Vector2 center = presenter.transform.position;
@@ -167,11 +169,15 @@ public class SceneInteractSystem
         {
             var col = hits[i];
             if (col == null) continue;
-
             // 在 Collider 或其父节点上寻找接口
             // 注意：GetComponentInParent 会产生少量 GC，若极致无 GC，可预缓存或自定义映射
             var interactable = col.GetComponentInParent<ISceneInteractable>();
             if (interactable == null) continue;
+
+            if (normalCandidatedSet.Contains(interactable))
+            {
+                continue;
+            }
 
             Vector2 diff = (Vector2)col.transform.position - center;
             var dist = diff.magnitude;
@@ -241,6 +247,7 @@ public class SceneInteractSystem
                 continue;
             }
 
+            normalCandidatedSet.Add(interactable);
             normalCandidates.Add(new IntResultItem
             {
                 interactable = interactable,

@@ -7,23 +7,36 @@ using UnityEngine;
 namespace My
 
 {
-    public class GlobalLogicDateManager
+    public class GameDateInfo
     {
-        public GameLogicManager LogicManager { get; set; }
+        public int CurrDay = 1;
 
-        public int CurrDay;
-        public void OnEnterNextDay()
+        public enum EDayPeriod
         {
-            CurrDay += 1;
+            Day,
+            Dawn,
+            Night,
+        }
 
-            Debug.Log("OnEnterNextDay next day");
+        public EDayPeriod DayPeriod;
 
-            // npc 刷新交互次数
+        public void NextPeriod()
+        {
 
-            //foreach(var p in LogicManager.homeDataManager)
-            //{
+            if(DayPeriod == EDayPeriod.Day)
+            {
+                DayPeriod = EDayPeriod.Dawn;
+            }
+            else if(DayPeriod == EDayPeriod.Dawn)
+            {
+                DayPeriod = EDayPeriod.Night;
+            }
+            else if (DayPeriod == EDayPeriod.Night)
+            {
+                DayPeriod = EDayPeriod.Day;
 
-            //}
+                CurrDay += 1;
+            }
         }
     }
 
@@ -31,6 +44,39 @@ namespace My
     public partial class GameLogicManager
     {
 
-        
+        public GameDateInfo DateInfo = new();
+
+        public class OneDayBalanceInfo
+        {
+
+        }
+        public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
+
+        public void GoToNextPeriod()
+        {
+            int currDay = DateInfo.CurrDay;
+
+            DateInfo.NextPeriod();
+
+            if(DateInfo.CurrDay != currDay)
+            {
+                HandleOneDayBalance();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void HandleOneDayBalance()
+        {
+            OneDayBalanceInfo balanceInfo = new OneDayBalanceInfo();
+            //
+            Debug.Log("结算");
+            //
+
+            //
+
+            EventOnOneDayBalance?.Invoke(balanceInfo);
+        }
     }
 }

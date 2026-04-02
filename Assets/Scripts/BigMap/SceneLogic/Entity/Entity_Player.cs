@@ -135,7 +135,9 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 300_000);
             
+
             // ×ÊÔ´Àà
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 0);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 3);

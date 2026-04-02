@@ -49,6 +49,7 @@ namespace My.Map.Entity
         public const string PlayerPleasure = "PlayerPleasure";
         public const string PlayerSan = "PlayerSan";
         public const string PlayerFaQingVal = "PlayerFaQingVal";
+        public const string PlayerOriginPower = "PlayerOriginPower";
 
         public const string PlayerKnockDown = "PlayerKnockDown";
 

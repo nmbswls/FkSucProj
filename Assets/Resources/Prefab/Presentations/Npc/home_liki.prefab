@@ -100,6 +100,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitPresenter: {fileID: 0}
   WeaponOnes: []
+  ySortOrder: {fileID: 0}
+  CurrEquipWeapon: 
 --- !u!1 &6716341979371502919
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,14 +182,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 0}
+  _shadowView: {fileID: 0}
+  _mainSpriteArr: []
+  pivotHeader: {fileID: 0}
   highlightFx: {fileID: 0}
   ViewRoot: {fileID: 0}
   ShadowView: {fileID: 0}
   AgentView: {fileID: 0}
   ViewPoint: {fileID: 0}
-  faceIndicator: {fileID: 8933406555717738629}
-  EyePos: {fileID: 0}
-  WeaponRoot: {fileID: 7921256209700466238}
+  HitPivot: {fileID: 0}
   WeaponCtrl: {fileID: 637426610165199311}
   navAgent: {fileID: 0}
   rb: {fileID: 0}
@@ -215,8 +218,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   BindEffectRoot: {fileID: 0}
+  MainAgentAnimator: {fileID: 0}
+  AnimHolder: {fileID: 0}
   MainFlasher: {fileID: 0}
   SpecialAnimClips: []
+  highlightCtrl: {fileID: 0}
 --- !u!58 &8125375396503032286
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -544,7 +550,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8530266492118516531
 Transform:
   m_ObjectHideFlags: 0

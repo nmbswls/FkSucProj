@@ -598,6 +598,7 @@ namespace My.Map
                 case AttrIdConsts.DeepZhaChance:
                 case AttrIdConsts.UnitHShield:
                 case AttrIdConsts.PlayerFaQingVal:
+                case AttrIdConsts.PlayerOriginPower:
                 case AttrIdConsts.SJProgress:
                     {
                         return GetResourceCurrent(attrId);

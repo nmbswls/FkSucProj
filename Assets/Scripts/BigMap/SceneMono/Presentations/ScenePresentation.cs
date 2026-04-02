@@ -29,6 +29,7 @@ namespace My
         void SetFadeAlpha(float fadeAlpha);
 
         Transform PivotHeader { get; }
+
     }
 
     public interface ISceneTargettable
@@ -54,6 +55,8 @@ namespace My
         protected AnimancerComponent _Animancer;
 
         private bool _visible;
+
+
 
 
         [Header("Õ®”√pivot")]

@@ -59,7 +59,8 @@ namespace My.Map.Fight
             Cast = 4,
             Dodge = 5,
             InputCancel = 6,
-            System = 7,
+            Die = 7,
+            System = 8,
         }
 
         public struct InterruptRequest

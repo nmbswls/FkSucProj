@@ -41,7 +41,7 @@ namespace My.Map.Scene
         //public SpriteRenderer MainView;
 
         public Transform ViewPoint;
-        public GameObject faceIndicator;
+        //public GameObject faceIndicator;
 
         public Transform HitPivot;
 
@@ -125,6 +125,8 @@ namespace My.Map.Scene
             MainFlasher = GetComponentInChildren<SpriteWhiteFlasher>();
 
             InitAnimComps();
+
+            CreateRootForwardHinter();
         }
 
         private float _tickMoveStateTimer;
@@ -145,6 +147,7 @@ namespace My.Map.Scene
 
             //UpdateTargettedMoveState();
 
+            // 提取出来
             UpdateVisible(dt);
 
             //if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
@@ -334,9 +337,9 @@ namespace My.Map.Scene
                     ViewRoot.gameObject.SetActive(true);
                 }
 
-                if (faceIndicator != null)
+                if (_rootForwardHinter != null)
                 {
-                    faceIndicator?.gameObject.SetActive(true);
+                    _rootForwardHinter?.gameObject.SetActive(true);
                 }
             }
             else
@@ -346,8 +349,8 @@ namespace My.Map.Scene
                     ViewRoot.gameObject.SetActive(false);
                 }
                 
-                if (faceIndicator != null)
-                    faceIndicator?.gameObject.SetActive(false);
+                if (_rootForwardHinter != null)
+                    _rootForwardHinter?.gameObject.SetActive(false);
             }
         }
 
@@ -392,9 +395,11 @@ namespace My.Map.Scene
 
         protected void UpdateFaceDirIndicator()
         {
-            if (faceIndicator == null) return;
+            //if (faceIndicator == null) return;
+
+            if (_rootForwardHinter == null) return;
             float targetAngle = Mathf.Atan2(UnitEntity.CurrentLook.y, UnitEntity.CurrentLook.x) * Mathf.Rad2Deg;
-            float currentAngle = faceIndicator.transform.eulerAngles.z;
+            float currentAngle = _rootForwardHinter.transform.eulerAngles.z;
 
             float desired = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref angularVel, smoothTime);
 
@@ -405,7 +410,7 @@ namespace My.Map.Scene
 
             float newAngle = currentAngle + delta;
 
-            faceIndicator.transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
+            _rootForwardHinter.transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
         }
 
         public override void Bind(ILogicEntity logic)
@@ -760,26 +765,29 @@ namespace My.Map.Scene
             UnitEntity.abilityController.OnUseWeaponHitCallback(hitId, hitEntityId);
         }
 
-        /// <summary>
-        /// 更新view透明度 
-        /// 根据优先级和状态 决定最终显示效果
-        /// </summary>
-        public void UpdateViewAlpha()
-        {
-            if (UnitEntity.GetAttr(AttrIdConsts.HideView) > 0)
-            {
-                //icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 0.6f);
-            }
-            else
-            {
-                //icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 1);
-            }
-        }
 
         public Collider2D GetTargetCol()
         {
             return targetCol;
         }
+
+
+        #region 脚底 
+
+
+        private GameObject _rootForwardHinter;
+        private void CreateRootForwardHinter()
+        {
+            var src = SimpleResManager.Load<GameObject>("SceneEffect/forward_hint");
+            var hinter = GameObject.Instantiate(src, transform);
+
+            _rootForwardHinter = hinter.transform.GetChild(0).gameObject;
+
+            _rootForwardHinter.SetActive(false);
+        }
+
+        #endregion
+
 
     }
 }

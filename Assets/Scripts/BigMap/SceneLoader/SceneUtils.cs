@@ -140,20 +140,42 @@ namespace My
         }
 
         public Collider2D[] hits = new Collider2D[128];
-        public List<ILogicEntity> OverlapBoxAllEntity(Vector2 orgPos, Vector2 dir, Vector2 size, EntityFilterParam? filter)
+
+        private Dictionary<long, (ILogicEntity, string)> tmpHitDict = new();
+        public IEnumerable<ILogicEntity> OverlapBoxAllEntity(Vector2 orgPos, Vector2 dir, Vector2 size, EntityFilterParam? filter, float atkHeight = 0.3f)
         {
-            List<ILogicEntity> retList = new();
+            tmpHitDict.Clear();
+
             float angleDeg = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             var hitCount = Physics2D.OverlapBoxNonAlloc(orgPos, size, angleDeg, hits, 1 << LayerMask.NameToLayer("MapTarget"));
             for (int i = 0; i < hitCount; i++)
             {
-                var trans = hits[i].transform;
-                var comp = trans.GetComponentInParent<IScenePresentation>();
+                var targettable = hits[i].GetComponent<SceneTargettable>();
+                if(targettable == null)
+                {
+                    continue;
+                }
+                //var comp = trans.GetComponentInParent<IScenePresentation>();
+                var comp = targettable.BelongPresenter;
                 if (comp == null) continue;
                 var entity = comp.GetLogicEntity();
                 if (entity == null) continue;
 
                 if (entity.MarkDestroyed) continue;
+
+                if(tmpHitDict.ContainsKey(entity.Id))
+                {
+                    continue;
+                }
+
+                bool heightMatch = targettable.CheckHitHeightValid(atkHeight);
+                if (!heightMatch)
+                {
+                    // 产生重叠但高度不符，发生错位，忽略判定
+                    Debug.Log($"错位");
+                    continue;
+                }
+                
 
                 if (filter != null)
                 {
@@ -181,24 +203,48 @@ namespace My
                     }
                 }
 
-                retList.Add(comp.GetLogicEntity());
+                tmpHitDict.Add(entity.Id, (entity, targettable.SpecialTag));
+                yield return entity;
             }
-
-            return retList;
         }
 
-        public List<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter)
+
+        //public IEnumerable<ILogicEntity> OverlapSectAllEntity(Vector2 orgPos, Vector2 dir, float radius, float angle, EntityFilterParam? filter, float atkHeight = 0.3f)
+        //{
+            
+        //}
+
+
+        public IEnumerable<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter, float atkHeight = 0.3f)
         {
-            List<ILogicEntity> retList = new();
+            tmpHitDict.Clear();
             var hitCount = Physics2D.OverlapCircleNonAlloc(orgPos, radius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
             for (int i = 0; i < hitCount; i++)
             {
-                var trans = hits[i].transform;
-                var comp = trans.GetComponentInParent<IScenePresentation>();
+                var targettable = hits[i].GetComponent<SceneTargettable>();
+                if (targettable == null)
+                {
+                    continue;
+                }
+                //var comp = trans.GetComponentInParent<IScenePresentation>();
+                var comp = targettable.BelongPresenter;
                 if (comp == null) continue;
                 var entity = comp.GetLogicEntity();
                 if (entity == null) continue;
+
                 if (entity.MarkDestroyed) continue;
+
+                if (tmpHitDict.ContainsKey(entity.Id))
+                {
+                    continue;
+                }
+
+                bool heightMatch = targettable.CheckHitHeightValid(atkHeight);
+                if (!heightMatch)
+                {
+                    //Debug.Log($"错位");
+                    continue;
+                }
 
                 if (filter != null)
                 {
@@ -225,10 +271,9 @@ namespace My
                         }
                     }
                 }
-                retList.Add(comp.GetLogicEntity());
+                tmpHitDict.Add(entity.Id, (entity, targettable.SpecialTag));
+                yield return entity;
             }
-
-            return retList;
         }
 
         public void OverlapCheckDynamicObs(Vector2 orgPos, float radius, List<(Vector2, Vector2)> retList)

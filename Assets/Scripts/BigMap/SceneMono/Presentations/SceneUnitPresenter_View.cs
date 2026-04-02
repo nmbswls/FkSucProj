@@ -11,12 +11,13 @@ namespace My.Map.Scene
     {
         public Transform BindEffectRoot;
 
-        private float _pendingOffsetZ = 0;
 
         public AnimancerComponent MainAgentAnimator;
         public UnitAnimHolder AnimHolder;
 
         private AnimationClip _Idle;
+
+        private float _pendingOffsetZ = 0;
         private void InitAnimComps()
         {
             if(AnimHolder != null)
@@ -34,22 +35,14 @@ namespace My.Map.Scene
             //OnEventAnimPlay("attack_01", 0);
         }
 
+        
+
 
         public void UpdateOffsetZView()
         {
             if (AgentView == null) return;
 
-            float offsetZ = 0;
-
-            foreach(var buffInst in UnitEntity.BuffContainer.Values)
-            {
-                if(buffInst.Def.ZOffsetOverride > 0)
-                {
-                    offsetZ = buffInst.Def.ZOffsetOverride;
-                }
-            }
-
-            float targetOffsetZ = offsetZ + this.AgentView.transform.localPosition.y;
+            float targetOffsetZ = UnitEntity.OffsetZ + this.AgentView.transform.localPosition.y;
 
             _pendingOffsetZ = Mathf.Lerp(_pendingOffsetZ, targetOffsetZ, 3f * LogicTime.deltaTime);
 

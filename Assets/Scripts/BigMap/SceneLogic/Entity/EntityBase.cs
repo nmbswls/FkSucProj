@@ -89,6 +89,9 @@ namespace My.Map
         bool IsActive { get; set; }
         Vector2 Pos { get; }
 
+        float OffsetZ { get; }
+
+
         long LifeBindEntityId { get; }
 
         // 生命周期钩子
@@ -161,6 +164,8 @@ namespace My.Map
         public event Action EventOnAnimLayerUpdate;
         public event Action<string, int, bool> EventOnAnimPlay; // 动画名 层id 是否清空
         public Vector2 Pos { get; protected set; } = Vector2.zero;
+
+        public float OffsetZ { get; protected set; }
 
         public ISceneAbilityViewer? viewer; // 表现层接口
 
@@ -594,6 +599,8 @@ namespace My.Map
         public Dictionary<long, BuffInstance> BuffContainer { get; protected set; } = new();
         public event Action<BuffInstance> EventOnBuffRegister;
         public event Action<long> EventOnBuffUnregister;
+
+        
     }
 
 }

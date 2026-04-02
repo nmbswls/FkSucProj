@@ -185,6 +185,8 @@ namespace My.Map
             {
                 CheckDialogActorBehaviour();
             }
+
+            UpdateUnitOffsetZ();
         }
 
         protected virtual void TickActivateState(float dt)
@@ -224,6 +226,11 @@ namespace My.Map
         public virtual void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
             this.IsDead = true;
+
+            TryInterrupt(new InterruptRequest()
+            {
+                source = EInterruptSource.Die,
+            });
 
             EventOnDie?.Invoke(this.Id);
 
@@ -1163,6 +1170,22 @@ namespace My.Map
         public (float, float) GetViewRangeAndAngle()
         {
             return (5.0f, 120f);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void UpdateUnitOffsetZ()
+        {
+            OffsetZ = 0;
+
+            foreach (var buffInst in BuffContainer.Values)
+            {
+                if (buffInst.Def.ZOffsetOverride > 0)
+                {
+                    OffsetZ = buffInst.Def.ZOffsetOverride;
+                }
+            }
         }
     }
 

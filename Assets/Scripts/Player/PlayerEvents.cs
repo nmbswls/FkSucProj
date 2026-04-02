@@ -2,6 +2,7 @@
 using System;
 using My.Map;
 using UnityEngine;
+using static My.PlayerFuncOpenSystem;
 
 namespace My.Quest
 {
@@ -14,6 +15,16 @@ namespace My.Quest
         PlayerKilled,
 
         ItemChange,
+
+        OpenFunc,
+    }
+
+    // 功能解锁
+    public struct PlayerFuncUnlockEvent
+    {
+        public My.PlayerFuncOpenSystem.EFuncOpenType OpenType;
+
+        public EPlayerEventType EventType { get { return EPlayerEventType.OpenFunc; } }
     }
 
     // 玩家击杀单位事件

@@ -16,6 +16,8 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     public List<MapUnitWeaponOne> WeaponOnes = new();
     public YSortOrder ySortOrder;
 
+    public string CurrEquipWeapon = string.Empty;
+
     public void Awake()
     {
         UnitPresenter = GetComponentInParent<SceneUnitPresenter>();
@@ -30,7 +32,10 @@ public class MapUnitWeaponCtrl : MonoBehaviour
                 continue;
             }    
             WeaponOnes.Add(weaponOne);
-            go.gameObject.SetActive(false);
+            if(weaponOne.name != CurrEquipWeapon)
+            {
+                go.gameObject.SetActive(false);
+            }
 
             weaponOne.WeaponCtrl = this;
         }
@@ -39,7 +44,6 @@ public class MapUnitWeaponCtrl : MonoBehaviour
 
     void Update()
     {
-
         
         bool isFacingUp = UnitPresenter.UnitEntity.CurrentLook.y > 0.1f;
         if(ySortOrder != null)
@@ -53,6 +57,20 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         foreach (var weaponOne in WeaponOnes)
         {
             weaponOne.OnWeaponAimDirUpdate(UnitPresenter.UnitEntity.CurrentLook);
+        }
+    }
+
+    /// <summary>
+    /// …Ë÷√≥£◊§Œ‰∆˜œ‘ æ
+    /// </summary>
+    /// <param name="weaponName"></param>
+    public void SetAlwaysShowWeapon(string weaponName)
+    {
+        CurrEquipWeapon = weaponName;
+
+        foreach(var weaponOne in WeaponOnes)
+        {
+            weaponOne.IsShown = false;
         }
     }
 

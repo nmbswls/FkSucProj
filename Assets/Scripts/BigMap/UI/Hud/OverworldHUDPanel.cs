@@ -1,13 +1,16 @@
 
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Scene;
+using My.Quest;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static My.PlayerFuncOpenSystem;
 
 
 namespace My.UI
@@ -63,13 +66,27 @@ namespace My.UI
         public Image zhaZhiSwitchOne;
         public Button BtnZhaZhiSwitch;
 
-        public RectTransform PlayerClothesRoot;
-        public CanvasGroup PlayerClothesCG;
-        public Image ClothesBar;
+        public Button BtnHomeStorage;
+        public Button BtnHomeNextPeriod;
 
-        public RectTransform PlayerExposeRoot;
-        public CanvasGroup PlayerExposeCG;
-        public Image ExposeBar;
+        public class PlayerPropBall
+        {
+            public string AttrId;
+            public RectTransform Root;
+            public CanvasGroup CG;
+            public Image BarValue;
+        }
+
+        //public RectTransform PlayerClothesRoot;
+        //public CanvasGroup PlayerClothesCG;
+        //public Image ClothesBar;
+
+        //public RectTransform PlayerExposeRoot;
+        //public CanvasGroup PlayerExposeCG;
+        //public Image ExposeBar;
+
+        public RectTransform PropLineContainer;
+        private Dictionary<string, PlayerPropBall> PlayerBallMap = new();
 
         private bool isUIDisguiseMode = false;
         private Tween disguiseSwitchTween = null;
@@ -82,28 +99,8 @@ namespace My.UI
             SkilBar.InitSkills(this);
 
 
-            bool disguising = false;
+            
 
-            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
-            {
-                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
-                {
-                    disguising = true;
-                }
-            }
-            if (disguising)
-            {
-                PlayerClothesRoot.gameObject.SetActive(true);
-                PlayerExposeRoot.gameObject.SetActive(false);
-            }
-            else
-            {
-                PlayerClothesRoot.gameObject.SetActive(false);
-                PlayerExposeRoot.gameObject.SetActive(true);
-            }
-
-            PlayerClothesCG.alpha = 1;
-            PlayerExposeCG.alpha = 1;
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
@@ -125,6 +122,55 @@ namespace My.UI
             {
                 DoSwitchZhaZhiMode();
             });
+
+            InitializePropBalls();
+        }
+
+        private void InitializePropBalls()
+        {
+            var hungerGo = PropLineContainer.Find("PlayerHunger");
+            {
+                var ball = new PlayerPropBall();
+                ball.AttrId = AttrIdConsts.PlayerHunger;
+                ball.Root = hungerGo as RectTransform;
+                ball.CG = hungerGo.GetComponent<CanvasGroup>();
+                ball.BarValue = hungerGo.Find("Bar").GetComponent<Image>();
+                PlayerBallMap.Add(AttrIdConsts.PlayerHunger, ball);
+                ball.Root.gameObject.SetActive(false);
+            }
+            var sanGo = PropLineContainer.Find("PlayerSan");
+            {
+                var ball = new PlayerPropBall();
+                ball.AttrId = AttrIdConsts.PlayerSan;
+                ball.Root = sanGo as RectTransform;
+                ball.CG = sanGo.GetComponent<CanvasGroup>();
+                ball.BarValue = sanGo.Find("Bar").GetComponent<Image>();
+                PlayerBallMap.Add(AttrIdConsts.PlayerSan, ball);
+
+                ball.Root.gameObject.SetActive(false);
+            }
+            var clothesGo = PropLineContainer.Find("PlayerClothes");
+            {
+                var ball = new PlayerPropBall();
+                ball.AttrId = AttrIdConsts.PlayerClothes;
+                ball.Root = clothesGo as RectTransform;
+                ball.CG = clothesGo.GetComponent<CanvasGroup>();
+                ball.BarValue = clothesGo.Find("Bar").GetComponent<Image>();
+                PlayerBallMap.Add(AttrIdConsts.PlayerClothes, ball);
+
+                ball.Root.gameObject.SetActive(false);
+            }
+            var cexposeGo = PropLineContainer.Find("PlayerExpose");
+            {
+                var ball = new PlayerPropBall();
+                ball.AttrId = AttrIdConsts.PlayerOriginPower;
+                ball.Root = cexposeGo as RectTransform;
+                ball.CG = cexposeGo.GetComponent<CanvasGroup>();
+                ball.BarValue = cexposeGo.Find("Bar").GetComponent<Image>();
+                PlayerBallMap.Add(AttrIdConsts.PlayerOriginPower, ball);
+
+                ball.Root.gameObject.SetActive(false);
+            }
         }
 
         public void Update()
@@ -136,8 +182,8 @@ namespace My.UI
                 //PlayerClothesText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) * 0.001f)).ToString();
                 PlayerPleasureText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f)).ToString();
 
-                PlayerHungerText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerHunger) * 0.001f)).ToString();
-                PlayerSanText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSan) * 0.001f)).ToString();
+                //PlayerHungerText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerHunger) * 0.001f)).ToString();
+                //PlayerSanText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSan) * 0.001f)).ToString();
 
                 PlayerQueenStatusText.text = MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsQueenMode ? "Queen" : "Normal";
 
@@ -188,6 +234,8 @@ namespace My.UI
             TempAlertBar.fillAmount = totalRate;
 
             CheckDisguiseState();
+
+            
         }
 
         /// <summary>
@@ -212,29 +260,42 @@ namespace My.UI
 
             if(isUIDisguiseMode)
             {
-                PlayerClothesRoot.gameObject.SetActive(true);
-                PlayerClothesCG.alpha = 0;
+                PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
+                PlayerBallMap[AttrIdConsts.PlayerClothes].CG.alpha = 0;
+                //PlayerClothesRoot.gameObject.SetActive(true);
+                //PlayerClothesCG.alpha = 0;
+
                 disguiseSwitchTween = DOTween.Sequence()
-                        .Append(PlayerClothesCG.DOFade(1, 0.3f))
-                        .Append(PlayerExposeCG.DOFade(0, 0.3f))
+                        .Append(PlayerBallMap[AttrIdConsts.PlayerClothes].CG.DOFade(1, 0.3f))
+                        .Append(PlayerBallMap[AttrIdConsts.PlayerOriginPower].CG.DOFade(0, 0.3f))
                         .OnComplete(() =>
                         {
                             disguiseSwitchTween = null;
-                            PlayerExposeRoot.gameObject.SetActive(false);
+                            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
                         }).SetLink(gameObject);
             }
             else
             {
-                PlayerExposeRoot.gameObject.SetActive(true);
-                PlayerExposeCG.alpha = 0;
+                PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
+                PlayerBallMap[AttrIdConsts.PlayerClothes].CG.alpha = 0;
+
                 disguiseSwitchTween = DOTween.Sequence()
-                        .Append(PlayerExposeCG.DOFade(1, 0.3f))
-                        .Append(PlayerClothesCG.DOFade(0, 0.3f))
+                        .Append(PlayerBallMap[AttrIdConsts.PlayerOriginPower].CG.DOFade(1, 0.3f))
+                        .Append(PlayerBallMap[AttrIdConsts.PlayerClothes].CG.DOFade(0, 0.3f))
                         .OnComplete(() =>
                         {
                             disguiseSwitchTween = null;
-                            PlayerClothesRoot.gameObject.SetActive(false);
+                            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
                         }).SetLink(gameObject);
+            }
+        }
+
+        private void ShowBallAppearEffect(string attrId)
+        {
+            if(PlayerBallMap.TryGetValue(attrId, out var ball))
+            {
+                ball.CG.alpha = 0;
+                ball.CG.DOFade(1.0f, 1.0f);
             }
         }
 
@@ -244,7 +305,70 @@ namespace My.UI
             base.Show();
 
             UpdateHudMode(EHudMode.Normal);
+
+            PlayerEventBus.Subscribe<PlayerFuncUnlockEvent>(HandleOnPlayerFuncOpen);
+
+
+            if(MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Hunger))
+            {
+                PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(true);
+            }
+            else
+            {
+                PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(false);
+            }
+
+            if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.San))
+            {
+                PlayerBallMap[AttrIdConsts.PlayerSan].Root.gameObject.SetActive(true);
+            }
+            else
+            {
+                PlayerBallMap[AttrIdConsts.PlayerSan].Root.gameObject.SetActive(false);
+            }
+
+            bool disguising = false;
+
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            {
+                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
+                {
+                    disguising = true;
+                }
+            }
+
+            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
+            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
+
+            if (disguising && MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Clothes))
+            {
+                PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
+            }
+
+            if(!disguising && MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Expose))
+            {
+                PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(true);
+            }
+
+            if(MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsHome)
+            {
+                BtnHomeStorage.gameObject.SetActive(true);
+                BtnHomeNextPeriod.gameObject.SetActive(true);
+            }
+            else
+            {
+                BtnHomeStorage.gameObject.SetActive(false);
+                BtnHomeNextPeriod.gameObject.SetActive(false);
+            }
         }
+
+        public override void Hide()
+        {
+            base.Hide();
+
+            PlayerEventBus.Unsubscribe<PlayerFuncUnlockEvent>(HandleOnPlayerFuncOpen);
+        }
+
 
         /// <summary>
         /// 更新hud模式
@@ -635,6 +759,32 @@ namespace My.UI
                 zhaZhiSwitchOne.sprite = sprite;
             }
         }
+
+        #region 监听玩家事件
+
+
+        /// <summary>
+        /// 事件监听
+        /// </summary>
+        /// <param name="e"></param>
+        private void HandleOnPlayerFuncOpen(PlayerFuncUnlockEvent e)
+        {
+            if(e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Hunger)
+            {
+                ShowBallAppearEffect(AttrIdConsts.PlayerHunger);
+            }
+            else if (e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.San)
+            {
+                ShowBallAppearEffect(AttrIdConsts.PlayerSan);
+            }
+            else if(e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Clothes)
+            {
+                ShowBallAppearEffect(AttrIdConsts.PlayerClothes);
+            }
+        }
+
+
+        #endregion
     }
 
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Config;
 using My.Map.Logic;
 using My.Player.Bag;
@@ -679,7 +680,8 @@ namespace My.Map.Entity
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
 
-                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(checkOrigin, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter);
+                var iterList = ctx.Env.visionSenser.OverlapBoxAllEntity(checkOrigin, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter, hitHeight:0.3f);
+                candidates = iterList.ToList();
                 DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, checkOrigin, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: hitBoxDir);
             }
             else if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Square)
@@ -688,7 +690,8 @@ namespace My.Map.Entity
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
 
-                candidates = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter);
+                var iterList = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter, hitHeight: 0.3f);
+                candidates = iterList.ToList();
                 DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: hitBoxDir);
             }
             else if(realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Circle)
@@ -696,7 +699,18 @@ namespace My.Map.Entity
                 EntityFilterParam filter = new EntityFilterParam();
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
-                candidates = ctx.Env.visionSenser.OverlapCircleAllEntity(realCenter, realCfg.Radius, filter);
+
+                if(realCfg.CenterOffset != 0 && ctx.CtxType == EFightCtxType.Ability)
+                {
+                    var srcEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false);
+                    if(srcEntity != null && srcEntity is BaseUnitLogicEntity unitEntity)
+                    {
+                        realCenter += unitEntity.FinalLook.normalized * realCfg.CenterOffset;
+                    }
+                }
+
+                var iterList = ctx.Env.visionSenser.OverlapCircleAllEntity(realCenter, realCfg.Radius, filter);
+                candidates = iterList.ToList();
 
                 DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Circle, realCenter, new Vector2(realCfg.Radius, realCfg.Radius), Color.red, 1f);
             }

@@ -766,9 +766,9 @@ public interface IVisionSenser2D
 
     Vector2 ChoosePointAwayFromTarget(Vector2 orgPos, Vector2 centerPos, float awayDist);
 
-    List<ILogicEntity> OverlapBoxAllEntity(Vector2 orgPos, Vector2 dir, Vector2 size, EntityFilterParam? filter);
+    IEnumerable<ILogicEntity> OverlapBoxAllEntity(Vector2 orgPos, Vector2 dir, Vector2 size, EntityFilterParam? filter, float hitHeight = 0.3f);
 
-    List<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter);
+    IEnumerable<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter, float atkHeight = 0.3f);
 
     bool CheckIsInAlertArea(Vector2 pos);
 

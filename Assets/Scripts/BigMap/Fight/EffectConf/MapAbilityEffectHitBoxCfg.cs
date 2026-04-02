@@ -24,6 +24,7 @@ namespace My.Map.Entity
         public float Radius;
 
         public float CenterOffset; // 偏移量
+
         public bool IsDirRevert; // 是否反向
         public int CenterPosType = 0; // 0 happen 1 castVec
 
@@ -43,6 +44,8 @@ namespace My.Map.Entity
         [SerializeReference]
         [Obsolete]
         public List<MapFightEffectCfg> OnHitEffects = new();
+
+        public float CheckHeight = 0.3f;
     }
 }
 
