@@ -2233,6 +2233,8 @@ namespace My.Map.Entity
                     ValType = EOneVariatyType.Float,
                     RawVal = "0.15"
                 },
+
+                AnimTag = "queen_attack_03_down",
             };
 
             //var newEffect = new MapAbilityEffectUseWeaponCfg()
@@ -2251,13 +2253,29 @@ namespace My.Map.Entity
             //    }
             //};
 
-            var newEffect = new MapAbilityEffectHitBoxCfg()
+            var dashEffect = new MapAbilityEffectDashStartCfg()
+            {
+                DashDuration = 0.15f,
+                DashSpeed = 8f,
+                DashMode = EDashMode.FixTime,
+                DirMode = EDirMode.LookDir,
+            };
+
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+
+
+            var hitEffect = new MapAbilityEffectHitBoxCfg()
             {
                 Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
 
                 Radius = 2.5f,
-                CenterOffset = 1.3f,
+                //CenterOffset = 1.3f,
                 CampFilterType = ECampFilterType.NotSelf,
+                CenterPosType = 2,
+
 
                 HitResult = new()
                 {
@@ -2294,10 +2312,6 @@ namespace My.Map.Entity
             //        },
             //    }
             //};
-
-            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
-            spec.Phases.Add(mainPhase);
-
             var postPhase = new MapAbilityPhase()
             {
                 PhaseName = "Post",
@@ -2305,9 +2319,12 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.25"
+                    RawVal = "0.4"
                 },
             };
+            postPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
+
+            
             spec.Phases.Add(postPhase);
             return spec;
         }

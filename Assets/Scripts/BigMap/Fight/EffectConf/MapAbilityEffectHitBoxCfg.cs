@@ -26,7 +26,7 @@ namespace My.Map.Entity
         public float CenterOffset; // 偏移量
 
         public bool IsDirRevert; // 是否反向
-        public int CenterPosType = 0; // 0 happen 1 castVec
+        public int CenterPosType = 0; // 0 happen 1 castVec 2 施法者
 
         public EEntityType TargetEntityType;
 

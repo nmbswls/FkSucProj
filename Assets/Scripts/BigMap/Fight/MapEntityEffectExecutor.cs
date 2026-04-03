@@ -653,9 +653,17 @@ namespace My.Map.Entity
                         {
                             realCenter = ctx.TriggerPos.Value;
                         }
-                        else
+                        else if (realCfg.CenterPosType == 1)
                         {
                             realCenter = ctx.CastVec1.Value;
+                        }
+                        else if(realCfg.CenterPosType == 2)
+                        {
+                            var srcEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false);
+                            if (srcEntity != null && srcEntity is BaseUnitLogicEntity unitEntity)
+                            {
+                                realCenter = unitEntity.Pos;
+                            }
                         }
                         break;
                     }
