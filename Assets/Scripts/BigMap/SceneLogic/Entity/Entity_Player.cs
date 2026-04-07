@@ -270,10 +270,11 @@ namespace My.Map
                     AbilityId = "queen_dash",
                     deriveWindows = new List<DeriveWindow>()
                     {
+                        // 增加一种技能结束前后的特殊窗口 防止一些被打断也出现窗口
                         new DeriveWindow()
                         {
                             id = "1",
-                            window = new TimeWindow(0.4f, 0.55f),
+                            window = new TimeWindow(0.2f, 0.35f),
                         }
                     }
                 };
@@ -355,6 +356,7 @@ namespace My.Map
                     {
                         SkillId = "queen_attack"
                     },
+                    windowId = "1",
                 };
 
                 graph.Transitions.Add(trans);

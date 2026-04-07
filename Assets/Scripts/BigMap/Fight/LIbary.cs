@@ -56,8 +56,8 @@ namespace My.Map.Entity
 
                 {
                     var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "default_dash";
-                    cfg.MainAbilityId = "default_dash";
+                    cfg.SkillId = "queen_dash";
+                    cfg.MainAbilityId = "queen_dash";
                     cfg.CoolDown = 1.0f;
                     cfg.DesiredUseDistance = 999f;
                     cfg.BufferCacheTime = 0.2f;
@@ -480,6 +480,12 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreateQueenDashAttack();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+
+                {
                     var ab = CreateQueenAttackHeavy();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -711,7 +717,7 @@ namespace My.Map.Entity
         private static MapAbilitySpecConfig CreateDefaultDash()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
-            spec.Id = "default_dash";
+            spec.Id = "queen_dash";
             spec.TypeTag = AbilityTypeTag.Combat;
             //spec.CoolDown = 1.0f;
 
@@ -2060,6 +2066,74 @@ namespace My.Map.Entity
 
             return spec;
         }
+
+        private static MapAbilitySpecConfig CreateQueenDashAttack()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            // 做一个冲刺挑飞 等冲完再打
+            spec.Id = "queen_dash_attack_01";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.DefaultStepDistance = 0.3f;
+            spec.AdjustFaceDir = true;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.0f;
+
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.15"
+                },
+
+                AnimTag = "dash_attack_01",
+            });
+
+            var dashEffect = new MapAbilityEffectDashStartCfg()
+            {
+                DashDuration = 0.5f,
+                DashSpeed = 24f,
+                DashMode = EDashMode.FixTime,
+                DirMode = EDirMode.LookDir,
+            };
+
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            };
+
+            
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            //var postPhase = new MapAbilityPhase()
+            //{
+            //    PhaseName = "Post",
+            //    InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
+            //    DurationValue = new()
+            //    {
+            //        ValType = EOneVariatyType.Float,
+            //        RawVal = "0.25"
+            //    },
+            //};
+            //spec.Phases.Add(postPhase);
+            return spec;
+        }
+
 
         private static MapAbilitySpecConfig CreateQueenAttackAbility1()
         {

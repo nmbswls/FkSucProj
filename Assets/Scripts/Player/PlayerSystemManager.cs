@@ -53,7 +53,7 @@ namespace My.Player
         {
             "queen_attack",
             "queen_attack_heavy",
-            "default_dash",
+            "queen_dash",
             "queen_shoot",
             "fix_clothes",
             "spawn_attract",
@@ -119,8 +119,8 @@ namespace My.Player
 
             NormalSkillSlots[1] = "queen_attack_heavy";
 
-            NormalSkillSlots[2] = "default_dash";
-            NormalSkillSlots[2] = "default_dash";
+            NormalSkillSlots[2] = "queen_dash";
+            HumanSkillSlots[2] = "queen_dash";
 
             NormalSkillSlots[3] = "spawn_attract";
             NormalSkillSlots[4] = "queen_pull_all";
