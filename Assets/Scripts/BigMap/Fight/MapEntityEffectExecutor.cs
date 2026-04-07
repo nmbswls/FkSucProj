@@ -360,6 +360,23 @@ namespace My.Map.Entity
     }
 
 
+    public class AbilityFightExecutor4ShowEffect : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectShowEffect;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityFightExecutor4SpecialMoveTo cfg error");
+                return;
+            }
+
+            ctx.Env.viewer.ShowSceneFxEffect(realCfg.EffectName, Vector2.zero, Vector2.right);
+        }
+    }
+
+    
+
     public class AbilityFightExecutor4SpecialMoveTo : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
@@ -1507,5 +1524,49 @@ namespace My.Map.Entity
             ctx.Env.viewer.ShowNoiseEffect(0.8f, playerEntity.Pos);
         }
     }
-    
+
+
+    public class AbilityFightExecutor4XuLiStage : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectXuLiStageCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityFightExecutor4XuLiStage cfg error");
+                return;
+            }
+            string key = $"{realCfg.CheckPhaseName}.Timed";
+
+            if (!ctx.RunningStorage.ContainsKey(key))
+            {
+                Debug.LogError($"AbilityFightExecutor4XuLiStage error no key :{key}");
+                return;
+            }
+
+            ctx.RunningStorage.TryGetValue(key, out var xuliTime);
+            float realTime = xuliTime * 0.001f;
+            int stageIdx = -1;
+            for (int i=0;i<realCfg.StageInfos.Count;i++)
+            {
+                if (realTime >= realCfg.StageInfos[i].NeedTime)
+                {
+                    stageIdx = i;
+                    break;
+                }
+            }
+
+            if(stageIdx != -1)
+            {
+                Debug.Log($"AbilityFightExecutor4XuLiStage use stage {stageIdx} ");
+
+                var stage = realCfg.StageInfos[stageIdx];
+
+                foreach(var innerEffect in stage.StageEffects)
+                {
+                    ctx.Env.HandleLogicFightEffect(innerEffect, ctx);
+                }
+            }
+        }
+    }
 }

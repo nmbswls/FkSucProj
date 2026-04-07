@@ -202,6 +202,19 @@ namespace My
                             executor = new AbilityEffectExecutor4BroadcastAttract();
                         }
                         break;
+                    case MapFightEffectXuLiStageCfg:
+                        {
+                            executor = new AbilityFightExecutor4XuLiStage();
+                        }
+                        break;
+                    case MapFightEffectShowEffect:
+                        {
+                            executor = new AbilityFightExecutor4ShowEffect();
+                        }
+                        break;
+                        
+
+
                 }
 
                 if (executor != null)

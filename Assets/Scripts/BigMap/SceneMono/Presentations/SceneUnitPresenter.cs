@@ -397,9 +397,9 @@ namespace My.Map.Scene
         {
             //if (faceIndicator == null) return;
 
-            if (_rootForwardHinter == null) return;
+            if (_rootForwardRotator == null) return;
             float targetAngle = Mathf.Atan2(UnitEntity.CurrentLook.y, UnitEntity.CurrentLook.x) * Mathf.Rad2Deg;
-            float currentAngle = _rootForwardHinter.transform.eulerAngles.z;
+            float currentAngle = _rootForwardRotator.transform.localEulerAngles.z;
 
             float desired = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref angularVel, smoothTime);
 
@@ -410,7 +410,7 @@ namespace My.Map.Scene
 
             float newAngle = currentAngle + delta;
 
-            _rootForwardHinter.transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
+            _rootForwardRotator.transform.localRotation = Quaternion.Euler(0f, 0f, newAngle);
         }
 
         public override void Bind(ILogicEntity logic)
@@ -776,12 +776,14 @@ namespace My.Map.Scene
 
 
         private GameObject _rootForwardHinter;
+        private Transform _rootForwardRotator;
         private void CreateRootForwardHinter()
         {
             var src = SimpleResManager.Load<GameObject>("SceneEffect/forward_hint");
             var hinter = GameObject.Instantiate(src, transform);
 
-            _rootForwardHinter = hinter.transform.GetChild(0).gameObject;
+            _rootForwardHinter = hinter;
+            _rootForwardRotator = hinter.transform.GetChild(0).GetChild(0);
 
             _rootForwardHinter.SetActive(false);
         }

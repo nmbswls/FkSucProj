@@ -717,6 +717,10 @@ namespace My.UI
             return false;
         }
 
+        public bool OnHoldStart(string holdKey)
+        {
+            return false;
+        }
         public bool OnHoldUpdate(string holdKey)
         {
             return false;

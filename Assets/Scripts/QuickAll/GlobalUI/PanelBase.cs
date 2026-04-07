@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static My.UI.OverworldHUDPanel;
 
 namespace My.UI
 {
@@ -30,6 +31,7 @@ namespace My.UI
 
         bool OnClick(int button, Vector2 mousePos);
 
+        bool OnHoldStart(string holdKey);
         bool OnHoldUpdate(string holdKey);
 
         bool OnHoldingEnd(string holdKey);
@@ -92,6 +94,11 @@ namespace My.UI
         }
 
         public virtual bool OnConfirm()
+        {
+            return true;
+        }
+
+        public bool OnHoldStart(string holdKey)
         {
             return true;
         }

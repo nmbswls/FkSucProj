@@ -714,6 +714,31 @@ namespace My.Map.Entity
         }
 
         /// <summary>
+        /// 持续按键
+        /// </summary>
+        /// <param name="skillId"></param>
+        public void TrySkillHoldEnd(string skillId)
+        {
+
+            if (CurrentSkillId == null || CurrentSkillId != skillId)
+            {
+                return;
+            }
+
+            if (!Executor.IsRunning)
+            {
+                return;
+            }
+
+            var phase = Executor.GetCurrentPhase();
+            if (phase == null) return;
+            if (phase.HoldingPhase)
+            {
+                Executor.CurrentCtx.LastPhaseHoldTime = 0;
+            }
+        }
+
+        /// <summary>
         /// 获取当前准备好的主动技能
         /// </summary>
         /// <returns></returns>

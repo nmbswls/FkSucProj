@@ -144,6 +144,8 @@ namespace My.Map.Entity
 
             public Dictionary<string, long> RunningStorage = new();
 
+            public Dictionary<string, float> PhaseXuLiInfos = new();
+
             public string GroupOwnerName = null;
 
             public string GetVariatyRawVal(OneVariaty oneVariaty)
@@ -406,7 +408,7 @@ namespace My.Map.Entity
             // 锁动作
             var phaseDurRaw = CurrentCtx.GetVariatyRawVal(phase.DurationValue);
             var phaseDur = 0f;
-            if (!phase.HoldingPhase && !float.TryParse(phaseDurRaw, out phaseDur))
+            if (!string.IsNullOrEmpty(phaseDurRaw) && !float.TryParse(phaseDurRaw, out phaseDur))
             {
                 Debug.LogError("TickIntern wrong param");
             }
@@ -526,6 +528,9 @@ namespace My.Map.Entity
                 }
             }
             CurrentCtx._scheduled.Clear();
+
+            string phaseName = phase.PhaseName;
+            CurrentCtx.PhaseXuLiInfos[phaseName] = CurrentCtx.PhaseElapsed;
 
             CleanupPhase();
         }
@@ -674,6 +679,12 @@ namespace My.Map.Entity
 
             ctx.RunningVariables = this.CurrentCtx.RunningVariables;
 
+            foreach(var xuliInfo in CurrentCtx.PhaseXuLiInfos)
+            {
+                string key = $"{xuliInfo.Key}.Timed";
+                ctx.RunningStorage[key] = (long)(xuliInfo.Value * 1000);
+            }
+
             return ctx;
         }
 
@@ -750,9 +761,18 @@ namespace My.Map.Entity
                     phaseFinish = true;
                 }
             }
-            else if(LogicTime.time - CurrentCtx.LastPhaseHoldTime > 0.5f)
+            else if(phase.HoldingPhase)
             {
-                phaseFinish = true;
+                if(LogicTime.time - CurrentCtx.LastPhaseHoldTime > 0.5f)
+                {
+                    phaseFinish = true;
+                }
+                
+                // 时间太长也不行
+                if(CurrentCtx.PhaseDuration != 0 && CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
+                {
+                    phaseFinish = true;
+                }
             }
 
             // 阶段结束

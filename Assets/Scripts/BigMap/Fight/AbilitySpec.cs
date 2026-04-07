@@ -157,6 +157,8 @@ public interface ISceneAbilityViewer
 
     void TryCancelButtomProgress(long showId);
 
+    void ShowSceneFxEffect(string effectName, Vector2 pos, Vector2 dir);
+
     void ShowFakeFxEffect(string hintText, Vector2 logicPos);
 
     void ShowNoiseEffect(float intensity, Vector2 logicPos);
@@ -184,6 +186,7 @@ public interface ISceneAbilityViewer
     void StartHitStop(float duration);
 
     void ShowMapSpeachBubble(long entityId, string content, float duration, int priority = 1, float extraInteval = 0);
+
 
     //void ShowDamageNumber(Vector2 worldPos, string content);
 }

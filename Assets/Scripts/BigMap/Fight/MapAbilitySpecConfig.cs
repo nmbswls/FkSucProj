@@ -160,7 +160,7 @@ namespace My.Map.Entity
             Circle,
             Directional,
             LockTarget,
-            ToFace,
+            ToFace, // 会根据面向伪造一个施法参数
         }
         public ECastType CastType;
         public float Range1;

@@ -167,6 +167,7 @@ namespace My
         {
             if(gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
             {
+                var a = Time.deltaTime;
                 gameLogicManager.Tick(LogicTime.deltaTime);
             }
 
@@ -303,6 +304,19 @@ namespace My
             var worldPos = MainGameManager.Instance.GetWorldPosFromLogicPos(logicPos);
             FakeHintTextManager.ShowWorld(hintText, worldPos);
         }
+
+        public void ShowSceneFxEffect(string effectName, Vector2 pos, Vector2 dir)
+        {
+            var worldPos = MainGameManager.Instance.GetWorldPosFromLogicPos(pos);
+
+            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(worldPos, 1, effectName, null, dir: dir);
+            if (fxCtx == null)
+            {
+                Debug.LogError("ShowSceneFxEffect faaa " + effectName);
+                return;
+            }
+        }
+
 
         public void ShowNoiseEffect(float intensity, Vector2 logicPos)
         {

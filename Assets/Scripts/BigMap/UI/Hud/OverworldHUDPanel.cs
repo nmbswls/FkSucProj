@@ -570,6 +570,19 @@ namespace My.UI
             return false;
         }
 
+        public bool OnHoldStart(string holdKey)
+        {
+            //if (HudMode == EHudMode.Normal)
+            //{
+            //    var skillId = GetSkillIdByKey(holdKey);
+            //    if (!string.IsNullOrEmpty(skillId))
+            //    {
+            //        MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHold(skillId);
+            //    }
+
+            //}
+            return false;
+        }
 
         public bool OnHoldUpdate(string holdKey)
         {
@@ -589,6 +602,15 @@ namespace My.UI
 
         public bool OnHoldingEnd(string holdKey)
         {
+            if (HudMode == EHudMode.Normal)
+            {
+                var skillId = GetSkillIdByKey(holdKey);
+                if (!string.IsNullOrEmpty(skillId))
+                {
+                    MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.TrySkillHoldEnd(skillId);
+                }
+
+            }
             return false;
         }
 

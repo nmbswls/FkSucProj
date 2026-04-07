@@ -84,7 +84,7 @@ public class MapSceneEffectManager : MonoBehaviour
     /// <param name="duration"></param>
     /// <param name="effectName"></param>
     /// <returns></returns>
-    public EffectCtx ShowSceneEffect(Vector2 originPos, float duration, string effectName, long? bindingUnitId)
+    public EffectCtx ShowSceneEffect(Vector2 originPos, float duration, string effectName, long? bindingUnitId, Vector2? dir = null)
     {
         var prefab = Resources.Load<GameObject>($"SceneEffect/{effectName}");
         if (prefab == null) return null;
@@ -101,9 +101,23 @@ public class MapSceneEffectManager : MonoBehaviour
             newGo.SetActive(true);
         }
 
+
+
         int id = EffectUniqIdCounter++;
 
         var ctx = new EffectCtx();
+
+        newGo.transform.position = originPos;
+
+        if (dir != null && dir != Vector2.zero)
+        {
+            // 计算角度（弧度转角度）
+            float angle = Mathf.Atan2(dir.Value.y, dir.Value.x) * Mathf.Rad2Deg;
+
+            // 赋值给localEulerAngles，仅在Z轴旋转
+            transform.localEulerAngles = new Vector3(0, 0, angle);
+        }
+
         ctx.UniqId = id;
         ctx.EffectName = effectName;
         ctx.EffectGo = newGo;

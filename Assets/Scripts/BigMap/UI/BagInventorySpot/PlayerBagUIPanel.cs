@@ -402,6 +402,11 @@ namespace My.UI.Bag
             return false;
         }
 
+        public bool OnHoldStart(string holdKey)
+        {
+            return false;
+        }
+
         public bool OnHoldUpdate(string holdKey)
         {
             return false;

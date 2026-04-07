@@ -312,6 +312,13 @@ namespace My.UI
             return false;
         }
 
+
+        public bool DispatchHoldingStart(string holdingKey)
+        {
+            if (TryConsumeByLayers(c => c.OnHoldStart(holdingKey))) return true;
+            return false;
+        }
+
         public bool DispatchHoldingUpdate(string holdingKey)
         {
             if (TryConsumeByLayers(c => c.OnHoldUpdate(holdingKey))) return true;
@@ -381,5 +388,6 @@ namespace My.UI
                 }).SetLink(gameObject);
 
         }
+
     }
 }

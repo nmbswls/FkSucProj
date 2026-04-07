@@ -52,6 +52,7 @@ namespace My.Player
         public List<string> PlayerSkillList = new() 
         {
             "queen_attack",
+            "queen_attack_heavy",
             "default_dash",
             "queen_shoot",
             "fix_clothes",
@@ -115,6 +116,8 @@ namespace My.Player
 
             NormalSkillSlots[0] = "queen_attack";
             HumanSkillSlots[0] = "default_push";
+
+            NormalSkillSlots[1] = "queen_attack_heavy";
 
             NormalSkillSlots[2] = "default_dash";
             NormalSkillSlots[2] = "default_dash";

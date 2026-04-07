@@ -109,6 +109,10 @@ namespace My.Map.View
             return true;
         }
 
+        public bool OnHoldStart(string holdKey)
+        {
+            return true;
+        }
         public bool OnHoldUpdate(string holdKey)
         {
             return true;

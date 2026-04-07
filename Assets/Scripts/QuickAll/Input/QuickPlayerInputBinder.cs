@@ -25,6 +25,7 @@ namespace My.Input
 
         bool DispatchClick(int button, Vector2 mousePos);
 
+        bool DispatchHoldingStart(string holdingKey);
         bool DispatchHoldingUpdate(string holdingKey);
         bool DispatchHoldingEnd(string holdingKey);
     }
@@ -93,7 +94,7 @@ namespace My.Input
         //public static string Tab = "Tab";
 
 
-        private Dictionary<string, bool> keyHoldingStatus = new();
+        //private Dictionary<string, bool> keyHoldingStatus = new();
 
         public bool GlobalLock { get; set; }
 
@@ -111,25 +112,81 @@ namespace My.Input
         {
             uiRouter = UIManager.Instance;
 
-            keyHoldingStatus[EInputKey.MouseRight.ToString()] = false;
-            keyHoldingStatus[EInputKey.Tab.ToString()] = false;
+            //keyHoldingStatus[EInputKey.MouseRight.ToString()] = false;
+            //keyHoldingStatus[EInputKey.Tab.ToString()] = false;
         }
 
+        private readonly string keyMouseRight = EInputKey.MouseRight.ToString();
+        private readonly string keyTab = EInputKey.Tab.ToString();
         private void Update()
         {
-            if(UnityEngine.Input.GetKeyDown(KeyCode.I))
+            // 1. 普通按键检测
+            if (UnityEngine.Input.GetKeyDown(KeyCode.I))
             {
                 UIOrchestrator.Instance.EnsurePlayerBag();
             }
 
-            foreach(var kv in keyHoldingStatus)
+            if (GlobalLock) return;
+
+            // 2. 持续输入（Hold）的每帧 Update，直接问询 Input System
+            // 前提：actions.OverworldMap.RightClickHold 没有被 Disable
+            if (actions.OverworldMap.enabled)
             {
-                if(kv.Value)
+                if (actions.OverworldMap.RightClickHold.IsPressed())
                 {
-                    OnKeyHoldingUpdate(kv.Key);
+                    OnKeyHoldingUpdate(keyMouseRight);
+                }
+
+                if (actions.OverworldMap.TabHold.IsPressed())
+                {
+                    OnKeyHoldingUpdate(keyTab);
                 }
             }
         }
+
+        private void ForceReleaseActiveHolds()
+        {
+            // 如果 OverworldMap 正在激活，检查哪些键还按着
+            if (actions.OverworldMap.enabled)
+            {
+                if (actions.OverworldMap.RightClickHold.IsPressed())
+                {
+                    OnKeyHoldEnd(keyMouseRight);
+                }
+                if (actions.OverworldMap.TabHold.IsPressed())
+                {
+                    OnKeyHoldEnd(keyTab);
+                }
+            }
+        }
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus)
+            {
+                // 强制告诉业务层停止一切长按行为
+                OnKeyHoldEnd(keyMouseRight);
+                OnKeyHoldEnd(keyTab);
+
+                // 也可以顺便把移动方向清零
+                DoPlayerMove(Vector2.zero);
+            }
+        }
+
+        //private void Update()
+        //{
+        //    if(UnityEngine.Input.GetKeyDown(KeyCode.I))
+        //    {
+        //        UIOrchestrator.Instance.EnsurePlayerBag();
+        //    }
+
+        //    foreach(var kv in keyHoldingStatus)
+        //    {
+        //        if(kv.Value)
+        //        {
+        //            OnKeyHoldingUpdate(kv.Key);
+        //        }
+        //    }
+        //}
 
 
         // 底层执行输入模式切换（由组织层调用）
@@ -178,14 +235,18 @@ namespace My.Input
             actions.OverworldMap.HotKey4.performed += OnHotKey4;
 
             actions.OverworldMap.Click.performed += OnLeftDown;
-            actions.OverworldMap.RightClick.performed += OnRightDown;
+            //actions.OverworldMap.RightClick.performed += OnRightDown;
+            actions.OverworldMap.RightClick.started += OnRightDown;
+            actions.OverworldMap.RightClick.canceled += OnMouseRightHoldEnd;
 
-            actions.OverworldMap.RightClickHold.started += OnRightHoldStart;
-            actions.OverworldMap.RightClickHold.canceled += OnRightHoldEnd;
+            //actions.OverworldMap.RightClickHold.started += OnMouseRightHoldStart;
+            //actions.OverworldMap.RightClickHold.canceled += OnMouseRightHoldEnd;
 
-            actions.OverworldMap.Tab.performed += OnHotKeyTab;
-            actions.OverworldMap.TabHold.started += OnTabHoldStart;
-            actions.OverworldMap.TabHold.canceled += OnTabHoldEnd;
+            actions.OverworldMap.Tab.started += OnHotKeyTab;
+            actions.OverworldMap.Tab.canceled += OnHotKeyTabEnd;
+            
+            //actions.OverworldMap.TabHold.started += OnTabHoldStart;
+            //actions.OverworldMap.TabHold.canceled += OnTabHoldEnd;
 
             actions.OverworldMap.Q.performed += OnHotKeyQ;
             actions.OverworldMap.E.performed += OnHotKeyE;
@@ -217,14 +278,17 @@ namespace My.Input
             actions.OverworldMap.Click.performed -= OnLeftDown;
             actions.OverworldMap.RightClick.performed -= OnRightDown;
 
-            actions.OverworldMap.RightClickHold.started -= OnRightHoldStart;
-            actions.OverworldMap.RightClickHold.canceled -= OnRightHoldEnd;
+            actions.OverworldMap.RightClick.canceled -= OnMouseRightHoldEnd;
+            
+            //actions.OverworldMap.RightClickHold.started -= OnMouseRightHoldStart;
+            // actions.OverworldMap.RightClickHold.canceled -= OnMouseRightHoldEnd;
 
             actions.OverworldMap.PointerPos.performed -= OnPointerMove;
 
             actions.OverworldMap.Tab.started -= OnHotKeyTab;
-            actions.OverworldMap.TabHold.started -= OnTabHoldStart;
-            actions.OverworldMap.TabHold.canceled -= OnTabHoldEnd;
+            actions.OverworldMap.Tab.canceled -= OnHotKeyTabEnd;
+            //actions.OverworldMap.TabHold.started -= OnTabHoldStart;
+            //actions.OverworldMap.TabHold.canceled -= OnTabHoldEnd;
 
             actions.OverworldMap.Q.performed -= OnHotKeyQ;
             actions.OverworldMap.E.performed -= OnHotKeyE;
@@ -233,6 +297,8 @@ namespace My.Input
             actions.OverworldMap.Disable();
             actions.BattleMap.Disable();
             actions.UIMenuMap.Disable();
+
+            ForceReleaseActiveHolds();
         }
 
         public void OnMouseScroll(InputAction.CallbackContext ctx)
@@ -256,8 +322,8 @@ namespace My.Input
                 return;
             }
 
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
+            //if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            //    return;
 
 
             if (uiRouter == null || !uiRouter.DispatchClick(0, LastPos))
@@ -273,8 +339,6 @@ namespace My.Input
                 return;
             }
 
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
 
             if (uiRouter == null || !uiRouter.DispatchClick(1, LastPos))
             {
@@ -282,26 +346,7 @@ namespace My.Input
             }
         }
 
-        void OnRightHoldStart(InputAction.CallbackContext ctx)
-        {
-            keyHoldingStatus[EInputKey.MouseRight.ToString()] = true; 
-        }
-
-        void OnRightHoldEnd(InputAction.CallbackContext ctx)
-        {
-            keyHoldingStatus[EInputKey.MouseRight.ToString()] = false;
-
-            if (GlobalLock)
-            {
-                return;
-            }
-
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-
-            OnSceneHoldEnd(EInputKey.MouseRight.ToString());
-        }
-
+        
         public void OnPointerMove(InputAction.CallbackContext ctx)
         {
             if (GlobalLock)
@@ -382,11 +427,15 @@ namespace My.Input
 
         public void OnHotKeySpace(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Space.ToString());
         public void OnHotKeyTab(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Tab.ToString());
+        public void OnHotKeyTabEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.Tab.ToString());
 
-        public void OnTabHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(ctx, EInputKey.Tab.ToString());
-        public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(ctx, EInputKey.Tab.ToString());
+        //public void OnTabHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(EInputKey.Tab.ToString());
+        //public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.Tab.ToString());
 
         public void OnHotKeyCtrl(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Ctrl.ToString());
+
+        //public void OnMouseRightHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(EInputKey.MouseRight.ToString());
+        public void OnMouseRightHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.MouseRight.ToString());
 
         public void OnKeyPress(InputAction.CallbackContext ctx, string keyName)
         {
@@ -417,20 +466,44 @@ namespace My.Input
             }
         }
 
-        void OnKeyHoldStart(InputAction.CallbackContext ctx, string keyName)
-        {
-            keyHoldingStatus[keyName] = true;
-        }
 
-        void OnKeyHoldEnd(InputAction.CallbackContext ctx, string keyName)
+        //void OnRightHoldStart(InputAction.CallbackContext ctx)
+        //{
+        //    keyHoldingStatus[EInputKey.MouseRight.ToString()] = true;
+        //}
+
+        //void OnRightHoldEnd(InputAction.CallbackContext ctx)
+        //{
+        //    keyHoldingStatus[EInputKey.MouseRight.ToString()] = false;
+
+        //    if (GlobalLock)
+        //    {
+        //        return;
+        //    }
+
+        //    if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        //        return;
+
+        //    OnSceneHoldEnd(EInputKey.MouseRight.ToString());
+        //}
+
+
+        void OnKeyHoldStart(string keyName)
         {
-            keyHoldingStatus[keyName] = false;
+            //keyHoldingStatus[keyName] = true;
 
             if (GlobalLock)
             {
                 return;
             }
 
+            if (uiRouter == null || !uiRouter.DispatchHoldingStart(keyName))
+            {
+            }
+        }
+
+        void OnKeyHoldEnd(string keyName)
+        {
             if (uiRouter == null || !uiRouter.DispatchHoldingEnd(keyName))
             {
                 // 监听scene里的结束
@@ -531,25 +604,31 @@ namespace My.Input
 
         public void OnSceneLeftClick()
         {
-            if (!LogicTime.paused)
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
+
+            if (LogicTime.paused)
             {
-                //var player = MainGameManager.Instance.playerScenePresenter;
-                //Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
-                //var castDir = (LastPos - playerScreenPos).normalized;
-
-                ////  get skill name from data
-                //string skillName;
-                //if (player.PlayerEntity.IsQueenMode)
-                //{
-                //    skillName = "queen_attack";
-                //}
-                //else
-                //{
-                //    skillName = "default_push";
-                //}
-
-                //player.PlayerEntity.ablilityManager.UseSkill(skillName, null, target: null);
+                return;
             }
+
+            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            //Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
+            //var castDir = (LastPos - playerScreenPos).normalized;
+
+            ////  get skill name from data
+            //string skillName;
+            //if (player.PlayerEntity.IsQueenMode)
+            //{
+            //    skillName = "queen_attack";
+            //}
+            //else
+            //{
+            //    skillName = "default_push";
+            //}
+
+            //player.ablilityManager.UseSkill(skillName, null, target: null);
         }
 
         public void OnSceneRightClick()

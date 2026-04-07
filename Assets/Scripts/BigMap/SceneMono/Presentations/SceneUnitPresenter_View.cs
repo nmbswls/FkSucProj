@@ -143,7 +143,10 @@ namespace My.Map.Scene
                 var state = MainAgentAnimator.Play(clipInfo.Clip, 0, FadeMode.FromStart);
                 state.Speed = clipInfo.Speed;
 
-                state.Events.OnEnd = () => MainAgentAnimator.Play(_Idle);
+                if(!clipInfo.Clip.isLooping)
+                {
+                    state.Events.OnEnd = () => MainAgentAnimator.Play(_Idle);
+                }
             }
         }
 

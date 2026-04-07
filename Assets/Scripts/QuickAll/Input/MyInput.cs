@@ -188,7 +188,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""id"": ""77b93d26-6a11-44df-937a-56e563b7afc1"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
@@ -215,7 +215,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""id"": ""731f65be-d117-4a73-b9e4-199eee7ab3d4"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
