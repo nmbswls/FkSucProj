@@ -286,7 +286,7 @@ namespace My.Map
                 var node = new ComboNode()
                 {
                     NodeId = 201,
-                    AbilityId = "queen_dash_attack",
+                    AbilityId = "queen_dash_attack_01",
                 };
                 graph.ComboNodes.Add(node);
 
