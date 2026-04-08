@@ -556,7 +556,8 @@ namespace My.Map.Entity
             dir = diff.normalized;
             duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
 
-            var moveContext = unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, realCfg.IsGhost, dashWeaponName: realCfg.DashWeaponName, stopOnUnit:realCfg.EndOnHitUnit);
+            var moveContext = unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, realCfg.IsGhost, dashWeaponName: realCfg.DashWeaponName, 
+                stopOnUnit:realCfg.EndOnHitUnit, stopOnWall: realCfg.StopOnWall);
             if(realCfg.EndAbilityPhaseWhenEnds)
             {
                 moveContext.EndPhaseWhenMoveEnds = true;
