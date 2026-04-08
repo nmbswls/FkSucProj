@@ -440,12 +440,7 @@ namespace My.Map
                 }
             }
 
-            // 检查是否被打断
-            if(controlledMoveCtx.Interrupted)
-            {
-                EndControlledMove(5);
-                return;
-            }
+            
 
             if(controlledMoveCtx.Duration > 0)
             {
@@ -541,6 +536,11 @@ namespace My.Map
                 //
             }
 
+            if(controlledMoveCtx == null)
+            {
+                return;
+            }
+
             if(!string.IsNullOrEmpty(controlledMoveCtx.WeaponName))
             {
                 ClearWeapon(controlledMoveCtx.WeaponName);
@@ -549,7 +549,7 @@ namespace My.Map
 
             controlledMoveCtx.onMoveEnd?.Invoke(reason);
 
-            if (abilityController.CurrentCtx != null
+            if (abilityController.CurrentCtx != null && !string.IsNullOrEmpty(controlledMoveCtx.BindAbilityId)
                     && abilityController.CurrentCtx.AbilityConfig.Id == controlledMoveCtx.BindAbilityId
                     && abilityController.CurrentCtx.PhaseIndex == controlledMoveCtx.BindAbilityPhaseIdx)
             {
@@ -560,7 +560,7 @@ namespace My.Map
                     abilityController.CurrentCtx.PhaseMarkSkip = true;
                 }
 
-                if(controlledMoveCtx.HitId != 0 && HitWindowRegistry.activeHitWindows.TryGetValue(controlledMoveCtx.HitId.Value, out var window))
+                if(controlledMoveCtx.HitId != null && HitWindowRegistry.activeHitWindows.TryGetValue(controlledMoveCtx.HitId.Value, out var window))
                 {
                     if(window != null && window.HitRecord.Count > 0)
                     {
