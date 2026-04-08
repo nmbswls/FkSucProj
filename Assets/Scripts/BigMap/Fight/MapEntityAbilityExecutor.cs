@@ -610,6 +610,12 @@ namespace My.Map.Entity
 
             CurrentCtx.PhaseBindBuffs.Clear();
 
+            // 检查是否要立刻中止冲刺 现在一定中止
+            if (EntityOwner.controlledMoveCtx != null && EntityOwner.controlledMoveCtx.BindAbilityId == CurrentCtx.AbilityConfig.Id && EntityOwner.controlledMoveCtx.BindAbilityPhaseIdx == CurrentCtx.PhaseIndex)
+            {
+                EntityOwner.EndControlledMove(5);
+            }
+
             if (CurrentCtx.phaseHitWindows.Count > 0)
             {
                 foreach(var winId in CurrentCtx.phaseHitWindows)
@@ -617,11 +623,7 @@ namespace My.Map.Entity
                     EntityOwner.HitWindowRegistry.CloseHitWindow(winId);
                 }
 
-                // 检查是否要立刻中止冲刺 现在一定中止
-                if(EntityOwner.controlledMoveCtx != null && EntityOwner.controlledMoveCtx.BindAbilityId == CurrentCtx.AbilityConfig.Id && EntityOwner.controlledMoveCtx.BindAbilityPhaseIdx == CurrentCtx.PhaseIndex)
-                {
-                    EntityOwner.controlledMoveCtx.Interrupted = true;
-                }
+                
 
                 CurrentCtx.phaseHitWindows.Clear();
             }

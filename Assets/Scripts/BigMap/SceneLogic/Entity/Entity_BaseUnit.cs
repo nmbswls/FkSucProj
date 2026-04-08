@@ -325,8 +325,6 @@ namespace My.Map
             public bool EndOnCollideWall;
             public bool EndOnHitUnit;
 
-            public bool Interrupted;
-
             public List<MapFightEffectCfg> OnHitUnitEffects;
 
             public float timeLeft = 0f;
