@@ -2605,139 +2605,66 @@ namespace My.Map.Entity
 
             spec.Phases.Add(new MapAbilityPhase()
             {
-                PhaseName = "Xuli",
-                HoldingPhase = true,
-
-                PhaseBuff = new() { "jian_su_self" },
+                PhaseName = "Pre",
 
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "5"
+                    RawVal = "0.4"
                 },
-
-                AnimTag = "queen_attack_heavy_xuli",
             });
 
-            var mainPhase = new MapAbilityPhase()
+            var dashEffect = new MapAbilityEffectDashStartCfg()
             {
-                PhaseName = "Executing",
+                DashMode = EDashMode.FixDistance,
+                MaxDistance = 1.5f,
+                DashSpeed = 9f,
+                DashWeaponName = "Catch",
+                DirMode = EDirMode.LookDir,
+
+                EndOnHitUnit = true,
+                StopOnWall = true,
+            };
+
+            var dashPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Dash",
                 LockMovement = true,
                 LockRotation = true,
                 ImmuneKnock = true,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.5"
+                    RawVal = "0.65"
                 },
-
-                AnimTag = "queen_attack_heavy",
             };
 
 
-            var xuliEffect = new MapFightEffectXuLiStageCfg()
+            dashPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(dashPhase);
+
+            var executePhase = new MapAbilityPhase()
             {
-                CheckPhaseName = "Xuli",
-
-                StageInfos =
-                {
-                    new MapFightEffectXuLiStageCfg.EStageInfo()
-                    {
-                        NeedTime = 2.0f,
-
-                        StageEffects = new()
-                        {
-                            //new MapFightEffectShowEffect()
-                            //{
-                            //    ShowMode = MapFightEffectShowEffect.EShowMode.EntityAligned,
-
-                            //    ShowPos = new Vector2(0.5f, 0.2f),
-                            //},
-
-                            new MapAbilityEffectUseWeaponCfg()
-                            {
-                                WeaponName = "QueenHeavy",
-                                AnimName = "player_weapon01_heavy3",
-                                Duration = 0.5f,
-                                OnHitEffects = new()
-                                {
-
-                                    new MapFightEffectApplyDamageCfg()
-                                    {
-                                        BaseDamage = 15000,
-                                        KnockBackForce = 0.6f,
-                                    },
-                                }
-                            }
-                        }
-                    },
-
-                    new MapFightEffectXuLiStageCfg.EStageInfo()
-                    {
-                        NeedTime = 1.0f,
-
-                        StageEffects = new()
-                        {
-                            new MapAbilityEffectUseWeaponCfg()
-                            {
-                                WeaponName = "QueenHeavy",
-                                AnimName = "player_weapon01_heavy2",
-                                Duration = 0.5f,
-                                OnHitEffects = new()
-                                {
-
-                                    new MapFightEffectApplyDamageCfg()
-                                    {
-                                        BaseDamage = 25000,
-                                        KnockBackForce = 0.6f,
-                                    },
-                                }
-                            }
-                        }
-                    },
-
-                    new MapFightEffectXuLiStageCfg.EStageInfo()
-                    {
-                        NeedTime = 0.0f,
-
-                        StageEffects = new()
-                        {
-                            new MapAbilityEffectUseWeaponCfg()
-                            {
-                                WeaponName = "QueenHeavy",
-                                AnimName = "player_weapon01_heavy1",
-                                Duration = 0.5f,
-                                OnHitEffects = new()
-                                {
-
-                                    new MapFightEffectApplyDamageCfg()
-                                    {
-                                        BaseDamage = 40000,
-                                        KnockBackForce = 0.6f,
-                                    },
-                                }
-                            }
-                        }
-                    },
-                }
-            };
-
-
-            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = xuliEffect, Kind = PhaseEventKind.OnEnter });
-            spec.Phases.Add(mainPhase);
-
-
-            var postPhase = new MapAbilityPhase()
-            {
-                PhaseName = "Post",
-                InterruptMask = EAbilityInterruptMask.Cast | EAbilityInterruptMask.Move,
+                PhaseName = "Execute",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.4"
+                    RawVal = "0.65"
                 },
+                UsePhaseHitAsTarget = "Dash",
             };
-            spec.Phases.Add(postPhase);
+
+            var execEffect = new MapAbilityEffectAddBuffCfg()
+            {
+                BuffId = "force_stun",
+                Duration = 3.0f,
+            };
+
+            executePhase.Events.Add(new PhaseEffectEvent() { Effect = execEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(executePhase);
             return spec;
         }
 

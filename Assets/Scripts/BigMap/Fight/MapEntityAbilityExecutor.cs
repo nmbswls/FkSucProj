@@ -617,6 +617,12 @@ namespace My.Map.Entity
                     EntityOwner.HitWindowRegistry.CloseHitWindow(winId);
                 }
 
+                // 检查是否要立刻中止冲刺 现在一定中止
+                if(EntityOwner.controlledMoveCtx != null && EntityOwner.controlledMoveCtx.BindAbilityId == CurrentCtx.AbilityConfig.Id && EntityOwner.controlledMoveCtx.BindAbilityPhaseIdx == CurrentCtx.PhaseIndex)
+                {
+                    EntityOwner.controlledMoveCtx.Interrupted = true;
+                }
+
                 CurrentCtx.phaseHitWindows.Clear();
             }
 
@@ -647,7 +653,6 @@ namespace My.Map.Entity
                 //尝试进行cancel
                 //EntityOwner.viewer.TryCancelButtomProgress(CurrentCtx.ShowProgressShowId);
             }
-
         }
 
         public GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility()
@@ -858,6 +863,7 @@ namespace My.Map.Entity
             }
 
             CleanupPhase();
+
 
             _running = false;
             Debug.Log($"Ability {CurrentCtx.AbilityConfig.Id} Cancel");

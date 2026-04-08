@@ -325,6 +325,8 @@ namespace My.Map
             public bool EndOnCollideWall;
             public bool EndOnHitUnit;
 
+            public bool Interrupted;
+
             public List<MapFightEffectCfg> OnHitUnitEffects;
 
             public float timeLeft = 0f;
@@ -440,6 +442,12 @@ namespace My.Map
                 }
             }
 
+            // 检查是否被打断
+            if(controlledMoveCtx.Interrupted)
+            {
+                EndControlledMove(5);
+                return;
+            }
 
             if(controlledMoveCtx.Duration > 0)
             {

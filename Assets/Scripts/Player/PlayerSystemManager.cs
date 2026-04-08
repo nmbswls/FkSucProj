@@ -62,6 +62,8 @@ namespace My.Player
             "player_enter_queen",
             "player_quit_queen",
 
+            "queen_dash_down",
+
 
             "h_mode_execute",
 
@@ -122,8 +124,9 @@ namespace My.Player
             NormalSkillSlots[2] = "queen_dash";
             HumanSkillSlots[2] = "queen_dash";
 
-            NormalSkillSlots[3] = "spawn_attract";
+            NormalSkillSlots[3] = "queen_dash_down";
             NormalSkillSlots[4] = "queen_pull_all";
+            
 
             HumanSkillSlots[3] = "player_small_staggering";
             HumanSkillSlots[4] = "player_dark_dance";
