@@ -87,7 +87,17 @@ namespace My.Map.Scene
         {
             if(HitId != 0 && LogicTime.time >= this._durationTimer)
             {
-                ClearWeapon(HitId);
+                ClearWeapon();
+            }
+
+            if(HitId != 0)
+            {
+                WeaponCtrl.UnitPresenter.UnitEntity.HitWindowRegistry.activeHitWindows.TryGetValue(HitId, out var window);
+                if(window == null)
+                {
+                    //Debug.LogError("trigger baodi clear");
+                    ClearWeapon();
+                }
             }
         }
 
@@ -206,12 +216,8 @@ namespace My.Map.Scene
             }
         }
 
-        public void ClearWeapon(long hitId)
+        public void ClearWeapon()
         {
-            if(hitId != HitId)
-            {
-                return;
-            }
             gameObject.SetActive(false);
             HitId = 0;
             _durationTimer = 0;

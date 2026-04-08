@@ -7,6 +7,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.Map.Unit;
 using My.Player.Bag;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using static My.Map.Fight.FightStruct;
 
@@ -90,7 +91,7 @@ namespace My.Map
         public event Action<long, long?> EventOnHpChanged;
 
 
-        protected float externalDecay = 30f;          // ÍâÁ¦×ÔÈ»Ë¥¼õ£¨Ã¿Ãë£©
+        protected float externalDecay = 30f;          // å¤–åŠ›è‡ªç„¶è¡°å‡ï¼ˆæ¯ç§’ï¼‰
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
@@ -106,7 +107,7 @@ namespace My.Map
         {
             base.Initialize();
 
-            // ÓÅÏÈÓ¦ÓÃ¸²¸ÇÖµ
+            // ä¼˜å…ˆåº”ç”¨è¦†ç›–å€¼
             if (UnitBaseRecord.FactionId != EFactionId.None)
             {
                 this.FactionId = UnitBaseRecord.FactionId;
@@ -137,13 +138,13 @@ namespace My.Map
                 LogicManager.globalBuffManager.AddBuff(this.Id, "system_no_logic");
             }
 
-            //MeleeSlotManager.InitializeSlots();
+            HitWindowRegistry = new(this);
         }
 
         protected override void OnTick(float dt)
         {
             base.OnTick(dt);
-            // ¼ÆÊ±¡¢Ìõ¼ş¼ì²é¡¢ÀäÈ´µÈ
+            // è®¡æ—¶ã€æ¡ä»¶æ£€æŸ¥ã€å†·å´ç­‰
 
             if(!MarkNoLogic && !IsDead)
             {
@@ -152,7 +153,7 @@ namespace My.Map
 
             UpdateControlledMove(dt);
 
-            // ÍâÁ¦×ÔÈ»Ë¥¼õ£¨³ı·ÇÔÚDashÖĞ±£³Ö³£ËÙ£©
+            // å¤–åŠ›è‡ªç„¶è¡°å‡ï¼ˆé™¤éåœ¨Dashä¸­ä¿æŒå¸¸é€Ÿï¼‰
             if (controlledMoveCtx == null)
             {
                 externalVel = Vector2.MoveTowards(externalVel, Vector2.zero, externalDecay * dt);
@@ -254,16 +255,16 @@ namespace My.Map
         }
 
 
-        #region ÒÆ¶¯¿ØÖÆ
+        #region ç§»åŠ¨æ§åˆ¶
 
 
         /// <summary>
-        /// °üº¬·½ÏòÓëËÙ¶ÈµÄµ±Ç°ÓĞĞ§Î»ÒÆ ÓÉÊäÈëºÍÊÜ¿ØÒÆ¶¯¹²Í¬¾ö¶¨
+        /// åŒ…å«æ–¹å‘ä¸é€Ÿåº¦çš„å½“å‰æœ‰æ•ˆä½ç§» ç”±è¾“å…¥å’Œå—æ§ç§»åŠ¨å…±åŒå†³å®š
         /// </summary>
         public Vector2 activeMoveVec;
 
         public Vector2 externalVel;
-        public Vector2 knockVel;              // µ±Ç°»÷ÍËËÙ¶È(Ìæ´ú externalVel »òÓÉÆäÇı¶¯)
+        public Vector2 knockVel;              // å½“å‰å‡»é€€é€Ÿåº¦(æ›¿ä»£ externalVel æˆ–ç”±å…¶é©±åŠ¨)
         public float knockTimer;
 
         public float accel = 20f;
@@ -322,6 +323,7 @@ namespace My.Map
             public float DecayPowerRate = 0;
 
             public bool EndOnCollideWall;
+            public bool EndOnHitUnit;
 
             public List<MapFightEffectCfg> OnHitUnitEffects;
 
@@ -330,22 +332,43 @@ namespace My.Map
             public Action<int>? onMoveEnd;
             public bool WithEffect = false;
 
-            public AbilityHitWindow? HitWindow;
+            public string? WeaponName;
+            public long? HitId;
+
+            #region æŠ€èƒ½ç›¸å…³
+
+            public bool IsActiveAbility;
+            public bool EndPhaseWhenMoveEnds;
+            public string BindAbilityId;
+            public int BindAbilityPhaseIdx;
+
+            #endregion
         }
         public ControlledMoveCtx? controlledMoveCtx;
 
-        // ³å·æ
-        public void StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onHitEffects, bool withEffect = false, bool withGhost = false, string dashWeaponName = "")
+        // å†²é”‹
+        public ControlledMoveCtx StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onHitEffects, 
+            bool withEffect = false, 
+            bool withGhost = false, 
+            string dashWeaponName = "", 
+            bool stopOnWall = false,
+            bool stopOnUnit = false)
         {
             ApplyControlledMove(ControlledMoveCtx.EType.Dash, dashDir, dashTime, speed);
             controlledMoveCtx.WithEffect = withEffect;
+            controlledMoveCtx.EndOnCollideWall = stopOnWall;
 
-            if(!string.IsNullOrEmpty(dashWeaponName))
+            // åˆå§‹åŒ–dashç»‘å®šæ­¦å™¨
+            if (!string.IsNullOrEmpty(dashWeaponName))
             {
-                // Í³Ò»Îªhitwindow´¦Àí
-                var newWin = abilityController.CreateHitWindow(dashWeaponName, "0", dashTime, onHitEffects);
-                controlledMoveCtx.HitWindow = newWin;
+                var hitId = ApplyUseWeapon(dashWeaponName, "0", dashTime, onHitEffects);
+                controlledMoveCtx.WeaponName = dashWeaponName;
+                controlledMoveCtx.HitId = hitId;
             }
+
+            controlledMoveCtx.EndOnHitUnit = stopOnUnit;
+
+            return controlledMoveCtx;
         }
 
         public void ApplyKnockBack(Vector2 dir, float knockDist, float decayRate = 8f, Action<int>? onKnockEnd = null)
@@ -365,7 +388,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ÊµÏÖÊÜ¿ØÒÆ¶¯
+        /// å®ç°å—æ§ç§»åŠ¨
         /// </summary>
         /// <param name="type"></param>
         /// <param name="dir"></param>
@@ -375,13 +398,8 @@ namespace My.Map
         /// <param name="minEndSpeed"></param>
         public void ApplyControlledMove(ControlledMoveCtx.EType type, Vector2 dir, float duration = -1, float? originSpeed = null, float decayRate = 8f, List<MapFightEffectCfg> onHitEffects = null, float minEndSpeed = 0)
         {
-            if(controlledMoveCtx != null)
-            {
-                if(controlledMoveCtx.onMoveEnd != null)
-                {
-                    controlledMoveCtx.onMoveEnd?.Invoke(99);
-                }
-            }
+
+            EndControlledMove(99);
 
             ControlledMoveCtx ctx = new();
 
@@ -401,7 +419,7 @@ namespace My.Map
 
             controlledMoveCtx = ctx;
 
-            // Ê©¼Ó³õÊ¼ËÙ¶È
+            // æ–½åŠ åˆå§‹é€Ÿåº¦
             externalVel = ctx.MoveDir.normalized * ctx.OriginSpeed;
         }
 
@@ -410,6 +428,16 @@ namespace My.Map
             if(controlledMoveCtx == null)
             {
                 return;
+            }
+
+            if(controlledMoveCtx.HitId != null && controlledMoveCtx.EndOnHitUnit)
+            {
+                HitWindowRegistry.activeHitWindows.TryGetValue(controlledMoveCtx.HitId.Value, out var window);
+                if(window != null && window.HitRecord.Count > 0)
+                {
+                    EndControlledMove(2);
+                    return;
+                }
             }
 
 
@@ -430,9 +458,9 @@ namespace My.Map
             }
             else if(controlledMoveCtx.Type == ControlledMoveCtx.EType.Knock)
             {
-                // Ö¸ÊıË¥¼õ£ºv(t+dt) = v(t) * e^{-lambda * dt}
-                // lambda Ô½´ó£¬¼õËÙÔ½¿ì£»ÅäºÏ×îĞ¡Ä©ËÙÇ¯ÖÆ
-                float lambda = controlledMoveCtx.DecayPowerRate; // ¿Éµ÷ 6~16
+                // æŒ‡æ•°è¡°å‡ï¼šv(t+dt) = v(t) * e^{-lambda * dt}
+                // lambda è¶Šå¤§ï¼Œå‡é€Ÿè¶Šå¿«ï¼›é…åˆæœ€å°æœ«é€Ÿé’³åˆ¶
+                float lambda = controlledMoveCtx.DecayPowerRate; // å¯è°ƒ 6~16
                 if (lambda < 1) lambda = 1;
 
 
@@ -440,7 +468,7 @@ namespace My.Map
                 float damping = Mathf.Exp(-lambda * dt);
                 externalVel *= damping;
 
-                // Ä©¶ËÇ¯ÖÆ
+                // æœ«ç«¯é’³åˆ¶
                 if (externalVel.magnitude < controlledMoveCtx.MinEndSpeed)
                 {
                     externalVel = Vector2.zero;
@@ -449,13 +477,13 @@ namespace My.Map
             }
             else if (controlledMoveCtx.Type == ControlledMoveCtx.EType.Pull)
             {
-                // Ö¸ÊıË¥¼õ£ºv(t+dt) = v(t) * e^{-lambda * dt}
-                // lambda Ô½´ó£¬¼õËÙÔ½¿ì£»ÅäºÏ×îĞ¡Ä©ËÙÇ¯ÖÆ
-                float lambda = controlledMoveCtx.DecayPowerRate; // ¿Éµ÷ 6~16
+                // æŒ‡æ•°è¡°å‡ï¼šv(t+dt) = v(t) * e^{-lambda * dt}
+                // lambda è¶Šå¤§ï¼Œå‡é€Ÿè¶Šå¿«ï¼›é…åˆæœ€å°æœ«é€Ÿé’³åˆ¶
+                float lambda = controlledMoveCtx.DecayPowerRate; // å¯è°ƒ 6~16
                 float damping = Mathf.Exp(-lambda * dt);
                 externalVel *= damping;
 
-                // Ä©¶ËÇ¯ÖÆ
+                // æœ«ç«¯é’³åˆ¶
                 if (externalVel.magnitude < controlledMoveCtx.MinEndSpeed)
                 {
                     externalVel = Vector2.zero;
@@ -465,7 +493,7 @@ namespace My.Map
         }
 
 
-        //// ÍÆ½ø£¨½¨Òé·Å FixedUpdate »òÄãµÄ½ÇÉ«¿ØÖÆÆ÷ËÙ¶ÈºÏ³ÉÇ°£©
+        //// æ¨è¿›ï¼ˆå»ºè®®æ”¾ FixedUpdate æˆ–ä½ çš„è§’è‰²æ§åˆ¶å™¨é€Ÿåº¦åˆæˆå‰ï¼‰
         //private void UpdateKnockback(float dt)
         //{
         //    if (knockBackIntent == null) return;
@@ -477,13 +505,13 @@ namespace My.Map
         //        return;
         //    }
 
-        //    // Ö¸ÊıË¥¼õ£ºv(t+dt) = v(t) * e^{-lambda * dt}
-        //    // lambda Ô½´ó£¬¼õËÙÔ½¿ì£»ÅäºÏ×îĞ¡Ä©ËÙÇ¯ÖÆ
-        //    float lambda = 16f; // ¿Éµ÷ 6~16
+        //    // æŒ‡æ•°è¡°å‡ï¼šv(t+dt) = v(t) * e^{-lambda * dt}
+        //    // lambda è¶Šå¤§ï¼Œå‡é€Ÿè¶Šå¿«ï¼›é…åˆæœ€å°æœ«é€Ÿé’³åˆ¶
+        //    float lambda = 16f; // å¯è°ƒ 6~16
         //    float damping = Mathf.Exp(-lambda * dt);
         //    knockVel *= damping;
 
-        //    // Ä©¶ËÇ¯ÖÆ
+        //    // æœ«ç«¯é’³åˆ¶
         //    if (knockTimer < 0.08f && knockVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
         //    {
         //        knockVel = Vector2.zero;
@@ -507,19 +535,46 @@ namespace My.Map
                 //
             }
 
-            if(controlledMoveCtx.HitWindow != null)
+            if(!string.IsNullOrEmpty(controlledMoveCtx.WeaponName))
             {
-                //
-                abilityController.CloseHitWindow(controlledMoveCtx.HitWindow.weaponName, controlledMoveCtx.HitWindow.hitId);
+                ClearWeapon(controlledMoveCtx.WeaponName);
+                //HitWindowRegistry.CloseHitWindow(controlledMoveCtx.HitWindowId.Value);
             }
 
-            //controlledMoveCtx?.onCollide?.Invoke();
+            controlledMoveCtx.onMoveEnd?.Invoke(reason);
+
+            if (abilityController.CurrentCtx != null
+                    && abilityController.CurrentCtx.AbilityConfig.Id == controlledMoveCtx.BindAbilityId
+                    && abilityController.CurrentCtx.PhaseIndex == controlledMoveCtx.BindAbilityPhaseIdx)
+            {
+                if (controlledMoveCtx.EndPhaseWhenMoveEnds)
+                {
+                    // å°è¯•next phase
+                    Debug.Log($"end ClearControlledMove next phase {controlledMoveCtx.BindAbilityId}:{controlledMoveCtx.BindAbilityPhaseIdx}");
+                    abilityController.CurrentCtx.PhaseMarkSkip = true;
+                }
+
+                if(controlledMoveCtx.HitId != 0 && HitWindowRegistry.activeHitWindows.TryGetValue(controlledMoveCtx.HitId.Value, out var window))
+                {
+                    if(window != null && window.HitRecord.Count > 0)
+                    {
+                        if (controlledMoveCtx.BindAbilityPhaseIdx < abilityController.CurrentCtx.AbilityConfig.Phases.Count)
+                        {
+                            Debug.Log($"end controlled move set hit value");
+                            var phaseName = abilityController.CurrentCtx.AbilityConfig.Phases[controlledMoveCtx.BindAbilityPhaseIdx].PhaseName;
+                            abilityController.CurrentCtx.RunningStorage[$"{phaseName}.FirstHit"] = window.HitRecord[0];
+                        }
+                    }
+                }
+                
+            }
+
 
             controlledMoveCtx = null;
-            // Æ½»¬ÊÕÎ²£º±£ÁôÉÙÁ¿ËÙ¶È²¢¿ìËÙË¥¼õ
+            // å¹³æ»‘æ”¶å°¾ï¼šä¿ç•™å°‘é‡é€Ÿåº¦å¹¶å¿«é€Ÿè¡°å‡
             externalVel *= 0.1f;
 
-            Debug.Log("end ClearControlledMove");
+            Debug.Log($"end ClearControlledMove reason:{reason}");
         }
         #endregion
 
@@ -543,15 +598,15 @@ namespace My.Map
 
         protected override void InitAttribute()
         {
-            // ÊıÖµÀà
+            // æ•°å€¼ç±»
             RegisterUnitCommonNumeris();
             
-            // ×ÊÔ´Àà
+            // èµ„æºç±»
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 100_000);
 
             RegisterUnitCommonStates();
 
-            // ×ÊÔ´Àà
+            // èµ„æºç±»
             RegisterSpecAttrs();
 
             attributeStore.Commit();
@@ -625,10 +680,10 @@ namespace My.Map
         #region throwed
         #endregion
 
-        #region ÊÂ¼ş
+        #region äº‹ä»¶
 
         /// <summary>
-        /// ¼ì²éÊÂ¼ş 
+        /// æ£€æŸ¥äº‹ä»¶ 
         /// </summary>
         /// <param name="evt"></param>
         public override void OnMapLogicEvent(IMapLogicEvent evt)
@@ -652,16 +707,16 @@ namespace My.Map
         #region interrrupt
 
         /// <summary>
-        /// ´ò¶Ï
+        /// æ‰“æ–­
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
         public void TryInterrupt(InterruptRequest req)
         {
-            // ¼ì²é³¬¼¶»¤¼×
+            // æ£€æŸ¥è¶…çº§æŠ¤ç”²
             if (CheckHasState(AttrIdConsts.SuperArmor))
             {
-                // ÃâÒßËùÓĞ±»¶¯´ò¶Ï
+                // å…ç–«æ‰€æœ‰è¢«åŠ¨æ‰“æ–­
                 if (req.source == EInterruptSource.Stun
                 || req.source == EInterruptSource.Hit)
                 {
@@ -687,7 +742,7 @@ namespace My.Map
             base.OnDespawn(ref snapshot);
 
             //
-            // µ±ËÀÍö×´Ì¬ÏÂµÄunit±»»ØÊÕÊ±£¬Ö´ĞĞdestroy ÇÒÈç¹ûÓĞÂÓ¶áÆ· ĞèÒª´´½¨ĞÂÂÓ¶áÎï
+            // å½“æ­»äº¡çŠ¶æ€ä¸‹çš„unitè¢«å›æ”¶æ—¶ï¼Œæ‰§è¡Œdestroy ä¸”å¦‚æœæœ‰æ å¤ºå“ éœ€è¦åˆ›å»ºæ–°æ å¤ºç‰©
             if (IsDead)
             {
                 DoEntityDestroyed("dead_despawn");
@@ -733,7 +788,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ÊôĞÔ±ä»¯»Øµ÷
+        /// å±æ€§å˜åŒ–å›è°ƒ
         /// </summary>
         /// <param name="attrId"></param>
         /// <param name="before"></param>
@@ -742,7 +797,7 @@ namespace My.Map
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
         {
-            // 4.3 ËÀÍöÅĞ¶Ï´°¿Ú£º½öÔÚº¬ÉËº¦Ê±¼ì²é
+            // 4.3 æ­»äº¡åˆ¤æ–­çª—å£ï¼šä»…åœ¨å«ä¼¤å®³æ—¶æ£€æŸ¥
             switch (attrId)
             {
                 case AttrIdConsts.HP:
@@ -763,7 +818,7 @@ namespace My.Map
 
                                 if (xixue > 0)
                                 {
-                                    Debug.Log("ÎüÑª »ØÑª OnResourceAttriChanged");
+                                    Debug.Log("å¸è¡€ å›è¡€ OnResourceAttriChanged");
                                     var xixueVal = (long)(dmg * (double)(xixue / 10000));
                                     entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false, EDmgFlag.Xixue, srcEntityId: Id);
                                 }
@@ -796,16 +851,16 @@ namespace My.Map
 
         protected virtual void UnitOnHpChanged(long delta, long? srcEntityId, Vector2? hitDir, bool isEnmity, EDmgFlag deltaFlags)
         {
-            if(isEnmity) //²»ÊÇÕâÑù
+            if(isEnmity) //ä¸æ˜¯è¿™æ ·
             {
-                // ´¥·¢onhit
+                // è§¦å‘onhit
                 foreach (var b in BuffContainer.Values)
                 {
                     b.DoBuffTrigger(ETriggerType.OnHit);
                 }
             }
             
-            // ¸ßÓÚ5.00µÄÉËº¦²Å´¥·¢´ò¶Ï
+            // é«˜äº5.00çš„ä¼¤å®³æ‰è§¦å‘æ‰“æ–­
             //if(Math.Abs(delta) > 500)
             //{
             //    TryInterrupt(new InterruptRequest()
@@ -818,7 +873,7 @@ namespace My.Map
 
             if (Math.Abs(delta) > 1)
             {
-                // ÉËº¦Âß¼­
+                // ä¼¤å®³é€»è¾‘
                 if (srcEntityId != null)
                 {
                     var srcNpc = LogicManager.GetLogicEntity(srcEntityId.Value) as NpcUnitLogicEntity;
@@ -836,7 +891,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// µ¥Î»Ö´ĞĞ¹¥»÷
+        /// å•ä½æ‰§è¡Œæ”»å‡»
         /// </summary>
         protected virtual void UnitOnApplyHit()
         {
@@ -958,7 +1013,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// Ç¿ÖÆËÀÍö
+        /// å¼ºåˆ¶æ­»äº¡
         /// </summary>
         public void ForceDie()
         {
@@ -971,7 +1026,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ×ª»»³Éattach
+        /// è½¬æ¢æˆattach
         /// </summary>
         public void ConvertToAttachment()
         {
@@ -1101,7 +1156,7 @@ namespace My.Map
         public bool IsEvilAlert { get { return isEvilAlerting; } }
         
         /// <summary>
-        /// ¿ªÊ¼¸æ¾¯
+        /// å¼€å§‹å‘Šè­¦
         /// </summary>
         /// <param name="duration"></param>
         public void StartEvilAlert(float duration)
@@ -1164,7 +1219,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// »ñÈ¡¸ĞÖª²ÎÊı
+        /// è·å–æ„ŸçŸ¥å‚æ•°
         /// </summary>
         /// <returns></returns>
         public (float, float) GetViewRangeAndAngle()

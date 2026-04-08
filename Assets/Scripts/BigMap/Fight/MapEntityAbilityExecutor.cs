@@ -22,27 +22,13 @@ namespace My.Map.Entity
     }
 
 
-    public class AbilityHitWindow
-    {
-        public long hitId;
-        public string weaponName;
-        public float openTime;
-        public float durationTime;
-        public List<long> HitRecord = new();
-
-        public int HitParam0;
-        public int HitParam1;
-
-        public List<MapFightEffectCfg> OnHitEffects; // Ô­Ê¼Êı¾İ »¹ÊÇÉú³Éhitwindow×¨ÓÃÊı¾İ·ÅÈë£¿
-
-        // À´Ô´ÊÇweapon »¹ÊÇ ¼¼ÄÜ£¿
-    }
+    
 
     public static class EntityAbilityHelper
     {
 
         /// <summary>
-        /// ¸ù¾İÄ¿±êÉ¸Ñ¡ÀàĞÍ 
+        /// æ ¹æ®ç›®æ ‡ç­›é€‰ç±»å‹ 
         /// </summary>
         /// <param name="targetSelectPolicy"></param>
         /// <param name="casterUnit"></param>
@@ -99,37 +85,36 @@ namespace My.Map.Entity
     {
         public BaseUnitLogicEntity EntityOwner { get; set; }
 
-        public long HitWiindowIdCounter = 10000;
 
         public class AbilityRunningContext
         {
-            public ILogicEntity Actor;         // Ê©¶¯Õß
-            public ILogicEntity Target;        // Ä¿±ê¶ÔÏó£¨ÈçÃÅ»òµĞÈË£©£¬¿ÉÎª¿Õ
-            public Vector2 FaceDir;           // Ãæ³¯·½Ïò
-            public Vector2? InputVec;           // ¶îÍâÊäÈë·½Ïò
-            public Vector2? CastVec1;           // Ãæ³¯·½Ïò
-            public Vector2? Position;         // Ê©·ÅÎ»ÖÃ£¨Èç½ÅÏÂ»òµã»÷µã£©
+            public ILogicEntity Actor;         // æ–½åŠ¨è€…
+            public ILogicEntity Target;        // ç›®æ ‡å¯¹è±¡ï¼ˆå¦‚é—¨æˆ–æ•Œäººï¼‰ï¼Œå¯ä¸ºç©º
+            public Vector2 FaceDir;           // é¢æœæ–¹å‘
+            public Vector2? InputVec;           // é¢å¤–è¾“å…¥æ–¹å‘
+            public Vector2? CastVec1;           // é¢æœæ–¹å‘
+            public Vector2? Position;         // æ–½æ”¾ä½ç½®ï¼ˆå¦‚è„šä¸‹æˆ–ç‚¹å‡»ç‚¹ï¼‰
             public Dictionary<string, object> UserData = new();
-            // Ê±¼äÍÆ½ø
-            public float AbilityTime;        // ×Ô¿ªÊ¼ÆğÀÛ¼ÆÊ±¼ä
+            // æ—¶é—´æ¨è¿›
+            public float AbilityTime;        // è‡ªå¼€å§‹èµ·ç´¯è®¡æ—¶é—´
 
             public MapAbilitySpecConfig AbilityConfig;
             public int PhaseIndex;
-            public float PhaseElapsed;       // µ±Ç°½×¶ÎÒÑÓÃÊ±
-            public float PhaseDuration;      // µ±Ç°½×¶ÎÊ±¼ä
-            public float LastPhaseHoldTime;  // ÉÏ´ÎĞø³¤°´Ê±¼ä
+            public float PhaseElapsed;       // å½“å‰é˜¶æ®µå·²ç”¨æ—¶
+            public float PhaseDuration;      // å½“å‰é˜¶æ®µæ—¶é—´
+            public float LastPhaseHoldTime;  // ä¸Šæ¬¡ç»­é•¿æŒ‰æ—¶é—´
             public bool PhaseMarkSkip;
 
             //public List<Modifier> PhaseModifiers = new();
             public List<long> PhaseBindBuffs = new();
-            public Dictionary<long, AbilityHitWindow> phaseHitWindows = new();
+            public List<long> phaseHitWindows = new();
             public List<int> phaseBindEffectIds = new();
             public int PhaseIntentEffectId = 0;
 
             public string? openClickkkType;
             public float? openClickkkDuration;
 
-            public ISceneAbilityViewer? viewer; // ±íÏÖ²ã½Ó¿Ú
+            public ISceneAbilityViewer? viewer; // è¡¨ç°å±‚æ¥å£
 
             public string DebugSavedAnimTag;
             public float DebugSavedAnimTagTimer;
@@ -138,7 +123,7 @@ namespace My.Map.Entity
 
             public long ShowProgressShowId = 0;
 
-            // ±äÁ¿¼¯ºÏ
+            // å˜é‡é›†åˆ
             public Dictionary<string, string> RunningVariables = new();
             public Dictionary<string, string> PhaseOverrideAnims = null;
 
@@ -185,8 +170,6 @@ namespace My.Map.Entity
 
         //private Dictionary<string, float> _sharedCooldown = new();
 
-        public event Action<long, string, float, string?> EventOnApplyUseWeapon;
-        public event Action<string, long> EventOnCloseHitWindow;
         public event Action<string> EventOnUseAbility;
         public event Action<string, int> EventOnAbilityEnd;
         public event Action EventOnInputCancelPhaseStart;
@@ -216,7 +199,7 @@ namespace My.Map.Entity
 
         public class ScheduledEvent
         {
-            public float FireTime;     // Ïà¶Ô½×¶Î¿ªÊ¼µÄÊ±¼ä
+            public float FireTime;     // ç›¸å¯¹é˜¶æ®µå¼€å§‹çš„æ—¶é—´
             public PhaseEffectEvent Source;
             public int Left;
             public float NextInterval;
@@ -248,7 +231,7 @@ namespace My.Map.Entity
 
 
         /// <summary>
-        /// Ê¹ÓÃ¼¼ÄÜ
+        /// ä½¿ç”¨æŠ€èƒ½
         /// </summary>
         /// <param name="abState"></param>
         /// <param name="castVec1"></param>
@@ -267,7 +250,7 @@ namespace My.Map.Entity
                 });
             }
 
-            // ¼ì²é¿É´ò¶Ï
+            // æ£€æŸ¥å¯æ‰“æ–­
             if (!IsActionable())
             {
                 return false;
@@ -284,7 +267,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            // ¼ì²éÇ¿ÖÆ×ªÏò
+            // æ£€æŸ¥å¼ºåˆ¶è½¬å‘
             if(abilityConf.AdjustFaceDir)
             {
                 if(castVec1 != null)
@@ -360,7 +343,7 @@ namespace My.Map.Entity
 
                 withTargetCorrection = true;
                 var diff = mainTarget.Pos - EntityOwner.Pos;
-                // ²»ĞèÒªÎü¸½
+                // ä¸éœ€è¦å¸é™„
                 if (diff.magnitude < abilityConf.GoodCorrectionnDist)
                 {
                     correctPoint = null;
@@ -372,7 +355,7 @@ namespace My.Map.Entity
             }
             while (false);
             
-            // Ã»ÓĞÎü¸½Ê±²Å´¦ÀíÄ¬ÈÏµæ²½
+            // æ²¡æœ‰å¸é™„æ—¶æ‰å¤„ç†é»˜è®¤å«æ­¥
             if(!withTargetCorrection)
             {
                 if (abilityConf.DefaultStepDistance > 0)
@@ -405,7 +388,7 @@ namespace My.Map.Entity
             {
                 CurrentCtx.LastPhaseHoldTime = LogicTime.time;
             }
-            // Ëø¶¯×÷
+            // é”åŠ¨ä½œ
             var phaseDurRaw = CurrentCtx.GetVariatyRawVal(phase.DurationValue);
             var phaseDur = 0f;
             if (!string.IsNullOrEmpty(phaseDurRaw) && !float.TryParse(phaseDurRaw, out phaseDur))
@@ -414,7 +397,7 @@ namespace My.Map.Entity
             }
             CurrentCtx.PhaseDuration = phaseDur;
 
-            // Ä¬ÈÏ£º½øÈë¼´²¥·Å×ÔÉíAnimTag£¨Ò²¿Éµ±×÷Ò»¸öÊÂ¼ş£©
+            // é»˜è®¤ï¼šè¿›å…¥å³æ’­æ”¾è‡ªèº«AnimTagï¼ˆä¹Ÿå¯å½“ä½œä¸€ä¸ªäº‹ä»¶ï¼‰
             var animTag = phase.AnimTag;
             if (CurrentCtx.PhaseOverrideAnims != null && CurrentCtx.PhaseOverrideAnims.TryGetValue(phase.PhaseName, out var overrideAnim))
             {
@@ -437,7 +420,21 @@ namespace My.Map.Entity
                 CurrentCtx.ShowProgressShowId = EntityOwner.viewer.ShowBottomProgress("Checking", CurrentCtx.PhaseDuration);
             }
 
-            // °²ÅÅ¸Ã½×¶ÎµÄÊÂ¼ş
+            if(!string.IsNullOrEmpty(phase.UsePhaseHitAsTarget))
+            {
+                var targetStorageName = $"{phase.UsePhaseHitAsTarget}.FirstHit";
+                if(CurrentCtx.RunningStorage.TryGetValue(targetStorageName, out var entityId))
+                {
+                    var targetE = EntityOwner.LogicManager.GetLogicEntity(entityId, false);
+                    if (targetE != null)
+                    {
+                        Debug.Log($"entity:{EntityOwner.Id} ability:{CurrentCtx.AbilityConfig.Id} phase:{phase.PhaseName} change target :{entityId}");
+                        CurrentCtx.Target = targetE;
+                    }
+                }
+            }
+
+            // å®‰æ’è¯¥é˜¶æ®µçš„äº‹ä»¶
             CurrentCtx._scheduled.Clear();
             foreach (var ev in phase.Events)
             {
@@ -463,7 +460,7 @@ namespace My.Map.Entity
                 }
             }
 
-            // ÊÀ¼Òbuff
+            // ä¸–å®¶buff
             if(phase.PhaseBuff != null)
             {
                 foreach(var buffId in phase.PhaseBuff)
@@ -518,7 +515,7 @@ namespace My.Map.Entity
         {
             var phase = CurrentCtx.AbilityConfig.Phases[index];
 
-            // ´¥·¢ OnExit
+            // è§¦å‘ OnExit
             foreach (var ev in phase.Events)
             {
                 if (ev.Kind == PhaseEventKind.OnExit)
@@ -601,9 +598,9 @@ namespace My.Map.Entity
 
         public void CleanupPhase(bool isInterrupt = false)
         {
-            // ¹Ø±ÕÃüÖĞºĞ¡¢Í£Ö¹Î»ÒÆÇúÏß¡¢»ØÊÕÌØĞ§¡¢ÖØÖÃÊäÈëËøµÈ
+            // å…³é—­å‘½ä¸­ç›’ã€åœæ­¢ä½ç§»æ›²çº¿ã€å›æ”¶ç‰¹æ•ˆã€é‡ç½®è¾“å…¥é”ç­‰
 
-            // ÒÆ³ıphase¸½¼Ó×´Ì¬
+            // ç§»é™¤phaseé™„åŠ çŠ¶æ€
             foreach (var buffId in CurrentCtx.PhaseBindBuffs)
             {
                 EntityOwner.LogicManager.globalBuffManager.RequestRemoveBuff(null, buffId);
@@ -615,9 +612,9 @@ namespace My.Map.Entity
 
             if (CurrentCtx.phaseHitWindows.Count > 0)
             {
-                foreach (var hitWindow in CurrentCtx.phaseHitWindows.Values)
+                foreach(var winId in CurrentCtx.phaseHitWindows)
                 {
-                    EventOnCloseHitWindow?.Invoke(hitWindow.weaponName, hitWindow.hitId);
+                    EntityOwner.HitWindowRegistry.CloseHitWindow(winId);
                 }
 
                 CurrentCtx.phaseHitWindows.Clear();
@@ -647,9 +644,10 @@ namespace My.Map.Entity
 
             if (!isInterrupt)
             {
-                //³¢ÊÔ½øĞĞcancel
+                //å°è¯•è¿›è¡Œcancel
                 //EntityOwner.viewer.TryCancelButtomProgress(CurrentCtx.ShowProgressShowId);
             }
+
         }
 
         public GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility()
@@ -659,6 +657,9 @@ namespace My.Map.Entity
                 SrcType = ESourceType.Ability,
                 SrcEntityId = this.EntityOwner.Id,
                 SrcFactionId = this.EntityOwner.FactionId,
+
+                SrcAbilityId = CurrentCtx.AbilityConfig.Id,
+                SrcAbilityPhaseId = CurrentCtx.PhaseIndex,
             };
             var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, EFightCtxType.Ability, sourceInfo);
             ctx.TargetId = this.CurrentCtx.Target ?.Id ?? 0;
@@ -705,7 +706,7 @@ namespace My.Map.Entity
                 }
             }
 
-            // Ö´ĞĞ¶¨Ê±ÊÂ¼ş£¨Ïà¶Ôµ±Ç°½×¶ÎÊ±¼ä£©
+            // æ‰§è¡Œå®šæ—¶äº‹ä»¶ï¼ˆç›¸å¯¹å½“å‰é˜¶æ®µæ—¶é—´ï¼‰
             for (int i = 0; i < CurrentCtx._scheduled.Count; ++i)
             {
                 var s = CurrentCtx._scheduled[i];
@@ -735,10 +736,15 @@ namespace My.Map.Entity
                     EntityOwner.LogicManager.HandleLogicFightEffect(s.Source.Effect, effectCtx);
                     s.Left--;
                     s.FireTime += s.NextInterval > 0 ? s.NextInterval : float.MaxValue;
+
+                    if(effectCtx.OutHitWindowIds.Count > 0)
+                    {
+                        CurrentCtx.phaseHitWindows.AddRange(effectCtx.OutHitWindowIds);
+                    }
                 }
             }
 
-            // ¼ì²éÊÇ·ñÊÇÒıµ¼
+            // æ£€æŸ¥æ˜¯å¦æ˜¯å¼•å¯¼
             var phase = CurrentCtx.AbilityConfig.Phases[CurrentCtx.PhaseIndex];
             if(phase != null) 
             {
@@ -753,7 +759,7 @@ namespace My.Map.Entity
             {
                 phaseFinish = true;
             }
-            // ¼ì²é·Çholding½×¶Î
+            // æ£€æŸ¥éholdingé˜¶æ®µ
             else if(!phase.HoldingPhase)
             {
                 if(CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
@@ -768,14 +774,14 @@ namespace My.Map.Entity
                     phaseFinish = true;
                 }
                 
-                // Ê±¼äÌ«³¤Ò²²»ĞĞ
+                // æ—¶é—´å¤ªé•¿ä¹Ÿä¸è¡Œ
                 if(CurrentCtx.PhaseDuration != 0 && CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
                 {
                     phaseFinish = true;
                 }
             }
 
-            // ½×¶Î½áÊø
+            // é˜¶æ®µç»“æŸ
             if (phaseFinish)
             {
                 ExitPhase(CurrentCtx.PhaseIndex);
@@ -801,10 +807,10 @@ namespace My.Map.Entity
         //        float t = Ctx.PhaseElapsed;
         //        if (t - dt <= hw.StartOffset && t >= hw.StartOffset)
         //        {
-        //            // ´°¿Ú¿ªÊ¼Ê±¿Ì´¥·¢Ò»´Î£»Ò²¿ÉÔÚ´°¿ÚÆÚ¼äÑ­»·
+        //            // çª—å£å¼€å§‹æ—¶åˆ»è§¦å‘ä¸€æ¬¡ï¼›ä¹Ÿå¯åœ¨çª—å£æœŸé—´å¾ªç¯
         //            var dmgEffect = new DealDamageEffect(hw.Damage, hw.DamageType, knockback: 8f);
         //            dmgEffect.Apply(Current, Ctx);
-        //            // ÕâÀï¼ò»¯ÎªÒ»´Î´¥·¢£»Êµ¼Ê¿ÉÔÚ´°¿ÚÆÚ¼ä¶à´Î²ÉÑù
+        //            // è¿™é‡Œç®€åŒ–ä¸ºä¸€æ¬¡è§¦å‘ï¼›å®é™…å¯åœ¨çª—å£æœŸé—´å¤šæ¬¡é‡‡æ ·
         //        }
         //    }
         //}
@@ -845,7 +851,7 @@ namespace My.Map.Entity
 
             var phase = CurrentCtx.AbilityConfig.Phases[CurrentCtx.PhaseIndex];
 
-            //³¢ÊÔ½øĞĞcancel
+            //å°è¯•è¿›è¡Œcancel
             if (phase != null && phase.WithProgress && CurrentCtx.ShowProgressShowId != 0)
             {
                 EntityOwner.viewer.TryCancelButtomProgress(CurrentCtx.ShowProgressShowId);
@@ -856,6 +862,8 @@ namespace My.Map.Entity
             _running = false;
             Debug.Log($"Ability {CurrentCtx.AbilityConfig.Id} Cancel");
             CurrentCtx = null;
+
+            //  æ¸…ç†ç»‘å®šç»‘å®šçš„å†²åˆºå‘¢ï¼Ÿ
 
             EventOnAbilityEnd?.Invoke(abName, 1);
         }
@@ -878,83 +886,11 @@ namespace My.Map.Entity
             return phase;
         }
 
-        public void ApplyUseWeaponHitBox(string weaponName, string animName, float openTime, List<MapFightEffectCfg> hitCfgs)
-        {
-            // Í³Ò»Îªhitwindow´¦Àí
-            var win = CreateHitWindow(weaponName, animName, openTime, hitCfgs);
-            CurrentCtx.phaseHitWindows.Add(win.hitId, win);
-        }
+        
 
+        
 
-        public AbilityHitWindow CreateHitWindow(string weaponName, string animName, float openTime, List<MapFightEffectCfg> hitCfgs)
-        {
-            long hitId = ++HitWiindowIdCounter;
-
-            var hitWin = new AbilityHitWindow()
-            {
-                hitId = hitId,
-                weaponName = weaponName,
-                openTime = Time.realtimeSinceStartup,
-                durationTime = openTime,
-                OnHitEffects = hitCfgs,
-            };
-            EventOnApplyUseWeapon?.Invoke(hitId, weaponName, openTime, animName);
-
-            return hitWin;
-        }
-
-        public void CloseHitWindow(string weaponName, long hitId)
-        {
-            EventOnCloseHitWindow?.Invoke(weaponName, hitId);
-        }
-
-        public void OnUseWeaponHitCallback(long hitId, long hitEntityId)
-        {
-            if (CurrentCtx == null)
-            {
-                Debug.LogError($"OnUseWeaponHitCallback hit not found {hitId}");
-                return;
-            }
-            CurrentCtx.phaseHitWindows.TryGetValue(hitId, out var window);
-            //  todo ¶à´ÎÃüÖĞ
-            if (!window.HitRecord.Contains(hitEntityId))
-            {
-                window.HitRecord.Add(hitEntityId);
-                //Debug.Log("OnWeaponHitCallback " + "hittttttttttttttttttttttttttttttttttttttttttttttttttttttt " + hitEntityId);
-
-                if (window.OnHitEffects != null)
-                {
-                    var hitEntity = EntityOwner.LogicManager.AreaManager.GetLogicEntiy(hitEntityId);
-                    //MainGameManager.Instance.gameLogicManager.logicEntityDict.TryGetValue(hitEntityId, out var hitEntity);
-                    if (hitEntity != null && !hitEntity.MarkDestroyed)
-                    {
-                        var srcInfo = new EffectSourceInfo()
-                        {
-                            SrcType = ESourceType.Ability,
-                            SrcEntityId = EntityOwner.Id,
-                        };
-
-                        foreach (var hitEffect in window.OnHitEffects)
-                        {
-                            GameLogicManager.LogicFightEffectContext newCtx = new(EntityOwner.LogicManager, EFightCtxType.HitBox, srcInfo);
-
-                            newCtx.TargetId = hitEntity.Id;
-                            newCtx.TriggerPos = EntityOwner.Pos;
-                            //newCtx.CastVec1 = hitEntity.Pos - EntityOwner.Pos;
-                            newCtx.CastVec1 =  EntityOwner.FinalLook;
-
-                            EntityOwner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
-                        }
-
-                        MainGameManager.Instance.StartHitStop(0.04f);
-                    }
-                    else
-                    {
-                        Debug.Log($"OnWeaponHitCallback hit target not found or dead {hitEntityId}");
-                    }
-                }
-            }
-        }
+        
 
         public void OpenClickkkWindow(string windowType, float duration)
         {
@@ -969,7 +905,7 @@ namespace My.Map.Entity
 
         //public void ApplyHitWindow(string weaponName)
         //{
-        //    // Í³Ò»Îªhitwindow´¦Àí
+        //    // ç»Ÿä¸€ä¸ºhitwindowå¤„ç†
         //    long hitId = ++HitWiindowIdCounter;
 
         //    EventOnApplyUseWeapon?.Invoke(hitId, weaponName);

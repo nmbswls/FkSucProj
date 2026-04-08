@@ -38,9 +38,13 @@ namespace My.Map.Entity
         public float DashOverrideHitRadius = 0;
 
         public bool IsGhost = true;
-        public bool NextPhaseOnHit;
+        public bool EndOnHitUnit;
 
         [SerializeReference]
         public List<MapFightEffectCfg> OnHitEffects;
+
+        public bool StopOnWall;
+
+        public bool EndAbilityPhaseWhenEnds = true; // 只有当来自技能时 该值才可为true
     }
 }

@@ -490,6 +490,10 @@ namespace My.Map.Entity
                     _abilityDict[ab.Id] = ab;
                 }
 
+                {
+                    var ab = CreateQueenDashDown();
+                    _abilityDict[ab.Id] = ab;
+                }
                 
                 {
                     var ab = CreateDefaultPushAbility();
@@ -1909,7 +1913,7 @@ namespace My.Map.Entity
                     DirMode = EDirMode.LookDir,
 
                     DashWeaponName = "Charge",
-                    NextPhaseOnHit = true,
+                    EndOnHitUnit = true,
 
                     OnHitEffects = new()
                     {
@@ -2577,6 +2581,166 @@ namespace My.Map.Entity
             spec.Phases.Add(postPhase);
             return spec;
         }
+
+        /// <summary>
+        /// ÆËµ½
+        /// </summary>
+        /// <returns></returns>
+        private static MapAbilitySpecConfig CreateQueenDashDown()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "queen_dash_down";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0.3f;
+            spec.AdjustFaceDir = true;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.0f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            //spec.AddTargetCorrection = true;
+            //spec.GoodCorrectionnDist = 1.0f;
+            //spec.MaxCorrectionValue = 0.8f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Xuli",
+                HoldingPhase = true,
+
+                PhaseBuff = new() { "jian_su_self" },
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "5"
+                },
+
+                AnimTag = "queen_attack_heavy_xuli",
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+
+                AnimTag = "queen_attack_heavy",
+            };
+
+
+            var xuliEffect = new MapFightEffectXuLiStageCfg()
+            {
+                CheckPhaseName = "Xuli",
+
+                StageInfos =
+                {
+                    new MapFightEffectXuLiStageCfg.EStageInfo()
+                    {
+                        NeedTime = 2.0f,
+
+                        StageEffects = new()
+                        {
+                            //new MapFightEffectShowEffect()
+                            //{
+                            //    ShowMode = MapFightEffectShowEffect.EShowMode.EntityAligned,
+
+                            //    ShowPos = new Vector2(0.5f, 0.2f),
+                            //},
+
+                            new MapAbilityEffectUseWeaponCfg()
+                            {
+                                WeaponName = "QueenHeavy",
+                                AnimName = "player_weapon01_heavy3",
+                                Duration = 0.5f,
+                                OnHitEffects = new()
+                                {
+
+                                    new MapFightEffectApplyDamageCfg()
+                                    {
+                                        BaseDamage = 15000,
+                                        KnockBackForce = 0.6f,
+                                    },
+                                }
+                            }
+                        }
+                    },
+
+                    new MapFightEffectXuLiStageCfg.EStageInfo()
+                    {
+                        NeedTime = 1.0f,
+
+                        StageEffects = new()
+                        {
+                            new MapAbilityEffectUseWeaponCfg()
+                            {
+                                WeaponName = "QueenHeavy",
+                                AnimName = "player_weapon01_heavy2",
+                                Duration = 0.5f,
+                                OnHitEffects = new()
+                                {
+
+                                    new MapFightEffectApplyDamageCfg()
+                                    {
+                                        BaseDamage = 25000,
+                                        KnockBackForce = 0.6f,
+                                    },
+                                }
+                            }
+                        }
+                    },
+
+                    new MapFightEffectXuLiStageCfg.EStageInfo()
+                    {
+                        NeedTime = 0.0f,
+
+                        StageEffects = new()
+                        {
+                            new MapAbilityEffectUseWeaponCfg()
+                            {
+                                WeaponName = "QueenHeavy",
+                                AnimName = "player_weapon01_heavy1",
+                                Duration = 0.5f,
+                                OnHitEffects = new()
+                                {
+
+                                    new MapFightEffectApplyDamageCfg()
+                                    {
+                                        BaseDamage = 40000,
+                                        KnockBackForce = 0.6f,
+                                    },
+                                }
+                            }
+                        }
+                    },
+                }
+            };
+
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = xuliEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+
+            var postPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                InterruptMask = EAbilityInterruptMask.Cast | EAbilityInterruptMask.Move,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.4"
+                },
+            };
+            spec.Phases.Add(postPhase);
+            return spec;
+        }
+
         private static MapAbilitySpecConfig CreateDefaultPushAbility()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();

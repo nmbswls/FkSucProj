@@ -477,14 +477,14 @@ namespace My.Map.Scene
 
         protected virtual void InitWeaponInfo()
         {
-            UnitEntity.abilityController.EventOnApplyUseWeapon += (hitId, weaponName, duration, animName) =>
+            UnitEntity.EventOnUseWeapon += (hitId, weaponName, duration, animName) =>
             {
-                WeaponCtrl.ApplyUseWeapon(weaponName, hitId, duration, animName);
+                WeaponCtrl.HandleUseWeapon(weaponName, hitId, duration, animName);
             };
 
-            UnitEntity.abilityController.EventOnCloseHitWindow += (weaponName, hitId) =>
+            UnitEntity.EventOnHideWeapon += (weaponName, hitId) =>
             {
-                WeaponCtrl.OnHitWindowClear(weaponName, hitId);
+                WeaponCtrl.HandleClearWeapon(weaponName);
             };
         }
 
@@ -706,63 +706,7 @@ namespace My.Map.Scene
         /// <param name="hitEntityId"></param>
         public void OnWeaponHitCallback(long hitId, long hitEntityId)
         {
-
-            // tood
-            // 临时写在这里 后面统一到hitbox manage
-            if(UnitEntity.controlledMoveCtx != null && UnitEntity.controlledMoveCtx.HitWindow != null)
-            {
-                if(UnitEntity.controlledMoveCtx.HitWindow.hitId == hitId)
-                {
-                    var window = UnitEntity.controlledMoveCtx.HitWindow;
-                    //  todo 多次命中
-                    if (!window.HitRecord.Contains(hitEntityId))
-                    {
-                        window.HitRecord.Add(hitEntityId);
-                        //Debug.Log("OnWeaponHitCallback " + "hittttttttttttttttttttttttttttttttttttttttttttttttttttttt " + hitEntityId);
-
-                        if (window.OnHitEffects != null)
-                        {
-                            var hitEntity = UnitEntity.LogicManager.AreaManager.GetLogicEntiy(hitEntityId);
-                            //MainGameManager.Instance.gameLogicManager.logicEntityDict.TryGetValue(hitEntityId, out var hitEntity);
-                            if (hitEntity != null && !hitEntity.MarkDestroyed)
-                            {
-                                var srcInfo = new EffectSourceInfo()
-                                {
-                                    SrcType = ESourceType.Ability,
-                                    SrcEntityId = UnitEntity.Id,
-                                };
-
-                                foreach (var hitEffect in window.OnHitEffects)
-                                {
-                                    GameLogicManager.LogicFightEffectContext newCtx = new(UnitEntity.LogicManager, EFightCtxType.HitBox, srcInfo);
-
-                                    newCtx.TargetId = hitEntity.Id;
-                                    newCtx.TriggerPos = UnitEntity.Pos;
-                                    //newCtx.CastVec1 = hitEntity.Pos - EntityOwner.Pos;
-                                    newCtx.CastVec1 = UnitEntity.FinalLook;
-
-                                    UnitEntity.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
-                                }
-
-                                MainGameManager.Instance.StartHitStop(0.04f);
-                            }
-                            else
-                            {
-                                Debug.Log($"OnWeaponHitCallback hit target not found or dead {hitEntityId}");
-                            }
-
-                            if (hitEntity is BaseUnitLogicEntity unitHitTarget)
-                            {
-                                // 对目标执行一次hit result
-                                unitHitTarget.ProcessHit(UnitEntity.Id, UnitEntity.FinalLook);
-                            }
-                        }
-
-                    }
-                    return;
-                }
-            }
-            UnitEntity.abilityController.OnUseWeaponHitCallback(hitId, hitEntityId);
+            UnitEntity.HitWindowRegistry.OnMapHitboxCallback(hitId, hitEntityId);
         }
 
 

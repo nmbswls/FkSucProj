@@ -111,6 +111,8 @@ namespace My.Map.Entity
 
         public bool ShowRangePreview = false;
         public MapPreviewIntent PreviewIntent = new();
+
+        public string UsePhaseHitAsTarget; // 特殊属性 如果非空 则进入当前phase时 使用特定phase的击中目标当作新技能target
     }
 
 

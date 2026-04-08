@@ -244,7 +244,7 @@ namespace My
         }
 
         /// <summary>
-        /// Ð§¹ûÔ´ÐÅÏ¢
+        /// Ð§ï¿½ï¿½Ô´ï¿½ï¿½Ï¢
         /// </summary>
         [Serializable]
         public class EffectSourceInfo
@@ -256,6 +256,9 @@ namespace My
 
             public long SrcBuffId;
             public EFactionId SrcFactionId;
+
+            public string SrcAbilityId;
+            public int SrcAbilityPhaseId;
         }
 
         public enum EFightCtxType
@@ -282,24 +285,26 @@ namespace My
 
             public EffectSourceInfo SourceInfo; // 
 
-            public long TargetId;              // Ëø¶¨¶ÔÏó Èç¹ûÀ´×Ô¼¼ÄÜ ÔòÔÚÊÍ·ÅÊ±Ëø¶¨ Èç¹ûÀ´×ÔÐ§¹û´¥·¢ ÔòÔÚÂß¼­ÖÐ°ó¶¨
-            public Vector2? TriggerPos;        // ·¢ÉúµØµã ¼¼ÄÜÊÍ·ÅÎ»ÖÃ ×Óµ¯Åö×²Î»ÖÃ buff´¥·¢Î»ÖÃµÈ
+            public long TargetId;              // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½Ð°ï¿½
+            public Vector2? TriggerPos;        // ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Î»ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½×²Î»ï¿½ï¿½ buffï¿½ï¿½ï¿½ï¿½Î»ï¿½Ãµï¿½
             
-            public Vector2? CastVec1;          // 1.¼¼ÄÜ ÎªÊ©·¨²ÎÊý 
-                                               // 2.hitbox »÷´ò·½Ïò
-                                               // 3.ÎäÆ÷ µ¥Î»¼ädiff
+            public Vector2? CastVec1;          // 1.ï¿½ï¿½ï¿½ï¿½ ÎªÊ©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+                                               // 2.hitbox ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                                               // 3.ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Î»ï¿½ï¿½diff
 
-            public Vector2? CastVec2;          // Ê©·¨²ÎÊý2
+            public Vector2? CastVec2;          // Ê©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2
 
-            public Vector2? InputVec;          // ÊäÈë Ö»ÓÐÖ÷¶¯Ê©·¨²Å»á¸³Öµ
+            public Vector2? InputVec;          // ï¿½ï¿½ï¿½ï¿½ Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê©ï¿½ï¿½ï¿½Å»á¸³Öµ
 
-            // ±äÁ¿¼¯ºÏ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             public Dictionary<string, string> RunningVariables = new();
             public Dictionary<string, long> RunningStorage = new();
 
             public Dictionary<string, long> CacheAttrVal = new();
 
             public List<int> BindSceneFxIds = new();
+
+            public List<long> OutHitWindowIds = new();
 
             public string GetVariatyRawVal(OneVariaty oneVariaty)
             {

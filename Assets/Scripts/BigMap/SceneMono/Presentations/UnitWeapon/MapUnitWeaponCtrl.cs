@@ -79,7 +79,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     /// </summary>
     /// <param name="weaponName"></param>
     /// <param name="hitId"></param>
-    public void ApplyUseWeapon(string weaponName, long hitId, float duration, string weaponAnimName)
+    public void HandleUseWeapon(string weaponName, long hitId, float duration, string weaponAnimName)
     {
         var findIt = WeaponOnes.Find((item)=>item.gameObject.name == weaponName);
         if(findIt == null)
@@ -90,7 +90,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         findIt.ShowWeapon(hitId, duration, weaponAnimName);
     }
 
-    public void OnHitWindowClear(string weaponName, long hitId)
+    public void HandleClearWeapon(string weaponName)
     {
         var findIt = WeaponOnes.Find((item) => item.gameObject.name == weaponName);
         if (findIt == null)
@@ -98,7 +98,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
             Debug.LogError($"ApplyUseWeapon {weaponName} not found");
             return;
         }
-        findIt.ClearWeapon(hitId);
+        findIt.ClearWeapon();
     }
 
     public void OnWeaponTriggerHit(long hitId, ILogicEntity logicEntity)

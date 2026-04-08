@@ -311,7 +311,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            // ∂‘ƒø±Í ©º”
+            // ÂØπÁõÆÊ†áÊñΩÂä†
             if(realCfg.TargetType == 0)
             {
                 var targetUnit = ctx.Env.GetLogicEntity(ctx.TargetId) as BaseUnitLogicEntity;
@@ -435,7 +435,8 @@ namespace My.Map.Entity
 
             if(actor != null && actor is BaseUnitLogicEntity unitEntity)
             {
-                unitEntity.abilityController.ApplyUseWeaponHitBox(realCfg.WeaponName, realCfg.AnimName, realCfg.Duration, realCfg.OnHitEffects);
+                var windowId = unitEntity.ApplyUseWeapon(realCfg.WeaponName, realCfg.AnimName, realCfg.Duration, realCfg.OnHitEffects);
+                ctx.OutHitWindowIds.Add(windowId);
             }
         }
     }
@@ -457,7 +458,7 @@ namespace My.Map.Entity
             }
 
             Vector2? dashEndP = null;
-            // ≥¢ ‘ªÒ»°ƒø±ÍŒª÷√
+            // Â∞ùËØïËé∑ÂèñÁõÆÊ†á‰ΩçÁΩÆ
             if(realCfg.DashMode == EDashMode.ToTarget)
             {
                 var target = ctx.Env.GetLogicEntity(ctx.TargetId, false);
@@ -533,7 +534,7 @@ namespace My.Map.Entity
                 dashEndP = unitEntity.Pos + dashDir.normalized * dist;
             }
 
-            // ªÒ»°ƒø±Í ß∞‹ ¥” ©∑®≤Œ ˝÷–ªÒ»°
+            // Ëé∑ÂèñÁõÆÊ†áÂ§±Ë¥• ‰ªéÊñΩÊ≥ïÂèÇÊï∞‰∏≠Ëé∑Âèñ
             if (dashEndP == null)
             {
                 dashEndP = ctx.CastVec1;
@@ -542,7 +543,7 @@ namespace My.Map.Entity
             Vector2 dir;
             float duration;
 
-            // »‘√ª”– Ω¯––±£µ◊≈∂Œª“∆
+            // ‰ªçÊ≤°Êúâ ËøõË°å‰øùÂ∫ïÂì¶‰ΩçÁßª
             if (dashEndP == null)
             {
                 dir = Vector2.right;
@@ -555,7 +556,29 @@ namespace My.Map.Entity
             dir = diff.normalized;
             duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
 
-            unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, realCfg.IsGhost, dashWeaponName: realCfg.DashWeaponName);
+            var moveContext = unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, realCfg.IsGhost, dashWeaponName: realCfg.DashWeaponName, stopOnUnit:realCfg.EndOnHitUnit);
+            if(realCfg.EndAbilityPhaseWhenEnds)
+            {
+                moveContext.EndPhaseWhenMoveEnds = true;
+            }
+
+            if(ctx.SourceInfo.SrcType == ESourceType.Ability)
+            {
+                moveContext.BindAbilityId = ctx.SourceInfo.SrcAbilityId;
+                moveContext.BindAbilityPhaseIdx = ctx.SourceInfo.SrcAbilityPhaseId;
+
+                //
+                if(moveContext.HitId != 0)
+                {
+                    unitEntity.HitWindowRegistry.activeHitWindows.TryGetValue(moveContext.HitId.Value, out var bindWindow);
+                    if(bindWindow != null)
+                    {
+
+                    }
+                }
+            }
+
+            moveContext.EndOnHitUnit = realCfg.EndOnHitUnit;
         }
     }
 
@@ -625,7 +648,7 @@ namespace My.Map.Entity
 
             int layer = realCfg.Layer;
             if (realCfg.Layer <= 0) layer = 1;
-            // µ±ƒø±ÍtypeŒ™0 ± ‘⁄’˝≥£”Ôæ≥œ¬ æÕ «∏¯ƒø±Í π”√
+            // ÂΩìÁõÆÊ†átype‰∏∫0Êó∂ Âú®Ê≠£Â∏∏ËØ≠Â¢É‰∏ã Â∞±ÊòØÁªôÁõÆÊ†á‰ΩøÁî®
             if (realCfg.TargetType == 0)
             {
                 ctx.Env.globalBuffManager.RequestAddBuff(ctx.TargetId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId : srcBuffId, overrideDuration:realCfg.Duration);
@@ -650,22 +673,22 @@ namespace My.Map.Entity
 
             List<ILogicEntity> candidates = null;
             
-            Vector2 hitBoxDir = Vector2.right; // ≈ˆ◊≤∫–∑ΩœÚ ”∞œÏ≈–∂®«¯”Úº∆À„
-            Vector2 realCenter = ctx.TriggerPos.Value; // ≈ˆ◊≤÷––ƒ ”∞œÏ≈–∂®«¯º∆À„
+            Vector2 hitBoxDir = Vector2.right; // Á¢∞ÊíûÁõíÊñπÂêë ÂΩ±ÂìçÂà§ÂÆöÂå∫ÂüüËÆ°ÁÆó
+            Vector2 realCenter = ctx.TriggerPos.Value; // Á¢∞Êíû‰∏≠ÂøÉ ÂΩ±ÂìçÂà§ÂÆöÂå∫ËÆ°ÁÆó
 
             switch (ctx.CtxType)
             {
-                // ∂‘”⁄ººƒ‹ ≈ˆ◊≤∑ΩœÚŒ™ ©∑®∑ΩœÚ/√ÊœÚ
+                // ÂØπ‰∫éÊäÄËÉΩ Á¢∞ÊíûÊñπÂêë‰∏∫ÊñΩÊ≥ïÊñπÂêë/Èù¢Âêë
                 case EFightCtxType.Ability:
                     {
                         hitBoxDir = ctx.CastVec1.Value - ctx.TriggerPos.Value;
-                        // º∆À„offset
+                        // ËÆ°ÁÆóoffset
                         if(realCfg.IsDirRevert)
                         {
                             hitBoxDir = -hitBoxDir;
                         }
 
-                        // º∆À„÷––ƒ£¨∂‘”⁄ººƒ‹ ø…ƒ‹÷––ƒµ„‘⁄◊‘…Ì “≤ø…ƒ‹‘⁄ ©∑®µ„
+                        // ËÆ°ÁÆó‰∏≠ÂøÉÔºåÂØπ‰∫éÊäÄËÉΩ ÂèØËÉΩ‰∏≠ÂøÉÁÇπÂú®Ëá™Ë∫´ ‰πüÂèØËÉΩÂú®ÊñΩÊ≥ïÁÇπ
                         if (realCfg.CenterPosType == 0)
                         {
                             realCenter = ctx.TriggerPos.Value;
@@ -684,7 +707,7 @@ namespace My.Map.Entity
                         }
                         break;
                     }
-                // ∂‘”⁄◊”µØ ≈ˆ◊≤∑ΩœÚŒ™◊”µØ ©∑®∑ΩœÚ
+                // ÂØπ‰∫éÂ≠êÂºπ Á¢∞ÊíûÊñπÂêë‰∏∫Â≠êÂºπÊñΩÊ≥ïÊñπÂêë
                 case EFightCtxType.Bullet:
                     {
                         hitBoxDir = ctx.CastVec1.Value;
@@ -756,7 +779,7 @@ namespace My.Map.Entity
 
                     Debug.Log("AbilityEffectExecutor4HitBox find logic target " + candidate.Id);
 
-                    Vector2 hitDir = Vector2.right;  // ¬ﬂº≠≈ˆ◊≤∑ΩœÚ ◊˜Œ™≤Œ ˝¥´»Î◊” ¬º˛
+                    Vector2 hitDir = Vector2.right;  // ÈÄªËæëÁ¢∞ÊíûÊñπÂêë ‰Ωú‰∏∫ÂèÇÊï∞‰º†ÂÖ•Â≠ê‰∫ã‰ª∂
                     if (realCfg.Shape == MapAbilityEffectHitBoxCfg.EShape.Direction)
                     {
                         hitDir = hitBoxDir;
@@ -780,7 +803,7 @@ namespace My.Map.Entity
                             //newCtx.CastVec1 = ctx.CastVec1;
 
                             newCtx.TriggerPos = candidate.Pos;
-                            newCtx.CastVec1 = hitDir; // ∂‘”⁄hitbox¿‡–Õ  ©∑®∑ΩœÚŒ™ ‹ª˜∑ΩœÚ
+                            newCtx.CastVec1 = hitDir; // ÂØπ‰∫éhitboxÁ±ªÂûã ÊñΩÊ≥ïÊñπÂêë‰∏∫ÂèóÂáªÊñπÂêë
                             newCtx.CastVec2 = Vector2.zero;
 
                             newCtx.TargetId = candidate.Id;
@@ -791,7 +814,7 @@ namespace My.Map.Entity
                         {
                             if (candidate is BaseUnitLogicEntity unitEntity)
                             {
-                                // ∂‘ƒø±Í÷¥––“ª¥Œhit result
+                                // ÂØπÁõÆÊ†áÊâßË°å‰∏ÄÊ¨°hit result
                                 unitEntity.ProcessHit(ctx.SourceInfo.SrcEntityId, hitDir);
                             }
                         }
@@ -1104,7 +1127,7 @@ namespace My.Map.Entity
             }
 
 
-            //  π”√ººƒ‹
+            // ‰ΩøÁî®ÊäÄËÉΩ
             unitEntity.ablilityManager.UseSkill(realCfg.SkillId, castVec: castVec, target : realCfg.UseTargetAsTarget ? targetEntity : null);
         }
     }
@@ -1133,7 +1156,7 @@ namespace My.Map.Entity
             var baseVal = realCfg.BaseDamage;
             foreach(var onePair in realCfg.ExtraDamageRate)
             {
-                // todo ªÒ»°attr
+                // todo Ëé∑Âèñattr
                 long getAttr = 0;
                 baseVal += (long)(getAttr * onePair.Val * 0.0001f);
             }
@@ -1153,7 +1176,7 @@ namespace My.Map.Entity
             var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
             if (realCfg.KnockBackForce > 0 && actor != null)
             {
-                // ∂‘ƒø±Íª˜¥Ú
+                // ÂØπÁõÆÊ†áÂáªÊâì
                 if(realCfg.TargetType == 0)
                 {
                     if(target is BaseUnitLogicEntity unitEntity)
@@ -1480,13 +1503,13 @@ namespace My.Map.Entity
                     }
                 }
 
-                // ±ª÷˜Ω«Œ¸ ’
+                // Ë¢´‰∏ªËßíÂê∏Êî∂
                 if(absorb)
                 {
                     //ctx.Env.globalBuffManager.AddBuff();
                     Debug.Log("AbilityEffectExecutor4HModeBlurt sj to player");
                     //ctx.Env.viewer.ShowPauseCloseupWindow("jingyu", 0.5f);
-                    ctx.Env.viewer.ShowFakeFxEffect("æ´‘°", ctx.Env.playerLogicEntity.Pos);
+                    ctx.Env.viewer.ShowFakeFxEffect("Á≤æÊµ¥", ctx.Env.playerLogicEntity.Pos);
                 }
                 else
                 {
@@ -1496,7 +1519,7 @@ namespace My.Map.Entity
                         ctx.Env.globalDropCollection.CreateDrop("j_drop_small", 1, dropPos + UnityEngine.Random.insideUnitCircle * 0.5f, true, npcUnit.Pos);
                     }
 
-                    ctx.Env.viewer.ShowFakeFxEffect("¬‰µÿ", dropPos);
+                    ctx.Env.viewer.ShowFakeFxEffect("ËêΩÂú∞", dropPos);
                 }
             }
         }
