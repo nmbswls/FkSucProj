@@ -29,6 +29,9 @@ namespace My.Map
         EncounterCtrl,
         DynamicSpawner,
 
+        Teleporter,
+        SimpleBlock,
+
         MobNpc = 100,
         FacilityRuin,
         HomeFacility,

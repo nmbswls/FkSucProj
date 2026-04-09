@@ -67,7 +67,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164613401935894
+      rid: 3582754457494224938
   - StaticId: 101
     UniqName: 
     AppearCond:
@@ -89,7 +89,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164613401935895
+      rid: 3582754457494224939
   - StaticId: 102
     UniqName: 
     AppearCond:
@@ -111,7 +111,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164613401935896
+      rid: 3582754457494224940
   - StaticId: 103
     UniqName: 
     AppearCond:
@@ -133,7 +133,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164613401935897
+      rid: 3582754457494224941
   - StaticId: 104
     UniqName: 
     AppearCond:
@@ -155,7 +155,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164613401935898
+      rid: 3582754457494224942
   - StaticId: 105
     UniqName: 
     AppearCond:
@@ -177,7 +177,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164613401935899
+      rid: 3582754457494224943
   - StaticId: 106
     UniqName: 
     AppearCond:
@@ -199,8 +199,30 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164613401935900
+      rid: 3582754457494224944
   - StaticId: 107
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 3582754457494224945
+  - StaticId: 108
     UniqName: 
     AppearCond:
       Type: 2
@@ -221,7 +243,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 8510164613401935901
+      rid: 3582754457494224946
   NamedPoints:
   - Name: p1
     PointType: 0
@@ -252,7 +274,17 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 8510164613401935894
+    - rid: 3582754457494224938
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: 4.25, y: 6.47}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: village_01
+        TargetNamedPoint: entry_bottom
+    - rid: 3582754457494224939
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab3
@@ -260,7 +292,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 8510164613401935895
+    - rid: 3582754457494224940
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab2
@@ -268,7 +300,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 8510164613401935896
+    - rid: 3582754457494224941
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab1
@@ -276,7 +308,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 8510164613401935897
+    - rid: 3582754457494224942
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: lock_door_01
@@ -287,7 +319,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 8510164613401935898
+    - rid: 3582754457494224943
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: bridge_block
@@ -298,7 +330,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 8510164613401935899
+    - rid: 3582754457494224944
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hole
@@ -311,7 +343,7 @@ MonoBehaviour:
           - tp_name
           values:
           - hole_01_p
-    - rid: 8510164613401935900
+    - rid: 3582754457494224945
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hole
@@ -324,7 +356,7 @@ MonoBehaviour:
           - tp_name
           values:
           - hole_02_p
-    - rid: 8510164613401935901
+    - rid: 3582754457494224946
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: teleport

@@ -623,6 +623,19 @@ namespace My
                         newEntity = newGatherPoint;
                     }
                     break;
+
+                case EEntityType.Teleporter:
+                    {
+                        var newTeleporter = new LogicEntityTeleporter(this, record.Id, record.CfgId, record.Position, record);
+                        newEntity = newTeleporter;
+                    }
+                    break;
+                case EEntityType.SimpleBlock:
+                    {
+                        var newTeleporter = new LogicEntitySimpleBlock(this, record.Id, record.CfgId, record.Position, record);
+                        newEntity = newTeleporter;
+                    }
+                    break;
                 default:
                     {
                         ;

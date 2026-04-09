@@ -85,6 +85,10 @@ namespace My
                     {
                         return $"Prefab/Presentations/PatrolGroup";
                     }
+                case EEntityType.Teleporter:
+                    {
+                        return $"Prefab/Presentations/Teleporter";
+                    }
                 case EEntityType.HomeFacility:
                     {
                         return $"Prefab/Presentations/HomePlacement/{cfgId}";
@@ -100,6 +104,10 @@ namespace My
                 case EEntityType.FacilityRuin:
                     {
                         return $"Prefab/Presentations/FacilityRuin/{cfgId}";
+                    }
+                case EEntityType.SimpleBlock:
+                    {
+                        return $"Prefab/Presentations/SimpleBlock";
                     }
                 // ...
                 default: return "Prefab/Presentations/Default";

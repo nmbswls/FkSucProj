@@ -556,7 +556,7 @@ namespace My.Map.Entity
             dir = diff.normalized;
             duration = diff.magnitude / realCfg.DashSpeed - 0.02f;
 
-            var moveContext = unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, realCfg.IsGhost, dashWeaponName: realCfg.DashWeaponName, 
+            var moveContext = unitEntity.StartDash(dir, duration, realCfg.DashSpeed, realCfg.OnHitEffects, withGhost: realCfg.IsGhost, dashWeaponName: realCfg.DashWeaponName, 
                 stopOnUnit:realCfg.EndOnHitUnit, stopOnWall: realCfg.StopOnWall);
             if(realCfg.EndAbilityPhaseWhenEnds)
             {
@@ -567,16 +567,6 @@ namespace My.Map.Entity
             {
                 moveContext.BindAbilityId = ctx.SourceInfo.SrcAbilityId;
                 moveContext.BindAbilityPhaseIdx = ctx.SourceInfo.SrcAbilityPhaseId;
-
-                //
-                if(moveContext.HitId != 0)
-                {
-                    unitEntity.HitWindowRegistry.activeHitWindows.TryGetValue(moveContext.HitId.Value, out var bindWindow);
-                    if(bindWindow != null)
-                    {
-
-                    }
-                }
             }
 
             moveContext.EndOnHitUnit = realCfg.EndOnHitUnit;

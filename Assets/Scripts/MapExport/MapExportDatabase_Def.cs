@@ -169,6 +169,26 @@ namespace My.MapExport
     }
 
     [Serializable]
+    public class EntityInitInfo4Teleporter: EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.Teleporter;
+
+        public string TargetMapName;
+        public string TargetNamedPoint;
+    }
+
+    [Serializable]
+    public class EntityInitInfo4SimpleBlock : EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.SimpleBlock;
+
+        public float SizeX;
+        public float SizeY;
+    }
+    
+
+
+    [Serializable]
     public class EntityInitInfo4EventGroup : EntityInitInfo4InteractPoint
     {
         public override EEntityType EntityType => EEntityType.EventGroup;

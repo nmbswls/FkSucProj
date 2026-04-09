@@ -329,7 +329,7 @@ namespace My.Map
                             string namedP = output.Param4;
 
                             // Ô­µØ´«ËÍ
-                            if (mapName == Owner.LogicManager.AreaManager.MapName)
+                            if (string.IsNullOrEmpty(mapName) || mapName == Owner.LogicManager.AreaManager.MapName)
                             {
                                 if (string.IsNullOrEmpty(namedP))
                                 {

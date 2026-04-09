@@ -253,6 +253,26 @@ namespace My.Map.Logic
                         record = realRecord;
                         break;
                     }
+                case EEntityType.Teleporter:
+                    {
+                        var realRecord = new LogicEntityRecord4Teleporter();
+
+                        var initInfo4Teleporter = (EntityInitInfo4Teleporter)initInfo;
+                        realRecord.TargetMap = initInfo4Teleporter.TargetMapName;
+                        realRecord.TargetNamedPoint = initInfo4Teleporter.TargetNamedPoint;
+                        record = realRecord;
+                        break;
+                    }
+                case EEntityType.SimpleBlock:
+                    {
+                        var realRecord = new LogicEntityRecord4SimpleBlock();
+
+                        var initInfo4SimpleBlock = (EntityInitInfo4SimpleBlock)initInfo;
+                        realRecord.SizeX = initInfo4SimpleBlock.SizeX;
+                        realRecord.SizeY = initInfo4SimpleBlock.SizeY;
+                        record = realRecord;
+                        break;
+                    }
                 default:
                     {
                         record = new LogicEntityRecord();

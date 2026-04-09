@@ -142,5 +142,19 @@ namespace My.Map.Logic
     {
         
     }
+
+    [Serializable]
+    public class LogicEntityRecord4Teleporter : LogicEntityRecord
+    {
+        public string TargetMap;
+        public string TargetNamedPoint;
+    }
+
+    [Serializable]
+    public class LogicEntityRecord4SimpleBlock : LogicEntityRecord
+    {
+        public float SizeX;
+        public float SizeY;
+    }
 }
 
