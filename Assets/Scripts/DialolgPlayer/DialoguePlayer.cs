@@ -648,7 +648,7 @@ public partial class DialoguePlayer : MonoBehaviour
                                 string mapName = cd4Func.Param5;
                                 string targetPoint = cd4Func.Param6;
 
-                                MainGameManager.Instance.gameLogicManager.PreparePlayerSwitchArea(mapName, false, targetPoint);
+                                MainGameManager.Instance.gameLogicManager.PreparePlayerSwitchArea(mapName, false, targetPoint, silent : true);
                             }
                             break;
 
@@ -826,7 +826,7 @@ public partial class DialoguePlayer : MonoBehaviour
 
     private IEnumerator UnloadCutsceneSceneRoutine(Action onComplete)
     {
-        //UIManager.Instance.FadeShowBlack(1.0f);
+        UIManager.Instance.FadeShowBlack(0.01f);
 
         if (!string.IsNullOrEmpty(currCutsceneName))
         {

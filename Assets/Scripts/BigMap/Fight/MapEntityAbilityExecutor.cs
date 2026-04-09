@@ -275,6 +275,10 @@ namespace My.Map.Entity
                     var dir = castVec1.Value - EntityOwner.Pos;
                     EntityOwner.ForceSetFaceTarget(dir, false);
                 }
+                else
+                {
+
+                }
             }
 
 

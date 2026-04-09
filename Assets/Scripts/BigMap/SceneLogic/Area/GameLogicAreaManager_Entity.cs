@@ -185,6 +185,11 @@ namespace My.Map.Logic
                         foreach (var one in initInfo4PatrolGroup.GroupUnits)
                         {
                             var groupRecord = CreateEntityRecordFromInitInfo(one.InitInfo);
+                            if(groupRecord == null)
+                            {
+                                Debug.Log("PatrolGroup group unit create fail " + one.GroupIdx);
+                                continue;
+                            }
                             patrolGroupRecord.PatrolUnitIds.Add(groupRecord.Id);
                             Repo.RegisterRecord(groupRecord);
                         }

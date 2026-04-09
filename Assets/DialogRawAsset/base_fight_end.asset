@@ -33,9 +33,18 @@ MonoBehaviour:
     - rid: 8510164613401935884
     - rid: 8510164613401935885
     - rid: 8510164613401936258
+    - rid: 3582754457494225044
   references:
     version: 2
     RefIds:
+    - rid: 3582754457494225044
+      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+      data:
+        IsFolded: 0
+        TextLines:
+        - Speaker: 
+          Content: ???
+          VoiceLine: {fileID: 0}
     - rid: 8510164613401935873
       type: {class: EditorPlayerTimelineCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
       data:

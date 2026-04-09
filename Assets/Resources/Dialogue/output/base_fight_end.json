@@ -122,6 +122,19 @@
           "Param4": 0,
           "Param5": "base_clear",
           "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "???",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
         }
       ]
     }

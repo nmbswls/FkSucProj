@@ -129,10 +129,14 @@ namespace My
         public async Task AsyncHandleStepClearing(SwitchAreaIntent intent)
         {
             // 清理ui
-            UIManager.Instance.HideAll("LoadingOverlay");
+            if(string.IsNullOrEmpty(intent.OldAreaName))
+            {
+                UIManager.Instance.HideAll("LoadingOverlay");
+                // 设置ui状态为boot
+                await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
+            }
 
-            // 设置ui状态为boot
-            await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
+            UIManager.Instance.HidePanel("InteractMenu");
 
             // 尝试清理旧世界
             bool isUnloading = false;

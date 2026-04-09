@@ -585,8 +585,8 @@ namespace My.Input
             {
                 return;
             }
-
-            if (!LogicTime.paused && !player.PlayerEntity.CheckHasState(AttrIdConsts.LockFace))
+            if (!LogicTime.paused)
+            //if (!LogicTime.paused && !player.PlayerEntity.CheckHasState(AttrIdConsts.LockFace))
             {
                 Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(player.transform.position);
                 var castDir = (LastPos - playerScreenPos).normalized;
