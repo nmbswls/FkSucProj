@@ -34,6 +34,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["not_target"].IsBoolean) { throw new SerializationException(); }  NotTarget = _buf["not_target"]; }
         { if(!_buf["always_h_mode"].IsBoolean) { throw new SerializationException(); }  AlwaysHMode = _buf["always_h_mode"]; }
         { if(!_buf["ignore_attract_level"].IsNumber) { throw new SerializationException(); }  IgnoreAttractLevel = _buf["ignore_attract_level"]; }
+        { if(!_buf["unit_bottom_size"].IsNumber) { throw new SerializationException(); }  UnitBottomSize = _buf["unit_bottom_size"]; }
     }
 
     public static UnitNpc DeserializeUnitNpc(JSONNode _buf)
@@ -102,6 +103,10 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// 忽略吸引等级
     /// </summary>
     public int IgnoreAttractLevel;
+    /// <summary>
+    /// 底部size
+    /// </summary>
+    public float UnitBottomSize;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -129,6 +134,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "notTarget:" + NotTarget + ","
         + "alwaysHMode:" + AlwaysHMode + ","
         + "ignoreAttractLevel:" + IgnoreAttractLevel + ","
+        + "unitBottomSize:" + UnitBottomSize + ","
         + "}";
     }
 }

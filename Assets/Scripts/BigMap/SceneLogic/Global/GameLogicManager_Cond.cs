@@ -59,6 +59,11 @@ namespace My
                         return true;
                     }
                     break;
+                case cfg.demo.ECommonCheckType.AlwaysFail:
+                    {
+                        return false;
+                    }
+                    break;
                 case cfg.demo.ECommonCheckType.CheckVariable:
                     {
                         bool checkHas = false;

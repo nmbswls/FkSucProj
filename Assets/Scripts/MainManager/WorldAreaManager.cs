@@ -246,7 +246,12 @@ public class WorldAreaManager : MonoBehaviour
 
     private bool IsCellInBounds(Vector3Int cell)
     {
-        return currentRoot.TileGround.cellBounds.Contains(cell);
+        if (currentRoot.TileGrounds == null || currentRoot.TileGrounds.Length == 0) return false;
+        foreach(var ground in currentRoot.TileGrounds)
+        {
+            if(ground.cellBounds.Contains(cell)) return true;
+        }
+        return false;
     }
 
     private bool IsCellBlockedByTile(Vector3Int cell)
@@ -258,12 +263,17 @@ public class WorldAreaManager : MonoBehaviour
     {
         // 边界外直接不可走
         if (!IsCellInBounds(cell)) return false;
-        // 不在行走区域
-        if(currentRoot.TileGround.GetTile(cell) == null)
+
+        foreach (var ground in currentRoot.TileGrounds)
         {
-            return false;
+            // 不在行走区域
+            if (ground.GetTile(cell) != null)
+            {
+                return true;
+            }
         }
-        return true;
+            
+        return false;
     }
 
 

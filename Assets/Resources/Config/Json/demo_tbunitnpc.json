@@ -17,7 +17,8 @@
     "defeat_drop_id": 1,
     "not_target": false,
     "always_h_mode": false,
-    "ignore_attract_level": 0
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5
   },
   {
     "id": "initial_orc_02",
@@ -37,7 +38,8 @@
     "defeat_drop_id": 1,
     "not_target": false,
     "always_h_mode": false,
-    "ignore_attract_level": 0
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5
   },
   {
     "id": "initial_orc_big",
@@ -57,7 +59,8 @@
     "defeat_drop_id": 1,
     "not_target": false,
     "always_h_mode": false,
-    "ignore_attract_level": 0
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5
   },
   {
     "id": "game_init_luca_injured",
@@ -75,6 +78,7 @@
     "defeat_drop_id": 0,
     "not_target": true,
     "always_h_mode": false,
-    "ignore_attract_level": 0
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5
   }
 ]

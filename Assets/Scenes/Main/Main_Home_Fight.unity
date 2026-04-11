@@ -12173,7 +12173,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Grid: {fileID: 1169312632}
-  TileGround: {fileID: 838021581}
+  TileGrounds:
+  - {fileID: 838021581}
   TileHole: {fileID: 0}
   PlayerBornPos: {fileID: 0}
   StaticPrefabRoot: {fileID: 1903785365}

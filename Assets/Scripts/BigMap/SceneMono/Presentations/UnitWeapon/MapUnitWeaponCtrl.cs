@@ -28,7 +28,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
             var weaponOne = go.GetComponent<MapUnitWeaponOne>();
             if(weaponOne == null)
             {
-                Debug.LogError("MapUnitWeaponCtrl init fail");
+                //Debug.LogError("MapUnitWeaponCtrl init fail");
                 continue;
             }    
             WeaponOnes.Add(weaponOne);

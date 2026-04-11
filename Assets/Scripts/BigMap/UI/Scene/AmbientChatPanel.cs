@@ -52,6 +52,7 @@ namespace My.Map
             // 1. 更新所有插槽的冷却时间
             UpdateSlotsCooldown();
 
+            
             // 2. 生成逻辑
             spawnTimer += Time.deltaTime;
             if (spawnTimer >= spawnInterval)
@@ -114,6 +115,21 @@ namespace My.Map
 
         void TrySpawnBubble()
         {
+            if(MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
+            {
+                return;
+            }
+            var playerPrenster = MainGameManager.Instance.playerScenePresenter;
+            if (playerPrenster == null)
+            {
+                return;
+            }
+
+            if(!playerPrenster.IsInBusyZone)
+            { 
+                return; 
+            }
+
             if (chatterLines.Length == 0) return;
 
             // 1. 获取所有“空闲”的插槽 (冷却时间 <= 0)

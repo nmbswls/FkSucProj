@@ -6,7 +6,8 @@ using UnityEngine.Tilemaps;
 public class WorldAreaRoot : MonoBehaviour
 {
     public Grid Grid;
-    public Tilemap TileGround;
+    
+    public Tilemap[] TileGrounds;
     public Tilemap TileHole;
 
     public Transform PlayerBornPos;

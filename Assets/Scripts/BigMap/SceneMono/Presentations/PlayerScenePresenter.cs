@@ -17,23 +17,23 @@ namespace My.Map.Scene
         private Collider2D[] hits = new Collider2D[16];
 
 
-        // ÅäÖÃ²ÎÊı£º¸ù¾İÊÖ¸Ğµ÷ÕûÕâĞ©Öµ
+        // é…ç½®å‚æ•°ï¼šæ ¹æ®æ‰‹æ„Ÿè°ƒæ•´è¿™äº›å€¼
 
-        private const float SearchRadius = 5.0f; // ¼¼ÄÜµÄ×î´óÉä³Ì£¨Ó²ÏŞÖÆ£©
-        private const float MaxAimAngle = 60f;   // Ë÷µĞÉÈĞÎ½Ç¶ÈµÄÒ»°ë£¨60¶È = ×Ü¹²120¶ÈÉÈĞÎ£©
-        private const float MouseHoverThreshold = 0.8f; // Êó±ê¾«×¼ĞüÍ£µÄÅĞ¶¨°ë¾¶
+        private const float SearchRadius = 5.0f; // æŠ€èƒ½çš„æœ€å¤§å°„ç¨‹ï¼ˆç¡¬é™åˆ¶ï¼‰
+        private const float MaxAimAngle = 60f;   // ç´¢æ•Œæ‰‡å½¢è§’åº¦çš„ä¸€åŠï¼ˆ60åº¦ = æ€»å…±120åº¦æ‰‡å½¢ï¼‰
+        private const float MouseHoverThreshold = 0.8f; // é¼ æ ‡ç²¾å‡†æ‚¬åœçš„åˆ¤å®šåŠå¾„
 
         public long GetSmartMainTargetId(Vector2 playerPos, Vector2 mouseWorldPos)
         {
             int layerMask = 1 << LayerMask.NameToLayer("MapTarget");
 
-            // 1. »ñÈ¡Éä³ÌÄÚËùÓĞÄ¿±ê
+            // 1. è·å–å°„ç¨‹å†…æ‰€æœ‰ç›®æ ‡
             var count = Physics2D.OverlapCircleNonAlloc(playerPos, SearchRadius, hits, layerMask);
 
             long bestTargetId = 0;
             float bestScore = float.MinValue;
 
-            // ¼ÆËãÍæ¼Òµ½Êó±êµÄ¡°³¯ÏòÏòÁ¿¡±
+            // è®¡ç®—ç©å®¶åˆ°é¼ æ ‡çš„â€œæœå‘å‘é‡â€
             Vector2 aimDir = (mouseWorldPos - playerPos).normalized;
 
             for (int i = 0; i < count; i++)
@@ -50,48 +50,48 @@ namespace My.Map.Scene
                 if (unitEntity.CheckHasState(AttrIdConsts.NoSelect)) continue;
                 Vector2 targetPos = unitEntity.Pos;
 
-                // --- ºËĞÄÆÀ·ÖÂß¼­ĞŞ¸Ä ---
+                // --- æ ¸å¿ƒè¯„åˆ†é€»è¾‘ä¿®æ”¹ ---
 
-                //// 1. ÓÅÏÈÅĞ¶¨£ºÊÇ·ñÊó±êÖ±½ÓµãÔÚ¹ÖÉíÉÏ£¿(×î¸ßÓÅÏÈ¼¶)
+                //// 1. ä¼˜å…ˆåˆ¤å®šï¼šæ˜¯å¦é¼ æ ‡ç›´æ¥ç‚¹åœ¨æ€ªèº«ä¸Šï¼Ÿ(æœ€é«˜ä¼˜å…ˆçº§)
                 //float distToMouse = Vector2.Distance(mouseWorldPos, targetPos);
                 //if (distToMouse <= MouseHoverThreshold)
                 //{
-                //    // Èç¹ûÊó±êÖ±½ÓĞüÍ££¬Ö±½Ó¸ø×î´ó·Ö£¬¾àÀëÔ½½ü·ÖÔ½¸ß£¬È·±£¶à¸öÖØµşÊ±Ñ¡×î×¼µÄ
+                //    // å¦‚æœé¼ æ ‡ç›´æ¥æ‚¬åœï¼Œç›´æ¥ç»™æœ€å¤§åˆ†ï¼Œè·ç¦»è¶Šè¿‘åˆ†è¶Šé«˜ï¼Œç¡®ä¿å¤šä¸ªé‡å æ—¶é€‰æœ€å‡†çš„
                 //    float manualScore = 1000f - distToMouse;
                 //    if (manualScore > bestScore)
                 //    {
                 //        bestScore = manualScore;
                 //        bestTargetId = unitEntity.Id;
                 //    }
-                //    continue; // ¼ÈÈ»Ö±½ÓĞüÍ£ÁË£¬¾Í²»ÓÃ×ßÏÂÃæµÄ³£¹æÂß¼­ÁË
+                //    continue; // æ—¢ç„¶ç›´æ¥æ‚¬åœäº†ï¼Œå°±ä¸ç”¨èµ°ä¸‹é¢çš„å¸¸è§„é€»è¾‘äº†
                 //}
 
-                // 2. ³£¹æÅĞ¶¨£º»ùÓÚÍæ¼Ò¾àÀëºÍ³¯Ïò
+                // 2. å¸¸è§„åˆ¤å®šï¼šåŸºäºç©å®¶è·ç¦»å’Œæœå‘
                 Vector2 toTargetDir = targetPos - playerPos;
                 float distToPlayer = toTargetDir.magnitude;
 
-                // ¹éÒ»»¯·½ÏòÓÃÓÚ¼ÆËã½Ç¶È
-                Vector2 toTargetDirNorm = toTargetDir / distToPlayer; // ¼òµ¥µÄ¹éÒ»»¯
+                // å½’ä¸€åŒ–æ–¹å‘ç”¨äºè®¡ç®—è§’åº¦
+                Vector2 toTargetDirNorm = toTargetDir / distToPlayer; // ç®€å•çš„å½’ä¸€åŒ–
 
-                // ¼ÆËã¼Ğ½Ç (0¶È±íÊ¾Õı¶ÔÊó±ê·½Ïò£¬180¶È±íÊ¾ÔÚ±³ºó)
+                // è®¡ç®—å¤¹è§’ (0åº¦è¡¨ç¤ºæ­£å¯¹é¼ æ ‡æ–¹å‘ï¼Œ180åº¦è¡¨ç¤ºåœ¨èƒŒå)
                 float angle = Vector2.Angle(aimDir, toTargetDirNorm);
 
-                // ¡¾É¸Ñ¡ 1¡¿½Ç¶ÈÌŞ³ı£ºÈç¹û¹ÖÔÚ²àÃæ»ò±³ºó£¨³¬³öÉÈĞÎ£©£¬Ö±½Ó²»¿¼ÂÇ
-                // ³ı·Ç¹Ö·Ç³£·Ç³£½ü£¨ÌùÁ³£©£¬ÎªÁË·ÀÖ¹Â©¹Ö£¬¿ÉÒÔÔÊĞíÌùÁ³¹ÖÎŞÊÓ½Ç¶È
+                // ã€ç­›é€‰ 1ã€‘è§’åº¦å‰”é™¤ï¼šå¦‚æœæ€ªåœ¨ä¾§é¢æˆ–èƒŒåï¼ˆè¶…å‡ºæ‰‡å½¢ï¼‰ï¼Œç›´æ¥ä¸è€ƒè™‘
+                // é™¤éæ€ªéå¸¸éå¸¸è¿‘ï¼ˆè´´è„¸ï¼‰ï¼Œä¸ºäº†é˜²æ­¢æ¼æ€ªï¼Œå¯ä»¥å…è®¸è´´è„¸æ€ªæ— è§†è§’åº¦
                 if (angle > MaxAimAngle && distToPlayer > 1.0f)
                 {
                     continue;
                 }
 
-                // ¡¾ÆÀ·Ö¡¿ÀëÍæ¼ÒÔ½½ü£¬·ÖÊıÔ½¸ß (ÕâÊÇÄãÒªµÄºËĞÄÂß¼­)
-                // »ù´¡·ÖÊÇ (Éä³Ì - ¾àÀë)£¬¾àÀëÔ½Ğ¡·ÖÔ½¸ß
+                // ã€è¯„åˆ†ã€‘ç¦»ç©å®¶è¶Šè¿‘ï¼Œåˆ†æ•°è¶Šé«˜ (è¿™æ˜¯ä½ è¦çš„æ ¸å¿ƒé€»è¾‘)
+                // åŸºç¡€åˆ†æ˜¯ (å°„ç¨‹ - è·ç¦»)ï¼Œè·ç¦»è¶Šå°åˆ†è¶Šé«˜
                 float score = SearchRadius - distToPlayer;
 
-                // ¡¾Î¢µ÷¡¿½Ç¶ÈÔ½Õı£¬ÉÔÎ¢¼ÓÒ»µãµã·Ö (·ÀÖ¹Á½¸ö¹Ö¾àÀëÒ»ÑùÊ±£¬Ñ¡ÍáµÄÄÇ¸ö)
-                // ÕâÀïµÄÈ¨ÖØ¸øºÜĞ¡ (0.2f)£¬±£Ö¤Ö÷Òª»¹ÊÇ¿´¾àÀë
+                // ã€å¾®è°ƒã€‘è§’åº¦è¶Šæ­£ï¼Œç¨å¾®åŠ ä¸€ç‚¹ç‚¹åˆ† (é˜²æ­¢ä¸¤ä¸ªæ€ªè·ç¦»ä¸€æ ·æ—¶ï¼Œé€‰æ­ªçš„é‚£ä¸ª)
+                // è¿™é‡Œçš„æƒé‡ç»™å¾ˆå° (0.2f)ï¼Œä¿è¯ä¸»è¦è¿˜æ˜¯çœ‹è·ç¦»
                 score += (1.0f - (angle / MaxAimAngle)) * 0.5f;
 
-                //if (unitEntity.IsBoss) score += 2.0f; // Boss ÒÀÈ»ÉÔÎ¢ÓÅÏÈ
+                //if (unitEntity.IsBoss) score += 2.0f; // Boss ä¾ç„¶ç¨å¾®ä¼˜å…ˆ
 
                 if (score > bestScore)
                 {
@@ -137,6 +137,10 @@ namespace My.Map.Scene
         public bool InteractFocused { get; set; }
         public bool IsInteractDetail { get; set; }
 
+        public Vector2? LastValidMovePos { get; set; }
+        public bool IsAdjustingFromForbidden { get; set; }
+
+
         public override void Tick(float dt)
         {
             base.Tick(dt);
@@ -159,6 +163,59 @@ namespace My.Map.Scene
             CheckTickZoneArea();
 
             CheckTriggerTeleporter();
+
+            TickForbiddenAreaMove();
+        }
+
+        private void TickForbiddenAreaMove()
+        {
+            if(IsAdjustingFromForbidden)
+            {
+
+                if (infoProvider.IsForbidden)
+                {
+                    bool passed = true;
+                    foreach (var cond in infoProvider.EnableCondition)
+                    {
+                        if (!MainGameManager.Instance.gameLogicManager.CheckCommonCond(cond))
+                        {
+                            passed = false;
+                            break;
+                        }
+                    }
+
+                    if (!passed)
+                    {
+                        isForbiddenPos = true;
+                    }
+                }
+
+                Vector2 diff = new Vector2(transform.position.x, transform.position.y) - LastValidMovePos.Value;
+                transform.localPosition = LastValidMovePos.Value;
+                IsAdjustingFromForbidden = false;
+
+                Debug.Log("forbit move adjust");
+
+
+                return;
+            }
+            else
+            {
+                int count = Physics2D.OverlapPointNonAlloc(PlayerEntity.Pos, zoneTriggerCache, 1 << LayerMask.NameToLayer("Zone"));
+                for (int i = 0; i < count; i++)
+                {
+                    var col = zoneTriggerCache[i];
+                    if (col == null) continue;
+
+                    var forbidChecker = col.GetComponentInParent<ForbidZoneChecker>();
+                    if (forbidChecker == null) continue;
+
+                }
+            }
+
+            
+            
+
         }
 
 
@@ -201,6 +258,9 @@ namespace My.Map.Scene
         public override void Bind(ILogicEntity logic)
         {
             base.Bind(logic);
+
+            // åˆå§‹åŒ–position
+            //LastValidMovePos = logic.Pos;
         }
 
 
@@ -248,13 +308,13 @@ namespace My.Map.Scene
         protected float lastEmitNoiseTs = 0;
 
         /// <summary>
-        /// ÒÆ¶¯ÔëÒô
+        /// ç§»åŠ¨å™ªéŸ³
         /// </summary>
         /// <param name="now"></param>
         /// <param name="dt"></param>
         protected void TickMoveNoiseEffect(float now, float dt)
         {
-            // ÓĞËÙ¶ÈÊ±¼ÇÂ¼Ê±¼ä´Á
+            // æœ‰é€Ÿåº¦æ—¶è®°å½•æ—¶é—´æˆ³
             if (rb.velocity.magnitude > 0.1f)
             {
                 lastHasSpeedTs = now;
@@ -332,7 +392,7 @@ namespace My.Map.Scene
                 ret.Add(new SceneInteractSelection()
                 {
                     SelectId = 2,
-                    SelectContent = "ÕõÔú",
+                    SelectContent = "æŒ£æ‰",
                     Selectable = true,
                 });
             }
@@ -399,18 +459,20 @@ namespace My.Map.Scene
 
         }
 
-
         private float _checkAreaTiker = 0;
         private Collider2D[] zoneTriggerCache = new Collider2D[16];
 
         public bool IsInBusyZone = false;
+        
+        /// <summary>
+        /// é«˜é¢‘æ£€æŸ¥ ä¿è¯ç²¾åº¦
+        /// </summary>
         private void CheckTickZoneArea()
         {
-            if(LogicTime.time - _checkAreaTiker < 1.0f)
+            if (LogicTime.time - _checkAreaTiker < 1.0f)
             {
                 return;
             }
-
             _checkAreaTiker = LogicTime.time;
 
             bool isInBusy = false;
@@ -425,10 +487,11 @@ namespace My.Map.Scene
                 ZoneInfoProvider infoProvider = col.GetComponentInParent<ZoneInfoProvider>();
                 if (infoProvider == null) continue;
 
-                if(infoProvider.ZoneType == ZoneInfoProvider.EZoneType.BusyZone)
+                if((infoProvider.ZoneType & ZoneInfoProvider.EZoneFlag.BusyZone) != 0)
                 {
                     isInBusy = true;
                 }
+
             }
 
             if(isInAlert)
@@ -441,7 +504,22 @@ namespace My.Map.Scene
             }
 
             IsInBusyZone = isInBusy;
+
+            if(isForbiddenPos)
+            {
+                IsAdjustingFromForbidden = true;
+                if(LastValidMovePos == null)
+                {
+                    LastValidMovePos = new Vector2(0, 0);
+                }
+            }
+            else
+            {
+                LastValidMovePos = transform.position;
+            }
         }
+
+
 
         public bool IsAutoInteract()
         {

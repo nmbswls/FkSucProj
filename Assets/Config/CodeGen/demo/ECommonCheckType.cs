@@ -18,6 +18,7 @@ namespace cfg.demo
         CheckVariable = 2,
         OwnItem = 4,
         TaskStep = 5,
+        AlwaysFail = 6,
     }
 
 } 
