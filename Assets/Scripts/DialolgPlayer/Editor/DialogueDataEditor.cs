@@ -26,16 +26,16 @@ namespace My.Dialog
     }
 
 
-    // --- 抽象基类 ---
+    // --- ??????? ---
     [Serializable]
     public abstract class EditorDialogCommand
     {
-        public bool IsFolded = true; // 内部折叠
+        public bool IsFolded = true; // ??????
         public virtual string GetSummary() => $"";
     }
 
 
-    // --- 具体子类示例 ---
+    // --- ??????????? ---
 
     [Serializable]
     public class EditorDialogueCommand4Text : EditorDialogCommand
@@ -166,7 +166,7 @@ namespace My.Dialog
 
     public class EditorWaitTimelineSignalCommand : EditorDialogCommand
     {
-        public string SignalName; // 等待的信号名称
+        public string SignalName; // ????????????
 
         public override string GetSummary() => $"[WaitTimelineSignal]";
     }
@@ -183,6 +183,14 @@ namespace My.Dialog
         public float WaitTime;
 
         public override string GetSummary() => $"[Wait]";
+    }
+
+    [Serializable]
+    public class EditorCommandPlayerForbidZoneExitSlide : EditorDialogCommand
+    {
+        public float OverrideMoveDuration;
+
+        public override string GetSummary() => "[PlayerForbidExitSlide]";
     }
 
 }

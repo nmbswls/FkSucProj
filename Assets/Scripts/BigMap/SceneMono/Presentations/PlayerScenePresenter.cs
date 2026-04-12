@@ -1,11 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Config;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
 using My;
+using My.Map;
 using My.Map.Entity;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static UnityEditor.Rendering.CameraUI;
 
@@ -107,7 +109,7 @@ namespace My.Map.Scene
     }
 
 
-    public class PlayerScenePresenter : SceneUnitPresenter, ISceneInteractable, IAnimancerPrewarmable
+    public partial class PlayerScenePresenter : SceneUnitPresenter, ISceneInteractable, IAnimancerPrewarmable
     {
 
         public GhostTrailSpawner MoveTrailSpawner;
@@ -140,9 +142,6 @@ namespace My.Map.Scene
 
         public Vector2? LastValidMovePos { get; set; }
 
-        private bool _inForbidInnerZone;
-        private readonly List<ForbidZoneChecker> _forbidCheckerScratch = new(8);
-
         public override void Tick(float dt)
         {
             base.Tick(dt);
@@ -168,95 +167,6 @@ namespace My.Map.Scene
 
             TickForbiddenAreaMove();
         }
-
-        private static bool ForbidZoneCondEnabled(ForbidZoneChecker checker)
-        {
-            if (checker.EnableCondition == null || checker.EnableCondition.Count == 0)
-                return true;
-            var glm = MainGameManager.Instance.gameLogicManager;
-            foreach (var cond in checker.EnableCondition)
-            {
-                if (!glm.CheckCommonCond(cond))
-                    return false;
-            }
-            return true;
-        }
-
-        private void GatherForbidZonesAt(Vector2 worldPos)
-        {
-            _forbidCheckerScratch.Clear();
-            int zn = Physics2D.OverlapPointNonAlloc(worldPos, zoneTriggerCache, 1 << LayerMask.NameToLayer("Zone"));
-            for (int i = 0; i < zn; i++)
-            {
-                var col = zoneTriggerCache[i];
-                if (col == null) continue;
-                var checker = col.GetComponentInParent<ForbidZoneChecker>();
-                if (checker == null) continue;
-                if (!ForbidZoneCondEnabled(checker)) continue;
-                if (_forbidCheckerScratch.Contains(checker)) continue;
-                _forbidCheckerScratch.Add(checker);
-            }
-        }
-
-        private void TickForbiddenAreaMove()
-        {
-            Vector2 worldPos = rb != null ? rb.position : (Vector2)transform.position;
-            GatherForbidZonesAt(worldPos);
-
-            bool inInner = false;
-            for (int i = 0; i < _forbidCheckerScratch.Count; i++)
-            {
-                var fz = _forbidCheckerScratch[i];
-                if (fz.InnerCol != null && fz.InnerCol.OverlapPoint(worldPos))
-                {
-                    inInner = true;
-                    break;
-                }
-            }
-
-            bool inOuter = false;
-            if (!inInner)
-            {
-                for (int i = 0; i < _forbidCheckerScratch.Count; i++)
-                {
-                    var fz = _forbidCheckerScratch[i];
-                    if (fz.OuterCol != null && fz.OuterCol.OverlapPoint(worldPos))
-                    {
-                        inOuter = true;
-                        break;
-                    }
-                }
-            }
-
-            _inForbidInnerZone = inInner;
-
-            if (inInner)
-            {
-                if (LastValidMovePos.HasValue)
-                {
-                    Vector2 restore = LastValidMovePos.Value;
-                    if (rb != null)
-                        rb.position = restore;
-                    transform.position = new Vector3(restore.x, restore.y, transform.position.z);
-                    CharacterController?.ResetSmoothedMoveVelocity();
-                    PlayerEntity.SetPosition(MainGameManager.Instance.GetLogicPosFromWorldPos(restore));
-                }
-                return;
-            }
-
-            if (!inOuter)
-            {
-                LastValidMovePos = worldPos;
-            }
-        }
-
-        public override bool CheckCanActiveMove()
-        {
-            if (_inForbidInnerZone)
-                return false;
-            return base.CheckCanActiveMove();
-        }
-
 
         private float _checkTeleporterTimer = 0;
         private Collider2D[] hits = new Collider2D[16];

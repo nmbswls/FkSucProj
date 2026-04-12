@@ -1,5 +1,3 @@
-
-
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -22,7 +20,7 @@ namespace My.Dialog
         public List<DialogCommandData> Commands = new List<DialogCommandData>();
     }
 
-    // --- 抽象基类 ---
+    // --- ??????? ---
     [Serializable]
     public abstract class DialogCommandData
     {
@@ -47,9 +45,7 @@ namespace My.Dialog
         public string VoiceLine;
     }
 
-    /// <summary>
-    /// 带有简单开叉的文本
-    /// </summary>
+    // ???м????????
     [Serializable]
     public class DialogCommandData4BranchText : DialogCommandData
     {
@@ -89,7 +85,7 @@ namespace My.Dialog
 
 
     public enum EProbabilityType
-    { 
+    {
         None,
         Fixed,
         CharmRule,
@@ -113,8 +109,6 @@ namespace My.Dialog
     {
         public string AnimName;
     }
-
-    
 
 
     [Serializable]
@@ -140,7 +134,7 @@ namespace My.Dialog
 
     public class DialogCommandData4WaitTimelineSignal : DialogCommandData
     {
-        public string SignalName; // 等待的信号名称
+        public string SignalName; // ??? Timeline ?????????????
     }
 
     [Serializable]
@@ -156,13 +150,18 @@ namespace My.Dialog
     }
 
     [Serializable]
+    public class DialogCommandData4PlayerForbidZoneExitSlide : DialogCommandData
+    {
+        // <=0 ??????? Inspector ?? forbidExitMoveDuration
+        public float OverrideMoveDuration;
+    }
+
+    [Serializable]
     public class DialogCommandData4Choice : DialogCommandData
     {
         public float TimeLimit = 0;
         public List<DialogChoiceOption> Options = new List<DialogChoiceOption>();
     }
-
-
 
 
     [Serializable]
@@ -172,7 +171,7 @@ namespace My.Dialog
 
         public string TargetStepId;
 
-        // 检查是否是有概率的选项
+        // ?????????????????
         public EProbabilityType ProbabilityType;
         public float ProbabilityParam1;
 
@@ -201,7 +200,7 @@ namespace My.Dialog
     [Serializable]
     public class ConditionLocalVariableInt : DialogCondition
     {
-        // 为演示简单，保持基本结构
+        // ????????????????
         public string VariableKey;
         public enum CompareType { Equals, Greater, Less, GE, LE, NotEquals }
         public CompareType Compare;
@@ -228,7 +227,7 @@ namespace My.Dialog
     [Serializable]
     public class ConditionLocalVariableString : DialogCondition
     {
-        // 为演示简单，保持基本结构
+        // ????????????????
         public string VariableKey;
         public enum CompareType { Equals, NotEquals }
         public CompareType Compare;

@@ -13,25 +13,25 @@ namespace My.Map.Scene
         [Header("Agent")]
         public float maxMoveSpeed = 5f;
         private float maxAccel = 999f;
-        public float damping = 0f;              // ÏßĞÔ×èÄá£¨¿ÉÑ¡£©
+        public float damping = 0f;              // çº¿æ€§é˜»å°¼ï¼ˆå¯é€‰ï¼‰
 
         [Header("Soft Separation (for Enemy)")]
-        public bool enableSeparation = true;    // Íæ¼Ò¿É¹Ø£¬µĞÈË¿ª
+        public bool enableSeparation = true;    // ç©å®¶å¯å…³ï¼Œæ•Œäººå¼€
         public float separationRadius = 1.0f;
         public float separationStrength = 7f;
         public float separationDeadZone = 0.12f;
-        public LayerMask separationQueryMask;        // ÓÃÓÚ·ÖÀëµÄ¡°µĞÈË²ã¡±£¨¼´ÆäËûµĞÈË£©
+        public LayerMask separationQueryMask;        // ç”¨äºåˆ†ç¦»çš„â€œæ•Œäººå±‚â€ï¼ˆå³å…¶ä»–æ•Œäººï¼‰
         public string separationTag;
 
         [Header("Dynamic Non-Penetration")]
         public LayerMask dynamicBlockQueryMask;   
-        public float nonPenPadding = 0.05f;     // ×îĞ¡¼äÏ¶£¬¼õÒ»µã±ÜÃâ¶¶¶¯
-        public float dynamicQueryExtra = 0.2f;  // ²éÑ¯°ë¾¶ÈßÓà
+        public float nonPenPadding = 0.05f;     // æœ€å°é—´éš™ï¼Œå‡ä¸€ç‚¹é¿å…æŠ–åŠ¨
+        public float dynamicQueryExtra = 0.2f;  // æŸ¥è¯¢åŠå¾„å†—ä½™
 
         private Rigidbody2D rb;
         private Collider2D selfCollider;
-        private Vector2 velocity;               // Æ½»¬ËÙ¶È
-        private static Collider2D[] overlapBuf = new Collider2D[32]; // ¸´ÓÃ»º³å
+        private Vector2 velocity;               // å¹³æ»‘é€Ÿåº¦
+        private static Collider2D[] overlapBuf = new Collider2D[32]; // å¤ç”¨ç¼“å†²
 
         private float radius;
 
@@ -42,7 +42,7 @@ namespace My.Map.Scene
 
         public Action<Vector2> SyncPos { get; set; }
 
-        // ÓÃÓÚ½ûÇø»ØÀ­µÈ£ºÁ¢¼´ÇåµôÆ½»¬ËÙ¶È£¬±ÜÃâÏÂÒ»Ö¡ FixedUpdate ÓÖ°ÑÈËÍÆ½øÄÚÈ¦
+        // ç”¨äºç¦åŒºå›æ‹‰ç­‰ï¼šç«‹å³æ¸…æ‰å¹³æ»‘é€Ÿåº¦ï¼Œé¿å…ä¸‹ä¸€å¸§ FixedUpdate åˆæŠŠäººæ¨è¿›å†…åœˆ
         public void ResetSmoothedMoveVelocity()
         {
             velocity = Vector2.zero;
@@ -76,7 +76,7 @@ namespace My.Map.Scene
                 ghost = IsGhoseMove();
             }
 
-            // 2) µĞÈË¼äÈíĞÔÉ¢¿ª£¨Íæ¼Ò¿É¹Ø±Õ£©
+            // 2) æ•Œäººé—´è½¯æ€§æ•£å¼€ï¼ˆç©å®¶å¯å…³é—­ï¼‰
             if (enableSeparation && separationStrength > 0f && separationRadius > 0f)
             {
                 Vector2 sepVel = ComputeSeparationVelocity();
@@ -85,18 +85,18 @@ namespace My.Map.Scene
                     finalDesiredVel = finalDesiredVel.normalized * maxMoveSpeed;
             }
 
-            // 3) ¼ÓËÙ¶ÈÏŞÖÆÓë×èÄá
+            // 3) åŠ é€Ÿåº¦é™åˆ¶ä¸é˜»å°¼
             Vector2 accel = (finalDesiredVel - velocity) / Time.fixedDeltaTime;
             float maxA = Mathf.Max(1e-4f, maxAccel);
             if (accel.magnitude > maxA) accel = accel.normalized * maxA;
             velocity += accel * Time.fixedDeltaTime;
             if (damping > 0f) velocity *= Mathf.Clamp01(1f - damping * Time.fixedDeltaTime);
 
-            // 4) Ô¤¹ÀÄ¿±êÎ»ÖÃ
+            // 4) é¢„ä¼°ç›®æ ‡ä½ç½®
             Vector2 targetPos = rb.position + velocity * Time.fixedDeltaTime;
 
-            // 5) ¶Ô¶¯Ì¬µ¥Î»×ö¡°ÎŞÍÆ¼·¡±µÄ·Ç´©Í¸Î»ÖÃÔ¼Êø
-            // Íæ¼ÒÔ¼ÊøµĞÈË£»µĞÈËÔ¼ÊøÍæ¼Ò£¨ÄãÒ²¿ÉÒÔË«Ïò¶¼Ô¼Êø£¬Ğ§¹û¸ü±¥Âú£©
+            // 5) å¯¹åŠ¨æ€å•ä½åšâ€œæ— æ¨æŒ¤â€çš„éç©¿é€ä½ç½®çº¦æŸ
+            // ç©å®¶çº¦æŸæ•Œäººï¼›æ•Œäººçº¦æŸç©å®¶ï¼ˆä½ ä¹Ÿå¯ä»¥åŒå‘éƒ½çº¦æŸï¼Œæ•ˆæœæ›´é¥±æ»¡ï¼‰
             if(!ghost)
             {
                 targetPos = ProjectAgainstDynamics(targetPos, radius, dynamicBlockQueryMask);
@@ -140,7 +140,7 @@ namespace My.Map.Scene
                 if (dist < separationDeadZone || dist < 1e-4f) continue;
 
                 float w = Mathf.Clamp01(1f - dist / separationRadius);
-                sum += dir / dist * w; // ¹éÒ»»¯ºó°´È¨ÖØ
+                sum += dir / dist * w; // å½’ä¸€åŒ–åæŒ‰æƒé‡
                 used++;
             }
             if (used == 0) return Vector2.zero;
@@ -175,7 +175,7 @@ namespace My.Map.Scene
         //        }
         //        else if (dist <= 1e-4f)
         //        {
-        //            // ÍêÈ«ÖØºÏÊ±£¬ÓÃµ±Ç°ÒÆ¶¯·½Ïò»ò¹Ì¶¨·½Ïò
+        //            // å®Œå…¨é‡åˆæ—¶ï¼Œç”¨å½“å‰ç§»åŠ¨æ–¹å‘æˆ–å›ºå®šæ–¹å‘
         //            Vector2 dir = (tgt - rb.position);
         //            if (dir.sqrMagnitude < 1e-6f) dir = Vector2.right;
         //            dir.Normalize();
@@ -191,17 +191,17 @@ namespace My.Map.Scene
             int count = Physics2D.OverlapCircleNonAlloc(tgt, queryR, overlapBuf, mask);
             if (count <= 0) return tgt;
 
-            // Ô­Ê¼£¨Î´ĞŞÕı£©Ä¿±ê·½Ïò£¬ÓÃÓÚÖØºÏÊ±µÄÊ×Ñ¡·½Ïò
+            // åŸå§‹ï¼ˆæœªä¿®æ­£ï¼‰ç›®æ ‡æ–¹å‘ï¼Œç”¨äºé‡åˆæ—¶çš„é¦–é€‰æ–¹å‘
             Vector2 origDir = tgt - rb.position;
             float origDirLen = origDir.magnitude;
             if (origDirLen > 1e-6f) origDir /= origDirLen; else origDir = Vector2.zero;
 
             Vector2 totalCorrection = Vector2.zero;
 
-            // ÏŞÖÆÃ¿Ö¡×î´óĞŞÕı£¨¿Éµ÷²ÎÊı£¬½¨Òé¹«¿ªÎª maxCorrectionPerStep£©
+            // é™åˆ¶æ¯å¸§æœ€å¤§ä¿®æ­£ï¼ˆå¯è°ƒå‚æ•°ï¼Œå»ºè®®å…¬å¼€ä¸º maxCorrectionPerStepï¼‰
             float maxCorrection = Mathf.Max(0.05f, 0.5f * maxMoveSpeed * Time.fixedDeltaTime);
 
-            // µü´ú´ÎÊı£¨1~2´Î¼´¿É£©
+            // è¿­ä»£æ¬¡æ•°ï¼ˆ1~2æ¬¡å³å¯ï¼‰
             const int iters = 1;
             for (int k = 0; k < iters; k++)
             {
@@ -221,7 +221,7 @@ namespace My.Map.Scene
 
                     float otherR = GetApproxRadius(col);
 
-                    // ×¢ÒâÓÃ¡°µ±Ç°µü´úÖĞµÄÁÙÊ±Ä¿±ê¡±À´²âÁ¿Óë¶Ô·½µÄ¾àÀë
+                    // æ³¨æ„ç”¨â€œå½“å‰è¿­ä»£ä¸­çš„ä¸´æ—¶ç›®æ ‡â€æ¥æµ‹é‡ä¸å¯¹æ–¹çš„è·ç¦»
                     Vector2 curTgt = tgt + totalCorrection;
                     Vector2 to = curTgt - otherRb.position;
                     float dist = to.magnitude;
@@ -238,27 +238,27 @@ namespace My.Map.Scene
                         }
                         else
                         {
-                            // ÖØºÏ£ºÓÅÏÈÓÃ±¾Ö¡Ô­Ê¼ÒÆ¶¯·½Ïò£»ÈôÎŞ£¬ÔòÓÃµ±Ç°Î»ÖÃÓë¶Ô·½Î»ÖÃµÄ·½Ïò£»ÔÙ²»ĞĞËæ»úÎ¢ÈÅ
+                            // é‡åˆï¼šä¼˜å…ˆç”¨æœ¬å¸§åŸå§‹ç§»åŠ¨æ–¹å‘ï¼›è‹¥æ— ï¼Œåˆ™ç”¨å½“å‰ä½ç½®ä¸å¯¹æ–¹ä½ç½®çš„æ–¹å‘ï¼›å†ä¸è¡Œéšæœºå¾®æ‰°
                             dir = origDir;
                             if (dir.sqrMagnitude < 1e-6f)
                             {
                                 Vector2 alt = ((Vector2)transform.position - otherRb.position);
                                 if (alt.sqrMagnitude > 1e-6f) dir = alt.normalized;
-                                else dir = new Vector2(1f, 0f); // ×îºó¶µµ×
+                                else dir = new Vector2(1f, 0f); // æœ€åå…œåº•
                             }
                         }
 
                         float push = (minDist - dist);
-                        // Ö»×ö×îĞ¡±ØÒªĞŞÕıµÄÔöÁ¿Í¶Ó°
+                        // åªåšæœ€å°å¿…è¦ä¿®æ­£çš„å¢é‡æŠ•å½±
                         Vector2 corr = dir * push;
 
-                        // ÀÛ¼ÆĞŞÕı£¬µ«ÏŞÖÆ×î´ó·ù¶È
+                        // ç´¯è®¡ä¿®æ­£ï¼Œä½†é™åˆ¶æœ€å¤§å¹…åº¦
                         Vector2 newTotal = totalCorrection + corr;
                         if (newTotal.magnitude > maxCorrection)
                         {
                             newTotal = newTotal.normalized * maxCorrection;
                             totalCorrection = newTotal;
-                            // ´ïµ½ÉÏÏŞ¾ÍÌáÇ°ÍË³ö£¬±ÜÃâ´óÌøºÍÕñµ´
+                            // è¾¾åˆ°ä¸Šé™å°±æå‰é€€å‡ºï¼Œé¿å…å¤§è·³å’ŒæŒ¯è¡
                             break;
                         }
                         else
@@ -268,7 +268,7 @@ namespace My.Map.Scene
                     }
                 }
 
-                // Èô±¾ÂÖÃ»ÓĞÈÎºÎÖØµş£¬ÌáÇ°½áÊø
+                // è‹¥æœ¬è½®æ²¡æœ‰ä»»ä½•é‡å ï¼Œæå‰ç»“æŸ
                 if (!anyOverlap) break;
             }
 
@@ -278,7 +278,7 @@ namespace My.Map.Scene
 
         float GetApproxRadius(Collider2D col)
         {
-            // ¹ÀËã¶Ô·½µÄµÈĞ§Ô²°ë¾¶£¬¿É¸ÄÎª¶ÁÈ¡¶Ô·½ TopDownAgent.radius
+            // ä¼°ç®—å¯¹æ–¹çš„ç­‰æ•ˆåœ†åŠå¾„ï¼Œå¯æ”¹ä¸ºè¯»å–å¯¹æ–¹ TopDownAgent.radius
             if (col is CircleCollider2D cc)
                 return cc.radius * Mathf.Max(col.transform.lossyScale.x, col.transform.lossyScale.y);
             if (col is CapsuleCollider2D cap)
@@ -295,18 +295,18 @@ namespace My.Map.Scene
             float dist = desiredDelta.magnitude;
             if (dist <= 1e-5f) return true;
 
-            // Ê¹ÓÃ CircleCast Ô¤²âÊÇ·ñ»á×²¾²Ì¬ÕÏ°­
+            // ä½¿ç”¨ CircleCast é¢„æµ‹æ˜¯å¦ä¼šæ’é™æ€éšœç¢
             RaycastHit2D hit = Physics2D.CircleCast(currentPos, agentRadius, dir, dist, staticMask);
             if (hit.collider)
             {
                 float move = Mathf.Max(0f, hit.distance - skinStatic);
                 finalPos = currentPos + dir * move;
-                return false; // ±»×èµ²£¨µ«ÒÑÆ½»¬Í£ÔÚÆ¤·ôÇ°£©
+                return false; // è¢«é˜»æŒ¡ï¼ˆä½†å·²å¹³æ»‘åœåœ¨çš®è‚¤å‰ï¼‰
             }
             else
             {
                 finalPos = currentPos + desiredDelta;
-                return true; // Î´×èµ²
+                return true; // æœªé˜»æŒ¡
             }
         }
     }
