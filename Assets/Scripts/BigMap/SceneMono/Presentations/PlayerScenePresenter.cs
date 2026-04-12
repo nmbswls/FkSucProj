@@ -478,6 +478,18 @@ namespace My.Map.Scene
         {
             return preLoadAnimClips;
         }
+
+        public override Vector2 GetFixedDesiredVel()
+        {
+            if (UnitEntity == null) return Vector2.zero;
+
+            if(_forbidPhase != EForbidPhase.Idle)
+            {
+                return Vector2.zero;
+            }
+
+            return base.GetFixedDesiredVel();
+        }
     }
 
 }

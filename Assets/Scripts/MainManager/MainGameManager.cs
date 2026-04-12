@@ -580,21 +580,21 @@ namespace My
 
 
 
-        public void PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false)
+        public bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, System.Action onDialogEnd = null)
         {
 
             var dialogMetaInfo = CfgMgr.Cfgs.TbDialogMetaInfo.Get(dialogId);
             if (dialogMetaInfo == null)
             {
                 Debug.LogError($"PlayDialog dialog not found {dialogId}.");
-                return;
+                return false;
             }
 
             var dialogAsset = Resources.Load<TextAsset>($"Dialogue/output/{dialogMetaInfo.JsonDataName}");
             if (dialogAsset == null)
             {
                 Debug.LogError("PlayerDialog not found dialog " + dialogId);
-                return;
+                return false;
             }
 
             var settings = new JsonSerializerSettings
@@ -619,6 +619,7 @@ namespace My
             {
                 LogicTime.ClearPauseSource("Dialog");
                 UIManager.Instance.HidePanel("DialoguePanel");
+                onDialogEnd?.Invoke();
             });
 
             if (pause)
@@ -634,6 +635,8 @@ namespace My
                     //unitEntity.RegisterGaze("Dialog", gameLogicManager.playerLogicEntity.Id, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Interact);
                 }
             }
+
+            return true;
         }
 
         public void StartLoot(ILootableObj lootObj)

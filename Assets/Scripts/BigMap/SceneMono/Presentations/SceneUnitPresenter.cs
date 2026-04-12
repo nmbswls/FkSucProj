@@ -230,7 +230,7 @@ namespace My.Map.Scene
         /// µ◊≤„ŒÔ¿Ì“∆∂Ø
         /// </summary>
         /// <returns></returns>
-        public Vector2 GetFixedDesiredVel()
+        public virtual Vector2 GetFixedDesiredVel()
         {
             if(UnitEntity == null) return Vector2.zero;
 
@@ -257,7 +257,6 @@ namespace My.Map.Scene
                 Vector2 targetMoveVel = UnitEntity.GetDesiredVelocity();
                 return targetMoveVel + UnitEntity.externalVel;
             }
-
         }
 
         public virtual bool CheckCanActiveMove()

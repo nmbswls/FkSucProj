@@ -8,7 +8,6 @@ using My;
 using My.Dialog;
 using My.Map;
 using My.Map.Logic;
-using My.Map.Scene;
 using My.UI;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -584,15 +583,6 @@ public partial class DialoguePlayer : MonoBehaviour
                     dialogActor.DoDialogMove(cd4MoveEntity.MovePos, cd4MoveEntity.MoveDuration, forcedStartPos);
                 }
                 break;
-
-            case DialogCommandData4PlayerForbidZoneExitSlide cmdForbidExit:
-                {
-                    var player = MainGameManager.Instance.playerScenePresenter;
-                    if (player != null)
-                        player.DialogCommand_CompleteForbidZoneExitCue(cmdForbidExit.OverrideMoveDuration);
-                    SafeComplete();
-                    break;
-                }
 
             case DialogCommandData4SimpleFunc cd4Func:
                 {

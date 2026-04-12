@@ -544,36 +544,58 @@ namespace My.Input
 
         public void DoPlayerMove(Vector2 dir)
         {
-            if (MainGameManager.Instance.playerScenePresenter != null)
+            if (MainGameManager.Instance.playerScenePresenter == null)
             {
-                if (MainGameManager.Instance.dialoguePlayer.IsPlaying)
-                {
-                    return;
-                }
+                return;
+            }
+
+
+            bool doMove = false;
+            do
+            {
+                
 
                 if (MainGameManager.Instance.gameLogicManager.IsBalancing)
                 {
-                    return;
+                    break;
                 }
 
                 if (MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
                 {
-                    return;
+                    break;
+                }
+
+                if (MainGameManager.Instance.playerScenePresenter.ForbidPhase != PlayerScenePresenter.EForbidPhase.Idle)
+                {
+                    break;
                 }
 
 
                 if (LootPointUIPanel.Instance != null)
                 {
-                    return;
+                    break;
                 }
                 if (DeepAbsorbPanel.Instance != null)
                 {
-                    return;
+                    break;
                 }
-                //MainGameManager.Instance.playerScenePresenter.freeMoveDir = dir;
-                //MainGameManager.Instance.playerScenePresenter.freeMoveDir = Vector2.ClampMagnitude(dir, 1f);
 
+                if (MainGameManager.Instance.dialoguePlayer.IsPlaying)
+                {
+                    break;
+                }
+
+                doMove = true;
+            }
+            while (false);
+
+            if(doMove)
+            {
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.FreeMoveInput = Vector2.ClampMagnitude(dir, 1f);
+            }
+            else
+            {
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.FreeMoveInput = Vector2.zero;
             }
         }
 
@@ -585,6 +607,12 @@ namespace My.Input
             {
                 return;
             }
+
+            if (player.ForbidPhase != PlayerScenePresenter.EForbidPhase.Idle)
+            {
+                return;
+            }
+
             if (!LogicTime.paused)
             //if (!LogicTime.paused && !player.PlayerEntity.CheckHasState(AttrIdConsts.LockFace))
             {

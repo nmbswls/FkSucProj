@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using System;
@@ -1623,15 +1623,6 @@ namespace My.Dialog
                             {
                                 var realCommand = new DialogCommandData4Wait();
                                 realCommand.WaitTime = cmdWait.WaitTime;
-                                runCommand = realCommand;
-                            }
-                            break;
-
-
-                        case EditorCommandPlayerForbidZoneExitSlide cmdPz:
-                            {
-                                var realCommand = new DialogCommandData4PlayerForbidZoneExitSlide();
-                                realCommand.OverrideMoveDuration = cmdPz.OverrideMoveDuration;
                                 runCommand = realCommand;
                             }
                             break;

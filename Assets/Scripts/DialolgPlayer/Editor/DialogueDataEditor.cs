@@ -185,12 +185,4 @@ namespace My.Dialog
         public override string GetSummary() => $"[Wait]";
     }
 
-    [Serializable]
-    public class EditorCommandPlayerForbidZoneExitSlide : EditorDialogCommand
-    {
-        public float OverrideMoveDuration;
-
-        public override string GetSummary() => "[PlayerForbidExitSlide]";
-    }
-
 }

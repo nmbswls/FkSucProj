@@ -45,7 +45,7 @@ namespace My.Dialog
         public string VoiceLine;
     }
 
-    // ???§Þ????????
+    // ?????????????
     [Serializable]
     public class DialogCommandData4BranchText : DialogCommandData
     {
@@ -147,13 +147,6 @@ namespace My.Dialog
     public class DialogCommandData4Wait : DialogCommandData
     {
         public float WaitTime;
-    }
-
-    [Serializable]
-    public class DialogCommandData4PlayerForbidZoneExitSlide : DialogCommandData
-    {
-        // <=0 ??????? Inspector ?? forbidExitMoveDuration
-        public float OverrideMoveDuration;
     }
 
     [Serializable]
