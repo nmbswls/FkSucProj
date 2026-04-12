@@ -2,6 +2,7 @@ using Config;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
+using My;
 using My.Map.Entity;
 using System.Collections.Generic;
 using System.Linq;
@@ -138,8 +139,9 @@ namespace My.Map.Scene
         public bool IsInteractDetail { get; set; }
 
         public Vector2? LastValidMovePos { get; set; }
-        public bool IsAdjustingFromForbidden { get; set; }
 
+        private bool _inForbidInnerZone;
+        private readonly List<ForbidZoneChecker> _forbidCheckerScratch = new(8);
 
         public override void Tick(float dt)
         {
@@ -167,55 +169,92 @@ namespace My.Map.Scene
             TickForbiddenAreaMove();
         }
 
+        private static bool ForbidZoneCondEnabled(ForbidZoneChecker checker)
+        {
+            if (checker.EnableCondition == null || checker.EnableCondition.Count == 0)
+                return true;
+            var glm = MainGameManager.Instance.gameLogicManager;
+            foreach (var cond in checker.EnableCondition)
+            {
+                if (!glm.CheckCommonCond(cond))
+                    return false;
+            }
+            return true;
+        }
+
+        private void GatherForbidZonesAt(Vector2 worldPos)
+        {
+            _forbidCheckerScratch.Clear();
+            int zn = Physics2D.OverlapPointNonAlloc(worldPos, zoneTriggerCache, 1 << LayerMask.NameToLayer("Zone"));
+            for (int i = 0; i < zn; i++)
+            {
+                var col = zoneTriggerCache[i];
+                if (col == null) continue;
+                var checker = col.GetComponentInParent<ForbidZoneChecker>();
+                if (checker == null) continue;
+                if (!ForbidZoneCondEnabled(checker)) continue;
+                if (_forbidCheckerScratch.Contains(checker)) continue;
+                _forbidCheckerScratch.Add(checker);
+            }
+        }
+
         private void TickForbiddenAreaMove()
         {
-            if(IsAdjustingFromForbidden)
+            Vector2 worldPos = rb != null ? rb.position : (Vector2)transform.position;
+            GatherForbidZonesAt(worldPos);
+
+            bool inInner = false;
+            for (int i = 0; i < _forbidCheckerScratch.Count; i++)
             {
-
-                if (infoProvider.IsForbidden)
+                var fz = _forbidCheckerScratch[i];
+                if (fz.InnerCol != null && fz.InnerCol.OverlapPoint(worldPos))
                 {
-                    bool passed = true;
-                    foreach (var cond in infoProvider.EnableCondition)
-                    {
-                        if (!MainGameManager.Instance.gameLogicManager.CheckCommonCond(cond))
-                        {
-                            passed = false;
-                            break;
-                        }
-                    }
+                    inInner = true;
+                    break;
+                }
+            }
 
-                    if (!passed)
+            bool inOuter = false;
+            if (!inInner)
+            {
+                for (int i = 0; i < _forbidCheckerScratch.Count; i++)
+                {
+                    var fz = _forbidCheckerScratch[i];
+                    if (fz.OuterCol != null && fz.OuterCol.OverlapPoint(worldPos))
                     {
-                        isForbiddenPos = true;
+                        inOuter = true;
+                        break;
                     }
                 }
+            }
 
-                Vector2 diff = new Vector2(transform.position.x, transform.position.y) - LastValidMovePos.Value;
-                transform.localPosition = LastValidMovePos.Value;
-                IsAdjustingFromForbidden = false;
+            _inForbidInnerZone = inInner;
 
-                Debug.Log("forbit move adjust");
-
-
+            if (inInner)
+            {
+                if (LastValidMovePos.HasValue)
+                {
+                    Vector2 restore = LastValidMovePos.Value;
+                    if (rb != null)
+                        rb.position = restore;
+                    transform.position = new Vector3(restore.x, restore.y, transform.position.z);
+                    CharacterController?.ResetSmoothedMoveVelocity();
+                    PlayerEntity.SetPosition(MainGameManager.Instance.GetLogicPosFromWorldPos(restore));
+                }
                 return;
             }
-            else
+
+            if (!inOuter)
             {
-                int count = Physics2D.OverlapPointNonAlloc(PlayerEntity.Pos, zoneTriggerCache, 1 << LayerMask.NameToLayer("Zone"));
-                for (int i = 0; i < count; i++)
-                {
-                    var col = zoneTriggerCache[i];
-                    if (col == null) continue;
-
-                    var forbidChecker = col.GetComponentInParent<ForbidZoneChecker>();
-                    if (forbidChecker == null) continue;
-
-                }
+                LastValidMovePos = worldPos;
             }
+        }
 
-            
-            
-
+        public override bool CheckCanActiveMove()
+        {
+            if (_inForbidInnerZone)
+                return false;
+            return base.CheckCanActiveMove();
         }
 
 
@@ -259,8 +298,7 @@ namespace My.Map.Scene
         {
             base.Bind(logic);
 
-            // 初始化position
-            //LastValidMovePos = logic.Pos;
+            LastValidMovePos = rb != null ? rb.position : (Vector2)transform.position;
         }
 
 
@@ -504,19 +542,6 @@ namespace My.Map.Scene
             }
 
             IsInBusyZone = isInBusy;
-
-            if(isForbiddenPos)
-            {
-                IsAdjustingFromForbidden = true;
-                if(LastValidMovePos == null)
-                {
-                    LastValidMovePos = new Vector2(0, 0);
-                }
-            }
-            else
-            {
-                LastValidMovePos = transform.position;
-            }
         }
 
 

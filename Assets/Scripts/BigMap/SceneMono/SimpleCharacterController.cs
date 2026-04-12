@@ -41,6 +41,13 @@ namespace My.Map.Scene
         public Func<bool> IsGhoseMove { get; set; }
 
         public Action<Vector2> SyncPos { get; set; }
+
+        // 用于禁区回拉等：立即清掉平滑速度，避免下一帧 FixedUpdate 又把人推进内圈
+        public void ResetSmoothedMoveVelocity()
+        {
+            velocity = Vector2.zero;
+        }
+
         void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
