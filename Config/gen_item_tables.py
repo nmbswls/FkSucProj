@@ -1,4 +1,4 @@
-# Generate item.xlsx + item_use.xlsx and register TbItemUse. Run from repo root or Config/.
+# Generate item.xlsx（含 item + item_use 两个 sheet）并注册 TbItemUse。Run from repo root or Config/.
 import openpyxl
 from pathlib import Path
 
@@ -29,7 +29,7 @@ ITEM_COLS = [
 ]
 
 
-def write_item_xlsx():
+def write_item_workbook():
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "item"
@@ -128,38 +128,12 @@ def write_item_xlsx():
     for r in rows:
         ws.append(r)
 
-    wb.save(DATAS / "item.xlsx")
+    ws_use = wb.create_sheet("item_use")
+    ws_use.append(["##var"] + [c[0] for c in USE_COLS])
+    ws_use.append(["##type"] + [c[1] for c in USE_COLS])
+    ws_use.append(["##group"] + ["c,s"] * len(USE_COLS))
+    ws_use.append(["##"] + [c[0] for c in USE_COLS])
 
-
-USE_COLS = [
-    ("id", "int"),
-    ("item_id", "string"),
-    ("slot", "int"),
-    ("usable", "bool"),
-    ("cost_on_use", "bool"),
-    ("use_cd", "float"),
-    ("use_time", "float"),
-    ("use_type", "EItemUseType"),
-    ("p1", "long"),
-    ("p2", "long"),
-    ("p3", "long"),
-    ("p4", "long"),
-    ("s1", "string"),
-    ("s2", "string"),
-]
-
-
-def write_item_use_xlsx():
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "item_use"
-
-    ws.append(["##var"] + [c[0] for c in USE_COLS])
-    ws.append(["##type"] + [c[1] for c in USE_COLS])
-    ws.append(["##group"] + ["c,s"] * len(USE_COLS))
-    ws.append(["##"] + [c[0] for c in USE_COLS])
-
-    # id, item_id, slot, usable, cost_on_use, use_cd, use_time, use_type, p1..p4, s1, s2
     use_rows = [
         (1, "banana", 1, True, True, 10.0, 1.5, "None", 0, 0, 0, 0, None, None),
         (
@@ -197,32 +171,55 @@ def write_item_use_xlsx():
     ]
 
     for u in use_rows:
-        ws.append([None] + list(u))
+        ws_use.append([None] + list(u))
 
-    wb.save(DATAS / "item_use.xlsx")
+    wb.save(DATAS / "item.xlsx")
+
+
+USE_COLS = [
+    ("id", "int"),
+    ("item_id", "string"),
+    ("slot", "int"),
+    ("usable", "bool"),
+    ("cost_on_use", "bool"),
+    ("use_cd", "float"),
+    ("use_time", "float"),
+    ("use_type", "EItemUseType"),
+    ("p1", "long"),
+    ("p2", "long"),
+    ("p3", "long"),
+    ("p4", "long"),
+    ("s1", "string"),
+    ("s2", "string"),
+]
 
 
 def patch_tables():
     wb = openpyxl.load_workbook(DATAS / "__tables__.xlsx")
     ws = wb.active
-    # skip if already registered
+    found = False
     for r in range(1, ws.max_row + 1):
-        v = ws.cell(r, 5).value
-        if v and "item_use" in str(v):
-            wb.save(DATAS / "__tables__.xlsx")
-            return
-
-    r = ws.max_row + 1
-    ws.cell(r, 1, None)
-    ws.cell(r, 2, "demo.TbItemUse")
-    ws.cell(r, 3, "demo.ItemUse")
-    ws.cell(r, 4, True)
-    ws.cell(r, 5, "item_use@item_use.xlsx")
+        full_name = ws.cell(r, 2).value
+        inp = ws.cell(r, 5).value
+        if full_name == "demo.TbItemUse" or (
+            inp and str(inp).startswith("item_use@")
+        ):
+            ws.cell(r, 5, "item_use@item.xlsx")
+            found = True
+    if not found:
+        r = ws.max_row + 1
+        ws.cell(r, 1, None)
+        ws.cell(r, 2, "demo.TbItemUse")
+        ws.cell(r, 3, "demo.ItemUse")
+        ws.cell(r, 4, True)
+        ws.cell(r, 5, "item_use@item.xlsx")
     wb.save(DATAS / "__tables__.xlsx")
 
 
 if __name__ == "__main__":
-    write_item_xlsx()
-    write_item_use_xlsx()
+    write_item_workbook()
     patch_tables()
+    legacy = DATAS / "item_use.xlsx"
+    if legacy.exists():
+        legacy.unlink()
     print("ok")

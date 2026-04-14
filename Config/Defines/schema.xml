@@ -1,6 +1,6 @@
 <module name="demo">
 
-    <!-- 道具主表用枚举；EItemUseType 各类型参数见 item_use 表头注释与 schema 末尾说明 -->
+    <!-- 道具主表用枚举；EItemUseType 各类型参数见 item.xlsx 的 item_use 表头注释与 schema 末尾说明 -->
     <enum name="EItemType">
         <var name="Normal" value="0"/>
         <var name="Currency" value="1"/>
