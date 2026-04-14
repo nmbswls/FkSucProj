@@ -2,9 +2,10 @@ using SuperScrollView;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using cfg.demo;
+using My.Config;
 using My.Player.Bag;
 using UnityEngine.UI;
-using Config;
 using TMPro;
 using static UnityEditor.Progress;
 using My.Map;
@@ -32,12 +33,12 @@ namespace My.UI.Bag
         public string ItemPrefabName = "ItemCellPrefab";
 
         /// <summary>
-        /// Òþ²Ø±³°ü
+        /// ???????
         /// </summary>
         public RectTransform SpeBagPanel;
         public Button CollapseSpeBagBtn;
         public LoopGridView SpeGridView;
-        public int CurrExpandSpeBag; // µ±Ç°Õ¹¿ªµÄ±³°ü
+        public int CurrExpandSpeBag; // ???????????
 
         public Transform SpecBagSelectionsTr;
 
@@ -137,11 +138,11 @@ namespace My.UI.Bag
 
         private void OnInventoryChanged(int idx)
         {
-            GridView.RefreshAllShownItem(); // ¼ò»¯£¬Êµ¼Ê¿É¾Ö²¿Ë¢ÐÂ
+            GridView.RefreshAllShownItem(); // ????????????
         }
 
         /// <summary>
-        /// Ë¢ÐÂ
+        /// ???
         /// </summary>
         private void OnInventoryAllChanged()
         {
@@ -159,8 +160,8 @@ namespace My.UI.Bag
 
         LoopGridViewItem OnMainGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
         {
-            // ×¢Òâ£º²¿·Ö°æ±¾ÊÇ OnGetItemByRowColumn »Øµ÷Ç©Ãû²»Í¬£¬°´ÄãµÄ API ¸ÄÃû
-            // itemIndex = ÐÐÐòºÅ£¨row£©£¬ÁÐÓÃ column ²ÎÊý
+            // ???????æ±¾?? OnGetItemByRowColumn ???????????????? API ????
+            // itemIndex = ??????row???????? column ????
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 
@@ -192,8 +193,16 @@ namespace My.UI.Bag
             var stack = bag.GetItemByIdx(index);
             if (stack == null || stack.IsEmpty) return;
 
-            var itemConf = FakeItemDatabase.GetItem(stack.ItemID);
-            if (!FakeItemDatabase.CanUse(stack.ItemID)) return;
+            if (!ItemCatalog.CanUse(stack.ItemID))
+            {
+                return;
+            }
+
+            var useRow = ItemCatalog.GetPrimaryUse(stack.ItemID);
+            if (useRow == null || !useRow.Usable)
+            {
+                return;
+            }
 
             stack.RemoveFromStack(1);
             if (stack.Count <= 0) 
@@ -202,18 +211,18 @@ namespace My.UI.Bag
             }
 
             MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.ItemUseCd.TryGetValue(stack.ItemID, out var lastUseTime);
-            if(lastUseTime != 0 && itemConf.UseCfg1.UseCd > 0 && LogicTime.time - lastUseTime < itemConf.UseCfg1.UseCd)
+            if(lastUseTime != 0 && useRow.UseCd > 0 && LogicTime.time - lastUseTime < useRow.UseCd)
             {
                 Debug.LogError($"use item fail cd {lastUseTime}");
                 return;
             }
 
-            if (itemConf.UseCfg1.UseType == FakeItemConf.EItemUseType.UseAbility)
+            if (useRow.UseType == EItemUseType.UseAbility)
             {
                 //
                 UIManager.Instance.HidePanel("PlayerBag");
 
-                var skillName = itemConf.UseCfg1.Param5;
+                var skillName = useRow.S1;
                 if (string.IsNullOrEmpty(skillName)) 
                 {
                     Debug.LogError($"UseItem skill name invalid");
@@ -221,7 +230,7 @@ namespace My.UI.Bag
                 }
                 OverworldHUDPanel.Instance.OnClickUseSkill(skillName, (ret) =>
                 {
-                    if(itemConf.UseCfg1.CostOnUse)
+                    if(useRow.CostOnUse)
                     {
                         bag.TryCostItem(stack.ItemID, 1);
                     }
@@ -232,7 +241,7 @@ namespace My.UI.Bag
             {
                 MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("use_item", overrideParams: new Dictionary<string, string>()
                 {
-                    ["PhaseExecutingTime"] = itemConf.UseCfg1.UseTime.ToString(),
+                    ["PhaseExecutingTime"] = useRow.UseTime.ToString(),
                     ["ItemId"] = stack.ItemID,
                 }); ;
             }
@@ -269,7 +278,7 @@ namespace My.UI.Bag
 
             var item = bag.GetItemByIdx(index);
             long dropCount = bag.RemoveAt(index, count);
-            // ÕâÀï¿ÉÉú³É³¡¾°µôÂäÎï£¬±¾Ê¾Àý½öÒÆ³ý
+            // ????????????????????????????
             //UIBus.RaiseInventoryAllChanged();
             if (dropCount > 0)
             {
@@ -298,7 +307,7 @@ namespace My.UI.Bag
         {
             if(partId > 0 && MainGameManager.Instance.gameLogicManager.playerLogicEntity.AtttachingObjList.Count > 0)
             {
-                FakeHintTextManager.ShowWorld("Ëø¶¨", MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
+                FakeHintTextManager.ShowWorld("????", MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
                 return;
             }
 
@@ -333,8 +342,8 @@ namespace My.UI.Bag
                 return null;
             }
 
-            // ×¢Òâ£º²¿·Ö°æ±¾ÊÇ OnGetItemByRowColumn »Øµ÷Ç©Ãû²»Í¬£¬°´ÄãµÄ API ¸ÄÃû
-            // itemIndex = ÐÐÐòºÅ£¨row£©£¬ÁÐÓÃ column ²ÎÊý
+            // ???????æ±¾?? OnGetItemByRowColumn ???????????????? API ????
+            // itemIndex = ??????row???????? column ????
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 
@@ -346,7 +355,7 @@ namespace My.UI.Bag
                 item.gameObject.SetActive(true);
                 cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, CurrExpandSpeBag, null);
             }
-            // ÌØÊâ
+            // ????
             else if(itemIndex < specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 var stack = specBag.GetItemByIdx(itemIndex);

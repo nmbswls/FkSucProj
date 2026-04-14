@@ -1,5 +1,38 @@
 <module name="demo">
 
+    <!-- 道具主表用枚举；EItemUseType 各类型参数见 item_use 表头注释与 schema 末尾说明 -->
+    <enum name="EItemType">
+        <var name="Normal" value="0"/>
+        <var name="Currency" value="1"/>
+        <var name="Equip" value="2"/>
+        <var name="Pocket" value="3"/>
+        <var name="Insertion" value="4"/>
+    </enum>
+
+    <enum name="EItemStackType">
+        <var name="NoStack" value="0"/>
+        <var name="Size1" value="1"/>
+        <var name="Size2" value="2"/>
+        <var name="Size3" value="3"/>
+        <var name="Size4" value="4"/>
+        <var name="Custom" value="5"/>
+        <var name="NoLimit" value="6"/>
+    </enum>
+
+    <enum name="EItemRevealEffectType">
+        <var name="None" value="0"/>
+        <var name="AddGcVal" value="1"/>
+        <var name="CostClothes" value="2"/>
+    </enum>
+
+    <!-- AddHunger: p1=饥饿增量(逻辑内再乘系数); GiveDrop: p1=drop_bundle_id; UseAbility: s1=技能/能力名 -->
+    <enum name="EItemUseType">
+        <var name="None" value="0"/>
+        <var name="AddHunger" value="1"/>
+        <var name="GiveDrop" value="2"/>
+        <var name="UseAbility" value="3"/>
+    </enum>
+
     <enum name="ECommonCheckType">
 		<var name="None" value="0"/>
         <var name="TaskFinish" value="1"/>

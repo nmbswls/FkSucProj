@@ -1,8 +1,9 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Config;
+using cfg.demo;
 using Map.Logic.Events;
+using My.Config;
 using My.Map.Logic;
 using My.Player.Bag;
 using My.Quest;
@@ -32,7 +33,7 @@ namespace My.Player
         //public string SavedReviveMap = "initial";
 
         /// <summary>
-        /// 养成
+        /// ????
         /// </summary>
         public PlayerProgressionSystem ProgressionSystem { get; private set; }
 
@@ -45,7 +46,7 @@ namespace My.Player
 
         /// <summary>
         /// 
-        /// 游戏变量表
+        /// ?????????
         /// </summary>
         public Dictionary<string, bool> VariableDict = new();
 
@@ -157,12 +158,12 @@ namespace My.Player
             inventoryModel = new(this);
 
             var mainBag = inventoryModel.MainBag;
-            mainBag.NormalSlots[0] = FakeItemDatabase.CreateItemStack("banana", 2);
-            mainBag.NormalSlots[1] = FakeItemDatabase.CreateItemStack("qiezi", 3);
-            mainBag.NormalSlots[2] = FakeItemDatabase.CreateItemStack("bangbangtang", 3);
-            mainBag.NormalSlots[6] = FakeItemDatabase.CreateItemStack("chanzi", 1);
+            mainBag.NormalSlots[0] = ItemCatalog.CreateItemStack("banana", 2);
+            mainBag.NormalSlots[1] = ItemCatalog.CreateItemStack("qiezi", 3);
+            mainBag.NormalSlots[2] = ItemCatalog.CreateItemStack("bangbangtang", 3);
+            mainBag.NormalSlots[6] = ItemCatalog.CreateItemStack("chanzi", 1);
 
-            mainBag.NormalSlots[12] = FakeItemDatabase.CreateItemStack("evil_scroll_01", 5);
+            mainBag.NormalSlots[12] = ItemCatalog.CreateItemStack("evil_scroll_01", 5);
             
             //inventoryModel.NormalSlots[1] = new ItemStack() { ItemID = "qiezi", Count = 3 };
             //inventoryModel.NormalSlots[2] = new ItemStack() { ItemID = "bangbangtang", Count = 3 };
@@ -193,7 +194,7 @@ namespace My.Player
         {
             VariableDict[id] = true;
 
-            // 变量事件
+            // ???????
             logicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()
             {
                 Name = id,
@@ -218,8 +219,13 @@ namespace My.Player
         /// <returns></returns>
         public bool CanGainItems(string itemId, long count)
         {
-            var itemConf = FakeItemDatabase.GetItem(itemId);
-            if(itemConf.ItemType == FakeItemConf.EItemType.Currency)
+            var itemConf = ItemCatalog.GetItemDef(itemId);
+            if (itemConf == null)
+            {
+                return false;
+            }
+
+            if(itemConf.ItemType == EItemType.Currency)
             {
                 return true;
             }
@@ -232,7 +238,7 @@ namespace My.Player
         }
 
         /// <summary>
-        /// 返回值为实际添加数量
+        /// ?????????????????
         /// </summary>
         /// <param name="itemId"></param>
         /// <param name="count"></param>
@@ -243,14 +249,14 @@ namespace My.Player
         }
 
         /// <summary>
-        /// 获取当前状态的技能组
+        /// ???????????????
         /// </summary>
         /// <returns></returns>
         public string[] GetSkillSlotsByState()
         {
             var player = logicManager.playerLogicEntity;
             string[] showSkills = null;
-            // 启用技能组
+            // ??????????
             if (player.IsFaQing)
             {
                 showSkills = FaQingSkillSlots;
@@ -270,7 +276,7 @@ namespace My.Player
         }
 
         /// <summary>
-        /// 获取当前状态的技能组
+        /// ???????????????
         /// </summary>
         /// <returns></returns>
         public string[] GetItemSlotsByState()

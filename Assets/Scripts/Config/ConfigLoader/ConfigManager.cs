@@ -12,7 +12,7 @@ namespace My.Config
         public static cfg.Tables Cfgs { get { return _gameConfigs; } }
         public static void LoadGameConfigs()
         {
-            string gameConfDir = "Config/Json"; // 替换为gen.bat中outputDataDir指向的目录
+            string gameConfDir = "Config/Json"; // ??I?gen.bat??outputDataDir??????
 
             _gameConfigs = new cfg.Tables((file) => {
                 var configAsset = Resources.Load<TextAsset>($"{gameConfDir}/{file}");
@@ -62,6 +62,8 @@ namespace My.Config
                     step.CfgObjectives.Add(oneObj);
                 }
             }
+
+            ItemCatalog.RebuildItemCaches();
         }
     }
 }

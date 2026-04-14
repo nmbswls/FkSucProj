@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Config;
+using My.Config;
 using My.Map.Drop;
 using UnityEngine;
 
@@ -52,7 +52,7 @@ namespace My.Map.Scene
                 transform.position = dropData.Position;
             }
 
-            var itemCfg = FakeItemDatabase.GetItem(dropData.ItemId);
+            var itemCfg = ItemCatalog.GetItemDef(dropData.ItemId);
             cacheItemName = itemCfg?.DisplayName ?? "?";
 
             flyToPlayerMover.Clear();
@@ -93,7 +93,7 @@ namespace My.Map.Scene
 
         public bool TriggerInteract(int selectionId)
         {
-            Debug.Log("手动拾取触发");
+            Debug.Log("?????????");
             MainGameManager.Instance.gameLogicManager.globalDropCollection.PickDrop(DropData.Id);
             return true;
         }

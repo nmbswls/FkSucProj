@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Config;
 using Config.Unit;
+using My.Config;
 using Map.Logic.Events;
 using My.Map.Entity;
 using My.Map.Logic;
@@ -939,7 +939,7 @@ namespace My.Map
                         var items = DropUtils.GetBundleDropItems(DropId);
                         for (int i = 0; i < items.Count; i++)
                         {
-                            containItems[i] = FakeItemDatabase.CreateItemStack(items[i].Item1, items[i].Item2);
+                            containItems[i] = ItemCatalog.CreateItemStack(items[i].Item1, items[i].Item2);
                         }
                     }
                     return containItems;
@@ -949,7 +949,7 @@ namespace My.Map
 
             public long GetMaxStack(string itemId)
             {
-                return FakeItemDatabase.GetMaxStackByType(itemId, EContainerType.LootPoint);
+                return ItemCatalog.GetMaxStackByType(itemId, EContainerType.LootPoint);
             }
 
             public void SetItemData(int slotIdx, ItemStack item)

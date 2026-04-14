@@ -4,8 +4,9 @@ using UnityEngine.UI;
 using TMPro;
 using SuperScrollView;
 using Unity.VisualScripting;
+using cfg.demo;
+using My.Config;
 using My.Player.Bag;
-using Config;
 using static UnityEditor.Progress;
 
 
@@ -36,14 +37,14 @@ namespace My.UI
         }
         public EStyleType StyleType;
 
-        public int Index;           // 在所在列表的索引
+        public int Index;           // ????????????????
         private ItemStack boundStack;
         private System.Action<int> onChanged;
 
         public EContainerType ContainerType;
         public int ContainerId;
 
-        protected FakeItemConf? cacheConf;
+        protected cfg.demo.ItemData cacheItemDef;
 
         public void Bind(ItemStack stack, int index, EContainerType containerType, int containerId, System.Action<int> onChangedCb, EStyleType style = EStyleType.Normal)
         {
@@ -60,10 +61,10 @@ namespace My.UI
 
             if(hasItem)
             {
-                var conf = FakeItemDatabase.GetItem(stack.ItemID);
-                debugNameStr.text = conf.ItemId;
+                var conf = ItemCatalog.GetItemDef(stack.ItemID);
+                debugNameStr.text = conf != null ? conf.ItemId : stack.ItemID;
                 onChanged = onChangedCb;
-                var maxStack = FakeItemDatabase.GetMaxStackByType(stack.ItemID, containerType);
+                var maxStack = ItemCatalog.GetMaxStackByType(stack.ItemID, containerType);
                 countRect.gameObject.SetActive(hasItem && maxStack > 1);
             }
             else
@@ -75,7 +76,7 @@ namespace My.UI
 
             if (hasItem)
             {
-                cacheConf = FakeItemDatabase.GetItem(stack.ItemID);
+                cacheItemDef = ItemCatalog.GetItemDef(stack.ItemID);
 
                 //icon.sprite = FakeItemDatabase.GetIcon(stack.ItemID);
                 countText.text = stack.Count.ToString();
@@ -160,7 +161,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// 被drop时
+        /// ??drop?
         /// </summary>
         /// <param name="eventData"></param>
         public void OnDrop(PointerEventData eventData)

@@ -2,7 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Config;
+using cfg.demo;
+using My.Config;
 using My.Map.Logic;
 using My.Player.Bag;
 using Unity.VisualScripting;
@@ -215,8 +216,9 @@ namespace My.Map.Entity
             var useItemId = ctx.GetVariatyRawVal(realCfg.UseItemId);
             Debug.Log("use " + useItemId);
 
-            var itemCfg = FakeItemDatabase.GetItem(useItemId);
-            if(itemCfg == null || itemCfg.UseCfg1 == null)
+            var itemDef = ItemCatalog.GetItemDef(useItemId);
+            var useRow = ItemCatalog.GetPrimaryUse(useItemId);
+            if(itemDef == null || useRow == null)
             {
                 Debug.LogError($"AbilityEffectExecutor4UseItem item not found {useItemId}");
                 return;
@@ -227,8 +229,8 @@ namespace My.Map.Entity
             var srcIdxStr = ctx.GetVariatyRawVal(realCfg.UseItemSrcIdx);
             int.TryParse(srcIdxStr, out var srcIdx);
 
-            ctx.Env.HandleUseItem(ctx.SourceInfo.SrcEntityId, 1, itemCfg.UseCfg1);
-            if(itemCfg.UseCfg1.CostOnUse)
+            ctx.Env.HandleUseItem(ctx.SourceInfo.SrcEntityId, 1, useRow);
+            if(useRow.CostOnUse)
             {
                 ctx.Env.playerDataManager.CostItem(useItemId, 1);
             }

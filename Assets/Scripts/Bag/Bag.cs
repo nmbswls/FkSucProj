@@ -1,4 +1,5 @@
-using Config;
+using cfg.demo;
+using My.Config;
 using My.Map;
 using My.Map.Entity;
 using SuperScrollView;
@@ -10,7 +11,6 @@ using System.Text;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static Config.FakeItemConf;
 using static My.Map.Fight.FightStruct;
 using static My.UI.AnyContainerItemCell;
 using static UnityEditor.Progress;
@@ -80,24 +80,24 @@ namespace My.Player.Bag
     public static class ItemUtils
     {
         /// <summary>
-        /// 移动或交换
+        /// ??????
         /// </summary>
         /// <returns></returns>
         public static bool MoveOrMergeOrSwapItem(IItemContainer srcContainer, int srcIdx, IItemContainer dstContainer, int dstIdx)
         {
-            // 检查源idx是否合法
+            // ????idx?????
             if(!srcContainer.IsSlotIdxValid(srcIdx))
             {
                 return false;
             }
 
-            // 检查目标idx是否合法
+            // ??????idx?????
             if (!dstContainer.IsSlotIdxValid(dstIdx))
             {
                 return false;
             }
 
-            // 检查源item是否存在且合法
+            // ????item??????????
             var srcItem = srcContainer.GetItemByIdx(srcIdx);
             if(srcItem == null || srcItem.Count <= 0)
             {
@@ -107,12 +107,12 @@ namespace My.Player.Bag
 
             var dstItem = dstContainer.GetItemByIdx(dstIdx);
 
-            // 目标为空 可移动或部分移动
+            // ?????? ???????????
             if(dstItem == null || dstItem.Count <= 0)
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
 
-                // 全部移动
+                // ??????
                 if(srcItem.Count <= srcItemNewStackMax)
                 {
                     dstContainer.SetItemData(dstIdx, srcItem);
@@ -120,20 +120,20 @@ namespace My.Player.Bag
                     return true;
                 }
 
-                // 不支持部分移动
+                // ???????????
                 if(srcItem.ItemInstanceId != 0)
                 {
                     return false;
                 }
 
                 long canMove = srcItemNewStackMax;
-                var newItem = FakeItemDatabase.CreateItemStack(srcItem.ItemID, canMove);
+                var newItem = ItemCatalog.CreateItemStack(srcItem.ItemID, canMove);
                 dstContainer.SetItemData(dstIdx, newItem);
                 srcContainer.SetItemCount(srcIdx, srcItem.Count - canMove);
 
                 return true;
             }
-            // 目标为同类可堆叠 尝试合并
+            // ?????????? ??????
             else if (dstItem.ItemID == srcItem.ItemID && srcItem.ItemInstanceId == 0 && dstItem.ItemInstanceId == 0)
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
@@ -141,13 +141,13 @@ namespace My.Player.Bag
 
                 long canMove1 = srcItemNewStackMax - dstItem.Count;
                 long canMove2 = dstItemNewStackMax - srcItem.Count;
-                // 可移动数量太少 尝试交换
+                // ???????????? ???????
                 if (canMove1 <= 0 && canMove2 <= 0)
                 {
                     return false;
                 }
 
-                // 尝试两个方向的移动
+                // ????????????????
                 if(canMove1 > 0)
                 {
                     dstContainer.SetItemCount(dstIdx, dstItem.Count + canMove1);
@@ -175,7 +175,7 @@ namespace My.Player.Bag
 
                 return true;
             }
-            // 不可合并 尝试交换
+            // ?????? ???????
             else
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
@@ -190,8 +190,8 @@ namespace My.Player.Bag
                     return false;
                 }
 
-                // 执行交换
-                // todo 允许在有空位时强行移动过来
+                // ???????
+                // todo ???????????????????????
                 dstContainer.SetItemData(dstIdx, srcItem);
                 srcContainer.SetItemData(srcIdx, dstItem);
 
@@ -205,14 +205,14 @@ namespace My.Player.Bag
         long GetMaxStack(string itemId);
 
         /// <summary>
-        /// 底层设置信息
+        /// ??????????
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="item"></param>
         void SetItemData(int idx, ItemStack item);
 
         /// <summary>
-        /// 修改数量
+        /// ???????
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="item"></param>
@@ -226,14 +226,14 @@ namespace My.Player.Bag
 
 
         /// <summary>
-        /// 获取道具总量
+        /// ???????????
         /// </summary>
         /// <param name="itemId"></param>
         /// <returns></returns>
         long GetItemCount(string itemId);
 
         /// <summary>
-        /// 获取目标item
+        /// ??????item
         /// </summary>
         /// <param name="idx"></param>
         /// <returns></returns>
@@ -263,12 +263,12 @@ namespace My.Player.Bag
 
         public long GetMaxStack(string itemId)
         {
-            // 普通背包这么读
+            // ????????????
             if(BagId == 0)
             {
-                return FakeItemDatabase.GetMaxStackByType(itemId, EContainerType.Inventory);
+                return ItemCatalog.GetMaxStackByType(itemId, EContainerType.Inventory);
             }
-            return FakeItemDatabase.GetMaxStackByType(itemId, EContainerType.SpecialInventory);
+            return ItemCatalog.GetMaxStackByType(itemId, EContainerType.SpecialInventory);
         }
 
         public long GetItemCount(string itemId)
@@ -404,14 +404,14 @@ namespace My.Player.Bag
         }
 
         /// <summary>
-        /// 尝试增加到背包 仅添加一次
+        /// ????????????? ?????????
         /// </summary>
         /// <param name="incoming"></param>
         /// <returns></returns>
         public long TryGiveItem(string itemId, long count, int preferredIdx = -1)
         {
             if (itemId == null || count <= 0) return 0;
-            var itemConf = FakeItemDatabase.GetItem(itemId);
+            var itemConf = ItemCatalog.GetItemDef(itemId);
             if (itemConf == null) return 0;
 
             long remaining = count;
@@ -422,7 +422,7 @@ namespace My.Player.Bag
             // 
             if (preferredIdx != -1)
             {
-                // 检查普通槽位
+                // ??????????
                 if(preferredIdx < NormalSlots.Count)
                 {
                     var s = NormalSlots[preferredIdx];
@@ -434,13 +434,13 @@ namespace My.Player.Bag
                     else if (s == null || s.Count <= 0)
                     {
                         var put = Math.Min(maxStack, remaining);
-                        NormalSlots[preferredIdx] = FakeItemDatabase.CreateItemStack(itemId, put);
+                        NormalSlots[preferredIdx] = ItemCatalog.CreateItemStack(itemId, put);
                         remaining -= put;
                     }
                 }
             }
 
-            // 尝试普通格子堆叠
+            // ?????????????
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 var s = NormalSlots[i];
@@ -456,13 +456,13 @@ namespace My.Player.Bag
                 return count;
             }
 
-            // 找普通格子空位继续放
+            // ??????????????????
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 if (NormalSlots[i] == null || NormalSlots[i].IsEmpty)
                 {
                     var put = Math.Min(maxStack, remaining);
-                    NormalSlots[i] = FakeItemDatabase.CreateItemStack(itemId, put);
+                    NormalSlots[i] = ItemCatalog.CreateItemStack(itemId, put);
                     remaining -= put;
                 }
             }
@@ -472,10 +472,10 @@ namespace My.Player.Bag
                 return count;
             }
 
-            // 如果背包可超载 在超载中寻找
+            // ???????????? ??????????
             if (MaxExtraCapacity > 0)
             {
-                // 先堆叠
+                // ????
                 for (int i = 0; i < ExtraSlots.Count && remaining > 0; i++)
                 {
                     var s = ExtraSlots[i];
@@ -488,11 +488,11 @@ namespace My.Player.Bag
 
                 if (remaining > 0)
                 {
-                    // 额外还有空位
+                    // ??????????
                     while (ExtraSlots.Count < MaxExtraCapacity && remaining > 0)
                     {
                         var put = Math.Min(maxStack, remaining);
-                        var newItem = FakeItemDatabase.CreateItemStack(itemId, put);
+                        var newItem = ItemCatalog.CreateItemStack(itemId, put);
                         ExtraSlots.Add(newItem);
                         remaining -= put;
                     }
@@ -503,25 +503,25 @@ namespace My.Player.Bag
         }
         public bool TrySplit(int srcIndex, long count)
         {
-            // 只分离普通背包
+            // ????????????
             if (srcIndex < NormalSlots.Count)
             {
                 var src = NormalSlots[srcIndex];
                 if (src == null || src.IsEmpty) return false;
                 if (count <= 0 || count >= src.Count) return false;
 
-                // 实例化道具无法拆分
+                // ???????????????
                 if(src.ItemInstanceId != 0)
                 {
                     return false;
                 }
 
-                // 找空位
+                // ?????
                 int emptyIdx = NormalSlots.FindIndex(s => s == null || s.IsEmpty);
                 if (emptyIdx < 0) return false;
 
                 src.RemoveFromStack(count);
-                NormalSlots[emptyIdx] = FakeItemDatabase.CreateItemStack(src.ItemID, count);
+                NormalSlots[emptyIdx] = ItemCatalog.CreateItemStack(src.ItemID, count);
                 return true;
             }
                 
@@ -572,7 +572,7 @@ namespace My.Player.Bag
         }
 
         /// <summary>
-        /// 是否是合法idx
+        /// ???????idx
         /// </summary>
         /// <param name="slotIdx"></param>
         /// <returns></returns>
@@ -592,7 +592,7 @@ namespace My.Player.Bag
         }
 
         /// <summary>
-        /// 设置item数量
+        /// ????item????
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="count"></param>
@@ -669,8 +669,8 @@ namespace My.Player.Bag
 
                     if(bag.NormalSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
                     {
-                        var itemConf = FakeItemDatabase.GetItem(bag.NormalSlots[i].ItemID);
-                        if(itemConf.AutoDestroy)
+                        var itemConf = ItemCatalog.GetItemDef(bag.NormalSlots[i].ItemID);
+                        if(itemConf != null && itemConf.AutoDestroy)
                         {
                             insertion.Lifetime -= dt;
                             if(insertion.Lifetime <= 0)
@@ -693,8 +693,8 @@ namespace My.Player.Bag
                 {
                     if (bag.ExtraSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
                     {
-                        var itemConf = FakeItemDatabase.GetItem(bag.ExtraSlots[i].ItemID);
-                        if (itemConf.AutoDestroy)
+                        var itemConf = ItemCatalog.GetItemDef(bag.ExtraSlots[i].ItemID);
+                        if (itemConf != null && itemConf.AutoDestroy)
                         {
                             insertion.Lifetime -= dt;
                             if (insertion.Lifetime <= 0)
@@ -757,8 +757,8 @@ namespace My.Player.Bag
             }
 
             long leftCount = count;
-            var itemConf = FakeItemDatabase.GetItem(itemId);
-            if (itemConf.ItemType == FakeItemConf.EItemType.Currency)
+            var itemConf = ItemCatalog.GetItemDef(itemId);
+            if (itemConf != null && itemConf.ItemType == EItemType.Currency)
             {
                 CurrencyBag.TryGetValue(itemId, out var itemVal);
                 if (itemVal > leftCount)
@@ -794,8 +794,13 @@ namespace My.Player.Bag
 
         public long GiveItem(string itemId, long amount, int bagId)
         {
-            var itemConf = FakeItemDatabase.GetItem(itemId);
-            if (itemConf.ItemType == FakeItemConf.EItemType.Currency)
+            var itemConf = ItemCatalog.GetItemDef(itemId);
+            if (itemConf == null)
+            {
+                return 0;
+            }
+
+            if (itemConf.ItemType == EItemType.Currency)
             {
                 CurrencyBag[itemId] = CurrencyBag.GetValueOrDefault(itemId) + amount;
                 return amount;
@@ -803,7 +808,12 @@ namespace My.Player.Bag
 
             if (itemConf.IsAutoUse)
             {
-                DataManager.logicManager.HandleUseItem(DataManager.logicManager.playerLogicEntity.Id, amount, itemConf.UseCfg1);
+                var useRow = ItemCatalog.GetPrimaryUse(itemId);
+                if (useRow != null)
+                {
+                    DataManager.logicManager.HandleUseItem(DataManager.logicManager.playerLogicEntity.Id, amount, useRow);
+                }
+
                 return amount;
             }
 
@@ -823,7 +833,7 @@ namespace My.Player.Bag
         
 
         /// <summary>
-        /// 尝试交换或移动
+        /// ????????????
         /// </summary>
         /// <param name="srcBagId"></param>
         /// <param name="srcIndex"></param>
@@ -832,10 +842,10 @@ namespace My.Player.Bag
         /// <returns></returns>
         public bool TrySwapOrMove(int srcBagId, int srcIndex, int dstBagId, int dstIndex)
         {
-            // 原地交换
+            // ??????
             if (srcBagId == dstBagId  && srcIndex == dstIndex) return false;
 
-            // 有个包找不到
+            // ???????????
             var srcBag = GetBagById(srcBagId); 
             var dstBag = GetBagById(dstBagId);
             if (srcBag == null || dstBag == null) return false;

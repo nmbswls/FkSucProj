@@ -1,5 +1,4 @@
 
-using Config;
 using Map.Logic.Events;
 using My.Config;
 using My.Home;
@@ -16,9 +15,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using cfg.demo;
 using Unity.Profiling;
 using UnityEngine;
-using static Config.FakeItemConf;
 using static MapSceneEffectManager;
 using static My.Map.Fight.FightStruct;
 using static My.MapExport.MapExportDatabase;
@@ -764,23 +763,35 @@ namespace My
             //return playerDataManager.SavedBornPoint;
         }
 
-        public bool HandleUseItem(long userUnit, long cnt, ItemUseCfg useCfg)
+        public bool HandleUseItem(long userUnit, long cnt, ItemUse useRow)
         {
             var srcActor = GetLogicEntity(userUnit) as BaseUnitLogicEntity;
-            if (srcActor != null)
+            if (srcActor == null)
             {
                 return false;
             }
-            switch (useCfg.UseType)
+
+            switch (useRow.UseType)
             {
-                case FakeItemConf.EItemUseType.AddHunger:
+                case EItemUseType.AddHunger:
                     {
-                        srcActor.ApplyResourceChange(AttrIdConsts.PlayerHunger, +useCfg.Param1 * 100 * cnt, false, EDmgFlag.None, srcActor.Id);
+                        srcActor.ApplyResourceChange(AttrIdConsts.PlayerHunger, +useRow.P1 * 100 * cnt, false, EDmgFlag.None, srcActor.Id);
                     }
                     break;
-                case FakeItemConf.EItemUseType.GiveDrop:
+                case EItemUseType.GiveDrop:
                     {
-                        int dropId = (int)useCfg.Param1;
+                        int dropId = (int)useRow.P1;
+                        if (dropId <= 0 && int.TryParse(useRow.S1, out var parsedDrop))
+                        {
+                            dropId = parsedDrop;
+                        }
+
+                        if (dropId <= 0)
+                        {
+                            Debug.LogError("HandleUseItem GiveDrop invalid drop bundle id.");
+                            break;
+                        }
+
                         if(cnt > 100)
                         {
                             Debug.Log($"HandleUseItem too much bundle {cnt}");

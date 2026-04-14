@@ -19,6 +19,25 @@ public sealed partial class ItemData : Luban.BeanBase
     public ItemData(JSONNode _buf) 
     {
         { if(!_buf["item_id"].IsString) { throw new SerializationException(); }  ItemId = _buf["item_id"]; }
+        { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
+        { if(!_buf["item_type"].IsNumber) { throw new SerializationException(); }  ItemType = (demo.EItemType)_buf["item_type"].AsInt; }
+        { if(!_buf["stack_type"].IsNumber) { throw new SerializationException(); }  StackType = (demo.EItemStackType)_buf["stack_type"].AsInt; }
+        { if(!_buf["stack_count"].IsNumber) { throw new SerializationException(); }  StackCount = _buf["stack_count"]; }
+        { if(!_buf["max_stack_inventory"].IsNumber) { throw new SerializationException(); }  MaxStackInventory = _buf["max_stack_inventory"]; }
+        { if(!_buf["max_stack_shop"].IsNumber) { throw new SerializationException(); }  MaxStackShop = _buf["max_stack_shop"]; }
+        { if(!_buf["max_stack_loot"].IsNumber) { throw new SerializationException(); }  MaxStackLoot = _buf["max_stack_loot"]; }
+        { if(!_buf["sprite_name"].IsString) { throw new SerializationException(); }  SpriteName = _buf["sprite_name"]; }
+        { if(!_buf["can_drop"].IsBoolean) { throw new SerializationException(); }  CanDrop = _buf["can_drop"]; }
+        { if(!_buf["rare_tier"].IsNumber) { throw new SerializationException(); }  RareTier = _buf["rare_tier"]; }
+        { if(!_buf["reveal_effect_type"].IsNumber) { throw new SerializationException(); }  RevealEffectType = (demo.EItemRevealEffectType)_buf["reveal_effect_type"].AsInt; }
+        { if(!_buf["reveal_p1"].IsNumber) { throw new SerializationException(); }  RevealP1 = _buf["reveal_p1"]; }
+        { if(!_buf["reveal_p2"].IsNumber) { throw new SerializationException(); }  RevealP2 = _buf["reveal_p2"]; }
+        { if(!_buf["auto_destroy"].IsBoolean) { throw new SerializationException(); }  AutoDestroy = _buf["auto_destroy"]; }
+        { if(!_buf["auto_destroy_time"].IsNumber) { throw new SerializationException(); }  AutoDestroyTime = _buf["auto_destroy_time"]; }
+        { if(!_buf["special_buff_id"].IsString) { throw new SerializationException(); }  SpecialBuffId = _buf["special_buff_id"]; }
+        { if(!_buf["special_buff_interval"].IsNumber) { throw new SerializationException(); }  SpecialBuffInterval = _buf["special_buff_interval"]; }
+        { if(!_buf["auto_pick"].IsBoolean) { throw new SerializationException(); }  AutoPick = _buf["auto_pick"]; }
+        { if(!_buf["is_auto_use"].IsBoolean) { throw new SerializationException(); }  IsAutoUse = _buf["is_auto_use"]; }
     }
 
     public static ItemData DeserializeItemData(JSONNode _buf)
@@ -30,6 +49,82 @@ public sealed partial class ItemData : Luban.BeanBase
     /// item_id
     /// </summary>
     public string ItemId;
+    /// <summary>
+    /// display_name
+    /// </summary>
+    public string DisplayName;
+    /// <summary>
+    /// item_type
+    /// </summary>
+    public demo.EItemType ItemType;
+    /// <summary>
+    /// stack_type
+    /// </summary>
+    public demo.EItemStackType StackType;
+    /// <summary>
+    /// stack_count
+    /// </summary>
+    public int StackCount;
+    /// <summary>
+    /// max_stack_inventory
+    /// </summary>
+    public int MaxStackInventory;
+    /// <summary>
+    /// max_stack_shop
+    /// </summary>
+    public int MaxStackShop;
+    /// <summary>
+    /// max_stack_loot
+    /// </summary>
+    public int MaxStackLoot;
+    /// <summary>
+    /// sprite_name
+    /// </summary>
+    public string SpriteName;
+    /// <summary>
+    /// can_drop
+    /// </summary>
+    public bool CanDrop;
+    /// <summary>
+    /// rare_tier
+    /// </summary>
+    public int RareTier;
+    /// <summary>
+    /// reveal_effect_type
+    /// </summary>
+    public demo.EItemRevealEffectType RevealEffectType;
+    /// <summary>
+    /// reveal_p1
+    /// </summary>
+    public long RevealP1;
+    /// <summary>
+    /// reveal_p2
+    /// </summary>
+    public long RevealP2;
+    /// <summary>
+    /// auto_destroy
+    /// </summary>
+    public bool AutoDestroy;
+    /// <summary>
+    /// auto_destroy_time
+    /// </summary>
+    public float AutoDestroyTime;
+    /// <summary>
+    /// special_buff_id
+    /// </summary>
+    public string SpecialBuffId;
+    /// <summary>
+    /// special_buff_interval
+    /// </summary>
+    public float SpecialBuffInterval;
+    /// <summary>
+    /// auto_pick
+    /// </summary>
+    public bool AutoPick;
+    /// <summary>
+    /// is_auto_use
+    /// </summary>
+    public bool IsAutoUse;
    
     public const int __ID__ = 1942709544;
     public override int GetTypeId() => __ID__;
@@ -42,6 +137,25 @@ public sealed partial class ItemData : Luban.BeanBase
     {
         return "{ "
         + "itemId:" + ItemId + ","
+        + "displayName:" + DisplayName + ","
+        + "itemType:" + ItemType + ","
+        + "stackType:" + StackType + ","
+        + "stackCount:" + StackCount + ","
+        + "maxStackInventory:" + MaxStackInventory + ","
+        + "maxStackShop:" + MaxStackShop + ","
+        + "maxStackLoot:" + MaxStackLoot + ","
+        + "spriteName:" + SpriteName + ","
+        + "canDrop:" + CanDrop + ","
+        + "rareTier:" + RareTier + ","
+        + "revealEffectType:" + RevealEffectType + ","
+        + "revealP1:" + RevealP1 + ","
+        + "revealP2:" + RevealP2 + ","
+        + "autoDestroy:" + AutoDestroy + ","
+        + "autoDestroyTime:" + AutoDestroyTime + ","
+        + "specialBuffId:" + SpecialBuffId + ","
+        + "specialBuffInterval:" + SpecialBuffInterval + ","
+        + "autoPick:" + AutoPick + ","
+        + "isAutoUse:" + IsAutoUse + ","
         + "}";
     }
 }

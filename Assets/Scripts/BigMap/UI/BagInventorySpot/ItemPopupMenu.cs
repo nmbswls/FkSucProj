@@ -1,4 +1,5 @@
-using Config;
+using cfg.demo;
+using My.Config;
 using My.Map;
 using My.Player.Bag;
 using My.UI.Bag;
@@ -58,7 +59,8 @@ namespace My.UI
 
         private AnyContainerItemCell currentCell;
         private ItemStack currentStack;
-        private FakeItemConf cacheItemCfg;
+        private cfg.demo.ItemData cacheItemDef;
+        private ItemUse cachePrimaryUse;
         private int currentIndex;
 
         void Awake()
@@ -86,7 +88,8 @@ namespace My.UI
 
             gameObject.SetActive(true);
 
-            cacheItemCfg = FakeItemDatabase.GetItem(stack.ItemID);
+            cacheItemDef = ItemCatalog.GetItemDef(stack.ItemID);
+            cachePrimaryUse = ItemCatalog.GetPrimaryUse(stack.ItemID);
 
             UseBtnGo.SetActive(false);
             UseBtn2Go.SetActive(false);
@@ -94,7 +97,7 @@ namespace My.UI
             DropBtnGo.SetActive(false);
             CloseBtnGo.SetActive(true);
 
-            // 根据物品可用性禁用按钮
+            // ??????????????????
             //bool canUse = currentIsInventory && FakeItemDatabase.CanUse(stack.ItemID);
             //UseBtn.interactable = canUse;
 
@@ -106,8 +109,8 @@ namespace My.UI
                     SplitBtnGo.gameObject.SetActive(true);
                 }
 
-                var itemConf = FakeItemDatabase.GetItem(stack.ItemID);
-                if(itemConf.CanDrop)
+                var itemConf = ItemCatalog.GetItemDef(stack.ItemID);
+                if(itemConf != null && itemConf.CanDrop)
                 {
                     DropBtnGo.gameObject.SetActive(true);
                 }
@@ -117,7 +120,7 @@ namespace My.UI
                     //var item = 
                 }
 
-                if(FakeItemDatabase.CanUse(stack.ItemID))
+                if(ItemCatalog.CanUse(stack.ItemID))
                 {
                     UseBtnGo.SetActive(true);
                 }
@@ -130,14 +133,18 @@ namespace My.UI
             {
                 MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.ItemUseCd.TryGetValue(currentStack.ItemID, out var useTime);
                 
-                // 不在cd
-                if(useTime == 0 || LogicTime.time - useTime > cacheItemCfg.UseCfg1.UseCd)
+                // ????cd
+                if (cachePrimaryUse == null)
+                {
+                    UseBtnCdText.text = "";
+                }
+                else if(useTime == 0 || LogicTime.time - useTime > cachePrimaryUse.UseCd)
                 {
                     UseBtnCdText.text = "";
                 }
                 else
                 {
-                    var cdVal = (int)Mathf.Ceil((cacheItemCfg.UseCfg1.UseCd + useTime) - LogicTime.time);
+                    var cdVal = (int)Mathf.Ceil((cachePrimaryUse.UseCd + useTime) - LogicTime.time);
                     UseBtnCdText.text = $"({cdVal}s)";
                 }
             }
@@ -172,7 +179,7 @@ namespace My.UI
 
             int bagId = currentCell.ContainerId;
 
-            // 简化：固定拆分数量为一半，实际可弹窗输入
+            // ????????????????????????????
             long half = currentStack.Count / 2;
             //if (half > 0)
             //{
@@ -199,7 +206,7 @@ namespace My.UI
                 return;
             }
 
-            // 简化：全部丢弃
+            // ??????????
             PlayerBagUIPanel.Instance?.DropItemToGround(currentCell.ContainerId, currentIndex, currentStack.Count);
             Close();
         }

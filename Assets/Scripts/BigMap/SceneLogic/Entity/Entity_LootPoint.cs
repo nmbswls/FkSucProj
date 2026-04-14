@@ -1,18 +1,18 @@
+using cfg.demo;
 using Config.Unit;
-using Config;
+using My.Config;
 using UnityEngine;
 using Config.Map;
 using System.Collections.Generic;
 using System;
-using static UnityEditor.Progress;
 using My.Player.Bag;
 using Map.Logic.Events;
 using My.Map.Logic;
 using My.UI;
 using System.Linq;
 using My.Map.Entity;
-using static My.UI.AnyContainerItemCell;
 using My.Map.Fight;
+using Config;
 
 
 namespace My.Map
@@ -83,7 +83,7 @@ namespace My.Map
                 var items = DropUtils.GetBundleDropItems(dropId);
                 for (int i = 0; i < items.Count; i++)
                 {
-                    containItems[i] = FakeItemDatabase.CreateItemStack(items[i].Item1, items[i].Item2);
+                    containItems[i] = ItemCatalog.CreateItemStack(items[i].Item1, items[i].Item2);
 
                     //var itemConf = FakeItemDatabase.GetIcon();
                     ItemSearchProgress[i] = 1.5f;
@@ -120,7 +120,7 @@ namespace My.Map
 
             public long GetMaxStack(string itemId)
             {
-                return FakeItemDatabase.GetMaxStackByType(itemId, EContainerType.LootPoint);
+                return ItemCatalog.GetMaxStackByType(itemId, EContainerType.LootPoint);
             }
 
             public void SetItemData(int slotIdx, ItemStack item)
@@ -214,7 +214,7 @@ namespace My.Map
         {
             if (!IsLocked)
             {
-                LogicManager.viewer.ShowFakeFxEffect("没锁", Pos);
+                LogicManager.viewer.ShowFakeFxEffect("???", Pos);
                 return;
             }
 
@@ -231,7 +231,7 @@ namespace My.Map
 
                 if (!enough)
                 {
-                    LogicManager.viewer.ShowFakeFxEffect("不够", Pos);
+                    LogicManager.viewer.ShowFakeFxEffect("????", Pos);
                     return;
                 }
 
@@ -242,7 +242,7 @@ namespace My.Map
             }
 
             this.IsLocked = false;
-            LogicManager.viewer.ShowFakeFxEffect("解了", Pos);
+            LogicManager.viewer.ShowFakeFxEffect("????", Pos);
             EventOnLootPointUnlock?.Invoke(this);
         }
 
@@ -250,7 +250,7 @@ namespace My.Map
         {
             if (IsLocked)
             {
-                LogicManager.viewer.ShowFakeFxEffect("锁了", Pos);
+                LogicManager.viewer.ShowFakeFxEffect("????", Pos);
                 return;
             }
 
@@ -272,15 +272,15 @@ namespace My.Map
 
                 if (!match)
                 {
-                    LogicManager.viewer.ShowFakeFxEffect("条件不足", Pos);
+                    LogicManager.viewer.ShowFakeFxEffect("????????", Pos);
                     return;
                 }
             }
 
-            LogicManager.viewer.ShowFakeFxEffect("搜！", Pos);
+            LogicManager.viewer.ShowFakeFxEffect("???", Pos);
             EventOnLootPointUsed?.Invoke(this);
 
-            // 抛出事件
+            // ??????
             if(this.FactionId != Entity.EFactionId.None)
             {
                 LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
@@ -291,8 +291,8 @@ namespace My.Map
                         SourceEntity = LogicManager.playerLogicEntity,
                     },
                     Name = "Loot",
-                    Param3 = (long)this.FactionId, // 被偷的阵营
-                    Param5 = this.BelongRoomId, // 被偷的房间
+                    Param3 = (long)this.FactionId, // ????????
+                    Param5 = this.BelongRoomId, // ????????
                 });
             }
             
@@ -321,7 +321,7 @@ namespace My.Map
 
             if (!match)
             {
-                LogicManager.viewer.ShowFakeFxEffect("条件不足", Pos);
+                LogicManager.viewer.ShowFakeFxEffect("????????", Pos);
                 return false;
             }
 
@@ -343,20 +343,26 @@ namespace My.Map
                 lootContainer.ItemSearchProgress.Remove(minKey);
                 EnOnUnrealed?.Invoke(minKey);
 
-                // 揭露
+                // ???
                 var itemStack = lootContainer.LootItems[minKey];
-                var conf = FakeItemDatabase.GetItem(itemStack.ItemID);
+                var conf = ItemCatalog.GetItemDef(itemStack.ItemID);
+                if (conf == null)
+                {
+                    return;
+                }
 
                 switch(conf.RevealEffectType)
                 {
-                    case FakeItemConf.ERevealEffectType.AddGcVal:
+                    case EItemRevealEffectType.AddGcVal:
                         {
-                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5000, false, FightStruct.EDmgFlag.None, null);
+                            int v = conf.RevealP1 != 0 ? (int)conf.RevealP1 : 5000;
+                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerPleasure, v, false, FightStruct.EDmgFlag.None, null);
                         }
                         break;
-                    case FakeItemConf.ERevealEffectType.CostClothes:
+                    case EItemRevealEffectType.CostClothes:
                         {
-                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -3000, false, FightStruct.EDmgFlag.None, null);
+                            int v = conf.RevealP1 != 0 ? (int)conf.RevealP1 : 3000;
+                            LogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -v, false, FightStruct.EDmgFlag.None, null);
                         }
                         break;
                 }
