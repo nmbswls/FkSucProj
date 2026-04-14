@@ -340,8 +340,6 @@ public partial class DialoguePlayer : MonoBehaviour
         }
 
         MainGameManager.Instance.gameLogicManager.playerDataManager.DialogTriggerSystem.AddTriggerCount(MetaInfo.DialogId);
-
-        MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
     }
 
     public void JumpToStep(string stepId)
