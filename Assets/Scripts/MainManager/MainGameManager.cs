@@ -593,7 +593,7 @@ namespace My
             var dialogAsset = Resources.Load<TextAsset>($"Dialogue/output/{dialogMetaInfo.JsonDataName}");
             if (dialogAsset == null)
             {
-                Debug.LogError("PlayerDialog not found dialog " + dialogId);
+                Debug.LogError("PlayerDialog not found dialog " + dialogId + "asset " + dialogMetaInfo.JsonDataName);
                 return false;
             }
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEditor.Rendering.CameraUI;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 
@@ -34,6 +35,8 @@ namespace My.Map.Scene
 
         public List<AnimationClip> SpecialAnimClips;
         private Dictionary<string, AnimationClip> _animCacheDict = new();
+
+        public static int NormalDialogInteract = 50;
 
         public static int EnterDetailMode = 98;
         public static int DeepAbsorbInteractGoodId = 99;
@@ -114,22 +117,6 @@ namespace My.Map.Scene
 
             UnitEntity.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
 
-            //UnitEntity.onNewKnockBackIntent += (intent) =>
-            //{
-            //    UnitEntity.externalVel = intent.knockDir.normalized * intent.knockDuration;
-            //};
-
-
-
-            //UnitEntity.onNewDashIntent += (intent) =>
-            //{
-            //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
-            //};
-
-            //UnitEntity.onNewKnockBackIntent += (intent) =>
-            //{
-            //    UnitEntity.externalVel = intent.knockDir.normalized * intent.knockDuration;
-            //};
         }
 
         protected override void UnregisterEvents()
@@ -317,7 +304,16 @@ namespace My.Map.Scene
                 return true;
             }
 
-            if (selectionId == DeepAbsorbInteractGoodId)
+            if(selectionId == NormalDialogInteract)
+            {
+                string currentDialogId = NpcEntity.GetCurrentDialogId();
+                if(!string.IsNullOrEmpty(currentDialogId))
+                {
+                    NpcEntity.LogicManager.viewer.PlayDialog(currentDialogId, srcEntityId : Id);
+                }
+                return true;
+            }
+            else if (selectionId == DeepAbsorbInteractGoodId)
             {
                DeepAbsorbPanel.Show(0, 5, 3);
                 //MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
@@ -512,7 +508,7 @@ namespace My.Map.Scene
                 {
                     ret.Add(new SceneInteractSelection()
                     {
-                        SelectId = 1,
+                        SelectId = NormalDialogInteract,
                         SelectContent = "½»Ì¸",
                         Selectable = true
                     }); ;
@@ -541,9 +537,6 @@ namespace My.Map.Scene
         {
             return false;
         }
-
-
-        
     }
 }
 
