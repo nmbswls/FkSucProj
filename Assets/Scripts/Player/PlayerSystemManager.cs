@@ -157,6 +157,12 @@ namespace My.Player
         {
             inventoryModel = new(this);
 
+            if (CfgMgr.Cfgs == null)
+            {
+                Debug.LogError("InitBagInfo: CfgMgr.Cfgs is null. Call CfgMgr.LoadGameConfigs before InitPlayerData / OnGameLogicInit.");
+                return;
+            }
+
             var mainBag = inventoryModel.MainBag;
             mainBag.NormalSlots[0] = ItemCatalog.CreateItemStack("banana", 2);
             mainBag.NormalSlots[1] = ItemCatalog.CreateItemStack("qiezi", 3);

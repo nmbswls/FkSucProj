@@ -93,9 +93,22 @@ namespace My.Config
 
         public static ItemStack CreateItemStack(string itemId, long count)
         {
+            if (string.IsNullOrEmpty(itemId))
+            {
+                Debug.LogWarning("ItemCatalog.CreateItemStack: itemId is null or empty.");
+                return null;
+            }
+
+            if (CfgMgr.Cfgs == null)
+            {
+                Debug.LogWarning($"ItemCatalog.CreateItemStack: CfgMgr.Cfgs is null, cannot create '{itemId}'. Call CfgMgr.LoadGameConfigs first.");
+                return null;
+            }
+
             var def = GetItemDef(itemId);
             if (def == null)
             {
+                Debug.LogWarning($"ItemCatalog.CreateItemStack: no TbItemData row for '{itemId}'.");
                 return null;
             }
 

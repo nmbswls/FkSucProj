@@ -217,6 +217,8 @@ namespace My.UI
 
             currentCell = null;
             currentStack = null;
+            cacheItemDef = null;
+            cachePrimaryUse = null;
         }
     }
 }
