@@ -7,7 +7,7 @@ namespace My
 
 {
     ///// <summary>
-    ///// ����������һ��
+    ///// 所有条件归一化
     ///// </summary>
     //public enum ECommonCheckType
     //{
@@ -49,6 +49,24 @@ namespace My
 
     public partial class GameLogicManager
     {
+        // 列表内条件全部满足才为 true；空列表视为满足
+        public bool CheckCommonCondsAll(System.Collections.Generic.IReadOnlyList<CommonCheckCond> conds)
+        {
+            if (conds == null || conds.Count == 0)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < conds.Count; i++)
+            {
+                if (!CheckCommonCond(conds[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         public bool CheckCommonCond(CommonCheckCond cond)
         {

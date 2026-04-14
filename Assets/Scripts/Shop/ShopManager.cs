@@ -1,8 +1,10 @@
 
 using System.Collections.Generic;
+using System.Linq;
+using cfg.demo;
+using My.Config;
 using My.Player.Bag;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 namespace My
 {
@@ -21,6 +23,35 @@ namespace My
             this.gameLogicManager = logicManager;
         }
 
+        public List<int> GetVisibleShopItemIndices(GameLogicManager mgr)
+        {
+            var r = new List<int>();
+            if (shopItems.Count == 0)
+            {
+                return r;
+            }
+
+            if (mgr == null)
+            {
+                for (int i = 0; i < shopItems.Count; i++)
+                {
+                    r.Add(i);
+                }
+
+                return r;
+            }
+
+            for (int i = 0; i < shopItems.Count; i++)
+            {
+                if (ShopGoodsDisplay.GetDisplayState(mgr, shopItems[i]) != EShopGoodsDisplayState.Hidden)
+                {
+                    r.Add(i);
+                }
+            }
+
+            return r;
+        }
+
         public bool TryBuyFromShop(int itemIdx, int count, int? dstBagIdx)
         {
             if (itemIdx < 0 || itemIdx >= shopItems.Count)
@@ -30,6 +61,21 @@ namespace My
             }
 
             var shopItem = shopItems[itemIdx];
+
+            if (gameLogicManager != null)
+            {
+                if (!gameLogicManager.CheckCommonCondsAll(shopItem.VisibleConds))
+                {
+                    Debug.LogError("TryBuyFromShop item not visible by cond");
+                    return false;
+                }
+
+                if (!gameLogicManager.CheckCommonCondsAll(shopItem.UnlockConds))
+                {
+                    Debug.LogError("TryBuyFromShop item locked by cond");
+                    return false;
+                }
+            }
 
             var costItem = shopItem.CostItemId;
             if (!gameLogicManager.playerDataManager.CheckHaveItem(costItem, shopItem.CostCount))
@@ -41,8 +87,7 @@ namespace My
             string giveItem = shopItem.ItemId;
             long giveCount = shopItem.BuyCount;
 
-            // 检查是否能放的下
-            if (gameLogicManager.playerDataManager.CanGainItems(giveItem, giveCount))
+            if (!gameLogicManager.playerDataManager.CanGainItems(giveItem, giveCount))
             {
                 return false;
             }
@@ -51,10 +96,6 @@ namespace My
 
             long addCnt = gameLogicManager.playerDataManager.inventoryModel.MainBag.TryGiveItem(giveItem, giveCount);
             Debug.Log("TryBuyFromShop try buy " + giveItem + " " + addCnt);
-            //if (dstBagIdx != null)
-            //{
-
-            //}
 
             return true;
         }
@@ -70,8 +111,6 @@ namespace My
                 return false;
             }
 
-            // if can sell
-            //Debug.Log("TryBuyFromShop try buy " + giveItem + " " + addCnt);
             bag.RemoveAt(itemIdx, item.Count);
 
             return true;
@@ -96,6 +135,50 @@ namespace My
             Shops.TryGetValue(shopId, out var shop);
             return shop;
         }
+
+        // 配置：按 NPC 配置 id 查找商店 id（多条时取第一条）
+        public bool TryGetShopIdByNpcId(string npcId, out int shopId)
+        {
+            shopId = 0;
+            if (string.IsNullOrEmpty(npcId) || CfgMgr.Cfgs == null)
+            {
+                return false;
+            }
+
+            foreach (var s in CfgMgr.Cfgs.TbShop.DataList)
+            {
+                if (s.BindNpcId == npcId)
+                {
+                    shopId = s.Id;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool TryGetShopDefByNpcId(string npcId, out Shop shopDef)
+        {
+            shopDef = null;
+            if (!TryGetShopIdByNpcId(npcId, out var sid))
+            {
+                return false;
+            }
+
+            shopDef = CfgMgr.Cfgs.TbShop.GetOrDefault(sid);
+            return shopDef != null;
+        }
+
+        public IShopProvider GetShopProviderByNpcId(string npcId)
+        {
+            if (!TryGetShopIdByNpcId(npcId, out var sid))
+            {
+                return null;
+            }
+
+            return GetShop(sid);
+        }
+
         public void TryRefreshOnDayChange()
         {
             foreach (var shop in Shops)
@@ -106,46 +189,49 @@ namespace My
 
         public void RefreshOnNightStart()
         {
-            List<int> getMapShopIds = new() { 1, 2, 4, 6 };
-            for (int i = 0; i < getMapShopIds.Count; i++)
+            Shops.Clear();
+            if (CfgMgr.Cfgs == null)
             {
-                int shopId = getMapShopIds[i];
+                Debug.LogError("RefreshOnNightStart CfgMgr.Cfgs is null");
+                return;
+            }
+
+            var goodsByShop = CfgMgr.Cfgs.TbShopGoods.DataList
+                .GroupBy(g => g.ShopId)
+                .ToDictionary(g => g.Key, g => g.OrderBy(x => x.Sort).ToList());
+
+            foreach (var shopCfg in CfgMgr.Cfgs.TbShop.DataList.OrderBy(s => s.Id))
+            {
                 var shop = new NormalShop(logicManager);
+                shop.ShopId = shopCfg.Id;
 
+                if (goodsByShop.TryGetValue(shopCfg.Id, out var lines))
                 {
-                    var shopItem = new ShopItemInfo();
-                    shopItem.ItemId = "flower_01";
-                    shopItem.BuyCount = 1;
+                    foreach (var g in lines)
+                    {
+                        var shopItem = new ShopItemInfo
+                        {
+                            ItemId = g.ItemId,
+                            BuyCount = g.BuyCount,
+                            CostItemId = g.CostItemId,
+                            CostCount = g.CostCount,
+                            LeftCount = -1,
+                        };
+                        if (g.VisibleConds != null)
+                        {
+                            shopItem.VisibleConds.AddRange(g.VisibleConds);
+                        }
 
-                    shopItem.CostItemId = "gold";
-                    shopItem.CostCount = 50;
+                        if (g.UnlockConds != null)
+                        {
+                            shopItem.UnlockConds.AddRange(g.UnlockConds);
+                        }
 
-                    shop.ShopItems.Add(shopItem);
+                        shop.ShopItems.Add(shopItem);
+                    }
                 }
 
-                {
-                    var shopItem = new ShopItemInfo();
-                    shopItem.ItemId = "flower_02";
-                    shopItem.BuyCount = 1;
-
-                    shopItem.CostItemId = "gold";
-                    shopItem.CostCount = 50;
-
-                    shop.ShopItems.Add(shopItem);
-                }
-
-                {
-                    var shopItem = new ShopItemInfo();
-                    shopItem.ItemId = "flower_03";
-                    shopItem.BuyCount = 1;
-
-                    shopItem.CostItemId = "gold";
-                    shopItem.CostCount = 100;
-
-                    shop.ShopItems.Add(shopItem);
-                }
-
-                Shops[shopId] = shop;
+                Shops[shopCfg.Id] = shop;
             }
         }
     }

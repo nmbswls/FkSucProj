@@ -105,6 +105,11 @@ namespace My.UI
                 maskOverlay.gameObject.SetActive(true);
             }
 
+            if (style == EStyleType.Locked)
+            {
+                lockOverlay.gameObject.SetActive(true);
+            }
+
             if(style == EStyleType.AddIcon)
             {
                 addOverlay.gameObject.SetActive(true);

@@ -1,10 +1,10 @@
+using My;
 using My.Player.Bag;
 using SuperScrollView;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 namespace My.UI
 {
@@ -27,6 +27,8 @@ namespace My.UI
 
 
         public IShopProvider BindShop;
+
+        private List<int> visibleItemIndices = new();
 
         public LoopGridView GridView;
 
@@ -61,7 +63,9 @@ namespace My.UI
 
             IShopProvider shop = (IShopProvider)data;
             this.BindShop = shop;
-            GridView.SetListItemCount(BindShop.ShopItems.Count + 1);
+            var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
+            visibleItemIndices = shop.GetVisibleShopItemIndices(glm);
+            GridView.SetListItemCount(visibleItemIndices.Count + 1);
         }
 
         public void RefreshContent()
@@ -72,19 +76,26 @@ namespace My.UI
         LoopGridViewItem OnGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
         {
             if (BindShop == null) return null;
-            // 注意：部分版本是 OnGetItemByRowColumn 回调签名不同，按你的 API 改名
-            // itemIndex = 行序号（row），列用 column 参数
+            // ??????????? OnGetItemByRowColumn ???????????????? API ????
+            // itemIndex = ??????row???????? column ????
 
 
             var item = grid.NewListViewItem(ItemPrefabName);
             var shopCell = item.GetComponent<ShopContainerWrapper>();
 
-            if (itemIndex < BindShop.ShopItems.Count)
+            if (itemIndex < visibleItemIndices.Count)
             {
-                var shopItem = BindShop.ShopItems[itemIndex];
+                int realIdx = visibleItemIndices[itemIndex];
+                var shopItem = BindShop.ShopItems[realIdx];
                 item.gameObject.SetActive(true);
 
-                shopCell.Bind(shopItem.LeftCount, new ItemStack(shopItem.ItemId, shopItem.BuyCount), itemIndex, EContainerType.Shop, 0, null);
+                var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
+                var st = ShopGoodsDisplay.GetDisplayState(glm, shopItem);
+                var style = st == EShopGoodsDisplayState.Locked
+                    ? AnyContainerItemCell.EStyleType.Locked
+                    : AnyContainerItemCell.EStyleType.Normal;
+
+                shopCell.Bind(shopItem.LeftCount, new ItemStack(shopItem.ItemId, shopItem.BuyCount), realIdx, EContainerType.Shop, 0, null, style);
             }
             else
             {

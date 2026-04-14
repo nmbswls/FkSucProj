@@ -13,12 +13,12 @@ namespace Map.Entity
     //[Serializable]
     //public class HitWindow
     //{
-    //    public PhaseKind Phase;        // ÔÚÄÄ¸ö½×¶ÎÄÚ
-    //    public float StartOffset;      // Ïà¶Ô½×¶Î¿ªÊ¼µÄÊ±¼ä
-    //    public float EndOffset;        // Ïà¶Ô½×¶Î¿ªÊ¼µÄÊ±¼ä
-    //    // ¼ò»¯µÄÃüÖĞĞÎ×´²ÎÊı
+    //    public PhaseKind Phase;        // åœ¨å“ªä¸ªé˜¶æ®µå†…
+    //    public float StartOffset;      // ç›¸å¯¹é˜¶æ®µå¼€å§‹çš„æ—¶é—´
+    //    public float EndOffset;        // ç›¸å¯¹é˜¶æ®µå¼€å§‹çš„æ—¶é—´
+    //    // ç®€åŒ–çš„å‘½ä¸­å½¢çŠ¶å‚æ•°
     //    public float Radius = 2.5f;
-    //    public float AngleDegrees = 140f; // ÉÈĞÎ½Ç¶È£»Èô=360ÔòÎªÔ²»·
+    //    public float AngleDegrees = 140f; // æ‰‡å½¢è§’åº¦ï¼›è‹¥=360åˆ™ä¸ºåœ†ç¯
     //    public float Damage = 30f;
     //    public string DamageType = "Physical";
     //}
@@ -26,11 +26,11 @@ namespace Map.Entity
 
     //public enum EffectTrigger
     //{
-    //    OnStart,           // Ability¸Õ¿ªÊ¼
-    //    OnPhaseEnter,      // ½øÈëÄ³½×¶Î£¨ÅäºÏEffectÄÚµÄPhase¹ıÂË£©
-    //    OnPhaseExit,       // Àë¿ªÄ³½×¶Î
-    //    OnComplete,        // Íê³É
-    //    OnCancel           // È¡Ïû
+    //    OnStart,           // Abilityåˆšå¼€å§‹
+    //    OnPhaseEnter,      // è¿›å…¥æŸé˜¶æ®µï¼ˆé…åˆEffectå†…çš„Phaseè¿‡æ»¤ï¼‰
+    //    OnPhaseExit,       // ç¦»å¼€æŸé˜¶æ®µ
+    //    OnComplete,        // å®Œæˆ
+    //    OnCancel           // å–æ¶ˆ
     //}
 
     
@@ -52,7 +52,7 @@ namespace Map.Entity
     
 
     //[Serializable]
-    //// 2) ¿ªÃÅ/½âËøĞ§¹û
+    //// 2) å¼€é—¨/è§£é”æ•ˆæœ
     //public class OpenDoorEffect : BaseEntityActioEffect
     //{
     //    public bool RequireKey;
@@ -91,7 +91,7 @@ namespace Map.Entity
     //        //    }
     //        //    else
     //        //    {
-    //        //        // ¿ÉÀ©Õ¹Îª×ªÈëÇËËøÄÜÁ¦
+    //        //        // å¯æ‰©å±•ä¸ºè½¬å…¥æ’¬é”èƒ½åŠ›
     //        //        Debug.Log("Door locked; no key requirement in effect. Consider lockpick.");
     //        //    }
     //        //}
@@ -122,7 +122,7 @@ namespace Map.Entity
     //    }
     //    public override void Apply(MapAbilitySpecConfig spec, AbilityContext ctx)
     //    {
-    //        // ÕâÀïÓ¦¶Ô½Ó Animator/StateMachine
+    //        // è¿™é‡Œåº”å¯¹æ¥ Animator/StateMachine
     //        Debug.Log($"PlayAnim: {AnimTag} at phase {ctx.CurrentPhase}");
     //    }
     //}
@@ -139,7 +139,7 @@ namespace Map.Entity
     //    }
     //    public override void Apply(MapAbilitySpecConfig abilityConfig, AbilityContext ctx)
     //    {
-    //        // ÕâÀïÓ¦¶Ô½Ó Animator/StateMachine
+    //        // è¿™é‡Œåº”å¯¹æ¥ Animator/StateMachine
     //        Debug.Log($"ShowBottomProgressEffect at phase {ctx.CurrentPhase}");
     //        ctx.viewer?.ShowBottomProgress(hintText, progressTime);
     //    }
