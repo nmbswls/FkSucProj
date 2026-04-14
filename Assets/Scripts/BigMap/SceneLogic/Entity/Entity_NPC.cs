@@ -207,7 +207,7 @@ namespace My.Map
                 moveSpeed = attrCfg.MoveSpeed;
             }
 
-            // ×ÊÔ´Àà
+            // èµ„æºç±»
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
@@ -232,7 +232,7 @@ namespace My.Map
         {
             base.OnUnitDie(reason, lastIntent);
 
-            // ³õÊ¼»¯µôÂä°ü
+            // åˆå§‹åŒ–æ‰è½åŒ…
             dropBagContainer = new(this.LogicManager, NpcConfig.DefeatDropId, 12);
 
 
@@ -293,13 +293,13 @@ namespace My.Map
 
 
         /// <summary>
-        /// ¼ì²éhÄ£Ê½
+        /// æ£€æŸ¥hæ¨¡å¼
         /// </summary>
         protected void TickHMode()
         {
             bool currHmode = IsInHMode();
 
-            // Îå·ÖÖÓºó»Ö¸´ÒâÖ¾
+            // äº”åˆ†é’Ÿåæ¢å¤æ„å¿—
             if (hShieldBroken && LogicTime.time - _lastHModeTimer > 5 * 60)
             {
                 ForceSetResource(AttrIdConsts.UnitHShield, 10000);
@@ -315,7 +315,7 @@ namespace My.Map
                 }
             }
 
-            // hÄ£Ê½ÏÂ ¼ì²éÉä¾«
+            // hæ¨¡å¼ä¸‹ æ£€æŸ¥å°„ç²¾
             if(currHmode)
             {
                 var hValMax = GetHValMax();
@@ -360,7 +360,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ¼ì²éÊÂ¼ş 
+        /// æ£€æŸ¥äº‹ä»¶ 
         /// </summary>
         /// <param name="evt"></param>
         public override void OnMapLogicEvent(IMapLogicEvent evt)
@@ -386,7 +386,7 @@ namespace My.Map
                         }
 
                         Debug.Log("npc on event interest");
-                        LogicManager.viewer.ShowFakeFxEffect("Ä¿»÷", Pos);
+                        LogicManager.viewer.ShowFakeFxEffect("ç›®å‡»", Pos);
                     }
                     break;
             }
@@ -425,7 +425,7 @@ namespace My.Map
                 case AttrIdConsts.UnitHVal:
                     {
 
-                        // ¶ÔÓÚÀÛ¼ÆhÖµ ¼ì²é¿Û¶Ü
+                        // å¯¹äºç´¯è®¡hå€¼ æ£€æŸ¥æ‰£ç›¾
                         if(delta > 0)
                         {
                             var shieldVal = attributeStore.GetAttr(AttrIdConsts.UnitHShield);
@@ -463,9 +463,9 @@ namespace My.Map
         {
             ForceSetResource(AttrIdConsts.UnitHVal, 0);
 
-            LogicManager.viewer.ShowFakeFxEffect("Éä!", this.Pos);
+            LogicManager.viewer.ShowFakeFxEffect("å°„!", this.Pos);
 
-            // ÉËº¦
+            // ä¼¤å®³
             ApplyResourceChange(AttrIdConsts.HP, -80000, false, Fight.FightStruct.EDmgFlag.None, this.Id);
 
             TryInterrupt(new InterruptRequest()
@@ -493,7 +493,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ¼ì²éÊÇ·ñ¿ÉÒÔ±»´¦¾ö
+        /// æ£€æŸ¥æ˜¯å¦å¯ä»¥è¢«å¤„å†³
         /// </summary>
         /// <returns></returns>
         public bool CheckCanExecute()
@@ -518,7 +518,7 @@ namespace My.Map
                 return true;
             }
 
-            // µÍÑªÁ¿Ò²¿ÉÒÔÕ¶É±
+            // ä½è¡€é‡ä¹Ÿå¯ä»¥æ–©æ€
             var currHp = attributeStore.GetAttr(AttrIdConsts.HP);
             var maxHp = attributeStore.GetAttr(AttrIdConsts.HP_MAX);
 
@@ -537,7 +537,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// »ñÈ¡µ±Ç°¶Ô»°
+        /// è·å–å½“å‰å¯¹è¯
         /// </summary>
         /// <returns></returns>
         public string GetCurrentDialogId()
