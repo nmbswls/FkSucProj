@@ -31,6 +31,7 @@ public partial class Tables
     public demo.TbShop TbShop {get; }
     public demo.TbShopGoods TbShopGoods {get; }
     public demo.TbItemUse TbItemUse {get; }
+    public demo.TbNpcDialogInfo TbNpcDialogInfo {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -51,6 +52,7 @@ public partial class Tables
         TbShop = new demo.TbShop(loader("demo_tbshop"));
         TbShopGoods = new demo.TbShopGoods(loader("demo_tbshopgoods"));
         TbItemUse = new demo.TbItemUse(loader("demo_tbitemuse"));
+        TbNpcDialogInfo = new demo.TbNpcDialogInfo(loader("demo_tbnpcdialoginfo"));
         ResolveRef();
     }
     
@@ -73,6 +75,7 @@ public partial class Tables
         TbShop.ResolveRef(this);
         TbShopGoods.ResolveRef(this);
         TbItemUse.ResolveRef(this);
+        TbNpcDialogInfo.ResolveRef(this);
     }
 }
 

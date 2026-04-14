@@ -207,7 +207,7 @@ namespace My.Map
                 moveSpeed = attrCfg.MoveSpeed;
             }
 
-            // 资源类
+            // H 模式相关资源注册
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
@@ -232,7 +232,7 @@ namespace My.Map
         {
             base.OnUnitDie(reason, lastIntent);
 
-            // 初始化掉落包
+            // 初始化掉落容器
             dropBagContainer = new(this.LogicManager, NpcConfig.DefeatDropId, 12);
 
 
@@ -292,14 +292,12 @@ namespace My.Map
         }
 
 
-        /// <summary>
-        /// 检查h模式
-        /// </summary>
+        // H 模式与护盾相关 Tick
         protected void TickHMode()
         {
             bool currHmode = IsInHMode();
 
-            // 五分钟后恢复意志
+            // 盾破后超过五分钟恢复部分护盾
             if (hShieldBroken && LogicTime.time - _lastHModeTimer > 5 * 60)
             {
                 ForceSetResource(AttrIdConsts.UnitHShield, 10000);
@@ -315,7 +313,7 @@ namespace My.Map
                 }
             }
 
-            // h模式下 检查射精
+            // H 模式满值时触发爆发逻辑
             if(currHmode)
             {
                 var hValMax = GetHValMax();
@@ -357,12 +355,7 @@ namespace My.Map
                 }
             }
         }
-
-
-        /// <summary>
-        /// 检查事件 
-        /// </summary>
-        /// <param name="evt"></param>
+        // 地图逻辑事件
         public override void OnMapLogicEvent(IMapLogicEvent evt)
         {
             if (EnmitySystem != null)
@@ -386,7 +379,7 @@ namespace My.Map
                         }
 
                         Debug.Log("npc on event interest");
-                        LogicManager.viewer.ShowFakeFxEffect("目击", Pos);
+                        LogicManager.viewer.ShowFakeFxEffect("npc_interest_fx", Pos);
                     }
                     break;
             }
@@ -425,7 +418,7 @@ namespace My.Map
                 case AttrIdConsts.UnitHVal:
                     {
 
-                        // 对于累计h值 检查扣盾
+                        // 正值伤害先扣 H 盾
                         if(delta > 0)
                         {
                             var shieldVal = attributeStore.GetAttr(AttrIdConsts.UnitHShield);
@@ -463,9 +456,9 @@ namespace My.Map
         {
             ForceSetResource(AttrIdConsts.UnitHVal, 0);
 
-            LogicManager.viewer.ShowFakeFxEffect("射!", this.Pos);
+            LogicManager.viewer.ShowFakeFxEffect("npc_h_burst", this.Pos);
 
-            // 伤害
+            // 附加 HP 伤害
             ApplyResourceChange(AttrIdConsts.HP, -80000, false, Fight.FightStruct.EDmgFlag.None, this.Id);
 
             TryInterrupt(new InterruptRequest()
@@ -491,11 +484,7 @@ namespace My.Map
         {
             AddAnimLayer(animName);
         }
-
-        /// <summary>
-        /// 检查是否可以被处决
-        /// </summary>
-        /// <returns></returns>
+        // 是否可被处决
         public bool CheckCanExecute()
         {
             //if(NpcConfig.ImmuneExecute)
@@ -518,7 +507,7 @@ namespace My.Map
                 return true;
             }
 
-            // 低血量也可以斩杀
+            // 低血量也可处决
             var currHp = attributeStore.GetAttr(AttrIdConsts.HP);
             var maxHp = attributeStore.GetAttr(AttrIdConsts.HP_MAX);
 
@@ -536,13 +525,43 @@ namespace My.Map
             return NpcConfig.EmnityCfgId;
         }
 
-        /// <summary>
-        /// 获取当前对话
-        /// </summary>
-        /// <returns></returns>
+        // npc_dialog_info：同 npc_id 且条件满足时取最大 priority，否则用 PeaceDialogId
         public string GetCurrentDialogId()
         {
-            return NpcConfig.PeaceDialogId;
+            string fallback = NpcConfig != null ? NpcConfig.PeaceDialogId : string.Empty;
+            if (CfgMgr.Cfgs == null || LogicManager == null || string.IsNullOrEmpty(CfgId))
+            {
+                return fallback;
+            }
+
+            int bestPriority = int.MinValue;
+            string bestDialogId = null;
+
+            foreach (var row in CfgMgr.Cfgs.TbNpcDialogInfo.DataList)
+            {
+                if (row.NpcId != CfgId)
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(row.NeedNpcVal) && !CheckLocalSwitch(row.NeedNpcVal))
+                {
+                    continue;
+                }
+
+                if (!LogicManager.CheckCommonCondsAll(row.ShowCond))
+                {
+                    continue;
+                }
+
+                if (row.Priority > bestPriority)
+                {
+                    bestPriority = row.Priority;
+                    bestDialogId = row.DialogId;
+                }
+            }
+
+            return string.IsNullOrEmpty(bestDialogId) ? fallback : bestDialogId;
         }
     }
 }
