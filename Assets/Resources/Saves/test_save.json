@@ -1,0 +1,31 @@
+{
+  "Meta": {
+    "SaveTime": "2026-04-15T12:00:00Z",
+    "Version": "bundled-test"
+  },
+  "Player": {
+    "Level": 1,
+    "CurrentHP": 100.0,
+    "MaxHP": 100.0,
+    "GlobalSwitchMap": {"base_clear":true,}
+  },
+  "Inventory": [
+    {
+      "ItemID": "banana",
+      "Amount": 1
+    }
+  ],
+  "CurrentMapId": "base_01",
+  "CurrentPos": {
+    "x": -3.5,
+    "y": -1.1
+  },
+  "LastOpenWorldBeforeHome": {
+    "MapId": "base_01",
+    "Pos": {
+      "x": -4.92,
+      "y": -1.1
+    }
+  },
+  "PlayerBuffs": []
+}
