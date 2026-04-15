@@ -37,6 +37,13 @@ using UnityEngine.EventSystems;
 
 namespace My
 {
+    public enum GameStartSaveSource
+    {
+        NewGame,
+        UserPersistentFile,
+        BundledTestSave,
+    }
+
     public partial class MainGameManager : MonoBehaviour, ISceneAbilityViewer
     {
         public static float OrderFactor = 100f;
@@ -114,11 +121,37 @@ namespace My
             //Cursor.lockState = CursorLockMode.Confined;
         }
 
-        public async Task InitStartGame(string startParams, Action? onComplete)
+        public async Task<bool> InitStartGame(string startParams, Action? onComplete, GameStartSaveSource saveSource)
         {
-            if(gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
+            if (gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
             {
-                return;
+                return false;
+            }
+
+            SaveData loadedData = null;
+            switch (saveSource)
+            {
+                case GameStartSaveSource.NewGame:
+                    break;
+                case GameStartSaveSource.UserPersistentFile:
+                    loadedData = await SaveSystem.LoadAsync(SaveSystem.DefaultSaveFileName);
+                    if (loadedData == null)
+                    {
+                        Debug.LogWarning("[MainGameManager] User save load failed or file missing/invalid.");
+                        return false;
+                    }
+                    break;
+                case GameStartSaveSource.BundledTestSave:
+                    loadedData = SaveSystem.LoadBundledSaveFromResources(SaveSystem.BundledTestSaveResourcePath);
+                    if (loadedData == null)
+                    {
+                        Debug.LogWarning("[MainGameManager] Bundled test save missing or invalid JSON.");
+                        return false;
+                    }
+                    break;
+                default:
+                    Debug.LogError($"[MainGameManager] Unknown GameStartSaveSource: {saveSource}");
+                    return false;
             }
 
             gameLogicManager.viewer = this;
@@ -127,27 +160,15 @@ namespace My
             gameLogicManager.EventOnLogicEntitySpawned += OnLogicEntitySpawned;
             gameLogicManager.EventOnLogicEntityDespawned += OnLogicEntityDespawned;
 
-            // 2. [后台线程] 执行异步读取
-            // 此时画面不会卡死，转圈圈动画会流畅播放
-            SaveData loadedData = await SaveSystem.LoadAsync(SAVE_FILE_NAME);
-            if (loadedData == null)
-            {
-                Debug.Log("no saving found");
-            }
             gameLogicManager.OnGameLogicInit(loadedData);
 
-
             sceneDropManager.OnGameInit();
-            // zhuceui
             UIOrchestrator.Instance.InitGameLogicEventListener();
-
 
             gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>
             {
                 MapProjectileManager.Instance.Spawn(pInfo);
             };
-
-            //UIManager.Instance.ShowLoading("starting");
 
             var playerMap = loadedData?.CurrentMapId ?? string.Empty;
             Vector2? savedPos = loadedData?.CurrentPos ?? Vector2.zero;
@@ -158,7 +179,9 @@ namespace My
                 savedPos = new Vector2(-4.92f, -1.1f);
             }
 
-            gameLogicManager.PreparePlayerSwitchArea(playerMap, true, targetPos : savedPos);
+            gameLogicManager.PreparePlayerSwitchArea(playerMap, true, targetPos: savedPos);
+            onComplete?.Invoke();
+            return true;
         }
 
 
@@ -540,42 +563,41 @@ namespace My
             PlayDialog("defeated_01");
         }
 
-        private const string SAVE_FILE_NAME = "mysave.json";
+        // --- 保存流程：主线程采集，字段与 SaveData 注释一致 ---
+        SaveData BuildRuntimeSaveSnapshot()
+        {
+            var data = new SaveData();
+            data.Meta.SaveTime = System.DateTime.Now.ToString("o");
+            data.Meta.Version = Application.version;
 
-        // --- 保存流程 ---
+            // 占位：待与真实养成/战斗数值对接
+            // data.PlayerData.Level = ...
+            data.Inventory.Add(new InventoryItemData { ItemID = "Sword_01", Amount = 1 });
+
+            if (gameLogicManager?.AreaManager != null &&
+                !string.IsNullOrEmpty(gameLogicManager.AreaManager.MapName))
+            {
+                data.CurrentMapId = gameLogicManager.AreaManager.MapName;
+            }
+
+            if (gameLogicManager?.playerLogicEntity != null)
+            {
+                data.CurrentPos = gameLogicManager.playerLogicEntity.Pos;
+            }
+
+            gameLogicManager?.AppendRuntimePersistenceToSaveData(data);
+
+            return data;
+        }
+
         public async Task OnSaveClicked()
         {
             if (SaveSystem.IsBusy) return;
 
+            SaveData dataToSave = BuildRuntimeSaveSnapshot();
+            await SaveSystem.SaveAsync(SaveSystem.DefaultSaveFileName, dataToSave);
 
-            // 2. [主线程] 采集数据 (Capture State)
-            // 必须在主线程做，因为后台线程不能访问 transform.position 等 Unity API
-            SaveData dataToSave = new SaveData();
-
-            // 填充元数据
-            dataToSave.Meta.SaveTime = System.DateTime.Now.ToString();
-            dataToSave.Meta.Version = Application.version;
-
-            // 填充玩家数据
-            //dataToSave.Player.Level = this.PlayerLevel;
-            //dataToSave.Player.CurrentHP = this.PlayerHP;
-            //dataToSave.Player.MaxHP = 100f;
-
-            // 填充位置数据 (转为纯 float 数组)
-            //Vector3 pos = PlayerTransform.position;
-            //Vector3 rot = PlayerTransform.eulerAngles;
-            //dataToSave.World.Position = new float[] { pos.x, pos.y, pos.z };
-            //dataToSave.World.Rotation = new float[] { rot.x, rot.y, rot.z };
-            //dataToSave.World.SceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-
-            // 填充背包 (模拟数据)
-            dataToSave.Inventory.Add(new InventoryItemData { ItemID = "Sword_01", Amount = 1 });
-
-            // 3. [后台线程] 执行异步保存
-            // 此时 UI 会继续渲染，不会卡顿
-            await SaveSystem.SaveAsync(SAVE_FILE_NAME, dataToSave);
-
-            Debug.Log("UI: 保存流程结束");
+            Debug.Log("UI: save flow finished");
         }
 
 

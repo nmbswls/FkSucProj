@@ -54,6 +54,7 @@ namespace My.Map
         bool CheckHasBuff(string buffId);
 
         void RegisterBuff(BuffInstance buffInst);
+        void RegisterBuffDirect(BuffInstance buffInst);
         void UnregisterBuff(BuffInstance buffInst);
     }
 
@@ -67,7 +68,7 @@ namespace My.Map
 
         long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent);
         /// <summary>
-        /// Ôö¼Ómodifier
+        /// å¢åŠ modifier
         /// </summary>
         /// <param name="m"></param>
         Modifier AddAttrModifier(ModSourceKey source, string attrId, long val);
@@ -97,11 +98,11 @@ namespace My.Map
 
         long LifeBindEntityId { get; }
 
-        // ÉúÃüÖÜÆÚ¹³×Ó
-        void OnSpawn(LogicEntityRecord data);    // ´Ó¼ÇÂ¼´´½¨ÍêÕûÊµÀı
-        void OnDespawn(ref LogicEntityRecord? snapshot); // Êä³ö¿ìÕÕ£¬¹©ÏÂ´ÎÖØ½¨
-        void OnWake();   // ´ÓSleep½øÈëActive£¬¿ªÆôAI¡¢¸ĞÖª¡¢°º¹óÏµÍ³
-        void OnSleep();  // ´ÓActive½µ¼¶ÎªSleep£¬¹Ø±Õ°º¹óÏµÍ³£¬±£ÁôÇáÁ¿Âß¼­
+        // ç”Ÿå‘½å‘¨æœŸé’©å­
+        void OnSpawn(LogicEntityRecord data);    // ä»???å½•åˆ›å»ºå®Œæ•´å®ä¾‹
+        void OnDespawn(ref LogicEntityRecord? snapshot); // è¾“å‡º??ç…§ï¼Œä¾›ä¸‹æ¬¡é‡??
+        void OnWake();   // ä»Sleepè¿›å…¥Activeï¼Œå¼€å¯AIã€æ„ŸçŸ¥ã€æ˜‚è´µç³»??
+        void OnSleep();  // ä»Activeé™çº§ä¸ºSleepï¼Œå…³??æ˜‚è´µç³»ç»Ÿï¼Œä¿ç•™è½»é‡é€»è¾‘
         void Tick(float dt);
 
         void OnEnterAOI();
@@ -158,19 +159,19 @@ namespace My.Map
         public EFactionId FactionId { get; set; }
 
         public bool IsActive { get; set; } = true;
-        public bool IsDirty { get; set; } // ÊµÌåÔà±ê¼ÇÎ» Ñ°ÕÒÊ±»úĞ´»Ørecord
+        public bool IsDirty { get; set; } // å®ä½“è„æ ‡è®°ä½ å¯»æ‰¾æ—¶æœºå†™å›record
 
         public bool MarkDestroyed { get; set; }
 
         public event Action<long, Vector2, Vector2> EventOnEntityMove;
         public event Action<long> EventOnDestroyed;
         public event Action EventOnAnimLayerUpdate;
-        public event Action<string, int, bool> EventOnAnimPlay; // ¶¯»­Ãû ²ãid ÊÇ·ñÇå¿Õ
+        public event Action<string, int, bool> EventOnAnimPlay; // åŠ¨ç”»?? å±‚id ??å¦æ¸…??
         public Vector2 Pos { get; protected set; } = Vector2.zero;
 
         public float OffsetZ { get; protected set; }
 
-        public ISceneAbilityViewer? viewer; // ±íÏÖ²ã½Ó¿Ú
+        public ISceneAbilityViewer? viewer; // è¡¨ç°å±‚æ¥??
 
         public string BelongRoomId { get; set; } = string.Empty;
 
@@ -178,10 +179,10 @@ namespace My.Map
 
 
 
-        #region ÉúÃüÖÜÆÚ
+        #region ç”Ÿå‘½å‘¨æœŸ
 
         /// <summary>
-        /// todo ²ğ·Öµ½Íâ²¿Î¬»¤
+        /// todo æ‹†åˆ†åˆ°???éƒ¨ç»´æŠ¤
         /// </summary>
         public long LifeBindEntityId { get; set; }
         public bool MarkDespawn { get; set; }
@@ -190,7 +191,7 @@ namespace My.Map
         #endregion
 
 
-        #region Í¨ÓÃ×Ö¶Î
+        #region é€šç”¨å­—???
 
         protected HashSet<string> EntityLocalSwitches = new();
         public bool CheckLocalSwitch(string switchName)
@@ -260,7 +261,7 @@ namespace My.Map
 
         public void TeleportTo(Vector2 pos)
         {
-            // ÆäËû
+            // å…¶ä»–
             var posNow = this.Pos;
             SetPosition(pos);
             EventOnEntityMove?.Invoke(this.Id, posNow, pos);
@@ -269,13 +270,13 @@ namespace My.Map
 
         protected virtual void InitAttribute()
         {
-            //// ÊıÖµÀà
+            //// æ•°å€¼ç±»
             //attributeStore.RegisterNumeric("Attack", initialBase: 100);
             //attributeStore.RegisterNumeric("Strength", initialBase: 10);
             //attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
             //attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
-            //// ×ÊÔ´Àà
+            //// èµ„æº??
             //attributeStore.RegisterResource("HP", "HP.Max", 100);
 
             //attributeStore.Commit();
@@ -287,7 +288,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ¶ÔÍâÊôĞÔ½Ó¿Ú
+        /// å¯¹???å±æ€§æ¥??
         /// </summary>
         /// <param name="attrId"></param>
         /// <returns></returns>
@@ -306,7 +307,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Ò»°ãÓÉÏµÍ³»úÖÆµ÷ÓÃ
+        /// ä¸€??ç”±ç³»ç»Ÿæœºåˆ¶è°ƒ??
         /// </summary>
         /// <param name="resourceId"></param>
         /// <param name="newVal"></param>
@@ -327,7 +328,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ÊôĞÔ±ä»¯»Øµ÷
+        /// å±æ€§å˜åŒ–å›??
         /// </summary>
         /// <param name="attrId"></param>
         /// <param name="before"></param>
@@ -336,7 +337,7 @@ namespace My.Map
 
         public virtual void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
         {
-            // 4.3 ËÀÍöÅĞ¶Ï´°¿Ú£º½öÔÚº¬ÉËº¦Ê±¼ì²é
+            // 4.3 æ­»äº¡åˆ¤æ–­çª—å£ï¼šä»…åœ¨å«ä¼¤???æ—¶æ£€??
         }
 
         public Modifier AddAttrModifier(ModSourceKey source, string attrId, long val)
@@ -356,7 +357,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Ïú»ÙÀíÓÉ£º
+        /// é”€æ¯ç†ç”±ï¼š
         /// </summary>
         /// <param name="reason"></param>
         public virtual void DoEntityDestroyed(string reason)
@@ -367,19 +368,19 @@ namespace My.Map
                 return;
             }
 
-            // ±ê¼ÇÒÑÏú»Ù 
+            // æ ‡???å·²é”€?? 
             MarkDestroyed = true;
 
-            // Ïú»Ù»Øµ÷
+            // é”€æ¯å›??
             EventOnDestroyed?.Invoke(this.Id);
 
             LogicManager.AreaManager.RequestEntityDestroy(this.Id, reason);
         }
 
         /// <summary>
-        /// ´¦ÀíentityµÄËÀÍöÂß¼­
-        ///  ¿ÉÄÜ°üÀ¨×´Ì¬ÇåÀí ¸÷ÖÖÖĞ¶ÏµÈ
-        ///  ËÀÍöºóÄ¬ÈÏ5ÃëºóÏú»Ù µ«view¿ÉÄÜÒÑ¾­Òş²Ø
+        /// å¤„ç†entityçš„???äº¡é€»è¾‘
+        ///  ??èƒ½åŒ…??çŠ¶æ€æ¸…?? å„???ä¸­????
+        ///  æ­»äº¡åé»˜??5ç§’åé”€?? ä½†view??èƒ½å·²ç»éš??
         /// </summary>
         /// <param name="reason"></param>
         /// <param name="lastIntent"></param>
@@ -391,7 +392,7 @@ namespace My.Map
         //        return;
         //    }
 
-        //    // ±ê¼ÇËÀÍö 
+        //    // æ ‡??????äº¡ 
         //    MarkDestroyed = true;
         //    MarkDeadTime = LogicTime.time;
 
@@ -505,7 +506,7 @@ namespace My.Map
         public void SetPosition(Vector2 pos)
         {
             this.Pos = pos;
-            // callback ĞÎÊ½
+            // callback å½¢å¼
             if(this.Id != 0)
             {
                 LogicManager.AreaManager.UpdatePosition(this.Id, pos);
@@ -548,6 +549,12 @@ namespace My.Map
             BuffContainer.Add(buffInst.InstanceId, buffInst);
             EventOnBuffRegister?.Invoke(buffInst);
         }
+
+        public void RegisterBuffDirect(BuffInstance buffInst)
+        {
+            BuffContainer[buffInst.InstanceId] = buffInst;
+        }
+
         public void UnregisterBuff(BuffInstance buffInst)
         {
             BuffContainer.Remove(buffInst.InstanceId);

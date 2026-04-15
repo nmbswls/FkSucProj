@@ -919,6 +919,21 @@ namespace My.Map.Entity
             return instance.InstanceId;
         }
 
+        public void RehydrateBuffFromPersist(IEntityBuffOwner owner, My.Saving.BuffPersistData data)
+        {
+            if (owner == null || data == null || string.IsNullOrEmpty(data.BuffId))
+            {
+                return;
+            }
+
+            long? caster = data.CasterEntityId != 0 ? data.CasterEntityId : (long?)null;
+            long? srcBuff = data.SrcBuffId != 0 ? data.SrcBuffId : (long?)null;
+            var inst = new BuffInstance(owner, ++BuffInstIdCounter, data.BuffId, data.Layer, data.RemainingLifetime, casterId: caster, srcBuffId: srcBuff);
+            inst.OnBuffAddOrUpdate(true);
+            _buffs[inst.InstanceId] = inst;
+            owner.RegisterBuffDirect(inst);
+        }
+
         // 外部接口：请求添加 Buff（可在效果中调用）
         public void RequestAddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {

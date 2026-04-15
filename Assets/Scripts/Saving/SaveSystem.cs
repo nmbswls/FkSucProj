@@ -1,91 +1,145 @@
 
-using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace My.Saving
 {
-
     public static class SaveSystem
     {
-        // 防止短时间内重复触发读写
+        public const string DefaultSaveFileName = "mysave.json";
+
+        // Resources 下 TextAsset，路径不含扩展名；只读
+        public const string BundledTestSaveResourcePath = "Saves/test_save";
+
         public static bool IsBusy { get; private set; }
 
-        // 获取存档路径 (Application.persistentDataPath 只能在主线程访问，所以建议在初始化时缓存或从外部传入)
-        private static string GetPath(string saveFileName)
+        public static string GetFullPath(string saveFileName)
         {
             return Path.Combine(Application.persistentDataPath, saveFileName);
         }
 
-        /// <summary>
-        /// 异步保存
-        /// </summary>
-        /// <param name="fileName">文件名 (如 save.json)</param>
-        /// <param name="data">准备好的纯数据对象 (DTO)</param>
+        public static bool SaveFileLooksValid(string fileName)
+        {
+            string fullPath = GetFullPath(fileName);
+            if (!File.Exists(fullPath)) return false;
+            try
+            {
+                return new FileInfo(fullPath).Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static string GetPath(string saveFileName) => GetFullPath(saveFileName);
+
+        public static SaveData DeserializeSaveData(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                Debug.LogError("[SaveSystem] DeserializeSaveData: json is empty");
+                return null;
+            }
+
+            try
+            {
+                var data = JsonConvert.DeserializeObject<SaveData>(json);
+                if (data == null)
+                {
+                    Debug.LogError("[SaveSystem] DeserializeSaveData: result is null");
+                    return null;
+                }
+
+                SaveData.EnsureHydrated(data);
+                return data;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SaveSystem] DeserializeSaveData failed: {e.Message}");
+                return null;
+            }
+        }
+
+        public static SaveData LoadBundledSaveFromResources(string resourcePathWithoutExtension)
+        {
+            var asset = Resources.Load<TextAsset>(resourcePathWithoutExtension);
+            if (asset == null)
+            {
+                Debug.LogError($"[SaveSystem] Bundled save TextAsset not found: Resources/{resourcePathWithoutExtension}.json");
+                return null;
+            }
+
+            return DeserializeSaveData(asset.text);
+        }
+
         public static async Task SaveAsync(string fileName, SaveData data)
         {
             if (IsBusy) return;
-            IsBusy = true;
+            if (data == null)
+            {
+                Debug.LogError("[SaveSystem] SaveAsync: data is null");
+                return;
+            }
 
-            // 1. 获取路径 (必须在主线程完成)
+            IsBusy = true;
             string fullPath = GetPath(fileName);
 
-            // 2. 切换到后台线程执行繁重工作
             await Task.Run(() =>
             {
                 try
                 {
-                    // A. 序列化 (CPU 密集型操作)
-                    // Formatting.None 可以减小文件体积，调试时可用 Indented
                     string json = JsonConvert.SerializeObject(data, Formatting.None);
-
-                    // B. 写入文件 (IO 密集型操作)
-                    // 可以在这里插入 AES 加密逻辑
                     File.WriteAllText(fullPath, json);
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
-                    // 捕获异常，防止 Task 默默失败
-                    Debug.LogError($"[SaveSystem] 保存失败: {e.Message}");
+                    Debug.LogError($"[SaveSystem] Save failed: {e.Message}");
                 }
             });
 
             IsBusy = false;
-            Debug.Log($"[SaveSystem] 异步保存完成: {fullPath}");
+            Debug.Log($"[SaveSystem] Save completed: {fullPath}");
         }
 
-        /// <summary>
-        /// 异步读取
-        /// </summary>
         public static async Task<SaveData> LoadAsync(string fileName)
         {
-            if (IsBusy) return null;
-            IsBusy = true;
+            if (IsBusy)
+            {
+                Debug.LogWarning("[SaveSystem] LoadAsync skipped: another save IO is in progress");
+                return null;
+            }
 
+            IsBusy = true;
             string fullPath = GetPath(fileName);
             if (!File.Exists(fullPath))
             {
                 IsBusy = false;
-                Debug.LogWarning("[SaveSystem] 存档文件不存在");
+                Debug.LogWarning("[SaveSystem] Save file not found");
                 return null;
             }
 
-            // 切换到后台线程
             SaveData result = await Task.Run(() =>
             {
                 try
                 {
-                    // A. 读取文件 (IO)
                     string json = File.ReadAllText(fullPath);
+                    var parsed = JsonConvert.DeserializeObject<SaveData>(json);
+                    if (parsed == null)
+                    {
+                        Debug.LogError("[SaveSystem] Deserialize returned null (empty or invalid JSON)");
+                        return null;
+                    }
 
-                    // B. 反序列化 (CPU) - 这是最耗时的部分！
-                    // 可以在这里插入 AES 解密逻辑
-                    return JsonConvert.DeserializeObject<SaveData>(json);
+                    SaveData.EnsureHydrated(parsed);
+                    return parsed;
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
-                    Debug.LogError($"[SaveSystem] 读取失败: {e.Message}");
+                    Debug.LogError($"[SaveSystem] Load failed: {e.Message}");
                     return null;
                 }
             });

@@ -46,9 +46,8 @@ namespace My.Player
 
         /// <summary>
         /// 
-        /// ?????????
         /// </summary>
-        public Dictionary<string, bool> VariableDict = new();
+        public Dictionary<string, bool> GlobalSwitchMap = new();
 
         public List<string> PlayerSkillList = new() 
         {
@@ -106,8 +105,8 @@ namespace My.Player
         {
             this.logicManager = logicManager;
 
-            VariableDict["fix_teleport"] = true;
-            VariableDict["a1"] = true;
+            //VariableDict["fix_teleport"] = true;
+            //VariableDict["a1"] = true;
 
             ProgressionSystem = new();
             QuestSystem = new();
@@ -146,6 +145,15 @@ namespace My.Player
         public void InitPlayerData(SaveData savingData)
         {
             InitBagInfo();
+
+            this.GlobalSwitchMap.Clear();
+            if (savingData?.PlayerData?.GlobalSwitchMap != null)
+            {
+                foreach (var kv in savingData.PlayerData.GlobalSwitchMap)
+                {
+                    this.GlobalSwitchMap[kv.Key] = kv.Value;
+                }
+            }
 
             ProgressionSystem.InitSystem(logicManager, savingData);
             QuestSystem.InitSystem(logicManager, savingData);
@@ -192,13 +200,13 @@ namespace My.Player
 
         public bool CheckHasParam(string id)
         {
-            VariableDict.TryGetValue(id, out var val);
+            GlobalSwitchMap.TryGetValue(id, out var val);
             return val;
         }
 
         public void SetVariable(string id)
         {
-            VariableDict[id] = true;
+            GlobalSwitchMap[id] = true;
 
             // ???????
             logicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()

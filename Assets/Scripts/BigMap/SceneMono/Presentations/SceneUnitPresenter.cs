@@ -418,8 +418,18 @@ namespace My.Map.Scene
 
             InitWeaponInfo();
 
+            SyncExistingBuffSceneEffects();
+
             OnEventGhostChange(this.Id);
             OnEventInvisibleChange(this.Id);
+        }
+
+        void SyncExistingBuffSceneEffects()
+        {
+            foreach (var b in UnitEntity.BuffContainer.Values)
+            {
+                OnEventBuffRegister(b);
+            }
         }
 
         protected override void RegisterEvents()

@@ -163,6 +163,8 @@ namespace My
                 }
             };
 
+            CapturePersistenceFromSaveData(saveData);
+
             MainStage = EMainGameStage.Initialized;
         }
 
@@ -273,6 +275,9 @@ namespace My
                 Debug.LogError("PlayerSwitchArea when have pending switch intent.");
                 return;
             }
+
+            TrySnapshotOpenWorldBeforeEnteringHome(mapName);
+
             var intent = new SwitchAreaIntent();
             intent.AreaName = mapName;
             intent.OldAreaName = AreaManager.MapName;
@@ -732,17 +737,16 @@ namespace My
             {
 
                 // 死亡
-                // 检查是否有map事件hook
-                //var reviveMapName = GetCurrentReviveMap();
-                var bornP = playerDataManager.SavedBornPoint;
-                if(!string.IsNullOrEmpty(bornP))
-                {
-                    bornP = "initial";
-                }
+                var reviveMapName = GetCurrentReviveMap();
+                //var bornP = playerDataManager.SavedBornPoint;
+                //if(!string.IsNullOrEmpty(bornP))
+                //{
+                //    bornP = "initial";
+                //}
 
-                var bornCfg = CfgMgr.Cfgs.TbBornPoint.GetOrDefault(bornP);
+                //var bornCfg = CfgMgr.Cfgs.TbBornPoint.GetOrDefault(bornP);
                 // 回城
-                PreparePlayerSwitchArea(bornCfg.MapName, true, bornCfg.NamedPoint);
+                PreparePlayerSwitchArea(reviveMapName, true);
             }
         }
 
@@ -828,7 +832,125 @@ namespace My
             return AreaManager.FindEntityInRange(pos, radius);
         }
 
-        
+        #region Persistence (save / buff restore)
+
+        private List<BuffPersistData> _pendingPlayerBuffRestore;
+
+        public OpenWorldReturnBookmark LastOpenWorldBeforeHome { get; private set; }
+
+        void CapturePersistenceFromSaveData(SaveData saveData)
+        {
+            if (saveData == null)
+            {
+                _pendingPlayerBuffRestore = null;
+                LastOpenWorldBeforeHome = null;
+                return;
+            }
+
+            if (saveData.PlayerBuffs != null && saveData.PlayerBuffs.Count > 0)
+            {
+                _pendingPlayerBuffRestore = new List<BuffPersistData>(saveData.PlayerBuffs);
+            }
+            else
+            {
+                _pendingPlayerBuffRestore = null;
+            }
+
+            if (saveData.LastOpenWorldBeforeHome != null)
+            {
+                LastOpenWorldBeforeHome = new OpenWorldReturnBookmark
+                {
+                    MapId = saveData.LastOpenWorldBeforeHome.MapId,
+                    Pos = saveData.LastOpenWorldBeforeHome.Pos,
+                };
+            }
+            else
+            {
+                LastOpenWorldBeforeHome = null;
+            }
+        }
+
+        void TrySnapshotOpenWorldBeforeEnteringHome(string destinationMapName)
+        {
+            var destCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(destinationMapName);
+            string srcMap = AreaManager.MapName;
+            if (string.IsNullOrEmpty(srcMap))
+            {
+                return;
+            }
+
+            var srcCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(srcMap);
+            if (destCfg == null || !destCfg.IsHome)
+            {
+                return;
+            }
+
+            if (srcCfg == null || srcCfg.IsHome)
+            {
+                return;
+            }
+
+            if (playerLogicEntity == null)
+            {
+                return;
+            }
+
+            LastOpenWorldBeforeHome = new OpenWorldReturnBookmark
+            {
+                MapId = srcMap,
+                Pos = playerLogicEntity.Pos,
+            };
+        }
+
+        public void RestorePendingPlayerBuffsIfAny(IEntityBuffOwner owner)
+        {
+            if (_pendingPlayerBuffRestore == null || _pendingPlayerBuffRestore.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var snap in _pendingPlayerBuffRestore)
+            {
+                globalBuffManager.RehydrateBuffFromPersist(owner, snap);
+            }
+
+            _pendingPlayerBuffRestore = null;
+        }
+
+        public void AppendRuntimePersistenceToSaveData(SaveData data)
+        {
+            if (data == null) return;
+
+            data.LastOpenWorldBeforeHome = LastOpenWorldBeforeHome == null
+                ? null
+                : new OpenWorldReturnBookmark
+                {
+                    MapId = LastOpenWorldBeforeHome.MapId,
+                    Pos = LastOpenWorldBeforeHome.Pos,
+                };
+
+            data.PlayerBuffs ??= new List<BuffPersistData>();
+            data.PlayerBuffs.Clear();
+            if (playerLogicEntity == null)
+            {
+                return;
+            }
+
+            foreach (var b in playerLogicEntity.BuffContainer.Values)
+            {
+                data.PlayerBuffs.Add(new BuffPersistData
+                {
+                    BuffId = b.BuffId,
+                    Layer = b.Layer,
+                    RemainingLifetime = b.Lifetime,
+                    CasterEntityId = b.CasterId,
+                    SrcBuffId = b.SrcBuffId,
+                });
+            }
+        }
+
+        #endregion
+
     }
 
 }

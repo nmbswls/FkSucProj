@@ -1,10 +1,28 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace My.Saving
 {
+    [Serializable]
+    public class OpenWorldReturnBookmark
+    {
+        public string MapId;
+        public Vector2 Pos;
+    }
+
+    [Serializable]
+    public class BuffPersistData
+    {
+        public string BuffId;
+        public int Layer;
+        public float RemainingLifetime;
+        public long CasterEntityId;
+        public long SrcBuffId;
+    }
+
     [Serializable]
     public class MetaData
     {
@@ -18,6 +36,8 @@ namespace My.Saving
         public int Level;
         public float CurrentHP;
         public float MaxHP;
+
+        public Dictionary<string, bool> GlobalSwitchMap = new();
     }
 
     [Serializable]
@@ -31,20 +51,34 @@ namespace My.Saving
     public class SaveData
     {
         public MetaData Meta;
-        public PlayerData Player;
+
+        [JsonProperty("Player")]
+        public PlayerData PlayerData;
+
         public List<InventoryItemData> Inventory;
-        //public WorldData World;
 
         public string CurrentMapId;
         public Vector2 CurrentPos;
 
+        public OpenWorldReturnBookmark LastOpenWorldBeforeHome;
+        public List<BuffPersistData> PlayerBuffs;
+
         public SaveData()
         {
             Meta = new MetaData();
-            Player = new PlayerData();
+            PlayerData = new PlayerData();
             Inventory = new List<InventoryItemData>();
-            //World = new WorldData();
+            PlayerBuffs = new List<BuffPersistData>();
+        }
+
+        public static void EnsureHydrated(SaveData data)
+        {
+            if (data == null) return;
+            data.Meta ??= new MetaData();
+            data.PlayerData ??= new PlayerData();
+            data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
+            data.Inventory ??= new List<InventoryItemData>();
+            data.PlayerBuffs ??= new List<BuffPersistData>();
         }
     }
-
 }
