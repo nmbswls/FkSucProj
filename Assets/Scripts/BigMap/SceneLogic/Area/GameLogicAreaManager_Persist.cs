@@ -98,6 +98,11 @@ namespace My.Map.Logic
                     continue;
                 }
 
+                if (rec.MarkDestroyed)
+                {
+                    continue;
+                }
+
                 d.EntityRecords.Add(rec);
             }
 
