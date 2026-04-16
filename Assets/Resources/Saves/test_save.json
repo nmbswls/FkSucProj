@@ -7,7 +7,9 @@
     "Level": 1,
     "CurrentHP": 100.0,
     "MaxHP": 100.0,
-    "GlobalSwitchMap": {"base_clear":true,}
+    "GlobalSwitchMap": {
+      "base_clear": true
+    }
   },
   "Inventory": [
     {
@@ -27,5 +29,12 @@
       "y": -1.1
     }
   },
-  "PlayerBuffs": []
+  "PlayerBuffs": [],
+  "GlobalRuntime": {
+    "AlertVal": 0,
+    "WantedScaledVal": 0,
+    "WantedLastTime": 0.0
+  },
+  "MapRuntimeByMapId": {},
+  "NextLogicEntityIdHint": 0
 }
