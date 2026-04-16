@@ -3,8 +3,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using cfg.demo;
 using Config;
 using My.Config;
+using My.Map;
 using My.MapExport;
 using UnityEngine;
 
@@ -17,7 +19,7 @@ namespace My.Map.Logic
         public class LogicEntityRepository
         {
             public readonly Dictionary<long, LogicEntityRecord> Records = new();
-            // 已加载的运行时实体
+            // ??????????????
             public readonly Dictionary<long, ILogicEntity> Loaded = new();
 
             public bool HasRecord(long id) => Records.ContainsKey(id);
@@ -55,6 +57,9 @@ namespace My.Map.Logic
             public long EntityInstId;
             public float LastRespawnTime;
             public float LastDestroyTime;
+
+            // ???????????????????????/????????????????????????????????????????????????????????????????
+            public bool LastRemovalWasVisibilityCond;
         }
         public Dictionary<int, SceneRefreshInfoRuntime> RefreshInfoRuntimes = new();
 
@@ -65,7 +70,7 @@ namespace My.Map.Logic
         public HashSet<long> NewCreateEntityMark = new();
 
         /// <summary>
-        /// 检查刷新和消失
+        /// ??????????
         /// </summary>
         /// <param name="dt"></param>
         public void CheckRefreshAppearAndDisappear(float dt)
@@ -93,7 +98,7 @@ namespace My.Map.Logic
         }
 
         /// <summary>
-        /// 检查强制刷新
+        /// ?????????
         /// </summary>
         public void ForceCheckRefreshInfos()
         {
@@ -109,12 +114,35 @@ namespace My.Map.Logic
         }
 
         /// <summary>
-        /// 处理一次刷新
+        /// ??????????
         /// </summary>
         /// <param name="refreshInfo"></param>
         public void HandleOneRefreshInfo(DynamicEntityRefreshInfo refreshInfo)
         {
-            if (RefreshInfoRuntimes.TryGetValue(refreshInfo.StaticId, out var refreshRuntime))
+            RefreshInfoRuntimes.TryGetValue(refreshInfo.StaticId, out var refreshRuntime);
+
+            if (refreshRuntime != null && refreshRuntime.EntityInstId != 0 &&
+                Repo.Records.TryGetValue(refreshRuntime.EntityInstId, out var liveRec) &&
+                !liveRec.MarkDestroyed)
+            {
+                if (!DialogForceStaticIds.Contains(refreshInfo.StaticId) &&
+                    ShouldHideByRefreshConditions(refreshInfo))
+                {
+                    ForceDestroyEntityNow(refreshRuntime.EntityInstId, "RefreshCondHide");
+                    if (RefreshInfoRuntimes.TryGetValue(refreshInfo.StaticId, out var rtVis))
+                    {
+                        rtVis.LastRemovalWasVisibilityCond = true;
+                    }
+
+                    RefreshInfoRuntimes.TryGetValue(refreshInfo.StaticId, out refreshRuntime);
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            if (RefreshInfoRuntimes.TryGetValue(refreshInfo.StaticId, out refreshRuntime))
             {
                 if (refreshRuntime.EntityInstId != 0 &&
                     Repo.Records.TryGetValue(refreshRuntime.EntityInstId, out var existingRec) &&
@@ -123,23 +151,28 @@ namespace My.Map.Logic
                     return;
                 }
 
-                if(!refreshInfo.WillRespawn)
+                if (refreshInfo.WillRespawn)
                 {
-                    return;
+                    if (LogicTime.time - refreshRuntime.LastDestroyTime < refreshInfo.RespawnInterval)
+                    {
+                        return;
+                    }
                 }
-
-                if(LogicTime.time - refreshRuntime.LastDestroyTime < refreshInfo.RespawnInterval)
+                else if (!IsSavePointRefreshInfo(refreshInfo))
                 {
-                    return;
+                    if (!HasDynamicVisibilityCond(refreshInfo) || !refreshRuntime.LastRemovalWasVisibilityCond)
+                    {
+                        return;
+                    }
                 }
             }
 
-            // 排除特殊条件
-            // todo 抽象
+            // ???????????
+            // todo ????
             if(!DialogForceStaticIds.Contains(refreshInfo.StaticId))
             {
-                // 检查条件
-                if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != 0)
+                // ???????
+                if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != ECommonCheckType.None)
                 {
                     if (!logicManager.CheckCommonCond(refreshInfo.AppearCond))
                     {
@@ -161,9 +194,71 @@ namespace My.Map.Logic
             {
                 EntityInstId = record.Id,
                 LastRespawnTime = LogicTime.time,
+                LastRemovalWasVisibilityCond = false,
             };
 
             Record2RefreshInfo[record.Id] = refreshInfo.StaticId;
+        }
+
+        private void RebuildRefreshInfoByStaticId()
+        {
+            if (_refreshInfoByStaticId == null)
+            {
+                _refreshInfoByStaticId = new Dictionary<int, DynamicEntityRefreshInfo>(EntityRefreshInfo.Count);
+            }
+            else
+            {
+                _refreshInfoByStaticId.Clear();
+            }
+
+            foreach (var ri in EntityRefreshInfo)
+            {
+                _refreshInfoByStaticId[ri.StaticId] = ri;
+            }
+        }
+
+        internal bool TryGetRefreshInfoByStaticId(int staticId, out DynamicEntityRefreshInfo info)
+        {
+            if (_refreshInfoByStaticId == null)
+            {
+                info = null;
+                return false;
+            }
+
+            return _refreshInfoByStaticId.TryGetValue(staticId, out info);
+        }
+
+        internal static bool IsSavePointRefreshInfo(DynamicEntityRefreshInfo ri)
+        {
+            return ri?.InitInfo != null && ri.InitInfo.EntityType == EEntityType.SavePoint;
+        }
+
+        private static bool HasDynamicVisibilityCond(DynamicEntityRefreshInfo ri)
+        {
+            bool hasAppear = ri.AppearCond != null && ri.AppearCond.Type != ECommonCheckType.None;
+            bool hasDisappear = ri.DisappearCond != null && ri.DisappearCond.Type != ECommonCheckType.None;
+            return hasAppear || hasDisappear;
+        }
+
+        private bool ShouldHideByRefreshConditions(DynamicEntityRefreshInfo refreshInfo)
+        {
+            if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != ECommonCheckType.None)
+            {
+                if (!logicManager.CheckCommonCond(refreshInfo.AppearCond))
+                {
+                    return true;
+                }
+            }
+
+            if (refreshInfo.DisappearCond != null && refreshInfo.DisappearCond.Type != ECommonCheckType.None)
+            {
+                if (logicManager.CheckCommonCond(refreshInfo.DisappearCond))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 
@@ -188,7 +283,7 @@ namespace My.Map.Logic
 
                         var pName = patrolGroupRecord.WayPointList[patrolGroupRecord.WayPointIdx];
                         Vector2 point = cacheDatabase.FindNamedPointByName(pName)?.Position ?? Vector3.zero;
-                        // 初始化巡逻兵
+                        // ?????????
                         foreach (var one in initInfo4PatrolGroup.GroupUnits)
                         {
                             var groupRecord = CreateEntityRecordFromInitInfo(one.InitInfo);
@@ -337,12 +432,12 @@ namespace My.Map.Logic
         /// <returns></returns>
         public void RegisterEntityRecord(LogicEntityRecord rec, bool isCreate = false)
         {
-            // 交由仓库管理
+            // ?????????
             Repo.RegisterRecord(rec);
-            // 注册到 AOI
+            // ??? AOI
             UnitGridIndex.AddOrMove(rec.Id, rec.Position);
 
-            // 长生命周期对象
+            // ?????????????
             if (IsRecordAlwaysActive(rec))
             {
                 var ent = SpawnEntity(rec.Id);
@@ -352,10 +447,10 @@ namespace My.Map.Logic
                 }
                 else
                 {
-                    // 特殊容器
+                    // ????????
                     LongLived.Register(ent);
 
-                    // 初始状态：可选择 Active 或 Sleep
+                    // ???????????? Active ?? Sleep
                     runtimeStates[rec.Id] = new OneEntityRuntimeState { Id = rec.Id, State = LogicLifeState.Active };
                 }
             }
@@ -386,6 +481,7 @@ namespace My.Map.Logic
                 {
                     refreshRuntime.EntityInstId = 0;
                     refreshRuntime.LastDestroyTime = LogicTime.time;
+                    refreshRuntime.LastRemovalWasVisibilityCond = false;
                 }
 
                 Record2RefreshInfo.Remove(recId);

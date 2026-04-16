@@ -73,6 +73,10 @@ namespace My.Map.Logic
 
         public InnerListener innerListener;
         public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
+
+        // StaticId -> ????????????????????SavePoint ?????????????
+        private Dictionary<int, DynamicEntityRefreshInfo> _refreshInfoByStaticId;
+
         public List<int> DialogForceStaticIds = new();
 
         public Dictionary<string, int> StaticName2RefreshIdMap = new();
@@ -184,6 +188,7 @@ namespace My.Map.Logic
                 EntityRefreshInfo.AddRange(homeRefreshs);
             }
 
+            RebuildRefreshInfoByStaticId();
 
             BuildIndexFromRecords();
 
@@ -229,6 +234,7 @@ namespace My.Map.Logic
 
             NewCreateEntityMark.Clear();
             Record2RefreshInfo.Clear();
+            _refreshInfoByStaticId?.Clear();
         }
 
 
@@ -793,6 +799,14 @@ namespace My.Map.Logic
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        /// <summary>
+        /// 立即移除逻辑实体与 Record（不经过死亡延迟队列），用于刷新条件驱动的显隐。
+        /// </summary>
+        public bool ForceDestroyEntityNow(long id, string reason)
+        {
+            return DestroyEntity(id, reason);
+        }
+
         private bool DestroyEntity(long id, string reason)
         {
             // ????????record

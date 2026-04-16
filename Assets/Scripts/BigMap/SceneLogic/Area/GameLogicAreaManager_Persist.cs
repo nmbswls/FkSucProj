@@ -71,17 +71,37 @@ namespace My.Map.Logic
             foreach (var kv in RefreshInfoRuntimes)
             {
                 var rt = kv.Value;
+                var entityInstIdPersist = rt.EntityInstId;
+                if (TryGetRefreshInfoByStaticId(kv.Key, out var refreshDef) &&
+                    IsSavePointRefreshInfo(refreshDef))
+                {
+                    entityInstIdPersist = 0;
+                }
+
                 d.RefreshStates.Add(new RefreshRuntimePersist
                 {
                     StaticId = kv.Key,
-                    EntityInstId = rt.EntityInstId,
+                    EntityInstId = entityInstIdPersist,
                     LastRespawnTime = rt.LastRespawnTime,
                     LastDestroyTime = rt.LastDestroyTime,
+                    LastRemovalWasVisibilityCond = rt.LastRemovalWasVisibilityCond,
                 });
             }
 
             foreach (var kv in Record2RefreshInfo)
             {
+                if (Repo.Records.TryGetValue(kv.Key, out var linkRec) &&
+                    linkRec.EntityType == EEntityType.SavePoint)
+                {
+                    continue;
+                }
+
+                if (TryGetRefreshInfoByStaticId(kv.Value, out var refreshDef) &&
+                    IsSavePointRefreshInfo(refreshDef))
+                {
+                    continue;
+                }
+
                 d.RecordToRefreshStaticId[kv.Key] = kv.Value;
             }
 
@@ -94,6 +114,11 @@ namespace My.Map.Logic
             {
                 var rec = kv.Value;
                 if (rec.EntityType == EEntityType.Player)
+                {
+                    continue;
+                }
+
+                if (rec.EntityType == EEntityType.SavePoint)
                 {
                     continue;
                 }
@@ -121,17 +146,31 @@ namespace My.Map.Logic
             RefreshInfoRuntimes.Clear();
             foreach (var r in data.RefreshStates)
             {
+                var entityInstId = r.EntityInstId;
+                if (TryGetRefreshInfoByStaticId(r.StaticId, out var refreshDef) &&
+                    IsSavePointRefreshInfo(refreshDef))
+                {
+                    entityInstId = 0;
+                }
+
                 RefreshInfoRuntimes[r.StaticId] = new SceneRefreshInfoRuntime
                 {
-                    EntityInstId = r.EntityInstId,
+                    EntityInstId = entityInstId,
                     LastRespawnTime = r.LastRespawnTime,
                     LastDestroyTime = r.LastDestroyTime,
+                    LastRemovalWasVisibilityCond = r.LastRemovalWasVisibilityCond,
                 };
             }
 
             Record2RefreshInfo.Clear();
             foreach (var kv in data.RecordToRefreshStaticId)
             {
+                if (TryGetRefreshInfoByStaticId(kv.Value, out var refreshDef) &&
+                    IsSavePointRefreshInfo(refreshDef))
+                {
+                    continue;
+                }
+
                 Record2RefreshInfo[kv.Key] = kv.Value;
             }
 
@@ -145,6 +184,11 @@ namespace My.Map.Logic
                     }
 
                     if (rec.EntityType == EEntityType.Player)
+                    {
+                        continue;
+                    }
+
+                    if (rec.EntityType == EEntityType.SavePoint)
                     {
                         continue;
                     }
