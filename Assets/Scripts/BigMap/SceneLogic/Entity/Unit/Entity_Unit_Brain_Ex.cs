@@ -57,7 +57,7 @@ namespace My.Map.Unit
         }
     }
 
-    // ²ßÂÔ½Ó¿Ú
+    // ç­–ç•¥æ¥å£
     public interface IIdlePolicy
     {
         void OnEnter(AIBrainV2 brain);
@@ -65,7 +65,7 @@ namespace My.Map.Unit
         void OnExit(AIBrainV2 brain);
     }
 
-    // ¼òµ¥µÄ¹¤³§Àà
+    // ç®€å•çš„å·¥å‚ç±»
     public static class MovePolicyFactory
     {
         public static IIdlePolicy Create(IdleType type)
@@ -80,9 +80,9 @@ namespace My.Map.Unit
         }
     }
 
-    // --- ¾ßÌå²ßÂÔÊµÏÖ ---
+    // --- å…·ä½“ç­–ç•¥å®ç° ---
 
-    // 1. Ô­µØÕ¾Á¢²ßÂÔ
+    // 1. åŸåœ°ç«™ç«‹ç­–ç•¥
     public class Policy_StandStill : IIdlePolicy
     {
         public void OnEnter(AIBrainV2 brain)
@@ -92,16 +92,16 @@ namespace My.Map.Unit
 
         public void OnTick(AIBrainV2 brain, float dt)
         {
-            // Ëæ»ú×ªÍ·Âß¼­
+            // éšæœºè½¬å¤´é€»è¾‘
 
-            // Õ¾×ÅĞèÒª¾­³£
+            // ç«™ç€éœ€è¦ç»å¸¸
             brain.HomePos = brain.NpcEntity.Pos;
         }
 
         public void OnExit(AIBrainV2 brain) { }
     }
 
-    // 1. Ô­µØÕ¾Á¢²ßÂÔ
+    // 1. åŸåœ°ç«™ç«‹ç­–ç•¥
     public class Policy_Wander : IIdlePolicy
     {
 
@@ -116,7 +116,7 @@ namespace My.Map.Unit
         {
 
 
-            // Õ¾×ÅĞèÒª¾­³£
+            // ç«™ç€éœ€è¦ç»å¸¸
             brain.HomePos = brain.NpcEntity.Pos;
         }
 
@@ -140,7 +140,7 @@ namespace My.Map.Unit
     }
 
 
-    // 2. Ñ²Âß²ßÂÔ
+    // 2. å·¡é€»ç­–ç•¥
     public class Policy_Patrol : IIdlePolicy
     {
         private int _index = 0;
@@ -157,15 +157,15 @@ namespace My.Map.Unit
 
             Vector3 target = points[_index];
 
-            // ¼òµ¥ÅĞ¶ÏÊÇ·ñµ½´ï
+            // ç®€å•åˆ¤æ–­æ˜¯å¦åˆ°è¾¾
             if (Vector3.Distance(brain.NpcEntity.Pos, target) < 0.5f)
             {
-                // µ½ÁË£¬È¥ÏÂÒ»¸öµã
+                // åˆ°äº†ï¼Œå»ä¸‹ä¸€ä¸ªç‚¹
                 _index = (_index + 1) % points.Count;
                 MoveToNext(brain);
             }
 
-            // Õ¾×ÅĞèÒª¾­³£
+            // ç«™ç€éœ€è¦ç»å¸¸
             brain.HomePos = brain.NpcEntity.Pos;
         }
 
@@ -184,7 +184,7 @@ namespace My.Map.Unit
         }
     }
 
-    // --- Idle ×´Ì¬ ---
+    // --- Idle çŠ¶æ€ ---
     public class AIStateIdle : AIBaseState
     {
         private IIdlePolicy _idlePolicy;
@@ -194,7 +194,7 @@ namespace My.Map.Unit
 
         public AIStateIdle(AIBrainV2 brain) : base(brain)
         {
-            // ´ÓÅäÖÃ´´½¨²ßÂÔ
+            // ä»é…ç½®åˆ›å»ºç­–ç•¥
             _idlePolicy = MovePolicyFactory.Create(brain.Config.IdleType);
         }
 
@@ -232,7 +232,7 @@ namespace My.Map.Unit
                 return;
             }
 
-            // ¼ì²éÊÇ·ñĞèÒª½øÈëÍ¨¼©×´Ì¬
+            // æ£€æŸ¥æ˜¯å¦éœ€è¦è¿›å…¥é€šç¼‰çŠ¶æ€
             if(_brain.Config.IsGuard)
             {
                 int wantedVal = _brain.LogicManager.WantedManager.CurrentWantedVal;
@@ -243,7 +243,7 @@ namespace My.Map.Unit
                 }
             }
             
-            // 3. Ö´ĞĞÏĞÖÃ²ßÂÔ
+            // 3. æ‰§è¡Œé—²ç½®ç­–ç•¥
             _idlePolicy.OnTick(_brain, Time.deltaTime);
         }
 
@@ -251,11 +251,11 @@ namespace My.Map.Unit
         {
             base.OnExit();
             _idlePolicy.OnExit(_brain);
-            _brain.HomePos = _brain.NpcEntity.Pos; // ¸üĞÂ¸´Î»×ø±êµã
+            _brain.HomePos = _brain.NpcEntity.Pos; // æ›´æ–°å¤ä½åæ ‡ç‚¹
         }
     }
 
-    // --- Idle ×´Ì¬ ---
+    // --- Idle çŠ¶æ€ ---
     public class AIStateAttracted : AIBaseState
     {
         public override string StateName => "Attracted";
@@ -297,7 +297,7 @@ namespace My.Map.Unit
             }
 
 
-            // ½øĞĞÒÆ¶¯
+            // è¿›è¡Œç§»åŠ¨
             if (_brain.LatestAttrctInfo.AttractLevel >= 3)
             {
                 _brain.NpcEntity.TryMoveTo(_brain.LatestAttrctInfo.HappenPos, moveSpeedRate: 0.9f);
@@ -305,7 +305,7 @@ namespace My.Map.Unit
             }
             else if (_brain.LatestAttrctInfo.AttractLevel >= 2)
             {
-                // 2¼¶ÒÔÉÏ 
+                // 2çº§ä»¥ä¸Š 
                 _brain.NpcEntity.TryMoveTo(attractSource.Pos, moveSpeedRate: 0.1f);
                 _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract slow", _brain.NpcEntity.Pos);
             }
@@ -314,7 +314,7 @@ namespace My.Map.Unit
                 _brain.NpcEntity.StopMove();
             }
 
-            // Ìõ¼şÂú×ãÊ±Ö´ĞĞ¿«ÓÍ
+            // æ¡ä»¶æ»¡è¶³æ—¶æ‰§è¡Œæ©æ²¹
             if (_brain.LatestAttrctInfo.AttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
             {
                 if (attractSource is PlayerLogicEntity playerEntity && !playerEntity.CheckHasState(AttrIdConsts.ImmumeKaiYou))
@@ -364,7 +364,7 @@ namespace My.Map.Unit
                 {
                     _endCharmdTimer = LogicTime.time;
                     //
-                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "ÎÒÔÚ×öÊ²Ã´?", 2f);
+                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "æˆ‘åœ¨åšä»€ä¹ˆ?", 2f);
 
                     _brain.NpcEntity.StopMove();
                 }
@@ -372,7 +372,7 @@ namespace My.Map.Unit
                 if (LogicTime.time - _endCharmdTimer > 3.0f)
                 {
                     _brain.ChangeState(_brain.StateReturn);
-                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "¸Ï½ô×ß", 2f);
+                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "èµ¶ç´§èµ°", 2f);
                 }
 
                 return;
@@ -400,12 +400,12 @@ namespace My.Map.Unit
 
     public class AIStateCombat : AIBaseState
     {
-        private float _attackTimer; // ¹¥»÷ÀäÈ´¼ÆÊ±Æ÷
+        private float _attackTimer; // æ”»å‡»å†·å´è®¡æ—¶å™¨
         private BaseUnitLogicEntity _currentTarget;
 
         public float OverTimeLimit = 15f;
 
-        private float attackRestTimer = 0; // ÔİÍ£¹¥»÷Âß¼­
+        private float attackRestTimer = 0; // æš‚åœæ”»å‡»é€»è¾‘
 
 
         private EntitySkillCfg? intentSkillCfgOrigin;
@@ -424,12 +424,12 @@ namespace My.Map.Unit
         public override void OnEnter()
         {
             base.OnEnter();
-            _attackTimer = 1f; // ¸Õ½øÈëÕ½¶·Í¨³£¿ÉÒÔÁ¢¼´¹¥»÷£¬»òÕß¸ù¾İÉè¼ÆÉèÎª 0.5f ÑÓ³Ù
-            _brain.NpcEntity.StopMove(); // ÏÈÍ£Ò»ÏÂ£¬ÖØĞÂÆÀ¹ÀÂ·¾¶
+            _attackTimer = 1f; // åˆšè¿›å…¥æˆ˜æ–—é€šå¸¸å¯ä»¥ç«‹å³æ”»å‡»ï¼Œæˆ–è€…æ ¹æ®è®¾è®¡è®¾ä¸º 0.5f å»¶è¿Ÿ
+            _brain.NpcEntity.StopMove(); // å…ˆåœä¸€ä¸‹ï¼Œé‡æ–°è¯„ä¼°è·¯å¾„
 
             ResetAttackState();
 
-            attackRestTimer = LogicTime.time + 0.5f; // ½øÈë×´Ì¬Ê±ÏÈĞİÃßÒ»»á
+            attackRestTimer = LogicTime.time + 0.5f; // è¿›å…¥çŠ¶æ€æ—¶å…ˆä¼‘çœ ä¸€ä¼š
         }
 
         private void ResetAttackState()
@@ -442,7 +442,7 @@ namespace My.Map.Unit
         }
 
         /// <summary>
-        /// ¼ì²éÑ¡ÔñÊ¹ÓÃ¼¼ÄÜ
+        /// æ£€æŸ¥é€‰æ‹©ä½¿ç”¨æŠ€èƒ½
         /// </summary>
         private void TryChooseOriginSkillUse()
         {
@@ -511,17 +511,17 @@ namespace My.Map.Unit
         }
 
         /// <summary>
-        /// ¼ì²éÊÇ·ñÒªÍË³öÕ½¶·×´Ì¬
+        /// æ£€æŸ¥æ˜¯å¦è¦é€€å‡ºæˆ˜æ–—çŠ¶æ€
         /// </summary>
         /// <returns></returns>
         private bool CheckLeaveCombat()
         {
-            // --- 1. »ñÈ¡Ä¿±ê (Êı¾İÑéÖ¤) ---
+            // --- 1. è·å–ç›®æ ‡ (æ•°æ®éªŒè¯) ---
             var targetId = _brain.Aggro.CurrentTargetId;
 
             var entity = _brain.LogicManager.GetLogicEntity(targetId);
             _currentTarget = entity as BaseUnitLogicEntity;
-            // Èç¹û³ğºŞÁĞ±í¿ÕÁË£¬»òÕßÄ¿±êÏú»ÙÁË
+            // å¦‚æœä»‡æ¨åˆ—è¡¨ç©ºäº†ï¼Œæˆ–è€…ç›®æ ‡é”€æ¯äº†
             if (_currentTarget == null)
             {
                 HandleTargetLost();
@@ -537,7 +537,7 @@ namespace My.Map.Unit
             float distToTarget = Vector3.Distance(_brain.NpcEntity.Pos, _currentTarget.Pos);
             if (distToTarget > _brain.Config.ChaseRange)
             {
-                // ·ÅÆú×·»÷£¬Çå³ı³ğºŞ£¬»Ø¼Ò
+                // æ”¾å¼ƒè¿½å‡»ï¼Œæ¸…é™¤ä»‡æ¨ï¼Œå›å®¶
                 _brain.Aggro.ClearTarget();
                 _brain.ChangeState(_brain.StateReturn);
                 return true;
@@ -548,34 +548,34 @@ namespace My.Map.Unit
 
         public override void OnUpdate()
         {
-            // ¼ì²éÊÇ·ñÍË³öÕ½¶·×´Ì¬
+            // æ£€æŸ¥æ˜¯å¦é€€å‡ºæˆ˜æ–—çŠ¶æ€
             if(CheckLeaveCombat())
             {
                 return;
             }
 
-            // ¼ì²éÖĞÖ¹¼¼ÄÜÊÍ·Å
+            // æ£€æŸ¥ä¸­æ­¢æŠ€èƒ½é‡Šæ”¾
             ChecStopCastSkill();
 
-            // ¼ì²éÊÇ·ñÒªÖĞÖ¹Ê¹ÓÃ¼¼ÄÜ
+            // æ£€æŸ¥æ˜¯å¦è¦ä¸­æ­¢ä½¿ç”¨æŠ€èƒ½
             TryChooseOriginSkillUse();
 
             TickCastSkill();
 
-            // Ã»ÓĞ¼¼ÄÜĞèÒªÊÍ·ÅÊ± ½øĞĞ×ßÎ»
+            // æ²¡æœ‰æŠ€èƒ½éœ€è¦é‡Šæ”¾æ—¶ è¿›è¡Œèµ°ä½
             if (intentSkillCfgOrigin == null)
             {
                 var diff = _brain.NpcEntity.Pos - _currentTarget.Pos;
                 var distToTarget = diff.magnitude;
 
-                // ³¬¹ıÔ¶¾àÀë
+                // è¶…è¿‡è¿œè·ç¦»
                 if (_brain.Config.CombatFarDistance > 0 && distToTarget > _brain.Config.CombatFarDistance)
                 {
                     Debug.Log("fast mo TryMoveTo player");
-                    // ¿ìËÙÒÆ¶¯
+                    // å¿«é€Ÿç§»åŠ¨
                     _brain.NpcEntity.TryMoveTo(_currentTarget.Pos);
                 }
-                // µÍÓÚ×î½ü¾àÀë
+                // ä½äºæœ€è¿‘è·ç¦»
                 else if (_brain.Config.CombatCloseDistance > 0 && distToTarget <= _brain.Config.CombatCloseDistance)
                 {
                     Debug.Log("too close");
@@ -585,13 +585,13 @@ namespace My.Map.Unit
                 else
                 {
                     Debug.Log("keep distance");
-                    // ¼ÆËãÇĞÏß·½Ïò (×óÊÖ¶¨Ôò»òÓÒÊÖ¶¨Ôò)
+                    // è®¡ç®—åˆ‡çº¿æ–¹å‘ (å·¦æ‰‹å®šåˆ™æˆ–å³æ‰‹å®šåˆ™)
                     Vector2 tangentDir = new Vector3(-diff.y, diff.x);
-                    // ¸ù¾İÊ±¼ä¼ÆËãÆ«ÒÆÁ¿ (-1 µ½ 1 Ö®¼ä²¨¶¯)
+                    // æ ¹æ®æ—¶é—´è®¡ç®—åç§»é‡ (-1 åˆ° 1 ä¹‹é—´æ³¢åŠ¨)
                     float sineValue = Mathf.Sin(LogicTime.time * 1.0f + 0.0f);
                     var _strafeAmplitude = 0.5f;
 
-                    // ×îÖÕÄ¿±êµã = ²ÛÎ»ÖĞĞÄ + ÇĞÏß·½ÏòÆ«ÒÆ
+                    // æœ€ç»ˆç›®æ ‡ç‚¹ = æ§½ä½ä¸­å¿ƒ + åˆ‡çº¿æ–¹å‘åç§»
                     _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.Pos + (tangentDir * sineValue * _strafeAmplitude), moveSpeedRate: 0.25f);
                 }
             }
@@ -600,7 +600,7 @@ namespace My.Map.Unit
         public override void OnExit()
         {
             base.OnExit();
-            _brain.NpcEntity.StopMove(); // ÍË³öÕ½¶·Ê±É²³µ
+            _brain.NpcEntity.StopMove(); // é€€å‡ºæˆ˜æ–—æ—¶åˆ¹è½¦
         }
 
         private void ChecStopCastSkill()
@@ -614,7 +614,7 @@ namespace My.Map.Unit
             //bool stopSkill = false;
             //do
             //{
-            //    // ½ûÖ¹²Ù×÷Ê± Ìø³ö
+            //    // ç¦æ­¢æ“ä½œæ—¶ è·³å‡º
             //    if (_brain.NpcEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
             //    {
             //        stopSkill = true;
@@ -638,7 +638,7 @@ namespace My.Map.Unit
 
 
         /// <summary>
-        /// Ê¹ÓÃ¼¼ÄÜ¹ı³ÌÖĞ
+        /// ä½¿ç”¨æŠ€èƒ½è¿‡ç¨‹ä¸­
         /// </summary>
         private void TickCastSkill()
         {
@@ -647,24 +647,24 @@ namespace My.Map.Unit
                 return;
             }
 
-            // ÕıÔÚÊÍ·Å¼¼ÄÜÊ±£¬¼ì²éÊÇ·ñ½øĞĞÁ¬»÷
+            // æ­£åœ¨é‡Šæ”¾æŠ€èƒ½æ—¶ï¼Œæ£€æŸ¥æ˜¯å¦è¿›è¡Œè¿å‡»
             if(hasCastAbility)
             {
                 do
                 {
-                    // ¼ÌĞøµÈ´ıaction
+                    // ç»§ç»­ç­‰å¾…action
                     if (!_brain.NpcEntity.abilityController.IsActionable())
                     {
                         break;
                     }
 
                     var trans = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetPossibleTransition();
-                    // ²»¿É½Ó¼¼ÄÜ Ìø³ö
+                    // ä¸å¯æ¥æŠ€èƒ½ è·³å‡º
                     if (trans == null || trans.Count == 0)
                     {
                         if (!_brain.NpcEntity.abilityController.IsRunning)
                         {
-                            // ÖØÖÃ¼¼ÄÜÊÍ·Å
+                            // é‡ç½®æŠ€èƒ½é‡Šæ”¾
                             ResetAttackState();
                             return;
                         }
@@ -688,7 +688,7 @@ namespace My.Map.Unit
             }
 
 
-            // »¹ÔÚ¼¼ÄÜ×ßÎ»½×¶Î
+            // è¿˜åœ¨æŠ€èƒ½èµ°ä½é˜¶æ®µ
             if (!hasCastAbility)
             {
                 var targetId = EntityAbilityHelper.GetTargetByPolicy(intentAbilityCfgCurrent.TargetSelectPolicy, _brain.NpcEntity);
@@ -714,7 +714,7 @@ namespace My.Map.Unit
                         case MapAbilitySpecConfig.ECastType.LockTarget:
 
                             {
-                                // ÎŞÄ¿±êÀàĞÍµÄ¼¼ÄÜ ¶¢½ôÄ¿±êµã
+                                // æ— ç›®æ ‡ç±»å‹çš„æŠ€èƒ½ ç›¯ç´§ç›®æ ‡ç‚¹
                                 _brain.NpcEntity.RegisterGaze("Combat", targetId, target.Pos, EGazePriority.CastSkill, 0.5f);
 
                                 var diff = target.Pos - _brain.NpcEntity.Pos;
@@ -742,7 +742,7 @@ namespace My.Map.Unit
                         case MapAbilitySpecConfig.ECastType.Point:
                         case MapAbilitySpecConfig.ECastType.Directional:
                             {
-                                // ÎŞÄ¿±êÀàĞÍµÄ¼¼ÄÜ ¶¢½ôÄ¿±êµã
+                                // æ— ç›®æ ‡ç±»å‹çš„æŠ€èƒ½ ç›¯ç´§ç›®æ ‡ç‚¹
                                 _brain.NpcEntity.RegisterGaze("Combat", 0, target.Pos, EGazePriority.CastSkill, 0.5f);
                                 var diff = target.Pos - _brain.NpcEntity.Pos;
                                 if (diff.magnitude < 0.05f)
@@ -768,7 +768,7 @@ namespace My.Map.Unit
                         
                         case MapAbilitySpecConfig.ECastType.Circle:
                             {
-                                // todo ¶ÔÊ©·¨µã×öÖÜÎ§Ì½²â ¾¡Á¿¸²¸Ç¸ü¶àµ¥Î»
+                                // todo å¯¹æ–½æ³•ç‚¹åšå‘¨å›´æ¢æµ‹ å°½é‡è¦†ç›–æ›´å¤šå•ä½
                                 var adjustedCastVec = target.Pos + UnityEngine.Random.insideUnitCircle * 0.5f;
                                 var diff = adjustedCastVec - _brain.NpcEntity.Pos;
                                 if (diff.magnitude < 0.05f)
@@ -776,7 +776,7 @@ namespace My.Map.Unit
                                     canCast = true;
                                     break;
                                 }
-                                // ÎŞÄ¿±êÀàĞÍµÄ¼¼ÄÜ ¶¢½ôÄ¿±êµã
+                                // æ— ç›®æ ‡ç±»å‹çš„æŠ€èƒ½ ç›¯ç´§ç›®æ ‡ç‚¹
                                 _brain.NpcEntity.RegisterGaze("Combat", 0, adjustedCastVec, EGazePriority.CastSkill, 0.5f);
 
                                 var angle = Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook);
@@ -813,27 +813,27 @@ namespace My.Map.Unit
 
         private void HandleTargetLost()
         {
-            // ¹Ø¼üÂß¼­£ºÁ¬½Ó Search ×´Ì¬
-            // ³¢ÊÔ»ñÈ¡Ä¿±ê"×îºóÒ»´Î³öÏÖµÄÎ»ÖÃ"
+            // å…³é”®é€»è¾‘ï¼šè¿æ¥ Search çŠ¶æ€
+            // å°è¯•è·å–ç›®æ ‡"æœ€åä¸€æ¬¡å‡ºç°çš„ä½ç½®"
             Vector2? lastKnownPos = _brain.Aggro.LastKnownTargetPos;
 
             if (lastKnownPos != null)
             {
-                // 1. ¼ÇÂ¼¿ÉÒÉÎ»ÖÃµ½ºÚ°å
+                // 1. è®°å½•å¯ç–‘ä½ç½®åˆ°é»‘æ¿
                 _brain.SuspiciousPos = lastKnownPos.Value;
-                // 2. ÇĞ»»µ½ËÑË÷×´Ì¬
+                // 2. åˆ‡æ¢åˆ°æœç´¢çŠ¶æ€
                 //_brain.ChangeState(_brain.StateSearch);
                 _brain.ChangeState(_brain.StateReturn);
             }
             else
             {
-                // ÍêÈ«Ã»Í·Ğ÷£¬Ö»ÄÜ»Ø¼Ò
+                // å®Œå…¨æ²¡å¤´ç»ªï¼Œåªèƒ½å›å®¶
                 _brain.ChangeState(_brain.StateReturn);
             }
         }
     }
 
-    // --- Return ×´Ì¬ ---
+    // --- Return çŠ¶æ€ ---
     public class AIStateReturn : AIBaseState
     {
 
@@ -881,7 +881,7 @@ namespace My.Map.Unit
                 return;
             }
 
-            // ¼ì²éÊÇ·ñĞèÒª½øÈëÍ¨¼©×´Ì¬
+            // æ£€æŸ¥æ˜¯å¦éœ€è¦è¿›å…¥é€šç¼‰çŠ¶æ€
             if (_brain.Config.IsGuard)
             {
                 int wantedVal = _brain.LogicManager.WantedManager.CurrentWantedVal;
@@ -896,12 +896,12 @@ namespace My.Map.Unit
             {
                 if (Vector3.Distance(_brain.NpcEntity.Pos, _brain.HomePos.Value) < 0.5f)
                 {
-                    // µ½¼ÒÁË£¬ÇĞ»Ø Idle
+                    // åˆ°å®¶äº†ï¼Œåˆ‡å› Idle
                     _brain.ChangeState(_brain.StateIdle);
                     return;
                 }
 
-                // ·À¿¨ËÀ£º¶¨ÆÚÖØÉèÂ·¾¶
+                // é˜²å¡æ­»ï¼šå®šæœŸé‡è®¾è·¯å¾„
                 if (Time.frameCount % 60 == 0)
                 {
                     _brain.NpcEntity.TryMoveTo(_brain.HomePos.Value, moveSpeedRate: 0.7f);
@@ -909,7 +909,7 @@ namespace My.Map.Unit
             }
             else
             {
-                // ÎŞ¼Ò¿É¹é 
+                // æ— å®¶å¯å½’ 
                 if (Duration > _homeLessMinStayTime)
                 {
                     _brain.ChangeState(_brain.StateIdle);
@@ -919,7 +919,7 @@ namespace My.Map.Unit
         }
     }
 
-    // --- Flee ×´Ì¬ ---
+    // --- Flee çŠ¶æ€ ---
     public class AIStateFlee : AIBaseState
     {
         public AIStateFlee(AIBrainV2 brain) : base(brain) {  }
@@ -930,22 +930,22 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
-            _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "ÎÒÌÓ", 2f);
+            _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "æˆ‘é€ƒ", 2f);
             // _brain.NpcEntity.PlayAnimation("Panic");
             //_brain.Aggro.ClearGridSignal();
         }
 
         public override void OnUpdate()
         {
-            // Èç¹ûÃ»ÓĞµĞÈËÁË£¬»òÕßÒÑ¾­ÅÜµÃ×ã¹»Ô¶ÇÒÑªÁ¿»Ö¸´ÁË
+            // å¦‚æœæ²¡æœ‰æ•Œäººäº†ï¼Œæˆ–è€…å·²ç»è·‘å¾—è¶³å¤Ÿè¿œä¸”è¡€é‡æ¢å¤äº†
             if (!_brain.Aggro.HasHostile && !_brain.NpcEntity.IsEvilAlert)
             {
-                _brain.ChangeState(_brain.StateReturn); // ÌÓÍê»Ø¼Ò
+                _brain.ChangeState(_brain.StateReturn); // é€ƒå®Œå›å®¶
                 return;
             }
 
-            // ¼òµ¥µÄ·´ÏòÒÆ¶¯Âß¼­
-            // ¼ÙÉè Aggro ÏµÍ³ÄÜ¸ø³öÒ»¸ö "ËùÓĞµĞÈËµÄÖØĞÄÎ»ÖÃ" EnemyCenter
+            // ç®€å•çš„åå‘ç§»åŠ¨é€»è¾‘
+            // å‡è®¾ Aggro ç³»ç»Ÿèƒ½ç»™å‡ºä¸€ä¸ª "æ‰€æœ‰æ•Œäººçš„é‡å¿ƒä½ç½®" EnemyCenter
             //Vector3 enemyPos = _brain.Aggro.GetNearestHostilePos();
             Vector2? enemyPos = _brain.Aggro.LastKnownTargetPos;
             Vector2 runDir;
@@ -965,7 +965,7 @@ namespace My.Map.Unit
 
     public class AIStateSearch : AIBaseState
     {
-        // ËÑË÷½×¶Î
+        // æœç´¢é˜¶æ®µ
         private enum SearchPhase { MovingToPos, LookingAround }
         private SearchPhase _phase;
         private float _lookAroundTimer;
@@ -981,7 +981,7 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
-            // 1. ¿ªÊ¼½×¶Î£ºÇ°Íù¿ÉÒÉµã
+            // 1. å¼€å§‹é˜¶æ®µï¼šå‰å¾€å¯ç–‘ç‚¹
             _phase = SearchPhase.MovingToPos;
 
             if (_brain.SuspiciousPos == null)
@@ -998,7 +998,7 @@ namespace My.Map.Unit
 
         public override void OnUpdate()
         {
-            // --- ÈÎºÎÊ±ºò·¢ÏÖÕæµĞÈË£¬ÇĞÕ½¶· ---
+            // --- ä»»ä½•æ—¶å€™å‘ç°çœŸæ•Œäººï¼Œåˆ‡æˆ˜æ–— ---
             if (_brain.Aggro.HasHostile)
             {
                 _brain.ChangeState(_brain.StateCombat);
@@ -1008,30 +1008,30 @@ namespace My.Map.Unit
             switch (_phase)
             {
                 case SearchPhase.MovingToPos:
-                    // ¼ì²âÊÇ·ñµ½´ï¿ÉÒÉµã
+                    // æ£€æµ‹æ˜¯å¦åˆ°è¾¾å¯ç–‘ç‚¹
                     if (Vector3.Distance(_brain.NpcEntity.Pos, searchOrgPoint) < 0.3f)
                     {
-                        // µ½´ï£¬¿ªÊ¼ËÄ´¦ÕÅÍû
+                        // åˆ°è¾¾ï¼Œå¼€å§‹å››å¤„å¼ æœ›
                         _phase = SearchPhase.LookingAround;
                         _lookAroundTimer = LogicTime.time + _brain.Config.SearchDuration;
                         _brain.NpcEntity.StopMove();
                         break;
                     }
 
-                    // ³¬Ê±Ç¿ÖÆ½áÊø (·ÀÖ¹Â·²»Í¨Ò»Ö±×ß)
+                    // è¶…æ—¶å¼ºåˆ¶ç»“æŸ (é˜²æ­¢è·¯ä¸é€šä¸€ç›´èµ°)
                     if (Duration > 10.0f) _brain.ChangeState(_brain.StateReturn);
                     break;
 
                 case SearchPhase.LookingAround:
-                    // µ¹¼ÆÊ±
+                    // å€’è®¡æ—¶
 
-                    // ÕâÀï¿ÉÒÔ¼ÓÂß¼­£ºÃ¿ÃëËæ»ú×ª¸öÉí
+                    // è¿™é‡Œå¯ä»¥åŠ é€»è¾‘ï¼šæ¯ç§’éšæœºè½¬ä¸ªèº«
                     // RotateToRandomDir();
 
                     if (LogicTime.time > _lookAroundTimer)
                     {
-                        // ËÑÍêÁËÃ»½á¹û£¬·ÅÆú£¬»Ø¼Ò
-                        _brain.SuspiciousPos = null; // Çå³ıĞÅºÅ
+                        // æœå®Œäº†æ²¡ç»“æœï¼Œæ”¾å¼ƒï¼Œå›å®¶
+                        _brain.SuspiciousPos = null; // æ¸…é™¤ä¿¡å·
                         _brain.ChangeState(_brain.StateReturn);
                     }
                     break;
@@ -1057,7 +1057,7 @@ namespace My.Map.Unit
             chaseChillTimer = 0;
             wantedUnitId = _brain.NpcEntity.LogicManager.playerLogicEntity.Id;
 
-            _brain.NpcEntity.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "×¥Äã¡£", 2.0f);
+            _brain.NpcEntity.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "æŠ“ä½ ã€‚", 2.0f);
         }
 
         public override void OnUpdate()
@@ -1068,7 +1068,7 @@ namespace My.Map.Unit
                 if(chaseChillTimer == 0)
                 {
                     chaseChillTimer = LogicTime.time + 1.0f;
-                    _brain.NpcEntity.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "Ã»ÊÂÁË¡£", 2.0f);
+                    _brain.NpcEntity.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "æ²¡äº‹äº†ã€‚", 2.0f);
                 }
             }
             else
@@ -1076,14 +1076,14 @@ namespace My.Map.Unit
                 chaseChillTimer = 0;
             }
 
-            // Ê±¼äµ½ÁË ¿ÉÒÔÍË³ö
+            // æ—¶é—´åˆ°äº† å¯ä»¥é€€å‡º
             if(chaseChillTimer != 0 && LogicTime.time > chaseChillTimer)
             {
                 _brain.ChangeState(_brain.StateIdle);
                 return;
             }
 
-            // Ê²Ã´Ê±ºòÍË³ö×·Öğ£¿
+            // ä»€ä¹ˆæ—¶å€™é€€å‡ºè¿½é€ï¼Ÿ
             bool lostTarget = false;
             Vector2 searchPos = _brain.NpcEntity.Pos;
             if (_brain.NpcEntity.VisionSystem.VisibleMap.TryGetValue(wantedUnitId, out var visibilityEntry))
@@ -1100,7 +1100,7 @@ namespace My.Map.Unit
                 searchPos = _brain.NpcEntity.Pos;
             }
 
-            // ¶ªÊ§Ä¿±ê ½øĞĞsearch
+            // ä¸¢å¤±ç›®æ ‡ è¿›è¡Œsearch
             if (lostTarget)
             {
                 _brain.ChangeState(_brain.StateSearch);
@@ -1115,14 +1115,14 @@ namespace My.Map.Unit
                 return;
             }
 
-            // ÒÆ¶¯
+            // ç§»åŠ¨
             _brain.NpcEntity.TryMoveTo(searchTarget.Pos, stopDistance:0.1f, moveSpeedRate: 1f);
 
             var diff = searchTarget.Pos - _brain.NpcEntity.Pos;
             // 
             if(diff.magnitude < 0.5f)
             {
-                // ³öÏÖ¶Ô»°
+                // å‡ºç°å¯¹è¯
                 _brain.NpcEntity.LogicManager.viewer.PlayDialog("wanted_arrest", srcEntityId: _brain.NpcEntity.Id, pause:true);
 
                 _brain.ChangeState(_brain.StateIdle);

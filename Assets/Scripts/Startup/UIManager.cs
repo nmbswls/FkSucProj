@@ -40,7 +40,7 @@ namespace My.UI
         [Header("Debug")]
         [SerializeField] private bool logConsumption = false;
 
-        // ÔËĞĞÊ±
+        // è¿è¡Œæ—¶
         private readonly Dictionary<string, PanelResource> catalogMap = new();
         private readonly Dictionary<string, IPanel> activePanels = new();
         private readonly Dictionary<string, PanelPool> pools = new();
@@ -49,7 +49,7 @@ namespace My.UI
         public CanvasGroup TopBlackMaskCG;
 
 
-        // ÊäÈë»º´æ
+        // è¾“å…¥ç¼“å­˜
         private InputAction uiConfirm, uiCancel, uiNavigate;
         private readonly List<(InputAction action, Action<InputAction.CallbackContext> handler)> handlers = new();
 
@@ -126,7 +126,7 @@ namespace My.UI
 
 
         private List<IPanel> _tickCacheList = new();
-        // ÊäÈëÃ°Åİ·Ö·¢
+        // è¾“å…¥å†’æ³¡åˆ†å‘
         private bool TryConsumeByLayers(Func<IInputConsumer, bool> call)
         {
             for (int layer = (int)UILayer.System; layer >= (int)UILayer.HUD; layer--)
@@ -157,7 +157,7 @@ namespace My.UI
 
         private int GetPriority(IPanel p) => (p is IFocusable f) ? f.FocusPriority : 0;
 
-        // Ãæ°å¹ÜÀí
+        // é¢æ¿ç®¡ç†
         public IPanel ShowPanel(string panelId, object data = null, UILayer? layerOverride = null)
         {
             if (activePanels.TryGetValue(panelId, out var existing))
@@ -268,11 +268,11 @@ namespace My.UI
                 Debug.LogError($"Prefab {res.resourcePath} missing IPanel component");
                 return null;
             }
-            (panel as PanelBase)?.Hide(); // ³õÊ¼Òş²Ø
+            (panel as PanelBase)?.Hide(); // åˆå§‹éšè—
             return panel;
         }
 
-        // Loading ¿ì½İ
+        // Loading å¿«æ·
         public void ShowLoading(string text = "Loading...") { ShowPanel(loadingPanelId, text, UILayer.System); }
         public void HideLoading() { HidePanel(loadingPanelId); }
 
@@ -335,7 +335,7 @@ namespace My.UI
         private Tween coHideBlack;
 
         /// <summary>
-        /// ÏÔÊ¾ºÚÆÁ
+        /// æ˜¾ç¤ºé»‘å±
         /// </summary>
         public void FadeShowBlack(float duration = 1.0f)
         {
@@ -363,7 +363,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ºÚÆÁÏûÊ§
+        /// é»‘å±æ¶ˆå¤±
         /// </summary>
         public void FadeHideBlack(float duration = 1.0f)
         {

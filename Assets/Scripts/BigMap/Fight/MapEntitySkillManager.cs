@@ -36,7 +36,7 @@ namespace My.Map.Entity
     //    public void Write(ActionType type, Vector2 dir)
     //    {
     //        float now = Time.time;
-    //        if (now - lastInputTime < debounce) return; // È¥¶¶
+    //        if (now - lastInputTime < debounce) return; // å»æŠ–
     //        lastInputTime = now;
     //        map[type] = new BufferedInput
     //        {
@@ -51,7 +51,7 @@ namespace My.Map.Entity
     //    {
     //        consumed = default;
     //        float now = Time.time;
-    //        // ÓÅÏÈ¼¶ÅÅĞò
+    //        // ä¼˜å…ˆçº§æ’åº
     //        List<BufferedInput> list = new List<BufferedInput>();
     //        foreach (var kv in map)
     //        {
@@ -65,12 +65,12 @@ namespace My.Map.Entity
     //            if (now - entry.time <= win && isLegal(entry.type))
     //            {
     //                consumed = entry;
-    //                map[entry.type] = null; // µ¥´ÎÏûºÄ
+    //                map[entry.type] = null; // å•æ¬¡æ¶ˆè€—
     //                return true;
     //            }
     //        }
 
-    //        // ÇåÀí¹ıÆÚ
+    //        // æ¸…ç†è¿‡æœŸ
     //        foreach (var kv in new List<ActionType>(map.Keys))
     //        {
     //            var v = map[kv];
@@ -88,7 +88,7 @@ namespace My.Map.Entity
 
 
     /// <summary>
-    /// Êä³ö
+    /// è¾“å‡º
     /// </summary>
     [Serializable]
     public struct SkillInput
@@ -114,17 +114,17 @@ namespace My.Map.Entity
     
 
     /// <summary>
-    /// ÔËĞĞÊ±Á¬ÕĞÍ¼
+    /// è¿è¡Œæ—¶è¿æ‹›å›¾
     /// </summary>
     [Serializable]
     public class EntitySkillComboGraph
     {
 
         /// <summary>
-        /// ÅÉÉúÊäÈë
-        /// ÊäÈëÀàĞÍÓÉÉÏ²ã·â×°
-        /// ¿ÉÄÜÊÇ×ó¼üÓÒ¼ü Ò²¿ÉÄÜÊÇÈë¿Ú¼¼ÄÜÃû
-        /// ÀıÈç¼¼ÄÜtest  ¿ÉÄÜÂ·ÓÉ³ötest_01 test_02µÈ µ«Ö»ĞèÒª´«Èëtest¼´¿É
+        /// æ´¾ç”Ÿè¾“å…¥
+        /// è¾“å…¥ç±»å‹ç”±ä¸Šå±‚å°è£…
+        /// å¯èƒ½æ˜¯å·¦é”®å³é”® ä¹Ÿå¯èƒ½æ˜¯å…¥å£æŠ€èƒ½å
+        /// ä¾‹å¦‚æŠ€èƒ½test  å¯èƒ½è·¯ç”±å‡ºtest_01 test_02ç­‰ ä½†åªéœ€è¦ä¼ å…¥testå³å¯
         /// </summary>
         [Serializable]
         public struct InputPattern
@@ -140,12 +140,12 @@ namespace My.Map.Entity
         }
 
 
-        // Ê±¼ä±ê¼Ç£ºÏà¶Ôµ±Ç°½ÚµãÊ±¼ä
+        // æ—¶é—´æ ‡è®°ï¼šç›¸å¯¹å½“å‰èŠ‚ç‚¹æ—¶é—´
         [Serializable]
         public struct TimeWindow
         {
-            public float start; // Ãë
-            public float end;   // Ãë
+            public float start; // ç§’
+            public float end;   // ç§’
 
             public TimeWindow(float s, float e)
             {
@@ -155,35 +155,35 @@ namespace My.Map.Entity
             public bool Contains(float t) => t >= start && t <= end;
         }
 
-        // ÅÉÉú´°¿Ú£ºÖ§³ÖÃüÖĞÈ·ÈÏÃªµã
+        // æ´¾ç”Ÿçª—å£ï¼šæ”¯æŒå‘½ä¸­ç¡®è®¤é”šç‚¹
         [Serializable]
         public class DeriveWindow
         {
             public string id;
-            public TimeWindow window;       // »ùÓÚ nodeClock µÄ´°¿Ú
+            public TimeWindow window;       // åŸºäº nodeClock çš„çª—å£
         }
 
-        // Á¬ÕĞ½Úµã
+        // è¿æ‹›èŠ‚ç‚¹
         [Serializable]
         public class ComboNode
         {
             public int NodeId;
             public string AbilityId;
-            public float ExpectedDuration = 0.5f; // ¹À¼ÆÊ±³¤£¬½öÓÃÓÚ´°¿Ú²Î¿¼
+            public float ExpectedDuration = 0.5f; // ä¼°è®¡æ—¶é•¿ï¼Œä»…ç”¨äºçª—å£å‚è€ƒ
             public List<DeriveWindow> deriveWindows = new List<DeriveWindow>();
         }
 
-        // ×ªÒÆ£º´ÓÒ»½Úµãµ½ÁíÒ»½Úµã
+        // è½¬ç§»ï¼šä»ä¸€èŠ‚ç‚¹åˆ°å¦ä¸€èŠ‚ç‚¹
         [Serializable]
         public class Transition
         {
             public int fromNodeId;
             public int toNodeId;
-            public InputPattern triggerInput;   // ±ØĞëÆ¥ÅäµÄÊäÈë
-            public string windowId;             // ±ØĞëÔÚ¶ÔÓ¦´°¿ÚÄÚ
-            public bool requireHitConfirm;      // ÈßÓà±£»¤
-            public float scoreBias;             // AIÆÀ·Ö¼ÓÈ¨£¨¸üÓÅÏÈµÄ·ÖÖ§¸ø¸ü¸ß·Ö£©
-            public string label;                // ±¸×¢/²ß»®Ãû
+            public InputPattern triggerInput;   // å¿…é¡»åŒ¹é…çš„è¾“å…¥
+            public string windowId;             // å¿…é¡»åœ¨å¯¹åº”çª—å£å†…
+            public bool requireHitConfirm;      // å†—ä½™ä¿æŠ¤
+            public float scoreBias;             // AIè¯„åˆ†åŠ æƒï¼ˆæ›´ä¼˜å…ˆçš„åˆ†æ”¯ç»™æ›´é«˜åˆ†ï¼‰
+            public string label;                // å¤‡æ³¨/ç­–åˆ’å
         }
 
         public string Id;
@@ -216,7 +216,7 @@ namespace My.Map.Entity
     }
 
     /// <summary>
-    /// ×¨ÃÅÓÃÓÚ±àÅÅ
+    /// ä¸“é—¨ç”¨äºç¼–æ’
     /// </summary>
     public class ComboOrchestrator
     {
@@ -225,13 +225,13 @@ namespace My.Map.Entity
         private readonly EntitySkillComboGraph _graph;
         private readonly ComboContext _ctx;
 
-        // ÔËĞĞÌ¬£ºÊäÈë»º³åÓëÉÏÏÂÎÄ
+        // è¿è¡Œæ€ï¼šè¾“å…¥ç¼“å†²ä¸ä¸Šä¸‹æ–‡
         public class ComboContext
         {
             public int currentNodeId;
-            public float nodeClock;            // µ±Ç°½ÚµãÔËĞĞÊ±¼ä
-            public bool hitConfirmed;          // ÊÇ·ñÃüÖĞÈ·ÈÏ
-            public float lastHitTime;          // ÃüÖĞÊ±¼ä£¨ÓÃÓÚ´°¿Ú£©
+            public float nodeClock;            // å½“å‰èŠ‚ç‚¹è¿è¡Œæ—¶é—´
+            public bool hitConfirmed;          // æ˜¯å¦å‘½ä¸­ç¡®è®¤
+            public float lastHitTime;          // å‘½ä¸­æ—¶é—´ï¼ˆç”¨äºçª—å£ï¼‰
             public float useSkillTime;
             public int maxBuffer = 6;
 
@@ -273,7 +273,7 @@ namespace My.Map.Entity
             var node = _graph.GetNode(nodeId);
             if (node == null) return null;
 
-            // ¼¤»î´°¿Ú
+            // æ¿€æ´»çª—å£
             var activeWindows = new Dictionary<string, EntitySkillComboGraph.DeriveWindow>();
             foreach (var w in node.deriveWindows)
             {
@@ -283,7 +283,7 @@ namespace My.Map.Entity
                 }
             }
             if (activeWindows.Count == 0) return null;
-            // ÆÀ·ÖÌôÑ¡
+            // è¯„åˆ†æŒ‘é€‰
             var transitions = _graph.GetTransitions(nodeId);
             List<EntitySkillComboGraph.Transition> ret = new();
 
@@ -310,13 +310,13 @@ namespace My.Map.Entity
             var nodeId = _ctx.currentNodeId;
             var node = _graph.GetNode(nodeId);
 
-            // ³¢ÊÔ½øĞĞentry transition
+            // å°è¯•è¿›è¡Œentry transition
             if (node == null)
             {
                 return false;
             }
 
-            // ¼¤»î´°¿Ú
+            // æ¿€æ´»çª—å£
             var activeWindows = new Dictionary<string, EntitySkillComboGraph.DeriveWindow>();
             foreach (var w in node.deriveWindows)
             {
@@ -327,7 +327,7 @@ namespace My.Map.Entity
             }
             if (activeWindows.Count == 0) return false;
 
-            // ÆÀ·ÖÌôÑ¡
+            // è¯„åˆ†æŒ‘é€‰
             var transitions = _graph.GetTransitions(nodeId);
             float best = float.NegativeInfinity;
             foreach (var t in transitions)
@@ -376,7 +376,7 @@ namespace My.Map.Entity
 
 
         /// <summary>
-        /// »ñÈ¡Èë¿ÚÕæÊµcombo½Úµã
+        /// è·å–å…¥å£çœŸå®comboèŠ‚ç‚¹
         /// </summary>
         /// <param name="input"></param>
         /// <param name="chosen"></param>
@@ -408,7 +408,7 @@ namespace My.Map.Entity
         public void OnHitConfirm()
         {
             _ctx.hitConfirmed = true;
-            _ctx.lastHitTime = Time.time; // »òÕßÊ¹ÓÃÍâ²¿È¨ÍşÊ±ÖÓ
+            _ctx.lastHitTime = Time.time; // æˆ–è€…ä½¿ç”¨å¤–éƒ¨æƒå¨æ—¶é’Ÿ
         }
 
 
@@ -419,7 +419,7 @@ namespace My.Map.Entity
             {
                 _ctx.SetNode(0);
 
-                // ÖØÖÃ
+                // é‡ç½®
                 _ctx.hitConfirmed = false;
                 _ctx.lastHitTime = -999f;
                 _ctx.useSkillTime = 0;
@@ -433,7 +433,7 @@ namespace My.Map.Entity
                 _ctx.SetNode(nextNodeId);
                 //_callbacks.OnNodeEnter(t.toNodeId);
 
-                // ÖØÖÃ
+                // é‡ç½®
                 _ctx.hitConfirmed = false;
                 _ctx.lastHitTime = -999f;
                 _ctx.useSkillTime = LogicTime.time;
@@ -485,7 +485,7 @@ namespace My.Map.Entity
             this.OwnerEntity = ownerEntity;
 
             this.comboOrchestrator = new(comboGraph);
-            // ³õÊ¼»¯comboOrchestrator
+            // åˆå§‹åŒ–comboOrchestrator
         }
 
         public bool RegisterSkill(string skillId)
@@ -522,14 +522,14 @@ namespace My.Map.Entity
                 }
             }
 
-            // ÇåÀí
+            // æ¸…ç†
             if(!Executor.IsRunning)
             {
                 CurrentSkillId = null;
                 CurrentAbilityId = null;
             }
 
-            // Èç¹û¿ÉÒÔÊ¹ÓÃ¼¼ÄÜ ¼ì²éinput buffer
+            // å¦‚æœå¯ä»¥ä½¿ç”¨æŠ€èƒ½ æ£€æŸ¥input buffer
             if (Executor.IsActionable())
             {
                 if(inputBuffer.Count > 0)
@@ -561,7 +561,7 @@ namespace My.Map.Entity
 
         }
         /// <summary>
-        /// Ê¹ÓÃ¼¼ÄÜ
+        /// ä½¿ç”¨æŠ€èƒ½
         /// </summary>
         /// <param name="skillName"></param>
         /// <param name="castVec1"></param>
@@ -575,14 +575,14 @@ namespace My.Map.Entity
                 return false;
             }
 
-            // Í£Ö¹¼¼ÄÜÊäÈë 
+            // åœæ­¢æŠ€èƒ½è¾“å…¥ 
             if(OwnerEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
             {
                 return false;
             }
 
-            // ²»¿ÉĞĞ¶¯
-            // ´¦ÀíÖĞ¶Ï¼¼ÄÜ²ã¼¶
+            // ä¸å¯è¡ŒåŠ¨
+            // å¤„ç†ä¸­æ–­æŠ€èƒ½å±‚çº§
             if (!Executor.IsActionable())
             {
                 // 
@@ -600,13 +600,13 @@ namespace My.Map.Entity
             string realAbilityId;
             EntitySkillComboGraph.Transition chosenTran = null;
 
-            // ÏÈ¼ì²éÊÇ·ñÄÜÖ±½ÓÏÎ½Ócombo
+            // å…ˆæ£€æŸ¥æ˜¯å¦èƒ½ç›´æ¥è¡”æ¥combo
             if (comboOrchestrator.TryTriggerCurrentCombo(new SkillInput() { SkillId = skillId }, out chosenTran))
             {
                 var nextNode = comboOrchestrator.GetComboNode(chosenTran.toNodeId);
                 realAbilityId = nextNode.AbilityId;
             }
-            // ÔÙ¼ì²éÄÜ·ñ´¥·¢Èë¿Úcombo
+            // å†æ£€æŸ¥èƒ½å¦è§¦å‘å…¥å£combo
             else if(comboOrchestrator.TryTriggerEntryCombo(new SkillInput() { SkillId = skillId }, out chosenTran))
             {
                 var nextNode = comboOrchestrator.GetComboNode(chosenTran.toNodeId);
@@ -616,7 +616,7 @@ namespace My.Map.Entity
                     return false;
                 }
             }
-            // ·ÇcomboÀà¼¼ÄÜ Ö±½ÓÖ´ĞĞ
+            // écomboç±»æŠ€èƒ½ ç›´æ¥æ‰§è¡Œ
             else
             {
                 realAbilityId = skillRuntime.cacheConfig.MainAbilityId;
@@ -633,26 +633,26 @@ namespace My.Map.Entity
                 return false;
             }
 
-            // Ö´ĞĞcombo×´Ì¬¸üĞÂ
-            // todo Èç¹û¼¼ÄÜ´ò¶ÏÁ¬»÷ ÔòĞèÒªÔÚÕâÀïÖÃ¿Õ
+            // æ‰§è¡ŒcomboçŠ¶æ€æ›´æ–°
+            // todo å¦‚æœæŠ€èƒ½æ‰“æ–­è¿å‡» åˆ™éœ€è¦åœ¨è¿™é‡Œç½®ç©º
             if(chosenTran != null)
             {
                 comboOrchestrator.TransitCombo(chosenTran.toNodeId);
             }
             else
             {
-                // ´ò¶ÏÁ¬ÕĞµÄ¼¼ÄÜ ĞèÒªÖØÖÃ
+                // æ‰“æ–­è¿æ‹›çš„æŠ€èƒ½ éœ€è¦é‡ç½®
                 if(skillRuntime.cacheConfig.InterruptCombo)
                 {
                     comboOrchestrator.TransitCombo(0);
                 }
             }
 
-            // ±£´æµ±Ç°¼¼ÄÜ
+            // ä¿å­˜å½“å‰æŠ€èƒ½
             CurrentSkillId = skillId;
             CurrentAbilityId = realAbilityId;
 
-            // ÀäÈ´µÈÇé¿ö
+            // å†·å´ç­‰æƒ…å†µ
             if (skillRuntime.cacheConfig.CoolDown > 0)
             {
                 skillRuntime.cooldown = skillRuntime.cacheConfig.CoolDown;
@@ -674,7 +674,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            // ²»Ò»ÖÂ
+            // ä¸ä¸€è‡´
             if (Executor.CurrentCtx.AbilityConfig.Id != CurrentAbilityId)
             {
                 return;
@@ -689,7 +689,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ³ÖĞø°´¼ü
+        /// æŒç»­æŒ‰é”®
         /// </summary>
         /// <param name="skillId"></param>
         public void TrySkillHold(string skillId)
@@ -714,7 +714,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ³ÖĞø°´¼ü
+        /// æŒç»­æŒ‰é”®
         /// </summary>
         /// <param name="skillId"></param>
         public void TrySkillHoldEnd(string skillId)
@@ -739,7 +739,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// »ñÈ¡µ±Ç°×¼±¸ºÃµÄÖ÷¶¯¼¼ÄÜ
+        /// è·å–å½“å‰å‡†å¤‡å¥½çš„ä¸»åŠ¨æŠ€èƒ½
         /// </summary>
         /// <returns></returns>
         public bool CheckAnyReadySkill()
@@ -758,7 +758,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// »ñÈ¡µ±Ç°×¼±¸ºÃµÄÖ÷¶¯¼¼ÄÜ
+        /// è·å–å½“å‰å‡†å¤‡å¥½çš„ä¸»åŠ¨æŠ€èƒ½
         /// </summary>
         /// <returns></returns>
         public List<SkillRuntime> GetAllReadySkills()
@@ -778,7 +778,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// »ñÈ¡µ±Ç°×¼±¸ºÃµÄÖ÷¶¯¼¼ÄÜ
+        /// è·å–å½“å‰å‡†å¤‡å¥½çš„ä¸»åŠ¨æŠ€èƒ½
         /// </summary>
         /// <returns></returns>
         public bool IsSkillReady(string skillName)
@@ -820,7 +820,7 @@ namespace My.Map.Entity
         
 
         ///// <summary>
-        ///// ¼ì²é¼¼ÄÜÊÇ·ñ¿ÉÅÉÉú
+        ///// æ£€æŸ¥æŠ€èƒ½æ˜¯å¦å¯æ´¾ç”Ÿ
         ///// </summary>
         ///// <param name="groupAbility"></param>
         //public (bool, string) GetCanDerive(string abilityName)
@@ -839,7 +839,7 @@ namespace My.Map.Entity
         //    if (comboRuntime.currentIndex < 0) 
         //        return info.NodeLinks[info.startIndex];
 
-        //    // ÃüÖĞ·ÖÖ§ÓëË÷ÒıÍÆ½øµÄ×ÛºÏÑ¡Ôñ
+        //    // å‘½ä¸­åˆ†æ”¯ä¸ç´¢å¼•æ¨è¿›çš„ç»¼åˆé€‰æ‹©
         //    var nextIndex = Math.Min(comboRuntime.currentIndex + 1, info.NodeLinks.Count - 1);
         //    var candidate = info.NodeLinks[nextIndex];
 
@@ -858,7 +858,7 @@ namespace My.Map.Entity
         //            if(LogicTime.time - comboRuntime.lastUseTime > candidate.ComboWindow)
         //            {
         //                canUse = false;
-        //                Debug.Log("¹ıÆÚÁË");
+        //                Debug.Log("è¿‡æœŸäº†");
         //                break;
         //            }
         //        }
@@ -875,7 +875,7 @@ namespace My.Map.Entity
         //    ComboRuntimes.TryGetValue(comboName, out var comboRuntime);
         //    if(comboRuntime != null)
         //    {
-        //        comboRuntime.currentIndex = -1; /* Çå×´Ì¬Óëtoken */
+        //        comboRuntime.currentIndex = -1; /* æ¸…çŠ¶æ€ä¸token */
         //    }
         //}
     }

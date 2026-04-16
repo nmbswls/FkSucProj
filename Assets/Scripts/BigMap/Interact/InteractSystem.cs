@@ -78,7 +78,7 @@ public class SceneInteractSystem
 
 
     /// <summary>
-    /// µ±Ç°¿É´¦¾ö¶ÔÏó
+    /// å½“å‰å¯å¤„å†³å¯¹è±¡
     /// </summary>
     private SceneNpcPresenter? currExecuteTarget = null;
     private readonly List<SceneNpcPresenter> executeCandidates = new List<SceneNpcPresenter>(64);
@@ -164,13 +164,13 @@ public class SceneInteractSystem
         Vector2 center = presenter.transform.position;
         int count = Physics2D.OverlapCircleNonAlloc(center, _maxCheckableRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
 
-        // ±éÀúÃüÖĞ£¬É¸Ñ¡ÊµÏÖÁË½Ó¿ÚµÄ¶ÔÏó
+        // éå†å‘½ä¸­ï¼Œç­›é€‰å®ç°äº†æ¥å£çš„å¯¹è±¡
         for (int i = 0; i < count; i++)
         {
             var col = hits[i];
             if (col == null) continue;
-            // ÔÚ Collider »òÆä¸¸½ÚµãÉÏÑ°ÕÒ½Ó¿Ú
-            // ×¢Òâ£ºGetComponentInParent »á²úÉúÉÙÁ¿ GC£¬Èô¼«ÖÂÎŞ GC£¬¿ÉÔ¤»º´æ»ò×Ô¶¨ÒåÓ³Éä
+            // åœ¨ Collider æˆ–å…¶çˆ¶èŠ‚ç‚¹ä¸Šå¯»æ‰¾æ¥å£
+            // æ³¨æ„ï¼šGetComponentInParent ä¼šäº§ç”Ÿå°‘é‡ GCï¼Œè‹¥æè‡´æ—  GCï¼Œå¯é¢„ç¼“å­˜æˆ–è‡ªå®šä¹‰æ˜ å°„
             var interactable = col.GetComponentInParent<ISceneInteractable>();
             if (interactable == null) continue;
 
@@ -196,13 +196,13 @@ public class SceneInteractSystem
                 }
             }
 
-            // ½Ç¶È²»Âú×ã Ò»ÇĞ½»»¥¶¼²»½øĞĞ
+            // è§’åº¦ä¸æ»¡è¶³ ä¸€åˆ‡äº¤äº’éƒ½ä¸è¿›è¡Œ
             if (!canInt)
             {
                 continue;
             }
 
-            // ÓÅÏÈÅĞ¶Ï´¦¾ö
+            // ä¼˜å…ˆåˆ¤æ–­å¤„å†³
             do
             {
                 if (interactable is not SceneNpcPresenter npcPresenter)
@@ -233,13 +233,13 @@ public class SceneInteractSystem
 
             var closest = col.ClosestPoint(center);
             var closestDist = (closest - center).magnitude;
-            // ¼ì²éÆÕÍ¨½»»¥
+            // æ£€æŸ¥æ™®é€šäº¤äº’
             if (closestDist > _normalCheckRadius)
             {
                 continue;
             }
 
-            // ×Ô¶¯´¥·¢ Ö±½Ó×Ô¶¯´¥·¢
+            // è‡ªåŠ¨è§¦å‘ ç›´æ¥è‡ªåŠ¨è§¦å‘
             if (interactable.IsAutoInteract())
             {
                 Debug.Log("trigger auto interact.");
@@ -256,8 +256,8 @@ public class SceneInteractSystem
             });
         }
 
-        // ¸ù¾İ¾àÀë´Ó½üµ½Ô¶ÅÅĞò
-        // »¹Òª¿¼ÂÇ½Ç¶ÈÈ¨ÖØ£¿
+        // æ ¹æ®è·ç¦»ä»è¿‘åˆ°è¿œæ’åº
+        // è¿˜è¦è€ƒè™‘è§’åº¦æƒé‡ï¼Ÿ
         normalCandidates.Sort((a, b) => a.distance.CompareTo(b.distance));
 
         //executeCandidates.Sort((a, b) => {

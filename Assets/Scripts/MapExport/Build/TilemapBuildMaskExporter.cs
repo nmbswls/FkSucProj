@@ -11,10 +11,10 @@ namespace My
     {
         public int width;
         public int height;
-        public int originX; // ¶ÔÆëµ½ tilemap.cellBounds.xMin
+        public int originX; // å¯¹é½åˆ° tilemap.cellBounds.xMin
         public int originY;
 
-        // Î»Í¼£ºÃ¿ bit ±íÊ¾Ò»¸ö¸ñÊÇ·ñ¿É½¨Ôì£¨1=¿É½¨£¬0=²»¿É£©
+        // ä½å›¾ï¼šæ¯ bit è¡¨ç¤ºä¸€ä¸ªæ ¼æ˜¯å¦å¯å»ºé€ ï¼ˆ1=å¯å»ºï¼Œ0=ä¸å¯ï¼‰
         public byte[] bits;
 
         public bool IsBuildable(int x, int y)
@@ -41,7 +41,7 @@ namespace My
         public int height;
         public int originX;
         public int originY;
-        public byte[] bits; // 1=Õ¼ÓÃ, 0=¿Õ
+        public byte[] bits; // 1=å ç”¨, 0=ç©º
 
         public bool IsOccupied(int x, int y)
         {
@@ -66,18 +66,18 @@ namespace My
         public struct ExportResult
         {
             public BuildGrid buildGrid;
-            public OccupancyGrid occupancyGrid; // ¿ÉÑ¡£¬Èç¹ûÃ»´«Õ¼ÓÃ²ãÔòÎª¿Õ
+            public OccupancyGrid occupancyGrid; // å¯é€‰ï¼Œå¦‚æœæ²¡ä¼ å ç”¨å±‚åˆ™ä¸ºç©º
         }
 
-        // ´«Èë£ºµØÃæ²ã¡¢½û½¨²ã¡¢Ë®²ã¡¢Õ¼ÓÃ²ã£¨¿ÉÑ¡£©
+        // ä¼ å…¥ï¼šåœ°é¢å±‚ã€ç¦å»ºå±‚ã€æ°´å±‚ã€å ç”¨å±‚ï¼ˆå¯é€‰ï¼‰
         public static ExportResult Export(
             Tilemap ground,
             Tilemap blocked = null,
             Tilemap water = null,
-            Tilemap occupiedLayer = null // Èç¹ûÄãÓÃÒ»¸öTilemapÀ´±íÊ¾µ±Ç°Õ¼ÓÃ
+            Tilemap occupiedLayer = null // å¦‚æœä½ ç”¨ä¸€ä¸ªTilemapæ¥è¡¨ç¤ºå½“å‰å ç”¨
         )
         {
-            // Í³Ò»±ß½ç£ºÒÔ ground µÄ cellBounds Îª»ù×¼£¨¿É¸ù¾İĞèÒª¸ÄÎª²¢¼¯£©
+            // ç»Ÿä¸€è¾¹ç•Œï¼šä»¥ ground çš„ cellBounds ä¸ºåŸºå‡†ï¼ˆå¯æ ¹æ®éœ€è¦æ”¹ä¸ºå¹¶é›†ï¼‰
             BoundsInt bounds = ground.cellBounds;
             int W = bounds.size.x;
             int H = bounds.size.y;
@@ -100,7 +100,7 @@ namespace My
                 bits = new byte[(W * H + 7) / 8]
             };
 
-            // É¨Ãè
+            // æ‰«æ
             for (int ly = 0; ly < H; ly++)
             {
                 for (int lx = 0; lx < W; lx++)
@@ -112,11 +112,11 @@ namespace My
                     bool isWater = water != null && water.GetTile(cell) != null;
                     bool isOccupiedTile = occupiedLayer != null && occupiedLayer.GetTile(cell) != null;
 
-                    // ¿É½¨ÔìµÄÂß¼­£ºÓĞµØÃæ£¬ÇÒ²»ÔÚ½û½¨/Ë®Óò/Õ¼ÓÃÉÏ
+                    // å¯å»ºé€ çš„é€»è¾‘ï¼šæœ‰åœ°é¢ï¼Œä¸”ä¸åœ¨ç¦å»º/æ°´åŸŸ/å ç”¨ä¸Š
                     bool buildable = hasGround && !isBlocked && !isWater && !isOccupiedTile;
                     build.SetBuildable(lx, ly, buildable);
 
-                    // Õ¼ÓÃÎ»Í¼£ºÈç¹ûÄãÈ·ÊµÓÃÒ»¸ö²ã±íÊ¾ÒÑÕ¼ÓÃ
+                    // å ç”¨ä½å›¾ï¼šå¦‚æœä½ ç¡®å®ç”¨ä¸€ä¸ªå±‚è¡¨ç¤ºå·²å ç”¨
                     occ.SetOccupied(lx, ly, isOccupiedTile);
                 }
             }
@@ -124,8 +124,8 @@ namespace My
             return new ExportResult { buildGrid = build, occupancyGrid = occ };
         }
 
-        // Èç¹ûÃ»ÓĞµ¥¶ÀµÄÕ¼ÓÃTilemap£¬µ«ÄãÏëÔÚÔËĞĞÊ±¸ù¾İ¶ÔÏóÎ»ÖÃ±ê¼ÇÕ¼ÓÃ£º
-        // ¿ÉÓÃ´Ë·½·¨½«ÊÀ½ç×ø±êÁĞ±íÓ³ÉäÎª¸ñ×ÓÕ¼ÓÃÎ»Í¼
+        // å¦‚æœæ²¡æœ‰å•ç‹¬çš„å ç”¨Tilemapï¼Œä½†ä½ æƒ³åœ¨è¿è¡Œæ—¶æ ¹æ®å¯¹è±¡ä½ç½®æ ‡è®°å ç”¨ï¼š
+        // å¯ç”¨æ­¤æ–¹æ³•å°†ä¸–ç•Œåæ ‡åˆ—è¡¨æ˜ å°„ä¸ºæ ¼å­å ç”¨ä½å›¾
         public static void MarkOccupancyFromWorldPositions(
             Grid grid,
             Vector3[] worldPositions,
@@ -143,10 +143,10 @@ namespace My
             }
         }
 
-        // ¼òÒ×ĞòÁĞ»¯Îª×Ö½ÚÁ÷£¨¿ÉÓÃÓÚ´æµµ/ÍøÂç£©
+        // ç®€æ˜“åºåˆ—åŒ–ä¸ºå­—èŠ‚æµï¼ˆå¯ç”¨äºå­˜æ¡£/ç½‘ç»œï¼‰
         public static byte[] SerializeBuildGrid(BuildGrid g)
         {
-            // ¸ñÊ½£ºwidth,height,originX,originY, bitsLen, bits
+            // æ ¼å¼ï¼šwidth,height,originX,originY, bitsLen, bits
             using (var ms = new System.IO.MemoryStream())
             using (var bw = new System.IO.BinaryWriter(ms))
             {

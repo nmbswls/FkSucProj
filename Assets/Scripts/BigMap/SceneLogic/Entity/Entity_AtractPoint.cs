@@ -52,7 +52,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Ö´ĞĞÎüÒıÁ¦
+        /// æ‰§è¡Œå¸å¼•åŠ›
         /// </summary>
         protected void ApplyAttract()
         {

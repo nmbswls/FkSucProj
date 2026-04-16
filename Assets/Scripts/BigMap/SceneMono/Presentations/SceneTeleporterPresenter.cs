@@ -36,7 +36,7 @@ namespace My.Map.Scene
             string mapName = TeleporterEntity.TargetMapId;
             string namedP = TeleporterEntity.TargetNamedPoint;
 
-            // Ô­µØ´«ËÍ
+            // åŸåœ°ä¼ é€
             if (string.IsNullOrEmpty(mapName) || mapName == TeleporterEntity.LogicManager.AreaManager.MapName)
             {
                 if (string.IsNullOrEmpty(namedP))

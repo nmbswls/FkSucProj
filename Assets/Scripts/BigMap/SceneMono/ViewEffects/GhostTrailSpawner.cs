@@ -10,12 +10,12 @@ namespace My.Map
 
 
         [Header("Ghost Settings")]
-        public GameObject target;                  // ÒªÉú³É²ĞÓ°µÄ¶ÔÏó£¨´øSpriteRenderer£©
-        public Material ghostMaterial;             // °ëÍ¸Ã÷²ĞÓ°²ÄÖÊ£¨SpriteÓÃµÄÍ¸Ã÷shader/URP Sprite-Unlit£©
-        public float spawnInterval = 0.05f;        // ²ĞÓ°Éú³É¼ä¸ô
-        public float ghostLife = 0.3f;             // ²ĞÓ°´æ»îÊ±¼ä
-        public int poolSize = 32;                  // ¶ÔÏó³Ø´óĞ¡
-        public float minSpeedToSpawn = 0.1f;       // ËÙ¶ÈãĞÖµ£¨2DÒ²Ê¹ÓÃÊÀ½ç×ø±ê£©
+        public GameObject target;                  // è¦ç”Ÿæˆæ®‹å½±çš„å¯¹è±¡ï¼ˆå¸¦SpriteRendererï¼‰
+        public Material ghostMaterial;             // åŠé€æ˜æ®‹å½±æè´¨ï¼ˆSpriteç”¨çš„é€æ˜shader/URP Sprite-Unlitï¼‰
+        public float spawnInterval = 0.05f;        // æ®‹å½±ç”Ÿæˆé—´éš”
+        public float ghostLife = 0.3f;             // æ®‹å½±å­˜æ´»æ—¶é—´
+        public int poolSize = 32;                  // å¯¹è±¡æ± å¤§å°
+        public float minSpeedToSpawn = 0.1f;       // é€Ÿåº¦é˜ˆå€¼ï¼ˆ2Dä¹Ÿä½¿ç”¨ä¸–ç•Œåæ ‡ï¼‰
 
         private float _timer;
 
@@ -46,7 +46,7 @@ namespace My.Map
 
             _lastPos = target.transform.position;
 
-            // Ô¤½¨¶ÔÏó³Ø
+            // é¢„å»ºå¯¹è±¡æ± 
             for (int i = 0; i < poolSize; i++)
             {
                 var ghost = CreateGhostInstance();
@@ -76,16 +76,16 @@ namespace My.Map
             ghost.transform.SetParent(MainGameManager.Instance.SceneEffectLayer);
             ghost.transform.localScale = target.transform.localScale;
 
-            // Ìí¼Ó²¢ÅäÖÃ SpriteRenderer
+            // æ·»åŠ å¹¶é…ç½® SpriteRenderer
             var sr = ghost.AddComponent<SpriteRenderer>();
 
-            // ²ĞÓ°²ÄÖÊ£¨¿ÉÑ¡£©£¬ÈôÎª¿ÕÔò¼Ì³ĞÄ¬ÈÏ²ÄÖÊ
+            // æ®‹å½±æè´¨ï¼ˆå¯é€‰ï¼‰ï¼Œè‹¥ä¸ºç©ºåˆ™ç»§æ‰¿é»˜è®¤æè´¨
             if (ghostMaterial != null)
             {
                 sr.sharedMaterial = ghostMaterial;
             }
 
-            // Ìí¼Óµ­³ö½Å±¾
+            // æ·»åŠ æ·¡å‡ºè„šæœ¬
             var fade = ghost.AddComponent<GhoseTrailFader>();
             fade.life = ghostLife;
 
@@ -94,7 +94,7 @@ namespace My.Map
 
         void SpawnGhost()
         {
-            if (target == null || _targetSrList.Count == 0) return; // Ä¿±êÒÑÏú»Ù»òÈ±×é¼ş
+            if (target == null || _targetSrList.Count == 0) return; // ç›®æ ‡å·²é”€æ¯æˆ–ç¼ºç»„ä»¶
             var ghost = GetGhostFromPool();
             if (!ghost) ghost = CreateGhostInstance();
 
@@ -112,7 +112,7 @@ namespace My.Map
             }
 
             if (activeSr == null) return;
-            // ¿½±´ÊôĞÔ
+            // æ‹·è´å±æ€§
             sr.sprite = activeSr.sprite;
             sr.flipX = activeSr.flipX;
             sr.flipY = activeSr.flipY;
@@ -120,7 +120,7 @@ namespace My.Map
             sr.sortingOrder = activeSr.sortingOrder - 1;
             sr.color = activeSr.color;
 
-            // Î»ÖÃÓë³¯Ïò
+            // ä½ç½®ä¸æœå‘
             ghost.transform.SetPositionAndRotation(target.transform.position, target.transform.rotation);
             ghost.transform.position += activeSr.transform.localPosition;
             ghost.transform.localScale = activeSr.transform.localScale;
@@ -131,20 +131,20 @@ namespace My.Map
             }
             ghost.SetActive(true);
 
-            // ÖØÖÃµ­³ö
+            // é‡ç½®æ·¡å‡º
             var fader = ghost.GetComponent<GhoseTrailFader>();
             if (fader != null) fader.ResetLife(ghostLife, sr.color);
 
             ghosts.Add(ghost);
-            // Æô¶¯»ØÊÕ
+            // å¯åŠ¨å›æ”¶
             StartCoroutine(RecycleAfter(ghost, ghostLife));
         }
 
         System.Collections.IEnumerator RecycleAfter(GameObject ghost, float delay)
         {
             yield return new WaitForSeconds(delay);
-            if (!this) yield break; // ¹ÜÀíÆ÷±»Ïú»Ù
-            if (!ghost) yield break; // ÓÄÁéÒÑÏú»Ù
+            if (!this) yield break; // ç®¡ç†å™¨è¢«é”€æ¯
+            if (!ghost) yield break; // å¹½çµå·²é”€æ¯
             ghost.SetActive(false);
             _pool.Enqueue(ghost);
 

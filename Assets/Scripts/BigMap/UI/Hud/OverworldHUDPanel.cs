@@ -103,7 +103,7 @@ namespace My.UI
 
         }
 
-        public void Refresh() { /* ¸üĞÂÈÎÎñ/ÌáÊ¾µÈ */ }
+        public void Refresh() { /* æ›´æ–°ä»»åŠ¡/æç¤ºç­‰ */ }
 
         public enum EHudMode
         { 
@@ -239,7 +239,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ¼ì²é
+        /// æ£€æŸ¥
         /// </summary>
         private void CheckDisguiseState()
         {
@@ -372,7 +372,7 @@ namespace My.UI
 
 
         /// <summary>
-        /// ¸üĞÂhudÄ£Ê½
+        /// æ›´æ–°hudæ¨¡å¼
         /// </summary>
         /// <param name="mode"></param>
         public void UpdateHudMode(EHudMode mode)
@@ -390,7 +390,7 @@ namespace My.UI
             }
             else if (mode == EHudMode.PreviewSkill)
             {
-                Vector2 hotspot = new Vector2(cursorTexSkill.width / 2, cursorTexSkill.height / 2); // »ò¼ıÍ·¼â¶ËÏñËØ
+                Vector2 hotspot = new Vector2(cursorTexSkill.width / 2, cursorTexSkill.height / 2); // æˆ–ç®­å¤´å°–ç«¯åƒç´ 
                 Cursor.SetCursor(cursorTexSkill, hotspot, CursorMode.Auto);
             }
 
@@ -632,7 +632,7 @@ namespace My.UI
             }
             else if (HudMode == EHudMode.PreviewSkill)
             {
-                // ×ó¼ü
+                // å·¦é”®
                 if (button == 0)
                 {
                     overworldSkillPreviewUI.ConfirmSkillCast(mousePos);
@@ -683,7 +683,7 @@ namespace My.UI
 
         #endregion
 
-        #region ¼¼ÄÜÔ¤ÀÀ
+        #region æŠ€èƒ½é¢„è§ˆ
 
         protected void EnterSkillPreviewMode(string skillId, Action<bool> onConfirm = null)
         {
@@ -705,7 +705,7 @@ namespace My.UI
 
         #endregion
 
-        #region ½¨Ôì
+        #region å»ºé€ 
 
         protected void EnterBuildMode()
         {
@@ -729,22 +729,22 @@ namespace My.UI
         public GameObject simpleFloatTextPrefab;
         public void DoPendingAlertReduce(long val)
         {
-            // 1. Éú³ÉÔ¤ÖÆÌå
+            // 1. ç”Ÿæˆé¢„åˆ¶ä½“
             GameObject go = Instantiate(simpleFloatTextPrefab, AlertHint.transform.position, Quaternion.identity, AlertHint.transform);
             go.SetActive(true);
 
-            // 2. »ñÈ¡½Å±¾²¢³õÊ¼»¯
+            // 2. è·å–è„šæœ¬å¹¶åˆå§‹åŒ–
             HudSimpleFloatingText popup = go.GetComponent<HudSimpleFloatingText>();
             popup.Setup("-"+val, AlertHint.transform.position, UnityEngine.Color.black);
         }
 
         public void ShowBottomHintText(long val)
         {
-            //// 1. Éú³ÉÔ¤ÖÆÌå
+            //// 1. ç”Ÿæˆé¢„åˆ¶ä½“
             //GameObject go = Instantiate(simpleFloatTextPrefab, AlertHint.transform.position, Quaternion.identity, AlertHint.transform);
             //go.SetActive(true);
 
-            //// 2. »ñÈ¡½Å±¾²¢³õÊ¼»¯
+            //// 2. è·å–è„šæœ¬å¹¶åˆå§‹åŒ–
             //HudSimpleFloatingText popup = go.GetComponent<HudSimpleFloatingText>();
             //popup.Setup("-" + val, AlertHint.transform.position, UnityEngine.Color.black);
         }
@@ -783,11 +783,11 @@ namespace My.UI
             }
         }
 
-        #region ¼àÌıÍæ¼ÒÊÂ¼ş
+        #region ç›‘å¬ç©å®¶äº‹ä»¶
 
 
         /// <summary>
-        /// ÊÂ¼ş¼àÌı
+        /// äº‹ä»¶ç›‘å¬
         /// </summary>
         /// <param name="e"></param>
         private void HandleOnPlayerFuncOpen(PlayerFuncUnlockEvent e)

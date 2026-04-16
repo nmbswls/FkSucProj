@@ -142,7 +142,7 @@ namespace My.Map.Entity
             newCtx.throwStartTime = LogicTime.time;
             newCtx.throwDuration = duration;
 
-            // 增加
+            // 澧炲姞
             launcher.OnThrowStart();
             target.OnBeingThrowStart();
 
@@ -183,7 +183,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            // 处理
+            // 澶勭悊
             CleanOneThrowContext(launcherCtx);
 
             return true;

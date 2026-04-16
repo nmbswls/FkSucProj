@@ -16,6 +16,6 @@ namespace My
         public byte[] buildableBits;
 
         [Tooltip("Bit-packed initial occupancy: 1=occupied, 0=free")]
-        public byte[] occupancyBits; // ¿ÉÎª¿Õ
+        public byte[] occupancyBits; // å¯ä¸ºç©º
     }
 }

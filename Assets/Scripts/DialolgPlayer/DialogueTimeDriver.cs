@@ -6,7 +6,7 @@ public class DialogueTimeDriver : MonoBehaviour
 {
     private class Tween
     {
-        public Action<float> update; // ´«Èë 0..1 µÄ½ø¶È
+        public Action<float> update; // ä¼ å…¥ 0..1 çš„è¿›åº¦
         public Action completed;
         public float duration;
         public float elapsed;

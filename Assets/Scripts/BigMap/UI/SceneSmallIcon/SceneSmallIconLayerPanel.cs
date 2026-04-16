@@ -41,7 +41,7 @@ namespace My.UI
             //BottomProgressPanel.Setup();
         }
 
-        public void Refresh() { /* ¸üĞÂÈÎÎñ/ÌáÊ¾µÈ */ }
+        public void Refresh() { /* æ›´æ–°ä»»åŠ¡/æç¤ºç­‰ */ }
 
         public override int FocusPriority => 0;
         public bool OnConfirm() => false;
@@ -51,7 +51,7 @@ namespace My.UI
 
         public SceneInteractUIHinter InteractHintPrefab;
         public SceneEvilAlertUIItem EvilAlertPrefab;
-        public SceneNPCHStatUIStruct NPCHStatPrefab; // ĞèÒªÔÚ Inspector ÖĞÍÏ×§ Prefab
+        public SceneNPCHStatUIStruct NPCHStatPrefab; // éœ€è¦åœ¨ Inspector ä¸­æ‹–æ‹½ Prefab
 
 
         private Dictionary<ISceneInteractable, SceneInteractUIHinter> sceneInteractHintDicts = new();
@@ -127,7 +127,7 @@ namespace My.UI
 
         protected void UpdateSceneSmallIconBind()
         {
-            // »º´æÆÁÄ»³ß´çºÍ 10% µÄ·À¶¶»º³å
+            // ç¼“å­˜å±å¹•å°ºå¯¸å’Œ 10% çš„é˜²æŠ–ç¼“å†²
             _screenWidth = Screen.width;
             _screenHeight = Screen.height;
             _bufferX = _screenWidth * 0.1f;
@@ -155,7 +155,7 @@ namespace My.UI
             }
         }
 
-        #region Alert UI ¸üĞÂÓë°´Ğè·ÖÅä
+        #region Alert UI æ›´æ–°ä¸æŒ‰éœ€åˆ†é…
 
         protected void CheckUpdateSceneUnitAlert(IScenePresentation presenter)
         {
@@ -181,7 +181,7 @@ namespace My.UI
             if (isVisible)
             {
                 SceneEvilAlertUIItem uiItem;
-                // ÔÚÆÁÄ»ÄÚ£¬Èç¹ûÃ»ÓĞ·ÖÅäUI£¬Ôò´Ó³ØÖĞÈ¡
+                // åœ¨å±å¹•å†…ï¼Œå¦‚æœæ²¡æœ‰åˆ†é…UIï¼Œåˆ™ä»æ± ä¸­å–
                 if (!hasActiveUI)
                 {
                     uiItem = AllocateEvilAlertUI(npcPresenter);
@@ -191,12 +191,12 @@ namespace My.UI
                     uiItem = _activeEvilAlerts[presenter.Id];
                 }
 
-                // 2. ¸üĞÂ UI Î»ÖÃ
+                // 2. æ›´æ–° UI ä½ç½®
                 UpdateSceneAlertUI(uiItem, screenPos);
             }
             else
             {
-                // 3. ÔÚÆÁÄ»Íâ£¬Èç¹ûÕ¼ÓÃÁË UI£¬Á¢¿Ì»ØÊÕ
+                // 3. åœ¨å±å¹•å¤–ï¼Œå¦‚æœå ç”¨äº† UIï¼Œç«‹åˆ»å›æ”¶
                 if (hasActiveUI)
                 {
                     RecycleEvilAlertUI(presenter.Id);
@@ -216,7 +216,7 @@ namespace My.UI
                 uiItem = Instantiate(EvilAlertPrefab, transform);
             }
 
-            uiItem.Bind(npcPresenter); // µ÷ÓÃÍâ²¿×é¼şµÄ°ó¶¨·½·¨
+            uiItem.Bind(npcPresenter); // è°ƒç”¨å¤–éƒ¨ç»„ä»¶çš„ç»‘å®šæ–¹æ³•
             _activeEvilAlerts[npcPresenter.Id] = uiItem;
             return uiItem;
         }
@@ -225,7 +225,7 @@ namespace My.UI
         {
             if (_activeEvilAlerts.TryGetValue(entityId, out var uiItem))
             {
-                uiItem.Unbind(); // ÄÚ²¿½â°ó²¢Òş²Ø
+                uiItem.Unbind(); // å†…éƒ¨è§£ç»‘å¹¶éšè—
                 _evilAlertPool.Enqueue(uiItem);
                 _activeEvilAlerts.Remove(entityId);
             }
@@ -236,7 +236,7 @@ namespace My.UI
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 transform.parent as RectTransform,
                 screenPos,
-                TopCanvas.worldCamera, // ×¢Òâ Canvas Ä£Ê½£¬Èç¹ûÊÇ Overlay ÕâÀï´« null
+                TopCanvas.worldCamera, // æ³¨æ„ Canvas æ¨¡å¼ï¼Œå¦‚æœæ˜¯ Overlay è¿™é‡Œä¼  null
                 out Vector2 uiLocalPos
             );
             uiLocalPos += Vector2.up * 20f;
@@ -245,7 +245,7 @@ namespace My.UI
         #endregion
 
 
-        #region ui ½»»¥¸üĞÂ
+        #region ui äº¤äº’æ›´æ–°
 
         protected void CheckUpdateSceneInteracbleHint(IScenePresentation presenter)
         {
@@ -274,7 +274,7 @@ namespace My.UI
                     break;
                 }
 
-                // 1. ÅĞ¶ÏÊÇ·ñÔÚÆÁÄ»¿ÉÊÓ·¶Î§ÄÚ£¨´ø»º³åÇøÓò£©
+                // 1. åˆ¤æ–­æ˜¯å¦åœ¨å±å¹•å¯è§†èŒƒå›´å†…ï¼ˆå¸¦ç¼“å†²åŒºåŸŸï¼‰
                 worldPos = presenter.GetWorldPosition();
                 var viewportPos = _mainCam.WorldToViewportPoint(worldPos);
                 isVisible = viewportPos.z > 0 &&
@@ -286,7 +286,7 @@ namespace My.UI
             if (isVisible)
             {
                 SceneInteractUIHinter hintItem;
-                // ÔÚÆÁÄ»ÄÚ£¬Èç¹ûÃ»ÓĞ·ÖÅäUI£¬Ôò´Ó³ØÖĞÈ¡
+                // åœ¨å±å¹•å†…ï¼Œå¦‚æœæ²¡æœ‰åˆ†é…UIï¼Œåˆ™ä»æ± ä¸­å–
                 if (!hasActiveUI)
                 {
                     hintItem = AllocateInteractHintUI(interactblePresenter);
@@ -296,12 +296,12 @@ namespace My.UI
                     hintItem = sceneInteractHintDicts[interactblePresenter];
                 }
 
-                // 2. ¸üĞÂ UI Î»ÖÃ
+                // 2. æ›´æ–° UI ä½ç½®
                 UpdateInteractUIPosition(hintItem, worldPos);
             }
             else
             {
-                // 3. ÔÚÆÁÄ»Íâ£¬Èç¹ûÕ¼ÓÃÁË UI£¬Á¢¿Ì»ØÊÕ
+                // 3. åœ¨å±å¹•å¤–ï¼Œå¦‚æœå ç”¨äº† UIï¼Œç«‹åˆ»å›æ”¶
                 if (hasActiveUI)
                 {
                     RecycleInteractHintUI(interactblePresenter);
@@ -348,11 +348,11 @@ namespace My.UI
             var hintPos = innerInteract.GetHintAnchorPosition();
             Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
 
-            // Èç¹ûÊÇ Screen Space - Camera »ò World Space£¬ÓÃ RectTransformUtility£º
+            // å¦‚æœæ˜¯ Screen Space - Camera æˆ– World Spaceï¼Œç”¨ RectTransformUtilityï¼š
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 UIManager.Instance.RootCanvas.transform as RectTransform,
                 screenPos,
-                UIManager.Instance.UICamera,   // Screen Space - Camera ÓÃÉãÏñ»ú£»Overlay Ä£Ê½´« null
+                UIManager.Instance.UICamera,   // Screen Space - Camera ç”¨æ‘„åƒæœºï¼›Overlay æ¨¡å¼ä¼  null
                 out Vector2 localPos
             );
             hintItem.transform.localPosition = localPos;
@@ -361,11 +361,11 @@ namespace My.UI
         #endregion
 
 
-        #region NPC HStat UI ¸üĞÂÓë°´Ğè·ÖÅä
+        #region NPC HStat UI æ›´æ–°ä¸æŒ‰éœ€åˆ†é…
 
         protected void CheckUpdateSceneNpcHStat(IScenePresentation presenter)
         {
-            // Ç¿×ªÅĞ¶ÏÊÇ·ñÎª NPC
+            // å¼ºè½¬åˆ¤æ–­æ˜¯å¦ä¸º NPC
             if (presenter is not SceneNpcPresenter npcPresenter) return;
 
             bool hasActiveUI = _activeNpcHStat.ContainsKey(npcPresenter.Id);
@@ -378,7 +378,7 @@ namespace My.UI
             }
             else
             {
-                // 1. ÅĞ¶ÏÊÇ·ñÔÚÆÁÄ»¿ÉÊÓ·¶Î§ÄÚ£¨Ôö¼Ó -0.1 µ½ 1.1 µÄ»º³å·À¶¶ÇøÓò£©
+                // 1. åˆ¤æ–­æ˜¯å¦åœ¨å±å¹•å¯è§†èŒƒå›´å†…ï¼ˆå¢åŠ  -0.1 åˆ° 1.1 çš„ç¼“å†²é˜²æŠ–åŒºåŸŸï¼‰
                 screenPos = _mainCam.WorldToScreenPoint(npcPresenter.Pos);
                 isVisible = screenPos.z > 0 &&
                 screenPos.x >= -_bufferX && screenPos.x <= _screenWidth + _bufferX &&
@@ -390,7 +390,7 @@ namespace My.UI
             if (isVisible)
             {
                 SceneNPCHStatUIStruct uiItem;
-                // ÔÚÆÁÄ»ÄÚ£¬Èç¹ûÃ»ÓĞ·ÖÅäUI£¬Ôò´Ó³ØÖĞÈ¡
+                // åœ¨å±å¹•å†…ï¼Œå¦‚æœæ²¡æœ‰åˆ†é…UIï¼Œåˆ™ä»æ± ä¸­å–
                 if (!hasActiveUI)
                 {
                     uiItem = AllocateNpcHStatUI(npcPresenter);
@@ -400,15 +400,15 @@ namespace My.UI
                     uiItem = _activeNpcHStat[npcPresenter.Id];
                 }
 
-                // 2. ¸üĞÂ UI Î»ÖÃ
+                // 2. æ›´æ–° UI ä½ç½®
                 UpdateNpcHStatUIPosition(uiItem, screenPos);
 
-                // 3. (¿ÉÑ¡) ÔÚÕâÀï¸üĞÂ UI ÉÏµÄÎÄ±¾¡¢ÑªÌõ½ø¶ÈµÈÊµÊ±±íÏÖÊı¾İ
+                // 3. (å¯é€‰) åœ¨è¿™é‡Œæ›´æ–° UI ä¸Šçš„æ–‡æœ¬ã€è¡€æ¡è¿›åº¦ç­‰å®æ—¶è¡¨ç°æ•°æ®
                 // uiItem.SJProgressText.text = "...";
             }
             else
             {
-                // 3. ÔÚÆÁÄ»Íâ£¬Èç¹ûÕ¼ÓÃÁË UI£¬Á¢¿Ì»ØÊÕ
+                // 3. åœ¨å±å¹•å¤–ï¼Œå¦‚æœå ç”¨äº† UIï¼Œç«‹åˆ»å›æ”¶
                 if (hasActiveUI)
                 {
                     RecycleNpcHStatUI(npcPresenter.Id);
@@ -428,7 +428,7 @@ namespace My.UI
                 uiItem = Instantiate(NPCHStatPrefab, transform);
             }
 
-            uiItem.Bind(npcPresenter); // µ÷ÓÃÍâ²¿×é¼şµÄ°ó¶¨·½·¨
+            uiItem.Bind(npcPresenter); // è°ƒç”¨å¤–éƒ¨ç»„ä»¶çš„ç»‘å®šæ–¹æ³•
             _activeNpcHStat[npcPresenter.Id] = uiItem;
             return uiItem;
         }
@@ -437,7 +437,7 @@ namespace My.UI
         {
             if (_activeNpcHStat.TryGetValue(entityId, out var uiItem))
             {
-                uiItem.Unbind(); // ÄÚ²¿½â°ó²¢Òş²Ø
+                uiItem.Unbind(); // å†…éƒ¨è§£ç»‘å¹¶éšè—
                 _npcHStatPool.Enqueue(uiItem);
                 _activeNpcHStat.Remove(entityId);
             }
@@ -448,11 +448,11 @@ namespace My.UI
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 transform.parent as RectTransform,
                 screenPos,
-                TopCanvas.worldCamera, // ×¢Òâ Canvas Ä£Ê½£¬Èç¹ûÊÇ Overlay ÕâÀï´« null
+                TopCanvas.worldCamera, // æ³¨æ„ Canvas æ¨¡å¼ï¼Œå¦‚æœæ˜¯ Overlay è¿™é‡Œä¼  null
                 out Vector2 uiLocalPos
             );
 
-            // ¸ù¾İĞèÒªµ÷Õû¸ß¶ÈÆ«ÒÆ£¬±ÜÃâºÍ Alert / Interact UI ÖØµş
+            // æ ¹æ®éœ€è¦è°ƒæ•´é«˜åº¦åç§»ï¼Œé¿å…å’Œ Alert / Interact UI é‡å 
             uiLocalPos += Vector2.up * 10f;
             uiItem.transform.localPosition = uiLocalPos;
 
@@ -462,7 +462,7 @@ namespace My.UI
         #endregion
 
         /// <summary>
-        /// Ç¿ÖÆ½â°ó
+        /// å¼ºåˆ¶è§£ç»‘
         /// </summary>
         /// <param name="scenePresentation"></param>
         public void OnScenePresentationUbbind(IScenePresentation scenePresentation)
@@ -474,7 +474,7 @@ namespace My.UI
 
             RecycleEvilAlertUI(scenePresentation.Id);
 
-            // ²¹³ä HStat µÄ½â°ó»ØÊÕ
+            // è¡¥å…… HStat çš„è§£ç»‘å›æ”¶
             RecycleNpcHStatUI(scenePresentation.Id);
         }
 

@@ -32,21 +32,21 @@ namespace My.UI
 
             if(uiHover.name == "PlayerClothes")
             {
-                TitleText.text = "衣装";
+                TitleText.text = "琛ｈ";
                 ValueText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) * 0.001f)).ToString();
 
-                DescText.text = "归零就会暴露";
+                DescText.text = "褰掗浂灏变細鏆撮湶";
             }
             else if (uiHover.name == "PlayerExpose")
             {
-                TitleText.text = "真身";
+                TitleText.text = "鐪熻韩";
                 ValueText.text = "999";
 
-                DescText.text = "你以恶魔姿态现身，积攒能量";
+                DescText.text = "浣犱互鎭堕瓟濮挎�佺幇韬紝绉敀鑳介噺";
             }
             else
             {
-                TitleText.text = "未知";
+                TitleText.text = "鏈煡";
             }
         }
     }

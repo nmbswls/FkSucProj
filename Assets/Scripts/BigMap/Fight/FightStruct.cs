@@ -27,7 +27,7 @@ namespace My.Map.Fight
         }
 
         /// <summary>
-        /// Ä¿±êÑ¡Ôñ²ßÂÔ
+        /// ç›®æ ‡é€‰æ‹©ç­–ç•¥
         /// </summary>
         public enum ETargetSelectPolicy
         {
@@ -66,8 +66,8 @@ namespace My.Map.Fight
         public struct InterruptRequest
         {
             public EInterruptSource source;
-            public int priority;     // À´Ô´ÓÅÏÈ¼¶£¨ÀıÈç£ºStun=100, Hit=50, InputCancel=30£©
-            public object payload;   // ¿ÉÑ¡£ºÊ±³¤¡¢·½Ïò¡¢Ğ§¹ûIDµÈ
+            public int priority;     // æ¥æºä¼˜å…ˆçº§ï¼ˆä¾‹å¦‚ï¼šStun=100, Hit=50, InputCancel=30ï¼‰
+            public object payload;   // å¯é€‰ï¼šæ—¶é•¿ã€æ–¹å‘ã€æ•ˆæœIDç­‰
         }
 
         [Serializable]

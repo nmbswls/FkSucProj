@@ -14,8 +14,8 @@ namespace My.Map.Scene
         public int segmentId;
         public Vector2 a;
         public Vector2 b;
-        //public object source; // ¿ÉÑ¡£ºÀ´Ô´¶ÔÏó£¬±ÈÈç BoxCollider2D
-        public Bounds bounds; // AABB£¬ÓÃÓÚÍø¸ñ¸²¸Ç
+        //public object source; // å¯é€‰ï¼šæ¥æºå¯¹è±¡ï¼Œæ¯”å¦‚ BoxCollider2D
+        public Bounds bounds; // AABBï¼Œç”¨äºç½‘æ ¼è¦†ç›–
 
         
         public Segment2D(int segmentId, Vector2 a, Vector2 b)
@@ -26,11 +26,11 @@ namespace My.Map.Scene
             //this.source = source;
             var min = new Vector2(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y));
             var max = new Vector2(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
-            // Z Î¬±£³Ö 0
+            // Z ç»´ä¿æŒ 0
             this.bounds = new Bounds((min + max) * 0.5f, new Vector3(max.x - min.x, max.y - min.y, 0f));
         }
 
-        // ĞŞ¸Ä¶ËµãºóĞèµ÷ÓÃ
+        // ä¿®æ”¹ç«¯ç‚¹åéœ€è°ƒç”¨
         public void RecomputeBounds()
         {
             var min = new Vector2(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y));
@@ -38,7 +38,7 @@ namespace My.Map.Scene
             bounds = new Bounds((min + max) * 0.5f, new Vector3(max.x - min.x, max.y - min.y, 0f));
         }
 
-        // ×î½ü¾àÀëµ½µã£¨Æ½·½¾àÀë£©£¬ÓÃÓÚÔ²ĞÎ¾«É¸
+        // æœ€è¿‘è·ç¦»åˆ°ç‚¹ï¼ˆå¹³æ–¹è·ç¦»ï¼‰ï¼Œç”¨äºåœ†å½¢ç²¾ç­›
         public float SqrDistanceToPoint(Vector2 p)
         {
             Vector2 ab = b - a;
@@ -55,11 +55,11 @@ namespace My.Map.Scene
         private readonly Dictionary<Vector2Int, List<int>> buckets = new Dictionary<Vector2Int, List<int>>();
         private readonly Dictionary<int, List<Vector2Int>> segmentCoveredCells = new Dictionary<int, List<Vector2Int>>();
 
-        // ÄÚ²¿¶Î´æ´¢Óë»îÔ¾±ê¼Ç
+        // å†…éƒ¨æ®µå­˜å‚¨ä¸æ´»è·ƒæ ‡è®°
         private readonly List<Segment2D> segments;
         private readonly List<bool> active;
 
-        // ¸´ÓÃÈİÆ÷
+        // å¤ç”¨å®¹å™¨
         private readonly List<Vector2Int> tmpCells = new List<Vector2Int>();
 
         public SegmentGridIndex(float cellSize)
@@ -69,7 +69,7 @@ namespace My.Map.Scene
             active = new List<bool>();
         }
 
-        // ÈçĞèÓÃÒÑÓĞ¶ÎÁĞ±í³õÊ¼»¯£¬Ò²Ìá¹©Õâ¸ö¹¹Ôì
+        // å¦‚éœ€ç”¨å·²æœ‰æ®µåˆ—è¡¨åˆå§‹åŒ–ï¼Œä¹Ÿæä¾›è¿™ä¸ªæ„é€ 
         public SegmentGridIndex(IList<Segment2D> initialSegments, float cellSize) : this(cellSize)
         {
             if (initialSegments != null && initialSegments.Count > 0)
@@ -80,10 +80,10 @@ namespace My.Map.Scene
         public Segment2D GetSegment(int idx) => segments[idx];
         public bool IsActive(int idx) => idx >= 0 && idx < active.Count && active[idx];
 
-        // ¶¯Ì¬Ìí¼Óµ¥¸ö¶Î£º·µ»ØÆäË÷Òı
+        // åŠ¨æ€æ·»åŠ å•ä¸ªæ®µï¼šè¿”å›å…¶ç´¢å¼•
         public int AddSegment(Segment2D s)
         {
-            // ±£Ö¤ bounds ÓĞĞ§
+            // ä¿è¯ bounds æœ‰æ•ˆ
             if (s.bounds.size.x == 0f && s.bounds.size.y == 0f)
             {
                 var min = new Vector2(Mathf.Min(s.a.x, s.b.x), Mathf.Min(s.a.y, s.b.y));
@@ -104,7 +104,7 @@ namespace My.Map.Scene
             return idx;
         }
 
-        // ¶¯Ì¬ÅúÁ¿Ìí¼Ó£º·µ»ØÃ¿¸ö¶ÎµÄË÷Òı
+        // åŠ¨æ€æ‰¹é‡æ·»åŠ ï¼šè¿”å›æ¯ä¸ªæ®µçš„ç´¢å¼•
         public void AddSegments(IList<Segment2D> input, out List<int> outIndices)
         {
             outIndices = new List<int>(input?.Count ?? 0);
@@ -117,22 +117,22 @@ namespace My.Map.Scene
             }
         }
 
-        // ¸üĞÂ¼ÈÓĞ¶ÎµÄ¼¸ºÎ£¨°´Ë÷Òı¸²¸Ç£©£¬²¢ÔöÁ¿¸üĞÂÆäÍø¸ñ¸²¸Ç
+        // æ›´æ–°æ—¢æœ‰æ®µçš„å‡ ä½•ï¼ˆæŒ‰ç´¢å¼•è¦†ç›–ï¼‰ï¼Œå¹¶å¢é‡æ›´æ–°å…¶ç½‘æ ¼è¦†ç›–
         public void UpdateSegment(int idx, Segment2D s)
         {
             if (idx < 0 || idx >= segments.Count || !active[idx]) return;
 
-            // Ğ´ÈëĞÂ¼¸ºÎ
+            // å†™å…¥æ–°å‡ ä½•
             segments[idx] = s;
 
-            // ¾É¸²¸ÇÒÆ³ı
+            // æ—§è¦†ç›–ç§»é™¤
             if (segmentCoveredCells.TryGetValue(idx, out var oldCells))
             {
                 for (int k = 0; k < oldCells.Count; k++)
                     RemoveFromBucket(oldCells[k], idx);
             }
 
-            // ĞÂ¸²¸Ç¼ÓÈë
+            // æ–°è¦†ç›–åŠ å…¥
             tmpCells.Clear();
             ComputeCoveredCells(s.bounds, tmpCells);
             for (int k = 0; k < tmpCells.Count; k++)
@@ -141,7 +141,7 @@ namespace My.Map.Scene
             segmentCoveredCells[idx] = new List<Vector2Int>(tmpCells);
         }
 
-        // ÅúÁ¿¸üĞÂ
+        // æ‰¹é‡æ›´æ–°
         public void UpdateSegments(IList<int> indices, IList<Segment2D> newValues)
         {
             if (indices == null || newValues == null) return;
@@ -150,7 +150,7 @@ namespace My.Map.Scene
                 UpdateSegment(indices[i], newValues[i]);
         }
 
-        // ¶¯Ì¬ÒÆ³ı£¨Âß¼­Ê§»î + ÇåÍ°£©
+        // åŠ¨æ€ç§»é™¤ï¼ˆé€»è¾‘å¤±æ´» + æ¸…æ¡¶ï¼‰
         public void RemoveSegment(int idx)
         {
             if (idx < 0 || idx >= segments.Count || !active[idx]) return;
@@ -164,7 +164,7 @@ namespace My.Map.Scene
             active[idx] = false;
         }
 
-        // Çå¿Õ²¢ÖØÖÃ
+        // æ¸…ç©ºå¹¶é‡ç½®
         public void Clear()
         {
             buckets.Clear();
@@ -173,11 +173,11 @@ namespace My.Map.Scene
             active.Clear();
         }
 
-        // ²éÑ¯½Ó¿ÚÊ¾Àı£¨ÄãÒÑÓĞµÄÊµÏÖ¿É¸´ÓÃ£©
+        // æŸ¥è¯¢æ¥å£ç¤ºä¾‹ï¼ˆä½ å·²æœ‰çš„å®ç°å¯å¤ç”¨ï¼‰
         public void QueryCircle(Vector2 center, float radius, HashSet<int> results)
         {
             results.Clear();
-            // ¸ù¾İÔ²µÄ AABB ÕÒµ½¸²¸ÇµÄ¸ñ×Ó£¬È»ºóºÏ²¢ bucket
+            // æ ¹æ®åœ†çš„ AABB æ‰¾åˆ°è¦†ç›–çš„æ ¼å­ï¼Œç„¶ååˆå¹¶ bucket
             Bounds bb = new Bounds(center, new Vector3(radius * 2f, radius * 2f, 0f));
             tmpCells.Clear();
             ComputeCoveredCells(bb, tmpCells);
@@ -195,7 +195,7 @@ namespace My.Map.Scene
         public void QueryRay(Vector2 origin, Vector2 dir, float maxDist, HashSet<int> results)
         {
             results.Clear();
-            // Éú³ÉÉäÏßµÄ AABB£¨±£ÊØ°üÎ§£©£¬²éÑ¯¸²¸Ç¸ñ×Ó
+            // ç”Ÿæˆå°„çº¿çš„ AABBï¼ˆä¿å®ˆåŒ…å›´ï¼‰ï¼ŒæŸ¥è¯¢è¦†ç›–æ ¼å­
             var end = origin + dir.normalized * maxDist;
             var min = new Vector2(Mathf.Min(origin.x, end.x), Mathf.Min(origin.y, end.y));
             var max = new Vector2(Mathf.Max(origin.x, end.x), Mathf.Max(origin.y, end.y));
@@ -214,7 +214,7 @@ namespace My.Map.Scene
             }
         }
 
-        // ÏÂÃæÊÇÄãÒÑÓĞµÄ¹¤¾ß£º¸²¸Ç¸ñ×Ó¼ÆËãÓëÍ°²Ù×÷
+        // ä¸‹é¢æ˜¯ä½ å·²æœ‰çš„å·¥å…·ï¼šè¦†ç›–æ ¼å­è®¡ç®—ä¸æ¡¶æ“ä½œ
         private void ComputeCoveredCells(Bounds bb, List<Vector2Int> outCells)
         {
             outCells.Clear();
@@ -261,18 +261,18 @@ namespace My.Map.Scene
 
     public class ObstacleSegmentProvider : MonoBehaviour
     {
-        private SegmentGridIndex segentGridIndex;    // Ö»¶ÁË÷Òı
+        private SegmentGridIndex segentGridIndex;    // åªè¯»ç´¢å¼•
 
-        // ¸´ÓÃÈİÆ÷
+        // å¤ç”¨å®¹å™¨
         private readonly HashSet<int> tmpIdxSet = new HashSet<int>();
         private readonly List<int> tmpList = new List<int>();
 
-        // Ô´¹ÜÀí£ºsourceId -> indices
+        // æºç®¡ç†ï¼šsourceId -> indices
         private readonly Dictionary<string, List<int>> sourceMap = new Dictionary<string, List<int>>();
 
         void Awake()
         {
-            // ³õÊ¼»¯¶¯Ì¬Ë÷Òı
+            // åˆå§‹åŒ–åŠ¨æ€ç´¢å¼•
             segentGridIndex = new SegmentGridIndex(5f);
         }
 
@@ -287,7 +287,7 @@ namespace My.Map.Scene
             return segentGridIndex.GetSegment(idx);
         }
 
-        // Íâ²¿²éÑ¯£ºÔ²ĞÎ·¶Î§ºòÑ¡£¨ºÏ²¢¾²Ì¬+¶¯Ì¬£©
+        // å¤–éƒ¨æŸ¥è¯¢ï¼šåœ†å½¢èŒƒå›´å€™é€‰ï¼ˆåˆå¹¶é™æ€+åŠ¨æ€ï¼‰
         public void QueryCircle(Vector2 center, float radius, HashSet<int> results)
         {
             results.Clear();
@@ -296,14 +296,14 @@ namespace My.Map.Scene
 
         }
 
-        // Íâ²¿²éÑ¯£º¹âÏßÑØÍ¾ºòÑ¡£¨ºÏ²¢¾²Ì¬+¶¯Ì¬£©
+        // å¤–éƒ¨æŸ¥è¯¢ï¼šå…‰çº¿æ²¿é€”å€™é€‰ï¼ˆåˆå¹¶é™æ€+åŠ¨æ€ï¼‰
         public void QueryRay(Vector2 origin, Vector2 dir, float maxDist, HashSet<int> results)
         {
             results.Clear();
             segentGridIndex.QueryRay(origin, dir, maxDist, results);
         }
 
-        // Ìí¼ÓÒ»Åú¶Î£¬·µ»ØÆäÈ«¾ÖË÷ÒıÁĞ±í£¨¹© AOI ¼ÇÂ¼£©
+        // æ·»åŠ ä¸€æ‰¹æ®µï¼Œè¿”å›å…¶å…¨å±€ç´¢å¼•åˆ—è¡¨ï¼ˆä¾› AOI è®°å½•ï¼‰
         public void AddSegments(string sourceId, IEnumerable<Segment2D> inputs)
         {
             if (!sourceMap.TryGetValue(sourceId, out var indices))
@@ -314,7 +314,7 @@ namespace My.Map.Scene
 
             foreach (var seg in inputs)
             {
-                // È·±£ bounds ÓĞĞ§
+                // ç¡®ä¿ bounds æœ‰æ•ˆ
                 if (seg.bounds.size.x == 0f && seg.bounds.size.y == 0f)
                 {
                     seg.RecomputeBounds();
@@ -326,7 +326,7 @@ namespace My.Map.Scene
             Debug.Log("AddSegments now seg count:" + segentGridIndex.Count);
         }
 
-        // °´À´Ô´ÕûÅúÒÆ³ı
+        // æŒ‰æ¥æºæ•´æ‰¹ç§»é™¤
         public void RemoveSource(string sourceId)
         {
             if (!sourceMap.TryGetValue(sourceId, out var indices)) return;
@@ -337,7 +337,7 @@ namespace My.Map.Scene
         }
 
 
-        // ÒÆ³ıÒ»Åú¶Î£¨Âß¼­Ê§»î£©
+        // ç§»é™¤ä¸€æ‰¹æ®µï¼ˆé€»è¾‘å¤±æ´»ï¼‰
         public void RemoveSegments(IList<int> segmentIndices)
         {
             if (segmentIndices == null || segmentIndices.Count == 0) return;

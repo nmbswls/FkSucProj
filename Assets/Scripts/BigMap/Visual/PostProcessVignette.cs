@@ -8,17 +8,17 @@ namespace My.Map
 {
     public class PostProcessVignette : MonoBehaviour
     {
-        public Volume globalVolume; // ÍÏÈë³¡¾°ÀïµÄ Global Volume
-        private Vignette vignette;  // »º´æ Vignette ×é¼ş
+        public Volume globalVolume; // æ‹–å…¥åœºæ™¯é‡Œçš„ Global Volume
+        private Vignette vignette;  // ç¼“å­˜ Vignette ç»„ä»¶
 
         public bool IsDanger;
 
         void Start()
         {
-            // ´Ó Volume µÄ Profile ÖĞ³¢ÊÔ»ñÈ¡ Vignette ×é¼ş
+            // ä» Volume çš„ Profile ä¸­å°è¯•è·å– Vignette ç»„ä»¶
             if (globalVolume.profile.TryGet(out vignette))
             {
-                Debug.Log("ÕÒµ½ Vignette ×é¼şÁË£¡");
+                Debug.Log("æ‰¾åˆ° Vignette ç»„ä»¶äº†ï¼");
             }
         }
 
@@ -30,27 +30,27 @@ namespace My.Map
             this.IsDanger = isDanger;
             if (IsDanger)
             {
-                // ¿ªÆôºìÉ«£¬ÇÒÔö¼ÓÇ¿¶È
+                // å¼€å¯çº¢è‰²ï¼Œä¸”å¢åŠ å¼ºåº¦
                 vignette.color.value = new Color(0.54f, 0, 0);
-                vignette.intensity.value = 0.45f; // 0~1 Ö®¼äµ÷Õû
+                vignette.intensity.value = 0.45f; // 0~1 ä¹‹é—´è°ƒæ•´
                 vignette.intensity.overrideState = true;
             }
             else
             {
-                // »Ö¸´Õı³£
+                // æ¢å¤æ­£å¸¸
                 vignette.intensity.value = 0f;
-                // »òÕßÇĞ»ØºÚÉ«°µ½Ç
+                // æˆ–è€…åˆ‡å›é»‘è‰²æš—è§’
                 vignette.color.value = Color.black;
                 vignette.intensity.overrideState = true;
             }
         }
 
-        // ÄãÒ²¿ÉÒÔÔÚ Update ÀïÏñ·½°¸AÄÇÑùĞ´ºôÎüĞ§¹û
+        // ä½ ä¹Ÿå¯ä»¥åœ¨ Update é‡Œåƒæ–¹æ¡ˆAé‚£æ ·å†™å‘¼å¸æ•ˆæœ
         void Update()
         {
             if (vignette != null && IsDanger)
             {
-                // ¶¯Ì¬¸Ä±ä Intensity ÖÆÔìºôÎü¸Ğ
+                // åŠ¨æ€æ”¹å˜ Intensity åˆ¶é€ å‘¼å¸æ„Ÿ
                 float baseIntensity = 0.3f;
                 float pulse = Mathf.Sin(Time.time * 6f) * 0.1f;
                 vignette.intensity.value = baseIntensity + pulse;

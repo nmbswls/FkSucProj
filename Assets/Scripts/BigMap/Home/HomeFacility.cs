@@ -16,7 +16,7 @@ namespace My.Map
 
         void Awake()
         {
-            // ×Ô¶¯×¥È¡×ÓÎïÌåÀïµÄËùÓĞµã
+            // è‡ªåŠ¨æŠ“å–å­ç‰©ä½“é‡Œçš„æ‰€æœ‰ç‚¹
             _mySpots = GetComponentsInChildren<HomeActionSpot>().ToList();
 
             if (HomeSceneManager.Instance != null)
@@ -26,16 +26,16 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ÔÚ±¾ÉèÊ©ÄÚ£¬ÕÒÒ»¸öÌØ¶¨ÀàĞÍµÄ¿ÕÎ»
+        /// åœ¨æœ¬è®¾æ–½å†…ï¼Œæ‰¾ä¸€ä¸ªç‰¹å®šç±»å‹çš„ç©ºä½
         /// </summary>
         public bool TryGetSpot(HomeActionSpot.SpotType spotType, out HomeActionSpot spot, out int slotIndex, out Vector3 pos)
         {
             spot = null; slotIndex = -1; pos = Vector3.zero;
 
-            // É¸Ñ¡·ûºÏÀàĞÍµÄµã£¨±ÈÈçÔÚ½ÌÌÃÀïÕÒ Worship µã£¬¶ø²»ÊÇ Gate µã£©
+            // ç­›é€‰ç¬¦åˆç±»å‹çš„ç‚¹ï¼ˆæ¯”å¦‚åœ¨æ•™å ‚é‡Œæ‰¾ Worship ç‚¹ï¼Œè€Œä¸æ˜¯ Gate ç‚¹ï¼‰
             var validSpots = _mySpots.Where(s => s.Type == spotType).ToList();
 
-            // Ëæ»ú´òÂÒÒÔ±ÜÃâ×ÜÊÇÈ¥Í¬Ò»¸öµã
+            // éšæœºæ‰“ä¹±ä»¥é¿å…æ€»æ˜¯å»åŒä¸€ä¸ªç‚¹
             validSpots.Sort((a, b) => Random.Range(-1, 2));
 
             foreach (var s in validSpots)
@@ -45,8 +45,8 @@ namespace My.Map
                 {
                     spot = s;
                     slotIndex = idx;
-                    // ÕâÀïÎÒÃÇÉÔÎ¢È¡ÇÉ£¬²»Á¢¼´ Occupy£¬¶øÊÇ¼ÆËã³öÎ»ÖÃ·µ»Ø£¬ÈÃ NPC ¾ö¶¨
-                    // ×¢Òâ£ºÔÚ¶àÏß³Ì»ò¸ß²¢·¢ÏÂ×îºÃÔÚÕâÀïÔ¤Õ¼Î»
+                    // è¿™é‡Œæˆ‘ä»¬ç¨å¾®å–å·§ï¼Œä¸ç«‹å³ Occupyï¼Œè€Œæ˜¯è®¡ç®—å‡ºä½ç½®è¿”å›ï¼Œè®© NPC å†³å®š
+                    // æ³¨æ„ï¼šåœ¨å¤šçº¿ç¨‹æˆ–é«˜å¹¶å‘ä¸‹æœ€å¥½åœ¨è¿™é‡Œé¢„å ä½
                     Vector3 offset = spot.IsQueueMode ? -spot.transform.forward * (idx * spot.Spacing) : Vector3.zero;
                     pos = spot.transform.position + spot.transform.rotation * offset;
                     return true;

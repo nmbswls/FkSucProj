@@ -16,12 +16,12 @@ public class FakeHintTextManager : MonoBehaviour
     public Color defaultColor = Color.white;
 
     [Header("Motion")]
-    public Vector2 startOffset = Vector2.zero;      // ³õÊ¼ÆÁÄ»Æ«ÒÆ
-    public Vector2 drift = new Vector2(0, 60f);     // Ã¿ÃëÏòÉÏµÄÆ¯ÒÆÏñËØ
-    public float lifetime = 1.2f;                   // ´æ»îÊ±¼ä
-    public float fadeOutTime = 0.8f;                // µ­³öÊ±³¤
+    public Vector2 startOffset = Vector2.zero;      // åˆå§‹å±å¹•åç§»
+    public Vector2 drift = new Vector2(0, 60f);     // æ¯ç§’å‘ä¸Šçš„æ¼‚ç§»åƒç´ 
+    public float lifetime = 1.2f;                   // å­˜æ´»æ—¶é—´
+    public float fadeOutTime = 0.8f;                // æ·¡å‡ºæ—¶é•¿
 
-    // ¹ÜÀíµÄÆ®×ÖÊµÀı
+    // ç®¡ç†çš„é£˜å­—å®ä¾‹
     private readonly List<FloatingItem> _items = new List<FloatingItem>();
     private readonly Queue<int> _toRemove = new Queue<int>();
 
@@ -52,20 +52,20 @@ public class FakeHintTextManager : MonoBehaviour
         }
     }
 
-    // Í³Ò»Çı¶¯µÄ Update£¨ÄãÒ²¿ÉÒÔ¸Ä³ÉÔÚ×Ô¼ºµÄÈ«¾Ö Tick ÖĞÊÖ¶¯µ÷ÓÃ TickAll(Time.deltaTime)£©
+    // ç»Ÿä¸€é©±åŠ¨çš„ Updateï¼ˆä½ ä¹Ÿå¯ä»¥æ”¹æˆåœ¨è‡ªå·±çš„å…¨å±€ Tick ä¸­æ‰‹åŠ¨è°ƒç”¨ TickAll(Time.deltaTime)ï¼‰
     void Update()
     {
         TickAll(Time.deltaTime);
     }
 
-    // ¶ÔÍâ½Ó¿Ú£ºÆÁÄ»×ø±ê
+    // å¯¹å¤–æ¥å£ï¼šå±å¹•åæ ‡
     public static void Show(string text, Vector2 screenPosition, Color? color = null, int? fontSize = null)
     {
         var inst = GetOrCreateInstance();
         inst.CreateItem(text, screenPosition, color ?? inst.defaultColor, fontSize ?? inst.defaultFontSize);
     }
 
-    // ¶ÔÍâ½Ó¿Ú£ºÊÀ½ç×ø±ê
+    // å¯¹å¤–æ¥å£ï¼šä¸–ç•Œåæ ‡
     public static void ShowWorld(string text, Vector3 worldPosition, Camera cam = null, Color? color = null, int? fontSize = null)
     {
         var inst = GetOrCreateInstance();
@@ -83,7 +83,7 @@ public class FakeHintTextManager : MonoBehaviour
         return _instance;
     }
 
-    // ´´½¨Ò»¸öÆ®×ÖÊı¾İÏî²¢Éú³ÉÆä UI
+    // åˆ›å»ºä¸€ä¸ªé£˜å­—æ•°æ®é¡¹å¹¶ç”Ÿæˆå…¶ UI
     private void CreateItem(string message, Vector2 screenPos, Color color, int fontSize)
     {
         GameObject go = new GameObject("FloatingText", typeof(Text));
@@ -100,11 +100,11 @@ public class FakeHintTextManager : MonoBehaviour
         txt.raycastTarget = false;
 
         var rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0, 0); // ÆÁÄ»ÏñËØ¶¨Î»
+        rt.anchorMin = rt.anchorMax = new Vector2(0, 0); // å±å¹•åƒç´ å®šä½
         rt.pivot = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = screenPos + startOffset;
 
-        // ×¢²áµ½ÁĞ±í£¬ÓÉ¹ÜÀíÆ÷Í³Ò» Tick
+        // æ³¨å†Œåˆ°åˆ—è¡¨ï¼Œç”±ç®¡ç†å™¨ç»Ÿä¸€ Tick
         _items.Add(new FloatingItem
         {
             go = go,
@@ -117,7 +117,7 @@ public class FakeHintTextManager : MonoBehaviour
         });
     }
 
-    // Í³Ò»Çı¶¯ËùÓĞÆ®×Ö
+    // ç»Ÿä¸€é©±åŠ¨æ‰€æœ‰é£˜å­—
     public void TickAll(float dt)
     {
         _toRemove.Clear();
@@ -126,10 +126,10 @@ public class FakeHintTextManager : MonoBehaviour
             var item = _items[i];
             item.elapsed += dt;
 
-            // Î»ÖÃÆ¯ÒÆ
+            // ä½ç½®æ¼‚ç§»
             item.rt.anchoredPosition += item.driftPerSecond * dt;
 
-            // µ­³ö
+            // æ·¡å‡º
             float fadeStart = Mathf.Max(0f, item.lifetime - item.fadeOutTime);
             if (item.elapsed >= fadeStart)
             {
@@ -139,7 +139,7 @@ public class FakeHintTextManager : MonoBehaviour
                 item.txt.color = c;
             }
 
-            // ½áÊø
+            // ç»“æŸ
             if (item.elapsed >= item.lifetime)
             {
                 if (item.go) Destroy(item.go);
@@ -148,24 +148,24 @@ public class FakeHintTextManager : MonoBehaviour
             }
             else
             {
-                _items[i] = item; // ½á¹¹Ìå»òÀà¶¼°²È«£¬ÕâÀï±£³Ö¸³Öµ
+                _items[i] = item; // ç»“æ„ä½“æˆ–ç±»éƒ½å®‰å…¨ï¼Œè¿™é‡Œä¿æŒèµ‹å€¼
             }
         }
 
-        //// ´ÓºóÍùÇ°É¾³ı£¬±ÜÃâË÷Òı´íÂÒ
+        //// ä»åå¾€å‰åˆ é™¤ï¼Œé¿å…ç´¢å¼•é”™ä¹±
         //while (_toRemove.Count > 0)
         //{
         //    int idx = _toRemove.Dequeue();
         //    if (idx >= 0 && idx < _items.Count)
         //    {
         //        _items.RemoveAt(idx);
-        //        // ×¢Òâ£ºÒÆ³ıºóË÷Òı±ä»¯£¬±¾ÂÖÎÒÃÇÖ»¼ÇÂ¼½«ÒªÉ¾³ıµÄË÷Òı²¢Öğ¸ö´¦Àí£¬
-        //        // Èç¹ûµ£ĞÄË÷Òı´íÂÒ£¬¿É¸ÄÎªµ¹Ğò±éÀú»ò¼ÇÂ¼¶ÔÏóÒıÓÃÔÙÍ³Ò»ÇåÀí¡£
+        //        // æ³¨æ„ï¼šç§»é™¤åç´¢å¼•å˜åŒ–ï¼Œæœ¬è½®æˆ‘ä»¬åªè®°å½•å°†è¦åˆ é™¤çš„ç´¢å¼•å¹¶é€ä¸ªå¤„ç†ï¼Œ
+        //        // å¦‚æœæ‹…å¿ƒç´¢å¼•é”™ä¹±ï¼Œå¯æ”¹ä¸ºå€’åºéå†æˆ–è®°å½•å¯¹è±¡å¼•ç”¨å†ç»Ÿä¸€æ¸…ç†ã€‚
         //    }
         //}
     }
 
-    // Æ®×ÖÊı¾İ½á¹¹£¨·Ç MonoBehaviour£¬´¿Êı¾İ£¬ÓÉ¹ÜÀíÆ÷Çı¶¯£©
+    // é£˜å­—æ•°æ®ç»“æ„ï¼ˆé MonoBehaviourï¼Œçº¯æ•°æ®ï¼Œç”±ç®¡ç†å™¨é©±åŠ¨ï¼‰
     private struct FloatingItem
     {
         public GameObject go;

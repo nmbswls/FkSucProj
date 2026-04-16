@@ -22,7 +22,7 @@ namespace Config.Map
         public SerializableDict<string, int> RepairMaterials;
 
         /// <summary>
-        /// 完成后的placement
+        /// 瀹屾垚鍚庣殑placement
         /// </summary>
         public string PlacementId;
         public Vector2 PlaceOffset;

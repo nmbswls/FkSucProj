@@ -11,7 +11,7 @@ namespace My.Map.Scene
     {
         public LogicEntitySavePoint SaveEntity => (LogicEntitySavePoint)_logic;
 
-        public string ShowName => string.IsNullOrEmpty(CfgId) ? "Save Point" : CfgId;
+        public string ShowName => "Save Point";
 
         public Vector2 Pos => transform.position;
 

@@ -10,19 +10,19 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 namespace My.Map.Entity
 {
 
-    // Âß¼­²ã½Ó¿Ú£ºµ¼º½ÓëÎïÀí·şÎñÓÉUnity²ãÊµÏÖ
+    // é€»è¾‘å±‚æ¥å£ï¼šå¯¼èˆªä¸ç‰©ç†æœåŠ¡ç”±Unityå±‚å®ç°
     public interface INavProvider
     {
-        // ÇëÇóÉú³É»ò¸üĞÂµ½Ä¿±êÎ»ÖÃµÄÂ·¾¶£»·µ»ØÊÇ·ñ³É¹¦
+        // è¯·æ±‚ç”Ÿæˆæˆ–æ›´æ–°åˆ°ç›®æ ‡ä½ç½®çš„è·¯å¾„ï¼›è¿”å›æ˜¯å¦æˆåŠŸ
         bool TryBuildPath(Vector3 start, Vector3 destination, out NavPath path);
 
-        // Õë¶ÔÒÆ¶¯Ä¿±ê£¨¸úËæ£©Ìá¹©ÏÂÒ»Ä¿±êµã£¨¿É×öÔ¤²â£©
+        // é’ˆå¯¹ç§»åŠ¨ç›®æ ‡ï¼ˆè·Ÿéšï¼‰æä¾›ä¸‹ä¸€ç›®æ ‡ç‚¹ï¼ˆå¯åšé¢„æµ‹ï¼‰
         bool TryGetFollowPoint(ILogicEntity target, float predictionSeconds, Vector2 offset, out Vector3 followPoint);
 
-        // ¶¯Ì¬ÖØ¹æ»®£ºÔÚ¸úËæ»òÂ·¾¶ÊÜ×èÊ±µ÷ÓÃ
+        // åŠ¨æ€é‡è§„åˆ’ï¼šåœ¨è·Ÿéšæˆ–è·¯å¾„å—é˜»æ—¶è°ƒç”¨
         bool TryReplan(Vector3 current, Vector3 goal, out NavPath path);
 
-        // ¼òµ¥Á¬Í¨ĞÔ/Ö±Ïß¿É´ï²âÊÔ
+        // ç®€å•è¿é€šæ€§/ç›´çº¿å¯è¾¾æµ‹è¯•
         bool Linecast(Vector3 from, Vector3 to, out Vector3 hitPoint);
 
 
@@ -31,7 +31,7 @@ namespace My.Map.Entity
 
     public struct NavPath
     {
-        public Vector2[] Waypoints; // ÊÀ½ç×ø±ê
+        public Vector2[] Waypoints; // ä¸–ç•Œåæ ‡
         public int Length => Waypoints?.Length ?? 0;
     }
 
@@ -73,7 +73,7 @@ namespace My.Map.Entity
         /// <summary>
         /// 
         /// </summary>
-        private Vector2 _currentGoal;       // PathingÓÃµÄµ±Ç°×ÓÄ¿±ê
+        private Vector2 _currentGoal;       // Pathingç”¨çš„å½“å‰å­ç›®æ ‡
 
         private ILogicEntity? _followTarget;
         private float _followPrediction;
@@ -82,7 +82,7 @@ namespace My.Map.Entity
         private float _moveSpeedRate = 1.0f;
         private float _stopDistance = 0.1f;
 
-        // ÔËĞĞÊ±¸¨Öú
+        // è¿è¡Œæ—¶è¾…åŠ©
         private float _stuckTimer;
         private Vector2 _lastPosition;
         private float _replanCooldownLeft;
@@ -140,8 +140,8 @@ namespace My.Map.Entity
             {
                 TruncateNewPath(newPath);
 
-                // Ö»ÓĞµ±Â·¾¶·¢Éú¾çÁÒ±ä»¯Ê±£¬²ÅÖØÖÃÄ³Ğ©×´Ì¬
-                // ·ñÔò±£³Ö State = EMotorState.Pathing ²»±ä
+                // åªæœ‰å½“è·¯å¾„å‘ç”Ÿå‰§çƒˆå˜åŒ–æ—¶ï¼Œæ‰é‡ç½®æŸäº›çŠ¶æ€
+                // å¦åˆ™ä¿æŒ State = EMotorState.Pathing ä¸å˜
                 if (MotorState != EMotorState.Pathing)
                 {
                     MotorState = EMotorState.Pathing;
@@ -156,7 +156,7 @@ namespace My.Map.Entity
             }
             else
             {
-                // Ã»ÓĞÂ·¾¶£º³¢ÊÔÖ±ÏßÒÆ¶¯»òÁ¢¼´Ê§°Ü
+                // æ²¡æœ‰è·¯å¾„ï¼šå°è¯•ç›´çº¿ç§»åŠ¨æˆ–ç«‹å³å¤±è´¥
                 _path = default;
                 _pathIndex = -1;
                 _currentGoal = destination;
@@ -167,7 +167,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ½øĞĞ¸úËæ
+        /// è¿›è¡Œè·Ÿéš
         /// </summary>
         /// <param name="target"></param>
         /// <param name="followPrediction"></param>
@@ -192,7 +192,7 @@ namespace My.Map.Entity
             this._stopDistance = stopDistance;
             this._moveSpeedRate = moveSpeedRate;
 
-            // Ê×´ÎÈ¡Ä¿±êµã²¢½¨Â·¾¶£¨Èç¹û¿É£©
+            // é¦–æ¬¡å–ç›®æ ‡ç‚¹å¹¶å»ºè·¯å¾„ï¼ˆå¦‚æœå¯ï¼‰
             if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var goal))
             {
                 _currentGoal = goal;
@@ -216,10 +216,10 @@ namespace My.Map.Entity
         public void Tick(float dt)
         {
             _replanCooldownLeft -= dt;
-            // ¼ÇÂ¼¿¨×¡ĞÅÏ¢£¨½öÂß¼­ÅĞ¶¨£©
+            // è®°å½•å¡ä½ä¿¡æ¯ï¼ˆä»…é€»è¾‘åˆ¤å®šï¼‰
             TrackStuck(dt);
 
-            // ½«ÆÚÍûĞı×ª/ËÙ¶È×ª»¯Îª×îÖÕÎïÀíÎ»×Ë£¨ÔÚFixedUpdateÖĞÖ´ĞĞ£©
+            // å°†æœŸæœ›æ—‹è½¬/é€Ÿåº¦è½¬åŒ–ä¸ºæœ€ç»ˆç‰©ç†ä½å§¿ï¼ˆåœ¨FixedUpdateä¸­æ‰§è¡Œï¼‰
             //DesiredRotation = ComputeDesiredRotationFromVelocity(DesiredVelocity, Rotation, _settings.AngularSpeedDeg, dt);
             if(MotorState == EMotorState.Pathing)
             {
@@ -277,7 +277,7 @@ namespace My.Map.Entity
         private void TickFree()
         {
             DesiredVelocity = FreeMoveInput * Owner.GetCurrSpeed();
-            // ¿É½¥Í££º´Óµ±Ç°ËÙ¶Èµ½0
+            // å¯æ¸åœï¼šä»å½“å‰é€Ÿåº¦åˆ°0
             Velocity = Vector3.zero;
         }
 
@@ -286,10 +286,10 @@ namespace My.Map.Entity
         /// </summary>
         private void TickPathingState()
         {
-            // 1. ÖÕµãÅĞ¶¨
+            // 1. ç»ˆç‚¹åˆ¤å®š
             if (_path.Length == 0)
             {
-                // Ö±ÏßÒÆ¶¯Ä£Ê½µÄÖÕµãÅĞ¶Ï
+                // ç›´çº¿ç§»åŠ¨æ¨¡å¼çš„ç»ˆç‚¹åˆ¤æ–­
                 if (Vector2.Distance(Owner.Pos, _currentGoal) <= ArriveTolerance)
                 {
                     EnterFree();
@@ -297,29 +297,29 @@ namespace My.Map.Entity
                 return;
             }
 
-            // 2. Â·¾¶µãÇĞ»»ÅĞ¶¨ (Switch Logic)
-            // »ñÈ¡µ±Ç°ÒªÈ¥µÄÂ·µã
+            // 2. è·¯å¾„ç‚¹åˆ‡æ¢åˆ¤å®š (Switch Logic)
+            // è·å–å½“å‰è¦å»çš„è·¯ç‚¹
             Vector2 currentWaypoint = _path.Waypoints[_pathIndex];
             float dist = Vector2.Distance(Owner.Pos, currentWaypoint);
 
-            // ÅĞ¶ÏÊÇ·ñÊÇ×îºóÒ»¸öµã
+            // åˆ¤æ–­æ˜¯å¦æ˜¯æœ€åä¸€ä¸ªç‚¹
             bool isFinalPoint = _pathIndex >= _path.Length - 1;
 
-            // ÇĞ»»Ìõ¼ş£º
-            // A. Èç¹ûÊÇÖĞ¼äµã£ºÊ¹ÓÃ¿íËÉµÄ SwitchRadius (ÇĞ½Ç)
-            // B. Èç¹ûÊÇÖÕµã£ºÊ¹ÓÃÑÏ¸ñµÄ ArriveTolerance
+            // åˆ‡æ¢æ¡ä»¶ï¼š
+            // A. å¦‚æœæ˜¯ä¸­é—´ç‚¹ï¼šä½¿ç”¨å®½æ¾çš„ SwitchRadius (åˆ‡è§’)
+            // B. å¦‚æœæ˜¯ç»ˆç‚¹ï¼šä½¿ç”¨ä¸¥æ ¼çš„ ArriveTolerance
             float threshold = isFinalPoint ? ArriveTolerance : SwitchRadius;
 
             if (dist <= threshold)
             {
                 if (isFinalPoint)
                 {
-                    // ÕæµÄµ½ÁËÖÕµã
+                    // çœŸçš„åˆ°äº†ç»ˆç‚¹
                     EnterFree();
                 }
                 else
                 {
-                    // ÇĞ»»µ½ÏÂÒ»¸öµã
+                    // åˆ‡æ¢åˆ°ä¸‹ä¸€ä¸ªç‚¹
                     _pathIndex++;
                 }
             }
@@ -328,23 +328,23 @@ namespace My.Map.Entity
 
         private void TickFollowingState()
         {
-            // 1) ¸üĞÂÄ¿±êµã£¨´øÔ¤²âÓëÖØ¹æ»®£©
+            // 1) æ›´æ–°ç›®æ ‡ç‚¹ï¼ˆå¸¦é¢„æµ‹ä¸é‡è§„åˆ’ï¼‰
             if (AllowReplan && _replanCooldownLeft <= 0f)
             {
                 if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var goal))
                 {
                     _currentGoal = goal;
-                    // ÈôÖ±Ïß¿É´ïÇÒ¾àÀë²»´ó£¬½ûÓÃÂ·¾¶¸ÄÓÃÖ±ÏßSteering
+                    // è‹¥ç›´çº¿å¯è¾¾ä¸”è·ç¦»ä¸å¤§ï¼Œç¦ç”¨è·¯å¾„æ”¹ç”¨ç›´çº¿Steering
                     if (navProvider.Linecast(Owner.Pos, goal, out var hit))
                     {
-                        // ÓĞ×èµ²£ºÖØĞÂ¹æ»®
+                        // æœ‰é˜»æŒ¡ï¼šé‡æ–°è§„åˆ’
                         navProvider.TryReplan(Owner.Pos, goal, out var newPath);
 
                         TruncateNewPath(newPath);
                     }
                     else
                     {
-                        _path = default; // Ö±ÏßÄ£Ê½
+                        _path = default; // ç›´çº¿æ¨¡å¼
                         _pathIndex = -1;
                     }
                     _replanCooldownLeft = ReplanCooldown;
@@ -369,17 +369,17 @@ namespace My.Map.Entity
 
         private void UpdatePathingVelocity()
         {
-            // Ã»Â·¾¶µãÊ±Ö±ÏßÇ°Íù_currentGoal
+            // æ²¡è·¯å¾„ç‚¹æ—¶ç›´çº¿å‰å¾€_currentGoal
             if (_path.Length == 0)
             {
                 MoveToward(_currentGoal);
                 return;
             }
 
-            // ÓĞÂ·¾¶
-            // È·¶¨µ±Ç°×ÓÂ·µã
+            // æœ‰è·¯å¾„
+            // ç¡®å®šå½“å‰å­è·¯ç‚¹
             var waypoint = _path.Waypoints[_pathIndex];
-            // ³¯×ÓÂ·µãÒÆ¶¯
+            // æœå­è·¯ç‚¹ç§»åŠ¨
             MoveToward(waypoint);
 
             //DesiredVelocity = ApplyAvoidanceToVelocity(DesiredVelocity);
@@ -389,14 +389,14 @@ namespace My.Map.Entity
         {
             float d = (Owner.Pos - _currentGoal).magnitude;
 
-            // 2) Ç£Òı°ë¾¶ÓëÍ£Ö¹¾àÀë
+            // 2) ç‰µå¼•åŠå¾„ä¸åœæ­¢è·ç¦»
             if (d <= _stopDistance)
             {
                 DesiredVelocity = Vector3.zero;
-                return; // ±£³ÖIdle»òÎ¢¶¯
+                return; // ä¿æŒIdleæˆ–å¾®åŠ¨
             }
 
-            // 3) ¼ÆËãÄ¿±ê·½Ïò£¨Â·¾¶»òÖ±Ïß£©
+            // 3) è®¡ç®—ç›®æ ‡æ–¹å‘ï¼ˆè·¯å¾„æˆ–ç›´çº¿ï¼‰
             Vector3 dir;
             if (_path.Length > 0 && _pathIndex >= 0)
             {
@@ -405,10 +405,10 @@ namespace My.Map.Entity
             }
             else
             {
-                dir = (_currentGoal - Owner.Pos).normalized; // Ö±Ïß
+                dir = (_currentGoal - Owner.Pos).normalized; // ç›´çº¿
             }
 
-            // 4) ËÙ¶ÈÆ¥ÅäÂß¼­
+            // 4) é€Ÿåº¦åŒ¹é…é€»è¾‘
             //var targetVel = Vector2.zero;
             //if(_followTarget is BaseUnitLogicEntity unitEntity)
             //{
@@ -429,32 +429,32 @@ namespace My.Map.Entity
             const float D_far = 8f, D_mid = 3f, buffer = 0.75f;
             if (d > D_far)
             {
-                // Ô¶¾à£º×·¸Ï£¬ÂÔ¸ßÓÚÄ¿±êËÙ¶È£¬µ«²»³¬¹ıMaxSpeed
+                // è¿œè·ï¼šè¿½èµ¶ï¼Œç•¥é«˜äºç›®æ ‡é€Ÿåº¦ï¼Œä½†ä¸è¶…è¿‡MaxSpeed
                 v_des = Mathf.Min(Owner.GetCurrSpeed(), targetSpeed + 1.5f);
             }
             else if (d > D_mid)
             {
-                // ÖĞ¾à£º²¿·ÖÍ¬²½ + ¾àÀëÎó²î±ÈÀıÏî
+                // ä¸­è·ï¼šéƒ¨åˆ†åŒæ­¥ + è·ç¦»è¯¯å·®æ¯”ä¾‹é¡¹
                 float k_p = 0.5f;
                 v_des = Mathf.Clamp(targetSpeed + k_p * (d - D_mid), 0f, Owner.GetCurrSpeed());
             }
             else
             {
-                // ½ü¾à»º³å£ºÏßĞÔË¥¼õÖÁÍ£Ö¹¾àÀë
+                // è¿‘è·ç¼“å†²ï¼šçº¿æ€§è¡°å‡è‡³åœæ­¢è·ç¦»
                 float k_close = 2.0f;
                 float distToStopEdge = Mathf.Max(0f, d - _stopDistance);
                 float maxCloseSpeed = Mathf.Min(Owner.GetCurrSpeed(), distToStopEdge * k_close);
                 v_des = maxCloseSpeed;
-                // µ±Ô¤¼Æ»á·´³¬»òÌùÁ³Ê±£¬Ìá¸ßÖÆ¶¯
-                // ¿ÉÁÙÊ±ÌáÉıDeceleration»ò½«¼ÓËÙ¶ÈÄ¿±êÉèÎª0
+                // å½“é¢„è®¡ä¼šåè¶…æˆ–è´´è„¸æ—¶ï¼Œæé«˜åˆ¶åŠ¨
+                // å¯ä¸´æ—¶æå‡Decelerationæˆ–å°†åŠ é€Ÿåº¦ç›®æ ‡è®¾ä¸º0
             }
 
-            // 5) ¼Ó¼õËÙÏŞÖÆÓë·´³¬ÒÖÖÆ
+            // 5) åŠ å‡é€Ÿé™åˆ¶ä¸åè¶…æŠ‘åˆ¶
             float currentSpeed = Velocity.magnitude;
             float accel = Acceleration;
             float decel = Deceleration;
 
-            // ÈôÄÚ»ıÏÔÊ¾»á·´³¬£¬Ê¹ÓÃ¸ü¸ßdecel±Æ½ü
+            // è‹¥å†…ç§¯æ˜¾ç¤ºä¼šåè¶…ï¼Œä½¿ç”¨æ›´é«˜decelé€¼è¿‘
             var toGoal = (_currentGoal - Owner.Pos).normalized;
             bool likelyOvershoot = Vector3.Dot(toGoal, (Velocity).normalized) < 0f || (currentSpeed > v_des && d < D_mid);
             float accelUsed = likelyOvershoot ? 0f : accel;
@@ -463,10 +463,10 @@ namespace My.Map.Entity
             float nextSpeed = StepSpeed(currentSpeed, v_des, accelUsed, decelUsed, Time.deltaTime);
             DesiredVelocity = dir * nextSpeed;
 
-            // 6) ²àÏòÆ«ÒÆÓë±ÜÕÏ£¨¿ÉÑ¡£©
+            // 6) ä¾§å‘åç§»ä¸é¿éšœï¼ˆå¯é€‰ï¼‰
             // DesiredVelocity = ApplyLocalAvoidance(DesiredVelocity);
 
-            // 7) Ğı×ª¶ÔÆë
+            // 7) æ—‹è½¬å¯¹é½
             //DesiredRotation = ComputeDesiredRotationFromVelocity(DesiredVelocity, Rotation, _settings.AngularSpeedDeg, dt);
         }
 
@@ -482,7 +482,7 @@ namespace My.Map.Entity
             var dir = to.normalized;
             var desiredSpeed = Owner.GetCurrSpeed() * _moveSpeedRate;
 
-            // ¼ÓËÙ¶È/¼õËÙ¶È¿ØÖÆ
+            // åŠ é€Ÿåº¦/å‡é€Ÿåº¦æ§åˆ¶
             //var currentSpeed = target.magnitude;
             //var targetSpeed = Mathf.MoveTowards(currentSpeed, desiredSpeed, 11);
             DesiredVelocity = dir * desiredSpeed;
@@ -515,7 +515,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ²Ã¼ôÂ·¾¶
+        /// è£å‰ªè·¯å¾„
         /// </summary>
         /// <param name="newPath"></param>
         /// <param name="startIndex"></param>
@@ -523,31 +523,31 @@ namespace My.Map.Entity
         {
             int startIndex = 0;
 
-            // ±éÀúĞÂÂ·¾¶µÄÇ°¼¸¸öµã
+            // éå†æ–°è·¯å¾„çš„å‰å‡ ä¸ªç‚¹
             for (int i = 0; i < newPath.Waypoints.Length; i++)
             {
                 Vector2 wp = newPath.Waypoints[i];
                 float distToWp = Vector2.Distance(Owner.Pos, wp);
 
-                // Èç¹ûÕâ¸öÂ·µãÀëÎÒ·Ç³£½ü£¨±ÈÈçĞ¡ÓÚÇĞ½Ç°ë¾¶ SwitchRadius£©£¬
-                // »òÕß±È SwitchRadius ÉÔ´óÒ»µãµã£¨·ÀÖ¹»ØÍ·ÅÜ£©£¬
-                // ¾ÍÈÏÎªÕâ¸öµã¡°ÎÒÒÑ¾­µ½ÁË¡±»ò¡°¿ÉÒÔÖ±½ÓºöÂÔ¡±¡£
-                // ÕâÀï½¨ÒéÊ¹ÓÃÉÔ´óÒ»µãµÄÈİ²î£¬±ÈÈç SwitchRadius * 1.2f
+                // å¦‚æœè¿™ä¸ªè·¯ç‚¹ç¦»æˆ‘éå¸¸è¿‘ï¼ˆæ¯”å¦‚å°äºåˆ‡è§’åŠå¾„ SwitchRadiusï¼‰ï¼Œ
+                // æˆ–è€…æ¯” SwitchRadius ç¨å¤§ä¸€ç‚¹ç‚¹ï¼ˆé˜²æ­¢å›å¤´è·‘ï¼‰ï¼Œ
+                // å°±è®¤ä¸ºè¿™ä¸ªç‚¹â€œæˆ‘å·²ç»åˆ°äº†â€æˆ–â€œå¯ä»¥ç›´æ¥å¿½ç•¥â€ã€‚
+                // è¿™é‡Œå»ºè®®ä½¿ç”¨ç¨å¤§ä¸€ç‚¹çš„å®¹å·®ï¼Œæ¯”å¦‚ SwitchRadius * 1.2f
                 if (distToWp < SwitchRadius)
                 {
-                    startIndex = i + 1; // Ìø¹ıÕâ¸öµã£¬Ö±½ÓÈ¥ÏÂÒ»¸ö
+                    startIndex = i + 1; // è·³è¿‡è¿™ä¸ªç‚¹ï¼Œç›´æ¥å»ä¸‹ä¸€ä¸ª
                 }
                 else
                 {
-                    // Óöµ½µÚÒ»¸ö¡°×ã¹»Ô¶¡±µÄµã£¬Í£Ö¹ĞŞ¼ô£¬ÒÔ´ËÎªÆğµã
+                    // é‡åˆ°ç¬¬ä¸€ä¸ªâ€œè¶³å¤Ÿè¿œâ€çš„ç‚¹ï¼Œåœæ­¢ä¿®å‰ªï¼Œä»¥æ­¤ä¸ºèµ·ç‚¹
                     break;
                 }
             }
 
-            // Ó¦ÓÃĞÂÂ·¾¶
+            // åº”ç”¨æ–°è·¯å¾„
             _path = newPath;
 
-            // Èç¹ûËùÓĞµã¶¼±»¼ôµôÁË£¨ËµÃ÷ÀëÖÕµã¼«½ü£©£¬¾ÍÉèÎª×îºóÒ»¸öµã
+            // å¦‚æœæ‰€æœ‰ç‚¹éƒ½è¢«å‰ªæ‰äº†ï¼ˆè¯´æ˜ç¦»ç»ˆç‚¹æè¿‘ï¼‰ï¼Œå°±è®¾ä¸ºæœ€åä¸€ä¸ªç‚¹
             _pathIndex = Mathf.Min(startIndex, _path.Length - 1);
         }
 
@@ -564,7 +564,7 @@ namespace My.Map.Entity
 
 
         /// <summary>
-        /// ½øÈëpathing
+        /// è¿›å…¥pathing
         /// </summary>
         /// <param name="destination"></param>
         private void EnterPathing(Vector3 destination)
@@ -587,8 +587,8 @@ namespace My.Map.Entity
 
         private static bool Arrived(Vector2 pos, Vector2 dst, float tol) => (pos - dst).magnitude <= tol;
 
-        public float AvoidanceRadius = 0.2f;   // Õì²â°ë¾¶£º¶àÔ¶¿ªÊ¼±ÜÈÃ
-        public float AvoidanceWeight = 0.5f;   // ±ÜÕÏÈ¨ÖØ£ºÔ½´ó¶ãµÃÔ½ºİ
+        public float AvoidanceRadius = 0.2f;   // ä¾¦æµ‹åŠå¾„ï¼šå¤šè¿œå¼€å§‹é¿è®©
+        public float AvoidanceWeight = 0.5f;   // é¿éšœæƒé‡ï¼šè¶Šå¤§èº²å¾—è¶Šç‹ 
         protected List<(Vector2, Vector2)> avoidanceCache = new();
         public float lookAheadDistance = 0.3f;
         public float bodyRadius = 0.3f;

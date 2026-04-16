@@ -90,10 +90,10 @@ namespace My.Config
     [Serializable]
     public class MapInteractInfo
     {
-        // ËùÓĞ½»»¥·ÅÒ»Æğ
+        // æ‰€æœ‰äº¤äº’æ”¾ä¸€èµ·
         public int InteractId;
-        public string Label; // Ñ¡Ïî
-        public string UnLabel; // »ÒÉ«Ñ¡Ïî
+        public string Label; // é€‰é¡¹
+        public string UnLabel; // ç°è‰²é€‰é¡¹
         public bool HideWhenFail = true;
         public float NeedDist = 0.4f;
         public bool Passive = false;

@@ -9,7 +9,7 @@ using static Unity.VisualScripting.Metadata;
 namespace My
 {
 
-    // 2. ¼«¼ò´æ´¢½á¹¹£¨ÓÃÓÚÒ¶×Ó½Úµã´æ´¢Êı¾İ£¬Ê¡ÄÚ´æ£©
+    // 2. æç®€å­˜å‚¨ç»“æ„ï¼ˆç”¨äºå¶å­èŠ‚ç‚¹å­˜å‚¨æ•°æ®ï¼Œçœå†…å­˜ï¼‰
     [System.Serializable]
     public struct StatPair
     {
@@ -26,16 +26,16 @@ namespace My
 
     public class StatMap
     {
-        // Ö»ÓĞÔÚ¾ÛºÏ½Úµã²ÅÕæÕı´´½¨ Dictionary
+        // åªæœ‰åœ¨èšåˆèŠ‚ç‚¹æ‰çœŸæ­£åˆ›å»º Dictionary
         private Dictionary<int, float> _map = new Dictionary<int, float>();
 
-        // »ñÈ¡Öµ£¬Ã»ÓĞÔò·µ»Ø 0
+        // è·å–å€¼ï¼Œæ²¡æœ‰åˆ™è¿”å› 0
         public float Get(int id)
         {
             return _map.TryGetValue(id, out float val) ? val : 0f;
         }
 
-        // ÉèÖÃ/Ìí¼Ó
+        // è®¾ç½®/æ·»åŠ 
         public void Add(int id, float value)
         {
             if (_map.ContainsKey(id))
@@ -44,13 +44,13 @@ namespace My
                 _map[id] = value;
         }
 
-        // Çå¿Õ£¨¸´ÓÃ Dictionary£¬±ÜÃâ GC£©
+        // æ¸…ç©ºï¼ˆå¤ç”¨ Dictionaryï¼Œé¿å… GCï¼‰
         public void Clear()
         {
             _map.Clear();
         }
 
-        // ºËĞÄÓÅ»¯£º½«ÁíÒ»¸ö Map ºÏ²¢½øÀ´£¨ÓÃÓÚÖĞ¼ä½Úµã¾ÛºÏ£©
+        // æ ¸å¿ƒä¼˜åŒ–ï¼šå°†å¦ä¸€ä¸ª Map åˆå¹¶è¿›æ¥ï¼ˆç”¨äºä¸­é—´èŠ‚ç‚¹èšåˆï¼‰
         public void MergeFrom(StatMap otherMap)
         {
             foreach (var kvp in otherMap._map)
@@ -59,23 +59,23 @@ namespace My
             }
         }
 
-        // ºËĞÄÓÅ»¯£º½«½ô´ÕÁĞ±íºÏ²¢½øÀ´£¨ÓÃÓÚÒ¶×Ó½Úµã¾ÛºÏ£©
-        // ÕâÊÇ´¦ÀíÏ¡ÊèÊı¾İµÄ¹Ø¼ü£¬±éÀú List ±È±éÀú´óÊı×é¿ìµÃ¶à
+        // æ ¸å¿ƒä¼˜åŒ–ï¼šå°†ç´§å‡‘åˆ—è¡¨åˆå¹¶è¿›æ¥ï¼ˆç”¨äºå¶å­èŠ‚ç‚¹èšåˆï¼‰
+        // è¿™æ˜¯å¤„ç†ç¨€ç–æ•°æ®çš„å…³é”®ï¼Œéå† List æ¯”éå†å¤§æ•°ç»„å¿«å¾—å¤š
         public void MergeFrom(List<StatPair> sparseList)
         {
             if (sparseList == null) return;
-            // List Îª¿ÕÊ±Ñ­»·²»»áÖ´ĞĞ£¬¿ªÏú¼«µÍ
+            // List ä¸ºç©ºæ—¶å¾ªç¯ä¸ä¼šæ‰§è¡Œï¼Œå¼€é”€æä½
             for (int i = 0; i < sparseList.Count; i++)
             {
                 Add(sparseList[i].ID, sparseList[i].Value);
             }
         }
 
-        // µ÷ÊÔÓÃ
+        // è°ƒè¯•ç”¨
         public Dictionary<int, float> GetRawDict() => _map;
 
-        // ĞÂÔö£º±©Â¶µü´úÆ÷¹©Íâ²¿±éÀú
-        // ×¢Òâ£º¾¡Á¿±ÜÃâÖ±½Ó±©Â¶ Dictionary£¬·ÀÖ¹Íâ²¿ĞŞ¸Ä
+        // æ–°å¢ï¼šæš´éœ²è¿­ä»£å™¨ä¾›å¤–éƒ¨éå†
+        // æ³¨æ„ï¼šå°½é‡é¿å…ç›´æ¥æš´éœ² Dictionaryï¼Œé˜²æ­¢å¤–éƒ¨ä¿®æ”¹
         public Dictionary<int, float>.Enumerator GetEnumerator()
         {
             return _map.GetEnumerator();
@@ -105,7 +105,7 @@ namespace My
 
 
     /// <summary>
-    /// ¾ÛºÏ½Úµã
+    /// èšåˆèŠ‚ç‚¹
     /// </summary>
     public class ProgressionAggregator : IProgressionSource
     {
@@ -152,31 +152,31 @@ namespace My
 
         public void EvaluateStats(StatMap targetMap)
         {
-            // Íâ²¿ÇëÇóÊı¾İÊ±£¬È·±£»º´æÊÇ×îĞÂµÄ
+            // å¤–éƒ¨è¯·æ±‚æ•°æ®æ—¶ï¼Œç¡®ä¿ç¼“å­˜æ˜¯æœ€æ–°çš„
             RebuildCache();
             targetMap.MergeFrom(_cache);
         }
 
-        //// ½öÓÃÓÚµ÷ÊÔ»ò¸ù½Úµã²éÑ¯
+        //// ä»…ç”¨äºè°ƒè¯•æˆ–æ ¹èŠ‚ç‚¹æŸ¥è¯¢
         //public float GetValue(int id)
         //{
         //    if (_isDirty)
         //    {
-        //        // ´¥·¢ÄÚ²¿ÖØËãµ«²»µ¼³öµ½Íâ²¿
+        //        // è§¦å‘å†…éƒ¨é‡ç®—ä½†ä¸å¯¼å‡ºåˆ°å¤–éƒ¨
         //        StatMap temp = new StatMap();
         //        EvaluateStats(temp);
         //    }
         //    return _cache.Get(id);
         //}
 
-        // 2. ÓÅ»¯ GetValue£º²»ÔÙ²úÉú GC
+        // 2. ä¼˜åŒ– GetValueï¼šä¸å†äº§ç”Ÿ GC
         public float GetValue(int id)
         {
-            RebuildCache(); // È·±£Ôà±ê¼Ç±»Çå³ı£¬»º´æ×îĞÂ
+            RebuildCache(); // ç¡®ä¿è„æ ‡è®°è¢«æ¸…é™¤ï¼Œç¼“å­˜æœ€æ–°
             return _cache.Get(id);
         }
 
-        // 1. ÌáÈ¡ÖØËãÂß¼­
+        // 1. æå–é‡ç®—é€»è¾‘
         private void RebuildCache()
         {
             if (!_isDirty) return;
@@ -187,12 +187,12 @@ namespace My
                 child.EvaluateStats(_cache);
             }
             _isDirty = false;
-            // ÕâÀï¼ÆËãÍêºó£¬_cache Àï¾ÍÊÇ×îĞÂµÄÈ«Á¿Êı¾İ
+            // è¿™é‡Œè®¡ç®—å®Œåï¼Œ_cache é‡Œå°±æ˜¯æœ€æ–°çš„å…¨é‡æ•°æ®
         }
 
 
-        // 3. ĞÂÔö£ºÔÊĞíÍâ²¿Ö±½Ó·ÃÎÊ»º´æ£¨Ö»¶ÁÒıÓÃ£©
-        // ¶ÔÓÚ¡°´óµØÍ¼¡±ÕâÖÖĞèÒª±éÀúËùÓĞÊôĞÔµÄÏµÍ³£¬Õâ¸ö×î¹Ø¼ü
+        // 3. æ–°å¢ï¼šå…è®¸å¤–éƒ¨ç›´æ¥è®¿é—®ç¼“å­˜ï¼ˆåªè¯»å¼•ç”¨ï¼‰
+        // å¯¹äºâ€œå¤§åœ°å›¾â€è¿™ç§éœ€è¦éå†æ‰€æœ‰å±æ€§çš„ç³»ç»Ÿï¼Œè¿™ä¸ªæœ€å…³é”®
         public StatMap GetRawCache()
         {
             RebuildCache();

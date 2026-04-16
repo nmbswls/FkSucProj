@@ -47,7 +47,7 @@ namespace My.UI
 
             Camera cam = Camera.main;
 
-            // 将世界坐标转屏幕坐标（像素）
+            // 灏嗕笘鐣屽潗鏍囪浆灞忓箷鍧愭爣锛堝儚绱狅級
             Vector3 screenPos = cam ? cam.WorldToScreenPoint(worldTopLeft)
                                     : new Vector3(worldTopLeft.x, worldTopLeft.y, 0f);
 

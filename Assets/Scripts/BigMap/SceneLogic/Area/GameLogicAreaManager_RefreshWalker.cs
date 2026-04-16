@@ -18,7 +18,7 @@ namespace My.Map.Logic
 {
 
     /// <summary>
-    /// ¹ÜÀíÇøÓò
+    /// ç®¡ç†åŒºåŸŸ
     /// </summary>
     public partial class GameLogicAreaManager
     {
@@ -100,7 +100,7 @@ namespace My.Map.Logic
             for (int i = SpawnedWalkerRecords.Count - 1; i >= 0; i--)
             {
                 long recId = SpawnedWalkerRecords[i];
-                // ÏÈÖ»´¦Àíloaded
+                // å…ˆåªå¤„ç†loaded
                 if (!Repo.IsLoaded(recId))
                 {
                     Repo.Records.TryGetValue(recId, out var rec);
@@ -149,7 +149,7 @@ namespace My.Map.Logic
                     var endP = path.PointList[path.PointList.Count - 1];
                     var diff = endP - entity.Pos;
 
-                    // ¼ì²éµ½´ï
+                    // æ£€æŸ¥åˆ°è¾¾
                     if (diff.magnitude < 0.3f)
                     {
                         SpawnedWalkerRecords.RemoveAt(i);

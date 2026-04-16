@@ -48,7 +48,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         bool isFacingUp = UnitPresenter.UnitEntity.CurrentLook.y > 0.1f;
         if(ySortOrder != null)
         {
-            // 1. 处理层级
+            // 1. 澶勭悊灞傜骇
             ySortOrder.baseOrder = isFacingUp ?
                 -1 :
                 +1;
@@ -61,7 +61,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     }
 
     /// <summary>
-    /// 设置常驻武器显示
+    /// 璁剧疆甯搁┗姝﹀櫒鏄剧ず
     /// </summary>
     /// <param name="weaponName"></param>
     public void SetAlwaysShowWeapon(string weaponName)
@@ -75,7 +75,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
     }
 
     /// <summary>
-    /// 世家
+    /// 涓栧
     /// </summary>
     /// <param name="weaponName"></param>
     /// <param name="hitId"></param>

@@ -10,7 +10,7 @@ namespace My.Map.Entity
 {
 
     /// <summary>
-    /// 将自身转变为指定目标的attach
+    /// 灏嗚嚜韬浆鍙樹负鎸囧畾鐩爣鐨刟ttach
     /// </summary>
     [Serializable]
     public class MapAbilityEffectConvertAttachCfg : MapFightEffectCfg

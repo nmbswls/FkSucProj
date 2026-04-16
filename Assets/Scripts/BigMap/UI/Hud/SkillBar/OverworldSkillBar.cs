@@ -68,7 +68,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// 初始化技能组
+        /// 鍒濆鍖栨妧鑳界粍
         /// </summary>
         public void InitSkills(OverworldHUDPanel hudPanel)
         {
@@ -102,7 +102,7 @@ namespace My.UI
 
 
         /// <summary>
-        /// 是否翻转
+        /// 鏄惁缈昏浆
         /// </summary>
         /// <param name="flip"></param>
         public void Refresh(bool hint = false)

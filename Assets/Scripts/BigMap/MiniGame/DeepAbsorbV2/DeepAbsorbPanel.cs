@@ -42,7 +42,7 @@ namespace My.MiniGame
 
 
         [SerializeField] private DeepAbsorbQteBar QteBar;
-        [SerializeField] private TMP_Text promptText; // ¿ÉÓÃ Text Ìæ´ú
+        [SerializeField] private TMP_Text promptText; // å¯ç”¨ Text æ›¿ä»£
 
         [Header("Feedback Colors")]
         [SerializeField] private Color normalTextColor = Color.white;
@@ -54,7 +54,7 @@ namespace My.MiniGame
         {
             QteBar.SetResultCallback(OnQueBarResult);
 
-            SetPrompt("°´ Space ½øĞĞÅĞ¶¨");
+            SetPrompt("æŒ‰ Space è¿›è¡Œåˆ¤å®š");
             SetPromptColor(normalTextColor);
         }
 
@@ -81,7 +81,7 @@ namespace My.MiniGame
             this.successCnt = 0;
             this.perfectCnt = 0;
 
-            SetPrompt("°´ Space ½øĞĞÅĞ¶¨");
+            SetPrompt("æŒ‰ Space è¿›è¡Œåˆ¤å®š");
             SetPromptColor(normalTextColor);
 
             QteBar.InitCursorPos();
@@ -92,28 +92,28 @@ namespace My.MiniGame
         {
             if(result == ZoneType.Perfect)
             {
-                SetPrompt("´ó³É¹¦!");
+                SetPrompt("å¤§æˆåŠŸ!");
                 SetPromptColor(perfectTextColor);
 
                 perfectCnt += 1;
             }
             else if (result == ZoneType.Success)
             {
-                SetPrompt("³É¹¦!");
+                SetPrompt("æˆåŠŸ!");
                 SetPromptColor(successTextColor);
 
                 successCnt += 1;
             }
             else if (result == ZoneType.Fail)
             {
-                SetPrompt("Ê§°Ü!");
+                SetPrompt("å¤±è´¥!");
                 SetPromptColor(successTextColor);
 
                 chanceLeft = 0;
             }
             else 
             {
-                SetPrompt("ÎŞ");
+                SetPrompt("æ— ");
                 SetPromptColor(failTextColor);
             }
 
@@ -144,7 +144,7 @@ namespace My.MiniGame
             {
                 QteBar.ResetGame();
 
-                SetPrompt("°´ Space ½øĞĞÅĞ¶¨");
+                SetPrompt("æŒ‰ Space è¿›è¡Œåˆ¤å®š");
                 SetPromptColor(normalTextColor);
             });
         }

@@ -20,7 +20,7 @@ namespace My.Dialog
         public List<DialogCommandData> Commands = new List<DialogCommandData>();
     }
 
-    // --- ??????? ---
+    // --- 对话命令数据基类 ---
     [Serializable]
     public abstract class DialogCommandData
     {
@@ -45,7 +45,7 @@ namespace My.Dialog
         public string VoiceLine;
     }
 
-    // ?????????????
+    // 分支台词：每组选项对应一段逐行文本
     [Serializable]
     public class DialogCommandData4BranchText : DialogCommandData
     {
@@ -134,7 +134,7 @@ namespace My.Dialog
 
     public class DialogCommandData4WaitTimelineSignal : DialogCommandData
     {
-        public string SignalName; // ??? Timeline ?????????????
+        public string SignalName; // WaitTimelineSignal：等待 Timeline 发出的信号名
     }
 
     [Serializable]
@@ -164,7 +164,7 @@ namespace My.Dialog
 
         public string TargetStepId;
 
-        // ?????????????????
+        // 概率分支类型（与失败跳转等配合）
         public EProbabilityType ProbabilityType;
         public float ProbabilityParam1;
 
@@ -193,7 +193,7 @@ namespace My.Dialog
     [Serializable]
     public class ConditionLocalVariableInt : DialogCondition
     {
-        // ????????????????
+        // 本地整型变量键名
         public string VariableKey;
         public enum CompareType { Equals, Greater, Less, GE, LE, NotEquals }
         public CompareType Compare;
@@ -220,7 +220,7 @@ namespace My.Dialog
     [Serializable]
     public class ConditionLocalVariableString : DialogCondition
     {
-        // ????????????????
+        // 本地字符串变量键名
         public string VariableKey;
         public enum CompareType { Equals, NotEquals }
         public CompareType Compare;

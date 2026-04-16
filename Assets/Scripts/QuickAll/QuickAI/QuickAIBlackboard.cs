@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class QuickAIBlackboard
 {
-    public Transform target;                 // Íæ¼Ò
-    public Vector2 lastKnownTargetPos;       // ×îºóÄ¿»÷µã
-    public float timeSinceSeen;              // Óë loseTargetTime ÅäºÏ
-    public int currentWaypointIndex;         // Ñ²ÂßË÷Òı
+    public Transform target;                 // ç©å®¶
+    public Vector2 lastKnownTargetPos;       // æœ€åç›®å‡»ç‚¹
+    public float timeSinceSeen;              // ä¸ loseTargetTime é…åˆ
+    public int currentWaypointIndex;         // å·¡é€»ç´¢å¼•
     public int patrolDirection = 1;          // PingPong
-    public float stateTimer;                 // Í¨ÓÃ¼ÆÊ±Æ÷
+    public float stateTimer;                 // é€šç”¨è®¡æ—¶å™¨
     public bool inAttackCooldown;
 }

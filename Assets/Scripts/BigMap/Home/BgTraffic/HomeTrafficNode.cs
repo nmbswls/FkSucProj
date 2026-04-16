@@ -6,17 +6,17 @@ namespace My.Map
 {
     public class HomeTrafficNode : MonoBehaviour
     {
-        // Ö»ÓĞÁ½ÖÖ£ºÆÕÍ¨Â·µã£¬»òÕß¶Ëµã£¨³öÈë¿ÚºÏÒ»£©
+        // åªæœ‰ä¸¤ç§ï¼šæ™®é€šè·¯ç‚¹ï¼Œæˆ–è€…ç«¯ç‚¹ï¼ˆå‡ºå…¥å£åˆä¸€ï¼‰
         public enum NodeType { Normal, EndPoint }
 
         public NodeType Type = NodeType.Normal;
 
-        [Header("Á¬½ÓµÄ½Úµã£¨Ë«ÏòÂ·¼ÇµÃ»¥ÏàÍÏ£©")]
+        [Header("è¿æ¥çš„èŠ‚ç‚¹ï¼ˆåŒå‘è·¯è®°å¾—äº’ç›¸æ‹–ï¼‰")]
         public List<HomeTrafficNode> NextNodes = new List<HomeTrafficNode>();
 
         void OnDrawGizmos()
         {
-            // ¶ËµãÏÔÊ¾ÎªºìÉ«£¬ÆÕÍ¨µãÏÔÊ¾Îª»ÆÉ«
+            // ç«¯ç‚¹æ˜¾ç¤ºä¸ºçº¢è‰²ï¼Œæ™®é€šç‚¹æ˜¾ç¤ºä¸ºé»„è‰²
             Gizmos.color = Type == NodeType.EndPoint ? Color.red : Color.yellow;
             Gizmos.DrawSphere(transform.position, 0.3f);
 

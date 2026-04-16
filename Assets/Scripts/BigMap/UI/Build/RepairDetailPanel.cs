@@ -43,7 +43,7 @@ namespace My.UI
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     transform.parent as RectTransform,
                     screenPos,
-                    UIManager.Instance.RootCanvas.worldCamera, // ×¢Òâ Canvas Ä£Ê½£¬Èç¹ûÊÇ Overlay ÕâÀï´« null
+                    UIManager.Instance.RootCanvas.worldCamera, // æ³¨æ„ Canvas æ¨¡å¼ï¼Œå¦‚æœæ˜¯ Overlay è¿™é‡Œä¼  null
                     out Vector2 uiLocalPos
                 );
                 uiLocalPos += Vector2.up * 20f;
@@ -73,7 +73,7 @@ namespace My.UI
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 transform.parent as RectTransform,
                 screenPos,
-                UIManager.Instance.RootCanvas.worldCamera, // ×¢Òâ Canvas Ä£Ê½£¬Èç¹ûÊÇ Overlay ÕâÀï´« null
+                UIManager.Instance.RootCanvas.worldCamera, // æ³¨æ„ Canvas æ¨¡å¼ï¼Œå¦‚æœæ˜¯ Overlay è¿™é‡Œä¼  null
                 out Vector2 uiLocalPos
             );
             uiLocalPos += Vector2.up * 20f;

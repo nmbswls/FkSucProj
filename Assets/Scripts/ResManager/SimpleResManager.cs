@@ -6,61 +6,61 @@ namespace My
 {
     public static class SimpleResManager
     {
-        // ×ÊÔ´»º´æ×Öµä
+        // èµ„æºç¼“å­˜å­—å…¸
         private static Dictionary<string, Object> cache = new Dictionary<string, Object>();
 
         /// <summary>
-        /// ¼ÓÔØ×ÊÔ´£¨´ø»º´æ£©
+        /// åŠ è½½èµ„æºï¼ˆå¸¦ç¼“å­˜ï¼‰
         /// </summary>
         public static T Load<T>(string path) where T : Object
         {
-            // 1. Èç¹û»º´æÖĞ´æÔÚ£¬Ö±½Ó·µ»Ø
+            // 1. å¦‚æœç¼“å­˜ä¸­å­˜åœ¨ï¼Œç›´æ¥è¿”å›
             if (cache.TryGetValue(path, out Object obj))
             {
                 if (obj != null) return obj as T;
             }
 
-            // 2. »º´æÖĞÃ»ÓĞ£¬´Ó Resources ¼ÓÔØ
+            // 2. ç¼“å­˜ä¸­æ²¡æœ‰ï¼Œä» Resources åŠ è½½
             T res = Resources.Load<T>(path);
             if (res != null)
             {
-                cache[path] = res; // ´æÈë»º´æ
+                cache[path] = res; // å­˜å…¥ç¼“å­˜
             }
             else
             {
-                Debug.LogError($"[ResManager] ×ÊÔ´¼ÓÔØÊ§°Ü£¬Â·¾¶: {path}");
+                Debug.LogError($"[ResManager] èµ„æºåŠ è½½å¤±è´¥ï¼Œè·¯å¾„: {path}");
             }
 
             return res;
         }
 
         /// <summary>
-        /// Ğ¶ÔØµ¥¸ö×ÊÔ´
+        /// å¸è½½å•ä¸ªèµ„æº
         /// </summary>
         public static void Unload(string path)
         {
             if (cache.TryGetValue(path, out Object obj))
             {
-                cache.Remove(path); // ÒÆ³ı»º´æÒıÓÃ
+                cache.Remove(path); // ç§»é™¤ç¼“å­˜å¼•ç”¨
 
-                // Unity¹æ¶¨£ºGameObjectºÍComponent²»ÄÜÊ¹ÓÃ UnloadAsset Ğ¶ÔØ
+                // Unityè§„å®šï¼šGameObjectå’ŒComponentä¸èƒ½ä½¿ç”¨ UnloadAsset å¸è½½
                 if (!(obj is GameObject) && !(obj is Component))
                 {
-                    // ½öÊÊÓÃÓÚ Texture, AudioClip, TextAsset µÈ¶ÀÁ¢×ÊÔ´
+                    // ä»…é€‚ç”¨äº Texture, AudioClip, TextAsset ç­‰ç‹¬ç«‹èµ„æº
                     Resources.UnloadAsset(obj);
                 }
             }
         }
 
         /// <summary>
-        /// Ğ¶ÔØËùÓĞÎ´Ê¹ÓÃ×ÊÔ´£¨Í¨³£ÔÚÇĞ³¡¾°Ê±µ÷ÓÃ£©
+        /// å¸è½½æ‰€æœ‰æœªä½¿ç”¨èµ„æºï¼ˆé€šå¸¸åœ¨åˆ‡åœºæ™¯æ—¶è°ƒç”¨ï¼‰
         /// </summary>
         public static void UnloadAllUnused()
         {
-            // Çå¿ÕÕû¸ö×ÖµäµÄÒıÓÃ
+            // æ¸…ç©ºæ•´ä¸ªå­—å…¸çš„å¼•ç”¨
             cache.Clear();
 
-            // ´¥·¢Unityµ×²ãÒì²½Ğ¶ÔØÃ»ÓĞ±»ÒıÓÃµÄ×ÊÔ´£¨°üÀ¨±»ÒÆ³ö×ÖµäµÄ GameObject Ô¤ÖÆÌå£©
+            // è§¦å‘Unityåº•å±‚å¼‚æ­¥å¸è½½æ²¡æœ‰è¢«å¼•ç”¨çš„èµ„æºï¼ˆåŒ…æ‹¬è¢«ç§»å‡ºå­—å…¸çš„ GameObject é¢„åˆ¶ä½“ï¼‰
             Resources.UnloadUnusedAssets();
         }
     }

@@ -26,16 +26,16 @@ namespace My.Dialog
     }
 
 
-    // --- ??????? ---
+    // --- 编辑器侧对话命令基类 ---
     [Serializable]
     public abstract class EditorDialogCommand
     {
-        public bool IsFolded = true; // ??????
+        public bool IsFolded = true; // Inspector 中是否折叠子项
         public virtual string GetSummary() => $"";
     }
 
 
-    // --- ??????????? ---
+    // --- 具体命令类型（与运行时 Structs 对应） ---
 
     [Serializable]
     public class EditorDialogueCommand4Text : EditorDialogCommand
@@ -166,7 +166,7 @@ namespace My.Dialog
 
     public class EditorWaitTimelineSignalCommand : EditorDialogCommand
     {
-        public string SignalName; // ????????????
+        public string SignalName; // Timeline SignalReceiver 上配置的信号名
 
         public override string GetSummary() => $"[WaitTimelineSignal]";
     }

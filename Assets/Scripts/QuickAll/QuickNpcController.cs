@@ -10,17 +10,17 @@
 //    #region movement controller
 
 //    [Header("Base Move")]
-//    public float moveSpeed = 5f;              // »ù´¡ĞĞ×ßËÙ¶È
-//    public float acceleration = 20f;          // ÊäÈë¼ÓËÙ¶È£¨Æ½»¬£©
-//    public bool isAIControlled = false;       // Íæ¼Ò»òAI
+//    public float moveSpeed = 5f;              // åŸºç¡€è¡Œèµ°é€Ÿåº¦
+//    public float acceleration = 20f;          // è¾“å…¥åŠ é€Ÿåº¦ï¼ˆå¹³æ»‘ï¼‰
+//    public bool isAIControlled = false;       // ç©å®¶æˆ–AI
 
 //    [Header("External Effects")]
-//    public float maxExternalSpeed = 10f;      // ÍâÁ¦µş¼ÓËÙ¶ÈÉÏÏŞ
-//    public float externalDecay = 6f;          // ÍâÁ¦×ÔÈ»Ë¥¼õ£¨Ã¿Ãë£©
+//    public float maxExternalSpeed = 10f;      // å¤–åŠ›å åŠ é€Ÿåº¦ä¸Šé™
+//    public float externalDecay = 6f;          // å¤–åŠ›è‡ªç„¶è¡°å‡ï¼ˆæ¯ç§’ï¼‰
 
 
 //    [Header("Knockback")]
-//    public float knockbackMinEndSpeed = 0.4f; // µÍÓÚ´ËËÙ¶È½áÊø»÷ÍË
+//    public float knockbackMinEndSpeed = 0.4f; // ä½äºæ­¤é€Ÿåº¦ç»“æŸå‡»é€€
 
 //    [Header("Debug")]
 //    public Vector2 currentVelocity;
@@ -28,17 +28,17 @@
 //    public Vector2 externalVel;
 //    public LayerMask wallsLayer;
 
-//    // ×´Ì¬»ú£¨ÊÜ¿Ø²ã£©
+//    // çŠ¶æ€æœºï¼ˆå—æ§å±‚ï¼‰
 //    public enum ControlState { Normal, Knockback, Dash, Stunned }
 //    public ControlState controlState = ControlState.Normal;
 
-//    private Vector2 facing = Vector2.down; // ³õÊ¼ÃæÏòÏÂ
+//    private Vector2 facing = Vector2.down; // åˆå§‹é¢å‘ä¸‹
 
 //    #endregion
 
 
 //    [Header("Animation")]
-//    public Animator animator; // 2D¶¯»­»ú£¬º¬²ÎÊı: Speed(float), DirX(float), DirY(float)
+//    public Animator animator; // 2DåŠ¨ç”»æœºï¼Œå«å‚æ•°: Speed(float), DirX(float), DirY(float)
 //    public SpriteRenderer spriteRenderer;
 
 
@@ -46,12 +46,12 @@
 //    private Collider2D col;
 
 //    private Vector2 moveInput;
-//    public Vector2 aiMoveDir;                 // AIÌá¹©µÄ·½Ïò£¨µ¥Î»ÏòÁ¿£©
+//    public Vector2 aiMoveDir;                 // AIæä¾›çš„æ–¹å‘ï¼ˆå•ä½å‘é‡ï¼‰
 
-//    // Knockback ¼ÆÊ±
+//    // Knockback è®¡æ—¶
 //    private float knockbackTimeLeft = 0f;
 
-//    // ÍÆ¼·»º´æ
+//    // æ¨æŒ¤ç¼“å­˜
 //    private readonly Collider2D[] neighborBuffer = new Collider2D[32];
 
 
@@ -83,13 +83,13 @@
 //        {
 //            case ControlState.Knockback:
 //                knockbackTimeLeft -= dt;
-//                // ÓÉËÙ¶ÈºÍÊ±¼ä¹²Í¬¾ö¶¨½áÊø£¨ËÙ¶È×ã¹»µÍ»òÊ±¼äµ½£©
+//                // ç”±é€Ÿåº¦å’Œæ—¶é—´å…±åŒå†³å®šç»“æŸï¼ˆé€Ÿåº¦è¶³å¤Ÿä½æˆ–æ—¶é—´åˆ°ï¼‰
 //                if (knockbackTimeLeft <= 0f || externalVel.magnitude < knockbackMinEndSpeed)
 //                    ExitKnockback();
 //                break;
 //        }
 
-//        // ÊäÈë»òAI×ªÎª baseMoveVel£¨½ö Normal ×´Ì¬ÏÂÉúĞ§£»Dash ¿ÉÑ¡ÔÊĞí×ªÏò£©
+//        // è¾“å…¥æˆ–AIè½¬ä¸º baseMoveVelï¼ˆä»… Normal çŠ¶æ€ä¸‹ç”Ÿæ•ˆï¼›Dash å¯é€‰å…è®¸è½¬å‘ï¼‰
 //        Vector2 desiredDir;
 //        if (!isAIControlled)
 //        {
@@ -104,7 +104,7 @@
 //        Vector2 targetBase = controllable ? desiredDir * moveSpeed : Vector2.zero;
 //        baseMoveVel = Vector2.MoveTowards(baseMoveVel, targetBase, acceleration * dt);
 
-//        // ÍâÁ¦×ÔÈ»Ë¥¼õ£¨³ı·ÇÔÚDashÖĞ±£³Ö³£ËÙ£©
+//        // å¤–åŠ›è‡ªç„¶è¡°å‡ï¼ˆé™¤éåœ¨Dashä¸­ä¿æŒå¸¸é€Ÿï¼‰
 //        if (controlState != ControlState.Dash)
 //        {
 //            externalVel = Vector2.MoveTowards(externalVel, Vector2.zero, externalDecay * dt);
@@ -125,24 +125,24 @@
 //        Vector2 candidatePos = startPos + delta;
 
 
-//        // »ùÓÚ¸üĞÂºóµÄ externalVel ÖØĞÂ¼ÆËãÎ»ÒÆ£¨¸üÌù½ü¡°ËÙ¶ÈÇı¶¯¡±£©
+//        // åŸºäºæ›´æ–°åçš„ externalVel é‡æ–°è®¡ç®—ä½ç§»ï¼ˆæ›´è´´è¿‘â€œé€Ÿåº¦é©±åŠ¨â€ï¼‰
 //        Vector2 newDesiredVel = baseMoveVel + externalVel;
 //        Vector2 correctedDelta = newDesiredVel * dt;
 
-//        // Î»ÒÆ²åÖµ£¬±ÜÃâÍ»±ä
+//        // ä½ç§»æ’å€¼ï¼Œé¿å…çªå˜
 //        Vector2 finalDelta = correctedDelta;
 //        rb.MovePosition(startPos + finalDelta);
 
-//        // ¿ÉÑ¡£ºËÙ¶ÈÂË²¨
+//        // å¯é€‰ï¼šé€Ÿåº¦æ»¤æ³¢
 //        Vector2 targetVel = finalDelta / dt;
 //        rb.velocity = targetVel;
 //    }
 
 
-//    // Ê¾Àı£º¹¥»÷ÃüÖĞ»ò×²Ç½ÊÂ¼ş¿Éµ÷ÓÃ
+//    // ç¤ºä¾‹ï¼šæ”»å‡»å‘½ä¸­æˆ–æ’å¢™äº‹ä»¶å¯è°ƒç”¨
 //    private void OnCollisionEnter2D(Collision2D collision)
 //    {
-//        // Ç½Ìå×²»÷£ºÔÚ»÷ÍË»ò³å´ÌÖĞ×²Ç½µÄ´¦Àí
+//        // å¢™ä½“æ’å‡»ï¼šåœ¨å‡»é€€æˆ–å†²åˆºä¸­æ’å¢™çš„å¤„ç†
 //        int layer = collision.collider.gameObject.layer;
 //        bool isWall = (wallsLayer.value & (1 << layer)) != 0;
 
@@ -151,21 +151,21 @@
 //            Vector2 normal = collision.contacts[0].normal;
 //            if (controlState == ControlState.Knockback)
 //            {
-//                // ×²Ç½ºó½áÊø»÷ÍË²¢¿É×ªÑ£ÔÎ
+//                // æ’å¢™åç»“æŸå‡»é€€å¹¶å¯è½¬çœ©æ™•
 //                externalVel = Vector2.zero;
 //                //ApplyStun(defaultStunDuration * 0.6f);
 //            }
 //            else if (controlState == ControlState.Dash)
 //            {
-//                // Dash×²Ç½Á¢¼´½áÊø
+//                // Dashæ’å¢™ç«‹å³ç»“æŸ
 //            }
 //        }
 //    }
 
-//    // ¹«¿ª½Ó¿Ú£º´¥·¢»÷ÍË
+//    // å…¬å¼€æ¥å£ï¼šè§¦å‘å‡»é€€
 //    public void ApplyKnockback(Vector2 dir, float initialSpeed, float duration)
 //    {
-//        if (controlState == ControlState.Dash) return; // ³å´Ì°ÔÌå¿ÉºöÂÔ£¬°´Éè¼Æ¿É¸Ä
+//        if (controlState == ControlState.Dash) return; // å†²åˆºéœ¸ä½“å¯å¿½ç•¥ï¼ŒæŒ‰è®¾è®¡å¯æ”¹
 //        controlState = ControlState.Knockback;
 //        externalVel = dir.normalized * Mathf.Max(initialSpeed, 0f);
 //        knockbackTimeLeft = Mathf.Max(duration, 0f);

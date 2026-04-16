@@ -79,7 +79,7 @@ namespace My.UI
                 }
                 else
                 {
-                    ObjDesc.text = "Î´ÖªÌõ¼şĞèÇó";
+                    ObjDesc.text = "æœªçŸ¥æ¡ä»¶éœ€æ±‚";
                     switch (BindingObjective.Data.ObjType)
                     {
                         case cfg.demo.EQuestObjectiveType.KillMonster:
@@ -87,8 +87,8 @@ namespace My.UI
                                 if (!string.IsNullOrEmpty(BindingObjective.Data.ObjP4))
                                 {
                                     var unitCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(BindingObjective.Data.ObjP4);
-                                    string mName = unitCfg?.Name ?? "Î´Öªµ¥Î»";
-                                    ObjDesc.text = $"»÷É±{mName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
+                                    string mName = unitCfg?.Name ?? "æœªçŸ¥å•ä½";
+                                    ObjDesc.text = $"å‡»æ€{mName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
                                 }
                             }
                             break;
@@ -168,7 +168,7 @@ namespace My.UI
 
                 if (_flagPendingStep)
                 {
-                    // ÇĞ»»ÈÎÎñ ´ËÊ±ÒòÎªÒ»¶¨Ã»ÓĞÌØĞ§²¥·Å Ñ¡ÔñÊÇ·ñÊ¹ÓÃ½¥±ä
+                    // åˆ‡æ¢ä»»åŠ¡ æ­¤æ—¶å› ä¸ºä¸€å®šæ²¡æœ‰ç‰¹æ•ˆæ’­æ”¾ é€‰æ‹©æ˜¯å¦ä½¿ç”¨æ¸å˜
 
                     //ForceUpdateQuestView();
                     var seq = DOTween.Sequence();
@@ -236,7 +236,7 @@ namespace My.UI
             MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.EventOnQuestObjUpdate -= UpdateQuestObjectiveDetailView;
             MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.EventOnQuestStepUpdate -= UpdateQuestStepView;
 
-            // ÇåÀíÒ»ÇĞ
+            // æ¸…ç†ä¸€åˆ‡
 
             NextStepTween?.Kill();
             NextStepTween = null;
@@ -269,8 +269,8 @@ namespace My.UI
 
 
         /// <summary>
-        /// Ç¿ÖÆË¢ĞÂÒ»´ÎÈÎÎñÊÓ´°
-        /// Í¨³£ÓÃÓÚÇĞ»»ÏÔÊ¾
+        /// å¼ºåˆ¶åˆ·æ–°ä¸€æ¬¡ä»»åŠ¡è§†çª—
+        /// é€šå¸¸ç”¨äºåˆ‡æ¢æ˜¾ç¤º
         /// </summary>
         public void ForceUpdateQuestView()
         {
@@ -306,7 +306,7 @@ namespace My.UI
         
 
         /// <summary>
-        /// ¸üĞÂµ¥ÌõÄ¿±ê±ä»¯
+        /// æ›´æ–°å•æ¡ç›®æ ‡å˜åŒ–
         /// </summary>
         /// <param name="questId"></param>
         public void UpdateQuestObjectiveDetailView(int questId)
@@ -328,7 +328,7 @@ namespace My.UI
                 var lineStruct = ObjectiveLines[i];
                 lineStruct.UpdateObjectiveDescText();
 
-                // ¼ì²é²¥·ÅÍê³É¶¯Ğ§
+                // æ£€æŸ¥æ’­æ”¾å®ŒæˆåŠ¨æ•ˆ
                 if(!lineStruct.CompleteHint.gameObject.activeSelf && objRuntime.GetCurrProgress() >= objRuntime.GetRequireProgress())
                 {
                     if(lineStruct.CompleteTween != null)
@@ -350,7 +350,7 @@ namespace My.UI
                             lineStruct.CompleteTween = null;
                         }).SetLink(gameObject);
                 }
-                // ·ñÔòÖ´ĞĞÒş²Ø
+                // å¦åˆ™æ‰§è¡Œéšè—
                 else if(objRuntime.GetCurrProgress() < objRuntime.GetRequireProgress())
                 {
                     if (lineStruct.CompleteTween != null)
@@ -365,7 +365,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ²¥·Å²½½øÌØĞ§
+        /// æ’­æ”¾æ­¥è¿›ç‰¹æ•ˆ
         /// </summary>
         /// <param name="questId"></param>
         public void UpdateQuestStepView(int questId)
@@ -374,7 +374,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ÇåÀíËùÓĞview
+        /// æ¸…ç†æ‰€æœ‰view
         /// </summary>
         private void ClearView()
         {

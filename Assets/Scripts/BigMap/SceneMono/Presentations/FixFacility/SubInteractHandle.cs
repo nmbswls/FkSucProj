@@ -23,7 +23,7 @@ namespace My.Map.Scene
 
         public ISubInteractHolder Owner;
 
-        public string ShowName => "�鿴";
+        public string ShowName => "查看";
 
         public Vector2 Pos => throw new System.NotImplementedException();
 

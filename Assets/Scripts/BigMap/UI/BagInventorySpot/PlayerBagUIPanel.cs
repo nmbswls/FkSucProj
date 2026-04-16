@@ -33,12 +33,12 @@ namespace My.UI.Bag
         public string ItemPrefabName = "ItemCellPrefab";
 
         /// <summary>
-        /// ???????
+        /// 特殊背包面板根节点
         /// </summary>
         public RectTransform SpeBagPanel;
         public Button CollapseSpeBagBtn;
         public LoopGridView SpeGridView;
-        public int CurrExpandSpeBag; // ???????????
+        public int CurrExpandSpeBag; // 当前展开的特殊背包 BagId，-1 表示未展开
 
         public Transform SpecBagSelectionsTr;
 
@@ -138,11 +138,11 @@ namespace My.UI.Bag
 
         private void OnInventoryChanged(int idx)
         {
-            GridView.RefreshAllShownItem(); // ????????????
+            GridView.RefreshAllShownItem(); // 单格变更后仅刷新已创建的可见项
         }
 
         /// <summary>
-        /// ???
+        /// 整表容量或数据变化时重建列表并刷新
         /// </summary>
         private void OnInventoryAllChanged()
         {
@@ -160,8 +160,7 @@ namespace My.UI.Bag
 
         LoopGridViewItem OnMainGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
         {
-            // ???????汾?? OnGetItemByRowColumn ???????????????? API ????
-            // itemIndex = ??????row???????? column ????
+            // LoopGridView 新版回调：itemIndex 为扁平序号，与 row*列数+column 一致
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 
@@ -278,7 +277,7 @@ namespace My.UI.Bag
 
             var item = bag.GetItemByIdx(index);
             long dropCount = bag.RemoveAt(index, count);
-            // ????????????????????????????
+            // 从背包移除后在玩家附近生成世界掉落
             //UIBus.RaiseInventoryAllChanged();
             if (dropCount > 0)
             {
@@ -307,7 +306,7 @@ namespace My.UI.Bag
         {
             if(partId > 0 && MainGameManager.Instance.gameLogicManager.playerLogicEntity.AtttachingObjList.Count > 0)
             {
-                FakeHintTextManager.ShowWorld("????", MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
+                FakeHintTextManager.ShowWorld("存在附着物时无法打开分栏背包", MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
                 return;
             }
 
@@ -342,8 +341,7 @@ namespace My.UI.Bag
                 return null;
             }
 
-            // ???????汾?? OnGetItemByRowColumn ???????????????? API ????
-            // itemIndex = ??????row???????? column ????
+            // 与主背包相同：itemIndex 为扁平槽位序号
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 
@@ -355,7 +353,7 @@ namespace My.UI.Bag
                 item.gameObject.SetActive(true);
                 cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, CurrExpandSpeBag, null);
             }
-            // ????
+            // 扩展栏动态槽位
             else if(itemIndex < specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 var stack = specBag.GetItemByIdx(itemIndex);

@@ -8,60 +8,60 @@ namespace My.UI
 {
     public class HudSimpleFloatingText : MonoBehaviour
     {
-        [Header("ÉèÖÃ")]
-        public float moveSpeed = 2f;      // ÏòÉÏÆ®¶¯µÄËÙ¶È
-        public float fadeDuration = 1f;   // ÏûÊ§ËùĞèÊ±¼ä
-        private Vector3 offset = new Vector3(-0.05f, 0, 0); // Éú³ÉÊ±µÄÆ«ÒÆÁ¿
+        [Header("è®¾ç½®")]
+        public float moveSpeed = 2f;      // å‘ä¸Šé£˜åŠ¨çš„é€Ÿåº¦
+        public float fadeDuration = 1f;   // æ¶ˆå¤±æ‰€éœ€æ—¶é—´
+        private Vector3 offset = new Vector3(-0.05f, 0, 0); // ç”Ÿæˆæ—¶çš„åç§»é‡
 
-        private TextMeshProUGUI textMesh; // Èç¹ûÊÇ Legacy Text£¬¸ÄÎª private Text textMesh;
+        private TextMeshProUGUI textMesh; // å¦‚æœæ˜¯ Legacy Textï¼Œæ”¹ä¸º private Text textMesh;
         private float alpha;
         private float timer;
 
         void Awake()
         {
             textMesh = GetComponentInChildren<TextMeshProUGUI>();
-            // Èç¹ûÊÇ Legacy Text: textMesh = GetComponent<Text>();
+            // å¦‚æœæ˜¯ Legacy Text: textMesh = GetComponent<Text>();
         }
 
         public void Setup(string text, Vector3 startPos, Color? color = null)
         {
-            // ÉèÖÃÎÄ×ÖÄÚÈİ
+            // è®¾ç½®æ–‡å­—å†…å®¹
             textMesh.text = text;
 
-            // Èç¹û´«ÁËÑÕÉ«¾ÍÉèÖÃÑÕÉ«£¬·ñÔòÊ¹ÓÃÔ¤ÖÆÌåÄ¬ÈÏÑÕÉ«
+            // å¦‚æœä¼ äº†é¢œè‰²å°±è®¾ç½®é¢œè‰²ï¼Œå¦åˆ™ä½¿ç”¨é¢„åˆ¶ä½“é»˜è®¤é¢œè‰²
             if (color.HasValue)
             {
                 textMesh.color = color.Value;
             }
 
-            // ÉèÖÃ³õÊ¼Î»ÖÃ (ÊÀ½ç×ø±ê×ªUI×ø±êµÄÂß¼­Í¨³£ÓÉ¹ÜÀíÆ÷´¦Àí£¬ÕâÀï¼ÙÉè´«ÈëµÄÊÇÕıÈ·Î»ÖÃ)
-            // »òÕßÈç¹ûÊÇ World Space µÄ Canvas£¬Ö±½ÓÉèÖÃ position ¼´¿É
+            // è®¾ç½®åˆå§‹ä½ç½® (ä¸–ç•Œåæ ‡è½¬UIåæ ‡çš„é€»è¾‘é€šå¸¸ç”±ç®¡ç†å™¨å¤„ç†ï¼Œè¿™é‡Œå‡è®¾ä¼ å…¥çš„æ˜¯æ­£ç¡®ä½ç½®)
+            // æˆ–è€…å¦‚æœæ˜¯ World Space çš„ Canvasï¼Œç›´æ¥è®¾ç½® position å³å¯
             transform.position = startPos + offset;
 
-            // ÖØÖÃ×´Ì¬
+            // é‡ç½®çŠ¶æ€
             alpha = 1f;
             timer = 0f;
 
-            // È·±£ÍêÈ«²»Í¸Ã÷¿ªÊ¼
+            // ç¡®ä¿å®Œå…¨ä¸é€æ˜å¼€å§‹
             SetAlpha(1f);
         }
 
         void Update()
         {
-            // 1. ÏòÉÏÒÆ¶¯
+            // 1. å‘ä¸Šç§»åŠ¨
             transform.position += Vector3.left * moveSpeed * Time.deltaTime;
 
-            // 2. ´¦Àíµ­³ö
+            // 2. å¤„ç†æ·¡å‡º
             timer += Time.deltaTime;
             if (timer > 0)
             {
-                // ¼ÆËãµ±Ç°µÄ Alpha Öµ (´Ó 1 ±äµ½ 0)
+                // è®¡ç®—å½“å‰çš„ Alpha å€¼ (ä» 1 å˜åˆ° 0)
                 float progress = timer / fadeDuration;
                 alpha = Mathf.Lerp(1f, 0f, progress);
 
                 SetAlpha(alpha);
 
-                // 3. ÏûÊ§ºóÏú»ÙÎïÌå
+                // 3. æ¶ˆå¤±åé”€æ¯ç‰©ä½“
                 if (timer >= fadeDuration)
                 {
                     Destroy(gameObject);

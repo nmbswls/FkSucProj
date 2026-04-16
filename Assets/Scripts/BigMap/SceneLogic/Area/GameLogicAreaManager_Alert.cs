@@ -16,7 +16,7 @@ namespace My.Map.Logic
 {
 
     /// <summary>
-    /// ¹ÜÀíÇøÓò
+    /// ç®¡ç†åŒºåŸŸ
     /// </summary>
     public partial class GameLogicAreaManager
     {
@@ -57,7 +57,7 @@ namespace My.Map.Logic
         }
 
         /// <summary>
-        /// »ñÈ¡ºÏ·¨entity
+        /// è·å–åˆæ³•entity
         /// </summary>
         /// <returns></returns>
         public IEnumerable<BaseUnitLogicEntity> GetAlertingLogicEntities()
@@ -158,7 +158,7 @@ namespace My.Map.Logic
 
             _lastApplyPendingTimer = LogicTime.time;
 
-            // ½áËã²¢ÇåÀí¾¯½ä¶È
+            // ç»“ç®—å¹¶æ¸…ç†è­¦æˆ’åº¦
             foreach (var oneKey in entityPendingAlerts.Keys.ToList())
             {
                 var ll = entityPendingAlerts[oneKey];
@@ -227,14 +227,14 @@ namespace My.Map.Logic
         }
 
         /// <summary>
-        /// Ìí¼ÓĞ°¶ñÖµ
+        /// æ·»åŠ é‚ªæ¶å€¼
         /// </summary>
         /// <param name="addVal"></param>
         public void TryAddEvilAlertDirect(long addVal)
         {
             AreaAlertValue += 5;
 
-            // ¼ÆËãË¥¼õ
+            // è®¡ç®—è¡°å‡
         }
 
         /// <summary>

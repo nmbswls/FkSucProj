@@ -12,22 +12,22 @@ namespace My
         public enum FillDirection { PosX, NegX, PosY, NegY }
 
         public WarnShape shape = WarnShape.Circle;
-        public float chargeTime = 2f;       // ĞîÁ¦Ê±¼ä£¨Ãë£©
-        public float radius = 2f;           // Ô²ĞÎ°ë¾¶
-        public Vector2 size = new Vector2(4f, 2f); // ¾ØĞÎ¿í¸ß
+        public float chargeTime = 2f;       // è“„åŠ›æ—¶é—´ï¼ˆç§’ï¼‰
+        public float radius = 2f;           // åœ†å½¢åŠå¾„
+        public Vector2 size = new Vector2(4f, 2f); // çŸ©å½¢å®½é«˜
         public FillDirection direction = FillDirection.PosX;
 
         public Color baseColor = new Color(1f, 0.6f, 0.6f, 0.35f);
         public Color fillColor = new Color(1f, 0f, 0f, 0.6f);
         public float edgeSoftness = 0.05f;
 
-        public UnityEvent onChargeComplete; // ÌîÂú»Øµ÷
+        public UnityEvent onChargeComplete; // å¡«æ»¡å›è°ƒ
 
 
 
         [Header("Materials")]
-        public Material circleMat; // °ó¶¨µ½Ô²ÅÌRenderer
-        public Material rectMat;   // °ó¶¨µ½¾ØĞÎRenderer
+        public Material circleMat; // ç»‘å®šåˆ°åœ†ç›˜Renderer
+        public Material rectMat;   // ç»‘å®šåˆ°çŸ©å½¢Renderer
 
         private Material runtimeMat;
         private float timer;
@@ -50,7 +50,7 @@ namespace My
             timer = 0f;
             charging = true;
             EnsureMaterial();
-            ApplyStaticParams(); // °ë¾¶/³ß´ç/ÑÕÉ«µÈÒ»´ÎĞÔ²ÎÊı
+            ApplyStaticParams(); // åŠå¾„/å°ºå¯¸/é¢œè‰²ç­‰ä¸€æ¬¡æ€§å‚æ•°
             ApplyProgress(0f);
             SetVisible(true);
         }
@@ -62,7 +62,7 @@ namespace My
             timer = 0f;
             charging = true;
             EnsureMaterial();
-            ApplyStaticParams(); // °ë¾¶/³ß´ç/ÑÕÉ«µÈÒ»´ÎĞÔ²ÎÊı
+            ApplyStaticParams(); // åŠå¾„/å°ºå¯¸/é¢œè‰²ç­‰ä¸€æ¬¡æ€§å‚æ•°
             ApplyProgress(0f);
             SetVisible(true);
         }
@@ -84,7 +84,7 @@ namespace My
             {
                 charging = false;
                 onChargeComplete?.Invoke();
-                // ¿ÉÑ¡Ôñ×Ô¶¯Òş²Ø£º
+                // å¯é€‰æ‹©è‡ªåŠ¨éšè—ï¼š
                 // SetVisible(false);
             }
         }

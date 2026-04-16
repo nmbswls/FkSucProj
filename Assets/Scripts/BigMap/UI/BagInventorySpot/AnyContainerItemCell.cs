@@ -37,7 +37,7 @@ namespace My.UI
         }
         public EStyleType StyleType;
 
-        public int Index;           // ????????????????
+        public int Index;           // 当前格在所属容器中的槽位索引
         private ItemStack boundStack;
         private System.Action<int> onChanged;
 
@@ -161,7 +161,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ??drop?
+        /// 拖拽结束时在其他格子上释放：把 Payload 交给控制器计算合并/交换
         /// </summary>
         /// <param name="eventData"></param>
         public void OnDrop(PointerEventData eventData)

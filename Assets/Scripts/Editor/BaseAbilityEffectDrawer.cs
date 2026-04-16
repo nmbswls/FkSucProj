@@ -10,7 +10,7 @@ public class BaseAbilityEffectDrawer : PropertyDrawer
 {
     public static readonly Dictionary<EAbilityEffectType, Type> TypeMap = new()
     {
-        { EAbilityEffectType.None, typeof(NoneEffectCfg) }, // ÏÂÃæ»á¶¨ÒåÒ»¸öÕ¼Î»Àà
+        { EAbilityEffectType.None, typeof(NoneEffectCfg) }, // ä¸‹é¢ä¼šå®šä¹‰ä¸€ä¸ªå ä½ç±»
         { EAbilityEffectType.ApplyBuff, typeof(MapAbilityEffectAddBuffCfg) },
         { EAbilityEffectType.FakeDamage, typeof(MapAbilityEffectCostResourceCfg) },
         { EAbilityEffectType.DashStart, typeof(MapAbilityEffectDashStartCfg) },
@@ -25,7 +25,7 @@ public class BaseAbilityEffectDrawer : PropertyDrawer
          { EAbilityEffectType.UseWeapon, typeof(MapAbilityEffectUseWeaponCfg) },
     };
 
-    // Õ¼Î»ÀàĞÍ
+    // å ä½ç±»å‹
     [Serializable]
     private class NoneEffectCfg : MapFightEffectCfg
     {
@@ -39,23 +39,23 @@ public class BaseAbilityEffectDrawer : PropertyDrawer
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        // ¶¯Ì¬¼ÆËã¸ß¶È£ºÀàĞÍĞĞ + ×ÓÀàËùÓĞ×Ö¶Î
+        // åŠ¨æ€è®¡ç®—é«˜åº¦ï¼šç±»å‹è¡Œ + å­ç±»æ‰€æœ‰å­—æ®µ
         float h = EditorGUIUtility.singleLineHeight + 6;
 
-        // ·ÃÎÊ¸Ã¶ÔÏóµÄ×ÓÊôĞÔ£¨ManagedReference µÄ×Ö¶ÎÒÔ×ÓÊôĞÔĞÎÊ½´æÔÚ£©
+        // è®¿é—®è¯¥å¯¹è±¡çš„å­å±æ€§ï¼ˆManagedReference çš„å­—æ®µä»¥å­å±æ€§å½¢å¼å­˜åœ¨ï¼‰
         var iterator = property.Copy();
         var end = iterator.GetEndProperty();
         bool expanded = property.isExpanded;
 
-        // Èç¹ûÕÛµş£¬ÏÔÊ¾Ò»ĞĞ¼´¿É
+        // å¦‚æœæŠ˜å ï¼Œæ˜¾ç¤ºä¸€è¡Œå³å¯
         if (!expanded)
             return h;
 
-        // ½øÈëµÚÒ»¸ö×ÓÊôĞÔ£¨×¢Òâ£ºÈç¹ûÃ»ÓĞ×ÓÊôĞÔ£¬NextVisible(true) »á·µ»Ø false£©
+        // è¿›å…¥ç¬¬ä¸€ä¸ªå­å±æ€§ï¼ˆæ³¨æ„ï¼šå¦‚æœæ²¡æœ‰å­å±æ€§ï¼ŒNextVisible(true) ä¼šè¿”å› falseï¼‰
         bool enter = iterator.NextVisible(true);
         while (enter && !SerializedProperty.EqualContents(iterator, end))
         {
-            // Ìø¹ıÄã²»Ïë¼ÆËãµÄ×Ö¶Î
+            // è·³è¿‡ä½ ä¸æƒ³è®¡ç®—çš„å­—æ®µ
             //if (iterator.name != "EffectType")
             {
                 h += EditorGUI.GetPropertyHeight(iterator, true) + 4;
@@ -129,7 +129,7 @@ public class BaseAbilityEffectDrawer : PropertyDrawer
 
     private void EnsureInstance(SerializedProperty property)
     {
-        // ½öÔÚ SerializeReference Çé¿öÏÂÓĞÒâÒå
+        // ä»…åœ¨ SerializeReference æƒ…å†µä¸‹æœ‰æ„ä¹‰
         if (property.propertyType != SerializedPropertyType.ManagedReference) return;
 
         if (property.managedReferenceValue == null)
@@ -140,18 +140,18 @@ public class BaseAbilityEffectDrawer : PropertyDrawer
             {
                 instance = Activator.CreateInstance(noneType);
             }
-            catch { /* ºöÂÔ£¬±£³Ö null */ }
+            catch { /* å¿½ç•¥ï¼Œä¿æŒ null */ }
 
             property.managedReferenceValue = instance;
             property.serializedObject?.ApplyModifiedProperties();
         }
         else
         {
-            // Í¬²½ EffectType ÓëÊµÀıÀàĞÍµÄÄ¬ÈÏÖµ£¨¿ÉÑ¡£¬²»Å×´í£©
+            // åŒæ­¥ EffectType ä¸å®ä¾‹ç±»å‹çš„é»˜è®¤å€¼ï¼ˆå¯é€‰ï¼Œä¸æŠ›é”™ï¼‰
             var typeProp = property.FindPropertyRelative("EffectType");
             if (typeProp != null && typeProp.propertyType == SerializedPropertyType.Enum)
             {
-                // µ±ÊµÀıÓëÃ¶¾Ù²»Æ¥ÅäÊ±²»Ç¿ÖÆ¾ÀÕı£¬±ÜÃâÎó¸²¸Ç£¬½»¸øÓÃ»§ÇĞ»»
+                // å½“å®ä¾‹ä¸æšä¸¾ä¸åŒ¹é…æ—¶ä¸å¼ºåˆ¶çº æ­£ï¼Œé¿å…è¯¯è¦†ç›–ï¼Œäº¤ç»™ç”¨æˆ·åˆ‡æ¢
             }
         }
     }
@@ -169,14 +169,14 @@ public class BaseAbilityEffectDrawer : PropertyDrawer
         catch (Exception e)
         {
             Debug.LogWarning($"Failed to switch type to {targetType}: {e.Message}");
-            // »ØÍËµ½ None
+            // å›é€€åˆ° None
             try
             {
                 var fallback = Activator.CreateInstance(TypeMap[EAbilityEffectType.None]);
                 property.managedReferenceValue = fallback;
                 property.serializedObject?.ApplyModifiedProperties();
             }
-            catch { /* ¾²Ä¬Ê§°Ü */ }
+            catch { /* é™é»˜å¤±è´¥ */ }
         }
     }
 }

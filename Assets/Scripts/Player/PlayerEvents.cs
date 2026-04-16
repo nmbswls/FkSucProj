@@ -19,7 +19,7 @@ namespace My.Quest
         OpenFunc,
     }
 
-    // ¹¦ÄÜ½âËø
+    // åŠŸèƒ½è§£é”
     public struct PlayerFuncUnlockEvent
     {
         public My.PlayerFuncOpenSystem.EFuncOpenType OpenType;
@@ -27,7 +27,7 @@ namespace My.Quest
         public EPlayerEventType EventType { get { return EPlayerEventType.OpenFunc; } }
     }
 
-    // Íæ¼Ò»÷É±µ¥Î»ÊÂ¼ş
+    // ç©å®¶å‡»æ€å•ä½äº‹ä»¶
     public struct PlayerKillUnitEvent
     {
         public string KilledCfgId;
@@ -36,7 +36,7 @@ namespace My.Quest
         public EPlayerEventType EventType { get { return EPlayerEventType.PlayerKillUnit; } }
     }
 
-    // Íæ¼ÒËÀÍöÊÂ¼ş
+    // ç©å®¶æ­»äº¡äº‹ä»¶
     public struct PlayerKilledEvent
     {
         public Vector3 DeathPosition;
@@ -54,7 +54,7 @@ namespace My.Quest
     public static class PlayerEventBus
     {
         /// <summary>
-        /// ¶©ÔÄÊÂ¼ş
+        /// è®¢é˜…äº‹ä»¶
         /// </summary>
         public static void Subscribe<T>(Action<T> handler) where T : struct
         {
@@ -62,7 +62,7 @@ namespace My.Quest
         }
 
         /// <summary>
-        /// ×¢ÏúÊÂ¼ş
+        /// æ³¨é”€äº‹ä»¶
         /// </summary>
         public static void Unsubscribe<T>(Action<T> handler) where T : struct
         {
@@ -70,7 +70,7 @@ namespace My.Quest
         }
 
         /// <summary>
-        /// ·¢²¼£¨´¥·¢£©ÊÂ¼ş
+        /// å‘å¸ƒï¼ˆè§¦å‘ï¼‰äº‹ä»¶
         /// </summary>
         public static void Publish<T>(T eventData) where T : struct
         {
@@ -78,8 +78,8 @@ namespace My.Quest
         }
 
         /// <summary>
-        /// ÄÚ²¿·ºĞÍ¾²Ì¬Àà£¬ÀûÓÃ C# ·ºĞÍÌØĞÔ£¬Ã¿ÖÖÊÂ¼şÀàĞÍ»á×Ô¶¯Éú³É¶ÀÁ¢µÄÀàºÍÎ¯ÍĞÊµÀı¡£
-        /// ÕâÑù×öÊ¡È¥ÁË Dictionary µÄ²é±í¿ªÏú£¬Ò²Ã»ÓĞÈÎºÎ×°Ïä²ğÏä£¨0 GC£©¡£
+        /// å†…éƒ¨æ³›å‹é™æ€ç±»ï¼Œåˆ©ç”¨ C# æ³›å‹ç‰¹æ€§ï¼Œæ¯ç§äº‹ä»¶ç±»å‹ä¼šè‡ªåŠ¨ç”Ÿæˆç‹¬ç«‹çš„ç±»å’Œå§”æ‰˜å®ä¾‹ã€‚
+        /// è¿™æ ·åšçœå»äº† Dictionary çš„æŸ¥è¡¨å¼€é”€ï¼Œä¹Ÿæ²¡æœ‰ä»»ä½•è£…ç®±æ‹†ç®±ï¼ˆ0 GCï¼‰ã€‚
         /// </summary>
         private static class EventBusInternal<T> where T : struct
         {

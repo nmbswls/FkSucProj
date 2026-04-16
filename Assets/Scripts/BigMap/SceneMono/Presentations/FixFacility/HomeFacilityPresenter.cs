@@ -9,7 +9,7 @@ using UnityEngine;
 namespace My
 {
     /// <summary>
-    /// ½¨ÖşÎï
+    /// å»ºç­‘ç‰©
     /// </summary>
     public class HomeFacilityPresenter : ScenePresentationBase<HomeFacilityLogicEntity>, ISubInteractHolder
     {
@@ -44,9 +44,9 @@ namespace My
         {
             _sprites = ViewRoot.GetComponentsInChildren<SpriteRenderer>(true);
 
-            Debug.Log($"ÒÑÊÕ¼¯ {_sprites.Length} ¸ö SpriteRenderer");
+            Debug.Log($"å·²æ”¶é›† {_sprites.Length} ä¸ª SpriteRenderer");
 
-            // ±ê¼Ç¶ÔÏóÒÑĞŞ¸Ä£¬È·±£ Unity ±£´æÕâ¸öÁĞ±í£¬·ñÔòÖØÆôºó»á¶ªÊ§
+            // æ ‡è®°å¯¹è±¡å·²ä¿®æ”¹ï¼Œç¡®ä¿ Unity ä¿å­˜è¿™ä¸ªåˆ—è¡¨ï¼Œå¦åˆ™é‡å¯åä¼šä¸¢å¤±
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
 #endif
@@ -85,7 +85,7 @@ namespace My
             ret.Add(new SceneInteractSelection()
             {
                 SelectId = 1,
-                SelectContent = "²é¿´",
+                SelectContent = "æŸ¥çœ‹",
             });
 
             return ret;
@@ -93,7 +93,7 @@ namespace My
 
         public bool SubTriggerInteract(int subIdx, int selectionId)
         {
-            MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"ÎÒÊÇ{FacilityEntity.InnerFacilityRef.Id}¡£", 1f);
+            MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"æˆ‘æ˜¯{FacilityEntity.InnerFacilityRef.Id}ã€‚", 1f);
             _interactCdTimer[subIdx] = LogicTime.time;
             return true;
         }

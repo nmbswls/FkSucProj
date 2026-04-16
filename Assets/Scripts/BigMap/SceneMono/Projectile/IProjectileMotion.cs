@@ -15,13 +15,13 @@ namespace My
 {
     public interface IMapProjectileMotion
     {
-        // ÓÉÔËĞĞÊ±´«ÈëÉÏÏÂÎÄ£¬±ãÓÚMotion·ÃÎÊ¹²ÓÃÊı¾İ
+        // ç”±è¿è¡Œæ—¶ä¼ å…¥ä¸Šä¸‹æ–‡ï¼Œä¾¿äºMotionè®¿é—®å…±ç”¨æ•°æ®
         void Initialize(MapProjectile owner);
-        // ÎïÀí²½
+        // ç‰©ç†æ­¥
         void Tick(float dt);
-        // ¹©Manager»òProjectile²éÑ¯£ºÊÇ·ñÓ¦½áÊø£¨±ÈÈçÅ×ÎïÂäµØ£©
+        // ä¾›Manageræˆ–ProjectileæŸ¥è¯¢ï¼šæ˜¯å¦åº”ç»“æŸï¼ˆæ¯”å¦‚æŠ›ç‰©è½åœ°ï¼‰
         bool IsFinished { get; }
-        // Ìá¹©µ±Ç°Î»ÖÃÓë³¯Ïò£¨ÓÃÓÚäÖÈ¾ÓëÃüÖĞ£©
+        // æä¾›å½“å‰ä½ç½®ä¸æœå‘ï¼ˆç”¨äºæ¸²æŸ“ä¸å‘½ä¸­ï¼‰
         Vector2 Position { get; }
         Vector2 Forward { get; }
     }
@@ -36,11 +36,11 @@ namespace My
     [Serializable]
     public class InstanceMotionData : MotionDataBase
     {
-        // ×¼±¸Ê±¼ä
+        // å‡†å¤‡æ—¶é—´
         public float prepareTime = 1.0f;
         public float speed = 12;
 
-        public float homingSterRate = 1.0f;  // ×ªÏò±£ÁôÔ­ËÙ¶È
+        public float homingSterRate = 1.0f;  // è½¬å‘ä¿ç•™åŸé€Ÿåº¦
         public bool homingConstantSpeed = false;
         public float homingOverrideSpeed = 12.0f;
     }
@@ -108,9 +108,9 @@ namespace My
             _finished = false;
             _hitCD.Clear();
 
-            float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg; // Óë +X Öá¼Ğ½Ç
+            float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg; // ä¸ +X è½´å¤¹è§’
             if (owner.ViewRoot != null)
-                owner.ViewRoot.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // ÈÆ Z Öá
+                owner.ViewRoot.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // ç»• Z è½´
         }
 
         public void Tick(float dt)
@@ -160,7 +160,7 @@ namespace My
             {
                 if (HandleHit(hit))
                 {
-                    // ÖÕÖ¹
+                    // ç»ˆæ­¢
                     _finished = true;
                     //ProjectileUtil.PlayFX(PD.impactFX, hit.point, hit.normal);
                     return;
@@ -168,7 +168,7 @@ namespace My
                 else
                 {
                     _pos = end;
-                    // ´©Í¸¼ÌĞø£¬Î»ÖÃÍÆ½øÖÁÃüÖĞµã
+                    // ç©¿é€ç»§ç»­ï¼Œä½ç½®æ¨è¿›è‡³å‘½ä¸­ç‚¹
                     //_pos = hit.point + _dir * (D.radius * 0.5f);
                 }
             }
@@ -224,7 +224,7 @@ namespace My
 
     /// <summary>
     /// instance motion
-    /// Á¢¼´´¥·¢µÄ×Óµ¯
+    /// ç«‹å³è§¦å‘çš„å­å¼¹
     /// </summary>
     public class MapProjectileInstanceMotion : IMapProjectileMotion
     {
@@ -247,7 +247,7 @@ namespace My
         public Vector2 Forward => _dir;
 
         /// <summary>
-        /// ×ªÏòÊ±¼ä
+        /// è½¬å‘æ—¶é—´
         /// </summary>
         public float turnResponseTime = 0.3f;
 
@@ -262,11 +262,11 @@ namespace My
             _finished = false;
             _hitCD.Clear();
 
-            float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg; // Óë +X Öá¼Ğ½Ç
+            float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg; // ä¸ +X è½´å¤¹è§’
             if (!ownerProj.bindingProjInfo.pData.lockAngle)
             {
                 if (owner.ViewRoot != null)
-                    owner.ViewRoot.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // ÈÆ Z Öá
+                    owner.ViewRoot.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // ç»• Z è½´
             }
         }
 
@@ -288,7 +288,7 @@ namespace My
                 return;
             }
 
-            // Î´µ½×¼±¸½×¶Î
+            // æœªåˆ°å‡†å¤‡é˜¶æ®µ
             if (_time >= D.prepareTime)
             {
                 _finished = true;
@@ -307,7 +307,7 @@ namespace My
             if (!PD.isHoming) return;
             if (_time > PD.homingTime) return;
 
-            // µ¼º½
+            // å¯¼èˆª
             var targetId = ownerProj.bindingProjInfo.homingTargetId;
             if (targetId == null || targetId == 0)
             {
@@ -327,7 +327,7 @@ namespace My
 
             Vector2 forward = new Vector2(Mathf.Cos(newAngle * Mathf.Deg2Rad), Mathf.Sin(newAngle * Mathf.Deg2Rad));
 
-            // ¹Ì¶¨ËÙ¶È ¿ÉÄÜÅÜ¹ı
+            // å›ºå®šé€Ÿåº¦ å¯èƒ½è·‘è¿‡
             if (D.homingConstantSpeed)
             {
                 Vector2 vel = forward * D.speed;
@@ -370,7 +370,7 @@ namespace My
         private float _exposeHeight = 0.3f;
 
         public bool IsFinished => _finished;
-        public Vector2 Position => _pos;           // µØÃæÎ»ÖÃ£¨ÒõÓ°Î»ÖÃ£©
+        public Vector2 Position => _pos;           // åœ°é¢ä½ç½®ï¼ˆé˜´å½±ä½ç½®ï¼‰
         public Vector2 Forward => _vxy.sqrMagnitude > 0.0001f ? _vxy.normalized : Vector2.right;
 
         public void Initialize(MapProjectile owner)
@@ -400,7 +400,7 @@ namespace My
             _lifetime = PD.maxLifetime;
             _finished = false;
 
-            // ÉèÖÃÊÓ¾õ£¨ÒõÓ°/Ì§Éı£©ÓÉÍâ²ãProjectile¸ºÔğ£¨¸ù¾İMotionÀàĞÍ£©
+            // è®¾ç½®è§†è§‰ï¼ˆé˜´å½±/æŠ¬å‡ï¼‰ç”±å¤–å±‚Projectileè´Ÿè´£ï¼ˆæ ¹æ®Motionç±»å‹ï¼‰
             Owner.ConfigureParabolaVisual(D);
 
         }
@@ -422,7 +422,7 @@ namespace My
             _vz -= D.gravity * dt;
             _z += _vz * dt;
 
-            // ÊÓ¾õ¸üĞÂ
+            // è§†è§‰æ›´æ–°
             Owner.UpdateParabolaVisual(_pos, _z, Forward);
 
             if (_z <= _exposeHeight)
@@ -458,21 +458,21 @@ namespace My
     }
 
     /// <summary>
-    /// Âß¼­²ãĞÅÏ¢
+    /// é€»è¾‘å±‚ä¿¡æ¯
     /// </summary>
     public class LogicProjectileInfo
     {
         public long instId;
-        //public Projectile projectile;      // ÔËĞĞÊ±ÈİÆ÷£¨¿ÉÓÃÓÚ»Øµ÷£©
+        //public Projectile projectile;      // è¿è¡Œæ—¶å®¹å™¨ï¼ˆå¯ç”¨äºå›è°ƒï¼‰
 
         public ILogicEntity ownerEntity;
-        public ProjectileData pData;        // Í³Ò»Êı¾İ
+        public ProjectileData pData;        // ç»Ÿä¸€æ•°æ®
 
-        //public MotionDataBase motionData;  // ¾ßÌåÔË¶¯Êı¾İSO
+        //public MotionDataBase motionData;  // å…·ä½“è¿åŠ¨æ•°æ®SO
 
         public Vector2 spawnPos;
         public Vector2 initialDir;
-        public long? homingTargetId;     // ×·×Ù
+        public long? homingTargetId;     // è¿½è¸ª
 
     }
 }

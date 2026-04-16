@@ -10,7 +10,7 @@ using System.Linq;
 
 
 /// <summary>
-/// ÈÎÎñ±à¼­Æ÷
+/// ä»»åŠ¡ç¼–è¾‘å™¨
 /// </summary>
 public class QuestEditorWindow : EditorWindow
 {
@@ -124,10 +124,10 @@ public class QuestEditorWindow : EditorWindow
     {
         EditorGUILayout.BeginHorizontal();
         {
-            // ×ó²àÃæ°å£º²½ÖèÁĞ±í (30%)
+            // å·¦ä¾§é¢æ¿ï¼šæ­¥éª¤åˆ—è¡¨ (30%)
             DrawLeftPanel();
 
-            // ÓÒ²àÃæ°å£ºÏêÏ¸±à¼­ (70%)
+            // å³ä¾§é¢æ¿ï¼šè¯¦ç»†ç¼–è¾‘ (70%)
             DrawRightPanel();
         }
         EditorGUILayout.EndHorizontal();
@@ -227,13 +227,13 @@ public class QuestEditorWindow : EditorWindow
             objectivesProp.arraySize++;
             var newObj = objectivesProp.GetArrayElementAtIndex(objectivesProp.arraySize - 1);
 
-            // ÉèÖÃÄ¬ÈÏÖµ
+            // è®¾ç½®é»˜è®¤å€¼
             newObj.FindPropertyRelative("objectiveId").intValue = objectivesProp.arraySize;
             newObj.FindPropertyRelative("text").stringValue = "New Objective";
             newObj.FindPropertyRelative("isHidden").boolValue = false;
             newObj.FindPropertyRelative("isOption").boolValue = false;
 
-            // Çå¿ÕÌõ¼ş
+            // æ¸…ç©ºæ¡ä»¶
             var conditionProp = newObj.FindPropertyRelative("condition");
             conditionProp.managedReferenceValue = null;
         }
@@ -292,7 +292,7 @@ public class QuestEditorWindow : EditorWindow
             outcomesProp.arraySize++;
             var newOut = outcomesProp.GetArrayElementAtIndex(outcomesProp.arraySize - 1);
 
-            // ÉèÖÃÄ¬ÈÏÖµ
+            // è®¾ç½®é»˜è®¤å€¼
             newOut.FindPropertyRelative("outcomeName").stringValue = "New Outcome";
             newOut.FindPropertyRelative("description").stringValue = "";
             newOut.FindPropertyRelative("completeId").intValue = 0;
@@ -349,7 +349,7 @@ public class QuestEditorWindow : EditorWindow
     {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-        // ÏÔÊ¾µ±Ç°ÀàĞÍ
+        // æ˜¾ç¤ºå½“å‰ç±»å‹
         string typeName = "No Condition";
         if (conditionProp.managedReferenceValue != null)
         {
@@ -359,21 +359,21 @@ public class QuestEditorWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField($"Condition Type: {typeName}");
 
-        // ÀàĞÍÑ¡Ôñ°´Å¥
+        // ç±»å‹é€‰æ‹©æŒ‰é’®
         if (GUILayout.Button("Change Type", EditorStyles.miniButton, GUILayout.Width(100)))
         {
             ShowConditionTypeMenu(conditionProp);
         }
         EditorGUILayout.EndHorizontal();
 
-        // »æÖÆÌõ¼şÄÚÈİ
+        // ç»˜åˆ¶æ¡ä»¶å†…å®¹
         if (conditionProp.managedReferenceValue != null)
         {
-            // »æÖÆÍ¨ÓÃÊôĞÔ
+            // ç»˜åˆ¶é€šç”¨å±æ€§
             SerializedProperty negateProp = conditionProp.FindPropertyRelative("negate");
             EditorGUILayout.PropertyField(negateProp, new GUIContent("Negate"));
 
-            // »æÖÆÌõ¼şÌØ¶¨ÊôĞÔ
+            // ç»˜åˆ¶æ¡ä»¶ç‰¹å®šå±æ€§
             DrawSpecificConditionProperties(conditionProp);
         }
 
@@ -388,10 +388,10 @@ public class QuestEditorWindow : EditorWindow
         Type conditionType = conditionObject.GetType();
         SerializedProperty prop = conditionProp.Copy();
 
-        // ±éÀúËùÓĞÊôĞÔ
+        // éå†æ‰€æœ‰å±æ€§
         while (prop.NextVisible(true))
         {
-            if (prop.name == "negate") continue; // ÒÑ¾­µ¥¶À´¦Àí
+            if (prop.name == "negate") continue; // å·²ç»å•ç‹¬å¤„ç†
 
             if (conditionType == typeof(QuestCondition))
             {
@@ -422,14 +422,14 @@ public class QuestEditorWindow : EditorWindow
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.BeginHorizontal();
 
-            // É¾³ı°´Å¥
+            // åˆ é™¤æŒ‰é’®
             if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(24)))
             {
                 conditionsProp.DeleteArrayElementAtIndex(i);
                 break;
             }
 
-            // Ìõ¼şÃèÊö
+            // æ¡ä»¶æè¿°
             string description = "No Condition";
             if (condProp.managedReferenceValue != null)
             {
@@ -440,13 +440,13 @@ public class QuestEditorWindow : EditorWindow
 
             EditorGUILayout.EndHorizontal();
 
-            // »æÖÆÌõ¼şÄÚÈİ
+            // ç»˜åˆ¶æ¡ä»¶å†…å®¹
             DrawConditionField(condProp);
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(4);
         }
 
-        // Ìí¼Ó×ÓÌõ¼ş°´Å¥
+        // æ·»åŠ å­æ¡ä»¶æŒ‰é’®
         if (GUILayout.Button("+ Add Sub-Condition", EditorStyles.miniButton))
         {
             conditionsProp.arraySize++;
@@ -459,17 +459,17 @@ public class QuestEditorWindow : EditorWindow
     {
         GenericMenu menu = new GenericMenu();
 
-        // »ù´¡Ìõ¼şÀàĞÍ
+        // åŸºç¡€æ¡ä»¶ç±»å‹
         menu.AddItem(new GUIContent("Kill Enemy"), false,
             () => SetConditionType(conditionProp, typeof(QuestConditionKill)));
         menu.AddItem(new GUIContent("Has Item"), false,
             () => SetConditionType(conditionProp, typeof(QuestConditionHasSwitch)));
 
-        //// ×éºÏÌõ¼ş
+        //// ç»„åˆæ¡ä»¶
         //menu.AddItem(new GUIContent("Composite (AND/OR)"), false,
         //    () => SetConditionType(conditionProp, typeof(CompositeCondition)));
 
-        // Çå³ıÌõ¼ş
+        // æ¸…é™¤æ¡ä»¶
         menu.AddItem(new GUIContent("Clear Condition"), false,
             () => conditionProp.managedReferenceValue = null);
 
@@ -557,7 +557,7 @@ public class QuestEditorWindow : EditorWindow
                 list.serializedProperty.arraySize++;
                 var newElem = list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1);
 
-                // ³õÊ¼»¯ĞÂ²½Öè
+                // åˆå§‹åŒ–æ–°æ­¥éª¤
                 int newId = 1;
                 if (list.serializedProperty.arraySize > 1)
                 {
@@ -588,7 +588,7 @@ public class QuestEditorWindow : EditorWindow
 
         if (string.IsNullOrEmpty(path)) return;
 
-        // ´´½¨Êı¾İ¸±±¾ÓÃÓÚĞòÁĞ»¯
+        // åˆ›å»ºæ•°æ®å‰¯æœ¬ç”¨äºåºåˆ—åŒ–
         var exportData = new QuestDataExport
         {
             questId = currentQuest.questId,
@@ -598,7 +598,7 @@ public class QuestEditorWindow : EditorWindow
             steps = currentQuest.steps.ToList()
         };
 
-        // ĞòÁĞ»¯ÎªJSON
+        // åºåˆ—åŒ–ä¸ºJSON
         var settings = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
@@ -634,10 +634,10 @@ public class QuestEditorWindow : EditorWindow
                 TypeNameHandling = TypeNameHandling.Auto
             };
 
-            // ·´ĞòÁĞ»¯µ½ÁÙÊ±¶ÔÏó
+            // ååºåˆ—åŒ–åˆ°ä¸´æ—¶å¯¹è±¡
             var importData = JsonConvert.DeserializeObject<QuestDataExport>(json, settings);
 
-            // Ó¦ÓÃµ¼ÈëµÄÊı¾İ
+            // åº”ç”¨å¯¼å…¥çš„æ•°æ®
             Undo.RecordObject(currentQuest, "Import Quest Data");
 
             currentQuest.questId = importData.questId;
@@ -651,7 +651,7 @@ public class QuestEditorWindow : EditorWindow
 
             EditorUtility.DisplayDialog("Success", "Quest data imported successfully!", "OK");
 
-            // Ë¢ĞÂ±à¼­Æ÷
+            // åˆ·æ–°ç¼–è¾‘å™¨
             InitSerializedObject();
         }
         catch (Exception e)
@@ -661,7 +661,7 @@ public class QuestEditorWindow : EditorWindow
         }
     }
 
-    // ÓÃÓÚJSONµ¼³öµÄÊı¾İ½á¹¹
+    // ç”¨äºJSONå¯¼å‡ºçš„æ•°æ®ç»“æ„
     [Serializable]
     public class QuestDataExport
     {

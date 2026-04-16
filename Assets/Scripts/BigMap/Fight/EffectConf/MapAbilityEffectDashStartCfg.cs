@@ -45,6 +45,6 @@ namespace My.Map.Entity
 
         public bool StopOnWall;
 
-        public bool EndAbilityPhaseWhenEnds = true; // 只有当来自技能时 该值才可为true
+        public bool EndAbilityPhaseWhenEnds = true; // 鍙湁褰撴潵鑷妧鑳芥椂 璇ュ�兼墠鍙负true
     }
 }

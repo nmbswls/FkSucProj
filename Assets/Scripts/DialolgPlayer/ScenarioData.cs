@@ -13,7 +13,7 @@ using UnityEngine;
 //[Serializable]
 //public class StepData
 //{
-//    public string label; // ¿ÉÑ¡£¬×÷ÎªÌø×ªÃªµã
+//    public string label; // å¯é€‰ï¼Œä½œä¸ºè·³è½¬é”šç‚¹
 //    public List<CommandData> commands = new List<CommandData>();
 //}
 
@@ -21,34 +21,34 @@ using UnityEngine;
 //[Serializable]
 //public class ChoiceOption
 //{
-//    public string id;                 // ÓÃÓÚºÏ²¢ OR£ºÔÊĞí¶à¸öÍ¬ id µÄÑ¡Ïî
-//    public string text;               // »òÊ¹ÓÃ textKey
+//    public string id;                 // ç”¨äºåˆå¹¶ ORï¼šå…è®¸å¤šä¸ªåŒ id çš„é€‰é¡¹
+//    public string text;               // æˆ–ä½¿ç”¨ textKey
 //    public string textKey;
 //    public string jumpLabel;
 
-//    // AND Ìõ¼ş×Ó¾ä£ºÃ¿¸ö×Ö·û´®Ò»¸ö×Ó¾ä£¬È«²¿Âú×ã²ÅÏÔÊ¾
-//    // ĞÎÈç£ºcondType#p1|p2|p3|p4
+//    // AND æ¡ä»¶å­å¥ï¼šæ¯ä¸ªå­—ç¬¦ä¸²ä¸€ä¸ªå­å¥ï¼Œå…¨éƒ¨æ»¡è¶³æ‰æ˜¾ç¤º
+//    // å½¢å¦‚ï¼šcondType#p1|p2|p3|p4
 //    public class OneClause
 //    {
 //        public string type;
 //        public List<string> ps;
 //    }
-//    public List<OneClause> condClauses;  // null »ò ¿ÕÁĞ±í´ú±íÎŞÌõ¼ş
+//    public List<OneClause> condClauses;  // null æˆ– ç©ºåˆ—è¡¨ä»£è¡¨æ— æ¡ä»¶
 //}
 
 //[Serializable]
 //public class CommandData
 //{
-//    public string type; // ÀıÈç "TypeText","ShowPortrait","CameraMove"...
+//    public string type; // ä¾‹å¦‚ "TypeText","ShowPortrait","CameraMove"...
 //    public bool wait = true;
-//    // Í¨ÓÃ²ÎÊıÈİÆ÷£º¿ÉÓÃ¼üÖµ×Öµä»ò JSON ¿ÉĞòÁĞ»¯µÄ¼òµ¥¶ÔÏó
-//    public SerializableDict<string, string> s; // ×Ö·û´®²ÎÊı£¨id¡¢keys¡¢names£©
-//    public SerializableDict<string, float> f;  // ¸¡µã²ÎÊı£¨duration¡¢fade¡¢fovµÈ£©
-//    public SerializableDict<string, int> i;    // ÕûÊı²ÎÊı£¨Ë÷Òı¡¢¼ÆÊı£©
-//    public List<ChoiceOption> choiceOptions; // Choice ×¨ÓÃ
+//    // é€šç”¨å‚æ•°å®¹å™¨ï¼šå¯ç”¨é”®å€¼å­—å…¸æˆ– JSON å¯åºåˆ—åŒ–çš„ç®€å•å¯¹è±¡
+//    public SerializableDict<string, string> s; // å­—ç¬¦ä¸²å‚æ•°ï¼ˆidã€keysã€namesï¼‰
+//    public SerializableDict<string, float> f;  // æµ®ç‚¹å‚æ•°ï¼ˆdurationã€fadeã€fovç­‰ï¼‰
+//    public SerializableDict<string, int> i;    // æ•´æ•°å‚æ•°ï¼ˆç´¢å¼•ã€è®¡æ•°ï¼‰
+//    public List<ChoiceOption> choiceOptions; // Choice ä¸“ç”¨
 //}
 
-//// ¼òµ¥¿ÉĞòÁĞ»¯×Öµä£¨JsonUtility ²»Ö§³Ö Dictionary£¬¿ÉÓÃ×Ô¶¨Òå°ü×°£©
+//// ç®€å•å¯åºåˆ—åŒ–å­—å…¸ï¼ˆJsonUtility ä¸æ”¯æŒ Dictionaryï¼Œå¯ç”¨è‡ªå®šä¹‰åŒ…è£…ï¼‰
 //[Serializable]
 //public class SerializableDict<TKey, TValue>
 //{

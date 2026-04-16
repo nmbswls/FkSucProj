@@ -6,13 +6,13 @@ public class DebugHitBoxIndicator : MonoBehaviour
 {
     public enum Shape { Rect, Circle, Capsule }
 
-    // Í³Ò»Èë¿Ú£ºXYÆ½Ãæ£¬Z=0
+    // ç»Ÿä¸€å…¥å£ï¼šXYå¹³é¢ï¼ŒZ=0
     public static void Draw(Shape shape, Vector2 center, Vector2 size, Color color, float duration = 0.25f, int segments = 20, Vector2? dir = null)
     {
         switch (shape)
         {
             case Shape.Rect:
-                // »­¾ØĞÎ£¨size=¿í¸ß£©
+                // ç”»çŸ©å½¢ï¼ˆsize=å®½é«˜ï¼‰
                 float angleDeg = 0f;
                 if (dir != null)
                 {
@@ -29,13 +29,13 @@ public class DebugHitBoxIndicator : MonoBehaviour
         }
     }
 
-    // ¾ØĞÎÏß¿ò£ºsize=(w,h)
+    // çŸ©å½¢çº¿æ¡†ï¼šsize=(w,h)
     static void DrawRect(Vector2 c, Vector2 size, Color col, float dur, float angleDeg = 0f)
     {
         float hx = size.x * 0.5f;
         float hy = size.y * 0.5f;
 
-        // ±¾µØÎ´Ğı×ªµÄËÄ½Ç£¨ÒÔÖĞĞÄÎªÔ­µã£©
+        // æœ¬åœ°æœªæ—‹è½¬çš„å››è§’ï¼ˆä»¥ä¸­å¿ƒä¸ºåŸç‚¹ï¼‰
         Vector2[] local = new Vector2[]
         {
         new Vector2(-hx, -hy),
@@ -44,7 +44,7 @@ public class DebugHitBoxIndicator : MonoBehaviour
         new Vector2(-hx,  hy)
         };
 
-        // Ğı×ª£¨ÈÆZÖá£©
+        // æ—‹è½¬ï¼ˆç»•Zè½´ï¼‰
         float rad = angleDeg * Mathf.Deg2Rad;
         float cos = Mathf.Cos(rad);
         float sin = Mathf.Sin(rad);
@@ -53,12 +53,12 @@ public class DebugHitBoxIndicator : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             var p = local[i];
-            // Ó¦ÓÃĞı×ª²¢Æ½ÒÆµ½ÖĞĞÄ
+            // åº”ç”¨æ—‹è½¬å¹¶å¹³ç§»åˆ°ä¸­å¿ƒ
             float rx = p.x * cos - p.y * sin;
             float ry = p.x * sin + p.y * cos;
             pts[i] = new Vector3(c.x + rx, c.y + ry, 0f);
         }
-        pts[4] = pts[0]; // ±ÕºÏ
+        pts[4] = pts[0]; // é—­åˆ
 
         var go = NewLine(col);
         var lr = go.GetComponent<LineRenderer>();
@@ -67,7 +67,7 @@ public class DebugHitBoxIndicator : MonoBehaviour
         Object.Destroy(go, dur);
     }
 
-    // Ô²Ïß¿ò£ºradius=size.x
+    // åœ†çº¿æ¡†ï¼šradius=size.x
     static void DrawCircle(Vector2 c, float radius, Color col, float dur, int seg)
     {
         var go = NewLine(col);
@@ -81,37 +81,37 @@ public class DebugHitBoxIndicator : MonoBehaviour
         Object.Destroy(go, dur);
     }
 
-    // ½ºÄÒ£ºradius=size.x£¬¸ß¶È=size.y£¨×Ü³¤¶È£©£¬ÑØYÖáÑÓÉì
+    // èƒ¶å›Šï¼šradius=size.xï¼Œé«˜åº¦=size.yï¼ˆæ€»é•¿åº¦ï¼‰ï¼Œæ²¿Yè½´å»¶ä¼¸
     static void DrawCapsule(Vector2 c, float radius, float height, Color col, float dur, int seg)
     {
         height = Mathf.Max(height, radius * 2f);
         float straight = height - radius * 2f;
         float half = straight * 0.5f;
 
-        // ÉÏÏÂ°ëÔ²
+        // ä¸Šä¸‹åŠåœ†
         var top = new Vector2(c.x, c.y + half);
         var bot = new Vector2(c.x, c.y - half);
 
-        // ×éºÏÏß£º×ó²àÊúÏß¡¢ÓÒ²àÊúÏß¡¢ÉÏ°ëÔ²¡¢ÏÂ°ëÔ²
-        // ×óÊúÏß
+        // ç»„åˆçº¿ï¼šå·¦ä¾§ç«–çº¿ã€å³ä¾§ç«–çº¿ã€ä¸ŠåŠåœ†ã€ä¸‹åŠåœ†
+        // å·¦ç«–çº¿
         DrawLine(new Vector3[] {
             new Vector3(c.x - radius, bot.y, 0),
             new Vector3(c.x - radius, top.y, 0)
         }, col, dur);
 
-        // ÓÒÊúÏß
+        // å³ç«–çº¿
         DrawLine(new Vector3[] {
             new Vector3(c.x + radius, bot.y, 0),
             new Vector3(c.x + radius, top.y, 0)
         }, col, dur);
 
-        // ÉÏ°ëÔ²
+        // ä¸ŠåŠåœ†
         DrawArc(top, radius, 0, Mathf.PI, col, dur, seg);
-        // ÏÂ°ëÔ²
+        // ä¸‹åŠåœ†
         DrawArc(bot, radius, Mathf.PI, Mathf.PI * 2f, col, dur, seg);
     }
 
-    // ¹¤¾ß£º´´½¨LineRenderer£¨Í³Ò»ÑùÊ½£©
+    // å·¥å…·ï¼šåˆ›å»ºLineRendererï¼ˆç»Ÿä¸€æ ·å¼ï¼‰
     static GameObject NewLine(Color col)
     {
         var go = new GameObject("[Debug2DLine]");

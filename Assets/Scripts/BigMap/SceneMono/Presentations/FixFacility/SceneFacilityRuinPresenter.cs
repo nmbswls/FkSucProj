@@ -14,7 +14,7 @@ namespace My.Map.Scene
     {
         public LogicEntityFacilityRuin FacilityRuinEntity { get { return (LogicEntityFacilityRuin)_logic; } }
 
-        public string ShowName => "·ÏĞæ";
+        public string ShowName => "åºŸå¢Ÿ";
 
         public Vector2 Pos => transform.position;
 
@@ -58,9 +58,9 @@ namespace My.Map.Scene
         {
             _sprites = ViewRoot.GetComponentsInChildren<SpriteRenderer>(true);
 
-            Debug.Log($"ÒÑÊÕ¼¯ {_sprites.Length} ¸ö SpriteRenderer");
+            Debug.Log($"å·²æ”¶é›† {_sprites.Length} ä¸ª SpriteRenderer");
 
-            // ±ê¼Ç¶ÔÏóÒÑĞŞ¸Ä£¬È·±£ Unity ±£´æÕâ¸öÁĞ±í£¬·ñÔòÖØÆôºó»á¶ªÊ§
+            // æ ‡è®°å¯¹è±¡å·²ä¿®æ”¹ï¼Œç¡®ä¿ Unity ä¿å­˜è¿™ä¸ªåˆ—è¡¨ï¼Œå¦åˆ™é‡å¯åä¼šä¸¢å¤±
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
 #endif
@@ -116,7 +116,7 @@ namespace My.Map.Scene
         private void OnRuinRepaired()
         {
 
-            MainGameManager.Instance.ShowFakeFxEffect("ĞŞºÃÁË", this.transform.position);
+            MainGameManager.Instance.ShowFakeFxEffect("ä¿®å¥½äº†", this.transform.position);
 
             if (_sprites != null)
             {
@@ -153,7 +153,7 @@ namespace My.Map.Scene
         {
             if (FacilityRuinEntity.Cfg.AutoRepair)
             {
-                MainGameManager.Instance.ShowMapSpeachBubble(FacilityRuinEntity.Id, "Ã»ĞŞºÃ¡£", 1f);
+                MainGameManager.Instance.ShowMapSpeachBubble(FacilityRuinEntity.Id, "æ²¡ä¿®å¥½ã€‚", 1f);
             }
             else
             {
@@ -182,7 +182,7 @@ namespace My.Map.Scene
                 ret.Add(new SceneInteractSelection()
                 {
                     SelectId = 1,
-                    SelectContent = "²é¿´",
+                    SelectContent = "æŸ¥çœ‹",
                 });
             }
             else
@@ -190,7 +190,7 @@ namespace My.Map.Scene
                 ret.Add(new SceneInteractSelection()
                 {
                     SelectId = 1,
-                    SelectContent = "ĞŞÀí",
+                    SelectContent = "ä¿®ç†",
                 });
             }
 

@@ -83,20 +83,20 @@ namespace My.UI
             {
                 UnrealvingHintObj.gameObject.SetActive(true);
 
-                var item = GridView.GetShownItemByItemIndex(unrealIdx); // »ò FindItemByItemIndex(index)
+                var item = GridView.GetShownItemByItemIndex(unrealIdx); // æˆ– FindItemByItemIndex(index)
                 if (item != null)
                 {
-                    // ¸ÃÏîµÄ RectTransform
+                    // è¯¥é¡¹çš„ RectTransform
                     var itemRT = item.transform as RectTransform;
                     var worldCenter = itemRT.TransformPoint(itemRT.rect.center);
 
-                    // 4) ÊÀ½çµã -> ÆÁÄ»µã -> ui ¸¸½ÚµãµÄ¾Ö²¿×ø±ê
+                    // 4) ä¸–ç•Œç‚¹ -> å±å¹•ç‚¹ -> ui çˆ¶èŠ‚ç‚¹çš„å±€éƒ¨åæ ‡
                     Vector2 screenPt = RectTransformUtility.WorldToScreenPoint(UIManager.Instance.UICamera, worldCenter);
                     Canvas canvas = UnrealvingHintObj.GetComponentInParent<Canvas>();
                     Vector2 localInParent;
                     RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, screenPt, canvas.worldCamera, out localInParent);
 
-                    // 5) ÉèÖÃµ½ UI£¨È·±£ÃªµãºÏÀí£©
+                    // 5) è®¾ç½®åˆ° UIï¼ˆç¡®ä¿é”šç‚¹åˆç†ï¼‰
                     UnrealvingHintObj.anchoredPosition = localInParent;
 
                     //UnrealvingHintObj.transform.position = item.transform.position + new Vector3(0.5f, -0.5f);
@@ -107,8 +107,8 @@ namespace My.UI
 
         LoopGridViewItem OnGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
         {
-            // ×¢Òâ£º²¿·Ö°æ±¾ÊÇ OnGetItemByRowColumn »Øµ÷Ç©Ãû²»Í¬£¬°´ÄãµÄ API ¸ÄÃû
-            // itemIndex = ĞĞĞòºÅ£¨row£©£¬ÁĞÓÃ column ²ÎÊı
+            // æ³¨æ„ï¼šéƒ¨åˆ†ç‰ˆæœ¬æ˜¯ OnGetItemByRowColumn å›è°ƒç­¾åä¸åŒï¼ŒæŒ‰ä½ çš„ API æ”¹å
+            // itemIndex = è¡Œåºå·ï¼ˆrowï¼‰ï¼Œåˆ—ç”¨ column å‚æ•°
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 

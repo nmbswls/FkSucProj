@@ -13,15 +13,15 @@ using UnityEngine.UIElements;
 namespace My.UI
 {
     /// <summary>
-    /// Ï¸½ÚÑ¡ÔñÁĞ±í
+    /// ç»†èŠ‚é€‰æ‹©åˆ—è¡¨
     /// </summary>
     public class UISceneInteractMenu4Choose : MonoBehaviour
     {
         [Header("SuperScrollView")]
-        public LoopListView2 listView;          // ÍÏÈë³¡¾°ÖĞµÄ LoopListView2
-        public RectTransform viewport;          // ScrollRect µÄ Viewport£¬¿ØÖÆ¿É¼û¸ß¶È=5*itemHeight
-        private float itemHeight = 32f;          // ÓëPrefab¸ß¶ÈÒ»ÖÂ
-        public string itemPrefabName = "TabItem"; // ÔÚ SuperScrollView µÄ ItemPrefabMgr Àï×¢²áµÄÃû×Ö
+        public LoopListView2 listView;          // æ‹–å…¥åœºæ™¯ä¸­çš„ LoopListView2
+        public RectTransform viewport;          // ScrollRect çš„ Viewportï¼Œæ§åˆ¶å¯è§é«˜åº¦=5*itemHeight
+        private float itemHeight = 32f;          // ä¸Prefabé«˜åº¦ä¸€è‡´
+        public string itemPrefabName = "TabItem"; // åœ¨ SuperScrollView çš„ ItemPrefabMgr é‡Œæ³¨å†Œçš„åå­—
         public CanvasGroup RootCanvasGroup;
 
         public struct ChooseItem
@@ -36,8 +36,8 @@ namespace My.UI
 
 
         public RectTransform ScrollView;
-        private int currentIndex = 0;   // Êó±ê¹öÂÖÒÆ¶¯µÄµ±Ç°Ïî
-        private int selectedIndex = -1; // °´FÈ·ÈÏºóµÄÑ¡ÖĞÏî£¨-1 ±íÊ¾ÉĞÎ´È·ÈÏ£©
+        private int currentIndex = 0;   // é¼ æ ‡æ»šè½®ç§»åŠ¨çš„å½“å‰é¡¹
+        private int selectedIndex = -1; // æŒ‰Fç¡®è®¤åçš„é€‰ä¸­é¡¹ï¼ˆ-1 è¡¨ç¤ºå°šæœªç¡®è®¤ï¼‰
 
         public int CurrentIndex { get { return currentIndex; } }
 
@@ -45,7 +45,7 @@ namespace My.UI
 
         private void Awake()
         {
-            // ÏŞÖÆÖ»ÏÔÊ¾5¸ö£ºÉèÖÃ viewport ¸ß¶È
+            // é™åˆ¶åªæ˜¾ç¤º5ä¸ªï¼šè®¾ç½® viewport é«˜åº¦
             //if (viewport != null)
             //{
             //    var size = viewport.sizeDelta;
@@ -53,9 +53,9 @@ namespace My.UI
             //    viewport.sizeDelta = size;
             //}
 
-            // ³õÊ¼»¯ ListView
+            // åˆå§‹åŒ– ListView
             listView.InitListView(data.Count, OnGetItemByIndex);
-            // ³õÊ¼¾ÓÖĞÏÔÊ¾ currentIndex
+            // åˆå§‹å±…ä¸­æ˜¾ç¤º currentIndex
             ScrollToCenter(currentIndex);
         }
 
@@ -80,7 +80,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ÒÆ¶¯cursor
+        /// ç§»åŠ¨cursor
         /// </summary>
         /// <param name="delta"></param>
         public void MoveCursor(int delta)
@@ -90,16 +90,16 @@ namespace My.UI
             if (newIndex == currentIndex) return;
 
             currentIndex = newIndex;
-            // Ë¢ĞÂ¿É¼ûÏîÍâ¹Û
+            // åˆ·æ–°å¯è§é¡¹å¤–è§‚
             RefreshVisibleItems();
-            // ½«µ±Ç°Ïî¹ö¶¯ÖÁÖĞ¼ä£¨5¸öÊÓ´°µÄµÚ3¸öÎ»ÖÃ£©
+            // å°†å½“å‰é¡¹æ»šåŠ¨è‡³ä¸­é—´ï¼ˆ5ä¸ªè§†çª—çš„ç¬¬3ä¸ªä½ç½®ï¼‰
             ScrollToCenter(currentIndex);
 
             EventOnIndexUpdate?.Invoke(currentIndex);
         }
 
 
-        // SuperScrollView »Øµ÷£ºÎª¸ø¶¨ index Ìá¹©/Ë¢ĞÂ item
+        // SuperScrollView å›è°ƒï¼šä¸ºç»™å®š index æä¾›/åˆ·æ–° item
         private LoopListViewItem2 OnGetItemByIndex(LoopListView2 view, int index)
         {
             if (index < 0 || index >= data.Count) return null;
@@ -118,7 +118,7 @@ namespace My.UI
 
             viewComp.gameObject.SetActive(true);
 
-            // ¹Ì¶¨¸ß¶È£¨Óë itemHeight ±£³ÖÒ»ÖÂ£©
+            // å›ºå®šé«˜åº¦ï¼ˆä¸ itemHeight ä¿æŒä¸€è‡´ï¼‰
             var rt = item.GetComponent<RectTransform>();
             if (rt) rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, itemHeight);
 
@@ -144,24 +144,24 @@ namespace My.UI
             }
         }
 
-        // ½«Ö¸¶¨ index µÄÏî¹ö¶¯ÖÁ¡°ÖĞ¼äÎ»ÖÃ¡±
+        // å°†æŒ‡å®š index çš„é¡¹æ»šåŠ¨è‡³â€œä¸­é—´ä½ç½®â€
         private void ScrollToCenter(int index)
         {
             if (data.Count == 0) return;
 
-            // 5 ¸ö¿ÉÊÓÏî£¬ÖĞ¼äÊÇµÚ 3 ¸ö£¨0-based£ºÎ»ÖÃ2£©
+            // 5 ä¸ªå¯è§†é¡¹ï¼Œä¸­é—´æ˜¯ç¬¬ 3 ä¸ªï¼ˆ0-basedï¼šä½ç½®2ï¼‰
             int targetViewRow = 2;
-            // ¼ÆËãÊ¹ index ÔÚ viewport µÄÄ¿±êĞĞµÄÎ»ÖÃËùĞèµÄ¹ö¶¯Æ«ÒÆ£¨µ¥Î»£ºitemHeight£©
-            // SuperScrollView Ê¹ÓÃ Normalize pos »ò MovePanelToItemIndex µÄ½Ó¿Ú
-            // ÕâÀïÊ¹ÓÃ MovePanelToItemIndex(index, offset)
-            // offset£ºÈÃ index µÄ item ¶¥²¿Ïà¶ÔÓÚ viewport ¶¥²¿µÄÏñËØÆ«ÒÆ
+            // è®¡ç®—ä½¿ index åœ¨ viewport çš„ç›®æ ‡è¡Œçš„ä½ç½®æ‰€éœ€çš„æ»šåŠ¨åç§»ï¼ˆå•ä½ï¼šitemHeightï¼‰
+            // SuperScrollView ä½¿ç”¨ Normalize pos æˆ– MovePanelToItemIndex çš„æ¥å£
+            // è¿™é‡Œä½¿ç”¨ MovePanelToItemIndex(index, offset)
+            // offsetï¼šè®© index çš„ item é¡¶éƒ¨ç›¸å¯¹äº viewport é¡¶éƒ¨çš„åƒç´ åç§»
             float offset = targetViewRow * itemHeight;
             listView.MovePanelToItemIndex(index, offset);
         }
 
         public int SelectedIndex => selectedIndex;
 
-        // ¶¯Ì¬ÉèÖÃÊı¾İ²¢ÖØ½¨
+        // åŠ¨æ€è®¾ç½®æ•°æ®å¹¶é‡å»º
         public void SetData(List<ChooseItem> newData, int initialIndex = 0)
         {
             data = newData ?? new List<ChooseItem>();
@@ -179,12 +179,12 @@ namespace My.UI
 
         public void ItemOnClick(int idx)
         {
-            // 2. ³¢ÊÔ»ñÈ¡µ±Ç°¿É¼ûµÄ Item
+            // 2. å°è¯•è·å–å½“å‰å¯è§çš„ Item
             LoopListViewItem2 item = listView.GetShownItemByItemIndex(idx);
 
             if (item != null)
             {
-                // CASE A: Item ÒÑ¾­ÔÚÆÁÄ»ÉÏÁË
+                // CASE A: Item å·²ç»åœ¨å±å¹•ä¸Šäº†
                 var myItem = item.GetComponent<UISceneInteractMenu4ChooseItem>();
                 myItem.DoHintConfirm();
             }

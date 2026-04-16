@@ -24,18 +24,18 @@ namespace My.Map
     {
 
         /// <summary>
-        /// ´øµÃµ½
+        /// å¸¦å¾—åˆ°
         /// </summary>
         public bool IsQueenMode;
-        public bool IsPendingGc; // ÊÇ·ñµÈ´ı´¥·¢gc
+        public bool IsPendingGc; // æ˜¯å¦ç­‰å¾…è§¦å‘gc
 
 
-        public bool IsFaQing = false; // ÊÇ·ñ·¢ÇéÖĞ
-        public float LastFaQingTimer; // ½øÈë·¢ÇéÊ±¼ä
+        public bool IsFaQing = false; // æ˜¯å¦å‘æƒ…ä¸­
+        public float LastFaQingTimer; // è¿›å…¥å‘æƒ…æ—¶é—´
 
         
-        public bool IsExposed = false; // ±©Â¶×´Ì¬
-        public float LastExposeTimer; // ½øÈë±©Â¶Ê±¼ä
+        public bool IsExposed = false; // æš´éœ²çŠ¶æ€
+        public float LastExposeTimer; // è¿›å…¥æš´éœ²æ—¶é—´
 
         public bool IsZhaZhiMode = false;
 
@@ -121,7 +121,7 @@ namespace My.Map
 
         protected override void RegisterSpecAttrs()
         {
-            // ÊıÖµÀà
+            // æ•°å€¼ç±»
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
 
 
@@ -138,7 +138,7 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 300_000);
             
 
-            // ×ÊÔ´Àà
+            // èµ„æºç±»
             attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 0);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 3);
 
@@ -148,7 +148,7 @@ namespace My.Map
         {
             base.OnResourceAttriChanged(attrId, before, after, intent);
 
-            // 4.3 ËÀÍöÅĞ¶Ï´°¿Ú£º½öÔÚº¬ÉËº¦Ê±¼ì²é
+            // 4.3 æ­»äº¡åˆ¤æ–­çª—å£ï¼šä»…åœ¨å«ä¼¤å®³æ—¶æ£€æŸ¥
             switch (attrId)
             {
                 case AttrIdConsts.PlayerPleasure:
@@ -190,7 +190,7 @@ namespace My.Map
 
             abilityController.EventOnUseAbility += (abilityName) =>
             {
-                // ¼ì²éÊ©¼Óattract
+                // æ£€æŸ¥æ–½åŠ attract
                 var abilityConf = AbilityLibrary.GetAbilityConfig(abilityName);
                 if (abilityConf == null)
                 {
@@ -270,7 +270,7 @@ namespace My.Map
                     AbilityId = "queen_dash",
                     deriveWindows = new List<DeriveWindow>()
                     {
-                        // Ôö¼ÓÒ»ÖÖ¼¼ÄÜ½áÊøÇ°ºóµÄÌØÊâ´°¿Ú ·ÀÖ¹Ò»Ğ©±»´ò¶ÏÒ²³öÏÖ´°¿Ú
+                        // å¢åŠ ä¸€ç§æŠ€èƒ½ç»“æŸå‰åçš„ç‰¹æ®Šçª—å£ é˜²æ­¢ä¸€äº›è¢«æ‰“æ–­ä¹Ÿå‡ºç°çª—å£
                         new DeriveWindow()
                         {
                             id = "1",
@@ -369,7 +369,7 @@ namespace My.Map
         
 
         /// <summary>
-        /// µÍÆµ½øĞĞplayerÏà¹ØÂß¼­
+        /// ä½é¢‘è¿›è¡Œplayerç›¸å…³é€»è¾‘
         /// </summary>
         private void TickPlayerStateLowFreq()
         {
@@ -401,17 +401,17 @@ namespace My.Map
 
             TickBeingGazedInfo();
 
-            // ¼ì²éÍæ¼ÒÒÂ×Å±©Â¶
+            // æ£€æŸ¥ç©å®¶è¡£ç€æš´éœ²
             TickPlayerExpose();
 
-            // ¼ì²éÊÇ·ñ½øÈë¸ß³±
+            // æ£€æŸ¥æ˜¯å¦è¿›å…¥é«˜æ½®
             TickGc();
 
             TickFaQing();
         }
 
         /// <summary>
-        /// ¼ì²éÍæ¼Ò×´Ì¬±ä»¯
+        /// æ£€æŸ¥ç©å®¶çŠ¶æ€å˜åŒ–
         /// </summary>
         private void TickResourceChange(float interval)
         {
@@ -424,7 +424,7 @@ namespace My.Map
             if (GetAttr(AttrIdConsts.PlayerHunger) <= 0)
             {
                 ApplyResourceChange(AttrIdConsts.HP, -500, false, EDmgFlag.None, null);
-                LogicManager.viewer.ShowFakeFxEffect("¶ö", this.Pos);
+                LogicManager.viewer.ShowFakeFxEffect("é¥¿", this.Pos);
             }
 
             long autoFaqing = 0;
@@ -451,7 +451,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ¸üĞÂÉíÉÏµÄ¸ß³±Ò×ÉË
+        /// æ›´æ–°èº«ä¸Šçš„é«˜æ½®æ˜“ä¼¤
         /// </summary>
         private void TickPlayerGcYishang()
         {
@@ -482,7 +482,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ¼ì²éÊÇ·ñ½øÈë±©Â¶×´Ì¬
+        /// æ£€æŸ¥æ˜¯å¦è¿›å…¥æš´éœ²çŠ¶æ€
         /// </summary>
         private void TickPlayerExpose()
         {
@@ -520,7 +520,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ¼ì²é¸ß³±×´Ì¬
+        /// æ£€æŸ¥é«˜æ½®çŠ¶æ€
         /// </summary>
         private void TickGc()
         {
@@ -540,14 +540,14 @@ namespace My.Map
 
             LogicManager.AddNewEntityRecord(gcLiquidEntity);
 
-            // Ìí¼Ó×ÔÉídebuff
+            // æ·»åŠ è‡ªèº«debuff
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_debuff");
 
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_yishang", layer: 100);
 
             if(!isSelfGc)
             {
-                // ·Ç×ÔÎ¿ĞèÒª¿Ûsan
+                // éè‡ªæ…°éœ€è¦æ‰£san
                 ApplyResourceChange(AttrIdConsts.PlayerSan, -500, false, FightStruct.EDmgFlag.None, this.Id);
             }
 
@@ -557,7 +557,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ¼ì²éÊÇ·ñ½øÈë·¢Çé×´Ì¬
+        /// æ£€æŸ¥æ˜¯å¦è¿›å…¥å‘æƒ…çŠ¶æ€
         /// </summary>
         private void TickFaQing()
         {
@@ -571,10 +571,10 @@ namespace My.Map
                     canLeave = true;
                 }
 
-                // ·¢Çé×´Ì¬ÏÂ£¬ÓĞÒÔÏÂÇé¿ö»á½øĞĞÍÑÀë£º
-                //     1.¸ß³±ÍÑÀë ×ßÁíÒ»ÌõÂ·Ïß
-                //     2.¿¿ÀíÖÇÇ¿ĞĞ£¨´ı¶¨£©
-                //     3.Ê±¼äÍÑÀë
+                // å‘æƒ…çŠ¶æ€ä¸‹ï¼Œæœ‰ä»¥ä¸‹æƒ…å†µä¼šè¿›è¡Œè„±ç¦»ï¼š
+                //     1.é«˜æ½®è„±ç¦» èµ°å¦ä¸€æ¡è·¯çº¿
+                //     2.é ç†æ™ºå¼ºè¡Œï¼ˆå¾…å®šï¼‰
+                //     3.æ—¶é—´è„±ç¦»
 
                 if (canLeave)
                 {
@@ -585,7 +585,7 @@ namespace My.Map
                     EventOnFaQingStateChange?.Invoke();
                 }
             }
-            // ¼ì²é½øÈë·¢Çé
+            // æ£€æŸ¥è¿›å…¥å‘æƒ…
             else
             {
 
@@ -651,10 +651,10 @@ namespace My.Map
             }
         }
 
-        private float lastRefreshSpiritTime; // ÉÏ´Î¸üĞÂÊ±¼ä
+        private float lastRefreshSpiritTime; // ä¸Šæ¬¡æ›´æ–°æ—¶é—´
 
         /// <summary>
-        /// ¼ì²é¾«Áé¹ÖÎï
+        /// æ£€æŸ¥ç²¾çµæ€ªç‰©
         /// </summary>
         protected void TickRefreshSpiritMonster()
         {
@@ -663,7 +663,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ¼ì²éÏòÖÜÎ§´«²¥hval
+        /// æ£€æŸ¥å‘å‘¨å›´ä¼ æ’­hval
         /// </summary>
         protected void TickApplyAuraHVal()
         {
@@ -698,7 +698,7 @@ namespace My.Map
             }
         }
 
-        #region ÒÆ¶¯ÉùÒôµÈ
+        #region ç§»åŠ¨å£°éŸ³ç­‰
 
 
         #endregion
@@ -708,7 +708,7 @@ namespace My.Map
         private Dictionary<long, float> BeingGazedTrack = new();
 
         /// <summary>
-        /// tick ±»×¢ÊÓĞ§¹û
+        /// tick è¢«æ³¨è§†æ•ˆæœ
         /// </summary>
         private void TickBeingGazedInfo()
         { 
@@ -732,7 +732,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Ö»ÓĞÒÂ×°Âú×ãÌõ¼şÊ± ²Å³ÉÎª±»×¢ÊÓ¶ÔÏó
+        /// åªæœ‰è¡£è£…æ»¡è¶³æ¡ä»¶æ—¶ æ‰æˆä¸ºè¢«æ³¨è§†å¯¹è±¡
         /// </summary>
         /// <returns></returns>
         public bool WillBeGazed()
@@ -781,7 +781,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ´òattach
+        /// æ‰“attach
         /// </summary>
         public void HitAttachObjs()
         {
@@ -822,12 +822,12 @@ namespace My.Map
                 obj.BuffInstId = bid;
             }
 
-            // Í¨ÖªÉÏ²ã¸Ä±äview
+            // é€šçŸ¥ä¸Šå±‚æ”¹å˜view
             EventOnAttachmentUpdate?.Invoke(0);
         }
 
         /// <summary>
-        /// Ö´ĞĞ³·ÍË
+        /// æ‰§è¡Œæ’¤é€€
         /// </summary>
         private void TickRetreating()
         {
@@ -857,7 +857,7 @@ namespace My.Map
         
 
         /// <summary>
-        /// ¼ì²éÉíÉÏµÄattackÎïÌå
+        /// æ£€æŸ¥èº«ä¸Šçš„attackç‰©ä½“
         /// </summary>
         private void TickAttachingObj(float dt)
         {

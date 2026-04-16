@@ -298,21 +298,21 @@ namespace My.UI
             BuildGroupIndex();
         }
 
-        #region »¥³â×é´¦Àí
+        #region äº’æ–¥ç»„å¤„ç†
 
         [Serializable]
         public class UIGroupPolicy
         {
-            public string groupName;                // ×éÃû£¬Èç "Interaction", "Inventory", "Fullscreen"
-            public bool singleInGroup = false;      // ÊÇ·ñÍ¬×éÄÚ»¥³â£¨true=Í¬×éÖ»ÄÜÁôÒ»¸ö£©
-            public List<string> panelIds = new();   // ×éÄÚÃæ°åÇåµ¥
+            public string groupName;                // ç»„åï¼Œå¦‚ "Interaction", "Inventory", "Fullscreen"
+            public bool singleInGroup = false;      // æ˜¯å¦åŒç»„å†…äº’æ–¥ï¼ˆtrue=åŒç»„åªèƒ½ç•™ä¸€ä¸ªï¼‰
+            public List<string> panelIds = new();   // ç»„å†…é¢æ¿æ¸…å•
             public bool isExclusive = false;
         }
 
         [Header("UI Groups (Mutual Exclusion)")]
         [SerializeField] private List<UIGroupPolicy> groupPolicies = new();
 
-        // ÔËĞĞÊ±Ë÷Òı
+        // è¿è¡Œæ—¶ç´¢å¼•
         private readonly Dictionary<string, string> panelToGroup = new();     // panelId -> groupName
         private readonly Dictionary<string, HashSet<string>> groupActive = new(); // groupName -> active panelIds
 
@@ -354,21 +354,21 @@ namespace My.UI
             return null;
         }
 
-        // ¶ÔÍâ£º°´×é¹æÔòÏÔÊ¾Ãæ°å£¨»¥³â×éÉúĞ§£©
+        // å¯¹å¤–ï¼šæŒ‰ç»„è§„åˆ™æ˜¾ç¤ºé¢æ¿ï¼ˆäº’æ–¥ç»„ç”Ÿæ•ˆï¼‰
         public void ShowInGroup(string panelId, object ctx = null, UILayer? layerOverride = null)
         {
-            // ²éÕÒÃæ°åËùÊô×é
+            // æŸ¥æ‰¾é¢æ¿æ‰€å±ç»„
             var policy = FindGroupByPanel(panelId, out var myGroup);
             if (policy != null && !string.IsNullOrEmpty(myGroup))
             {
                 if(policy.isExclusive)
                 {
-                    // 1) ¹Ø±ÕÆäËû×éËùÓĞ»î¶¯Ãæ°å
+                    // 1) å…³é—­å…¶ä»–ç»„æ‰€æœ‰æ´»åŠ¨é¢æ¿
                     foreach (var kv in groupActive)
                     {
                         var groupName = kv.Key;
                         if (groupName == myGroup) continue;
-                        // ¸´ÖÆ¼¯ºÏ±ÜÃâ±éÀúĞŞ¸Ä
+                        // å¤åˆ¶é›†åˆé¿å…éå†ä¿®æ”¹
                         var toClose = new List<string>(kv.Value);
                         foreach (var pid in toClose)
                         {
@@ -378,7 +378,7 @@ namespace My.UI
                     }
                 }
                 
-                // 2) ÈôÍ¬×éµ¥Àı£¬¹Ø±ÕÍ¬×éÒÑ´ò¿ªÃæ°å
+                // 2) è‹¥åŒç»„å•ä¾‹ï¼Œå…³é—­åŒç»„å·²æ‰“å¼€é¢æ¿
                 if (policy.singleInGroup && groupActive.TryGetValue(myGroup, out var setInMyGroup))
                 {
                     var toCloseMy = new List<string>(setInMyGroup);
@@ -393,10 +393,10 @@ namespace My.UI
                 }
             }
 
-            // 3) ´ò¿ªÄ¿±êÃæ°å
+            // 3) æ‰“å¼€ç›®æ ‡é¢æ¿
             UIManager.Instance.ShowPanel(panelId, ctx, layerOverride);
 
-            // 4) µÇ¼Ç»î¶¯¹ØÏµ
+            // 4) ç™»è®°æ´»åŠ¨å…³ç³»
             if (!string.IsNullOrEmpty(myGroup))
             {
                 if (!groupActive.TryGetValue(myGroup, out var set))
@@ -405,7 +405,7 @@ namespace My.UI
             }
         }
 
-        // ¶ÔÍâ£º°´×é¹æÔò¹Ø±ÕÃæ°å£¨¸üĞÂË÷Òı£©
+        // å¯¹å¤–ï¼šæŒ‰ç»„è§„åˆ™å…³é—­é¢æ¿ï¼ˆæ›´æ–°ç´¢å¼•ï¼‰
         public void HideInGroup(string panelId)
         {
             UIManager.Instance.HidePanel(panelId);
@@ -415,7 +415,7 @@ namespace My.UI
             }
         }
 
-        // ¸¨Öú£º¹Ø±ÕÕû¸ö×é£¨¿ÉÓÃÓÚ¡°»Øµ½ÊÀ½ç¡±Ê±Çå¿Õ½»»¥Ïà¹Ø£©
+        // è¾…åŠ©ï¼šå…³é—­æ•´ä¸ªç»„ï¼ˆå¯ç”¨äºâ€œå›åˆ°ä¸–ç•Œâ€æ—¶æ¸…ç©ºäº¤äº’ç›¸å…³ï¼‰
         public void CloseGroup(string groupName)
         {
             if (!groupActive.TryGetValue(groupName, out var set)) return;
@@ -427,7 +427,7 @@ namespace My.UI
             }
         }
 
-        // ²éÑ¯£ºÄ³×éÊÇ·ñÓĞ»î¶¯Ãæ°å
+        // æŸ¥è¯¢ï¼šæŸç»„æ˜¯å¦æœ‰æ´»åŠ¨é¢æ¿
         public bool IsGroupActive(string groupName)
         {
             return groupActive.TryGetValue(groupName, out var set) && set.Count > 0;
@@ -477,7 +477,7 @@ namespace My.UI
 
             UIManager.Instance.HideAll("Loading");
 
-            // ¹Ø±ÕÕ½¶·Ïà¹Ø
+            // å…³é—­æˆ˜æ–—ç›¸å…³
             UIManager.Instance.ShowPanel("OverworldHUD");
             UIManager.Instance.ShowPanel("SceneMask");
             UIManager.Instance.ShowPanel("SmallIconLayer");
@@ -495,9 +495,9 @@ namespace My.UI
         private async Task EnterBattleAsync(object ctx)
         {
             //UIManager.Instance.ShowLoading("Entering Battle...");
-            //// ¹Ø±ÕÊÀ½ç HUD
+            //// å…³é—­ä¸–ç•Œ HUD
             //UIManager.Instance.HidePanel("OverworldHUD");
-            //// ´ò¿ªÕ½¶· HUD
+            //// æ‰“å¼€æˆ˜æ–— HUD
             UIManager.Instance.ShowPanel("EncounterBattleHud", ctx, UILayer.HUD);
             //UIManager.Instance.ApplyInputMode(UIInputMode.Battle);
             //UIManager.Instance.HideLoading();
@@ -510,16 +510,16 @@ namespace My.UI
 
         //private async Task EnterPauseAsync()
         //{
-        //    // ´ò¿ªÔİÍ£²Ëµ¥£¨Ê¾Àı£¬Äã¿ÉÒÔ×öÒ»¸ö PauseMenuPanel£¬·ÅÔÚ Popup/Overlay ²ã£©
+        //    // æ‰“å¼€æš‚åœèœå•ï¼ˆç¤ºä¾‹ï¼Œä½ å¯ä»¥åšä¸€ä¸ª PauseMenuPanelï¼Œæ”¾åœ¨ Popup/Overlay å±‚ï¼‰
         //    UIManager.Instance.ShowPanel("PauseMenu", null, UILayer.Overlay);
-        //    // ²Ëµ¥Ì¬ÇĞ UI ÊäÈë
+        //    // èœå•æ€åˆ‡ UI è¾“å…¥
         //    UIManager.Instance.ApplyInputMode(UIInputMode.Menu);
         //    await Task.CompletedTask;
         //}
 
         //private async Task EnterDialogAsync(object dialogCtx)
         //{
-        //    // ´ò¿ª¶Ô»°Ãæ°å£¨Ê¾Àı£©
+        //    // æ‰“å¼€å¯¹è¯é¢æ¿ï¼ˆç¤ºä¾‹ï¼‰
         //    UIManager.Instance.ShowPanel("DialogPanel", dialogCtx, UILayer.Popup);
         //    UIManager.Instance.ApplyInputMode(UIInputMode.Dialog);
         //    await Task.CompletedTask;
@@ -528,20 +528,20 @@ namespace My.UI
         //private async Task EnterLoadingAsync(string tip)
         //{
         //    UIManager.Instance.ShowLoading(tip);
-        //    // Loading ×´Ì¬Í¨³£Ö»ÊÇÕ¹Ê¾ÕÚÕÖ£¬ÍÌµôÊäÈë£»½áÊøÊ±ÓÉµ÷ÓÃ·½ÔÙÌøµ½ÏÂÒ»¸ö×´Ì¬
+        //    // Loading çŠ¶æ€é€šå¸¸åªæ˜¯å±•ç¤ºé®ç½©ï¼Œåæ‰è¾“å…¥ï¼›ç»“æŸæ—¶ç”±è°ƒç”¨æ–¹å†è·³åˆ°ä¸‹ä¸€ä¸ªçŠ¶æ€
         //    await Task.CompletedTask;
         //}
 
-        //// ³£ÓÃ±àÅÅ£º´ÓÈÎÒâ×´Ì¬½øÈëÕ½¶·
+        //// å¸¸ç”¨ç¼–æ’ï¼šä»ä»»æ„çŠ¶æ€è¿›å…¥æˆ˜æ–—
         //public async Task GoToBattleAsync(object battleCtx)
         //{
         //    await SetStateAsync(UIAppState.Loading, "Matchmaking...");
-        //    // ×ÊÔ´¼ÓÔØ/³¡¾°ÇĞ»»...
+        //    // èµ„æºåŠ è½½/åœºæ™¯åˆ‡æ¢...
         //    await SetStateAsync(UIAppState.Battle, battleCtx);
         //}
 
 
-        #region ¾ßÌåÂß¼­²¿·Ö
+        #region å…·ä½“é€»è¾‘éƒ¨åˆ†
 
         public void EnsurePlayerBag()
         {
@@ -553,7 +553,7 @@ namespace My.UI
         public void TryEnterLootDetailMode(ILootableObj lootObj)
         {
             EnsurePlayerBag();
-            // ´ò¿ªlootpoint
+            // æ‰“å¼€lootpoint
             ShowInGroup("LootPoint", lootObj);
 
             //if(UIManager.Instance.IsPanelVisible())
@@ -584,7 +584,7 @@ namespace My.UI
         private List<MapLogicSubscription> subs = new();
 
         /// <summary>
-        /// Âß¼­ÊÂ¼ş´¦Àí
+        /// é€»è¾‘äº‹ä»¶å¤„ç†
         /// </summary>
         public void InitGameLogicEventListener()
         {
@@ -642,7 +642,7 @@ namespace My.UI
                         
                         if(player.IsFaQing)
                         {
-                            // ¿ªÊ¼·¢Çé ĞèÒª²¥Ğ§¹û
+                            // å¼€å§‹å‘æƒ… éœ€è¦æ’­æ•ˆæœ
                         }
 
 
@@ -719,7 +719,7 @@ namespace My.UI
 //        if (currentMode == mode) return;
 //        currentMode = mode;
 
-//        // ÇĞ»» Map
+//        // åˆ‡æ¢ Map
 //        mapOverworld?.Disable();
 //        mapBattle?.Disable();
 //        mapUI?.Disable();
@@ -736,7 +736,7 @@ namespace My.UI
 //    }
 
 
-//    // ±ã½İÁ÷³Ì£ºÕ½¶·ÇĞ»» + Loading
+//    // ä¾¿æ·æµç¨‹ï¼šæˆ˜æ–—åˆ‡æ¢ + Loading
 //    public void EnterBattleUI(object battleCtx)
 //    {
 

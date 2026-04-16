@@ -22,7 +22,7 @@ namespace My.UI
     }
 
     /// <summary>
-    /// ¿ØÖÆitemÖ®¼äÍÏ¶¯µÄ´¦Àí
+    /// æ§åˆ¶itemä¹‹é—´æ‹–åŠ¨çš„å¤„ç†
     /// </summary>
     public class ItemDragDropController : PanelBase
     {
@@ -68,7 +68,7 @@ namespace My.UI
 
             Payload = new DragPayload
             {
-                //Stack = stack.Clone(), // ÍÏ×§¹ı³ÌÊ¹ÓÃ¿ËÂ¡Êı¾İ
+                //Stack = stack.Clone(), // æ‹–æ‹½è¿‡ç¨‹ä½¿ç”¨å…‹éš†æ•°æ®
                 ItemId = stack.ItemID,
                 ItemCnt = stack.Count,
 
@@ -99,7 +99,7 @@ namespace My.UI
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvasRect,
                 screenPos,
-                TopCanvas.worldCamera,          // ×¢ÒâÕâÀï
+                TopCanvas.worldCamera,          // æ³¨æ„è¿™é‡Œ
                 out Vector2 localOnCanvas
             );
 
@@ -144,10 +144,10 @@ namespace My.UI
             }
         }
 
-        // ´ÓÍÏ×§Âäµ½±³°ü¸ñ×Ó
+        // ä»æ‹–æ‹½è½åˆ°èƒŒåŒ…æ ¼å­
         public void OnDropToInventory(int bagId, DragPayload payload, int dstIndex)
         {
-            // ´Ólootµãµ½±³°ü
+            // ä»lootç‚¹åˆ°èƒŒåŒ…
             if (payload.SourceContainerType == EContainerType.LootPoint)
             {
                 if(LootPointUIPanel.Instance == null || LootPointUIPanel.Instance.Loot == null)
@@ -197,7 +197,7 @@ namespace My.UI
                 int fromBag = payload.SourceContainerId;
                 int toBag = bagId;
 
-                // ±³°üÄÚ²¿ÒÆ¶¯/¶Ñµş/½»»»
+                // èƒŒåŒ…å†…éƒ¨ç§»åŠ¨/å †å /äº¤æ¢
                 bool ok = PlayerBagUIPanel.Instance.BindingInventory.TrySwapOrMove(fromBag, payload.SourceIndex, toBag, dstIndex);
                 if (ok)
                 {
@@ -207,7 +207,7 @@ namespace My.UI
         }
 
 
-        // lootµã×Ô¼ºÄÚ²¿ÍÏ×§
+        // lootç‚¹è‡ªå·±å†…éƒ¨æ‹–æ‹½
         public void OnDropToLootContainer(int bagId, DragPayload payload, int dstIndex)
         {
 
@@ -217,7 +217,7 @@ namespace My.UI
                 return;
             }
 
-            // Ô­µØ½»»»
+            // åŸåœ°äº¤æ¢
             if (payload.SourceContainerType == EContainerType.LootPoint)
             {
                 var container = LootPointUIPanel.Instance.Loot.GetLootItemContainer();
@@ -228,7 +228,7 @@ namespace My.UI
                     LootPointUIPanel.Instance.RefreshContent();
                 }
             }
-            // ´Ó±³°üÍÏ¶¯µ½lootµã
+            // ä»èƒŒåŒ…æ‹–åŠ¨åˆ°lootç‚¹
             else if (payload.SourceContainerType == EContainerType.Inventory
                 || payload.SourceContainerType == EContainerType.SpecialInventory)
             {
@@ -244,7 +244,7 @@ namespace My.UI
             }
         }
 
-        // lootµã×Ô¼ºÄÚ²¿ÍÏ×§
+        // lootç‚¹è‡ªå·±å†…éƒ¨æ‹–æ‹½
         public void OnDropToShop(DragPayload payload, int dstIndex)
         {
 
@@ -254,7 +254,7 @@ namespace My.UI
                 return;
             }
 
-            // ³¢ÊÔÊÛÂô
+            // å°è¯•å”®å–
             if (payload.SourceContainerType == EContainerType.Inventory
                 || payload.SourceContainerType == EContainerType.SpecialInventory)
             {

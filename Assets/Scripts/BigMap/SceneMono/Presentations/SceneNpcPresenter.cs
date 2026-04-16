@@ -140,7 +140,7 @@ namespace My.Map.Scene
                 return false;
             }
 
-            // ¼ì²éÍæ¼Ò¿¿½üÖ÷¶¯Í£¿¿
+            // æ£€æŸ¥ç©å®¶é è¿‘ä¸»åŠ¨åœé 
             do
             {
                 if(NpcEntity.IsInCombat)
@@ -196,7 +196,7 @@ namespace My.Map.Scene
                 return true;
             }
 
-            // Õë¶ÔÔÎÑ£ÀàĞÍ Èç¹û¿ÉÕ¥È¡
+            // é’ˆå¯¹æ™•çœ©ç±»å‹ å¦‚æœå¯æ¦¨å–
             if (UnitEntity.MarkUnsensored)
             {
                 return true;
@@ -288,7 +288,7 @@ namespace My.Map.Scene
                     InteractDetailMode = true;
                     NpcEntity.RegisterGaze("Interact", UnitEntity.LogicManager.playerLogicEntity.Id, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Override, 0);
 
-                    // todo Å×³öÊÂ¼ş
+                    // todo æŠ›å‡ºäº‹ä»¶
                     if(SceneInteractMenuPanel.Instance != null)
                     {
                         SceneInteractMenuPanel.Instance.ResetRefreshSelection();
@@ -351,7 +351,7 @@ namespace My.Map.Scene
                 //        //return;
                 //    }
 
-                //    // ÏÔÊ¾²ãÊÂ¼ş
+                //    // æ˜¾ç¤ºå±‚äº‹ä»¶
                 //    MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
                 //    {
                 //        Name = "AbsorbDizzy",
@@ -361,7 +361,7 @@ namespace My.Map.Scene
                 //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
                 //}
 
-                // ÏÔÊ¾²ãÊÂ¼ş
+                // æ˜¾ç¤ºå±‚äº‹ä»¶
                 MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
                 {
                     Name = "AbsorbDizzy",
@@ -386,7 +386,7 @@ namespace My.Map.Scene
 
         /// <summary>
         /// 1 shendu
-        /// 2 Îü
+        /// 2 å¸
         /// </summary>
         /// <returns></returns>
         public List<SceneInteractSelection> GetInteractSelections()
@@ -399,7 +399,7 @@ namespace My.Map.Scene
                 ret.Add(new SceneInteractSelection()
                 {
                     SelectId = PickDropInteractId,
-                    SelectContent = "ËÑ¹Î",
+                    SelectContent = "æœåˆ®",
                     Selectable = true
                 }); 
             }
@@ -412,7 +412,7 @@ namespace My.Map.Scene
                     ret.Add(new SceneInteractSelection()
                     {
                         SelectId = DeepAbsorbInteractGoodId,
-                        SelectContent = "Éî¶ÈÕ¥È¡",
+                        SelectContent = "æ·±åº¦æ¦¨å–",
                         Selectable = true
                     });
                 }
@@ -421,7 +421,7 @@ namespace My.Map.Scene
                     ret.Add(new SceneInteractSelection()
                     {
                         SelectId = DeepAbsorbInteractBadId,
-                        SelectContent = "Éî¶ÈÕ¥È¡(ÎŞ£©",
+                        SelectContent = "æ·±åº¦æ¦¨å–(æ— ï¼‰",
                         Selectable = false
                     });
                 }
@@ -475,7 +475,7 @@ namespace My.Map.Scene
                 //        ret.Add(new SceneInteractSelection()
                 //        {
                 //            SelectId = EnterDetailMode,
-                //            SelectContent = "»¥¶¯",
+                //            SelectContent = "äº’åŠ¨",
                 //            Selectable = true
                 //        });
                 //    }
@@ -509,7 +509,7 @@ namespace My.Map.Scene
                     ret.Add(new SceneInteractSelection()
                     {
                         SelectId = NormalDialogInteract,
-                        SelectContent = "½»Ì¸",
+                        SelectContent = "äº¤è°ˆ",
                         Selectable = true
                     }); ;
                 }
@@ -524,7 +524,7 @@ namespace My.Map.Scene
                 ret.Add(new SceneInteractSelection()
                 {
                     SelectId = BackHit,
-                    SelectContent = "±»´Ì",
+                    SelectContent = "è¢«åˆº",
                     Selectable = true
                 }); ;
             }
@@ -541,6 +541,6 @@ namespace My.Map.Scene
 }
 
 /// <summary>
-/// ³¡¾°µ¥Î» »ùÀà
+/// åœºæ™¯å•ä½ åŸºç±»
 /// </summary>
 

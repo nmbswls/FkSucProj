@@ -8,10 +8,10 @@ namespace My
 {
     public static class GlobalHighlightManager
     {
-        // µ±ĞèÒª°´Ô­ÒòÇå³ı¸ßÁÁÊ±´¥·¢
+        // å½“éœ€è¦æŒ‰åŸå› æ¸…é™¤é«˜äº®æ—¶è§¦å‘
         public static Action<string> OnClearHighlightByReason;
 
-        // µ±ĞèÒªÇå³ıËùÓĞ¸ßÁÁÊ±´¥·¢
+        // å½“éœ€è¦æ¸…é™¤æ‰€æœ‰é«˜äº®æ—¶è§¦å‘
         public static Action OnClearAllHighlights;
 
         public static void ClearByReason(string reason) => OnClearHighlightByReason?.Invoke(reason);

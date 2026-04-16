@@ -136,7 +136,7 @@ namespace My
             return shop;
         }
 
-        // 配置：按 NPC 配置 id 查找商店 id（多条时取第一条）
+        // 閰嶇疆锛氭寜 NPC 閰嶇疆 id 鏌ユ壘鍟嗗簵 id锛堝鏉℃椂鍙栫涓�鏉★級
         public bool TryGetShopIdByNpcId(string npcId, out int shopId)
         {
             shopId = 0;

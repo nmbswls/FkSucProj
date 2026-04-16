@@ -126,7 +126,7 @@ namespace My.Map
                     HandleInteractOutputs();
                 }
             }
-            // ´¦Àí
+            // å¤„ç†
 
             if(!_isInteracting)
             {
@@ -203,8 +203,8 @@ namespace My.Map
         }
 
         /// <summary>
-        /// »ñÈ¡½»»¥×÷ÓÃÄ¿±ê
-        /// ½öÕë¶Ô²¿·ÖoutputÓĞĞ§¹û
+        /// è·å–äº¤äº’ä½œç”¨ç›®æ ‡
+        /// ä»…é’ˆå¯¹éƒ¨åˆ†outputæœ‰æ•ˆæœ
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
@@ -328,7 +328,7 @@ namespace My.Map
                             string mapName = output.Param3;
                             string namedP = output.Param4;
 
-                            // Ô­µØ´«ËÍ
+                            // åŸåœ°ä¼ é€
                             if (string.IsNullOrEmpty(mapName) || mapName == Owner.LogicManager.AreaManager.MapName)
                             {
                                 if (string.IsNullOrEmpty(namedP))
@@ -363,7 +363,7 @@ namespace My.Map
                         {
                             var player = Owner.LogicManager.playerLogicEntity;
 
-                            // ³¢ÊÔ»ñÈ¡¸²¸ÇµÄÖµ
+                            // å°è¯•è·å–è¦†ç›–çš„å€¼
                             var pName = Owner.GetRuntimeVariable(output.Param3);
                             if (string.IsNullOrEmpty(pName))
                             {
@@ -460,7 +460,7 @@ namespace My.Map
                         }
                         break;
 
-                    #region groupÏà¹Ø
+                    #region groupç›¸å…³
 
                     case Config.LogicInteractOutput.EOutputType.EGMemberActivate:
                         {
@@ -498,7 +498,7 @@ namespace My.Map
 
 
 
-                    #region pending ³ÖĞøĞÔµÄ
+                    #region pending æŒç»­æ€§çš„
 
                     case LogicInteractOutput.EOutputType.Wait:
                         {

@@ -151,12 +151,12 @@ namespace My.UI
                 //}
             }
 
-            // ²»ÔÚuiÉÏÊ± ÒÆ¶¯
+            // ä¸åœ¨uiä¸Šæ—¶ ç§»åŠ¨
             if (!EventSystem.current.IsPointerOverGameObject() && !LogicTime.paused)
             {
                 Vector3 sp = new Vector3(UnityEngine.Input.mousePosition.x, UnityEngine.Input.mousePosition.y, 1);
                 Vector3 wp = Camera.main.ScreenToWorldPoint(sp);
-                wp.z = 0; // ½« z ¹Ì¶¨µ½ÄãµÄÊÀ½çÆ½Ãæ£¨ÀıÈç 0£©
+                wp.z = 0; // å°† z å›ºå®šåˆ°ä½ çš„ä¸–ç•Œå¹³é¢ï¼ˆä¾‹å¦‚ 0ï¼‰
 
 
                 switch (mainAbilityCfg.CastType)
@@ -164,7 +164,7 @@ namespace My.UI
                     case ECastType.Point:
                     case ECastType.Circle:
                         {
-                            // Ê©·¨¾àÀë
+                            // æ–½æ³•è·ç¦»
                             var dist = mainAbilityCfg.Range1;
 
                             if (dist < (wp - playerPos).magnitude)
@@ -193,7 +193,7 @@ namespace My.UI
                 case ECastType.Point:
                 case ECastType.Circle:
                     {
-                        // Ê©·¨¾àÀë
+                        // æ–½æ³•è·ç¦»
                         var dist = mainAbilityCfg.Range1;
                         var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
                         if (dist < (wp - playerPos).magnitude)

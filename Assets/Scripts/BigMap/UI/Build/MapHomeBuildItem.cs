@@ -42,12 +42,12 @@ namespace My.UI
         public void SetSelected(bool selected)
         {
             isSelected = selected;
-            // ¸Ä±äÑÕÉ«»òÑùÊ½
+            // æ”¹å˜é¢œè‰²æˆ–æ ·å¼
             if (background != null)
             {
                 background.color = selected ? selectedColor : baseColor;
             }
-            // Ò²¿É¶îÍâ¸Ä±äÎÄ×Ö»òÍ¼±êµÄ·ç¸ñ
+            // ä¹Ÿå¯é¢å¤–æ”¹å˜æ–‡å­—æˆ–å›¾æ ‡çš„é£æ ¼
             if (title != null)
                 title.color = selected ? Color.black : Color.white;
             if (icon != null)

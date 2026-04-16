@@ -12,7 +12,7 @@
 //    public DisplayBus Display;
 //    public Map.Logic.Events.MapLogicEventBus LogicBus;
 
-//    // ±£´æ¶©ÔÄ¾ä±ú
+//    // ä¿å­˜è®¢é˜…å¥æŸ„
 //    private Map.Logic.Events.MapLogicSubscription subSkill;
 //    private Map.Logic.Events.MapLogicSubscription subDamage;
 //    private Map.Logic.Events.MapLogicSubscription subTransform;
@@ -21,14 +21,14 @@
 
 //    void Awake()
 //    {
-//        // ³õÊ¼»¯´¦ÀíÆ÷
+//        // åˆå§‹åŒ–å¤„ç†å™¨
 
-//        // ¶©ÔÄÂß¼­×ÜÏß£¬²¢±£´æ¾ä±ú
+//        // è®¢é˜…é€»è¾‘æ€»çº¿ï¼Œå¹¶ä¿å­˜å¥æŸ„
 //        //subSkill = LogicBus.Subscribe(skillToAnim);
 //        //subDamage = LogicBus.Subscribe(dmgToUI);
 //        //subTransform = LogicBus.Subscribe(tfToView);
 
-//        // Æô¶¯ EOF Ğ­³Ì
+//        // å¯åŠ¨ EOF åç¨‹
 //        eofCoroutine = StartCoroutine(EndOfFramePump());
 //    }
 
@@ -46,15 +46,15 @@
 
 //    void OnDestroy()
 //    {
-//        // Í£Ö¹Ğ­³Ì
+//        // åœæ­¢åç¨‹
 //        if (eofCoroutine != null) StopCoroutine(eofCoroutine);
 
-//        // ½â³ıÂß¼­²ã¶©ÔÄ
+//        // è§£é™¤é€»è¾‘å±‚è®¢é˜…
 //        if (subSkill != null) LogicBus.Unsubscribe(subSkill);
 //        if (subDamage != null) LogicBus.Unsubscribe(subDamage);
 //        if (subTransform != null) LogicBus.Unsubscribe(subTransform);
 
-//        // ÈçÏÔÊ¾²ãÒ²ÓĞÖ±½Ó¶©ÔÄ£¨ÀıÈçµ¥¶ÀµÄÏÔÊ¾´¦ÀíÆ÷×¢²áµ½ DisplayBus£©£¬Í¬ÑùĞèÒª±£´æ²¢½â°ó£º
+//        // å¦‚æ˜¾ç¤ºå±‚ä¹Ÿæœ‰ç›´æ¥è®¢é˜…ï¼ˆä¾‹å¦‚å•ç‹¬çš„æ˜¾ç¤ºå¤„ç†å™¨æ³¨å†Œåˆ° DisplayBusï¼‰ï¼ŒåŒæ ·éœ€è¦ä¿å­˜å¹¶è§£ç»‘ï¼š
 //        // Display.Unsubscribe(displaySubX);
 //    }
 //}

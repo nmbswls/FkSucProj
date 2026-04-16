@@ -16,7 +16,7 @@ namespace Config.Map
         public string ShowName = "?";
         public string PrefabName;
 
-        public bool DefaultLocked = false; // 是否默认带锁
+        public bool DefaultLocked = false; // 鏄惁榛樿甯﹂攣
 
         [Serializable]
         public class UnlockItemReq
@@ -51,7 +51,7 @@ namespace Config.Map
         public CLootRequiment LootRequiment = null;
 
         /// <summary>
-        /// 对应drop id
+        /// 瀵瑰簲drop id
         /// </summary>
         public int DefaultDropId;
     }

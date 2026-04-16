@@ -1,33 +1,33 @@
 
 namespace My
 {
-//    ×¢ÊÍ£ºÒÔ # »ò // ¿ªÍ·µÄĞĞºöÂÔ£»¿ÕĞĞºöÂÔ¡£
-//Step ¿ªÊ¼Óë¿ÉÑ¡±êÇ©£º
+//    æ³¨é‡Šï¼šä»¥ # æˆ– // å¼€å¤´çš„è¡Œå¿½ç•¥ï¼›ç©ºè¡Œå¿½ç•¥ã€‚
+//Step å¼€å§‹ä¸å¯é€‰æ ‡ç­¾ï¼š
 //[Step]
-//    ¿ªÊ¼ÎŞ±êÇ©µÄ Step
-//[Step labelName] ¿ªÊ¼´ø±êÇ©µÄ Step£¨ÓÃÓÚ Jump/Choice Ìø×ª£©
-//¶Ô°×ĞĞ£º½ÇÉ«Ãû: ÎÄ±¾
-//»á×ª»»Îª TypeText ÃüÁî£¨name=½ÇÉ«Ãû£¬text=ÎÄ±¾£»ÄãÒ²¿ÉÒÔÏ°¹ßĞ´ textKey = xxx£¬´Ë½âÎöÆ÷»áÓÅÏÈÊ¶±ğ textKey ±ê¼Ç£©
-//ÄÚÁªÃüÁî¿é£ºÔÚ¶Ô°×»òµ¥¶ÀĞĞÖĞÊ¹ÓÃ[Command key = value ¡­ wait = 0 / 1]
-//¶à¸öÃüÁî¿é¿É³öÏÖÔÚÍ¬Ò»ĞĞ£¬¶ÔÓ¦¡°²¢ĞĞÃüÁî¡±¡£Ä¬ÈÏ wait = 1£»ÈôÏë·Ç×èÈû£¬Ğ´ wait = 0¡£
-//Ö§³ÖµÄÃüÁîÓëÖ®Ç°Ò»ÖÂ£ºShowPortrait¡¢ChangeExpression¡¢HidePortrait¡¢CameraMove¡¢CameraZoom¡¢CameraShake¡¢PlaySE¡¢Wait¡¢Jump µÈ¡£
-//Choice Çø¿é£º
-//[Choice] ¿ªÊ¼£¬ËæºóÈô¸ÉÑ¡ÏîĞĞ
-//Ñ¡ÏîÎÄ±¾ -> jumpLabel
-//¹â±ê¡°- ¡±ºóÊÇÏÔÊ¾¸øÍæ¼ÒµÄÎÄ±¾£¬-> ÓÒ²àÊÇÌø×ªµ½µÄ±êÇ©Ãû
-//½áÊøÌõ¼ş£ºÓöµ½¿ÕĞĞ¡¢ÏÂÒ»¸ö[Step]¡¢»òÎÄ¼ş½áÊø
-//Éú³ÉÒ»Ìõ Choice ÃüÁî£¬wait=1
-//ÔÊĞíÔÚ¶Ô°×ĞĞºó¸½¼ÓÃüÁî¿é×÷Îª²¢ĞĞÃüÁî£¬ÀıÈçÉãÏñ»ú/Á¢»æĞ§¹ûÓëËµ»°Í¬²½
+//    å¼€å§‹æ— æ ‡ç­¾çš„ Step
+//[Step labelName] å¼€å§‹å¸¦æ ‡ç­¾çš„ Stepï¼ˆç”¨äº Jump/Choice è·³è½¬ï¼‰
+//å¯¹ç™½è¡Œï¼šè§’è‰²å: æ–‡æœ¬
+//ä¼šè½¬æ¢ä¸º TypeText å‘½ä»¤ï¼ˆname=è§’è‰²åï¼Œtext=æ–‡æœ¬ï¼›ä½ ä¹Ÿå¯ä»¥ä¹ æƒ¯å†™ textKey = xxxï¼Œæ­¤è§£æå™¨ä¼šä¼˜å…ˆè¯†åˆ« textKey æ ‡è®°ï¼‰
+//å†…è”å‘½ä»¤å—ï¼šåœ¨å¯¹ç™½æˆ–å•ç‹¬è¡Œä¸­ä½¿ç”¨[Command key = value â€¦ wait = 0 / 1]
+//å¤šä¸ªå‘½ä»¤å—å¯å‡ºç°åœ¨åŒä¸€è¡Œï¼Œå¯¹åº”â€œå¹¶è¡Œå‘½ä»¤â€ã€‚é»˜è®¤ wait = 1ï¼›è‹¥æƒ³éé˜»å¡ï¼Œå†™ wait = 0ã€‚
+//æ”¯æŒçš„å‘½ä»¤ä¸ä¹‹å‰ä¸€è‡´ï¼šShowPortraitã€ChangeExpressionã€HidePortraitã€CameraMoveã€CameraZoomã€CameraShakeã€PlaySEã€Waitã€Jump ç­‰ã€‚
+//Choice åŒºå—ï¼š
+//[Choice] å¼€å§‹ï¼Œéšåè‹¥å¹²é€‰é¡¹è¡Œ
+//é€‰é¡¹æ–‡æœ¬ -> jumpLabel
+//å…‰æ ‡â€œ- â€åæ˜¯æ˜¾ç¤ºç»™ç©å®¶çš„æ–‡æœ¬ï¼Œ-> å³ä¾§æ˜¯è·³è½¬åˆ°çš„æ ‡ç­¾å
+//ç»“æŸæ¡ä»¶ï¼šé‡åˆ°ç©ºè¡Œã€ä¸‹ä¸€ä¸ª[Step]ã€æˆ–æ–‡ä»¶ç»“æŸ
+//ç”Ÿæˆä¸€æ¡ Choice å‘½ä»¤ï¼Œwait=1
+//å…è®¸åœ¨å¯¹ç™½è¡Œåé™„åŠ å‘½ä»¤å—ä½œä¸ºå¹¶è¡Œå‘½ä»¤ï¼Œä¾‹å¦‚æ‘„åƒæœº/ç«‹ç»˜æ•ˆæœä¸è¯´è¯åŒæ­¥
 
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
 
-    // ½«¡°¶Ô»°µ¼Ïò¾ç±¾Óï·¨¡±µÄ txt ÎÄ±¾½âÎöÎª ScenarioData
+    // å°†â€œå¯¹è¯å¯¼å‘å‰§æœ¬è¯­æ³•â€çš„ txt æ–‡æœ¬è§£æä¸º ScenarioData
     public static class TxtDialogueScriptParser
     {
-        //// Èë¿Ú£º´«ÈëÍêÕûÎÄ±¾£¬·µ»Ø ScenarioData
+        //// å…¥å£ï¼šä¼ å…¥å®Œæ•´æ–‡æœ¬ï¼Œè¿”å› ScenarioData
         //public static ScenarioData Parse(string txt, string scenarioId = "script_txt")
         //{
         //    var sc = new ScenarioData { id = scenarioId };
@@ -45,7 +45,7 @@ namespace My
         //        if (string.IsNullOrEmpty(line)) continue;
         //        if (IsComment(line)) continue;
 
-        //        // Step ¿é
+        //        // Step å—
         //        if (IsStepHeader(line, out string stepLabel))
         //        {
         //            currentStep = new StepData { label = string.IsNullOrEmpty(stepLabel) ? null : stepLabel };
@@ -53,7 +53,7 @@ namespace My
         //            continue;
         //        }
 
-        //        // Choice ¿é
+        //        // Choice å—
         //        if (IsChoiceHeader(line))
         //        {
         //            EnsureStep(ref currentStep, sc);
@@ -62,26 +62,26 @@ namespace My
         //            continue;
         //        }
 
-        //        // ¶Ô°×ĞĞ»ò´¿ÃüÁîĞĞ
+        //        // å¯¹ç™½è¡Œæˆ–çº¯å‘½ä»¤è¡Œ
         //        EnsureStep(ref currentStep, sc);
         //        ParseDialogueOrCommandLine(line, currentStep);
         //    }
 
         //    if (sc.steps.Count == 0)
         //    {
-        //        // ×Ô¶¯´´½¨¿Õ Step£¬±ÜÃâºóĞø¿ÕÒıÓÃ
+        //        // è‡ªåŠ¨åˆ›å»ºç©º Stepï¼Œé¿å…åç»­ç©ºå¼•ç”¨
         //        sc.steps.Add(new StepData());
         //    }
         //    return sc;
         //}
 
-        //// ½«Ò»ĞĞ½âÎöÎª¶Ô°×+ÄÚÁªÃüÁî »ò µ¥ĞĞÃüÁîÃÇ
+        //// å°†ä¸€è¡Œè§£æä¸ºå¯¹ç™½+å†…è”å‘½ä»¤ æˆ– å•è¡Œå‘½ä»¤ä»¬
         //private static void ParseDialogueOrCommandLine(string line, StepData step)
         //{
-        //    // ÌáÈ¡ĞĞÖĞµÄÄÚÁªÃüÁî¿é [Cmd ...]
+        //    // æå–è¡Œä¸­çš„å†…è”å‘½ä»¤å— [Cmd ...]
         //    var commandBlocks = ExtractCommandBlocks(line, out string lineWithoutBlocks);
 
-        //    // ³¢ÊÔ¶Ô°×¸ñÊ½£ºName: content
+        //    // å°è¯•å¯¹ç™½æ ¼å¼ï¼šName: content
         //    string speaker = null;
         //    string content = null;
 
@@ -96,7 +96,7 @@ namespace My
         //            var say = NewCommand("TypeText", true);
         //            say.s.Add("name", speaker);
 
-        //            // Ö§³Ö ¡°textKey: xxx¡± µÄĞ´·¨£¨ÀıÈç content="textKey:intro.line1"£©
+        //            // æ”¯æŒ â€œtextKey: xxxâ€ çš„å†™æ³•ï¼ˆä¾‹å¦‚ content="textKey:intro.line1"ï¼‰
         //            if (content.StartsWith("textKey:", StringComparison.OrdinalIgnoreCase))
         //            {
         //                string tk = content.Substring("textKey:".Length).Trim();
@@ -111,8 +111,8 @@ namespace My
         //    }
         //    else
         //    {
-        //        // ·Ç¶Ô°×ĞĞ£º¿ÉÄÜÊÇ´¿ÃüÁîĞĞ£¬Óï·¨ĞÎÈç£º [Cmd ...] [Cmd ...] »ò CameraZoom fov=55 duration=0.5 µÈ
-        //        // Èç¹ûÃ»ÓĞ·½À¨ºÅ£¬»á³¢ÊÔ½âÎöÎªÒ»Ìõ¡°ÃüÁîĞĞ£¨Ê× token Îª type£©¡±
+        //        // éå¯¹ç™½è¡Œï¼šå¯èƒ½æ˜¯çº¯å‘½ä»¤è¡Œï¼Œè¯­æ³•å½¢å¦‚ï¼š [Cmd ...] [Cmd ...] æˆ– CameraZoom fov=55 duration=0.5 ç­‰
+        //        // å¦‚æœæ²¡æœ‰æ–¹æ‹¬å·ï¼Œä¼šå°è¯•è§£æä¸ºä¸€æ¡â€œå‘½ä»¤è¡Œï¼ˆé¦– token ä¸º typeï¼‰â€
         //        if (commandBlocks.Count == 0)
         //        {
         //            var tokens = SplitTokens(lineWithoutBlocks);
@@ -124,7 +124,7 @@ namespace My
         //        }
         //    }
 
-        //    // °ÑÄÚÁªÃüÁî¿é²¢ĞĞ¼ÓÈë
+        //    // æŠŠå†…è”å‘½ä»¤å—å¹¶è¡ŒåŠ å…¥
         //    foreach (var block in commandBlocks)
         //    {
         //        var cmd = ParseCommandBlock(block);
@@ -132,13 +132,13 @@ namespace My
         //    }
         //}
 
-        //// ½âÎö Choice Çø¿é
+        //// è§£æ Choice åŒºå—
         //private static CommandData ParseChoiceBlock(List<string> lines, ref int idx)
         //{
         //    var cmd = NewCommand("Choice", true);
         //    cmd.choiceOptions = new List<ChoiceOption>();
 
-        //    // ¶ÁÈ¡Ö±µ½¿ÕĞĞ/ÏÂÒ» Step/ÏÂÒ» Choice/ÎÄ¼ş½áÊø
+        //    // è¯»å–ç›´åˆ°ç©ºè¡Œ/ä¸‹ä¸€ Step/ä¸‹ä¸€ Choice/æ–‡ä»¶ç»“æŸ
         //    while (idx < lines.Count)
         //    {
         //        string l = lines[idx].Trim();
@@ -147,10 +147,10 @@ namespace My
         //        if (!l.StartsWith("-")) break;
 
         //        string body = l.Substring(1).Trim();
-        //        ExtractCommandBlocks(body, out string withoutBlocks); // ¿ÉÑ¡£ºÒÆ³ıĞĞÄÚ [ ... ]
+        //        ExtractCommandBlocks(body, out string withoutBlocks); // å¯é€‰ï¼šç§»é™¤è¡Œå†… [ ... ]
         //        string choiceMain = withoutBlocks;
 
-        //        // ÎÄ±¾ÓëÌø×ª
+        //        // æ–‡æœ¬ä¸è·³è½¬
         //        string textPart = choiceMain;
         //        string extraPart = null;
         //        int arrow = choiceMain.IndexOf("->", StringComparison.Ordinal);
@@ -164,7 +164,7 @@ namespace My
 
         //        var option = new ChoiceOption { condClauses = null };
 
-        //        // ÎÄ±¾¶Î£ºÖ§³Ö id=xxx
+        //        // æ–‡æœ¬æ®µï¼šæ”¯æŒ id=xxx
         //        if (!string.IsNullOrEmpty(textPart))
         //        {
         //            var textTokens = SplitTokens(textPart);
@@ -242,10 +242,10 @@ namespace My
         //    return cmd;
         //}
 
-        //// ½âÎöĞÎÈç [Command key=value ...] µÄ¿é
+        //// è§£æå½¢å¦‚ [Command key=value ...] çš„å—
         //private static CommandData ParseCommandBlock(string block)
         //{
-        //    // È¥µôÁ½¶Ë·½À¨ºÅ
+        //    // å»æ‰ä¸¤ç«¯æ–¹æ‹¬å·
         //    string inner = block.Trim();
         //    if (inner.StartsWith("[")) inner = inner.Substring(1);
         //    if (inner.EndsWith("]")) inner = inner.Substring(0, inner.Length - 1);
@@ -255,7 +255,7 @@ namespace My
         //    return ParseCommandFromTokens(tokens, defaultWait: true);
         //}
 
-        //// ½«Ò»´® tokens£¨µÚÒ»¸öÎª type£¬ÆäºóÊÇ key=value£©½âÎöÎª CommandData
+        //// å°†ä¸€ä¸² tokensï¼ˆç¬¬ä¸€ä¸ªä¸º typeï¼Œå…¶åæ˜¯ key=valueï¼‰è§£æä¸º CommandData
         //private static CommandData ParseCommandFromTokens(List<string> tokens, bool defaultWait)
         //{
         //    string type = tokens[0];
@@ -269,7 +269,7 @@ namespace My
         //        string key = kv.Substring(0, eq).Trim();
         //        string valRaw = kv.Substring(eq + 1).Trim();
 
-        //        // È¥³ı°ü¹üÒıºÅ
+        //        // å»é™¤åŒ…è£¹å¼•å·
         //        string val = Unquote(valRaw);
 
         //        if (key.Equals("wait", StringComparison.OrdinalIgnoreCase))
@@ -278,7 +278,7 @@ namespace My
         //            continue;
         //        }
 
-        //        // °´ÀàĞÍÌî³ä s/f/i
+        //        // æŒ‰ç±»å‹å¡«å…… s/f/i
         //        if (float.TryParse(val, out var fv))
         //        {
         //            EnsureF(cmd).Add(key, fv);
@@ -295,7 +295,7 @@ namespace My
         //    return cmd;
         //}
 
-        //// ÌáÈ¡Ò»ĞĞÖĞµÄËùÓĞ [ ... ] ÃüÁî¿é£¬·µ»Ø¿éÁĞ±í£¬²¢Êä³öÈ¥³ı¿éºóµÄÖ÷ÎÄ±¾²¿·Ö
+        //// æå–ä¸€è¡Œä¸­çš„æ‰€æœ‰ [ ... ] å‘½ä»¤å—ï¼Œè¿”å›å—åˆ—è¡¨ï¼Œå¹¶è¾“å‡ºå»é™¤å—åçš„ä¸»æ–‡æœ¬éƒ¨åˆ†
         //private static List<string> ExtractCommandBlocks(string line, out string withoutBlocks)
         //{
         //    var blocks = new List<string>();
@@ -317,12 +317,12 @@ namespace My
         //            {
         //                string block = line.Substring(i, j - i);
         //                blocks.Add(block);
-        //                i = j; // Ìø¹ıÕâÒ»Õû¿é
+        //                i = j; // è·³è¿‡è¿™ä¸€æ•´å—
         //                continue;
         //            }
         //            else
         //            {
-        //                // ·½À¨ºÅ²»Æ¥Åä£¬ÊÓÎªÆÕÍ¨ÎÄ±¾
+        //                // æ–¹æ‹¬å·ä¸åŒ¹é…ï¼Œè§†ä¸ºæ™®é€šæ–‡æœ¬
         //                sbMain.Append(line[i]);
         //                i++;
         //            }
@@ -337,18 +337,18 @@ namespace My
         //    return blocks;
         //}
 
-        //// ¸¨Öú£ºÅĞ¶Ï¡°Name: ...¡±µÄÃ°ºÅÎ»ÖÃ£¬µ«±Ü¿ªÊ××Ö·ûÎª'['µÄÃüÁîĞĞ
+        //// è¾…åŠ©ï¼šåˆ¤æ–­â€œName: ...â€çš„å†’å·ä½ç½®ï¼Œä½†é¿å¼€é¦–å­—ç¬¦ä¸º'['çš„å‘½ä»¤è¡Œ
         //private static int IndexOfSpeakerColon(string line)
         //{
         //    if (string.IsNullOrEmpty(line)) return -1;
         //    if (line.StartsWith("[")) return -1;
-        //    // ÕÒµ½µÚÒ»¸öÃ°ºÅ£¬ÇÒÃ°ºÅÇ°±ØĞëÓĞÎÄ×Ö
+        //    // æ‰¾åˆ°ç¬¬ä¸€ä¸ªå†’å·ï¼Œä¸”å†’å·å‰å¿…é¡»æœ‰æ–‡å­—
         //    int idx = line.IndexOf(':');
         //    if (idx > 0) return idx;
         //    return -1;
         //}
 
-        //// ¹¤¾ßº¯ÊıÃÇ
+        //// å·¥å…·å‡½æ•°ä»¬
         //private static bool IsComment(string line)
         //{
         //    return line.StartsWith("#") || line.StartsWith("//");
@@ -358,9 +358,9 @@ namespace My
         //{
         //    label = null;
         //    if (!line.StartsWith("[Step")) return false;
-        //    // ÔÊĞíĞÎÊ½£º[Step] »ò [Step label]
+        //    // å…è®¸å½¢å¼ï¼š[Step] æˆ– [Step label]
         //    if (!line.EndsWith("]")) return false;
-        //    string inner = line.Substring(1, line.Length - 2).Trim(); // È¥µô [ ]
+        //    string inner = line.Substring(1, line.Length - 2).Trim(); // å»æ‰ [ ]
         //    string[] parts = inner.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         //    if (parts.Length >= 1 && parts[0].Equals("Step", StringComparison.OrdinalIgnoreCase))
         //    {
@@ -425,7 +425,7 @@ namespace My
 
         //private static List<string> SplitTokens(string input)
         //{
-        //    // Ö§³ÖÒıºÅ±£»¤£¬¿Õ°×Îª·Ö¸ô
+        //    // æ”¯æŒå¼•å·ä¿æŠ¤ï¼Œç©ºç™½ä¸ºåˆ†éš”
         //    var res = new List<string>();
         //    if (string.IsNullOrEmpty(input)) return res;
 

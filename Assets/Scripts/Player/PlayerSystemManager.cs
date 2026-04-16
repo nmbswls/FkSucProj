@@ -33,7 +33,7 @@ namespace My.Player
         //public string SavedReviveMap = "initial";
 
         /// <summary>
-        /// ????
+        /// 玩家进度（养成等）子系统
         /// </summary>
         public PlayerProgressionSystem ProgressionSystem { get; private set; }
 
@@ -208,7 +208,7 @@ namespace My.Player
         {
             GlobalSwitchMap[id] = true;
 
-            // ???????
+            // 广播全局开关变更事件
             logicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()
             {
                 Name = id,
@@ -252,7 +252,7 @@ namespace My.Player
         }
 
         /// <summary>
-        /// ?????????????????
+        /// 尝试将道具发放到指定背包，返回实际入包数量
         /// </summary>
         /// <param name="itemId"></param>
         /// <param name="count"></param>
@@ -263,14 +263,14 @@ namespace My.Player
         }
 
         /// <summary>
-        /// ???????????????
+        /// 根据玩家当前状态返回应显示的技能栏槽位列表
         /// </summary>
         /// <returns></returns>
         public string[] GetSkillSlotsByState()
         {
             var player = logicManager.playerLogicEntity;
             string[] showSkills = null;
-            // ??????????
+            // 发情 / 暴露 / 常态使用不同技能配置
             if (player.IsFaQing)
             {
                 showSkills = FaQingSkillSlots;
@@ -290,7 +290,7 @@ namespace My.Player
         }
 
         /// <summary>
-        /// ???????????????
+        /// 根据状态返回快捷道具栏槽位（当前实现与状态无关，预留扩展）
         /// </summary>
         /// <returns></returns>
         public string[] GetItemSlotsByState()

@@ -88,7 +88,7 @@ namespace My.Map
 
         void UpdateFade()
         {
-            // ÒÔ¹Ì¶¨ËÙÂÊÏò targetAlpha ¿¿Â£
+            // ä»¥å›ºå®šé€ŸçŽ‡å‘ targetAlpha é æ‹¢
             float next = Mathf.MoveTowards(currAlpha, targetAlpha, fadeSpeed * Time.deltaTime);
 
             if (Mathf.Abs(next - currAlpha) > Mathf.Epsilon)

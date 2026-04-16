@@ -15,30 +15,30 @@ namespace My.MiniGame
         [SerializeField] private RectTransform barRect;
         [SerializeField] private RectTransform cursorRect;
 
-        [SerializeField] private GameObject gridCellPrefab; // ¸ñ×ÓÔ¤ÖÆÌå(Image)
-        [SerializeField] private RectTransform gridParent;      // ¸ñ×ÓÉú³ÉµÄ¸¸½Úµã
-        [SerializeField] private int totalGrids = 40;       // ×Ü¸ñÊı
-        [SerializeField] private float gridWidth = 15f;     // µ¥¸ñ¿í¶È
+        [SerializeField] private GameObject gridCellPrefab; // æ ¼å­é¢„åˆ¶ä½“(Image)
+        [SerializeField] private RectTransform gridParent;      // æ ¼å­ç”Ÿæˆçš„çˆ¶èŠ‚ç‚¹
+        [SerializeField] private int totalGrids = 40;       // æ€»æ ¼æ•°
+        [SerializeField] private float gridWidth = 15f;     // å•æ ¼å®½åº¦
 
         [Header("Input")]
         [SerializeField] private KeyCode inputKey = KeyCode.Space;
 
         [Header("Visual Colors")]
-        public Color colorFail = new Color(0.5f, 0.5f, 0.5f, 0.5f); // »ÒÉ«
-        public Color colorNormal = new Color(1f, 1f, 1f, 0.8f);     // °×É«
-        public Color colorSuccess = new Color(0.2f, 0.8f, 1f, 1f);  // À¶É«
-        public Color colorPerfect = new Color(1f, 0.8f, 0f, 1f);    // ½ğÉ«
+        public Color colorFail = new Color(0.5f, 0.5f, 0.5f, 0.5f); // ç°è‰²
+        public Color colorNormal = new Color(1f, 1f, 1f, 0.8f);     // ç™½è‰²
+        public Color colorSuccess = new Color(0.2f, 0.8f, 1f, 1f);  // è“è‰²
+        public Color colorPerfect = new Color(1f, 0.8f, 0f, 1f);    // é‡‘è‰²
 
         [Header("Flow")]
         [SerializeField] private bool autoReset = true;
         [SerializeField] private float resetDelay = 0.8f;
 
         public enum ZoneType { Fail = 0, Normal = 1, Success = 2, Perfect = 3 }
-        private ZoneType[] gridMap; // ´æ´¢Ã¿Ò»¸ñµÄÀàĞÍ
+        private ZoneType[] gridMap; // å­˜å‚¨æ¯ä¸€æ ¼çš„ç±»å‹
 
         public int Difficulty = 1;
 
-        // ÔËĞĞÊ±×´Ì¬
+        // è¿è¡Œæ—¶çŠ¶æ€
         private float currentSpeed;
         private List<GameObject> spawnedGrids = new List<GameObject>();
 
@@ -47,9 +47,9 @@ namespace My.MiniGame
         private bool isFrozen;
         private float cursorPositionX = 0f;
         private float totalWidth;
-        private float startX; // ĞÂÔö±äÁ¿£º¼ÇÂ¼ÆğÊ¼Æ«ÒÆÁ¿
+        private float startX; // æ–°å¢å˜é‡ï¼šè®°å½•èµ·å§‹åç§»é‡
 
-        private Action<ZoneType> onResult; // ¿ÉÑ¡£ºÍâ²¿»Øµ÷
+        private Action<ZoneType> onResult; // å¯é€‰ï¼šå¤–éƒ¨å›è°ƒ
 
 
         private void Awake()
@@ -90,7 +90,7 @@ namespace My.MiniGame
             GenerateGridMap(Difficulty);
 
             UpdateGridVisuals();
-            // 5. ÖØÖÃ¹â±ê
+            // 5. é‡ç½®å…‰æ ‡
             movingRight = true;
             UpdateCursorVisual();
 
@@ -110,15 +110,15 @@ namespace My.MiniGame
         }
 
         /// <summary>
-        /// ºËĞÄËã·¨£º¸ù¾İÄÑ¶ÈÌî³ä gridMap Êı×é
+        /// æ ¸å¿ƒç®—æ³•ï¼šæ ¹æ®éš¾åº¦å¡«å…… gridMap æ•°ç»„
         /// </summary>
         private void GenerateGridMap(int diff)
         {
             int centerIndex = totalGrids / 2;
 
-            // ¶¯Ì¬¼ÆËã¸÷ÇøÓòµÄ¡°°ë¾¶¡±£¨¸ñ×ÓÊı£©
-            // ÄÑ¶È10Ê±: Perfect°ë¾¶=0(Ö»ÓĞÖĞĞÄ1¸ñ), Success°ë¾¶=1(×óÓÒ¸÷À©1¸ñ)
-            // ÄÑ¶È1Ê±: Perfect°ë¾¶=5, Success°ë¾¶=10
+            // åŠ¨æ€è®¡ç®—å„åŒºåŸŸçš„â€œåŠå¾„â€ï¼ˆæ ¼å­æ•°ï¼‰
+            // éš¾åº¦10æ—¶: PerfectåŠå¾„=0(åªæœ‰ä¸­å¿ƒ1æ ¼), SuccessåŠå¾„=1(å·¦å³å„æ‰©1æ ¼)
+            // éš¾åº¦1æ—¶: PerfectåŠå¾„=5, SuccessåŠå¾„=10
             int radiusPerfect = Mathf.Max(0, 5 - Mathf.CeilToInt(diff / 2.0f));
             int radiusSuccess = radiusPerfect + Mathf.Max(1, 6 - Mathf.CeilToInt(diff / 2.0f));
             int radiusNormal = radiusSuccess + Mathf.Max(1, 4 - Mathf.CeilToInt(diff / 3.0f));
@@ -176,23 +176,23 @@ namespace My.MiniGame
         {
             if (cursorRect != null)
             {
-                // cursorPositionX ÊÇÂß¼­×ø±ê(0~800)£¬ĞèÒª¼ÓÉÏ startX ×ª»»³ÉÊÓ¾õ×ø±ê(-400~400)
+                // cursorPositionX æ˜¯é€»è¾‘åæ ‡(0~800)ï¼Œéœ€è¦åŠ ä¸Š startX è½¬æ¢æˆè§†è§‰åæ ‡(-400~400)
                 cursorRect.anchoredPosition = new Vector2(startX + cursorPositionX, cursorRect.anchoredPosition.y);
             }
         }
 
         private void CheckHit()
         {
-            isRunning = false; // Í£Ö¹ÒÆ¶¯
+            isRunning = false; // åœæ­¢ç§»åŠ¨
 
-            // ¼ÆËãµ±Ç°ÂäÔÚÄÄÒ»¸ö¸ñ×ÓÉÏ
-            // ·ÀÖ¹Ë÷ÒıÔ½½ç£¨±ÈÈç¸ÕºÃÔÚ±ßÔµ£©
+            // è®¡ç®—å½“å‰è½åœ¨å“ªä¸€ä¸ªæ ¼å­ä¸Š
+            // é˜²æ­¢ç´¢å¼•è¶Šç•Œï¼ˆæ¯”å¦‚åˆšå¥½åœ¨è¾¹ç¼˜ï¼‰
             int hitIndex = Mathf.FloorToInt(cursorPositionX / gridWidth);
             hitIndex = Mathf.Clamp(hitIndex, 0, totalGrids - 1);
 
             ZoneType result = gridMap[hitIndex];
 
-            // Å×³ö½á¹û£¬Íâ²¿È¥´¦ÀíUIÏÔÊ¾
+            // æŠ›å‡ºç»“æœï¼Œå¤–éƒ¨å»å¤„ç†UIæ˜¾ç¤º
             onResult?.Invoke(result);
         }
 
@@ -206,34 +206,34 @@ namespace My.MiniGame
         }
 
 
-        // ¿ÉÑ¡£ºÍâ²¿¶©ÔÄ½á¹û
+        // å¯é€‰ï¼šå¤–éƒ¨è®¢é˜…ç»“æœ
         public void SetResultCallback(Action<ZoneType> callback)
         {
             onResult = callback;
         }
 
-        // ÔÚ±à¼­Æ÷²ÎÊı±ä¶¯Ê±¶¯Ì¬¸üĞÂ
+        // åœ¨ç¼–è¾‘å™¨å‚æ•°å˜åŠ¨æ—¶åŠ¨æ€æ›´æ–°
 #if UNITY_EDITOR
         private void OnValidate()
         {
             if (barRect == null) return;
-            // ½öÔÚ±à¼­Æ÷Ô¤ÀÀ¸üĞÂÇøÓòÎ»ÖÃ
+            // ä»…åœ¨ç¼–è¾‘å™¨é¢„è§ˆæ›´æ–°åŒºåŸŸä½ç½®
         }
 #endif
 
 
         private void SpawnGridVisuals()
         {
-            // 1. Ç¿ÖÆÉèÖÃ¸¸½ÚµãÊôĞÔ£¬È·±£ËüÔÚÆÁÄ»ÖĞ¼ä
+            // 1. å¼ºåˆ¶è®¾ç½®çˆ¶èŠ‚ç‚¹å±æ€§ï¼Œç¡®ä¿å®ƒåœ¨å±å¹•ä¸­é—´
             RectTransform parentRect = gridParent.GetComponent<RectTransform>();
             parentRect.anchorMin = new Vector2(0.5f, 0.5f);
             parentRect.anchorMax = new Vector2(0.5f, 0.5f);
-            parentRect.pivot = new Vector2(0.5f, 0.5f); // ÖĞĞÄµãÔÚÖĞ¼ä
-            parentRect.anchoredPosition = Vector2.zero; // Î»ÖÃ¹éÁã
-            parentRect.sizeDelta = new Vector2(totalWidth, parentRect.sizeDelta.y); // ÉèÎª×Ü¿í
+            parentRect.pivot = new Vector2(0.5f, 0.5f); // ä¸­å¿ƒç‚¹åœ¨ä¸­é—´
+            parentRect.anchoredPosition = Vector2.zero; // ä½ç½®å½’é›¶
+            parentRect.sizeDelta = new Vector2(totalWidth, parentRect.sizeDelta.y); // è®¾ä¸ºæ€»å®½
 
-            // 2. ¼ÆËãÆğÊ¼Æ«ÒÆÁ¿ (ºËĞÄĞŞ¸Ä)
-            // ÒòÎª¸¸½ÚµãPivotÔÚÖĞ¼ä£¬×ó±ßÔµµÄ×ø±ê¾ÍÊÇ -×Ü¿í/2
+            // 2. è®¡ç®—èµ·å§‹åç§»é‡ (æ ¸å¿ƒä¿®æ”¹)
+            // å› ä¸ºçˆ¶èŠ‚ç‚¹Pivotåœ¨ä¸­é—´ï¼Œå·¦è¾¹ç¼˜çš„åæ ‡å°±æ˜¯ -æ€»å®½/2
             startX = -totalWidth / 2f;
 
             
@@ -242,17 +242,17 @@ namespace My.MiniGame
                 GameObject obj = Instantiate(gridCellPrefab, gridParent);
                 RectTransform rt = obj.GetComponent<RectTransform>();
                 obj.SetActive(true);
-                // ÉèÖÃÃªµãÎª¸¸½Úµã×óÖĞ£¬·½±ã¼ÆËã
-                // ×¢Òâ£ºÕâÀïÎÒÃÇ¸Ä±ä²ßÂÔ£¬ÈÃ×ÓÎïÌåÃªµã¸úËæ¸¸½ÚµãÖĞĞÄ£¬Í¨¹ı×ø±êÆ«ÒÆÀ´¶¨Î»
+                // è®¾ç½®é”šç‚¹ä¸ºçˆ¶èŠ‚ç‚¹å·¦ä¸­ï¼Œæ–¹ä¾¿è®¡ç®—
+                // æ³¨æ„ï¼šè¿™é‡Œæˆ‘ä»¬æ”¹å˜ç­–ç•¥ï¼Œè®©å­ç‰©ä½“é”šç‚¹è·Ÿéšçˆ¶èŠ‚ç‚¹ä¸­å¿ƒï¼Œé€šè¿‡åæ ‡åç§»æ¥å®šä½
                 rt.anchorMin = new Vector2(0.5f, 0.5f);
                 rt.anchorMax = new Vector2(0.5f, 0.5f);
-                rt.pivot = new Vector2(0f, 0.5f); // PivotÉèÔÚ¸ñ×ÓµÄ×ó±ß£¬·½±ã¶ÔÆë
+                rt.pivot = new Vector2(0f, 0.5f); // Pivotè®¾åœ¨æ ¼å­çš„å·¦è¾¹ï¼Œæ–¹ä¾¿å¯¹é½
 
-                // 3. Ó¦ÓÃÆ«ÒÆÁ¿£ºÆğÊ¼Î»ÖÃ + µ±Ç°¸ñË÷Òı * ¸ñ¿í
+                // 3. åº”ç”¨åç§»é‡ï¼šèµ·å§‹ä½ç½® + å½“å‰æ ¼ç´¢å¼• * æ ¼å®½
                 float xPos = startX + (i * gridWidth);
                 rt.anchoredPosition = new Vector2(xPos, 0);
 
-                rt.sizeDelta = new Vector2(gridWidth, rt.sizeDelta.y); // ¿í¶È¹Ì¶¨£¬¸ß¶ÈÑØÓÃPrefab
+                rt.sizeDelta = new Vector2(gridWidth, rt.sizeDelta.y); // å®½åº¦å›ºå®šï¼Œé«˜åº¦æ²¿ç”¨Prefab
 
                 spawnedGrids.Add(obj);
             }
@@ -263,7 +263,7 @@ namespace My.MiniGame
             for (int i = 0; i < totalGrids; i++)
             {
                 GameObject obj = spawnedGrids[i];
-                // ÉèÖÃÑÕÉ«
+                // è®¾ç½®é¢œè‰²
                 Image img = obj.transform.GetChild(0).GetComponent<Image>();
                 switch (gridMap[i])
                 {

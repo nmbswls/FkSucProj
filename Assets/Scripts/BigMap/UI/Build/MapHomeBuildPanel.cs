@@ -30,8 +30,8 @@ namespace My.UI
         public RectTransform buildListContent;
         public string buildItemPrefabName;
 
-        private int currentIndex = 0;   // Êó±ê¹öÂÖÒÆ¶¯µÄµ±Ç°Ïî
-        private int selectedIndex = -1; // È·ÈÏÑ¡ÔñÏî
+        private int currentIndex = 0;   // é¼ æ ‡æ»šè½®ç§»åŠ¨çš„å½“å‰é¡¹
+        private int selectedIndex = -1; // ç¡®è®¤é€‰æ‹©é¡¹
 
 
         protected List<HomeFacilityCfg> buildingItemDatas = new();
@@ -58,7 +58,7 @@ namespace My.UI
 
         }
 
-        // Íâ²¿µ÷ÓÃ£ºÇå³ıÑ¡ÖĞ£¨ÔÊĞíÃ»ÓĞÈÎºÎÑ¡ÖĞ£©
+        // å¤–éƒ¨è°ƒç”¨ï¼šæ¸…é™¤é€‰ä¸­ï¼ˆå…è®¸æ²¡æœ‰ä»»ä½•é€‰ä¸­ï¼‰
         public void ClearBuildSelection()
         {
             if (selectedIndex == -1) return;
@@ -80,12 +80,12 @@ namespace My.UI
                 return item;
             }
 
-            // °ó¶¨Êı¾İ
+            // ç»‘å®šæ•°æ®
             var data = buildingItemDatas[index];
             bool isSelected = (index == selectedIndex);
             viewComp.Bind(data, isSelected);
 
-            // ×¢²áµã»÷ÊÂ¼ş£¨±ÜÃâÖØ¸´×¢²á£¬ÏÈÇå¿ÕÔÙ¼Ó£©
+            // æ³¨å†Œç‚¹å‡»äº‹ä»¶ï¼ˆé¿å…é‡å¤æ³¨å†Œï¼Œå…ˆæ¸…ç©ºå†åŠ ï¼‰
             viewComp.onClick = () => OnBuildItemClicked(index);
 
             return item;
@@ -94,7 +94,7 @@ namespace My.UI
         {
             if (index < 0 || index >= buildingItemDatas.Count) return;
 
-            // Èç¹ûµã»÷µÄÊÇÒÑÑ¡ÖĞÏî£¬ÔòÈ¡ÏûÑ¡ÖĞ£¨Ö§³Ö¡°×î¶àÒ»¸öÑ¡ÖĞ¡±£¬Ò²Ö§³Ö¡°¿ÉÎŞÑ¡ÖĞ¡±£©
+            // å¦‚æœç‚¹å‡»çš„æ˜¯å·²é€‰ä¸­é¡¹ï¼Œåˆ™å–æ¶ˆé€‰ä¸­ï¼ˆæ”¯æŒâ€œæœ€å¤šä¸€ä¸ªé€‰ä¸­â€ï¼Œä¹Ÿæ”¯æŒâ€œå¯æ— é€‰ä¸­â€ï¼‰
             if (selectedIndex == index)
             {
                 ClearBuildSelection();
@@ -104,20 +104,20 @@ namespace My.UI
             int old = selectedIndex;
             selectedIndex = index;
 
-            // Ë¢ĞÂ¾ÉÏîºÍĞÂÏîµÄÍâ¹Û
+            // åˆ·æ–°æ—§é¡¹å’Œæ–°é¡¹çš„å¤–è§‚
             RefreshItem(old);
             RefreshItem(selectedIndex);
 
-            // Í¨ÖªÒµÎñ/¹ÜÀíÆ÷
+            // é€šçŸ¥ä¸šåŠ¡/ç®¡ç†å™¨
             NotifySelectionChanged(selectedIndex, buildingItemDatas[selectedIndex]);
         }
 
-        // Ë¢ĞÂÖ¸¶¨ index µÄ¿ÉÊÓÏî£¨Èç¹ûµ±Ç°ÔÚÊÓ´°ÖĞ£©
+        // åˆ·æ–°æŒ‡å®š index çš„å¯è§†é¡¹ï¼ˆå¦‚æœå½“å‰åœ¨è§†çª—ä¸­ï¼‰
         private void RefreshItem(int index)
         {
             if (index < 0) return;
             var item = buildItemsList.GetShownItemByItemIndex(index);
-            if (item == null) return; // ²»ÔÚ¿ÉÊÓ·¶Î§£¬ÎŞĞèË¢ĞÂ
+            if (item == null) return; // ä¸åœ¨å¯è§†èŒƒå›´ï¼Œæ— éœ€åˆ·æ–°
             var viewComp = item.GetComponent<MapHomeBuildItem>();
             if (viewComp != null)
             {
@@ -128,7 +128,7 @@ namespace My.UI
         
 
         /// <summary>
-        /// ÇĞ»»×´Ì¬
+        /// åˆ‡æ¢çŠ¶æ€
         /// </summary>
         /// <param name="index"></param>
         /// <param name="data"></param>

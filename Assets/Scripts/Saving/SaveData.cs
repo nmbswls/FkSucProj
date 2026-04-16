@@ -65,6 +65,22 @@ namespace My.Saving
         public long EntityInstId;
         public float LastRespawnTime;
         public float LastDestroyTime;
+
+        /// <summary>ERefreshSlotRemovalReason 整数值；新存档写入。</summary>
+        public int LastRemovalReason;
+
+        // 旧版 bool 字段：反序列化时迁移为 VisibilityCondition。
+        [JsonProperty("LastRemovalWasVisibilityCond")]
+        private bool LegacyLastRemovalWasVisibilityCond
+        {
+            set
+            {
+                if (value && LastRemovalReason == 0)
+                {
+                    LastRemovalReason = (int)ERefreshSlotRemovalReason.VisibilityCondition;
+                }
+            }
+        }
     }
 
     // 单张地图上的逻辑状态：区域邪恶警戒、动态刷新 CD、实体 Record 快照

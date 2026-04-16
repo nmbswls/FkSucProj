@@ -12,7 +12,7 @@ namespace My.Config
         public static cfg.Tables Cfgs { get { return _gameConfigs; } }
         public static void LoadGameConfigs()
         {
-            string gameConfDir = "Config/Json"; // ??I?gen.bat??outputDataDir??????
+            string gameConfDir = "Config/Json"; // 须与 gen.bat 中 outputDataDir 生成的 Resources 相对路径一致
 
             _gameConfigs = new cfg.Tables((file) => {
                 var configAsset = Resources.Load<TextAsset>($"{gameConfDir}/{file}");

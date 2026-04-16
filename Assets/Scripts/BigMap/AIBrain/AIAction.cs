@@ -64,7 +64,7 @@
 //            //    }
 //            //}
 
-//            //// Ä¿±êÎªµã ¶ÔÓÚaiÀ´Ëµ 
+//            //// ç›®æ ‡ä¸ºç‚¹ å¯¹äºaiæ¥è¯´ 
 //            //if (abilityConf.TargetType == MapAbilitySpecConfig.ETargetType.Point
 //            //    || abilityConf.TargetType == MapAbilitySpecConfig.ETargetType.Circle)
 //            //{
@@ -105,7 +105,7 @@
 //    [Serializable]
 //    public abstract class AIActionCfg
 //    {
-//        // ÊÇ·ñÎª×°ÊÎÆ÷action
+//        // æ˜¯å¦ä¸ºè£…é¥°å™¨action
 //        public abstract bool IsDecorate { get; }
 //    }
 
@@ -541,7 +541,7 @@
 //                }
 //            }
 
-//            // ²»¶ÏÒÆ¶¯
+//            // ä¸æ–­ç§»åŠ¨
 //            if(_currPathPoint != null && !_brain.NpcEntity.entityMotorComp.CheckIsMovingTo(_currPathPoint.Value))
 //            {
 //                _brain.NpcEntity.entityMotorComp.TryMoveTo(_currPathPoint.Value);
@@ -656,10 +656,10 @@
 //        {
 //            base.Stop(endStatus);
 
-//            // Àë¿ªÇ°Í£Ö¹ÒÆ¶¯
+//            // ç¦»å¼€å‰åœæ­¢ç§»åŠ¨
 //            _brain.NpcEntity.entityMotorComp.StopMove();
 
-//            // ±£µ×ÇåÀíÒ»´Îattract ±ÜÃâÁ¢¿Ì¾Í±»÷È»ó
+//            // ä¿åº•æ¸…ç†ä¸€æ¬¡attract é¿å…ç«‹åˆ»å°±è¢«é­…æƒ‘
 //            _brain.blackboard.AttractTrigger = false;
 //        }
 
@@ -714,10 +714,10 @@
 //        {
 //            base.Stop(endStatus);
 
-//            // Àë¿ªÇ°Í£Ö¹ÒÆ¶¯
+//            // ç¦»å¼€å‰åœæ­¢ç§»åŠ¨
 //            _brain.NpcEntity.entityMotorComp.StopMove();
 
-//            // ±£µ×ÇåÀíÒ»´Îattract ±ÜÃâÁ¢¿Ì¾Í±»÷È»ó
+//            // ä¿åº•æ¸…ç†ä¸€æ¬¡attract é¿å…ç«‹åˆ»å°±è¢«é­…æƒ‘
 //            _brain.blackboard.AttractTrigger = false;
 //        }
 
@@ -765,7 +765,7 @@
 //                return 0;
 //            }
 
-//            // ºÍÆ½ÈË²»·Å¼¼ÄÜ
+//            // å’Œå¹³äººä¸æ”¾æŠ€èƒ½
 //            if(_brain.NpcEntity.unitCfg.IsPeace)
 //            {
 //                return 0;
@@ -776,13 +776,13 @@
 //                return 0;
 //            }
 
-//            // ¸øÒ»¸ö±£µ×cd
+//            // ç»™ä¸€ä¸ªä¿åº•cd
 //            if(_lastEndTime != 0 && LogicTime.time - _lastEndTime < 4.0f)
 //            {
 //                return 0;
 //            }
 
-//            // ¼ì²é ÓĞÈÎÒâ¼¼ÄÜ¿ÉÊ¹ÓÃ
+//            // æ£€æŸ¥ æœ‰ä»»æ„æŠ€èƒ½å¯ä½¿ç”¨
 //            var anyReady = _brain.NpcEntity.ablilityManager.CheckAnyReadySkill();
 //            if(anyReady)
 //            {
@@ -821,7 +821,7 @@
 //            var best = skills[0];
 
 //            var skillConf = SkillLibrary.GetSkillConfig(best.SkillName);
-//            // ¸üĞÂ×´Ì¬
+//            // æ›´æ–°çŠ¶æ€
 //            _brain.blackboard.CurrIntentSkill = skillConf.SkillId;
 //            _overTimer = LogicTime.time + OverTimeLimit;
 //            hasCastAbility = false;
@@ -838,7 +838,7 @@
 //        {
 //            if (Status != AIActionStatus.Running) return;
 
-//            // ±£µ×ÖĞ¶Ï ±ÜÃâ¿¨ÔÚÄÇÀï
+//            // ä¿åº•ä¸­æ–­ é¿å…å¡åœ¨é‚£é‡Œ
 //            if (LogicTime.time > _overTimer)
 //            {
 //                Stop(AIActionStatus.Success);
@@ -851,7 +851,7 @@
 //                return;
 //            }
 
-//            // ½ûÖ¹²Ù×÷Ê± Ìø³ö
+//            // ç¦æ­¢æ“ä½œæ—¶ è·³å‡º
 //            if (_brain.NpcEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
 //            {
 //                Stop(AIActionStatus.Success);
@@ -866,10 +866,10 @@
 //            }
 
 
-//            // Î´Ê¹ÓÃ¼¼ÄÜ
+//            // æœªä½¿ç”¨æŠ€èƒ½
 //            if (!hasCastAbility)
 //            {
-//                // ¾àÀëÂú×ãÊ©·¨Ìõ¼ş Ê¹ÓÃ
+//                // è·ç¦»æ»¡è¶³æ–½æ³•æ¡ä»¶ ä½¿ç”¨
 //                if (_config.DesiredUseDistance > 0 && _brain.blackboard.Distance < _config.DesiredUseDistance)
 //                {
 //                    var dir = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
@@ -885,17 +885,17 @@
 //                    _brain.NpcEntity.entityMotorComp.TryMoveTo(_brain.PlayerEntity.Pos, _config.DesiredUseDistance, 1.2f);
 //                }
 //            }
-//            // ÕıÔÚÊ¹ÓÃ¼¼ÄÜ
+//            // æ­£åœ¨ä½¿ç”¨æŠ€èƒ½
 //            else
 //            {
-//                // ¼ÌĞøµÈ´ıactiona
+//                // ç»§ç»­ç­‰å¾…actiona
 //                if(!_brain.NpcEntity.abilityController.IsActionable())
 //                {
 //                    return;
 //                }
 
 //                var trans = _brain.NpcEntity.ablilityManager.comboOrchestrator.GetPossibleTransition();
-//                // ²»¿É½Ó¼¼ÄÜ Ìø³ö
+//                // ä¸å¯æ¥æŠ€èƒ½ è·³å‡º
 //                if (trans == null || trans.Count == 0)
 //                {
 //                    if (!_brain.NpcEntity.abilityController.IsRunning)
@@ -910,10 +910,10 @@
 
 //                //_brain.NpcEntity.ForceSetFaceTarget(_brain.NpcEntity.DesiredFaceDir, false);
 
-//                // Ò»¶¨ÎŞÄ¿±ê²ÎÊı
+//                // ä¸€å®šæ— ç›®æ ‡å‚æ•°
 //                if (_brain.NpcEntity.ablilityManager.UseSkill(firstTran.triggerInput.SkillId))
 //                {
-//                    // ĞŞ¸Ä¼¼ÄÜÊÍ·ÅÌõ¼ş
+//                    // ä¿®æ”¹æŠ€èƒ½é‡Šæ”¾æ¡ä»¶
 //                    _overTimer = LogicTime.time + OverTimeLimit;
 //                    currComboAbilityName = node.AbilityId;
 //                }
@@ -981,7 +981,7 @@
 //                return 0;
 //            }
             
-//            // ¾àÀëÌ«Ô¶
+//            // è·ç¦»å¤ªè¿œ
 //            if(_brain.blackboard.Distance > _brain.brainConfig.BadBattleDistance)
 //            {
 //                return 0;
@@ -1027,7 +1027,7 @@
 //            }
 //            _timer = LogicTime.time;
 
-//            // ¾àÀëÌ«½ü ºóÍËÒ»²½
+//            // è·ç¦»å¤ªè¿‘ åé€€ä¸€æ­¥
 //            if (_brain.blackboard.Distance < _brain.brainConfig.GoodBattleDistance)
 //            {
 //                var diff = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
@@ -1038,12 +1038,12 @@
 //            {
 //                Debug.Log("DistanceControl TryMoveTo player");
 //                var diff = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
-//                // ¼ÆËãÇĞÏß·½Ïò (×óÊÖ¶¨Ôò»òÓÒÊÖ¶¨Ôò)
+//                // è®¡ç®—åˆ‡çº¿æ–¹å‘ (å·¦æ‰‹å®šåˆ™æˆ–å³æ‰‹å®šåˆ™)
 //                Vector2 tangentDir = new Vector3(-diff.y, diff.x);
-//                // ¸ù¾İÊ±¼ä¼ÆËãÆ«ÒÆÁ¿ (-1 µ½ 1 Ö®¼ä²¨¶¯)
+//                // æ ¹æ®æ—¶é—´è®¡ç®—åç§»é‡ (-1 åˆ° 1 ä¹‹é—´æ³¢åŠ¨)
 //                float sineValue = Mathf.Sin(LogicTime.time * 1.0f + 0.0f);
 //                var _strafeAmplitude = 0.5f;
-//                // ×îÖÕÄ¿±êµã = ²ÛÎ»ÖĞĞÄ + ÇĞÏß·½ÏòÆ«ÒÆ
+//                // æœ€ç»ˆç›®æ ‡ç‚¹ = æ§½ä½ä¸­å¿ƒ + åˆ‡çº¿æ–¹å‘åç§»
 //                //Vector3 finalTargetPos = baseSlotPos + (tangentDir * sineValue * _strafeAmplitude);
 
 //                //_brain.NpcEntity.entityMotorComp.TryMoveFollow(_brain.PlayerEntity, 0.3f, Vector2.zero, 1.0f, moveSpeedRate: 0.3f);
@@ -1168,7 +1168,7 @@
 
 //        public override string Name => "AttractedDaemon";
 
-//        // »º´æattractĞÅÏ¢ ËæÊ±±È½Ï±ä»¯
+//        // ç¼“å­˜attractä¿¡æ¯ éšæ—¶æ¯”è¾ƒå˜åŒ–
 
 //        public override float RateScore()
 //        {
@@ -1179,7 +1179,7 @@
 //        {
 //            base.Start();
 
-//            // ½øÈëºó½«×´Ì¬È¡Èë±¾µØ ÇåÀítrigger ÒÔ·½±ãÏÂ´Î½øÈë
+//            // è¿›å…¥åå°†çŠ¶æ€å–å…¥æœ¬åœ° æ¸…ç†trigger ä»¥æ–¹ä¾¿ä¸‹æ¬¡è¿›å…¥
 //            FetchDataFromAttractTrigger();
 
 //            if(_brain.blackboard.AttractLevel == 1)
@@ -1225,10 +1225,10 @@
 //                }
 //            }
 
-//            // ½øĞĞÒÆ¶¯
+//            // è¿›è¡Œç§»åŠ¨
 //            if(_brain.blackboard.CurrentAttractLevel >= 3)
 //            {
-//                // 2¼¶ÒÔÉÏ 
+//                // 2çº§ä»¥ä¸Š 
 //                if(srcPlayer != null)
 //                {
 //                    _brain.NpcEntity.entityMotorComp.TryMoveTo(srcPlayer.Pos, moveSpeedRate: 0.9f);
@@ -1237,7 +1237,7 @@
 //            }
 //            else if (_brain.blackboard.CurrentAttractLevel >= 2)
 //            {
-//                // 2¼¶ÒÔÉÏ 
+//                // 2çº§ä»¥ä¸Š 
 //                if (srcPlayer != null)
 //                {
 //                    _brain.NpcEntity.entityMotorComp.TryMoveTo(srcPlayer.Pos, moveSpeedRate: 0.1f);
@@ -1249,7 +1249,7 @@
 //                _brain.NpcEntity.entityMotorComp.StopMove();
 //            }
 
-//            // Ìõ¼şÂú×ãÊ±Ö´ĞĞ¿«ÓÍ
+//            // æ¡ä»¶æ»¡è¶³æ—¶æ‰§è¡Œæ©æ²¹
 //            if(_brain.blackboard.CurrentAttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
 //            {
 //                if(srcPlayer != null && !srcPlayer.CheckHasState(AttrIdConsts.ImmumeKaiYou))
@@ -1270,7 +1270,7 @@
 //            {
 //                return;
 //            }
-//            // ½øÈëºó½«×´Ì¬È¡Èë±¾µØ ÇåÀítrigger ÒÔ·½±ãÏÂ´Î½øÈë
+//            // è¿›å…¥åå°†çŠ¶æ€å–å…¥æœ¬åœ° æ¸…ç†trigger ä»¥æ–¹ä¾¿ä¸‹æ¬¡è¿›å…¥
 //            _brain.blackboard.AttractTrigger = false;
 
 //            attractSourcePos = null;
@@ -1344,7 +1344,7 @@
 
 //        public override float RateScore()
 //        {
-//            // 2¼¶ÒÔÉÏÎüÒıÊ± ²Å»áÖ÷¶¯ÒÆ¶¯
+//            // 2çº§ä»¥ä¸Šå¸å¼•æ—¶ æ‰ä¼šä¸»åŠ¨ç§»åŠ¨
             
 //            return 1;
 //        }
@@ -1373,16 +1373,16 @@
 
 //            //_brain.blackboard.
 
-//            // Èç¹ûµ±Ç°ÓĞÎüÒıÊÂ¼ş ³ÖĞø¸üĞÂĞÅÏ¢
+//            // å¦‚æœå½“å‰æœ‰å¸å¼•äº‹ä»¶ æŒç»­æ›´æ–°ä¿¡æ¯
 //            //if (npcUnit.attractInfo != null)
 //            //{
-//            //    // ¸üĞÂ´¥·¢ÊÂ¼ş
+//            //    // æ›´æ–°è§¦å‘äº‹ä»¶
 //            //    if (npcUnit.attractInfo.LastTriggerTime != _attarctLastTriggerTime)
 //            //    {
 //            //        _attarctLastTriggerTime = npcUnit.attractInfo.LastTriggerTime;
 //            //    }
 
-//            //    // ³¢ÊÔÆô¶¯Ê×´ÎÑ°Â· »ò¸Ä±äÄ¿±êÑ°Â·
+//            //    // å°è¯•å¯åŠ¨é¦–æ¬¡å¯»è·¯ æˆ–æ”¹å˜ç›®æ ‡å¯»è·¯
 //            //    if (npcUnit.attractInfo.Pos != _currAttractePos)
 //            //    {
 //            //        _currAttractePos = npcUnit.attractInfo.Pos;
@@ -1397,7 +1397,7 @@
 //            //    }
 //            //}
 
-//            //// ´ı¹ºÊ±¼äÍË³ö
+//            //// å¾…è´­æ—¶é—´é€€å‡º
 //            //if(LogicTime.time - _attarctLastTriggerTime > realCfg.StayDuration)
 //            //{
 //            //    _brain.blackboard.CanLeaveAttract = true;
@@ -1419,7 +1419,7 @@
 //    }
 
 //    /// <summary>
-//    /// ÓÃÓÚÌÓÍö×´Ì¬
+//    /// ç”¨äºé€ƒäº¡çŠ¶æ€
 //    /// </summary>
 //    public class AIActionPeacefulEscape : AIAction
 //    {
@@ -1444,7 +1444,7 @@
 
 //        public override float RateScore()
 //        {
-//            // 2¼¶ÒÔÉÏÎüÒıÊ± ²Å»áÖ÷¶¯ÒÆ¶¯
+//            // 2çº§ä»¥ä¸Šå¸å¼•æ—¶ æ‰ä¼šä¸»åŠ¨ç§»åŠ¨
 //            return 1;
 //        }
 
@@ -1465,7 +1465,7 @@
 //        {
 //            RefreshPeacefulEscape();
 
-//            // ÓĞÄ¿±êµã ÇÒÃ»ÓĞ½øÈëµ½´ïËµ»°×´Ì¬
+//            // æœ‰ç›®æ ‡ç‚¹ ä¸”æ²¡æœ‰è¿›å…¥åˆ°è¾¾è¯´è¯çŠ¶æ€
 //            if(NextEscapePoint != null && _escapeReachTalkTimer == 0)
 //            {
 //                _brain.NpcEntity.entityMotorComp.TryMoveTo(NextEscapePoint.Value, moveSpeedRate:1);
@@ -1473,7 +1473,7 @@
 //                if (diff.magnitude < 0.3f)
 //                {
 //                    _escapeReachTalkTimer = LogicTime.time;
-//                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "º¦ÅÂ", 2f);
+//                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "å®³æ€•", 2f);
 
 //                    if(_brain.NpcEntity.NpcRecord.IsForeigner)
 //                    {
@@ -1487,7 +1487,7 @@
 //                if(LogicTime.time - _escapeReachTalkTimer > 5.0f)
 //                {
 //                    _escapeReachTalkTimer = LogicTime.time;
-//                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "º¦ÅÂ", 2f);
+//                    _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "å®³æ€•", 2f);
 //                }
 //            }
 
@@ -1512,7 +1512,7 @@
 //            {
 //                var diff = _brain.PlayerEntity.Pos - _brain.NpcEntity.Pos;
 
-//                // Ì«½üÁË 
+//                // å¤ªè¿‘äº† 
 //                if (diff.magnitude < 2.0f)
 //                {
 //                    var randomOffset = UnityEngine.Random.insideUnitCircle * 1.0f;

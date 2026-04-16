@@ -43,14 +43,14 @@ namespace My
         public long Id => _logic?.Id ?? 0;
         protected TLogic _logic;
 
-        [Header("×é¼ş")]
+        [Header("ç»„ä»¶")]
         public Transform MainViewRt;
         [SerializeField]
         protected SpriteRenderer _shadowView;
         [SerializeField]
         protected SpriteRenderer[] _mainSpriteArr;
         private MaterialPropertyBlock _mpb;
-        private static readonly int FadeProp = Shader.PropertyToID("_Fade"); // »º´æÊôĞÔID£¬ĞÔÄÜ¸üºÃ
+        private static readonly int FadeProp = Shader.PropertyToID("_Fade"); // ç¼“å­˜å±æ€§IDï¼Œæ€§èƒ½æ›´å¥½
 
         protected AnimancerComponent _Animancer;
 
@@ -59,7 +59,7 @@ namespace My
 
 
 
-        [Header("Í¨ÓÃpivot")]
+        [Header("é€šç”¨pivot")]
         [SerializeField] private Transform pivotHeader;
         public Transform PivotHeader { get { return pivotHeader; } }
 
@@ -72,7 +72,7 @@ namespace My
 
             _Animancer = GetComponentInChildren<AnimancerComponent>();
 
-            // 2. ³õÊ¼»¯ÊôĞÔ¿é
+            // 2. åˆå§‹åŒ–å±æ€§å—
             _mpb = new MaterialPropertyBlock();
         }
 
@@ -81,9 +81,9 @@ namespace My
         {
             _mainSpriteArr = MainViewRt.GetComponentsInChildren<SpriteRenderer>(true);
 
-            Debug.Log($"ÒÑÊÕ¼¯ {_mainSpriteArr.Length} ¸ö SpriteRenderer");
+            Debug.Log($"å·²æ”¶é›† {_mainSpriteArr.Length} ä¸ª SpriteRenderer");
 
-            // ±ê¼Ç¶ÔÏóÒÑĞŞ¸Ä£¬È·±£ Unity ±£´æÕâ¸öÁĞ±í£¬·ñÔòÖØÆôºó»á¶ªÊ§
+            // æ ‡è®°å¯¹è±¡å·²ä¿®æ”¹ï¼Œç¡®ä¿ Unity ä¿å­˜è¿™ä¸ªåˆ—è¡¨ï¼Œå¦åˆ™é‡å¯åä¼šä¸¢å¤±
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
 #endif
@@ -101,7 +101,7 @@ namespace My
         {
             _logic = logic as TLogic;
 
-            // ³õÊ¼×´Ì¬¿ÉÄÜĞèÒªÖ÷¶¯À­È¡»òÓÉÂß¼­²ãÔÚ Bind ºóÁ¢¼´ÍÆËÍ
+            // åˆå§‹çŠ¶æ€å¯èƒ½éœ€è¦ä¸»åŠ¨æ‹‰å–æˆ–ç”±é€»è¾‘å±‚åœ¨ Bind åç«‹å³æ¨é€
 
             transform.localPosition = MainGameManager.Instance.GetWorldPosFromLogicPos(_logic.Pos);
 
@@ -206,22 +206,22 @@ namespace My
 
         protected virtual void OnFadeStateUpdate()
         {
-            // ÓÅ»¯£ºËùÓĞ²¿¼ş¹²ÓÃÍ¬Ò»¸öÖµ£¬ËùÒÔÖ»ÒªÉèÖÃÒ»´Î MPB
+            // ä¼˜åŒ–ï¼šæ‰€æœ‰éƒ¨ä»¶å…±ç”¨åŒä¸€ä¸ªå€¼ï¼Œæ‰€ä»¥åªè¦è®¾ç½®ä¸€æ¬¡ MPB
             _mpb.SetFloat(FadeProp, 1 - _currFadeAlpha);
 
-            // 3. ±éÀúÓ¦ÓÃ
+            // 3. éå†åº”ç”¨
             for (int i = 0; i < _mainSpriteArr.Length; i++)
             {
-                // »ñÈ¡µ±Ç°¿ÉÄÜÒÑÓĞµÄÊôĞÔ£¨·ÀÖ¹¸²¸ÇÆäËûÊôĞÔ£©
+                // è·å–å½“å‰å¯èƒ½å·²æœ‰çš„å±æ€§ï¼ˆé˜²æ­¢è¦†ç›–å…¶ä»–å±æ€§ï¼‰
                 _mainSpriteArr[i].GetPropertyBlock(_mpb);
-                // ¸üĞÂ Fade Öµ
+                // æ›´æ–° Fade å€¼
                 _mpb.SetFloat(FadeProp, 1 - _currFadeAlpha);
-                // Ó¦ÓÃ»ØÈ¥
+                // åº”ç”¨å›å»
                 _mainSpriteArr[i].SetPropertyBlock(_mpb);
             }
         }
 
-        #region Í·¶¥ÆøÅİ
+        #region å¤´é¡¶æ°”æ³¡
 
         #endregion
         public void AddHeadTalkBubble(string content, float duration)

@@ -27,10 +27,10 @@ public class SceneAOIManager : MonoBehaviour
     }
 
     [Header("Player & AOI")]
-    public float aoiRadius = 20f;   // ¶¯Ì¬¶ÔÏó¿É¼û°ë¾¶£¨Ô²»ò·½ĞÎ£©
-    public int chunkRing = 1;       // Íæ¼ÒËùÔÚChunk¼°ÖÜ±ß»·Êı
+    public float aoiRadius = 20f;   // åŠ¨æ€å¯¹è±¡å¯è§åŠå¾„ï¼ˆåœ†æˆ–æ–¹å½¢ï¼‰
+    public int chunkRing = 1;       // ç©å®¶æ‰€åœ¨ChunkåŠå‘¨è¾¹ç¯æ•°
 
-    [Tooltip("Àë¿ªAOI³ÙÖÍ±ß½ç£¨Àë¿ªÅĞ¶¨°ë¾¶ = aoiRadius + radiusHysteresis£©")]
+    [Tooltip("ç¦»å¼€AOIè¿Ÿæ»è¾¹ç•Œï¼ˆç¦»å¼€åˆ¤å®šåŠå¾„ = aoiRadius + radiusHysteresisï¼‰")]
     public float radiusHysteresis = 2f;
 
     [Header("Debounce & Grace")]
@@ -38,40 +38,40 @@ public class SceneAOIManager : MonoBehaviour
     public float exitGraceSeconds = 0.3f;
 
     [Header("Factories & Assets")]
-    [SerializeField] private MonoBehaviour presentationFactorySource; // ¸³ÖµÎªÊµÏÖ IPresentationFactory µÄ×é¼ş
-    [SerializeField] private MonoBehaviour assetProviderSource;       // ¸³ÖµÎªÊµÏÖ IAssetProvider µÄ×é¼ş
+    [SerializeField] private MonoBehaviour presentationFactorySource; // èµ‹å€¼ä¸ºå®ç° IPresentationFactory çš„ç»„ä»¶
+    [SerializeField] private MonoBehaviour assetProviderSource;       // èµ‹å€¼ä¸ºå®ç° IAssetProvider çš„ç»„ä»¶
 
-    // ¶¯Ì¬ÊµÌå£ºÍø¸ñÍ°£¨cellSize ÓÃ chunkCellSize »ò¸üÏ¸Á£¶È£©
+    // åŠ¨æ€å®ä½“ï¼šç½‘æ ¼æ¡¶ï¼ˆcellSize ç”¨ chunkCellSize æˆ–æ›´ç»†ç²’åº¦ï¼‰
     public int dynamicCellSize = 1;
 
-    // ÄÚ²¿×´Ì¬
+    // å†…éƒ¨çŠ¶æ€
     private IPresentationFactoryAsync _presentationFactory;
     private IAssetProviderAsync _assetAsync;
     private IAssetProvider _asset;
 
-    // ¶¯Ì¬ÊµÌå¿Õ¼äË÷Òı£ºcell×ø±ê -> ÊµÌå¼¯ºÏ
+    // åŠ¨æ€å®ä½“ç©ºé—´ç´¢å¼•ï¼šcellåæ ‡ -> å®ä½“é›†åˆ
     private readonly Dictionary<(int, int), HashSet<ILogicEntity>> _buckets = new();
-    // ÒÑÔÚAOIÖĞµÄÊµÌåID -> Presentation
+    // å·²åœ¨AOIä¸­çš„å®ä½“ID -> Presentation
 
-    //// ¾²Ì¬ChunkÒÑ¼ÓÔØÊµÀı£ºChunk×ø±ê -> GameObjectÁĞ±í
+    //// é™æ€Chunkå·²åŠ è½½å®ä¾‹ï¼šChunkåæ ‡ -> GameObjectåˆ—è¡¨
     //private readonly Dictionary<ChunkCoord, List<GameObject>> _loadedChunks = new();
-    //// µ±Ç°Chunk¼¯ºÏ
+    //// å½“å‰Chunké›†åˆ
     //private HashSet<ChunkCoord> _currentChunks = new();
 
-    // ÊµÌå AOI ×´Ì¬£¨¶¨Ê±Æ÷ + ÊÇ·ñÏÔÊ¾£©
+    // å®ä½“ AOI çŠ¶æ€ï¼ˆå®šæ—¶å™¨ + æ˜¯å¦æ˜¾ç¤ºï¼‰
     private class AOIEntry
     {
         public ILogicEntity entity;
-        public bool isShown;               // ÆÚÍûÏÔÊ¾£¨Âú×ã¶¨Ê±Æ÷ºóÏÔÊ¾£©
-        public float enterTimer;           // ½øÈëÑÓ³ÙÀÛ¼Æ
-        public float exitTimer;            // Àë¿ªÑÓ³ÙÀÛ¼Æ
+        public bool isShown;               // æœŸæœ›æ˜¾ç¤ºï¼ˆæ»¡è¶³å®šæ—¶å™¨åæ˜¾ç¤ºï¼‰
+        public float enterTimer;           // è¿›å…¥å»¶è¿Ÿç´¯è®¡
+        public float exitTimer;            // ç¦»å¼€å»¶è¿Ÿç´¯è®¡
         public bool lastInsideInner;
         public bool lastInsideOuter;
 
-        // === ĞÂÔö: Òì²½´´½¨×´Ì¬ÓëÕ¹Ê¾ÒıÓÃ ===
-        public bool creating;              // ÕıÔÚ SpawnAsync
-        public bool canceledDuringCreate;  // ´´½¨¹ı³ÌÖĞ±»È¡Ïû£¨Àë¿ª»òĞ¶ÔØ£©
-        public IScenePresentation pres;         // ÒÑ´´½¨µÄÕ¹Ê¾£¨¿ÉÄÜÎª null£©
+        // === æ–°å¢: å¼‚æ­¥åˆ›å»ºçŠ¶æ€ä¸å±•ç¤ºå¼•ç”¨ ===
+        public bool creating;              // æ­£åœ¨ SpawnAsync
+        public bool canceledDuringCreate;  // åˆ›å»ºè¿‡ç¨‹ä¸­è¢«å–æ¶ˆï¼ˆç¦»å¼€æˆ–å¸è½½ï¼‰
+        public IScenePresentation pres;         // å·²åˆ›å»ºçš„å±•ç¤ºï¼ˆå¯èƒ½ä¸º nullï¼‰
         public Vector2 pos;
 
     }
@@ -93,26 +93,26 @@ public class SceneAOIManager : MonoBehaviour
 
     public async Task CleanupAllAsync()
     {
-        // 1) ·ÀÖ¹ Update ¼ÌĞøÍÆ½ø×´Ì¬»ú£¨¿ÉÑ¡£ºÉèÖÃ±êÖ¾Î»»òÖ±½Ó½ûÓÃ×é¼ş£©
+        // 1) é˜²æ­¢ Update ç»§ç»­æ¨è¿›çŠ¶æ€æœºï¼ˆå¯é€‰ï¼šè®¾ç½®æ ‡å¿—ä½æˆ–ç›´æ¥ç¦ç”¨ç»„ä»¶ï¼‰
         enabled = false;
 
-        // 2) ¶¯Ì¬ AOI£ºÈ¡Ïû´´½¨¡¢»ØÊÕËùÓĞÕ¹Ê¾
+        // 2) åŠ¨æ€ AOIï¼šå–æ¶ˆåˆ›å»ºã€å›æ”¶æ‰€æœ‰å±•ç¤º
         try
         {
             var entries = new List<AOIEntry>(_aoiStates.Values);
 
-            // ±ê¼ÇËùÓĞÕıÔÚ´´½¨µÄÈÎÎñÈ¡Ïû
+            // æ ‡è®°æ‰€æœ‰æ­£åœ¨åˆ›å»ºçš„ä»»åŠ¡å–æ¶ˆ
             foreach (var entry in entries)
             {
                 entry.canceledDuringCreate = true;
             }
 
-            // »ØÊÕÒÑ´æÔÚµÄÕ¹Ê¾
+            // å›æ”¶å·²å­˜åœ¨çš„å±•ç¤º
             foreach (var entry in entries)
             {
                 if (entry.pres != null)
                 {
-                    // Óë HideAndRecyclePresentation µÄÓïÒåÒ»ÖÂ£¬µ«ÕâÀïµÈ´ı»ØÊÕÍê³É
+                    // ä¸ HideAndRecyclePresentation çš„è¯­ä¹‰ä¸€è‡´ï¼Œä½†è¿™é‡Œç­‰å¾…å›æ”¶å®Œæˆ
                     try
                     {
                         entry.pres.SetVisible(false);
@@ -124,7 +124,7 @@ public class SceneAOIManager : MonoBehaviour
                         Debug.LogException(ex);
                     }
                     entry.pres = null;
-                    // ÍË³öµØÍ¼µÄÇåÀí²»ĞèÒª´¥·¢Âß¼­²ãµÄ OnExitAOI£¬¿É°´ĞèÇó¾ö¶¨£º
+                    // é€€å‡ºåœ°å›¾çš„æ¸…ç†ä¸éœ€è¦è§¦å‘é€»è¾‘å±‚çš„ OnExitAOIï¼Œå¯æŒ‰éœ€æ±‚å†³å®šï¼š
                     // entry.entity.OnExitAOI();
                 }
                 entry.creating = false;
@@ -138,25 +138,25 @@ public class SceneAOIManager : MonoBehaviour
             Debug.LogException(ex);
         }
 
-        // 3) ¾²Ì¬ Chunk£ºÊÍ·ÅËùÓĞÊµÀı²¢Çå¿Õ¼ÇÂ¼
+        // 3) é™æ€ Chunkï¼šé‡Šæ”¾æ‰€æœ‰å®ä¾‹å¹¶æ¸…ç©ºè®°å½•
         try
         {
             var chunkList = new List<ChunkRecord>(_chunks.Values);
 
             foreach (var rec in chunkList)
             {
-                // Èç¹ûÕıÔÚ¼ÓÔØ£¬±ê¼ÇÈ¡Ïû
+                // å¦‚æœæ­£åœ¨åŠ è½½ï¼Œæ ‡è®°å–æ¶ˆ
                 rec.cancelAfterLoad = true;
 
-                // ÊÍ·ÅÒÑÓĞÊµÀı
+                // é‡Šæ”¾å·²æœ‰å®ä¾‹
                 if (rec.instances != null && rec.instances.Count > 0)
                 {
-                    // ·ÖÆ¬ÊÍ·Å£¬ÑØÓÃÏÖÓĞÊÍ·ÅÂß¼­
+                    // åˆ†ç‰‡é‡Šæ”¾ï¼Œæ²¿ç”¨ç°æœ‰é‡Šæ”¾é€»è¾‘
                     await ReleaseSlice(rec.instances);
                     rec.instances = null;
                 }
 
-                // ÒÆ³ı¸Ã chunk µÄ·Ö¶ÎÊı¾İ
+                // ç§»é™¤è¯¥ chunk çš„åˆ†æ®µæ•°æ®
                 try
                 {
                     WorldAreaManager.Instance.SegmentProvider.RemoveSource(rec.coord.ToString());
@@ -181,7 +181,7 @@ public class SceneAOIManager : MonoBehaviour
             Debug.LogException(ex);
         }
 
-        // 4) ÇåÀíµØÍ¼Ïà¹ØÒıÓÃ
+        // 4) æ¸…ç†åœ°å›¾ç›¸å…³å¼•ç”¨
         try
         {
 
@@ -192,10 +192,10 @@ public class SceneAOIManager : MonoBehaviour
             Debug.LogException(ex);
         }
 
-        // 5) ¿ÉÑ¡£º½â°óÍæ¼ÒÓëÆäËûÍâ²¿ÒıÓÃ£¨°´ÏîÄ¿ĞèÇó£©
+        // 5) å¯é€‰ï¼šè§£ç»‘ç©å®¶ä¸å…¶ä»–å¤–éƒ¨å¼•ç”¨ï¼ˆæŒ‰é¡¹ç›®éœ€æ±‚ï¼‰
         // player = null;
 
-        // 6) »Ö¸´×é¼ş¿ÉÓÃĞÔ£¨Èç¹ûĞèÒªÔÚÍ¬³¡¾°ÄÚÖØĞÂ InitArea ºó¸´ÓÃ£©
+        // 6) æ¢å¤ç»„ä»¶å¯ç”¨æ€§ï¼ˆå¦‚æœéœ€è¦åœ¨åŒåœºæ™¯å†…é‡æ–° InitArea åå¤ç”¨ï¼‰
         enabled = true;
     }
 
@@ -226,14 +226,14 @@ public class SceneAOIManager : MonoBehaviour
         if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null) return;
         if (string.IsNullOrEmpty(MapName)) return;
 
-        // 1) ¶¯Ì¬ÊµÌå AOI Ë¢ĞÂ£¨Íø¸ñÍ° + °ë¾¶·¶Î§£©
+        // 1) åŠ¨æ€å®ä½“ AOI åˆ·æ–°ï¼ˆç½‘æ ¼æ¡¶ + åŠå¾„èŒƒå›´ï¼‰
         RefreshDynamicAOI(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, LogicTime.deltaTime);
 
-        // 2) ¾²Ì¬ Chunk AOI Ë¢ĞÂ£¨¾Å¹¬¸ñ/»·£©
+        // 2) é™æ€ Chunk AOI åˆ·æ–°ï¼ˆä¹å®«æ ¼/ç¯ï¼‰
         RefreshStaticChunks(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
     }
 
-    // ===== ¶¯Ì¬ÊµÌå½Ó¿Ú =====
+    // ===== åŠ¨æ€å®ä½“æ¥å£ =====
 
     public IScenePresentation GetActivePresentation(long instId)
     {
@@ -283,9 +283,9 @@ public class SceneAOIManager : MonoBehaviour
                 exitTimer = 0f,
                 lastInsideInner = false,
                 lastInsideOuter = false,
-                creating = false,              // === ĞÂÔö ===
-                canceledDuringCreate = false, // === ĞÂÔö ===
-                pres = null,                   // === ĞÂÔö ===
+                creating = false,              // === æ–°å¢ ===
+                canceledDuringCreate = false, // === æ–°å¢ ===
+                pres = null,                   // === æ–°å¢ ===
                 pos = worldPos,
             };
         }
@@ -310,14 +310,14 @@ public class SceneAOIManager : MonoBehaviour
             set.Remove(entity);
         }
 
-        // === ĞÂÔö: Òì²½´´½¨È¡ÏûÓëÕ¹Ê¾»ØÊÕ ===
+        // === æ–°å¢: å¼‚æ­¥åˆ›å»ºå–æ¶ˆä¸å±•ç¤ºå›æ”¶ ===
         if (entry.creating) entry.canceledDuringCreate = true;
 
         if (entry.pres != null)
         {
-            HideAndRecyclePresentation(entry); // === ĞŞ¸Ä: Ê¹ÓÃ entry °æ±¾ ===
+            HideAndRecyclePresentation(entry); // === ä¿®æ”¹: ä½¿ç”¨ entry ç‰ˆæœ¬ ===
         }
-        // === ĞÂÔö½áÊø ===
+        // === æ–°å¢ç»“æŸ ===
 
         _aoiStates.Remove(entity.Id);
     }
@@ -331,7 +331,7 @@ public class SceneAOIManager : MonoBehaviour
             if (_buckets.TryGetValue(c0, out var set0)) set0.Remove(entity);
             RegisterEntity(entity, newPos);
         }
-        // Âß¼­²ã¿É×ÔĞĞ´¥·¢×´Ì¬ÊÂ¼ş£»¿ÉÑ¡£ºÈôÒÑÔÚAOI£¬PresenterÎ»ÖÃ»áÍ¨¹ıÊÂ¼ş»òÏÂÒ»Ö¡Ë¢ĞÂ
+        // é€»è¾‘å±‚å¯è‡ªè¡Œè§¦å‘çŠ¶æ€äº‹ä»¶ï¼›å¯é€‰ï¼šè‹¥å·²åœ¨AOIï¼ŒPresenterä½ç½®ä¼šé€šè¿‡äº‹ä»¶æˆ–ä¸‹ä¸€å¸§åˆ·æ–°
     }
 
     private void RefreshDynamicAOI(Vector3 playerPos, float dt)
@@ -342,7 +342,7 @@ public class SceneAOIManager : MonoBehaviour
         float innerR2 = innerR * innerR;
         float outerR2 = outerR * outerR;
 
-        // ºòÑ¡¼¯ºÏ£¨°´ÍâÈ¦·½ĞÎ°üÎ§£©
+        // å€™é€‰é›†åˆï¼ˆæŒ‰å¤–åœˆæ–¹å½¢åŒ…å›´ï¼‰
         var min = center - new Vector2(outerR, outerR);
         var max = center + new Vector2(outerR, outerR);
         var cMin = ToDynamicCell(min);
@@ -371,9 +371,9 @@ public class SceneAOIManager : MonoBehaviour
                     exitTimer = 0f,
                     lastInsideInner = false,
                     lastInsideOuter = false,
-                    creating = false,              // === ĞÂÔö ===
-                    canceledDuringCreate = false, // === ĞÂÔö ===
-                    pres = null                   // === ĞÂÔö ===
+                    creating = false,              // === æ–°å¢ ===
+                    canceledDuringCreate = false, // === æ–°å¢ ===
+                    pres = null                   // === æ–°å¢ ===
                 };
                 _aoiStates[e.Id] = entry;
             }
@@ -381,32 +381,32 @@ public class SceneAOIManager : MonoBehaviour
             Vector2 pos = ExtractPosition(e);
             float d2 = (pos - center).sqrMagnitude;
 
-            bool insideInner = d2 <= innerR2; // ½øÈëÅĞ¶¨
-            bool insideOuter = d2 <= outerR2; // Àë¿ª³ÙÖÍÅĞ¶¨
+            bool insideInner = d2 <= innerR2; // è¿›å…¥åˆ¤å®š
+            bool insideOuter = d2 <= outerR2; // ç¦»å¼€è¿Ÿæ»åˆ¤å®š
 
             if (!entry.isShown)
             {
-                // Î´ÏÔÊ¾£ºÁ¬Ğø´¦ÓÚÄÚÈ¦ÀÛ¼Æ enterTimer
+                // æœªæ˜¾ç¤ºï¼šè¿ç»­å¤„äºå†…åœˆç´¯è®¡ enterTimer
                 if (insideInner)
                 {
                     entry.enterTimer += dt;
                     if (entry.enterTimer >= enterGraceSeconds)
                     {
-                        // === ĞŞ¸Ä: ½øÈëºóÈçÎŞÕ¹Ê¾ÇÒ²»ÔÚ´´½¨ÖĞÔòÒì²½´´½¨ ===
+                        // === ä¿®æ”¹: è¿›å…¥åå¦‚æ— å±•ç¤ºä¸”ä¸åœ¨åˆ›å»ºä¸­åˆ™å¼‚æ­¥åˆ›å»º ===
                         entry.isShown = true;
                         entry.exitTimer = 0f;
 
                         if (entry.pres != null)
                         {
-                            ShowPresentation(entry); // === ĞŞ¸Ä ===
+                            ShowPresentation(entry); // === ä¿®æ”¹ ===
                         }
                         else if (!entry.creating && !entry.entity.MarkDestroyed)
                         {
-                            entry.creating = true;              // === ĞÂÔö ===
-                            entry.canceledDuringCreate = false; // === ĞÂÔö ===
-                            _ = SpawnPresentationAsync(entry);  // === ĞÂÔö: fire-and-forget Òì²½´´½¨ ===
+                            entry.creating = true;              // === æ–°å¢ ===
+                            entry.canceledDuringCreate = false; // === æ–°å¢ ===
+                            _ = SpawnPresentationAsync(entry);  // === æ–°å¢: fire-and-forget å¼‚æ­¥åˆ›å»º ===
                         }
-                        // === ĞŞ¸Ä½áÊø ===
+                        // === ä¿®æ”¹ç»“æŸ ===
                     }
                 }
                 else
@@ -416,25 +416,25 @@ public class SceneAOIManager : MonoBehaviour
             }
             else
             {
-                // ÒÑÏÔÊ¾£º½öÔÚÍêÈ«³¬³öÍâÈ¦²ÅÀÛ¼Æ exitTimer
+                // å·²æ˜¾ç¤ºï¼šä»…åœ¨å®Œå…¨è¶…å‡ºå¤–åœˆæ‰ç´¯è®¡ exitTimer
                 if (!insideOuter)
                 {
                     entry.exitTimer += dt;
                     if (entry.exitTimer >= exitGraceSeconds)
                     {
-                        // === ĞŞ¸Ä: ´¥·¢Àë¿ª£¬ÈôÕıÔÚ´´½¨Ôò±ê¼ÇÈ¡Ïû ===
+                        // === ä¿®æ”¹: è§¦å‘ç¦»å¼€ï¼Œè‹¥æ­£åœ¨åˆ›å»ºåˆ™æ ‡è®°å–æ¶ˆ ===
                         entry.isShown = false;
                         entry.enterTimer = 0f;
 
                         if (entry.pres != null)
                         {
-                            HideAndRecyclePresentation(entry); // === ĞŞ¸Ä ===
+                            HideAndRecyclePresentation(entry); // === ä¿®æ”¹ ===
                         }
                         else if (entry.creating)
                         {
-                            entry.canceledDuringCreate = true; // === ĞÂÔö ===
+                            entry.canceledDuringCreate = true; // === æ–°å¢ ===
                         }
-                        // === ĞŞ¸Ä½áÊø ===
+                        // === ä¿®æ”¹ç»“æŸ ===
                     }
                 }
                 else
@@ -445,10 +445,10 @@ public class SceneAOIManager : MonoBehaviour
 
             //if(entry.pres != null)
             //{
-            //    // ¼ì²éËÀÍö¶¯»­Íê±Ï
+            //    // æ£€æŸ¥æ­»äº¡åŠ¨ç”»å®Œæ¯•
             //    if (entry.pres.CheckValid())
             //    {
-            //        HideAndRecyclePresentation(entry); // === ĞŞ¸Ä ===
+            //        HideAndRecyclePresentation(entry); // === ä¿®æ”¹ ===
             //    }
             //}
 
@@ -456,7 +456,7 @@ public class SceneAOIManager : MonoBehaviour
             entry.lastInsideOuter = insideOuter;
         }
 
-        // Î´·ÃÎÊµ½µÄÊµÌå£ºÊÓÎª´¦ÓÚÍâÈ¦Ö®Íâ£¬ÈôÕıÔÚÏÔÊ¾ÔòÍÆ½øÀë¿ª¼ÆÊ±
+        // æœªè®¿é—®åˆ°çš„å®ä½“ï¼šè§†ä¸ºå¤„äºå¤–åœˆä¹‹å¤–ï¼Œè‹¥æ­£åœ¨æ˜¾ç¤ºåˆ™æ¨è¿›ç¦»å¼€è®¡æ—¶
         var keys = new List<long>(_aoiStates.Keys);
         foreach (var id in keys)
         {
@@ -467,32 +467,32 @@ public class SceneAOIManager : MonoBehaviour
                 entry.exitTimer += dt;
                 if (entry.exitTimer >= exitGraceSeconds)
                 {
-                    // === ĞŞ¸Ä: Àë¿ª´¦Àí£¨º¬´´½¨ÆÚÈ¡Ïû£© ===
+                    // === ä¿®æ”¹: ç¦»å¼€å¤„ç†ï¼ˆå«åˆ›å»ºæœŸå–æ¶ˆï¼‰ ===
                     entry.isShown = false;
                     entry.enterTimer = 0f;
                     if (entry.pres != null)
                         HideAndRecyclePresentation(entry);
                     else if (entry.creating)
                         entry.canceledDuringCreate = true;
-                    // === ĞŞ¸Ä½áÊø ===
+                    // === ä¿®æ”¹ç»“æŸ ===
                 }
             }
         }
     }
 
-    // === ĞÂÔö: Òì²½´´½¨Óë¾ºÌ¬´¦Àí ===
-    private async Task SpawnPresentationAsync(AOIEntry entry) // === ĞÂÔö ===
+    // === æ–°å¢: å¼‚æ­¥åˆ›å»ºä¸ç«æ€å¤„ç† ===
+    private async Task SpawnPresentationAsync(AOIEntry entry) // === æ–°å¢ ===
     {
         var logic = entry.entity;
         IScenePresentation pres = null;
         try
         {
-            pres = await _presentationFactory.SpawnAsync(logic); // === ĞÂÔö ===
+            pres = await _presentationFactory.SpawnAsync(logic); // === æ–°å¢ ===
             if(MainGameManager.Instance.gameLogicManager.AreaManager.NewCreateEntityMark.Contains(logic.Id))
             {
                 MainGameManager.Instance.gameLogicManager.AreaManager.NewCreateEntityMark.Remove(logic.Id);
 
-                MainGameManager.Instance.ShowFakeFxEffect("´´½¨", logic.Pos);
+                MainGameManager.Instance.ShowFakeFxEffect("åˆ›å»º", logic.Pos);
             }
         }
         catch (System.Exception ex)
@@ -503,13 +503,13 @@ public class SceneAOIManager : MonoBehaviour
             return;
         }
 
-        // ´´½¨Íê³É£º¸üĞÂ×´Ì¬
+        // åˆ›å»ºå®Œæˆï¼šæ›´æ–°çŠ¶æ€
         entry.pres = pres;
         entry.creating = false;
         if(entry.entity.Type == EEntityType.Player)
         {
             MainGameManager.Instance.playerScenePresenter = pres as PlayerScenePresenter;
-            // °ó¶¨Ïà»ú
+            // ç»‘å®šç›¸æœº
             //MainGameManager.Instance.CameraCtrl.Target = MainGameManager.Instance.playerScenePresenter.ViewPoint;
             MainGameManager.Instance.MainMapVCam.Follow = MainGameManager.Instance.playerScenePresenter.ViewPoint;
 
@@ -518,24 +518,24 @@ public class SceneAOIManager : MonoBehaviour
 
         if (entry.canceledDuringCreate || !entry.isShown)
         {
-            // ÒÑÈ¡Ïû»ò²»ĞèÏÔÊ¾£ºÖ±½Ó»ØÊÕ
+            // å·²å–æ¶ˆæˆ–ä¸éœ€æ˜¾ç¤ºï¼šç›´æ¥å›æ”¶
             entry.canceledDuringCreate = false;
             if (entry.pres != null)
             {
                 entry.pres.SetVisible(false);
                 entry.pres.Unbind();
-                await _presentationFactory.RecycleAsync(entry.pres); // === ĞÂÔö ===
+                await _presentationFactory.RecycleAsync(entry.pres); // === æ–°å¢ ===
                 entry.pres = null;
             }
             return;
         }
 
-        // ÈÔĞèÏÔÊ¾£º°ó¶¨ÓëÏÔÊ¾
+        // ä»éœ€æ˜¾ç¤ºï¼šç»‘å®šä¸æ˜¾ç¤º
         ShowPresentation(entry);
     }
-    // === ĞÂÔö½áÊø ===
+    // === æ–°å¢ç»“æŸ ===
 
-    private void ShowPresentation(AOIEntry entry) // === ĞŞ¸Ä: Ê¹ÓÃ entry °æ±¾ ===
+    private void ShowPresentation(AOIEntry entry) // === ä¿®æ”¹: ä½¿ç”¨ entry ç‰ˆæœ¬ ===
     {
         if (entry.pres == null) return;
         entry.pres.Bind(entry.entity);
@@ -544,12 +544,12 @@ public class SceneAOIManager : MonoBehaviour
 
     }
 
-    private void HideAndRecyclePresentation(AOIEntry entry) // === ĞŞ¸Ä: Ê¹ÓÃ entry °æ±¾ ===
+    private void HideAndRecyclePresentation(AOIEntry entry) // === ä¿®æ”¹: ä½¿ç”¨ entry ç‰ˆæœ¬ ===
     {
         if (entry.pres == null) return;
         entry.pres.SetVisible(false);
         entry.pres.Unbind();
-        _ = _presentationFactory.RecycleAsync(entry.pres); // === ĞŞ¸Ä: Òì²½»ØÊÕ ===
+        _ = _presentationFactory.RecycleAsync(entry.pres); // === ä¿®æ”¹: å¼‚æ­¥å›æ”¶ ===
         entry.pres = null;
         entry.entity.OnExitAOI();
     }
@@ -566,40 +566,40 @@ public class SceneAOIManager : MonoBehaviour
         return e.Pos;
     }
 
-    // ===== ¾²Ì¬ Chunk ¹ÜÀí =====
+    // ===== é™æ€ Chunk ç®¡ç† =====
 
     [Header("Debounce / Hysteresis")]
-    [SerializeField] private float chunkEnterDelay = 0.05f;  // ½øÈë´°¿Ú£¬Ãë
-    [SerializeField] private float chunkExitDelay = 0.15f;   // ÍË³ö´°¿Ú£¬Ãë
-    [SerializeField] private float chunkMinStay = 0.30f;     // ×î¶Ì×¤Áô£¬Ãë£¨Loaded ºóÖÁÉÙ±£³ÖÕâÃ´¾Ã£©
+    [SerializeField] private float chunkEnterDelay = 0.05f;  // è¿›å…¥çª—å£ï¼Œç§’
+    [SerializeField] private float chunkExitDelay = 0.15f;   // é€€å‡ºçª—å£ï¼Œç§’
+    [SerializeField] private float chunkMinStay = 0.30f;     // æœ€çŸ­é©»ç•™ï¼Œç§’ï¼ˆLoaded åè‡³å°‘ä¿æŒè¿™ä¹ˆä¹…ï¼‰
 
     private readonly Dictionary<ChunkCoord, ChunkRecord> _chunks = new Dictionary<ChunkCoord, ChunkRecord>();
-    private int maxConcurrentLoads = 2;     // Í¬Ê± Loading µÄ chunk ÉÏÏŞ
+    private int maxConcurrentLoads = 2;     // åŒæ—¶ Loading çš„ chunk ä¸Šé™
     private int _concurrentLoading = 0;
 
     private int batchObjectsPerSlice = 8;
     private int yieldEveryNObjects = 4;
 
-    // Ã¿¸ö chunk µÄ±¾µØ×´Ì¬
+    // æ¯ä¸ª chunk çš„æœ¬åœ°çŠ¶æ€
     public sealed class ChunkRecord
     {
         public readonly ChunkCoord coord;
 
-        // Ä¿±êÒâÍ¼
+        // ç›®æ ‡æ„å›¾
         public bool desiredVisible;
 
-        // ½ø¶È×´Ì¬
+        // è¿›åº¦çŠ¶æ€
         public LoadState loadState;
 
-        // ¶¶¶¯¿ØÖÆµÄÊ±¼ä´Á
-        public float lastBecameDesired;    // ×î½üÒ»´Î±äÎª desiredVisible=true µÄÊ±¼ä£¨ÔÚÍâ²¿¸üĞÂ£©
-        public float lastBecameUndesired;  // ×î½üÒ»´Î±äÎª desiredVisible=false µÄÊ±¼ä
-        public float lastBecameLoaded;     // ×î½üÒ»´Î½øÈë Loaded µÄÊ±¼ä
+        // æŠ–åŠ¨æ§åˆ¶çš„æ—¶é—´æˆ³
+        public float lastBecameDesired;    // æœ€è¿‘ä¸€æ¬¡å˜ä¸º desiredVisible=true çš„æ—¶é—´ï¼ˆåœ¨å¤–éƒ¨æ›´æ–°ï¼‰
+        public float lastBecameUndesired;  // æœ€è¿‘ä¸€æ¬¡å˜ä¸º desiredVisible=false çš„æ—¶é—´
+        public float lastBecameLoaded;     // æœ€è¿‘ä¸€æ¬¡è¿›å…¥ Loaded çš„æ—¶é—´
 
-        // ¼ÓÔØÖĞÈ¡Ïû±êÖ¾
+        // åŠ è½½ä¸­å–æ¶ˆæ ‡å¿—
         public bool cancelAfterLoad;
         public bool refreshAfterLoad;
-        // ÊµÀı
+        // å®ä¾‹
         public List<(GameObject, int)> instances = new();
 
         public ChunkRecord(ChunkCoord c)
@@ -631,7 +631,7 @@ public class SceneAOIManager : MonoBehaviour
         var center = WorldToChunk(playerPos);
         var target = CollectChunkRing(center, chunkRing);
 
-        // ±ê¼Ç desiredVisible£¬²¢Î¬»¤¼ÇÂ¼¼¯
+        // æ ‡è®° desiredVisibleï¼Œå¹¶ç»´æŠ¤è®°å½•é›†
         foreach (var c in target)
         {
             if (!_chunks.TryGetValue(c, out var rec))
@@ -651,19 +651,19 @@ public class SceneAOIManager : MonoBehaviour
             }
         }
 
-        // 2) ÍÆ½ø×´Ì¬»ú£¨´øÏŞÁ÷Óë¶¶¶¯´°¿Ú£©
+        // 2) æ¨è¿›çŠ¶æ€æœºï¼ˆå¸¦é™æµä¸æŠ–åŠ¨çª—å£ï¼‰
         int startedLoadsThisFrame = 0;
         int startedUnloadsThisFrame = 0;
 
-        // ÓÅÏÈĞ¶ÔØ£¨¿ØÖÆÄÚ´æ·åÖµ£©£¬ÔÙ¼ÓÔØ
-        // 2.1 Ğ¶ÔØÍÆ½ø
+        // ä¼˜å…ˆå¸è½½ï¼ˆæ§åˆ¶å†…å­˜å³°å€¼ï¼‰ï¼Œå†åŠ è½½
+        // 2.1 å¸è½½æ¨è¿›
         foreach (var c in keys)
         {
             var rec = _chunks[c];
             TickChunkUnload(rec, LogicTime.time, ref startedUnloadsThisFrame);
         }
 
-        // 2.2 ¼ÓÔØÍÆ½ø
+        // 2.2 åŠ è½½æ¨è¿›
         foreach (var c in keys)
         {
             var rec = _chunks[c];
@@ -686,7 +686,7 @@ public class SceneAOIManager : MonoBehaviour
 
         if(record.loadState != LoadState.Loaded)
         {
-            // ÖĞÍ¾ÓĞË¢ĞÂ ĞèÒª¼ÇÂ¼
+            // ä¸­é€”æœ‰åˆ·æ–° éœ€è¦è®°å½•
             if(record.loadState == LoadState.Loading)
             {
                 record.refreshAfterLoad = true;
@@ -697,22 +697,22 @@ public class SceneAOIManager : MonoBehaviour
         var instances = new List<(GameObject, int)>();
         int objCountSinceYield = 0;
 
-        // Åú´ÎÃ¶¾Ù£¨¸ù¾İÄãµÄÅäÖÃÊµÏÖ GetPrefabs£©
+        // æ‰¹æ¬¡æšä¸¾ï¼ˆæ ¹æ®ä½ çš„é…ç½®å®ç° GetPrefabsï¼‰
         foreach (var item in GetChunkPrefabs(coord))
         {
             var existObjInfo = record.instances.Find((a) => a.Item2 == item.ItemId);
 
-            // ²»Âú×ã³öÏÖÌõ¼ş
+            // ä¸æ»¡è¶³å‡ºç°æ¡ä»¶
             if (item.AppearCond != null && !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
             {
-                // ÒÑ¼ÓÔØ ĞèÒªĞ¶ÔØ
+                // å·²åŠ è½½ éœ€è¦å¸è½½
                 if(existObjInfo.Item1 != null)
                 {
                     _asset.Release(existObjInfo.Item1);
                 }
                 continue;
             }
-            // Âú×ã³öÏÖÌõ¼ş
+            // æ»¡è¶³å‡ºç°æ¡ä»¶
             else
             {
                 if(existObjInfo.Item1 == null)
@@ -763,10 +763,10 @@ public class SceneAOIManager : MonoBehaviour
             case LoadState.Unloaded:
                 if (!rec.desiredVisible) return;
 
-                // ½øÈë´°¿ÚÅĞ¶¨£ºĞèÒªÏÔÊ¾ÇÒÂú×ã enterDelay
+                // è¿›å…¥çª—å£åˆ¤å®šï¼šéœ€è¦æ˜¾ç¤ºä¸”æ»¡è¶³ enterDelay
                 if (now - rec.lastBecameDesired < chunkEnterDelay) return;
 
-                // ÏŞÁ÷£º²¢·¢ÓëÃ¿Ö¡ĞÂ¿ªÉÏÏŞ
+                // é™æµï¼šå¹¶å‘ä¸æ¯å¸§æ–°å¼€ä¸Šé™
                 if (_concurrentLoading >= maxConcurrentLoads) return;
 
                 startedLoadsThisFrame++;
@@ -774,30 +774,30 @@ public class SceneAOIManager : MonoBehaviour
                 break;
 
             case LoadState.Loading:
-                // Èç¹ûÖĞÍ¾²»ÔÙĞèÒªÏÔÊ¾£¬±ê¼ÇÈ¡Ïû
+                // å¦‚æœä¸­é€”ä¸å†éœ€è¦æ˜¾ç¤ºï¼Œæ ‡è®°å–æ¶ˆ
                 if (!rec.desiredVisible)
                 {
-                    // µ«ÈôÒÑ¼ÓÔØÍê³É»áÔÚ»Øµ÷Ê±´¦Àí
+                    // ä½†è‹¥å·²åŠ è½½å®Œæˆä¼šåœ¨å›è°ƒæ—¶å¤„ç†
                     rec.cancelAfterLoad = true;
                     rec.lastBecameUndesired = (rec.lastBecameUndesired == 0f) ? now : rec.lastBecameUndesired;
                 }
                 break;
 
             case LoadState.Loaded:
-                // ×î¶Ì×¤Áô±£»¤£º¼´Ê¹²»ÔÙĞèÒª£¬Ò²Òª±£³Ö minStay
+                // æœ€çŸ­é©»ç•™ä¿æŠ¤ï¼šå³ä½¿ä¸å†éœ€è¦ï¼Œä¹Ÿè¦ä¿æŒ minStay
                 if (!rec.desiredVisible)
                 {
-                    // ÍË³ö´°¿Ú¼ÆÊ±µã
+                    // é€€å‡ºçª—å£è®¡æ—¶ç‚¹
                     if (rec.lastBecameUndesired == 0f)
                         rec.lastBecameUndesired = now;
 
-                    // Èç¹ûÃ»´ïµ½ minStay£¬²»Ğ¶
+                    // å¦‚æœæ²¡è¾¾åˆ° minStayï¼Œä¸å¸
                     if (now - rec.lastBecameLoaded < chunkMinStay) return;
 
-                    // ÍË³ö´°¿Ú£º´ïµ½ exitDelay ²ÅĞ¶
+                    // é€€å‡ºçª—å£ï¼šè¾¾åˆ° exitDelay æ‰å¸
                     if (now - rec.lastBecameUndesired < chunkExitDelay) return;
 
-                    // ÓÉĞ¶ÔØÍÆ½øÁ÷³Ì´¦Àí
+                    // ç”±å¸è½½æ¨è¿›æµç¨‹å¤„ç†
                 }
                 else
                 {
@@ -809,7 +809,7 @@ public class SceneAOIManager : MonoBehaviour
                 break;
 
             case LoadState.Unloading:
-                // ÈôÓÖĞèÒªÏÔÊ¾£¬µÈĞ¶ÔØ½áÊøºóÔÙ¼ÓÔØ£¨±ÜÃâÀ­¾â£©
+                // è‹¥åˆéœ€è¦æ˜¾ç¤ºï¼Œç­‰å¸è½½ç»“æŸåå†åŠ è½½ï¼ˆé¿å…æ‹‰é”¯ï¼‰
                 break;
         }
     }
@@ -821,7 +821,7 @@ public class SceneAOIManager : MonoBehaviour
             case LoadState.Loaded:
                 if (!rec.desiredVisible)
                 {
-                    // ×î¶Ì×¤Áô + ÍË³ö´°¿ÚÅĞ¶¨
+                    // æœ€çŸ­é©»ç•™ + é€€å‡ºçª—å£åˆ¤å®š
                     if (now - rec.lastBecameLoaded < chunkMinStay) return;
 
                     if (rec.lastBecameUndesired == 0f)
@@ -835,7 +835,7 @@ public class SceneAOIManager : MonoBehaviour
                 break;
 
             case LoadState.Loading:
-                // Èô²»ÔÙĞèÒªÏÔÊ¾£¬±ê¼ÇÈ¡Ïû²¢×¼±¸ÔÚ load Íê³ÉºóÖ±½ÓÊÍ·Å
+                // è‹¥ä¸å†éœ€è¦æ˜¾ç¤ºï¼Œæ ‡è®°å–æ¶ˆå¹¶å‡†å¤‡åœ¨ load å®Œæˆåç›´æ¥é‡Šæ”¾
                 if (!rec.desiredVisible)
                 {
                     rec.cancelAfterLoad = true;
@@ -846,12 +846,12 @@ public class SceneAOIManager : MonoBehaviour
 
             case LoadState.Unloading:
             case LoadState.Unloaded:
-                // ÎŞĞè´¦Àí
+                // æ— éœ€å¤„ç†
                 break;
         }
     }
 
-    // Òì²½¼ÓÔØ£º·ÖÅúÊµÀı»¯ + ²¢·¢¼ÆÊı
+    // å¼‚æ­¥åŠ è½½ï¼šåˆ†æ‰¹å®ä¾‹åŒ– + å¹¶å‘è®¡æ•°
     private async void StartChunkLoad(ChunkRecord rec)
     {
         if (rec.loadState != LoadState.Unloaded) return;
@@ -859,14 +859,14 @@ public class SceneAOIManager : MonoBehaviour
         rec.loadState = LoadState.Loading;
         rec.cancelAfterLoad = false;
         rec.refreshAfterLoad = false;
-        rec.lastBecameUndesired = 0f; // ÇåÀí²»ĞèÒª¼ÆÊ±
+        rec.lastBecameUndesired = 0f; // æ¸…ç†ä¸éœ€è¦è®¡æ—¶
         _concurrentLoading++;
 
         var instances = new List<(GameObject, int)>();
         var batchBuffer = new List<StaticPrefabItem>(batchObjectsPerSlice);
         int objCountSinceYield = 0;
 
-        // Åú´ÎÃ¶¾Ù£¨¸ù¾İÄãµÄÅäÖÃÊµÏÖ GetPrefabs£©
+        // æ‰¹æ¬¡æšä¸¾ï¼ˆæ ¹æ®ä½ çš„é…ç½®å®ç° GetPrefabsï¼‰
         foreach (var item in GetChunkPrefabs(rec.coord))
         {
             if(item.AppearCond != null && item.AppearCond.Type != ECommonCheckType.None && !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
@@ -880,25 +880,25 @@ public class SceneAOIManager : MonoBehaviour
                 objCountSinceYield = await InstantiateBatch(batchBuffer, instances, objCountSinceYield);
                 batchBuffer.Clear();
 
-                // ¼ÓÔØ¹ı³ÌÖĞÈô±»±ê¼ÇÈ¡Ïû£¬¿É¼ÌĞø°ÑÒÑ¼ÓÔØµÄ»ØÊÕ´¦ÀíÑÓºóµ½Íê³É½×¶Î
+                // åŠ è½½è¿‡ç¨‹ä¸­è‹¥è¢«æ ‡è®°å–æ¶ˆï¼Œå¯ç»§ç»­æŠŠå·²åŠ è½½çš„å›æ”¶å¤„ç†å»¶ååˆ°å®Œæˆé˜¶æ®µ
             }
         }
-        // ´¦ÀíÊ£ÓàµÄ°ëÅú
+        // å¤„ç†å‰©ä½™çš„åŠæ‰¹
         if (batchBuffer.Count > 0)
         {
             objCountSinceYield = await InstantiateBatch(batchBuffer, instances, objCountSinceYield);
         }
 
-        // ¼ÓÔØÍê³É£¬»ØÖ÷Ïß³ÌºóºËÑé
+        // åŠ è½½å®Œæˆï¼Œå›ä¸»çº¿ç¨‹åæ ¸éªŒ
         if (!_chunks.TryGetValue(rec.coord, out var cur) || cur != rec)
         {
-            // ¼ÇÂ¼ÒÑ±»Ìæ»»£¬°²È«ÊÍ·Å
+            // è®°å½•å·²è¢«æ›¿æ¢ï¼Œå®‰å…¨é‡Šæ”¾
             foreach (var prefabInfo in instances) _ = _assetAsync.ReleaseAsync(prefabInfo.Item1);
             _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
             return;
         }
 
-        // Èô²»ÔÙĞèÒªÏÔÊ¾»ò±»±ê¼ÇÈ¡Ïû£¬ÔòÖ±½ÓÊÍ·Å
+        // è‹¥ä¸å†éœ€è¦æ˜¾ç¤ºæˆ–è¢«æ ‡è®°å–æ¶ˆï¼Œåˆ™ç›´æ¥é‡Šæ”¾
         if (rec.cancelAfterLoad || !rec.desiredVisible)
         {
             foreach (var prefabInfo in instances)
@@ -917,7 +917,7 @@ public class SceneAOIManager : MonoBehaviour
         rec.lastBecameLoaded = LogicTime.time;
         _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
 
-        // ĞèÒªË¢ĞÂ
+        // éœ€è¦åˆ·æ–°
         if (rec.refreshAfterLoad)
         {
             ForceUpdateOneChunk(rec.coord);
@@ -963,7 +963,7 @@ public class SceneAOIManager : MonoBehaviour
             if (objCountSinceYield >= yieldEveryNObjects)
             {
                 objCountSinceYield = 0;
-                await Task.Yield(); // ÇĞÆ¬£¬±ÜÃâ¿¨¶Ù
+                await Task.Yield(); // åˆ‡ç‰‡ï¼Œé¿å…å¡é¡¿
             }
         }
 
@@ -971,13 +971,13 @@ public class SceneAOIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Ğ¶ÔØ×ÊÔ´
+    /// å¸è½½èµ„æº
     /// </summary>
     public void UnloadAllResource()
     {
     }
 
-    // Òì²½Ğ¶ÔØ£º·ÖÅúÊÍ·Å
+    // å¼‚æ­¥å¸è½½ï¼šåˆ†æ‰¹é‡Šæ”¾
     private async void StartChunkUnload(ChunkRecord rec)
     {
         if (rec.loadState == LoadState.Unloaded) return;
@@ -985,14 +985,14 @@ public class SceneAOIManager : MonoBehaviour
 
         rec.loadState = LoadState.Unloading;
 
-        // È¡³öÏÖÓĞÊµÀı²¢Á¢¼´Çå¿Õ£¬·ÀÖ¹ÖØ¸´²Ù×÷
+        // å–å‡ºç°æœ‰å®ä¾‹å¹¶ç«‹å³æ¸…ç©ºï¼Œé˜²æ­¢é‡å¤æ“ä½œ
         var list = rec.instances ?? new List<(GameObject, int)>();
         rec.instances = null;
 
         int count = 0;
         List<(GameObject, int)> slice = new List<(GameObject, int)>(batchObjectsPerSlice);
 
-        // ÇĞÆ¬ÊÍ·Å
+        // åˆ‡ç‰‡é‡Šæ”¾
         for (int i = 0; i < list.Count; i++)
         {
             slice.Add(list[i]);
@@ -1009,11 +1009,11 @@ public class SceneAOIManager : MonoBehaviour
             slice.Clear();
         }
 
-        // Ğ¶ÔØÍê³É£¬Èô´ËÊ±ÓÖĞèÒªÏÔÊ¾£¬½»ÓÉÏÂÒ»Ö¡µÄ Tick ¾ö¶¨ÊÇ·ñÖØĞÂ¼ÓÔØ
+        // å¸è½½å®Œæˆï¼Œè‹¥æ­¤æ—¶åˆéœ€è¦æ˜¾ç¤ºï¼Œäº¤ç”±ä¸‹ä¸€å¸§çš„ Tick å†³å®šæ˜¯å¦é‡æ–°åŠ è½½
         if (_chunks.TryGetValue(rec.coord, out var cur) && cur == rec)
         {
             rec.loadState = LoadState.Unloaded;
-            rec.lastBecameUndesired = 0f; // ÍË³ö´°¿Ú¼ÆÊ±Íê³É£¬ÖØÖÃ
+            rec.lastBecameUndesired = 0f; // é€€å‡ºçª—å£è®¡æ—¶å®Œæˆï¼Œé‡ç½®
         }
 
         WorldAreaManager.Instance.SegmentProvider.RemoveSource(rec.coord.ToString());
@@ -1033,8 +1033,8 @@ public class SceneAOIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÊÀ½ç×ø±ê×ªchunk
-    /// ¼ì²éÍæ¼ÒÊÇ·ñ´¦ÓÚsub¿Õ¼ä
+    /// ä¸–ç•Œåæ ‡è½¬chunk
+    /// æ£€æŸ¥ç©å®¶æ˜¯å¦å¤„äºsubç©ºé—´
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>

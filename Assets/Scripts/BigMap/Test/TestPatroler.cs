@@ -45,7 +45,7 @@ public class TestPatroler : MonoBehaviour
         WayPointDistance += MoveSpeed * dt;
 
 
-        // µÖ´ï
+        // æŠµè¾¾
         if (WayPointDistance >= currMoveDist)
         {
             WayPointIdx = (WayPointIdx + 1) % this.WayPointInfos.Count;

@@ -5,22 +5,22 @@ using UnityEngine;
 
 public class MapNoiseRing : MonoBehaviour
 {
-    [Header("ºËĞÄ²ÎÊı")]
-    [Range(0f, 1f)] public float baseAlpha = 0.8f;     // ³õÊ¼Í¸Ã÷¶È
-    public float minDuration = 0.25f;                  // ×î¿ìÀ©É¢Ê±¼ä£¨ÔëÒô×î´óÊ±£©
-    public float maxDuration = 1.5f;                   // ×îÂıÀ©É¢Ê±¼ä£¨ÔëÒô×îĞ¡Ê±£©
-    public float minScale = 0.1f;                      // ³õÊ¼Ëõ·Å
-    public float maxScaleAtMaxNoise = 4f;              // ÔëÒô=1Ê±µÄÄ¿±êËõ·Å
+    [Header("æ ¸å¿ƒå‚æ•°")]
+    [Range(0f, 1f)] public float baseAlpha = 0.8f;     // åˆå§‹é€æ˜åº¦
+    public float minDuration = 0.25f;                  // æœ€å¿«æ‰©æ•£æ—¶é—´ï¼ˆå™ªéŸ³æœ€å¤§æ—¶ï¼‰
+    public float maxDuration = 1.5f;                   // æœ€æ…¢æ‰©æ•£æ—¶é—´ï¼ˆå™ªéŸ³æœ€å°æ—¶ï¼‰
+    public float minScale = 0.1f;                      // åˆå§‹ç¼©æ”¾
+    public float maxScaleAtMaxNoise = 4f;              // å™ªéŸ³=1æ—¶çš„ç›®æ ‡ç¼©æ”¾
     public AnimationCurve noiseToDuration = AnimationCurve.EaseInOut(0, 1, 1, 0);
-    // ÉÏÃæÇúÏß£ºÊäÈënoise[0..1] Êä³öÒ»¸ö[0..1]µÄt£¬Ö®ºóÓ³Éäµ½min/maxDuration£¨ÄãÒ²¿ÉÒÔÖ±½ÓÓÃÏßĞÔÓ³Éä£©
+    // ä¸Šé¢æ›²çº¿ï¼šè¾“å…¥noise[0..1] è¾“å‡ºä¸€ä¸ª[0..1]çš„tï¼Œä¹‹åæ˜ å°„åˆ°min/maxDurationï¼ˆä½ ä¹Ÿå¯ä»¥ç›´æ¥ç”¨çº¿æ€§æ˜ å°„ï¼‰
 
-    [Header("Íâ¹Û")]
+    [Header("å¤–è§‚")]
     public Color ringColor = Color.white;
-    public bool useAdditiveMaterial = false; // Ê¹ÓÃ¼ÓÉ«²ÄÖÊ¿É¸üÏñÌØĞ§
+    public bool useAdditiveMaterial = false; // ä½¿ç”¨åŠ è‰²æè´¨å¯æ›´åƒç‰¹æ•ˆ
 
-    [Header("»ØÊÕ")]
+    [Header("å›æ”¶")]
     public bool autoDestroy = true;
-    public float extraLife = 0.05f; // ¶¯»­½áÊøºóÑÓÊ±Ïú»Ù/»ØÊÕ
+    public float extraLife = 0.05f; // åŠ¨ç”»ç»“æŸåå»¶æ—¶é”€æ¯/å›æ”¶
 
     private SpriteRenderer _sr;
     private Tweener _scaleTween;
@@ -31,42 +31,42 @@ public class MapNoiseRing : MonoBehaviour
         _sr = GetComponent<SpriteRenderer>();
         if (useAdditiveMaterial && _sr.material != null)
         {
-            // ¿ÉÔÚÏîÄ¿Àï×¼±¸Ò»¸ö¼ÓÉ«²ÄÖÊ "Sprites/Default-Additive"
+            // å¯åœ¨é¡¹ç›®é‡Œå‡†å¤‡ä¸€ä¸ªåŠ è‰²æè´¨ "Sprites/Default-Additive"
             // _sr.material = Resources.Load<Material>("Sprites/Default-Additive");
         }
     }
 
     /// <summary>
-    /// ²¥·ÅÒ»´ÎÔëÒô»·¶¯»­
-    /// noiseStrength: 0..1£¨0=¼«Ğ¡£¬1=¼«´ó£©
-    /// worldPos: ÔëÒôÖĞĞÄÊÀ½ç×ø±ê
+    /// æ’­æ”¾ä¸€æ¬¡å™ªéŸ³ç¯åŠ¨ç”»
+    /// noiseStrength: 0..1ï¼ˆ0=æå°ï¼Œ1=æå¤§ï¼‰
+    /// worldPos: å™ªéŸ³ä¸­å¿ƒä¸–ç•Œåæ ‡
     /// </summary>
     public void Play(float noiseStrength, Vector3 worldPos)
     {
         transform.position = worldPos;
 
-        // È¡Ïû¾ÉTween
+        // å–æ¶ˆæ—§Tween
         _scaleTween?.Kill();
         _alphaTween?.Kill();
 
-        // ³õÊ¼×´Ì¬
+        // åˆå§‹çŠ¶æ€
         transform.localScale = Vector3.one * minScale;
 
-        // ÑÕÉ« & alpha
+        // é¢œè‰² & alpha
         var c = ringColor;
-        c.a = baseAlpha * Mathf.Clamp01(noiseStrength * 0.8f + 0.2f); // ÔëÒôÔ½´ó³õÊ¼Ô½ÁÁ
+        c.a = baseAlpha * Mathf.Clamp01(noiseStrength * 0.8f + 0.2f); // å™ªéŸ³è¶Šå¤§åˆå§‹è¶Šäº®
         _sr.color = c;
 
-        // ¼ÆËãÄ¿±êËõ·Å & Ê±³¤
+        // è®¡ç®—ç›®æ ‡ç¼©æ”¾ & æ—¶é•¿
         float targetScale = Mathf.Lerp(minScale * 1.2f, maxScaleAtMaxNoise, Mathf.Clamp01(noiseStrength));
         float t01 = Mathf.Clamp01(noiseToDuration.Evaluate(Mathf.Clamp01(noiseStrength)));
-        float duration = Mathf.Lerp(maxDuration, minDuration, t01); // ÔëÒô´ó -> Ê±¼ä¶Ì£¨À©É¢¿ì£©
+        float duration = Mathf.Lerp(maxDuration, minDuration, t01); // å™ªéŸ³å¤§ -> æ—¶é—´çŸ­ï¼ˆæ‰©æ•£å¿«ï¼‰
 
-        // À©É¢£¨Ëõ·Å£©¶¯»­
+        // æ‰©æ•£ï¼ˆç¼©æ”¾ï¼‰åŠ¨ç”»
         _scaleTween = transform.DOScale(targetScale, duration)
             .SetEase(Ease.OutCubic);
 
-        // Í¸Ã÷¶Èµ­³ö
+        // é€æ˜åº¦æ·¡å‡º
         _alphaTween = DOTween.To(
             () => _sr.color,
             col => _sr.color = col,
@@ -74,7 +74,7 @@ public class MapNoiseRing : MonoBehaviour
             duration
         ).SetEase(Ease.InQuad);
 
-        // ½áÊø»ØÊÕ/Ïú»Ù
+        // ç»“æŸå›æ”¶/é”€æ¯
         DOVirtual.DelayedCall(duration + extraLife, () =>
         {
             if (autoDestroy)

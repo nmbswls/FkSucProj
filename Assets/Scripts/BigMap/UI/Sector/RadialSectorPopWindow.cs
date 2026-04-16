@@ -31,17 +31,17 @@ namespace My.UI
 
         [Header("Appearance")]
         public float radius = 180f;
-        public float innerRadius = 60f; // ÄÚÈ¦ËÀÇø£¬±ÜÃâÎó´¥ÖĞĞÄ
+        public float innerRadius = 60f; // å†…åœˆæ­»åŒºï¼Œé¿å…è¯¯è§¦ä¸­å¿ƒ
         public Color colorNormal = new Color(0.2f, 0.2f, 0.25f, 0.8f);
         public Color colorHighlight = new Color(0.85f, 0.7f, 0.2f, 0.95f);
 
         [Header("Behavior")]
-        public bool cancelIfCenter = true; // ËÉ¿ªÇÒÔÚÖĞĞÄÇøÓò²»Ñ¡Ôñ
+        public bool cancelIfCenter = true; // æ¾å¼€ä¸”åœ¨ä¸­å¿ƒåŒºåŸŸä¸é€‰æ‹©
 
         private List<RadialSectorItem> sectors = new List<RadialSectorItem>();
         private int currentIndex = -1;
         private bool isOpen;
-        private Camera uiCam; // Èô Canvas ÊÇ ScreenSpace-Overlay£¬¿ÉÎª null
+        private Camera uiCam; // è‹¥ Canvas æ˜¯ ScreenSpace-Overlayï¼Œå¯ä¸º null
 
         private float LastHoldUpdateTime;
 
@@ -65,7 +65,7 @@ namespace My.UI
 
 
 
-        // ¶¯Ì¬ÉèÖÃÌõÄ¿
+        // åŠ¨æ€è®¾ç½®æ¡ç›®
         public void BuildMenu(List<RadialItem> items)
         {
             Clear();
@@ -91,15 +91,15 @@ namespace My.UI
                     inst.SetData(null, false, colorNormal, fillAmount);
                 }
 
-                // ÉèÖÃĞı×ª/°Ú·Å
-                float startAngle = 0 - i * step; // ´ÓÕıÉÏ·½¿ªÊ¼
+                // è®¾ç½®æ—‹è½¬/æ‘†æ”¾
+                float startAngle = 0 - i * step; // ä»æ­£ä¸Šæ–¹å¼€å§‹
                 //float endAngle = startAngle + step;
                 //inst.startAngle = Mathf.Repeat(startAngle, 360f);
                 //inst.endAngle = Mathf.Repeat(endAngle, 360f);
 
                 inst.SectRoot.localRotation = Quaternion.Euler(0, 0, startAngle + step / 2f - 1);
                 inst.label.text = i.ToString();
-                // Í¼±êÎ»ÖÃÔÚÔ²»·ÖĞÏß
+                // å›¾æ ‡ä½ç½®åœ¨åœ†ç¯ä¸­çº¿
                 if (inst.InfoRoot != null)
                 {
                     float midAngleRad = Mathf.Deg2Rad * (startAngle + 90);
@@ -158,7 +158,7 @@ namespace My.UI
 
         private void HandleClose()
         {
-            // ³¬Ê±Î´¸üĞÂ ¹Ø±Õ
+            // è¶…æ—¶æœªæ›´æ–° å…³é—­
             if(LogicTime.time - LastHoldUpdateTime > 1f)
             {
                 OnReleaseToConfirm();
@@ -177,7 +177,7 @@ namespace My.UI
 
         private void UpdateSelectionByPointer()
         {
-            // Êó±êÎ»ÖÃ»»Ëãµ½±¾µØ×ø±ê
+            // é¼ æ ‡ä½ç½®æ¢ç®—åˆ°æœ¬åœ°åæ ‡
             var mousePos = MainGameManager.Instance.inputBinder.LastPos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 sectorContainer, mousePos, uiCam, out Vector2 local);
@@ -195,7 +195,7 @@ namespace My.UI
 
             float startAngle = -90f - step / 2f;
 
-            // ½«ÓÒ·½0¶È×ª»»ÎªÉÏ·½0¶È£¨-90£©£¬²¢Ó³Éäµ½0-360
+            // å°†å³æ–¹0åº¦è½¬æ¢ä¸ºä¸Šæ–¹0åº¦ï¼ˆ-90ï¼‰ï¼Œå¹¶æ˜ å°„åˆ°0-360
             //angle = Mathf.Repeat(angle - 90f, 360f);
             int idx = AngleToIndex(-angle + 90);
             Highlight(idx);
@@ -206,7 +206,7 @@ namespace My.UI
             }
             else
             {
-                chosenAbilityLabel.text = "ÎŞ";
+                chosenAbilityLabel.text = "æ— ";
             }
         }
 
@@ -215,7 +215,7 @@ namespace My.UI
             int count = sectors.Count;
             if (count == 0) return -1;
             float step = 360f / count;
-            // ÉÏ·½Îª index=0
+            // ä¸Šæ–¹ä¸º index=0
             int idx = Mathf.RoundToInt(Mathf.Repeat((angle) / step, count)) % count;
             return idx;
         }
@@ -247,7 +247,7 @@ namespace My.UI
             canvasGroup.interactable = open;
             canvasGroup.alpha = open ? 1f : 0f;
             if (!open) Highlight(-1);
-            // ¿É¼Óµ­Èëµ­³öĞ­³Ì
+            // å¯åŠ æ·¡å…¥æ·¡å‡ºåç¨‹
         }
 
         public void Clear()

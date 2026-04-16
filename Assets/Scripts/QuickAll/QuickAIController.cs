@@ -10,7 +10,7 @@
 //public class QuickAIController : MonoBehaviour
 //{
 //    public QuickAIConfig config;
-//    public Transform target; // Íâ²¿¸³Öµ£¨Íæ¼Ò£©
+//    public Transform target; // å¤–éƒ¨èµ‹å€¼ï¼ˆç©å®¶ï¼‰
 //    private QuickAIBlackboard bb;
 
 
@@ -60,7 +60,7 @@
 //    {
 //        if (state == QuickAIState.Dead) return;
 
-//        // ¸ĞÖª¸üĞÂ
+//        // æ„ŸçŸ¥æ›´æ–°
 //        bool see = sensor.CanSeeTarget();
 //        bool hear = sensor.CanHearTarget();
 
@@ -74,14 +74,14 @@
 //            bb.timeSinceSeen += Time.deltaTime;
 //        }
 
-//        // Í¨ÓÃËÀÍö¼ì²â£¨Ê¾Àı£©
+//        // é€šç”¨æ­»äº¡æ£€æµ‹ï¼ˆç¤ºä¾‹ï¼‰
 //        if (health <= 0 && state != QuickAIState.Dead)
 //        {
 //            TransitionTo(QuickAIState.Dead);
 //            return;
 //        }
 
-//        // ×´Ì¬Çı¶¯
+//        // çŠ¶æ€é©±åŠ¨
 //        switch (state)
 //        {
 //            case QuickAIState.Idle: UpdateIdle(see, hear); break;
@@ -138,7 +138,7 @@
 //        }
 //    }
 
-//    // ×´Ì¬¸üĞÂÊµÏÖ
+//    // çŠ¶æ€æ›´æ–°å®ç°
 //    void UpdateIdle(bool see, bool hear)
 //    {
 //        bb.stateTimer += Time.deltaTime;
@@ -149,7 +149,7 @@
 //            return;
 //        }
 
-//        // ¼òµ¥µÈ´ıºó×ªÑ²Âß£¨ÈçÓĞÂ·¾¶£©
+//        // ç®€å•ç­‰å¾…åè½¬å·¡é€»ï¼ˆå¦‚æœ‰è·¯å¾„ï¼‰
 //        if (config.waypoints != null && config.waypoints.Length > 0 && bb.stateTimer > 1.0f)
 //        {
 //            TransitionTo(QuickAIState.Patrol);
@@ -164,7 +164,7 @@
 //            return;
 //        }
 
-//        // ÅäÖÃÒì³£
+//        // é…ç½®å¼‚å¸¸
 //        if (config.waypoints == null || config.waypoints.Length == 0)
 //        {
 //            TransitionTo(QuickAIState.Idle);
@@ -197,30 +197,30 @@
 //            else
 //            {
 
-//                // ´ÓAgent»ñÈ¡ÆÚÍûËÙ¶È£¬Í¶Ó°µ½XY
+//                // ä»Agentè·å–æœŸæœ›é€Ÿåº¦ï¼ŒæŠ•å½±åˆ°XY
 //                Vector3 desired3 = navAgent.desiredVelocity;
 //                Vector2 desired = new Vector2(desired3.x, desired3.y);
 
-//                //// °´×Ô¶¨Òå¼ÓËÙ¶È±Æ½üÄ¿±êËÙ¶È
+//                //// æŒ‰è‡ªå®šä¹‰åŠ é€Ÿåº¦é€¼è¿‘ç›®æ ‡é€Ÿåº¦
 //                //Vector2 targetVel = Vector2.ClampMagnitude(desired, maxSpeed);
 //                //currentVel = Vector2.MoveTowards(currentVel, targetVel, acceleration * Time.fixedDeltaTime);
 //                //rb.velocity = currentVel;
 
-//                //// ÃæÏòÒÆ¶¯·½Ïò£¨¿ÉÑ¡£©
+//                //// é¢å‘ç§»åŠ¨æ–¹å‘ï¼ˆå¯é€‰ï¼‰
 //                //if (currentVel.sqrMagnitude > 0.0001f)
 //                //{
-//                //    float targetAngle = Mathf.Atan2(currentVel.y, currentVel.x) * Mathf.Rad2Deg - 90f; // ÒÔ½ÇÉ«upÖ¸ÏòÇ°
+//                //    float targetAngle = Mathf.Atan2(currentVel.y, currentVel.x) * Mathf.Rad2Deg - 90f; // ä»¥è§’è‰²upæŒ‡å‘å‰
 //                //    float newAngle = Mathf.MoveTowardsAngle(transform.eulerAngles.z, targetAngle, turnSpeedDegPerSec * Time.fixedDeltaTime);
 //                //    rb.MoveRotation(newAngle);
 //                //}
 
-//                //// Í¬²½AgentÄÚ²¿Î»ÖÃ
+//                //// åŒæ­¥Agentå†…éƒ¨ä½ç½®
 //                //navAgent.nextPosition = transform.position;
 
 //                //var corners = agent.path.corners;
 //                //if (corners != null && corners.Length > 1)
 //                //{
-//                //    Vector3 nextCorner = corners[1]; // [0]ÊÇµ±Ç°Î»ÖÃ
+//                //    Vector3 nextCorner = corners[1]; // [0]æ˜¯å½“å‰ä½ç½®
 //                //    Vector3 dir = (nextCorner - transform.position);
 //                //    dir.z = 0f;
 //                //    Vector3 move = dir.normalized * moveSpeed;
@@ -263,14 +263,14 @@
 //        //Vector2 dest = see ? (Vector2)t.position : bb.lastKnownTargetPos;
 //        //motor.MoveTowards(dest, config.chaseSpeed);
 
-//        //// ½øÈë¹¥»÷
+//        //// è¿›å…¥æ”»å‡»
 //        //if (Vector2.Distance(transform.position, t.position) <= config.attackRange && see)
 //        //{
 //        //    TransitionTo(QuickAIState.Attack);
 //        //    return;
 //        //}
 
-//        //// ×·»÷³¬Ê±×ªËÑË÷
+//        //// è¿½å‡»è¶…æ—¶è½¬æœç´¢
 //        //if (!see && bb.timeSinceSeen >= config.loseTargetTime)
 //        //{
 //        //    TransitionTo(QuickAIState.Search);
@@ -286,12 +286,12 @@
 //            return;
 //        }
 
-//        // ±£³ÖÃæÏò
+//        // ä¿æŒé¢å‘
 //        Vector2 dir = (t.position - transform.position).normalized;
 //        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 //        GetComponent<Rigidbody2D>().rotation = angle;
 
-//        // ³¬³ö·¶Î§»ò¿´²»µ½ -> ×·»÷/ËÑË÷
+//        // è¶…å‡ºèŒƒå›´æˆ–çœ‹ä¸åˆ° -> è¿½å‡»/æœç´¢
 //        float dist = Vector2.Distance(transform.position, t.position);
 //        if (dist > config.attackRange * 1.05f)
 //        {
@@ -299,7 +299,7 @@
 //            return;
 //        }
 
-//        // ÀäÈ´½áÊøÔò¼ÌĞø¹¥»÷
+//        // å†·å´ç»“æŸåˆ™ç»§ç»­æ”»å‡»
 //        if (!bb.inAttackCooldown && attackRoutine == null)
 //        {
 //            //TryStartAttack();
@@ -331,7 +331,7 @@
 
 //        bb.stateTimer += Time.deltaTime;
 
-//        // ÔÚ×îºóÄ¿»÷µã¸½½üËæ»úµãÑ²²é
+//        // åœ¨æœ€åç›®å‡»ç‚¹é™„è¿‘éšæœºç‚¹å·¡æŸ¥
 //        Vector2 center = bb.lastKnownTargetPos;
 //        Vector2 targetPos = center + Random.insideUnitCircle * config.searchRadius;
 
@@ -339,7 +339,7 @@
 
 //        //if (bb.stateTimer >= config.searchDuration)
 //        //{
-//        //    // ËÑË÷Ê§°Ü£¬»Øµ½Ñ²Âß»ò´ı»ú
+//        //    // æœç´¢å¤±è´¥ï¼Œå›åˆ°å·¡é€»æˆ–å¾…æœº
 //        //    TransitionTo((config.waypoints != null && config.waypoints.Length > 0) ? QuickAIState.Patrol : QuickAIState.Idle);
 //        //}
 //    }
@@ -353,7 +353,7 @@
 //        }
 //    }
 
-//    // Ê¾ÀıÊÜÉË/ËÀÍöÈë¿Ú
+//    // ç¤ºä¾‹å—ä¼¤/æ­»äº¡å…¥å£
 //    public void TakeDamage(int amount)
 //    {
 //        if (state == QuickAIState.Dead) return;
@@ -371,9 +371,9 @@
 //    void OnDead()
 //    {
 //        motor.Stop();
-//        // ²¥·ÅËÀÍö¶¯»­/µôÂä/½ûÓÃÅö×²
+//        // æ’­æ”¾æ­»äº¡åŠ¨ç”»/æ‰è½/ç¦ç”¨ç¢°æ’
 //        GetComponent<Collider2D>().enabled = false;
-//        // ¿ÉÑÓ³ÙÏú»Ù»ò¶ÔÏó³Ø»ØÊÕ
+//        // å¯å»¶è¿Ÿé”€æ¯æˆ–å¯¹è±¡æ± å›æ”¶
 //        Destroy(gameObject, 2f);
 //    }
 //}

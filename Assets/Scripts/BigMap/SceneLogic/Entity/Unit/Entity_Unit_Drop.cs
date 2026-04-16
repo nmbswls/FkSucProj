@@ -13,7 +13,7 @@ namespace My.Map
 
         public void TryUseLootPoint()
         {
-            LogicManager.viewer.ShowFakeFxEffect("À—£°", Pos);
+            LogicManager.viewer.ShowFakeFxEffect("ÊêúÔºÅ", Pos);
             LogicManager.viewer.StartLoot(this);
         }
 

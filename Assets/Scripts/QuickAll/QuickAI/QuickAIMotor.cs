@@ -21,7 +21,7 @@
 
 //    public void MoveToFixPoint(Vector2 point)
 //    {
-//        //// 如果没有路径或已到达
+//        //// 濡傛灉娌℃湁璺緞鎴栧凡鍒拌揪
 //        //if (!agent.hasPath || agent.pathPending)
 //        //    return;
 
@@ -37,7 +37,7 @@
 //        //rb.velocity = dir * speed;
 //        //if (dir.sqrMagnitude > 0.0001f)
 //        //{
-//        //    // 2D 朝向：以 transform.right 作为朝向
+//        //    // 2D 鏈濆悜锛氫互 transform.right 浣滀负鏈濆悜
 //        //    float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 //        //    rb.rotation = angle;
 //        //}

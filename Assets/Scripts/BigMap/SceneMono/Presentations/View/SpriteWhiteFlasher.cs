@@ -8,17 +8,17 @@ namespace My.Map
     {
         public SpriteRenderer sr;
 
-        // ÊôĞÔ ID »º´æ£¨ĞÔÄÜÓÅ»¯£ºÓÃÕûÊıID±È×Ö·û´®²éÕÒ¿ìºÜ¶à£©
+        // å±æ€§ ID ç¼“å­˜ï¼ˆæ€§èƒ½ä¼˜åŒ–ï¼šç”¨æ•´æ•°IDæ¯”å­—ç¬¦ä¸²æŸ¥æ‰¾å¿«å¾ˆå¤šï¼‰
         private static readonly int FlashAmountID = Shader.PropertyToID("_FlashAmount");
         private static readonly int BrightBoostID = Shader.PropertyToID("_BrightBoost");
 
-        [Range(0, 1)] public float peakAmount = 1.0f; // ½¨Òé Shader Àï°ÑÂß¼­Ğ´ºÃ£¬ÕâÀïÖ»´«0-1
+        [Range(0, 1)] public float peakAmount = 1.0f; // å»ºè®® Shader é‡ŒæŠŠé€»è¾‘å†™å¥½ï¼Œè¿™é‡Œåªä¼ 0-1
         private float brightBoost = 0.24f;
         private float duration = 0.3f;
 
         private Coroutine routine;
 
-        // MPB »º´æ£º²»ĞèÒªÃ¿´Î update ¶¼ new Ò»¸ö
+        // MPB ç¼“å­˜ï¼šä¸éœ€è¦æ¯æ¬¡ update éƒ½ new ä¸€ä¸ª
         private MaterialPropertyBlock _mpb;
 
         void Awake()
@@ -26,14 +26,14 @@ namespace My.Map
             if (!sr) sr = GetComponentInChildren<SpriteRenderer>();
             _mpb = new MaterialPropertyBlock();
 
-            // Ô¤ÏÈÉèÖÃºÃ¾²Ì¬ÊôĞÔ£¬±ÜÃâÔËĞĞÊ±·´¸´ÉèÖÃ
-            // ×¢Òâ£ºÕâÀïĞèÒªÏÈ»ñÈ¡µ±Ç°×´Ì¬£¬ÒÔÃâ¸²¸ÇÁËÆäËûÊôĞÔ
+            // é¢„å…ˆè®¾ç½®å¥½é™æ€å±æ€§ï¼Œé¿å…è¿è¡Œæ—¶åå¤è®¾ç½®
+            // æ³¨æ„ï¼šè¿™é‡Œéœ€è¦å…ˆè·å–å½“å‰çŠ¶æ€ï¼Œä»¥å…è¦†ç›–äº†å…¶ä»–å±æ€§
             sr.GetPropertyBlock(_mpb);
             _mpb.SetFloat(BrightBoostID, brightBoost);
             sr.SetPropertyBlock(_mpb);
         }
 
-        // ¿ÉÒÔÔÚ Editor µ÷Õû²ÎÊı²âÊÔ
+        // å¯ä»¥åœ¨ Editor è°ƒæ•´å‚æ•°æµ‹è¯•
         [ContextMenu("Test Flash")]
         public void TriggerFlash()
         {
@@ -47,18 +47,18 @@ namespace My.Map
             float up = duration * 0.35f;
             float down = duration - up;
 
-            // 1. ÉÏÉı½×¶Î
+            // 1. ä¸Šå‡é˜¶æ®µ
             while (t < up)
             {
                 t += Time.deltaTime;
                 float val = Mathf.Lerp(0f, peakAmount, t / up);
-                UpdateMaterial(val); // ·â×°ÉèÖÃÂß¼­
+                UpdateMaterial(val); // å°è£…è®¾ç½®é€»è¾‘
                 yield return null;
             }
 
             t = 0f;
 
-            // 2. ÏÂ½µ½×¶Î
+            // 2. ä¸‹é™é˜¶æ®µ
             while (t < down)
             {
                 t += Time.deltaTime;
@@ -67,21 +67,21 @@ namespace My.Map
                 yield return null;
             }
 
-            // 3. ¹éÁãÈ·±£¸É¾»
+            // 3. å½’é›¶ç¡®ä¿å¹²å‡€
             UpdateMaterial(0f);
             routine = null;
         }
 
-        // ºËĞÄÓÅ»¯·½·¨
+        // æ ¸å¿ƒä¼˜åŒ–æ–¹æ³•
         private void UpdateMaterial(float amount)
         {
-            // 1. »ñÈ¡µ±Ç° PropertyBlock (±ØĞëÏÈ Get£¬·ñÔò»á¶ªÊ§Ö®Ç°µÄÆäËûÊôĞÔĞŞ¸Ä)
+            // 1. è·å–å½“å‰ PropertyBlock (å¿…é¡»å…ˆ Getï¼Œå¦åˆ™ä¼šä¸¢å¤±ä¹‹å‰çš„å…¶ä»–å±æ€§ä¿®æ”¹)
             sr.GetPropertyBlock(_mpb);
 
-            // 2. ĞŞ¸ÄÎÒÃÇ¹Ø×¢µÄÖµ
+            // 2. ä¿®æ”¹æˆ‘ä»¬å…³æ³¨çš„å€¼
             _mpb.SetFloat(FlashAmountID, amount);
 
-            // 3. ÉèÖÃ»ØÈ¥
+            // 3. è®¾ç½®å›å»
             sr.SetPropertyBlock(_mpb);
         }
     }

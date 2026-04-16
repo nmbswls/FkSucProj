@@ -71,9 +71,9 @@ namespace My.Map.Logic
             foreach (var kv in RefreshInfoRuntimes)
             {
                 var rt = kv.Value;
+                EnsureLinkedRefreshOnRuntime(kv.Key, rt);
                 var entityInstIdPersist = rt.EntityInstId;
-                if (TryGetRefreshInfoByStaticId(kv.Key, out var refreshDef) &&
-                    IsSavePointRefreshInfo(refreshDef))
+                if (IsSavePointRefreshRuntime(kv.Key, rt))
                 {
                     entityInstIdPersist = 0;
                 }
@@ -84,7 +84,7 @@ namespace My.Map.Logic
                     EntityInstId = entityInstIdPersist,
                     LastRespawnTime = rt.LastRespawnTime,
                     LastDestroyTime = rt.LastDestroyTime,
-                    LastRemovalWasVisibilityCond = rt.LastRemovalWasVisibilityCond,
+                    LastRemovalReason = (int)rt.LastRemovalReason,
                 });
             }
 
@@ -153,13 +153,15 @@ namespace My.Map.Logic
                     entityInstId = 0;
                 }
 
-                RefreshInfoRuntimes[r.StaticId] = new SceneRefreshInfoRuntime
+                var rt = new SceneRefreshInfoRuntime
                 {
                     EntityInstId = entityInstId,
                     LastRespawnTime = r.LastRespawnTime,
                     LastDestroyTime = r.LastDestroyTime,
-                    LastRemovalWasVisibilityCond = r.LastRemovalWasVisibilityCond,
+                    LastRemovalReason = SanitizePersistedRemovalReason(r.LastRemovalReason),
                 };
+                EnsureLinkedRefreshOnRuntime(r.StaticId, rt);
+                RefreshInfoRuntimes[r.StaticId] = rt;
             }
 
             Record2RefreshInfo.Clear();

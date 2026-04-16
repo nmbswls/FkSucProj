@@ -48,12 +48,12 @@ namespace My.Map
             newEntities.Clear();
             foreach (var inEntity in inEnties)
             {
-                // 新的
+                // 鏂扮殑
                 if(!currAffectedEntites.Contains(inEntity.Id))
                 {
                     LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, cacheCfg.AreaBuffId, casterId:Id);
                 }
-                // 维护tmp2
+                // 缁存姢tmp2
                 newEntities.Add(inEntity.Id);
             }
 
@@ -75,7 +75,7 @@ namespace My.Map
         {
             base.DoEntityDestroyed(reason);
 
-            // 清理
+            // 娓呯悊
             foreach(var curEntity in currAffectedEntites)
             {
                 LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, cacheCfg.AreaBuffId, casterId: Id);

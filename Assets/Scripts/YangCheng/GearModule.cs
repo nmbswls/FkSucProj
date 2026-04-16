@@ -9,7 +9,7 @@ namespace My
         public event Action<IProgressionSource> OnStatsChanged;
 
         private int _level = 1;
-        // Ä£ÄâÅäÖÃ±íÊı¾İ£ºÃ¿ÉıÒ»¼¶¼Ó¶àÉÙÊôĞÔ
+        // æ¨¡æ‹Ÿé…ç½®è¡¨æ•°æ®ï¼šæ¯å‡ä¸€çº§åŠ å¤šå°‘å±æ€§
         private Dictionary<int, float> _growthRates;
         private Dictionary<int, float> _baseStats;
 
@@ -29,7 +29,7 @@ namespace My
 
         public void EvaluateStats(StatMap targetMap)
         {
-            // Âß¼­£º»ù´¡Öµ + (µÈ¼¶-1 * ³É³¤ÂÊ)
+            // é€»è¾‘ï¼šåŸºç¡€å€¼ + (ç­‰çº§-1 * æˆé•¿ç‡)
             foreach (var pair in _baseStats)
             {
                 float growth = _growthRates.ContainsKey(pair.Key) ? _growthRates[pair.Key] : 0;

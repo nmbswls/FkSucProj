@@ -22,7 +22,7 @@ namespace My.UI
 {
 
     /// <summary>
-    /// ½»»¥Ãæ°å
+    /// äº¤äº’é¢æ¿
     /// </summary>
     public class SceneInteractMenuPanel : PanelBase, IInputConsumer, IRefreshable
     {
@@ -41,11 +41,11 @@ namespace My.UI
 
 
         /// <summary>
-        /// UI×é¼ş
+        /// UIç»„ä»¶
         /// </summary>
         /// 
         [Header("Normal Interact")]
-        public GameObject NormalInteractRoot; // ½»»¥Ï¸½Ú
+        public GameObject NormalInteractRoot; // äº¤äº’ç»†èŠ‚
         public CanvasGroup NormalInteractCG;
 
         public GameObject TopOpHint;
@@ -61,14 +61,14 @@ namespace My.UI
 
         public UISceneInteractMenu4Choose ChooseInteractMenu;
 
-        [Header("ÆäËû")]
+        [Header("å…¶ä»–")]
         public bool WithHigherInteract;
 
 
         public RectTransform HModeExecuteHint;
 
         /// <summary>
-        /// µ±Ç°»îÔ¾¿É½»»¥ÁĞ±í
+        /// å½“å‰æ´»è·ƒå¯äº¤äº’åˆ—è¡¨
         /// </summary>
         public List<IntResultItem> ActiveInteractableList = new();
         public ISceneInteractable? currFocusInteractable { get; set; } = null;
@@ -114,13 +114,13 @@ namespace My.UI
 
             if(currFocusInteractable != null)
             {
-                // ¸üĞÂÏêÇéÌõÎ»ÖÃ
+                // æ›´æ–°è¯¦æƒ…æ¡ä½ç½®
                 var hintPos = currFocusInteractable.GetHintAnchorPosition();
                 Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     UIManager.Instance.RootCanvas.transform as RectTransform,
                     screenPos,
-                    UIManager.Instance.UICamera,   // Screen Space - Camera ÓÃÉãÏñ»ú£»Overlay Ä£Ê½´« null
+                    UIManager.Instance.UICamera,   // Screen Space - Camera ç”¨æ‘„åƒæœºï¼›Overlay æ¨¡å¼ä¼  null
                     out Vector2 localPos
                 );
                 NormalInteractRoot.transform.localPosition = localPos;
@@ -128,13 +128,13 @@ namespace My.UI
 
             if(currExecuteTarget != null)
             {
-                // ¸üĞÂÏêÇéÌõÎ»ÖÃ
+                // æ›´æ–°è¯¦æƒ…æ¡ä½ç½®
                 var hintPos = currExecuteTarget.GetHintAnchorPosition();
                 Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     UIManager.Instance.RootCanvas.transform as RectTransform,
                     screenPos,
-                    UIManager.Instance.UICamera,   // Screen Space - Camera ÓÃÉãÏñ»ú£»Overlay Ä£Ê½´« null
+                    UIManager.Instance.UICamera,   // Screen Space - Camera ç”¨æ‘„åƒæœºï¼›Overlay æ¨¡å¼ä¼  null
                     out Vector2 localPos
                 );
                 HModeExecuteHint.transform.localPosition = localPos;
@@ -151,8 +151,8 @@ namespace My.UI
             _refreshSelectionTimer = 0;
         }
         /// <summary>
-        /// ³¢ÊÔ¸üĞÂÒÑ´æÔÚµÄ½»»¥
-        /// Ö÷ÒªÓÃÓÚ¸üĞÂcdµÈ
+        /// å°è¯•æ›´æ–°å·²å­˜åœ¨çš„äº¤äº’
+        /// ä¸»è¦ç”¨äºæ›´æ–°cdç­‰
         /// </summary>
         private void TryUpdateInteractSelections()
         {
@@ -212,15 +212,15 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ÇĞ»»ÏÂÒ»¸öfocusÄ¿±ê
+        /// åˆ‡æ¢ä¸‹ä¸€ä¸ªfocusç›®æ ‡
         /// </summary>
         public void CycleNextFocusTarget()
         {
-            if (ActiveInteractableList.Count <= 1) return; // Ö»ÓĞÒ»¸ö»òÃ»ÓĞ£¬²»ÓÃÇĞ
+            if (ActiveInteractableList.Count <= 1) return; // åªæœ‰ä¸€ä¸ªæˆ–æ²¡æœ‰ï¼Œä¸ç”¨åˆ‡
 
-            // 1. ÕâÊÇÒ»¸öºÃµÄÊ±»ú¶ÔÁĞ±í½øĞĞÒ»´ÎÅÅĞò
-            // ÈÃÇĞ»»Ë³Ğò·ûºÏÖ±¾õ£¨±ÈÈç°´´Ó×óµ½ÓÒ£¬»òÓÉ½üµ½Ô¶£©
-            // ×¢Òâ£º²»ÒªÃ¿Ö¡ÅÅĞò£¬Ö»ÔÚÇĞ»»Ê±ÅÅĞò
+            // 1. è¿™æ˜¯ä¸€ä¸ªå¥½çš„æ—¶æœºå¯¹åˆ—è¡¨è¿›è¡Œä¸€æ¬¡æ’åº
+            // è®©åˆ‡æ¢é¡ºåºç¬¦åˆç›´è§‰ï¼ˆæ¯”å¦‚æŒ‰ä»å·¦åˆ°å³ï¼Œæˆ–ç”±è¿‘åˆ°è¿œï¼‰
+            // æ³¨æ„ï¼šä¸è¦æ¯å¸§æ’åºï¼Œåªåœ¨åˆ‡æ¢æ—¶æ’åº
             SortCandidatesByDistance();
 
             int currentIndex = -1;
@@ -253,7 +253,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ÅÅĞò
+        /// æ’åº
         /// </summary>
         private void SortCandidatesByDistance()
         {
@@ -263,7 +263,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ¼ì²éËø½»»¥Ãæ°å
+        /// æ£€æŸ¥é”äº¤äº’é¢æ¿
         /// </summary>
         private void TickRefreshNormalInteractBlock()
         {
@@ -298,7 +298,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ±£µ×Ë¢ĞÂ½»»¥ÁĞ±í
+        /// ä¿åº•åˆ·æ–°äº¤äº’åˆ—è¡¨
         /// </summary>
         public void RefreshFocusInteractable()
         {
@@ -339,7 +339,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ¸üĞÂÊÓÍ¼
+        /// æ›´æ–°è§†å›¾
         /// </summary>
         private void UpdateFocusInteractableView()
         {
@@ -351,18 +351,18 @@ namespace My.UI
             {
                 NormalInteractRoot.gameObject.SetActive(true);
 
-                // ¸üĞÂÏêÇéÌõÎ»ÖÃ
+                // æ›´æ–°è¯¦æƒ…æ¡ä½ç½®
                 var hintPos = currFocusInteractable.GetHintAnchorPosition();
                 Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     UIManager.Instance.RootCanvas.transform as RectTransform,
                     screenPos,
-                    UIManager.Instance.UICamera,   // Screen Space - Camera ÓÃÉãÏñ»ú£»Overlay Ä£Ê½´« null
+                    UIManager.Instance.UICamera,   // Screen Space - Camera ç”¨æ‘„åƒæœºï¼›Overlay æ¨¡å¼ä¼  null
                     out Vector2 localPos
                 );
                 NormalInteractRoot.transform.localPosition = localPos;
 
-                string topHint = " ½»»¥";
+                string topHint = " äº¤äº’";
 
                 IsDetailMenuShown = false;
                 if (currFocusInteractable != null)
@@ -377,7 +377,7 @@ namespace My.UI
 
                 ObjFloatingNameText.text = currFocusInteractable.ShowName;
 
-                // ÓĞ¿ÉÇĞ»»ÏîÊ± ÇĞ»»
+                // æœ‰å¯åˆ‡æ¢é¡¹æ—¶ åˆ‡æ¢
                 if (ActiveInteractableList.Count > 1)
                 {
                     ObjSwitchHint.gameObject.SetActive(true);
@@ -408,7 +408,7 @@ namespace My.UI
         private RefreshInteractObjIntent refreshIntent;
 
         /// <summary>
-        /// Ë¢ĞÂ½»»¥Îï
+        /// åˆ·æ–°äº¤äº’ç‰©
         /// </summary>
         /// <param name="interactables"></param>
         public void RefreshActiveInteractableObjs(List<IntResultItem> interactables)
@@ -434,7 +434,7 @@ namespace My.UI
             }
 
 
-            // ½öÎ¬»¤µ±Ç°
+            // ä»…ç»´æŠ¤å½“å‰
             this.ActiveInteractableList.Clear();
             if (refreshIntent.Interactables.Count > 0)
             {
@@ -456,7 +456,7 @@ namespace My.UI
                 //}
             }
 
-            //// µ±¿É½»»¥ÁĞ±í
+            //// å½“å¯äº¤äº’åˆ—è¡¨
             //if (currFocusInteractable != null)
             //{
             //    var currentIndex = ActiveInteractableList.FindIndex(x => x.interactable == currFocusInteractable);
@@ -466,14 +466,14 @@ namespace My.UI
             //    }
             //}
 
-            // Ë¢ĞÂfocus¶ÔÏó
+            // åˆ·æ–°focuså¯¹è±¡
             RefreshFocusInteractable();
             refreshIntent = null;
         }
 
 
         /// <summary>
-        /// Ë¢ĞÂ´¦¾öÁĞ±í
+        /// åˆ·æ–°å¤„å†³åˆ—è¡¨
         /// </summary>
         public void RefreshExecuteTarget(SceneNpcPresenter npcPresenter)
         {
@@ -492,13 +492,13 @@ namespace My.UI
             {
                 HModeExecuteHint.gameObject.SetActive(true);
 
-                // ¸üĞÂÏêÇéÌõÎ»ÖÃ
+                // æ›´æ–°è¯¦æƒ…æ¡ä½ç½®
                 var hintPos = currExecuteTarget.GetHintAnchorPosition();
                 Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     UIManager.Instance.RootCanvas.transform as RectTransform,
                     screenPos,
-                    UIManager.Instance.UICamera,   // Screen Space - Camera ÓÃÉãÏñ»ú£»Overlay Ä£Ê½´« null
+                    UIManager.Instance.UICamera,   // Screen Space - Camera ç”¨æ‘„åƒæœºï¼›Overlay æ¨¡å¼ä¼  null
                     out Vector2 localPos
                 );
                 HModeExecuteHint.transform.localPosition = localPos;
@@ -569,7 +569,7 @@ namespace My.UI
 
 
         /// <summary>
-        /// È·ÈÏ
+        /// ç¡®è®¤
         /// </summary>
         /// <returns></returns>
         public bool OnConfirm()
@@ -596,7 +596,7 @@ namespace My.UI
                     currFocusInteractable.IsInteractDetail = true;
                 }
 
-                // ¸ø³öselection
+                // ç»™å‡ºselection
                 var selections = currFocusInteractable.GetInteractSelections();
                 var innerList = new List<ChooseItem>();
                 foreach (var one in selections)
@@ -676,7 +676,7 @@ namespace My.UI
 
 
         /// <summary>
-        /// ¼àÌı¹öÂÖÊÂ¼ş
+        /// ç›‘å¬æ»šè½®äº‹ä»¶
         /// </summary>
         /// <param name="deltaY"></param>
         /// <returns></returns>
@@ -697,11 +697,11 @@ namespace My.UI
             {
                 if (deltaY > 0f)
                 {
-                    ChooseInteractMenu.MoveCursor(-1);  // ÉÏ¹ö£ºË÷Òı¼õ
+                    ChooseInteractMenu.MoveCursor(-1);  // ä¸Šæ»šï¼šç´¢å¼•å‡
                 }
                 else
                 {
-                    ChooseInteractMenu.MoveCursor(1);  // ÉÏ¹ö£ºË÷Òı¼õ
+                    ChooseInteractMenu.MoveCursor(1);  // ä¸Šæ»šï¼šç´¢å¼•å‡
                 }
             }
             return true;

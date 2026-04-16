@@ -8,11 +8,11 @@ using UnityEngine.UI;
 namespace My.Map
 {
     /// <summary>
-    /// ·ÕÎ§¸Ğ
+    /// æ°›å›´æ„Ÿ
     /// </summary>
     public class AmbientBubble : MonoBehaviour
     {
-        [Header("UI ×é¼ş")]
+        [Header("UI ç»„ä»¶")]
         public TextMeshProUGUI contentText;
         public Image MainBubble;
 
@@ -20,24 +20,24 @@ namespace My.Map
 
         public RectTransform rectTransform;
 
-        [Header("»ù´¡¶¯»­²ÎÊı")]
-        public float floatDistance = 80f; // ÏòÉÏÆ¯¸¡¾àÀë
-        public float lifeTime = 5f;       // ´æ»îÊ±¼ä
-        public float fadeTime = 0.8f;     // µ­Èëµ­³öÊ±¼ä
+        [Header("åŸºç¡€åŠ¨ç”»å‚æ•°")]
+        public float floatDistance = 80f; // å‘ä¸Šæ¼‚æµ®è·ç¦»
+        public float lifeTime = 5f;       // å­˜æ´»æ—¶é—´
+        public float fadeTime = 0.8f;     // æ·¡å…¥æ·¡å‡ºæ—¶é—´
 
-        [Header("·ÕÎ§¸ĞÉèÖÃ (Í¸ÊÓ)")]
-        public float sideRotationAngle = 25f; // ²à±ßÇãĞ±½Ç¶È
+        [Header("æ°›å›´æ„Ÿè®¾ç½® (é€è§†)")]
+        public float sideRotationAngle = 25f; // ä¾§è¾¹å€¾æ–œè§’åº¦
 
         // ---------------------------------------------------------
-        // ĞÂÔö£ºÕûºÏ½øÀ´µÄ Jitter (ÎÄ×Ö·ĞÌÚ) ²ÎÊı
+        // æ–°å¢ï¼šæ•´åˆè¿›æ¥çš„ Jitter (æ–‡å­—æ²¸è…¾) å‚æ•°
         // ---------------------------------------------------------
-        [Header("ÎÄ×Ö·ĞÌÚÌØĞ§ (Vertex Jitter)")]
-        [Tooltip("½Ç¶È¶¶¶¯·ù¶È")]
+        [Header("æ–‡å­—æ²¸è…¾ç‰¹æ•ˆ (Vertex Jitter)")]
+        [Tooltip("è§’åº¦æŠ–åŠ¨å¹…åº¦")]
         public float JitterAngleMultiplier = 1.5f;
-        [Tooltip("Î»ÖÃ²¨¶¯·ù¶È (ÖµÔ½Ğ¡Ô½Ï¸Äå£¬Ô½´óÔ½¿ñÂÒ)")]
+        [Tooltip("ä½ç½®æ³¢åŠ¨å¹…åº¦ (å€¼è¶Šå°è¶Šç»†è…»ï¼Œè¶Šå¤§è¶Šç‹‚ä¹±)")]
         public float JitterCurveScale = 0.6f;
 
-        // ÄÚ²¿±äÁ¿
+        // å†…éƒ¨å˜é‡
         private bool isInitialized = false;
 
         public int Style = 0;
@@ -68,31 +68,31 @@ namespace My.Map
         }
 
         // ---------------------------------------------------------
-        // ³õÊ¼»¯ÓëÉúÃüÖÜÆÚ
+        // åˆå§‹åŒ–ä¸ç”Ÿå‘½å‘¨æœŸ
         // ---------------------------------------------------------
         public void Setup(string text, Vector2 startPos, float scale, Vector2 globalScaleRange, int side, int style = 0)
         {
-            // 1. »ù´¡ÉèÖÃ
+            // 1. åŸºç¡€è®¾ç½®
             this.Style = style;
 
             contentText.text = text;
             rectTransform.anchoredPosition = startPos;
             transform.localScale = Vector3.one * scale;
 
-            // 2. Ó¦ÓÃÍ¸ÊÓºÍ¶ÔÆë (±ßÔµ·ÕÎ§¸ĞºËĞÄ)
+            // 2. åº”ç”¨é€è§†å’Œå¯¹é½ (è¾¹ç¼˜æ°›å›´æ„Ÿæ ¸å¿ƒ)
             ApplyAtmosphereStyle(side);
 
-            // 3. ¼ÆËãÑÕÉ«·Ö²ã (½üÊµÔ¶Ğé)
+            // 3. è®¡ç®—é¢œè‰²åˆ†å±‚ (è¿‘å®è¿œè™š)
             float normalizedScale = Mathf.InverseLerp(globalScaleRange.x, globalScaleRange.y, scale);
             float targetAlpha = Mathf.Lerp(0.7f, 1f, normalizedScale);
 
-            // ³õÊ¼ÉèÎªÈ«Í¸Ã÷
+            // åˆå§‹è®¾ä¸ºå…¨é€æ˜
             canvasGroup.alpha = 0;
 
-            // ±ê¼Ç³õÊ¼»¯Íê³É£¬¿ªÊ¼ÔÚUpdateÖĞÔËĞĞJitter
+            // æ ‡è®°åˆå§‹åŒ–å®Œæˆï¼Œå¼€å§‹åœ¨Updateä¸­è¿è¡ŒJitter
             isInitialized = true;
 
-            // 4. ¿ªÊ¼ DoTween ¶¯»­ĞòÁĞ
+            // 4. å¼€å§‹ DoTween åŠ¨ç”»åºåˆ—
             AnimateBubble(targetAlpha);
 
             RefreshStyle();
@@ -100,7 +100,7 @@ namespace My.Map
 
         void Update()
         {
-            // Ã¿Ò»Ö¡¸üĞÂ¶¥µ×Êı¾İ£¬²úÉú·ĞÌÚĞ§¹û
+            // æ¯ä¸€å¸§æ›´æ–°é¡¶åº•æ•°æ®ï¼Œäº§ç”Ÿæ²¸è…¾æ•ˆæœ
             if (isInitialized && contentText != null)
             {
                 ApplyVertexJitter(contentText);
@@ -112,22 +112,22 @@ namespace My.Map
         }
 
         // ---------------------------------------------------------
-        // ¶¯»­Âß¼­ (DoTween)
+        // åŠ¨ç”»é€»è¾‘ (DoTween)
         // ---------------------------------------------------------
         void AnimateBubble(float targetAlpha)
         {
-            // µ­Èë
+            // æ·¡å…¥
             canvasGroup.DOFade(targetAlpha, fadeTime);
 
-            // Æ¯¸¡ÒÆ¶¯
+            // æ¼‚æµ®ç§»åŠ¨
             Vector2 endPos = rectTransform.anchoredPosition;
             endPos.y += floatDistance;
             rectTransform.DOAnchorPos(endPos, lifeTime).SetEase(Ease.Linear);
 
-            // ÕûÌå UI ¿éµÄÎ¢Èõ»Î¶¯ (Ä£ÄâÊÖ³Ö¸Ğ)
+            // æ•´ä½“ UI å—çš„å¾®å¼±æ™ƒåŠ¨ (æ¨¡æ‹Ÿæ‰‹æŒæ„Ÿ)
             rectTransform.DOShakeAnchorPos(lifeTime, strength: 2f, vibrato: 3, randomness: 90, snapping: false);
 
-            // Ïú»ÙÁ÷³Ì
+            // é”€æ¯æµç¨‹
             Sequence seq = DOTween.Sequence();
             seq.AppendInterval(lifeTime - fadeTime);
             seq.Append(canvasGroup.DOFade(0f, fadeTime));
@@ -140,18 +140,18 @@ namespace My.Map
 
             switch (side)
             {
-                case 0: // ×ó²à£ºÏòÓÒ¿´
+                case 0: // å·¦ä¾§ï¼šå‘å³çœ‹
                     rectTransform.localRotation = Quaternion.Euler(0, sideRotationAngle, 0);
                     //contentText.alignment = TextAlignmentOptions.MidlineLeft;
                     break;
-                case 1: // ÓÒ²à£ºÏò×ó¿´
+                case 1: // å³ä¾§ï¼šå‘å·¦çœ‹
                     rectTransform.localRotation = Quaternion.Euler(0, -sideRotationAngle, 0);
                     //contentText.alignment = TextAlignmentOptions.MidlineRight;
                     break;
-                case 2: // ÉÏ·½
+                case 2: // ä¸Šæ–¹
                     rectTransform.localRotation = Quaternion.Euler(10, 0, 0);
                     break;
-                case 3: // ÏÂ·½
+                case 3: // ä¸‹æ–¹
                     rectTransform.localRotation = Quaternion.Euler(-10, 0, 0);
                     break;
             }
@@ -182,45 +182,45 @@ namespace My.Map
         }
 
         // ---------------------------------------------------------
-        // ºËĞÄÌØĞ§£º¶¥µãÔëµã (Ô­ TextJitterEffect Âß¼­)
+        // æ ¸å¿ƒç‰¹æ•ˆï¼šé¡¶ç‚¹å™ªç‚¹ (åŸ TextJitterEffect é€»è¾‘)
         // ---------------------------------------------------------
         void ApplyVertexJitter(TextMeshProUGUI textPro)
         {
-            // Ç¿ÖÆË¢ĞÂÍø¸ñĞÅÏ¢
+            // å¼ºåˆ¶åˆ·æ–°ç½‘æ ¼ä¿¡æ¯
             textPro.ForceMeshUpdate();
             TMP_TextInfo textInfo = textPro.textInfo;
 
-            // ±éÀúËùÓĞ×Ö·û
+            // éå†æ‰€æœ‰å­—ç¬¦
             for (int i = 0; i < textInfo.characterCount; i++)
             {
                 TMP_CharacterInfo charInfo = textInfo.characterInfo[i];
 
-                // Ìø¹ı²»¿É¼û×Ö·û£¨¿Õ¸ñµÈ£©
+                // è·³è¿‡ä¸å¯è§å­—ç¬¦ï¼ˆç©ºæ ¼ç­‰ï¼‰
                 if (!charInfo.isVisible) continue;
 
-                // »ñÈ¡¶¥µãË÷Òı
+                // è·å–é¡¶ç‚¹ç´¢å¼•
                 int materialIndex = charInfo.materialReferenceIndex;
                 int vertexIndex = charInfo.vertexIndex;
                 Vector3[] vertices = textInfo.meshInfo[materialIndex].vertices;
 
-                // --- ºËĞÄËã·¨£ºËæ»ú¾ØÕó±ä»» ---
+                // --- æ ¸å¿ƒç®—æ³•ï¼šéšæœºçŸ©é˜µå˜æ¢ ---
 
-                // 1. ¼ÆËãËæ»úÆ«ÒÆ (Jitter)
+                // 1. è®¡ç®—éšæœºåç§» (Jitter)
                 Vector3 jitterOffset = new Vector3(
                     Random.Range(-0.25f, 0.25f),
                     Random.Range(-0.25f, 0.25f),
                     0
                 ) * JitterCurveScale;
 
-                // 2. ¼ÆËãËæ»úĞı×ª
+                // 2. è®¡ç®—éšæœºæ—‹è½¬
                 float randomAngle = Random.Range(-5f, 5f) * JitterAngleMultiplier;
                 Quaternion jitterRot = Quaternion.Euler(0, 0, randomAngle);
 
-                // 3. ¹¹½¨±ä»»¾ØÕó
+                // 3. æ„å»ºå˜æ¢çŸ©é˜µ
                 Matrix4x4 matrix = Matrix4x4.TRS(jitterOffset, jitterRot, Vector3.one);
 
-                // 4. Ó¦ÓÃµ½×Ö·ûµÄËÄ¸ö¶¥µã
-                // ÎªÁËÈÃĞı×ªÎ§ÈÆ×Ö·ûÖĞĞÄ£¬ĞèÒªÏÈÆ½ÒÆµ½ÖĞĞÄ£¬Ğı×ª£¬ÔÙÒÆ»ØÈ¥
+                // 4. åº”ç”¨åˆ°å­—ç¬¦çš„å››ä¸ªé¡¶ç‚¹
+                // ä¸ºäº†è®©æ—‹è½¬å›´ç»•å­—ç¬¦ä¸­å¿ƒï¼Œéœ€è¦å…ˆå¹³ç§»åˆ°ä¸­å¿ƒï¼Œæ—‹è½¬ï¼Œå†ç§»å›å»
                 Vector3 charCenter = (vertices[vertexIndex + 0] + vertices[vertexIndex + 2]) / 2;
 
                 vertices[vertexIndex + 0] = matrix.MultiplyPoint3x4(vertices[vertexIndex + 0] - charCenter) + charCenter;
@@ -229,7 +229,7 @@ namespace My.Map
                 vertices[vertexIndex + 3] = matrix.MultiplyPoint3x4(vertices[vertexIndex + 3] - charCenter) + charCenter;
             }
 
-            // ½«ĞŞ¸ÄºóµÄ¶¥µãÊı¾İÍÆËÍµ½Mesh
+            // å°†ä¿®æ”¹åçš„é¡¶ç‚¹æ•°æ®æ¨é€åˆ°Mesh
             textPro.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
         }
     }

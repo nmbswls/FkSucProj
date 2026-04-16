@@ -25,13 +25,13 @@ namespace My.Map
                 return;
             }
 
-            // Ê¹ÓÃµ±Ç°ÑÕÉ«×÷Îª»ùÉ«
+            // ä½¿ç”¨å½“å‰é¢œè‰²ä½œä¸ºåŸºè‰²
             _baseColor = _sr.color;
             _elapsed = 0f;
             _inited = true;
         }
 
-        // ¿ÉÔÚÉú³ÉÊ±´«Èë³õÊ¼ÑÕÉ«£¨ÓëÄ¿±êÒ»ÖÂ£©
+        // å¯åœ¨ç”Ÿæˆæ—¶ä¼ å…¥åˆå§‹é¢œè‰²ï¼ˆä¸ç›®æ ‡ä¸€è‡´ï¼‰
         public void ResetLife(float l, Color initialColor)
         {
             life = l;
@@ -52,12 +52,12 @@ namespace My.Map
             float t = Mathf.Clamp01(_elapsed / life);
 
             var c = _sr.color;
-            c.a = Mathf.Lerp(_baseColor.a, 0f, t); // Alpha ´Ó³õÊ¼ -> 0
+            c.a = Mathf.Lerp(_baseColor.a, 0f, t); // Alpha ä»åˆå§‹ -> 0
             _sr.color = c;
 
             if (_elapsed >= life)
             {
-                // µ½µã½»¸øSpawnerµÄĞ­³Ì»ØÊÕ
+                // åˆ°ç‚¹äº¤ç»™Spawnerçš„åç¨‹å›æ”¶
             }
         }
     }

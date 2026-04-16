@@ -7,7 +7,7 @@ using UnityEngine;
 namespace My.Map.Entity
 {
     /// <summary>
-    /// 专门用于player扩散吸引
+    /// 涓撻棬鐢ㄤ簬player鎵╂暎鍚稿紩
     /// </summary>
     [Serializable]
     public class MapFightEffectBroadcastAttractCfg : MapFightEffectCfg

@@ -44,7 +44,7 @@ namespace My
             {
                 // give effect
                 //pInfo.
-                // ¼ÆËãexplode
+                // è®¡ç®—explode
                 if (pInfo.pData.ExplodeEffects != null)
                 {
                     foreach (var ef in pInfo.pData.ExplodeEffects)

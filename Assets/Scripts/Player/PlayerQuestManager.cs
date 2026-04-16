@@ -18,12 +18,12 @@ using static UnityEngine.Texture2D;
 namespace My.Player
 {
 
-    // --- ²½ÖèÔËĞĞÊ± ---
+    // --- æ­¥éª¤è¿è¡Œæ—¶ ---
 
     
     /// <summary>
-    /// µ¥¸öÄ¿±ê
-    /// ÈßÓà×°ÔØÅäÖÃÖĞµÄÊı¾İ
+    /// å•ä¸ªç›®æ ‡
+    /// å†—ä½™è£…è½½é…ç½®ä¸­çš„æ•°æ®
     /// </summary>
     public class QuestObjectiveRuntime
     {
@@ -90,7 +90,7 @@ namespace My.Player
             CurrStepId = data.StepId;
             CacheStepCfg = data;
 
-            // ³õÊ¼»¯ Outcomes
+            // åˆå§‹åŒ– Outcomes
             _objectiveRuntimes = new QuestObjectiveRuntime[data.CfgObjectives.Count];
             for (int i = 0; i < _objectiveRuntimes.Length; i++)
             {
@@ -170,7 +170,7 @@ namespace My.Player
                     }
                 }
 
-                // ¼ì²éÊÇ·ñÍê³É
+                // æ£€æŸ¥æ˜¯å¦å®Œæˆ
                 if (allFinish)
                 {
                     //_activeStep.OnStepCompleted(outcomeIdx);
@@ -202,12 +202,12 @@ namespace My.Player
         public bool IsActive { get; private set; }
 
         
-        // µ±Ç°»îÔ¾µÄ²½Öè
+        // å½“å‰æ´»è·ƒçš„æ­¥éª¤
         private StepRuntime _activeStep;
         public StepRuntime ActiveStep { get { return _activeStep; } }
 
-        // --- ÄÚ²¿±êÇ©¼¯ (Internal Tags) ---
-        // ÕâÊÇ×ÓÏµÍ³½»»¥µÄ¹Ø¼ü
+        // --- å†…éƒ¨æ ‡ç­¾é›† (Internal Tags) ---
+        // è¿™æ˜¯å­ç³»ç»Ÿäº¤äº’çš„å…³é”®
         private HashSet<string> _internalTags = new HashSet<string>();
 
         public bool ErrFlag;
@@ -217,7 +217,7 @@ namespace My.Player
         private List<EPlayerEventType> _currentListernTypes = new();
 
         /// <summary>
-        /// ´´½¨ÈÎÎñ
+        /// åˆ›å»ºä»»åŠ¡
         /// </summary>
         /// <param name="data"></param>
         /// <param name="ctx"></param>
@@ -251,7 +251,7 @@ namespace My.Player
         }
 
 
-        // ±êÇ©²Ù×÷ API
+        // æ ‡ç­¾æ“ä½œ API
         private void AddInternalTag(string tag)
         {
             if (!_internalTags.Contains(tag))
@@ -265,7 +265,7 @@ namespace My.Player
 
         private float _autoStepTimer = 0;
 
-        // Ö÷Ñ­»·
+        // ä¸»å¾ªç¯
         public void LateTick()
         {
             if (!IsActive) return;
@@ -302,7 +302,7 @@ namespace My.Player
         }
 
         /// <summary>
-        /// ´¦ÀíÏÂÒ»²½
+        /// å¤„ç†ä¸‹ä¸€æ­¥
         /// </summary>
         private void ResolveNextSteps()
         {
@@ -368,7 +368,7 @@ namespace My.Player
         }
 
         /// <summary>
-        /// ´¦ÀíÈÎÎñÍê³É
+        /// å¤„ç†ä»»åŠ¡å®Œæˆ
         /// </summary>
         public void OnQuestComplete()
         {
@@ -436,7 +436,7 @@ namespace My.Player
             
         }
 
-        #region ¼àÌı
+        #region ç›‘å¬
 
         /// <summary>
         /// 
@@ -579,7 +579,7 @@ namespace My.Player
         }
 
         /// <summary>
-        /// ×¢²áplayerÊÂ¼ş
+        /// æ³¨å†Œplayeräº‹ä»¶
         /// </summary>
         public void RegisterPlayerEvents()
         {
@@ -590,7 +590,7 @@ namespace My.Player
         private List<int> _removedQuests = new();
 
         /// <summary>
-        /// Ç¿ÖÆÍê³É
+        /// å¼ºåˆ¶å®Œæˆ
         /// </summary>
         /// <param name="questId"></param>
         public void ForceFinishQuest(int questId)
@@ -632,7 +632,7 @@ namespace My.Player
         }
 
         /// <summary>
-        /// ÇåÀí¹ıÆÚ
+        /// æ¸…ç†è¿‡æœŸ
         /// 
         /// </summary>
         public void TryRefreshQuest()
@@ -704,7 +704,7 @@ namespace My.Player
             EventOnQuestStepUpdate?.Invoke(questId);
         }
 
-        #region ¼àÌı
+        #region ç›‘å¬
 
         /// <summary>
         /// 

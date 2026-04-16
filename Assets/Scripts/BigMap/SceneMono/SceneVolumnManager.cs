@@ -12,33 +12,33 @@ namespace My.Map.Scene
     {
         public static SceneVolumnManager Instance { get; private set; }
 
-        [Header("ºóÆÚ´¦Àí Volume")]
+        [Header("åæœŸå¤„ç† Volume")]
         public Volume specialVisionVolume;
         public Volume defaultVolume;
 
-        [Header("·ººì/É«²Ê ½¥±äÉèÖÃ")]
-        public float smoothTransitionSpeed = 10f; // »­ÃæÑÕÉ«¹ı¶ÉËÙ¶È
-        public Color targetVisionColor = new Color(1f, 0.5f, 0.5f); // ÁÔÄ§ÈËÊÓÒ°µÄ·ººìÑÕÉ«
-        private Color defaultColor = Color.white; // Õı³£ÑÕÉ«
+        [Header("æ³›çº¢/è‰²å½© æ¸å˜è®¾ç½®")]
+        public float smoothTransitionSpeed = 10f; // ç”»é¢é¢œè‰²è¿‡æ¸¡é€Ÿåº¦
+        public Color targetVisionColor = new Color(1f, 0.5f, 0.5f); // çŒé­”äººè§†é‡çš„æ³›çº¢é¢œè‰²
+        private Color defaultColor = Color.white; // æ­£å¸¸é¢œè‰²
 
-        [Header("¾µÍ·»û±ä Âö³åÉèÖÃ")]
-        public float distortionDuration = 0.5f; // Å¤ÇúÂö³å³ÖĞøÊ±¼ä
-        public AnimationCurve distortionCurve;  // Å¤ÇúÇúÏß (·åÖµĞÍ ^)
+        [Header("é•œå¤´ç•¸å˜ è„‰å†²è®¾ç½®")]
+        public float distortionDuration = 0.5f; // æ‰­æ›²è„‰å†²æŒç»­æ—¶é—´
+        public AnimationCurve distortionCurve;  // æ‰­æ›²æ›²çº¿ (å³°å€¼å‹ ^)
 
         public float targetVignetteIntensity = 0.5f;
         private float defaultVignetteIntensity = 0f;
 
-        // ÊÂ¼ş
+        // äº‹ä»¶
         public static event Action<bool> OnVisionStateChanged;
 
         private bool isSpecialVisionActive = false;
         private float distortionTimer = 0f;
 
-        // ÌáÈ¡³öÀ´µÄÌØĞ§×é¼ş
+        // æå–å‡ºæ¥çš„ç‰¹æ•ˆç»„ä»¶
         private LensDistortion lensDistortion;
         private ColorAdjustments colorAdjustments;
 
-        private Vignette vignette; // ĞÂÔö£º°µ½Ç×é¼ş
+        private Vignette vignette; // æ–°å¢ï¼šæš—è§’ç»„ä»¶
 
         private void Awake()
         {
@@ -47,13 +47,13 @@ namespace My.Map.Scene
 
         void Start()
         {
-            // È·±£ÕûÌåÈ¨ÖØÊ¼ÖÕÎª1£¬ÈÃÄÚ²¿²ÎÊı×Ô¼º¾ö¶¨Ç¿¶È
+            // ç¡®ä¿æ•´ä½“æƒé‡å§‹ç»ˆä¸º1ï¼Œè®©å†…éƒ¨å‚æ•°è‡ªå·±å†³å®šå¼ºåº¦
             if (specialVisionVolume != null)
             {
                 specialVisionVolume.weight = 0f;
             }
 
-            // ·Ö±ğ»ñÈ¡ ¾µÍ·»û±ä ºÍ É«²Êµ÷Õû ×é¼ş
+            // åˆ†åˆ«è·å– é•œå¤´ç•¸å˜ å’Œ è‰²å½©è°ƒæ•´ ç»„ä»¶
             if (specialVisionVolume.profile.TryGet(out lensDistortion))
             {
                 lensDistortion.intensity.value = 0f;
@@ -73,7 +73,7 @@ namespace My.Map.Scene
         void Update()
         {
             
-            // 1. ¶ÀÁ¢´¦Àí£ºÉ«²ÊÂË¾µµÄÆ½»¬½¥±ä (¿ØÖÆºì¹â)
+            // 1. ç‹¬ç«‹å¤„ç†ï¼šè‰²å½©æ»¤é•œçš„å¹³æ»‘æ¸å˜ (æ§åˆ¶çº¢å…‰)
             if (colorAdjustments != null)
             {
                 Color targetColor = isSpecialVisionActive ? targetVisionColor : defaultColor;
@@ -95,7 +95,7 @@ namespace My.Map.Scene
             }
 
 
-            // 2. ¶ÀÁ¢´¦Àí£º¾µÍ·»û±äµÄ¶¯Ì¬Âö³å (²»ÊÜ½¥±äËÙ¶ÈÓ°Ïì£¬Ö±½Ó¶ÁÈ¡ÇúÏß)
+            // 2. ç‹¬ç«‹å¤„ç†ï¼šé•œå¤´ç•¸å˜çš„åŠ¨æ€è„‰å†² (ä¸å—æ¸å˜é€Ÿåº¦å½±å“ï¼Œç›´æ¥è¯»å–æ›²çº¿)
             if (isSpecialVisionActive && lensDistortion != null)
             {
                 if (distortionTimer < distortionDuration)
@@ -103,19 +103,19 @@ namespace My.Map.Scene
                     distortionTimer += Time.deltaTime;
                     float progress = distortionTimer / distortionDuration;
 
-                    // ´ÓÇúÏß¶ÁÈ¡Ç¿¶È£¬´ËÊ±²»»á±»Íâ²¿ weight Ï÷Èõ£¡
+                    // ä»æ›²çº¿è¯»å–å¼ºåº¦ï¼Œæ­¤æ—¶ä¸ä¼šè¢«å¤–éƒ¨ weight å‰Šå¼±ï¼
                     lensDistortion.intensity.value = distortionCurve.Evaluate(progress);
                 }
             }
             else if (!isSpecialVisionActive && lensDistortion != null)
             {
-                // ¹Ø±ÕÊ±È·±£»û±ä¹éÁã£¨»òÕßÄã¿ÉÒÔ¸ø¹Ø±ÕÒ²¼ÓÒ»¸öÇúÏß£©
+                // å…³é—­æ—¶ç¡®ä¿ç•¸å˜å½’é›¶ï¼ˆæˆ–è€…ä½ å¯ä»¥ç»™å…³é—­ä¹ŸåŠ ä¸€ä¸ªæ›²çº¿ï¼‰
                 lensDistortion.intensity.value = 0f;
             }
         }
 
         /// <summary>
-        /// ¶ÔÍâÌá¹©µÄ½Ó¿Ú£¬·½±ãUIµã»÷»òÆäËû½Å±¾µ÷ÓÃ
+        /// å¯¹å¤–æä¾›çš„æ¥å£ï¼Œæ–¹ä¾¿UIç‚¹å‡»æˆ–å…¶ä»–è„šæœ¬è°ƒç”¨
         /// </summary>
         public void EnterHuntingMode(bool active)
         {
@@ -123,7 +123,7 @@ namespace My.Map.Scene
 
             if (active)
             {
-                distortionTimer = 0f; // ¿ªÆôÊ±ÖØÖÃ»û±ä¼ÆÊ±Æ÷
+                distortionTimer = 0f; // å¼€å¯æ—¶é‡ç½®ç•¸å˜è®¡æ—¶å™¨
 
                 specialVisionVolume.weight = 1;
                 defaultVolume.weight = 0;

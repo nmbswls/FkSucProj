@@ -8,13 +8,13 @@ namespace My.Map
 
     public class PauseController
     {
-        // key: À´Ô´Ãû£»value: ¸ÃÀ´Ô´µ±Ç°³ÖÓĞµÄÔİÍ£´ÎÊı
+        // key: æ¥æºåï¼›value: è¯¥æ¥æºå½“å‰æŒæœ‰çš„æš‚åœæ¬¡æ•°
         private readonly Dictionary<string, int> _sources = new Dictionary<string, int>(StringComparer.Ordinal);
 
-        // ÊÇ·ñ´¦ÓÚÔİÍ££¨ÈÎÒâÀ´Ô´¼ÆÊı > 0£©
+        // æ˜¯å¦å¤„äºæš‚åœï¼ˆä»»æ„æ¥æºè®¡æ•° > 0ï¼‰
         public bool IsPaused => _sources.Count > 0;
 
-        // ÇëÇóÔİÍ££¨Í¬Ò»À´Ô´¿É¶à´Îµ÷ÓÃ£¬¼ÆÊıÀÛ¼Ó£©
+        // è¯·æ±‚æš‚åœï¼ˆåŒä¸€æ¥æºå¯å¤šæ¬¡è°ƒç”¨ï¼Œè®¡æ•°ç´¯åŠ ï¼‰
         public void RequestPause(string source)
         {
             if (string.IsNullOrEmpty(source)) source = "Unknown";
@@ -24,7 +24,7 @@ namespace My.Map
                 _sources[source] = 1;
         }
 
-        // ÊÍ·ÅÔİÍ££¨¼ÆÊı¼õÒ»£¬¹éÁãºóÒÆ³ıÀ´Ô´£©
+        // é‡Šæ”¾æš‚åœï¼ˆè®¡æ•°å‡ä¸€ï¼Œå½’é›¶åç§»é™¤æ¥æºï¼‰
         public void ReleasePause(string source)
         {
             if (string.IsNullOrEmpty(source)) source = "Unknown";
@@ -34,23 +34,23 @@ namespace My.Map
                 if (count <= 0) _sources.Remove(source);
                 else _sources[source] = count;
             }
-            // Ã»ÕÒµ½Ò²²»Å×´í£¬ÈİÈÌÖØ¸´ÊÍ·Å
+            // æ²¡æ‰¾åˆ°ä¹Ÿä¸æŠ›é”™ï¼Œå®¹å¿é‡å¤é‡Šæ”¾
         }
 
-        // Çå¿ÕÄ³À´Ô´µÄËùÓĞÔİÍ££¨·ÀĞ¹Â©/Èİ´í£©
+        // æ¸…ç©ºæŸæ¥æºçš„æ‰€æœ‰æš‚åœï¼ˆé˜²æ³„æ¼/å®¹é”™ï¼‰
         public void Clear(string source)
         {
             if (string.IsNullOrEmpty(source)) source = "Unknown";
             _sources.Remove(source);
         }
 
-        // Çå¿ÕÈ«²¿À´Ô´£¨½ô¼±¸´Î»£©
+        // æ¸…ç©ºå…¨éƒ¨æ¥æºï¼ˆç´§æ€¥å¤ä½ï¼‰
         public void ClearAll()
         {
             _sources.Clear();
         }
 
-        // µ÷ÊÔ²é¿´µ±Ç°À´Ô´Óë¼ÆÊı
+        // è°ƒè¯•æŸ¥çœ‹å½“å‰æ¥æºä¸è®¡æ•°
         public IReadOnlyDictionary<string, int> ActiveSources => _sources;
     }
 
@@ -64,7 +64,7 @@ namespace My.Map
         public static float timeScale { get => D.TimeScale; set => D.TimeScale = value; }
         public static bool paused => D.Paused;
 
-        // Ö±½ÓÓÃ×Ö·û´®¹ÜÀíÔİÍ£
+        // ç›´æ¥ç”¨å­—ç¬¦ä¸²ç®¡ç†æš‚åœ
         public static void RequestPause(string source) => D.Pause.RequestPause(source);
         public static void ReleasePause(string source) => D.Pause.ReleasePause(source);
         public static void ClearPauseSource(string source) => D.Pause.Clear(source);
@@ -131,7 +131,7 @@ namespace My.Map
 
     //    public void OnLogicUpdate(float dt)
     //    {
-    //        // ÕâÀïÊ¹ÓÃ dt£¨Âß¼­Ê±¼ä£©½øĞĞÒÆ¶¯¡¢¼ÆÊ±µÈ
+    //        // è¿™é‡Œä½¿ç”¨ dtï¼ˆé€»è¾‘æ—¶é—´ï¼‰è¿›è¡Œç§»åŠ¨ã€è®¡æ—¶ç­‰
     //        // Example: transform.position += velocity * dt;
     //    }
     //}

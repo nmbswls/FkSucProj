@@ -21,7 +21,7 @@ namespace My.Map
         public override EEntityType Type => EEntityType.DynamicSpawner;
 
         /// <summary>
-        /// ÒÑË¢ĞÂÁĞ±í
+        /// å·²åˆ·æ–°åˆ—è¡¨
         /// </summary>
         public Dictionary<int, long> MemberId2EntityMap = new();
         protected HashSet<int> currActiveMemberSet = new();
@@ -93,11 +93,11 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ÖØË¢Ò»´Î É¾³ı¾ÉµÄ ´´½¨ĞÂµÄ
+        /// é‡åˆ·ä¸€æ¬¡ åˆ é™¤æ—§çš„ åˆ›å»ºæ–°çš„
         /// </summary>
         public void RefreshSpawner(bool force = false)
         {
-            // Ç¿ÖÆÖØË¢ ·ñÔòÔöÁ¿Ë¢ĞÂ
+            // å¼ºåˆ¶é‡åˆ· å¦åˆ™å¢é‡åˆ·æ–°
             if(force)
             {
                 foreach(var kv in MemberId2EntityMap)
@@ -150,7 +150,7 @@ namespace My.Map
 
                     currActiveMemberSet.Add(memberInfo.MemberId);
 
-                    // Ç¿ÖÆ¼¤»îÒ»´Î
+                    // å¼ºåˆ¶æ¿€æ´»ä¸€æ¬¡
                     LogicManager.GetLogicEntity(MemberId2EntityMap[memberInfo.MemberId]);
                 }
             }

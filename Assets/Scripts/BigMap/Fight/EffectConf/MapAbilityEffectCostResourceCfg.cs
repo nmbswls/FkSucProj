@@ -17,7 +17,7 @@ namespace My.Map.Entity
         public bool IsEnmity;
         public EDmgFlag Flags;
 
-        public int TargetType; // 在不同触发语境下 该值的含义不同
+        public int TargetType; // 鍦ㄤ笉鍚岃Е鍙戣澧冧笅 璇ュ�肩殑鍚箟涓嶅悓
 
         public List<AttrKvPair> ExtraAttrInfos;
     }

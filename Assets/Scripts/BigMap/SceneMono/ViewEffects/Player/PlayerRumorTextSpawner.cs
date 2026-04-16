@@ -6,29 +6,29 @@ namespace My.Map.View
 {
     public class PlayerRumorTextSpawner : MonoBehaviour
     {
-        [Tooltip("ÎÄ±¾Éú³ÉµÄ³õÊ¼Î»ÖÃÏà¶ÔÍæ¼ÒÍ·¶¥µÄÆ«ÒÆ")]
+        [Tooltip("æ–‡æœ¬ç”Ÿæˆçš„åˆå§‹ä½ç½®ç›¸å¯¹ç©å®¶å¤´é¡¶çš„åç§»")]
         public Vector3 spawnOffset = new Vector3(0f, 0.1f, 0f);
 
         [Header("Spawn Settings")]
-        [Tooltip("Ã¿ÃëÉú³ÉµÄÎÄ±¾ÊıÁ¿")]
+        [Tooltip("æ¯ç§’ç”Ÿæˆçš„æ–‡æœ¬æ•°é‡")]
         public float spawnRate = 1.0f;
-        [Tooltip("Í¬Ê±´æÔÚµÄ×î´óÎÄ±¾ÊıÁ¿")]
+        [Tooltip("åŒæ—¶å­˜åœ¨çš„æœ€å¤§æ–‡æœ¬æ•°é‡")]
         public int maxActiveTexts = 12;
-        [Tooltip("Ëæ»úË®Æ½É¢²¼·¶Î§")]
+        [Tooltip("éšæœºæ°´å¹³æ•£å¸ƒèŒƒå›´")]
         public float horizontalSpread = 1.2f;
-        [Tooltip("Ëæ»ú´¹Ö±³õÊ¼Æ«ÒÆ·¶Î§")]
+        [Tooltip("éšæœºå‚ç›´åˆå§‹åç§»èŒƒå›´")]
         public float verticalJitter = 0.5f;
-        [Tooltip("ÎÄ±¾´Ó´Ê¿âÖĞËæ»úÌôÑ¡")]
+        [Tooltip("æ–‡æœ¬ä»è¯åº“ä¸­éšæœºæŒ‘é€‰")]
         public List<string> rumorLines = new List<string>()
         {
-            "what£¿",
-            "why£¡",
+            "whatï¼Ÿ",
+            "whyï¼",
             "whhhh",
         };
 
         [Header("Prefab & Pool")]
         public GameObject textBubblePrefab;
-        [Tooltip("ÊÇ·ñÊ¹ÓÃ¶ÔÏó³ØÌá¸ßĞÔÄÜ")]
+        [Tooltip("æ˜¯å¦ä½¿ç”¨å¯¹è±¡æ± æé«˜æ€§èƒ½")]
         public bool usePool = true;
         public int poolSize = 24;
 
@@ -61,14 +61,14 @@ namespace My.Map.View
             _timer += Time.deltaTime;
             float interval = 1f / Mathf.Max(0.0001f, spawnRate);
 
-            // °´¹Ì¶¨ÆµÂÊÉú³É
+            // æŒ‰å›ºå®šé¢‘ç‡ç”Ÿæˆ
             while (_timer >= interval)
             {
                 _timer -= interval;
                 TrySpawn();
             }
 
-            // ÇåÀíÒÑ±»»ØÊÕ/Ïú»ÙµÄÒıÓÃ
+            // æ¸…ç†å·²è¢«å›æ”¶/é”€æ¯çš„å¼•ç”¨
             for (int i = _active.Count - 1; i >= 0; i--)
             {
                 if (_active[i] == null || !_active[i].activeSelf)

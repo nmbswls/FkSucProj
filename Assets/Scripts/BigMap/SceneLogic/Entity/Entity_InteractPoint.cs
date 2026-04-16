@@ -17,7 +17,7 @@ namespace My.Map.Entity
 
     public class LogicEntityInteractPoint : LogicEntityBase, IWithInteract, IEntityInteractable
     {
-        // ×´Ì¬
+        // çŠ¶æ€
         //public bool Appear = false;
         public int CurrStatusId = 0;
         private bool IsSwitching = false;
@@ -80,7 +80,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ¼ì²é×´Ì¬ÇĞ»»
+        /// æ£€æŸ¥çŠ¶æ€åˆ‡æ¢
         /// </summary>
         public void CheckStatusCondition()
         {
@@ -119,7 +119,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ÊÇ·ñÕıÔÚ½»»¥
+        /// æ˜¯å¦æ­£åœ¨äº¤äº’
         /// </summary>
         public bool IsInteracting { get { return InteractComp.IsInteracting; } }
 
@@ -149,7 +149,7 @@ namespace My.Map.Entity
 
             
 
-            // µÍÆµ¼ì²é×´Ì¬ÇĞ»»
+            // ä½é¢‘æ£€æŸ¥çŠ¶æ€åˆ‡æ¢
             LowFreqCheckStatusChange();
 
             InteractComp?.TickInteract(dt);
@@ -157,7 +157,7 @@ namespace My.Map.Entity
 
         private float _lowFreqCheckStatusTimer = 0;
         /// <summary>
-        /// µÍÆµ¼ì²é
+        /// ä½é¢‘æ£€æŸ¥
         /// </summary>
         protected void LowFreqCheckStatusChange()
         {

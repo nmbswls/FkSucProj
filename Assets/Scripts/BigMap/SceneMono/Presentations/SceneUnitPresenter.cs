@@ -12,7 +12,7 @@ public interface IMapWeaponHolder
 namespace My.Map.Scene
 {
     /// <summary>
-    /// ³¡¾°µ¥Î» »ùÀà
+    /// åœºæ™¯å•ä½ åŸºç±»
     /// </summary>
     public abstract partial class SceneUnitPresenter : ScenePresentationBase<BaseUnitLogicEntity>,
         IMapWeaponHolder, 
@@ -33,9 +33,9 @@ namespace My.Map.Scene
         public Transform HitPivot;
 
         //public Transform WeaponRoot;
-        public MapUnitWeaponCtrl WeaponCtrl; // ÎäÆ÷¿ØÖÆÆ÷
+        public MapUnitWeaponCtrl WeaponCtrl; // æ­¦å™¨æ§åˆ¶å™¨
 
-        // ¿ØÖÆÒÆ¶¯×é¼ş
+        // æ§åˆ¶ç§»åŠ¨ç»„ä»¶
         public NavMeshAgent navAgent;
         public Rigidbody2D rb;
         public Collider2D mainCol;
@@ -126,7 +126,7 @@ namespace My.Map.Scene
             {
                 navAgent.nextPosition = rb.position;
             }
-            // Í¬²½Î»ÖÃ
+            // åŒæ­¥ä½ç½®
             if (UnitEntity != null)
             {
                 UnitEntity.SetPosition(MainGameManager.Instance.GetLogicPosFromWorldPos(transform.position));
@@ -134,7 +134,7 @@ namespace My.Map.Scene
 
             //UpdateTargettedMoveState();
 
-            // ÌáÈ¡³öÀ´
+            // æå–å‡ºæ¥
             UpdateVisible(dt);
 
             //if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
@@ -146,7 +146,7 @@ namespace My.Map.Scene
             //{
             //    float currMoveSpeed = GetCurrentMoveSpeed();
             //    Vector2 targetMoveVel;
-            //    // ÓÅÏÈÈÃÊÜ¿ØÒÆ¶¯ÉúĞ§
+            //    // ä¼˜å…ˆè®©å—æ§ç§»åŠ¨ç”Ÿæ•ˆ
             //    if (UnitEntity.targettedMoveIntent != null && UnitEntity.targettedMoveIntent.targettedDesireDir != null)
             //    {
             //        if((UnitEntity.targettedMoveIntent.MoveTarget - UnitEntity.Pos).magnitude < 0.05f)
@@ -166,7 +166,7 @@ namespace My.Map.Scene
             //    UnitEntity.activeMoveVec = Vector2.MoveTowards(UnitEntity.activeMoveVec, targetMoveVel, acceleration * dt);
             //}
 
-            // ²»ËøÃæÏòÊ± µ÷Õû
+            // ä¸é”é¢å‘æ—¶ è°ƒæ•´
             //if (UnitEntity.GetAttr(AttrIdConsts.LockFace) == 0)
             {
                 if(AgentView != null)
@@ -214,7 +214,7 @@ namespace My.Map.Scene
         //private Vector2 smoothedTarget;
 
         /// <summary>
-        /// µ×²ãÎïÀíÒÆ¶¯
+        /// åº•å±‚ç‰©ç†ç§»åŠ¨
         /// </summary>
         /// <returns></returns>
         public virtual Vector2 GetFixedDesiredVel()
@@ -365,7 +365,7 @@ namespace My.Map.Scene
 
         protected override void LateUpdate()
         {
-            // Í¬²½Î»ÖÃ
+            // åŒæ­¥ä½ç½®
             if (UnitEntity != null)
             {
                 //transform.position = MainGameManager.Instance.GetWorldPosFromLogicPos(UnitEntity.Pos);
@@ -375,9 +375,9 @@ namespace My.Map.Scene
         }
 
 
-        public float maxTurnSpeedDegPerSec = 720f; // ¿ÉÑ¡×î´ó½ÇËÙ¶ÈÏŞÖÆ
-        public float smoothTime = 0.12f;           // Ô½Ğ¡Ô½¸úÊÖ
-        private float angularVel;                  // SmoothDampAngle ÄÚ²¿ËÙ¶È»º´æ
+        public float maxTurnSpeedDegPerSec = 720f; // å¯é€‰æœ€å¤§è§’é€Ÿåº¦é™åˆ¶
+        public float smoothTime = 0.12f;           // è¶Šå°è¶Šè·Ÿæ‰‹
+        private float angularVel;                  // SmoothDampAngle å†…éƒ¨é€Ÿåº¦ç¼“å­˜
 
         protected void UpdateFaceDirIndicator()
         {
@@ -389,7 +389,7 @@ namespace My.Map.Scene
 
             float desired = Mathf.SmoothDampAngle(currentAngle, targetAngle, ref angularVel, smoothTime);
 
-            // ¿ÉÑ¡£ºÏŞÖÆÃ¿Ö¡½Ç¶È±ä»¯²»³¬¹ı×î´ó½ÇËÙ¶È
+            // å¯é€‰ï¼šé™åˆ¶æ¯å¸§è§’åº¦å˜åŒ–ä¸è¶…è¿‡æœ€å¤§è§’é€Ÿåº¦
             float maxStep = maxTurnSpeedDegPerSec * LogicTime.deltaTime;
             float delta = Mathf.DeltaAngle(currentAngle, desired);
             delta = Mathf.Clamp(delta, -maxStep, maxStep);
@@ -484,11 +484,11 @@ namespace My.Map.Scene
             };
         }
 
-        #region ¼àÌı
+        #region ç›‘å¬
 
         protected virtual void OnEventUnitDie(long entityId)
         {
-            MainGameManager.Instance.ShowFakeFxEffect("ÎÒËÀÁË", this.transform.position);
+            MainGameManager.Instance.ShowFakeFxEffect("æˆ‘æ­»äº†", this.transform.position);
 
             if(ViewRoot != null)
             {
@@ -622,7 +622,7 @@ namespace My.Map.Scene
 
         #endregion
 
-        #region ÊÜ¿ØÒÆ¶¯
+        #region å—æ§ç§»åŠ¨
 
 
 
@@ -641,41 +641,41 @@ namespace My.Map.Scene
         }
 
 
-        // ·ÖÀë¿ØÖÆ£¨»ùÓÚÄ¿±ê·ÖÀëËÙ¶È£©
+        // åˆ†ç¦»æ§åˆ¶ï¼ˆåŸºäºç›®æ ‡åˆ†ç¦»é€Ÿåº¦ï¼‰
         public float selfRadius = 0.5f;
         public float queryRadius = 1.2f;
         public int maxNeighbors = 12;
-        public float kp = 10f;                // ´©Í¸ -> Ä¿±ê·ÖÀëËÙ¶È ±ÈÀı
-        public float kd = 5f;                 // Ïà¶Ô·¨ÏòËÙ¶È×èÄá
-        public float maxSepSpeedPerPair = 6f; // µ¥¶Ô×î´ó·ÖÀëËÙ¶È
-        public float maxImpulsePerPair = 3.5f;// µ¥¶Ô×î´ó³åÁ¿(ËÙ¶ÈÔöÁ¿)
-        public float maxTotalImpulse = 6f;    // µ¥Ö¡ÀÛ¼Æ×î´ó³åÁ¿
-        public bool enableUnitSeparation = true;  // ÊÇ·ñÆôÓÃµ¥Î»¼äÍÆ¼·
-        public float separationRadius = 0.5f;     // ×ÔÉíÅö×²°ë¾¶£¨ÓëCircleCollider2DÒ»ÖÂ»òÂÔ´ó£©
-        public float separationStrength = 12f;    // ÍÆ¼·Á¦¶ÈÏµÊık
-        public float separationDamping = 3f;      // ÍÆ¼·×èÄác
-        public float pushPriority = 1f;       // ÓÅÏÈ¼¶(Ô½´óÔ½ÓÅÏÈÍÆ¶¯±ğÈË£¬×Ô¼ºÉÙ¶¯)
+        public float kp = 10f;                // ç©¿é€ -> ç›®æ ‡åˆ†ç¦»é€Ÿåº¦ æ¯”ä¾‹
+        public float kd = 5f;                 // ç›¸å¯¹æ³•å‘é€Ÿåº¦é˜»å°¼
+        public float maxSepSpeedPerPair = 6f; // å•å¯¹æœ€å¤§åˆ†ç¦»é€Ÿåº¦
+        public float maxImpulsePerPair = 3.5f;// å•å¯¹æœ€å¤§å†²é‡(é€Ÿåº¦å¢é‡)
+        public float maxTotalImpulse = 6f;    // å•å¸§ç´¯è®¡æœ€å¤§å†²é‡
+        public bool enableUnitSeparation = true;  // æ˜¯å¦å¯ç”¨å•ä½é—´æ¨æŒ¤
+        public float separationRadius = 0.5f;     // è‡ªèº«ç¢°æ’åŠå¾„ï¼ˆä¸CircleCollider2Dä¸€è‡´æˆ–ç•¥å¤§ï¼‰
+        public float separationStrength = 12f;    // æ¨æŒ¤åŠ›åº¦ç³»æ•°k
+        public float separationDamping = 3f;      // æ¨æŒ¤é˜»å°¼c
+        public float pushPriority = 1f;       // ä¼˜å…ˆçº§(è¶Šå¤§è¶Šä¼˜å…ˆæ¨åŠ¨åˆ«äººï¼Œè‡ªå·±å°‘åŠ¨)
         public float maxExternalSpeed = 20f;
-        public float blendDelta = 0.6f;       // ºòÑ¡Î»ÒÆµ½×îÖÕÎ»ÒÆµÄ²åÖµ±ÈÀı
+        public float blendDelta = 0.6f;       // å€™é€‰ä½ç§»åˆ°æœ€ç»ˆä½ç§»çš„æ’å€¼æ¯”ä¾‹
 
-        // ÍÆ¼·»º´æ
+        // æ¨æŒ¤ç¼“å­˜
         private readonly Collider2D[] neighborBuffer = new Collider2D[32];
 
 
         #endregion
 
 
-        #region ³å´Ì/»÷ÍË´¦Àí
+        #region å†²åˆº/å‡»é€€å¤„ç†
 
         public LayerMask wallsLayer;
 
 
 
 
-        // Ê¾Àı£º¹¥»÷ÃüÖĞ»ò×²Ç½ÊÂ¼ş¿Éµ÷ÓÃ
+        // ç¤ºä¾‹ï¼šæ”»å‡»å‘½ä¸­æˆ–æ’å¢™äº‹ä»¶å¯è°ƒç”¨
         protected virtual void OnCollisionEnter2D(Collision2D collision)
         {
-            // Ç½Ìå×²»÷£ºÔÚ»÷ÍË»ò³å´ÌÖĞ×²Ç½µÄ´¦Àí
+            // å¢™ä½“æ’å‡»ï¼šåœ¨å‡»é€€æˆ–å†²åˆºä¸­æ’å¢™çš„å¤„ç†
             int layer = collision.collider.gameObject.layer;
             bool isWall = (wallsLayer.value & (1 << layer)) != 0;
 
@@ -696,7 +696,7 @@ namespace My.Map.Scene
         #endregion
 
         /// <summary>
-        /// ÎäÆ÷»Øµ÷
+        /// æ­¦å™¨å›è°ƒ
         /// </summary>
         /// <param name="hitId"></param>
         /// <param name="hitEntityId"></param>
@@ -712,7 +712,7 @@ namespace My.Map.Scene
         }
 
 
-        #region ½Åµ× 
+        #region è„šåº• 
 
 
         private GameObject _rootForwardHinter;

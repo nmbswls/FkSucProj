@@ -64,7 +64,7 @@ namespace My.Map.View
 
         private void OnEnable()
         {
-            // Èô´Ó¶ÔÏó³Ø¼¤»î£¬ÖØÖÃ±ØÒª×´Ì¬
+            // è‹¥ä»å¯¹è±¡æ± æ¿€æ´»ï¼Œé‡ç½®å¿…è¦çŠ¶æ€
             if (_text == null) _text = GetComponent<TMP_Text>();
             _baseColor = _text.color;
             if (_mainCam == null && Camera.main) _mainCam = Camera.main.transform;
@@ -75,18 +75,18 @@ namespace My.Map.View
         {
             _age += Time.deltaTime;
 
-            // ÉÏ¸¡
+            // ä¸Šæµ®
             float upOffset = floatSpeed * _age;
-            // °Ú¶¯£¨Ë®Æ½ÇáÎ¢Æ«ÒÆ£©
+            // æ‘†åŠ¨ï¼ˆæ°´å¹³è½»å¾®åç§»ï¼‰
             float sway = Mathf.Sin(_age * swayFrequency * Mathf.PI * 2f) * swayAmplitude;
             Vector3 swayOffset = _randomSwayDir * sway;
 
             transform.position = _startPos + Vector3.up * upOffset + swayOffset;
 
-            // ³¯ÏòÏà»ú£¨½öĞı×ªYÒÔ±£³ÖÆ½Ãæ£©
+            // æœå‘ç›¸æœºï¼ˆä»…æ—‹è½¬Yä»¥ä¿æŒå¹³é¢ï¼‰
             if (lookAtCamera && _mainCam != null)
             {
-                // Ê¹ÎÄ±¾Ê¼ÖÕ³¯Ïò¾µÍ·£¨Billboard£©
+                // ä½¿æ–‡æœ¬å§‹ç»ˆæœå‘é•œå¤´ï¼ˆBillboardï¼‰
                 Vector3 toCam = _mainCam.position - transform.position;
                 toCam.y = 0f;
                 if (toCam.sqrMagnitude > 0.0001f)
@@ -95,7 +95,7 @@ namespace My.Map.View
                 }
             }
 
-            // ½¥Òş/½¥ÏÔ
+            // æ¸éš/æ¸æ˜¾
             float alpha = 1f;
             if (_age < fadeInTime)
             {
@@ -110,7 +110,7 @@ namespace My.Map.View
             var c = _text.color;
             _text.color = new Color(c.r, c.g, c.b, alpha);
 
-            // »ºÂıËõ·Å£¨¿ÉÑ¡£ºÔÚÏûÊ§Ç°ÂÔÎ¢ËõĞ¡£©
+            // ç¼“æ…¢ç¼©æ”¾ï¼ˆå¯é€‰ï¼šåœ¨æ¶ˆå¤±å‰ç•¥å¾®ç¼©å°ï¼‰
             float shrinkStart = lifetime - fadeOutTime;
             if (_age > shrinkStart)
             {
@@ -118,7 +118,7 @@ namespace My.Map.View
                 transform.localScale = Vector3.Lerp(initialScale, initialScale * 0.9f, t);
             }
 
-            // ½áÊøÂß¼­
+            // ç»“æŸé€»è¾‘
             if (_age >= lifetime)
             {
                 onFinished?.Invoke();

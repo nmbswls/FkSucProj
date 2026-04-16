@@ -11,7 +11,7 @@ namespace My.Saving
     {
         public const string DefaultSaveFileName = "mysave.json";
 
-        // Resources ÏÂ TextAsset£¬Â·¾¶²»º¬À©Õ¹Ãû£»Ö»¶Á
+        // Resources ä¸‹ TextAssetï¼Œè·¯å¾„ä¸å«æ‰©å±•åï¼›åªè¯»
         public const string BundledTestSaveResourcePath = "Saves/test_save";
 
         public static bool IsBusy { get; private set; }

@@ -12,30 +12,30 @@ namespace My.Map
         [System.Serializable]
         public class ChatSlot
         {
-            public Vector2 position;   // »ù´¡ÃªµãÎ»ÖÃ
-            public int side;           // 0=×ó, 1=ÓÒ
-            public float cooldownTimer; // ÀäÈ´µ¹¼ÆÊ±
+            public Vector2 position;   // åŸºç¡€é”šç‚¹ä½ç½®
+            public int side;           // 0=å·¦, 1=å³
+            public float cooldownTimer; // å†·å´å€’è®¡æ—¶
         }
 
-        [Header("ÅäÖÃ")]
+        [Header("é…ç½®")]
         public GameObject bubblePrefab;
         public RectTransform spawnContainer;
 
-        [Header("ÎÄ°¸")]
+        [Header("æ–‡æ¡ˆ")]
         [TextArea] public string[] chatterLines;
 
-        [Header("Éú³É¹æÔò")]
+        [Header("ç”Ÿæˆè§„åˆ™")]
         public float spawnInterval = 0.6f;
         public Vector2 scaleRange = new Vector2(0.8f, 1.2f);
 
-        [Header("²å²ÛÉèÖÃ (Slot Settings)")]
-        [Tooltip("ÆøÅİ´¹Ö±·½ÏòµÄ¼ä¾à£¬´óÔ¼ÊÇÆøÅİµÄ¸ß¶È")]
+        [Header("æ’æ§½è®¾ç½® (Slot Settings)")]
+        [Tooltip("æ°”æ³¡å‚ç›´æ–¹å‘çš„é—´è·ï¼Œå¤§çº¦æ˜¯æ°”æ³¡çš„é«˜åº¦")]
         public float slotHeightSpacing = 120f;
-        [Tooltip("±ßÔµ¾àÀë")]
+        [Tooltip("è¾¹ç¼˜è·ç¦»")]
         public float edgePadding = 150f;
-        [Tooltip("Ñ¡ÖĞ²å²ÛºóµÄËæ»úÆ«ÒÆ·¶Î§")]
+        [Tooltip("é€‰ä¸­æ’æ§½åçš„éšæœºåç§»èŒƒå›´")]
         public float positionJitter = 30f;
-        [Tooltip("²å²ÛÀäÈ´Ê±¼ä£¨Ãë£©£¬·ÀÖ¹Í¬Ò»Î»ÖÃÁ¬ĞøÉú³É")]
+        [Tooltip("æ’æ§½å†·å´æ—¶é—´ï¼ˆç§’ï¼‰ï¼Œé˜²æ­¢åŒä¸€ä½ç½®è¿ç»­ç”Ÿæˆ")]
         public float slotCooldown = 3.0f;
 
         private List<ChatSlot> slots = new List<ChatSlot>();
@@ -43,45 +43,45 @@ namespace My.Map
 
         void Start()
         {
-            // ÓÎÏ·¿ªÊ¼Ê±¼ÆËãËùÓĞ¿ÉÓÃµÄ²å²ÛÎ»ÖÃ
+            // æ¸¸æˆå¼€å§‹æ—¶è®¡ç®—æ‰€æœ‰å¯ç”¨çš„æ’æ§½ä½ç½®
             GenerateSlots();
         }
 
         void Update()
         {
-            // 1. ¸üĞÂËùÓĞ²å²ÛµÄÀäÈ´Ê±¼ä
+            // 1. æ›´æ–°æ‰€æœ‰æ’æ§½çš„å†·å´æ—¶é—´
             UpdateSlotsCooldown();
 
             
-            // 2. Éú³ÉÂß¼­
+            // 2. ç”Ÿæˆé€»è¾‘
             spawnTimer += Time.deltaTime;
             if (spawnTimer >= spawnInterval)
             {
                 TrySpawnBubble();
-                // ÉÔÎ¢Ëæ»ú»¯ÏÂÒ»´ÎÉú³ÉµÄÊ±¼äµã£¬±ÜÃâÌ«»úĞµ
+                // ç¨å¾®éšæœºåŒ–ä¸‹ä¸€æ¬¡ç”Ÿæˆçš„æ—¶é—´ç‚¹ï¼Œé¿å…å¤ªæœºæ¢°
                 spawnTimer = Random.Range(-0.1f, 0.1f);
             }
         }
 
-        // Ô¤¼ÆËãÆÁÄ»Á½²àµÄÉú³Éµã
+        // é¢„è®¡ç®—å±å¹•ä¸¤ä¾§çš„ç”Ÿæˆç‚¹
         void GenerateSlots()
         {
             slots.Clear();
             float containerHeight = spawnContainer.rect.height;
             float containerWidth = spawnContainer.rect.width;
 
-            // ¼ÆËãÃ¿Ò»²àÄÜ·Å¶àÉÙ¸ö²å²Û
-            // ÎÒÃÇÁô³öÉÏÏÂ 10% µÄÓàÁ¿£¬²»ÈÃÆøÅİÉú³ÉÔÚÆÁÄ»×î¶¥¶Ë»ò×îµ×¶Ë
+            // è®¡ç®—æ¯ä¸€ä¾§èƒ½æ”¾å¤šå°‘ä¸ªæ’æ§½
+            // æˆ‘ä»¬ç•™å‡ºä¸Šä¸‹ 10% çš„ä½™é‡ï¼Œä¸è®©æ°”æ³¡ç”Ÿæˆåœ¨å±å¹•æœ€é¡¶ç«¯æˆ–æœ€åº•ç«¯
             float availableHeight = containerHeight * 0.8f;
             int slotCountPerSide = Mathf.FloorToInt(availableHeight / slotHeightSpacing);
 
-            float startY = -availableHeight / 2; // ´ÓÏÂ·½¿ªÊ¼
+            float startY = -availableHeight / 2; // ä»ä¸‹æ–¹å¼€å§‹
 
-            // Éú³É×ó²à²å²Û
+            // ç”Ÿæˆå·¦ä¾§æ’æ§½
             for (int i = 0; i < slotCountPerSide; i++)
             {
                 float y = startY + (i * slotHeightSpacing);
-                // ×ó²à X ×ø±ê
+                // å·¦ä¾§ X åæ ‡
                 float leftX = -containerWidth / 2 + edgePadding;
 
                 slots.Add(new ChatSlot
@@ -91,7 +91,7 @@ namespace My.Map
                     cooldownTimer = 0f
                 });
 
-                // ÓÒ²à X ×ø±ê (¶Ô³ÆÉú³É)
+                // å³ä¾§ X åæ ‡ (å¯¹ç§°ç”Ÿæˆ)
                 float rightX = containerWidth / 2 - edgePadding;
                 slots.Add(new ChatSlot
                 {
@@ -132,59 +132,59 @@ namespace My.Map
 
             if (chatterLines.Length == 0) return;
 
-            // 1. »ñÈ¡ËùÓĞ¡°¿ÕÏĞ¡±µÄ²å²Û (ÀäÈ´Ê±¼ä <= 0)
+            // 1. è·å–æ‰€æœ‰â€œç©ºé—²â€çš„æ’æ§½ (å†·å´æ—¶é—´ <= 0)
             var availableSlots = slots.Where(s => s.cooldownTimer <= 0).ToList();
 
-            // Èç¹ûÃ»ÓĞ¿ÕÏĞÎ»ÖÃ£¬ÕâÒ»Ö¡¾Í²»Éú³É£¨±ÜÃâÖØµşµÄ¹Ø¼ü£¡£©
+            // å¦‚æœæ²¡æœ‰ç©ºé—²ä½ç½®ï¼Œè¿™ä¸€å¸§å°±ä¸ç”Ÿæˆï¼ˆé¿å…é‡å çš„å…³é”®ï¼ï¼‰
             if (availableSlots.Count == 0) return;
 
-            // 2. Ëæ»úÑ¡Ò»¸ö²å²Û
+            // 2. éšæœºé€‰ä¸€ä¸ªæ’æ§½
             ChatSlot selectedSlot = availableSlots[Random.Range(0, availableSlots.Count)];
 
-            // 3. ¼¤»î²å²ÛÀäÈ´ (ÖØÖÃ¼ÆÊ±Æ÷)
+            // 3. æ¿€æ´»æ’æ§½å†·å´ (é‡ç½®è®¡æ—¶å™¨)
             selectedSlot.cooldownTimer = slotCooldown;
 
-            // 4. ¼ÆËã×îÖÕÎ»ÖÃ (»ù´¡Î»ÖÃ + Ëæ»úÆ«ÒÆ Jitter)
-            // ÕâÑù¼´Ê¹Ñ¡ÖĞÍ¬Ò»¸ö²å²Û£¬Ã¿´ÎÎ»ÖÃÒ²»áÓĞÎ¢Ãî²»Í¬
+            // 4. è®¡ç®—æœ€ç»ˆä½ç½® (åŸºç¡€ä½ç½® + éšæœºåç§» Jitter)
+            // è¿™æ ·å³ä½¿é€‰ä¸­åŒä¸€ä¸ªæ’æ§½ï¼Œæ¯æ¬¡ä½ç½®ä¹Ÿä¼šæœ‰å¾®å¦™ä¸åŒ
             Vector2 finalPos = selectedSlot.position + Random.insideUnitCircle * positionJitter;
 
-            // 5. Éú³ÉÊµÌå
+            // 5. ç”Ÿæˆå®ä½“
             SpawnBubbleAt(finalPos, selectedSlot.side);
         }
 
         void SpawnBubbleAt(Vector2 pos, int side)
         {
             GameObject go = Instantiate(bubblePrefab, spawnContainer);
-            go.transform.SetAsLastSibling(); // ±£Ö¤ÔÚ×îÉÏ²ã (»òÕß FirstSibling ÔÚ×îµ×²ã)
+            go.transform.SetAsLastSibling(); // ä¿è¯åœ¨æœ€ä¸Šå±‚ (æˆ–è€… FirstSibling åœ¨æœ€åº•å±‚)
 
             AmbientBubble bubble = go.GetComponent<AmbientBubble>();
             string content = chatterLines[Random.Range(0, chatterLines.Length)];
             float scale = Random.Range(scaleRange.x, scaleRange.y);
 
-            // µ÷ÓÃÖ®Ç°µÄ Setup ·½·¨
+            // è°ƒç”¨ä¹‹å‰çš„ Setup æ–¹æ³•
             var rand = UnityEngine.Random.Range(0, 100);
             bubble.Setup(content, pos, scale, scaleRange, side, rand < 50 ? 0 : 1);
         }
 
-        // ±à¼­Æ÷¸¨Öú£º»­³ö²å²ÛÎ»ÖÃ£¬·½±ãµ÷ÊÔ
+        // ç¼–è¾‘å™¨è¾…åŠ©ï¼šç”»å‡ºæ’æ§½ä½ç½®ï¼Œæ–¹ä¾¿è°ƒè¯•
         void OnDrawGizmosSelected()
         {
             if (spawnContainer == null) return;
 
             Gizmos.color = Color.yellow;
 
-            // ¼ÈÈ»ÔÚ±à¼­Æ÷Ä£Ê½ÏÂ¿ÉÄÜ»¹Ã»ÔËĞĞStart£¬ÎÒÃÇ¼òµ¥Ä£ÄâÒ»ÏÂÎ»ÖÃ
+            // æ—¢ç„¶åœ¨ç¼–è¾‘å™¨æ¨¡å¼ä¸‹å¯èƒ½è¿˜æ²¡è¿è¡ŒStartï¼Œæˆ‘ä»¬ç®€å•æ¨¡æ‹Ÿä¸€ä¸‹ä½ç½®
             if (!Application.isPlaying) return;
 
             foreach (var slot in slots)
             {
-                // ½« RectTransform µÄ¾Ö²¿×ø±ê×ª»»ÎªÊÀ½ç×ø±ê»æÖÆ
+                // å°† RectTransform çš„å±€éƒ¨åæ ‡è½¬æ¢ä¸ºä¸–ç•Œåæ ‡ç»˜åˆ¶
                 Vector3 worldPos = spawnContainer.TransformPoint(slot.position);
 
                 if (slot.cooldownTimer > 0)
-                    Gizmos.color = Color.red; // ÀäÈ´ÖĞÏÔÊ¾ºìÉ«
+                    Gizmos.color = Color.red; // å†·å´ä¸­æ˜¾ç¤ºçº¢è‰²
                 else
-                    Gizmos.color = Color.green; // ¿ÉÓÃÏÔÊ¾ÂÌÉ«
+                    Gizmos.color = Color.green; // å¯ç”¨æ˜¾ç¤ºç»¿è‰²
 
                 Gizmos.DrawWireSphere(worldPos, 20f);
             }

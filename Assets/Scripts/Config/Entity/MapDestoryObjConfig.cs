@@ -12,11 +12,11 @@ namespace Config.Unit
     {
         public string CfgId;
 
-        public bool IsHitCountMode = true; // ÊÇ·ñÊÇ¹¥»÷´ÎÊıÄ£Ê½
+        public bool IsHitCountMode = true; // æ˜¯å¦æ˜¯æ”»å‡»æ¬¡æ•°æ¨¡å¼
         public int HitCount = 3;
         public int DropBundleId;
 
-        public bool IsPrecious; // ÆÆ»µÕä¹óÎï»áÒı·¢Í¨¼©
-        public bool HasOwner; // ÊÇ·ñÓĞÖ÷
+        public bool IsPrecious; // ç ´åçè´µç‰©ä¼šå¼•å‘é€šç¼‰
+        public bool HasOwner; // æ˜¯å¦æœ‰ä¸»
     }
 }

@@ -44,7 +44,7 @@ namespace My.MapExport
         }
 
 
-        #region »ùµØÏà¹Ø
+        #region åŸºåœ°ç›¸å…³
 
 
 
@@ -53,7 +53,7 @@ namespace My.MapExport
         // area id
         public string AreaId;
 
-        // ÒÔÁĞ±íĞÎÊ½ĞòÁĞ»¯£¬¼æÈİ Unity ĞòÁĞ»¯
+        // ä»¥åˆ—è¡¨å½¢å¼åºåˆ—åŒ–ï¼Œå…¼å®¹ Unity åºåˆ—åŒ–
         public List<ChunkExportItem> Buckets = new List<ChunkExportItem>();
 
         public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
@@ -62,7 +62,7 @@ namespace My.MapExport
         public List<NamedPoint> NamedPoints = new List<NamedPoint>();
         public List<NamedPath> NamedPaths = new List<NamedPath>();
 
-        // ÔËĞĞÊ±±ã½İ²éÑ¯£¨¿ÉÑ¡£©
+        // è¿è¡Œæ—¶ä¾¿æ·æŸ¥è¯¢ï¼ˆå¯é€‰ï¼‰
         private Dictionary<(int x, int y), List<StaticPrefabItem>> _prefabMap;
 
         private Dictionary<(int x, int y), List<Segment2D>> _segmentMap;

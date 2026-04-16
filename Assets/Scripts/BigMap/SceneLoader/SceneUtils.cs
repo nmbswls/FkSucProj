@@ -16,16 +16,16 @@ namespace My
         public float DefaultRange = 6.0f;
         public float DefaultFovAngle = 90;
 
-        private const float HardBackLimitDeg = 150f;   // ±³ÏòÓ²ÏŞÖÆ
-        private const float RadiusAngleMaxDeg = 20f;   // °ë¾¶½ÇÈİÈÌÉÏÏŞ
-        private const float CloseDistance = 1.0f;      // ÌùÉí¾àÀëãĞÖµ
-        private const float ExtraAngleNearDeg = 20f;   // ½üÉí²ßÂÔĞÔÀ©Õ¹×î´óÖµ
+        private const float HardBackLimitDeg = 150f;   // èƒŒå‘ç¡¬é™åˆ¶
+        private const float RadiusAngleMaxDeg = 20f;   // åŠå¾„è§’å®¹å¿ä¸Šé™
+        private const float CloseDistance = 1.0f;      // è´´èº«è·ç¦»é˜ˆå€¼
+        private const float ExtraAngleNearDeg = 20f;   // è¿‘èº«ç­–ç•¥æ€§æ‰©å±•æœ€å¤§å€¼
         private const float MaxExpandedHalfFovDeg = 120f;
-        private const float RayLateralSpread = 0.2f;   // ½üÉí¶àÉäÏß×óÓÒÆ«ÒÆ£¨Ã×£©
+        private const float RayLateralSpread = 0.2f;   // è¿‘èº«å¤šå°„çº¿å·¦å³åç§»ï¼ˆç±³ï¼‰
 
         /// <summary>
-        /// Õë¶Ôµ¥Î»¼äµÄ¿É¼ûĞÔ
-        ///   ¼ÙÉèµ¥Î»°ë¾¶²»ÖÁÓÚÌ«´ó
+        /// é’ˆå¯¹å•ä½é—´çš„å¯è§æ€§
+        ///   å‡è®¾å•ä½åŠå¾„ä¸è‡³äºå¤ªå¤§
         /// </summary>
         /// <param name="selfEntityId"></param>
         /// <param name="targetEntityId"></param>
@@ -44,10 +44,10 @@ namespace My
             }
             Vector2 eyePos = selfUnit.GetWorldPosition();
             Vector2 p1 = targetPresenter.GetWorldPosition();
-            // ·½ÏòÓë¾àÀë
+            // æ–¹å‘ä¸è·ç¦»
             Vector2 toTarget = p1 - eyePos;
             float dist = toTarget.magnitude;
-            // ÌùÉí ±Ø¶¨¿´¼û
+            // è´´èº« å¿…å®šçœ‹è§
             if (dist <= 0.05f) return true;
 
             var seeParams = selfUnit.UnitEntity.GetViewRangeAndAngle();
@@ -63,42 +63,42 @@ namespace My
 
             float baseHalfFov = Mathf.Abs(fovAngle) * 0.5f;
 
-            // ±³ÏòÓ²ÏŞÖÆ
+            // èƒŒå‘ç¡¬é™åˆ¶
             if (angle >= HardBackLimitDeg)
                 return false;
 
-            // Ä¿±ê°ë¾¶£¨À´×Ô CapsuleCollider2D£©
+            // ç›®æ ‡åŠå¾„ï¼ˆæ¥è‡ª CapsuleCollider2Dï¼‰
             float targetRadius = 0.25f;
-            // todo ÊµÏÖ²»Í¬°ë¾¶
+            // todo å®ç°ä¸åŒåŠå¾„
 
-            // °ë¾¶½ÇÈİÈÌ
+            // åŠå¾„è§’å®¹å¿
             float radiusAngleDeg = Mathf.Atan2(targetRadius, Mathf.Max(dist, 0.05f)) * Mathf.Rad2Deg;
             radiusAngleDeg = Mathf.Min(radiusAngleDeg, RadiusAngleMaxDeg);
 
-            // ½öÇ°°ëÔ²Ó¦ÓÃ°ë¾¶½ÇÈİÈÌ£¨±ÜÃâÓ°Ïì±³Ïò£©
+            // ä»…å‰åŠåœ†åº”ç”¨åŠå¾„è§’å®¹å¿ï¼ˆé¿å…å½±å“èƒŒå‘ï¼‰
             if (angle > 120f)
                 radiusAngleDeg = 0f;
 
-            // ½üÉí²ßÂÔĞÔÀ©Õ¹£¨½öÇ°ÏòÈ¨ÖØ£©  
+            // è¿‘èº«ç­–ç•¥æ€§æ‰©å±•ï¼ˆä»…å‰å‘æƒé‡ï¼‰  
             bool nearMode = dist <= CloseDistance;
-            float frontWeight = Mathf.Max(0f, Mathf.Cos(angle * Mathf.Deg2Rad)); // Ç°·½¡Ö1£¬²àÏò¡Ö0£¬ºó·½¡Ö0
+            float frontWeight = Mathf.Max(0f, Mathf.Cos(angle * Mathf.Deg2Rad)); // å‰æ–¹â‰ˆ1ï¼Œä¾§å‘â‰ˆ0ï¼Œåæ–¹â‰ˆ0
             float extraNear = nearMode ? (ExtraAngleNearDeg * frontWeight * Mathf.Clamp01((CloseDistance - dist) / Mathf.Max(CloseDistance, 0.0001f))) : 0f;
 
-            // ÓĞĞ§°ë½Ç
+            // æœ‰æ•ˆåŠè§’
             float effectiveHalfFov = Mathf.Min(baseHalfFov + radiusAngleDeg + extraNear, MaxExpandedHalfFovDeg);
 
-            // ½Ç¶ÈÅĞ¶¨
+            // è§’åº¦åˆ¤å®š
             if (angle > effectiveHalfFov)
                 return false;
 
-            // ÕÚµ²¼ì²â£ºÖ÷ÉäÏß + ½üÉí×óÓÒÆ«ÒÆÁ½Ìõ£¨ÈÎÒâÒ»ÌõÍ¨Ôò¿É¼û£©
+            // é®æŒ¡æ£€æµ‹ï¼šä¸»å°„çº¿ + è¿‘èº«å·¦å³åç§»ä¸¤æ¡ï¼ˆä»»æ„ä¸€æ¡é€šåˆ™å¯è§ï¼‰
             if (IsLineClear2D(eyePos, dirToTarget, dist))
                 return true;
 
             if (nearMode)
             {
-                // ¹¹Ôì×óÓÒÆ«ÒÆÆğµã£¨2DÖĞÓëÊÓÏß´¹Ö±µÄÓÒÏò£©
-                Vector2 right = new Vector2(-dirToTarget.y, dirToTarget.x); // Ğı×ª90¡ã
+                // æ„é€ å·¦å³åç§»èµ·ç‚¹ï¼ˆ2Dä¸­ä¸è§†çº¿å‚ç›´çš„å³å‘ï¼‰
+                Vector2 right = new Vector2(-dirToTarget.y, dirToTarget.x); // æ—‹è½¬90Â°
                 Vector2 leftOrigin = eyePos - right * RayLateralSpread;
                 Vector2 rightOrigin = eyePos + right * RayLateralSpread;
 
@@ -127,7 +127,7 @@ namespace My
 
 
         /// <summary>
-        /// Ñ¡ÔñÒ»¸öÀëÖĞĞÄµãÖ¸¶¨¾àÀëµÄµã ¾¡Á¿ÀëÔ­Ê¼µã½Ï½ü
+        /// é€‰æ‹©ä¸€ä¸ªç¦»ä¸­å¿ƒç‚¹æŒ‡å®šè·ç¦»çš„ç‚¹ å°½é‡ç¦»åŸå§‹ç‚¹è¾ƒè¿‘
         /// </summary>
         /// <param name="orgPos"></param>
         /// <param name="centerPos"></param>
@@ -171,15 +171,15 @@ namespace My
                 bool heightMatch = targettable.CheckHitHeightValid(atkHeight);
                 if (!heightMatch)
                 {
-                    // ²úÉúÖØµşµ«¸ß¶È²»·û£¬·¢Éú´íÎ»£¬ºöÂÔÅĞ¶¨
-                    Debug.Log($"´íÎ»");
+                    // äº§ç”Ÿé‡å ä½†é«˜åº¦ä¸ç¬¦ï¼Œå‘ç”Ÿé”™ä½ï¼Œå¿½ç•¥åˆ¤å®š
+                    Debug.Log($"é”™ä½");
                     continue;
                 }
                 
 
                 if (filter != null)
                 {
-                    // ²»Âú×ã
+                    // ä¸æ»¡è¶³
                     if (filter.Value.FilterType != EEntityType.None && filter.Value.FilterType != entity.Type)
                     {
                         continue;
@@ -190,7 +190,7 @@ namespace My
                         continue;
                     }
 
-                    // Ğ£ÑéÕóÓªÏà¹Ø
+                    // æ ¡éªŒé˜µè¥ç›¸å…³
                     if (filter.Value.CampFilterType != ECampFilterType.All)
                     {
                         if (filter.Value.CampFilterType == ECampFilterType.NotSelf)
@@ -242,13 +242,13 @@ namespace My
                 bool heightMatch = targettable.CheckHitHeightValid(atkHeight);
                 if (!heightMatch)
                 {
-                    //Debug.Log($"´íÎ»");
+                    //Debug.Log($"é”™ä½");
                     continue;
                 }
 
                 if (filter != null)
                 {
-                    // ²»Âú×ã
+                    // ä¸æ»¡è¶³
                     if (filter.Value.FilterType != EEntityType.None && filter.Value.FilterType != entity.Type)
                     {
                         continue;
@@ -259,7 +259,7 @@ namespace My
                         continue;
                     }
 
-                    // Ğ£ÑéÕóÓªÏà¹Ø
+                    // æ ¡éªŒé˜µè¥ç›¸å…³
                     if (filter.Value.CampFilterType != ECampFilterType.All)
                     {
                         if (filter.Value.CampFilterType == ECampFilterType.NotSelf)
@@ -290,7 +290,7 @@ namespace My
 
 
         /// <summary>
-        /// ¼ì²éÊÇ·ñÓëalert areaÂå
+        /// æ£€æŸ¥æ˜¯å¦ä¸alert areaæ´›
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>

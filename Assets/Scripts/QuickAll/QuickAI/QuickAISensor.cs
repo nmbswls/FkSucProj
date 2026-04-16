@@ -19,7 +19,7 @@ public class QuickAISensor : MonoBehaviour
         float angle = Vector2.Angle(transform.right, dir.normalized);
         if (angle > config.visionAngle * 0.5f) return false;
 
-        // ÉäÏßÕÚµ²¼ì²â
+        // å°„çº¿é®æŒ¡æ£€æµ‹
         RaycastHit2D hit = Physics2D.Raycast(transform.position, dir.normalized, dist, config.obstacleMask | config.targetMask);
         if (hit && hit.transform == bb.target) return true;
 

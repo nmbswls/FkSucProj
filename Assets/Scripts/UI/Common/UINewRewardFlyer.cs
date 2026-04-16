@@ -12,16 +12,16 @@ namespace My
         public Image iconImage;
 
         [Header("Settings")]
-        public float popDuration = 0.5f;   // ÖĞÑëµ¯³öÍ£ÁôÊ±¼ä
-        public float flyDuration = 0.6f;   // ·ÉĞĞºÄÊ±
-        public float scalePunch = 1.5f;    // µ¯³öÊ±µÄ×î´óËõ·Å
+        public float popDuration = 0.5f;   // ä¸­å¤®å¼¹å‡ºåœç•™æ—¶é—´
+        public float flyDuration = 0.6f;   // é£è¡Œè€—æ—¶
+        public float scalePunch = 1.5f;    // å¼¹å‡ºæ—¶çš„æœ€å¤§ç¼©æ”¾
 
         private Action onCompleteCallback;
 
         public void Initialize(Sprite sprite, Vector3 startPos, Vector3 targetPos, Action onComplete)
         {
             iconImage.sprite = sprite;
-            transform.position = startPos; // ×¢ÒâÊ¹ÓÃ World Position
+            transform.position = startPos; // æ³¨æ„ä½¿ç”¨ World Position
             this.onCompleteCallback = onComplete;
 
             StartCoroutine(AnimateRoutine(startPos, targetPos));
@@ -29,17 +29,17 @@ namespace My
 
         private IEnumerator AnimateRoutine(Vector3 startPos, Vector3 endPos)
         {
-            // --- ½×¶Î 1: ÖĞÑëµ¯³ö (Pop) ---
+            // --- é˜¶æ®µ 1: ä¸­å¤®å¼¹å‡º (Pop) ---
             float timer = 0f;
             transform.localScale = Vector3.zero;
 
-            // ¼òµ¥µÄµ¯ĞÔ·Å´óĞ§¹û
+            // ç®€å•çš„å¼¹æ€§æ”¾å¤§æ•ˆæœ
             while (timer < popDuration)
             {
                 timer += Time.deltaTime;
                 float progress = timer / popDuration;
 
-                // Ê¹ÓÃÒ»¸ö×Ô¶¨ÒåµÄÇúÏßÄ£Äâµ¯Ìø: 0 -> 1.5 -> 1.0
+                // ä½¿ç”¨ä¸€ä¸ªè‡ªå®šä¹‰çš„æ›²çº¿æ¨¡æ‹Ÿå¼¹è·³: 0 -> 1.5 -> 1.0
                 float scale = 0f;
                 if (progress < 0.5f) scale = Mathf.Lerp(0, scalePunch, progress * 2);
                 else scale = Mathf.Lerp(scalePunch, 1f, (progress - 0.5f) * 2);
@@ -49,20 +49,20 @@ namespace My
             }
             transform.localScale = Vector3.one;
 
-            // --- ½×¶Î 2: ±´Èû¶ûÇúÏß·ÉĞĞ (Fly) ---
+            // --- é˜¶æ®µ 2: è´å¡å°”æ›²çº¿é£è¡Œ (Fly) ---
             timer = 0f;
 
-            // ¼ÆËãÒ»¸ö¿ØÖÆµã£¬Ê¹Â·¾¶³Ê»¡ĞÎ
-            // ¿ØÖÆµãÈ¡ÔÚÖĞµãÉÏ·½»ò²à·½Ò»¶¨¾àÀë
+            // è®¡ç®—ä¸€ä¸ªæ§åˆ¶ç‚¹ï¼Œä½¿è·¯å¾„å‘ˆå¼§å½¢
+            // æ§åˆ¶ç‚¹å–åœ¨ä¸­ç‚¹ä¸Šæ–¹æˆ–ä¾§æ–¹ä¸€å®šè·ç¦»
             Vector3 midPoint = (startPos + endPos) / 2;
-            Vector3 controlPoint = midPoint + (Vector3.up * 2f) + (Vector3.right * 1f); // ¸ù¾İÆÁÄ»µ÷ÕûÊıÖµ
+            Vector3 controlPoint = midPoint + (Vector3.up * 2f) + (Vector3.right * 1f); // æ ¹æ®å±å¹•è°ƒæ•´æ•°å€¼
 
             while (timer < flyDuration)
             {
                 timer += Time.deltaTime;
                 float t = timer / flyDuration;
 
-                // ¶ş½×±´Èû¶ûÇúÏß¹«Ê½
+                // äºŒé˜¶è´å¡å°”æ›²çº¿å…¬å¼
                 // B(t) = (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
                 Vector3 pos = Mathf.Pow(1 - t, 2) * startPos +
                               2 * (1 - t) * t * controlPoint +
@@ -70,14 +70,14 @@ namespace My
 
                 transform.position = pos;
 
-                // ·ÉĞĞ¹ı³ÌÖĞÖğ½¥±äĞ¡
+                // é£è¡Œè¿‡ç¨‹ä¸­é€æ¸å˜å°
                 transform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.5f, t);
 
                 yield return null;
             }
 
-            // --- ½áÊø ---
-            onCompleteCallback?.Invoke(); // Í¨Öª¹ÜÀíÆ÷ÎÒµ½ÁË
+            // --- ç»“æŸ ---
+            onCompleteCallback?.Invoke(); // é€šçŸ¥ç®¡ç†å™¨æˆ‘åˆ°äº†
             Destroy(gameObject);
         }
     }

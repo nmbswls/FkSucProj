@@ -1,4 +1,5 @@
 using My.Map;
+using My.Map.Logic;
 using UnityEngine;
 
 namespace My.Map.Entity
@@ -17,7 +18,7 @@ namespace My.Map.Entity
         {
         }
 
-        public override void Tick(float dt)
+        protected override void OnTick(float dt)
         {
         }
     }

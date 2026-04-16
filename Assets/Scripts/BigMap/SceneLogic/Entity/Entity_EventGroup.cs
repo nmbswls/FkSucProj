@@ -43,8 +43,8 @@ namespace My.Map
 
 
         ///// <summary>
-        ///// »º´æ
-        ///// Î£ÏÕ logicentity¿ÉÄÜ±»´´½¨ÎªÁíÒ»¸ö
+        ///// ç¼“å­˜
+        ///// å±é™© logicentityå¯èƒ½è¢«åˆ›å»ºä¸ºå¦ä¸€ä¸ª
         ///// </summary>
         //public Dictionary<int, ILogicEntity> GroupMemberDict = new();
 
@@ -54,7 +54,7 @@ namespace My.Map
         protected HashSet<int> CurrActiveMemberSet = new();
         protected List<int> _tmpMemberList = new();
         /// <summary>
-        /// ´æ´¢¸÷´¥·¢Æ÷
+        /// å­˜å‚¨å„è§¦å‘å™¨
         /// </summary>
         public class GroupInnerTriggerState
         {
@@ -73,7 +73,7 @@ namespace My.Map
         {
             base.Initialize();
 
-            // ³õÊ¼»¯ÄÚ²¿´¥·¢Æ÷
+            // åˆå§‹åŒ–å†…éƒ¨è§¦å‘å™¨
             foreach(var eventTrigger in CacheEventGroupCfg.InnerTriggers)
             {
                 var info = new GroupInnerTriggerState()
@@ -110,9 +110,9 @@ namespace My.Map
         }
 
         /// <summary>
-        /// È·±£µ±Ç°½×¶ÎµÄmember¶¼´æÔÚÇÒ¶¼Ë¢ĞÂÎªentity
-        /// ¶ÔÓÚ×Óentity Ö»ÓĞÔÚgroupÊµÀı»¯ºó²Å»áÊµÀı»¯
-        ///              ÇÒÖ»ÒªgroupÊµÀı»¯ ×Ó¶ÔÏó±£Ö¤ÊµÀı»¯
+        /// ç¡®ä¿å½“å‰é˜¶æ®µçš„memberéƒ½å­˜åœ¨ä¸”éƒ½åˆ·æ–°ä¸ºentity
+        /// å¯¹äºå­entity åªæœ‰åœ¨groupå®ä¾‹åŒ–åæ‰ä¼šå®ä¾‹åŒ–
+        ///              ä¸”åªè¦groupå®ä¾‹åŒ– å­å¯¹è±¡ä¿è¯å®ä¾‹åŒ–
         /// </summary>
         protected void EnsureStageEntities()
         {
@@ -162,14 +162,14 @@ namespace My.Map
                     CurrActiveMemberSet.Add(mId);
                 }
 
-                // Ç¿ÖÆ¼¤»îÒ»´Î
+                // å¼ºåˆ¶æ¿€æ´»ä¸€æ¬¡
                 LogicManager.GetLogicEntity(MemberId2EntityMap[mId]);
             }
 
         }
 
         /// <summary>
-        /// ¼à¿ØÃ¿¸ö³ÉÔ±
+        /// ç›‘æ§æ¯ä¸ªæˆå‘˜
         /// </summary>
         public void TickAllMemberStatus()
         {
@@ -279,7 +279,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ¼àÌı´¥·¢ÊÂ¼ş
+        /// ç›‘å¬è§¦å‘äº‹ä»¶
         /// </summary>
         protected override void OnStatusChange(int preStage)
         {
@@ -289,7 +289,7 @@ namespace My.Map
                 return;
             }
 
-            // È·±£entityÕı³£
+            // ç¡®ä¿entityæ­£å¸¸
             EnsureStageEntities();
 
             foreach (var triggerId in stateExtraInfo.ActiveTriggerIds)
@@ -329,7 +329,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ¼¤»î³ÁË¯³ÉÔ±
+        /// æ¿€æ´»æ²‰ç¡æˆå‘˜
         /// </summary>
         public void ActivateSleepyMembers()
         {
@@ -369,7 +369,7 @@ namespace My.Map
             {
                 foreach (var mId in CurrActiveMemberSet)
                 {
-                    // ²»ÊÇµ±Ç°×´Ì¬¸ÃÓĞµÄ³ÉÔ± Ìø¹ı
+                    // ä¸æ˜¯å½“å‰çŠ¶æ€è¯¥æœ‰çš„æˆå‘˜ è·³è¿‡
                     if(!stateExtraInfo.EnsureMemberIds.Contains(mId))
                     {
                         continue;

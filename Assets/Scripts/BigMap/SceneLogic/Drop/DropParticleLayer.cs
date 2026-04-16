@@ -5,7 +5,7 @@
 //{
 //    private ParticleSystem _ps;
 //    private ParticleSystem.TextureSheetAnimationModule _tsa;
-//    private Sprite[] _sprites; // TSAÖĞÒÑÌí¼ÓµÄÖ¡ÁĞ±í»º´æ
+//    private Sprite[] _sprites; // TSAä¸­å·²æ·»åŠ çš„å¸§åˆ—è¡¨ç¼“å­˜
 //    private ParticleSystem.Particle[] _buffer;
 
 //    void Awake()
@@ -13,7 +13,7 @@
 //        _ps = GetComponent<ParticleSystem>();
 //        _tsa = _ps.textureSheetAnimation;
 
-//        // ¶ÁÈ¡ TSA Ãæ°åÀïÌí¼ÓµÄÖ¡£¨Unity 2021+ Ö§³Ö GetSprite£©
+//        // è¯»å– TSA é¢æ¿é‡Œæ·»åŠ çš„å¸§ï¼ˆUnity 2021+ æ”¯æŒ GetSpriteï¼‰
 //        int count = _tsa.spriteCount;
 //        _sprites = new Sprite[count];
 //        for (int i = 0; i < count; i++)
@@ -21,7 +21,7 @@
 //            _sprites[i] = _tsa.GetSprite(i);
 //        }
 
-//        // ¸ù¾İ×î´óÁ£×ÓÊı×¼±¸»º´æ
+//        // æ ¹æ®æœ€å¤§ç²’å­æ•°å‡†å¤‡ç¼“å­˜
 //        var main = _ps.main;
 //        int max = main.maxParticles;
 //        _buffer = new ParticleSystem.Particle[Mathf.Max(1024, max)];
@@ -38,8 +38,8 @@
 //    }
 
 
-//    // ¸ù¾İË÷Òı·¢ÉäÒ»¸ö´ú±íµôÂäÎïµÄÁ£×Ó
-//    // spriteIndex: ¶ÔÓ¦ TSA ÁĞ±íÖĞµÄÖ¡Ë÷Òı£¨0..spriteCount-1£©
+//    // æ ¹æ®ç´¢å¼•å‘å°„ä¸€ä¸ªä»£è¡¨æ‰è½ç‰©çš„ç²’å­
+//    // spriteIndex: å¯¹åº” TSA åˆ—è¡¨ä¸­çš„å¸§ç´¢å¼•ï¼ˆ0..spriteCount-1ï¼‰
 //    public int EmitDrop(Vector3 pos, int spriteIndex, float size, Color color, float lifetime = 99999f)
 //    {
 //        if (spriteIndex < 0 || spriteIndex >= _sprites.Length)
@@ -54,18 +54,18 @@
 //            startSize = size,
 //            startColor = color,
 //            startLifetime = lifetime,
-//            //sprite = _sprites[spriteIndex] // ¹Ø¼ü£ºÖ¸¶¨¸ÃÁ£×ÓµÄÍ¼¼¯Ö¡
+//            //sprite = _sprites[spriteIndex] // å…³é”®ï¼šæŒ‡å®šè¯¥ç²’å­çš„å›¾é›†å¸§
 //        };
 
 //        _ps.Emit(emit, 1);
 
-//        // È¡³öµ±Ç°Á£×Ó×ÜÊı²¢·µ»ØĞÂÁ£×ÓµÄË÷Òı£¨¼òµ¥½üËÆ£º×îºóÒ»¸ö£©
+//        // å–å‡ºå½“å‰ç²’å­æ€»æ•°å¹¶è¿”å›æ–°ç²’å­çš„ç´¢å¼•ï¼ˆç®€å•è¿‘ä¼¼ï¼šæœ€åä¸€ä¸ªï¼‰
 //        int count = _ps.GetParticles(_buffer);
 //        int idx = count - 1;
 //        return Mathf.Max(idx, 0);
 //    }
 
-//    // É¾³ı/Òş²ØÄ³¸öÁ£×Ó
+//    // åˆ é™¤/éšè—æŸä¸ªç²’å­
 //    public void KillParticle(int particleIndex)
 //    {
 //        int count = _ps.GetParticles(_buffer);
@@ -76,7 +76,7 @@
 //        }
 //    }
 
-//    // ¿ÉÑ¡£ºÅúÁ¿¸üĞÂ£¨ÀıÈç¸Ä±äÑÕÉ«/´óĞ¡£©£¬¾¡Á¿¼õÉÙSetParticlesµ÷ÓÃÆµÂÊ
+//    // å¯é€‰ï¼šæ‰¹é‡æ›´æ–°ï¼ˆä¾‹å¦‚æ”¹å˜é¢œè‰²/å¤§å°ï¼‰ï¼Œå°½é‡å‡å°‘SetParticlesè°ƒç”¨é¢‘ç‡
 //    public void SetParticleColor(int particleIndex, Color color)
 //    {
 //        int count = _ps.GetParticles(_buffer);

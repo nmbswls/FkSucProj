@@ -56,7 +56,7 @@ namespace Config
     //    }
 
 
-    //    // ´«ÈëÃû³Æ£¬Èç "Fireball"£»Â·¾¶Ïà¶Ô Resources ¸ù£¨²»º¬À©Õ¹Ãû£©
+    //    // ä¼ å…¥åç§°ï¼Œå¦‚ "Fireball"ï¼›è·¯å¾„ç›¸å¯¹ Resources æ ¹ï¼ˆä¸å«æ‰©å±•åï¼‰
     //    private static MapNpcConfig Load(string cfgId)
     //    {
     //        var data = Resources.Load<MapNpcConfig>($"Config/Entity/Npc/{cfgId}");
@@ -88,7 +88,7 @@ namespace Config
         }
 
 
-        // ´«ÈëÃû³Æ£¬Èç "Fireball"£»Â·¾¶Ïà¶Ô Resources ¸ù£¨²»º¬À©Õ¹Ãû£©
+        // ä¼ å…¥åç§°ï¼Œå¦‚ "Fireball"ï¼›è·¯å¾„ç›¸å¯¹ Resources æ ¹ï¼ˆä¸å«æ‰©å±•åï¼‰
         private static MapUnitStrategyTemplate Load(string cfgId)
         {
             var data = Resources.Load<MapUnitStrategyTemplate>($"Config/Unit/Strategy/{cfgId}");

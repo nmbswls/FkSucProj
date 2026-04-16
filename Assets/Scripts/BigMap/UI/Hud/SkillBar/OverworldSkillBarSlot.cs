@@ -25,11 +25,11 @@ namespace My.UI
 
         public SkillRuntime skillData;
 
-        public RectTransform shineRect;   // ¸ß¹âÍ¼Æ¬µÄRectTransform
+        public RectTransform shineRect;   // é«˜å…‰å›¾ç‰‡çš„RectTransform
 
         private Vector2 shineStartPos = new Vector2(-25, 25);
         private Vector2 shineEndPos = new Vector2(25, -25);
-        private float shineDuration = 0.4f;// É¨¹âºÄÊ±
+        private float shineDuration = 0.4f;// æ‰«å…‰è€—æ—¶
 
         public void Setup(OverworldSkillBar bar, int slotIdx)
         {
@@ -74,20 +74,20 @@ namespace My.UI
         {
             DOTween.Kill(shineRect);
 
-            // ´´½¨Ò»¸ö¶¯»­ÐòÁÐ
+            // åˆ›å»ºä¸€ä¸ªåŠ¨ç”»åºåˆ—
             Sequence sequence = DOTween.Sequence();
-            // 4. ×¼±¸¸ß¹âÉ¨¹ý£º¼¤»î¸ß¹âÎïÌå£¬²¢ÖØÖÃµ½×óÏÂ½ÇÆðµã
+            // 4. å‡†å¤‡é«˜å…‰æ‰«è¿‡ï¼šæ¿€æ´»é«˜å…‰ç‰©ä½“ï¼Œå¹¶é‡ç½®åˆ°å·¦ä¸‹è§’èµ·ç‚¹
             sequence.AppendCallback(() =>
             {
                 shineRect.gameObject.SetActive(true);
                 shineRect.localPosition = shineStartPos;
             });
 
-            // 5. ¸ß¹âÉ¨¹ý¶¯»­£º´Ó×óÏÂÒÆ¶¯µ½ÓÒÉÏ
+            // 5. é«˜å…‰æ‰«è¿‡åŠ¨ç”»ï¼šä»Žå·¦ä¸‹ç§»åŠ¨åˆ°å³ä¸Š
             sequence.Append(shineRect.DOLocalMove(shineEndPos, shineDuration)
-                    .SetEase(Ease.Linear)); // É¨¹âÒ»°ãÓÃÔÈËÙ(Linear)
+                    .SetEase(Ease.Linear)); // æ‰«å…‰ä¸€èˆ¬ç”¨åŒ€é€Ÿ(Linear)
 
-            // 6. É¨¹â½áÊøºó£¬Òþ²Ø¸ß¹âÎïÌå
+            // 6. æ‰«å…‰ç»“æŸåŽï¼Œéšè—é«˜å…‰ç‰©ä½“
             sequence.OnComplete(() =>
             {
                 shineRect.gameObject.SetActive(false);

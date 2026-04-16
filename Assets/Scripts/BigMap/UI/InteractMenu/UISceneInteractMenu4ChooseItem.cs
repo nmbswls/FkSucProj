@@ -14,7 +14,7 @@ namespace My.UI
     {
         public TextMeshProUGUI titleText;
         public Image bgImage;
-        public Image pointerImage; // ×ó²àÖ¸Ê¾¼ıÍ·£¨¿ÉÑ¡£©
+        public Image pointerImage; // å·¦ä¾§æŒ‡ç¤ºç®­å¤´ï¼ˆå¯é€‰ï¼‰
 
         public GameObject SelectHintBg;
         public Image SelectHintBgImage;
@@ -28,10 +28,10 @@ namespace My.UI
         //public Color textNormal = Color.white;
         //public Color textSelected = Color.yellow;
 
-        public Color pressedColor = new Color(0, 0, 0.5f); // ÉîÀ¶É«
-        public float duration = 0.15f; // µ¥³ÌÊ±¼ä£¨±ä¹ıÈ¥µÄÊ±¼ä£©
+        public Color pressedColor = new Color(0, 0, 0.5f); // æ·±è“è‰²
+        public float duration = 0.15f; // å•ç¨‹æ—¶é—´ï¼ˆå˜è¿‡å»çš„æ—¶é—´ï¼‰
 
-        private Color originalColor; // ¼ÇÂ¼Ô­Ê¼ÑÕÉ«£¨ÌìÀ¶É«£©
+        private Color originalColor; // è®°å½•åŸå§‹é¢œè‰²ï¼ˆå¤©è“è‰²ï¼‰
 
         public void Awake()
         {
@@ -45,8 +45,8 @@ namespace My.UI
             SelectHintBgImage.DOKill();
             SelectHintBgImage.color = originalColor;
 
-            // 3. Ö´ĞĞ±äÉ«
-            // 0.15Ãë±äÉî£¬LoopType.Yoyo ´ú±í±äÍê×Ô¶¯±ä»ØÀ´£¬Ò»¹²Ö´ĞĞ2´Î£¨È¥1»Ø1£©
+            // 3. æ‰§è¡Œå˜è‰²
+            // 0.15ç§’å˜æ·±ï¼ŒLoopType.Yoyo ä»£è¡¨å˜å®Œè‡ªåŠ¨å˜å›æ¥ï¼Œä¸€å…±æ‰§è¡Œ2æ¬¡ï¼ˆå»1å›1ï¼‰
             SelectHintBgImage.DOColor(pressedColor, duration)
                        .SetLoops(2, LoopType.Yoyo)
                        .SetEase(Ease.InOutQuad);
@@ -56,7 +56,7 @@ namespace My.UI
         {
             titleText.text = title;
 
-            // ÊÓ¾õ¹æÔò£º
+            // è§†è§‰è§„åˆ™ï¼š
             if (isCurrent)
             {
                 SelectHintBg.SetActive(true);
@@ -78,7 +78,7 @@ namespace My.UI
             }
 
             if (pointerImage)
-                pointerImage.enabled = isCurrent; // Ö»¶Ôµ±Ç°½¹µãÏÔÊ¾¼ıÍ·
+                pointerImage.enabled = isCurrent; // åªå¯¹å½“å‰ç„¦ç‚¹æ˜¾ç¤ºç®­å¤´
         }
     }
 

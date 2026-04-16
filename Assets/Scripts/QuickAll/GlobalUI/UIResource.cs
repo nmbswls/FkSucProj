@@ -6,8 +6,8 @@ namespace My.UI
     [Serializable]
     public class PanelResource
     {
-        public string panelId;              // Èç "OverworldHUD"
-        public string resourcePath;         // Èç "UI/Prefabs/OverworldHUD"
+        public string panelId;              // å¦‚ "OverworldHUD"
+        public string resourcePath;         // å¦‚ "UI/Prefabs/OverworldHUD"
         public UILayer defaultLayer = UILayer.HUD;
         public bool pooled = true;
         public int poolSize = 1;

@@ -57,26 +57,26 @@ namespace My.MapExport
     public class DynamicEntityRefreshInfo
     {
         /// <summary>
-        /// ×Ô¶¯¸³Öµ
+        /// è‡ªåŠ¨èµ‹å€¼
         /// </summary>
-        public int StaticId; // ³¡¾°ÄÚÎ¨Ò»id ÓÃÓÚ¼ì²éÊÇ·ñÒÑ´´½¨ ×Ô¶¯·ÖÅä
+        public int StaticId; // åœºæ™¯å†…å”¯ä¸€id ç”¨äºæ£€æŸ¥æ˜¯å¦å·²åˆ›å»º è‡ªåŠ¨åˆ†é…
 
         /// <summary>
-        /// Î¨Ò»Ãû×Ö
+        /// å”¯ä¸€åå­—
         /// </summary>
         public string UniqName;
 
         /// <summary>
-        /// ³öÏÖÌõ¼ş
+        /// å‡ºç°æ¡ä»¶
         /// </summary>
         public CommonCheckCond AppearCond;
 
         /// <summary>
-        /// ÏûÊ§Ìõ¼ş
+        /// æ¶ˆå¤±æ¡ä»¶
         /// </summary>
         public CommonCheckCond DisappearCond;
 
-        // ÖØÉúÏà¹ØĞÅÏ¢
+        // é‡ç”Ÿç›¸å…³ä¿¡æ¯
         public bool WillRespawn = false;
         public float RespawnInterval = 0;
 

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class FlyToPlayerMover : MonoBehaviour
 {
-    public float speed = 8f;          // ·ÉĞĞËÙ¶È£¨Ã×/Ãë£©
-    public float arriveDistance = 0.2f; // ¾àÀëĞ¡ÓÚ´ËÖµÈÏÎªµ½´ï
+    public float speed = 8f;          // é£è¡Œé€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰
+    public float arriveDistance = 0.2f; // è·ç¦»å°äºæ­¤å€¼è®¤ä¸ºåˆ°è¾¾
 
     private Transform _target;
     private Vector3 _fixedPosition;
@@ -32,12 +32,12 @@ public class FlyToPlayerMover : MonoBehaviour
         if (dist <= arriveDistance)
         {
             _onArrived?.Invoke();
-            //enabled = false; // Í£Ö¹ÒÆ¶¯£¨ÉÏ²ã¿ÉÄÜ»áÏú»Ù£©
+            //enabled = false; // åœæ­¢ç§»åŠ¨ï¼ˆä¸Šå±‚å¯èƒ½ä¼šé”€æ¯ï¼‰
             return;
         }
 
         Vector3 step = dir.normalized * speed * LogicTime.deltaTime;
-        // ¼òµ¥ÔÈËÙ×·×Ù£»ĞèÒª¸üË¿»¬¿ÉÓÃ²åÖµ»ò¼ÓËÙÇúÏß
+        // ç®€å•åŒ€é€Ÿè¿½è¸ªï¼›éœ€è¦æ›´ä¸æ»‘å¯ç”¨æ’å€¼æˆ–åŠ é€Ÿæ›²çº¿
         transform.position += step;
     }
 }

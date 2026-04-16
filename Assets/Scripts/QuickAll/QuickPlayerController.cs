@@ -7,11 +7,11 @@ using UnityEngine.InputSystem;
 public class QuickPlayerController : MonoBehaviour
 {
     [Header("Animation")]
-    public Animator animator; // 2D¶¯»­»ú£¬º¬²ÎÊı: Speed(float), DirX(float), DirY(float)
+    public Animator animator; // 2DåŠ¨ç”»æœºï¼Œå«å‚æ•°: Speed(float), DirX(float), DirY(float)
     public SpriteRenderer spriteRenderer;
 
     [Header("Collision")]
-    public LayerMask obstacleMask; // µØĞÎ/Ç½ÌåÅö×²²ã
+    public LayerMask obstacleMask; // åœ°å½¢/å¢™ä½“ç¢°æ’å±‚
 
     private Rigidbody2D rb;
     private Collider2D col;
@@ -26,34 +26,34 @@ public class QuickPlayerController : MonoBehaviour
 
 
     [Header("Smoothing")]
-    public float blendDelta = 0.6f;       // ºòÑ¡Î»ÒÆµ½×îÖÕÎ»ÒÆµÄ²åÖµ±ÈÀı
-    public float velFilter = 0.5f;        // ×îÖÕËÙ¶ÈµÍÍ¨ÂË²¨
-    public float pushPriority = 1f;       // ÓÅÏÈ¼¶(Ô½´óÔ½ÓÅÏÈÍÆ¶¯±ğÈË£¬×Ô¼ºÉÙ¶¯)
-    public bool unpushable = false;       // °ÔÌå£º¼¸ºõ²»±»ÍÆ£¨ÈÔ¿ÉÍÆ±ğÈË£©
+    public float blendDelta = 0.6f;       // å€™é€‰ä½ç§»åˆ°æœ€ç»ˆä½ç§»çš„æ’å€¼æ¯”ä¾‹
+    public float velFilter = 0.5f;        // æœ€ç»ˆé€Ÿåº¦ä½é€šæ»¤æ³¢
+    public float pushPriority = 1f;       // ä¼˜å…ˆçº§(è¶Šå¤§è¶Šä¼˜å…ˆæ¨åŠ¨åˆ«äººï¼Œè‡ªå·±å°‘åŠ¨)
+    public bool unpushable = false;       // éœ¸ä½“ï¼šå‡ ä¹ä¸è¢«æ¨ï¼ˆä»å¯æ¨åˆ«äººï¼‰
 
-    // ·ÖÀë¿ØÖÆ£¨»ùÓÚÄ¿±ê·ÖÀëËÙ¶È£©
-    public float kp = 10f;                // ´©Í¸ -> Ä¿±ê·ÖÀëËÙ¶È ±ÈÀı
-    public float kd = 5f;                 // Ïà¶Ô·¨ÏòËÙ¶È×èÄá
-    public float maxSepSpeedPerPair = 6f; // µ¥¶Ô×î´ó·ÖÀëËÙ¶È
-    public float maxImpulsePerPair = 3.5f;// µ¥¶Ô×î´ó³åÁ¿(ËÙ¶ÈÔöÁ¿)
-    public float maxTotalImpulse = 6f;    // µ¥Ö¡ÀÛ¼Æ×î´ó³åÁ¿
+    // åˆ†ç¦»æ§åˆ¶ï¼ˆåŸºäºç›®æ ‡åˆ†ç¦»é€Ÿåº¦ï¼‰
+    public float kp = 10f;                // ç©¿é€ -> ç›®æ ‡åˆ†ç¦»é€Ÿåº¦ æ¯”ä¾‹
+    public float kd = 5f;                 // ç›¸å¯¹æ³•å‘é€Ÿåº¦é˜»å°¼
+    public float maxSepSpeedPerPair = 6f; // å•å¯¹æœ€å¤§åˆ†ç¦»é€Ÿåº¦
+    public float maxImpulsePerPair = 3.5f;// å•å¯¹æœ€å¤§å†²é‡(é€Ÿåº¦å¢é‡)
+    public float maxTotalImpulse = 6f;    // å•å¸§ç´¯è®¡æœ€å¤§å†²é‡
 
 
-    // Dash ¼ÆÊ±ÓëÀäÈ´
+    // Dash è®¡æ—¶ä¸å†·å´
     private float dashTimeLeft = 0f;
     private float dashCooldownLeft = 0f;
     private bool dashIFrameActive = false;
     private float dashIFrameLeft = 0f;
 
 
-    public float separationK = 14f;        // ·ÖÀëµ¯»ÉÏµÊı k
-    public float separationC = 3f;         // Ïà¶ÔËÙ¶È×èÄá c
-    public float maxCorrectionPerStep = 0.5f;  // µ¥²½×î´óĞŞÕıÏµÊı£¬·ÀÖ¹¹ı¶ÈĞŞÕı
+    public float separationK = 14f;        // åˆ†ç¦»å¼¹ç°§ç³»æ•° k
+    public float separationC = 3f;         // ç›¸å¯¹é€Ÿåº¦é˜»å°¼ c
+    public float maxCorrectionPerStep = 0.5f;  // å•æ­¥æœ€å¤§ä¿®æ­£ç³»æ•°ï¼Œé˜²æ­¢è¿‡åº¦ä¿®æ­£
 
-    // Knockback ¼ÆÊ±
+    // Knockback è®¡æ—¶
     private float knockbackTimeLeft = 0f;
 
-    // ÍÆ¼·»º´æ
+    // æ¨æŒ¤ç¼“å­˜
     private readonly Collider2D[] neighborBuffer = new Collider2D[32];
 
 
@@ -87,7 +87,7 @@ public class QuickPlayerController : MonoBehaviour
     //{
     //    if (ctx.performed)
     //    {
-    //        // TODO: ½»»¥¼ì²â£¨ÉäÏß/´¥·¢Æ÷£©
+    //        // TODO: äº¤äº’æ£€æµ‹ï¼ˆå°„çº¿/è§¦å‘å™¨ï¼‰
     //    }
     //}
 
@@ -96,7 +96,7 @@ public class QuickPlayerController : MonoBehaviour
 
     //private void UpdateDashInfo()
     //{
-    //    // ÀäÈ´/Ê±³¤¼ÆÊ±
+    //    // å†·å´/æ—¶é•¿è®¡æ—¶
     //    float dt = Time.deltaTime;
     //    if (dashCooldownLeft > 0f) dashCooldownLeft -= dt;
     //    if (dashIFrameActive)
@@ -120,30 +120,30 @@ public class QuickPlayerController : MonoBehaviour
     //            break;
     //        case ControlState.Knockback:
     //            knockbackTimeLeft -= dt;
-    //            // ÓÉËÙ¶ÈºÍÊ±¼ä¹²Í¬¾ö¶¨½áÊø£¨ËÙ¶È×ã¹»µÍ»òÊ±¼äµ½£©
+    //            // ç”±é€Ÿåº¦å’Œæ—¶é—´å…±åŒå†³å®šç»“æŸï¼ˆé€Ÿåº¦è¶³å¤Ÿä½æˆ–æ—¶é—´åˆ°ï¼‰
     //            if (knockbackTimeLeft <= 0f || externalVel.magnitude < knockbackMinEndSpeed)
     //                ExitKnockback();
     //            break;
     //    }
 
 
-    //    //// ÃæÏò·½Ïò£ºµ±ÓĞÊäÈëÊ±¸üĞÂ
+    //    //// é¢å‘æ–¹å‘ï¼šå½“æœ‰è¾“å…¥æ—¶æ›´æ–°
     //    //if (moveInput.sqrMagnitude > 0.0001f)
     //    //{
     //    //    facing = moveInput.normalized;
     //    //}
 
-    //    //// ¶¯»­²ÎÊı
+    //    //// åŠ¨ç”»å‚æ•°
     //    //float speedParam = velocity.magnitude;
     //    //animator.SetFloat("Speed", speedParam);
     //    //animator.SetFloat("DirX", facing.x);
     //    //animator.SetFloat("DirY", facing.y);
 
-    //    //// ¿ÉÑ¡£º×óÓÒ·­×ª£¨ÈôÄãÓÃ²àÊÓ¶¯»­£©
+    //    //// å¯é€‰ï¼šå·¦å³ç¿»è½¬ï¼ˆè‹¥ä½ ç”¨ä¾§è§†åŠ¨ç”»ï¼‰
     //    //if (spriteRenderer) spriteRenderer.flipX = facing.x < 0f;
 
 
-    //    // ÊäÈë»òAI×ªÎª baseMoveVel£¨½ö Normal ×´Ì¬ÏÂÉúĞ§£»Dash ¿ÉÑ¡ÔÊĞí×ªÏò£©
+    //    // è¾“å…¥æˆ–AIè½¬ä¸º baseMoveVelï¼ˆä»… Normal çŠ¶æ€ä¸‹ç”Ÿæ•ˆï¼›Dash å¯é€‰å…è®¸è½¬å‘ï¼‰
     //    Vector2 desiredDir = Vector2.zero;
     //    if (!isAIControlled && MainGameManager.Instance.gameLogicManager.playerLogicEntity.LockMovementState.Count == 0)
     //    {
@@ -158,13 +158,13 @@ public class QuickPlayerController : MonoBehaviour
     //    Vector2 targetBase = controllable ? desiredDir * moveSpeed : Vector2.zero;
     //    baseMoveVel = Vector2.MoveTowards(baseMoveVel, targetBase, acceleration * dt);
 
-    //    // ÍâÁ¦×ÔÈ»Ë¥¼õ£¨³ı·ÇÔÚDashÖĞ±£³Ö³£ËÙ£©
+    //    // å¤–åŠ›è‡ªç„¶è¡°å‡ï¼ˆé™¤éåœ¨Dashä¸­ä¿æŒå¸¸é€Ÿï¼‰
     //    if (controlState != ControlState.Dash)
     //    {
     //        externalVel = Vector2.MoveTowards(externalVel, Vector2.zero, externalDecay * dt);
     //    }
 
-    //    // Debug£º¿ÉÔÚ Animator ²ÎÊıÖĞÊ¹ÓÃ
+    //    // Debugï¼šå¯åœ¨ Animator å‚æ•°ä¸­ä½¿ç”¨
     //    currentVelocity = rb.velocity;
 
     //    if(Input.GetKeyDown(KeyCode.K))
@@ -185,54 +185,54 @@ public class QuickPlayerController : MonoBehaviour
     //    Vector2 candidatePos = startPos + delta;
 
 
-    //    // ÍÆ¼·£ºµ¥Î»¼ä·ÖÀëÁ¦£¬Ğ´Èë externalVel£¨½ö·ÇDash»ò´©ÈË¹Ø±ÕÊ±£©
+    //    // æ¨æŒ¤ï¼šå•ä½é—´åˆ†ç¦»åŠ›ï¼Œå†™å…¥ externalVelï¼ˆä»…éDashæˆ–ç©¿äººå…³é—­æ—¶ï¼‰
     //    if (controlState != ControlState.Dash)
     //    {
     //        Vector2 totalSelfImpulse = ComputeReactiveImpulses(startPos, candidatePos, dt);
-    //        // ½«³åÁ¿µş¼ÓÎªÍâÁ¦ËÙ¶È
+    //        // å°†å†²é‡å åŠ ä¸ºå¤–åŠ›é€Ÿåº¦
     //        externalVel += totalSelfImpulse;
 
-    //        // ÉÏÏŞÓëÂË²¨
+    //        // ä¸Šé™ä¸æ»¤æ³¢
     //        if (externalVel.magnitude > maxExternalSpeed)
     //            externalVel = externalVel.normalized * maxExternalSpeed;
 
     //        //candidatePos = ApplySeparationForces(startPos, candidatePos, dt);
     //    }
 
-    //    // »ùÓÚ¸üĞÂºóµÄ externalVel ÖØĞÂ¼ÆËãÎ»ÒÆ£¨¸üÌù½ü¡°ËÙ¶ÈÇı¶¯¡±£©
+    //    // åŸºäºæ›´æ–°åçš„ externalVel é‡æ–°è®¡ç®—ä½ç§»ï¼ˆæ›´è´´è¿‘â€œé€Ÿåº¦é©±åŠ¨â€ï¼‰
     //    Vector2 newDesiredVel = baseMoveVel + externalVel;
     //    Vector2 correctedDelta = newDesiredVel * dt;
 
-    //    // Î»ÒÆ²åÖµ£¬±ÜÃâÍ»±ä
+    //    // ä½ç§»æ’å€¼ï¼Œé¿å…çªå˜
     //    Vector2 finalDelta = Vector2.Lerp(delta, correctedDelta, blendDelta);
     //    rb.MovePosition(startPos + finalDelta);
 
-    //    // ¿ÉÑ¡£ºËÙ¶ÈÂË²¨
+    //    // å¯é€‰ï¼šé€Ÿåº¦æ»¤æ³¢
     //    Vector2 targetVel = finalDelta / dt;
     //    rb.velocity = Vector2.Lerp(rb.velocity, targetVel, velFilter);
 
 
-    //    //// ×éºÏËÙ¶È
+    //    //// ç»„åˆé€Ÿåº¦
     //    //Vector2 finalVel = baseMoveVel + externalVel;
-    //    //// ÏŞÖÆÍâÁ¦µÄÉÏÏŞ£¬·ÀÖ¹ÎŞÇîÔöËÙ
+    //    //// é™åˆ¶å¤–åŠ›çš„ä¸Šé™ï¼Œé˜²æ­¢æ— ç©·å¢é€Ÿ
     //    //if (externalVel.magnitude > maxExternalSpeed)
     //    //{
     //    //    externalVel = externalVel.normalized * maxExternalSpeed;
     //    //    finalVel = baseMoveVel + externalVel;
     //    //}
 
-    //    //// ³å´ÌÆÚ¼ä¿ÉÑ¡ÔñºöÂÔµ¥Î»Åö×²£¨ÇĞ»»²ã»ò½ûÓÃÓëµ¥Î»µÄ½Ó´¥£©
+    //    //// å†²åˆºæœŸé—´å¯é€‰æ‹©å¿½ç•¥å•ä½ç¢°æ’ï¼ˆåˆ‡æ¢å±‚æˆ–ç¦ç”¨ä¸å•ä½çš„æ¥è§¦ï¼‰
     //    //if (controlState == ControlState.Dash && dashPassThroughUnits)
     //    //{
-    //    //    // ÈÔ±£³ÖÓëÇ½ÌåÅö×²£ºÕâÀï²»¸ÄÎïÀí²ã£¬Åö×²ÈÔÓÉ Rigidbody2D ´¦Àí
-    //    //    // Èç¹ûĞèÒª³¹µ×¸Ä²ã£¬ÇëÔÚÏîÄ¿ÖĞÉèÖÃ Layer Åö×²¾ØÕó£¬²¢ÔÚ EnterDash/EndDash ÀïÇĞ»» gameObject.layer
+    //    //    // ä»ä¿æŒä¸å¢™ä½“ç¢°æ’ï¼šè¿™é‡Œä¸æ”¹ç‰©ç†å±‚ï¼Œç¢°æ’ä»ç”± Rigidbody2D å¤„ç†
+    //    //    // å¦‚æœéœ€è¦å½»åº•æ”¹å±‚ï¼Œè¯·åœ¨é¡¹ç›®ä¸­è®¾ç½® Layer ç¢°æ’çŸ©é˜µï¼Œå¹¶åœ¨ EnterDash/EndDash é‡Œåˆ‡æ¢ gameObject.layer
     //    //}
 
     //    //rb.MovePosition(candidatePos); 
     //}
 
 
-    //// ·µ»ØÊ©¼ÓÔÚ¡°×Ô¼º¡±ÉíÉÏµÄ×Ü³åÁ¿£¨ËÙ¶ÈÔöÁ¿£©£¬²¢¾¡¿ÉÄÜ°Ñ·´Ïò³åÁ¿Ğ´µ½¶Ô·½
+    //// è¿”å›æ–½åŠ åœ¨â€œè‡ªå·±â€èº«ä¸Šçš„æ€»å†²é‡ï¼ˆé€Ÿåº¦å¢é‡ï¼‰ï¼Œå¹¶å°½å¯èƒ½æŠŠåå‘å†²é‡å†™åˆ°å¯¹æ–¹
     //private Vector2 ComputeReactiveImpulses(Vector2 startPos, Vector2 candidatePos, float dt)
     //{
     //    int count = Physics2D.OverlapCircleNonAlloc(candidatePos, queryRadius, neighborBuffer, unitLayer);
@@ -255,22 +255,22 @@ public class QuickPlayerController : MonoBehaviour
 
     //        if (dist < minDist)
     //        {
-    //            // ·¨Ïß£º´Ó¶Ô·½Ö¸Ïò×Ô¼º
+    //            // æ³•çº¿ï¼šä»å¯¹æ–¹æŒ‡å‘è‡ªå·±
     //            Vector2 n = toSelf / dist;
     //            float penetration = (minDist - dist);
 
     //            float penSoft = 0.4f * selfRadius;
-    //            float penEff = penetration / (1f + penetration / Mathf.Max(1e-4f, penSoft)); // Èí±¥ºÍ
-    //            // Ïà¶Ô·¨ÏòËÙ¶È
+    //            float penEff = penetration / (1f + penetration / Mathf.Max(1e-4f, penSoft)); // è½¯é¥±å’Œ
+    //            // ç›¸å¯¹æ³•å‘é€Ÿåº¦
     //            Vector2 vSelf = (candidatePos - startPos) / dt;
     //            Vector2 vOther = GetBodyVel(other);
     //            float vRelN = Vector2.Dot(vSelf - vOther, n);
 
-    //            // Ä¿±ê·ÖÀëËÙ¶È£¨ÉÏÏŞ£©
+    //            // ç›®æ ‡åˆ†ç¦»é€Ÿåº¦ï¼ˆä¸Šé™ï¼‰
     //            float vSep = kp * penEff - kd * vRelN;
     //            vSep = Mathf.Clamp(vSep, 0f, maxSepSpeedPerPair);
 
-    //            // ±¾¶Ô³åÁ¿£¨ËÙ¶ÈÔöÁ¿£©
+    //            // æœ¬å¯¹å†²é‡ï¼ˆé€Ÿåº¦å¢é‡ï¼‰
     //            float pairImpulseMag = Mathf.Min(vSep, maxImpulsePerPair);
     //            pairs.Add((n, pairImpulseMag));
 
@@ -278,7 +278,7 @@ public class QuickPlayerController : MonoBehaviour
 
     //            //Vector2 pairImpulse = n * pairImpulseMag;
 
-    //            //// ÖÊÁ¿ÓëÓÅÏÈ¼¶·ÖÅä
+    //            //// è´¨é‡ä¸ä¼˜å…ˆçº§åˆ†é…
     //            //float selfShare, otherShare;
     //            //GetImpulseShares(other, out selfShare, out otherShare);
 
@@ -288,7 +288,7 @@ public class QuickPlayerController : MonoBehaviour
     //            //selfImpulseSum += selfImp;
     //            //remainingBudget -= pairImpulseMag;
 
-    //            //// ³¢ÊÔ°Ñ·´×÷ÓÃÁ¦Ê©¼Ó¸ø¶Ô·½
+    //            //// å°è¯•æŠŠåä½œç”¨åŠ›æ–½åŠ ç»™å¯¹æ–¹
     //            //var otherCtrl = other.GetComponent<ReactivePushController>();
     //            //if (otherCtrl != null)
     //            //{
@@ -298,25 +298,25 @@ public class QuickPlayerController : MonoBehaviour
     //    }
 
 
-    //    // 2) Í³¼Æ²¢¼ÆËãËõ·Å
+    //    // 2) ç»Ÿè®¡å¹¶è®¡ç®—ç¼©æ”¾
     //    float sumMag = 0f;
     //    for (int i = 0; i < pairs.Count; i++) sumMag += pairs[i].Item2;
 
-    //    // »ùÓÚÔ¤ËãµÄÈ«¾ÖËõ·Å
+    //    // åŸºäºé¢„ç®—çš„å…¨å±€ç¼©æ”¾
     //    float scaleBudget = (sumMag > 1e-4f) ? Mathf.Min(1f, maxTotalImpulse / sumMag) : 1f;
 
-    //    // »ùÓÚÁÚ¾ÓÊıÁ¿µÄ¸½¼ÓË¥¼õ£¨±ÜÃâ¸ßÃÜ¶Èµş¼Ó£©
+    //    // åŸºäºé‚»å±…æ•°é‡çš„é™„åŠ è¡°å‡ï¼ˆé¿å…é«˜å¯†åº¦å åŠ ï¼‰
     //    float scaleNeighbors = 1f;
     //    if (pairs.Count > 1)
     //    {
-    //        // Ã¿¶àÒ»¸öÁÚ¾Ó£¬³ËÒÔ perNeighborAttenuation
+    //        // æ¯å¤šä¸€ä¸ªé‚»å±…ï¼Œä¹˜ä»¥ perNeighborAttenuation
     //        int extra = pairs.Count - 1;
     //        scaleNeighbors = Mathf.Pow(0.5f, extra);
     //    }
 
     //    float scale = scaleBudget * scaleNeighbors;
 
-    //    // 3) Ê©¼ÓËõ·ÅºóµÄ×÷ÓÃ-·´×÷ÓÃ³åÁ¿
+    //    // 3) æ–½åŠ ç¼©æ”¾åçš„ä½œç”¨-åä½œç”¨å†²é‡
     //    Vector2 selfImpulseSum = Vector2.zero;
 
     //    for (int i = 0; i < pairs.Count; i++)
@@ -337,7 +337,7 @@ public class QuickPlayerController : MonoBehaviour
             
     //    }
 
-    //    // 4) ×îÖÕ°²È«ÏŞ·ù£¨¼«¶Ë±£»¤£©
+    //    // 4) æœ€ç»ˆå®‰å…¨é™å¹…ï¼ˆæç«¯ä¿æŠ¤ï¼‰
     //    float m = selfImpulseSum.magnitude;
     //    if (m > maxTotalImpulse)
     //        selfImpulseSum = selfImpulseSum.normalized * maxTotalImpulse;
@@ -346,7 +346,7 @@ public class QuickPlayerController : MonoBehaviour
     //}
 
 
-    //// ¸ù¾İÖÊÁ¿ÓëÓÅÏÈ¼¶¾ö¶¨³åÁ¿·ÖÅä±ÈÀı
+    //// æ ¹æ®è´¨é‡ä¸ä¼˜å…ˆçº§å†³å®šå†²é‡åˆ†é…æ¯”ä¾‹
     //private void GetImpulseShares(Collider2D other, out float selfShare, out float otherShare)
     //{
     //    //float mSelf = Mathf.Max(0.001f, effectiveMass);
@@ -357,27 +357,27 @@ public class QuickPlayerController : MonoBehaviour
     //    float pOther = 1f;
     //    bool otherUnpushable = false;
 
-    //    // ¶Ô·½Ã»ÓĞ½Å±¾£¬ÊÓÎª½ÏÖØ½ÏÓ²ÎïÌå£¨µ«ÈÔ²»ÓëÆäÅö×²£©
+    //    // å¯¹æ–¹æ²¡æœ‰è„šæœ¬ï¼Œè§†ä¸ºè¾ƒé‡è¾ƒç¡¬ç‰©ä½“ï¼ˆä½†ä»ä¸ä¸å…¶ç¢°æ’ï¼‰
     //    mOther = 2f;
     //    pOther = 1.5f;
 
-    //    // ¼ÆËã¡°µÖ¿¹ÏµÊı¡± r = mass * priority£¬r Ô½´óÔ½²»¶¯
+    //    // è®¡ç®—â€œæŠµæŠ—ç³»æ•°â€ r = mass * priorityï¼Œr è¶Šå¤§è¶Šä¸åŠ¨
     //    float rSelf = mSelf * pSelf;
     //    float rOther = mOther * pOther;
 
-    //    // ·ÖÅä·İ¶î£ºË­¸ü¡°ÖØ/ÓÅÏÈ¡±£¬Ë­³Ğµ£¸üÉÙ
+    //    // åˆ†é…ä»½é¢ï¼šè°æ›´â€œé‡/ä¼˜å…ˆâ€ï¼Œè°æ‰¿æ‹…æ›´å°‘
     //    float denom = rSelf + rOther;
     //    if (denom < 1e-5f) { selfShare = 0.5f; otherShare = 0.5f; return; }
 
-    //    // Õı³£·ÖÅä£¨¶Ô×Ô¼ºÊ©¼ÓµÄÕıÏò³åÁ¿±ÈÀı£©
+    //    // æ­£å¸¸åˆ†é…ï¼ˆå¯¹è‡ªå·±æ–½åŠ çš„æ­£å‘å†²é‡æ¯”ä¾‹ï¼‰
     //    selfShare = rOther / denom;
     //    otherShare = rSelf / denom;
 
-    //    // °ÔÌåĞŞÕı
+    //    // éœ¸ä½“ä¿®æ­£
     //    //if (unpushable) selfShare = Mathf.Min(selfShare, unpushableShare);
     //    if (otherUnpushable) otherShare = Mathf.Min(otherShare, 0.1f);
 
-    //    // ¹éÒ»£¬·ÀÖ¹¼«¶Ë
+    //    // å½’ä¸€ï¼Œé˜²æ­¢æç«¯
     //    float sum = selfShare + otherShare;
     //    if (sum > 1e-5f) { selfShare /= sum; otherShare /= sum; }
     //}
@@ -391,7 +391,7 @@ public class QuickPlayerController : MonoBehaviour
 
     ////    Vector2 corrected = candidatePos;
 
-    ////    // µ¥´Îµü´ú£ºµş¼ÓËùÓĞÁÚ¾ÓµÄĞŞÕıÏòÁ¿
+    ////    // å•æ¬¡è¿­ä»£ï¼šå åŠ æ‰€æœ‰é‚»å±…çš„ä¿®æ­£å‘é‡
     ////    Vector2 totalCorrection = Vector2.zero;
     ////    for (int i = 0; i < count && used < separationMaxNeighbors; i++)
     ////    {
@@ -409,13 +409,13 @@ public class QuickPlayerController : MonoBehaviour
     ////        if (dist < minDist)
     ////        {
     ////            float penetration = (minDist - dist);
-    ////            Vector2 n = toSelf / dist; // ĞŞÕı·¨Ïß£º´ÓÁÚ¾ÓÖ¸Ïò×Ô¼º
+    ////            Vector2 n = toSelf / dist; // ä¿®æ­£æ³•çº¿ï¼šä»é‚»å±…æŒ‡å‘è‡ªå·±
 
-    ////            // Ïà¶ÔËÙ¶È×èÄá£¨±ÜÃâ¶¶¶¯£©
+    ////            // ç›¸å¯¹é€Ÿåº¦é˜»å°¼ï¼ˆé¿å…æŠ–åŠ¨ï¼‰
     ////            Vector2 relVel = (candidatePos - startPos) / dt - GetBodyVel(other);
     ////            float vN = Vector2.Dot(relVel, n);
 
-    ////            // ÈíÔ¼ÊøĞŞÕıÁ¿£ºk*pen - c*vN
+    ////            // è½¯çº¦æŸä¿®æ­£é‡ï¼šk*pen - c*vN
     ////            float corrMag = separationK * penetration - separationC * vN;
     ////            corrMag = Mathf.Max(0f, corrMag);
     ////            totalCorrection += n * corrMag * dt;
@@ -423,7 +423,7 @@ public class QuickPlayerController : MonoBehaviour
     ////        }
     ////    }
 
-    ////    // ÏŞÖÆ×î´óĞŞÕı£¬±ÜÃâÒ»´ÎÍÆÌ«Ô¶
+    ////    // é™åˆ¶æœ€å¤§ä¿®æ­£ï¼Œé¿å…ä¸€æ¬¡æ¨å¤ªè¿œ
     ////    if (totalCorrection.magnitude > maxCorrectionPerStep)
     ////        totalCorrection = totalCorrection.normalized * maxCorrectionPerStep;
 
@@ -480,10 +480,10 @@ public class QuickPlayerController : MonoBehaviour
     //}
 
 
-    //// Ê¾Àı£º¹¥»÷ÃüÖĞ»ò×²Ç½ÊÂ¼ş¿Éµ÷ÓÃ
+    //// ç¤ºä¾‹ï¼šæ”»å‡»å‘½ä¸­æˆ–æ’å¢™äº‹ä»¶å¯è°ƒç”¨
     //private void OnCollisionEnter2D(Collision2D collision)
     //{
-    //    // Ç½Ìå×²»÷£ºÔÚ»÷ÍË»ò³å´ÌÖĞ×²Ç½µÄ´¦Àí
+    //    // å¢™ä½“æ’å‡»ï¼šåœ¨å‡»é€€æˆ–å†²åˆºä¸­æ’å¢™çš„å¤„ç†
     //    int layer = collision.collider.gameObject.layer;
     //    bool isWall = (wallsLayer.value & (1 << layer)) != 0;
 
@@ -492,22 +492,22 @@ public class QuickPlayerController : MonoBehaviour
     //        Vector2 normal = collision.contacts[0].normal;
     //        if (controlState == ControlState.Knockback)
     //        {
-    //            // ×²Ç½ºó½áÊø»÷ÍË²¢¿É×ªÑ£ÔÎ
+    //            // æ’å¢™åç»“æŸå‡»é€€å¹¶å¯è½¬çœ©æ™•
     //            externalVel = Vector2.zero;
     //            //ApplyStun(defaultStunDuration * 0.6f);
     //        }
     //        else if (controlState == ControlState.Dash)
     //        {
-    //            // Dash×²Ç½Á¢¼´½áÊø
+    //            // Dashæ’å¢™ç«‹å³ç»“æŸ
     //            EndDash();
     //        }
     //    }
     //}
 
-    //// ¹«¿ª½Ó¿Ú£º´¥·¢»÷ÍË
+    //// å…¬å¼€æ¥å£ï¼šè§¦å‘å‡»é€€
     //public void ApplyKnockback(Vector2 dir, float initialSpeed, float duration)
     //{
-    //    if (controlState == ControlState.Dash) return; // ³å´Ì°ÔÌå¿ÉºöÂÔ£¬°´Éè¼Æ¿É¸Ä
+    //    if (controlState == ControlState.Dash) return; // å†²åˆºéœ¸ä½“å¯å¿½ç•¥ï¼ŒæŒ‰è®¾è®¡å¯æ”¹
     //    controlState = ControlState.Knockback;
     //    externalVel = dir.normalized * Mathf.Max(initialSpeed, 0f);
     //    knockbackTimeLeft = Mathf.Max(duration, 0f);
@@ -518,36 +518,36 @@ public class QuickPlayerController : MonoBehaviour
     //#region movement controller
 
     //[Header("Base Move")]
-    //public float moveSpeed = 5f;              // »ù´¡ĞĞ×ßËÙ¶È
-    //public float acceleration = 20f;          // ÊäÈë¼ÓËÙ¶È£¨Æ½»¬£©
-    //public bool isAIControlled = false;       // Íæ¼Ò»òAI
-    //public Vector2 aiMoveDir;                 // AIÌá¹©µÄ·½Ïò£¨µ¥Î»ÏòÁ¿£©
+    //public float moveSpeed = 5f;              // åŸºç¡€è¡Œèµ°é€Ÿåº¦
+    //public float acceleration = 20f;          // è¾“å…¥åŠ é€Ÿåº¦ï¼ˆå¹³æ»‘ï¼‰
+    //public bool isAIControlled = false;       // ç©å®¶æˆ–AI
+    //public Vector2 aiMoveDir;                 // AIæä¾›çš„æ–¹å‘ï¼ˆå•ä½å‘é‡ï¼‰
 
     //[Header("External Effects")]
-    //public float maxExternalSpeed = 10f;      // ÍâÁ¦µş¼ÓËÙ¶ÈÉÏÏŞ
-    //public float externalDecay = 6f;          // ÍâÁ¦×ÔÈ»Ë¥¼õ£¨Ã¿Ãë£©
-    //public bool enableUnitSeparation = true;  // ÊÇ·ñÆôÓÃµ¥Î»¼äÍÆ¼·
-    //public float separationRadius = 0.5f;     // ×ÔÉíÅö×²°ë¾¶£¨ÓëCircleCollider2DÒ»ÖÂ»òÂÔ´ó£©
-    //public float separationStrength = 12f;    // ÍÆ¼·Á¦¶ÈÏµÊık
-    //public float separationDamping = 3f;      // ÍÆ¼·×èÄác
-    //public LayerMask unitLayer;               // ¿É±»ÍÆ¼·µÄµ¥Î»²ã
+    //public float maxExternalSpeed = 10f;      // å¤–åŠ›å åŠ é€Ÿåº¦ä¸Šé™
+    //public float externalDecay = 6f;          // å¤–åŠ›è‡ªç„¶è¡°å‡ï¼ˆæ¯ç§’ï¼‰
+    //public bool enableUnitSeparation = true;  // æ˜¯å¦å¯ç”¨å•ä½é—´æ¨æŒ¤
+    //public float separationRadius = 0.5f;     // è‡ªèº«ç¢°æ’åŠå¾„ï¼ˆä¸CircleCollider2Dä¸€è‡´æˆ–ç•¥å¤§ï¼‰
+    //public float separationStrength = 12f;    // æ¨æŒ¤åŠ›åº¦ç³»æ•°k
+    //public float separationDamping = 3f;      // æ¨æŒ¤é˜»å°¼c
+    //public LayerMask unitLayer;               // å¯è¢«æ¨æŒ¤çš„å•ä½å±‚
 
 
-    //public int separationMaxNeighbors = 8;    // ÍÆ¼·¼ÆËãµÄ×î´óÁÚ¾ÓÊı
-    //public float separationQueryRadius = 1.2f;// ÍÆ¼·²ÉÑù°ë¾¶
+    //public int separationMaxNeighbors = 8;    // æ¨æŒ¤è®¡ç®—çš„æœ€å¤§é‚»å±…æ•°
+    //public float separationQueryRadius = 1.2f;// æ¨æŒ¤é‡‡æ ·åŠå¾„
 
     //[Header("Dash")]
     //public float dashSpeed = 12f;
     //public float dashDuration = 0.2f;
     //public float dashCooldown = 0.6f;
-    //public bool dashPassThroughUnits = true;  // ³å´ÌÊÇ·ñ´©¹ıµ¥Î»
-    //public LayerMask wallsLayer;              // Ç½Ìå²ã£¨³å´ÌÈÔĞèÅö×²£©
-    //public bool dashInvulnerable = true;      // ³å´ÌÎŞµĞÖ¡
+    //public bool dashPassThroughUnits = true;  // å†²åˆºæ˜¯å¦ç©¿è¿‡å•ä½
+    //public LayerMask wallsLayer;              // å¢™ä½“å±‚ï¼ˆå†²åˆºä»éœ€ç¢°æ’ï¼‰
+    //public bool dashInvulnerable = true;      // å†²åˆºæ— æ•Œå¸§
     //public float dashIFrameTime = 0.15f;
 
     //[Header("Knockback")]
-    //public float knockbackDrag = 4f;          // »÷ÍËËÙ¶ÈÖ¸ÊıË¥¼õ
-    //public float knockbackMinEndSpeed = 0.4f; // µÍÓÚ´ËËÙ¶È½áÊø»÷ÍË
+    //public float knockbackDrag = 4f;          // å‡»é€€é€Ÿåº¦æŒ‡æ•°è¡°å‡
+    //public float knockbackMinEndSpeed = 0.4f; // ä½äºæ­¤é€Ÿåº¦ç»“æŸå‡»é€€
 
     //[Header("Debug")]
     //public Vector2 currentVelocity;
@@ -555,11 +555,11 @@ public class QuickPlayerController : MonoBehaviour
     //public Vector2 externalVel;
 
 
-    //// ×´Ì¬»ú£¨ÊÜ¿Ø²ã£©
+    //// çŠ¶æ€æœºï¼ˆå—æ§å±‚ï¼‰
     //public enum ControlState { Normal, Knockback, Dash, Stunned }
     //public ControlState controlState = ControlState.Normal;
 
-    //private Vector2 facing = Vector2.down; // ³õÊ¼ÃæÏòÏÂ
+    //private Vector2 facing = Vector2.down; // åˆå§‹é¢å‘ä¸‹
 
 
     //#endregion
@@ -577,8 +577,8 @@ public class QuickPlayerController : MonoBehaviour
     //        dashIFrameLeft = dashIFrameTime;
     //    }
 
-    //    // ÈçĞè´©ÈË£º¿ÉÔÚ´ËÇĞ»» layer µ½Ò»¸öÓë¡°µ¥Î»²ã¡±²»Åö×²µÄ²ã
-    //    // int oldLayer = gameObject.layer; // ĞèÒª»º´æÒÔ±ã»Ö¸´
+    //    // å¦‚éœ€ç©¿äººï¼šå¯åœ¨æ­¤åˆ‡æ¢ layer åˆ°ä¸€ä¸ªä¸â€œå•ä½å±‚â€ä¸ç¢°æ’çš„å±‚
+    //    // int oldLayer = gameObject.layer; // éœ€è¦ç¼“å­˜ä»¥ä¾¿æ¢å¤
     //    // gameObject.layer = LayerMask.NameToLayer("DashLayer");
     //}
 
@@ -586,11 +586,11 @@ public class QuickPlayerController : MonoBehaviour
     //private void EndDash()
     //{
     //    controlState = ControlState.Normal;
-    //    // Æ½»¬ÊÕÎ²£º±£ÁôÉÙÁ¿ËÙ¶È²¢¿ìËÙË¥¼õ
+    //    // å¹³æ»‘æ”¶å°¾ï¼šä¿ç•™å°‘é‡é€Ÿåº¦å¹¶å¿«é€Ÿè¡°å‡
     //    externalVel *= 0.1f;
     //    dashIFrameActive = false;
 
-    //    // »Ö¸´²ã
+    //    // æ¢å¤å±‚
     //    // gameObject.layer = previousLayer;
     //}
 

@@ -11,13 +11,13 @@ namespace My.Map
         public static HomeTrafficManager Instance;
 
 
-        [Header("ÅäÖÃ")]
+        [Header("é…ç½®")]
         public GameObject NpcPrefab;
         public int MaxNpcCount = 80;
         public float SpawnInterval = 0.5f;
         public float PathRandomWidth = 1f;
 
-        // ËùÓĞ¶ËµãÁĞ±í£¨¼ÈÊÇÆğµãÒ²ÊÇÖÕµã£©
+        // æ‰€æœ‰ç«¯ç‚¹åˆ—è¡¨ï¼ˆæ—¢æ˜¯èµ·ç‚¹ä¹Ÿæ˜¯ç»ˆç‚¹ï¼‰
         private List<HomeTrafficNode> _endPoints = new List<HomeTrafficNode>();
         private List<HomeBgNpc> _pool = new List<HomeBgNpc>();
         private float _timer;
@@ -26,7 +26,7 @@ namespace My.Map
         {
             Instance = this;
 
-            // 1. ÊÕ¼¯ËùÓĞ EndPoint
+            // 1. æ”¶é›†æ‰€æœ‰ EndPoint
             var allNodes = transform.GetComponentsInChildren<HomeTrafficNode>();
             foreach (var node in allNodes)
             {
@@ -34,7 +34,7 @@ namespace My.Map
                     _endPoints.Add(node);
             }
 
-            // ³õÊ¼»¯¶ÔÏó³Ø
+            // åˆå§‹åŒ–å¯¹è±¡æ± 
             for (int i = 0; i < MaxNpcCount; i++)
             {
                 var obj = Instantiate(NpcPrefab, transform);
@@ -69,12 +69,12 @@ namespace My.Map
 
         void TrySpawnNpc()
         {
-            if (_endPoints.Count < 2) return; // ÖÁÉÙÒªÓĞÁ½¸ö¶Ëµã²ÅÄÜ×ß
+            if (_endPoints.Count < 2) return; // è‡³å°‘è¦æœ‰ä¸¤ä¸ªç«¯ç‚¹æ‰èƒ½èµ°
 
-            // 1. Ëæ»úÑ¡Ò»¸ö³öÉúµã (StartNode)
+            // 1. éšæœºé€‰ä¸€ä¸ªå‡ºç”Ÿç‚¹ (StartNode)
             var startNode = _endPoints[Random.Range(0, _endPoints.Count)];
 
-            // 2. Ñ°ÕÒÒ»ÌõÍ¨Íù¡°ÆäËû¶Ëµã¡±µÄÂ·
+            // 2. å¯»æ‰¾ä¸€æ¡é€šå¾€â€œå…¶ä»–ç«¯ç‚¹â€çš„è·¯
             Queue<Vector3> route = GenerateRouteToAnyExit(startNode);
 
             if (route == null || route.Count == 0)
@@ -91,7 +91,7 @@ namespace My.Map
 
             Vector3 offset = roundOffsetList[offsetIdx];
 
-            // ¼ÓÉÏÆ«ÒÆÁ¿
+            // åŠ ä¸Šåç§»é‡
             npc.Init(startNode.transform.position + offset, route, offset);
         }
 
@@ -100,10 +100,10 @@ namespace My.Map
             Queue<Vector3> path = new Queue<Vector3>();
             HomeTrafficNode current = startNode;
 
-            // 1. Ê¹ÓÃ HashSet ¼ÇÂ¼ÒÑ·ÃÎÊµÄ½Úµã£¬²éÕÒËÙ¶È¿ì (O(1))
+            // 1. ä½¿ç”¨ HashSet è®°å½•å·²è®¿é—®çš„èŠ‚ç‚¹ï¼ŒæŸ¥æ‰¾é€Ÿåº¦å¿« (O(1))
             HashSet<HomeTrafficNode> visited = new HashSet<HomeTrafficNode>();
 
-            // °ÑÆğµãÏÈ¼Ó½øÈ¥£¬·ÀÖ¹ÈÆÒ»´óÈ¦ÓÖ×ß»ØÆğµã
+            // æŠŠèµ·ç‚¹å…ˆåŠ è¿›å»ï¼Œé˜²æ­¢ç»•ä¸€å¤§åœˆåˆèµ°å›èµ·ç‚¹
             visited.Add(startNode);
 
             bool foundExit = false;
@@ -111,29 +111,29 @@ namespace My.Map
 
             for (int i = 0; i < maxSteps; i++)
             {
-                // --- ºËĞÄ¸Ä¶¯£º¸üÑÏ¸ñµÄÉ¸Ñ¡ ---
+                // --- æ ¸å¿ƒæ”¹åŠ¨ï¼šæ›´ä¸¥æ ¼çš„ç­›é€‰ ---
 
-                // É¸Ñ¡³ö¿É×ßµÄÏÂÒ»²½£º±ØĞëÊÇ²»ÔÚ visited ¼¯ºÏÀïµÄµã
+                // ç­›é€‰å‡ºå¯èµ°çš„ä¸‹ä¸€æ­¥ï¼šå¿…é¡»æ˜¯ä¸åœ¨ visited é›†åˆé‡Œçš„ç‚¹
                 List<HomeTrafficNode> validNextNodes = current.NextNodes
                     .Where(n => !visited.Contains(n))
                     .ToList();
 
-                // Èç¹ûËùÓĞÂ·¶¼×ß¹ıÁË£¨»òÕßÊÇËÀºúÍ¬£©£¬ÄÇ¾Í¶Ïµô
+                // å¦‚æœæ‰€æœ‰è·¯éƒ½èµ°è¿‡äº†ï¼ˆæˆ–è€…æ˜¯æ­»èƒ¡åŒï¼‰ï¼Œé‚£å°±æ–­æ‰
                 if (validNextNodes.Count == 0) break;
 
-                // Ëæ»úÑ¡Ò»ÌõĞÂÂ·
+                // éšæœºé€‰ä¸€æ¡æ–°è·¯
                 HomeTrafficNode nextNode = validNextNodes[Random.Range(0, validNextNodes.Count)];
 
-                // ¼ÓÈëÂ·¾¶
+                // åŠ å…¥è·¯å¾„
                 path.Enqueue(nextNode.transform.position);
 
-                // ±ê¼ÇÎªÒÑ·ÃÎÊ
+                // æ ‡è®°ä¸ºå·²è®¿é—®
                 visited.Add(nextNode);
 
-                // ¸üĞÂµ±Ç°½Úµã
+                // æ›´æ–°å½“å‰èŠ‚ç‚¹
                 current = nextNode;
 
-                // --- ÅĞ¶ÏÊÇ·ñµ½´ïÖÕµã ---
+                // --- åˆ¤æ–­æ˜¯å¦åˆ°è¾¾ç»ˆç‚¹ ---
                 if (current.Type == HomeTrafficNode.NodeType.EndPoint && current != startNode)
                 {
                     foundExit = true;

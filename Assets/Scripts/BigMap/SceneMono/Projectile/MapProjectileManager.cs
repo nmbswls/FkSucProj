@@ -9,7 +9,7 @@ namespace My
 {
 
     /// <summary>
-    /// ×Óµ¯ÅäÖÃÊı¾İ
+    /// å­å¼¹é…ç½®æ•°æ®
     /// </summary>
     public class ProjectileData
     {
@@ -17,32 +17,32 @@ namespace My
         public float maxLifetime = 6f;
 
         public bool friendlyFire = false;
-        public int maxPenetration = 0;       // Ö±Ïß¿É´©Í¸Êı
+        public int maxPenetration = 0;       // ç›´çº¿å¯ç©¿é€æ•°
 
         public bool rotateBodyToVelocity = true;
 
         //[Header("FX")]
-        //public GameObject impactFX;          // Ö±ÏßÃüÖĞµãFX
-        //public GameObject explodeFX;         // Å×Îï/ÖÕÖ¹FX
+        //public GameObject impactFX;          // ç›´çº¿å‘½ä¸­ç‚¹FX
+        //public GameObject explodeFX;         // æŠ›ç‰©/ç»ˆæ­¢FX
         public float fxAutoDestroy = 3f;
 
         public bool showRangeWarn = false;
 
         public EMotionType motiontype;
-        public MotionDataBase motionData;    // Ö¸Ïò¾ßÌåÔË¶¯SO£¨Linear/Parabola/Homing£©
+        public MotionDataBase motionData;    // æŒ‡å‘å…·ä½“è¿åŠ¨SOï¼ˆLinear/Parabola/Homingï¼‰
 
         public FightStruct.Shape ProjShape = new();
 
         public bool isHoming;
-        public float homingTime = 999; // ÖÆµ¼Ê±¼ä
+        public float homingTime = 999; // åˆ¶å¯¼æ—¶é—´
 
         public bool TriggerOnLifeEnd;
         public bool TriggerOnCollide;
 
-        // »÷ÖĞµ¥Î»Ğ§¹û
+        // å‡»ä¸­å•ä½æ•ˆæœ
         public FightStruct.HitResult EntityHitResult = null;
 
-        // ±¬Õ¨Ğ§¹û
+        // çˆ†ç‚¸æ•ˆæœ
         public List<MapFightEffectCfg> ExplodeEffects = null;
 
         public bool lockAngle = false;

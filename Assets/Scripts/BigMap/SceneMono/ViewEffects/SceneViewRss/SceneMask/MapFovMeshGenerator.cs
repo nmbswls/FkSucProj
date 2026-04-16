@@ -11,7 +11,7 @@ namespace My.Map.Scene
     {
         public static class Geo2D
         {
-            // ÉäÏß(Æğµã p, ·½Ïò dir) Óë Ïß¶Î (a,b) Ïà½»£¬·µ»ØÊÇ·ñÏà½»Óë½»µã
+            // å°„çº¿(èµ·ç‚¹ p, æ–¹å‘ dir) ä¸ çº¿æ®µ (a,b) ç›¸äº¤ï¼Œè¿”å›æ˜¯å¦ç›¸äº¤ä¸äº¤ç‚¹
             public static bool RaySegmentIntersection(Vector2 p, Vector2 dir, Vector2 a, Vector2 b, out Vector2 hit, out float tRay)
             {
                 hit = default;
@@ -20,10 +20,10 @@ namespace My.Map.Scene
                 Vector2 v2 = b - a;
                 float cross = Cross(dir, v2);
                 const float eps = 1e-7f;
-                if (Mathf.Abs(cross) < eps) return false; // Æ½ĞĞ»ò¹²Ïß
+                if (Mathf.Abs(cross) < eps) return false; // å¹³è¡Œæˆ–å…±çº¿
 
-                float t = Cross(v2, v1) / cross; // ÉäÏßÉÏ²ÎÊı
-                float u = Cross(dir, v1) / cross; // Ïß¶ÎÉÏµÄ²ÎÊı [0,1]
+                float t = Cross(v2, v1) / cross; // å°„çº¿ä¸Šå‚æ•°
+                float u = Cross(dir, v1) / cross; // çº¿æ®µä¸Šçš„å‚æ•° [0,1]
                 if (t >= 0f && u >= 0f && u <= 1f)
                 {
                     hit = p + dir * t;
@@ -49,8 +49,8 @@ namespace My.Map.Scene
         
 
         [Header("Sampling")]
-        public float epsilonAngle = 0.0005f; // ¦Å½Ç¶ÈÎ¢Æ«ÒÆ
-        public int uniformSamples = 64;      // FOV ÄÚµÄ¾ùÔÈ²ÉÑùÊıÁ¿£¨ÓÃÓÚ²¹¿ÕÓò£©
+        public float epsilonAngle = 0.0005f; // Îµè§’åº¦å¾®åç§»
+        public int uniformSamples = 64;      // FOV å†…çš„å‡åŒ€é‡‡æ ·æ•°é‡ï¼ˆç”¨äºè¡¥ç©ºåŸŸï¼‰
         public bool includeVertexDirections = true;
 
         [Header("Index")]
@@ -65,7 +65,7 @@ namespace My.Map.Scene
         public ObstacleSegmentProvider segmentProvider;
         public bool NeedMask = true;
 
-        public float orientationDegrees = 0f; // Ö÷½Ç³¯Ïò(ÊÀ½ç½Ç¶È)
+        public float orientationDegrees = 0f; // ä¸»è§’æœå‘(ä¸–ç•Œè§’åº¦)
         private Vector2? lastPosUpdateVal = null;
         private float? lastAngleUpdateVal = null;
         public float angleUpdateInterval = 5f;
@@ -142,7 +142,7 @@ namespace My.Map.Scene
             }
 
             var playerFaceDir = MainGameManager.Instance.gameLogicManager.playerLogicEntity.CurrentLook;
-            float angle = Mathf.Atan2(playerFaceDir.y, playerFaceDir.x) * Mathf.Rad2Deg; // Óë +X Öá¼Ğ½Ç
+            float angle = Mathf.Atan2(playerFaceDir.y, playerFaceDir.x) * Mathf.Rad2Deg; // ä¸ +X è½´å¤¹è§’
             orientationDegrees = angle;
             bool needUpdate = false;
             var currQuantiedAngle = GetCurrentQuantiedDeg();
@@ -184,23 +184,23 @@ namespace My.Map.Scene
             float left = theta - fov * 0.5f;
             float right = theta + fov * 0.5f;
 
-            // ÊÕ¼¯·½Ïò
+            // æ”¶é›†æ–¹å‘
             var dirs = new List<float>(uniformSamples + 64);
             dirs.Add(left);
             dirs.Add(right);
 
-            // ¾ùÔÈ²ÉÑù
+            // å‡åŒ€é‡‡æ ·
             for (int i = 1; i < uniformSamples - 1; i++)
             {
                 float a = Mathf.Lerp(left, right, i / (float)(uniformSamples - 1));
                 dirs.Add(a);
             }
 
-            // Ïà¹Ø¶¥µã·½Ïò
+            // ç›¸å…³é¡¶ç‚¹æ–¹å‘
             if (includeVertexDirections)
             {
                 candidateSet.Clear();
-                segmentProvider.QueryCircle(P, viewRadius, candidateSet); // ½öÈ¦ÄÚºòÑ¡
+                segmentProvider.QueryCircle(P, viewRadius, candidateSet); // ä»…åœˆå†…å€™é€‰
                 foreach (int idx in candidateSet)
                 {
                     var seg = segmentProvider.GetSegment(idx);
@@ -215,13 +215,13 @@ namespace My.Map.Scene
                 //}
             }
 
-            // È¥ÖØ²¢ÅÅĞò
+            // å»é‡å¹¶æ’åº
             //dirs.Sort();
             SortUnwrapped(dirs);
 
             CompactAngles(dirs, epsilonAngle * 0.5f);
 
-            // ¶ÔÃ¿¸ö·½Ïò×ö ¦Å Î¢Æ«ÒÆÓëÉäÏß²âÊÔ
+            // å¯¹æ¯ä¸ªæ–¹å‘åš Îµ å¾®åç§»ä¸å°„çº¿æµ‹è¯•
             points.Clear();
             angles.Clear();
 
@@ -232,12 +232,12 @@ namespace My.Map.Scene
                 SampleDirection(P, a + epsilonAngle, ref points, ref angles);
             }
 
-            // ½Ç¶ÈÅÅĞò£¨Ïà¶ÔÓÚ P£©
+            // è§’åº¦æ’åºï¼ˆç›¸å¯¹äº Pï¼‰
             var idxs = new int[points.Count];
             for (int i = 0; i < idxs.Length; i++) idxs[i] = i;
             Array.Sort(idxs, (i, j) => angles[i].CompareTo(angles[j]));
 
-            // ¹¹½¨Èı½ÇÉÈ Mesh
+            // æ„å»ºä¸‰è§’æ‰‡ Mesh
             BuildTriangleFanMesh(P, points, idxs);
         }
 
@@ -248,7 +248,7 @@ namespace My.Map.Scene
             for (int i = 0; i < angles.Count; i++)
             {
                 float a = angles[i];
-                // Õ¹¿ªµ½Ïà¶Ô baseA µÄÁ¬ĞøÓò
+                // å±•å¼€åˆ°ç›¸å¯¹ baseA çš„è¿ç»­åŸŸ
                 float d = a - baseA;
                 while (d > Mathf.PI) d -= 2f * Mathf.PI;
                 while (d < -Mathf.PI) d += 2f * Mathf.PI;
@@ -263,7 +263,7 @@ namespace My.Map.Scene
             Vector2 d = v - P;
             if (d.sqrMagnitude < 1e-8f) return;
             float a = Geo2D.AngleOf(d);
-            // ´¦Àí½Ç¶ÈÔÚ [left, right]£¬¿¼ÂÇ¿çÔ½ -PI/PI µÄÇé¿ö
+            // å¤„ç†è§’åº¦åœ¨ [left, right]ï¼Œè€ƒè™‘è·¨è¶Š -PI/PI çš„æƒ…å†µ
             if (AngleInInterval(a, left, right))
             {
                 dirs.Add(a);
@@ -272,7 +272,7 @@ namespace My.Map.Scene
 
         static float NormalizeAngleRad(float a)
         {
-            // ¹æ·¶µ½ (-¦Ğ, ¦Ğ]
+            // è§„èŒƒåˆ° (-Ï€, Ï€]
             if (a > Mathf.PI) a -= 2f * Mathf.PI;
             if (a <= -Mathf.PI) a += 2f * Mathf.PI;
             return a;
@@ -290,7 +290,7 @@ namespace My.Map.Scene
             }
             else
             {
-                // Çø¼ä¿çÔ½ -¦Ğ/¦Ğ£¬ÂäÔÚ [left, ¦Ğ] »ò [-¦Ğ, right]
+                // åŒºé—´è·¨è¶Š -Ï€/Ï€ï¼Œè½åœ¨ [left, Ï€] æˆ– [-Ï€, right]
                 return a >= left || a <= right;
             }
         }
@@ -318,7 +318,7 @@ namespace My.Map.Scene
             Vector2 bestHit = P + dir * viewRadius;
             float bestT = viewRadius;
 
-            // ºòÑ¡±ßË÷Òı
+            // å€™é€‰è¾¹ç´¢å¼•
             segmentProvider.QueryRay(P, dir, viewRadius, candidateSet);
 
             foreach (int idx in candidateSet)
@@ -342,7 +342,7 @@ namespace My.Map.Scene
 
         bool RayBoundsPossible(Vector2 p, Vector2 dir, Bounds b, float maxDist)
         {
-            // ´ÖÂÔÌŞ³ı£ºÆğµãµ½°üÎ§ºĞµÄ×î½üµã¾àÀëÊÇ·ñÔÚ maxDist ÒÔÄÚ
+            // ç²—ç•¥å‰”é™¤ï¼šèµ·ç‚¹åˆ°åŒ…å›´ç›’çš„æœ€è¿‘ç‚¹è·ç¦»æ˜¯å¦åœ¨ maxDist ä»¥å†…
             Vector2 c = b.ClosestPoint(p);
             return (c - p).sqrMagnitude <= (maxDist * maxDist + 1e-4f);
         }
@@ -356,7 +356,7 @@ namespace My.Map.Scene
         //        return;
         //    }
 
-        //    // ¶¥µã£ºÖĞĞÄ + ÓĞĞò±ß½ç
+        //    // é¡¶ç‚¹ï¼šä¸­å¿ƒ + æœ‰åºè¾¹ç•Œ
         //    var vertices = new Vector3[n + 1];
         //    vertices[0] = new Vector3(center.x, center.y, 0f);
         //    for (int i = 0; i < n; i++)
@@ -365,7 +365,7 @@ namespace My.Map.Scene
         //        vertices[i + 1] = new Vector3(p.x, p.y, 0f);
         //    }
 
-        //    // Èı½ÇË÷Òı
+        //    // ä¸‰è§’ç´¢å¼•
         //    var triangles = new int[(n - 1) * 3];
         //    for (int i = 0; i < n - 1; i++)
         //    {
@@ -374,7 +374,7 @@ namespace My.Map.Scene
         //        triangles[i * 3 + 2] = i + 2;
         //    }
 
-        //    // UV ¿ÉÑ¡£¨ÓÃÓÚ½¥±ä/×ÅÉ«£©
+        //    // UV å¯é€‰ï¼ˆç”¨äºæ¸å˜/ç€è‰²ï¼‰
         //    var uvs = new Vector2[n + 1];
         //    for (int i = 0; i < n + 1; i++) uvs[i] = Vector2.zero;
 
@@ -383,30 +383,30 @@ namespace My.Map.Scene
         //    mesh.SetTriangles(triangles, 0);
         //    mesh.SetUVs(0, uvs);
         //    mesh.RecalculateBounds();
-        //    mesh.RecalculateNormals(); // 2D ¿ÉºöÂÔ
+        //    mesh.RecalculateNormals(); // 2D å¯å¿½ç•¥
         //}
 
-        //public float blurWidth = 0.5f;   // ±ßÔµÏòÄÚÊÕµÄ¿í¶È£¨ÊÀ½çµ¥Î»£©
-        //public float innerAlpha = 0.3f;  // ±ßÔµ´øÄÚ²à×îµÍÍ¸Ã÷¶È£¨0~1£©
-        //public Material softEdgeMat;     // Ê¹ÓÃÏÂ·½ Shader
+        //public float blurWidth = 0.5f;   // è¾¹ç¼˜å‘å†…æ”¶çš„å®½åº¦ï¼ˆä¸–ç•Œå•ä½ï¼‰
+        //public float innerAlpha = 0.3f;  // è¾¹ç¼˜å¸¦å†…ä¾§æœ€ä½é€æ˜åº¦ï¼ˆ0~1ï¼‰
+        //public Material softEdgeMat;     // ä½¿ç”¨ä¸‹æ–¹ Shader
 
         void BuildTriangleFanMesh(Vector2 centerWorld2D, List<Vector2> ptsWorld2D, int[] order)
         {
             int n = order.Length;
             if (n < 2) { mesh.Clear(); return; }
 
-            // ½« 2D ÊÀ½çµãÌáÉıÎª 3D ÊÀ½çµã£¨¼ÙÉèÔÚ XY Æ½Ãæ£¬z ÓÃÎïÌåµÄ z£©
+            // å°† 2D ä¸–ç•Œç‚¹æå‡ä¸º 3D ä¸–ç•Œç‚¹ï¼ˆå‡è®¾åœ¨ XY å¹³é¢ï¼Œz ç”¨ç‰©ä½“çš„ zï¼‰
             float z = transform.position.z;
 
             var vertices = new Vector3[n + 1];
             Vector3 centerWorld3D = new Vector3(centerWorld2D.x, centerWorld2D.y, z);
-            vertices[0] = transform.InverseTransformPoint(centerWorld3D); // ±¾µØ
+            vertices[0] = transform.InverseTransformPoint(centerWorld3D); // æœ¬åœ°
 
             for (int i = 0; i < n; i++)
             {
                 var p2 = ptsWorld2D[order[i]];
                 Vector3 pw = new Vector3(p2.x, p2.y, z);
-                vertices[i + 1] = transform.InverseTransformPoint(pw); // ±¾µØ
+                vertices[i + 1] = transform.InverseTransformPoint(pw); // æœ¬åœ°
             }
 
             var triangles = new int[(n - 1) * 3];
@@ -418,7 +418,7 @@ namespace My.Map.Scene
             }
 
             mesh.Clear();
-            mesh.SetVertices(vertices);   // ±¾µØ×ø±ê
+            mesh.SetVertices(vertices);   // æœ¬åœ°åæ ‡
             mesh.SetTriangles(triangles, 0);
             mesh.RecalculateBounds();
         }

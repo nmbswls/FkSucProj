@@ -6,23 +6,23 @@ using UnityEngine;
 namespace My.Map.Scene
 {
 
-    // ¶¨Òåµ¥¸öÎäÆ÷²¿¼şµÄÊı¾İ½á¹¹
+    // å®šä¹‰å•ä¸ªæ­¦å™¨éƒ¨ä»¶çš„æ•°æ®ç»“æ„
     [System.Serializable]
     public class WeaponPart
     {
-        public Transform rotator;          // Ğı×ª½Úµã
-        public SpriteRenderer spriteVisual; // äÖÈ¾½Úµã
+        public Transform rotator;          // æ—‹è½¬èŠ‚ç‚¹
+        public SpriteRenderer spriteVisual; // æ¸²æŸ“èŠ‚ç‚¹
 
         public Transform[] NeedFlipObjs;
 
-        // ¿ÉÑ¡£ºÄ³Ğ©²¿¼ş¿ÉÄÜĞèÒªÇáÎ¢µÄÃé×¼ÑÓ³Ù»ò½Ç¶ÈÆ«ÒÆ
+        // å¯é€‰ï¼šæŸäº›éƒ¨ä»¶å¯èƒ½éœ€è¦è½»å¾®çš„ç„å‡†å»¶è¿Ÿæˆ–è§’åº¦åç§»
         public float angleOffset = 0f;
     }
 
     public class MapUnitWeaponOne : MonoBehaviour
     {
         /// <summary>
-        /// ÎäÆ÷ÏÔÊ¾×´Ì¬
+        /// æ­¦å™¨æ˜¾ç¤ºçŠ¶æ€
         /// </summary>
         public bool IsShown;
 
@@ -39,24 +39,24 @@ namespace My.Map.Scene
         public ParticleSystem[] slashEffects;
         //public GameObject[] ColliderArray;
 
-        public float WeaponViewLength; // ÎäÆ÷ÊÓ¾õ³¤¶È
+        public float WeaponViewLength; // æ­¦å™¨è§†è§‰é•¿åº¦
 
 
-        [Header("ÎäÆ÷²¿¼şÁĞ±í")]
+        [Header("æ­¦å™¨éƒ¨ä»¶åˆ—è¡¨")]
         public WeaponPart[] weaponParts;
 
 
-        [Header("¹ìµÀÎ»ÒÆÓë²Ã¼ôÅäÖÃ")]
+        [Header("è½¨é“ä½ç§»ä¸è£å‰ªé…ç½®")]
         public float posLerpSpeed = 15f;
-        [Tooltip("¹ìµÀºáÏò°ë¾¶")]
+        [Tooltip("è½¨é“æ¨ªå‘åŠå¾„")]
         public float radiusX = 0.2f;
-        [Tooltip("¹ìµÀ×İÏò°ë¾¶ (Ñ¹±âÖÆÔì2DÍ¸ÊÓ)")]
+        [Tooltip("è½¨é“çºµå‘åŠå¾„ (å‹æ‰åˆ¶é€ 2Dé€è§†)")]
         public float radiusY = 0.4f;
-        [Tooltip("ÏòÉÏÃé×¼µÄ×î´ó½Ç¶ÈÏŞÖÆ (»ùÓÚ½ÇÉ«³¯ÓÒÊ±¼ÆËã)")]
+        [Tooltip("å‘ä¸Šç„å‡†çš„æœ€å¤§è§’åº¦é™åˆ¶ (åŸºäºè§’è‰²æœå³æ—¶è®¡ç®—)")]
         public float maxAngle = 60f;
-        [Tooltip("ÏòÏÂÃé×¼µÄ×î´ó½Ç¶ÈÏŞÖÆ (·À´©Ä£ºËĞÄ)")]
+        [Tooltip("å‘ä¸‹ç„å‡†çš„æœ€å¤§è§’åº¦é™åˆ¶ (é˜²ç©¿æ¨¡æ ¸å¿ƒ)")]
         public float minAngle = -60f;
-        [Tooltip("¹ìµÀµÄÖĞĞÄÆ«ÒÆÁ¿ (x>0´ú±íÍùÁ³Ç°ÍÆ)")]
+        [Tooltip("è½¨é“çš„ä¸­å¿ƒåç§»é‡ (x>0ä»£è¡¨å¾€è„¸å‰æ¨)")]
         public Vector2 centerOffset = new Vector2(-0.15f, -0f);
 
         public void PlaySlash(int idx) 
@@ -105,13 +105,13 @@ namespace My.Map.Scene
         //{
         //    if (aimDir == Vector2.zero) return;
 
-        //    // 1. ´¦ÀíËùÓĞ²¿¼şµÄĞı×ªºÍ·­×ª
+        //    // 1. å¤„ç†æ‰€æœ‰éƒ¨ä»¶çš„æ—‹è½¬å’Œç¿»è½¬
         //    float baseAngle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
         //    bool isLookingLeft = aimDir.x < 0;
 
         //    foreach (var part in weaponParts)
         //    {
-        //        // Ã¿¸ö²¿¼ş¼ÓÉÏ×Ô¼ºµÄ¹Ì¶¨Æ«ÒÆ½Ç£¨Èç¹ûÓĞµÄ»°£©
+        //        // æ¯ä¸ªéƒ¨ä»¶åŠ ä¸Šè‡ªå·±çš„å›ºå®šåç§»è§’ï¼ˆå¦‚æœæœ‰çš„è¯ï¼‰
         //        part.rotator.rotation = Quaternion.AngleAxis(baseAngle + part.angleOffset, Vector3.forward);
         //        if(part.spriteVisual != null)
         //        {
@@ -127,7 +127,7 @@ namespace My.Map.Scene
         //        }
         //    }
 
-        //    // 2. ÕûÌåÍÖÔ²¹ìµÀÎ»ÒÆ (ºÍÖ®Ç°Ò»Ñù)
+        //    // 2. æ•´ä½“æ¤­åœ†è½¨é“ä½ç§» (å’Œä¹‹å‰ä¸€æ ·)
         //    float targetX = aimDir.x * maxPositionOffset.x;
         //    float targetY = aimDir.y * maxPositionOffset.y;
         //    Vector3 targetPos = new Vector3(targetX, targetY, 0);
@@ -136,7 +136,7 @@ namespace My.Map.Scene
         //}
 
         /// <summary>
-        /// Íâ²¿Ã¿Ö¡µ÷ÓÃ£¬¸üĞÂÎäÆ÷µÄÃé×¼Î»×Ë
+        /// å¤–éƒ¨æ¯å¸§è°ƒç”¨ï¼Œæ›´æ–°æ­¦å™¨çš„ç„å‡†ä½å§¿
         /// </summary>
         public void OnWeaponAimDirUpdate(Vector2 aimDir)
         {
@@ -172,23 +172,23 @@ namespace My.Map.Scene
             float orbitAngle = Mathf.Atan2(localDir.y, localDir.x) * Mathf.Rad2Deg;
 
             orbitAngle = Mathf.Clamp(orbitAngle, minAngle, maxAngle);
-            // ÓÃÊÜÏŞµÄ½Ç¶È¼ÆËãÍÖÔ²ÉÏµÄµã
+            // ç”¨å—é™çš„è§’åº¦è®¡ç®—æ¤­åœ†ä¸Šçš„ç‚¹
             float rad = orbitAngle * Mathf.Deg2Rad;
             Vector2 targetPos = new Vector2(
                 Mathf.Cos(rad) * radiusX,
                 Mathf.Sin(rad) * radiusY
             );
 
-            // ĞèÇó 2£º¼ÓÉÏ¹ì¼£ÖĞµãÆ«ÒÆ
+            // éœ€æ±‚ 2ï¼šåŠ ä¸Šè½¨è¿¹ä¸­ç‚¹åç§»
             targetPos += centerOffset;
 
-            // ¡¾ºËĞÄ¼¼ÇÉ£º¾µÏñÊä³ö¡¿Èç¹û½ÇÉ«Êµ¼ÊÉÏÊÇ³¯×óµÄ£¬°ÑX×ø±êÔÙ·­×ª»ØÈ¥
+            // ã€æ ¸å¿ƒæŠ€å·§ï¼šé•œåƒè¾“å‡ºã€‘å¦‚æœè§’è‰²å®é™…ä¸Šæ˜¯æœå·¦çš„ï¼ŒæŠŠXåæ ‡å†ç¿»è½¬å›å»
             if (!isFacingRight)
             {
                 targetPos.x *= -1f;
             }
 
-            // ×îºóÓ¦ÓÃÆ½»¬ÒÆ¶¯ (±£ÁôÁËÄãÔ­ÓĞµÄ Lerp Éè¼Æ£¬Ê¹¶¯×÷¸üË³»¬)
+            // æœ€ååº”ç”¨å¹³æ»‘ç§»åŠ¨ (ä¿ç•™äº†ä½ åŸæœ‰çš„ Lerp è®¾è®¡ï¼Œä½¿åŠ¨ä½œæ›´é¡ºæ»‘)
             Vector3 finalPos = new Vector3(targetPos.x, targetPos.y, 0);
             transform.localPosition = Vector3.Lerp(transform.localPosition, finalPos, Time.deltaTime * posLerpSpeed);
         }
@@ -200,7 +200,7 @@ namespace My.Map.Scene
 
             this._durationTimer = LogicTime.time + duration;
 
-            // ÏÈ³¢ÊÔ»ñÈ¡ clip ³¤¶È£¨¼òµ¥°æ£º°´ clip ÃûÆ¥Åä£©
+            // å…ˆå°è¯•è·å– clip é•¿åº¦ï¼ˆç®€å•ç‰ˆï¼šæŒ‰ clip ååŒ¹é…ï¼‰
             if(weaponAnimancer != null)
             {
                 var clipRes = SimpleResManager.Load<AnimationClip>($"Anim/player/{weaponAnimName}");

@@ -180,7 +180,7 @@ namespace My.Map
         /// </summary>
         public void UnregisterGazeBySourceTag(string sourceTag)
         {
-            Debug.Log("UnregisterGazeBySourceTag??????");
+            Debug.Log($"UnregisterGazeBySourceTag sourceTag={sourceTag}");
             _requests.RemoveAll(r => r.SourceTag == sourceTag);
         }
 

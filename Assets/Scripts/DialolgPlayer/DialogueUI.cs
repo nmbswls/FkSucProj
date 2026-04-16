@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    public class DialogueUI : PanelBase // ¼ÙÉè PanelBase ÊÇÄú×Ô¼ºµÄ»ùÀà
+    public class DialogueUI : PanelBase // å‡è®¾ PanelBase æ˜¯æ‚¨è‡ªå·±çš„åŸºç±»
     {
         [Header("Refs")]
         public TextMeshProUGUI nameText;
@@ -37,18 +37,18 @@ namespace My.UI
         [HideInInspector] public float autoTimer = 0f;
         public bool IsFastMode = false;
 
-        // ´ò×Ö»ú×´Ì¬
+        // æ‰“å­—æœºçŠ¶æ€
         public List<OneTextLine> readingData;
         public int currentLineIndex = 0;
 
         private string currentFullText;
         private int currentIndex;
         private float tick;
-        private float typingTimer; // ÓÃÓÚ¼ÇÂ¼´ò×ÖÒÑ¾­½øĞĞÁË¶à¾Ã£¬·ÀÖ¹Îó´¥
+        private float typingTimer; // ç”¨äºè®°å½•æ‰“å­—å·²ç»è¿›è¡Œäº†å¤šä¹…ï¼Œé˜²æ­¢è¯¯è§¦
         private bool typing;
         private Action onTypingComplete;
 
-        // Ñ¡Ôñ×´Ì¬
+        // é€‰æ‹©çŠ¶æ€
         private bool showingChoices;
         private float choiceLimitTime;
         private float choiceLimitTimeLeft;
@@ -69,12 +69,12 @@ namespace My.UI
 
         private void Update()
         {
-            // ´ò×Ö»úÍÆ½ø
+            // æ‰“å­—æœºæ¨è¿›
             if (typing)
             {
                 float dt = Time.deltaTime;
                 tick += dt;
-                typingTimer += dt; // ÀÛ¼Ó´ò×Ö×ÜÊ±³¤
+                typingTimer += dt; // ç´¯åŠ æ‰“å­—æ€»æ—¶é•¿
 
                 while (tick >= charInterval)
                 {
@@ -84,44 +84,44 @@ namespace My.UI
                 }
             }
 
-            // Ñ¡ÏîÏŞÊ±Âß¼­
+            // é€‰é¡¹é™æ—¶é€»è¾‘
             if (showingChoices && choiceLimitTime > 0)
             {
-                choiceLimitTimeLeft -= Time.deltaTime; // ½¨ÒéÓÃ Time.deltaTime£¬»òÌæ»»ÎªÄúµÄ LogicTime.deltaTime
+                choiceLimitTimeLeft -= Time.deltaTime; // å»ºè®®ç”¨ Time.deltaTimeï¼Œæˆ–æ›¿æ¢ä¸ºæ‚¨çš„ LogicTime.deltaTime
                 if (choiceLimitTimeLeft <= 0)
                 {
-                    OnChoiceClick(0); // ³¬Ê±Ä¬ÈÏÑ¡ÔñµÚÒ»Ïî
+                    OnChoiceClick(0); // è¶…æ—¶é»˜è®¤é€‰æ‹©ç¬¬ä¸€é¡¹
                 }
             }
         }
 
         /// <summary>
-        /// ³¢ÊÔ½øĞĞcontinue
+        /// å°è¯•è¿›è¡Œcontinue
         /// </summary>
         private void TryDoContinue()
         {
-            // Èç¹ûÕıÔÚÕ¹Ê¾Ñ¡Ïî£¬ÆÁ±Îµã»÷£¬·ÀÖ¹´íÎó¹Ø±Õ»òÌø¹ı
+            // å¦‚æœæ­£åœ¨å±•ç¤ºé€‰é¡¹ï¼Œå±è”½ç‚¹å‡»ï¼Œé˜²æ­¢é”™è¯¯å…³é—­æˆ–è·³è¿‡
             if (showingChoices) return;
 
             if (readingData == null || readingData.Count == 0) return;
             if (currentLineIndex >= readingData.Count) return;
 
-            // ÕıÔÚ´ò×ÖÊ±µã»÷£º³¢ÊÔ¿ì½øÈ«ÏÔ
+            // æ­£åœ¨æ‰“å­—æ—¶ç‚¹å‡»ï¼šå°è¯•å¿«è¿›å…¨æ˜¾
             if (typing)
             {
-                // ·ÀÎó´¥£º´ò×Ö¸Õ¿ªÊ¼µÄ 0.25 ÃëÄÚµã»÷ÎŞĞ§£¨1ÃëÍ¨³£Ì«³¤£¬Ó°ÏìÊÖ¸Ğ£©
+                // é˜²è¯¯è§¦ï¼šæ‰“å­—åˆšå¼€å§‹çš„ 0.25 ç§’å†…ç‚¹å‡»æ— æ•ˆï¼ˆ1ç§’é€šå¸¸å¤ªé•¿ï¼Œå½±å“æ‰‹æ„Ÿï¼‰
                 if (typingTimer < 0.25f)
                 {
                     return;
                 }
 
-                // Á¢¼´ÏÔÊ¾È«Á¿
+                // ç«‹å³æ˜¾ç¤ºå…¨é‡
                 contentText.text = currentFullText ?? "";
                 FinishTyping();
                 return;
             }
 
-            // ´ò×ÖÒÑÍê³É£¬½øÈëÏÂÒ»ĞĞ
+            // æ‰“å­—å·²å®Œæˆï¼Œè¿›å…¥ä¸‹ä¸€è¡Œ
             currentLineIndex++;
             if (currentLineIndex < readingData.Count)
             {
@@ -129,7 +129,7 @@ namespace My.UI
             }
             else
             {
-                // ¶Ô»°½áÊø
+                // å¯¹è¯ç»“æŸ
                 var cb = onTypingComplete;
                 onTypingComplete = null;
                 cb?.Invoke();
@@ -140,7 +140,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// Ö´ĞĞÒ»ÅúÎÄ±¾µÄÏÔÊ¾Âß¼­
+        /// æ‰§è¡Œä¸€æ‰¹æ–‡æœ¬çš„æ˜¾ç¤ºé€»è¾‘
         /// </summary>
         public void StartTypeTextBatch(List<OneTextLine> textLines, Action onComplete)
         {
@@ -162,7 +162,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// Ö´ĞĞÒ»ĞĞÎÄ±¾µÄ´ò×Ö
+        /// æ‰§è¡Œä¸€è¡Œæ–‡æœ¬çš„æ‰“å­—
         /// </summary>
         private void StartTypeOneLine(OneTextLine line)
         {
@@ -188,7 +188,7 @@ namespace My.UI
             currentFullText = fullText ?? "";
             currentIndex = 0;
             tick = 0f;
-            typingTimer = 0f; // ÖØÖÃ·ÀÎó´¥¼ÆÊ±Æ÷
+            typingTimer = 0f; // é‡ç½®é˜²è¯¯è§¦è®¡æ—¶å™¨
             typing = true;
 
             if (contentText) contentText.text = "";
@@ -205,13 +205,13 @@ namespace My.UI
                 return;
             }
 
-            // ±£³Ö¸»ÎÄ±¾±êÇ©ÍêÕû
+            // ä¿æŒå¯Œæ–‡æœ¬æ ‡ç­¾å®Œæ•´
             if (currentFullText[currentIndex] == '<')
             {
                 int close = currentFullText.IndexOf('>', currentIndex);
                 if (close == -1)
                 {
-                    // ±êÇ©²»ÍêÕû£¬Ö±½ÓÖÕÖ¹ÎªÕû¶Î
+                    // æ ‡ç­¾ä¸å®Œæ•´ï¼Œç›´æ¥ç»ˆæ­¢ä¸ºæ•´æ®µ
                     contentText.text = currentFullText;
                     FinishTyping();
                     return;
@@ -237,10 +237,10 @@ namespace My.UI
             if (nextIndicator) nextIndicator.SetActive(show);
         }
 
-        // Ñ¡ÔñÏµÍ³
+        // é€‰æ‹©ç³»ç»Ÿ
         public void StartChoices(List<string> options, Action<int> onSelected, float limitTime = 0)
         {
-            ShowNextIndicator(false); // µ¯³öÑ¡ÏîÊ±Òş²ØÏÂÒ»²½Ö¸Ê¾Æ÷
+            ShowNextIndicator(false); // å¼¹å‡ºé€‰é¡¹æ—¶éšè—ä¸‹ä¸€æ­¥æŒ‡ç¤ºå™¨
             showingChoices = true;
             onChoiceSelected = onSelected;
 
@@ -249,7 +249,7 @@ namespace My.UI
 
             if (choicePanel) choicePanel.SetActive(true);
 
-            // ÇåÀí¾É°´Å¥£¨ÅÅ³ıÔ¤ÖÆÌå±¾Éí£¬ÒÔ·ÀÔ¤ÖÆÌåÔÚÍ¬Ò»½ÚµãÏÂ£©
+            // æ¸…ç†æ—§æŒ‰é’®ï¼ˆæ’é™¤é¢„åˆ¶ä½“æœ¬èº«ï¼Œä»¥é˜²é¢„åˆ¶ä½“åœ¨åŒä¸€èŠ‚ç‚¹ä¸‹ï¼‰
             if (choiceContainer)
             {
                 foreach (Transform child in choiceContainer)
@@ -261,7 +261,7 @@ namespace My.UI
                 }
             }
 
-            // Éú³ÉĞÂÑ¡Ïî
+            // ç”Ÿæˆæ–°é€‰é¡¹
             for (int i = 0; i < options.Count; i++)
             {
                 var btn = Instantiate(choiceButtonPrefab, choiceContainer);
@@ -269,7 +269,7 @@ namespace My.UI
                 var tmp = btn.GetComponentInChildren<TextMeshProUGUI>();
                 if (tmp) tmp.text = options[i];
 
-                int index = i; // ²¶»ñ¾Ö²¿±äÁ¿
+                int index = i; // æ•è·å±€éƒ¨å˜é‡
                 btn.onClick.AddListener(() => OnChoiceClick(index));
             }
 

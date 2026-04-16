@@ -17,7 +17,7 @@ namespace Map.Scene
         // Update is called once per frame
         void Update()
         {
-            // ÒÔ¹Ì¶¨ËÙÂÊÏò targetAlpha ¿¿Â£
+            // ä»¥å›ºå®šé€ŸçŽ‡å‘ targetAlpha é æ‹¢
             float next = Mathf.MoveTowards(currCeilAlpha, targetCeilAlpha, fadeSpeed * Time.deltaTime);
 
             if (Mathf.Abs(next - currCeilAlpha) > Mathf.Epsilon)

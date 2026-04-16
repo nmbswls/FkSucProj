@@ -26,7 +26,7 @@ namespace My.Map.Scene
         public UniformGridIndex<long> GridIndex;
 
 
-        // ¿É½»»¥Îï ºÍ ÆÕÍ¨Ê°È¡ÊÇ·ñ¹²Ïí
+        // å¯äº¤äº’ç‰© å’Œ æ™®é€šæ‹¾å–æ˜¯å¦å…±äº«
         private Dictionary<long, MapSceneDropInteractable> _spawnedInteractObjs = new Dictionary<long, MapSceneDropInteractable>();
         private Queue<MapSceneDropInteractable> _innerPool = new();
         public GameObject interactablePrefab;
@@ -65,7 +65,7 @@ namespace My.Map.Scene
 
         private List<long> cacheList = new();
 
-        public float activateDistance = 16f;    // ¾àÀëãĞÖµ£¨Ã×£©
+        public float activateDistance = 16f;    // è·ç¦»é˜ˆå€¼ï¼ˆç±³ï¼‰
 
         private float _checkInteractTimer;
         public void CheckInteractWithDrops()
@@ -107,7 +107,7 @@ namespace My.Map.Scene
                 {
                     if (distSqr <= activateDistance * activateDistance)
                     {
-                        // Éú³É½»»¥Îï
+                        // ç”Ÿæˆäº¤äº’ç‰©
                         obj = SpawnInteractable(dropData, null, dropData.AutoPick);
                         _spawnedInteractObjs[item] = obj;
                     }
@@ -117,7 +117,7 @@ namespace My.Map.Scene
                 {
                     obj.flyToPlayerMover.Init(MainGameManager.Instance.playerScenePresenter.transform, onArrived: () =>
                         {
-                            Debug.Log("´¥·¢Ê°È¡µÀ¾ßÌí¼Ó");
+                            Debug.Log("è§¦å‘æ‹¾å–é“å…·æ·»åŠ ");
 
                             MainGameManager.Instance.gameLogicManager.globalDropCollection.PickDrop(obj.DropData.Id);
                         });
@@ -127,11 +127,11 @@ namespace My.Map.Scene
                     //{
                     //    mover.Init(MainGameManager.Instance.playerScenePresenter.transform, onArrived: () =>
                     //    {
-                    //        Debug.Log("´¥·¢Ê°È¡µÀ¾ßÌí¼Ó");
+                    //        Debug.Log("è§¦å‘æ‹¾å–é“å…·æ·»åŠ ");
                     //        GameObject.Destroy(go);
                     //    });
 
-                    //    // Ë¢ĞÂÏÔÊ¾µÄ sprite£¨´Ó²ÄÖÊ»òÄã×Ô¼ºµÄÅäÖÃÀ´Ô´£©
+                    //    // åˆ·æ–°æ˜¾ç¤ºçš„ spriteï¼ˆä»æè´¨æˆ–ä½ è‡ªå·±çš„é…ç½®æ¥æºï¼‰
                     //    var sr = go.GetComponentInChildren<SpriteRenderer>();
                     //    if (sr != null)
                     //    {
@@ -139,12 +139,12 @@ namespace My.Map.Scene
                     //    }
                     //}
 
-                    //// ¿ÉÑ¡£ºÉú³ÉºóÒÆ³ıÁ£×Ó±ÜÃâÖØ¸´
+                    //// å¯é€‰ï¼šç”Ÿæˆåç§»é™¤ç²’å­é¿å…é‡å¤
                     //OnDropRemoved(item);
                     ////spawned++;
                     ////if (spawned >= maxSpawnPerScan) break;
                 }
-                // ·Ç×Ô¶¯Ê°È¡ Éú³É½»»¥Îï
+                // éè‡ªåŠ¨æ‹¾å– ç”Ÿæˆäº¤äº’ç‰©
                 else
                 {
                     
@@ -213,7 +213,7 @@ namespace My.Map.Scene
             }
             else
             {
-                // ¶ÔÏó³Ø¿ÉÌæ»» Instantiate
+                // å¯¹è±¡æ± å¯æ›¿æ¢ Instantiate
                 var go = Instantiate(interactablePrefab, dropData.Position, Quaternion.identity, transform);
                 interactObj = go.GetComponent<MapSceneDropInteractable>();
                 interactObj.gameObject.SetActive(true);
@@ -241,7 +241,7 @@ namespace My.Map.Scene
             {
                 if (_spawnedInteractObjs.ContainsKey(newDrop.Id)) return;
 
-                // Éú³É½»»¥Îï
+                // ç”Ÿæˆäº¤äº’ç‰©
                 var go = SpawnInteractable(newDrop, srcPos, newDrop.AutoPick);
                 _spawnedInteractObjs[newDrop.Id] = go;
             }

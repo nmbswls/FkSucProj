@@ -92,23 +92,23 @@ namespace My.Map
         public  ModSourceKey source;
         public  string attrId;
         public  bool isOverride;
-        public  long value;      // ¿ÉÀ©Õ¹ÎªÇúÏß/±í´ïÊ½
-        public  int priority;     // Override/»¥³â¿ØÖÆ
+        public  long value;      // å¯æ‰©å±•ä¸ºæ›²çº¿/è¡¨è¾¾å¼
+        public  int priority;     // Override/äº’æ–¥æ§åˆ¶
     }
 
     public sealed class NumericEntry
     {
         public string attrId;
-        public long baseValue;               // Base ½×¶Î¿ÉÖ±½Ó»º´æ»òÀ´×ÔÄ£°å
+        public long baseValue;               // Base é˜¶æ®µå¯ç›´æ¥ç¼“å­˜æˆ–æ¥è‡ªæ¨¡æ¿
         public readonly List<Modifier> addMods = new();
         public readonly List<Modifier> mulMods = new();
 
-        public readonly List<Modifier> overrideMods = new(); // °´ priority ÅÅĞò
-                                                             // Ë÷Òı£ºÀ´Ô´ -> ĞŞÊÎÆ÷¼¯ºÏ£¨ÓÃÓÚ O(1) ¹ıÆÚ£©
+        public readonly List<Modifier> overrideMods = new(); // æŒ‰ priority æ’åº
+                                                             // ç´¢å¼•ï¼šæ¥æº -> ä¿®é¥°å™¨é›†åˆï¼ˆç”¨äº O(1) è¿‡æœŸï¼‰
         public readonly Dictionary<ModSourceKey, List<Modifier>> bySource = new();
-        // ¾ÛºÏ»º´æ
+        // èšåˆç¼“å­˜
         public long addSum = 0;
-        //public long mulProduct = 10000;         // ³Ë·¨Í³Ò»´æÎª ¦°(1+rate) »òÖ±½Ó³Ë value
+        //public long mulProduct = 10000;         // ä¹˜æ³•ç»Ÿä¸€å­˜ä¸º Î (1+rate) æˆ–ç›´æ¥ä¹˜ value
         public long? overrideValue = null;
         public long finalValue;
         public bool dirty = true;
@@ -120,19 +120,19 @@ namespace My.Map
     public sealed class ResourceEntry
     {
         public string resourceId;    // e.g., "HP", "MP", "Shield"
-                                              // ÉÏÏŞÊÇÒ»¸öÊıÖµÀàÊôĞÔ£¨ÔÊĞí±»ĞŞÊÎÓëÒÀÀµ£©
+                                              // ä¸Šé™æ˜¯ä¸€ä¸ªæ•°å€¼ç±»å±æ€§ï¼ˆå…è®¸è¢«ä¿®é¥°ä¸ä¾èµ–ï¼‰
         public NumericEntry? maxEntry;
         public long? maxFixVal;
 
         public long current;
-        public long regenPerSec;             // ¿É×÷Îª NumericEntry »ò³£Á¿
-        public long drainPerSec;             // Í¬ÉÏ
+        public long regenPerSec;             // å¯ä½œä¸º NumericEntry æˆ–å¸¸é‡
+        public long drainPerSec;             // åŒä¸Š
         public MaxChangePolicy onMaxChange = MaxChangePolicy.KeepRatio;
         public bool canHeal = true;
         public bool canSpend = true;
 
         public long cacheMaxVal;
-        public bool dirty = true;             // µ±Ç°ÖµÊÇ·ñĞèÒªË¢ĞÂ£¨ÒòÉÏÏŞ»ò²ßÂÔ¸Ä±ä£©
+        public bool dirty = true;             // å½“å‰å€¼æ˜¯å¦éœ€è¦åˆ·æ–°ï¼ˆå› ä¸Šé™æˆ–ç­–ç•¥æ”¹å˜ï¼‰
         public int version = 0;
 
         public int ToZeroSrc;
@@ -167,18 +167,18 @@ namespace My.Map
         public IEntityAttributeOwner Owner;
         public static long ModifierIdCounter = 10000;
 
-        // ÊıÖµÀàÓë×ÊÔ´ÀàµÄ×¢²á±í
+        // æ•°å€¼ç±»ä¸èµ„æºç±»çš„æ³¨å†Œè¡¨
         private readonly Dictionary<string, NumericEntry> numerics = new();
-        private readonly Dictionary<string, ResourceEntry> resources = new(); // key: "HP", "MP"... (CurrentÍ¨¹ı×ÊÔ´¹ÜÀí)
-                                                                              // À´Ô´Ë÷Òı£¨ÊµÌå¼¶±ğ£©£ºÀ´Ô´ -> (attrId, modifier) ÁĞ±í£¬±ãÓÚ Buff ½áÊøÊ±ÅúÁ¿¹ıÆÚ
+        private readonly Dictionary<string, ResourceEntry> resources = new(); // key: "HP", "MP"... (Currenté€šè¿‡èµ„æºç®¡ç†)
+                                                                              // æ¥æºç´¢å¼•ï¼ˆå®ä½“çº§åˆ«ï¼‰ï¼šæ¥æº -> (attrId, modifier) åˆ—è¡¨ï¼Œä¾¿äº Buff ç»“æŸæ—¶æ‰¹é‡è¿‡æœŸ
         private readonly Dictionary<ModSourceKey, List<(string attrId, Modifier mod)>> sourceIndex = new();
 
         private readonly List<(string resourceId, float delta, bool isDamage, ModSourceKey source)> _resourceChanges = new();
 
-        // ÒÀÀµÍ¼
+        // ä¾èµ–å›¾
         private readonly float epsilon = 1e-5f;
 
-        // Ôà¶ÓÁĞ£º°´ level ·ÖÍ°
+        // è„é˜Ÿåˆ—ï¼šæŒ‰ level åˆ†æ¡¶
         private readonly SortedDictionary<int, Queue<string>> dirtyQueues = new();
 
         public event Action<string, bool> EvOnStatusAttrChanged;
@@ -190,7 +190,7 @@ namespace My.Map
         }
 
 
-        // ×¢²áÊıÖµÊôĞÔ£¨¿ÉÑ¡³õÊ¼ Base ÖµÓëÄ¬ÈÏ Clamp£©
+        // æ³¨å†Œæ•°å€¼å±æ€§ï¼ˆå¯é€‰åˆå§‹ Base å€¼ä¸é»˜è®¤ Clampï¼‰
         public NumericEntry RegisterNumeric(string attrId, long initialBase = 0)
         {
             if (numerics.ContainsKey(attrId))
@@ -202,7 +202,7 @@ namespace My.Map
             return e;
         }
 
-        // ×¢²á×ÊÔ´£¨°ó¶¨ Max µ½Ä³¸öÊıÖµÊôĞÔ£¬ÀıÈç "HP.Max"£©
+        // æ³¨å†Œèµ„æºï¼ˆç»‘å®š Max åˆ°æŸä¸ªæ•°å€¼å±æ€§ï¼Œä¾‹å¦‚ "HP.Max"ï¼‰
         public ResourceEntry RegisterResource(string resourceId, string maxAttrId = null, long? fixMaxValue = null, long initialCurrent = 0, MaxChangePolicy policy = MaxChangePolicy.KeepRatio)
         {
             if (resources.ContainsKey(resourceId))
@@ -212,10 +212,10 @@ namespace My.Map
             NumericEntry? maxEntry = null;
             if (!string.IsNullOrEmpty(maxAttrId))
             {
-                // È·±£ Max ÊıÖµÊôĞÔÒÑ×¢²á
+                // ç¡®ä¿ Max æ•°å€¼å±æ€§å·²æ³¨å†Œ
                 maxEntry = numerics.TryGetValue(maxAttrId, out var e)
                     ? e
-                    : RegisterNumeric(maxAttrId, initialBase: initialCurrent); // »òÅ×Òì³££¬°´ÄãµÄÉè¼ÆÑ¡Ôñ
+                    : RegisterNumeric(maxAttrId, initialBase: initialCurrent); // æˆ–æŠ›å¼‚å¸¸ï¼ŒæŒ‰ä½ çš„è®¾è®¡é€‰æ‹©
 
                 if(maxEntry != null)
                 {
@@ -248,7 +248,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Ôö¼Ómodifier
+        /// å¢åŠ modifier
         /// </summary>
         /// <param name="m"></param>
         public Modifier AddModifier(ModSourceKey source, string attrId, long val)
@@ -267,7 +267,7 @@ namespace My.Map
             }
             var e = numerics[m.attrId];
 
-            // Èç¹ûÊÇoverride ĞèÒª¸üĞÂ¸²¸Ç²ßÂÔ
+            // å¦‚æœæ˜¯override éœ€è¦æ›´æ–°è¦†ç›–ç­–ç•¥
             if(m.isOverride)
             {
                 InsertOverride(e, m);
@@ -278,7 +278,7 @@ namespace My.Map
                 e.addMods.Add(m);
                 e.addSum += m.value;
             }
-            // Ë÷Òı
+            // ç´¢å¼•
             if (!e.bySource.TryGetValue(m.source, out var list))
             {
                 list = new List<Modifier>(); e.bySource[m.source] = list;
@@ -296,14 +296,14 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Ôö¼Ómodifier
+        /// å¢åŠ modifier
         /// </summary>
         /// <param name="m"></param>
         public void UpdateModifier(Modifier m)
         {
             var e = numerics[m.attrId];
 
-            // Èç¹ûÊÇoverride ĞèÒª¸üĞÂ¸²¸Ç²ßÂÔ
+            // å¦‚æœæ˜¯override éœ€è¦æ›´æ–°è¦†ç›–ç­–ç•¥
             if (m.isOverride)
             {
                 e.overrideValue = e.overrideMods[0].value;
@@ -341,7 +341,7 @@ namespace My.Map
                     e.addMods.Remove(mod);
                     e.addSum -= mod.value;
                 }
-                // ´Ó per-attr Ë÷ÒıÒÆ³ı
+                // ä» per-attr ç´¢å¼•ç§»é™¤
                 if (e.bySource.TryGetValue(sk, out var col))
                 {
                     col.Remove(mod);
@@ -357,7 +357,7 @@ namespace My.Map
             var attrNode = UnitAttrSystemUnits.GetAttrNode(attrId);
             if (attrNode == null)
             {
-                // ÊıÖµ¿ÉÄÜÎ´²ÎÓëÍ¼£¨´¿¾Ö²¿ÊôĞÔ£©£¬Ò²ÒªÖØËãÆä finalValue
+                // æ•°å€¼å¯èƒ½æœªå‚ä¸å›¾ï¼ˆçº¯å±€éƒ¨å±æ€§ï¼‰ï¼Œä¹Ÿè¦é‡ç®—å…¶ finalValue
                 if (numerics.ContainsKey(attrId)) RecomputeNumeric(attrId);
                 return;
             }
@@ -377,7 +377,7 @@ namespace My.Map
 
         public void Commit()
         {
-            // ²ã¼¶ÍÆ½ø
+            // å±‚çº§æ¨è¿›
             foreach (var kv in dirtyQueues.ToArray())
             {
                 var level = kv.Key; var q = kv.Value;
@@ -387,7 +387,7 @@ namespace My.Map
                     numerics.TryGetValue(attrId, out var e);
                     var changed = RecomputeNumeric(attrId);
                     if (!changed) continue;
-                    // Ïòºó¼Ì´«²¥
+                    // å‘åç»§ä¼ æ’­
 
                     var attrNode = UnitAttrSystemUnits.GetAttrNode(attrId);
                     if(attrNode != null)
@@ -399,11 +399,11 @@ namespace My.Map
                 dirtyQueues.Remove(level);
             }
 
-            // ×ÊÔ´ÀàµÄ"ÉÏÏŞ±ä»¯Áª¶¯¡±£ºÈô Max ±ä¶¯£¬µ÷Õû current
+            // èµ„æºç±»çš„"ä¸Šé™å˜åŒ–è”åŠ¨â€ï¼šè‹¥ Max å˜åŠ¨ï¼Œè°ƒæ•´ current
             foreach (var r in resources.Values)
             {
-                // max.finalValue ÒÑÔÚÉÏÒ»²½¸üĞÂ£¬±È½ÏÇ°ºó£¨´Ë´¦¿É»º´æÉÏ´ÎÖµÒÔ¶Ô±È£©
-                // ÕâÀïÑİÊ¾£ºµ± Numeric ÖØËãÊ±¼´¿É±ê×¢ r.dirty
+                // max.finalValue å·²åœ¨ä¸Šä¸€æ­¥æ›´æ–°ï¼Œæ¯”è¾ƒå‰åï¼ˆæ­¤å¤„å¯ç¼“å­˜ä¸Šæ¬¡å€¼ä»¥å¯¹æ¯”ï¼‰
+                // è¿™é‡Œæ¼”ç¤ºï¼šå½“ Numeric é‡ç®—æ—¶å³å¯æ ‡æ³¨ r.dirty
                 if (r.dirty)
                 {
                     AdjustCurrentOnMaxChange(r);
@@ -419,7 +419,7 @@ namespace My.Map
         {
             if (!numerics.TryGetValue(attrId, out var e)) return false;
 
-            // ÏÈÖ´ĞĞ¹«Ê½£¨ÈçÒÀÀµÆäËûÊôĞÔ£©£¬·ñÔòÓÃ¾ÛºÏ
+            // å…ˆæ‰§è¡Œå…¬å¼ï¼ˆå¦‚ä¾èµ–å…¶ä»–å±æ€§ï¼‰ï¼Œå¦åˆ™ç”¨èšåˆ
             long baseComputed = e.baseValue;
             var attrNode = UnitAttrSystemUnits.GetAttrNode(attrId);
             if (attrNode != null && attrNode.Eval != null)
@@ -442,7 +442,7 @@ namespace My.Map
                 var old = e.finalValue;
                 e.finalValue = final;
                 e.version++;
-                // Èç¹ûÕâÊÇÄ³¸ö×ÊÔ´µÄ Max£¬±ê×¢¸Ã×ÊÔ´ĞèÒªÁª¶¯
+                // å¦‚æœè¿™æ˜¯æŸä¸ªèµ„æºçš„ Maxï¼Œæ ‡æ³¨è¯¥èµ„æºéœ€è¦è”åŠ¨
                 TryMarkResourceOnMaxChanged(attrId, old, final);
 
 
@@ -457,7 +457,7 @@ namespace My.Map
         }
 
 
-        // 3) ¾ÛºÏ×ÊÔ´±ä»¯
+        // 3) èšåˆèµ„æºå˜åŒ–
         public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
         {
             if (!resources.TryGetValue(resourceId, out var r)) 
@@ -489,7 +489,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// ¸üĞÂ
+        /// æ›´æ–°
         /// </summary>
         public void CommitResources()
         {
@@ -509,7 +509,7 @@ namespace My.Map
 
                 r.pendingDelta.Clear();
 
-                // 4.4 ×îÖÕÇ¯ÖÆµ½ [0, newMax]
+                // 4.4 æœ€ç»ˆé’³åˆ¶åˆ° [0, newMax]
                 if (r.current < 0f) r.current = 0;
                 if(r.maxEntry != null)
                 {
@@ -525,12 +525,12 @@ namespace My.Map
 
         private long GetFinal(string id)
         {
-            // ²éÑ¯ÒÀÀµÊ±¶ÁÈ¡µ±Ç°ÒÑÎÈ¶¨µÄ finalValue
+            // æŸ¥è¯¢ä¾èµ–æ—¶è¯»å–å½“å‰å·²ç¨³å®šçš„ finalValue
             if (numerics.TryGetValue(id, out var e)) return e.finalValue;
-            // Ö§³ÖÖ±½Ó¶ÁÈ¡×ÊÔ´µ±Ç°»òÉÏÏŞ
+            // æ”¯æŒç›´æ¥è¯»å–èµ„æºå½“å‰æˆ–ä¸Šé™
             if (id.EndsWith(".Max"))
             {
-                var rid = id[..^4]; // È¥µô ".Max"
+                var rid = id[..^4]; // å»æ‰ ".Max"
                 if (resources.TryGetValue(rid, out var r)) 
                 { 
                     return r.cacheMaxVal; 
@@ -558,7 +558,7 @@ namespace My.Map
             //float oldMax = r.max.finalValue;
             long oldMax = r.cacheMaxVal;
             long newMax = r.maxEntry.finalValue;
-            // ÈôĞèÒª¾ÉÖµ£¬ÇëÔÚ ResourceEntry ÖĞ¼Ó lastMax ²¢ÔÚ±êÔàÊ±¸³Öµ
+            // è‹¥éœ€è¦æ—§å€¼ï¼Œè¯·åœ¨ ResourceEntry ä¸­åŠ  lastMax å¹¶åœ¨æ ‡è„æ—¶èµ‹å€¼
             switch (r.onMaxChange)
             {
                 case MaxChangePolicy.KeepRatio:
@@ -573,7 +573,7 @@ namespace My.Map
                     r.current = Math.Min(newMax, r.current);
                     break;
                 case MaxChangePolicy.ResetOnBuffEnd:
-                    // ĞèÒª Buff ÉúÃüÖÜÆÚ»Øµ÷£ºÔÚ Buff ½áÊøÊ±½«ÉÏÏŞ»ØÍË²¢°´²ßÂÔÖØÕû
+                    // éœ€è¦ Buff ç”Ÿå‘½å‘¨æœŸå›è°ƒï¼šåœ¨ Buff ç»“æŸæ—¶å°†ä¸Šé™å›é€€å¹¶æŒ‰ç­–ç•¥é‡æ•´
                     r.current = Math.Min(newMax, r.current);
                     break;
             }
@@ -582,7 +582,7 @@ namespace My.Map
         }
 
 
-        #region ¶ÔÍâ½Ó¿Ú
+        #region å¯¹å¤–æ¥å£
 
         public long GetAttr(string attrId)
         {

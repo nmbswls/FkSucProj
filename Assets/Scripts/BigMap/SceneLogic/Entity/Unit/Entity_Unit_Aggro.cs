@@ -8,24 +8,24 @@ namespace My.Map.Unit
 {
 
     /// <summary>
-    /// ³ğºŞÄ£¿é
+    /// ä»‡æ¨æ¨¡å—
     /// </summary>
     public class UnitAggroSystem
     {
         private  BaseUnitLogicEntity _unit { get; set; }
 
-        // --- ÅäÖÃ²ÎÊı ---
-        private const float OutOfCombatTime = 8.0f;     // ÍÑÕ½Ê±¼ä
-        private const float LeashRadius = 15.0f;        // Ó²ÍÑÕ½¾àÀë
-        private const float BaseSightThreat = 20.0f;    // Ä¿»÷»ù´¡³ğºŞ
+        // --- é…ç½®å‚æ•° ---
+        private const float OutOfCombatTime = 8.0f;     // è„±æˆ˜æ—¶é—´
+        private const float LeashRadius = 15.0f;        // ç¡¬è„±æˆ˜è·ç¦»
+        private const float BaseSightThreat = 20.0f;    // ç›®å‡»åŸºç¡€ä»‡æ¨
 
-        // --- Á¬Ëø³ğºŞÅäÖÃ ---
-        private const float AllySenseInterval = 1.0f;   // ¸ĞÖªÆµÂÊ (1ÃëÒ»´Î×ã¹»ÁË)
-        private const float AllySenseRadius = 5.0f;    // ÄÜ¸ĞÖªµ½¶ÓÓÑµÄ·¶Î§
+        // --- è¿é”ä»‡æ¨é…ç½® ---
+        private const float AllySenseInterval = 1.0f;   // æ„ŸçŸ¥é¢‘ç‡ (1ç§’ä¸€æ¬¡è¶³å¤Ÿäº†)
+        private const float AllySenseRadius = 5.0f;    // èƒ½æ„ŸçŸ¥åˆ°é˜Ÿå‹çš„èŒƒå›´
         private float _nextAllySenseTime = 0f;
         private float _clearCoolTimer = 0;
 
-        // --- ºËĞÄÊı¾İ ---
+        // --- æ ¸å¿ƒæ•°æ® ---
         private class HostileInfo
         {
             public float TotalDamage = 0f;
@@ -42,24 +42,24 @@ namespace My.Map.Unit
         public UnitAggroSystem(BaseUnitLogicEntity unit)
         {
             _unit = unit;
-            // ³õÊ¼Ëæ»ú»¯£¬·ÀÖ¹ËùÓĞ¹ÖÍ¬Ò»Ö¡×ö¼ì²â (ĞÔÄÜ¼â·å)
+            // åˆå§‹éšæœºåŒ–ï¼Œé˜²æ­¢æ‰€æœ‰æ€ªåŒä¸€å¸§åšæ£€æµ‹ (æ€§èƒ½å°–å³°)
             _nextAllySenseTime = LogicTime.time + Random.Range(0f, 1.0f);
         }
 
         public void Tick(float dt)
         {
-            // Ö÷¶¯¸ĞÖª¶ÓÓÑ (ÊµÏÖÁ¬Ëø³ğºŞµÄºËĞÄ)
+            // ä¸»åŠ¨æ„ŸçŸ¥é˜Ÿå‹ (å®ç°è¿é”ä»‡æ¨çš„æ ¸å¿ƒ)
             //TickAllySense();
 
             OnVisionUpdate();
 
-            // 2. ÇåÀí
+            // 2. æ¸…ç†
             CleanupInvalidTargets();
 
-            // 3. ÆÀ¹À
+            // 3. è¯„ä¼°
             ReevaluateTarget();
 
-            // 4. ×´Ì¬Í¬²½
+            // 4. çŠ¶æ€åŒæ­¥
             if (_threatTable.Count == 0 && CurrentTargetId != 0)
             {
                 CurrentTargetId = 0;
@@ -77,7 +77,7 @@ namespace My.Map.Unit
         }
 
         /// <summary>
-        /// ÇåÀíÄ¿±ê ²¢¸øÓèÒ»¶ÎÊ±¼äÀä¾²
+        /// æ¸…ç†ç›®æ ‡ å¹¶ç»™äºˆä¸€æ®µæ—¶é—´å†·é™
         /// </summary>
         public void ClearTarget(float coolTime = 3.0f)
         {
@@ -88,8 +88,8 @@ namespace My.Map.Unit
 
 
         /// <summary>
-        /// µÍÆµÀ©É¢
-        /// ºóĞøÓÅ»¯ ½«Õ½ÒâÀ©É¢µ½ÇøÓò½ÚµãÀï
+        /// ä½é¢‘æ‰©æ•£
+        /// åç»­ä¼˜åŒ– å°†æˆ˜æ„æ‰©æ•£åˆ°åŒºåŸŸèŠ‚ç‚¹é‡Œ
         /// </summary>
         private void TickAllySense()
         {
@@ -107,32 +107,32 @@ namespace My.Map.Unit
             //{
             //    if (ally == null || ally.Id == _unit.Id) continue;
 
-            //    // ¹Ø¼üÅĞ¶Ï£º¶ÓÓÑÊÇ·ñÔÚÕ½¶·ÖĞ£¿
-            //    // ĞèÒª×ªĞÍ»ñÈ¡¶ÓÓÑµÄ Aggro ×é¼şĞÅÏ¢£¬ÕâÀï¼ÙÉè¿ÉÒÔÖ±½Ó·ÃÎÊ
+            //    // å…³é”®åˆ¤æ–­ï¼šé˜Ÿå‹æ˜¯å¦åœ¨æˆ˜æ–—ä¸­ï¼Ÿ
+            //    // éœ€è¦è½¬å‹è·å–é˜Ÿå‹çš„ Aggro ç»„ä»¶ä¿¡æ¯ï¼Œè¿™é‡Œå‡è®¾å¯ä»¥ç›´æ¥è®¿é—®
             //    if (ally is NpcUnitLogicEntity npcAlly && npcAlly.AggroSystem.IsInCombat)
             //    {
-            //        // ºËĞÄÁ¬ËøÂß¼­£ºA -> B -> C
-            //        // ÎÒ¿´µ½ÁË¶ÓÓÑ A µÄÄ¿±ê T
+            //        // æ ¸å¿ƒè¿é”é€»è¾‘ï¼šA -> B -> C
+            //        // æˆ‘çœ‹åˆ°äº†é˜Ÿå‹ A çš„ç›®æ ‡ T
             //        long allyTargetId = npcAlly.AggroSystem.CurrentTargetId;
             //        if (allyTargetId == 0) continue;
 
-            //        // ¼òµ¥µÄÑéÖ¤£º¶ÓÓÑµÄÄ¿±ê¾àÀëÎÒÔ¶²»Ô¶£¿
-            //        // Èç¹ûÌ«Ô¶¾Í²»´ÕÈÈÄÖÁË£¬·ÀÖ¹È«Í¼¹Ö±©¶¯
+            //        // ç®€å•çš„éªŒè¯ï¼šé˜Ÿå‹çš„ç›®æ ‡è·ç¦»æˆ‘è¿œä¸è¿œï¼Ÿ
+            //        // å¦‚æœå¤ªè¿œå°±ä¸å‡‘çƒ­é—¹äº†ï¼Œé˜²æ­¢å…¨å›¾æ€ªæš´åŠ¨
             //        var targetEnt = _unit.LogicManager.GetLogicEntity(allyTargetId, false);
             //        if (targetEnt == null) continue;
 
             //        if (Vector3.Distance(_unit.Pos, targetEnt.Pos) < LeashRadius)
             //        {
-            //            // ³É¹¦±»Á¬Ëø£¡
-            //            // ½«Ä¿±ê¼ÓÈëÎÒµÄ³ğºŞÁĞ±í£¬¸øÓèÒ»¸ö»ù´¡³ğºŞÖµ
+            //            // æˆåŠŸè¢«è¿é”ï¼
+            //            // å°†ç›®æ ‡åŠ å…¥æˆ‘çš„ä»‡æ¨åˆ—è¡¨ï¼Œç»™äºˆä¸€ä¸ªåŸºç¡€ä»‡æ¨å€¼
             //            var info = GetOrAddHostile(allyTargetId);
 
-            //            // Ë¢ĞÂÊ±¼ä£¬È·±£²»»áÁ¢¿ÌÍÑÕ½
+            //            // åˆ·æ–°æ—¶é—´ï¼Œç¡®ä¿ä¸ä¼šç«‹åˆ»è„±æˆ˜
             //            info.LastInteractionTime = LogicTime.time;
 
-            //            // ÕâÀïµÄ¼¼ÇÉ£º¿ÉÒÔ¸øÒ»µãµã Damage Ä£Äâ"ÎÒÒ²ÉúÆøÁË"£¬
-            //            // »òÕßÊ²Ã´¶¼²»¼Ó£¬½ö¿¿ ReevaluateTarget ÀïµÄ (BaseSightThreat) Âß¼­Ñ¡ÖĞËü
-            //            // ½¨Òé£ºÉÔÎ¢¼ÓÒ»µãµã£¬È·±£³ÖĞøĞÔ
+            //            // è¿™é‡Œçš„æŠ€å·§ï¼šå¯ä»¥ç»™ä¸€ç‚¹ç‚¹ Damage æ¨¡æ‹Ÿ"æˆ‘ä¹Ÿç”Ÿæ°”äº†"ï¼Œ
+            //            // æˆ–è€…ä»€ä¹ˆéƒ½ä¸åŠ ï¼Œä»…é  ReevaluateTarget é‡Œçš„ (BaseSightThreat) é€»è¾‘é€‰ä¸­å®ƒ
+            //            // å»ºè®®ï¼šç¨å¾®åŠ ä¸€ç‚¹ç‚¹ï¼Œç¡®ä¿æŒç»­æ€§
             //            if (info.TotalDamage < 1f) info.TotalDamage = 1f;
             //        }
             //    }
@@ -140,7 +140,7 @@ namespace My.Map.Unit
         }
 
         // ============================================================
-        // ÏÂÃæ±£³Ö¾«¼òÂß¼­
+        // ä¸‹é¢ä¿æŒç²¾ç®€é€»è¾‘
         // ============================================================
 
         public void OnTakeDamage(long attackerId, float amount)
@@ -190,7 +190,7 @@ namespace My.Map.Unit
             List<long> toRemove = null;
             foreach (var kv in _threatTable)
             {
-                // ¹æÔò£º³¬Ê± »òÕß Ä¿±êËÀÍö/Ê§Ğ§
+                // è§„åˆ™ï¼šè¶…æ—¶ æˆ–è€… ç›®æ ‡æ­»äº¡/å¤±æ•ˆ
                 if (LogicTime.time - kv.Value.LastInteractionTime > OutOfCombatTime)
                 {
                     if (toRemove == null) toRemove = new List<long>();
@@ -218,9 +218,9 @@ namespace My.Map.Unit
             foreach (var kv in _threatTable)
             {
                 float score = kv.Value.TotalDamage;
-                if (kv.Value.IsVisible) score += BaseSightThreat; // ÊÓ¾õÈ¨ÖØ
+                if (kv.Value.IsVisible) score += BaseSightThreat; // è§†è§‰æƒé‡
 
-                // ¾àÀëÈ¨ÖØ¼ÆËã...
+                // è·ç¦»æƒé‡è®¡ç®—...
 
                 if (score > maxScore) { maxScore = score; bestTarget = kv.Key; }
             }

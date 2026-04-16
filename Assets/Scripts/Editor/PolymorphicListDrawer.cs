@@ -15,7 +15,7 @@ using UnityEngine;
 //    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 //    {
 //        if (!property.isArray)
-//            return EditorGUI.GetPropertyHeight(property, label, true); // ¶ÔÔªËØ»ò·ÇÊı×é£¬°´Ä¬ÈÏ¸ß¶È
+//            return EditorGUI.GetPropertyHeight(property, label, true); // å¯¹å…ƒç´ æˆ–éæ•°ç»„ï¼ŒæŒ‰é»˜è®¤é«˜åº¦
 //        EnsureList(property);
 //        return _list == null ? EditorGUIUtility.singleLineHeight : _list.GetHeight();
 //    }
@@ -24,7 +24,7 @@ using UnityEngine;
 //    {
 //        if (!property.isArray)
 //        {
-//            // ·ÇÊı×é£¨°üÀ¨ÔªËØ£©£¬²»´¦Àí£¬ÈÃÄ¬ÈÏ»òÔªËØ×Ô¼ºµÄ Drawer »­
+//            // éæ•°ç»„ï¼ˆåŒ…æ‹¬å…ƒç´ ï¼‰ï¼Œä¸å¤„ç†ï¼Œè®©é»˜è®¤æˆ–å…ƒç´ è‡ªå·±çš„ Drawer ç”»
 //            EditorGUI.PropertyField(position, property, label, true);
 //            return;
 //        }
@@ -44,10 +44,10 @@ using UnityEngine;
 
 //        _arrayProp = property;
 
-//        // ÑéÖ¤£º±ØĞëÊÇÊı×é»òÁĞ±í
+//        // éªŒè¯ï¼šå¿…é¡»æ˜¯æ•°ç»„æˆ–åˆ—è¡¨
 //        if (!_arrayProp.isArray) { _list = null; return; }
 
-//        // È¡ÊôĞÔÉÏµÄ²ÎÊı
+//        // å–å±æ€§ä¸Šçš„å‚æ•°
 //        var attr = (PolymorphicListAttribute)attribute;
 
 //        _list = new ReorderableList(property.serializedObject, _arrayProp, attr.draggable, attr.showHeader, attr.canAdd, attr.canRemove);
@@ -76,7 +76,7 @@ using UnityEngine;
 //            _arrayProp.InsertArrayElementAtIndex(index);
 
 //            var newElem = _arrayProp.GetArrayElementAtIndex(index);
-//            // ³õÊ¼»¯Îª None ÀàĞÍÊµÀı
+//            // åˆå§‹åŒ–ä¸º None ç±»å‹å®ä¾‹
 //            var instance = System.Activator.CreateInstance(BaseAbilityEffectDrawer.TypeMap[EAbilityEffectType.None]);
 //            newElem.managedReferenceValue = instance;
 

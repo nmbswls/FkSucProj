@@ -30,7 +30,7 @@ namespace My
         }
 
         /// <summary>
-        /// µôÂä
+        /// æ‰è½
         /// </summary>
         /// <param name="bundleId"></param>
         /// <returns></returns>

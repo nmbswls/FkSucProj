@@ -10,7 +10,7 @@ namespace My.Player
 
 
     /// <summary>
-    /// ÏµÍ³
+    /// ç³»ç»Ÿ
     /// </summary>
     public class PlayerProgressionSystem : IPlayerSystem
     {
@@ -22,7 +22,7 @@ namespace My.Player
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
 
-        //public ProgressionNode BaseStatsModule { get; private set; } // »ù´¡³É³¤(Éı¼¶/×ªÉú)
+        //public ProgressionNode BaseStatsModule { get; private set; } // åŸºç¡€æˆé•¿(å‡çº§/è½¬ç”Ÿ)
 
         //public LevelProgression LevelData { get; private set; }
 
@@ -56,37 +56,37 @@ namespace My.Player
         {
             //TotalStats.GetFinalAttribute(StatID.Attack);
 
-            // 1. »ñÈ¡×îĞÂµÄÑø³ÉÊı¾İ (´¥·¢ RebuildCache)
+            // 1. è·å–æœ€æ–°çš„å…»æˆæ•°æ® (è§¦å‘ RebuildCache)
             StatMap currentStats = ProgressionRoot.GetRawCache();
 
-            // 2. ±éÀúÑø³ÉÏµÍ³µÄËùÓĞÉúĞ§ÊôĞÔ
+            // 2. éå†å…»æˆç³»ç»Ÿçš„æ‰€æœ‰ç”Ÿæ•ˆå±æ€§
             foreach (var kvp in currentStats)
             {
                 int statId = kvp.Key;
                 float newValue = kvp.Value;
 
-                // --- ÓÅ»¯µã£ºÖµ±È¶Ô ---
-                // Ö»ÓĞµ±ÖµÕæµÄ±äÁË£¬²ÅÍ¨ÖªÕ½¶·ÏµÍ³
-                // ÕâÒ»²½ÄÜÀ¹½Øµô 99% µÄ¡°ÎŞĞ§¸üĞÂ¡±£¨±ÈÈçÆäËûÊôĞÔ±äÁË£¬µ«¹¥»÷Á¦Ã»±ä£©
+                // --- ä¼˜åŒ–ç‚¹ï¼šå€¼æ¯”å¯¹ ---
+                // åªæœ‰å½“å€¼çœŸçš„å˜äº†ï¼Œæ‰é€šçŸ¥æˆ˜æ–—ç³»ç»Ÿ
+                // è¿™ä¸€æ­¥èƒ½æ‹¦æˆªæ‰ 99% çš„â€œæ— æ•ˆæ›´æ–°â€ï¼ˆæ¯”å¦‚å…¶ä»–å±æ€§å˜äº†ï¼Œä½†æ”»å‡»åŠ›æ²¡å˜ï¼‰
                 if (_lastKnownValues.TryGetValue(statId, out float oldValue))
                 {
                     if (Mathf.Approximately(oldValue, newValue)) continue;
                 }
 
-                // 3. Ó¦ÓÃ±ä¸ü
+                // 3. åº”ç”¨å˜æ›´
                 //_combatEntity.SetAttribute(statId, newValue);
-                _lastKnownValues[statId] = newValue; // ¸üĞÂ±¾µØ»º´æ
+                _lastKnownValues[statId] = newValue; // æ›´æ–°æœ¬åœ°ç¼“å­˜
             }
         }
 
-        // »ñÈ¡Õ½¶·ÊôĞÔ (¸ßÆµµ÷ÓÃ)
+        // è·å–æˆ˜æ–—å±æ€§ (é«˜é¢‘è°ƒç”¨)
         public float GetFinalAttribute(int id)
         {
             return ProgressionRoot.GetValue(id);
         }
 
 
-        #region ¼àÌı
+        #region ç›‘å¬
 
         public void OnPlayerKillUnit()
         {
@@ -112,8 +112,8 @@ namespace My.Player
         public void LevelUp(int newLevel)
         {
             //LevelData.SetLevel(newLevel);
-            // ´ËÊ± BaseStatsModule ÔàÁË -> TotalStats ÔàÁË
-            // ÏÂ´Î GetValue Ê±»á×Ô¶¯ÖØËã
+            // æ­¤æ—¶ BaseStatsModule è„äº† -> TotalStats è„äº†
+            // ä¸‹æ¬¡ GetValue æ—¶ä¼šè‡ªåŠ¨é‡ç®—
         }
     }
 
@@ -123,7 +123,7 @@ namespace My.Player
         public ProgressionAggregator GearAggregator;
 
         /// <summary>
-        /// ×°±¸Ó³Éä
+        /// è£…å¤‡æ˜ å°„
         /// </summary>
         public Dictionary<int, PlayerGear> Slot2Gears = new();
 

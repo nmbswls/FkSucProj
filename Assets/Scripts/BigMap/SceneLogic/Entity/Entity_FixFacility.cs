@@ -24,7 +24,7 @@ namespace My.Map
 
         public bool IsRepaired = false;
         /// <summary>
-        /// ½¨Ôì²ÄÁÏ
+        /// å»ºé€ ææ–™
         /// </summary>
         public Dictionary<string, long> PutBuildMaterial = new();
 
@@ -81,10 +81,10 @@ namespace My.Map
 
         public void OnRepairFinish()
         {
-            // ±ê¼Ç
+            // æ ‡è®°
             IsRepaired = true;
 
-            // ²¥·Å
+            // æ’­æ”¾
             EventOnRepaired?.Invoke();
 
             // 

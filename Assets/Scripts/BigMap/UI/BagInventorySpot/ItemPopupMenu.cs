@@ -97,7 +97,7 @@ namespace My.UI
             DropBtnGo.SetActive(false);
             CloseBtnGo.SetActive(true);
 
-            // ??????????????????
+            // 可按道具表动态控制「使用」按钮显隐（旧逻辑已注释）
             //bool canUse = currentIsInventory && FakeItemDatabase.CanUse(stack.ItemID);
             //UseBtn.interactable = canUse;
 
@@ -133,7 +133,7 @@ namespace My.UI
             {
                 MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.ItemUseCd.TryGetValue(currentStack.ItemID, out var useTime);
                 
-                // ????cd
+                // 使用冷却剩余秒数
                 if (cachePrimaryUse == null)
                 {
                     UseBtnCdText.text = "";
@@ -179,7 +179,7 @@ namespace My.UI
 
             int bagId = currentCell.ContainerId;
 
-            // ????????????????????????????
+            // 默认拆一半，具体数量在弹窗中确认
             long half = currentStack.Count / 2;
             //if (half > 0)
             //{
@@ -206,7 +206,7 @@ namespace My.UI
                 return;
             }
 
-            // ??????????
+            // 将整堆丢到玩家脚下世界掉落
             PlayerBagUIPanel.Instance?.DropItemToGround(currentCell.ContainerId, currentIndex, currentStack.Count);
             Close();
         }

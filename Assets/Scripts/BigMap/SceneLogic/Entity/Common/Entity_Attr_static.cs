@@ -66,7 +66,7 @@ namespace My.Map.Entity
 
         public const string HValYiShang = "HValYiShang";
 
-        #region ÌØÊâ×´Ì¬¡¢ÊÓ¾õµÈ
+        #region ç‰¹æ®ŠçŠ¶æ€ã€è§†è§‰ç­‰
 
         public const string UnitDizzy = "UnitDizzy";
 
@@ -87,14 +87,14 @@ namespace My.Map.Entity
         public readonly static Dictionary<string, AttrNode> AttrGraph = new();
         public class AttrNode
         {
-            public string attrId;                        // ½öÓÃÓÚÊıÖµÀàÅÉÉú£¬×ÊÔ´.Current ²»½øÈëÍ¼
-            public Func<AttrCalcContext, long>? Eval;               // ¹«Ê½Î¯ÍĞ£¨¿É¿Õ£º´¿¾ÛºÏ£©
-            public readonly List<string> inputs = new();         // ÒÀÀµµÄÊôĞÔId
-            public readonly List<AttrNode> outs = new();         // ·´ÏòÁÚ½Ó
+            public string attrId;                        // ä»…ç”¨äºæ•°å€¼ç±»æ´¾ç”Ÿï¼Œèµ„æº.Current ä¸è¿›å…¥å›¾
+            public Func<AttrCalcContext, long>? Eval;               // å…¬å¼å§”æ‰˜ï¼ˆå¯ç©ºï¼šçº¯èšåˆï¼‰
+            public readonly List<string> inputs = new();         // ä¾èµ–çš„å±æ€§Id
+            public readonly List<AttrNode> outs = new();         // åå‘é‚»æ¥
             public int level = 0;
             public int componentId = 0;
         }
-        private readonly static List<AttrNode> topo = new();            // Ô¤±àÒëÍØÆËĞò
+        private readonly static List<AttrNode> topo = new();            // é¢„ç¼–è¯‘æ‹“æ‰‘åº
 
 
         public static void InitGameAttrs()
@@ -109,7 +109,7 @@ namespace My.Map.Entity
         public static void CompileGraph(IEnumerable<(string output, string[] inputs, Func<AttrCalcContext, long> eval)> defs)
         {
             AttrGraph.Clear();
-            // ¹¹½¨½ÚµãÓë±ß
+            // æ„å»ºèŠ‚ç‚¹ä¸è¾¹
             foreach (var (outId, ins, eval) in defs)
             {
                 var n = AttrGraph.TryGetValue(outId, out var ex) ? ex : (AttrGraph[outId] = new AttrNode { attrId = outId });
@@ -124,7 +124,7 @@ namespace My.Map.Entity
                     }
                 }
             }
-            // Kahn ÍØÆË + ²ã¼¶
+            // Kahn æ‹“æ‰‘ + å±‚çº§
             var indeg = new Dictionary<string, int>();
             foreach (var n in AttrGraph.Values) indeg[n.attrId] = 0;
             foreach (var n in AttrGraph.Values) foreach (var i in n.inputs) indeg[n.attrId]++;
@@ -143,7 +143,7 @@ namespace My.Map.Entity
                     if (indeg[v.attrId] == 0) q.Enqueue(v);
                 }
             }
-            // ÈôÓĞ²ĞÓàÈë¶È -> ´æÔÚ»·¡£ÒªÇóĞŞÕı¹«Ê½»ò±ê×¢Îª¹Ì¶¨µã×ÓÍ¼£¨´Ë´¦Ê¡ÂÔµü´úÊµÏÖ£¬¿ÉÑ¡ÔÚÔËĞĞÆÚ¶ÔĞ¡×ÓÍ¼µü´ú N ´Î£©
+            // è‹¥æœ‰æ®‹ä½™å…¥åº¦ -> å­˜åœ¨ç¯ã€‚è¦æ±‚ä¿®æ­£å…¬å¼æˆ–æ ‡æ³¨ä¸ºå›ºå®šç‚¹å­å›¾ï¼ˆæ­¤å¤„çœç•¥è¿­ä»£å®ç°ï¼Œå¯é€‰åœ¨è¿è¡ŒæœŸå¯¹å°å­å›¾è¿­ä»£ N æ¬¡ï¼‰
             if (topo.Count != AttrGraph.Count)
                 throw new InvalidOperationException("Dependency cycle detected in attribute graph.");
         }

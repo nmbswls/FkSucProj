@@ -8,10 +8,10 @@ public class MaskBlurRendererFeature : ScriptableRendererFeature
     public class MaskBlurSettings
     {
         public RenderPassEvent injectionPoint = RenderPassEvent.AfterRenderingTransparents;
-        public Material blurMaterial;         // Ò»Î¬¸ßË¹Ä£ºı²ÄÖÊ
-        public RenderTexture sourceMaskRT;    // ÊäÈëµÄ¶şÖµÕÚÕÖ
-        public Material screenMaskMaterial;   // ÆÁÄ»ÕÚÕÖµÄ²ÄÖÊ£¨²ÉÑù _MaskTex ¿ØÖÆÍ¸Ã÷£©
-        public string maskTexturePropertyName = "_LightMask"; // ²ÄÖÊÖĞµÄÎÆÀíÊôĞÔÃû
+        public Material blurMaterial;         // ä¸€ç»´é«˜æ–¯æ¨¡ç³Šæè´¨
+        public RenderTexture sourceMaskRT;    // è¾“å…¥çš„äºŒå€¼é®ç½©
+        public Material screenMaskMaterial;   // å±å¹•é®ç½©çš„æè´¨ï¼ˆé‡‡æ · _MaskTex æ§åˆ¶é€æ˜ï¼‰
+        public string maskTexturePropertyName = "_LightMask"; // æè´¨ä¸­çš„çº¹ç†å±æ€§å
         public int blurRadius = 8;
         public float blurSigma = 3.0f;
         public FilterMode filterMode = FilterMode.Bilinear;
@@ -28,7 +28,7 @@ public class MaskBlurRendererFeature : ScriptableRendererFeature
         _pass.renderPassEvent = settings.injectionPoint;
     }
 
-    // Ã¿´ÎäÖÈ¾Æ÷ÉèÖÃÊ±±»µ÷ÓÃ
+    // æ¯æ¬¡æ¸²æŸ“å™¨è®¾ç½®æ—¶è¢«è°ƒç”¨
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
         if (settings.blurMaterial == null || settings.sourceMaskRT == null)
@@ -46,10 +46,10 @@ public class MaskBlurRendererFeature : ScriptableRendererFeature
         readonly MaskBlurRendererFeature.MaskBlurSettings _settings;
         ScriptableRenderer _renderer;
 
-        // ³Ö¾ÃÊä³ö RT
+        // æŒä¹…è¾“å‡º RT
         RenderTexture _resultRT;
 
-        // ÁÙÊ± RT id
+        // ä¸´æ—¶ RT id
         int _rtBlurX = Shader.PropertyToID("_MaskBlur_RT_X");
         int _rtBlurY = Shader.PropertyToID("_MaskBlur_RT_Y");
 
@@ -95,7 +95,7 @@ public class MaskBlurRendererFeature : ScriptableRendererFeature
             int w = camData.camera.pixelWidth;
             int h = camData.camera.pixelHeight;
 
-            // ÊäÈëÕÚÕÖ²»ÔÚÊ±Ö±½ÓÍË³ö
+            // è¾“å…¥é®ç½©ä¸åœ¨æ—¶ç›´æ¥é€€å‡º
             if (_settings.sourceMaskRT == null || !_settings.sourceMaskRT.IsCreated())
                 return;
             if (_settings.blurMaterial == null)
@@ -106,31 +106,31 @@ public class MaskBlurRendererFeature : ScriptableRendererFeature
             CommandBuffer cmd = CommandBufferPool.Get("MaskBlur");
             using (new ProfilingScope(cmd, _profiler))
             {
-                // ·ÖÅäÁÙÊ± RT
+                // åˆ†é…ä¸´æ—¶ RT
                 cmd.GetTemporaryRT(_rtBlurX, w, h, 0, _settings.filterMode, _settings.outputFormat);
                 cmd.GetTemporaryRT(_rtBlurY, w, h, 0, _settings.filterMode, _settings.outputFormat);
 
-                //// ºáÏòÄ£ºı
+                //// æ¨ªå‘æ¨¡ç³Š
                 //_settings.blurMaterial.SetVector("_Direction", new Vector4(1, 0, 0, 0));
                 //_settings.blurMaterial.SetFloat("_Radius", _settings.blurRadius);
                 //_settings.blurMaterial.SetFloat("_Sigma", _settings.blurSigma);
                 //cmd.Blit(_settings.sourceMaskRT, _rtBlurX, _settings.blurMaterial);
 
-                //// ×İÏòÄ£ºı
+                //// çºµå‘æ¨¡ç³Š
                 //_settings.blurMaterial.SetVector("_Direction", new Vector4(0, 1, 0, 0));
                 //cmd.Blit(_rtBlurX, _rtBlurY, _settings.blurMaterial);
 
-                //// Êä³öµ½³Ö¾Ã RT
+                //// è¾“å‡ºåˆ°æŒä¹… RT
                 //cmd.Blit(_rtBlurY, _resultRT);
 
-                // »Ø´«µ½ÆÁÄ»ÕÚÕÖ²ÄÖÊ
+                // å›ä¼ åˆ°å±å¹•é®ç½©æè´¨
                 if (_settings.screenMaskMaterial != null)
                 {
                     //_settings.screenMaskMaterial.SetTexture(_settings.maskTexturePropertyName, _resultRT);
                     _settings.screenMaskMaterial.SetTexture(_settings.maskTexturePropertyName, _settings.sourceMaskRT);
                 }
 
-                // ÊÍ·ÅÁÙÊ± RT
+                // é‡Šæ”¾ä¸´æ—¶ RT
                 cmd.ReleaseTemporaryRT(_rtBlurX);
                 cmd.ReleaseTemporaryRT(_rtBlurY);
             }
@@ -141,7 +141,7 @@ public class MaskBlurRendererFeature : ScriptableRendererFeature
 
         public override void OnCameraCleanup(CommandBuffer cmd)
         {
-            // ³Ö¾Ã RT ±£ÁôÒÔ¹© UI ²ÄÖÊ²ÉÑù£¬²»ÔÚ´ËÊÍ·Å
+            // æŒä¹… RT ä¿ç•™ä»¥ä¾› UI æè´¨é‡‡æ ·ï¼Œä¸åœ¨æ­¤é‡Šæ”¾
         }
     }
 }

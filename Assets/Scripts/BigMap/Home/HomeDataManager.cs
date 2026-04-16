@@ -55,7 +55,7 @@ namespace My.Home
         private Dictionary<long, HomeFacilityInstance> homePlacementMap = new();
 
         /// <summary>
-        /// ²éÕÒÉèÊ©
+        /// æŸ¥æ‰¾è®¾æ–½
         /// </summary>
         /// <param name="placementId"></param>
         /// <returns></returns>
@@ -66,8 +66,8 @@ namespace My.Home
         }
 
         /// <summary>
-        /// ÒÑÍê³ÉĞŞ¸´µÄfacilityÁĞ±í
-        /// ÒÔÎ¨Ò»id´æ´¢ 
+        /// å·²å®Œæˆä¿®å¤çš„facilityåˆ—è¡¨
+        /// ä»¥å”¯ä¸€idå­˜å‚¨ 
         /// </summary>
         public List<string> RepairedFacilityList = new();
 
@@ -84,15 +84,15 @@ namespace My.Home
         private List<string> extraProduceEvents;
 
         /// <summary>
-        /// ´Ó´æµµÖĞ¼ÓÔØ
+        /// ä»å­˜æ¡£ä¸­åŠ è½½
         /// </summary>
         /// <param name="saveData"></param>
         public void LoadHomeData(SaveData saveData)
         {
-            //// ³õÊ¼»¯placement
+            //// åˆå§‹åŒ–placement
             //foreach (var one in PlacementInfos)
             //{
-            //    // ´´½¨
+            //    // åˆ›å»º
             //    HomePlaceableObject cfg = HomePlacementCfgtLoader.Get(one.Id);
 
             //    if(cfg.IsFixed)
@@ -147,7 +147,7 @@ namespace My.Home
         }
 
         /// <summary>
-        /// ĞŞ¸´ Ö±½Ó²»¶ÔÁË
+        /// ä¿®å¤ ç›´æ¥ä¸å¯¹äº†
         /// </summary>
         /// <param name="facilityId"></param>
         /// <param name="repairPos"></param>
@@ -290,7 +290,7 @@ namespace My.Home
             List<DynamicEntityRefreshInfo> retList = new();
 
             int uniqId = 10;
-            //// home×´Ì¬ ¶ÁÈ¡ĞÅÏ¢
+            //// homeçŠ¶æ€ è¯»å–ä¿¡æ¯
             //{
             //    var refreshInfo = new DynamicEntityRefreshInfo();
             //    refreshInfo.UniqId = uniqId++;
@@ -336,8 +336,8 @@ namespace My.Home
         {
             DailyNormalHTimes = 0;
 
-            // ½øĞĞ»ù´¡Éú²ú
-            // ÕÒµ½½¨ÖşÎï ·ÅÈë
+            // è¿›è¡ŒåŸºç¡€ç”Ÿäº§
+            // æ‰¾åˆ°å»ºç­‘ç‰© æ”¾å…¥
         }
     }
 }

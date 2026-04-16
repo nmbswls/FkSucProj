@@ -12,7 +12,7 @@ using static My.MapExport.MapExportDatabase;
 
 public class StaticItemExporterWindow : EditorWindow
 {
-    // ÊäÈë
+    // è¾“å…¥
     [SerializeField] private GameObject sceneRoot;
     [SerializeField] private Transform namedPointRoot;
     [SerializeField] private bool includeInactive = false;
@@ -21,26 +21,26 @@ public class StaticItemExporterWindow : EditorWindow
     [SerializeField] private bool filterByLayer = false;
     [SerializeField] private int layerFilter = 0;
 
-    // Key Éú³É
+    // Key ç”Ÿæˆ
     private enum KeyMode { PrefabName, AssetGUID, Path }
     [SerializeField] private KeyMode keyMode = KeyMode.PrefabName;
-    [SerializeField] private string keyPrefix = ""; // ¿ÉÑ¡Ç°×º
-    [SerializeField] private bool stripInstanceSuffix = true; // È¥µô "(Clone)" Ö®Àà
+    [SerializeField] private string keyPrefix = ""; // å¯é€‰å‰ç¼€
+    [SerializeField] private bool stripInstanceSuffix = true; // å»æ‰ "(Clone)" ä¹‹ç±»
 
-    // ±ä»»´¦Àí
+    // å˜æ¢å¤„ç†
     [SerializeField] private Vector3 positionOffset = Vector3.zero;
     [SerializeField] private bool roundToGrid = false;
     [SerializeField] private float gridUnit = 0.1f;
 
-    // ·ÖÍ°£¨Chunk£©ÉèÖÃ
+    // åˆ†æ¡¶ï¼ˆChunkï¼‰è®¾ç½®
     [SerializeField] private float chunkCellSize = 16f;
-    [SerializeField] private Vector2 chunkOrigin = Vector2.zero; // ×ø±êÔ­µãÆ«ÒÆ
+    [SerializeField] private Vector2 chunkOrigin = Vector2.zero; // åæ ‡åŸç‚¹åç§»
 
-    // É¨Ãè½á¹û»º´æ
+    // æ‰«æç»“æœç¼“å­˜
     private Dictionary<(int x, int y), List<StaticPrefabItem>> chunkBuckets =
         new Dictionary<(int x, int y), List<StaticPrefabItem>>();
 
-    // É¨Ãè½á¹û»º´æ
+    // æ‰«æç»“æœç¼“å­˜
     private List<DynamicEntityExportGenerator> dynamicGenerator =
         new();
 
@@ -137,12 +137,12 @@ public class StaticItemExporterWindow : EditorWindow
             {
                 var t = stack.Pop();
 
-                // ¹ıÂË
+                // è¿‡æ»¤
                 if (!includeInactive && !t.gameObject.activeInHierarchy) continue;
                 if (filterByTag && !t.CompareTag(tagFilter)) continue;
                 if (filterByLayer && t.gameObject.layer != layerFilter) continue;
 
-                // ¿ÉÀ©Õ¹£ºÖ»µ¼³ö´øÌØ¶¨×é¼ş
+                // å¯æ‰©å±•ï¼šåªå¯¼å‡ºå¸¦ç‰¹å®šç»„ä»¶
                 // if (t.GetComponent<MeshRenderer>() == null) continue;
                 var prefabProvider = t.GetComponent<MapScenePrefabProvider>();
                 if (prefabProvider != null)
@@ -170,7 +170,7 @@ public class StaticItemExporterWindow : EditorWindow
                     continue;
                 }
 
-                // ±éÀú×Ó½Úµã
+                // éå†å­èŠ‚ç‚¹
                 for (int i = 0; i < t.childCount; i++)
                     stack.Push(t.GetChild(i));
             }
@@ -188,12 +188,12 @@ public class StaticItemExporterWindow : EditorWindow
             {
                 var t = stack.Pop();
 
-                // ¹ıÂË
+                // è¿‡æ»¤
                 if (!includeInactive && !t.gameObject.activeInHierarchy) continue;
                 if (filterByTag && !t.CompareTag(tagFilter)) continue;
                 if (filterByLayer && t.gameObject.layer != layerFilter) continue;
 
-                // ¿ÉÀ©Õ¹£ºÖ»µ¼³ö´øÌØ¶¨×é¼ş
+                // å¯æ‰©å±•ï¼šåªå¯¼å‡ºå¸¦ç‰¹å®šç»„ä»¶
                 // if (t.GetComponent<MeshRenderer>() == null) continue;
                 var generator = t.GetComponent<DynamicEntityExportGenerator>();
                 if (generator != null)
@@ -204,7 +204,7 @@ public class StaticItemExporterWindow : EditorWindow
                     continue;
                 }
 
-                // ±éÀú×Ó½Úµã
+                // éå†å­èŠ‚ç‚¹
                 for (int i = 0; i < t.childCount; i++)
                     stack.Push(t.GetChild(i));
             }
@@ -268,10 +268,10 @@ public class StaticItemExporterWindow : EditorWindow
             {
                 var t = stack.Pop();
 
-                // ¹ıÂË
+                // è¿‡æ»¤
                 if (!includeInactive && !t.gameObject.activeInHierarchy) continue;
 
-                // ¶ÔÓÚÖ¸¶¨²ãµÄÅö×²ÌåÉú³ÉÊÓÏßÊı¾İ
+                // å¯¹äºæŒ‡å®šå±‚çš„ç¢°æ’ä½“ç”Ÿæˆè§†çº¿æ•°æ®
                 if (t.gameObject.layer == fovObcLayer)
                 {
                     var cols = t.GetComponentsInChildren<Collider2D>();
@@ -314,7 +314,7 @@ public class StaticItemExporterWindow : EditorWindow
                     list.AddRange(outList);
                 }
 
-                // ±éÀú×Ó½Úµã
+                // éå†å­èŠ‚ç‚¹
                 for (int i = 0; i < t.childCount; i++)
                     stack.Push(t.GetChild(i));
             }
@@ -328,12 +328,12 @@ public class StaticItemExporterWindow : EditorWindow
 
     private (string Key, Vector3 Position, Quaternion Rotation, Vector3 Scale)? MakeItemFromTransform(Transform t)
     {
-        // È·¶¨ Key
+        // ç¡®å®š Key
         string key = GenerateKey(t.gameObject);
         if (string.IsNullOrEmpty(key))
             return null;
 
-        // Î»ÖÃ/Ğı×ª/Ëõ·Å
+        // ä½ç½®/æ—‹è½¬/ç¼©æ”¾
         var pos = t.position + positionOffset;
         if (roundToGrid && gridUnit > 0f)
         {
@@ -343,7 +343,7 @@ public class StaticItemExporterWindow : EditorWindow
         }
 
         var rot = t.rotation;
-        var scl = t.lossyScale; // Ê¹ÓÃÊÀ½çËõ·Å
+        var scl = t.lossyScale; // ä½¿ç”¨ä¸–ç•Œç¼©æ”¾
 
         return (key, pos, rot, scl);
     }
@@ -394,7 +394,7 @@ public class StaticItemExporterWindow : EditorWindow
     private (int x, int y) WorldToChunk(Vector3 pos)
     {
         float px = pos.x - chunkOrigin.x;
-        float py = pos.z - chunkOrigin.y; // ³£¼û×ö·¨£ºÓÃ x-z Æ½Ãæ·Ö¿é
+        float py = pos.z - chunkOrigin.y; // å¸¸è§åšæ³•ï¼šç”¨ x-z å¹³é¢åˆ†å—
         int cx = Mathf.FloorToInt(px / chunkCellSize);
         int cy = Mathf.FloorToInt(py / chunkCellSize);
         return (cx, cy);
@@ -483,7 +483,7 @@ public class StaticItemExporterWindow : EditorWindow
         Debug.Log($"Exported ChunkStaticDatabase: {asset.Buckets.Count} buckets -> {path}");
     }
 
-    #region Ïß¶ÎÌáÈ¡
+    #region çº¿æ®µæå–
 
     private static void GetBoxWorldCorners(BoxCollider2D box, out Vector2 p0, out Vector2 p1, out Vector2 p2, out Vector2 p3)
     {

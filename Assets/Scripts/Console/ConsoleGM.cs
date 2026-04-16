@@ -15,11 +15,11 @@ using My.Map.Fight;
 public class ConsoleGM : MonoBehaviour
 {
     [Header("Toggle")]
-    public KeyCode toggleKey = KeyCode.BackQuote; // ~ »ò `
+    public KeyCode toggleKey = KeyCode.BackQuote; // ~ æˆ– `
     public bool visible = false;
 
     [Header("UI")]
-    public float height = 260f;         // ¿ØÖÆÌ¨´°¿Ú¸ß¶È
+    public float height = 260f;         // æ§åˆ¶å°çª—å£é«˜åº¦
     public int fontSize = 14;
     public int maxLogLines = 200;
     public Color bgColor = new Color(0, 0, 0, 0.8f);
@@ -38,28 +38,28 @@ public class ConsoleGM : MonoBehaviour
     private readonly List<string> history = new();
     private int historyIndex = -1;
 
-    // ÃüÁî×¢²á
+    // å‘½ä»¤æ³¨å†Œ
     private readonly Dictionary<string, Command> commands = new(StringComparer.OrdinalIgnoreCase);
 
-    // ×Ô¶¯Íê³ÉºòÑ¡
+    // è‡ªåŠ¨å®Œæˆå€™é€‰
     private List<string> candidates = new();
     private int candidateIndex = 0;
 
-    // ²ÎÊıÌáÊ¾»º´æ
+    // å‚æ•°æç¤ºç¼“å­˜
     private string paramHint = "";
 
     void Awake()
     {
         Application.logMessageReceived += OnUnityLog;
 
-        // ÑùÀıÃüÁî×¢²á
-        Register("help", "ÏÔÊ¾ËùÓĞÃüÁî»ò²é¿´Ä³ÃüÁî°ïÖú",
-            new[] { new CmdParam("cmd", "¿ÉÑ¡£¬ÃüÁîÃû") },
+        // æ ·ä¾‹å‘½ä»¤æ³¨å†Œ
+        Register("help", "æ˜¾ç¤ºæ‰€æœ‰å‘½ä»¤æˆ–æŸ¥çœ‹æŸå‘½ä»¤å¸®åŠ©",
+            new[] { new CmdParam("cmd", "å¯é€‰ï¼Œå‘½ä»¤å") },
             args =>
             {
                 if (args.Count == 0)
                 {
-                    Log("¿ÉÓÃÃüÁî£º");
+                    Log("å¯ç”¨å‘½ä»¤ï¼š");
                     foreach (var kv in commands.OrderBy(k => k.Key))
                         Log($"  {kv.Key} - {kv.Value.Description}");
                 }
@@ -69,53 +69,53 @@ public class ConsoleGM : MonoBehaviour
                     if (commands.TryGetValue(name, out var cmd))
                         Log($"{name} {cmd.ParamUsage()} - {cmd.Description}");
                     else
-                        LogError($"Î´ÖªÃüÁî {name}");
+                        LogError($"æœªçŸ¥å‘½ä»¤ {name}");
                 }
             });
 
-        Register("set_time_scale", "ÉèÖÃÊ±¼äËõ·Å",
-            new[] { new CmdParam("scale", "float£¬Ê±¼äËõ·Å£¬ÀıÈç 0.5") },
+        Register("set_time_scale", "è®¾ç½®æ—¶é—´ç¼©æ”¾",
+            new[] { new CmdParam("scale", "floatï¼Œæ—¶é—´ç¼©æ”¾ï¼Œä¾‹å¦‚ 0.5") },
             args =>
             {
-                if (args.Count < 1) { LogError("ÓÃ·¨£ºset_time_scale <scale>"); return; }
-                if (float.TryParse(args[0], out var s)) { Time.timeScale = s; Log($"ÒÑÉèÖÃ Time.timeScale = {s}"); }
-                else LogError("²ÎÊı¸ñÊ½´íÎó£¬Ğè float");
+                if (args.Count < 1) { LogError("ç”¨æ³•ï¼šset_time_scale <scale>"); return; }
+                if (float.TryParse(args[0], out var s)) { Time.timeScale = s; Log($"å·²è®¾ç½® Time.timeScale = {s}"); }
+                else LogError("å‚æ•°æ ¼å¼é”™è¯¯ï¼Œéœ€ float");
             });
 
-        Register("tp", "´«ËÍµ½×ø±ê",
+        Register("tp", "ä¼ é€åˆ°åæ ‡",
             new[] { new CmdParam("x", "float"), new CmdParam("y", "float") },
             args =>
             {
-                if (args.Count < 2) { LogError("ÓÃ·¨£ºtp <x> <y>"); return; }
-                if (Camera.main == null) { LogError("ÎŞÖ÷Ïà»ú"); return; }
+                if (args.Count < 2) { LogError("ç”¨æ³•ï¼štp <x> <y>"); return; }
+                if (Camera.main == null) { LogError("æ— ä¸»ç›¸æœº"); return; }
                 var player = FindAnyObjectByType<Rigidbody2D>();
-                if (player == null) { LogError("Î´ÕÒµ½ Rigidbody2D ×÷ÎªÍæ¼ÒÊ¾Àı"); return; }
+                if (player == null) { LogError("æœªæ‰¾åˆ° Rigidbody2D ä½œä¸ºç©å®¶ç¤ºä¾‹"); return; }
                 if (float.TryParse(args[0], out var x) && float.TryParse(args[1], out var y))
                 {
                     player.position = new Vector2(x, y);
-                    Log($"Íæ¼Ò´«ËÍÖÁ ({x}, {y})");
+                    Log($"ç©å®¶ä¼ é€è‡³ ({x}, {y})");
                 }
-                else LogError("²ÎÊıĞèÎª float");
+                else LogError("å‚æ•°éœ€ä¸º float");
             });
 
-        Register("set_variable", "ÉèÖÃ±äÁ¿",
-            new[] { new CmdParam("name", "string£¬±äÁ¿Ãû") },
+        Register("set_variable", "è®¾ç½®å˜é‡",
+            new[] { new CmdParam("name", "stringï¼Œå˜é‡å") },
             args =>
             {
-                if (args.Count < 1) { LogError("ÓÃ·¨£ºset_variable <id>"); return; }
+                if (args.Count < 1) { LogError("ç”¨æ³•ï¼šset_variable <id>"); return; }
                 var id = args[0];
                 
-                Log($"ÉèÖÃ±äÁ¿ id={id}");
+                Log($"è®¾ç½®å˜é‡ id={id}");
 
                 MainGameManager.Instance.gameLogicManager.playerDataManager.SetVariable(id);
 
             });
 
-        Register("add_alert", "¼Óalert",
-            new[] { new CmdParam("val", "int£¬Öµ") },
+        Register("add_alert", "åŠ alert",
+            new[] { new CmdParam("val", "intï¼Œå€¼") },
             args =>
             {
-                if (args.Count < 1) { LogError("ÓÃ·¨£ºset_variable <id>"); return; }
+                if (args.Count < 1) { LogError("ç”¨æ³•ï¼šset_variable <id>"); return; }
                 var val = int.Parse(args[0]);
 
                 Log($"add_alert val={val}");
@@ -124,14 +124,14 @@ public class ConsoleGM : MonoBehaviour
 
             });
 
-        Register("f1", "¿ÛÒÂ·ş20µã",
+        Register("f1", "æ‰£è¡£æœ20ç‚¹",
             null,
             args =>
             {
                 MainGameManager.Instance.gameLogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -20000, false, FightStruct.EDmgFlag.None, null);
             });
 
-        Register("m1", "Ë¢¹Ö",
+        Register("m1", "åˆ·æ€ª",
             null,
             args =>
             {
@@ -148,7 +148,7 @@ public class ConsoleGM : MonoBehaviour
                     EnmityConfId = "default_monster",
                 });
             });
-        Register("m2", "Ë¢ÊØÎÀ",
+        Register("m2", "åˆ·å®ˆå«",
             null,
             args =>
             {
@@ -166,7 +166,7 @@ public class ConsoleGM : MonoBehaviour
                 });
             });
 
-        Register("m3", "Ë¢Ğ¡¹í",
+        Register("m3", "åˆ·å°é¬¼",
             null,
             args =>
             {
@@ -185,8 +185,8 @@ public class ConsoleGM : MonoBehaviour
             });
         
 
-        Register("shop", "¿ªshop",
-            new[] { new CmdParam("shop id", "int£¬Öµ") },
+        Register("shop", "å¼€shop",
+            new[] { new CmdParam("shop id", "intï¼Œå€¼") },
             args =>
             {
                 var id = int.Parse(args[0]);
@@ -198,8 +198,8 @@ public class ConsoleGM : MonoBehaviour
                 UIOrchestrator.Instance.ShowShop(shopInfo);
             });
 
-        Register("gc", "¼Ógc",
-            new[] { new CmdParam("val", "int£¬Öµ") },
+        Register("gc", "åŠ gc",
+            new[] { new CmdParam("val", "intï¼Œå€¼") },
             args =>
             {
                 var val = int.Parse(args[0]);
@@ -208,7 +208,7 @@ public class ConsoleGM : MonoBehaviour
                 player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, val, false, FightStruct.EDmgFlag.None, null);
             });
 
-        Register("faqing", "Ç¿ÖÆ·¢Çé",
+        Register("faqing", "å¼ºåˆ¶å‘æƒ…",
             null,
             args =>
             {
@@ -218,7 +218,7 @@ public class ConsoleGM : MonoBehaviour
             });
 
 
-        Register("gptest", "´´½¨²âÊÔÓÃgather point",
+        Register("gptest", "åˆ›å»ºæµ‹è¯•ç”¨gather point",
             null,
             args =>
             {
@@ -235,7 +235,7 @@ public class ConsoleGM : MonoBehaviour
                 MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(rec);
             });
 
-        Register("hptest", "´´½¨²âÊÔÓÃhide point",
+        Register("hptest", "åˆ›å»ºæµ‹è¯•ç”¨hide point",
             null,
             args =>
             {
@@ -252,7 +252,7 @@ public class ConsoleGM : MonoBehaviour
                 MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(rec);
             });
 
-        Register("dmg", "Ôì³ÉÉËº¦",
+        Register("dmg", "é€ æˆä¼¤å®³",
             null,
             args =>
             {
@@ -260,9 +260,9 @@ public class ConsoleGM : MonoBehaviour
                 player.ApplyResourceChange(AttrIdConsts.HP, -9999999, false, FightStruct.EDmgFlag.None, null);
             });
 
-        Register("give_item", "¸øitem",
-            new[] { new CmdParam("itemId", "string£¬±äÁ¿Ãû"),
-             new CmdParam("count", "string£¬±äÁ¿Ãû")},
+        Register("give_item", "ç»™item",
+            new[] { new CmdParam("itemId", "stringï¼Œå˜é‡å"),
+             new CmdParam("count", "stringï¼Œå˜é‡å")},
             args =>
             {
                 string itemId = args[0];
@@ -272,7 +272,7 @@ public class ConsoleGM : MonoBehaviour
 
             });
 
-        Register("rr", "³·ÍË",
+        Register("rr", "æ’¤é€€",
             null,
             args =>
             {
@@ -290,16 +290,16 @@ public class ConsoleGM : MonoBehaviour
                 }
             });
 
-        Register("wanted", "Í¨¼©",
+        Register("wanted", "é€šç¼‰",
             null,
             args =>
             {
                 MainGameManager.Instance.gameLogicManager.WantedManager.AddWantedVal(50000);
             });
 
-        Register("add_quest_value", "¿ªshop",
-            new[] { new CmdParam("quest_id", "int£¬Öµ"),
-            new CmdParam("amount", "int£¬Öµ")},
+        Register("add_quest_value", "å¼€shop",
+            new[] { new CmdParam("quest_id", "intï¼Œå€¼"),
+            new CmdParam("amount", "intï¼Œå€¼")},
             args =>
             {
                 var questId = int.Parse(args[0]);
@@ -323,8 +323,8 @@ public class ConsoleGM : MonoBehaviour
                 MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.RaiseQuestObjUpdateEvent(quest.cacheCfg.QuestId);
             });
 
-        Register("finish_quest", "Ö±½ÓÍê³ÉÈÎÎñ",
-            new[] { new CmdParam("quest_id", "int£¬Öµ") },
+        Register("finish_quest", "ç›´æ¥å®Œæˆä»»åŠ¡",
+            new[] { new CmdParam("quest_id", "intï¼Œå€¼") },
             args =>
             {
                 var questId = int.Parse(args[0]);
@@ -348,7 +348,7 @@ public class ConsoleGM : MonoBehaviour
 
         if (!visible) return;
 
-        // »ù´¡¼üÅÌ½»»¥£¨²»ÒÀÀµ IMGUI focus£©
+        // åŸºç¡€é”®ç›˜äº¤äº’ï¼ˆä¸ä¾èµ– IMGUI focusï¼‰
         if (Input.GetKeyDown(KeyCode.UpArrow)) BrowseHistory(-1);
         if (Input.GetKeyDown(KeyCode.DownArrow)) BrowseHistory(+1);
 
@@ -372,22 +372,22 @@ public class ConsoleGM : MonoBehaviour
                 visible = !visible;
                 if (visible) DisableInput(); else EnableInput();
                 e.Use();
-                if (!visible) return; // ¹Øµôºó¾Í²»ÔÙ»æÖÆ
+                if (!visible) return; // å…³æ‰åå°±ä¸å†ç»˜åˆ¶
             }
-            // »Ø³µ±£Áô¸øÊäÈëÖ´ĞĞ£¨ÄãÒÑÓĞ´¦Àí£©
-            // ÆäËü±à¼­¼ü£¨Backspace/×óÓÒ¼ıÍ·£©ÈÃ IMGUI Õı³£´¦Àí
+            // å›è½¦ä¿ç•™ç»™è¾“å…¥æ‰§è¡Œï¼ˆä½ å·²æœ‰å¤„ç†ï¼‰
+            // å…¶å®ƒç¼–è¾‘é”®ï¼ˆBackspace/å·¦å³ç®­å¤´ï¼‰è®© IMGUI æ­£å¸¸å¤„ç†
         }
 
         EnsureStyles();
 
         var rect = new Rect(0, 0, Screen.width, height);
-        // ±³¾°
+        // èƒŒæ™¯
         DrawRect(rect, bgColor);
 
         GUILayout.BeginArea(rect);
         GUILayout.Space(6);
 
-        // ÈÕÖ¾ÇøÓò
+        // æ—¥å¿—åŒºåŸŸ
         scroll = GUILayout.BeginScrollView(scroll, GUILayout.ExpandHeight(true));
         foreach (var line in logs)
         {
@@ -395,7 +395,7 @@ public class ConsoleGM : MonoBehaviour
         }
         GUILayout.EndScrollView();
 
-        // ÊäÈëÇøÓò±³¾°
+        // è¾“å…¥åŒºåŸŸèƒŒæ™¯
         var inputRect = new Rect(8, height - 36, Screen.width - 16, 28);
         DrawRect(inputRect, inputBgColor);
 
@@ -405,12 +405,12 @@ public class ConsoleGM : MonoBehaviour
         input = GUILayout.TextField(input, inputStyle, GUILayout.Height(24), GUILayout.ExpandWidth(true));
         GUI.FocusControl("ConsoleInput");
 
-        if (GUILayout.Button("Ö´ĞĞ", GUILayout.Width(60), GUILayout.Height(24)))
+        if (GUILayout.Button("æ‰§è¡Œ", GUILayout.Width(60), GUILayout.Height(24)))
             ExecuteInput();
         GUILayout.Space(8);
         GUILayout.EndHorizontal();
 
-        // ²ÎÊıÌáÊ¾
+        // å‚æ•°æç¤º
         if (!string.IsNullOrEmpty(paramHint))
         {
             GUILayout.Space(2);
@@ -421,17 +421,17 @@ public class ConsoleGM : MonoBehaviour
         }
         else
         {
-            // Õ¼Î»£¬±£³Ö¿Ø¼şÊıÁ¿Ò»ÖÂ
+            // å ä½ï¼Œä¿æŒæ§ä»¶æ•°é‡ä¸€è‡´
             GUILayout.Space(0);
         }
 
-        // ×Ô¶¯Íê³ÉºòÑ¡
+        // è‡ªåŠ¨å®Œæˆå€™é€‰
         if (candidates.Count > 0)
         {
             GUILayout.Space(2);
             var c = hintStyle.normal.textColor;
             hintStyle.normal.textColor = hintColor;
-            GUILayout.Label("ºòÑ¡£º" + string.Join("  |  ", candidates.Select((s, i) => i == candidateIndex ? $"[{s}]" : s)), hintStyle);
+            GUILayout.Label("å€™é€‰ï¼š" + string.Join("  |  ", candidates.Select((s, i) => i == candidateIndex ? $"[{s}]" : s)), hintStyle);
             hintStyle.normal.textColor = c;
         }
         else
@@ -439,7 +439,7 @@ public class ConsoleGM : MonoBehaviour
             GUILayout.Space(0);
         }
 
-        //// ´¦Àí»Ø³µ
+        //// å¤„ç†å›è½¦
         //var e = Event.current;
         //if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Return)
         //{
@@ -452,7 +452,7 @@ public class ConsoleGM : MonoBehaviour
         GUILayout.EndArea();
     }
 
-    // =============== ÃüÁîÏµÍ³ ===============
+    // =============== å‘½ä»¤ç³»ç»Ÿ ===============
 
     private void Register(string name, string desc, CmdParam[] parameters, Action<List<string>> handler)
     {
@@ -471,7 +471,7 @@ public class ConsoleGM : MonoBehaviour
         candidates.Clear();
         paramHint = "";
 
-        // ½âÎöÃüÁî
+        // è§£æå‘½ä»¤
         var tokens = Tokenize(line);
         if (tokens.Count == 0) return;
 
@@ -480,7 +480,7 @@ public class ConsoleGM : MonoBehaviour
 
         if (!commands.TryGetValue(cmdName, out var cmd))
         {
-            LogError($"Î´ÖªÃüÁî£º{cmdName}£¨ÊäÈë help ²é¿´£©");
+            LogError($"æœªçŸ¥å‘½ä»¤ï¼š{cmdName}ï¼ˆè¾“å…¥ help æŸ¥çœ‹ï¼‰");
             return;
         }
 
@@ -490,13 +490,13 @@ public class ConsoleGM : MonoBehaviour
         }
         catch (Exception ex)
         {
-            LogError($"ÃüÁîÖ´ĞĞ´íÎó£º{ex.Message}");
+            LogError($"å‘½ä»¤æ‰§è¡Œé”™è¯¯ï¼š{ex.Message}");
         }
     }
 
     private List<string> Tokenize(string line)
     {
-        // ¼òµ¥·Ö´Ê£ºÖ§³ÖË«ÒıºÅ°ü¹üµÄ²ÎÊı
+        // ç®€å•åˆ†è¯ï¼šæ”¯æŒåŒå¼•å·åŒ…è£¹çš„å‚æ•°
         var list = new List<string>();
         bool inQuote = false;
         var cur = new System.Text.StringBuilder();
@@ -516,7 +516,7 @@ public class ConsoleGM : MonoBehaviour
     private void UpdateHints()
     {
         var prefix = input;
-        // ¹¹½¨ÃüÁîÌáÊ¾ºÍ²ÎÊıÌáÊ¾
+        // æ„å»ºå‘½ä»¤æç¤ºå’Œå‚æ•°æç¤º
         var tokens = Tokenize(prefix);
         if (tokens.Count == 0)
         {
@@ -528,26 +528,26 @@ public class ConsoleGM : MonoBehaviour
 
         if (input.EndsWith(" "))
         {
-            // ÓÃ»§ÕıÔÚÊäÈëÏÂÒ»¸ö²ÎÊı
+            // ç”¨æˆ·æ­£åœ¨è¾“å…¥ä¸‹ä¸€ä¸ªå‚æ•°
             tokens.Add("");
         }
 
         if (tokens.Count == 1)
         {
-            // ÃüÁîÃû×Ô¶¯Íê³É
+            // å‘½ä»¤åè‡ªåŠ¨å®Œæˆ
             string head = tokens[0];
             candidates = commands.Keys.Where(k => k.StartsWith(head, StringComparison.OrdinalIgnoreCase))
                                       .OrderBy(k => k).ToList();
             candidateIndex = 0;
 
-            // ²ÎÊıÌáÊ¾£ºÏÔÊ¾¸ÃÃüÁîµÄ²ÎÊıÇ©Ãû
+            // å‚æ•°æç¤ºï¼šæ˜¾ç¤ºè¯¥å‘½ä»¤çš„å‚æ•°ç­¾å
             if (commands.TryGetValue(head, out var cmdExact))
             {
                 paramHint = $"{cmdExact.Name} {cmdExact.ParamUsage()} - {cmdExact.Description}";
             }
             else
             {
-                // ×î½üµÄ¹«¹²Ç°×ºÃüÖĞÏÔÊ¾µÚÒ»¸öºòÑ¡µÄÇ©Ãû
+                // æœ€è¿‘çš„å…¬å…±å‰ç¼€å‘½ä¸­æ˜¾ç¤ºç¬¬ä¸€ä¸ªå€™é€‰çš„ç­¾å
                 if (candidates.Count > 0 && commands.TryGetValue(candidates[0], out var cmd))
                     paramHint = $"{cmd.Name} {cmd.ParamUsage()} - {cmd.Description}";
                 else
@@ -556,7 +556,7 @@ public class ConsoleGM : MonoBehaviour
         }
         else
         {
-            // ÒÑÈ·¶¨ÃüÁîÃû£¬¸ø²ÎÊıÌáÊ¾
+            // å·²ç¡®å®šå‘½ä»¤åï¼Œç»™å‚æ•°æç¤º
             string cmdName = tokens[0];
             if (commands.TryGetValue(cmdName, out var cmd))
             {
@@ -564,7 +564,7 @@ public class ConsoleGM : MonoBehaviour
             }
             else paramHint = "";
 
-            // ²»¶Ô²ÎÊı×ö×Ô¶¯²¹È«£¨Ò²¿ÉÔÚ´Ë×ö×Ô¶¨Òå²¹È«£©
+            // ä¸å¯¹å‚æ•°åšè‡ªåŠ¨è¡¥å…¨ï¼ˆä¹Ÿå¯åœ¨æ­¤åšè‡ªå®šä¹‰è¡¥å…¨ï¼‰
             candidates.Clear();
         }
     }
@@ -576,7 +576,7 @@ public class ConsoleGM : MonoBehaviour
 
         if (tokens.Count == 0 || (tokens.Count == 1 && !addingSpace))
         {
-            // ÔÚÃüÁîÃû½×¶Î½øĞĞ²¹È«
+            // åœ¨å‘½ä»¤åé˜¶æ®µè¿›è¡Œè¡¥å…¨
             if (candidates.Count == 0)
             {
                 candidates = commands.Keys.OrderBy(k => k).ToList();
@@ -584,19 +584,19 @@ public class ConsoleGM : MonoBehaviour
             }
             else
             {
-                // Ñ­»·Ñ¡ÔñºòÑ¡
+                // å¾ªç¯é€‰æ‹©å€™é€‰
                 candidateIndex = (candidateIndex + 1) % candidates.Count;
             }
 
             if (candidates.Count > 0)
             {
                 input = candidates[candidateIndex] + " ";
-                // ½«¹â±ê·Åµ½Ä©Î²
+                // å°†å…‰æ ‡æ”¾åˆ°æœ«å°¾
             }
         }
         else
         {
-            // ²ÎÊı²¹È«£º´Ë´¦Áô¿Õ£¬ÈôĞèÒª¿É¸ù¾İÃüÁî×Ô¶¨Òå
+            // å‚æ•°è¡¥å…¨ï¼šæ­¤å¤„ç•™ç©ºï¼Œè‹¥éœ€è¦å¯æ ¹æ®å‘½ä»¤è‡ªå®šä¹‰
         }
     }
 
@@ -606,11 +606,11 @@ public class ConsoleGM : MonoBehaviour
         historyIndex = Mathf.Clamp(historyIndex + delta, 0, history.Count);
         if (historyIndex >= 0 && historyIndex < history.Count) input = history[historyIndex];
         else input = "";
-        // ¸üĞÂÌáÊ¾
+        // æ›´æ–°æç¤º
         UpdateHints();
     }
 
-    // =============== UI/ÈÕÖ¾ ===============
+    // =============== UI/æ—¥å¿— ===============
 
     private void EnsureStyles()
     {
@@ -683,7 +683,7 @@ public class ConsoleGM : MonoBehaviour
         MainGameManager.Instance.inputBinder.GlobalLock = true;
     }
 
-    // =============== Êı¾İ½á¹¹ ===============
+    // =============== æ•°æ®ç»“æ„ ===============
     private class Command
     {
         public string Name;

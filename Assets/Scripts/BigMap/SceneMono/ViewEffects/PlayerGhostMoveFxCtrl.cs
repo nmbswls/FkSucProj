@@ -7,15 +7,15 @@ namespace My.Map.View
     public class PlayerGhostMoveFxCtrl : MonoBehaviour
     {
         [Header("References")]
-        public SpriteRenderer playerSR;       // Íæ¼ÒÏÔÊ¾×é¼ş
-        public GameObject orbPrefab;          // FX_Orb2D Ô¤ÖÆÌå£¨¶ÀÁ¢ÌØĞ§£©
+        public SpriteRenderer playerSR;       // ç©å®¶æ˜¾ç¤ºç»„ä»¶
+        public GameObject orbPrefab;          // FX_Orb2D é¢„åˆ¶ä½“ï¼ˆç‹¬ç«‹ç‰¹æ•ˆï¼‰
 
         [Header("Timings")]
-        public float playerFadeOut = 0.1f;    // Íæ¼ÒÒşÈ¥Ê±¼ä
-        public float orbFadeIn = 0.08f;       // ¹âµãµ­ÈëÊ±¼ä
-        public float orbMoveDuration = 0.3f;  // ¹âµã·ÉĞĞÊ±¼ä
-        public float orbFadeOut = 0.1f;      // ¹âµãµ­³öÊ±¼ä
-        public float playerFadeIn = 0.12f;     // Íæ¼Ò»Ö¸´ÏÔÊ¾Ê±¼ä
+        public float playerFadeOut = 0.1f;    // ç©å®¶éšå»æ—¶é—´
+        public float orbFadeIn = 0.08f;       // å…‰ç‚¹æ·¡å…¥æ—¶é—´
+        public float orbMoveDuration = 0.3f;  // å…‰ç‚¹é£è¡Œæ—¶é—´
+        public float orbFadeOut = 0.1f;      // å…‰ç‚¹æ·¡å‡ºæ—¶é—´
+        public float playerFadeIn = 0.12f;     // ç©å®¶æ¢å¤æ˜¾ç¤ºæ—¶é—´
 
         [Header("Ease")]
         public Ease moveEase = Ease.InOutCubic;
@@ -29,55 +29,55 @@ namespace My.Map.View
         /// <param name="onFXComplete"></param>
         public void PlayMoveFx(Transform player, Vector3 targetPos, System.Action onFXReachTarget, System.Action onFXComplete)
         {
-            // 1) Éú³É¹âµãÌØĞ§£¨½¨Òé¶ÔÏó³Ø¹ÜÀí£¬ÕâÀïÓÃ¼òµ¥ Instantiate£©
+            // 1) ç”Ÿæˆå…‰ç‚¹ç‰¹æ•ˆï¼ˆå»ºè®®å¯¹è±¡æ± ç®¡ç†ï¼Œè¿™é‡Œç”¨ç®€å• Instantiateï¼‰
             //var orbGO = Instantiate(orbPrefab);
             //orbGO.transform.position = player.position;
             //orbGO.SetActive(true);
             this.gameObject.SetActive(true);
             this.transform.position = player.position;
 
-            // 2) È¡×é¼ş
+            // 2) å–ç»„ä»¶
             var orbSR = GetComponentInChildren<SpriteRenderer>();
             var trail = GetComponentInChildren<TrailRenderer>();
-            var psList = GetComponentsInChildren<ParticleSystem>(); // ¿É¶à¸ö
+            var psList = GetComponentsInChildren<ParticleSystem>(); // å¯å¤šä¸ª
 
-            // 3) ³õÊ¼»¯¿É¼ûĞÔÓëÁ£×Ó
+            // 3) åˆå§‹åŒ–å¯è§æ€§ä¸ç²’å­
             SetAlpha(playerSR, 1f);
             SetAlpha(orbSR, 0f);
             foreach (var ps in psList) { ps.Clear(); ps.Play(); }
             if (trail) trail.Clear();
 
-            // 4) ¹¹½¨ÏÔÊ¾ÓÃĞòÁĞ
+            // 4) æ„å»ºæ˜¾ç¤ºç”¨åºåˆ—
             Sequence seq = DOTween.Sequence();
 
-            // Íæ¼Òµ­³ö£¨½öÏÔÊ¾²à£¬²»ÒÆ¶¯Íæ¼Ò£©
+            // ç©å®¶æ·¡å‡ºï¼ˆä»…æ˜¾ç¤ºä¾§ï¼Œä¸ç§»åŠ¨ç©å®¶ï¼‰
             seq.Append(DOTween.To(() => playerSR.color, c => playerSR.color = c,
                 new Color(playerSR.color.r, playerSR.color.g, playerSR.color.b, 0f), playerFadeOut));
 
-            // ¹âµãµ­Èë
+            // å…‰ç‚¹æ·¡å…¥
             seq.Join(DOTween.To(() => orbSR.color, c => orbSR.color = c,
                 new Color(orbSR.color.r, orbSR.color.g, orbSR.color.b, 1f), orbFadeIn));
 
-            // Òş²ØÍæ¼ÒäÖÈ¾Æ÷£¨¿É±ÜÃâ¶¯»­Ó°Ïì£©
+            // éšè—ç©å®¶æ¸²æŸ“å™¨ï¼ˆå¯é¿å…åŠ¨ç”»å½±å“ï¼‰
             seq.AppendCallback(() => playerSR.enabled = false);
 
-            // ¹âµã·ÉĞĞµ½Ä¿±ê
+            // å…‰ç‚¹é£è¡Œåˆ°ç›®æ ‡
             seq.Append(transform.DOMove(targetPos, orbMoveDuration).SetEase(moveEase));
 
-            // µÖ´ï£ºÍ¨ÖªÂß¼­²ã¿É½øĞĞÊµ¼Ê¡°Ë²ÒÆ¡±
+            // æŠµè¾¾ï¼šé€šçŸ¥é€»è¾‘å±‚å¯è¿›è¡Œå®é™…â€œç¬ç§»â€
             seq.AppendCallback(() =>
             {
-                // ¿É´¥·¢Ò»¸öµÖ´ï±¬ÉÁ£¨ÌáÉı emission »ò´¥·¢¶ÀÁ¢·¢ÉäÆ÷£©
+                // å¯è§¦å‘ä¸€ä¸ªæŠµè¾¾çˆ†é—ªï¼ˆæå‡ emission æˆ–è§¦å‘ç‹¬ç«‹å‘å°„å™¨ï¼‰
                 Burst(psList);
                 onFXReachTarget?.Invoke();
             });
 
-            // ¹âµãµ­³ö
+            // å…‰ç‚¹æ·¡å‡º
             seq.Append(DOTween.To(() => orbSR.color, c => orbSR.color = c,
                 new Color(orbSR.color.r, orbSR.color.g, orbSR.color.b, 0f), orbFadeOut));
 
-            // Âß¼­²ã´ËÊ±Ó¦ÒÑ°Ñ player.position = targetPos
-            // ÏÔÊ¾²ã»Ö¸´Íæ¼Ò
+            // é€»è¾‘å±‚æ­¤æ—¶åº”å·²æŠŠ player.position = targetPos
+            // æ˜¾ç¤ºå±‚æ¢å¤ç©å®¶
             seq.AppendCallback(() => {
                 playerSR.enabled = true;
                 SetAlpha(playerSR, 0f);
@@ -85,11 +85,11 @@ namespace My.Map.View
             seq.Append(DOTween.To(() => playerSR.color, c => playerSR.color = c,
                 new Color(playerSR.color.r, playerSR.color.g, playerSR.color.b, 1f), playerFadeIn));
 
-            // ÊÕÎ²Óë»Øµ÷
+            // æ”¶å°¾ä¸å›è°ƒ
             seq.OnComplete(() =>
             {
                 foreach (var ps in psList) { ps.Stop(); }
-                //Destroy(orbGO); // »ò¹é»¹¶ÔÏó³Ø
+                //Destroy(orbGO); // æˆ–å½’è¿˜å¯¹è±¡æ± 
                 onFXComplete?.Invoke();
             });
         }
@@ -104,7 +104,7 @@ namespace My.Map.View
             //foreach (var ps in psList)
             //{
             //    var emission = ps.emission;
-            //    // ÁÙÊ±Ìá¸ß·¢ÉäÂÊ×÷Îª¼òµ¥±¬ÉÁ
+            //    // ä¸´æ—¶æé«˜å‘å°„ç‡ä½œä¸ºç®€å•çˆ†é—ª
             //    var original = emission.rateOverTime.constant;
             //    emission.rateOverTime = original * 3f;
             //    DOVirtual.DelayedCall(0.12f, () => emission.rateOverTime = original);

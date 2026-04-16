@@ -9,7 +9,7 @@ using UnityEngine;
 namespace My.Map.Entity
 {
     /// <summary>
-    /// 让自身或目标进行移动
+    /// 璁╄嚜韬垨鐩爣杩涜绉诲姩
     /// </summary>
     [Serializable]
     public class MapAbilityEffectControlledMoveCfg : MapFightEffectCfg

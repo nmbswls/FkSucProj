@@ -53,7 +53,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ִ��ʰȡ
+        /// 执行拾取
         /// </summary>
         public void DoGather()
         {

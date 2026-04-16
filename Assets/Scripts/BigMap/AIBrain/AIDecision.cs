@@ -126,7 +126,7 @@ namespace My.Map.Entity.AI
 
  //   //   public class AIDecisionCheckIsInPatrolGroup : AIDecision
  //   //   {
- //   //       public bool IsHas; // ÊÇ»ò·ñ
+ //   //       public bool IsHas; // æ˜¯æˆ–å¦
  //   //       /// <summary>
  //   //       /// On init we grab our Character component
  //   //       /// </summary>

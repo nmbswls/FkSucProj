@@ -9,7 +9,7 @@ namespace My.Map
     {
         private Queue<Vector3> _pathQueue;
         private Vector3 _currentTarget;
-        private Vector3 _pathOffset; // ¸öÈË×¨ÊôµÄÂ·¾¶Æ«ÒÆÁ¿
+        private Vector3 _pathOffset; // ä¸ªäººä¸“å±çš„è·¯å¾„åç§»é‡
         private float _speed;
 
         private SpriteRenderer _sr;
@@ -28,13 +28,13 @@ namespace My.Map
             transform.position = startPos;
             _pathQueue = pathRoute;
             _pathOffset = offset;
-            _speed = Random.Range(1.0f, 1.5f); // Ëæ»úËÙ¶È
+            _speed = Random.Range(1.0f, 1.5f); // éšæœºé€Ÿåº¦
 
-            // Ëæ»úÑÕÉ«²îÒì
+            // éšæœºé¢œè‰²å·®å¼‚
             float grey = Random.Range(0.9f, 1f);
             _sr.color = new Color(grey, grey, grey, 1f);
 
-            // Ëæ»ú¶¯»­ÆğÊ¼Ö¡
+            // éšæœºåŠ¨ç”»èµ·å§‹å¸§
             if (_anim)
             {
                 _anim.Play("Walk", 0, Random.value);
@@ -51,12 +51,12 @@ namespace My.Map
         {
             if (_pathQueue.Count > 0)
             {
-                // È¡³öÏÂÒ»¸öµã£¬²¢¼ÓÉÏÆ«ÒÆÁ¿
+                // å–å‡ºä¸‹ä¸€ä¸ªç‚¹ï¼Œå¹¶åŠ ä¸Šåç§»é‡
                 _currentTarget = _pathQueue.Dequeue() + _pathOffset;
             }
             else
             {
-                // Ã»Â·ÁË£¬»ØÊÕ
+                // æ²¡è·¯äº†ï¼Œå›æ”¶
                 Recycle();
             }
         }
@@ -65,11 +65,11 @@ namespace My.Map
         {
             if (!IsActive) return;
 
-            // 1. ÒÆ¶¯Âß¼­
+            // 1. ç§»åŠ¨é€»è¾‘
             Vector3 dir = (_currentTarget - transform.position);
             float dist = dir.magnitude;
 
-            // Èç¹û¾àÀëºÜ½ü£¬¾ÍËãµ½´ï
+            // å¦‚æœè·ç¦»å¾ˆè¿‘ï¼Œå°±ç®—åˆ°è¾¾
             if (dist < 0.1f)
             {
                 SetNextTarget();
@@ -79,20 +79,20 @@ namespace My.Map
             Vector3 moveDir = dir.normalized;
             transform.position += moveDir * _speed * Time.deltaTime;
 
-            // 2. ÊÓ¾õ±íÏÖ (Top-Down ×¨Êô)
+            // 2. è§†è§‰è¡¨ç° (Top-Down ä¸“å±)
 
-            // A. ×óÓÒ·­×ª (¸ù¾İ X ÖáÒÆ¶¯·½Ïò)
+            // A. å·¦å³ç¿»è½¬ (æ ¹æ® X è½´ç§»åŠ¨æ–¹å‘)
             if (Mathf.Abs(moveDir.x) > 0.1f)
             {
                 _sr.flipX = moveDir.x < 0;
             }
 
-            // B. ²ã¼¶ÅÅĞò (Y-Sorting)
-            // ÔÚ Top-Down ÓÎÏ·ÖĞ£¬Y Ô½´ó(Ô½¿¿ÉÏ)Ó¦¸Ã±»ÕÚµ²£¬Order Ô½Ğ¡
-            // ½« Y ×ø±êÓ³ÉäÎª Order£¬¾«¶ÈÉèÎª 100
+            // B. å±‚çº§æ’åº (Y-Sorting)
+            // åœ¨ Top-Down æ¸¸æˆä¸­ï¼ŒY è¶Šå¤§(è¶Šé ä¸Š)åº”è¯¥è¢«é®æŒ¡ï¼ŒOrder è¶Šå°
+            // å°† Y åæ ‡æ˜ å°„ä¸º Orderï¼Œç²¾åº¦è®¾ä¸º 100
             _sr.sortingOrder = -(int)(transform.position.y * 100);
 
-            // C. (¿ÉÑ¡) Èç¹ûÄãÓĞ 4 ·½Ïò¶¯»­£¬ÕâÀï¸ù¾İ moveDir µÄ x/y ÇĞ»» Animator ×´Ì¬
+            // C. (å¯é€‰) å¦‚æœä½ æœ‰ 4 æ–¹å‘åŠ¨ç”»ï¼Œè¿™é‡Œæ ¹æ® moveDir çš„ x/y åˆ‡æ¢ Animator çŠ¶æ€
             // if (Mathf.Abs(moveDir.y) > Mathf.Abs(moveDir.x)) { Play("WalkUp/Down"); }
         }
 

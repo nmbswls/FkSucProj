@@ -15,7 +15,7 @@ public class TestFollower : MonoBehaviour
         public float lastUpdateNavTime;
         public bool NeedRecalculatePath;
         public Vector2 targettedDesireDir;
-        public float StopDistance = 1f; // Í£Ö¹¾àÀë
+        public float StopDistance = 1f; // åœæ­¢è·ç¦»
     }
 
     public TargettedMoveIntent? targettedMoveIntent;
@@ -107,14 +107,14 @@ public class TestFollower : MonoBehaviour
             return;
         }
         
-        // ÖØËãÂ·¾¶
+        // é‡ç®—è·¯å¾„
         if (targettedMoveIntent.NeedRecalculatePath)
         {
             navAgent.SetDestination(targettedMoveIntent.MoveTarget);
             targettedMoveIntent.NeedRecalculatePath = false;
         }
 
-        // pendingÖĞ µÈ´ıÑ°ÕÒ
+        // pendingä¸­ ç­‰å¾…å¯»æ‰¾
         if (!navAgent.hasPath || navAgent.pathPending)
         {
             return;
@@ -129,7 +129,7 @@ public class TestFollower : MonoBehaviour
             return;
         }
 
-        // ´ÓAgent»ñÈ¡ÆÚÍûËÙ¶È£¬Í¶Ó°µ½XY
+        // ä»Agentè·å–æœŸæœ›é€Ÿåº¦ï¼ŒæŠ•å½±åˆ°XY
         Vector3 desired3 = navAgent.desiredVelocity;
         Vector2 desired = new Vector2(desired3.x, desired3.y);
         desired = desired.normalized;
@@ -142,34 +142,34 @@ public class TestFollower : MonoBehaviour
     {
         //if (targettedMoveIntent == null) return;
 
-        //// ÄãµÄÒÆ¶¯ËÙ¶È£¨µ¥Î»£ºÃ×/Ãë£©
+        //// ä½ çš„ç§»åŠ¨é€Ÿåº¦ï¼ˆå•ä½ï¼šç±³/ç§’ï¼‰
         //float moveSpeed = 0.2f;
         //float dt = Time.fixedDeltaTime;
 
-        //// µ±Ç°Î»ÖÃÓëÄ¿±êÎ»ÖÃ
+        //// å½“å‰ä½ç½®ä¸ç›®æ ‡ä½ç½®
         //Vector2 pos = rb.position;
-        //Vector2 target = targettedMoveIntent.MoveTarget; // ĞèÒªÓĞÄ¿±êµã
-        //Vector2 dir = targettedMoveIntent.targettedDesireDir; // ÒÑ¹éÒ»»¯µÄ·½ÏòÏòÁ¿£¨³¤¶È¡Ö1£©
+        //Vector2 target = targettedMoveIntent.MoveTarget; // éœ€è¦æœ‰ç›®æ ‡ç‚¹
+        //Vector2 dir = targettedMoveIntent.targettedDesireDir; // å·²å½’ä¸€åŒ–çš„æ–¹å‘å‘é‡ï¼ˆé•¿åº¦â‰ˆ1ï¼‰
 
-        //// ¾àÀëÓë±¾Ö¡Î»ÒÆ
+        //// è·ç¦»ä¸æœ¬å¸§ä½ç§»
         //float dist = Vector2.Distance(pos, target);
         //float step = moveSpeed * dt;
 
-        //// Í£Ö¹/µ½´ïÅĞ¶¨ãĞÖµ£¬±ÜÃâ¶¶¶¯
-        //float arriveThreshold = 0.02f; // ¿É¸ù¾İ½ÇÉ«ÌåĞÍ/ËÙ¶Èµ÷Õû
+        //// åœæ­¢/åˆ°è¾¾åˆ¤å®šé˜ˆå€¼ï¼Œé¿å…æŠ–åŠ¨
+        //float arriveThreshold = 0.02f; // å¯æ ¹æ®è§’è‰²ä½“å‹/é€Ÿåº¦è°ƒæ•´
 
         //if (dist <= arriveThreshold)
         //{
-        //    // µ½´ïÄ¿±ê£ºÍ£Ö¹»òÇĞ×´Ì¬
-        //    // ¿É½«ËÙ¶ÈÇåÁã¡¢·¢ÊÂ¼ş¡¢¸üĞÂÒâÍ¼µÈ
-        //    // rb.MovePosition(target); // ¿ÉÖ±½ÓÌùµ½Ä¿±êµã£¨½÷É÷Ê¹ÓÃ£¬±ÜÃâ´©Í¸£©
+        //    // åˆ°è¾¾ç›®æ ‡ï¼šåœæ­¢æˆ–åˆ‡çŠ¶æ€
+        //    // å¯å°†é€Ÿåº¦æ¸…é›¶ã€å‘äº‹ä»¶ã€æ›´æ–°æ„å›¾ç­‰
+        //    // rb.MovePosition(target); // å¯ç›´æ¥è´´åˆ°ç›®æ ‡ç‚¹ï¼ˆè°¨æ…ä½¿ç”¨ï¼Œé¿å…ç©¿é€ï¼‰
         //    return;
         //}
 
-        //// ²Ã¼ô²½³¤£º²»Òª³¬¹ıÊ£Óà¾àÀë
+        //// è£å‰ªæ­¥é•¿ï¼šä¸è¦è¶…è¿‡å‰©ä½™è·ç¦»
         //float clampedStep = Mathf.Min(step, dist);
 
-        //// Ò²¿ÉÒÔÓÃÖ¸ÏòÄ¿±êµÄÕæÊµ·½Ïò£¬±ÜÃâ¾É·½ÏòÓëÄ¿±ê²»Ò»ÖÂ
+        //// ä¹Ÿå¯ä»¥ç”¨æŒ‡å‘ç›®æ ‡çš„çœŸå®æ–¹å‘ï¼Œé¿å…æ—§æ–¹å‘ä¸ç›®æ ‡ä¸ä¸€è‡´
         //Vector2 realDir = (dist > 1e-6f) ? (target - pos).normalized : dir;
 
         //rb.MovePosition(pos + realDir * clampedStep);

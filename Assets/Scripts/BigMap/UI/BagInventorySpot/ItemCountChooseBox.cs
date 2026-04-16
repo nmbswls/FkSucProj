@@ -40,7 +40,7 @@ namespace My.UI
         public Button btnConfirm;
         public Button btnCancel;
 
-        // »Øµ÷
+        // å›è°ƒ
         private Action<long> onConfirm;
         private Action onCancel;
 
@@ -75,13 +75,13 @@ namespace My.UI
         {
             base.Show();
 
-            // Ê×´ÎË¢ĞÂ
+            // é¦–æ¬¡åˆ·æ–°
             RefreshUI();
         }
 
         private void OnEnable()
         {
-            // °ó¶¨ÊÂ¼ş
+            // ç»‘å®šäº‹ä»¶
             btnMinus.onClick.AddListener(() => ChangeBy(-step));
             btnPlus.onClick.AddListener(() => ChangeBy(+step));
             //btnMin.onClick.AddListener(() => SetQuantity(minValue));
@@ -104,7 +104,7 @@ namespace My.UI
 
         private void OnDisable()
         {
-            // ÇåÀíÊÂ¼ş£¨±ÜÃâÖØ¸´°ó¶¨£©
+            // æ¸…ç†äº‹ä»¶ï¼ˆé¿å…é‡å¤ç»‘å®šï¼‰
             btnMinus.onClick.RemoveAllListeners();
             btnPlus.onClick.RemoveAllListeners();
             //btnMin.onClick.RemoveAllListeners();
@@ -128,7 +128,7 @@ namespace My.UI
             }
             else
             {
-                // ·ÇÊı×Ö£¬»Øµ½µ±Ç°ºÏ·¨Öµ
+                // éæ•°å­—ï¼Œå›åˆ°å½“å‰åˆæ³•å€¼
                 RefreshUI();
             }
         }
@@ -157,12 +157,12 @@ namespace My.UI
             if (_updating) return;
             _updating = true;
 
-            // ³õÊ¼»¯¿Ø¼ş
+            // åˆå§‹åŒ–æ§ä»¶
             slider.minValue = minValue;
             slider.maxValue = maxValue;
             slider.wholeNumbers = true;
 
-            // Í¬²½¿Ø¼ş
+            // åŒæ­¥æ§ä»¶
             if (inputField.text != quantity.ToString())
                 inputField.text = quantity.ToString();
 

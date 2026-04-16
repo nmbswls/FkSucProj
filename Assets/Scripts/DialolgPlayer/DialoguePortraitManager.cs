@@ -53,7 +53,7 @@ public class PortraitManager : MonoBehaviour
 
         if (fade > 0.01f)
         {
-            // ´´½¨¸²¸ÇÍ¼½øĞĞ½»²æµ­Èë
+            // åˆ›å»ºè¦†ç›–å›¾è¿›è¡Œäº¤å‰æ·¡å…¥
             var overlayGO = new GameObject("ExprOverlay");
             overlayGO.transform.SetParent(s.image.transform.parent, false);
             var overlay = overlayGO.AddComponent<Image>();

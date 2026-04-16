@@ -11,18 +11,18 @@ namespace My.Map
         public BaseUnitLogicEntity UnitEntity { get; protected set; }
 
         [Header("Settings")]
-        public int maxSlots = 8;            // ×î´ó²ÛÎ»Êı (ÀıÈç6¸ö£¬Ã¿60¶ÈÒ»¸ö)
+        public int maxSlots = 8;            // æœ€å¤§æ§½ä½æ•° (ä¾‹å¦‚6ä¸ªï¼Œæ¯60åº¦ä¸€ä¸ª)
         public float slotRadius = 2.0f;
 
 
-        // ÄÚ²¿Àà£º¶¨Òåµ¥¸ö²ÛÎ»
+        // å†…éƒ¨ç±»ï¼šå®šä¹‰å•ä¸ªæ§½ä½
         [System.Serializable]
         public class Slot
         {
             public bool isOccupied;
-            public ILogicEntity occupier;      // Ë­Õ¼ÁËÕâ¸ö¿Ó
-            public float angleDeg;          // ½Ç¶È (0-360)
-            public Vector2 currentWorldPos; // µ±Ç°¼ÆËã³öµÄÊÀ½ç×ø±ê£¨»º´æÓÃ£©
+            public ILogicEntity occupier;      // è°å äº†è¿™ä¸ªå‘
+            public float angleDeg;          // è§’åº¦ (0-360)
+            public Vector2 currentWorldPos; // å½“å‰è®¡ç®—å‡ºçš„ä¸–ç•Œåæ ‡ï¼ˆç¼“å­˜ç”¨ï¼‰
         }
 
         private List<Slot> _slots = new List<Slot>();
@@ -32,7 +32,7 @@ namespace My.Map
             this.UnitEntity = unitEntity;
         }
         /// <summary>
-        /// ³õÊ¼»¯²ÛÎ»½Ç¶È
+        /// åˆå§‹åŒ–æ§½ä½è§’åº¦
         /// </summary>
         public void InitializeSlots()
         {
@@ -50,7 +50,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ¸üĞÂËùÓĞ²ÛÎ»µÄÊÀ½ç×ø±ê (»ùÓÚÍæ¼Òµ±Ç°Î»ÖÃ)
+        /// æ›´æ–°æ‰€æœ‰æ§½ä½çš„ä¸–ç•Œåæ ‡ (åŸºäºç©å®¶å½“å‰ä½ç½®)
         /// </summary>
         public void UpdateSlotPositions()
         {
@@ -69,17 +69,17 @@ namespace My.Map
             int bestSlotIndex = -1;
             float minAngleDiff = float.MaxValue;
 
-            // ¼ÆËãÉêÇëÕßÏà¶ÔÓÚÍæ¼ÒµÄ½Ç¶È (2D Atan2)
+            // è®¡ç®—ç”³è¯·è€…ç›¸å¯¹äºç©å®¶çš„è§’åº¦ (2D Atan2)
             Vector2 dirToEnemy = ((Vector2)requester.Pos - (Vector2)UnitEntity.Pos).normalized;
             float enemyAngle = Mathf.Atan2(dirToEnemy.y, dirToEnemy.x) * Mathf.Rad2Deg;
-            // ¹éÒ»»¯µ½ 0-360
+            // å½’ä¸€åŒ–åˆ° 0-360
             if (enemyAngle < 0) enemyAngle += 360f;
 
             for (int i = 0; i < _slots.Count; i++)
             {
                 if (!_slots[i].isOccupied)
                 {
-                    // Ê¹ÓÃ DeltaAngle ¼ÆËã×î¶Ì½Ç¶È²î
+                    // ä½¿ç”¨ DeltaAngle è®¡ç®—æœ€çŸ­è§’åº¦å·®
                     float diff = Mathf.Abs(Mathf.DeltaAngle(enemyAngle, _slots[i].angleDeg));
                     if (diff < minAngleDiff)
                     {

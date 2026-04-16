@@ -12,17 +12,17 @@ namespace My.Map.Encounter
     {
 
         /// <summary>
-        /// °üÀ¨Õû¸ö¼ÓÔØÁ÷³Ì Íâ²¿µÄ¶³½á ÄÚ²¿µÄ¼ÌĞøÔË×÷
+        /// åŒ…æ‹¬æ•´ä¸ªåŠ è½½æµç¨‹ å¤–éƒ¨çš„å†»ç»“ å†…éƒ¨çš„ç»§ç»­è¿ä½œ
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
         public static async Task LoadBattleAsync(EncounterBattleService.BattleContext ctx)
         {
             EncounterBattleService.Instance.PendingContext = ctx;
-            // ÏÔÊ¾¹ı¶ÉUI
+            // æ˜¾ç¤ºè¿‡æ¸¡UI
             UIManager.Instance.ShowLoading();
 
-            // Òì²½¼ÓÔØÕ½¶·³¡¾°
+            // å¼‚æ­¥åŠ è½½æˆ˜æ–—åœºæ™¯
             var op = SceneManager.LoadSceneAsync("BattleScene", LoadSceneMode.Additive);
             while (!op.isDone) await Task.Yield();
 
@@ -35,7 +35,7 @@ namespace My.Map.Encounter
 
             Camera.main.transform.position = new Vector2(1000, 1000);
 
-            // Òş²Ø´óµØÍ¼ÊäÈë
+            // éšè—å¤§åœ°å›¾è¾“å…¥
             await UIOrchestrator.Instance.SetStateAsync(UIAppState.Battle);
             UIManager.Instance.HideLoading();
         }
@@ -52,7 +52,7 @@ namespace My.Map.Encounter
 
             Camera.main.transform.position = MainGameManager.Instance.playerScenePresenter.transform.position;
 
-            // »Ö¸´ÊäÈë
+            // æ¢å¤è¾“å…¥
             await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld);
             UIManager.Instance.HideLoading();
         }

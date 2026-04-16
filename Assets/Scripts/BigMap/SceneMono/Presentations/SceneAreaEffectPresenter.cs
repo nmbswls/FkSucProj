@@ -58,14 +58,14 @@ namespace My.Map.Scene
                     break;
             }
 
-            // ±éÀúÃüÖĞ£¬É¸Ñ¡ÊµÏÖÁË½Ó¿ÚµÄ¶ÔÏó
+            // éå†å‘½ä¸­ï¼Œç­›é€‰å®ç°äº†æ¥å£çš„å¯¹è±¡
             for (int i = 0; i < count; i++)
             {
                 var col = hits[i];
                 if (col == null) continue;
 
-                // ÔÚ Collider »òÆä¸¸½ÚµãÉÏÑ°ÕÒ½Ó¿Ú
-                // ×¢Òâ£ºGetComponentInParent »á²úÉúÉÙÁ¿ GC£¬Èô¼«ÖÂÎŞ GC£¬¿ÉÔ¤»º´æ»ò×Ô¶¨ÒåÓ³Éä
+                // åœ¨ Collider æˆ–å…¶çˆ¶èŠ‚ç‚¹ä¸Šå¯»æ‰¾æ¥å£
+                // æ³¨æ„ï¼šGetComponentInParent ä¼šäº§ç”Ÿå°‘é‡ GCï¼Œè‹¥æè‡´æ—  GCï¼Œå¯é¢„ç¼“å­˜æˆ–è‡ªå®šä¹‰æ˜ å°„
                 var presentation = col.GetComponentInParent<IScenePresentation>();
                 if (presentation == null)
                 {

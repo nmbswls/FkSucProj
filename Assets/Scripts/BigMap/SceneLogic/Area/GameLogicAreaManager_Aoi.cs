@@ -48,23 +48,23 @@ namespace My.Map.Logic
             }
         }
 
-        // ¼òÒ×·¶Î§²éÑ¯£¨·½ĞÎ½üËÆ£©
+        // ç®€æ˜“èŒƒå›´æŸ¥è¯¢ï¼ˆæ–¹å½¢è¿‘ä¼¼ï¼‰
         public void Query(Vector2 center, float radius, List<TKey> result)
         {
-            // Èç¹û result Îª null »ò²»°²È«£¬×îºÃ×ö·ÀÓùĞÔ¼ì²é
+            // å¦‚æœ result ä¸º null æˆ–ä¸å®‰å…¨ï¼Œæœ€å¥½åšé˜²å¾¡æ€§æ£€æŸ¥
             if (result == null) return;
             result.Clear();
 
-            // 1. ¼ÆËã²éÑ¯·¶Î§µÄ AABB (Min Max)
-            // ÕâÑù×öÄÜ¾«×¼¸²¸ÇËùÓĞ¿ÉÄÜÉæ¼°µÄ¸ñ×Ó£¬ÎŞÂÛ center ÔÚ¸ñ×ÓµÄÄÄ¸öÎ»ÖÃ
+            // 1. è®¡ç®—æŸ¥è¯¢èŒƒå›´çš„ AABB (Min Max)
+            // è¿™æ ·åšèƒ½ç²¾å‡†è¦†ç›–æ‰€æœ‰å¯èƒ½æ¶‰åŠçš„æ ¼å­ï¼Œæ— è®º center åœ¨æ ¼å­çš„å“ªä¸ªä½ç½®
             Vector2 minPos = center - new Vector2(radius, radius);
             Vector2 maxPos = center + new Vector2(radius, radius);
 
-            // 2. ½« AABB ×ª»»Îª¸ñ×Ó×ø±ê·¶Î§
+            // 2. å°† AABB è½¬æ¢ä¸ºæ ¼å­åæ ‡èŒƒå›´
             var minCell = PosToCell(minPos, cellSize);
             var maxCell = PosToCell(maxPos, cellSize);
 
-            // 3. ±éÀúÕâ¸ö¾ØĞÎ·¶Î§ÄÚµÄËùÓĞ¸ñ×Ó
+            // 3. éå†è¿™ä¸ªçŸ©å½¢èŒƒå›´å†…çš„æ‰€æœ‰æ ¼å­
             for (int y = minCell.y; y <= maxCell.y; y++)
             {
                 for (int x = minCell.x; x <= maxCell.x; x++)
@@ -88,61 +88,61 @@ namespace My.Map.Logic
     }
 
 
-    // InterestPoint£ºĞËÈ¤µã£¨Íæ¼Ò¡¢±¾µØAI¡¢Ïà»úÃªµãµÈ£©
+    // InterestPointï¼šå…´è¶£ç‚¹ï¼ˆç©å®¶ã€æœ¬åœ°AIã€ç›¸æœºé”šç‚¹ç­‰ï¼‰
     public class InterestPoint
     {
-        public int Id;            // Î¨Ò»ID
-        public Func<Vector3> Pos; // ÊµÊ±Î»ÖÃ»ñÈ¡Î¯ÍĞ
-        public float LogicRadius; // Âß¼­»îÔ¾°ë¾¶£¨½øÈë¼´»½ĞÑ£©
-        public float WarmupRadius;// Ô¤ÈÈ°ë¾¶£¨ÔÚ¸üÔ¶´¦Ô¤¼ÓÔØ£¬½øÈëActive°ë¾¶¸ü½ü£©
+        public int Id;            // å”¯ä¸€ID
+        public Func<Vector3> Pos; // å®æ—¶ä½ç½®è·å–å§”æ‰˜
+        public float LogicRadius; // é€»è¾‘æ´»è·ƒåŠå¾„ï¼ˆè¿›å…¥å³å”¤é†’ï¼‰
+        public float WarmupRadius;// é¢„çƒ­åŠå¾„ï¼ˆåœ¨æ›´è¿œå¤„é¢„åŠ è½½ï¼Œè¿›å…¥ActiveåŠå¾„æ›´è¿‘ï¼‰
     }
 
 
     public partial class GameLogicAreaManager
     {
         /// <summary>
-        /// ÉúÃüÖÜÆÚ 
+        /// ç”Ÿå‘½å‘¨æœŸ 
         /// </summary>
         public enum LogicLifeState
         {
-            NotLoaded,   // Î´¼ÓÔØ£¬½öÓĞRecord ¶ÔÓÚÈÎÒâ£¬
-            Warmup,      // Ô¤ÈÈ¼ÓÔØÖĞ£¨SpawnÖĞ/Íê³Éµ«Î´Wake£©
-            Active,      // ÍêÈ«»îÔ¾
-            Cooldown,    // ÀäÈ´¼ÆÊ±£¨Àë¿ªºóÑÓ³Ù½µ¼¶£©
-            Sleep        // ĞİÃß£¨ÇáÁ¿Ì¬£© Î¬³ÖµÍÆµ
+            NotLoaded,   // æœªåŠ è½½ï¼Œä»…æœ‰Record å¯¹äºä»»æ„ï¼Œ
+            Warmup,      // é¢„çƒ­åŠ è½½ä¸­ï¼ˆSpawnä¸­/å®Œæˆä½†æœªWakeï¼‰
+            Active,      // å®Œå…¨æ´»è·ƒ
+            Cooldown,    // å†·å´è®¡æ—¶ï¼ˆç¦»å¼€åå»¶è¿Ÿé™çº§ï¼‰
+            Sleep        // ä¼‘çœ ï¼ˆè½»é‡æ€ï¼‰ ç»´æŒä½é¢‘
         }
 
 
         [Serializable]
         public class Settings
         {
-            public float WarmupToActiveRadiusBias = -10f; // Àı£ºÔÚ¾àĞËÈ¤µã°ë¾¶¼õ10mÊ±×ªActive
-            public float ExitCooldown = 2.0f;             // Àë¿ªºó±£³ÖActiveµÄÊ±¼ä
-            public float SleepToDespawnDelay = 8.0f;      // ĞİÃß±£³Ö¶à¾Ãºó¿ÉÕæÕıĞ¶ÔØ£¨¿ÉÑ¡£©
-            public int MaxSpawnPerFrame = 8;              // Ã¿Ö¡×î´óÖØ½¨Êı
-            public int MaxDespawnPerFrame = 6;            // Ã¿Ö¡×î´óĞ¶ÔØÊı
-            public int MaxWakePerFrame = 16;              // Ã¿Ö¡×î´óWakeÊı
-            public int MaxSleepPerFrame = 16;             // Ã¿Ö¡×î´óSleepÊı
+            public float WarmupToActiveRadiusBias = -10f; // ä¾‹ï¼šåœ¨è·å…´è¶£ç‚¹åŠå¾„å‡10mæ—¶è½¬Active
+            public float ExitCooldown = 2.0f;             // ç¦»å¼€åä¿æŒActiveçš„æ—¶é—´
+            public float SleepToDespawnDelay = 8.0f;      // ä¼‘çœ ä¿æŒå¤šä¹…åå¯çœŸæ­£å¸è½½ï¼ˆå¯é€‰ï¼‰
+            public int MaxSpawnPerFrame = 8;              // æ¯å¸§æœ€å¤§é‡å»ºæ•°
+            public int MaxDespawnPerFrame = 6;            // æ¯å¸§æœ€å¤§å¸è½½æ•°
+            public int MaxWakePerFrame = 16;              // æ¯å¸§æœ€å¤§Wakeæ•°
+            public int MaxSleepPerFrame = 16;             // æ¯å¸§æœ€å¤§Sleepæ•°
         }
 
-        // ÊµÌåÔËĞĞÌ¬
+        // å®ä½“è¿è¡Œæ€
         private class OneEntityRuntimeState
         {
             public long Id;
             public LogicLifeState State;
-            public float Timer;            // ÀäÈ´/ÑÓ³Ù¼ÆÊ±
-            public int InterestRefCount;   // µ±Ç°ÂäÈëÈÎÒ»ĞËÈ¤°ë¾¶µÄÒıÓÃ¼ÆÊı
-            public bool NearAnyWarmup;     // ÊÇ·ñÂäÈëÈÎÒ»Warmup°ë¾¶
+            public float Timer;            // å†·å´/å»¶è¿Ÿè®¡æ—¶
+            public int InterestRefCount;   // å½“å‰è½å…¥ä»»ä¸€å…´è¶£åŠå¾„çš„å¼•ç”¨è®¡æ•°
+            public bool NearAnyWarmup;     // æ˜¯å¦è½å…¥ä»»ä¸€WarmupåŠå¾„
             public float ForceActiveUntil;
 
-            public bool IsMarkDestroy;        // ÔËĞĞÊ±ËÀÍö±ê¼Ç
-            public float DeathRemainTimer;    // Ê¬Ìå/²ĞÁô¼ÆÊ±
+            public bool IsMarkDestroy;        // è¿è¡Œæ—¶æ­»äº¡æ ‡è®°
+            public float DeathRemainTimer;    // å°¸ä½“/æ®‹ç•™è®¡æ—¶
         }
 
         private readonly Dictionary<long, OneEntityRuntimeState> runtimeStates = new();
         private readonly Dictionary<int, InterestPoint> interestPoints = new();
 
-        // ¹¤×÷¶ÓÁĞ£¨ÏŞÁ÷£©
+        // å·¥ä½œé˜Ÿåˆ—ï¼ˆé™æµï¼‰
         private readonly Queue<long> spawnEntityQ = new();
         private readonly Queue<long> despawnEntityQ = new();
         private readonly Queue<long> wakeEntityQ = new();
@@ -150,7 +150,7 @@ namespace My.Map.Logic
         //private readonly Queue<(long, int)> destroyEntityQ = new();
         private readonly Queue<(long, string)> corpseCleanupQ = new();
 
-        // ¸´ÓÃÈİÆ÷
+        // å¤ç”¨å®¹å™¨
         private readonly List<long> queryBufInt = new(256);
 
         private readonly HashSet<long> _frameWarmIdSet = new();
@@ -160,20 +160,20 @@ namespace My.Map.Logic
 
         private void TickEntityLifeCycle(float dt)
         {
-            // ÖØĞÂÆÀ¹ÀAOI£º¼ÆËãÃ¿¸öÊµÌåÓëĞËÈ¤µã¹ØÏµ£¨°´ÇøÓò½üËÆ£©
+            // é‡æ–°è¯„ä¼°AOIï¼šè®¡ç®—æ¯ä¸ªå®ä½“ä¸å…´è¶£ç‚¹å…³ç³»ï¼ˆæŒ‰åŒºåŸŸè¿‘ä¼¼ï¼‰
             _frameWarmIdSet.Clear();
             _frameActiveIdSet.Clear();
 
             foreach (var ip in interestPoints.Values)
             {
-                // Ô¤ÈÈ²éÑ¯
+                // é¢„çƒ­æŸ¥è¯¢
                 UnitGridIndex.Query(ip.Pos(), ip.WarmupRadius, queryBufInt);
                 foreach (var id in queryBufInt) 
                 {
                     _frameWarmIdSet.Add(id);
                 }
 
-                // Active°ë¾¶£¨¿ÉÓÃBias»òµ¥¶À°ë¾¶£©
+                // ActiveåŠå¾„ï¼ˆå¯ç”¨Biasæˆ–å•ç‹¬åŠå¾„ï¼‰
                 float activeR = Mathf.Max(0.1f, ip.LogicRadius);
                 UnitGridIndex.Query(ip.Pos(), activeR, queryBufInt);
                 foreach (var id in queryBufInt)
@@ -182,9 +182,9 @@ namespace My.Map.Logic
                 }
             }
 
-            // 2) ¸ù¾İ¼¯ºÏ¸üĞÂÃ¿¸öÊµÌå×´Ì¬
-            // ÎªÁË±ÜÃâ±éÀúÈ«¿â£¬ÕâÀï½ö¶Ô¡°ÊÜÓ°Ïì¼¯ºÏ¡±ÒÔ¼°¡°ÒÑ¼ÓÔØ/ÒÑÓĞ×´Ì¬¡±µÄÊµÌå½øĞĞ´¦Àí¡£
-            // ¼òÒ×ÊµÏÖ£ººÏ²¢ÈıÀà¼¯ºÏ
+            // 2) æ ¹æ®é›†åˆæ›´æ–°æ¯ä¸ªå®ä½“çŠ¶æ€
+            // ä¸ºäº†é¿å…éå†å…¨åº“ï¼Œè¿™é‡Œä»…å¯¹â€œå—å½±å“é›†åˆâ€ä»¥åŠâ€œå·²åŠ è½½/å·²æœ‰çŠ¶æ€â€çš„å®ä½“è¿›è¡Œå¤„ç†ã€‚
+            // ç®€æ˜“å®ç°ï¼šåˆå¹¶ä¸‰ç±»é›†åˆ
             _frameAffected.Clear();
             foreach (var id in _frameWarmIdSet) _frameAffected.Add(id);
             foreach (var id in _frameActiveIdSet) _frameAffected.Add(id);
@@ -201,26 +201,26 @@ namespace My.Map.Logic
                     runtimeStates[id] = st;
                 }
 
-                // ¼ÇÂ¼ĞËÈ¤¹ØÏµ
+                // è®°å½•å…´è¶£å…³ç³»
                 st.NearAnyWarmup = inWarm;
                 st.InterestRefCount = inActive ? 1 : 0;
 
                 StepStateMachine(st, dt);
             }
 
-            //// ´¦ÀíËÀÍö×´Ì¬
+            //// å¤„ç†æ­»äº¡çŠ¶æ€
             //ProcessDieQueue();
 
-            // ´¦ÀíÆäËû¼ÓÔØĞ¶ÔØµÈ
+            // å¤„ç†å…¶ä»–åŠ è½½å¸è½½ç­‰
             ProcessQueues(dt);
 
-            // ´¦ÀíÊ¬Ìå»ØÊÕ
+            // å¤„ç†å°¸ä½“å›æ”¶
             ProcessCorpse(dt);
         }
 
 
         /// <summary>
-        /// ¸üĞÂÊµÌåÎ»ÖÃ
+        /// æ›´æ–°å®ä½“ä½ç½®
         /// </summary>
         /// <param name="entityId"></param>
         /// <param name="newPos"></param>

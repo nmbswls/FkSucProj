@@ -27,18 +27,18 @@ namespace My
 
         public async Task<GameObject> InstantiateAsync(string key)
         {
-            ResourceRequest req = Resources.LoadAsync<GameObject>(key); // === 新增 ===
+            ResourceRequest req = Resources.LoadAsync<GameObject>(key); // === 鏂板 ===
 
-            while (!req.isDone) // === 新增 ===
+            while (!req.isDone) // === 鏂板 ===
             {
                 await Task.Yield();
             }
 
-            var prefab = req.asset as GameObject; // === 新增 ===
-            if (prefab == null) // === 新增 ===
+            var prefab = req.asset as GameObject; // === 鏂板 ===
+            if (prefab == null) // === 鏂板 ===
             {
-                Debug.LogError($"SimpleResourcesProviderAsync: LoadAsync failed, key={key}"); // === 新增 ===
-                return null; // === 新增 ===
+                Debug.LogError($"SimpleResourcesProviderAsync: LoadAsync failed, key={key}"); // === 鏂板 ===
+                return null; // === 鏂板 ===
             }
 
             //var prewarmableComponents = prefab.GetComponentsInChildren<IAnimancerPrewarmable>(true);
@@ -48,7 +48,7 @@ namespace My
             //    //AnimancerPrewarmService.Instance.EnqueueClips(clips);
             //}
 
-            return GameObject.Instantiate(prefab); // === 新增 ===
+            return GameObject.Instantiate(prefab); // === 鏂板 ===
         }
 
         public Task ReleaseAsync(GameObject go)

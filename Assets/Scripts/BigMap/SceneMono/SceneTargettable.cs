@@ -4,14 +4,14 @@ using UnityEngine;
 namespace My
 {
     /// <summary>
-    /// ³¡¾°target
+    /// åœºæ™¯target
     /// </summary>
     public class SceneTargettable : MonoBehaviour
     {
         public IScenePresentation BelongPresenter;
         public float CenterHight = 0.0f;
         public string SpecialTag;
-        public bool IsInteract; // ÊÇ·ñÊÇ½»»¥Ìå
+        public bool IsInteract; // æ˜¯å¦æ˜¯äº¤äº’ä½“
 
         [HideInInspector]
         public Collider2D Collider;
@@ -29,7 +29,7 @@ namespace My
         }
 
         /// <summary>
-        /// ¼ì²é
+        /// æ£€æŸ¥
         /// </summary>
         /// <param name="atkHeight"></param>
         /// <returns></returns>

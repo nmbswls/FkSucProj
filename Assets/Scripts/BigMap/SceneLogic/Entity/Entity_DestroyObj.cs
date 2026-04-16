@@ -51,7 +51,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ÉËº¦
+        /// ä¼¤å®³
         /// </summary>
         /// <param name="attrId"></param>
         /// <param name="intent"></param>

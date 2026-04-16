@@ -234,7 +234,7 @@ namespace Map.Entity.AI.Action
     //    {
     //        if (Status != AIActionStatus.Running) return;
 
-    //        // 保底中断 避免卡在那里
+    //        // 淇濆簳涓柇 閬垮厤鍗″湪閭ｉ噷
     //        durationTimer -= aiBrain.DeltaTime;
     //        if (durationTimer <= 0)
     //        {

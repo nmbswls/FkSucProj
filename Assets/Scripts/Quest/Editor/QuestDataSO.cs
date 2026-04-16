@@ -12,7 +12,7 @@ public class QuestDataSO : ScriptableObject
 
     public QuestStepData[] steps;
 
-    // 辅助方法：构建ID索引
+    // 杈呭姪鏂规硶锛氭瀯寤篒D绱㈠紩
     public Dictionary<int, QuestStepData> BuildStepMap()
     {
         var map = new Dictionary<int, QuestStepData>();

@@ -21,7 +21,7 @@ namespace Config.Unit
         public bool IsCombo;
 
         /// <summary>
-        /// Ê¹ÓÃÌõ¼ş
+        /// ä½¿ç”¨æ¡ä»¶
         /// </summary>
         public bool NeedHMode;
 
@@ -113,7 +113,7 @@ namespace Config.Unit
     //    public EFactionId DefaultFactionId;
     //    public string EnmityCfgId;
 
-    //    [Header("ÊôĞÔÄ£°å")]
+    //    [Header("å±æ€§æ¨¡æ¿")]
 
     //    public int Hp = 100;
 

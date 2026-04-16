@@ -63,7 +63,7 @@ namespace Config.Map
         }
 
         /// <summary>
-        /// ×´Ì¬ÇĞ»»¹æÔò
+        /// çŠ¶æ€åˆ‡æ¢è§„åˆ™
         /// </summary>
         public List<StateChangeRule> StateChangeRules = new();
     }

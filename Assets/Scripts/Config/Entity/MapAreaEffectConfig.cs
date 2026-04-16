@@ -20,7 +20,7 @@ namespace Config.Map
         public string AreaBuffId;
         public ECampFilterType CampFilterType = ECampFilterType.NotSelf;
 
-        public float DefaultLifeTime = -1; // 正值表示有时间
+        public float DefaultLifeTime = -1; // 姝ｅ�艰〃绀烘湁鏃堕棿
 
     }
 }

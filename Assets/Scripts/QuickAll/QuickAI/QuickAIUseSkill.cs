@@ -16,28 +16,28 @@ public class QuickAIUseSkill : MonoBehaviour
 
     public IEnumerator DoAttackCoroutine()
     {
-        // Ç°Ò¡
+        // å‰æ‘‡
         yield return new WaitForSeconds(config.attackWindup);
 
-        // Ö´ĞĞ¹¥»÷
+        // æ‰§è¡Œæ”»å‡»
         if (config.projectilePrefab == null)
         {
-            // ½üÕ½£º¿ÉÓÃOverlapCircle´¥·¢ÉËº¦
+            // è¿‘æˆ˜ï¼šå¯ç”¨OverlapCircleè§¦å‘ä¼¤å®³
             var hits = Physics2D.OverlapCircleAll(transform.position + transform.right * (config.attackRange * 0.6f), config.attackRange * 0.5f, bb != null && bb.target != null ? (1 << bb.target.gameObject.layer) : ~0);
-            // ÊµÕ½ÖĞÓ¦Ê¹ÓÃ¸ü°²È«µÄ Layer/Tag ¼ì²â + ÉËº¦½Ó¿Ú
+            // å®æˆ˜ä¸­åº”ä½¿ç”¨æ›´å®‰å…¨çš„ Layer/Tag æ£€æµ‹ + ä¼¤å®³æ¥å£
         }
         else
         {
-            // Ô¶³Ì£ºÊµÀı»¯×Óµ¯
+            // è¿œç¨‹ï¼šå®ä¾‹åŒ–å­å¼¹
             var proj = Instantiate(config.projectilePrefab, transform.position, Quaternion.identity);
             Vector2 dir = (bb.target.position - transform.position).normalized;
             proj.transform.right = dir;
-            // ÈÃ×Óµ¯½Å±¾×ÔĞĞ´¦ÀíËÙ¶È/ÉËº¦
+            // è®©å­å¼¹è„šæœ¬è‡ªè¡Œå¤„ç†é€Ÿåº¦/ä¼¤å®³
         }
 
         OnAttackPerformed?.Invoke();
 
-        // ºóÒ¡
+        // åæ‘‡
         yield return new WaitForSeconds(config.attackWinddown);
     }
 

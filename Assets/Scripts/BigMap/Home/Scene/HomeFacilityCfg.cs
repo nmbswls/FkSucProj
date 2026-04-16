@@ -18,19 +18,19 @@ namespace My
         public string Name;
 
         public Sprite sprite;
-        //public GameObject prefab; // Êµ¼Ê·ÅÖÃµÄ Prefab
-        public Sprite previewSprite; // Ô¤ÀÀÓÃÍ¼±ê£¨¿ÉÑ¡£©
+        //public GameObject prefab; // å®é™…æ”¾ç½®çš„ Prefab
+        public Sprite previewSprite; // é¢„è§ˆç”¨å›¾æ ‡ï¼ˆå¯é€‰ï¼‰
 
-        public bool IsFixed = false; // ¹Ì¶¨ÉèÊ© 
+        public bool IsFixed = false; // å›ºå®šè®¾æ–½ 
 
         [Header("Footprint Config")]
-        // pivot ÎªÕ¼¸ñµÄ²Î¿¼µã£¨Ïà¶Ô×óÏÂ½ÇÎª 0,0£©
+        // pivot ä¸ºå æ ¼çš„å‚è€ƒç‚¹ï¼ˆç›¸å¯¹å·¦ä¸‹è§’ä¸º 0,0ï¼‰
         public Vector2Int pivot = new Vector2Int(0, 0);
 
-        // »ù´¡ footprint£¨R0£©£¬Ïà¶Ô pivot µÄ¸ñ×Ó×ø±êÆ«ÒÆ
+        // åŸºç¡€ footprintï¼ˆR0ï¼‰ï¼Œç›¸å¯¹ pivot çš„æ ¼å­åæ ‡åç§»
         public List<Vector2Int> footprintR0 = new List<Vector2Int>() { new Vector2Int(0, 0) };
 
-        // ÊÇ·ñÔÚµ¼ÈëÊ±Ô¤¼ÆËã¸÷Ğı×ªµÄ footprint
+        // æ˜¯å¦åœ¨å¯¼å…¥æ—¶é¢„è®¡ç®—å„æ—‹è½¬çš„ footprint
         public bool precomputeRotations = true;
 
         [HideInInspector] public List<Vector2Int> footprintR90;
@@ -56,7 +56,7 @@ namespace My
 
 
         /// <summary>
-        /// Ã¿¸ö·ÅÖÃÎï£¬¶¼¿ÉÒÔ¶ÔÓ¦Ò»Ğ©½»»¥Îï
+        /// æ¯ä¸ªæ”¾ç½®ç‰©ï¼Œéƒ½å¯ä»¥å¯¹åº”ä¸€äº›äº¤äº’ç‰©
         /// </summary>
         [Serializable]
         public class BindingEntityInfo
@@ -96,7 +96,7 @@ namespace My
 
         public static List<Vector2Int> RotateFootprint(IEnumerable<Vector2Int> baseOffsets, EPlacementRotation rot)
         {
-            // ÒÔ pivot ÎªÔ­µãµÄ 90¡ã Ğı×ª¾ØÕó
+            // ä»¥ pivot ä¸ºåŸç‚¹çš„ 90Â° æ—‹è½¬çŸ©é˜µ
             return baseOffsets.Select(o => rot switch {
                 EPlacementRotation.R0 => new Vector2Int(o.x, o.y),
                 EPlacementRotation.R90 => new Vector2Int(-o.y, o.x),

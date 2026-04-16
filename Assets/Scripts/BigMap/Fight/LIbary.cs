@@ -565,7 +565,7 @@ namespace My.Map.Entity
                     _abilityDict[ab.Id] = ab;
                 }
 
-                // ²åÈë
+                // æ’å…¥
                 {
                     var ab = CreateEvilChildInsertionAbility();
                     _abilityDict[ab.Id] = ab;
@@ -762,7 +762,7 @@ namespace My.Map.Entity
             spec.Id = "queen_shoot";
             spec.TypeTag = AbilityTypeTag.Combat;
 
-            spec.CastType = ECastType.NoTarget; // ÏòÃæÇ°Éä³ö×Óµ¯
+            spec.CastType = ECastType.NoTarget; // å‘é¢å‰å°„å‡ºå­å¼¹
             spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
             spec.DesiredUseDistance = 5.0f;
 
@@ -1365,7 +1365,7 @@ namespace My.Map.Entity
             spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
             
-            // Ì§ÊÖ¶¯»­
+            // æŠ¬æ‰‹åŠ¨ç”»
             spec.Phases.Add(new MapAbilityPhase()
             {
                 PhaseName = "Pre",
@@ -1622,7 +1622,7 @@ namespace My.Map.Entity
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Executing",
-                EnterDebugString = "×¼±¸×¥È¡",
+                EnterDebugString = "å‡†å¤‡æŠ“å–",
                 PhaseBuff = new() { "jian_su_self" },
 
                 ShowRangePreview = true,
@@ -1917,8 +1917,8 @@ namespace My.Map.Entity
 
                     OnHitEffects = new()
                     {
-                        // ÌáÇ°½øÈëÏÂÒ»phase
-                        // Õâ¸öÓ¦¸Ã·ÅÈëÅäÖÃ
+                        // æå‰è¿›å…¥ä¸‹ä¸€phase
+                        // è¿™ä¸ªåº”è¯¥æ”¾å…¥é…ç½®
                         //new MapAbilityEffectNextPhaseCfg()
                         //{
                         //    MatchPhase = "Dashing",
@@ -2075,7 +2075,7 @@ namespace My.Map.Entity
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
-            // ×öÒ»¸ö³å´ÌÌô·É µÈ³åÍêÔÙ´ò
+            // åšä¸€ä¸ªå†²åˆºæŒ‘é£ ç­‰å†²å®Œå†æ‰“
             spec.Id = "queen_dash_attack_01";
             spec.TypeTag = AbilityTypeTag.Combat;
 
@@ -2583,7 +2583,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ÆËµ½
+        /// æ‰‘åˆ°
         /// </summary>
         /// <returns></returns>
         private static MapAbilitySpecConfig CreateQueenDashDown()
@@ -2820,7 +2820,7 @@ namespace My.Map.Entity
                 PhaseName = "Pre",
                 LockMovement = true,
                 LockRotation = true,
-                AnimTag = "×¼±¸",
+                AnimTag = "å‡†å¤‡",
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -3068,7 +3068,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// ÃèÊöÒÑ¾­Ëø¶¨Ê©·¨Ä¿±êºó ¶ÔÄ¿±ê½øĞĞÒ»´Î·´»÷
+        /// æè¿°å·²ç»é”å®šæ–½æ³•ç›®æ ‡å å¯¹ç›®æ ‡è¿›è¡Œä¸€æ¬¡åå‡»
         /// </summary>
         /// <returns></returns>
         private static MapAbilitySpecConfig CreateQueenCounterPayback()
@@ -3180,7 +3180,7 @@ namespace My.Map.Entity
 
 
             {
-                // ÔõÃ´Åªhitbox
+                // æ€ä¹ˆå¼„hitbox
                 var effect = new MapAbilityEffectHitBoxCfg()
                 {
                     Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
@@ -3275,7 +3275,7 @@ namespace My.Map.Entity
                     DirMode = EDirMode.LookDir,
                     OnHitEffects = new()
                     {
-                        // ÌáÇ°½øÈëÏÂÒ»phase
+                        // æå‰è¿›å…¥ä¸‹ä¸€phase
                         new MapAbilityEffectNextPhaseCfg()
                         {
                             MatchPhase = "Executing",
@@ -3390,7 +3390,7 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 WithProgress = true,
-                AnimTag = "ÕõÔú",
+                AnimTag = "æŒ£æ‰",
                 InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
                 DurationValue = new()
                 {
@@ -3522,7 +3522,7 @@ namespace My.Map.Entity
                 LockMovement = true,
                 ImmuneKnock = true,
                 AnimTag = "ziwei",
-                EnterDebugString = "¿ª¿Ù",
+                EnterDebugString = "å¼€æŠ ",
 
                 DurationValue = new()
                 {
@@ -3648,7 +3648,7 @@ namespace My.Map.Entity
                 ImmuneKnock = true,
                 ForbidDodge = true,
 
-                EnterDebugString = "Âú",
+                EnterDebugString = "æ»¡",
 
                 DurationValue = new()
                 {
@@ -3800,7 +3800,7 @@ namespace My.Map.Entity
             {
                 PhaseName = "Pre",
                 LockMovement = true,
-                EnterDebugString = "³å",
+                EnterDebugString = "å†²",
 
                 DurationValue = new()
                 {
@@ -3833,7 +3833,7 @@ namespace My.Map.Entity
                     DirMode = EDirMode.LookDir,
                     OnHitEffects = new()
                     {
-                        //// ÌáÇ°½øÈëÏÂÒ»phase
+                        //// æå‰è¿›å…¥ä¸‹ä¸€phase
                         //new MapAbilityEffectNextPhaseCfg()
                         //{
                         //    MatchPhase = "Dashing",

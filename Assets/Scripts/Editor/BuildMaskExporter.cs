@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class BuildMaskEditorMenu
 {
-    // ¿ìËÙ½«³¡¾°ÖĞÑ¡ÖĞµÄ Tilemap ×÷Îª ground µ¼³ö
+    // å¿«é€Ÿå°†åœºæ™¯ä¸­é€‰ä¸­çš„ Tilemap ä½œä¸º ground å¯¼å‡º
     [MenuItem("Tools/Build Mask/Export From Selected Ground")]
     public static void ExportFromSelectedGround()
     {
@@ -14,7 +14,7 @@ public static class BuildMaskEditorMenu
         var comp = ground.GetComponent<Tilemap>();
         if (ground == null)
         {
-            Debug.LogWarning("ÇëÑ¡ÔñÒ»¸ö Ground Tilemap ºóÔÙÖ´ĞĞ¡£");
+            Debug.LogWarning("è¯·é€‰æ‹©ä¸€ä¸ª Ground Tilemap åå†æ‰§è¡Œã€‚");
             return;
         }
         string path = EditorUtility.SaveFilePanelInProject(
@@ -39,7 +39,7 @@ public static class BuildMaskExporter
         Tilemap water = null,
         Tilemap occupiedLayer = null)
     {
-        // ¼ÆËã²¢¼¯±ß½ç£¬±ÜÃâ²ã´óĞ¡²»Ò»ÖÂ
+        // è®¡ç®—å¹¶é›†è¾¹ç•Œï¼Œé¿å…å±‚å¤§å°ä¸ä¸€è‡´
         BoundsInt bounds = UnionBounds(
             ground?.cellBounds ?? new BoundsInt(),
             blocked?.cellBounds ?? new BoundsInt(),
@@ -78,7 +78,7 @@ public static class BuildMaskExporter
         asset.buildableBits = buildBits;
         asset.occupancyBits = occBits;
 
-        // ´´½¨»ò¸²¸Ç×ÊÔ´
+        // åˆ›å»ºæˆ–è¦†ç›–èµ„æº
         var existing = AssetDatabase.LoadAssetAtPath<BuildMaskAsset>(assetPath);
         if (existing == null)
         {

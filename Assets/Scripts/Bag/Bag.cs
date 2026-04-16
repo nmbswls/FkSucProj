@@ -80,24 +80,24 @@ namespace My.Player.Bag
     public static class ItemUtils
     {
         /// <summary>
-        /// ??????
+        /// 在容器间移动、合并堆叠或整格交换道具
         /// </summary>
         /// <returns></returns>
         public static bool MoveOrMergeOrSwapItem(IItemContainer srcContainer, int srcIdx, IItemContainer dstContainer, int dstIdx)
         {
-            // ????idx?????
+            // 校验源槽位索引
             if(!srcContainer.IsSlotIdxValid(srcIdx))
             {
                 return false;
             }
 
-            // ??????idx?????
+            // 校验目标槽位索引
             if (!dstContainer.IsSlotIdxValid(dstIdx))
             {
                 return false;
             }
 
-            // ????item??????????
+            // 读取源槽道具，无效则失败
             var srcItem = srcContainer.GetItemByIdx(srcIdx);
             if(srcItem == null || srcItem.Count <= 0)
             {
@@ -107,12 +107,12 @@ namespace My.Player.Bag
 
             var dstItem = dstContainer.GetItemByIdx(dstIdx);
 
-            // ?????? ???????????
+            // 目标槽为空：整格迁入，或拆出一部分迁入（受叠加上限约束）
             if(dstItem == null || dstItem.Count <= 0)
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
 
-                // ??????
+                // 整堆不超过目标容器单格上限时直接迁入
                 if(srcItem.Count <= srcItemNewStackMax)
                 {
                     dstContainer.SetItemData(dstIdx, srcItem);
@@ -120,7 +120,7 @@ namespace My.Player.Bag
                     return true;
                 }
 
-                // ???????????
+                // 带实例 ID 的堆叠不可拆分迁入，只能整格操作
                 if(srcItem.ItemInstanceId != 0)
                 {
                     return false;
@@ -133,7 +133,7 @@ namespace My.Player.Bag
 
                 return true;
             }
-            // ?????????? ??????
+            // 目标槽已有同 ID 且无实例：尝试双向匀量合并
             else if (dstItem.ItemID == srcItem.ItemID && srcItem.ItemInstanceId == 0 && dstItem.ItemInstanceId == 0)
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
@@ -141,13 +141,13 @@ namespace My.Player.Bag
 
                 long canMove1 = srcItemNewStackMax - dstItem.Count;
                 long canMove2 = dstItemNewStackMax - srcItem.Count;
-                // ???????????? ???????
+                // 两侧格均已满，无法再互相匀量
                 if (canMove1 <= 0 && canMove2 <= 0)
                 {
                     return false;
                 }
 
-                // ????????????????
+                // 优先从源向目标补充可合并空间
                 if(canMove1 > 0)
                 {
                     dstContainer.SetItemCount(dstIdx, dstItem.Count + canMove1);
@@ -175,7 +175,7 @@ namespace My.Player.Bag
 
                 return true;
             }
-            // ?????? ???????
+            // 不同道具或存在实例：整格互换（需双方数量均不超过对方容器单格上限）
             else
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
@@ -190,8 +190,8 @@ namespace My.Player.Bag
                     return false;
                 }
 
-                // ???????
-                // todo ???????????????????????
+                // 整格交换两堆道具
+                // todo：带 ItemInstanceId 时需额外校验是否允许交换
                 dstContainer.SetItemData(dstIdx, srcItem);
                 srcContainer.SetItemData(srcIdx, dstItem);
 
@@ -205,14 +205,14 @@ namespace My.Player.Bag
         long GetMaxStack(string itemId);
 
         /// <summary>
-        /// ??????????
+        /// 写入指定槽位的道具堆（null 表示清空）
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="item"></param>
         void SetItemData(int idx, ItemStack item);
 
         /// <summary>
-        /// ???????
+        /// 仅修改指定槽中堆叠的数量
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="item"></param>
@@ -226,14 +226,14 @@ namespace My.Player.Bag
 
 
         /// <summary>
-        /// ???????????
+        /// 统计指定道具 ID 在本容器内的总数量
         /// </summary>
         /// <param name="itemId"></param>
         /// <returns></returns>
         long GetItemCount(string itemId);
 
         /// <summary>
-        /// ??????item
+        /// 读取指定槽位的道具堆
         /// </summary>
         /// <param name="idx"></param>
         /// <returns></returns>
@@ -263,7 +263,7 @@ namespace My.Player.Bag
 
         public long GetMaxStack(string itemId)
         {
-            // ????????????
+            // 主背包与特殊背包按容器类型取不同叠加上限
             if(BagId == 0)
             {
                 return ItemCatalog.GetMaxStackByType(itemId, EContainerType.Inventory);
@@ -404,7 +404,7 @@ namespace My.Player.Bag
         }
 
         /// <summary>
-        /// ????????????? ?????????
+        /// 将道具发放进本背包：优先槽合并、再全表合并、空位新建堆，最后扩展栏
         /// </summary>
         /// <param name="incoming"></param>
         /// <returns></returns>
@@ -419,10 +419,10 @@ namespace My.Player.Bag
             
 
             var maxStack = GetMaxStack(itemId);
-            // 
+            // 若指定了优先槽，先尝试在该普通栏位合并或占位
             if (preferredIdx != -1)
             {
-                // ??????????
+                // 优先槽须落在普通栏索引范围内
                 if(preferredIdx < NormalSlots.Count)
                 {
                     var s = NormalSlots[preferredIdx];
@@ -440,7 +440,7 @@ namespace My.Player.Bag
                 }
             }
 
-            // ?????????????
+            // 扫描普通栏：向已有同 ID 且未满的堆合并
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 var s = NormalSlots[i];
@@ -456,7 +456,7 @@ namespace My.Player.Bag
                 return count;
             }
 
-            // ??????????????????
+            // 普通栏找空槽新建堆叠
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 if (NormalSlots[i] == null || NormalSlots[i].IsEmpty)
@@ -472,10 +472,10 @@ namespace My.Player.Bag
                 return count;
             }
 
-            // ???????????? ??????????
+            // 仍有剩余且允许扩展栏：先合并进已有扩展堆
             if (MaxExtraCapacity > 0)
             {
-                // ????
+                // 扩展栏内同 ID 未满格
                 for (int i = 0; i < ExtraSlots.Count && remaining > 0; i++)
                 {
                     var s = ExtraSlots[i];
@@ -488,7 +488,7 @@ namespace My.Player.Bag
 
                 if (remaining > 0)
                 {
-                    // ??????????
+                    // 扩展栏未满则追加新堆，直到扩展上限
                     while (ExtraSlots.Count < MaxExtraCapacity && remaining > 0)
                     {
                         var put = Math.Min(maxStack, remaining);
@@ -503,20 +503,20 @@ namespace My.Player.Bag
         }
         public bool TrySplit(int srcIndex, long count)
         {
-            // ????????????
+            // 仅在普通栏支持拆分（扩展栏逻辑未实现）
             if (srcIndex < NormalSlots.Count)
             {
                 var src = NormalSlots[srcIndex];
                 if (src == null || src.IsEmpty) return false;
                 if (count <= 0 || count >= src.Count) return false;
 
-                // ???????????????
+                // 带实例 ID 的堆叠不允许拆分
                 if(src.ItemInstanceId != 0)
                 {
                     return false;
                 }
 
-                // ?????
+                // 找第一个空槽放置拆出的数量
                 int emptyIdx = NormalSlots.FindIndex(s => s == null || s.IsEmpty);
                 if (emptyIdx < 0) return false;
 
@@ -572,7 +572,7 @@ namespace My.Player.Bag
         }
 
         /// <summary>
-        /// ???????idx
+        /// 槽位索引是否落在普通栏或扩展栏合法范围内
         /// </summary>
         /// <param name="slotIdx"></param>
         /// <returns></returns>
@@ -592,7 +592,7 @@ namespace My.Player.Bag
         }
 
         /// <summary>
-        /// ????item????
+        /// 按全局槽索引修改对应堆叠的数量
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="count"></param>
@@ -833,7 +833,7 @@ namespace My.Player.Bag
         
 
         /// <summary>
-        /// ????????????
+        /// 跨背包移动、合并或交换（同包同槽无操作）
         /// </summary>
         /// <param name="srcBagId"></param>
         /// <param name="srcIndex"></param>
@@ -842,10 +842,10 @@ namespace My.Player.Bag
         /// <returns></returns>
         public bool TrySwapOrMove(int srcBagId, int srcIndex, int dstBagId, int dstIndex)
         {
-            // ??????
+            // 同背包且同索引，无需处理
             if (srcBagId == dstBagId  && srcIndex == dstIndex) return false;
 
-            // ???????????
+            // 解析源、目标背包实例
             var srcBag = GetBagById(srcBagId); 
             var dstBag = GetBagById(dstBagId);
             if (srcBag == null || dstBag == null) return false;

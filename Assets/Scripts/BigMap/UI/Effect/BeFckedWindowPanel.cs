@@ -52,7 +52,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// ³É¹¦ÕõÍÑ
+        /// æˆåŠŸæŒ£è„±
         /// </summary>
         public void OnClickkkSuccess()
         {

@@ -20,10 +20,10 @@ namespace My
             }
         }
 
-        public RectTransform flyingLayer;       // ·ÉĞĞÍ¼±êµÄ¸¸½Úµã£¨È«ÆÁPanel£©
+        public RectTransform flyingLayer;       // é£è¡Œå›¾æ ‡çš„çˆ¶èŠ‚ç‚¹ï¼ˆå…¨å±Panelï¼‰
         public RectTransform FlyTarget;
 
-        public GameObject flyerPrefab;      // ¹ÒÔØ RewardFlyer µÄ Prefab
+        public GameObject flyerPrefab;      // æŒ‚è½½ RewardFlyer çš„ Prefab
 
         private void Awake()
         {
@@ -31,35 +31,35 @@ namespace My
         }
 
         /// <summary>
-        /// ¹«¿ª
+        /// å…¬å¼€
         /// </summary>
         public void CreateScreenItem(string itemName, int count, Sprite icon)
         {
-            // 0. °²È«¼ì²é
+            // 0. å®‰å…¨æ£€æŸ¥
             if (OverworldHUDPanel.Instance == null) return;
             if (flyerPrefab == null || flyingLayer == null || FlyTarget == null)
             {
-                Debug.LogError("CreateScreenItem: È±ÉÙ±ØÒªµÄÒıÓÃ (Prefab/Layer/Target)");
+                Debug.LogError("CreateScreenItem: ç¼ºå°‘å¿…è¦çš„å¼•ç”¨ (Prefab/Layer/Target)");
                 return;
             }
 
-            // 1. ÊµÀı»¯ÎïÌå
+            // 1. å®ä¾‹åŒ–ç‰©ä½“
             GameObject flyerObj = Instantiate(flyerPrefab, flyingLayer);
             flyerObj.SetActive(true);
-            // ÖØÖÃÒ»ÏÂ¾Ö²¿×ø±ê£¬È·±£ËüÉú³ÉÊ±²»»á´ø×ÅPrefabÀïµÄÆ«ÒÆ
+            // é‡ç½®ä¸€ä¸‹å±€éƒ¨åæ ‡ï¼Œç¡®ä¿å®ƒç”Ÿæˆæ—¶ä¸ä¼šå¸¦ç€Prefabé‡Œçš„åç§»
             flyerObj.transform.localPosition = Vector3.zero;
 
             UINewRewardFlyer flyer = flyerObj.GetComponent<UINewRewardFlyer>();
 
-            // ================= ×ø±ê¼ÆËãºËĞÄÂß¼­ =================
+            // ================= åæ ‡è®¡ç®—æ ¸å¿ƒé€»è¾‘ =================
 
-            // A. È·¶¨ÆÁÄ»ÖĞĞÄµÄ¡¾ÏñËØ×ø±ê¡¿²¢¼ÓÉÏËæ»úÆ«ÒÆ
+            // A. ç¡®å®šå±å¹•ä¸­å¿ƒçš„ã€åƒç´ åæ ‡ã€‘å¹¶åŠ ä¸Šéšæœºåç§»
             Vector2 screenCenterPixel = new Vector2(Screen.width / 2f, Screen.height / 2f);
-            Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 100f; // 100ÏñËØ°ë¾¶ÄÚËæ»ú
+            Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * 100f; // 100åƒç´ åŠå¾„å†…éšæœº
             Vector2 spawnScreenPos = screenCenterPixel + randomOffset;
 
-            // B. »ñÈ¡µ±Ç° Canvas µÄÏà»ú (UIÏà»ú)
-            // Èç¹ûÊÇ Overlay Ä£Ê½£¬´« null£»Èç¹ûÊÇ Camera Ä£Ê½£¬´« worldCamera
+            // B. è·å–å½“å‰ Canvas çš„ç›¸æœº (UIç›¸æœº)
+            // å¦‚æœæ˜¯ Overlay æ¨¡å¼ï¼Œä¼  nullï¼›å¦‚æœæ˜¯ Camera æ¨¡å¼ï¼Œä¼  worldCamera
             Camera uiCamera = null;
             Canvas rootCanvas = flyingLayer.GetComponentInParent<Canvas>();
             if (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
@@ -67,38 +67,38 @@ namespace My
                 uiCamera = rootCanvas.worldCamera;
             }
 
-            // C. ½«¡¾ÆÁÄ»ÏñËØ×ø±ê¡¿×ª»»Îª flyingLayer ËùÔÚµÄ¡¾ÊÀ½ç×ø±ê¡¿
+            // C. å°†ã€å±å¹•åƒç´ åæ ‡ã€‘è½¬æ¢ä¸º flyingLayer æ‰€åœ¨çš„ã€ä¸–ç•Œåæ ‡ã€‘
             Vector3 startWorldPos;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(
-                flyingLayer as RectTransform, // ÒÔ´ËÎª²Î¿¼Æ½Ãæ
-                spawnScreenPos,               // ÊäÈëÆÁÄ»µã
-                uiCamera,                     // ÊäÈëÏà»ú
-                out startWorldPos             // Êä³öÊÀ½ç×ø±ê
+                flyingLayer as RectTransform, // ä»¥æ­¤ä¸ºå‚è€ƒå¹³é¢
+                spawnScreenPos,               // è¾“å…¥å±å¹•ç‚¹
+                uiCamera,                     // è¾“å…¥ç›¸æœº
+                out startWorldPos             // è¾“å‡ºä¸–ç•Œåæ ‡
             );
 
-            // D. »ñÈ¡Ä¿±êµÄ¡¾ÊÀ½ç×ø±ê¡¿
+            // D. è·å–ç›®æ ‡çš„ã€ä¸–ç•Œåæ ‡ã€‘
             Vector3 endWorldPos = FlyTarget.position;
-            // ĞŞÕı Z Öá£ºÇ¿ÖÆÈÃÖÕµã Z ÖµµÈÓÚÆğµã Z Öµ£¬±£Ö¤ÔÚÍ¬Ò»Æ½Ãæ·ÉĞĞ£¬·ÀÖ¹±»±³¾°ÕÚµ²
+            // ä¿®æ­£ Z è½´ï¼šå¼ºåˆ¶è®©ç»ˆç‚¹ Z å€¼ç­‰äºèµ·ç‚¹ Z å€¼ï¼Œä¿è¯åœ¨åŒä¸€å¹³é¢é£è¡Œï¼Œé˜²æ­¢è¢«èƒŒæ™¯é®æŒ¡
             endWorldPos.z = startWorldPos.z;
 
-            // 2. ³õÊ¼»¯·ÉĞĞÂß¼­
-            // 2. ³õÊ¼»¯·ÉĞĞÂß¼­ (´«Èë¼ÆËãºÃµÄÁ½¸öÊÀ½ç×ø±ê)
+            // 2. åˆå§‹åŒ–é£è¡Œé€»è¾‘
+            // 2. åˆå§‹åŒ–é£è¡Œé€»è¾‘ (ä¼ å…¥è®¡ç®—å¥½çš„ä¸¤ä¸ªä¸–ç•Œåæ ‡)
             flyer.Initialize(icon, startWorldPos, endWorldPos, () =>
             {
-                // --- ·ÉĞĞ½áÊøºóµÄ»Øµ÷ ---
+                // --- é£è¡Œç»“æŸåçš„å›è°ƒ ---
 
-                // A. ÊÓ¾õ·´À¡
+                // A. è§†è§‰åé¦ˆ
                 StartCoroutine(ShakeBackpack());
 
-                // B. Âß¼­´¦Àí£º¸øÍæ¼Ò¼ÓµÀ¾ß
+                // B. é€»è¾‘å¤„ç†ï¼šç»™ç©å®¶åŠ é“å…·
                 if (MainGameManager.Instance != null)
                 {
-                    // ×¢Òâ£ºÕâÀï½¨Òé°Ñ itemName ºÍ count Ò²´«½øÈ¥£¬Èç¹ûÄãºóĞøÂß¼­ĞèÒªµÄ»°
-                    // Ä¿Ç°ÄãµÄ´úÂëĞ´ËÀ´«ÁË "1" ºÍ 5
+                    // æ³¨æ„ï¼šè¿™é‡Œå»ºè®®æŠŠ itemName å’Œ count ä¹Ÿä¼ è¿›å»ï¼Œå¦‚æœä½ åç»­é€»è¾‘éœ€è¦çš„è¯
+                    // ç›®å‰ä½ çš„ä»£ç å†™æ­»ä¼ äº† "1" å’Œ 5
                     MainGameManager.Instance.gameLogicManager.playerDataManager.TryGiveItem("1", 5, 0);
                 }
 
-                // C. (¿ÉÑ¡) Èç¹ûÄã»¹ÒªÖ®Ç°µÄ²à±ßÈÕÖ¾¹¦ÄÜ£¬¿ÉÒÔÔÚÕâÀïµ÷ÓÃ NotificationPanelController
+                // C. (å¯é€‰) å¦‚æœä½ è¿˜è¦ä¹‹å‰çš„ä¾§è¾¹æ—¥å¿—åŠŸèƒ½ï¼Œå¯ä»¥åœ¨è¿™é‡Œè°ƒç”¨ NotificationPanelController
                 // NotificationPanelController.Instance?.EnqueueLog(itemName, icon);
             });
         }
@@ -114,7 +114,7 @@ namespace My
             //Vector3 originalPos = FlyTarget.anchoredPosition;
             //float elapsed = 0.0f;
             //float duration = 0.2f;
-            //float magnitude = 10f; // ¶¶¶¯·ù¶È
+            //float magnitude = 10f; // æŠ–åŠ¨å¹…åº¦
 
             //while (elapsed < duration)
             //{

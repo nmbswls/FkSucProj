@@ -13,7 +13,7 @@ namespace My.Def.Quest
     {
         public int QuestId;
         public string title;
-        // ÒıÓÃÀàĞÍ´¦Àí£º²»´æ Sprite ¶ÔÏó£¬Ö»´æÂ·¾¶
+        // å¼•ç”¨ç±»å‹å¤„ç†ï¼šä¸å­˜ Sprite å¯¹è±¡ï¼Œåªå­˜è·¯å¾„
         public string iconPath;
         public string description;
 
@@ -21,7 +21,7 @@ namespace My.Def.Quest
 
         public QuestStepData[] steps;
 
-        // ¸¨Öú·½·¨£º¹¹½¨IDË÷Òı
+        // è¾…åŠ©æ–¹æ³•ï¼šæ„å»ºIDç´¢å¼•
         public Dictionary<int, QuestStepData> BuildStepMap()
         {
             var map = new Dictionary<int, QuestStepData>();
@@ -86,7 +86,7 @@ namespace My.Def.Quest
         }
     }
 
-    // ×éºÏÌõ¼ş
+    // ç»„åˆæ¡ä»¶
     [Serializable]
     public class QuestConditionComposite : QuestCondition
     {
@@ -136,20 +136,20 @@ namespace My.Def.Quest
     {
         public int objectiveId;
 
-        [Tooltip("UIÏÔÊ¾µÄÃèÊö")]
+        [Tooltip("UIæ˜¾ç¤ºçš„æè¿°")]
         public string text;
 
-        [Tooltip("´ï³ÉÌõ¼ş")]
+        [Tooltip("è¾¾æˆæ¡ä»¶")]
         public ConditionData condition;
 
-        [Tooltip("ÊÇ·ñ³õÊ¼Òş²Ø")]
+        [Tooltip("æ˜¯å¦åˆå§‹éšè—")]
         public bool isHidden;
 
-        [Tooltip("ÊÇ·ñ¿ÉÑ¡")]
+        [Tooltip("æ˜¯å¦å¯é€‰")]
         public bool isOption;
 
-        [Header("±êÇ©ÏµÍ³")]
-        [Tooltip("µ±´ËÄ¿±êÍê³ÉÊ±£¬¸øÈÎÎñÊµÀı´òÉÏÕâĞ©±êÇ© (Internal Tags)")]
+        [Header("æ ‡ç­¾ç³»ç»Ÿ")]
+        [Tooltip("å½“æ­¤ç›®æ ‡å®Œæˆæ—¶ï¼Œç»™ä»»åŠ¡å®ä¾‹æ‰“ä¸Šè¿™äº›æ ‡ç­¾ (Internal Tags)")]
         public string[] completionTags;
     }
 
@@ -158,12 +158,12 @@ namespace My.Def.Quest
     [Serializable]
     public class StepOutcomeData
     {
-        public string outcomeName;    // ±ÈÈç "ÕıÃæÍ»»÷"
-        public string description;    // UIÃèÊö "»÷É±ÊØÎÀ"
+        public string outcomeName;    // æ¯”å¦‚ "æ­£é¢çªå‡»"
+        public string description;    // UIæè¿° "å‡»æ€å®ˆå«"
 
         public int completeId;
         public int[] NeedObjectiveIds;
-        public int nextStepId;     // ´ï³ÉºóÌø×ªµÄIDÁĞ±í
+        public int nextStepId;     // è¾¾æˆåè·³è½¬çš„IDåˆ—è¡¨
     }
 
 
@@ -171,16 +171,16 @@ namespace My.Def.Quest
     public class QuestStepData
     {
         public int stepId;
-        public bool isRoot;           // ÊÇ·ñÊÇÆğÊ¼²½Öè
-        public bool isAuto;           // ÊÇ·ñÊÇÆğÊ¼²½Öè
+        public bool isRoot;           // æ˜¯å¦æ˜¯èµ·å§‹æ­¥éª¤
+        public bool isAuto;           // æ˜¯å¦æ˜¯èµ·å§‹æ­¥éª¤
 
-        [Header("Íê³ÉÂ·¾¶")]
+        [Header("å®Œæˆè·¯å¾„")]
         public StepOutcomeData[] outcomes;
 
-        [Header("Ä¿±ê")]
+        [Header("ç›®æ ‡")]
         public ObjectiveData[] objectives;
 
-        [Header("Ê§°ÜÌõ¼ş (¿ÉÑ¡)")]
+        [Header("å¤±è´¥æ¡ä»¶ (å¯é€‰)")]
         public ConditionData failCondition;
     }
 

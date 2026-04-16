@@ -55,7 +55,7 @@ namespace My
         {
             if(MainStage != EMainGameStage.SwitchingMap)
             {
-                Debug.LogError("?? NextSwitchStep error");
+                Debug.LogError("NextSwitchStep called while MainStage is not SwitchingMap");
                 return;
             }
 

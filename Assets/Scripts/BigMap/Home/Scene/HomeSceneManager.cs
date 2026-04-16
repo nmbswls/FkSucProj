@@ -16,7 +16,7 @@ namespace My
         public readonly int originY;
 
         private readonly byte[] buildableBits;
-        private readonly byte[] occupancyBits; // ³õÊ¼Õ¼ÓÃ£¬ÔËĞĞÊ±¿É¿½±´Ò»·İ×÷¶¯Ì¬Õ¼ÓÃ
+        private readonly byte[] occupancyBits; // åˆå§‹å ç”¨ï¼Œè¿è¡Œæ—¶å¯æ‹·è´ä¸€ä»½ä½œåŠ¨æ€å ç”¨
 
         public BuildMaskRuntime(int w, int h, int ox, int oy, byte[] buildBits, byte[] occBits)
         {
@@ -56,7 +56,7 @@ namespace My
     {
         public static HomeSceneManager Instance { get; private set; }
 
-        [Header("ÊÕ¼¯×é¼ş")]
+        [Header("æ”¶é›†ç»„ä»¶")]
         public Transform FacilityRoot;
         public Transform ActionSlotRoot;
 
@@ -156,7 +156,7 @@ namespace My
         }
 
         /// <summary>
-        /// ·ÅÖÃ
+        /// æ”¾ç½®
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="rot"></param>
@@ -164,7 +164,7 @@ namespace My
         /// <param name="isMove"></param>
         public void TryPlace(HomeFacilityCfg obj, EPlacementRotation rot, Vector3Int pivotCell, bool isMove)
         {
-            // ÊµÀı»¯Êµ¼Ê¶ÔÏó
+            // å®ä¾‹åŒ–å®é™…å¯¹è±¡
             //var go = Instantiate(GetPrefabFor(obj, rot));
             //go.transform.position = CellToWorld(pivotCell);
             if(isMove)
@@ -178,7 +178,7 @@ namespace My
 
             // var chunkPos = SceneAOIManager.Instance.WorldToChunk(CellToWorld(pivotCell));
             //SceneAOIManager.Instance.ForceUpdateOneChunk(chunkPos);
-            // Õ¼ÓÃ¸ñ×Ó
+            // å ç”¨æ ¼å­
             var cells = obj.GetFootprint(rot).Select(off => pivotCell + new Vector3Int(off.x, off.y, 0));
             Occupy(cells);
         }
@@ -199,15 +199,15 @@ namespace My
 
         public List<HomeSimpleNpc> homeSimpleNpc = new List<HomeSimpleNpc>();
 
-        // Ë÷Òı1£º°´ÉèÊ©ÀàĞÍ´æ´¢ÉèÊ©
+        // ç´¢å¼•1ï¼šæŒ‰è®¾æ–½ç±»å‹å­˜å‚¨è®¾æ–½
         private Dictionary<HomeFacility.FacilityType, List<HomeFacility>> _facilities = new Dictionary<HomeFacility.FacilityType, List<HomeFacility>>();
 
-        // Ë÷Òı2£º°´½»»¥µãÀàĞÍ´æ´¢ËùÓĞµã£¨°üÀ¨Ò°ÍâµÄºÍÉèÊ©ÄÚµÄ£©
+        // ç´¢å¼•2ï¼šæŒ‰äº¤äº’ç‚¹ç±»å‹å­˜å‚¨æ‰€æœ‰ç‚¹ï¼ˆåŒ…æ‹¬é‡å¤–çš„å’Œè®¾æ–½å†…çš„ï¼‰
         private Dictionary<HomeActionSpot.SpotType, List<HomeActionSpot>> _allSpots = new Dictionary<HomeActionSpot.SpotType, List<HomeActionSpot>>();
 
 
         /// <summary>
-        /// ÏÈ¹Ì¶¨
+        /// å…ˆå›ºå®š
         /// </summary>
         private void InitFacilities()
         {
@@ -254,7 +254,7 @@ namespace My
             }
         }
 
-        // --- ×¢²áÂß¼­ ---
+        // --- æ³¨å†Œé€»è¾‘ ---
         public void RegisterFacility(HomeFacility f)
         {
             if (!_facilities.ContainsKey(f.Category)) _facilities[f.Category] = new List<HomeFacility>();
@@ -277,7 +277,7 @@ namespace My
         {
             if (!_allSpots.ContainsKey(type)) return null;
 
-            // ¼òµ¥µÄËæ»ú²ßÂÔ£¬Êµ¼Ê¿ÉÒÔ¼ÓÈë¾àÀëÅĞ¶Ï
+            // ç®€å•çš„éšæœºç­–ç•¥ï¼Œå®é™…å¯ä»¥åŠ å…¥è·ç¦»åˆ¤æ–­
             var available = _allSpots[type].Where(s => s.TryGetFreeSlotIndex() != -1).ToList();
             if (available.Count == 0) return null;
 

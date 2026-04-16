@@ -17,7 +17,7 @@ namespace My.Map.Unit
     }
 
     /// <summary>
-    /// ×¢ÒâÁ¦ÁĞ±í
+    /// æ³¨æ„åŠ›åˆ—è¡¨
     /// </summary>
     public class UnitVisionSystem : IUnitWithVision
     {
@@ -31,10 +31,10 @@ namespace My.Map.Unit
             public long TargetId;
             //public VisibilityStatus Status;
             public bool IsInView = false;
-            public float Confidence;     // 0..1£¬Ô½¸ßÔ½È·¶¨
-            public float LastSeenTime;   // ×îºóÒ»´ÎÅĞ¶¨Îª Visible µÄÊ±¼ä
-            public float LastUpdateTime; // ×î½üÒ»´Î¸üĞÂ£¨ÈÎºÎ×´Ì¬£©
-            public Vector2 LastKnownPos; // ×î½ü¿É¼ûÊ±¼ÇÂ¼µÄÎ»ÖÃ
+            public float Confidence;     // 0..1ï¼Œè¶Šé«˜è¶Šç¡®å®š
+            public float LastSeenTime;   // æœ€åä¸€æ¬¡åˆ¤å®šä¸º Visible çš„æ—¶é—´
+            public float LastUpdateTime; // æœ€è¿‘ä¸€æ¬¡æ›´æ–°ï¼ˆä»»ä½•çŠ¶æ€ï¼‰
+            public Vector2 LastKnownPos; // æœ€è¿‘å¯è§æ—¶è®°å½•çš„ä½ç½®
         }
         public Dictionary<long, VisibilityEntry> VisibleMap = new(); // TargetId => Entry
 
@@ -51,11 +51,11 @@ namespace My.Map.Unit
         }
 
         /// <summary>
-        /// ¸üĞÂ×¢ÒâÁ¦ÁĞ±í
+        /// æ›´æ–°æ³¨æ„åŠ›åˆ—è¡¨
         /// </summary>
         public void TryUpdateNoticeList()
         {
-            // ·ÖÕëÂÖÑ¯
+            // åˆ†é’ˆè½®è¯¢
             if (UnitEntity.Id % 10 != Time.frameCount % 10)
             {
                 return;
@@ -73,7 +73,7 @@ namespace My.Map.Unit
             float range = noticeParams.Item1;
             float fov = noticeParams.Item2;
             //VisibilityList.Clear();
-            /// Î¬»¤ÁËNoticeRecords 
+            /// ç»´æŠ¤äº†NoticeRecords 
             UnitEntity.LogicManager.AreaManager.UnitGridIndex.Query(UnitEntity.Pos, 16, cacheListLong);
             foreach (var id in cacheListLong)
             {
@@ -83,7 +83,7 @@ namespace My.Map.Unit
                     continue;
                 }
 
-                // Ö»¹Ø×¢²»Í¬ÕóÓªµÄ
+                // åªå…³æ³¨ä¸åŒé˜µè¥çš„
                 if (UnitEntity.FactionId != EFactionId.None && UnitEntity.FactionId == otherUnit.FactionId)
                 {
                     continue;
@@ -105,7 +105,7 @@ namespace My.Map.Unit
                 }
 
 
-                // ÓĞ¼ÇÂ¼ ¸üĞÂ
+                // æœ‰è®°å½• æ›´æ–°
                 if (!VisibleMap.TryGetValue(id, out var noticeRecord))
                 {
                     noticeRecord = new()
@@ -125,7 +125,7 @@ namespace My.Map.Unit
         }
 
         /// <summary>
-        /// Ä¿±ê¼ì²é
+        /// ç›®æ ‡æ£€æŸ¥
         /// </summary>
         /// <param name="now"></param>
         /// <param name="target"></param>
@@ -143,12 +143,12 @@ namespace My.Map.Unit
             //}
 
 
-            // ÒşÉí¸²¸Ç£¨»úÖÆ¼¶¶ã²Ø£©
+            // éšèº«è¦†ç›–ï¼ˆæœºåˆ¶çº§èº²è—ï¼‰
             var stealth = target.stealthInfo;
             bool stealthBlocks = false;
             if (stealth != null && stealth.stealthId != 0)
             {
-                // ¸Ã¹Û²ìÕßÔÚÒşÉí»ñÈ¡Ê±µÄÎŞÊÓ´°¿Ú
+                // è¯¥è§‚å¯Ÿè€…åœ¨éšèº«è·å–æ—¶çš„æ— è§†çª—å£
                 bool ignoreStealth =
                     stealth.SeeUnits != null &&
                     stealth.SeeUnits.TryGetValue(UnitEntity.Id, out var untilTs) &&
@@ -172,7 +172,7 @@ namespace My.Map.Unit
             }
         }
 
-        // ²éÑ¯½Ó¿Ú
+        // æŸ¥è¯¢æ¥å£
         public bool IsTargetVisible(long targetId)
         {
             bool basicView =  VisibleMap.TryGetValue(targetId, out var e) && e.IsInView;

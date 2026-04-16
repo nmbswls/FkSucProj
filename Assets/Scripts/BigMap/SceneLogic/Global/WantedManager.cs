@@ -17,7 +17,7 @@ namespace My
         }
 
         /// <summary>
-        /// ¼ì²éË¥¼õ
+        /// æ£€æŸ¥è¡°å‡
         /// </summary>
         /// <param name="dt"></param>
         public void Tick(float dt)

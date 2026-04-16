@@ -11,13 +11,13 @@ namespace My.UI
         public static long ShowInstIdCounter = 10;
 
         /// <summary>
-        /// 组件
+        /// 缁勪欢
         /// </summary>
 
         public TextMeshProUGUI hintTextComp;
         public Image ProgressBar;
 
-        #region 参数
+        #region 鍙傛暟
 
         public long playingShowId;
         public float TargetProgress;

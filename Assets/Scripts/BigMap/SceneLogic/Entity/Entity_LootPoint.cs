@@ -214,7 +214,7 @@ namespace My.Map
         {
             if (!IsLocked)
             {
-                LogicManager.viewer.ShowFakeFxEffect("???", Pos);
+                LogicManager.viewer.ShowFakeFxEffect("未上锁", Pos);
                 return;
             }
 
@@ -231,7 +231,7 @@ namespace My.Map
 
                 if (!enough)
                 {
-                    LogicManager.viewer.ShowFakeFxEffect("????", Pos);
+                    LogicManager.viewer.ShowFakeFxEffect("解锁材料不足", Pos);
                     return;
                 }
 
@@ -242,7 +242,7 @@ namespace My.Map
             }
 
             this.IsLocked = false;
-            LogicManager.viewer.ShowFakeFxEffect("????", Pos);
+            LogicManager.viewer.ShowFakeFxEffect("解锁成功", Pos);
             EventOnLootPointUnlock?.Invoke(this);
         }
 
@@ -250,7 +250,7 @@ namespace My.Map
         {
             if (IsLocked)
             {
-                LogicManager.viewer.ShowFakeFxEffect("????", Pos);
+                LogicManager.viewer.ShowFakeFxEffect("请先解锁", Pos);
                 return;
             }
 
@@ -272,15 +272,15 @@ namespace My.Map
 
                 if (!match)
                 {
-                    LogicManager.viewer.ShowFakeFxEffect("????????", Pos);
+                    LogicManager.viewer.ShowFakeFxEffect("不满足拾取条件", Pos);
                     return;
                 }
             }
 
-            LogicManager.viewer.ShowFakeFxEffect("???", Pos);
+            LogicManager.viewer.ShowFakeFxEffect("已使用", Pos);
             EventOnLootPointUsed?.Invoke(this);
 
-            // ??????
+            // 有阵营归属时广播通用事件供任务/统计等监听
             if(this.FactionId != Entity.EFactionId.None)
             {
                 LogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
@@ -291,8 +291,8 @@ namespace My.Map
                         SourceEntity = LogicManager.playerLogicEntity,
                     },
                     Name = "Loot",
-                    Param3 = (long)this.FactionId, // ????????
-                    Param5 = this.BelongRoomId, // ????????
+                    Param3 = (long)this.FactionId, // 阵营 Id
+                    Param5 = this.BelongRoomId, // 所属房间 Id
                 });
             }
             
@@ -321,7 +321,7 @@ namespace My.Map
 
             if (!match)
             {
-                LogicManager.viewer.ShowFakeFxEffect("????????", Pos);
+                LogicManager.viewer.ShowFakeFxEffect("不满足拾取条件", Pos);
                 return false;
             }
 
@@ -343,7 +343,7 @@ namespace My.Map
                 lootContainer.ItemSearchProgress.Remove(minKey);
                 EnOnUnrealed?.Invoke(minKey);
 
-                // ???
+                // 搜索进度归零：对该索引的战利品应用揭秘效果（资源增减等）
                 var itemStack = lootContainer.LootItems[minKey];
                 var conf = ItemCatalog.GetItemDef(itemStack.ItemID);
                 if (conf == null)

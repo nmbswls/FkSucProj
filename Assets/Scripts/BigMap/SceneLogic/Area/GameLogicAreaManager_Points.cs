@@ -13,7 +13,7 @@ namespace My.Map.Logic
 {
 
     /// <summary>
-    /// ¹ÜÀíÇøÓò
+    /// ç®¡ç†åŒºåŸŸ
     /// </summary>
     public partial class GameLogicAreaManager
     {

@@ -34,7 +34,7 @@ namespace My.Map.Logic
 
 
     /// <summary>
-    /// ??????? ??????? ???????????
+    /// 运行时房间信息（占位，后续可接导出数据）。
     /// </summary>
     public class LogicRoomInfo
     {
@@ -44,11 +44,11 @@ namespace My.Map.Logic
     }
 
     /// <summary>
-    /// ????????
+    /// ���ŵ�ͼ���߼�����AOI��ʵ���������ڡ���̬ˢ�µȡ�
     /// </summary>
     public partial class GameLogicAreaManager
     {
-        //public int ChunkCellSize = 32;  // ?????????
+        //public int ChunkCellSize = 32;  // ����������ؿ��ڴ����ø��Ӵ�С
         private readonly Settings settings;
 
 
@@ -74,7 +74,7 @@ namespace My.Map.Logic
         public InnerListener innerListener;
         public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
 
-        // StaticId -> ????????????????????SavePoint ?????????????
+        // StaticId -> 地图导出刷新项；用于 SavePoint 判定与 LinkedRefreshInfo 补链
         private Dictionary<int, DynamicEntityRefreshInfo> _refreshInfoByStaticId;
 
         public List<int> DialogForceStaticIds = new();
@@ -115,7 +115,7 @@ namespace My.Map.Logic
 
         private List<MapLogicSubscription> subs = new();
         /// <summary>
-        /// ???????????
+        /// 初始化地图：加载导出数据、刷新列表、仓库与兴趣点等。
         /// </summary>
         public void InitilizeMap(string mapName)
         {
@@ -159,7 +159,7 @@ namespace My.Map.Logic
             Repo = null;
 
 
-            // ???? cacheDatabase
+            // 加载地图导出数据库
             cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{mapName}");
 
             DialogForceStaticIds.Clear();
@@ -176,7 +176,7 @@ namespace My.Map.Logic
                 StaticName2RefreshIdMap[oneStaticInfo.UniqName] = oneStaticInfo.StaticId;
             }
 
-            // ????repo
+            // 初始化实体仓库
             if (Repo == null)
             {
                 Repo = new();
@@ -307,14 +307,14 @@ namespace My.Map.Logic
         }
 
         
-        // ??????????????????????????
+        // 根据 Record 重建 AOI 网格索引
         public void BuildIndexFromRecords()
         {
             foreach (var kv in Repo.Records)
                 UnitGridIndex.AddOrMove(kv.Key, kv.Value.Position);
         }
 
-        // ???/????????
+        // 兴趣点：注册 / 移除
         public void AddInterestPoint(InterestPoint ip) => interestPoints[ip.Id] = ip;
         public void RemoveInterestPoint(int id) => interestPoints.Remove(id);
 
@@ -324,7 +324,7 @@ namespace My.Map.Logic
             return null;
         }
 
-        #region aoi ????????
+        #region AOI 与兴趣相关
 
         #endregion
 
@@ -333,15 +333,15 @@ namespace My.Map.Logic
 
         public ILogicEntity GetLogicEntiy(long instId, bool ensureExist = true)
         {
-            // ????????? ?????????
+            // 1) 无 Record 则不存在
             if (!Repo.Records.TryGetValue(instId, out var rec)) return null;
 
-            // 2) ??????????????
+            // 2) 已加载则直接返回，并处理从 Cooldown 回到 Active
             if (Repo.IsLoaded(instId))
             {
                 var ent = Repo.GetLoaded(instId);
 
-                // ????
+                // 有运行时状态时，从 Cooldown 拉回 Active
                 if (runtimeStates.TryGetValue(instId, out var st))
                 {
                     if(st.State == LogicLifeState.Cooldown)
@@ -363,10 +363,10 @@ namespace My.Map.Logic
             return null;
         }
 
-        // ??????????????
+        // 区域每帧驱动：刷新、实体生命周期、邪恶警戒等
         public void Tick(float dt)
         {
-            // ??????
+            // 动态刷新出现/消失
             CheckRefreshAppearAndDisappear(dt);
 
             TickEntityLifeCycle(dt);
@@ -375,7 +375,7 @@ namespace My.Map.Logic
 
             TickLowFreqTickRecord();
 
-            // ??????????
+            // 区域邪恶警戒等
             TickEvilAlerts();
         }
 
@@ -432,7 +432,7 @@ namespace My.Map.Logic
         {
             if (st.IsMarkDestroy)
             {
-                // ??????????????????????????
+                // 已标记销毁的实体不再参与状态机推进（由销毁队列处理）
                 return;
             }
 
@@ -446,13 +446,13 @@ namespace My.Map.Logic
 
             if (activeFlag)
             {
-                // ????Active????????????????Spawn+Wake?????????????????????????????
+                // AlwaysActive：保证已 Spawn 并 Wake，不依赖兴趣圈
                 if (!Repo.IsLoaded(st.Id))
                 {
-                    // ?????????????????????????????
+                    // 尚未加载则先创建逻辑实体
                     var ent = SpawnEntity(rec.Id);
                 }
-                // ??????Wake
+                // 保持唤醒
                 Repo.GetLoaded(st.Id)?.OnWake();
 
                 st.State = LogicLifeState.Active;
@@ -467,7 +467,7 @@ namespace My.Map.Logic
                     {
                         if (activeFlag)
                         {
-                            // ?????????????always active????????? Warmup -> Active ????????????NotLoaded
+                            // AlwaysActive 在 NotLoaded 时也应进入 Warmup 并最终 Active
                             EnqueueSpawn(st.Id);
                             st.State = LogicLifeState.Warmup;
                             break;
@@ -489,14 +489,14 @@ namespace My.Map.Logic
                     }
                     else if (!st.NearAnyWarmup && !activeFlag)
                     {
-                        // ????????????????????????
+                        // 无兴趣且非 AlwaysActive：取消加载
                         EnqueueDespawn(st.Id);
                         st.State = LogicLifeState.NotLoaded;
                     }
-                    // isLong ??????? Warmup???????? Warmup??Loaded????Wake?????? Sleep?????? Despawn
+                    // AlwaysActive：Warmup 后若已 Loaded 可先 Sleep，避免长期 Despawn
                     else if (!st.NearAnyWarmup && activeFlag)
                     {
-                        // ?????????? Loaded ?? Sleep???? Loaded ???? Warmup ???????
+                        // 已加载则先入 Sleep，再由 Sleep 分支决定是否 Despawn
                         if (Repo.IsLoaded(st.Id))
                         {
                             EnqueueSleep(st.Id);
@@ -561,7 +561,7 @@ namespace My.Map.Logic
                                 }
                                 else
                                 {
-                                    // ??????????????? Despawn??????? Sleep??Loaded ????Wake??
+                                    // AlwaysActive：不 Despawn，改为 Sleep，保留 Loaded 以便再次 Wake
                                     EnqueueSleep(st.Id);
                                     st.State = LogicLifeState.Sleep;
                                     st.Timer = settings.SleepToDespawnDelay;
@@ -590,8 +590,8 @@ namespace My.Map.Logic
                             }
                             else
                             {
-                                // ??????????????? Sleep?????? Despawn
-                                st.Timer = settings.SleepToDespawnDelay; // ?????????
+                                // AlwaysActive：延长 Sleep 计时，避免立刻 Despawn
+                                st.Timer = settings.SleepToDespawnDelay; // 再次进入睡眠前的间隔
                             }
                         }
                     }
@@ -600,8 +600,7 @@ namespace My.Map.Logic
         }
 
         /// <summary>
-        /// ??????????????????????
-        /// ??????????I????????
+        /// 交互点等是否在忙碌中（例如正在对话），用于延迟 Sleep/Despawn。
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -639,7 +638,7 @@ namespace My.Map.Logic
         {
             int n;
 
-            // Despawn????????????????
+            // Despawn 每帧预算
             n = settings.MaxDespawnPerFrame;
             while (despawnEntityQ.Count > 0 && n-- > 0)
             {
@@ -647,7 +646,7 @@ namespace My.Map.Logic
                 DespawnEntity(id);
             }
 
-            // Spawn????????????????????????????????????????????? StepStateMachine ?????? AlwaysActive??
+            // Spawn 每帧预算（与 StepStateMachine、AlwaysActive 策略配合）
             n = settings.MaxSpawnPerFrame;
             while (spawnEntityQ.Count > 0 && n-- > 0)
             {
@@ -656,7 +655,7 @@ namespace My.Map.Logic
                 var ent = SpawnEntity(id);
             }
 
-            // Sleep/Wake ????
+            // Sleep / Wake 每帧预算
             n = settings.MaxSleepPerFrame;
             while (sleepEntityQ.Count > 0 && n-- > 0)
             {
@@ -676,7 +675,7 @@ namespace My.Map.Logic
 
         //private void ProcessDieQueue()
         //{
-        //    int budget = 64; // ??????
+        //    int budget = 64; // 每帧销毁预算（已注释）
         //    while (destroyEntityQ.Count > 0 && budget-- > 0)
         //    {
         //        var pair = destroyEntityQ.Dequeue();
@@ -687,7 +686,7 @@ namespace My.Map.Logic
         private float _corpseTickTimer;
 
         /// <summary>
-        /// ???????????
+        /// 处理死亡残留计时，到期后真正销毁实体。
         /// </summary>
         /// <param name="dt"></param>
         private void ProcessCorpse(float dt)
@@ -701,12 +700,12 @@ namespace My.Map.Logic
 
             _corpseTickTimer = LogicTime.time;
 
-            int n = 32; // ?????????
+            int n = 32; // 每帧处理的尸体清理数量上限
             int count = Math.Min(n, corpseCleanupQ.Count);
             for (int i = 0; i < count; i++)
             {
                 (var id, string reason) = corpseCleanupQ.Dequeue();
-                // ?????????????????
+                // 无 Record 则跳过
                 if (!Repo.Records.TryGetValue(id, out var rec)) continue;
 
                 if (!runtimeStates.TryGetValue(id, out var st)) continue;
@@ -714,19 +713,19 @@ namespace My.Map.Logic
                 st.DeathRemainTimer -= dt;
                 if (st.DeathRemainTimer > 0f)
                 {
-                    // ??????????????
+                    // 死亡计时未到，重新入队
                     corpseCleanupQ.Enqueue((id, reason));
                     continue;
                 }
 
-                // ???entity
+                // 计时结束，销毁实体
                 DestroyEntity(id, reason);
             }
         }
 
         private ILogicEntity SpawnEntity(long entityId)
         {
-            // ????Active????????????????Spawn+Wake?????????????????????????????
+            // AlwaysActive 等路径外，Spawn 前保证未重复加载
             if (Repo.IsLoaded(entityId))
             {
                 return null;   
@@ -768,20 +767,20 @@ namespace My.Map.Logic
         }
 
         /// <summary>
-        /// ????????entity
+        /// 请求销毁实体（进入死亡延迟队列，非立即移除 Record）。
         /// </summary>
         /// <param name="id"></param>
         /// <param name="reason"></param>
         public void RequestEntityDestroy(long id, string reason)
         {
-            // ?????????
+            // 无 Record 则忽略
             if (!Repo.HasRecord(id))
             {
                 Debug.Log($"RequestEntityDestroy id:{id} not found {reason}");
                 return;
             }
 
-            // ??????runtime???
+            // 确保存在运行时状态条目
             if (!runtimeStates.TryGetValue(id, out var st))
             {
                 st = new OneEntityRuntimeState { Id = id, State = LogicLifeState.NotLoaded };
@@ -789,19 +788,17 @@ namespace My.Map.Logic
             }
 
             st.IsMarkDestroy = true;
-            st.DeathRemainTimer = 5.0f; // ??5??????????
+            st.DeathRemainTimer = 5.0f; // 死亡后延迟一段时间再真正销毁（秒）
 
             corpseCleanupQ.Enqueue((id, reason));
         }
 
         /// <summary>
-        /// ???????? 
+        /// 立即移除逻辑实体与 Record（不走死亡延迟队列）；用于刷新条件显隐等。
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="reason"></param>
         /// <returns></returns>
-        /// <summary>
-        /// �����Ƴ��߼�ʵ���� Record�������������ӳٶ��У�������ˢ������������������
-        /// </summary>
         public bool ForceDestroyEntityNow(long id, string reason)
         {
             return DestroyEntity(id, reason);
@@ -809,18 +806,18 @@ namespace My.Map.Logic
 
         private bool DestroyEntity(long id, string reason)
         {
-            // ????????record
+            // 无 Record 则失败
             if(!Repo.HasRecord(id))
             {
                 Debug.Log($"DestroyEntity id:{id} reason:{reason}");
                 return false;
             }
 
-            // ??????????logic ?????????
+            // 若已加载则先 Despawn 逻辑层
             if (Repo.IsLoaded(id))
             {
                 var ent = Repo.GetLoaded(id);
-                DespawnEntity(id); // ??????logic???
+                DespawnEntity(id); // 回收逻辑实体
                 //if (!runtimeStates.TryGetValue(id, out var st))
                 //{
                 //    st = new OneEntityRuntimeState { Id = id, State = LogicLifeState.NotLoaded };
@@ -836,17 +833,17 @@ namespace My.Map.Logic
                 //    st.DeathRemainTimer = 0.5f;
                 //}
 
-                //// 4) ?????????????????????? Sleep??????????????????
+                //// 4) 旧版：按死亡计时决定 Sleep 或直接 Despawn（已废弃）
                 //if (st.DeathRemainTimer > 0f)
                 //{
-                //    // ??????? Sleep????????
+                //    // 旧版：先入 Sleep（已废弃）
                 //    EnqueueSleep(id);
-                //    // ????????????????
+                //    // 旧版：尸体队列（已废弃）
                 //    if (!corpseCleanupQ.Contains(id)) corpseCleanupQ.Enqueue(id);
                 //}
                 //else
                 //{
-                //    // ????????
+                //    // 旧版：直接 Despawn（已废弃）
                 //    DespawnEntity(id);
 
                 //    RemoveLogicRecord(id);
@@ -861,24 +858,24 @@ namespace My.Map.Logic
 
 
         /// <summary>
-        /// ????????????
+        /// 立即 Spawn 并 Wake（用于 GetLogicEntiy ensureExist 等路径）。
         /// </summary>
         /// <param name="id"></param>
         /// <param name="rec"></param>
         /// <returns></returns>
         private ILogicEntity? ImmediateSpawnAndWake(long id)
         {
-            // ???????????????????????
+            // 已加载则直接返回
             if (Repo.IsLoaded(id)) return Repo.GetLoaded(id);
 
             var newEnt = SpawnEntity(id);
-            // OnWake??????????
+            // 创建后立刻唤醒
             newEnt.OnWake();
 
-            // ?? AOI ????????????????????????
+            // 同步 AOI 网格位置
             UnitGridIndex.AddOrMove(id, newEnt.Pos);
 
-            // ???????????
+            // 标记为 Active 且视为在兴趣范围内（短时保活）
             var st = runtimeStates.ContainsKey(id) ? runtimeStates[id] : (runtimeStates[id] = new OneEntityRuntimeState { Id = id });
             st.State = LogicLifeState.Active;
             st.Timer = 0f;

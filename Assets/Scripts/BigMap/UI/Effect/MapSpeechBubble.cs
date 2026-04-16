@@ -35,7 +35,7 @@ namespace My
 
         //void LateUpdate()
         //{
-        //    // Ôö¼Ó¼ì²â£ºÈç¹ûÄ¿±êÎª¿Õ£¨½ÇÉ«±»Ïú»Ù£©£¬×Ô¶¯¹Ø±Õ
+        //    // å¢åŠ æ£€æµ‹ï¼šå¦‚æœç›®æ ‡ä¸ºç©ºï¼ˆè§’è‰²è¢«é”€æ¯ï¼‰ï¼Œè‡ªåŠ¨å…³é—­
         //    if (targetPresenter == null)
         //    {
         //        if (gameObject.activeSelf) Hide();

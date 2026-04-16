@@ -3,12 +3,12 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "GP/Area/WorldAreaInfo", fileName = "WorldAreaInfo")]
 public class WorldAreaInfo : ScriptableObject
 {
-    [Tooltip("ÊÀ½çÃû³Æ£¨ÓÃÓÚÈÕÖ¾/´æµµ£©")]
+    [Tooltip("ä¸–ç•Œåç§°ï¼ˆç”¨äºæ—¥å¿—/å­˜æ¡£ï¼‰")]
     public string worldName;
 
-    [Tooltip("¸ÃÊÀ½ç°üº¬µÄ×Ó³¡¾°Ãû³Æ£¨ĞèÌí¼Óµ½ Build Settings£©")]
+    [Tooltip("è¯¥ä¸–ç•ŒåŒ…å«çš„å­åœºæ™¯åç§°ï¼ˆéœ€æ·»åŠ åˆ° Build Settingsï¼‰")]
     public string[] subScenes;
 
-    [Tooltip("Ö÷¼¤»î³¡¾°£¨¿ÉÑ¡£©£¬ÓÃÓÚÉèÎª ActiveScene µÄ×Ó³¡¾°Ãû")]
+    [Tooltip("ä¸»æ¿€æ´»åœºæ™¯ï¼ˆå¯é€‰ï¼‰ï¼Œç”¨äºè®¾ä¸º ActiveScene çš„å­åœºæ™¯å")]
     public string activeSubScene;
 }

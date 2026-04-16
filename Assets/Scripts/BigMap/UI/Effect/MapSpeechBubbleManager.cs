@@ -9,15 +9,15 @@ namespace My.UI
     {
         public static MapSpeechBubbleManager Instance { get; private set; }
 
-        [Header("UI ÉèÖÃ")]
+        [Header("UI è®¾ç½®")]
         public GameObject bubblePrefab;
 
-        // ¶ÔÏó³Ø
+        // å¯¹è±¡æ± 
         private Queue<MapSpeechBubble> bubblePool = new Queue<MapSpeechBubble>();
 
-        // ºËĞÄ£º¼ÇÂ¼ÕıÔÚËµ»°µÄ¸÷¸ö½ÇÉ« (Key: ½ÇÉ«µÄInstanceID, Value: ¸Ã½ÇÉ«µÄÆµµÀÊı¾İ)
+        // æ ¸å¿ƒï¼šè®°å½•æ­£åœ¨è¯´è¯çš„å„ä¸ªè§’è‰² (Key: è§’è‰²çš„InstanceID, Value: è¯¥è§’è‰²çš„é¢‘é“æ•°æ®)
         private Dictionary<long, CharacterChannel> activeChannels = new Dictionary<long, CharacterChannel>();
-        // »º´æÒ»¸ö´ıÒÆ³ıÁĞ±í£¬·ÀÖ¹±éÀúÊ±ĞŞ¸Ä¼¯ºÏ±¨´í
+        // ç¼“å­˜ä¸€ä¸ªå¾…ç§»é™¤åˆ—è¡¨ï¼Œé˜²æ­¢éå†æ—¶ä¿®æ”¹é›†åˆæŠ¥é”™
         private List<long> deadChannelIds = new List<long>();
 
         void Awake()
@@ -27,11 +27,11 @@ namespace My.UI
 
         void Update()
         {
-            // 1. Í³Ò» Tick ËùÓĞÆµµÀ
+            // 1. ç»Ÿä¸€ Tick æ‰€æœ‰é¢‘é“
             foreach (var kvp in activeChannels)
             {
                 var channel = kvp.Value;
-                bool isFinished = channel.Tick(Time.deltaTime); // Çı¶¯×´Ì¬»ú
+                bool isFinished = channel.Tick(Time.deltaTime); // é©±åŠ¨çŠ¶æ€æœº
 
                 if (isFinished)
                 {
@@ -39,7 +39,7 @@ namespace My.UI
                 }
             }
 
-            // 2. ÇåÀíÒÑ¾­ËµÍê»°µÄÆµµÀ
+            // 2. æ¸…ç†å·²ç»è¯´å®Œè¯çš„é¢‘é“
             if (deadChannelIds.Count > 0)
             {
                 foreach (var id in deadChannelIds)
@@ -50,10 +50,10 @@ namespace My.UI
             }
         }
 
-        // ================== ¶ÔÍâ½Ó¿Ú ==================
+        // ================== å¯¹å¤–æ¥å£ ==================
 
         /// <summary>
-        /// ÈÃÄ³¸öÄ¿±êËµ»°£¨×Ô¶¯¼ÓÈë¶ÓÁĞ£©
+        /// è®©æŸä¸ªç›®æ ‡è¯´è¯ï¼ˆè‡ªåŠ¨åŠ å…¥é˜Ÿåˆ—ï¼‰
         /// </summary>
         public void Say(IScenePresentation target, string text, float duration = 2f, int priority = 1,  float extraInterval = 0)
         {
@@ -61,13 +61,13 @@ namespace My.UI
 
             long id = target.Id;
 
-            // Èç¹ûÕâ¸ö½ÇÉ«»¹Ã»ÓĞ¡°ÆµµÀ¡±£¬¸øËû¿ªÒ»¸ö
+            // å¦‚æœè¿™ä¸ªè§’è‰²è¿˜æ²¡æœ‰â€œé¢‘é“â€ï¼Œç»™ä»–å¼€ä¸€ä¸ª
             if (!activeChannels.ContainsKey(id))
             {
                 activeChannels[id] = new CharacterChannel(this, target);
             }
 
-            // ÍùËûµÄÆµµÀÀïÈûÒ»¾ä»°
+            // å¾€ä»–çš„é¢‘é“é‡Œå¡ä¸€å¥è¯
             activeChannels[id].Enqueue(text, duration, priority, extraInterval);
         }
 
@@ -81,7 +81,7 @@ namespace My.UI
         }
 
 
-        // ================== ³Ø»¯µ×²ãÂß¼­ ==================
+        // ================== æ± åŒ–åº•å±‚é€»è¾‘ ==================
 
         public MapSpeechBubble GetBubbleFromPool()
         {
@@ -102,15 +102,15 @@ namespace My.UI
             }
         }
 
-        // ================== ÄÚ²¿Àà£º½ÇÉ«ÆµµÀ ==================
-        // ¸ºÔğ¹ÜÀí¡¾µ¥¸ö½ÇÉ«¡¿µÄ¶Ô»°¶ÓÁĞºÍĞ­³Ì
+        // ================== å†…éƒ¨ç±»ï¼šè§’è‰²é¢‘é“ ==================
+        // è´Ÿè´£ç®¡ç†ã€å•ä¸ªè§’è‰²ã€‘çš„å¯¹è¯é˜Ÿåˆ—å’Œåç¨‹
         private class CharacterChannel
         {
             private MapSpeechBubbleManager manager;
             private IScenePresentation target;
             private MapSpeechBubble currentBubble;
 
-            // ¼òµ¥Êı¾İ½á¹¹
+            // ç®€å•æ•°æ®ç»“æ„
             struct Cmd 
             { 
                 public string text; 
@@ -120,9 +120,9 @@ namespace My.UI
             }
             private Queue<Cmd> queue = new Queue<Cmd>();
 
-            // ×´Ì¬±äÁ¿
+            // çŠ¶æ€å˜é‡
             private float timer;
-            private bool isShowingBubble; // true=ÏÔÊ¾ÖĞ, false=¼ä¸ôµÈ´ıÖĞ
+            private bool isShowingBubble; // true=æ˜¾ç¤ºä¸­, false=é—´éš”ç­‰å¾…ä¸­
             private Cmd currentCmd;
             private float popInterval = 0.3f;
 
@@ -144,28 +144,28 @@ namespace My.UI
                 queue.Enqueue(new Cmd { text = text, duration = duration, priority = priority, extraInterval = extraInterval });
             }
 
-            // ·µ»Ø true ±íÊ¾ÆµµÀ¿ÕÏĞ¿ÉÒÔÒÆ³ıÁË
+            // è¿”å› true è¡¨ç¤ºé¢‘é“ç©ºé—²å¯ä»¥ç§»é™¤äº†
             public bool Tick(float dt)
             {
-                // Èç¹ûËŞÖ÷¹ÒÁË£¬¹é»¹ÆøÅİ²¢×ÔÉ±
+                // å¦‚æœå®¿ä¸»æŒ‚äº†ï¼Œå½’è¿˜æ°”æ³¡å¹¶è‡ªæ€
                 if (target == null)
                 {
                     CleanUp();
                     return true;
                 }
 
-                // --- ×´Ì¬»úÂß¼­ ---
+                // --- çŠ¶æ€æœºé€»è¾‘ ---
 
                 if (timer > 0)
                 {
-                    // µ¹¼ÆÊ±½×¶Î
+                    // å€’è®¡æ—¶é˜¶æ®µ
                     timer -= dt;
 
-                    // ÆøÅİ¸úËæÂß¼­·ÅÔÚÕâÀï»òÕß Bubble ×ÔÉíµÄ Update ¶¼¿ÉÒÔ
-                    // Èç¹û·ÅÔÚÕâÀï£¬Bubble ¾Í¿ÉÒÔ×ö³É´¿Êı¾İ½ÓÊÕÕß£¬ÍêÈ«Ã»ÓĞÈÎºÎ Update
+                    // æ°”æ³¡è·Ÿéšé€»è¾‘æ”¾åœ¨è¿™é‡Œæˆ–è€… Bubble è‡ªèº«çš„ Update éƒ½å¯ä»¥
+                    // å¦‚æœæ”¾åœ¨è¿™é‡Œï¼ŒBubble å°±å¯ä»¥åšæˆçº¯æ•°æ®æ¥æ”¶è€…ï¼Œå®Œå…¨æ²¡æœ‰ä»»ä½• Update
                     if (isShowingBubble && currentBubble != null)
                     {
-                        // ¼òµ¥µÄ¸úËæÂß¼­
+                        // ç®€å•çš„è·Ÿéšé€»è¾‘
                         Camera mainCam = Camera.main;
                         Camera uiCam = UIManager.Instance.UICamera;
                         //RectTransform canvasRect = UIManager.Instance.transform;
@@ -173,34 +173,34 @@ namespace My.UI
 
                         Vector3 worldPos = target.PivotHeader.position;
 
-                        // 3. ½«ÊÀ½ç×ø±ê×ª»»ÎªÆÁÄ»ÏñËØ×ø±ê
+                        // 3. å°†ä¸–ç•Œåæ ‡è½¬æ¢ä¸ºå±å¹•åƒç´ åæ ‡
                         Vector3 screenPos3D = mainCam.WorldToScreenPoint(worldPos);
 
                         Vector2 screenPos2D = new Vector2(screenPos3D.x, screenPos3D.y);
                         Vector2 localPos;
 
                         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                            SceneSmallIconLayerPanel.Instance.transform as RectTransform,     // Ïà¶ÔË­µÄ×ø±êÏµ£¿(¸¸ÈİÆ÷)
-                            screenPos2D,    // ÆÁÄ»ÉÏµÄµãÔÚÄÄÀï£¿
-                            uiCam,          // Ë­ÅÄµÄUI£¿(OverlayÌînull)
-                            out localPos    // ½á¹û´æµ½ÕâÀï
+                            SceneSmallIconLayerPanel.Instance.transform as RectTransform,     // ç›¸å¯¹è°çš„åæ ‡ç³»ï¼Ÿ(çˆ¶å®¹å™¨)
+                            screenPos2D,    // å±å¹•ä¸Šçš„ç‚¹åœ¨å“ªé‡Œï¼Ÿ
+                            uiCam,          // è°æ‹çš„UIï¼Ÿ(Overlayå¡«null)
+                            out localPos    // ç»“æœå­˜åˆ°è¿™é‡Œ
                         );
 
-                        // 6. Ó¦ÓÃ×ø±ê
+                        // 6. åº”ç”¨åæ ‡
                         bubbleRect.anchoredPosition = localPos;
                     }
                 }
                 else
                 {
-                    // µ¹¼ÆÊ±½áÊø£¬·¢Éú×´Ì¬ÇĞ»»
+                    // å€’è®¡æ—¶ç»“æŸï¼Œå‘ç”ŸçŠ¶æ€åˆ‡æ¢
                     if (isShowingBubble)
                     {
-                        // === ¸Õ¸Õ½áÊøÏÔÊ¾ ===
+                        // === åˆšåˆšç»“æŸæ˜¾ç¤º ===
 
-                        // ¼ì²éÊÇ·ñÓĞºóĞø¼ä¸ô
+                        // æ£€æŸ¥æ˜¯å¦æœ‰åç»­é—´éš”
                         if (popInterval + currentCmd.extraInterval > 0)
                         {
-                            // ½øÈë¼ä¸ôÆÚ£º»ØÊÕÆøÅİ£¬ÉèÖÃ¼ä¸ô¼ÆÊ±
+                            // è¿›å…¥é—´éš”æœŸï¼šå›æ”¶æ°”æ³¡ï¼Œè®¾ç½®é—´éš”è®¡æ—¶
                             if (currentBubble != null)
                             {
                                 manager.ReturnBubbleToPool(currentBubble);
@@ -211,18 +211,18 @@ namespace My.UI
                         }
                         else
                         {
-                            // ÎŞ¼ä¸ô£º³¢ÊÔ²¥·ÅÏÂÒ»Ìõ
+                            // æ— é—´éš”ï¼šå°è¯•æ’­æ”¾ä¸‹ä¸€æ¡
                             TryPlayNext();
                         }
                     }
                     else
                     {
-                        // === ¸Õ¸Õ½áÊø¼ä¸ô ===
+                        // === åˆšåˆšç»“æŸé—´éš” ===
                         TryPlayNext();
                     }
                 }
 
-                // Èç¹ûÃ»ÆøÅİ£¬Ò²Ã»Ö¸Áî£¬ËµÃ÷¿ÕÏĞÁË
+                // å¦‚æœæ²¡æ°”æ³¡ï¼Œä¹Ÿæ²¡æŒ‡ä»¤ï¼Œè¯´æ˜ç©ºé—²äº†
                 return (currentBubble == null && queue.Count == 0 && timer <= 0);
             }
 
@@ -232,7 +232,7 @@ namespace My.UI
                 {
                     currentCmd = queue.Dequeue();
 
-                    // »ñÈ¡/¸´ÓÃÆøÅİ
+                    // è·å–/å¤ç”¨æ°”æ³¡
                     if (currentBubble == null)
                     {
                         currentBubble = manager.GetBubbleFromPool();
@@ -246,7 +246,7 @@ namespace My.UI
                 }
                 else
                 {
-                    // Ã»»°ËµÁË£¬ÇåÀíÏÖ³¡
+                    // æ²¡è¯è¯´äº†ï¼Œæ¸…ç†ç°åœº
                     CleanUp();
                 }
             }

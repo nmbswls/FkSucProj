@@ -29,7 +29,7 @@ public class WorldAreaManager : MonoBehaviour
 
     public event Action<string> OnWorldLoaded;
     public event Action<int> OnWorldUnloaded;
-    public event Action<string, float> OnLoadingProgress; // ×Ó³¡¾°Ãû£¬½ø¶È0-1
+    public event Action<string, float> OnLoadingProgress; // å­åœºæ™¯åï¼Œè¿›åº¦0-1
 
     public ObstacleSegmentProvider SegmentProvider;
 
@@ -65,7 +65,7 @@ public class WorldAreaManager : MonoBehaviour
 
     private IEnumerator CoLoadWorld(string mapName, bool setActive, Action<int, bool>? onComplete)
     {
-        // ÏÈĞ¶ÔØ¾ÉµÄ
+        // å…ˆå¸è½½æ—§çš„
         if (!string.IsNullOrEmpty(currentMapName))
             yield return CoUnloadWorld(null);
 
@@ -75,16 +75,16 @@ public class WorldAreaManager : MonoBehaviour
         if(areaCfg == null)
         {
             Debug.LogError("CoLoadWorld not found.");
-            // todo ´¦ÀíÒì³£Çé¿ö
-            // ±£µ×
+            // todo å¤„ç†å¼‚å¸¸æƒ…å†µ
+            // ä¿åº•
             yield break;
         }
 
         if(string.IsNullOrEmpty(areaCfg.SceneName))
         {
             Debug.LogError("CoLoadWorld area SceneName empty.");
-            // todo ´¦ÀíÒì³£Çé¿ö
-            // ±£µ×
+            // todo å¤„ç†å¼‚å¸¸æƒ…å†µ
+            // ä¿åº•
             yield break;
         }
 
@@ -116,7 +116,7 @@ public class WorldAreaManager : MonoBehaviour
 
         
         GameObject onlyRoot = null;
-        // ÉèÖÃ¼¤»î³¡¾°£¨Ó°Ïì Instantiate µÄÄ¬ÈÏ¹éÊô¡¢Lighting¡¢NavMesh µÈ£©
+        // è®¾ç½®æ¿€æ´»åœºæ™¯ï¼ˆå½±å“ Instantiate çš„é»˜è®¤å½’å±ã€Lightingã€NavMesh ç­‰ï¼‰
         if (setActive)
         {
             var active = loadedSubScenes.FirstOrDefault();
@@ -137,7 +137,7 @@ public class WorldAreaManager : MonoBehaviour
             }
             else
             {
-                // ÈôÖ¸¶¨µÄ activeSubSceneÎ´¼ÓÔØ£¬Ä¬ÈÏÉèÎªµÚÒ»¸ö¼ÓÔØµÄ
+                // è‹¥æŒ‡å®šçš„ activeSubSceneæœªåŠ è½½ï¼Œé»˜è®¤è®¾ä¸ºç¬¬ä¸€ä¸ªåŠ è½½çš„
                 if (loadedSubScenes.Count > 0)
                     SceneManager.SetActiveScene(loadedSubScenes[0]);
             }
@@ -152,7 +152,7 @@ public class WorldAreaManager : MonoBehaviour
 
     private IEnumerator CoUnloadWorld(Action? onUnload)
     {
-        // Öğ¸öĞ¶ÔØ
+        // é€ä¸ªå¸è½½
         for (int i = loadedSubScenes.Count - 1; i >= 0; --i)
         {
             var scene = loadedSubScenes[i];
@@ -185,13 +185,13 @@ public class WorldAreaManager : MonoBehaviour
     }
 
 
-    #region ¿ÉĞĞ×ß·ÖÎö
+    #region å¯è¡Œèµ°åˆ†æ
 
 
     public Vector2 ClampPathToWalkable(
         Vector2 current,
         Vector2 desired,
-        float maxStep = 0.2f) // Ã¿´Î×Ó²½×î´ó³¤¶È
+        float maxStep = 0.2f) // æ¯æ¬¡å­æ­¥æœ€å¤§é•¿åº¦
     {
         Vector2 pos = current;
         Vector2 totalDelta = desired - current;
@@ -228,14 +228,14 @@ public class WorldAreaManager : MonoBehaviour
                 continue;
             }
 
-            // ±¾×Ó²½ÎŞ·¨Ç°½ø£¬ÔòÖÕÖ¹£¬·µ»ØÒÑ´ïµ½µÄ×î½üºÏ·¨µã
+            // æœ¬å­æ­¥æ— æ³•å‰è¿›ï¼Œåˆ™ç»ˆæ­¢ï¼Œè¿”å›å·²è¾¾åˆ°çš„æœ€è¿‘åˆæ³•ç‚¹
             break;
         }
 
         return pos;
     }
 
-    // ÊÀ½ç×ø±êÅĞ¶¨Èë¿Ú
+    // ä¸–ç•Œåæ ‡åˆ¤å®šå…¥å£
     public bool IsWorldPosWalkable(Vector3 worldPos)
     {
         if (currentRoot == null) return false;
@@ -261,12 +261,12 @@ public class WorldAreaManager : MonoBehaviour
 
     private bool IsCellWalkable(Vector3Int cell)
     {
-        // ±ß½çÍâÖ±½Ó²»¿É×ß
+        // è¾¹ç•Œå¤–ç›´æ¥ä¸å¯èµ°
         if (!IsCellInBounds(cell)) return false;
 
         foreach (var ground in currentRoot.TileGrounds)
         {
-            // ²»ÔÚĞĞ×ßÇøÓò
+            // ä¸åœ¨è¡Œèµ°åŒºåŸŸ
             if (ground.GetTile(cell) != null)
             {
                 return true;

@@ -15,7 +15,7 @@ namespace My
 
         private IMapProjectileMotion _motion;
         private Transform _body;
-        private Transform _shadow;           // Ωˆ≈◊ŒÔ”√
+        private Transform _shadow;           // ‰ªÖÊäõÁâ©Áî®
         private SpriteRenderer _shadowSR;
 
         private float _lifetime;
@@ -46,7 +46,7 @@ namespace My
             return null;
         }
 
-        // Õ‚≤ø∑¢…‰Ω”ø⁄
+        // Â§ñÈÉ®ÂèëÂ∞ÑÊé•Âè£
         public void Launch(LogicProjectileInfo info, Transform homingTarget = null)
         {
             if (info == null)
@@ -58,15 +58,15 @@ namespace My
 
             this.bindingProjInfo = info;
 
-            //  µ¿˝ªØø… ”
+            // ÂÆû‰æãÂåñÂèØËßÜ
             SetupBodyAndShadow();
 
-            // ¥¥Ω®Motion µ¿˝≤¢≥ı ºªØ
+            // ÂàõÂª∫MotionÂÆû‰æãÂπ∂ÂàùÂßãÂåñ
             _motion = CreateProjectileMotion(info.pData.motionData);
 
             _motion.Initialize(this);
 
-            // ≥ı º∑≈÷√
+            // ÂàùÂßãÊîæÁΩÆ
             transform.position = MainGameManager.Instance.GetWorldPosFromLogicPos(info.spawnPos);
             //if (_body != null) _body.position = position;
 
@@ -81,7 +81,7 @@ namespace My
             float dt = Time.fixedDeltaTime;
             _motion.Tick(dt);
 
-            //// ∏¸–¬±æÃÂø… ”£®∑«≈◊ŒÔ£∫÷±Ω”Ã˘ Position£©
+            //// Êõ¥Êñ∞Êú¨‰ΩìÂèØËßÜÔºàÈùûÊäõÁâ©ÔºöÁõ¥Êé•Ë¥¥ PositionÔºâ
             //if (!(_motion is MapProjectileParabolaMotion))
             //{
             //    Vector2 pos = _motion.Position;
@@ -135,7 +135,7 @@ namespace My
 
         private void SetupBodyAndShadow()
         {
-            // «Â¿Ìæ…µƒ
+            // Ê∏ÖÁêÜÊóßÁöÑ
             //foreach (Transform child in transform) Destroy(child.gameObject);
 
             _body = ViewRoot.Find("body");
@@ -146,12 +146,12 @@ namespace My
             //else
             //    _body = transform;
 
-            // Shadow œ»≤ª¥¥Ω®£ªΩˆ≈◊ŒÔª·“™«Û
+            // Shadow ÂÖà‰∏çÂàõÂª∫Ôºõ‰ªÖÊäõÁâ©‰ºöË¶ÅÊ±Ç
             _shadow = null;
             _shadowSR = null;
         }
 
-        // π©≈◊ŒÔMotionµ˜”√£∫≈‰÷√ ”æı‘™Àÿ
+        // ‰æõÊäõÁâ©MotionË∞ÉÁî®ÔºöÈÖçÁΩÆËßÜËßâÂÖÉÁ¥†
         public void ConfigureParabolaVisual(ParabolaMotionData md)
         {
             if (_shadow == null)
@@ -172,19 +172,19 @@ namespace My
             }
         }
 
-        // π©≈◊ŒÔMotionµ˜”√£∫√ø÷°∏¸–¬ø… ”
+        // ‰æõÊäõÁâ©MotionË∞ÉÁî®ÔºöÊØèÂ∏ßÊõ¥Êñ∞ÂèØËßÜ
         public void UpdateParabolaVisual(Vector2 groundPos, float z, Vector2 forward)
         {
             var md = (ParabolaMotionData)bindingProjInfo.pData.motionData;
-            // body Ãß…˝
+            // body Êä¨Âçá
             Vector2 bodyPos = new Vector2(groundPos.x, groundPos.y + z * md.lift);
             if (_body != null) _body.position = bodyPos;
 
-            //// ≥ØœÚ
+            //// ÊúùÂêë
             //if (bindingProjInfo.pData.rotateBodyToVelocity && _body != null && forward.sqrMagnitude > 0.0001f)
             //    _body.right = forward;
 
-            // shadow ‘⁄µÿ√Ê
+            // shadow Âú®Âú∞Èù¢
             if (_shadow != null)
             {
                 _shadow.position = groundPos;

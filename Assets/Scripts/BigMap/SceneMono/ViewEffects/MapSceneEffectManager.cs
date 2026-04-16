@@ -70,7 +70,7 @@ public class MapSceneEffectManager : MonoBehaviour
 
             if(ctxs[i].CleanUpTimer != -1 && LogicTime.time > ctxs[i].CleanUpTimer)
             {
-                // ´æ£¿
+                // å­˜ï¼Ÿ
                 GameObject.Destroy(ctxs[i].EffectGo);
                 ctxs.RemoveAt(i);
             }
@@ -78,7 +78,7 @@ public class MapSceneEffectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÏÔÊ¾ÌØĞ§
+    /// æ˜¾ç¤ºç‰¹æ•ˆ
     /// </summary>
     /// <param name="originPos"></param>
     /// <param name="duration"></param>
@@ -111,10 +111,10 @@ public class MapSceneEffectManager : MonoBehaviour
 
         if (dir != null && dir != Vector2.zero)
         {
-            // ¼ÆËã½Ç¶È£¨»¡¶È×ª½Ç¶È£©
+            // è®¡ç®—è§’åº¦ï¼ˆå¼§åº¦è½¬è§’åº¦ï¼‰
             float angle = Mathf.Atan2(dir.Value.y, dir.Value.x) * Mathf.Rad2Deg;
 
-            // ¸³Öµ¸ølocalEulerAngles£¬½öÔÚZÖáĞı×ª
+            // èµ‹å€¼ç»™localEulerAnglesï¼Œä»…åœ¨Zè½´æ—‹è½¬
             transform.localEulerAngles = new Vector3(0, 0, angle);
         }
 
@@ -143,7 +143,7 @@ public class MapSceneEffectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// »ñÈ¡ÒÑÓĞ³¡¾°Ğ§¹û
+    /// è·å–å·²æœ‰åœºæ™¯æ•ˆæœ
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

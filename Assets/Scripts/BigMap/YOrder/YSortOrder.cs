@@ -9,7 +9,7 @@ namespace My.Map.Scene
     {
         public int baseOrder = 0;
         public static float factor = 100f;
-        public Transform pivot; // ½Åµã£»ÈôÎª¿ÕÓÃ×ÔÉí
+        public Transform pivot; // è„šç‚¹ï¼›è‹¥ä¸ºç©ºç”¨è‡ªèº«
         private SpriteRenderer sr;
         private SortingGroup group;
 

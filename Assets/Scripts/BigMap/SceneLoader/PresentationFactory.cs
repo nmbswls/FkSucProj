@@ -10,7 +10,7 @@ using UnityEngine;
 namespace My
 {
     /// <summary>
-    /// ¹¤³§Àà
+    /// å·¥å‚ç±»
     /// </summary>
     public interface IPresentationFactory
     {
@@ -31,7 +31,7 @@ namespace My
     {
         public static string GetPrefabKey(EEntityType type, string cfgId)
         {
-            // Ó³ÉäÂß¼­ÀàĞÍµ½±íÏÖPrefabµØÖ·£¨Addressables key/ResourcesÂ·¾¶£©
+            // æ˜ å°„é€»è¾‘ç±»å‹åˆ°è¡¨ç°Prefabåœ°å€ï¼ˆAddressables key/Resourcesè·¯å¾„ï¼‰
             switch (type)
             {
                 case EEntityType.InteractPoint:
@@ -120,7 +120,7 @@ namespace My
 
         public static string ResolveKey(GameObject go)
         {
-            // ¿ÉÍ¨¹ı±ê¼Ç/×é¼ş·´²é¶ÔÓ¦key£¬»òÔÚ Spawn Ê±´æÈë×Öµä
+            // å¯é€šè¿‡æ ‡è®°/ç»„ä»¶åæŸ¥å¯¹åº”keyï¼Œæˆ–åœ¨ Spawn æ—¶å­˜å…¥å­—å…¸
             return go.name;
         }
     }
@@ -129,7 +129,7 @@ namespace My
     {
         GameObject Instantiate(string key);
         void Release(GameObject go);
-        // Òì²½°æ±¾£¨ÍÆ¼öÉú²úÊ¹ÓÃ£©£ºTask<GameObject> InstantiateAsync(string key); Task ReleaseAsync(GameObject go);
+        // å¼‚æ­¥ç‰ˆæœ¬ï¼ˆæ¨èç”Ÿäº§ä½¿ç”¨ï¼‰ï¼šTask<GameObject> InstantiateAsync(string key); Task ReleaseAsync(GameObject go);
     }
 
     public interface IAssetProviderAsync
@@ -164,7 +164,7 @@ namespace My
             go.transform.SetParent(parent);
             var pres = go.GetComponent<IScenePresentation>();
             //if (pres == null)
-            //pres = go.AddComponent<DefaultPresenter>(); // ¶µµ×
+            //pres = go.AddComponent<DefaultPresenter>(); // å…œåº•
             return pres;
         }
 
@@ -197,7 +197,7 @@ namespace My
             var pres = go.GetComponent<IScenePresentation>();
             if (pres == null)
                 pres = go.AddComponent<DefaultPresenter>();
-            // ²»ÔÚÕâÀï Bind/SetVisible£¬ÓÉ AOIManager Íê³É£¬ÒÔ´¦ÀíÈ¡ÏûÂß¼­
+            // ä¸åœ¨è¿™é‡Œ Bind/SetVisibleï¼Œç”± AOIManager å®Œæˆï¼Œä»¥å¤„ç†å–æ¶ˆé€»è¾‘
             var dynamicRoot = MainGameManager.Instance.GetDynamicRoot();
             if (dynamicRoot != null)
             {
@@ -231,6 +231,6 @@ namespace My
         }
     }
 
-    // ¶µµ× Presenter
+    // å…œåº• Presenter
     public class DefaultPresenter : ScenePresentationBase<LogicEntityBase> { }
 }

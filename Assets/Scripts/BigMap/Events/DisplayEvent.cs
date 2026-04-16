@@ -20,11 +20,11 @@
 //        void Handle(in T evt);
 //    }
 
-//    // ¶©ÔÄ¾ä±ú
+//    // è®¢é˜…å¥æŸ„
 //    public sealed class DisplaySubscription
 //    {
 //        public readonly Type EventType;
-//        public readonly object Handler; // ´æ½Ó¿ÚÊµÀı¼´¿É
+//        public readonly object Handler; // å­˜æ¥å£å®ä¾‹å³å¯
 //        public DisplaySubscription(Type type, object handler)
 //        {
 //            EventType = type; Handler = handler;
@@ -38,7 +38,7 @@
 //        private readonly Queue<object> qFixed = new();
 //        private readonly Queue<object> qEOF = new();
 
-//        // ·µ»Ø¿ÉÓÃÓÚ½â°óµÄ¾ä±ú
+//        // è¿”å›å¯ç”¨äºè§£ç»‘çš„å¥æŸ„
 //        public DisplaySubscription Subscribe<T>(IDisplayHandler<T> handler) where T : struct, IDisplayEvent
 //        {
 //            var t = typeof(T);
@@ -75,7 +75,7 @@
 //        private void Dispatch<T>(in T evt) where T : struct, IDisplayEvent
 //        {
 //            if (!handlers.TryGetValue(typeof(T), out var list)) return;
-//            // Ç¿ÀàĞÍµ÷ÓÃ£¬ÎŞ·´Éä
+//            // å¼ºç±»å‹è°ƒç”¨ï¼Œæ— åå°„
 //            foreach (var h in list)
 //            {
 //                if (h is IDisplayHandler<T> dh) dh.Handle(evt);
@@ -86,13 +86,13 @@
 //        public void PumpFixed() { while (qFixed.Count > 0) DispatchDynamic(qFixed.Dequeue()); }
 //        public void PumpEndOfFrame() { while (qEOF.Count > 0) DispatchDynamic(qEOF.Dequeue()); }
 
-//        // ¶¯Ì¬Â·¾¶ÓÃÓÚ²»Í¬¾ßÌåÊÂ¼şÀàĞÍ£¬ÈÔ±ÜÃâ·´Éä²éÕÒ·½·¨£¬×ß½Ó¿Úµ÷ÓÃ
+//        // åŠ¨æ€è·¯å¾„ç”¨äºä¸åŒå…·ä½“äº‹ä»¶ç±»å‹ï¼Œä»é¿å…åå°„æŸ¥æ‰¾æ–¹æ³•ï¼Œèµ°æ¥å£è°ƒç”¨
 //        private void DispatchDynamic(object evt)
 //        {
 //            var t = evt.GetType();
 //            if (!handlers.TryGetValue(t, out var list)) return;
 
-//            // Ê¹ÓÃÔËĞĞÊ±·ºĞÍ¸¨Öú£ºÍ¨¹ı¾²Ì¬×ÖµäÂ·ÓÉ£¨¿ÉÓÉÉú³ÉÆ÷Éú³É£©£¬ÕâÀïÓÃ·´Éä¶µµ×
+//            // ä½¿ç”¨è¿è¡Œæ—¶æ³›å‹è¾…åŠ©ï¼šé€šè¿‡é™æ€å­—å…¸è·¯ç”±ï¼ˆå¯ç”±ç”Ÿæˆå™¨ç”Ÿæˆï¼‰ï¼Œè¿™é‡Œç”¨åå°„å…œåº•
 //            foreach (var h in list)
 //            {
 //                var iface = typeof(IDisplayHandler<>).MakeGenericType(t);

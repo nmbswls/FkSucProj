@@ -71,7 +71,7 @@ namespace My
         {
             OneDayBalanceInfo balanceInfo = new OneDayBalanceInfo();
             //
-            Debug.Log("½áËã");
+            Debug.Log("ç»“ç®—");
             //
 
             //

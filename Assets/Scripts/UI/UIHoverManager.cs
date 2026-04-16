@@ -19,9 +19,9 @@ namespace My.UI
 
     public interface IHoverInfoProvider
     {
-        // ·µ»ØÓÃÓÚÏÔÊ¾µÄÎÄ±¾£¬Èç¹û²»¿ÉÌáÊ¾Ôò·µ»Ø null »ò¿Õ´®
+        // è¿”å›ç”¨äºæ˜¾ç¤ºçš„æ–‡æœ¬ï¼Œå¦‚æœä¸å¯æç¤ºåˆ™è¿”å› null æˆ–ç©ºä¸²
         //void OnRefreshTipInfo(TooltipController controller);
-        // ¿ÉÑ¡£º·µ»ØÓÃÓÚÃªµãµÄÆÁÄ»×ø±ê£¨Ä¬ÈÏÊ¹ÓÃÊó±êÎ»ÖÃ»òÃüÖĞµã£©
+        // å¯é€‰ï¼šè¿”å›ç”¨äºé”šç‚¹çš„å±å¹•åæ ‡ï¼ˆé»˜è®¤ä½¿ç”¨é¼ æ ‡ä½ç½®æˆ–å‘½ä¸­ç‚¹ï¼‰
         Vector2? GetCustomScreenPos(Camera uiCamera);
 
         RectTransform GetHoverUIRange();
@@ -36,7 +36,7 @@ namespace My.UI
     }
 
     /// <summary>
-    /// hover tipÀàĞÍ
+    /// hover tipç±»å‹
     /// </summary>
     public enum EHoverTipType
     {
@@ -59,15 +59,15 @@ namespace My.UI
 
     public class UIHoverManager : MonoBehaviour
     {
-        // ±ØĞèÒıÓÃ
+        // å¿…éœ€å¼•ç”¨
         //public TooltipController tooltip;
-        public GraphicRaycaster raycaster;          // Canvas µÄ GraphicRaycaster
+        public GraphicRaycaster raycaster;          // Canvas çš„ GraphicRaycaster
         public Camera mainCamera;                   // 
 
         public bool With3D = false;
 
-        // ¼òµ¥¿ª¹Ø
-        public bool updateOnlyOnMouseMove = true;   // ½öÊó±êÒÆ¶¯Ê±¸üĞÂ£¨Ä¬ÈÏÊ¡ĞÔÄÜ£©
+        // ç®€å•å¼€å…³
+        public bool updateOnlyOnMouseMove = true;   // ä»…é¼ æ ‡ç§»åŠ¨æ—¶æ›´æ–°ï¼ˆé»˜è®¤çœæ€§èƒ½ï¼‰
 
         private EventSystem _eventSystem;
         private PointerEventData _ped;
@@ -117,13 +117,13 @@ namespace My.UI
 
             do
             {
-                // ÏÈ²é UI
+                // å…ˆæŸ¥ UI
                 if (TryGetUIHover(mouse, out currHoverOne, out Vector2 uiPos))
                 {
                     break;
                 }
 
-                // ÔÙ²é³¡¾°
+                // å†æŸ¥åœºæ™¯
                 if (TryGetWorldHover(mouse, out currHoverOne, out Vector2 worldPos))
                 {
                     break;
@@ -137,7 +137,7 @@ namespace My.UI
 
                 OnLeaveHover();
 
-                prevHoverOne = currHoverOne; // ¸üĞÂĞü¸¡Õß
+                prevHoverOne = currHoverOne; // æ›´æ–°æ‚¬æµ®è€…
                                              //var tipInfo = currHoverOne.GetSimpleTipInfo();
                                              //if (tipInfo != null)
                                              //{
@@ -165,7 +165,7 @@ namespace My.UI
             var results = new List<RaycastResult>();
             raycaster.Raycast(_ped, results);
 
-            // ½á¹ûÒÑ°´»æÖÆÉî¶ÈÅÅĞò£¬È¡µÚÒ»¸ö´ø ITipProvider µÄ
+            // ç»“æœå·²æŒ‰ç»˜åˆ¶æ·±åº¦æ’åºï¼Œå–ç¬¬ä¸€ä¸ªå¸¦ ITipProvider çš„
             foreach (var r in results)
             {
                 var tip = r.gameObject.GetComponentInParent<IHoverInfoProvider>();
@@ -188,7 +188,7 @@ namespace My.UI
 
             Ray ray = mainCamera.ScreenPointToRay(mouseScreen);
 
-            // ÏÈ 3D
+            // å…ˆ 3D
             if (With3D)
             {
                 if (Physics.Raycast(ray, out var hit3D))
@@ -206,7 +206,7 @@ namespace My.UI
             }
 
 
-            // ÔÙ 2D£¨¿ÉÑ¡£¬²»ÃüÖĞ 3D Ê±³¢ÊÔ£©
+            // å† 2Dï¼ˆå¯é€‰ï¼Œä¸å‘½ä¸­ 3D æ—¶å°è¯•ï¼‰
             RaycastHit2D hit2D = Physics2D.GetRayIntersection(ray);
             if (hit2D.collider != null)
             {
@@ -256,12 +256,12 @@ namespace My.UI
         private float hideDelayMs = 100;
         private float showDelayMs = 100;
 
-        // ¶ÔÍâ½Ó¿Ú£ºÇëÇóÏÔÊ¾
+        // å¯¹å¤–æ¥å£ï¼šè¯·æ±‚æ˜¾ç¤º
         public void RequestShowTip(HoverTipParams tipParams, IHoverInfoProvider provider)
         {
-            // ĞÂµÄÏÔÊ¾ÇëÇóµ½À´£¬ÌáÉı°æ±¾ºÅ²¢È¡ÏûÒş²ØĞ­³ÌµÄĞ§Á¦
+            // æ–°çš„æ˜¾ç¤ºè¯·æ±‚åˆ°æ¥ï¼Œæå‡ç‰ˆæœ¬å·å¹¶å–æ¶ˆéšè—åç¨‹çš„æ•ˆåŠ›
             int myVersion = ++showRequestVersion;
-            hideRequestVersion++; // Ê¹µ±Ç°ÕıÔÚµÈ´ıÒş²ØµÄĞ­³ÌÊ§Ğ§
+            hideRequestVersion++; // ä½¿å½“å‰æ­£åœ¨ç­‰å¾…éšè—çš„åç¨‹å¤±æ•ˆ
 
             StopCoroutineSafe(nameof(ShowDelayRoutine));
             StopCoroutineSafe(nameof(HideDelayRoutine));
@@ -270,9 +270,9 @@ namespace My.UI
 
         public void RequestHideTip(HoverTipParams tipParams)
         {
-            // ĞÂµÄÒş²ØÇëÇóµ½À´£¬ÌáÉı°æ±¾ºÅ²¢È¡ÏûÏÔÊ¾Ğ­³ÌµÄĞ§Á¦
+            // æ–°çš„éšè—è¯·æ±‚åˆ°æ¥ï¼Œæå‡ç‰ˆæœ¬å·å¹¶å–æ¶ˆæ˜¾ç¤ºåç¨‹çš„æ•ˆåŠ›
             int myVersion = ++hideRequestVersion;
-            showRequestVersion++; // Ê¹µ±Ç°ÕıÔÚµÈ´ıÏÔÊ¾µÄĞ­³ÌÊ§Ğ§
+            showRequestVersion++; // ä½¿å½“å‰æ­£åœ¨ç­‰å¾…æ˜¾ç¤ºçš„åç¨‹å¤±æ•ˆ
 
             StopCoroutineSafe(nameof(ShowDelayRoutine));
             StopCoroutineSafe(nameof(HideDelayRoutine));
@@ -281,7 +281,7 @@ namespace My.UI
 
         private IEnumerator ShowDelayRoutine(HoverTipParams tipParams, IHoverInfoProvider provider, int version)
         {
-            // ÑÓ³ÙµÈ´ı
+            // å»¶è¿Ÿç­‰å¾…
             if (!_uiHoverTips.TryGetValue(tipParams.TipType, out var hoverTip))
             {
                 yield break;
@@ -319,16 +319,16 @@ namespace My.UI
 
             while (t < wait)
             {
-                // ÈôÓĞĞÂµÄÇëÇóÊ¹±¾Ğ­³ÌÊ§Ğ§£¬Á¢¼´ÍË³ö
+                // è‹¥æœ‰æ–°çš„è¯·æ±‚ä½¿æœ¬åç¨‹å¤±æ•ˆï¼Œç«‹å³é€€å‡º
                 if (version != showRequestVersion) yield break;
                 t += Time.unscaledDeltaTime;
                 yield return null;
             }
 
-            // ÔÙ´ÎÈ·ÈÏÈÔÈ»ÊÇ×îĞÂµÄÏÔÊ¾ÇëÇó
+            // å†æ¬¡ç¡®è®¤ä»ç„¶æ˜¯æœ€æ–°çš„æ˜¾ç¤ºè¯·æ±‚
             if (version != showRequestVersion) yield break;
 
-            // ÕæÕıÏÔÊ¾£¨ÄãÒÑÓĞµÄÏÔÊ¾ÊµÏÖ¿ÉÒÔ·ÅÔÚÕâÀï£©
+            // çœŸæ­£æ˜¾ç¤ºï¼ˆä½ å·²æœ‰çš„æ˜¾ç¤ºå®ç°å¯ä»¥æ”¾åœ¨è¿™é‡Œï¼‰
             SetTipVisible(tipParams, provider, true);
         }
 
@@ -338,13 +338,13 @@ namespace My.UI
             float t = 0f;
             while (t < wait)
             {
-                // ÈôÓĞĞÂµÄÇëÇóÊ¹±¾Ğ­³ÌÊ§Ğ§£¨ÀıÈçÓÖÒªÏÔÊ¾£©£¬Á¢¼´ÍË³ö
+                // è‹¥æœ‰æ–°çš„è¯·æ±‚ä½¿æœ¬åç¨‹å¤±æ•ˆï¼ˆä¾‹å¦‚åˆè¦æ˜¾ç¤ºï¼‰ï¼Œç«‹å³é€€å‡º
                 if (version != hideRequestVersion) yield break;
                 t += Time.unscaledDeltaTime;
                 yield return null;
             }
 
-            // ÈÔÊÇ×îĞÂÒş²ØÇëÇó
+            // ä»æ˜¯æœ€æ–°éšè—è¯·æ±‚
             if (version != hideRequestVersion) yield break;
 
             SetTipVisible(tipParams, null, false);
@@ -373,7 +373,7 @@ namespace My.UI
 
         private void StopCoroutineSafe(string routineName)
         {
-            // ±ÜÃâ StopCoroutine(null) ±¨´í£»¿ÉÑ¡
+            // é¿å… StopCoroutine(null) æŠ¥é”™ï¼›å¯é€‰
             try { StopCoroutine(routineName); } catch { }
         }
     }

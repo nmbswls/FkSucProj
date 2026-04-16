@@ -24,7 +24,7 @@ namespace My.Map.AI
         
   //      public float LoseTargetTimer;
 
-  //      // Ã¿Ö¡¸üĞÂµÄ¸ĞÖª¿ìÕÕ
+  //      // æ¯å¸§æ›´æ–°çš„æ„ŸçŸ¥å¿«ç…§
   //      public float Distance;
   //      public float AngleToPlayer;
   //      public bool CanSee;
@@ -33,7 +33,7 @@ namespace My.Map.AI
 
   //      public Vector2? LastLeaveMoveModePos;
 
-  //      public bool LastPeriodSee; // ¿´¼û»ò²»¾ÃÇ°¿´¼û
+  //      public bool LastPeriodSee; // çœ‹è§æˆ–ä¸ä¹…å‰çœ‹è§
 
   //      public bool IsInHMode;
 
@@ -48,7 +48,7 @@ namespace My.Map.AI
   //      public int AttractLevel;
 
   //      public Vector2 EnterAttractPos; // 
-  //      public int CurrentAttractLevel; // µ±Ç°ÎüÒıµÈ¼¶
+  //      public int CurrentAttractLevel; // å½“å‰å¸å¼•ç­‰çº§
 
   //      public bool LockPeacefulEscape = false;
   //  }
@@ -71,7 +71,7 @@ namespace My.Map.AI
   //  }
     
   //  /// <summary>
-  //  /// ai ÄÔ
+  //  /// ai è„‘
   //  /// </summary>
   //  public class MapUnitAIBrain
   //  {
@@ -349,7 +349,7 @@ namespace My.Map.AI
   //          blackboard.AngleToPlayer = Vector2.SignedAngle(NpcEntity.CurrentLook, (PlayerEntity.Pos - NpcEntity.Pos));
   //          blackboard.CanSee = Vision.CanSee(NpcEntity.Pos, NpcEntity.CurrentLook, PlayerEntity.Pos, brainConfig.VisionRange, brainConfig.VisionFOV);
 
-  //          // ÓĞÎÊÌâ »á¶ªÊÂ¼ş
+  //          // æœ‰é—®é¢˜ ä¼šä¸¢äº‹ä»¶
   //          if (blackboard.CanSee)
   //          {
   //              blackboard.LoseTargetTimer = brainConfig.LoseTargetGrace;
@@ -372,7 +372,7 @@ namespace My.Map.AI
   //              //});
   //          }
 
-  //          // ±ß½ç
+  //          // è¾¹ç•Œ
   //          var center = blackboard.SpawnPos;
   //          float dist = Vector2.Distance(NpcEntity.Pos, center);
   //          bool nowIn = dist <= blackboard.BoundaryRadius;

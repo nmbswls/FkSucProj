@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace My.Map.Entity
 {
-    // ===== »ù´¡±êÇ©ÓëÃ¶¾Ù =====
+    // ===== åŸºç¡€æ ‡ç­¾ä¸æšä¸¾ =====
     public enum AbilityTypeTag 
     { 
         Combat, 
@@ -33,7 +33,7 @@ namespace My.Map.Entity
         String,
     }
 
-    public enum PhaseEventKind { OnEnter, OnExit, Timed } // Timed ÎªÏà¶Ô½×¶ÎÊ±¼äµÄ´¥·¢µã
+    public enum PhaseEventKind { OnEnter, OnExit, Timed } // Timed ä¸ºç›¸å¯¹é˜¶æ®µæ—¶é—´çš„è§¦å‘ç‚¹
 
 
     [Serializable]
@@ -55,11 +55,11 @@ namespace My.Map.Entity
     public class PhaseEffectEvent
     {
         public PhaseEventKind Kind = PhaseEventKind.Timed;
-        public float TimeOffset = 0f;         // ½öµ± Kind==Timed ÉúĞ§£¨Ïà¶Ô½×¶Î¿ªÊ¼£©
+        public float TimeOffset = 0f;         // ä»…å½“ Kind==Timed ç”Ÿæ•ˆï¼ˆç›¸å¯¹é˜¶æ®µå¼€å§‹ï¼‰
         [SerializeReference]
-        public MapFightEffectCfg Effect;                // ¾ßÌåĞ§¹û
-        public int Repeat = 0;                // ¿ÉÑ¡£ºÖØ¸´´ÎÊı
-        public float RepeatInterval = 0f;     // ¿ÉÑ¡£ºÖØ¸´¼ä¸ô£¨ÊÊºÏ³ÖĞøÉËº¦/³ÖĞø²ÉÑù£©
+        public MapFightEffectCfg Effect;                // å…·ä½“æ•ˆæœ
+        public int Repeat = 0;                // å¯é€‰ï¼šé‡å¤æ¬¡æ•°
+        public float RepeatInterval = 0f;     // å¯é€‰ï¼šé‡å¤é—´éš”ï¼ˆé€‚åˆæŒç»­ä¼¤å®³/æŒç»­é‡‡æ ·ï¼‰
 
         public string CheckNeedBuff;
         public string CheckNoBuff;
@@ -77,9 +77,9 @@ namespace My.Map.Entity
     public enum EAbilityInterruptMask
     {
         None = 0,
-        Hit = 1 << 0, // ÆÕÍ¨ÊÜ»÷
-        Move = 1 << 1, // ÆÕÍ¨ÊÜ»÷
-        Cancel = 1 << 2, // ÆÕÍ¨È¡Ïû
+        Hit = 1 << 0, // æ™®é€šå—å‡»
+        Move = 1 << 1, // æ™®é€šå—å‡»
+        Cancel = 1 << 2, // æ™®é€šå–æ¶ˆ
         Cast = 1 << 3,
     }
 
@@ -90,12 +90,12 @@ namespace My.Map.Entity
         public string PhaseName;
 
         public OneVariaty DurationValue;
-        public bool HoldingPhase; // ³ÖĞøÊ©·¨µÄphase²»»á×ÔÈ»½áÊø
+        public bool HoldingPhase; // æŒç»­æ–½æ³•çš„phaseä¸ä¼šè‡ªç„¶ç»“æŸ
         
-        public string AnimTag; // ¿ÉÓÃÓÚÇı¶¯¶¯»­×´Ì¬
+        public string AnimTag; // å¯ç”¨äºé©±åŠ¨åŠ¨ç”»çŠ¶æ€
 
 
-        public EAbilityInterruptMask InterruptMask; // ×Ô¶¨ÒåFlags
+        public EAbilityInterruptMask InterruptMask; // è‡ªå®šä¹‰Flags
         public bool ForbidDodge = false;
 
         public bool WithProgress = false;
@@ -104,7 +104,7 @@ namespace My.Map.Entity
         public bool ImmuneKnock = false;
 
 
-        public List<PhaseEffectEvent> Events = new();  // ¸Ã½×¶ÎÄÚµÄËùÓĞĞ§¹ûÓëÊ±Ğò
+        public List<PhaseEffectEvent> Events = new();  // è¯¥é˜¶æ®µå†…çš„æ‰€æœ‰æ•ˆæœä¸æ—¶åº
 
         public string EnterDebugString = string.Empty;
         public List<string> PhaseBuff = new();
@@ -112,7 +112,7 @@ namespace My.Map.Entity
         public bool ShowRangePreview = false;
         public MapPreviewIntent PreviewIntent = new();
 
-        public string UsePhaseHitAsTarget; // ÌØÊâÊôĞÔ Èç¹û·Ç¿Õ Ôò½øÈëµ±Ç°phaseÊ± Ê¹ÓÃÌØ¶¨phaseµÄ»÷ÖĞÄ¿±êµ±×÷ĞÂ¼¼ÄÜtarget
+        public string UsePhaseHitAsTarget; // ç‰¹æ®Šå±æ€§ å¦‚æœéç©º åˆ™è¿›å…¥å½“å‰phaseæ—¶ ä½¿ç”¨ç‰¹å®šphaseçš„å‡»ä¸­ç›®æ ‡å½“ä½œæ–°æŠ€èƒ½target
     }
 
 
@@ -123,15 +123,15 @@ namespace My.Map.Entity
         public string Id;
 
         /// <summary>
-        /// Ö÷tag
+        /// ä¸»tag
         /// </summary>
         public AbilityTypeTag TypeTag = AbilityTypeTag.Combat;
 
 
-        // ½×¶Î¶¨Òå
+        // é˜¶æ®µå®šä¹‰
         public List<MapAbilityPhase> Phases = new List<MapAbilityPhase>();
 
-        // Ğ§¹û
+        // æ•ˆæœ
         [SerializeReference]
         public List<MapFightEffectCfg> OnStartEffects = new();
         [SerializeReference]
@@ -139,7 +139,7 @@ namespace My.Map.Entity
         [SerializeReference]
         public List<MapFightEffectCfg> OnCancelEffects = new();
 
-        // ±äÁ¿¼¯ºÏ
+        // å˜é‡é›†åˆ
         public Dictionary<string, string> Variables = new();
 
        
@@ -148,7 +148,7 @@ namespace My.Map.Entity
         public bool IsDodge;
         public bool AdjustFaceDir;
 
-        // ai Ïà¹Ø
+        // ai ç›¸å…³
         
 
         public bool CauseAttract = false;
@@ -162,7 +162,7 @@ namespace My.Map.Entity
             Circle,
             Directional,
             LockTarget,
-            ToFace, // »á¸ù¾İÃæÏòÎ±ÔìÒ»¸öÊ©·¨²ÎÊı
+            ToFace, // ä¼šæ ¹æ®é¢å‘ä¼ªé€ ä¸€ä¸ªæ–½æ³•å‚æ•°
         }
         public ECastType CastType;
         public float Range1;
@@ -170,15 +170,15 @@ namespace My.Map.Entity
 
 
         /// <summary>
-        /// Ê©·¨Îü¸½
+        /// æ–½æ³•å¸é™„
         /// </summary>
         public float DefaultStepDistance = 0.0f;
-        public bool AddTargetCorrection = false; // ÊÇ·ñÔö¼ÓÎü¸½
+        public bool AddTargetCorrection = false; // æ˜¯å¦å¢åŠ å¸é™„
         public float MaxCorrectionValue = 0.5f;
         public float GoodCorrectionnDist = 0.8f;
 
         /// <summary>
-        /// Ñ¡Ôñ²ßÂÔ
+        /// é€‰æ‹©ç­–ç•¥
         /// </summary>
         public FightStruct.ETargetSelectPolicy TargetSelectPolicy = FightStruct.ETargetSelectPolicy.None;
 

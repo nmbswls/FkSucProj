@@ -14,7 +14,7 @@ namespace My.Map.Logic
 {
 
     /// <summary>
-    /// 管理区域
+    /// 绠＄悊鍖哄煙
     /// </summary>
     public partial class GameLogicAreaManager
     {
@@ -37,7 +37,7 @@ namespace My.Map.Logic
         }
 
         /// <summary>
-        /// 创建一个点
+        /// 鍒涘缓涓�涓偣
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="digId"></param>

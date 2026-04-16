@@ -24,7 +24,7 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
-        private bool IsSwitching = false;  // ²»ºÏÀí
+        private bool IsSwitching = false;  // ä¸åˆç†
         private float switchingTimer = 0;
 
         public bool InteractFocused { get; set; }

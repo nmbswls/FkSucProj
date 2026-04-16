@@ -8,7 +8,7 @@ namespace My.UI
 {
     public class RadialSectorItem : MonoBehaviour
     {
-        public Image sectorBg;   // ÉÈĞÎµ×Í¼£¨¿ÉÓÃImage Filled£©
+        public Image sectorBg;   // æ‰‡å½¢åº•å›¾ï¼ˆå¯ç”¨Image Filledï¼‰
         public RectTransform InfoRoot;
         public RectTransform SectRoot;
 
@@ -23,7 +23,7 @@ namespace My.UI
             AbilityId = abId;
             if (sectorBg != null)
             {
-                sectorBg.fillAmount = fillAmount - 2 * 1.0f / 360f; // Ìî³ä=ÉÈÇø½Ç¶È/360
+                sectorBg.fillAmount = fillAmount - 2 * 1.0f / 360f; // å¡«å……=æ‰‡åŒºè§’åº¦/360
                 sectorBg.color = normal;
             }
             //if (icon != null) icon.sprite = iconSprite;
@@ -42,7 +42,7 @@ namespace My.UI
         {
             if (icon != null)
                 icon.color = interactable ? icon.color : new Color(1, 1, 1, 0.35f);
-            // Ò²¿ÉÔÚÕâÀï¼Ó»Ò½×²ÄÖÊ¡¢½ûÓÃÕÚÕÖµÈ
+            // ä¹Ÿå¯åœ¨è¿™é‡ŒåŠ ç°é˜¶æè´¨ã€ç¦ç”¨é®ç½©ç­‰
         }
 
     }

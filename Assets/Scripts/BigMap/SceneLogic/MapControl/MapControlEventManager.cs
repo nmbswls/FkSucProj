@@ -97,7 +97,7 @@ namespace My.Map
         protected Dictionary<EMapLogicEventType, List<MapControlEvent>> _eventListeners = new();
 
         /// <summary>
-        /// ×¢²áÊÂ¼þ
+        /// æ³¨å†Œäº‹ä»¶
         /// </summary>
         public void RegisterMapControlEvents()
         {
@@ -160,7 +160,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// Ö´ÐÐaction
+        /// æ‰§è¡Œaction
         /// </summary>
         /// <param name="action"></param>
         public void ExecuteMapControlAction(MapControlAction action)

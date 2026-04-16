@@ -14,7 +14,7 @@ namespace My.Map
 
         public void ApplyAttracted(Vector2 pos, float power, ILogicEntity? attractSrc)
         {
-            // 仅处理玩家产生的吸引
+            // 浠呭鐞嗙帺瀹朵骇鐢熺殑鍚稿紩
             if(attractSrc == null || attractSrc is not PlayerLogicEntity playerEntity)
             {
                 return;

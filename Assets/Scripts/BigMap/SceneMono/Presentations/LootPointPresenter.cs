@@ -45,25 +45,25 @@ namespace My.Map.Scene
         }
 
         /// <summary>
-        /// 触发交互
+        /// 瑙﹀彂浜や簰
         /// </summary>
         /// <param name="triggerIdx"></param>
         public bool TriggerInteract(int selectionId)
         {
-            // 只有一个触发点
+            // 鍙湁涓�涓Е鍙戠偣
             if (selectionId == 1)
             {
-                // 尝试解锁
+                // 灏濊瘯瑙ｉ攣
                 if (!LootEntity.IsLocked)
                 {
-                    MainGameManager.Instance.ShowFakeFxEffect("没锁呀", _logic.Pos);
+                    MainGameManager.Instance.ShowFakeFxEffect("娌￠攣鍛�", _logic.Pos);
                     return true;
                 }
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("unlock_loot_point", target: LootEntity); ;
             }
             else if (selectionId == 2)
             {
-                // 尝试解锁
+                // 灏濊瘯瑙ｉ攣
                 if (LootEntity.IsLocked)
                 {
                     MainGameManager.Instance.ShowFakeFxEffect("locked", _logic.Pos);

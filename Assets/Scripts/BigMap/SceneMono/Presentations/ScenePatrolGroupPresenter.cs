@@ -25,7 +25,7 @@ namespace My.Map.Scene
         private void OnDrawGizmos()
         {
             var pos = RealEntity.WayPointInfos[RealEntity.WayPointIdx];
-            Gizmos.DrawSphere(new Vector3(pos.x, pos.y, 0), 0.1f); // 固定世界坐标
+            Gizmos.DrawSphere(new Vector3(pos.x, pos.y, 0), 0.1f); // 鍥哄畾涓栫晫鍧愭爣
         }
 
     }

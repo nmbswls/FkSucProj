@@ -70,7 +70,7 @@ namespace My.Map.Scene
 
         protected virtual void OnEventDestroyObjBrack(long entityId)
         {
-            MainGameManager.Instance.ShowFakeFxEffect("ÆÆËé", this.transform.position);
+            MainGameManager.Instance.ShowFakeFxEffect("ç ´ç¢Ž", this.transform.position);
 
             if (MainView != null)
             {

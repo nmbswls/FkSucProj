@@ -22,7 +22,7 @@ public class MapSceneFadeAlphaManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÇøÓò³õÊ¼»¯
+    /// åŒºåŸŸåˆå§‹åŒ–
     /// </summary>
     /// <param name="sceneRoot"></param>
     public void OnEnterArea(GameObject sceneRoot)

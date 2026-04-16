@@ -51,14 +51,14 @@ namespace My.Map
 
             Debug.Log("OnDialogStart " + this.Id);
 
-            // Ω”π‹anim
+            // Êé•ÁÆ°anim
             //AnimLayers.Add(new AnimLayerStruct() { Name = "idle", Layer = 6, Priority = 5});
             //RemoveAnimLayer();
         }
 
         public void OnDialogEnd()
         {
-            // ÷ÿ÷√anim
+            // ÈáçÁΩÆanim
             DialogControlled = false;
 
             //AnimLayers

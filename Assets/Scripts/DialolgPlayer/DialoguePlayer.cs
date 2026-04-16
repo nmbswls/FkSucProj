@@ -18,14 +18,14 @@ using static UnityEngine.EventSystems.EventTrigger;
 [Serializable]
 public class DialogueRuntime
 {
-    // ??????????????????????? DialoguePlayer ?? public ???????????? Runtime ???????????
+    // 对话运行期上下文：由 DialoguePlayer 填充 UI/镜头/驱动等引用，供数据驱动流程读取
     public DialogueUI ui;
     public PortraitManager portraits;
     public SimpleCameraDirector cam;
     //public AudioBus audio;
     public DialogueTimeDriver driver;
 
-    // ??????????????? key ????????????????????????????? key
+    // 文案本地化：将表 key 转为显示文本；为 null 时直接使用 key
     public Func<string, string> Localize;
 
     public Action<string> JumpTo;
@@ -48,7 +48,7 @@ public partial class DialoguePlayer : MonoBehaviour
     public bool AutoMode;
     public bool SkipMode;
 
-    // ?????
+    // 播放结束回调（可选）
     private Action? OnPlayEnd;
 
     private DialogMetaInfo MetaInfo;
@@ -64,30 +64,30 @@ public partial class DialoguePlayer : MonoBehaviour
         get { return isPlaying; }
     }
 
-    // ??????????
+    // 当前 Step 内正在执行的命令下标
     private int currentCmdIndex;
 
-    // ?????????????????
+    // 当前命令是否仍在异步执行（如移动未结束）
     private bool commandRunning;
 
-    // ??????????????????????/????????
+    // 是否在等待玩家确认继续，或 TypeText 播完后的停顿
     private bool waitingForContinue;
 
-    // Step ??????????????? Step ????
+    // 本 Step 的命令已全部跑完，等待进入下一 Step
     private bool waitingForNextStep;
 
-    // label ????
+    // 标签到 Step 索引（Jump 用，当前未启用）
     //private readonly Dictionary<string, int> labelToStep = new Dictionary<string, int>();
 
-    // ??????????????????????? Step??
+    // Step 内发生 Jump 后，下一帧重入 StartStepFromData
     private bool pendingJump;
 
     private string currCutsceneName;
     private GameObject cutsceneRootGo;
 
-    public PlayableDirector activeDirector; // ??????????? Timeline ???cutscene????????
-    private string waitingSignalName;       // ??????????? Timeline ???
-    private Action onSignalReceivedCallback;// ??????????
+    public PlayableDirector activeDirector; // 当前 Timeline / Cutscene 的 PlayableDirector
+    private string waitingSignalName;       // WaitTimelineSignal：等待 Timeline 发出的信号名
+    private Action onSignalReceivedCallback;// 收到上述信号后执行的收尾回调
 
     private void Awake()
     {
@@ -103,7 +103,7 @@ public partial class DialoguePlayer : MonoBehaviour
 
         CheckPendingCommandEnd();
         
-        // ?????/?????waitingForContinue???? Step ?????waitingForNextStep????????????/???
+        // 仅在等待继续或等待下一 Step 时处理自动/跳过推进，避免打断异步命令
         if (!waitingForContinue && !waitingForNextStep) return;
 
         if (SkipMode)
@@ -175,7 +175,7 @@ public partial class DialoguePlayer : MonoBehaviour
             ui.ShowNextIndicator(true);
             ui.autoTimer = 0f;
 
-            // ????????
+            // 异步条件满足后直接推进
             DoContinue();
         }
     }
@@ -204,7 +204,7 @@ public partial class DialoguePlayer : MonoBehaviour
         {
             waitingForContinue = false;
             ui.ShowNextIndicator(false);
-            // ????????????
+            // 玩家确认后继续执行下一条命令
             currentCmdIndex++;
             ExecuteNextCommandInStep();
         }
@@ -247,8 +247,8 @@ public partial class DialoguePlayer : MonoBehaviour
 
         MainGameManager.Instance.gameLogicManager.IsDialogPlayering = false;
 
-        // ?????????????????????????????????????
-        // ???????????
+        // 结束对话：若加载过过场则异步卸载该 Additive 场景
+        // 清理 Timeline 引用与信号等待状态
         if (!string.IsNullOrEmpty(currCutsceneName))
         {
             StartCoroutine(UnloadCutsceneSceneRoutine(null));
@@ -275,7 +275,7 @@ public partial class DialoguePlayer : MonoBehaviour
     }
 
     /// <summary>
-    /// ???????
+    /// 对话开始：注册受控静态实体、强制刷新、可选加载过场
     /// </summary>
     private void OnDialogStart()
     {
@@ -331,7 +331,7 @@ public partial class DialoguePlayer : MonoBehaviour
 
                 if(entity is not IDialogueActor dialogActor)
                 {
-                    Debug.LogError("??");
+                    Debug.LogError("Invalid dialogue actor type.");
                     continue;
                 }
 
@@ -380,7 +380,7 @@ public partial class DialoguePlayer : MonoBehaviour
     {
         if (pendingJump)
         {
-            // ?????? Jump ??? Step
+            // 存在待处理 Jump：从目标 Step 重新开始
             StartStepFromData();
             return;
         }
@@ -388,7 +388,7 @@ public partial class DialoguePlayer : MonoBehaviour
         var step = dataRef.Steps[stepIndex];
         var commands = step.Commands ?? new List<DialogCommandData>();
 
-        // ????????????????????????? Step??
+        // 本 Step 内命令已全部执行完，进入「等待下一 Step」
         if (currentCmdIndex >= commands.Count)
         {
             EnterWaitForNextStep();
@@ -397,18 +397,18 @@ public partial class DialoguePlayer : MonoBehaviour
 
         var cd = commands[currentCmdIndex];
 
-        // ?????????????
+        // 开始执行当前下标对应的命令
         commandRunning = true;
         waitingForContinue = false;
         waitingForNextStep = false;
 
-        // ???????
+        // 按命令类型分发执行
         ExecuteDataCommand(cd);
     }
 
     private void ExecuteDataCommand(DialogCommandData cd)
     {
-        // ???????????????????????????????????????????????????
+        // 统一收尾：禁用时立即回调；否则经时间驱动延迟一帧，避免与 UI 协程抢同一帧
         void SafeComplete()
         {
             if (!isActiveAndEnabled)
@@ -416,7 +416,7 @@ public partial class DialoguePlayer : MonoBehaviour
                 CommandCompletedFromData(cd);
                 return;
             }
-            // ???????????????????? UI ???????????????????
+            // 通过 DialogueTimeDriver 延迟执行 CommandCompletedFromData，给 UI 一帧机会
             driver.Run(0f, _ => { }, () => CommandCompletedFromData(cd));
         }
 
@@ -427,7 +427,7 @@ public partial class DialoguePlayer : MonoBehaviour
                     //string name = cd4Text.Speaker;
                     //string text = cd4Text.Content;
                     var textLines = cd4Text.TextLines;
-                    // ?? TypeText ????????????????????????????????????????
+                    // TypeText 播完后进入等待继续，由 Update 里 DoContinue 再推进
                     ui.StartTypeTextBatch(textLines, () =>
                     {
                         commandRunning = false;
@@ -435,20 +435,20 @@ public partial class DialoguePlayer : MonoBehaviour
                         ui.ShowNextIndicator(true);
                         ui.autoTimer = 0f;
 
-                        // ????????
+                        // 同上：进入等待继续
                         DoContinue();
                     });
                     break;
                 }
             case DialogCommandData4BranchText cd4BranchText:
                 {
-                    // Choice ???????????????????????????? Jump
+                    // 分支文本：选项确定后播对应行，目标 Step 由 JumpToStep 处理
                     ui.StartChoices(cd4BranchText.SimpleBranch, index =>
                     {
                         if (index >= 0 && index < cd4BranchText.SimpleTextLines.Count)
                         {
                             var textLines = cd4BranchText.SimpleTextLines[index];
-                            // ?? TypeText ????????????????????????????????????????
+                            // 分支内 TypeText 结束同样进入等待继续
                             ui.StartTypeTextBatch(textLines, () =>
                             {
                                 commandRunning = false;
@@ -456,7 +456,7 @@ public partial class DialoguePlayer : MonoBehaviour
                                 ui.ShowNextIndicator(true);
                                 ui.autoTimer = 0f;
 
-                                // ????????
+                                // 同上：进入等待继续
                                 DoContinue();
                             });
                         }
@@ -498,7 +498,7 @@ public partial class DialoguePlayer : MonoBehaviour
 
             //case "CameraMove":
             //    {
-            //        // ?????????????????????????????????????????????????
+            //        // 镜头位移等可在此接入 cam.MoveTo，经 driver 延迟后 SafeComplete
             //        // cam?.MoveTo(..., () => SafeComplete());
             //        driver.Run(0.01f, _ => { }, SafeComplete);
             //        break;
@@ -531,7 +531,7 @@ public partial class DialoguePlayer : MonoBehaviour
                 }
             case DialogCommandData4WaitTimelineSignal cdWaitSignal:
                 {
-                    // ???????????????????????????????? Timeline ?????????
+                    // 暂停剧情直到 Timeline 发出指定 Signal（由 ReceiveTimelineSignal 解除）
                     waitingSignalName = cdWaitSignal.SignalName;
                     onSignalReceivedCallback = SafeComplete;
                     break;
@@ -541,15 +541,15 @@ public partial class DialoguePlayer : MonoBehaviour
                 {
                     if (activeDirector != null && activeDirector.state == PlayState.Paused)
                     {
-                        activeDirector.Play(); // ???????
+                        activeDirector.Play(); // 从暂停点继续播放
                     }
-                    SafeComplete(); // ???????????????????????????????????????????
+                    SafeComplete(); // 无暂停或已恢复：本帧内完成命令收尾
                     break;
                 }
 
             case DialogCommandData4PlayTimeline cd4Timeline:
                 {
-                    // ???????????????????Timeline??????
+                    // PlayTimeline 内根据 waitFinished 决定是否订阅 stopped 再回调
                     PlayTimeline(cd4Timeline.TimelineId, cd4Timeline.WaitUntilFinished, SafeComplete);
                     break;
                 }
@@ -668,7 +668,7 @@ public partial class DialoguePlayer : MonoBehaviour
                         }
                     }
 
-                    // Choice ???????????????????????????? Jump
+                    // 纯选项：选择后可选 JumpToStep，再 SafeComplete
                     ui.StartChoices(options, index =>
                     {
                         if (index >= 0 && index < jumpLabels.Count)
@@ -725,7 +725,7 @@ public partial class DialoguePlayer : MonoBehaviour
             //case "Label":
             default:
                 {
-                    // ??????
+                    // 未识别命令类型：直接完成避免卡死
                     SafeComplete();
                     break;
                 }
@@ -736,7 +736,7 @@ public partial class DialoguePlayer : MonoBehaviour
     {
         if (!commandRunning)
         {
-            // ???????????????????????????????????????????????????????????????
+            // 若已处于「等待继续」且本回调来自 TypeText 完成，则不再重复推进
             if (waitingForContinue) return;
         }
 
@@ -748,7 +748,7 @@ public partial class DialoguePlayer : MonoBehaviour
             return;
         }
 
-        // ??????????????????????????????????
+        // 本条命令结束：推进下标并继续队列
         currentCmdIndex++;
         ExecuteNextCommandInStep();
     }
@@ -766,7 +766,7 @@ public partial class DialoguePlayer : MonoBehaviour
     }
 
 
-    #region ????????
+    #region 过场与 Timeline
 
     private IEnumerator LoadCutsceneSceneRoutine(string sceneName, bool hideMainScene)
     {
@@ -776,7 +776,7 @@ public partial class DialoguePlayer : MonoBehaviour
         //MainGameManager.Instance.CineBrain.m_DefaultBlend = new CinemachineBlendDefinition(
         //    CinemachineBlendDefinition.Style.Cut, 0f);
 
-        // ????????????????????
+        // 若已有 Additive 过场则先卸载，避免重复叠加
         if (!string.IsNullOrEmpty(currCutsceneName))
         {
             yield return SceneManager.UnloadSceneAsync(currCutsceneName);
@@ -784,24 +784,24 @@ public partial class DialoguePlayer : MonoBehaviour
 
         currCutsceneName = sceneName;
 
-        // ??? Additive ????????????????
+        // Additive 加载过场场景
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
         while (!asyncLoad.isDone)
         {
             yield return null;
         }
 
-        // ????????????????????????????????????????????
+        // 可选：隐藏主场景渲染（当前注释保留）
         if (hideMainScene)
         {
             //MainGameManager.Instance.gameLogicManager.SetMainWorldVisible(false);
         }
 
-        // ????????
+        // 对话期间暂停逻辑时间
         LogicTime.RequestPause("Dialog");
 
 
-        // ???????????????????????????????????????
+        // 将活动场景切到过场，便于 Find/Timeline 解析到正确实例
         Scene cutscene = SceneManager.GetSceneByName(sceneName);
         if (cutscene.IsValid())
         {
@@ -811,7 +811,7 @@ public partial class DialoguePlayer : MonoBehaviour
         var rootGo = cutscene.GetRootGameObjects()[0];
         cutsceneRootGo = rootGo;
 
-        // 
+        // 提升过场内主虚拟相机优先级，确保镜头切换生效
         var mainVcam = cutsceneRootGo.transform.Find("VCam").GetComponent<CinemachineVirtualCamera>();
         mainVcam.Priority = 100;
 
@@ -836,11 +836,11 @@ public partial class DialoguePlayer : MonoBehaviour
             currCutsceneName = null;
         }
 
-        // ?????????????
+        // 卸载过场后可在此恢复主场景可见性
         //MainGameManager.Instance.gameLogicManager.SetMainWorldVisible(true);
 
-        // ?????????? Active
-        //SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainGameScene")); // ???????????????????????
+        // 将 ActiveScene 切回主场景（路径需与工程一致）
+        //SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainGameScene")); // 示例：主场景名请按项目配置
 
         onComplete?.Invoke();
 
@@ -850,15 +850,15 @@ public partial class DialoguePlayer : MonoBehaviour
     }
 
     /// <summary>
-    /// ????timeline
+    /// 按资源名查找场景物体上的 PlayableDirector 并播放
     /// </summary>
     /// <param name="timelineId"></param>
     /// <param name="waitFinished"></param>
     /// <param name="onComplete"></param>
     private void PlayTimeline(string timelineId, bool waitFinished, Action onComplete)
     {
-        // ????????????????????????? PlayableDirector
-        // ??????????????????????????Director??????????????????????
+        // timelineId 对应场景中物体名，其挂 PlayableDirector
+        // 若要求等待播完：订阅 stopped，在回调里清空 activeDirector 再 onComplete
         GameObject timelineObj = GameObject.Find(timelineId);
         if (timelineObj != null)
         {
@@ -869,7 +869,7 @@ public partial class DialoguePlayer : MonoBehaviour
 
                 if (waitFinished)
                 {
-                    // ????Timeline??????
+                    // 播完自然停止时触发收尾
                     activeDirector.stopped += OnTimelineStopped;
 
                     void OnTimelineStopped(PlayableDirector director)
@@ -881,7 +881,7 @@ public partial class DialoguePlayer : MonoBehaviour
                             onComplete?.Invoke();
                         }
                     }
-                    return; // ??????? onComplete????? stopped ???
+                    return; // 等待 stopped，不在此处立即 onComplete
                 }
             }
             else
@@ -894,34 +894,34 @@ public partial class DialoguePlayer : MonoBehaviour
             Debug.LogWarning($"TimelineId {timelineId} not found in scene.");
         }
 
-        // ????????????????????????????????
+        // 不等待播完或未找到 Director：立即视为命令完成
         onComplete?.Invoke();
     }
 
     /// <summary>
-    /// ?? Timeline ?? SignalReceiver ????????????
+    /// 供 Timeline SignalReceiver 转发：匹配等待中的信号名则恢复对话命令流
     /// </summary>
     public void ReceiveTimelineSignal(string signalName)
     {
-        // ???????? Timeline
+        // 收到信号后暂停 Timeline，便于接对话 UI
         if (activeDirector != null && activeDirector.state == PlayState.Playing)
         {
             activeDirector.Pause();
         }
 
-        // ??? DialoguePlayer ???????????????
+        // 与 DialoguePlayer 内 WaitTimelineSignal 命令配对
         if (!string.IsNullOrEmpty(waitingSignalName) && waitingSignalName == signalName)
         {
             waitingSignalName = null;
             var callback = onSignalReceivedCallback;
             onSignalReceivedCallback = null;
 
-            // ??????????????????? DialoguePlayer ????????????????????????
+            // 执行注册在对话命令里的回调，继续 ExecuteNextCommandInStep 流程
             callback?.Invoke();
         }
     }
 
-    // ???????? PlayTimeline ??????? director ????? activeDirector
+    // 由 PlayTimeline 流程或外部把场景里的 Director 赋给 activeDirector
     public void SetActiveDirector(PlayableDirector director)
     {
         activeDirector = director;
@@ -932,7 +932,7 @@ public partial class DialoguePlayer : MonoBehaviour
 
 }
 
-// ??????????????????????
+// 简单引用计数：阻塞/解除玩家输入（与对话等系统协作）
 public static class InputBlocker
 {
     private static int counter = 0;
@@ -940,6 +940,6 @@ public static class InputBlocker
     {
         counter += block ? 1 : -1;
         counter = Mathf.Max(0, counter);
-        // ?????????????????????????/??????
+        // 此处可接入：counter>0 时禁用玩家操作或显示遮罩
     }
 }

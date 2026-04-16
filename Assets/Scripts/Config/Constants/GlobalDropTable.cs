@@ -46,7 +46,7 @@
 //        private Dictionary<string, DropBundle> runtimeBundleMap = null;
 
 //        /// <summary>
-//        /// µôÂä
+//        /// æ‰è½
 //        /// </summary>
 //        /// <param name="bundleId"></param>
 //        /// <returns></returns>

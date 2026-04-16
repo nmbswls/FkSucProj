@@ -17,23 +17,23 @@ namespace My
         }
 
         /// <summary>
-        /// ÔÚ Timeline µÄ Signal Receiver ÖĞ°ó¶¨Õâ¸ö·½·¨£¬²¢ÌîÈë×Ô¶¨ÒåµÄ×Ö·û´®²ÎÊı
+        /// åœ¨ Timeline çš„ Signal Receiver ä¸­ç»‘å®šè¿™ä¸ªæ–¹æ³•ï¼Œå¹¶å¡«å…¥è‡ªå®šä¹‰çš„å­—ç¬¦ä¸²å‚æ•°
         /// </summary>
         public void TriggerDialogueSignal(string signalName)
         {
-            // ÕÒµ½Äã³¡¾°ÖĞµÄ DialoguePlayer ÊµÀı
+            // æ‰¾åˆ°ä½ åœºæ™¯ä¸­çš„ DialoguePlayer å®ä¾‹
             var player = FindObjectOfType<DialoguePlayer>();
             if (player != null)
             {
-                // È·±£ DialoguePlayer ÖªµÀµ±Ç°µÄ Director ÊÇË­
+                // ç¡®ä¿ DialoguePlayer çŸ¥é“å½“å‰çš„ Director æ˜¯è°
                 player.SetActiveDirector(director);
 
-                // ·¢ËÍĞÅºÅ²¢´¥·¢ÔİÍ£
+                // å‘é€ä¿¡å·å¹¶è§¦å‘æš‚åœ
                 player.ReceiveTimelineSignal(signalName);
             }
             else
             {
-                Debug.LogWarning("Î´ÕÒµ½ DialoguePlayer£¬ÎŞ·¨´¥·¢ Timeline ĞÅºÅ¡£");
+                Debug.LogWarning("æœªæ‰¾åˆ° DialoguePlayerï¼Œæ— æ³•è§¦å‘ Timeline ä¿¡å·ã€‚");
             }
         }
     }

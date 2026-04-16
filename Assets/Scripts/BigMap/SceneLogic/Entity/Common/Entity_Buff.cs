@@ -149,8 +149,8 @@ namespace My.Map.Entity
                 };
                 
 
-                // µ±¸Ãbuff±»ÒÆ³ıÊ± »Ö¸´Ò»¶¨ÒÂ×°
-                // ±©Â¶×´Ì¬ÏÂ ÏòÖÜÎ§À©É¢hÖµ
+                // å½“è¯¥buffè¢«ç§»é™¤æ—¶ æ¢å¤ä¸€å®šè¡£è£…
+                // æš´éœ²çŠ¶æ€ä¸‹ å‘å‘¨å›´æ‰©æ•£hå€¼
                 _library["player_clothes_expose"] = new BuffDefinition()
                 {
                     BuffId = "player_clothes_expose",
@@ -243,7 +243,7 @@ namespace My.Map.Entity
                     { 
                         new MapFightEffectEasyEffect()
                         {
-                            EffectText = "¾ªÏÅ"
+                            EffectText = "æƒŠå“"
                         },
                     },
                     HeadHintPriority = 1,
@@ -275,7 +275,7 @@ namespace My.Map.Entity
                         new BuffTriggerRuleConfig()
                         {
                             TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 200, // Ã¿0.2ÃëÒ»´Î
+                            TriggerParam1 = 200, // æ¯0.2ç§’ä¸€æ¬¡
                             //OutputEffects = new()
                             //{
                             //    new BuffEffectCfg()
@@ -353,7 +353,7 @@ namespace My.Map.Entity
                         new BuffTriggerRuleConfig()
                         {
                             TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 200, // Ã¿0.2ÃëÒ»´Î
+                            TriggerParam1 = 200, // æ¯0.2ç§’ä¸€æ¬¡
                             OutputFightEffects = new()
                             {
                                 new MapAbilityEffectAddResourceCfg()
@@ -402,7 +402,7 @@ namespace My.Map.Entity
                 };
 
 
-                // Íæ¼Ò·¢Çé»¤¶Ü
+                // ç©å®¶å‘æƒ…æŠ¤ç›¾
                 _library["gc_self_yishang"] = new BuffDefinition()
                 {
                     BuffId = "gc_self_yishang",
@@ -423,7 +423,7 @@ namespace My.Map.Entity
                 };
 
 
-                // Íæ¼ÒgcÒ×ÉË
+                // ç©å®¶gcæ˜“ä¼¤
                 _library["gc_self_yishang"] = new BuffDefinition()
                 {
                     BuffId = "gc_self_yishang",
@@ -467,7 +467,7 @@ namespace My.Map.Entity
                         new BuffTriggerRuleConfig()
                         {
                             TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 500, // Ã¿0.5ÃëÒ»´Î
+                            TriggerParam1 = 500, // æ¯0.5ç§’ä¸€æ¬¡
                             OutputFightEffects = new()
                             {
                                 new MapAbilityEffectAddResourceCfg()
@@ -609,7 +609,7 @@ namespace My.Map.Entity
                         new BuffTriggerRuleConfig()
                         {
                             TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 1000, // Ã¿0.2ÃëÒ»´Î
+                            TriggerParam1 = 1000, // æ¯0.2ç§’ä¸€æ¬¡
                             OutputFightEffects = new()
                             {
                                 new MapFightEffectBroadcastAttractCfg()
@@ -622,7 +622,7 @@ namespace My.Map.Entity
                     },
                 };
 
-                /// Ğ¡ÎïÆ·²úÉúµÄ½×¶ÎĞÔ³å»÷
+                /// å°ç‰©å“äº§ç”Ÿçš„é˜¶æ®µæ€§å†²å‡»
                 _library["insertion_debuff_small"] = new BuffDefinition()
                 {
                     BuffId = "insertion_debuff_small",
@@ -667,7 +667,7 @@ namespace My.Map.Entity
     {
         Invalid,
         AnimOverride,
-        HitEffect, // ParamStr:Ğ§¹ûÃû  ParamFloat1:µ¥´ÎÊ±¼ä
+        HitEffect, // ParamStr:æ•ˆæœå  ParamFloat1:å•æ¬¡æ—¶é—´
     }
 
     [Serializable]
@@ -731,14 +731,14 @@ namespace My.Map.Entity
         public static bool Matches(IMapLogicEvent evt, BuffInstance buffInst, BuffTriggerRuleConfig rule)
         {
             //if (evt.Type != rule.TriggerType) return false;
-            // ¸ù¾İ _param ½âÎöÌõ¼ş£¬ÀıÈç:
+            // æ ¹æ® _param è§£ææ¡ä»¶ï¼Œä¾‹å¦‚:
             // tag=Vulnerable;source=Player;value>=5
             //return ParamMatch(evt);
             return true;
         }
 
         /// <summary>
-        /// ¼ì²é´¥·¢²ÎÊıÊÇ·ñÒ»ÖÂ
+        /// æ£€æŸ¥è§¦å‘å‚æ•°æ˜¯å¦ä¸€è‡´
         /// </summary>
         /// <param name="evt"></param>
         /// <returns></returns>
@@ -749,7 +749,7 @@ namespace My.Map.Entity
     }
 
 
-    // ¼òÒ×¿É¶ÓÁĞ»¯ÊÂ¼ş×ÜÏß
+    // ç®€æ˜“å¯é˜Ÿåˆ—åŒ–äº‹ä»¶æ€»çº¿
     public class BuffEventBus
     {
         private readonly Queue<IMapLogicEvent> _queue = new Queue<IMapLogicEvent>(64);
@@ -761,7 +761,7 @@ namespace My.Map.Entity
             foreach (var e in events) _queue.Enqueue(e);
         }
 
-        // ½«¶ÓÁĞÄÚÈİÒ»´ÎĞÔµ¹³ö£¨¹© BuffManager µ±Ç°Ö¡Ïû·Ñ£©
+        // å°†é˜Ÿåˆ—å†…å®¹ä¸€æ¬¡æ€§å€’å‡ºï¼ˆä¾› BuffManager å½“å‰å¸§æ¶ˆè´¹ï¼‰
         public List<IMapLogicEvent> Drain()
         {
             var list = new List<IMapLogicEvent>(_queue.Count);
@@ -787,7 +787,7 @@ namespace My.Map.Entity
         private readonly List<IMapLogicEvent> _frameEvents = new();
 
 
-        // ÇëÇó¶ÓÁĞ£¨±ÜÃâÆÀ¹À½×¶ÎÖ±½Ó¸Ä±í£©
+        // è¯·æ±‚é˜Ÿåˆ—ï¼ˆé¿å…è¯„ä¼°é˜¶æ®µç›´æ¥æ”¹è¡¨ï¼‰
         private readonly List<(long target, string buffId, int layer, float overrideDuration, long? casterId, long? srcBuffId)> _addRequests = new();
         private readonly List<(long target, long buffInstId)> _removeRequests = new();
 
@@ -836,13 +836,13 @@ namespace My.Map.Entity
 
                                 foreach (var rule in buff.Def.TriggerList)
                                 {
-                                    // ¼ì²é´¥·¢
+                                    // æ£€æŸ¥è§¦å‘
                                     if (!BuffTriggerCheckSystem.Matches(ev, buff, rule))
                                     {
                                         continue;
                                     }
 
-                                    // Ö´ĞĞ
+                                    // æ‰§è¡Œ
                                     // OnTrigger()
 
                                     buff.LastTriggerTime = LogicTime.time;
@@ -856,10 +856,10 @@ namespace My.Map.Entity
 
         private void TickLifetime(float dt)
         {
-            // 1) ÊÕ¼¯Íâ²¿ÊÂ¼ş£¨ÆäËüÏµÍ³¿ÉÖ±½ÓÏò EventBus.Enqueue£©
+            // 1) æ”¶é›†å¤–éƒ¨äº‹ä»¶ï¼ˆå…¶å®ƒç³»ç»Ÿå¯ç›´æ¥å‘ EventBus.Enqueueï¼‰
             _frameEvents.AddRange(BuffEventBus.Drain());
 
-            // 2) ÍÆ½ø¶¨Ê±Æ÷£¬²úÉú Tick/Expire ÊÂ¼ş
+            // 2) æ¨è¿›å®šæ—¶å™¨ï¼Œäº§ç”Ÿ Tick/Expire äº‹ä»¶
             foreach (var buffInst in _buffs.Values)
             {
                 buffInst.Tick(dt);
@@ -869,7 +869,7 @@ namespace My.Map.Entity
 
                     if (buffInst.Lifetime < 0 && !buffInst.MarkedForRemove)
                     {
-                        buffInst.MarkedForRemove = true; // ±ê¼Ç¹ıÆÚ£¬ÇåÀí½×¶ÎÒÆ³ı
+                        buffInst.MarkedForRemove = true; // æ ‡è®°è¿‡æœŸï¼Œæ¸…ç†é˜¶æ®µç§»é™¤
                     }
                 }
             }
@@ -884,10 +884,10 @@ namespace My.Map.Entity
                 consumed++;
             }
 
-            // 6) ´¦ÀíAdd/RemoveÇëÇó£¨ºÏ²¢/¶Ñµş/Ë¢ĞÂ£©
+            // 6) å¤„ç†Add/Removeè¯·æ±‚ï¼ˆåˆå¹¶/å †å /åˆ·æ–°ï¼‰
             FlushBuffAddRemoveRequests();
 
-            // 7) ÇåÀí
+            // 7) æ¸…ç†
             List<long> toRemove = new();
             foreach(var buff in  _buffs.Values)
             {
@@ -934,7 +934,7 @@ namespace My.Map.Entity
             owner.RegisterBuffDirect(inst);
         }
 
-        // Íâ²¿½Ó¿Ú£ºÇëÇóÌí¼Ó Buff£¨¿ÉÔÚĞ§¹ûÖĞµ÷ÓÃ£©
+        // å¤–éƒ¨æ¥å£ï¼šè¯·æ±‚æ·»åŠ  Buffï¼ˆå¯åœ¨æ•ˆæœä¸­è°ƒç”¨ï¼‰
         public void RequestAddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
             _addRequests.Add((entityId, buffId, layer, overrideDuration, casterId, srcBuffId));
@@ -972,7 +972,7 @@ namespace My.Map.Entity
 
         private void FlushBuffAddRemoveRequests()
         {
-            // ÏÈÖ´ĞĞÒÆ³ı
+            // å…ˆæ‰§è¡Œç§»é™¤
             foreach (var r in _removeRequests)
             {
                 _buffs.TryGetValue(r.buffInstId, out var buffInst);
@@ -983,7 +983,7 @@ namespace My.Map.Entity
             }
             _removeRequests.Clear();
 
-            // ºÏ²¢Í¬Ä¿±êÍ¬BuffµÄ¶à´Î Add
+            // åˆå¹¶åŒç›®æ ‡åŒBuffçš„å¤šæ¬¡ Add
             foreach (var addReq in _addRequests)
             {
                 var targetEntity = logicManager.AreaManager.GetLogicEntiy(addReq.target);
@@ -1018,7 +1018,7 @@ namespace My.Map.Entity
 
                         }
                         break;
-                    // ÖØÖÃ
+                    // é‡ç½®
                     case EBuffLayerOverrideType.Replace:
                         {
                             existing.Layer = layer;
@@ -1056,7 +1056,7 @@ namespace My.Map.Entity
 
                         }
                         break;
-                    // ÖØÖÃ
+                    // é‡ç½®
                     case EBuffTurnOverrideType.Replace:
                         {
                             existing.Lifetime = duration;
@@ -1107,14 +1107,14 @@ namespace My.Map.Entity
             return existing;
         }
 
-        //// Ìá¹©Íâ²¿Ö±½ÓÊ©¼Ó½Ó¿Ú£¨Á¢¼´ÅÅ¶Ó£©
+        //// æä¾›å¤–éƒ¨ç›´æ¥æ–½åŠ æ¥å£ï¼ˆç«‹å³æ’é˜Ÿï¼‰
         //public void AddBuffImmediate(GameObject target, BuffDefinition def, GameObject source, float? overrideDuration = null)
         //{
         //    RequestAddBuff(target, def, source, overrideDuration);
-        //    // ¿ÉÑ¡£ºÂíÉÏFlush£¬µ«Ò»°ãµÈÖ¡Ä©Í³Ò»´¦Àí
+        //    // å¯é€‰ï¼šé©¬ä¸ŠFlushï¼Œä½†ä¸€èˆ¬ç­‰å¸§æœ«ç»Ÿä¸€å¤„ç†
         //}
 
-        // ÓÃÓÚÍâ²¿ÏµÍ³×¢ÈëÊÂ¼ş
+        // ç”¨äºå¤–éƒ¨ç³»ç»Ÿæ³¨å…¥äº‹ä»¶
         //public void Emit(GameEvent ev) => BuffEventBus.Enqueue(ev);
 
         private List<MapLogicSubscription> logicSubs = new();
@@ -1143,7 +1143,7 @@ namespace My.Map.Entity
         }
 
 
-        //// µ÷ÊÔ£ºÁĞ³öÄ¿±êµ±Ç° Buff
+        //// è°ƒè¯•ï¼šåˆ—å‡ºç›®æ ‡å½“å‰ Buff
         //public List<BuffInstance> GetBuffs(GameObject target)
         //{
         //    return _buffs.Where(b => b.Owner == target).ToList();
@@ -1178,13 +1178,13 @@ namespace My.Map.Entity
         public float Lifetime;
 
         public long CasterId;
-        public long SrcBuffId; // Èç¹ûÊÇ¹â»·µÈ²ÅÓĞ°ó¶¨¹ØÏµ
+        public long SrcBuffId; // å¦‚æœæ˜¯å…‰ç¯ç­‰æ‰æœ‰ç»‘å®šå…³ç³»
         public IEntityBuffOwner BuffOwner;
 
 
         /// <summary>
-        /// ¶ÔÓÚbuff instanceÀ´Ëµ
-        /// entityId ÎªÊ©·¨Õß
+        /// å¯¹äºbuff instanceæ¥è¯´
+        /// entityId ä¸ºæ–½æ³•è€…
         /// 
         /// </summary>
         //public SourceKey? srcKey;
@@ -1194,7 +1194,7 @@ namespace My.Map.Entity
 
         public bool MarkedForRemove;
 
-        public float? tickIntervalSec; // null ±íÊ¾·ÇÖÜÆÚ
+        public float? tickIntervalSec; // null è¡¨ç¤ºéå‘¨æœŸ
 
         private List<Modifier?> registeredModifiers;
 
@@ -1249,7 +1249,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// µ±buffÌí¼Ó»ò¸Ä±äÊÇ 
+        /// å½“buffæ·»åŠ æˆ–æ”¹å˜æ˜¯ 
         /// </summary>
         public void OnBuffAddOrUpdate(bool isAdd)
         {
@@ -1364,7 +1364,7 @@ namespace My.Map.Entity
                     }
                 }
 
-                // ÒÆ³ı×ÔÉí
+                // ç§»é™¤è‡ªèº«
                 if(t.config.RemoveOnTrigger)
                 {
                     this.MarkedForRemove = true;
@@ -1374,14 +1374,14 @@ namespace My.Map.Entity
         
 
         /// <summary>
-        /// ´¦Àí´¥·¢Ğ§¹û
+        /// å¤„ç†è§¦å‘æ•ˆæœ
         /// </summary>
         /// <param name="triggerRuntime"></param>
         protected void HandleBuffTriggerEffect(MapFightEffectCfg fightEffect)
         {
             switch (fightEffect)
             {
-                // buff´¥·¢Æ÷ÖĞ 
+                // buffè§¦å‘å™¨ä¸­ 
                 case MapAbilityEffectAddResourceCfg:
                 case MapAbilityEffectCostResourceCfg:
                 case MapFightEffectApplyDamageCfg:
@@ -1431,10 +1431,10 @@ namespace My.Map.Entity
             }
             foreach (var affectedId in auraRuntimeInfo.AffectedEntites.ToList())
             {
-                // µ±Ö¡²»ÔÙÊÜ¹â»·Àï
+                // å½“å¸§ä¸å†å—å…‰ç¯é‡Œ
                 if (!_cacheFrameAffected.Contains(affectedId))
                 {
-                    // ÒÆ³ı¹â»·Ğ§¹û
+                    // ç§»é™¤å…‰ç¯æ•ˆæœ
                     BuffOwner.BuffManager.RemoveAllBuffById(affectedId, Def.AuraBuffId, casterId:this.BuffOwner.Id, srcBuffId: this.InstanceId);
                     auraRuntimeInfo.AffectedEntites.Remove(affectedId);
                 }
@@ -1445,7 +1445,7 @@ namespace My.Map.Entity
                 var exist = auraRuntimeInfo.AffectedEntites.Find((item) => item == currAffectId);
                 if (exist == -1)
                 {
-                    // ÒÆ³ı¹â»·Ğ§¹û
+                    // ç§»é™¤å…‰ç¯æ•ˆæœ
                     BuffOwner.BuffManager.RequestAddBuff(currAffectId, Def.AuraBuffId, 1, casterId: this.BuffOwner.Id, srcBuffId: this.InstanceId);
                     auraRuntimeInfo.AffectedEntites.Add(currAffectId);
                 }
@@ -1455,7 +1455,7 @@ namespace My.Map.Entity
 
 
         /// <summary>
-        /// buffÒÆ³ı
+        /// buffç§»é™¤
         /// </summary>
         public void OnBuffRemove()
         {
@@ -1480,7 +1480,7 @@ namespace My.Map.Entity
                 registeredModifiers = null;
             }
 
-            // ½â³ı°ó¶¨
+            // è§£é™¤ç»‘å®š
             if (BuffOwner != null)
             {
                 BuffOwner.BuffContainer.Remove(InstanceId);

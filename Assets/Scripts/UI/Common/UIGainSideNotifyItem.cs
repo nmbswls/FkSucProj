@@ -16,10 +16,10 @@ namespace My
         public Image iconImage;
 
         [Header("Animation Settings")]
-        public float slideDuration = 0.3f; // »¬ÈëºÄÊ±
-        public float lifeTime = 3.0f;      // Í£ÁôÊ±¼ä
+        public float slideDuration = 0.3f; // æ»‘å…¥è€—æ—¶
+        public float lifeTime = 3.0f;      // åœç•™æ—¶é—´
         public float fadeOutDuration = 0.5f;
-        public float targetHeight = 80f;   // ÄãÌõÄ¿µÄÊµ¼Ê¸ß¶È
+        public float targetHeight = 80f;   // ä½ æ¡ç›®çš„å®é™…é«˜åº¦
 
         public RectTransform viewRoot;
         private CanvasGroup canvasGroup;
@@ -30,37 +30,37 @@ namespace My
             messageText.text = text;
             iconImage.sprite = icon;
 
-            // »ñÈ¡×é¼ş
+            // è·å–ç»„ä»¶
             //rectTrans = GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
             layoutElement = GetComponent<LayoutElement>();
 
-            // --- 1. ³õÊ¼×´Ì¬ÉèÖÃ (²»¿É¼û¡¢ÔÚÓÒ²à¡¢¸ß¶ÈÎª0) ---
+            // --- 1. åˆå§‹çŠ¶æ€è®¾ç½® (ä¸å¯è§ã€åœ¨å³ä¾§ã€é«˜åº¦ä¸º0) ---
 
-            // A. Í¸Ã÷¶ÈÉèÎª 0
+            // A. é€æ˜åº¦è®¾ä¸º 0
             canvasGroup.alpha = 0f;
 
-            // B. Î»ÖÃÆ«ÒÆµ½ÆÁÄ»ÓÒ²àÍâ (¼ÙÉèÌõÄ¿¿í400£¬Æ«ÒÆ500È·±£³öÈ¥)
-            // ×¢Òâ£ºLayoutGroup ¿ØÖÆÎ»ÖÃ£¬µ«ÎÒÃÇ¿ÉÒÔ¿ØÖÆ anchoredPosition µÄÆ«ÒÆ
+            // B. ä½ç½®åç§»åˆ°å±å¹•å³ä¾§å¤– (å‡è®¾æ¡ç›®å®½400ï¼Œåç§»500ç¡®ä¿å‡ºå»)
+            // æ³¨æ„ï¼šLayoutGroup æ§åˆ¶ä½ç½®ï¼Œä½†æˆ‘ä»¬å¯ä»¥æ§åˆ¶ anchoredPosition çš„åç§»
             viewRoot.anchoredPosition = new Vector2(100f, 0f);
 
-            // C. ¸ß¶ÈÉèÎª 0 (ÕâÊÇÈÃÀÏÏûÏ¢Æ½»¬ÉÏ¸¡µÄ¹Ø¼ü)
+            // C. é«˜åº¦è®¾ä¸º 0 (è¿™æ˜¯è®©è€æ¶ˆæ¯å¹³æ»‘ä¸Šæµ®çš„å…³é”®)
             layoutElement.preferredHeight = 0f;
             layoutElement.minHeight = 0f;
 
-            // --- 2. ¿ªÊ¼¶¯»­Á÷³Ì ---
+            // --- 2. å¼€å§‹åŠ¨ç”»æµç¨‹ ---
             StartCoroutine(AnimateRoutine());
         }
 
         /// <summary>
-        /// ±»¹ÜÀíÆ÷Ç¿ÖÆÒÆ³ıÊ±µ÷ÓÃ£¨±ÈÈç³¬¹ı×î´óÊıÁ¿£©
+        /// è¢«ç®¡ç†å™¨å¼ºåˆ¶ç§»é™¤æ—¶è°ƒç”¨ï¼ˆæ¯”å¦‚è¶…è¿‡æœ€å¤§æ•°é‡ï¼‰
         /// </summary>
         public void ForceExit()
         {
-            // Í£Ö¹Ö®Ç°µÄÉúÃüÖÜÆÚĞ­³Ì
+            // åœæ­¢ä¹‹å‰çš„ç”Ÿå‘½å‘¨æœŸåç¨‹
             StopAllCoroutines();
 
-            // ¿ªÆô¿ìËÙµ­³öĞ­³Ì
+            // å¼€å¯å¿«é€Ÿæ·¡å‡ºåç¨‹
             StartCoroutine(FastFadeOutRoutine());
         }
 
@@ -68,7 +68,7 @@ namespace My
         private IEnumerator FastFadeOutRoutine()
         {
             float timer = 0f;
-            float duration = 0.2f; // ¿ìËÙÏûÊ§Ê±¼ä
+            float duration = 0.2f; // å¿«é€Ÿæ¶ˆå¤±æ—¶é—´
             float startAlpha = canvasGroup.alpha;
 
             while (timer < duration)
@@ -83,54 +83,54 @@ namespace My
 
         private IEnumerator AnimateRoutine()
         {
-            // === ½×¶ÎÒ»£º»¬Èë + ³Å¿ª¸ß¶È ===
+            // === é˜¶æ®µä¸€ï¼šæ»‘å…¥ + æ’‘å¼€é«˜åº¦ ===
             float timer = 0f;
 
             while (timer < slideDuration)
             {
                 timer += Time.deltaTime;
                 float t = timer / slideDuration;
-                // Ê¹ÓÃÆ½»¬ÇúÏß (EaseOutBack »áÓĞÒ»µãµã»Øµ¯£¬ºÜÓĞ¶¯¸Ğ)
+                // ä½¿ç”¨å¹³æ»‘æ›²çº¿ (EaseOutBack ä¼šæœ‰ä¸€ç‚¹ç‚¹å›å¼¹ï¼Œå¾ˆæœ‰åŠ¨æ„Ÿ)
                 float curveT = 1f - Mathf.Pow(1f - t, 3f);
 
-                // 1. ³Å¿ª¸ß¶È£º´Ó 0 -> targetHeight
-                // Ëæ×Å¸ß¶È±ä´ó£¬LayoutGroup »á×Ô¶¯°ÑÉÏÃæµÄÀÏÏûÏ¢ÍùÉÏÍÆ
+                // 1. æ’‘å¼€é«˜åº¦ï¼šä» 0 -> targetHeight
+                // éšç€é«˜åº¦å˜å¤§ï¼ŒLayoutGroup ä¼šè‡ªåŠ¨æŠŠä¸Šé¢çš„è€æ¶ˆæ¯å¾€ä¸Šæ¨
                 layoutElement.preferredHeight = Mathf.Lerp(0f, targetHeight, curveT);
 
-                // 2. Í¸Ã÷¶È£º0 -> 1
+                // 2. é€æ˜åº¦ï¼š0 -> 1
                 canvasGroup.alpha = Mathf.Lerp(0f, 1f, t);
 
-                // 3. Î»ÒÆ£º300 -> 0 (»Øµ½ LayoutGroup ·ÖÅäµÄÎ»ÖÃ)
+                // 3. ä½ç§»ï¼š300 -> 0 (å›åˆ° LayoutGroup åˆ†é…çš„ä½ç½®)
                 viewRoot.anchoredPosition = Vector2.Lerp(new Vector2(100f, 0), Vector2.zero, curveT);
 
                 yield return null;
             }
 
-            // È·±£×îÖÕ×´Ì¬ÕıÈ·
+            // ç¡®ä¿æœ€ç»ˆçŠ¶æ€æ­£ç¡®
             layoutElement.preferredHeight = targetHeight;
             viewRoot.anchoredPosition = Vector2.zero;
             canvasGroup.alpha = 1f;
 
-            // === ½×¶Î¶ş£ºÍ£ÁôÕ¹Ê¾ ===
+            // === é˜¶æ®µäºŒï¼šåœç•™å±•ç¤º ===
             yield return new WaitForSeconds(lifeTime);
 
-            // === ½×¶ÎÈı£ºµ­³öÏûÊ§ ===
+            // === é˜¶æ®µä¸‰ï¼šæ·¡å‡ºæ¶ˆå¤± ===
             timer = 0f;
             while (timer < fadeOutDuration)
             {
                 timer += Time.deltaTime;
                 float t = timer / fadeOutDuration;
 
-                // Í¸Ã÷¶È±ä 0
+                // é€æ˜åº¦å˜ 0
                 canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
 
-                // ¿ÉÑ¡£ºÉÔÎ¢ÍùÉÏÆ®Ò»µã£¬»òÕßÍùÓÒËõ»ØÈ¥
+                // å¯é€‰ï¼šç¨å¾®å¾€ä¸Šé£˜ä¸€ç‚¹ï¼Œæˆ–è€…å¾€å³ç¼©å›å»
                 // rectTrans.anchoredPosition = Vector2.Lerp(Vector2.zero, new Vector2(0, 50f), t);
 
                 yield return null;
             }
 
-            // === ½áÊø£ºÏú»Ù ===
+            // === ç»“æŸï¼šé”€æ¯ ===
             Destroy(gameObject);
         }
     }

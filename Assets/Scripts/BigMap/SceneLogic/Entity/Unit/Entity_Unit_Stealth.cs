@@ -24,7 +24,7 @@ namespace My.Map
         public long IIder = 100;
 
         /// <summary>
-        /// ¼ì²éÄ¿±êÊÇ·ñÒş²Ø
+        /// æ£€æŸ¥ç›®æ ‡æ˜¯å¦éšè—
         /// </summary>
         /// <param name="targetId"></param>
         /// <returns></returns>
@@ -64,7 +64,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ¿ªÊ¼¶ã²ØÖÁ¶ã²Øµã
+        /// å¼€å§‹èº²è—è‡³èº²è—ç‚¹
         /// </summary>
         public void StartStealth(long hidePointId, Vector2 stealthPos)
         {
@@ -93,27 +93,27 @@ namespace My.Map
                     continue;
                 }
 
-                // ¼ì²éÊÇ·ñ¿É¼û
+                // æ£€æŸ¥æ˜¯å¦å¯è§
                 if (!LogicManager.visionSenser.CanUnitSee(witness.Id, Id))
                 {
                     continue;
                 }
 
-                // Î¬»¤¿É¼ûĞÔ
+                // ç»´æŠ¤å¯è§æ€§
                 stealthInfo.SeeUnits.Add(e.Id, LogicTime.time);
             }
 
-            // Ôö¼Óbuff
+            // å¢åŠ buff
             LogicManager.globalBuffManager.RequestAddBuff(Id, StealBuffId);
 
-            // ¿ªÊ¼¶ã²Ø
+            // å¼€å§‹èº²è—
             TeleportTo(stealthPos);
 
             EventOnStartStealth?.Invoke(hidePointId);
         }
 
         /// <summary>
-        /// ½áÊø¶ã²Ø
+        /// ç»“æŸèº²è—
         /// </summary>
         public void EndStealth()
         {
@@ -122,7 +122,7 @@ namespace My.Map
             stealthInfo.SeeUnits.Clear();
             stealthInfo.hidePointId = 0;
 
-            // Ôö¼Óbuff
+            // å¢åŠ buff
             LogicManager.globalBuffManager.RemoveAllBuffById(Id, StealBuffId);
             TeleportTo(stealthInfo.beforePos);
 

@@ -7,7 +7,7 @@ namespace My.Map
     public partial class NpcUnitLogicEntity
     {
         ///// <summary>
-        ///// todo À©³äÎª¶à¸ö
+        ///// todo æ‰©å……ä¸ºå¤šä¸ª
         ///// </summary>
         //public bool IsWatchingPlayer;
 

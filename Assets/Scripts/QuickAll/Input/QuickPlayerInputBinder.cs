@@ -15,7 +15,7 @@ namespace My.Input
 {
     public interface IUiRouter
     {
-        // ·µ»ØÊÇ·ñÒÑÏû·Ñ¸ÃÊäÈë£¨true ±íÊ¾²»ÔÙ×ª·¢µ½³¡¾°£©
+        // è¿”å›æ˜¯å¦å·²æ¶ˆè´¹è¯¥è¾“å…¥ï¼ˆtrue è¡¨ç¤ºä¸å†è½¬å‘åˆ°åœºæ™¯ï¼‰
         bool DispatchConfirm();
         bool DispatchCancel();
         bool DispatchNavigate(Vector2 dir);
@@ -102,9 +102,9 @@ namespace My.Input
         {
             actions = new MyInput();
 
-            // »ñÈ¡Â·ÓÉÆ÷ÊµÀı£º¿ÉÒÔ×¢Èë¡¢²éÕÒ»ò¸³Öµ
-            //uiRouter = FindObjectOfType<UIManagerFacade>(); // Ê¾Àı£ºÒ»¸öÊµÏÖ IUiRouter µÄ×é¼ş/·şÎñ
-            //sceneRouter = FindObjectOfType<PlayerInputAdapter>(); // Ê¾Àı£º°ÑÍæ¼Ò²Ù×÷×ªÎª³¡¾°ĞĞÎª
+            // è·å–è·¯ç”±å™¨å®ä¾‹ï¼šå¯ä»¥æ³¨å…¥ã€æŸ¥æ‰¾æˆ–èµ‹å€¼
+            //uiRouter = FindObjectOfType<UIManagerFacade>(); // ç¤ºä¾‹ï¼šä¸€ä¸ªå®ç° IUiRouter çš„ç»„ä»¶/æœåŠ¡
+            //sceneRouter = FindObjectOfType<PlayerInputAdapter>(); // ç¤ºä¾‹ï¼šæŠŠç©å®¶æ“ä½œè½¬ä¸ºåœºæ™¯è¡Œä¸º
             ApplyInputMode(InputMode.Menu);
         }
 
@@ -120,7 +120,7 @@ namespace My.Input
         private readonly string keyTab = EInputKey.Tab.ToString();
         private void Update()
         {
-            // 1. ÆÕÍ¨°´¼ü¼ì²â
+            // 1. æ™®é€šæŒ‰é”®æ£€æµ‹
             if (UnityEngine.Input.GetKeyDown(KeyCode.I))
             {
                 UIOrchestrator.Instance.EnsurePlayerBag();
@@ -128,8 +128,8 @@ namespace My.Input
 
             if (GlobalLock) return;
 
-            // 2. ³ÖĞøÊäÈë£¨Hold£©µÄÃ¿Ö¡ Update£¬Ö±½ÓÎÊÑ¯ Input System
-            // Ç°Ìá£ºactions.OverworldMap.RightClickHold Ã»ÓĞ±» Disable
+            // 2. æŒç»­è¾“å…¥ï¼ˆHoldï¼‰çš„æ¯å¸§ Updateï¼Œç›´æ¥é—®è¯¢ Input System
+            // å‰æï¼šactions.OverworldMap.RightClickHold æ²¡æœ‰è¢« Disable
             if (actions.OverworldMap.enabled)
             {
                 if (actions.OverworldMap.RightClickHold.IsPressed())
@@ -146,7 +146,7 @@ namespace My.Input
 
         private void ForceReleaseActiveHolds()
         {
-            // Èç¹û OverworldMap ÕıÔÚ¼¤»î£¬¼ì²éÄÄĞ©¼ü»¹°´×Å
+            // å¦‚æœ OverworldMap æ­£åœ¨æ¿€æ´»ï¼Œæ£€æŸ¥å“ªäº›é”®è¿˜æŒ‰ç€
             if (actions.OverworldMap.enabled)
             {
                 if (actions.OverworldMap.RightClickHold.IsPressed())
@@ -163,11 +163,11 @@ namespace My.Input
         {
             if (!hasFocus)
             {
-                // Ç¿ÖÆ¸æËßÒµÎñ²ãÍ£Ö¹Ò»ÇĞ³¤°´ĞĞÎª
+                // å¼ºåˆ¶å‘Šè¯‰ä¸šåŠ¡å±‚åœæ­¢ä¸€åˆ‡é•¿æŒ‰è¡Œä¸º
                 OnKeyHoldEnd(keyMouseRight);
                 OnKeyHoldEnd(keyTab);
 
-                // Ò²¿ÉÒÔË³±ã°ÑÒÆ¶¯·½ÏòÇåÁã
+                // ä¹Ÿå¯ä»¥é¡ºä¾¿æŠŠç§»åŠ¨æ–¹å‘æ¸…é›¶
                 DoPlayerMove(Vector2.zero);
             }
         }
@@ -189,15 +189,15 @@ namespace My.Input
         //}
 
 
-        // µ×²ãÖ´ĞĞÊäÈëÄ£Ê½ÇĞ»»£¨ÓÉ×éÖ¯²ãµ÷ÓÃ£©
+        // åº•å±‚æ‰§è¡Œè¾“å…¥æ¨¡å¼åˆ‡æ¢ï¼ˆç”±ç»„ç»‡å±‚è°ƒç”¨ï¼‰
         public void ApplyInputMode(InputMode mode)
         {
-            // »ù±¾²ßÂÔ£ºÖ»ÆôÓÃµ±Ç°Ä£Ê½µÄ Map£»»ò°´Ğè²¢´æ
+            // åŸºæœ¬ç­–ç•¥ï¼šåªå¯ç”¨å½“å‰æ¨¡å¼çš„ Mapï¼›æˆ–æŒ‰éœ€å¹¶å­˜
             switch (mode)
             {
                 case InputMode.Menu:
                     actions.UIMenuMap.Enable();
-                    actions.BattleMap.Disable();   // UI Ä£Ê½ÏÂÆÁ±ÎÍæ¼ÒĞĞ¶¯
+                    actions.BattleMap.Disable();   // UI æ¨¡å¼ä¸‹å±è”½ç©å®¶è¡ŒåŠ¨
                     actions.OverworldMap.Disable();
                     break;
                 case InputMode.Overworld:
@@ -308,7 +308,7 @@ namespace My.Input
                 return;
             }
 
-            var delta = ctx.ReadValue<Vector2>().y; // Êó±ê¹öÂÖ
+            var delta = ctx.ReadValue<Vector2>().y; // é¼ æ ‡æ»šè½®
             if (uiRouter == null || !uiRouter.DispatchScroll(delta))
             {
                 OnSceneMouseScroll(delta);
@@ -372,8 +372,8 @@ namespace My.Input
             var dir = ctx.ReadValue<Vector2>();
             if (uiRouter == null || !uiRouter.DispatchNavigate(dir))
             {
-                // Î´Ïû·Ñ£º¿ÉÓÃÓÚÇĞ»»ÎäÆ÷²Û¡¢·­Ò³µÈ
-                // sceneRouter?.OnNavigateInWorld(dir); // ÈçÓĞĞèÒª
+                // æœªæ¶ˆè´¹ï¼šå¯ç”¨äºåˆ‡æ¢æ­¦å™¨æ§½ã€ç¿»é¡µç­‰
+                // sceneRouter?.OnNavigateInWorld(dir); // å¦‚æœ‰éœ€è¦
                 DoPlayerMove(dir);
             }
         }
@@ -506,7 +506,7 @@ namespace My.Input
         {
             if (uiRouter == null || !uiRouter.DispatchHoldingEnd(keyName))
             {
-                // ¼àÌısceneÀïµÄ½áÊø
+                // ç›‘å¬sceneé‡Œçš„ç»“æŸ
                 OnSceneHoldEnd(keyName);
             }
         }
@@ -628,7 +628,7 @@ namespace My.Input
             }
         }
 
-        // ·ÅÈëconrollerÀï ²»·ÅÔÚbinderÀï
+        // æ”¾å…¥conrolleré‡Œ ä¸æ”¾åœ¨binderé‡Œ
 
         public void OnSceneLeftClick()
         {

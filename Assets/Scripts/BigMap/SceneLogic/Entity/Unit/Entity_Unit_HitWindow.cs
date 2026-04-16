@@ -15,12 +15,12 @@ namespace My.Map
     {
         public UnitHitWindowRegistry HitWindowRegistry { get; set; }
 
-        public event Action<long, string, float, string?> EventOnUseWeapon; // Ê¹ÓÃÎäÆ÷»Øµ÷ ÓÉ
+        public event Action<long, string, float, string?> EventOnUseWeapon; // ä½¿ç”¨æ­¦å™¨å›è°ƒ ç”±
         public event Action<string, long> EventOnHideWeapon;
 
         public long ApplyUseWeapon(string weaponName, string animName, float duration, List<MapFightEffectCfg> hitCfgs, int maxHit = 0)
         {
-            // Í³Ò»Îªhitwindow´¦Àí
+            // ç»Ÿä¸€ä¸ºhitwindowå¤„ç†
             var hitWindow = HitWindowRegistry.OpenHitWindow(duration, false, hitEffects: hitCfgs, srcWeaponName: weaponName);
             hitWindow.MaxHitCount = maxHit;
             EventOnUseWeapon?.Invoke(hitWindow.HitId, weaponName, duration, animName);
@@ -34,7 +34,7 @@ namespace My.Map
     }
 
     /// <summary>
-    /// µ¥Î»hit´°¿Ú
+    /// å•ä½hitçª—å£
     /// </summary>
     public class ActiveHitWindow
     {
@@ -46,9 +46,9 @@ namespace My.Map
         public int HitParam0;
         public int HitParam1;
 
-        public List<MapFightEffectCfg> OnHitEffects; // Ô­Ê¼Êı¾İ »¹ÊÇÉú³Éhitwindow×¨ÓÃÊı¾İ·ÅÈë£¿
+        public List<MapFightEffectCfg> OnHitEffects; // åŸå§‹æ•°æ® è¿˜æ˜¯ç”Ÿæˆhitwindowä¸“ç”¨æ•°æ®æ”¾å…¥ï¼Ÿ
 
-        public bool IsSilentHit; // ÊÇ·ñÊÇ¾²Ä¬hit£¨²»²úÉúÅö×²ÌØĞ§µÈ£©
+        public bool IsSilentHit; // æ˜¯å¦æ˜¯é™é»˜hitï¼ˆä¸äº§ç”Ÿç¢°æ’ç‰¹æ•ˆç­‰ï¼‰
 
         public int MaxHitCount;
     }
@@ -92,7 +92,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// »Øµ÷
+        /// å›è°ƒ
         /// </summary>
         /// <param name="hitId"></param>
         /// <param name="hitEntityId"></param>
@@ -118,13 +118,13 @@ namespace My.Map
                 return;
             }
 
-            //  todo ¶à´ÎÃüÖĞ
+            //  todo å¤šæ¬¡å‘½ä¸­
             window.HitRecord.Add(hitEntityId);
 
 
             if (!window.IsSilentHit && hitEntity is BaseUnitLogicEntity unitHitTarget)
             {
-                // ¶ÔÄ¿±êÖ´ĞĞÒ»´Îhit result
+                // å¯¹ç›®æ ‡æ‰§è¡Œä¸€æ¬¡hit result
                 unitHitTarget.ProcessHit(Owner.Id, Owner.FinalLook);
             }
 

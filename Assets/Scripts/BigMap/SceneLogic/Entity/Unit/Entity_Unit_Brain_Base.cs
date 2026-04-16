@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace My.Map.Unit
 {
-    // --- ÅäÖÃ ---
+    // --- é…ç½® ---
     [System.Serializable]
     public class AIBrainConfig
     {
@@ -13,14 +13,14 @@ namespace My.Map.Unit
         public float AttackRange = 2.0f;
 
         public float ChaseRange = 15.0f;
-        public float SearchDuration = 5.0f;  // ËÑË÷³ÖĞøÊ±¼ä
+        public float SearchDuration = 5.0f;  // æœç´¢æŒç»­æ—¶é—´
         public float IdleWaitTime = 3.0f;
 
-        public IdleType IdleType = IdleType.StandStill; // Ã¶¾Ù¶¨ÒåÏĞÖÃÀàĞÍ
-        public List<Vector3> PatrolPoints;   // Ñ²ÂßµãÊı¾İ
+        public IdleType IdleType = IdleType.StandStill; // æšä¸¾å®šä¹‰é—²ç½®ç±»å‹
+        public List<Vector3> PatrolPoints;   // å·¡é€»ç‚¹æ•°æ®
         public float WanderInterval = 5.0f;
 
-        public bool IsPeace; // ºÍÆ½µ¥Î»Ö»»áÌÓ
+        public bool IsPeace; // å’Œå¹³å•ä½åªä¼šé€ƒ
         public float CombatCloseDistance = 2.0f;
         public float CombatFarDistance = 5.0f;
 
@@ -81,21 +81,21 @@ namespace My.Map.Unit
         FollowGroup,
     }
 
-    // --- ´óÄÔ (Controller) ---
+    // --- å¤§è„‘ (Controller) ---
     public class AIBrainV2
     {
-        // ×é¼şÒıÓÃ
-        public NpcUnitLogicEntity NpcEntity; // ÊµÌåÂß¼­
-        public AIBrainConfig Config;         // ÅäÖÃ
+        // ç»„ä»¶å¼•ç”¨
+        public NpcUnitLogicEntity NpcEntity; // å®ä½“é€»è¾‘
+        public AIBrainConfig Config;         // é…ç½®
 
         public GameLogicManager LogicManager { get {  return NpcEntity.LogicManager; } }
 
-        // ×´Ì¬»ú
+        // çŠ¶æ€æœº
         public AIBaseState CurrentState { get; private set; }
 
         public IVisionSenser2D Vision { get { return LogicManager.visionSenser; } }
 
-        // Ô¤¼ÓÔØ×´Ì¬ (±ÜÃâGC)
+        // é¢„åŠ è½½çŠ¶æ€ (é¿å…GC)
         public AIStateIdle StateIdle;
         public AIStateCombat StateCombat; 
         public AIStateReturn StateReturn;
@@ -106,9 +106,9 @@ namespace My.Map.Unit
         public AIStateCharmedFollow StateCharmedFollow;
 
 
-        // ºÚ°å (Blackboard) - ×´Ì¬¼ä¹²ÏíÊı¾İ
+        // é»‘æ¿ (Blackboard) - çŠ¶æ€é—´å…±äº«æ•°æ®
         public Vector2? HomePos;
-        public Vector2? SuspiciousPos; // <--- ËÑË÷Ä¿±êµã (×îºóÄ¿»÷Î»ÖÃ/ÉùÒôÀ´Ô´)
+        public Vector2? SuspiciousPos; // <--- æœç´¢ç›®æ ‡ç‚¹ (æœ€åç›®å‡»ä½ç½®/å£°éŸ³æ¥æº)
 
         
 
@@ -122,7 +122,7 @@ namespace My.Map.Unit
         public AIBrainV2(NpcUnitLogicEntity npcOwner)
         {
             this.NpcEntity = npcOwner;
-            this.HomePos = npcOwner.Pos; // ¼ÇÂ¼³öÉúµã
+            this.HomePos = npcOwner.Pos; // è®°å½•å‡ºç”Ÿç‚¹
 
             string cfgId = "default";
             if (npcOwner.NpcConfig.IsPeace)
@@ -139,11 +139,11 @@ namespace My.Map.Unit
         }
 
         /// <summary>
-        /// ³õÊ¼»¯×´Ì¬
+        /// åˆå§‹åŒ–çŠ¶æ€
         /// </summary>
         protected virtual void InitializeStates()
         {
-            // ³õÊ¼»¯×´Ì¬
+            // åˆå§‹åŒ–çŠ¶æ€
             StateIdle = new AIStateIdle(this);
             StateCombat = new AIStateCombat(this);
             StateReturn = new AIStateReturn(this);
@@ -167,7 +167,7 @@ namespace My.Map.Unit
 
         public void ResetBrain()
         {
-            // ÖØÖÃ
+            // é‡ç½®
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace My.Map.Unit
         }
     }
 
-    // --- ×´Ì¬»ùÀà ---
+    // --- çŠ¶æ€åŸºç±» ---
     public abstract class AIBaseState
     {
         public abstract string StateName { get; }
@@ -283,7 +283,7 @@ namespace My.Map.Unit
                 }
             }
 
-            // Ö»ÒªÄÜÉÏµ½charm ¾ÍÄÜ³ÌĞò
+            // åªè¦èƒ½ä¸Šåˆ°charm å°±èƒ½ç¨‹åº
             if (_brain.CharmedTrigger)
             {
                 _brain.CharmedTrigger = false;
@@ -293,7 +293,7 @@ namespace My.Map.Unit
 
             if(CanKaiYou())
             {
-                //// Ìõ¼şÂú×ãÊ±Ö´ĞĞ¿«ÓÍ
+                //// æ¡ä»¶æ»¡è¶³æ—¶æ‰§è¡Œæ©æ²¹
                 //if (_brain.LatestAttrctInfo.AttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
                 //{
                 //    if (attractSource is PlayerLogicEntity playerEntity && !playerEntity.CheckHasState(AttrIdConsts.ImmumeKaiYou))

@@ -37,7 +37,7 @@ namespace My
             //    {
             //        if (hitOne != null && hitOne.UnitEntity != null)
             //        {
-            //            // 对目标执行一次hit result
+            //            // 瀵圭洰鏍囨墽琛屼竴娆it result
             //            hitOne.UnitEntity.ProcessHit(logicProjectile.ownerEntity?.Id ?? 0, hitDir);
             //        }
             //    }
@@ -71,7 +71,7 @@ namespace My
                 {
                     if (hitOne != null && hitOne.UnitEntity != null)
                     {
-                        // 对目标执行一次hit result
+                        // 瀵圭洰鏍囨墽琛屼竴娆it result
                         hitOne.UnitEntity.ProcessHit(logicProjectile.ownerEntity?.Id ?? 0, hitDir);
                     }
                 }

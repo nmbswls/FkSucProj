@@ -38,15 +38,15 @@ namespace My
 
         [Header("Settings")]
         public GameObject logItemPrefab;
-        public float spawnInterval = 0.3f; // Ã¿Ò»ÌõÈÕÖ¾µ¯³öµÄ¼ä¸ôÊ±¼ä
+        public float spawnInterval = 0.3f; // æ¯ä¸€æ¡æ—¥å¿—å¼¹å‡ºçš„é—´éš”æ—¶é—´
         public int maxActiveItems = 5;
         public Transform logItemContainer;
 
-        // ºËĞÄ£ºÈÎÎñ¶ÓÁĞ
+        // æ ¸å¿ƒï¼šä»»åŠ¡é˜Ÿåˆ—
         private Queue<LogData> logQueue = new Queue<LogData>();
         private bool isProcessing = false;
 
-        // »î¶¯ÌõÄ¿ÁĞ±í£¨ÓÃÓÚ¹ÜÀíÉÏ¸¡ºÍÊıÁ¿ÏŞÖÆ£©
+        // æ´»åŠ¨æ¡ç›®åˆ—è¡¨ï¼ˆç”¨äºç®¡ç†ä¸Šæµ®å’Œæ•°é‡é™åˆ¶ï¼‰
         private List<UIGainSideNotifyItem> activeItems = new List<UIGainSideNotifyItem>();
 
         private void Awake()
@@ -55,13 +55,13 @@ namespace My
         }
 
         /// <summary>
-        /// Íâ²¿µ÷ÓÃµÄÈë¿Ú£ºÖ»¹Ü°ÑÊı¾İÈÓ½øÀ´
+        /// å¤–éƒ¨è°ƒç”¨çš„å…¥å£ï¼šåªç®¡æŠŠæ•°æ®æ‰”è¿›æ¥
         /// </summary>
         public void EnqueueLog(string message, Sprite icon)
         {
             logQueue.Enqueue(new LogData(message, icon));
 
-            // Èç¹ûµ±Ç°Ã»ÓĞÔÚ´¦Àí¶ÓÁĞ£¬¾Í¿ªÊ¼´¦Àí
+            // å¦‚æœå½“å‰æ²¡æœ‰åœ¨å¤„ç†é˜Ÿåˆ—ï¼Œå°±å¼€å§‹å¤„ç†
             if (!isProcessing)
             {
                 StartCoroutine(ProcessQueueRoutine());
@@ -85,59 +85,59 @@ namespace My
         private void CreateLogItem(LogData data)
         {
 
-            // 1. ÇåÀíÒÑÏú»ÙµÄ¿Õ¶ÔÏó
-            // (Item×Ô¼ºÏú»Ùºó List Àï»áÁô null£¬ĞèÒªÏÈÇåµô·ÀÖ¹±¨´í)
+            // 1. æ¸…ç†å·²é”€æ¯çš„ç©ºå¯¹è±¡
+            // (Itemè‡ªå·±é”€æ¯å List é‡Œä¼šç•™ nullï¼Œéœ€è¦å…ˆæ¸…æ‰é˜²æ­¢æŠ¥é”™)
             for (int i = activeItems.Count - 1; i >= 0; i--)
             {
                 if (activeItems[i] == null) activeItems.RemoveAt(i);
             }
 
-            // 2. ¼ì²éÊıÁ¿ÏŞÖÆ (³¬³öÔòÒÆ³ı×îÀÏµÄ)
+            // 2. æ£€æŸ¥æ•°é‡é™åˆ¶ (è¶…å‡ºåˆ™ç§»é™¤æœ€è€çš„)
             while (activeItems.Count >= maxActiveItems)
             {
-                // activeItems[0] ÊÇ×îÀÏµÄ£¨×îÔçÌí¼ÓµÄ£©
+                // activeItems[0] æ˜¯æœ€è€çš„ï¼ˆæœ€æ—©æ·»åŠ çš„ï¼‰
                 UIGainSideNotifyItem oldItem = activeItems[0];
-                activeItems.RemoveAt(0); // ´ÓÁĞ±íÒÆ³ıÒıÓÃ
+                activeItems.RemoveAt(0); // ä»åˆ—è¡¨ç§»é™¤å¼•ç”¨
 
                 if (oldItem != null)
                 {
-                    // µ÷ÓÃ Item ×ÔÉíµÄ¿ìËÙÍË³ö·½·¨
+                    // è°ƒç”¨ Item è‡ªèº«çš„å¿«é€Ÿé€€å‡ºæ–¹æ³•
                     oldItem.ForceExit();
                 }
             }
 
-            //// 3. Í¨ÖªÊ£ÏÂµÄÀÏÌõÄ¿ÍùÉÏ×ß
-            //// ±éÀúËùÓĞ»î×ÅµÄÌõÄ¿£¬ÈÃËüÃÇµÄÄ¿±ê Y ×ø±êÔö¼ÓÒ»¸ö¸ß¶È
+            //// 3. é€šçŸ¥å‰©ä¸‹çš„è€æ¡ç›®å¾€ä¸Šèµ°
+            //// éå†æ‰€æœ‰æ´»ç€çš„æ¡ç›®ï¼Œè®©å®ƒä»¬çš„ç›®æ ‡ Y åæ ‡å¢åŠ ä¸€ä¸ªé«˜åº¦
             //foreach (var item in activeItems)
             //{
             //    if (item != null) item.AddHeightOffset(itemHeight);
             //}
 
-            // 4. Éú³ÉĞÂÌõÄ¿
+            // 4. ç”Ÿæˆæ–°æ¡ç›®
             GameObject obj = Instantiate(logItemPrefab, logItemContainer);
             obj.SetActive(true);
 
-            // ³õÊ¼»¯ RectTransform£¬È·±£ËüÊÇ´ÓÈİÆ÷µ×²¿¿ªÊ¼
-            // ÕâÀïµÄ×ø±êÏµÂß¼­ÒÀÀµÓÚÄãÖ®Ç°ËµµÄ¡°ÍÑÀëLayoutGroup¡±·½°¸
+            // åˆå§‹åŒ– RectTransformï¼Œç¡®ä¿å®ƒæ˜¯ä»å®¹å™¨åº•éƒ¨å¼€å§‹
+            // è¿™é‡Œçš„åæ ‡ç³»é€»è¾‘ä¾èµ–äºä½ ä¹‹å‰è¯´çš„â€œè„±ç¦»LayoutGroupâ€æ–¹æ¡ˆ
             RectTransform rt = obj.GetComponent<RectTransform>();
             if (rt != null)
             {
-                // È·±£ Anchor/Pivot ÊÇÓÒÏÂ½Ç (1, 0)
+                // ç¡®ä¿ Anchor/Pivot æ˜¯å³ä¸‹è§’ (1, 0)
                 rt.anchorMin = new Vector2(1, 0);
                 rt.anchorMax = new Vector2(1, 0);
                 rt.pivot = new Vector2(1, 0);
-                rt.anchoredPosition = Vector2.zero; // ÖØÖÃÎ»ÖÃµ½Ô­µã
+                rt.anchoredPosition = Vector2.zero; // é‡ç½®ä½ç½®åˆ°åŸç‚¹
             }
 
-            // ±£Ö¤²ã¼¶ÔÚ×îÏÂ£¨Èç¹ûÄãÏ£ÍûĞÂÏûÏ¢¸ÇÔÚ¾ÉÏûÏ¢ÉÏ£¬ÓÃ SetAsLastSibling£»·´Ö® SetAsFirstSibling£©
+            // ä¿è¯å±‚çº§åœ¨æœ€ä¸‹ï¼ˆå¦‚æœä½ å¸Œæœ›æ–°æ¶ˆæ¯ç›–åœ¨æ—§æ¶ˆæ¯ä¸Šï¼Œç”¨ SetAsLastSiblingï¼›åä¹‹ SetAsFirstSiblingï¼‰
             obj.transform.SetAsLastSibling();
 
-            // 5. ³õÊ¼»¯½Å±¾²¢¼ÓÈëÁĞ±í
+            // 5. åˆå§‹åŒ–è„šæœ¬å¹¶åŠ å…¥åˆ—è¡¨
             UIGainSideNotifyItem newItem = obj.GetComponent<UIGainSideNotifyItem>();
             if (newItem != null)
             {
                 newItem.Initialize(data.message, data.icon);
-                // ¼ÓÈëÁĞ±íÄ©Î²
+                // åŠ å…¥åˆ—è¡¨æœ«å°¾
                 activeItems.Add(newItem);
             }
         }
