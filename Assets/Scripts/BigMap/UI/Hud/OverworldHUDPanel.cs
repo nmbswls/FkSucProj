@@ -245,7 +245,8 @@ namespace My.UI
         {
             bool disguising = false;
 
-            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg != null
+                && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
             {
                 if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
                 {

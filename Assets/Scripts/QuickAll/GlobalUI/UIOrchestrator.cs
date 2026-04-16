@@ -35,6 +35,14 @@ namespace My.UI
                 resourcePath = "UI/Prefabs/Startup/StartupManuPanel",
                 defaultLayer = UILayer.HUD,
             });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = "SavePointPanel",
+                resourcePath = "UI/Prefabs/SavePointPanel",
+                defaultLayer = UILayer.Overlay,
+                pooled = false,
+            });
             
 
 

@@ -640,6 +640,11 @@ namespace My
                         newEntity = newTeleporter;
                     }
                     break;
+                case EEntityType.SavePoint:
+                    {
+                        newEntity = new LogicEntitySavePoint(this, record.Id, record.CfgId, record.Position, record);
+                    }
+                    break;
                 default:
                     {
                         ;

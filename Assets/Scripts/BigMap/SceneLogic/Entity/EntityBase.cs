@@ -36,6 +36,7 @@ namespace My.Map
         FacilityRuin,
         HomeFacility,
 
+        SavePoint,
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner
@@ -68,7 +69,7 @@ namespace My.Map
 
         long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent);
         /// <summary>
-        /// 增加modifier
+        /// ????modifier
         /// </summary>
         /// <param name="m"></param>
         Modifier AddAttrModifier(ModSourceKey source, string attrId, long val);
@@ -98,11 +99,11 @@ namespace My.Map
 
         long LifeBindEntityId { get; }
 
-        // 生命周期钩子
-        void OnSpawn(LogicEntityRecord data);    // 从???录创建完整实例
-        void OnDespawn(ref LogicEntityRecord? snapshot); // 输出??照，供下次重??
-        void OnWake();   // 从Sleep进入Active，开启AI、感知、昂贵系??
-        void OnSleep();  // 从Active降级为Sleep，关??昂贵系统，保留轻量逻辑
+        // ???????????
+        void OnSpawn(LogicEntityRecord data);    // ?????????????????
+        void OnDespawn(ref LogicEntityRecord? snapshot); // ?????????????????
+        void OnWake();   // ??Sleep????Active??????AI??????????????
+        void OnSleep();  // ??Active?????Sleep?????????????????????????
         void Tick(float dt);
 
         void OnEnterAOI();
@@ -159,19 +160,19 @@ namespace My.Map
         public EFactionId FactionId { get; set; }
 
         public bool IsActive { get; set; } = true;
-        public bool IsDirty { get; set; } // 实体脏标记位 寻找时机写回record
+        public bool IsDirty { get; set; } // ????????? ??????????record
 
         public bool MarkDestroyed { get; set; }
 
         public event Action<long, Vector2, Vector2> EventOnEntityMove;
         public event Action<long> EventOnDestroyed;
         public event Action EventOnAnimLayerUpdate;
-        public event Action<string, int, bool> EventOnAnimPlay; // 动画?? 层id ??否清??
+        public event Action<string, int, bool> EventOnAnimPlay; // ?????? ??id ????????
         public Vector2 Pos { get; protected set; } = Vector2.zero;
 
         public float OffsetZ { get; protected set; }
 
-        public ISceneAbilityViewer? viewer; // 表现层接??
+        public ISceneAbilityViewer? viewer; // ????????
 
         public string BelongRoomId { get; set; } = string.Empty;
 
@@ -179,10 +180,10 @@ namespace My.Map
 
 
 
-        #region 生命周期
+        #region ????????
 
         /// <summary>
-        /// todo 拆分到???部维护
+        /// todo ????????????
         /// </summary>
         public long LifeBindEntityId { get; set; }
         public bool MarkDespawn { get; set; }
@@ -191,7 +192,7 @@ namespace My.Map
         #endregion
 
 
-        #region 通用字???
+        #region ????????
 
         protected HashSet<string> EntityLocalSwitches = new();
         public bool CheckLocalSwitch(string switchName)
@@ -261,7 +262,7 @@ namespace My.Map
 
         public void TeleportTo(Vector2 pos)
         {
-            // 其他
+            // ????
             var posNow = this.Pos;
             SetPosition(pos);
             EventOnEntityMove?.Invoke(this.Id, posNow, pos);
@@ -270,13 +271,13 @@ namespace My.Map
 
         protected virtual void InitAttribute()
         {
-            //// 数值类
+            //// ?????
             //attributeStore.RegisterNumeric("Attack", initialBase: 100);
             //attributeStore.RegisterNumeric("Strength", initialBase: 10);
             //attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
             //attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
-            //// 资源??
+            //// ?????
             //attributeStore.RegisterResource("HP", "HP.Max", 100);
 
             //attributeStore.Commit();
@@ -288,7 +289,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// 对???属性接??
+        /// ????????????
         /// </summary>
         /// <param name="attrId"></param>
         /// <returns></returns>
@@ -307,7 +308,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// 一??由系统机制调??
+        /// ??????????????
         /// </summary>
         /// <param name="resourceId"></param>
         /// <param name="newVal"></param>
@@ -328,7 +329,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// 属性变化回??
+        /// ??????????
         /// </summary>
         /// <param name="attrId"></param>
         /// <param name="before"></param>
@@ -337,7 +338,7 @@ namespace My.Map
 
         public virtual void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
         {
-            // 4.3 死亡判断窗口：仅在含伤???时检??
+            // 4.3 ???????????????????????????
         }
 
         public Modifier AddAttrModifier(ModSourceKey source, string attrId, long val)
@@ -357,7 +358,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// 销毁理由：
+        /// ?????????
         /// </summary>
         /// <param name="reason"></param>
         public virtual void DoEntityDestroyed(string reason)
@@ -368,19 +369,19 @@ namespace My.Map
                 return;
             }
 
-            // 标???已销?? 
+            // ??????????? 
             MarkDestroyed = true;
 
-            // 销毁回??
+            // ???????
             EventOnDestroyed?.Invoke(this.Id);
 
             LogicManager.AreaManager.RequestEntityDestroy(this.Id, reason);
         }
 
         /// <summary>
-        /// 处理entity的???亡逻辑
-        ///  ??能包??状态清?? 各???中????
-        ///  死亡后默??5秒后销?? 但view??能已经隐??
+        /// ????entity??????????
+        ///  ????????????? ???????????
+        ///  ?????????5??????? ??view???????????
         /// </summary>
         /// <param name="reason"></param>
         /// <param name="lastIntent"></param>
@@ -392,7 +393,7 @@ namespace My.Map
         //        return;
         //    }
 
-        //    // 标??????亡 
+        //    // ?????????? 
         //    MarkDestroyed = true;
         //    MarkDeadTime = LogicTime.time;
 
@@ -495,7 +496,7 @@ namespace My.Map
             }
         }
 
-        // 落库前由 Area 调用：把逻辑字段写回 Record（不经 OnDespawn）；尸体清理计时等纯内存调度不落库
+        // ?????? Area ????????????????? Record?????? OnDespawn???????????????????????????
         public virtual void SyncRecordForPersistence()
         {
             if (LogicManager?.AreaManager?.Repo?.Records.TryGetValue(Id, out var rec) != true)
@@ -517,7 +518,7 @@ namespace My.Map
         public void SetPosition(Vector2 pos)
         {
             this.Pos = pos;
-            // callback 形式
+            // callback ???
             if(this.Id != 0)
             {
                 LogicManager.AreaManager.UpdatePosition(this.Id, pos);

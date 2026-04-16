@@ -208,6 +208,12 @@ namespace My.MapExport
     
 
     [Serializable]
+    public class EntityInitInfo4SavePoint : EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.SavePoint;
+    }
+
+    [Serializable]
     public class EntityInitInfo4PatrolGroup : EntityInitInfo
     {
         public enum ELoopMode

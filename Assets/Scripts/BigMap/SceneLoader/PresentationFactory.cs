@@ -109,6 +109,10 @@ namespace My
                     {
                         return $"Prefab/Presentations/SimpleBlock";
                     }
+                case EEntityType.SavePoint:
+                    {
+                        return "Prefab/Presentations/SavePoint/SavePoint";
+                    }
                 // ...
                 default: return "Prefab/Presentations/Default";
             }
