@@ -68,7 +68,7 @@ namespace My.Map
 
         long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent);
         /// <summary>
-        /// å¢åŠ modifier
+        /// Ôö¼Ómodifier
         /// </summary>
         /// <param name="m"></param>
         Modifier AddAttrModifier(ModSourceKey source, string attrId, long val);
@@ -98,11 +98,11 @@ namespace My.Map
 
         long LifeBindEntityId { get; }
 
-        // ç”Ÿå‘½å‘¨æœŸé’©å­
-        void OnSpawn(LogicEntityRecord data);    // ä»???å½•åˆ›å»ºå®Œæ•´å®ä¾‹
-        void OnDespawn(ref LogicEntityRecord? snapshot); // è¾“å‡º??ç…§ï¼Œä¾›ä¸‹æ¬¡é‡??
-        void OnWake();   // ä»Sleepè¿›å…¥Activeï¼Œå¼€å¯AIã€æ„ŸçŸ¥ã€æ˜‚è´µç³»??
-        void OnSleep();  // ä»Activeé™çº§ä¸ºSleepï¼Œå…³??æ˜‚è´µç³»ç»Ÿï¼Œä¿ç•™è½»é‡é€»è¾‘
+        // ÉúÃüÖÜÆÚ¹³×Ó
+        void OnSpawn(LogicEntityRecord data);    // ´Ó???Â¼´´½¨ÍêÕûÊµÀı
+        void OnDespawn(ref LogicEntityRecord? snapshot); // Êä³ö??ÕÕ£¬¹©ÏÂ´ÎÖØ??
+        void OnWake();   // ´ÓSleep½øÈëActive£¬¿ªÆôAI¡¢¸ĞÖª¡¢°º¹óÏµ??
+        void OnSleep();  // ´ÓActive½µ¼¶ÎªSleep£¬¹Ø??°º¹óÏµÍ³£¬±£ÁôÇáÁ¿Âß¼­
         void Tick(float dt);
 
         void OnEnterAOI();
@@ -159,19 +159,19 @@ namespace My.Map
         public EFactionId FactionId { get; set; }
 
         public bool IsActive { get; set; } = true;
-        public bool IsDirty { get; set; } // å®ä½“è„æ ‡è®°ä½ å¯»æ‰¾æ—¶æœºå†™å›record
+        public bool IsDirty { get; set; } // ÊµÌåÔà±ê¼ÇÎ» Ñ°ÕÒÊ±»úĞ´»Ørecord
 
         public bool MarkDestroyed { get; set; }
 
         public event Action<long, Vector2, Vector2> EventOnEntityMove;
         public event Action<long> EventOnDestroyed;
         public event Action EventOnAnimLayerUpdate;
-        public event Action<string, int, bool> EventOnAnimPlay; // åŠ¨ç”»?? å±‚id ??å¦æ¸…??
+        public event Action<string, int, bool> EventOnAnimPlay; // ¶¯»­?? ²ãid ??·ñÇå??
         public Vector2 Pos { get; protected set; } = Vector2.zero;
 
         public float OffsetZ { get; protected set; }
 
-        public ISceneAbilityViewer? viewer; // è¡¨ç°å±‚æ¥??
+        public ISceneAbilityViewer? viewer; // ±íÏÖ²ã½Ó??
 
         public string BelongRoomId { get; set; } = string.Empty;
 
@@ -179,10 +179,10 @@ namespace My.Map
 
 
 
-        #region ç”Ÿå‘½å‘¨æœŸ
+        #region ÉúÃüÖÜÆÚ
 
         /// <summary>
-        /// todo æ‹†åˆ†åˆ°???éƒ¨ç»´æŠ¤
+        /// todo ²ğ·Öµ½???²¿Î¬»¤
         /// </summary>
         public long LifeBindEntityId { get; set; }
         public bool MarkDespawn { get; set; }
@@ -191,7 +191,7 @@ namespace My.Map
         #endregion
 
 
-        #region é€šç”¨å­—???
+        #region Í¨ÓÃ×Ö???
 
         protected HashSet<string> EntityLocalSwitches = new();
         public bool CheckLocalSwitch(string switchName)
@@ -261,7 +261,7 @@ namespace My.Map
 
         public void TeleportTo(Vector2 pos)
         {
-            // å…¶ä»–
+            // ÆäËû
             var posNow = this.Pos;
             SetPosition(pos);
             EventOnEntityMove?.Invoke(this.Id, posNow, pos);
@@ -270,13 +270,13 @@ namespace My.Map
 
         protected virtual void InitAttribute()
         {
-            //// æ•°å€¼ç±»
+            //// ÊıÖµÀà
             //attributeStore.RegisterNumeric("Attack", initialBase: 100);
             //attributeStore.RegisterNumeric("Strength", initialBase: 10);
             //attributeStore.RegisterNumeric("HP.Max", initialBase: 1000);
             //attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
 
-            //// èµ„æº??
+            //// ×ÊÔ´??
             //attributeStore.RegisterResource("HP", "HP.Max", 100);
 
             //attributeStore.Commit();
@@ -288,7 +288,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// å¯¹???å±æ€§æ¥??
+        /// ¶Ô???ÊôĞÔ½Ó??
         /// </summary>
         /// <param name="attrId"></param>
         /// <returns></returns>
@@ -307,7 +307,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// ä¸€??ç”±ç³»ç»Ÿæœºåˆ¶è°ƒ??
+        /// Ò»??ÓÉÏµÍ³»úÖÆµ÷??
         /// </summary>
         /// <param name="resourceId"></param>
         /// <param name="newVal"></param>
@@ -328,7 +328,7 @@ namespace My.Map
 
 
         /// <summary>
-        /// å±æ€§å˜åŒ–å›??
+        /// ÊôĞÔ±ä»¯»Ø??
         /// </summary>
         /// <param name="attrId"></param>
         /// <param name="before"></param>
@@ -337,7 +337,7 @@ namespace My.Map
 
         public virtual void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
         {
-            // 4.3 æ­»äº¡åˆ¤æ–­çª—å£ï¼šä»…åœ¨å«ä¼¤???æ—¶æ£€??
+            // 4.3 ËÀÍöÅĞ¶Ï´°¿Ú£º½öÔÚº¬ÉË???Ê±¼ì??
         }
 
         public Modifier AddAttrModifier(ModSourceKey source, string attrId, long val)
@@ -357,7 +357,7 @@ namespace My.Map
         }
 
         /// <summary>
-        /// é”€æ¯ç†ç”±ï¼š
+        /// Ïú»ÙÀíÓÉ£º
         /// </summary>
         /// <param name="reason"></param>
         public virtual void DoEntityDestroyed(string reason)
@@ -368,19 +368,19 @@ namespace My.Map
                 return;
             }
 
-            // æ ‡???å·²é”€?? 
+            // ±ê???ÒÑÏú?? 
             MarkDestroyed = true;
 
-            // é”€æ¯å›??
+            // Ïú»Ù»Ø??
             EventOnDestroyed?.Invoke(this.Id);
 
             LogicManager.AreaManager.RequestEntityDestroy(this.Id, reason);
         }
 
         /// <summary>
-        /// å¤„ç†entityçš„???äº¡é€»è¾‘
-        ///  ??èƒ½åŒ…??çŠ¶æ€æ¸…?? å„???ä¸­????
-        ///  æ­»äº¡åé»˜??5ç§’åé”€?? ä½†view??èƒ½å·²ç»éš??
+        /// ´¦ÀíentityµÄ???ÍöÂß¼­
+        ///  ??ÄÜ°ü??×´Ì¬Çå?? ¸÷???ÖĞ????
+        ///  ËÀÍöºóÄ¬??5ÃëºóÏú?? µ«view??ÄÜÒÑ¾­Òş??
         /// </summary>
         /// <param name="reason"></param>
         /// <param name="lastIntent"></param>
@@ -392,7 +392,7 @@ namespace My.Map
         //        return;
         //    }
 
-        //    // æ ‡??????äº¡ 
+        //    // ±ê??????Íö 
         //    MarkDestroyed = true;
         //    MarkDeadTime = LogicTime.time;
 
@@ -495,7 +495,7 @@ namespace My.Map
             }
         }
 
-        // è½åº“å‰ç”± Area è°ƒç”¨ï¼šæŠŠè¿è¡Œæ—¶å†™å› Recordï¼ˆå«å°¸ä½“å‰©ä½™æ—¶é—´ï¼Œä¸ç» OnDespawnï¼‰
+        // Âä¿âÇ°ÓÉ Area µ÷ÓÃ£º°ÑÂß¼­×Ö¶ÎĞ´»Ø Record£¨²»¾­ OnDespawn£©£»Ê¬ÌåÇåÀí¼ÆÊ±µÈ´¿ÄÚ´æµ÷¶È²»Âä¿â
         public virtual void SyncRecordForPersistence()
         {
             if (LogicManager?.AreaManager?.Repo?.Records.TryGetValue(Id, out var rec) != true)
@@ -504,7 +504,6 @@ namespace My.Map
             }
 
             RefreshEntityRecordInfo(rec);
-            LogicManager.AreaManager.ApplyCorpseRemainFromRuntime(Id, rec);
         }
 
         public void OnWake()
@@ -518,7 +517,7 @@ namespace My.Map
         public void SetPosition(Vector2 pos)
         {
             this.Pos = pos;
-            // callback å½¢å¼
+            // callback ĞÎÊ½
             if(this.Id != 0)
             {
                 LogicManager.AreaManager.UpdatePosition(this.Id, pos);

@@ -11,11 +11,11 @@ namespace My.Map.Logic
 
 
 
-    // é€»è¾‘å®ä½“çš„è½»é‡æè¿°ï¼ˆå¯å­˜æŒä¹…åŒ–ï¼‰
+    // Âß¼­ÊµÌåµÄÇáÁ¿ÃèÊö£¨¿É´æ³Ö¾Ã»¯£©
     [Serializable]
     public class LogicEntityRecord
     {
-        public long Id;               // å…¨å±€å”¯ä¸€ID
+        public long Id;               // È«¾ÖÎ¨Ò»ID
         public EEntityType EntityType;
         public string CfgId;
         public Vector2 Position;
@@ -31,10 +31,7 @@ namespace My.Map.Logic
         //public bool AlwaysActive;
 
         public List<string> LocalSwitches = null;
-        public bool MarkDestroyed = false;
-
-        // å°¸ä½“/å»¶è¿Ÿé”€æ¯ä¸­é—´æ€ï¼šä»ä¿ç•™åœ¨ Repo å†…ã€ç­‰å¾… corpseCleanup æ—¶å¤§äº 0ï¼›æ­£å¼ç§»é™¤åä¸º 0
-        public float CorpseCleanupRemainTime;
+        public bool MarkDestroyed = false; // Âß¼­ËÀÍö/Ïú»Ù±ê¼Ç£¬ÓÉ RefreshEntityRecordInfo µÈÓëÔËĞĞÊ±¶ÔÆë
     }
 
     [Serializable]
@@ -54,19 +51,19 @@ namespace My.Map.Logic
         public List<ItemStack> InnerItems = new();
     }
 
-    // é€»è¾‘å®ä½“çš„è½»é‡æè¿°ï¼ˆå¯å­˜æŒä¹…åŒ–ï¼‰
+    // Âß¼­ÊµÌåµÄÇáÁ¿ÃèÊö£¨¿É´æ³Ö¾Ã»¯£©
     [Serializable]
     public class LogicEntityRecord4UnitBase : LogicEntityRecord
     {
-        // ä»…ä¿å­˜ç‰¹æ®ŠçŠ¶æ€ buffä¸¢å¼ƒ
+        // ½ö±£´æÌØÊâ×´Ì¬ buff¶ªÆú
         public bool Unsensored;
-        public bool MarkDefeated; // å‡»è´¥æ ‡è®°
+        public bool MarkDefeated; // »÷°Ü±ê¼Ç
         public bool MarkAttaching;
 
-        public bool MarkNoLogic; // éé€»è¾‘çŠ¶æ€
+        public bool MarkNoLogic; // ·ÇÂß¼­×´Ì¬
     }
 
-    // é€»è¾‘å®ä½“çš„è½»é‡æè¿°ï¼ˆå¯å­˜æŒä¹…åŒ–ï¼‰
+    // Âß¼­ÊµÌåµÄÇáÁ¿ÃèÊö£¨¿É´æ³Ö¾Ã»¯£©
     [Serializable]
     public class LogicEntityRecord4Player : LogicEntityRecord4UnitBase
     {
@@ -100,7 +97,7 @@ namespace My.Map.Logic
     }
 
 
-    // é€»è¾‘å®ä½“çš„è½»é‡æè¿°ï¼ˆå¯å­˜æŒä¹…åŒ–ï¼‰
+    // Âß¼­ÊµÌåµÄÇáÁ¿ÃèÊö£¨¿É´æ³Ö¾Ã»¯£©
     [Serializable]
     public class LogicEntityRecord4PatrolGroup : LogicEntityRecord
     {
@@ -120,7 +117,7 @@ namespace My.Map.Logic
     public class LogicEntityRecord4EventGroup : LogicEntityRecord4InteractPoint
     {
         /// <summary>
-        /// å·²åˆ›å»ºçš„é›†åˆ
+        /// ÒÑ´´½¨µÄ¼¯ºÏ
         /// </summary>
         public Dictionary<int, long> MemberId2EntityMap = new();
 
@@ -131,7 +128,7 @@ namespace My.Map.Logic
     }
 
     /// <summary>
-    /// è®¾æ–½
+    /// ÉèÊ©
     /// </summary>
     [Serializable]
     public class LogicEntityRecord4HomeFacility : LogicEntityRecord4InteractPoint

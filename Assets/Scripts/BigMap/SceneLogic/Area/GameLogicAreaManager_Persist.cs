@@ -1,6 +1,5 @@
 using My.Map;
 using My.Saving;
-using UnityEngine;
 
 namespace My.Map.Logic
 {
@@ -39,74 +38,28 @@ namespace My.Map.Logic
                 ent?.OnWake();
             }
 
-            SyncCorpsePendingIntoRecords();
+            SyncLoadedCorpseRecordsForPersistence();
         }
 
-        private void SyncCorpsePendingIntoRecords()
+        private void SyncLoadedCorpseRecordsForPersistence()
         {
             foreach (var kv in runtimeStates)
             {
-                var st = kv.Value;
-                if (!st.IsMarkDestroy)
+                if (!kv.Value.IsMarkDestroy)
                 {
                     continue;
                 }
 
-                if (!Repo.Records.TryGetValue(st.Id, out var rec))
+                if (!Repo.IsLoaded(kv.Key))
                 {
                     continue;
                 }
 
-                if (Repo.IsLoaded(st.Id) && Repo.GetLoaded(st.Id) is LogicEntityBase leb)
+                if (Repo.GetLoaded(kv.Key) is LogicEntityBase leb)
                 {
                     leb.SyncRecordForPersistence();
                 }
-                else
-                {
-                    ApplyCorpseRemainFromRuntime(st.Id, rec);
-                }
             }
-        }
-
-        public void ApplyCorpseRemainFromRuntime(long id, LogicEntityRecord rec)
-        {
-            if (rec == null)
-            {
-                return;
-            }
-
-            if (runtimeStates.TryGetValue(id, out var st) && st.IsMarkDestroy)
-            {
-                rec.CorpseCleanupRemainTime = Mathf.Max(0f, st.DeathRemainTimer);
-            }
-            else
-            {
-                rec.CorpseCleanupRemainTime = 0f;
-            }
-        }
-
-        private void RestoreCorpseRuntimeFromRecord(LogicEntityRecord rec)
-        {
-            if (rec == null || rec.CorpseCleanupRemainTime <= 0f)
-            {
-                return;
-            }
-
-            if (!Repo.HasRecord(rec.Id))
-            {
-                return;
-            }
-
-            if (!runtimeStates.TryGetValue(rec.Id, out var st))
-            {
-                st = new OneEntityRuntimeState { Id = rec.Id, State = LogicLifeState.NotLoaded };
-            }
-
-            st.IsMarkDestroy = true;
-            st.DeathRemainTimer = rec.CorpseCleanupRemainTime;
-            runtimeStates[rec.Id] = st;
-
-            corpseCleanupQ.Enqueue((rec.Id, "persist_restore"));
         }
 
         public MapRuntimePersistData BuildMapRuntimePersistData()
@@ -141,11 +94,6 @@ namespace My.Map.Logic
             {
                 var rec = kv.Value;
                 if (rec.EntityType == EEntityType.Player)
-                {
-                    continue;
-                }
-
-                if (rec.MarkDestroyed && rec.CorpseCleanupRemainTime <= 0f)
                 {
                     continue;
                 }
@@ -196,25 +144,7 @@ namespace My.Map.Logic
                         continue;
                     }
 
-                    if (rec.MarkDestroyed && rec.CorpseCleanupRemainTime <= 0f)
-                    {
-                        continue;
-                    }
-
                     RegisterEntityRecord(rec, isCreate: false);
-                }
-
-                foreach (var rec in data.EntityRecords)
-                {
-                    if (rec == null || rec.EntityType == EEntityType.Player)
-                    {
-                        continue;
-                    }
-
-                    if (rec.CorpseCleanupRemainTime > 0f)
-                    {
-                        RestoreCorpseRuntimeFromRecord(rec);
-                    }
                 }
             }
 
