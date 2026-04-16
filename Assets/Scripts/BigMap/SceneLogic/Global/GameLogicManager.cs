@@ -836,6 +836,8 @@ namespace My
 
         private List<BuffPersistData> _pendingPlayerBuffRestore;
 
+        private Dictionary<string, MapRuntimePersistData> _pendingMapRuntimeByMapId;
+
         public OpenWorldReturnBookmark LastOpenWorldBeforeHome { get; private set; }
 
         void CapturePersistenceFromSaveData(SaveData saveData)
@@ -844,6 +846,7 @@ namespace My
             {
                 _pendingPlayerBuffRestore = null;
                 LastOpenWorldBeforeHome = null;
+                _pendingMapRuntimeByMapId = null;
                 return;
             }
 
@@ -868,6 +871,37 @@ namespace My
             {
                 LastOpenWorldBeforeHome = null;
             }
+
+            _pendingMapRuntimeByMapId = null;
+            if (saveData.MapRuntimeByMapId != null && saveData.MapRuntimeByMapId.Count > 0)
+            {
+                _pendingMapRuntimeByMapId = new Dictionary<string, MapRuntimePersistData>(saveData.MapRuntimeByMapId);
+            }
+
+            SaveData.SyncLogicEntityIdCounterFromSave(saveData);
+
+            if (saveData.GlobalRuntime != null)
+            {
+                AlertVal = saveData.GlobalRuntime.AlertVal;
+                WantedManager.CurrentWantedVal = saveData.GlobalRuntime.WantedScaledVal;
+                WantedManager.LastWantedTime = saveData.GlobalRuntime.WantedLastTime;
+            }
+        }
+
+        public void ApplyPendingMapRuntimeAfterMapInit(string mapName)
+        {
+            if (string.IsNullOrEmpty(mapName) || AreaManager == null)
+            {
+                return;
+            }
+
+            if (_pendingMapRuntimeByMapId == null || !_pendingMapRuntimeByMapId.TryGetValue(mapName, out var chunk))
+            {
+                return;
+            }
+
+            AreaManager.ApplyMapRuntimePersistData(chunk);
+            _pendingMapRuntimeByMapId.Remove(mapName);
         }
 
         void TrySnapshotOpenWorldBeforeEnteringHome(string destinationMapName)
@@ -928,6 +962,35 @@ namespace My
                     MapId = LastOpenWorldBeforeHome.MapId,
                     Pos = LastOpenWorldBeforeHome.Pos,
                 };
+
+            data.GlobalRuntime ??= new GlobalRuntimePersistData();
+            data.GlobalRuntime.AlertVal = AlertVal;
+            data.GlobalRuntime.WantedScaledVal = WantedManager != null ? WantedManager.CurrentWantedVal : 0;
+            data.GlobalRuntime.WantedLastTime = WantedManager != null ? WantedManager.LastWantedTime : 0f;
+
+            data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
+            if (AreaManager != null && !string.IsNullOrEmpty(AreaManager.MapName))
+            {
+                data.MapRuntimeByMapId[AreaManager.MapName] = AreaManager.BuildMapRuntimePersistData();
+            }
+
+            long maxEntityId = data.NextLogicEntityIdHint;
+            foreach (var pair in data.MapRuntimeByMapId)
+            {
+                var block = pair.Value;
+                if (block?.EntityRecords == null) continue;
+                foreach (var rec in block.EntityRecords)
+                {
+                    if (rec != null) maxEntityId = Math.Max(maxEntityId, rec.Id);
+                }
+            }
+
+            if (playerLogicEntity != null)
+            {
+                maxEntityId = Math.Max(maxEntityId, playerLogicEntity.Id);
+            }
+
+            data.NextLogicEntityIdHint = maxEntityId;
 
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.PlayerBuffs.Clear();

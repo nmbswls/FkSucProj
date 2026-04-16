@@ -1,6 +1,8 @@
 
 using System;
 using System.Collections.Generic;
+using My.Map;
+using My.Map.Logic;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -47,6 +49,38 @@ namespace My.Saving
         public int Amount;
     }
 
+    // 跨地图的全局运行时（警戒条、通缉等），不随单张地图卸载而丢失
+    [Serializable]
+    public class GlobalRuntimePersistData
+    {
+        public int AlertVal;
+        public int WantedScaledVal;
+        public float WantedLastTime;
+    }
+
+    [Serializable]
+    public class RefreshRuntimePersist
+    {
+        public int StaticId;
+        public long EntityInstId;
+        public float LastRespawnTime;
+        public float LastDestroyTime;
+    }
+
+    // 单张地图上的逻辑状态：区域邪恶警戒、动态刷新 CD、实体 Record 快照
+    [Serializable]
+    public class MapRuntimePersistData
+    {
+        public long AreaAlertValue;
+
+        public List<RefreshRuntimePersist> RefreshStates = new();
+
+        public Dictionary<long, int> RecordToRefreshStaticId = new();
+
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        public List<LogicEntityRecord> EntityRecords = new();
+    }
+
     [Serializable]
     public class SaveData
     {
@@ -62,6 +96,12 @@ namespace My.Saving
 
         public OpenWorldReturnBookmark LastOpenWorldBeforeHome;
         public List<BuffPersistData> PlayerBuffs;
+
+        public GlobalRuntimePersistData GlobalRuntime;
+
+        public Dictionary<string, MapRuntimePersistData> MapRuntimeByMapId = new();
+
+        public long NextLogicEntityIdHint;
 
         public SaveData()
         {
@@ -79,6 +119,31 @@ namespace My.Saving
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
             data.Inventory ??= new List<InventoryItemData>();
             data.PlayerBuffs ??= new List<BuffPersistData>();
+            data.GlobalRuntime ??= new GlobalRuntimePersistData();
+            data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
+        }
+
+        public static void SyncLogicEntityIdCounterFromSave(SaveData data)
+        {
+            if (data == null) return;
+            long maxId = data.NextLogicEntityIdHint;
+            if (data.MapRuntimeByMapId != null)
+            {
+                foreach (var kv in data.MapRuntimeByMapId)
+                {
+                    var block = kv.Value;
+                    if (block?.EntityRecords == null) continue;
+                    foreach (var rec in block.EntityRecords)
+                    {
+                        if (rec != null) maxId = Math.Max(maxId, rec.Id);
+                    }
+                }
+            }
+
+            if (maxId > 0)
+            {
+                My.GameLogicManager.LogicEntityIdInst = Math.Max(My.GameLogicManager.LogicEntityIdInst, maxId + 1);
+            }
         }
     }
 }

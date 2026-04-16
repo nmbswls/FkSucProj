@@ -587,6 +587,8 @@ namespace My
 
             gameLogicManager?.AppendRuntimePersistenceToSaveData(data);
 
+            SaveData.EnsureHydrated(data);
+
             return data;
         }
 

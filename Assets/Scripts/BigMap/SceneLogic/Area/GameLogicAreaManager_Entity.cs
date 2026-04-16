@@ -116,6 +116,13 @@ namespace My.Map.Logic
         {
             if (RefreshInfoRuntimes.TryGetValue(refreshInfo.StaticId, out var refreshRuntime))
             {
+                if (refreshRuntime.EntityInstId != 0 &&
+                    Repo.Records.TryGetValue(refreshRuntime.EntityInstId, out var existingRec) &&
+                    !existingRec.MarkDestroyed)
+                {
+                    return;
+                }
+
                 if(!refreshInfo.WillRespawn)
                 {
                     return;
