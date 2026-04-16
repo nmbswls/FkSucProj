@@ -1,20 +1,7 @@
-using Animancer;
-using DG.Tweening;
-using Map.Entity;
-using Map.Logic;
-using My.Dialog;
-using My.Map.Entity;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using Unity.Properties;
-using UnityEditor;
-using UnityEditor.PackageManager.UI;
+using My.Map.Entity;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem.HID;
-using static My.GameLogicManager;
-using static UnityEngine.GraphicsBuffer;
 
 
 public interface IMapWeaponHolder

@@ -495,6 +495,18 @@ namespace My.Map
             }
         }
 
+        // 落库前由 Area 调用：把运行时写回 Record（含尸体剩余时间，不经 OnDespawn）
+        public virtual void SyncRecordForPersistence()
+        {
+            if (LogicManager?.AreaManager?.Repo?.Records.TryGetValue(Id, out var rec) != true)
+            {
+                return;
+            }
+
+            RefreshEntityRecordInfo(rec);
+            LogicManager.AreaManager.ApplyCorpseRemainFromRuntime(Id, rec);
+        }
+
         public void OnWake()
         {
         }
