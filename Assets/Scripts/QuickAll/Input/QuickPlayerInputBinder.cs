@@ -5,6 +5,7 @@ using My.Map;
 using My.Map.Entity;
 using My.Map.Scene;
 using My.MiniGame;
+using My.MiniGame.Dream;
 using My.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -129,6 +130,11 @@ namespace My.Input
             if (UnityEngine.Input.GetKeyDown(KeyCode.M))
             {
                 WorldMapRuntime.TryToggle();
+            }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.F9))
+            {
+                DreamInfiltrationBootstrap.OpenEntry();
             }
 
             if (GlobalLock) return;

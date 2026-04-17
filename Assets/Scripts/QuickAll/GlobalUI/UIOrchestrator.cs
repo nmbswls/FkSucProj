@@ -2,6 +2,7 @@ using Map.Logic.Events;
 using My.Map;
 using My.Map.View;
 using My.MiniGame;
+using My.MiniGame.Dream;
 using My.Player.Bag;
 using System;
 using System.Collections;
@@ -197,6 +198,28 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = DreamInfiltrationIds.EntryPanel,
+                resourcePath = "UI/Prefabs/DreamInfiltration/DreamEntryPanel",
+                defaultLayer = UILayer.Overlay,
+                pooled = false,
+            });
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = DreamInfiltrationIds.GameplayPanel,
+                resourcePath = "UI/Prefabs/DreamInfiltration/DreamDodgeGameplayPanel",
+                defaultLayer = UILayer.Overlay,
+                pooled = false,
+            });
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = DreamInfiltrationIds.SettlementPanel,
+                resourcePath = "UI/Prefabs/DreamInfiltration/DreamSettlementPanel",
+                defaultLayer = UILayer.Overlay,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "DeepAbsorbPanel",
                 resourcePath = "UI/Prefabs/DeepAbsorbPanel",
                 defaultLayer = UILayer.Popup,
@@ -306,21 +329,21 @@ namespace My.UI
             BuildGroupIndex();
         }
 
-        #region 互斥组�?�理
+        #region ???????????
 
         [Serializable]
         public class UIGroupPolicy
         {
-            public string groupName;                // 组名，�?? "Interaction", "Inventory", "Fullscreen"
-            public bool singleInGroup = false;      // �?否同组内互斥（true=同组�?能留一�?�?
-            public List<string> panelIds = new();   // 组内面板清单
+            public string groupName;                // ????????? "Interaction", "Inventory", "Fullscreen"
+            public bool singleInGroup = false;      // ????????????true=??????????????
+            public List<string> panelIds = new();   // ????????��
             public bool isExclusive = false;
         }
 
         [Header("UI Groups (Mutual Exclusion)")]
         [SerializeField] private List<UIGroupPolicy> groupPolicies = new();
 
-        // 运�?�时索引
+        // ??????????
         private readonly Dictionary<string, string> panelToGroup = new();     // panelId -> groupName
         private readonly Dictionary<string, HashSet<string>> groupActive = new(); // groupName -> active panelIds
 
@@ -362,21 +385,21 @@ namespace My.UI
             return null;
         }
 
-        // 对�?�：按组规则显示面板（互斥组生效�?
+        // ???????????????????��????????��??
         public void ShowInGroup(string panelId, object ctx = null, UILayer? layerOverride = null)
         {
-            // 查找面板所属组
+            // ?????????????
             var policy = FindGroupByPanel(panelId, out var myGroup);
             if (policy != null && !string.IsNullOrEmpty(myGroup))
             {
                 if(policy.isExclusive)
                 {
-                    // 1) 关闭其他组所有活动面�?
+                    // 1) ????????????��?????
                     foreach (var kv in groupActive)
                     {
                         var groupName = kv.Key;
                         if (groupName == myGroup) continue;
-                        // 复制集合避免遍历�?�?
+                        // ?????????????????
                         var toClose = new List<string>(kv.Value);
                         foreach (var pid in toClose)
                         {
@@ -386,7 +409,7 @@ namespace My.UI
                     }
                 }
                 
-                // 2) 若同组单例，关闭同组已打开面板
+                // 2) ????�b????????????????
                 if (policy.singleInGroup && groupActive.TryGetValue(myGroup, out var setInMyGroup))
                 {
                     var toCloseMy = new List<string>(setInMyGroup);
@@ -401,10 +424,10 @@ namespace My.UI
                 }
             }
 
-            // 3) 打开�?标面�?
+            // 3) ??????????
             UIManager.Instance.ShowPanel(panelId, ctx, layerOverride);
 
-            // 4) 登�?�活动关�?
+            // 4) ???????????
             if (!string.IsNullOrEmpty(myGroup))
             {
                 if (!groupActive.TryGetValue(myGroup, out var set))
@@ -413,7 +436,7 @@ namespace My.UI
             }
         }
 
-        // 对�?�：按组规则关闭面板（更新索引）
+        // ??????????????????��??????????
         public void HideInGroup(string panelId)
         {
             UIManager.Instance.HidePanel(panelId);
@@ -423,7 +446,7 @@ namespace My.UI
             }
         }
 
-        // 辅助：关�?整个组（�?用于“回到世界”时清空交互相关�?
+        // ???????????????��?????????????��????????????
         public void CloseGroup(string groupName)
         {
             if (!groupActive.TryGetValue(groupName, out var set)) return;
@@ -435,7 +458,7 @@ namespace My.UI
             }
         }
 
-        // 查�??：某组是否有活动面板
+        // ??????????????��????
         public bool IsGroupActive(string groupName)
         {
             return groupActive.TryGetValue(groupName, out var set) && set.Count > 0;
@@ -485,7 +508,7 @@ namespace My.UI
 
             UIManager.Instance.HideAll("Loading");
 
-            // 关闭战斗相关
+            // ?????????
             UIManager.Instance.ShowPanel("OverworldHUD");
             UIManager.Instance.ShowPanel("SceneMask");
             UIManager.Instance.ShowPanel("SmallIconLayer");
@@ -503,9 +526,9 @@ namespace My.UI
         private async Task EnterBattleAsync(object ctx)
         {
             //UIManager.Instance.ShowLoading("Entering Battle...");
-            //// 关闭世界 HUD
+            //// ??????? HUD
             //UIManager.Instance.HidePanel("OverworldHUD");
-            //// 打开战斗 HUD
+            //// ????? HUD
             UIManager.Instance.ShowPanel("EncounterBattleHud", ctx, UILayer.HUD);
             //UIManager.Instance.ApplyInputMode(UIInputMode.Battle);
             //UIManager.Instance.HideLoading();
@@ -518,16 +541,16 @@ namespace My.UI
 
         //private async Task EnterPauseAsync()
         //{
-        //    // 打开暂停菜单（示例，你可以做一�? PauseMenuPanel，放�? Popup/Overlay 层）
+        //    // ????????????????????????? PauseMenuPanel?????? Popup/Overlay ??
         //    UIManager.Instance.ShowPanel("PauseMenu", null, UILayer.Overlay);
-        //    // 菜单态切 UI 输入
+        //    // ?????? UI ????
         //    UIManager.Instance.ApplyInputMode(UIInputMode.Menu);
         //    await Task.CompletedTask;
         //}
 
         //private async Task EnterDialogAsync(object dialogCtx)
         //{
-        //    // 打开对话面板（示例）
+        //    // ??????��?????
         //    UIManager.Instance.ShowPanel("DialogPanel", dialogCtx, UILayer.Popup);
         //    UIManager.Instance.ApplyInputMode(UIInputMode.Dialog);
         //    await Task.CompletedTask;
@@ -536,20 +559,20 @@ namespace My.UI
         //private async Task EnterLoadingAsync(string tip)
         //{
         //    UIManager.Instance.ShowLoading(tip);
-        //    // Loading 状态通常�?�?展示�?罩，吞掉输入；结束时由调用方再跳到下一�?状�?
+        //    // Loading ????????????????????????????????��???????????????
         //    await Task.CompletedTask;
         //}
 
-        //// 常用编排：从任意状态进入战�?
+        //// ???????????????????????
         //public async Task GoToBattleAsync(object battleCtx)
         //{
         //    await SetStateAsync(UIAppState.Loading, "Matchmaking...");
-        //    // 资源加载/场景切换...
+        //    // ???????/?????��?...
         //    await SetStateAsync(UIAppState.Battle, battleCtx);
         //}
 
 
-        #region 具体逻辑部分
+        #region ???????????
 
         public void EnsurePlayerBag()
         {
@@ -561,7 +584,7 @@ namespace My.UI
         public void TryEnterLootDetailMode(ILootableObj lootObj)
         {
             EnsurePlayerBag();
-            // 打开lootpoint
+            // ??lootpoint
             ShowInGroup("LootPoint", lootObj);
 
             //if(UIManager.Instance.IsPanelVisible())
@@ -592,7 +615,7 @@ namespace My.UI
         private List<MapLogicSubscription> subs = new();
 
         /// <summary>
-        /// 逻辑事件处理
+        /// ??????????
         /// </summary>
         public void InitGameLogicEventListener()
         {
@@ -650,7 +673,7 @@ namespace My.UI
                         
                         if(player.IsFaQing)
                         {
-                            // 开始发�? 需要播效果
+                            // ??????? ?????��??
                         }
 
 
@@ -727,7 +750,7 @@ namespace My.UI
 //        if (currentMode == mode) return;
 //        currentMode = mode;
 
-//        // 切换 Map
+//        // ?��? Map
 //        mapOverworld?.Disable();
 //        mapBattle?.Disable();
 //        mapUI?.Disable();
@@ -744,7 +767,7 @@ namespace My.UI
 //    }
 
 
-//    // 便捷流程：战斗切�? + Loading
+//    // ??????????????? + Loading
 //    public void EnterBattleUI(object battleCtx)
 //    {
 
