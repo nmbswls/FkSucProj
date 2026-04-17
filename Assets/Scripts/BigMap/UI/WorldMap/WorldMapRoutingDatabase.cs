@@ -40,6 +40,9 @@ namespace My.Map
         [Tooltip("behavior=UseAlternateMap 时使用")]
         public Sprite alternateMapSprite;
 
+        [Tooltip("Resources 路径（无扩展名）；alternateMapSprite 为空时使用")]
+        public string alternateMapTextureResourcePath = "";
+
         [Tooltip("勾选后使用下方独立世界坐标边界，否则沿用区域默认边界")]
         public bool useSeparateBounds;
 
@@ -55,6 +58,9 @@ namespace My.Map
 
         public Sprite mapSprite;
 
+        [Tooltip("Resources 下路径（无 .png），如 WorldMap/fake_map_base_01；mapSprite 已填时忽略")]
+        public string mapTextureResourcePath = "";
+
         public Vector2 worldMin;
         public Vector2 worldMax;
 
@@ -68,6 +74,9 @@ namespace My.Map
         public bool allowOpenWhenAreaUnknown = true;
 
         public Sprite mapSprite;
+
+        [Tooltip("未匹配到区域时使用的占位图 Resources 路径（无扩展名）")]
+        public string mapTextureResourcePath = "";
 
         public Vector2 worldMin = new Vector2(-40f, -40f);
         public Vector2 worldMax = new Vector2(40f, 40f);
@@ -101,6 +110,8 @@ namespace My.Map
         public Vector2 worldPos;
         public WorldMapLandmarkKind kind;
         public string label;
+        /// <summary>与逻辑实体 Id 对应，用于大地图打开时持续刷新位置</summary>
+        public long sourceEntityId;
     }
 
     public sealed class WorldMapViewContext
@@ -109,6 +120,37 @@ namespace My.Map
         public Vector2 WorldMin;
         public Vector2 WorldMax;
         public readonly List<WorldMapMarkerData> Markers = new();
+    }
+
+    /// <summary>
+    /// 从 Resources 加载 Texture2D 并生成 Sprite（需纹理 Read/Write 开启时使用 Sprite.Create）
+    /// </summary>
+    public static class WorldMapTextureResolver
+    {
+        private static readonly Dictionary<string, Sprite> Cache = new();
+
+        public static Sprite Resolve(Sprite direct, string resourcesPathWithoutExtension)
+        {
+            if (direct != null) return direct;
+            if (string.IsNullOrEmpty(resourcesPathWithoutExtension)) return null;
+            if (Cache.TryGetValue(resourcesPathWithoutExtension, out var cached) && cached != null)
+                return cached;
+
+            var tex = Resources.Load<Texture2D>(resourcesPathWithoutExtension);
+            if (tex == null)
+            {
+                Debug.LogWarning($"[WorldMap] Resources.Load<Texture2D> failed: '{resourcesPathWithoutExtension}'");
+                return null;
+            }
+
+            var sp = Sprite.Create(
+                tex,
+                new Rect(0, 0, tex.width, tex.height),
+                new Vector2(0.5f, 0.5f),
+                100f);
+            Cache[resourcesPathWithoutExtension] = sp;
+            return sp;
+        }
     }
 
     /// <summary>
@@ -166,7 +208,15 @@ namespace My.Map
             }
 
             EnsureDatabaseLoaded();
-            var areaId = glm.CurrentArea ?? string.Empty;
+            // CurrentArea 若未维护，则与地图导出名一致使用 AreaManager.MapName
+            var areaId = glm.CurrentArea;
+            if (string.IsNullOrEmpty(areaId) && glm.AreaManager != null &&
+                !string.IsNullOrEmpty(glm.AreaManager.MapName))
+            {
+                areaId = glm.AreaManager.MapName;
+            }
+
+            areaId ??= string.Empty;
             var roomId = player.BelongRoomId ?? string.Empty;
 
             WorldMapAreaConfig areaCfg = null;
@@ -180,9 +230,12 @@ namespace My.Map
                 if (Database == null || Database.fallback.allowOpenWhenAreaUnknown)
                 {
                     var fb = Database != null ? Database.fallback : null;
+                    var fbSprite = fb != null
+                        ? WorldMapTextureResolver.Resolve(fb.mapSprite, fb.mapTextureResourcePath)
+                        : null;
                     ctx = new WorldMapViewContext
                     {
-                        MapSprite = fb != null ? fb.mapSprite : null,
+                        MapSprite = fbSprite,
                         WorldMin = fb != null ? fb.worldMin : new Vector2(-40f, -40f),
                         WorldMax = fb != null ? fb.worldMax : new Vector2(40f, 40f),
                     };
@@ -201,17 +254,21 @@ namespace My.Map
                 return false;
             }
 
-            var sprite = areaCfg.mapSprite;
+            var sprite = WorldMapTextureResolver.Resolve(areaCfg.mapSprite, areaCfg.mapTextureResourcePath);
             var wMin = areaCfg.worldMin;
             var wMax = areaCfg.worldMax;
 
-            if (rule != null && rule.behavior == WorldMapRoomBehavior.UseAlternateMap && rule.alternateMapSprite != null)
+            if (rule != null && rule.behavior == WorldMapRoomBehavior.UseAlternateMap)
             {
-                sprite = rule.alternateMapSprite;
-                if (rule.useSeparateBounds)
+                var alt = WorldMapTextureResolver.Resolve(rule.alternateMapSprite, rule.alternateMapTextureResourcePath);
+                if (alt != null)
                 {
-                    wMin = rule.alternateWorldMin;
-                    wMax = rule.alternateWorldMax;
+                    sprite = alt;
+                    if (rule.useSeparateBounds)
+                    {
+                        wMin = rule.alternateWorldMin;
+                        wMax = rule.alternateWorldMax;
+                    }
                 }
             }
 
@@ -243,6 +300,7 @@ namespace My.Map
                 worldPos = player.Pos,
                 kind = WorldMapLandmarkKind.Player,
                 label = "Player",
+                sourceEntityId = player.Id,
             });
 
             foreach (var kv in glm.AreaManager.Repo.Records)
@@ -259,6 +317,7 @@ namespace My.Map
                     worldPos = e.Pos,
                     kind = kind,
                     label = e.WorldMapLandmarkLabel,
+                    sourceEntityId = e.Id,
                 });
             }
         }

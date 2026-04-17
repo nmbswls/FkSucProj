@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using My;
 using My.Map;
 using TMPro;
 using UnityEngine;
@@ -94,6 +95,9 @@ namespace My.UI
             img.color = ColorForKind(data.kind);
             img.raycastTarget = false;
 
+            var binder = go.AddComponent<WorldMapMarkerBinder>();
+            binder.SourceEntityId = data.sourceEntityId;
+
             if (!string.IsNullOrEmpty(data.label))
             {
                 var textGo = new GameObject("label", typeof(RectTransform));
@@ -112,6 +116,31 @@ namespace My.UI
             }
 
             return go;
+        }
+
+        private void LateUpdate()
+        {
+            if (!IsVisible || boundContext == null || markersRoot == null) return;
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null) return;
+
+            var rect = markersRoot.rect;
+            foreach (var go in spawnedMarkers)
+            {
+                if (go == null) continue;
+                var binder = go.GetComponent<WorldMapMarkerBinder>();
+                if (binder == null) continue;
+                var rt = (RectTransform)go.transform;
+                var e = glm.GetLogicEntity(binder.SourceEntityId, false);
+                if (e == null)
+                {
+                    rt.gameObject.SetActive(false);
+                    continue;
+                }
+
+                rt.gameObject.SetActive(true);
+                rt.anchoredPosition = WorldToAnchored(e.Pos, rect);
+            }
         }
 
         private static Color ColorForKind(WorldMapLandmarkKind k)
@@ -173,5 +202,13 @@ namespace My.UI
             }
             return false;
         }
+    }
+
+    /// <summary>
+    /// 标记与逻辑实体 Id 绑定，供 LateUpdate 刷新屏幕坐标
+    /// </summary>
+    public sealed class WorldMapMarkerBinder : MonoBehaviour
+    {
+        public long SourceEntityId;
     }
 }
