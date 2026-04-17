@@ -88,6 +88,20 @@ namespace My.Map
 
         public override EEntityType Type => EEntityType.Npc;
 
+        public override WorldMapLandmarkKind WorldMapLandmark
+        {
+            get
+            {
+                WorldMapRuntime.EnsureDatabaseLoaded();
+                if (WorldMapRuntime.Database != null && WorldMapRuntime.Database.IsNpcBossLandmark(CfgId))
+                    return WorldMapLandmarkKind.MajorBoss;
+                return base.WorldMapLandmark;
+            }
+        }
+
+        public override string WorldMapLandmarkLabel =>
+            NpcConfig != null && !string.IsNullOrEmpty(NpcConfig.Name) ? NpcConfig.Name : CfgId;
+
         protected override void InitAbility()
         {
             base.InitAbility();

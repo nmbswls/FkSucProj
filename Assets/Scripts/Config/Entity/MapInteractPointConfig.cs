@@ -23,6 +23,12 @@ namespace Config.Map
 
         public bool IsAlwaysActive = false;
 
+        [Tooltip("在大地图（M）上显示为重要地标")]
+        public bool ShowOnWorldMap = false;
+
+        [Tooltip("大地图标记旁的可选短标签，空则用 ShowName 或 CfgId")]
+        public string WorldMapMarkerLabel = "";
+
         [Serializable]
         public class StatusInfo
         {

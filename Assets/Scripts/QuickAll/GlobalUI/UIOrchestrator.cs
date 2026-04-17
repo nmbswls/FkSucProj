@@ -189,6 +189,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = WorldMapRuntime.PanelId,
+                resourcePath = "UI/Prefabs/WorldMapPanel",
+                defaultLayer = UILayer.Overlay,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "DeepAbsorbPanel",
                 resourcePath = "UI/Prefabs/DeepAbsorbPanel",
                 defaultLayer = UILayer.Popup,
@@ -298,13 +306,13 @@ namespace My.UI
             BuildGroupIndex();
         }
 
-        #region 互斥组处理
+        #region 互斥组�?�理
 
         [Serializable]
         public class UIGroupPolicy
         {
-            public string groupName;                // 组名，如 "Interaction", "Inventory", "Fullscreen"
-            public bool singleInGroup = false;      // 是否同组内互斥（true=同组只能留一个）
+            public string groupName;                // 组名，�?? "Interaction", "Inventory", "Fullscreen"
+            public bool singleInGroup = false;      // �?否同组内互斥（true=同组�?能留一�?�?
             public List<string> panelIds = new();   // 组内面板清单
             public bool isExclusive = false;
         }
@@ -312,7 +320,7 @@ namespace My.UI
         [Header("UI Groups (Mutual Exclusion)")]
         [SerializeField] private List<UIGroupPolicy> groupPolicies = new();
 
-        // 运行时索引
+        // 运�?�时索引
         private readonly Dictionary<string, string> panelToGroup = new();     // panelId -> groupName
         private readonly Dictionary<string, HashSet<string>> groupActive = new(); // groupName -> active panelIds
 
@@ -354,7 +362,7 @@ namespace My.UI
             return null;
         }
 
-        // 对外：按组规则显示面板（互斥组生效）
+        // 对�?�：按组规则显示面板（互斥组生效�?
         public void ShowInGroup(string panelId, object ctx = null, UILayer? layerOverride = null)
         {
             // 查找面板所属组
@@ -363,12 +371,12 @@ namespace My.UI
             {
                 if(policy.isExclusive)
                 {
-                    // 1) 关闭其他组所有活动面板
+                    // 1) 关闭其他组所有活动面�?
                     foreach (var kv in groupActive)
                     {
                         var groupName = kv.Key;
                         if (groupName == myGroup) continue;
-                        // 复制集合避免遍历修改
+                        // 复制集合避免遍历�?�?
                         var toClose = new List<string>(kv.Value);
                         foreach (var pid in toClose)
                         {
@@ -393,10 +401,10 @@ namespace My.UI
                 }
             }
 
-            // 3) 打开目标面板
+            // 3) 打开�?标面�?
             UIManager.Instance.ShowPanel(panelId, ctx, layerOverride);
 
-            // 4) 登记活动关系
+            // 4) 登�?�活动关�?
             if (!string.IsNullOrEmpty(myGroup))
             {
                 if (!groupActive.TryGetValue(myGroup, out var set))
@@ -405,7 +413,7 @@ namespace My.UI
             }
         }
 
-        // 对外：按组规则关闭面板（更新索引）
+        // 对�?�：按组规则关闭面板（更新索引）
         public void HideInGroup(string panelId)
         {
             UIManager.Instance.HidePanel(panelId);
@@ -415,7 +423,7 @@ namespace My.UI
             }
         }
 
-        // 辅助：关闭整个组（可用于“回到世界”时清空交互相关）
+        // 辅助：关�?整个组（�?用于“回到世界”时清空交互相关�?
         public void CloseGroup(string groupName)
         {
             if (!groupActive.TryGetValue(groupName, out var set)) return;
@@ -427,7 +435,7 @@ namespace My.UI
             }
         }
 
-        // 查询：某组是否有活动面板
+        // 查�??：某组是否有活动面板
         public bool IsGroupActive(string groupName)
         {
             return groupActive.TryGetValue(groupName, out var set) && set.Count > 0;
@@ -510,7 +518,7 @@ namespace My.UI
 
         //private async Task EnterPauseAsync()
         //{
-        //    // 打开暂停菜单（示例，你可以做一个 PauseMenuPanel，放在 Popup/Overlay 层）
+        //    // 打开暂停菜单（示例，你可以做一�? PauseMenuPanel，放�? Popup/Overlay 层）
         //    UIManager.Instance.ShowPanel("PauseMenu", null, UILayer.Overlay);
         //    // 菜单态切 UI 输入
         //    UIManager.Instance.ApplyInputMode(UIInputMode.Menu);
@@ -528,11 +536,11 @@ namespace My.UI
         //private async Task EnterLoadingAsync(string tip)
         //{
         //    UIManager.Instance.ShowLoading(tip);
-        //    // Loading 状态通常只是展示遮罩，吞掉输入；结束时由调用方再跳到下一个状态
+        //    // Loading 状态通常�?�?展示�?罩，吞掉输入；结束时由调用方再跳到下一�?状�?
         //    await Task.CompletedTask;
         //}
 
-        //// 常用编排：从任意状态进入战斗
+        //// 常用编排：从任意状态进入战�?
         //public async Task GoToBattleAsync(object battleCtx)
         //{
         //    await SetStateAsync(UIAppState.Loading, "Matchmaking...");
@@ -642,7 +650,7 @@ namespace My.UI
                         
                         if(player.IsFaQing)
                         {
-                            // 开始发情 需要播效果
+                            // 开始发�? 需要播效果
                         }
 
 
@@ -736,7 +744,7 @@ namespace My.UI
 //    }
 
 
-//    // 便捷流程：战斗切换 + Loading
+//    // 便捷流程：战斗切�? + Loading
 //    public void EnterBattleUI(object battleCtx)
 //    {
 

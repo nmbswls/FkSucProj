@@ -126,6 +126,11 @@ namespace My.Input
                 UIOrchestrator.Instance.EnsurePlayerBag();
             }
 
+            if (UnityEngine.Input.GetKeyDown(KeyCode.M))
+            {
+                WorldMapRuntime.TryToggle();
+            }
+
             if (GlobalLock) return;
 
             // 2. 持续输入（Hold）的每帧 Update，直接问询 Input System

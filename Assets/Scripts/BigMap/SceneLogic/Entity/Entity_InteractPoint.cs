@@ -2,6 +2,7 @@ using Config;
 using Config.Map;
 using Map.Logic.Events;
 using My.Config;
+using My.Map;
 using My.Map.Logic;
 using System;
 using System.Collections;
@@ -17,7 +18,7 @@ namespace My.Map.Entity
 
     public class LogicEntityInteractPoint : LogicEntityBase, IWithInteract, IEntityInteractable
     {
-        // 状态
+        // ??
         //public bool Appear = false;
         public int CurrStatusId = 0;
         private bool IsSwitching = false;
@@ -43,6 +44,30 @@ namespace My.Map.Entity
         }
 
         public override EEntityType Type => EEntityType.InteractPoint;
+
+        public override WorldMapLandmarkKind WorldMapLandmark
+        {
+            get
+            {
+                if (cacheCfg == null) return base.WorldMapLandmark;
+                if (cacheCfg.ShowOnWorldMap) return WorldMapLandmarkKind.MajorInteract;
+                WorldMapRuntime.EnsureDatabaseLoaded();
+                if (WorldMapRuntime.Database != null && WorldMapRuntime.Database.IsGlobalInteractLandmark(CfgId))
+                    return WorldMapLandmarkKind.MajorInteract;
+                return base.WorldMapLandmark;
+            }
+        }
+
+        public override string WorldMapLandmarkLabel
+        {
+            get
+            {
+                if (cacheCfg == null) return CfgId;
+                if (!string.IsNullOrEmpty(cacheCfg.WorldMapMarkerLabel)) return cacheCfg.WorldMapMarkerLabel;
+                if (!string.IsNullOrEmpty(cacheCfg.ShowName)) return cacheCfg.ShowName;
+                return CfgId;
+            }
+        }
 
         public override void Initialize()
         {
@@ -80,7 +105,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// 检查状态切换
+        /// ??????
         /// </summary>
         public void CheckStatusCondition()
         {
@@ -119,7 +144,7 @@ namespace My.Map.Entity
         }
 
         /// <summary>
-        /// 是否正在交互
+        /// ??????
         /// </summary>
         public bool IsInteracting { get { return InteractComp.IsInteracting; } }
 
@@ -149,7 +174,7 @@ namespace My.Map.Entity
 
             
 
-            // 低频检查状态切换
+            // ????????
             LowFreqCheckStatusChange();
 
             InteractComp?.TickInteract(dt);
@@ -157,7 +182,7 @@ namespace My.Map.Entity
 
         private float _lowFreqCheckStatusTimer = 0;
         /// <summary>
-        /// 低频检查
+        /// ????
         /// </summary>
         protected void LowFreqCheckStatusChange()
         {
