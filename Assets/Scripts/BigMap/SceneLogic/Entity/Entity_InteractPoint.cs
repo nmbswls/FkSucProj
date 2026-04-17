@@ -51,8 +51,7 @@ namespace My.Map.Entity
             {
                 if (cacheCfg == null) return base.WorldMapLandmark;
                 if (cacheCfg.ShowOnWorldMap) return WorldMapLandmarkKind.MajorInteract;
-                WorldMapRuntime.EnsureDatabaseLoaded();
-                if (WorldMapRuntime.Database != null && WorldMapRuntime.Database.IsGlobalInteractLandmark(CfgId))
+                if (WorldMapRuntime.IsGlobalInteractLandmark(CfgId))
                     return WorldMapLandmarkKind.MajorInteract;
                 return base.WorldMapLandmark;
             }

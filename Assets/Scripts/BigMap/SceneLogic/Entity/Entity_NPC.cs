@@ -92,8 +92,7 @@ namespace My.Map
         {
             get
             {
-                WorldMapRuntime.EnsureDatabaseLoaded();
-                if (WorldMapRuntime.Database != null && WorldMapRuntime.Database.IsNpcBossLandmark(CfgId))
+                if (WorldMapRuntime.IsNpcBossLandmark(CfgId))
                     return WorldMapLandmarkKind.MajorBoss;
                 return base.WorldMapLandmark;
             }

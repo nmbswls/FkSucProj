@@ -32,6 +32,9 @@ public partial class Tables
     public demo.TbShopGoods TbShopGoods {get; }
     public demo.TbItemUse TbItemUse {get; }
     public demo.TbNpcDialogInfo TbNpcDialogInfo {get; }
+    public demo.TbWorldMapArea TbWorldMapArea {get; }
+    public demo.TbWorldMapRoomRule TbWorldMapRoomRule {get; }
+    public demo.TbWorldMapSettings TbWorldMapSettings {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -53,6 +56,9 @@ public partial class Tables
         TbShopGoods = new demo.TbShopGoods(loader("demo_tbshopgoods"));
         TbItemUse = new demo.TbItemUse(loader("demo_tbitemuse"));
         TbNpcDialogInfo = new demo.TbNpcDialogInfo(loader("demo_tbnpcdialoginfo"));
+        TbWorldMapArea = new demo.TbWorldMapArea(loader("demo_tbworldmaparea"));
+        TbWorldMapRoomRule = new demo.TbWorldMapRoomRule(loader("demo_tbworldmaproomrule"));
+        TbWorldMapSettings = new demo.TbWorldMapSettings(loader("demo_tbworldmapsettings"));
         ResolveRef();
     }
     
@@ -76,6 +82,9 @@ public partial class Tables
         TbShopGoods.ResolveRef(this);
         TbItemUse.ResolveRef(this);
         TbNpcDialogInfo.ResolveRef(this);
+        TbWorldMapArea.ResolveRef(this);
+        TbWorldMapRoomRule.ResolveRef(this);
+        TbWorldMapSettings.ResolveRef(this);
     }
 }
 

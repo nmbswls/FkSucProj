@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using cfg;
+using cfg.demo;
+using My.Config;
 using My.Map.Entity;
 using My.UI;
 using UnityEngine;
@@ -14,94 +17,6 @@ namespace My.Map
         Player = 1,
         MajorInteract = 2,
         MajorBoss = 3,
-    }
-
-    public enum WorldMapRoomBehavior
-    {
-        /// <summary>不覆盖区域默认地图</summary>
-        Default = 0,
-        /// <summary>该房间内禁止打开大地图</summary>
-        ForbidOpen = 1,
-        /// <summary>使用另一张底图（可选独立边界）</summary>
-        UseAlternateMap = 2,
-    }
-
-    [Serializable]
-    public class WorldMapRoomRule
-    {
-        [Tooltip("与 LogicEntityBase.BelongRoomId 一致；填 * 表示未匹配到其它规则时的默认")]
-        public string roomId = "";
-
-        [Tooltip("同区内多条规则时，数值大优先")]
-        public int rulePriority;
-
-        public WorldMapRoomBehavior behavior = WorldMapRoomBehavior.Default;
-
-        [Tooltip("behavior=UseAlternateMap 时使用")]
-        public Sprite alternateMapSprite;
-
-        [Tooltip("Resources 路径（无扩展名）；alternateMapSprite 为空时使用")]
-        public string alternateMapTextureResourcePath = "";
-
-        [Tooltip("勾选后使用下方独立世界坐标边界，否则沿用区域默认边界")]
-        public bool useSeparateBounds;
-
-        public Vector2 alternateWorldMin;
-        public Vector2 alternateWorldMax;
-    }
-
-    [Serializable]
-    public class WorldMapAreaConfig
-    {
-        [Tooltip("与 GameLogicManager.CurrentArea 一致")]
-        public string areaId = "";
-
-        public Sprite mapSprite;
-
-        [Tooltip("Resources 下路径（无 .png），如 WorldMap/fake_map_base_01；mapSprite 已填时忽略")]
-        public string mapTextureResourcePath = "";
-
-        public Vector2 worldMin;
-        public Vector2 worldMax;
-
-        public List<WorldMapRoomRule> roomRules = new();
-    }
-
-    [Serializable]
-    public class WorldMapFallbackConfig
-    {
-        [Tooltip("CurrentArea 未在 areaConfigs 中列出时是否仍允许打开")]
-        public bool allowOpenWhenAreaUnknown = true;
-
-        public Sprite mapSprite;
-
-        [Tooltip("未匹配到区域时使用的占位图 Resources 路径（无扩展名）")]
-        public string mapTextureResourcePath = "";
-
-        public Vector2 worldMin = new Vector2(-40f, -40f);
-        public Vector2 worldMax = new Vector2(40f, 40f);
-    }
-
-    [CreateAssetMenu(menuName = "My/WorldMap/Routing Database", fileName = "WorldMapRoutingDatabase")]
-    public class WorldMapRoutingDatabase : ScriptableObject
-    {
-        public List<WorldMapAreaConfig> areaConfigs = new();
-
-        public WorldMapFallbackConfig fallback = new();
-
-        [Tooltip("出现在大地图上的 NPC cfgId（重要 Boss 等）")]
-        public List<string> globalNpcBossLandmarkCfgIds = new();
-
-        [Tooltip("出现在大地图上的交互物 cfgId（与交互点自身 ShowOnWorldMap 为或关系）")]
-        public List<string> globalInteractLandmarkCfgIds = new();
-
-        public bool IsNpcBossLandmark(string cfgId) =>
-            !string.IsNullOrEmpty(cfgId) && globalNpcBossLandmarkCfgIds != null &&
-            globalNpcBossLandmarkCfgIds.Contains(cfgId);
-
-        public bool IsGlobalInteractLandmark(string cfgId) =>
-            !string.IsNullOrEmpty(cfgId) && globalInteractLandmarkCfgIds != null &&
-            globalInteractLandmarkCfgIds.Contains(cfgId);
     }
 
     [Serializable]
@@ -122,9 +37,7 @@ namespace My.Map
         public readonly List<WorldMapMarkerData> Markers = new();
     }
 
-    /// <summary>
-    /// 从 Resources 加载 Texture2D 并生成 Sprite（需纹理 Read/Write 开启时使用 Sprite.Create）
-    /// </summary>
+    // 从 Resources 加载 Texture2D 并生成 Sprite（需纹理 Read/Write 开启时使用 Sprite.Create）
     public static class WorldMapTextureResolver
     {
         private static readonly Dictionary<string, Sprite> Cache = new();
@@ -153,20 +66,26 @@ namespace My.Map
         }
     }
 
-    /// <summary>
-    /// 大地图：路由解析、标记收集、与 UI 开关
-    /// </summary>
+    /// <summary>大地图：路由解析、标记收集、与 UI 开关（数据来自 Luban map.xlsx）</summary>
     public static class WorldMapRuntime
     {
         public const string PanelId = "WorldMap";
-        private const string DbResourcePath = "Config/WorldMapRoutingDatabase";
 
-        public static WorldMapRoutingDatabase Database { get; private set; }
+        public static bool IsNpcBossLandmark(string cfgId) =>
+            !string.IsNullOrEmpty(cfgId) && IdInCsv(CfgMgr.Cfgs?.TbWorldMapSettings?.GlobalNpcBossLandmarkCfgIds, cfgId);
 
-        public static void EnsureDatabaseLoaded()
+        public static bool IsGlobalInteractLandmark(string cfgId) =>
+            !string.IsNullOrEmpty(cfgId) && IdInCsv(CfgMgr.Cfgs?.TbWorldMapSettings?.GlobalInteractLandmarkCfgIds, cfgId);
+
+        private static bool IdInCsv(string csv, string id)
         {
-            if (Database != null) return;
-            Database = Resources.Load<WorldMapRoutingDatabase>(DbResourcePath);
+            if (string.IsNullOrEmpty(csv)) return false;
+            foreach (var part in csv.Split(','))
+            {
+                if (part.Trim() == id) return true;
+            }
+
+            return false;
         }
 
         public static void TryToggle()
@@ -207,8 +126,7 @@ namespace My.Map
                 return false;
             }
 
-            EnsureDatabaseLoaded();
-            // CurrentArea 若未维护，则与地图导出名一致使用 AreaManager.MapName
+            var cfgs = CfgMgr.Cfgs;
             var areaId = glm.CurrentArea;
             if (string.IsNullOrEmpty(areaId) && glm.AreaManager != null &&
                 !string.IsNullOrEmpty(glm.AreaManager.MapName))
@@ -219,25 +137,32 @@ namespace My.Map
             areaId ??= string.Empty;
             var roomId = player.BelongRoomId ?? string.Empty;
 
-            WorldMapAreaConfig areaCfg = null;
-            if (Database != null && Database.areaConfigs != null)
+            WorldMapArea areaRow = null;
+            if (cfgs != null)
             {
-                areaCfg = Database.areaConfigs.FirstOrDefault(a => a.areaId == areaId);
+                areaRow = cfgs.TbWorldMapArea.GetOrDefault(areaId);
             }
 
-            if (areaCfg == null)
+            if (areaRow == null)
             {
-                if (Database == null || Database.fallback.allowOpenWhenAreaUnknown)
+                var allowUnknown = cfgs?.TbWorldMapSettings == null ||
+                                   cfgs.TbWorldMapSettings.AllowOpenWhenAreaUnknown;
+                if (allowUnknown)
                 {
-                    var fb = Database != null ? Database.fallback : null;
-                    var fbSprite = fb != null
-                        ? WorldMapTextureResolver.Resolve(fb.mapSprite, fb.mapTextureResourcePath)
-                        : null;
+                    var st = cfgs?.TbWorldMapSettings;
+                    var fbPath = st != null ? st.FallbackMapTextureResourcePath : string.Empty;
+                    var fbSprite = WorldMapTextureResolver.Resolve(null, fbPath);
+                    var wMin = st != null
+                        ? new Vector2(st.FallbackWorldMinX, st.FallbackWorldMinY)
+                        : new Vector2(-40f, -40f);
+                    var wMax = st != null
+                        ? new Vector2(st.FallbackWorldMaxX, st.FallbackWorldMaxY)
+                        : new Vector2(40f, 40f);
                     ctx = new WorldMapViewContext
                     {
                         MapSprite = fbSprite,
-                        WorldMin = fb != null ? fb.worldMin : new Vector2(-40f, -40f),
-                        WorldMax = fb != null ? fb.worldMax : new Vector2(40f, 40f),
+                        WorldMin = wMin,
+                        WorldMax = wMax,
                     };
                     FillMarkers(glm, player, ctx);
                     return true;
@@ -247,27 +172,27 @@ namespace My.Map
                 return false;
             }
 
-            var rule = PickRoomRule(areaCfg, roomId);
-            if (rule != null && rule.behavior == WorldMapRoomBehavior.ForbidOpen)
+            var rule = PickRoomRule(cfgs, areaId, roomId);
+            if (rule != null && rule.Behavior == EWorldMapRoomBehavior.ForbidOpen)
             {
                 denyHint = "此处无法打开地图";
                 return false;
             }
 
-            var sprite = WorldMapTextureResolver.Resolve(areaCfg.mapSprite, areaCfg.mapTextureResourcePath);
-            var wMin = areaCfg.worldMin;
-            var wMax = areaCfg.worldMax;
+            var sprite = WorldMapTextureResolver.Resolve(null, areaRow.MapTextureResourcePath);
+            var wMinArea = new Vector2(areaRow.WorldMinX, areaRow.WorldMinY);
+            var wMaxArea = new Vector2(areaRow.WorldMaxX, areaRow.WorldMaxY);
 
-            if (rule != null && rule.behavior == WorldMapRoomBehavior.UseAlternateMap)
+            if (rule != null && rule.Behavior == EWorldMapRoomBehavior.UseAlternateMap)
             {
-                var alt = WorldMapTextureResolver.Resolve(rule.alternateMapSprite, rule.alternateMapTextureResourcePath);
+                var alt = WorldMapTextureResolver.Resolve(null, rule.AlternateMapTextureResourcePath);
                 if (alt != null)
                 {
                     sprite = alt;
-                    if (rule.useSeparateBounds)
+                    if (rule.UseSeparateBounds)
                     {
-                        wMin = rule.alternateWorldMin;
-                        wMax = rule.alternateWorldMax;
+                        wMinArea = new Vector2(rule.AlternateWorldMinX, rule.AlternateWorldMinY);
+                        wMaxArea = new Vector2(rule.AlternateWorldMaxX, rule.AlternateWorldMaxY);
                     }
                 }
             }
@@ -275,22 +200,30 @@ namespace My.Map
             ctx = new WorldMapViewContext
             {
                 MapSprite = sprite,
-                WorldMin = wMin,
-                WorldMax = wMax,
+                WorldMin = wMinArea,
+                WorldMax = wMaxArea,
             };
             FillMarkers(glm, player, ctx);
             return true;
         }
 
-        private static WorldMapRoomRule PickRoomRule(WorldMapAreaConfig areaCfg, string roomId)
+        private static WorldMapRoomRule PickRoomRule(Tables cfgs, string areaId, string roomId)
         {
-            if (areaCfg.roomRules == null || areaCfg.roomRules.Count == 0) return null;
+            if (cfgs == null) return null;
+            var list = cfgs.TbWorldMapRoomRule.DataList;
+            if (list == null || list.Count == 0) return null;
 
-            var ordered = areaCfg.roomRules.OrderByDescending(r => r.rulePriority).ToList();
-            var exact = ordered.FirstOrDefault(r => !string.IsNullOrEmpty(r.roomId) && r.roomId != "*" && r.roomId == roomId);
+            var ordered = list
+                .Where(r => r.AreaId == areaId)
+                .OrderByDescending(r => r.RulePriority)
+                .ToList();
+            if (ordered.Count == 0) return null;
+
+            var exact = ordered.FirstOrDefault(r =>
+                !string.IsNullOrEmpty(r.RoomId) && r.RoomId != "*" && r.RoomId == roomId);
             if (exact != null) return exact;
 
-            return ordered.FirstOrDefault(r => string.IsNullOrEmpty(r.roomId) || r.roomId == "*");
+            return ordered.FirstOrDefault(r => string.IsNullOrEmpty(r.RoomId) || r.RoomId == "*");
         }
 
         private static void FillMarkers(GameLogicManager glm, PlayerLogicEntity player, WorldMapViewContext ctx)

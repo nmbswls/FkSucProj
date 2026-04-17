@@ -1,0 +1,12 @@
+[
+  {
+    "allow_open_when_area_unknown": true,
+    "fallback_map_texture_resource_path": "WorldMap/fake_map_fallback",
+    "fallback_world_min_x": -40,
+    "fallback_world_min_y": -40,
+    "fallback_world_max_x": 40,
+    "fallback_world_max_y": 40,
+    "global_npc_boss_landmark_cfg_ids": "",
+    "global_interact_landmark_cfg_ids": ""
+  }
+]
