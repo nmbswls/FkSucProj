@@ -8,9 +8,7 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    /// <summary>
-    /// 全屏大地图：底图 + 玩家与重要地标标记；M / Esc / Cancel 关闭
-    /// </summary>
+    // 全屏大地图：底图 + 玩家与重要地标标记；M / Esc / Cancel 关闭
     public class WorldMapPanel : PanelWithInput
     {
         [SerializeField] private Image dimBackground;
@@ -204,9 +202,7 @@ namespace My.UI
         }
     }
 
-    /// <summary>
-    /// 标记与逻辑实体 Id 绑定，供 LateUpdate 刷新屏幕坐标
-    /// </summary>
+    // 标记与逻辑实体 Id 绑定，供 LateUpdate 刷新屏幕坐标
     public sealed class WorldMapMarkerBinder : MonoBehaviour
     {
         public long SourceEntityId;

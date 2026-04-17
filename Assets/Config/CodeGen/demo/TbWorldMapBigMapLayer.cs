@@ -13,25 +13,25 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
-public partial class TbWorldMapRoomRule
+public partial class TbWorldMapBigMapLayer
 {
-    private readonly System.Collections.Generic.List<demo.WorldMapRoomRule> _dataList;
+    private readonly System.Collections.Generic.List<demo.WorldMapBigMapLayer> _dataList;
 
 
-    public TbWorldMapRoomRule(JSONNode _buf)
+    public TbWorldMapBigMapLayer(JSONNode _buf)
     {
         int count = _buf.Count;
-        _dataList = new System.Collections.Generic.List<demo.WorldMapRoomRule>(count);
+        _dataList = new System.Collections.Generic.List<demo.WorldMapBigMapLayer>(count);
         
         foreach(JSONNode _ele in _buf.Children)
         {
-            demo.WorldMapRoomRule _v;
-            { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.WorldMapRoomRule.DeserializeWorldMapRoomRule(_ele);  }
+            demo.WorldMapBigMapLayer _v;
+            { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.WorldMapBigMapLayer.DeserializeWorldMapBigMapLayer(_ele);  }
             _dataList.Add(_v);
         }
     }
 
-    public System.Collections.Generic.List<demo.WorldMapRoomRule> DataList => _dataList;
+    public System.Collections.Generic.List<demo.WorldMapBigMapLayer> DataList => _dataList;
 
     
     public void ResolveRef(Tables tables)

@@ -14,12 +14,12 @@ using SimpleJSON;
 namespace cfg.demo
 {
 [System.Serializable]
-public sealed partial class WorldMapSettings : Luban.BeanBase
+public sealed partial class WorldMapGlobal : Luban.BeanBase
 {
-    public WorldMapSettings(JSONNode _buf) 
+    public WorldMapGlobal(JSONNode _buf) 
     {
         { if(!_buf["allow_open_when_area_unknown"].IsBoolean) { throw new SerializationException(); }  AllowOpenWhenAreaUnknown = _buf["allow_open_when_area_unknown"]; }
-        { if(!_buf["fallback_map_texture_resource_path"].IsString) { throw new SerializationException(); }  FallbackMapTextureResourcePath = _buf["fallback_map_texture_resource_path"]; }
+        { if(!_buf["fallback_big_map_texture_resource_path"].IsString) { throw new SerializationException(); }  FallbackBigMapTextureResourcePath = _buf["fallback_big_map_texture_resource_path"]; }
         { if(!_buf["fallback_world_min_x"].IsNumber) { throw new SerializationException(); }  FallbackWorldMinX = _buf["fallback_world_min_x"]; }
         { if(!_buf["fallback_world_min_y"].IsNumber) { throw new SerializationException(); }  FallbackWorldMinY = _buf["fallback_world_min_y"]; }
         { if(!_buf["fallback_world_max_x"].IsNumber) { throw new SerializationException(); }  FallbackWorldMaxX = _buf["fallback_world_max_x"]; }
@@ -28,36 +28,36 @@ public sealed partial class WorldMapSettings : Luban.BeanBase
         { if(!_buf["global_interact_landmark_cfg_ids"].IsString) { throw new SerializationException(); }  GlobalInteractLandmarkCfgIds = _buf["global_interact_landmark_cfg_ids"]; }
     }
 
-    public static WorldMapSettings DeserializeWorldMapSettings(JSONNode _buf)
+    public static WorldMapGlobal DeserializeWorldMapGlobal(JSONNode _buf)
     {
-        return new demo.WorldMapSettings(_buf);
+        return new demo.WorldMapGlobal(_buf);
     }
 
     /// <summary>
-    /// 未知区域是否允许打开
+    /// 未知地图是否可开
     /// </summary>
     public bool AllowOpenWhenAreaUnknown;
     /// <summary>
-    /// fallback 纹理 Resources 路径
+    /// fallback 底图
     /// </summary>
-    public string FallbackMapTextureResourcePath;
+    public string FallbackBigMapTextureResourcePath;
     /// <summary>
-    /// fallback 边界
+    /// 边界
     /// </summary>
     public float FallbackWorldMinX;
     public float FallbackWorldMinY;
     public float FallbackWorldMaxX;
     public float FallbackWorldMaxY;
     /// <summary>
-    /// 逗号分隔 cfgId
+    /// 逗号分隔
     /// </summary>
     public string GlobalNpcBossLandmarkCfgIds;
     /// <summary>
-    /// 逗号分隔 cfgId
+    /// 逗号分隔
     /// </summary>
     public string GlobalInteractLandmarkCfgIds;
    
-    public const int __ID__ = -33819784;
+    public const int __ID__ = -1602089928;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -68,7 +68,7 @@ public sealed partial class WorldMapSettings : Luban.BeanBase
     {
         return "{ "
         + "allowOpenWhenAreaUnknown:" + AllowOpenWhenAreaUnknown + ","
-        + "fallbackMapTextureResourcePath:" + FallbackMapTextureResourcePath + ","
+        + "fallbackBigMapTextureResourcePath:" + FallbackBigMapTextureResourcePath + ","
         + "fallbackWorldMinX:" + FallbackWorldMinX + ","
         + "fallbackWorldMinY:" + FallbackWorldMinY + ","
         + "fallbackWorldMaxX:" + FallbackWorldMaxX + ","

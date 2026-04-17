@@ -13,42 +13,42 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
-public partial class TbWorldMapSettings
+public partial class TbWorldMapGlobal
 {
 
-     private readonly demo.WorldMapSettings _data;
+     private readonly demo.WorldMapGlobal _data;
 
-     public demo.WorldMapSettings Data => _data;
+     public demo.WorldMapGlobal Data => _data;
 
-    public TbWorldMapSettings(JSONNode _buf)
+    public TbWorldMapGlobal(JSONNode _buf)
     {
         int n = _buf.Count;
         if (n != 1) throw new SerializationException("table mode=one, but size != 1");
-        { if(!_buf[0].IsObject) { throw new SerializationException(); }  _data = global::cfg.demo.WorldMapSettings.DeserializeWorldMapSettings(_buf[0]);  }
+        { if(!_buf[0].IsObject) { throw new SerializationException(); }  _data = global::cfg.demo.WorldMapGlobal.DeserializeWorldMapGlobal(_buf[0]);  }
     }
 
 
     /// <summary>
-    /// 未知区域是否允许打开
+    /// 未知地图是否可开
     /// </summary>
      public bool AllowOpenWhenAreaUnknown => _data.AllowOpenWhenAreaUnknown;
     /// <summary>
-    /// fallback 纹理 Resources 路径
+    /// fallback 底图
     /// </summary>
-     public string FallbackMapTextureResourcePath => _data.FallbackMapTextureResourcePath;
+     public string FallbackBigMapTextureResourcePath => _data.FallbackBigMapTextureResourcePath;
     /// <summary>
-    /// fallback 边界
+    /// 边界
     /// </summary>
      public float FallbackWorldMinX => _data.FallbackWorldMinX;
      public float FallbackWorldMinY => _data.FallbackWorldMinY;
      public float FallbackWorldMaxX => _data.FallbackWorldMaxX;
      public float FallbackWorldMaxY => _data.FallbackWorldMaxY;
     /// <summary>
-    /// 逗号分隔 cfgId
+    /// 逗号分隔
     /// </summary>
      public string GlobalNpcBossLandmarkCfgIds => _data.GlobalNpcBossLandmarkCfgIds;
     /// <summary>
-    /// 逗号分隔 cfgId
+    /// 逗号分隔
     /// </summary>
      public string GlobalInteractLandmarkCfgIds => _data.GlobalInteractLandmarkCfgIds;
     
