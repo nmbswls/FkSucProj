@@ -9,8 +9,6 @@ namespace My.MiniGame.Dream
 {
     public class DreamDodgeGameplayPanel : PanelWithInput
     {
-        [SerializeField] private CanvasGroup canvasGroup;
-
         [Header("Prefab layout（可空，则按子节点名解析 / 再退回代码生成）")]
         [SerializeField] private RectTransform dimOverlay;
         [SerializeField] private RectTransform playAreaLayout;
@@ -147,7 +145,7 @@ namespace My.MiniGame.Dream
         {
             if (!IsVisible || _frozen || _ended) return;
 
-            var half = _playArea.sizeDelta * 0.5f;
+            var half = GetPlayAreaHalfExtents();
             var p = _playerRt.anchoredPosition;
             var move = new Vector2(UnityEngine.Input.GetAxisRaw("Horizontal"), UnityEngine.Input.GetAxisRaw("Vertical"));
             if (move.sqrMagnitude > 1f) move.Normalize();
@@ -175,6 +173,31 @@ namespace My.MiniGame.Dream
             CheckWinLose();
         }
 
+        private Vector2 GetPlayAreaHalfExtents()
+        {
+            if (_playArea == null) return Vector2.zero;
+            var r = _playArea.rect;
+            if (r.width > 2f && r.height > 2f)
+                return new Vector2(r.width * 0.5f, r.height * 0.5f);
+            var sd = _playArea.sizeDelta;
+            return new Vector2(Mathf.Abs(sd.x) * 0.5f, Mathf.Abs(sd.y) * 0.5f);
+        }
+
+        private static Vector2 GetEntityHalfExtents(RectTransform rt)
+        {
+            if (rt == null) return Vector2.one * 8f;
+            var s = rt.rect.size;
+            return new Vector2(Mathf.Max(s.x * 0.5f, 0.5f), Mathf.Max(s.y * 0.5f, 0.5f));
+        }
+
+        private static bool IsEntityOutsidePlayArea(Vector2 center, Vector2 playHalf, Vector2 entityHalf)
+        {
+            return center.x - entityHalf.x > playHalf.x
+                || center.x + entityHalf.x < -playHalf.x
+                || center.y - entityHalf.y > playHalf.y
+                || center.y + entityHalf.y < -playHalf.y;
+        }
+
         private void SpawnBad()
         {
             var go = new GameObject("Bullet", typeof(RectTransform), typeof(Image));
@@ -182,7 +205,7 @@ namespace My.MiniGame.Dream
             var rt = (RectTransform)go.transform;
             rt.sizeDelta = new Vector2(16f, 16f);
             var edge = Random.Range(0, 4);
-            var half = _playArea.sizeDelta * 0.5f;
+            var half = GetPlayAreaHalfExtents();
             if (edge == 0) rt.anchoredPosition = new Vector2(-half.x, Random.Range(-half.y, half.y));
             else if (edge == 1) rt.anchoredPosition = new Vector2(half.x, Random.Range(-half.y, half.y));
             else if (edge == 2) rt.anchoredPosition = new Vector2(Random.Range(-half.x, half.x), -half.y);
@@ -209,7 +232,9 @@ namespace My.MiniGame.Dream
             go.transform.SetParent(_playArea, false);
             var rt = (RectTransform)go.transform;
             rt.sizeDelta = new Vector2(20f, 20f);
-            var half = _playArea.sizeDelta * 0.5f - Vector2.one * 30f;
+            var half = GetPlayAreaHalfExtents() - Vector2.one * 30f;
+            half.x = Mathf.Max(8f, half.x);
+            half.y = Mathf.Max(8f, half.y);
             rt.anchoredPosition = new Vector2(Random.Range(-half.x, half.x), Random.Range(-half.y, half.y));
 
             var kind = (DreamTendencyKind)Random.Range(0, 3);
@@ -274,9 +299,10 @@ namespace My.MiniGame.Dream
                     continue;
                 }
 
-                var half = _playArea.sizeDelta * 0.5f + Vector2.one * 40f;
+                var playHalf = GetPlayAreaHalfExtents();
                 var pos = e.Rt.anchoredPosition;
-                if (Mathf.Abs(pos.x) > half.x || Mathf.Abs(pos.y) > half.y)
+                var eh = GetEntityHalfExtents(e.Rt);
+                if (IsEntityOutsidePlayArea(pos, playHalf, eh))
                 {
                     Destroy(e.Rt.gameObject);
                     _entities.RemoveAt(i);

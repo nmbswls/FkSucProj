@@ -66,7 +66,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panelId: DreamInfiltrationGameplay
   canvasGroup: {fileID: 921000003}
-  canvasGroup: {fileID: 921000003}
   dimOverlay: {fileID: 921010011}
   playAreaLayout: {fileID: 921010021}
   playerMarker: {fileID: 921010121}
@@ -182,7 +181,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 560, y: 320}
+  m_SizeDelta: {x: 780, y: 480}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &921010022
 CanvasRenderer:

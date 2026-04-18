@@ -20,6 +20,7 @@ namespace My.MiniGame.Dream
                 return;
             }
 
+            DreamInfiltrationLogicPause.EnterMiniGame();
             UIManager.Instance.ShowPanel(DreamInfiltrationIds.EntryPanel, null, UILayer.Overlay);
         }
     }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using cfg.demo;
+using My.Map;
 using My.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,6 +46,12 @@ namespace My.MiniGame.Dream
 
             RebuildSpots();
         }
+
+        public override void Show()
+        {
+            base.Show();
+        }
+
 
         private static DreamThemeWeight RollTheme(DreamEntrySpotDef spot)
         {
@@ -136,6 +143,7 @@ namespace My.MiniGame.Dream
         public override bool OnCancel()
         {
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.EntryPanel);
+            DreamInfiltrationLogicPause.ExitMiniGame();
             return true;
         }
     }

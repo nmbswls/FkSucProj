@@ -389,6 +389,9 @@ MonoBehaviour:
   - Name: dash_attack_01
     Clip: {fileID: 7400000, guid: ef2c4b83f5f7d544f953f5f0b2cc5811, type: 2}
     Speed: 1
+  - Name: queen_attack_03_down
+    Clip: {fileID: 7400000, guid: ef2c4b83f5f7d544f953f5f0b2cc5811, type: 2}
+    Speed: 1
 --- !u!1 &1221229975014566784
 GameObject:
   m_ObjectHideFlags: 0
