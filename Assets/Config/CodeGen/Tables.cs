@@ -34,6 +34,7 @@ public partial class Tables
     public demo.TbNpcDialogInfo TbNpcDialogInfo {get; }
     public demo.TbWorldMapGlobal TbWorldMapGlobal {get; }
     public demo.TbWorldMapBigMapLayer TbWorldMapBigMapLayer {get; }
+    public demo.TbDreamInfiltrationSpot TbDreamInfiltrationSpot {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -57,6 +58,7 @@ public partial class Tables
         TbNpcDialogInfo = new demo.TbNpcDialogInfo(loader("demo_tbnpcdialoginfo"));
         TbWorldMapGlobal = new demo.TbWorldMapGlobal(loader("demo_tbworldmapglobal"));
         TbWorldMapBigMapLayer = new demo.TbWorldMapBigMapLayer(loader("demo_tbworldmapbigmaplayer"));
+        TbDreamInfiltrationSpot = new demo.TbDreamInfiltrationSpot(loader("demo_tbdreaminfiltrationspot"));
         ResolveRef();
     }
     
@@ -82,6 +84,7 @@ public partial class Tables
         TbNpcDialogInfo.ResolveRef(this);
         TbWorldMapGlobal.ResolveRef(this);
         TbWorldMapBigMapLayer.ResolveRef(this);
+        TbDreamInfiltrationSpot.ResolveRef(this);
     }
 }
 

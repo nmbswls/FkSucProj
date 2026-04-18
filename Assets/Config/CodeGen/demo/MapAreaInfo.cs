@@ -25,6 +25,8 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         { if(!_buf["is_home"].IsBoolean) { throw new SerializationException(); }  IsHome = _buf["is_home"]; }
         { if(!_buf["always_alert"].IsBoolean) { throw new SerializationException(); }  AlwaysAlert = _buf["always_alert"]; }
         { if(!_buf["default_disguise"].IsBoolean) { throw new SerializationException(); }  DefaultDisguise = _buf["default_disguise"]; }
+        { if(!_buf["hunting_target"].IsBoolean) { throw new SerializationException(); }  HuntingTarget = _buf["hunting_target"]; }
+        { var __json0 = _buf["hunting_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } HuntingUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  HuntingUnlockConds.Add(__v0); }   }
     }
 
     public static MapAreaInfo DeserializeMapAreaInfo(JSONNode _buf)
@@ -60,12 +62,21 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// 默认伪装
     /// </summary>
     public bool DefaultDisguise;
+    /// <summary>
+    /// 是否是出击目标
+    /// </summary>
+    public bool HuntingTarget;
+    /// <summary>
+    /// 解锁条件
+    /// </summary>
+    public System.Collections.Generic.List<demo.CommonCheckCond> HuntingUnlockConds;
    
     public const int __ID__ = 1607084204;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
     {
+        foreach (var _e in HuntingUnlockConds) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -78,6 +89,8 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         + "isHome:" + IsHome + ","
         + "alwaysAlert:" + AlwaysAlert + ","
         + "defaultDisguise:" + DefaultDisguise + ","
+        + "huntingTarget:" + HuntingTarget + ","
+        + "huntingUnlockConds:" + Luban.StringUtil.CollectionToString(HuntingUnlockConds) + ","
         + "}";
     }
 }

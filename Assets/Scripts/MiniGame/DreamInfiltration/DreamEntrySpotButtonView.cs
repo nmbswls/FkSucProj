@@ -19,16 +19,16 @@ namespace My.MiniGame.Dream
                 label = GetComponentInChildren<TextMeshProUGUI>(true);
         }
 
-        public void BindFromData(DreamEntrySpotDef spot, DreamThemeWeight rolled, int index, System.Action<int> onClicked)
+        public void BindFromData(DreamInfiltrationSpot spot, string rolledThemeDisplayName, int index, System.Action<int> onClicked)
         {
             DreamUISpriteUtil.EnsureWhiteSprite(GetComponent<Image>());
             var rt = (RectTransform)transform;
-            rt.anchorMin = rt.anchorMax = new Vector2(spot.Anchor01.x, spot.Anchor01.y);
+            rt.anchorMin = rt.anchorMax = new Vector2(spot.AnchorX, spot.AnchorY);
             rt.anchoredPosition = Vector2.zero;
             gameObject.name = $"Spot_{spot.SpotId}";
             if (label != null)
             {
-                label.text = $"{spot.DisplayName}\n<size=75%><#cccccc>{rolled.ThemeDisplayName}</size>";
+                label.text = $"{spot.DisplayName}\n<size=75%><#cccccc>{rolledThemeDisplayName}</size>";
             }
 
             if (_button == null) _button = GetComponent<Button>();

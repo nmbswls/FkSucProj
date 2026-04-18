@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using cfg.demo;
+using My.Config;
 using My.Map;
 using My.UI;
 using UnityEngine;
@@ -13,9 +14,9 @@ namespace My.MiniGame.Dream
         [SerializeField] private RectTransform spotsContainer;
         [SerializeField] private RectTransform spotButtonTemplate;
 
-        private DreamInfiltrationDatabase _db;
+        private TbDreamInfiltrationSpot _dreamSpotTable;
         private RectTransform _rootRt;
-        private readonly List<DreamThemeWeight> _rolledThemes = new();
+        private readonly List<(string themeId, string themeDisplayName)> _rolledThemes = new();
 
         public override int FocusPriority => 820;
 
@@ -39,9 +40,15 @@ namespace My.MiniGame.Dream
 
         public override void Setup(object data = null)
         {
-            _db = DreamInfiltrationDatabase.LoadOrDefault();
+            _dreamSpotTable = CfgMgr.Cfgs?.TbDreamInfiltrationSpot;
+            if (_dreamSpotTable == null || _dreamSpotTable.DataList == null || _dreamSpotTable.DataList.Count == 0)
+            {
+                Debug.LogError("[DreamInfiltration] TbDreamInfiltrationSpot missing or empty. Check demo_tbdreaminfiltrationspot.json and Tables loader.");
+                return;
+            }
+
             _rolledThemes.Clear();
-            foreach (var s in _db.Spots)
+            foreach (var s in _dreamSpotTable.DataList)
                 _rolledThemes.Add(RollTheme(s));
 
             RebuildSpots();
@@ -52,23 +59,23 @@ namespace My.MiniGame.Dream
             base.Show();
         }
 
-
-        private static DreamThemeWeight RollTheme(DreamEntrySpotDef spot)
+        private static (string themeId, string themeDisplayName) RollTheme(DreamInfiltrationSpot spot)
         {
             var list = spot.ThemeWeights;
             if (list == null || list.Count == 0)
-                return new DreamThemeWeight { ThemeId = "default", ThemeDisplayName = "浅梦", Weight = 1 };
-            int sum = 0;
+                return ("default", "浅梦");
+            var sum = 0;
             foreach (var t in list) sum += Mathf.Max(1, t.Weight);
-            int r = Random.Range(0, sum);
-            int acc = 0;
+            var r = Random.Range(0, sum);
+            var acc = 0;
             foreach (var t in list)
             {
                 acc += Mathf.Max(1, t.Weight);
-                if (r < acc) return t;
+                if (r < acc) return (t.ThemeId, t.ThemeDisplayName);
             }
 
-            return list[^1];
+            var last = list[^1];
+            return (last.ThemeId, last.ThemeDisplayName);
         }
 
         private void RebuildSpots()
@@ -82,15 +89,17 @@ namespace My.MiniGame.Dream
 
             ClearSpawnedSpots();
 
-            for (var i = 0; i < _db.Spots.Count; i++)
+            if (_dreamSpotTable == null) return;
+
+            for (var i = 0; i < _dreamSpotTable.DataList.Count; i++)
             {
-                var spot = _db.Spots[i];
+                var spot = _dreamSpotTable.DataList[i];
                 var rolled = _rolledThemes[i];
                 var inst = Instantiate(spotButtonTemplate, spotsContainer);
                 inst.gameObject.SetActive(true);
                 var view = inst.GetComponent<DreamEntrySpotButtonView>();
                 if (view != null)
-                    view.BindFromData(spot, rolled, i, OnSpotClicked);
+                    view.BindFromData(spot, rolled.themeDisplayName, i, OnSpotClicked);
                 else
                     Debug.LogError("[DreamInfiltration] SpotTemplate missing DreamEntrySpotButtonView.");
             }
@@ -116,15 +125,11 @@ namespace My.MiniGame.Dream
                 return;
             }
 
-            var spot = _db.Spots[index];
-            var conds = new List<CommonCheckCond>();
-            if (spot.UnlockConds != null)
-            {
-                foreach (var row in spot.UnlockConds)
-                    conds.Add(DreamCheckUtil.ToCommonCheckCond(row));
-            }
+            if (_dreamSpotTable == null || index < 0 || index >= _dreamSpotTable.DataList.Count)
+                return;
 
-            if (!glm.CheckCommonCondsAll(conds))
+            var spot = _dreamSpotTable.DataList[index];
+            if (!glm.CheckCommonCondsAll(spot.UnlockConds))
             {
                 Debug.Log("[DreamInfiltration] Spot locked by CommonCheckCond.");
                 return;
@@ -133,8 +138,8 @@ namespace My.MiniGame.Dream
             var rolled = _rolledThemes[index];
             var ctx = new DreamGameplayContext
             {
-                ThemeId = rolled.ThemeId,
-                ThemeDisplayName = rolled.ThemeDisplayName,
+                ThemeId = rolled.themeId,
+                ThemeDisplayName = rolled.themeDisplayName,
             };
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.EntryPanel);
             UIManager.Instance?.ShowPanel(DreamInfiltrationIds.GameplayPanel, ctx, UILayer.Overlay);

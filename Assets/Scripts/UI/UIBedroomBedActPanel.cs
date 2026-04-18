@@ -40,6 +40,10 @@ namespace My.UI
         private TextMeshProUGUI _btnTeleportLabel;
         private MapAreaInfo _selected;
 
+        // 地图列表：无悬停渐变，仅用底色区分选中
+        private static readonly Color MapRowBgNormal = new Color(0.22f, 0.24f, 0.30f, 1f);
+        private static readonly Color MapRowBgSelected = new Color(0.40f, 0.52f, 0.70f, 1f);
+
         public override int FocusPriority => 805;
 
         private void Awake()
@@ -94,6 +98,9 @@ namespace My.UI
                 btnDream.onClick.RemoveAllListeners();
                 btnDream.onClick.AddListener(OnClickOpenDream);
             }
+
+            if (mapRowTemplate != null)
+                ApplySimpleMapRowButton(mapRowTemplate);
         }
 
         private void Update()
@@ -132,9 +139,22 @@ namespace My.UI
             foreach (var m in tb.DataList)
             {
                 if (m == null || string.IsNullOrEmpty(m.Id)) continue;
-                if (m.IsHome) continue;
-                if (m.Id == "game_init") continue;
-                _huntMaps.Add(m);
+                if (!m.HuntingTarget) continue;
+
+                var conds = m.HuntingUnlockConds;
+                bool passed = true;
+                foreach (var cond in conds)
+                {
+                    if (!MainGameManager.Instance.gameLogicManager.CheckCommonCond(cond))
+                    {
+                        passed = true;
+                    }
+                }
+
+                if(passed)
+                {
+                    _huntMaps.Add(m);
+                }
             }
 
             _huntMaps.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));
@@ -166,6 +186,7 @@ namespace My.UI
             {
                 var row = Instantiate(mapRowTemplate, mapListContent);
                 row.gameObject.SetActive(true);
+                ApplySimpleMapRowButton(row);
                 var label = row.GetComponentInChildren<TextMeshProUGUI>(true);
                 if (label != null)
                     label.text = map.Name;
@@ -173,6 +194,32 @@ namespace My.UI
                 row.onClick.RemoveAllListeners();
                 row.onClick.AddListener(() => SelectMap(captured));
                 _spawnedMapRows.Add(row);
+            }
+        }
+
+        private static void ApplySimpleMapRowButton(Button row)
+        {
+            if (row == null) return;
+            row.transition = Selectable.Transition.None;
+            var c = row.colors;
+            c.fadeDuration = 0f;
+            c.colorMultiplier = 1f;
+            c.highlightedColor = c.normalColor;
+            c.pressedColor = c.normalColor;
+            c.selectedColor = c.normalColor;
+            row.colors = c;
+        }
+
+        private void RefreshMapListSelectionVisual()
+        {
+            for (var i = 0; i < _spawnedMapRows.Count && i < _huntMaps.Count; i++)
+            {
+                var row = _spawnedMapRows[i];
+                if (row == null) continue;
+                var img = row.targetGraphic as Image;
+                if (img == null) continue;
+                var on = _selected != null && ReferenceEquals(_selected, _huntMaps[i]);
+                img.color = on ? MapRowBgSelected : MapRowBgNormal;
             }
         }
 
@@ -198,6 +245,8 @@ namespace My.UI
 
             if (_btnTeleportLabel != null)
                 _btnTeleportLabel.text = "传送";
+
+            RefreshMapListSelectionVisual();
         }
 
         private void OnClickTeleport()

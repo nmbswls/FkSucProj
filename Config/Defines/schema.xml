@@ -54,4 +54,20 @@
         <var name="param6" type="string" comment="p6"/>
     </bean>
 
+    <!-- 入梦副玩法：入口点位与主题权重（原 DreamInfiltrationDatabase SO） -->
+    <bean name="DreamThemeWeight">
+        <var name="theme_id" type="string"/>
+        <var name="theme_display_name" type="string"/>
+        <var name="weight" type="int"/>
+    </bean>
+
+    <bean name="DreamInfiltrationSpot">
+        <var name="spot_id" type="string" comment="点位 id"/>
+        <var name="display_name" type="string" comment="显示名"/>
+        <var name="anchor_x" type="float" comment="背景上归一化 X 0~1"/>
+        <var name="anchor_y" type="float" comment="背景上归一化 Y 0~1"/>
+        <var name="unlock_conds" type="(list),CommonCheckCond" comment="解锁条件，空则视为无限制"/>
+        <var name="theme_weights" type="(list),DreamThemeWeight" comment="主题随机权重"/>
+    </bean>
+
 </module>

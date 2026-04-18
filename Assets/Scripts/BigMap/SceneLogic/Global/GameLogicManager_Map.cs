@@ -145,7 +145,12 @@ namespace My
             }
             else if (!string.IsNullOrEmpty(SwitchAreaIntent.TargetPoint))
             {
-                pos = AreaManager.cacheDatabase.FindNamedPointByName(SwitchAreaIntent.TargetPoint)?.Position ?? null;
+                var namedP = AreaManager.cacheDatabase.FindNamedPointByName(SwitchAreaIntent.TargetPoint);
+                if(namedP == null)
+                {
+                    namedP = AreaManager.cacheDatabase.FindNamedPointByName("default");
+                }
+                pos = namedP?.Position ?? null;
             }
 
             if (pos == null)

@@ -1,0 +1,68 @@
+[
+  {
+    "spot_id": "north",
+    "display_name": "北门潜入口",
+    "anchor_x": 0.22,
+    "anchor_y": 0.62,
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "theme_weights": [
+      { "theme_id": "ruins", "theme_display_name": "废墟回响", "weight": 10 },
+      { "theme_id": "garden", "theme_display_name": "花园低语", "weight": 10 },
+      { "theme_id": "maze", "theme_display_name": "迷宫心象", "weight": 10 }
+    ]
+  },
+  {
+    "spot_id": "east",
+    "display_name": "东侧裂隙",
+    "anchor_x": 0.72,
+    "anchor_y": 0.48,
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "theme_weights": [
+      { "theme_id": "ruins", "theme_display_name": "废墟回响", "weight": 10 },
+      { "theme_id": "garden", "theme_display_name": "花园低语", "weight": 10 },
+      { "theme_id": "maze", "theme_display_name": "迷宫心象", "weight": 10 }
+    ]
+  },
+  {
+    "spot_id": "locked_demo",
+    "display_name": "需条件（演示 AlwaysFail）",
+    "anchor_x": 0.48,
+    "anchor_y": 0.28,
+    "unlock_conds": [
+      {
+        "type": 6,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "theme_weights": [
+      { "theme_id": "ruins", "theme_display_name": "废墟回响", "weight": 10 },
+      { "theme_id": "garden", "theme_display_name": "花园低语", "weight": 10 },
+      { "theme_id": "maze", "theme_display_name": "迷宫心象", "weight": 10 }
+    ]
+  }
+]

@@ -6,7 +6,9 @@
     "scene_name": "Main_Home",
     "is_home": true,
     "always_alert": false,
-    "default_disguise": false
+    "default_disguise": false,
+    "hunting_target": false,
+    "hunting_unlock_conds": []
   },
   {
     "id": "village_01",
@@ -15,7 +17,9 @@
     "scene_name": "Main_Area_01",
     "is_home": false,
     "always_alert": true,
-    "default_disguise": true
+    "default_disguise": true,
+    "hunting_target": true,
+    "hunting_unlock_conds": []
   },
   {
     "id": "village_02",
@@ -24,7 +28,9 @@
     "scene_name": "Main_Area_02",
     "is_home": false,
     "always_alert": true,
-    "default_disguise": true
+    "default_disguise": true,
+    "hunting_target": true,
+    "hunting_unlock_conds": []
   },
   {
     "id": "game_init",
@@ -33,7 +39,9 @@
     "scene_name": "Main_Init",
     "is_home": false,
     "always_alert": true,
-    "default_disguise": false
+    "default_disguise": false,
+    "hunting_target": false,
+    "hunting_unlock_conds": []
   },
   {
     "id": "base_fight",
@@ -42,6 +50,8 @@
     "scene_name": "Main_Home_Fight",
     "is_home": false,
     "always_alert": true,
-    "default_disguise": false
+    "default_disguise": false,
+    "hunting_target": false,
+    "hunting_unlock_conds": []
   }
 ]
