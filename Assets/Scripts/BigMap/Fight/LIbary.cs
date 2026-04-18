@@ -3795,6 +3795,7 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.Combat;
 
             spec.CastType = ECastType.Directional;
+            spec.Range1 = 2f;
             spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
             spec.Phases.Add(new MapAbilityPhase()

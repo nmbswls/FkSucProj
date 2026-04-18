@@ -140,6 +140,13 @@ namespace My.Map.Scene
 
         public bool InteractFocused { get; set; }
         public bool IsInteractDetail { get; set; }
+        public bool WithInteractDetail 
+        { 
+            get 
+            {
+                return true;
+            } 
+        }
 
         public Vector2? LastValidMovePos { get; set; }
 

@@ -112,7 +112,7 @@ namespace My.UI
 
             RefreshFocusInteractable();
 
-            if(currFocusInteractable != null)
+            if(currFocusInteractable != null && currFocusInteractable as UnityEngine.Object != null)
             {
                 // 更新详情条位置
                 var hintPos = currFocusInteractable.GetHintAnchorPosition();
@@ -587,34 +587,50 @@ namespace My.UI
                 return false;
             }
 
-            if(!IsDetailMenuShown)
+            if(!IsDetailMenuShown )
             {
 
-                IsDetailMenuShown = true;
-                if(currFocusInteractable != null)
+                // 可以展开
+                if(currFocusInteractable.WithInteractDetail)
                 {
-                    currFocusInteractable.IsInteractDetail = true;
-                }
-
-                // 给出selection
-                var selections = currFocusInteractable.GetInteractSelections();
-                var innerList = new List<ChooseItem>();
-                foreach (var one in selections)
-                {
-                    innerList.Add(new ChooseItem()
+                    IsDetailMenuShown = true;
+                    if (currFocusInteractable != null)
                     {
-                        SelectId = one.SelectId,
-                        Content = one.SelectContent,
-                        Selectable = one.Selectable
+                        currFocusInteractable.IsInteractDetail = true;
                     }
-                    );
+
+                    // 给出selection
+                    var selections = currFocusInteractable.GetInteractSelections();
+                    var innerList = new List<ChooseItem>();
+                    foreach (var one in selections)
+                    {
+                        innerList.Add(new ChooseItem()
+                        {
+                            SelectId = one.SelectId,
+                            Content = one.SelectContent,
+                            Selectable = one.Selectable
+                        }
+                        );
+                    }
+
+                    ChooseInteractMenu.gameObject.SetActive(true);
+                    ChooseInteractMenu.SetData(innerList);
+
+                    TopOpHint.SetActive(false);
+                    CenterHint.SetActive(true);
                 }
-
-                ChooseInteractMenu.gameObject.SetActive(true);
-                ChooseInteractMenu.SetData(innerList);
-
-                TopOpHint.SetActive(false);
-                CenterHint.SetActive(true);
+                else
+                {
+                    var allSecletions = currFocusInteractable.GetInteractSelections();
+                    if(allSecletions.Count > 0)
+                    {
+                        currFocusInteractable.TriggerInteract(allSecletions.First().SelectId);
+                    }
+                    else
+                    {
+                        Debug.Log("无法交互。");
+                    }
+                }
             }
             else
             {

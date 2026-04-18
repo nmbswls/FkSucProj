@@ -136,8 +136,6 @@ namespace My
                 await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
             }
 
-            UIManager.Instance.HidePanel("InteractMenu");
-
             // 尝试清理旧世界
             bool isUnloading = false;
             WorldAreaManager.Instance.UnloadCurrentWorld(() =>

@@ -85,6 +85,19 @@ namespace My.Map.Scene
 
         private bool isInteractDetail;
 
+        public bool WithInteractDetail
+        {
+            get
+            {
+                if (CheckCanBackHit())
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();

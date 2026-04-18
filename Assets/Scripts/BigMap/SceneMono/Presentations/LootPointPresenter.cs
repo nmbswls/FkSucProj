@@ -22,6 +22,7 @@ namespace My.Map.Scene
 
         public bool InteractFocused { get; set; }
         public bool IsInteractDetail { get; set; }
+        public bool WithInteractDetail => true;
 
         public LootPointLogicEntity LootEntity { get { return (LootPointLogicEntity)_logic; } }
         public override void ApplyState(object state)

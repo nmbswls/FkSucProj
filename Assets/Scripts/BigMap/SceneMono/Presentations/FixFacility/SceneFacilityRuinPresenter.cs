@@ -51,6 +51,7 @@ namespace My.Map.Scene
 
         private bool isInteractDetail;
 
+        public bool WithInteractDetail => true;
 
 
         [ContextMenu("Auto Collect Child Sprites")]

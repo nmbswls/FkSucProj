@@ -56,6 +56,7 @@ namespace My.Map
 
         public bool InteractFocused { get; set; }
         public bool IsInteractDetail { get; set; }
+        public bool WithInteractDetail => true;
 
         public SimpleCharacterController CharacterController;
 

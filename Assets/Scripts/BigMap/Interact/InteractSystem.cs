@@ -18,7 +18,7 @@ public interface ISceneInteractable
 
     Vector2 Pos { get; }
 
-    //bool IsInteractFocus { get; set; }
+    bool WithInteractDetail { get; }
 
     bool InteractFocused { get; set; }
     bool IsInteractDetail { get; set; }
@@ -47,7 +47,7 @@ public class SceneInteractSystem
 {
     public static float CheckInterval = 0.1f;
 
-    private float _normalCheckRadius = 0.4f;
+    private float _normalCheckRadius = 0.6f;
     private float _checkAngle = 90f;
 
     private float _interactTimer = 0f;
@@ -107,6 +107,11 @@ public class SceneInteractSystem
             return false;
         }
         if (MainGameManager.Instance.gameLogicManager.IsBalancing)
+        {
+            return false;
+        }
+
+        if(MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
         {
             return false;
         }

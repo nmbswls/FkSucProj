@@ -624,6 +624,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.ForbidSkillOp, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.NoSelect, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.NoInteract, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Ghost, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Invisible, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.SuperArmor, initialBase: 0);
