@@ -291,6 +291,41 @@ namespace My.UI
             onChoiceSelected = null;
             cb?.Invoke(index);
         }
+
+        /// <summary>
+        /// 打断打字机与选项 UI，供「无缝切换对话段」命令在进入新 Step 前清理残留。
+        /// </summary>
+        public void PrepareForDialogSegmentSwitch()
+        {
+            typing = false;
+            tick = 0f;
+            typingTimer = 0f;
+            readingData = null;
+            currentLineIndex = 0;
+            currentFullText = null;
+            currentIndex = 0;
+            onTypingComplete = null;
+
+            if (showingChoices)
+            {
+                showingChoices = false;
+                if (choicePanel) choicePanel.SetActive(false);
+                choiceLimitTime = 0;
+                choiceLimitTimeLeft = 0;
+                onChoiceSelected = null;
+                if (choiceContainer && choiceButtonPrefab)
+                {
+                    foreach (Transform child in choiceContainer)
+                    {
+                        if (child.gameObject != choiceButtonPrefab.gameObject)
+                            Destroy(child.gameObject);
+                    }
+                }
+            }
+
+            if (contentText) contentText.text = "";
+            ShowNextIndicator(false);
+        }
     }
 
 }

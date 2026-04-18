@@ -185,4 +185,22 @@ namespace My.Dialog
         public override string GetSummary() => $"[Wait]";
     }
 
+    [Serializable]
+    public class EditorSwitchDialogSegmentCommand : EditorDialogCommand
+    {
+        public string TargetStepId = "";
+        public bool CancelTypingState = true;
+
+        public override string GetSummary() => $"[SwitchSegment] -> {TargetStepId}";
+    }
+
+    [Serializable]
+    public class EditorDynamicNpcChoiceCommand : EditorDialogCommand
+    {
+        public float TimeLimit;
+        public List<DialogChoiceOption> Options = new();
+
+        public override string GetSummary() => $"[DynamicNpcChoice] {Options?.Count ?? 0} opts";
+    }
+
 }

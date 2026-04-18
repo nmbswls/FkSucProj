@@ -1,0 +1,166 @@
+{
+  "Steps": [
+    {
+      "Id": "npc_hub",
+      "Note": "入口：动态选项 + 可路由回此 Step",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "NPC",
+              "Content": "……需要点什么？",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4DynamicNpcChoice, Assembly-CSharp",
+          "TimeLimit": 0.0,
+          "Options": [
+            {
+              "Text": "随便聊聊",
+              "TargetStepId": "hub_chitchat",
+              "ProbabilityType": 0,
+              "ProbabilityParam1": 0.0,
+              "FailTargetStepId": null,
+              "ShowWhenFail": false,
+              "Conditions1": []
+            },
+            {
+              "Text": "打听任务",
+              "TargetStepId": "hub_quest",
+              "ProbabilityType": 0,
+              "ProbabilityParam1": 0.0,
+              "FailTargetStepId": null,
+              "ShowWhenFail": false,
+              "Conditions1": [
+                {
+                  "$type": "My.Dialog.ConditionNpcHasLocalSwitch, Assembly-CSharp",
+                  "SwitchName": "quest_hint"
+                }
+              ]
+            },
+            {
+              "Text": "（警戒台词）",
+              "TargetStepId": "hub_combat",
+              "ProbabilityType": 0,
+              "ProbabilityParam1": 0.0,
+              "FailTargetStepId": null,
+              "ShowWhenFail": false,
+              "Conditions1": [
+                {
+                  "$type": "My.Dialog.ConditionNpcInCombat, Assembly-CSharp",
+                  "RequireInCombat": true
+                }
+              ]
+            },
+            {
+              "Text": "再见",
+              "TargetStepId": "hub_bye",
+              "ProbabilityType": 0,
+              "ProbabilityParam1": 0.0,
+              "FailTargetStepId": null,
+              "ShowWhenFail": false,
+              "Conditions1": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "hub_chitchat",
+      "Note": "闲聊后无缝回到入口",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "NPC",
+              "Content": "今天天气真不错。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SwitchDialogSegment, Assembly-CSharp",
+          "TargetStepId": "npc_hub",
+          "CancelTypingState": true
+        }
+      ]
+    },
+    {
+      "Id": "hub_quest",
+      "Note": "任务相关",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "NPC",
+              "Content": "关于那件事……我这边有些新消息。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SwitchDialogSegment, Assembly-CSharp",
+          "TargetStepId": "npc_hub",
+          "CancelTypingState": true
+        }
+      ]
+    },
+    {
+      "Id": "hub_combat",
+      "Note": "战斗中",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "NPC",
+              "Content": "……现在不是说这个的时候！",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SwitchDialogSegment, Assembly-CSharp",
+          "TargetStepId": "npc_hub",
+          "CancelTypingState": true
+        }
+      ]
+    },
+    {
+      "Id": "hub_bye",
+      "Note": "结束",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "NPC",
+              "Content": "回见。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

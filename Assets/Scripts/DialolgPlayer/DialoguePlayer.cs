@@ -684,6 +684,63 @@ public partial class DialoguePlayer : MonoBehaviour
                     break;
                 }
 
+            case DialogCommandData4SwitchDialogSegment sw:
+                {
+                    if (sw.CancelTypingState && ui != null)
+                        ui.PrepareForDialogSegmentSwitch();
+                    if (!string.IsNullOrEmpty(sw.TargetStepId))
+                        JumpToStep(sw.TargetStepId);
+                    SafeComplete();
+                    break;
+                }
+
+            case DialogCommandData4DynamicNpcChoice dyn:
+                {
+                    var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
+                    LogicEntityBase srcEntity = null;
+                    if (glm != null && runtimeRef != null && runtimeRef.SrcEntityId != null)
+                    {
+                        var ent = glm.GetLogicEntity(runtimeRef.SrcEntityId.Value, false);
+                        srcEntity = ent as LogicEntityBase;
+                    }
+
+                    var jumpLabels = new List<string>();
+                    var options = new List<string>();
+                    if (dyn.Options != null)
+                    {
+                        foreach (var choice in dyn.Options)
+                        {
+                            if (choice == null) continue;
+                            if (!DialogConditionRuntime.AllPass(choice.Conditions1, srcEntity, glm))
+                                continue;
+                            options.Add(choice.Text ?? "");
+                            jumpLabels.Add(choice.TargetStepId ?? "");
+                        }
+                    }
+
+                    if (options.Count == 0)
+                    {
+                        Debug.LogWarning("[Dialog] DialogCommandData4DynamicNpcChoice: no option passed condition filters.");
+                        SafeComplete();
+                        break;
+                    }
+
+                    ui.StartChoices(
+                        options,
+                        index =>
+                        {
+                            if (index >= 0 && index < jumpLabels.Count)
+                            {
+                                var label = jumpLabels[index];
+                                if (!string.IsNullOrEmpty(label))
+                                    JumpToStep(label);
+                            }
+                            SafeComplete();
+                        },
+                        dyn.TimeLimit);
+                    break;
+                }
+
             case DialogCommandData4JumpTo cd4JumpTo:
                 {
                     if (!string.IsNullOrEmpty(cd4JumpTo.TargetStepId)) JumpToStep(cd4JumpTo.TargetStepId);

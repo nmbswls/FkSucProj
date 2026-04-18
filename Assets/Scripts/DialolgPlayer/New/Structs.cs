@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using cfg.demo;
 using UnityEngine;
 
 namespace My.Dialog
@@ -237,12 +238,76 @@ namespace My.Dialog
     [Serializable]
     public class ConditionCheckPlayerLevel : DialogCondition
     {
+        // 与玩家实体 GetAttr(attrId) 比较：attrId 需在数值属性表中存在，否则为 0
+        public string AttrIdForLevel = "PlayerSan";
         public int PlayerLevel;
 
         public override string GetSummary()
         {
-            return $"[PlayerLevel] {PlayerLevel}";
+            return $"[PlayerAttr>={PlayerLevel}] {AttrIdForLevel}";
         }
+    }
+
+    [ConditionMenuName("NPC/In Combat")]
+    [Serializable]
+    public class ConditionNpcInCombat : DialogCondition
+    {
+        public bool RequireInCombat = true;
+
+        public override string GetSummary()
+        {
+            return RequireInCombat ? "[NPC] InCombat" : "[NPC] NotInCombat";
+        }
+    }
+
+    [ConditionMenuName("NPC/Has Local Switch")]
+    [Serializable]
+    public class ConditionNpcHasLocalSwitch : DialogCondition
+    {
+        public string SwitchName = "";
+
+        public override string GetSummary()
+        {
+            return $"[NPC Switch] {SwitchName}";
+        }
+    }
+
+    [Serializable]
+    public class SerializableCommonCheckCond
+    {
+        public ECommonCheckType Type;
+        public long Param1;
+        public long Param2;
+        public long Param3;
+        public long Param4;
+        public string Param5 = "";
+        public string Param6 = "";
+    }
+
+    [ConditionMenuName("Logic/CommonCheckCond List")]
+    [Serializable]
+    public class ConditionCommonCondsList : DialogCondition
+    {
+        public List<SerializableCommonCheckCond> Items = new();
+
+        public override string GetSummary()
+        {
+            return $"[CommonConds] x{Items?.Count ?? 0}";
+        }
+    }
+
+    [Serializable]
+    public class DialogCommandData4SwitchDialogSegment : DialogCommandData
+    {
+        public string TargetStepId = "";
+        public bool CancelTypingState = true;
+    }
+
+    [Serializable]
+    public class DialogCommandData4DynamicNpcChoice : DialogCommandData
+    {
+        public float TimeLimit;
+        public List<DialogChoiceOption> Options = new();
     }
 
 }

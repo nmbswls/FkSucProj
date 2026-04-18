@@ -1627,6 +1627,25 @@ namespace My.Dialog
                             }
                             break;
 
+                        case EditorSwitchDialogSegmentCommand segCmd:
+                            {
+                                var realCommand = new DialogCommandData4SwitchDialogSegment();
+                                realCommand.TargetStepId = segCmd.TargetStepId;
+                                realCommand.CancelTypingState = segCmd.CancelTypingState;
+                                runCommand = realCommand;
+                            }
+                            break;
+
+                        case EditorDynamicNpcChoiceCommand dynCmd:
+                            {
+                                var realCommand = new DialogCommandData4DynamicNpcChoice();
+                                realCommand.TimeLimit = dynCmd.TimeLimit;
+                                if (dynCmd.Options != null)
+                                    realCommand.Options.AddRange(dynCmd.Options);
+                                runCommand = realCommand;
+                            }
+                            break;
+
 
                     }
 
