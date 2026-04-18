@@ -36,13 +36,11 @@ namespace My.Map.Scene
         public List<AnimationClip> SpecialAnimClips;
         private Dictionary<string, AnimationClip> _animCacheDict = new();
 
-        public static int NormalDialogInteract = 50;
-
-        public static int EnterDetailMode = 98;
-        public static int DeepAbsorbInteractGoodId = 99;
-        public static int DeepAbsorbInteractBadId = 100;
-        public static int PickDropInteractId = 101;
-        public static int BackHit = 102;
+        public static int ID_NormalDialog = 51;
+        public static int ID_DeepAbsorbEnable = 99;
+        public static int ID_DeepAbsorbDisable = 100;
+        public static int ID_PickDropInteractId = 101;
+        public static int ID_BackHit = 102;
 
         public HighlightCtrl highlightCtrl;
         public bool InteractDetailMode { get; set; }
@@ -116,7 +114,6 @@ namespace My.Map.Scene
             base.RegisterEvents();
 
             UnitEntity.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
-
         }
 
         protected override void UnregisterEvents()
@@ -140,33 +137,6 @@ namespace My.Map.Scene
                 return false;
             }
 
-            // 检查玩家靠近主动停靠
-            do
-            {
-                if(NpcEntity.IsInCombat)
-                {
-                    break;
-                }
-
-                if(NpcEntity.CheckIsEmnity())
-                {
-                    break;
-                }
-
-
-                if(MainGameManager.Instance.playerScenePresenter == null || NpcEntity.AIBrain.CurrentState != NpcEntity.AIBrain.StateIdle)
-                {
-                    break;
-                }
-
-                var diff = MainGameManager.Instance.playerScenePresenter.Pos - this.Pos;
-                if (diff.sqrMagnitude < 1.0f)
-                {
-                    return false;
-                }
-            }
-            while (false);
-
             return true;
         }
 
@@ -189,89 +159,32 @@ namespace My.Map.Scene
 
         public bool CanInteractEnable()
         {
+            if (OverworldHUDPanel.Instance == null)
+            {
+                return false;
+            }
+
             if (NpcEntity.IsAttaching) return false;
 
+            // 拾取相关
             if(UnitEntity.IsDead)
             {
                 return true;
             }
 
-            // 针对晕眩类型 如果可榨取
+            // 可开启深度榨取
             if (UnitEntity.MarkUnsensored)
             {
                 return true;
             }
-
-            do
+            
+            // 可开启普通对话
+            if (CheckNpcPeaceDialog())
             {
-                //if(!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
-                //{
-                //    break;
-                //}
-
-                //if (NpcEntity.InteractComp.IsInteracting)
-                //{
-                //    break;
-                //}
-
-                if (UnitEntity.IsInCombat)
-                {
-                    break;
-                }
-
-                if(NpcEntity.CheckHasState(AttrIdConsts.NoSelect))
-                {
-                    //break;
-                }
-
-                //if (MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
-                //{
-                //    if (NpcEntity.InteractComp.IsInteracting)
-                //    {
-                //        break;
-                //    }
-
-                //    if (UnitEntity.IsInCombat)
-                //    {
-                //        break;
-                //    }
-
-                //    var logicInts = NpcEntity.InteractComp.InteractInfos;
-                //    int enableOne = 0;
-                //    foreach (var i in logicInts)
-                //    {
-                //        if (i.Passive)
-                //        {
-                //            continue;
-                //        }
-                //        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
-                //        if (canInt || !i.HideWhenFail)
-                //        {
-                //            enableOne += 1;
-                //        }
-                //    }
-
-                //    if (enableOne > 0)
-                //    {
-                //        return true;
-                //    }
-                //}
-
-                string currentDialogId = NpcEntity.GetCurrentDialogId();
-
-                if (string.IsNullOrEmpty(currentDialogId))
-                {
-                    return false;
-                }
-
                 return true;
             }
-            while (false);
-
-            if (!UnitEntity.IsDead 
-                && !UnitEntity.MarkNoLogic
-                && !NpcEntity.CheckHasState(AttrIdConsts.NoSelect)
-                && !MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
+            
+            if(CheckCanBackHit())
             {
                 return true;
             }
@@ -279,32 +192,83 @@ namespace My.Map.Scene
             return false;
         }
 
-        public bool TriggerInteract(int selectionId)
+
+        private bool CheckCanBackHit()
         {
-            if(selectionId == EnterDetailMode)
-            {
-                if(!UnitEntity.IsInCombat)
-                {
-                    InteractDetailMode = true;
-                    NpcEntity.RegisterGaze("Interact", UnitEntity.LogicManager.playerLogicEntity.Id, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Override, 0);
+            if (OverworldHUDPanel.Instance == null) return false;
+            if (!OverworldHUDPanel.Instance.IsHunterMode) return false;
 
-                    // todo 抛出事件
-                    if(SceneInteractMenuPanel.Instance != null)
-                    {
-                        SceneInteractMenuPanel.Instance.ResetRefreshSelection();
-                    }
-                }
-                return false;
-            }
-
-            if (selectionId < 50 && !UnitEntity.IsInCombat)
+            if (NpcEntity.CheckHasState(AttrIdConsts.NoInteract)) return false;
+            // h模式下可以背刺
+            if (!MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
             {
-                //NpcEntity.InteractComp.TryTriggerInteract(selectionId);
-                // NpcEntity
                 return true;
             }
 
-            if(selectionId == NormalDialogInteract)
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckNpcPeaceDialog()
+        {
+            if(!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
+            {
+                return false;
+            }
+
+            if(UnitEntity.IsDead || UnitEntity.MarkDestroyed | UnitEntity.MarkUnsensored)
+            {
+                return false;
+            }
+
+            if (UnitEntity.IsInCombat)
+            {
+                return false;
+            }
+
+            if (NpcEntity.CheckHasState(AttrIdConsts.NoSelect))
+            {
+                return false;
+            }
+
+            string currentDialogId = NpcEntity.GetCurrentDialogId();
+            if (string.IsNullOrEmpty(currentDialogId))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        public bool TriggerInteract(int selectionId)
+        {
+            //if(selectionId == EnterDetailMode)
+            //{
+            //    if(!UnitEntity.IsInCombat)
+            //    {
+            //        InteractDetailMode = true;
+            //        NpcEntity.RegisterGaze("Interact", UnitEntity.LogicManager.playerLogicEntity.Id, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Override, 0);
+
+            //        // todo 抛出事件
+            //        if(SceneInteractMenuPanel.Instance != null)
+            //        {
+            //            SceneInteractMenuPanel.Instance.ResetRefreshSelection();
+            //        }
+            //    }
+            //    return false;
+            //}
+
+            if (selectionId < 50)
+            {
+                //NpcEntity.InteractComp.TryTriggerInteract(selectionId);
+                return true;
+            }
+
+            if(selectionId == ID_NormalDialog)
             {
                 string currentDialogId = NpcEntity.GetCurrentDialogId();
                 if(!string.IsNullOrEmpty(currentDialogId))
@@ -313,12 +277,11 @@ namespace My.Map.Scene
                 }
                 return true;
             }
-            else if (selectionId == DeepAbsorbInteractGoodId)
+            else if (selectionId == ID_DeepAbsorbEnable)
             {
-               DeepAbsorbPanel.Show(0, 5, 3);
-                //MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
+               DeepAbsorbPanel.Show(UnitEntity.Id, 5, 3);
             }
-            else if(selectionId == PickDropInteractId)
+            else if(selectionId == ID_PickDropInteractId)
             {
                 var container = NpcEntity.GetLootItemContainer();
                 if (container != null)
@@ -333,42 +296,19 @@ namespace My.Map.Scene
                     });
                 }
             }
-            else if(selectionId == BackHit)
+            else if(selectionId == ID_BackHit)
             {
-                //if (selectionId == 1)
-                //{
-                //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("deep_zhaqu", target: NpcEntity);
-                //}
-                //else if (selectionId == 2)
-                //{
-                //    if (MainGameManager.Instance.VisionSenser2D.CanSee(transform.position, MainGameManager.Instance.playerScenePresenter.transform.position, NpcEntity.FaceDir, 1.0f, 60f))
-                //    {
-                //        return;
-                //    }
-
-                //    if (NpcEntity.GetAttr(AttrIdConsts.UnitDizzy) == 0)
-                //    {
-                //        //return;
-                //    }
-
-                //    // 显示层事件
-                //    MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
-                //    {
-                //        Name = "AbsorbDizzy",
-                //        Param3 = this.Id,
-                //    });
-
-                //    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
-                //}
-
-                // 显示层事件
-                MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+                if(CheckCanBackHit())
                 {
-                    Name = "AbsorbDizzy",
-                    Param3 = this.Id,
-                });
+                    // 显示层事件
+                    MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
+                    {
+                        Name = "BackHit",
+                        Param3 = this.Id,
+                    });
 
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
+                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
+                }
             }
 
             return true;
@@ -393,17 +333,17 @@ namespace My.Map.Scene
         {
             var ret = new List<SceneInteractSelection>();
             if (NpcEntity.IsAttaching) return ret;
+            if (UnitEntity.MarkUnsensored) return ret;
 
-            if (UnitEntity.IsDead)
+            if (UnitEntity.IsDead || UnitEntity.MarkUnsensored)
             {
                 ret.Add(new SceneInteractSelection()
                 {
-                    SelectId = PickDropInteractId,
+                    SelectId = ID_PickDropInteractId,
                     SelectContent = "搜刮",
                     Selectable = true
                 }); 
             }
-
 
             if (UnitEntity.MarkUnsensored)
             {
@@ -411,7 +351,7 @@ namespace My.Map.Scene
                 {
                     ret.Add(new SceneInteractSelection()
                     {
-                        SelectId = DeepAbsorbInteractGoodId,
+                        SelectId = ID_DeepAbsorbEnable,
                         SelectContent = "深度榨取",
                         Selectable = true
                     });
@@ -420,110 +360,34 @@ namespace My.Map.Scene
                 {
                     ret.Add(new SceneInteractSelection()
                     {
-                        SelectId = DeepAbsorbInteractBadId,
+                        SelectId = ID_DeepAbsorbDisable,
                         SelectContent = "深度榨取(无）",
                         Selectable = false
                     });
                 }
             }
 
-           
 
-
-            do
+            if(CheckNpcPeaceDialog())
             {
-                if (!MainGameManager.Instance.gameLogicManager.PlayerPeaceMode)
-                {
-                    break;
-                }
-
-                //if(UnitEntity.IsDead)
-                //{
-                //    break;
-                //}
-
-                //if (UnitEntity.IsInCombat)
-                //{
-                //    break;
-                //}
-
-                //if (NpcEntity.InteractComp.IsInteracting)
-                //{
-                //    break;
-                //}
-
-                //if (!InteractDetailMode)
-                //{
-                //    var logicInts = NpcEntity.InteractComp.InteractInfos;
-                //    bool hasEnabled = false;
-                //    foreach (var i in logicInts)
-                //    {
-                //        if (i.Passive)
-                //        {
-                //            continue;
-                //        }
-                //        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
-                //        if (canInt || !i.HideWhenFail)
-                //        {
-                //            hasEnabled = true; 
-                //            break;
-                //        }
-                //    }
-
-                //    if(hasEnabled)
-                //    {
-                //        ret.Add(new SceneInteractSelection()
-                //        {
-                //            SelectId = EnterDetailMode,
-                //            SelectContent = "互动",
-                //            Selectable = true
-                //        });
-                //    }
-                //}
-                //else
-                //{
-                //    var logicInts = NpcEntity.InteractComp.InteractInfos;
-                //    foreach (var i in logicInts)
-                //    {
-                //        if (i.Passive)
-                //        {
-                //            continue;
-                //        }
-                //        bool canInt = NpcEntity.InteractComp.CheckTriggerInteract(i.InteractId);
-                //        if (canInt || !i.HideWhenFail)
-                //        {
-                //            ret.Add(new SceneInteractSelection()
-                //            {
-                //                SelectId = i.InteractId,
-                //                SelectContent = i.Label,
-                //                Selectable = true
-                //            });
-                //        }
-                //    }
-                //}
-
                 string currentDialogId = NpcEntity.GetCurrentDialogId();
 
                 if (!string.IsNullOrEmpty(currentDialogId))
                 {
                     ret.Add(new SceneInteractSelection()
                     {
-                        SelectId = NormalDialogInteract,
+                        SelectId = ID_NormalDialog,
                         SelectContent = "交谈",
                         Selectable = true
                     }); ;
                 }
             }
-            while (false);
 
-            if (!UnitEntity.IsDead 
-                && !UnitEntity.MarkNoLogic
-                && !NpcEntity.CheckHasState(AttrIdConsts.NoSelect)
-                && !InteractDetailMode && !MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
+            if(CheckCanBackHit())
             {
                 ret.Add(new SceneInteractSelection()
                 {
-                    SelectId = BackHit,
+                    SelectId = ID_BackHit,
                     SelectContent = "被刺",
                     Selectable = true
                 }); ;

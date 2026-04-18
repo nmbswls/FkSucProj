@@ -215,6 +215,7 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 } ,
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 } ,
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 } ,
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoInteract, ModifierValue = 1 } ,
                     },
                     DefaultDuration = -1,
                 };

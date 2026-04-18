@@ -747,6 +747,12 @@ namespace My.Map
         {
             base.OnDespawn(ref snapshot);
 
+            if(snapshot != null)
+            {
+                var recUnit = (LogicEntityRecord4UnitBase)snapshot;
+                recUnit.Unsensored = this.MarkUnsensored;
+                recUnit.MarkNoLogic = this.MarkNoLogic;
+            }
             //
             // 当死亡状态下的unit被回收时，执行destroy 且如果有掠夺品 需要创建新掠夺物
             if (IsDead)

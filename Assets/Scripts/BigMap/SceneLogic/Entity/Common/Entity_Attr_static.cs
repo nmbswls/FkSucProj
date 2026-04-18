@@ -40,6 +40,7 @@ namespace My.Map.Entity
         public const string ImmumeKaiYou = "ImmumeKaiYou";
         public const string Sleep = "Sleep";
         public const string FastTurn = "FastTurn";
+        public const string NoInteract = "NoInteract";
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";
         public const string NoKiller = "NoKiller";
