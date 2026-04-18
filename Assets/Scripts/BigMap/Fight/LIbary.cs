@@ -2683,7 +2683,7 @@ namespace My.Map.Entity
                 PhaseName = "Pre",
                 LockMovement = true,
                 LockRotation = true,
-                AnimTag = "push",
+                AnimTag = "attack_01",
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -2707,6 +2707,7 @@ namespace My.Map.Entity
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = "Push",
+                AnimName = "player_push",
                 Duration = 0.24f,
                 OnHitEffects = new()
                 {
