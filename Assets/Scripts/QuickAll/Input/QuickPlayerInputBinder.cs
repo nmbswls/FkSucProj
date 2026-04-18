@@ -560,6 +560,11 @@ namespace My.Input
                 return;
             }
 
+            if (LogicTime.paused)
+            {
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.FreeMoveInput = Vector2.zero;
+                return;
+            }
 
             bool doMove = false;
             do

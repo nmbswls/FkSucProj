@@ -146,5 +146,10 @@ namespace My.MiniGame.Dream
             DreamInfiltrationLogicPause.ExitMiniGame();
             return true;
         }
+
+        public override bool OnNavigate(Vector2 dir)
+        {
+            return true;
+        }
     }
 }

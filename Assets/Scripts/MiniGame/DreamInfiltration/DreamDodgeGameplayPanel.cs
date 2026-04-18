@@ -402,6 +402,11 @@ namespace My.MiniGame.Dream
             UIManager.Instance?.ShowPanel(DreamInfiltrationIds.EntryPanel, null, UILayer.Overlay);
             return true;
         }
+
+        public override bool OnNavigate(Vector2 dir)
+        {
+            return true;
+        }
     }
 
     // 与玩法面板同文件，避免仅新增小 .cs 时 Unity 偶发未编译导致类型找不到

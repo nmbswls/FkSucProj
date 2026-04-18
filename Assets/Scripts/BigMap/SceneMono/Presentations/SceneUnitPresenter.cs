@@ -233,6 +233,8 @@ namespace My.Map.Scene
                 }
             }
 
+            if (LogicTime.paused) return Vector2.zero;
+
             float arriveRaiuds = 0.12f;
             if (!CheckCanActiveMove())
             {
