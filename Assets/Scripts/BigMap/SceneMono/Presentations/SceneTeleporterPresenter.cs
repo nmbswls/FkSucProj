@@ -15,7 +15,7 @@ namespace My.Map.Scene
     {
         [SerializeField] private GameObject highlightFx;
 
-        public Collider2D MainBlock;
+        public Collider2D MainCol;
 
         public LogicEntityTeleporter TeleporterEntity { get { return (LogicEntityTeleporter)_logic; } }
 
@@ -47,6 +47,8 @@ namespace My.Map.Scene
                         return;
                     }
                     TeleporterEntity.LogicManager.playerLogicEntity.TeleportTo(p.Value.Position);
+
+                    MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Id, "lock_move", overrideDuration: 0.6f);
                 }
             }
             else

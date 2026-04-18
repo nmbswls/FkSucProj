@@ -173,14 +173,14 @@ namespace My.Map.Scene
         private Collider2D[] hits = new Collider2D[16];
         private void CheckTriggerTeleporter()
         {
-            if (LogicTime.time - _checkTeleporterTimer < 0.5f)
+            if (LogicTime.time - _checkTeleporterTimer < 0.1f)
             {
                 return;
             }
 
             _checkTeleporterTimer = LogicTime.time;
 
-            int cnt = Physics2D.OverlapCircleNonAlloc(transform.position, 0.5f, hits, 1 << LayerMask.NameToLayer("Trigger"));
+            int cnt = Physics2D.OverlapCircleNonAlloc(transform.position, 0.1f, hits, 1 << LayerMask.NameToLayer("Trigger"));
             for (int i = 0; i < cnt; i++)
             {
                 var teleporter = hits[i].GetComponentInParent<SceneTeleporterPresenter>();
