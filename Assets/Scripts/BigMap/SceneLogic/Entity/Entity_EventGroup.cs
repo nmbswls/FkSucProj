@@ -151,14 +151,18 @@ namespace My.Map
                 if (!MemberId2EntityMap.ContainsKey(mId))
                 {
                     var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(mInfo.InitInfo);
+                    if(record == null)
+                    {
+                        Debug.Log($"event group:{Id} create member:{mId} entity:{record.Id} fail.");
+                        continue;
+                    }
+
                     record.LifeBindEntityId = this.Id;
                     record.Position = this.Pos + mInfo.InitInfo.Position;
                     MemberId2EntityMap[mId] = record.Id;
                     LogicManager.AddNewEntityRecord(record);
 
                     Debug.Log($"event group:{Id} create member:{mId} entity:{record.Id}");
-                    
-
                     CurrActiveMemberSet.Add(mId);
                 }
 
