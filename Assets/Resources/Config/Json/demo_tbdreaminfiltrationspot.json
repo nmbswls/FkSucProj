@@ -15,10 +15,20 @@
         "param6": ""
       }
     ],
-    "theme_weights": [
-      { "theme_id": "ruins", "theme_display_name": "废墟回响", "weight": 10 },
-      { "theme_id": "garden", "theme_display_name": "花园低语", "weight": 10 },
-      { "theme_id": "maze", "theme_display_name": "迷宫心象", "weight": 10 }
+    "theme_ids": [
+      "ruins",
+      "garden",
+      "maze"
+    ],
+    "theme_display_names": [
+      "废墟回响",
+      "花园低语",
+      "迷宫心象"
+    ],
+    "theme_weight_values": [
+      10,
+      10,
+      10
     ]
   },
   {
@@ -37,10 +47,20 @@
         "param6": ""
       }
     ],
-    "theme_weights": [
-      { "theme_id": "ruins", "theme_display_name": "废墟回响", "weight": 10 },
-      { "theme_id": "garden", "theme_display_name": "花园低语", "weight": 10 },
-      { "theme_id": "maze", "theme_display_name": "迷宫心象", "weight": 10 }
+    "theme_ids": [
+      "ruins",
+      "garden",
+      "maze"
+    ],
+    "theme_display_names": [
+      "废墟回响",
+      "花园低语",
+      "迷宫心象"
+    ],
+    "theme_weight_values": [
+      10,
+      10,
+      10
     ]
   },
   {
@@ -59,10 +79,20 @@
         "param6": ""
       }
     ],
-    "theme_weights": [
-      { "theme_id": "ruins", "theme_display_name": "废墟回响", "weight": 10 },
-      { "theme_id": "garden", "theme_display_name": "花园低语", "weight": 10 },
-      { "theme_id": "maze", "theme_display_name": "迷宫心象", "weight": 10 }
+    "theme_ids": [
+      "ruins",
+      "garden",
+      "maze"
+    ],
+    "theme_display_names": [
+      "废墟回响",
+      "花园低语",
+      "迷宫心象"
+    ],
+    "theme_weight_values": [
+      10,
+      10,
+      10
     ]
   }
 ]

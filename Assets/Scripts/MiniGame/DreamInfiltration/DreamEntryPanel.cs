@@ -61,21 +61,28 @@ namespace My.MiniGame.Dream
 
         private static (string themeId, string themeDisplayName) RollTheme(DreamInfiltrationSpot spot)
         {
-            var list = spot.ThemeWeights;
-            if (list == null || list.Count == 0)
+            var ids = spot.ThemeIds;
+            var names = spot.ThemeDisplayNames;
+            var weights = spot.ThemeWeightValues;
+            if (ids == null || names == null || weights == null || ids.Count == 0)
                 return ("default", "浅梦");
+            var n = Mathf.Min(Mathf.Min(ids.Count, names.Count), weights.Count);
+            if (n <= 0)
+                return ("default", "浅梦");
+
             var sum = 0;
-            foreach (var t in list) sum += Mathf.Max(1, t.Weight);
+            for (var i = 0; i < n; i++)
+                sum += Mathf.Max(1, weights[i]);
             var r = Random.Range(0, sum);
             var acc = 0;
-            foreach (var t in list)
+            for (var i = 0; i < n; i++)
             {
-                acc += Mathf.Max(1, t.Weight);
-                if (r < acc) return (t.ThemeId, t.ThemeDisplayName);
+                acc += Mathf.Max(1, weights[i]);
+                if (r < acc)
+                    return (ids[i], names[i]);
             }
 
-            var last = list[^1];
-            return (last.ThemeId, last.ThemeDisplayName);
+            return (ids[n - 1], names[n - 1]);
         }
 
         private void RebuildSpots()

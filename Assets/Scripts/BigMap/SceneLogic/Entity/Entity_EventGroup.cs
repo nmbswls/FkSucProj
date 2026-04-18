@@ -153,7 +153,7 @@ namespace My.Map
                     var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(mInfo.InitInfo);
                     if(record == null)
                     {
-                        Debug.Log($"event group:{Id} create member:{mId} entity:{record.Id} fail.");
+                        Debug.Log($"event group:{Id} create member:{mId} cfgId:{mInfo.InitInfo.CfgId} fail.");
                         continue;
                     }
 
