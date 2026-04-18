@@ -54,7 +54,7 @@ namespace My.MiniGame.Dream
         private void OnCloseClicked()
         {
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
-            DreamInfiltrationLogicPause.ExitMiniGame();
+            DreamInfiltrationBootstrap.ExitMiniGame();
         }
 
         public override void Setup(object data = null)
@@ -76,7 +76,7 @@ namespace My.MiniGame.Dream
         public override bool OnCancel()
         {
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
-            DreamInfiltrationLogicPause.ExitMiniGame();
+            DreamInfiltrationBootstrap.ExitMiniGame();
             return true;
         }
     }

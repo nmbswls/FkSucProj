@@ -143,7 +143,7 @@ namespace My.MiniGame.Dream
         public override bool OnCancel()
         {
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.EntryPanel);
-            DreamInfiltrationLogicPause.ExitMiniGame();
+            DreamInfiltrationBootstrap.ExitMiniGame();
             return true;
         }
 

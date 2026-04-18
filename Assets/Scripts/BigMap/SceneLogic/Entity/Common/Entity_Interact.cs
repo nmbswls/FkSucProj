@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using My.Config;
 using My.Map.Entity;
+using My.UI;
 using UnityEngine;
 using static My.GameLogicManager;
 using static UnityEditor.Rendering.CameraUI;
@@ -457,6 +458,12 @@ namespace My.Map
                                 break;
                             }
                             spawner.RefreshSpawner();
+                        }
+                        break;
+                    case LogicInteractOutput.EOutputType.OpenPanel:
+                        {
+                            string panelId = output.Param3;
+                            UIManager.Instance.ShowPanel(panelId);
                         }
                         break;
 
