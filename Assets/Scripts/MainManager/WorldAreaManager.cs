@@ -235,44 +235,29 @@ public class WorldAreaManager : MonoBehaviour
         return pos;
     }
 
-    // 世界坐标判定入口
+    // 世界坐标判定入口（须与各 Tilemap 自身 Transform 一致：用 Grid 的 WorldToCell 会在子 Tilemap 偏移后错位）
     public bool IsWorldPosWalkable(Vector3 worldPos)
     {
         if (currentRoot == null) return false;
-
-        var cell = currentRoot.Grid.WorldToCell(worldPos);
-        return IsCellWalkable(cell);
-    }
-
-    private bool IsCellInBounds(Vector3Int cell)
-    {
         if (currentRoot.TileGrounds == null || currentRoot.TileGrounds.Length == 0) return false;
-        foreach(var ground in currentRoot.TileGrounds)
+
+        var hole = currentRoot.TileHole;
+        if (hole != null)
         {
-            if(ground.cellBounds.Contains(cell)) return true;
+            var holeCell = hole.WorldToCell(worldPos);
+            if (hole.cellBounds.Contains(holeCell) && hole.GetTile(holeCell) != null)
+                return false;
         }
-        return false;
-    }
-
-    private bool IsCellBlockedByTile(Vector3Int cell)
-    {
-        return currentRoot.TileHole != null && currentRoot.TileHole.GetTile(cell) != null;
-    }
-
-    private bool IsCellWalkable(Vector3Int cell)
-    {
-        // 边界外直接不可走
-        if (!IsCellInBounds(cell)) return false;
 
         foreach (var ground in currentRoot.TileGrounds)
         {
-            // 不在行走区域
+            if (ground == null) continue;
+            var cell = ground.WorldToCell(worldPos);
+            if (!ground.cellBounds.Contains(cell)) continue;
             if (ground.GetTile(cell) != null)
-            {
                 return true;
-            }
         }
-            
+
         return false;
     }
 

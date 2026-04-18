@@ -239,6 +239,7 @@ namespace My.Map.Entity
 
             var realRecord = input as LogicEntityRecord4InteractPoint;
             realRecord.Status = CurrStatusId;
+            realRecord.DynamicVariables.Clear();
             realRecord.DynamicVariables.AddRange(DynamicVariables);
         }
     }

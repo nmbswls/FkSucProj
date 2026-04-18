@@ -67,9 +67,9 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224938
+      rid: 3582754657384529920
   - StaticId: 101
-    UniqName: 
+    UniqName: bedroom_bed
     AppearCond:
       Type: 0
       Param1: 0
@@ -89,7 +89,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224939
+      rid: 3582754657384529921
   - StaticId: 102
     UniqName: 
     AppearCond:
@@ -111,7 +111,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224940
+      rid: 3582754657384529922
   - StaticId: 103
     UniqName: 
     AppearCond:
@@ -133,7 +133,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224941
+      rid: 3582754657384529923
   - StaticId: 104
     UniqName: 
     AppearCond:
@@ -155,7 +155,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224942
+      rid: 3582754657384529924
   - StaticId: 105
     UniqName: 
     AppearCond:
@@ -177,7 +177,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224943
+      rid: 3582754657384529925
   - StaticId: 106
     UniqName: 
     AppearCond:
@@ -199,7 +199,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224944
+      rid: 3582754657384529926
   - StaticId: 107
     UniqName: 
     AppearCond:
@@ -221,8 +221,74 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224945
+      rid: 3582754657384529927
   - StaticId: 108
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 3582754657384529928
+  - StaticId: 109
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 3582754657384529929
+  - StaticId: 110
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 3582754657384529930
+  - StaticId: 111
     UniqName: 
     AppearCond:
       Type: 2
@@ -243,7 +309,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 3582754457494224946
+      rid: 3582754657384529931
   NamedPoints:
   - Name: p1
     PointType: 0
@@ -270,11 +336,52 @@ MonoBehaviour:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
+  - Name: bedroom_out_entry
+    PointType: 0
+    Position: {x: 3.002, y: 0.6, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: bedroom_in_entry
+    PointType: 0
+    Position: {x: -104.51, y: -105.49, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
   NamedPaths: []
   references:
     version: 2
     RefIds:
-    - rid: 3582754457494224938
+    - rid: 3582754657384529920
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: -104.48, y: -106.47}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: 
+        TargetNamedPoint: bedroom_out_entry
+    - rid: 3582754657384529921
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: bedroom_bed
+        Position: {x: -100, y: -100}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 3582754657384529922
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: 3.03, y: 1.18}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: 
+        TargetNamedPoint: bedroom_in_entry
+    - rid: 3582754657384529923
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -284,7 +391,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: village_01
         TargetNamedPoint: entry_bottom
-    - rid: 3582754457494224939
+    - rid: 3582754657384529924
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab3
@@ -292,7 +399,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 3582754457494224940
+    - rid: 3582754657384529925
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab2
@@ -300,7 +407,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 3582754457494224941
+    - rid: 3582754657384529926
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab1
@@ -308,7 +415,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 3582754457494224942
+    - rid: 3582754657384529927
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: lock_door_01
@@ -319,7 +426,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 3582754457494224943
+    - rid: 3582754657384529928
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: bridge_block
@@ -330,7 +437,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 3582754457494224944
+    - rid: 3582754657384529929
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hole
@@ -343,7 +450,7 @@ MonoBehaviour:
           - tp_name
           values:
           - hole_01_p
-    - rid: 3582754457494224945
+    - rid: 3582754657384529930
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hole
@@ -356,7 +463,7 @@ MonoBehaviour:
           - tp_name
           values:
           - hole_02_p
-    - rid: 3582754457494224946
+    - rid: 3582754657384529931
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: teleport

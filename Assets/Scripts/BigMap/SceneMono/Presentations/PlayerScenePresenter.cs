@@ -8,6 +8,7 @@ using Map.Scene;
 using My;
 using My.Map;
 using My.Map.Entity;
+using My.UI;
 using UnityEngine;
 using static UnityEditor.Rendering.CameraUI;
 
@@ -489,6 +490,16 @@ namespace My.Map.Scene
             }
 
             return base.GetFixedDesiredVel();
+        }
+
+        public override void OnEntityMove(long entityId, Vector2 oldPos, Vector2 newPos)
+        {
+            base.OnEntityMove(entityId, oldPos, newPos);
+
+            if((oldPos - newPos).sqrMagnitude > 5)
+            {
+                MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
+            }
         }
     }
 

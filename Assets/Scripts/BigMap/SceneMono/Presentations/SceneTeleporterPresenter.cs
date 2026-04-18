@@ -39,7 +39,7 @@ namespace My.Map.Scene
             // 原地传送
             if (string.IsNullOrEmpty(mapName) || mapName == TeleporterEntity.LogicManager.AreaManager.MapName)
             {
-                if (string.IsNullOrEmpty(namedP))
+                if (!string.IsNullOrEmpty(namedP))
                 {
                     var p = TeleporterEntity.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(namedP);
                     if (p == null)

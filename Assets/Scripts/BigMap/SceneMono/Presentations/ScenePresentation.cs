@@ -158,7 +158,7 @@ namespace My
             RefreshFadeState();
         }
 
-        public void OnEntityMove(long entityId, Vector2 oldPos, Vector2 newPos)
+        public virtual void OnEntityMove(long entityId, Vector2 oldPos, Vector2 newPos)
         {
             transform.position = newPos;
             SceneAOIManager.Instance.MoveEntity(_logic, oldPos, newPos);

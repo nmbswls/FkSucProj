@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: bedroom_bed
   m_EditorClassIdentifier: 
   CfgId: bedroom_bed
-  ShowName: "\u5165\u591C"
-  PrefabName: 
+  ShowName: "\u796D\u575B"
+  PrefabName: Home/bedroom_bed
   NameOffset: -1
   IsAlwaysActive: 0
   ShowOnWorldMap: 0
@@ -24,7 +24,7 @@ MonoBehaviour:
     Desp: 
     InteractInfos:
     - InteractId: 0
-      Label: 
+      Label: "\u5165\u591C"
       UnLabel: 
       HideWhenFail: 0
       NeedDist: 0

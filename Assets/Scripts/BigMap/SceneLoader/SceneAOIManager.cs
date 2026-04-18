@@ -497,7 +497,7 @@ public class SceneAOIManager : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"AOIManager SpawnAsync failed for {logic.Id}: {ex.Message}");
+            Debug.LogError($"AOIManager SpawnAsync failed for {logic.Id}: {ex.Message} {ex.StackTrace}");
             entry.creating = false;
             entry.canceledDuringCreate = false;
             return;
