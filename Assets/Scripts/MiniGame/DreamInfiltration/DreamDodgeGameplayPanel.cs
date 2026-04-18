@@ -9,8 +9,13 @@ namespace My.MiniGame.Dream
 {
     public class DreamDodgeGameplayPanel : PanelWithInput
     {
-        [SerializeField] private string panelId = DreamInfiltrationIds.GameplayPanel;
         [SerializeField] private CanvasGroup canvasGroup;
+
+        [Header("Prefab layout（可空，则按子节点名解析 / 再退回代码生成）")]
+        [SerializeField] private RectTransform dimOverlay;
+        [SerializeField] private RectTransform playAreaLayout;
+        [SerializeField] private RectTransform playerMarker;
+        [SerializeField] private TextMeshProUGUI hudText;
 
         private RectTransform _rootRt;
         private RectTransform _playArea;
@@ -44,6 +49,29 @@ namespace My.MiniGame.Dream
             if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
             _rootRt = GetComponent<RectTransform>();
             layer = UILayer.Overlay;
+            ResolveLayoutOrBuild();
+        }
+
+        private void ResolveLayoutOrBuild()
+        {
+            if (_layoutBuilt) return;
+
+            _playArea = playAreaLayout != null ? playAreaLayout : _rootRt.Find("PlayArea") as RectTransform;
+            _playerRt = playerMarker != null ? playerMarker : _playArea != null ? _playArea.Find("Player") as RectTransform : null;
+            var hudTr = _rootRt.Find("Hud");
+            _hudTmp = hudText != null ? hudText : hudTr != null ? hudTr.GetComponent<TextMeshProUGUI>() : null;
+
+
+            if (_playArea != null && _playerRt != null && _hudTmp != null)
+            {
+                _layoutBuilt = true;
+                var dimRt = dimOverlay != null ? dimOverlay : _rootRt.Find("Dim") as RectTransform;
+                if (dimRt != null) DreamUISpriteUtil.EnsureWhiteSprite(dimRt.GetComponent<Image>());
+                DreamUISpriteUtil.EnsureWhiteSprite(_playArea.GetComponent<Image>());
+                DreamUISpriteUtil.EnsureWhiteSprite(_playerRt.GetComponent<Image>());
+                return;
+            }
+
             BuildLayoutIfNeeded();
         }
 

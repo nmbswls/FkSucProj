@@ -3,6 +3,13 @@ using UnityEngine;
 
 namespace My.MiniGame.Dream
 {
+    public static class DreamInfiltrationIds
+    {
+        public const string EntryPanel = "DreamInfiltrationEntry";
+        public const string GameplayPanel = "DreamInfiltrationGameplay";
+        public const string SettlementPanel = "DreamInfiltrationSettlement";
+    }
+
     public static class DreamInfiltrationBootstrap
     {
         public static void OpenEntry()
