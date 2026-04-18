@@ -32,6 +32,9 @@ public class DialogueRuntime
 
     public long? SrcEntityId;
 
+    // NPC 统一入口（npc_generic_entry）播放前解析出的内容向对话 id（Peace / npc_dialog_info 等），供动态分支或命令使用
+    public string NpcResolvedPeaceDialogId;
+
     public List<long> ControlledEntityList = new();
 
 }

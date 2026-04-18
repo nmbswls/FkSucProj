@@ -2582,6 +2582,8 @@ MonoBehaviour:
     IsHome: 0
     AlwaysAlert: 0
     DefaultDisguise: 0
+    HuntingTarget: 0
+    HuntingUnlockConds: []
   currentRoot: {fileID: 0}
   SegmentProvider: {fileID: 1193154578}
 --- !u!114 &1193154578

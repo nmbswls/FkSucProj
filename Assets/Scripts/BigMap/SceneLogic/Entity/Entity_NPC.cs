@@ -538,8 +538,11 @@ namespace My.Map
             return NpcConfig.EmnityCfgId;
         }
 
-        // npc_dialog_info：同 npc_id 且条件满足时取最大 priority，否则用 PeaceDialogId
-        public string GetCurrentDialogId()
+        // 全局 NPC 交谈统一入口对话 id；存在 TbDialogMetaInfo 时由入口生成菜单与分支
+        public const string NpcDialogHubId = "npc_generic_entry";
+
+        // npc_dialog_info：同 npc_id 且条件满足时取最大 priority，否则用 PeaceDialogId（内容向 id，不经统一入口）
+        public string ResolveNpcPeaceDialogId()
         {
             string fallback = NpcConfig != null ? NpcConfig.PeaceDialogId : string.Empty;
             if (CfgMgr.Cfgs == null || LogicManager == null || string.IsNullOrEmpty(CfgId))
@@ -576,6 +579,22 @@ namespace My.Map
 
             return string.IsNullOrEmpty(bestDialogId) ? fallback : bestDialogId;
         }
+
+        // PlayDialog 使用的 id：有内容且配置了统一入口 meta 时走 NpcDialogHubId，否则直接走解析结果
+        public string GetNpcDialogEntryId()
+        {
+            var resolved = ResolveNpcPeaceDialogId();
+            if (string.IsNullOrEmpty(resolved))
+                return string.Empty;
+
+            if (CfgMgr.Cfgs != null && CfgMgr.Cfgs.TbDialogMetaInfo.GetOrDefault(NpcDialogHubId) != null)
+                return NpcDialogHubId;
+
+            return resolved;
+        }
+
+        // 与 GetNpcDialogEntryId 一致（兼容旧调用）
+        public string GetCurrentDialogId() => GetNpcDialogEntryId();
     }
 }
 
