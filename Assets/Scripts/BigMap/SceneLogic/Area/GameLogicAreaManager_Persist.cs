@@ -77,6 +77,10 @@ namespace My.Map.Logic
                 {
                     entityInstIdPersist = 0;
                 }
+                else if (IsFishingSpotRefreshRuntime(kv.Key, rt))
+                {
+                    entityInstIdPersist = 0;
+                }
 
                 d.RefreshStates.Add(new RefreshRuntimePersist
                 {
@@ -91,13 +95,14 @@ namespace My.Map.Logic
             foreach (var kv in Record2RefreshInfo)
             {
                 if (Repo.Records.TryGetValue(kv.Key, out var linkRec) &&
-                    linkRec.EntityType == EEntityType.SavePoint)
+                    (linkRec.EntityType == EEntityType.SavePoint || linkRec.EntityType == EEntityType.FishingSpot))
                 {
                     continue;
                 }
 
                 if (TryGetRefreshInfoByStaticId(kv.Value, out var refreshDef) &&
-                    IsSavePointRefreshInfo(refreshDef))
+                    (IsSavePointRefreshInfo(refreshDef) ||
+                     (refreshDef.InitInfo != null && refreshDef.InitInfo.EntityType == EEntityType.FishingSpot)))
                 {
                     continue;
                 }
@@ -128,6 +133,11 @@ namespace My.Map.Logic
                     continue;
                 }
 
+                if (rec.EntityType == EEntityType.FishingSpot)
+                {
+                    continue;
+                }
+
                 d.EntityRecords.Add(rec);
             }
 
@@ -152,6 +162,11 @@ namespace My.Map.Logic
                 {
                     entityInstId = 0;
                 }
+                else if (TryGetRefreshInfoByStaticId(r.StaticId, out var fishDef) &&
+                         IsFishingSpotRefreshInfo(fishDef))
+                {
+                    entityInstId = 0;
+                }
 
                 var rt = new SceneRefreshInfoRuntime
                 {
@@ -168,7 +183,7 @@ namespace My.Map.Logic
             foreach (var kv in data.RecordToRefreshStaticId)
             {
                 if (TryGetRefreshInfoByStaticId(kv.Value, out var refreshDef) &&
-                    IsSavePointRefreshInfo(refreshDef))
+                    (IsSavePointRefreshInfo(refreshDef) || IsFishingSpotRefreshInfo(refreshDef)))
                 {
                     continue;
                 }
@@ -191,6 +206,11 @@ namespace My.Map.Logic
                     }
 
                     if (rec.EntityType == EEntityType.SavePoint)
+                    {
+                        continue;
+                    }
+
+                    if (rec.EntityType == EEntityType.FishingSpot)
                     {
                         continue;
                     }

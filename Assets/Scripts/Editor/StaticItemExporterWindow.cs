@@ -410,6 +410,28 @@ public class StaticItemExporterWindow : EditorWindow
 
         if (string.IsNullOrEmpty(path)) return;
 
+        var fishingMissingUniq = new List<string>();
+        foreach (var dynamicGen in dynamicGenerator)
+        {
+            var ri = dynamicGen.RefreshInfo;
+            if (ri?.InitInfo != null &&
+                ri.InitInfo.EntityType == EEntityType.FishingSpot &&
+                string.IsNullOrEmpty(ri.UniqName))
+            {
+                fishingMissingUniq.Add(dynamicGen != null ? dynamicGen.gameObject.name : "(null generator)");
+            }
+        }
+
+        if (fishingMissingUniq.Count > 0)
+        {
+            var detail = string.Join("\n", fishingMissingUniq);
+            const string title = "Map export blocked";
+            var body = "FishingSpot refresh entries require a non-empty UniqName (player save key). Missing on:\n\n" + detail;
+            EditorUtility.DisplayDialog(title, body, "OK");
+            Debug.LogError("[MapExport] " + body.Replace("\n", " | "));
+            return;
+        }
+
         var asset = ScriptableObject.CreateInstance<MapExportDatabase>();
         asset.Buckets = new List<MapExportDatabase.ChunkExportItem>();
 

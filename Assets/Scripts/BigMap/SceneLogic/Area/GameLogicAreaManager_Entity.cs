@@ -203,6 +203,16 @@ namespace My.Map.Logic
                     }
                 }
             }
+
+            if (refreshInfo.InitInfo != null &&
+                refreshInfo.InitInfo.EntityType == EEntityType.FishingSpot &&
+                string.IsNullOrEmpty(refreshInfo.UniqName))
+            {
+                Debug.LogError(
+                    $"[FishingSpot] StaticId={refreshInfo.StaticId}: UniqName is empty. " +
+                    "Fishing spots need a non-empty UniqName for save/state; fix the map export or refresh config.");
+                return;
+            }
             
             LogicEntityRecord record = CreateEntityRecordFromInitInfo(refreshInfo.InitInfo);
 
@@ -210,6 +220,11 @@ namespace My.Map.Logic
             {
                 Debug.Log("HandleOneRefreshInfo err not good");
                 return;
+            }
+
+            if (record is LogicEntityRecord4FishingSpot fishRec)
+            {
+                fishRec.UniqName = refreshInfo.UniqName;
             }
 
             RegisterEntityRecord(record);
@@ -265,6 +280,21 @@ namespace My.Map.Logic
             }
 
             return TryGetRefreshInfoByStaticId(staticId, out var ri) && IsSavePointRefreshInfo(ri);
+        }
+
+        internal static bool IsFishingSpotRefreshInfo(DynamicEntityRefreshInfo ri)
+        {
+            return ri?.InitInfo != null && ri.InitInfo.EntityType == EEntityType.FishingSpot;
+        }
+
+        internal bool IsFishingSpotRefreshRuntime(int staticId, SceneRefreshInfoRuntime rt)
+        {
+            if (rt?.LinkedRefreshInfo != null)
+            {
+                return IsFishingSpotRefreshInfo(rt.LinkedRefreshInfo);
+            }
+
+            return TryGetRefreshInfoByStaticId(staticId, out var ri) && IsFishingSpotRefreshInfo(ri);
         }
 
         private void EnsureLinkedRefreshOnRuntime(int staticId, SceneRefreshInfoRuntime rt)
@@ -451,6 +481,11 @@ namespace My.Map.Logic
                         realRecord.SizeX = initInfo4SimpleBlock.SizeX;
                         realRecord.SizeY = initInfo4SimpleBlock.SizeY;
                         record = realRecord;
+                        break;
+                    }
+                case EEntityType.FishingSpot:
+                    {
+                        record = new LogicEntityRecord4FishingSpot();
                         break;
                     }
                 default:

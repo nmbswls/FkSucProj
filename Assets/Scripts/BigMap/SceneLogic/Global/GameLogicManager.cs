@@ -21,7 +21,6 @@ using UnityEngine;
 using static MapSceneEffectManager;
 using static My.Map.Fight.FightStruct;
 using static My.MapExport.MapExportDatabase;
-using static UnityEditor.PlayerSettings;
 
 namespace My
 {
@@ -84,6 +83,20 @@ namespace My
 
 
         public int TimePeriod;
+
+        /// <summary>
+        /// 世界结算日；推进时触发垂钓点按配置补满等。
+        /// </summary>
+        public int SettlementDayIndex { get; private set; }
+
+        /// <summary>
+        /// 结算日 +1，并按 Luban 垂钓配置为各点补鱼次数。
+        /// </summary>
+        public void AdvanceSettlementDayAndApplyFishingRules()
+        {
+            SettlementDayIndex++;
+            playerDataManager?.ApplyFishingRestockForSettlement(SettlementDayIndex);
+        }
 
 
         /// <summary>
@@ -562,6 +575,11 @@ namespace My
                         newEntity = new LogicEntitySavePoint(this, record.Id, record.CfgId, record.Position, record);
                     }
                     break;
+                case EEntityType.FishingSpot:
+                    {
+                        newEntity = new FishingSpotLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                    }
+                    break;
                 default:
                     {
                         ;
@@ -807,6 +825,11 @@ namespace My
                 AlertVal = saveData.GlobalRuntime.AlertVal;
                 WantedManager.CurrentWantedVal = saveData.GlobalRuntime.WantedScaledVal;
                 WantedManager.LastWantedTime = saveData.GlobalRuntime.WantedLastTime;
+                SettlementDayIndex = saveData.GlobalRuntime.SettlementDayIndex;
+            }
+            else
+            {
+                SettlementDayIndex = 0;
             }
         }
 
@@ -889,6 +912,7 @@ namespace My
             data.GlobalRuntime.AlertVal = AlertVal;
             data.GlobalRuntime.WantedScaledVal = WantedManager != null ? WantedManager.CurrentWantedVal : 0;
             data.GlobalRuntime.WantedLastTime = WantedManager != null ? WantedManager.LastWantedTime : 0f;
+            data.GlobalRuntime.SettlementDayIndex = SettlementDayIndex;
 
             data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
             if (AreaManager != null && !string.IsNullOrEmpty(AreaManager.MapName))
@@ -913,6 +937,8 @@ namespace My
             }
 
             data.NextLogicEntityIdHint = maxEntityId;
+
+            playerDataManager?.ApplyRuntimeToSaveData(data);
 
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.PlayerBuffs.Clear();

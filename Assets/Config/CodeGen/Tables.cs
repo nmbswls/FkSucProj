@@ -35,6 +35,8 @@ public partial class Tables
     public demo.TbWorldMapGlobal TbWorldMapGlobal {get; }
     public demo.TbWorldMapBigMapLayer TbWorldMapBigMapLayer {get; }
     public demo.TbDreamInfiltrationSpot TbDreamInfiltrationSpot {get; }
+    public demo.TbFishingSpot TbFishingSpot {get; }
+    public demo.TbFishingSpotFish TbFishingSpotFish {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -59,6 +61,8 @@ public partial class Tables
         TbWorldMapGlobal = new demo.TbWorldMapGlobal(loader("demo_tbworldmapglobal"));
         TbWorldMapBigMapLayer = new demo.TbWorldMapBigMapLayer(loader("demo_tbworldmapbigmaplayer"));
         TbDreamInfiltrationSpot = new demo.TbDreamInfiltrationSpot(loader("demo_tbdreaminfiltrationspot"));
+        TbFishingSpot = new demo.TbFishingSpot(loader("demo_tbfishingspot"));
+        TbFishingSpotFish = new demo.TbFishingSpotFish(loader("demo_tbfishingspotfish"));
         ResolveRef();
     }
     
@@ -85,6 +89,8 @@ public partial class Tables
         TbWorldMapGlobal.ResolveRef(this);
         TbWorldMapBigMapLayer.ResolveRef(this);
         TbDreamInfiltrationSpot.ResolveRef(this);
+        TbFishingSpot.ResolveRef(this);
+        TbFishingSpotFish.ResolveRef(this);
     }
 }
 

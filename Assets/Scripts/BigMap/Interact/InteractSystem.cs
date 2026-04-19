@@ -116,11 +116,10 @@ public class SceneInteractSystem
             return false;
         }
 
-        if(MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
+        if(FishingMiniGamePanel.Instance != null)
         {
             return false;
         }
-
 
         if(LootPointUIPanel.Instance != null)
         {

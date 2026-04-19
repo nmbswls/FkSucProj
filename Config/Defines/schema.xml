@@ -54,16 +54,6 @@
         <var name="param6" type="string" comment="p6"/>
     </bean>
 
-    <!-- 入梦副玩法：入口点位；主题用三列平行 list（与 drop_bundle 等表一致，Excel 用 ; 分隔） -->
-    <bean name="DreamInfiltrationSpot">
-        <var name="spot_id" type="string" comment="点位 id"/>
-        <var name="display_name" type="string" comment="显示名"/>
-        <var name="anchor_x" type="float" comment="背景上归一化 X 0~1"/>
-        <var name="anchor_y" type="float" comment="背景上归一化 Y 0~1"/>
-        <var name="unlock_conds" type="(list#sep=;),CommonCheckCond" comment="解锁条件，空则视为无限制"/>
-        <var name="theme_ids" type="(list#sep=;),string" comment="主题 id，与 theme_display_names、theme_weight_values 同序"/>
-        <var name="theme_display_names" type="(list#sep=;),string" comment="主题显示名"/>
-        <var name="theme_weight_values" type="(list#sep=;),int" comment="权重"/>
-    </bean>
+    <!-- DreamInfiltrationSpot、FishingSpot、FishingSpotFish 均在 xlsx 表头定义（read_schema_from_file）；鱼种行通过 spot_id 关联钓点 id -->
 
 </module>

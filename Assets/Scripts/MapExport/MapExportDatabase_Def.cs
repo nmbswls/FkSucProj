@@ -214,6 +214,12 @@ namespace My.MapExport
     }
 
     [Serializable]
+    public class EntityInitInfo4FishingSpot : EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.FishingSpot;
+    }
+
+    [Serializable]
     public class EntityInitInfo4PatrolGroup : EntityInitInfo
     {
         public enum ELoopMode

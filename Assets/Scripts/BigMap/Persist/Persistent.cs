@@ -156,5 +156,14 @@ namespace My.Map.Logic
         public float SizeX;
         public float SizeY;
     }
+
+    [Serializable]
+    public class LogicEntityRecord4FishingSpot : LogicEntityRecord
+    {
+        /// <summary>
+        /// 与 DynamicEntityRefreshInfo.UniqName 一致，用于玩家档键。
+        /// </summary>
+        public string UniqName = string.Empty;
+    }
 }
 

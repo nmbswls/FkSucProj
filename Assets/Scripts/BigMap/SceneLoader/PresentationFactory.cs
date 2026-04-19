@@ -77,6 +77,17 @@ namespace My
                     {
                         return $"Prefab/Presentations/GatherPoint/{cfgId}";
                     }
+                case EEntityType.FishingSpot:
+                    {
+                        var spotCfg = CfgMgr.Cfgs != null
+                            ? CfgMgr.Cfgs.TbFishingSpot.GetOrDefault(cfgId)
+                            : null;
+                        if(spotCfg == null)
+                        {
+                            return string.Empty;
+                        }
+                        return $"Prefab/Presentations/FishingSpot/{spotCfg.PrefabPath}";
+                    }
                 case EEntityType.AttractPoint:
                     {
                         return $"Prefab/Presentations/AttractPoint/{cfgId}";

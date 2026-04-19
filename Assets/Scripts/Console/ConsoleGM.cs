@@ -235,6 +235,14 @@ public class ConsoleGM : MonoBehaviour
                 MainGameManager.Instance.gameLogicManager.AddNewEntityRecord(rec);
             });
 
+        Register("fish_settlement", "推进一次世界结算日并刷新垂钓点容量（按 Luban restock_every_n_days）",
+            null,
+            args =>
+            {
+                MainGameManager.Instance.gameLogicManager.AdvanceSettlementDayAndApplyFishingRules();
+                Log("fish_settlement: day=" + MainGameManager.Instance.gameLogicManager.SettlementDayIndex);
+            });
+
         Register("hptest", "创建测试用hide point",
             null,
             args =>

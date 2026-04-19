@@ -34,35 +34,35 @@ public sealed partial class DreamInfiltrationSpot : Luban.BeanBase
     }
 
     /// <summary>
-    /// 点位 id
+    /// spot_id
     /// </summary>
     public string SpotId;
     /// <summary>
-    /// 显示名
+    /// display_name
     /// </summary>
     public string DisplayName;
     /// <summary>
-    /// 背景上归一化 X 0~1
+    /// anchor_x
     /// </summary>
     public float AnchorX;
     /// <summary>
-    /// 背景上归一化 Y 0~1
+    /// anchor_y
     /// </summary>
     public float AnchorY;
     /// <summary>
-    /// 解锁条件，空则视为无限制
+    /// unlock_conds
     /// </summary>
     public System.Collections.Generic.List<demo.CommonCheckCond> UnlockConds;
     /// <summary>
-    /// 主题 id，与 theme_display_names、theme_weight_values 同序
+    /// theme_ids
     /// </summary>
     public System.Collections.Generic.List<string> ThemeIds;
     /// <summary>
-    /// 主题显示名
+    /// theme_display_names
     /// </summary>
     public System.Collections.Generic.List<string> ThemeDisplayNames;
     /// <summary>
-    /// 权重
+    /// theme_weight_values
     /// </summary>
     public System.Collections.Generic.List<int> ThemeWeightValues;
    

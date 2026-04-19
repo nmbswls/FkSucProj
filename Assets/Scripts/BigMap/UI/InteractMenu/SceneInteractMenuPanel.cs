@@ -415,7 +415,7 @@ namespace My.UI
         {
             refreshIntent = new()
             {
-                HappenTime = LogicTime.time,
+                HappenTime = Time.time,
                 Interactables = interactables
             };
         }
@@ -427,7 +427,7 @@ namespace My.UI
 
             if(this.ActiveInteractableList.Count != 0)
             {
-                if(LogicTime.time - refreshIntent.HappenTime < 0.1f)
+                if(Time.time - refreshIntent.HappenTime < 0.1f)
                 {
                     return;
                 }

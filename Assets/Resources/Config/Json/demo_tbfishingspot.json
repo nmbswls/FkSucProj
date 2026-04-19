@@ -1,0 +1,30 @@
+[
+  {
+    "id": "fish_spot_base_01",
+    "prefab_path": "fish_spot_small",
+    "display_name": "Demo Pond",
+    "capacity": 5,
+    "restock_every_n_days": 3
+  },
+  {
+    "id": "fish_spot_base_02",
+    "prefab_path": "fish_spot_small",
+    "display_name": "Demo Pond",
+    "capacity": 5,
+    "restock_every_n_days": 3
+  },
+  {
+    "id": "fish_spot_base_03",
+    "prefab_path": "fish_spot_small",
+    "display_name": "Demo Pond",
+    "capacity": 5,
+    "restock_every_n_days": 3
+  },
+  {
+    "id": "fish_spot_base_04",
+    "prefab_path": "fish_spot_small",
+    "display_name": "Demo Pond",
+    "capacity": 5,
+    "restock_every_n_days": 3
+  }
+]

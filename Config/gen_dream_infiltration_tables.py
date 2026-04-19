@@ -1,4 +1,4 @@
-# 入梦入口点位：生成 dream_infiltration.xlsx 并在 __tables__.xlsx 注册 TbDreamInfiltrationSpot。
+# 入梦入口点位：生成 dream_infiltration.xlsx 并在 __tables__.xlsx 注册 TbDreamInfiltrationSpot（read_schema_from_file=true，结构见表头）。
 # 在 Config 目录执行: python gen_dream_infiltration_tables.py 后运行 gen.bat。
 from pathlib import Path
 
@@ -115,7 +115,7 @@ def patch_tables():
         ws.cell(target_row, 1, None)
     ws.cell(target_row, 2, full)
     ws.cell(target_row, 3, "demo.DreamInfiltrationSpot")
-    ws.cell(target_row, 4, False)
+    ws.cell(target_row, 4, True)
     ws.cell(target_row, 5, f"{SHEET}@dream_infiltration.xlsx")
     ws.cell(target_row, 6, None)
     ws.cell(target_row, 7, None)

@@ -79,6 +79,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = "FishingMiniGamePanel",
+                resourcePath = "UI/Prefabs/FishingMiniGamePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "SceneMask",
                 resourcePath = "UI/Prefabs/SceneMask",
                 defaultLayer = UILayer.Scene,

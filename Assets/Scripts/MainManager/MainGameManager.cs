@@ -210,7 +210,7 @@ namespace My
 
             if (gameLogicManager.MainStage == GameLogicManager.EMainGameStage.Running)
             {
-                interactSystem.Tick(LogicTime.deltaTime);
+                interactSystem.Tick(Time.deltaTime);
             }
 
 

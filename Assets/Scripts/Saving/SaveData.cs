@@ -40,6 +40,8 @@ namespace My.Saving
         public float MaxHP;
 
         public Dictionary<string, bool> GlobalSwitchMap = new();
+
+        public Dictionary<string, FishingSpotRuntimeSave> FishingSpotByUniqName = new();
     }
 
     [Serializable]
@@ -56,6 +58,22 @@ namespace My.Saving
         public int AlertVal;
         public int WantedScaledVal;
         public float WantedLastTime;
+
+        /// <summary>
+        /// 世界结算日计数；每推进一次触发垂钓点按 N 日补满等逻辑。
+        /// </summary>
+        public int SettlementDayIndex;
+    }
+
+    /// <summary>
+    /// 单点垂钓存档（键为地图刷新项 UniqName）
+    /// </summary>
+    [Serializable]
+    public class FishingSpotRuntimeSave
+    {
+        public string CfgId;
+        public int Remaining;
+        public int LastRestockSettlementDayIndex;
     }
 
     [Serializable]
@@ -133,6 +151,7 @@ namespace My.Saving
             data.Meta ??= new MetaData();
             data.PlayerData ??= new PlayerData();
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
+            data.PlayerData.FishingSpotByUniqName ??= new Dictionary<string, FishingSpotRuntimeSave>();
             data.Inventory ??= new List<InventoryItemData>();
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.GlobalRuntime ??= new GlobalRuntimePersistData();

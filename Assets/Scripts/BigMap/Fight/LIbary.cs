@@ -525,6 +525,12 @@ namespace My.Map.Entity
                     var ab = CreateQueenCounterPayback();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                {
+                    //var ab = CreatePlayerPutDown();
+                    //_abilityDict[ab.Id] = ab;
+                }
+
                 {
                     var ab = CreatePullAllEnemy();
                     _abilityDict[ab.Id] = ab;
@@ -3065,6 +3071,13 @@ namespace My.Map.Entity
                 },
             };
             spec.Phases.Add(postPhase);
+            return spec;
+        }
+
+
+        private static MapAbilitySpecConfig CreatePlayerPutDown()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
             return spec;
         }
 

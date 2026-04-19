@@ -1,0 +1,138 @@
+[
+  {
+    "line_id": 1,
+    "spot_id": "fish_spot_base_01",
+    "fish_item_id": "banana",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "line_id": 2,
+    "spot_id": "fish_spot_base_01",
+    "fish_item_id": "qiezi",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "weight": 60
+  },
+  {
+    "line_id": 3,
+    "spot_id": "fish_spot_base_02",
+    "fish_item_id": "banana",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "line_id": 4,
+    "spot_id": "fish_spot_base_02",
+    "fish_item_id": "qiezi",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "weight": 60
+  },
+  {
+    "line_id": 5,
+    "spot_id": "fish_spot_base_03",
+    "fish_item_id": "banana",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "line_id": 6,
+    "spot_id": "fish_spot_base_03",
+    "fish_item_id": "qiezi",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "weight": 60
+  },
+  {
+    "line_id": 7,
+    "spot_id": "fish_spot_base_04",
+    "fish_item_id": "banana",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "line_id": 8,
+    "spot_id": "fish_spot_base_04",
+    "fish_item_id": "qiezi",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "weight": 60
+  }
+]

@@ -9,6 +9,7 @@ using My.Player.Bag;
 using My.Quest;
 using My.Saving;
 using UnityEngine;
+using System.Linq;
 
 namespace My.Player
 {
@@ -42,6 +43,11 @@ namespace My.Player
         public DialogTriggerSystem DialogTriggerSystem { get; private set; }
 
         public PlayerFuncOpenSystem FuncOpenSystem { get; private set; }
+
+        /// <summary>
+        /// 垂钓点运行时状态（键为地图 UniqName）；存盘写入 SaveData.PlayerData.FishingSpotByUniqName。
+        /// </summary>
+        private readonly Dictionary<string, FishingSpotRuntimeSave> _fishingRuntime = new();
 
 
         /// <summary>
@@ -159,6 +165,112 @@ namespace My.Player
             QuestSystem.InitSystem(logicManager, savingData);
             DialogTriggerSystem.InitSystem(logicManager, savingData);
             FuncOpenSystem.InitSystem(logicManager, savingData);
+
+            _fishingRuntime.Clear();
+            if (savingData?.PlayerData?.FishingSpotByUniqName != null)
+            {
+                foreach (var kv in savingData.PlayerData.FishingSpotByUniqName)
+                {
+                    _fishingRuntime[kv.Key] = new FishingSpotRuntimeSave
+                    {
+                        CfgId = kv.Value.CfgId,
+                        Remaining = kv.Value.Remaining,
+                        LastRestockSettlementDayIndex = kv.Value.LastRestockSettlementDayIndex,
+                    };
+                }
+            }
+        }
+
+        public void ApplyRuntimeToSaveData(SaveData data)
+        {
+            if (data.PlayerData == null)
+            {
+                data.PlayerData = new PlayerData();
+            }
+
+            data.PlayerData.GlobalSwitchMap.Clear();
+            foreach (var kv in GlobalSwitchMap)
+            {
+                data.PlayerData.GlobalSwitchMap[kv.Key] = kv.Value;
+            }
+
+            data.PlayerData.FishingSpotByUniqName.Clear();
+            foreach (var kv in _fishingRuntime)
+            {
+                data.PlayerData.FishingSpotByUniqName[kv.Key] = new FishingSpotRuntimeSave
+                {
+                    CfgId = kv.Value.CfgId,
+                    Remaining = kv.Value.Remaining,
+                    LastRestockSettlementDayIndex = kv.Value.LastRestockSettlementDayIndex,
+                };
+            }
+        }
+
+        public FishingSpotRuntimeSave GetOrCreateFishingSpotState(string uniqName, string cfgId, int settlementDayIndex)
+        {
+            if (string.IsNullOrEmpty(uniqName))
+            {
+                return null;
+            }
+
+            if (_fishingRuntime.TryGetValue(uniqName, out var existing))
+            {
+                return existing;
+            }
+
+            var cfg = CfgMgr.Cfgs.TbFishingSpot.GetOrDefault(cfgId);
+            int cap = cfg != null ? cfg.Capacity : 0;
+            var created = new FishingSpotRuntimeSave
+            {
+                CfgId = cfgId,
+                Remaining = cap,
+                LastRestockSettlementDayIndex = settlementDayIndex,
+            };
+            _fishingRuntime[uniqName] = created;
+            return created;
+        }
+
+        public FishingSpotRuntimeSave GetFishingSpotStateOrNull(string uniqName)
+        {
+            if (string.IsNullOrEmpty(uniqName))
+            {
+                return null;
+            }
+
+            _fishingRuntime.TryGetValue(uniqName, out var s);
+            return s;
+        }
+
+        public void TryConsumeOneFishingUse(string uniqName)
+        {
+            if (string.IsNullOrEmpty(uniqName))
+            {
+                return;
+            }
+
+            if (_fishingRuntime.TryGetValue(uniqName, out var st))
+            {
+                st.Remaining = Mathf.Max(0, st.Remaining - 1);
+            }
+        }
+
+        public void ApplyFishingRestockForSettlement(int newSettlementDayIndex)
+        {
+            foreach (var kv in _fishingRuntime.ToList())
+            {
+                var cfg = CfgMgr.Cfgs.TbFishingSpot.GetOrDefault(kv.Value.CfgId);
+                if (cfg == null)
+                {
+                    continue;
+                }
+
+                int n = Mathf.Max(1, cfg.RestockEveryNDays);
+                if (newSettlementDayIndex - kv.Value.LastRestockSettlementDayIndex >= n)
+                {
+                    kv.Value.Remaining = cfg.Capacity;
+                    kv.Value.LastRestockSettlementDayIndex = newSettlementDayIndex;
+                }
+            }
         }
 
         public void InitBagInfo()
