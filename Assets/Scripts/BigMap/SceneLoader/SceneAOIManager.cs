@@ -1057,5 +1057,20 @@ public class SceneAOIManager : MonoBehaviour
         return set;
     }
 
-    
+    /// <summary>
+    /// 本地传送黑屏期间：立即按当前玩家位置跑一轮动态/静态 AOI，不等待下一帧 Update。
+    /// </summary>
+    public void PrewarmTickAtPlayerOnce(float dt)
+    {
+        if (!WorldAreaManager.Instance.IsWorldLoaded)
+            return;
+        if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null)
+            return;
+        if (string.IsNullOrEmpty(MapName))
+            return;
+        var pos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
+        RefreshDynamicAOI(pos, dt);
+        RefreshStaticChunks(pos);
+    }
+
 }

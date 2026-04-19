@@ -253,7 +253,7 @@ namespace My
                 UIManager.Instance.FadeShowBlack(fadeToBlackDuration);
                 yield return new WaitForSecondsRealtime(fadeToBlackDuration + 0.05f);
                 req.CommitTeleport();
-                yield return null;
+                yield return CoPrewarmLocalRoomAfterTeleportCommit();
                 UIManager.Instance.FadeHideBlack(fadeFromBlackDuration);
             }
             finally
@@ -262,6 +262,36 @@ namespace My
                 if (gameLogicManager != null)
                     gameLogicManager.ReleaseLocalRoomTeleportLock();
             }
+        }
+
+        /// <summary>
+        /// Commit 后黑屏内：加速推进 AreaManager 生命周期队列，并每帧驱动 AOI，直到 presenter 异步创建完毕或超时。
+        /// </summary>
+        private IEnumerator CoPrewarmLocalRoomAfterTeleportCommit()
+        {
+            const float stepDt = 1f / 60f;
+            const int lifecyclePumpsPerYield = 32;
+            const float wallSeconds = 14f;
+            var t0 = Time.realtimeSinceStartup;
+
+            while (Time.realtimeSinceStartup - t0 < wallSeconds)
+            {
+                if (gameLogicManager != null && gameLogicManager.AreaManager != null)
+                    gameLogicManager.AreaManager.AdvanceLifecycleForTeleportPrewarm(stepDt, lifecyclePumpsPerYield);
+
+                if (AOIManager != null)
+                    AOIManager.PrewarmTickAtPlayerOnce(stepDt);
+
+                bool aoiIdle = AOIManager != null && AOIManager.CheckNoLoading();
+                bool logicIdle = gameLogicManager == null || gameLogicManager.AreaManager == null ||
+                                 !gameLogicManager.AreaManager.HasPendingAreaLifecycleQueues();
+                if (aoiIdle && logicIdle)
+                    yield break;
+
+                yield return null;
+            }
+
+            Debug.LogWarning("LocalRoomTeleport prewarm: timeout waiting for AOI / area queues.");
         }
 
     }

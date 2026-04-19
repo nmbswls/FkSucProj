@@ -886,7 +886,16 @@ namespace My.Map.Logic
             return newEnt;
         }
 
+        public bool HasPendingAreaLifecycleQueues()
+        {
+            return spawnEntityQ.Count > 0 || despawnEntityQ.Count > 0 || wakeEntityQ.Count > 0 || sleepEntityQ.Count > 0;
+        }
 
+        public void AdvanceLifecycleForTeleportPrewarm(float dt, int iterations)
+        {
+            for (int i = 0; i < iterations; i++)
+                TickEntityLifeCycle(dt);
+        }
 
     }
 }
