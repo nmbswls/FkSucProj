@@ -334,7 +334,7 @@ public class SceneAOIManager : MonoBehaviour
         // 逻辑层可自行触发状态事件；可选：若已在AOI，Presenter位置会通过事件或下一帧刷新
     }
 
-    private void RefreshDynamicAOI(Vector3 playerPos, float dt)
+    private void RefreshDynamicAOI(Vector3 playerPos, float dt, bool noEnterGrace = false)
     {
         Vector2 center = playerPos;
         float innerR = aoiRadius;
@@ -390,7 +390,7 @@ public class SceneAOIManager : MonoBehaviour
                 if (insideInner)
                 {
                     entry.enterTimer += dt;
-                    if (entry.enterTimer >= enterGraceSeconds)
+                    if (noEnterGrace || entry.enterTimer >= enterGraceSeconds)
                     {
                         // === 修改: 进入后如无展示且不在创建中则异步创建 ===
                         entry.isShown = true;
@@ -1069,7 +1069,7 @@ public class SceneAOIManager : MonoBehaviour
         if (string.IsNullOrEmpty(MapName))
             return;
         var pos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
-        RefreshDynamicAOI(pos, dt);
+        RefreshDynamicAOI(pos, dt, noEnterGrace : true);
         RefreshStaticChunks(pos);
     }
 
