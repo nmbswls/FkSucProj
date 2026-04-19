@@ -395,7 +395,7 @@ namespace My.Map.Unit
                 return;
             }
 
-            _brain.NpcEntity.TryMoveFollow(srcEntity, 0, Vector2.zero, stopDistance:0.25f);
+            _brain.NpcEntity.TryMoveFollow(srcEntity, 0, Vector2.zero, stopDistance:0.25f, moveSpeedRate: 0.4f);
         } 
 
         public override void OnExit()

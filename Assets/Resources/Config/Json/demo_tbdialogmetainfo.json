@@ -108,5 +108,19 @@
     "show_priority": 0,
     "custom_variables": [],
     "cutscene_id": ""
+  },
+  {
+    "dialog_id": "qigai_01",
+    "is_auto_trigger": false,
+    "only_once": false,
+    "json_data_name": "qigai_01",
+    "need_map": "",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 0,
+    "custom_variables": [],
+    "cutscene_id": ""
   }
 ]

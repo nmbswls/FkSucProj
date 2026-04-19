@@ -238,11 +238,16 @@ namespace My.UI
         }
 
         // 选择系统
-        public void StartChoices(List<string> options, Action<int> onSelected, float limitTime = 0)
+        public void StartChoices(List<string> options, Action<int> onSelected, float limitTime = 0, string overrideText = null)
         {
             ShowNextIndicator(false); // 弹出选项时隐藏下一步指示器
             showingChoices = true;
             onChoiceSelected = onSelected;
+
+            if(!string.IsNullOrEmpty(overrideText))
+            {
+                contentText.text = overrideText;
+            }
 
             choiceLimitTime = limitTime;
             choiceLimitTimeLeft = limitTime;

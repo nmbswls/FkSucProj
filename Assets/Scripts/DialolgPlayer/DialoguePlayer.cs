@@ -32,9 +32,6 @@ public class DialogueRuntime
 
     public long? SrcEntityId;
 
-    // NPC 统一入口（npc_generic_entry）播放前解析出的内容向对话 id（Peace / npc_dialog_info 等），供动态分支或命令使用
-    public string NpcResolvedPeaceDialogId;
-
     public List<long> ControlledEntityList = new();
 
 }
@@ -390,11 +387,8 @@ public partial class DialoguePlayer : MonoBehaviour
             Debug.LogWarning("[Dialog] ResolveNpcPeaceDialogId: SrcEntity is not NPC.");
             return null;
         }
-
-        var id = npc.ResolveNpcPeaceDialogId();
-        if (string.IsNullOrEmpty(id))
-            Debug.LogWarning("[Dialog] ResolveNpcPeaceDialogId: resolved dialog id is empty.");
-        return string.IsNullOrEmpty(id) ? null : id;
+        
+        return NpcUnitLogicEntity.NpcDialogHubId;
     }
 
     // 选项要求切换对话资源时：结束当前对话并 PlayDialog
@@ -418,13 +412,9 @@ public partial class DialoguePlayer : MonoBehaviour
         }
 
         var srcId = runtimeRef?.SrcEntityId;
-        var peaceCtx = runtimeRef != null && !string.IsNullOrEmpty(runtimeRef.NpcResolvedPeaceDialogId)
-            ? runtimeRef.NpcResolvedPeaceDialogId
-            : null;
-
         ui?.PrepareForDialogSegmentSwitch();
         Stop();
-        mgr.PlayDialog(targetDialogId, srcId, pause: false, onDialogEnd: null, npcResolvedPeaceDialogId: peaceCtx);
+        mgr.PlayDialog(targetDialogId, srcId, pause: false, onDialogEnd: null);
         return true;
     }
 
@@ -800,6 +790,7 @@ public partial class DialoguePlayer : MonoBehaviour
                         break;
                     }
 
+
                     ui.StartChoices(
                         options,
                         index =>
@@ -815,7 +806,7 @@ public partial class DialoguePlayer : MonoBehaviour
                             }
                             SafeComplete();
                         },
-                        dyn.TimeLimit);
+                        dyn.TimeLimit, overrideText:"entry");
                     break;
                 }
 

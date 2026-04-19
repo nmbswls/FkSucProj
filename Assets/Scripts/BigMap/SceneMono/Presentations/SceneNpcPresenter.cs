@@ -250,11 +250,6 @@ namespace My.Map.Scene
                 return false;
             }
 
-            if (string.IsNullOrEmpty(NpcEntity.GetNpcDialogEntryId()))
-            {
-                return false;
-            }
-
             return true;
         }
 
@@ -285,11 +280,10 @@ namespace My.Map.Scene
 
             if(selectionId == ID_NormalDialog)
             {
-                var entryId = NpcEntity.GetNpcDialogEntryId();
+                var entryId = NpcUnitLogicEntity.NpcDialogHubId;
                 if (!string.IsNullOrEmpty(entryId))
                 {
-                    var resolvedPeace = NpcEntity.ResolveNpcPeaceDialogId();
-                    NpcEntity.LogicManager.viewer.PlayDialog(entryId, srcEntityId: Id, npcResolvedPeaceDialogId: resolvedPeace);
+                    NpcEntity.LogicManager.viewer.PlayDialog(entryId, srcEntityId: Id);
                 }
                 return true;
             }
@@ -386,7 +380,7 @@ namespace My.Map.Scene
 
             if(CheckNpcPeaceDialog())
             {
-                if (!string.IsNullOrEmpty(NpcEntity.GetNpcDialogEntryId()))
+                if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
                 {
                     ret.Add(new SceneInteractSelection()
                     {

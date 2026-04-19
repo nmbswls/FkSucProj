@@ -618,7 +618,7 @@ namespace My
 
 
 
-        public bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, System.Action onDialogEnd = null, string npcResolvedPeaceDialogId = null)
+        public bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, System.Action onDialogEnd = null)
         {
 
             var dialogMetaInfo = CfgMgr.Cfgs.TbDialogMetaInfo.Get(dialogId);
@@ -650,7 +650,6 @@ namespace My
                 driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
                 JumpTo = label => dialoguePlayer.JumpToStep(label),
                 SrcEntityId = srcEntityId,
-                NpcResolvedPeaceDialogId = npcResolvedPeaceDialogId ?? string.Empty,
             };
 
             dialoguePlayer.ui = dialogPanel;

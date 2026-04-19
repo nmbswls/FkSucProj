@@ -449,6 +449,11 @@ namespace My.Map.Entity
                 // 可临时提升Deceleration或将加速度目标设为0
             }
 
+            if(v_des > Owner.GetCurrSpeed() * _moveSpeedRate)
+            {
+                v_des = Owner.GetCurrSpeed() * _moveSpeedRate;
+            }
+
             // 5) 加减速限制与反超抑制
             float currentSpeed = Velocity.magnitude;
             float accel = Acceleration;
