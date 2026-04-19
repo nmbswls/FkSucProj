@@ -326,20 +326,23 @@ namespace My.Map
                         break;
                     case LogicInteractOutput.EOutputType.Teleport:
                         {
+                            if (Owner.LogicManager.IsLocalRoomTeleportLocked)
+                                break;
+
                             string mapName = output.Param3;
                             string namedP = output.Param4;
 
                             // 原地传送
                             if (string.IsNullOrEmpty(mapName) || mapName == Owner.LogicManager.AreaManager.MapName)
                             {
-                                if (string.IsNullOrEmpty(namedP))
+                                if (!string.IsNullOrEmpty(namedP))
                                 {
                                     var p = Owner.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(namedP);
                                     if (p == null)
                                     {
                                         break;
                                     }
-                                    Owner.LogicManager.playerLogicEntity.TeleportTo(p.Value.Position);
+                                    Owner.LogicManager.RequestLocalRoomTeleport(p.Value.Position);
                                 }
                             }
                             else

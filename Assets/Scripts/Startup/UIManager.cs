@@ -40,7 +40,7 @@ namespace My.UI
         [Header("Debug")]
         [SerializeField] private bool logConsumption = false;
 
-        // 运行时
+        // 杩愯�屾椂
         private readonly Dictionary<string, PanelResource> catalogMap = new();
         private readonly Dictionary<string, IPanel> activePanels = new();
         private readonly Dictionary<string, PanelPool> pools = new();
@@ -49,7 +49,7 @@ namespace My.UI
         public CanvasGroup TopBlackMaskCG;
 
 
-        // 输入缓存
+        // 杈撳叆缂撳瓨
         private InputAction uiConfirm, uiCancel, uiNavigate;
         private readonly List<(InputAction action, Action<InputAction.CallbackContext> handler)> handlers = new();
 
@@ -126,7 +126,7 @@ namespace My.UI
 
 
         private List<IPanel> _tickCacheList = new();
-        // 输入冒泡分发
+        // 杈撳叆鍐掓场鍒嗗彂
         private bool TryConsumeByLayers(Func<IInputConsumer, bool> call)
         {
             for (int layer = (int)UILayer.System; layer >= (int)UILayer.HUD; layer--)
@@ -157,7 +157,7 @@ namespace My.UI
 
         private int GetPriority(IPanel p) => (p is IFocusable f) ? f.FocusPriority : 0;
 
-        // 面板管理
+        // 闈㈡澘绠＄悊
         public IPanel ShowPanel(string panelId, object data = null, UILayer? layerOverride = null)
         {
             if (activePanels.TryGetValue(panelId, out var existing))
@@ -268,11 +268,11 @@ namespace My.UI
                 Debug.LogError($"Prefab {res.resourcePath} missing IPanel component");
                 return null;
             }
-            (panel as PanelBase)?.Hide(); // 初始隐藏
+            (panel as PanelBase)?.Hide(); // 鍒濆�嬮殣钘�
             return panel;
         }
 
-        // Loading 快捷
+        // Loading 蹇�鎹�
         public void ShowLoading(string text = "Loading...") { ShowPanel(loadingPanelId, text, UILayer.System); }
         public void HideLoading() { HidePanel(loadingPanelId); }
 
@@ -335,7 +335,7 @@ namespace My.UI
         private Tween coHideBlack;
 
         /// <summary>
-        /// 显示黑屏
+        /// 鏄剧ず榛戝睆
         /// </summary>
         public void FadeShowBlack(float duration = 1.0f)
         {
@@ -363,7 +363,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// 黑屏消失
+        /// 榛戝睆娑堝け
         /// </summary>
         public void FadeHideBlack(float duration = 1.0f)
         {

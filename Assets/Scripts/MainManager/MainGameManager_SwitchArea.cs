@@ -1,5 +1,6 @@
 
 
+using System.Collections;
 using System.Threading.Tasks;
 using My.Input;
 using My.UI;
@@ -14,6 +15,19 @@ namespace My
     /// </summary>
     public partial class MainGameManager
     {
+        Coroutine _localRoomTeleportFadeCo;
+
+        private void OnHardAreaClearStarting()
+        {
+            if (_localRoomTeleportFadeCo != null)
+            {
+                StopCoroutine(_localRoomTeleportFadeCo);
+                _localRoomTeleportFadeCo = null;
+            }
+            if (gameLogicManager != null)
+                gameLogicManager.ReleaseLocalRoomTeleportLock();
+        }
+
         private void HandleOnSwitchStageUpdate(EMapSwitchStep newStage)
         {
             switch(newStage)
@@ -211,6 +225,43 @@ namespace My
             }
 
             Initialized = true;
+        }
+
+        private void OnLocalRoomTeleportFade(LocalRoomTeleportRequest req)
+        {
+            if (_localRoomTeleportFadeCo != null)
+            {
+                StopCoroutine(_localRoomTeleportFadeCo);
+                _localRoomTeleportFadeCo = null;
+                gameLogicManager.ReleaseLocalRoomTeleportLock();
+            }
+            _localRoomTeleportFadeCo = StartCoroutine(CoLocalRoomTeleportFade(req));
+        }
+
+        private IEnumerator CoLocalRoomTeleportFade(LocalRoomTeleportRequest req)
+        {
+            try
+            {
+                const float fadeToBlackDuration = 0.22f;
+                const float fadeFromBlackDuration = 0.28f;
+                if (UIManager.Instance == null)
+                {
+                    req.CommitTeleport();
+                    yield break;
+                }
+
+                UIManager.Instance.FadeShowBlack(fadeToBlackDuration);
+                yield return new WaitForSecondsRealtime(fadeToBlackDuration + 0.05f);
+                req.CommitTeleport();
+                yield return null;
+                UIManager.Instance.FadeHideBlack(fadeFromBlackDuration);
+            }
+            finally
+            {
+                _localRoomTeleportFadeCo = null;
+                if (gameLogicManager != null)
+                    gameLogicManager.ReleaseLocalRoomTeleportLock();
+            }
         }
 
     }

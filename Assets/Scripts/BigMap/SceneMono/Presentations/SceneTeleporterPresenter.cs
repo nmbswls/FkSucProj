@@ -33,6 +33,9 @@ namespace My.Map.Scene
 
        public void TryTriggerTeleport()
        {
+            if (TeleporterEntity.LogicManager.IsLocalRoomTeleportLocked)
+                return;
+
             string mapName = TeleporterEntity.TargetMapId;
             string namedP = TeleporterEntity.TargetNamedPoint;
 
@@ -46,9 +49,11 @@ namespace My.Map.Scene
                     {
                         return;
                     }
-                    TeleporterEntity.LogicManager.playerLogicEntity.TeleportTo(p.Value.Position);
-
-                    MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Id, "lock_move", overrideDuration: 0.6f);
+                    TeleporterEntity.LogicManager.RequestLocalRoomTeleport(p.Value.Position, () =>
+                    {
+                        TeleporterEntity.LogicManager.globalBuffManager.AddBuff(
+                            TeleporterEntity.LogicManager.playerLogicEntity.Id, "lock_move", overrideDuration: 0.6f);
+                    });
                 }
             }
             else

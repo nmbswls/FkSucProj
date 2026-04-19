@@ -187,6 +187,9 @@ namespace My.Map.Scene
 
             _checkTeleporterTimer = LogicTime.time;
 
+            if (PlayerEntity.LogicManager.IsLocalRoomTeleportLocked)
+                return;
+
             int cnt = Physics2D.OverlapCircleNonAlloc(transform.position, 0.1f, hits, 1 << LayerMask.NameToLayer("Trigger"));
             for (int i = 0; i < cnt; i++)
             {

@@ -117,8 +117,22 @@ namespace My
 
             gameLogicManager = new();
             gameLogicManager.EventOnSwitchStageUpdate += HandleOnSwitchStageUpdate;
+            gameLogicManager.EventOnLocalRoomTeleportRequested += OnLocalRoomTeleportFade;
+            gameLogicManager.EventOnHardAreaClearStarting += OnHardAreaClearStarting;
 
             //Cursor.lockState = CursorLockMode.Confined;
+        }
+
+        private void OnDestroy()
+        {
+            if (gameLogicManager != null)
+            {
+                gameLogicManager.EventOnSwitchStageUpdate -= HandleOnSwitchStageUpdate;
+                gameLogicManager.EventOnLocalRoomTeleportRequested -= OnLocalRoomTeleportFade;
+                gameLogicManager.EventOnHardAreaClearStarting -= OnHardAreaClearStarting;
+            }
+
+            OnHardAreaClearStarting();
         }
 
         public async Task<bool> InitStartGame(string startParams, Action? onComplete, GameStartSaveSource saveSource)

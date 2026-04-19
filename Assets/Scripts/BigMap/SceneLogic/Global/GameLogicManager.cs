@@ -73,6 +73,9 @@ namespace My
         public event Action<ILogicEntity> EventOnLogicEntitySpawned;
         public event Action<ILogicEntity> EventOnLogicEntityDespawned;
 
+        // 即将丢弃当前区域/切图前触发：供表现层中断本地传送渐隐协程并释放传送锁，避免协程被 Stop 后锁泄漏
+        public event Action EventOnHardAreaClearStarting;
+
         
 
         public ISceneAbilityViewer? viewer; // 表现层接口
@@ -206,6 +209,8 @@ namespace My
 
             SwitchAreaIntent = intent;
 
+            EventOnHardAreaClearStarting?.Invoke();
+
             DelayedEffectQueue.Clear();
 
             AreaManager.CleanArea();
@@ -238,6 +243,8 @@ namespace My
             {
                 NeedBalancing = false;
                 DelayedEffectQueue.Clear();
+
+                EventOnHardAreaClearStarting?.Invoke();
 
                 AreaManager.CleanArea();
                 globalBuffManager.Clear();

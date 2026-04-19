@@ -576,6 +576,11 @@ namespace My.Input
                     break;
                 }
 
+                if(MainGameManager.Instance.gameLogicManager.IsLocalRoomTeleportLocked)
+                {
+                    break;
+                }
+
                 if (MainGameManager.Instance.gameLogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
                 {
                     break;

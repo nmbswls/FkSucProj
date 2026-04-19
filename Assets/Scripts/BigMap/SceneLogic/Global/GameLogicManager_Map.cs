@@ -102,6 +102,8 @@ namespace My
         /// </summary>
         public void ClearPreviousArea()
         {
+            EventOnHardAreaClearStarting?.Invoke();
+
             DelayedEffectQueue.Clear();
             AreaManager.CleanArea();
             globalBuffManager.Clear();
@@ -213,6 +215,68 @@ namespace My
 
         }
 
+        // 玩家同地图房间传送：仅发事件 + Commit 回调，不直接调 MainGameManager / UI
+        public event Action<LocalRoomTeleportRequest> EventOnLocalRoomTeleportRequested;
+
+        bool _localRoomTeleportLock;
+
+        public bool IsLocalRoomTeleportLocked => _localRoomTeleportLock;
+
+        public void ReleaseLocalRoomTeleportLock()
+        {
+            _localRoomTeleportLock = false;
+        }
+
+        public void RequestLocalRoomTeleport(Vector2 targetWorldPos, Action onAfterTeleport = null)
+        {
+            if (_localRoomTeleportLock)
+                return;
+
+            var player = playerLogicEntity;
+            if (player == null)
+                return;
+
+            var from = player.Pos;
+            void ApplyTeleport()
+            {
+                player.TeleportTo(targetWorldPos);
+                onAfterTeleport?.Invoke();
+            }
+
+            var req = new LocalRoomTeleportRequest(from, targetWorldPos, ApplyTeleport);
+            if (EventOnLocalRoomTeleportRequested == null)
+            {
+                _localRoomTeleportLock = true;
+                try
+                {
+                    ApplyTeleport();
+                }
+                finally
+                {
+                    _localRoomTeleportLock = false;
+                }
+                return;
+            }
+
+            _localRoomTeleportLock = true;
+            EventOnLocalRoomTeleportRequested.Invoke(req);
+        }
+
+    }
+
+    // 本地房间传送：表现层在遮罩全黑后调用 CommitTeleport 再渐亮
+    public sealed class LocalRoomTeleportRequest
+    {
+        public Vector2 From { get; }
+        public Vector2 To { get; }
+        public Action CommitTeleport { get; }
+
+        public LocalRoomTeleportRequest(Vector2 from, Vector2 to, Action commitTeleport)
+        {
+            From = from;
+            To = to;
+            CommitTeleport = commitTeleport ?? throw new ArgumentNullException(nameof(commitTeleport));
+        }
     }
 
 }
