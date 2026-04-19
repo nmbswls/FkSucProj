@@ -425,13 +425,13 @@ namespace My.UI
             if (refreshIntent == null) return;
 
 
-            if(this.ActiveInteractableList.Count != 0)
-            {
-                if(Time.time - refreshIntent.HappenTime < 0.1f)
-                {
-                    return;
-                }
-            }
+            //if(this.ActiveInteractableList.Count != 0)
+            //{
+            //    if(Time.time - refreshIntent.HappenTime < 0.1f)
+            //    {
+            //        return;
+            //    }
+            //}
 
 
             // 仅维护当前
@@ -454,6 +454,10 @@ namespace My.UI
                 //{
                 //    this.ActiveInteractableList.Add(oneInt);
                 //}
+            }
+            else
+            {
+                ;
             }
 
             //// 当可交互列表
