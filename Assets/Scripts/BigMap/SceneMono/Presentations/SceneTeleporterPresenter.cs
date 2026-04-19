@@ -51,8 +51,8 @@ namespace My.Map.Scene
                     }
                     TeleporterEntity.LogicManager.RequestLocalRoomTeleport(p.Value.Position, () =>
                     {
-                        TeleporterEntity.LogicManager.globalBuffManager.AddBuff(
-                            TeleporterEntity.LogicManager.playerLogicEntity.Id, "lock_move", overrideDuration: 0.6f);
+                        //TeleporterEntity.LogicManager.globalBuffManager.AddBuff(
+                        //    TeleporterEntity.LogicManager.playerLogicEntity.Id, "lock_move", overrideDuration: 0.6f);
                     });
                 }
             }

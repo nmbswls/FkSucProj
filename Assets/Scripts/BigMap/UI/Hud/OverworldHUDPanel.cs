@@ -551,6 +551,8 @@ namespace My.UI
 
 
         public bool OnNavigate(Vector2 dir) => false;
+
+        public bool CapturesNavigateAxisForWorld => false;
         public bool OnHotkey(string keyName)
         {
             if(HudMode == EHudMode.Normal)

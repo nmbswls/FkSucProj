@@ -163,5 +163,7 @@ namespace My.MiniGame.Dream
         {
             return true;
         }
+
+        public override bool CapturesNavigateAxisForWorld => true;
     }
 }

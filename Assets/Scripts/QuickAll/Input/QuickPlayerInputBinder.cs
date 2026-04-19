@@ -20,6 +20,10 @@ namespace My.Input
         bool DispatchConfirm();
         bool DispatchCancel();
         bool DispatchNavigate(Vector2 dir);
+
+        /// 是否存在占用导航轴的 UI（原始查询，与 OnNavigate 返回值无关）
+        bool IsNavigateAxisCapturedByUi() => false;
+
         bool DispatchScroll(float deltaY);
 
         bool DispatchHotkey(string keyName);
@@ -99,6 +103,23 @@ namespace My.Input
 
         public bool GlobalLock { get; set; }
 
+        private const float OverworldNavigateDirEpsSq = 0.0001f;
+        private Vector2? _overworldNavLastDispatchedDir;
+        private bool _overworldNavStickyBlockWorld;
+
+        private void ResetOverworldNavigateRoutingState()
+        {
+            _overworldNavLastDispatchedDir = null;
+            _overworldNavStickyBlockWorld = false;
+        }
+
+        private bool OverworldNavigateSampleShouldDispatch(Vector2 dir)
+        {
+            if (_overworldNavLastDispatchedDir == null)
+                return dir.sqrMagnitude > OverworldNavigateDirEpsSq;
+            return (dir - _overworldNavLastDispatchedDir.Value).sqrMagnitude > OverworldNavigateDirEpsSq;
+        }
+
         private void Awake()
         {
             actions = new MyInput();
@@ -153,6 +174,50 @@ namespace My.Input
                     OnKeyHoldingUpdate(keyTab);
                 }
             }
+
+            // 移动：每帧读当前向量（键按住不重复 performed 时也能对齐；传送锁等由 DoPlayerMove 内统一门控）
+            PollOverworldMoveSample();
+        }
+
+        private void ApplyOverworldNavigateAndMove(Vector2 dir)
+        {
+            if (GlobalLock)
+                return;
+            if (!actions.OverworldMap.enabled)
+                return;
+            if (MainGameManager.Instance == null)
+                return;
+
+            if (MainGameManager.Instance.playerScenePresenter != null)
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.FreeMoveInput = Vector2.zero;
+
+            if (dir.sqrMagnitude <= OverworldNavigateDirEpsSq)
+                _overworldNavStickyBlockWorld = false;
+
+            bool axisCaptured = uiRouter != null && uiRouter.IsNavigateAxisCapturedByUi();
+            if (uiRouter != null && OverworldNavigateSampleShouldDispatch(dir))
+            {
+                bool consumed = uiRouter.DispatchNavigate(dir);
+                _overworldNavLastDispatchedDir = dir;
+                if (!axisCaptured)
+                    _overworldNavStickyBlockWorld = consumed;
+            }
+
+            bool allowWorldMove = (uiRouter == null || !axisCaptured) && !_overworldNavStickyBlockWorld;
+            if (allowWorldMove)
+                DoPlayerMove(dir);
+        }
+
+        private void PollOverworldMoveSample()
+        {
+            if (!actions.OverworldMap.enabled)
+                return;
+            ApplyOverworldNavigateAndMove(actions.OverworldMap.Move.ReadValue<Vector2>());
+        }
+
+        public void OnMove(InputAction.CallbackContext ctx)
+        {
+            ApplyOverworldNavigateAndMove(ctx.ReadValue<Vector2>());
         }
 
         private void ForceReleaseActiveHolds()
@@ -180,6 +245,7 @@ namespace My.Input
 
                 // 也可以顺便把移动方向清零
                 DoPlayerMove(Vector2.zero);
+                ResetOverworldNavigateRoutingState();
             }
         }
 
@@ -203,6 +269,7 @@ namespace My.Input
         // 底层执行输入模式切换（由组织层调用）
         public void ApplyInputMode(InputMode mode)
         {
+            this.mode = mode;
             // 基本策略：只启用当前模式的 Map；或按需并存
             switch (mode)
             {
@@ -222,12 +289,15 @@ namespace My.Input
                     actions.UIMenuMap.Disable();
                     break;
             }
+
+            ResetOverworldNavigateRoutingState();
         }
 
         private void OnEnable()
         {
             ApplyInputMode(InputMode.Overworld);
 
+            actions.OverworldMap.Move.started += OnMove;
             actions.OverworldMap.Move.performed += OnMove;
             actions.OverworldMap.Move.canceled += OnMove;
 
@@ -268,6 +338,7 @@ namespace My.Input
 
         private void OnDisable()
         {
+            actions.OverworldMap.Move.started -= OnMove;
             actions.OverworldMap.Move.performed -= OnMove;
             actions.OverworldMap.Move.canceled -= OnMove;
 
@@ -372,23 +443,6 @@ namespace My.Input
 
             OnScenePointMove();
         }
-
-        public void OnMove(InputAction.CallbackContext ctx)
-        {
-            if(GlobalLock)
-            {
-                return;
-            }
-
-            var dir = ctx.ReadValue<Vector2>();
-            if (uiRouter == null || !uiRouter.DispatchNavigate(dir))
-            {
-                // 未消费：可用于切换武器槽、翻页等
-                // sceneRouter?.OnNavigateInWorld(dir); // 如有需要
-                DoPlayerMove(dir);
-            }
-        }
-
 
         public void OnConfirm(InputAction.CallbackContext ctx)
         {
@@ -567,16 +621,21 @@ namespace My.Input
             }
 
             bool doMove = false;
+
             do
             {
-                
-
                 if (MainGameManager.Instance.gameLogicManager.IsBalancing)
                 {
                     break;
                 }
 
-                if(MainGameManager.Instance.gameLogicManager.IsLocalRoomTeleportLocked)
+                if (MainGameManager.Instance.gameLogicManager.IsLocalRoomTeleportLocked)
+                {
+                    break;
+                }
+
+                // 切图：PreparePlayerSwitchArea 已写入 SwitchAreaIntent，但 MainStage 要等下一次 Tick 才变为 SwitchingMap，空窗内仍会 Running
+                if (MainGameManager.Instance.gameLogicManager.SwitchAreaIntent != null)
                 {
                     break;
                 }

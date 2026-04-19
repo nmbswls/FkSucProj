@@ -35,6 +35,9 @@ namespace My.UI
         bool OnHoldUpdate(string holdKey);
 
         bool OnHoldingEnd(string holdKey);
+
+        // 与 OnNavigate 返回值无关：为 true 时按栈序先于场景移动占用导航轴（如背包、暂停）
+        bool CapturesNavigateAxisForWorld => false;
     }
 
     public interface IFocusable
@@ -127,6 +130,8 @@ namespace My.UI
         {
             return true;
         }
+
+        public virtual bool CapturesNavigateAxisForWorld => false;
     }
 }
 

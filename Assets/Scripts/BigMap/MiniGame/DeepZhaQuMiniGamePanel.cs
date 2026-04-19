@@ -231,6 +231,7 @@ namespace My.Map.SmallGame.Zha
             return true;
         }
 
+        public override bool CapturesNavigateAxisForWorld => true;
 
         public override bool OnNavigate(Vector2 dir)
         {

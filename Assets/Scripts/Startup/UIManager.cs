@@ -40,7 +40,7 @@ namespace My.UI
         [Header("Debug")]
         [SerializeField] private bool logConsumption = false;
 
-        // æ©æ„¯ï¿½å±¾æ¤‚
+        // è¿è?Œæ??
         private readonly Dictionary<string, PanelResource> catalogMap = new();
         private readonly Dictionary<string, IPanel> activePanels = new();
         private readonly Dictionary<string, PanelPool> pools = new();
@@ -49,7 +49,7 @@ namespace My.UI
         public CanvasGroup TopBlackMaskCG;
 
 
-        // æˆæ’³å†ç¼‚æ’³ç“¨
+        // è¾“å…¥ç¼“å­˜
         private InputAction uiConfirm, uiCancel, uiNavigate;
         private readonly List<(InputAction action, Action<InputAction.CallbackContext> handler)> handlers = new();
 
@@ -126,7 +126,7 @@ namespace My.UI
 
 
         private List<IPanel> _tickCacheList = new();
-        // æˆæ’³å†éæ“åœºé’å——å½‚
+        // è¾“å…¥å†’æ³¡åˆ†å??
         private bool TryConsumeByLayers(Func<IInputConsumer, bool> call)
         {
             for (int layer = (int)UILayer.System; layer >= (int)UILayer.HUD; layer--)
@@ -157,7 +157,30 @@ namespace My.UI
 
         private int GetPriority(IPanel p) => (p is IFocusable f) ? f.FocusPriority : 0;
 
-        // é—ˆãˆ¡æ¾˜ç» ï¼„æ‚Š
+        /// Óë DispatchNavigate ÏàÍ¬µÄ²ãĞò£ºÊÇ·ñ´æÔÚÉùÃ÷Õ¼ÓÃµ¼º½ÖáµÄÃæ°å£¨Ô­Ê¼×´Ì¬£¬²»º¬ÅÉ·¢Óë³¡¾°²ßÂÔ£©
+        public bool IsNavigateAxisCapturedByUi()
+        {
+            for (int layer = (int)UILayer.System; layer >= (int)UILayer.HUD; layer--)
+            {
+                if (!layerPanels.TryGetValue(layer, out var list) || list.Count == 0)
+                    continue;
+                _tickCacheList.Clear();
+                _tickCacheList.AddRange(list);
+                _tickCacheList.Sort((a, b) => GetPriority(b).CompareTo(GetPriority(a)));
+                foreach (var p in _tickCacheList)
+                {
+                    if (!p.IsVisible)
+                        continue;
+                    if (p is IFocusable f && !f.CanFocus)
+                        continue;
+                    if (p is IInputConsumer c && c.CapturesNavigateAxisForWorld)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        // é¢æ¿ç®¡ç†
         public IPanel ShowPanel(string panelId, object data = null, UILayer? layerOverride = null)
         {
             if (activePanels.TryGetValue(panelId, out var existing))
@@ -268,11 +291,11 @@ namespace My.UI
                 Debug.LogError($"Prefab {res.resourcePath} missing IPanel component");
                 return null;
             }
-            (panel as PanelBase)?.Hide(); // é’æ¿†ï¿½å¬®æ®£é’˜ï¿½
+            (panel as PanelBase)?.Hide(); // åˆå????šè—??
             return panel;
         }
 
-        // Loading è¹‡ï¿½é¹ï¿½
+        // Loading å¿?æ?
         public void ShowLoading(string text = "Loading...") { ShowPanel(loadingPanelId, text, UILayer.System); }
         public void HideLoading() { HidePanel(loadingPanelId); }
 
@@ -335,7 +358,7 @@ namespace My.UI
         private Tween coHideBlack;
 
         /// <summary>
-        /// é„å‰§ãšæ¦›æˆç†
+        /// æ˜¾ç¤º???‘å??
         /// </summary>
         public void FadeShowBlack(float duration = 1.0f)
         {
@@ -363,7 +386,7 @@ namespace My.UI
         }
 
         /// <summary>
-        /// æ¦›æˆç†å¨‘å ã‘
+        /// é»‘å±æ¶ˆå¤±
         /// </summary>
         public void FadeHideBlack(float duration = 1.0f)
         {

@@ -403,6 +403,7 @@ namespace My.MiniGame.Dream
             return true;
         }
 
+        public override bool CapturesNavigateAxisForWorld => true;
         public override bool OnNavigate(Vector2 dir)
         {
             return true;
