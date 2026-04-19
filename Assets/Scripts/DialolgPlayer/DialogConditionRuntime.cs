@@ -138,4 +138,60 @@ namespace My.Dialog
             return false;
         }
     }
+
+    // 为 DialogCommandData4DynamicNpcChoice 在运行期组装选项（与 JSON 数据解耦）
+    public static class DynamicNpcChoiceRuntime
+    {
+        public static List<DialogChoiceOption> BuildOptions(LogicEntityBase srcEntity, My.GameLogicManager glm)
+        {
+            var ret = new List<DialogChoiceOption>();
+            if (glm == null || srcEntity is not NpcUnitLogicEntity npcEntity)
+            {
+                return ret;
+            }
+
+            var defaultDialogId = npcEntity.GetCurrentDialogId();
+            if (!string.IsNullOrEmpty(defaultDialogId))
+            {
+                ret.Add(new DialogChoiceOption
+                {
+                    Text = "交谈",
+                    TargetStepId = "",
+                    TargetDialogId = defaultDialogId,
+                    Conditions1 = new List<DialogCondition>(),
+                });
+            }
+
+            var shopInfo = glm.shopDataManager.GetShopProviderByNpcId(npcEntity.CfgId);
+            if(shopInfo != null)
+            {
+                ret.Add(new DialogChoiceOption
+                {
+                    Text = "交易",
+                    TargetStepId = "shop",
+                    TargetDialogId = "",
+                    Conditions1 = new List<DialogCondition>(),
+                });
+            }
+
+            ret.Add(new DialogChoiceOption
+            {
+                Text = "诱惑",
+                TargetStepId = "",
+                TargetDialogId = "player_gouyin",
+                Conditions1 = new List<DialogCondition>(),
+            });
+
+            ret.Add(new DialogChoiceOption
+            {
+                Text = "再见",
+                TargetStepId = "hub_bye",
+                TargetDialogId = "",
+                Conditions1 = new List<DialogCondition>(),
+            });
+
+            return ret;
+        }
+
+    }
 }

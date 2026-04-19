@@ -198,9 +198,8 @@ namespace My.Dialog
     public class EditorDynamicNpcChoiceCommand : EditorDialogCommand
     {
         public float TimeLimit;
-        public List<DialogChoiceOption> Options = new();
 
-        public override string GetSummary() => $"[DynamicNpcChoice] {Options?.Count ?? 0} opts";
+        public override string GetSummary() => "[DynamicNpcChoice] runtime-generated";
     }
 
 }

@@ -350,7 +350,16 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
-            _brain.NpcEntity.RegisterGaze("Charmed", _brain.LatestAttrctInfo.AttractSrcId, _brain.LatestAttrctInfo.HappenPos, EGazePriority.Interact, 0);
+            var buffInstance = _brain.NpcEntity.FindBuffById("social_charmed");
+            if(buffInstance != null)
+            {
+                var srcEntityId = buffInstance.CasterId;
+                var srcEntity = _brain.LogicManager.GetLogicEntity(srcEntityId, false);
+                if(srcEntity != null)
+                {
+                    _brain.NpcEntity.RegisterGaze("Charmed", srcEntity.Id, srcEntity.Pos, EGazePriority.Interact, 0);
+                }
+            }
             _endCharmdTimer = 0;
         }
 
@@ -875,7 +884,7 @@ namespace My.Map.Unit
                 return;
             }
 
-            if (_brain.SuspiciousPos != Vector3.zero)
+            if (_brain.SuspiciousPos != null)
             {
                 _brain.ChangeState(_brain.StateSearch);
                 return;

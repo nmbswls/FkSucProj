@@ -891,8 +891,8 @@ namespace My.Dialog
                 SerializedProperty condsProp = optionProp.FindPropertyRelative("Conditions1");
 
 
-                // 基础高度 4行 + 15
-                float fixedPartHeight = (standardHeight + space) * 5 + 15f;
+                // 基础高度：Text / TargetStepId / TargetDialogId / ShowWhenFail + 余量
+                float fixedPartHeight = (standardHeight + space) * 6 + 15f;
                 float conditionsPartHeight = 0f;
                 // 2.2 累加每个 Condition 的高度
                 if (condsProp.arraySize > 0)
@@ -937,6 +937,13 @@ namespace My.Dialog
                 EditorGUI.PropertyField(targetRect, optionProp.FindPropertyRelative("TargetStepId"));
                 currentY += standardHeight + space;
 
+                var targetDialogProp = optionProp.FindPropertyRelative("TargetDialogId");
+                if (targetDialogProp != null)
+                {
+                    Rect tdRect = new Rect(rect.x + 5, currentY, rect.width - 10, standardHeight);
+                    EditorGUI.PropertyField(tdRect, targetDialogProp, new GUIContent("Target Dialog Id", "Literal dialog id or @NpcResolvedPeace"));
+                    currentY += standardHeight + space;
+                }
 
                 // --- 绘制 show on fail 属性 ---
                 Rect showFailRect = new Rect(rect.x + 5, currentY, rect.width - 10, standardHeight);
@@ -998,9 +1005,12 @@ namespace My.Dialog
                 h += 20;
 
 
-                // Text + TargetStepId 属性高度
+                // Text + TargetStepId + TargetDialogId + ShowWhenFail 属性高度
                 h += EditorGUI.GetPropertyHeight(optionProp.FindPropertyRelative("Text"));
                 h += EditorGUI.GetPropertyHeight(optionProp.FindPropertyRelative("TargetStepId"));
+                var targetDialogH = optionProp.FindPropertyRelative("TargetDialogId");
+                if (targetDialogH != null)
+                    h += EditorGUI.GetPropertyHeight(targetDialogH);
                 h += EditorGUI.GetPropertyHeight(optionProp.FindPropertyRelative("ShowWhenFail"));
                 h += 6; // spacing
 
@@ -1640,8 +1650,6 @@ namespace My.Dialog
                             {
                                 var realCommand = new DialogCommandData4DynamicNpcChoice();
                                 realCommand.TimeLimit = dynCmd.TimeLimit;
-                                if (dynCmd.Options != null)
-                                    realCommand.Options.AddRange(dynCmd.Options);
                                 runCommand = realCommand;
                             }
                             break;

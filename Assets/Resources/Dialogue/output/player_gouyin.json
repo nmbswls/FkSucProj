@@ -1,0 +1,37 @@
+{
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "简单勾引",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 4,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4JumpTo, Assembly-CSharp",
+          "TargetStepId": "end"
+        }
+      ]
+    }
+  ]
+}

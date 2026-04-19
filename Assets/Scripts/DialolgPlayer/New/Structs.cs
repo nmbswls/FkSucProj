@@ -158,12 +158,21 @@ namespace My.Dialog
     }
 
 
+    // 选项里 TargetDialogId 可用的占位符（大小写不敏感），运行期替换为实际 dialog id
+    public static class DialogChoicePlaceholders
+    {
+        public const string NpcResolvedPeace = "@NpcResolvedPeace";
+    }
+
     [Serializable]
     public class DialogChoiceOption
     {
         public string Text;
 
         public string TargetStepId;
+
+        // 非空：选择后结束当前对话并 PlayDialog 切换到该 id（可为字面表 id，或 DialogChoicePlaceholders 占位符）；与 Conditions1 组合可实现按任务等过滤出不同目标对话
+        public string TargetDialogId = "";
 
         // 概率分支类型（与失败跳转等配合）
         public EProbabilityType ProbabilityType;
@@ -306,8 +315,14 @@ namespace My.Dialog
     [Serializable]
     public class DialogCommandData4DynamicNpcChoice : DialogCommandData
     {
+        // 选项列表由运行期 DynamicNpcChoiceRuntime 按对话 id / Src NPC 等生成，不序列化在 JSON 中
         public float TimeLimit;
-        public List<DialogChoiceOption> Options = new();
     }
 
+    [Serializable]
+    public class DialogCommandData4OpenShop : DialogCommandData
+    {
+        public int FixShop;
+        public bool BindingShop;
+    }
 }

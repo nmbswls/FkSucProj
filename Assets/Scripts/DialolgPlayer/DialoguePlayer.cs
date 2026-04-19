@@ -360,6 +360,74 @@ public partial class DialoguePlayer : MonoBehaviour
         this.pendingJump = true;
     }
 
+    // 解析选项要切换到的对话 id：TargetDialogId 字面量 / 占位符
+    private string ResolveChoiceTargetDialogId(DialogChoiceOption choice)
+    {
+        if (choice == null)
+            return null;
+
+        var raw = choice.TargetDialogId != null ? choice.TargetDialogId.Trim() : "";
+        if (raw.Length == 0)
+            return null;
+
+        if (string.Equals(raw, DialogChoicePlaceholders.NpcResolvedPeace, StringComparison.OrdinalIgnoreCase))
+            return ResolveNpcPeaceDialogIdForSrcNpc();
+        return raw;
+    }
+
+    private string ResolveNpcPeaceDialogIdForSrcNpc()
+    {
+        var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
+        if (glm == null || runtimeRef?.SrcEntityId == null)
+        {
+            Debug.LogWarning("[Dialog] ResolveNpcPeaceDialogId: missing manager or SrcEntityId.");
+            return null;
+        }
+
+        var ent = glm.GetLogicEntity(runtimeRef.SrcEntityId.Value, false);
+        if (ent is not NpcUnitLogicEntity npc)
+        {
+            Debug.LogWarning("[Dialog] ResolveNpcPeaceDialogId: SrcEntity is not NPC.");
+            return null;
+        }
+
+        var id = npc.ResolveNpcPeaceDialogId();
+        if (string.IsNullOrEmpty(id))
+            Debug.LogWarning("[Dialog] ResolveNpcPeaceDialogId: resolved dialog id is empty.");
+        return string.IsNullOrEmpty(id) ? null : id;
+    }
+
+    // 选项要求切换对话资源时：结束当前对话并 PlayDialog
+    private bool TryPlayChoiceTargetDialog(DialogChoiceOption choice)
+    {
+        var targetDialogId = ResolveChoiceTargetDialogId(choice);
+        if (string.IsNullOrEmpty(targetDialogId))
+            return false;
+
+        if (MetaInfo != null && string.Equals(targetDialogId, MetaInfo.DialogId, StringComparison.Ordinal))
+        {
+            Debug.LogWarning("[Dialog] TryPlayChoiceTargetDialog: target equals current dialog, skip.");
+            return false;
+        }
+
+        var mgr = MainGameManager.Instance;
+        if (mgr == null)
+        {
+            Debug.LogWarning("[Dialog] TryPlayChoiceTargetDialog: MainGameManager missing.");
+            return false;
+        }
+
+        var srcId = runtimeRef?.SrcEntityId;
+        var peaceCtx = runtimeRef != null && !string.IsNullOrEmpty(runtimeRef.NpcResolvedPeaceDialogId)
+            ? runtimeRef.NpcResolvedPeaceDialogId
+            : null;
+
+        ui?.PrepareForDialogSegmentSwitch();
+        Stop();
+        mgr.PlayDialog(targetDialogId, srcId, pause: false, onDialogEnd: null, npcResolvedPeaceDialogId: peaceCtx);
+        return true;
+    }
+
     private void StartStepFromData()
     {
         if (dataRef == null || stepIndex < 0 || stepIndex >= dataRef.Steps.Count)
@@ -662,25 +730,29 @@ public partial class DialoguePlayer : MonoBehaviour
                 {
                     var options = new List<string>();
                     var jumpLabels = new List<string>();
+                    var choiceRefs = new List<DialogChoiceOption>();
                     if (cd4Choice.Options != null)
                     {
                         foreach (var choice in cd4Choice.Options)
                         {
+                            if (choice == null) continue;
                             options.Add(choice.Text ?? "");
                             jumpLabels.Add(choice.TargetStepId ?? "");
+                            choiceRefs.Add(choice);
                         }
                     }
 
-                    // 纯选项：选择后可选 JumpToStep，再 SafeComplete
+                    // 纯选项：选择后可选切到 NPC peace 对话资源，或 JumpToStep，再 SafeComplete
                     ui.StartChoices(options, index =>
                     {
-                        if (index >= 0 && index < jumpLabels.Count)
+                        if (index >= 0 && index < choiceRefs.Count)
                         {
+                            var picked = choiceRefs[index];
+                            if (TryPlayChoiceTargetDialog(picked))
+                                return;
                             var label = jumpLabels[index];
                             if (!string.IsNullOrEmpty(label))
-                            {
                                 JumpToStep(label);
-                            }
                         }
                         SafeComplete();
                     });
@@ -709,16 +781,16 @@ public partial class DialoguePlayer : MonoBehaviour
 
                     var jumpLabels = new List<string>();
                     var options = new List<string>();
-                    if (dyn.Options != null)
+                    var pickedChoices = new List<DialogChoiceOption>();
+                    var sourceChoices = DynamicNpcChoiceRuntime.BuildOptions(srcEntity, glm);
+                    foreach (var choice in sourceChoices)
                     {
-                        foreach (var choice in dyn.Options)
-                        {
-                            if (choice == null) continue;
-                            if (!DialogConditionRuntime.AllPass(choice.Conditions1, srcEntity, glm))
-                                continue;
-                            options.Add(choice.Text ?? "");
-                            jumpLabels.Add(choice.TargetStepId ?? "");
-                        }
+                        if (choice == null) continue;
+                        if (!DialogConditionRuntime.AllPass(choice.Conditions1, srcEntity, glm))
+                            continue;
+                        options.Add(choice.Text ?? "");
+                        jumpLabels.Add(choice.TargetStepId ?? "");
+                        pickedChoices.Add(choice);
                     }
 
                     if (options.Count == 0)
@@ -732,8 +804,11 @@ public partial class DialoguePlayer : MonoBehaviour
                         options,
                         index =>
                         {
-                            if (index >= 0 && index < jumpLabels.Count)
+                            if (index >= 0 && index < pickedChoices.Count)
                             {
+                                var picked = pickedChoices[index];
+                                if (TryPlayChoiceTargetDialog(picked))
+                                    return;
                                 var label = jumpLabels[index];
                                 if (!string.IsNullOrEmpty(label))
                                     JumpToStep(label);
