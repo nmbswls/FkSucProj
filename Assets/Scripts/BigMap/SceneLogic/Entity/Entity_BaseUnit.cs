@@ -88,7 +88,8 @@ namespace My.Map
         public event Action<long> EventOnAttachStatusChanged;
         public event Action<long> EventOnGhostChange;
         public event Action<long> EventOnInvisibleChange;
-        public event Action<long, long?> EventOnHpChanged;
+        // id, 来源实体, 实际 applied 的 HP 变化量（finalDelta，负数为扣血）
+        public event Action<long, long?, long> EventOnHpChanged;
 
 
         protected float externalDecay = 30f;          // 外力自然衰减（每秒）
@@ -842,7 +843,7 @@ namespace My.Map
                                 }
                             }
 
-                            UnitOnHpChanged(intent.delta, intent.srcEntityId, intent.HitDir, intent.isEnmity, intent.deltaFlags);
+                            UnitOnHpChanged(intent.finalDelta, intent.srcEntityId, intent.HitDir, intent.isEnmity, intent.deltaFlags);
 
                         }
 
@@ -862,7 +863,7 @@ namespace My.Map
         }
 
 
-        protected virtual void UnitOnHpChanged(long delta, long? srcEntityId, Vector2? hitDir, bool isEnmity, EDmgFlag deltaFlags)
+        protected virtual void UnitOnHpChanged(long finalDelta, long? srcEntityId, Vector2? hitDir, bool isEnmity, EDmgFlag deltaFlags)
         {
             if(isEnmity) //不是这样
             {
@@ -882,9 +883,9 @@ namespace My.Map
             //    });
             //}
 
-            EventOnHpChanged?.Invoke(this.Id, srcEntityId);
+            EventOnHpChanged?.Invoke(this.Id, srcEntityId, finalDelta);
 
-            if (Math.Abs(delta) > 1)
+            if (Math.Abs(finalDelta) > 1)
             {
                 // 伤害逻辑
                 if (srcEntityId != null)
@@ -892,7 +893,7 @@ namespace My.Map
                     var srcNpc = LogicManager.GetLogicEntity(srcEntityId.Value) as NpcUnitLogicEntity;
                     if (srcNpc != null)
                     {
-                        srcNpc.AggroSystem.OnTakeDamage(this.Id, Math.Abs(delta));
+                        srcNpc.AggroSystem.OnTakeDamage(this.Id, Math.Abs(finalDelta));
                     }
                 }
             }

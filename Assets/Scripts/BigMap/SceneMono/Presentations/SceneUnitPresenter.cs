@@ -503,9 +503,22 @@ namespace My.Map.Scene
             PresenterOnHit(srcId);
         }
 
-        protected virtual void HandleEventHpChanged(long entityId, long? srcId)
+        protected virtual void HandleEventHpChanged(long entityId, long? srcId, long hpFinalDelta)
         {
-            MainGameManager.Instance.ShowDamageNumber(PivotHeader.transform.position, "-1");
+            if (hpFinalDelta >= 0)
+                return;
+
+            if (MainGameManager.Instance == null)
+                return;
+
+            var amount = -hpFinalDelta;
+            if (amount <= 0)
+                return;
+
+            var text = (amount / 1000).ToString();
+            var bind = PivotHeader != null ? PivotHeader : transform;
+            var worldPos = (Vector2)bind.position;
+            MainGameManager.Instance.ShowDamageNumber(worldPos, text, bind);
         }
 
         protected virtual void OnEventStartStealth(long entityId)

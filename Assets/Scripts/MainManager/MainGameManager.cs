@@ -691,9 +691,7 @@ namespace My
         /// <param name="bindTrans"></param>
         public void ShowDamageNumber(Vector2 worldPos, string content, Transform? bindTrans = null)
         {
-            var dmgResource = SimpleResManager.Load<DamageNumber>($"SceneEffect/JumpText/Crit_01");
-            //var dmgResource = SimpleResManager.Load<DamageNumber>($"SceneEffect/JumpText/Damage_01");
-            //var dmgResource = SimpleResManager.Load<DamageNumber>($"SceneEffect/JumpText/Heal_01");
+            var dmgResource = SimpleResManager.Load<DamageNumber>($"SceneEffect/JumpText/Damage_01");
             if (bindTrans == null)
             {
                 dmgResource.Spawn(worldPos, content);

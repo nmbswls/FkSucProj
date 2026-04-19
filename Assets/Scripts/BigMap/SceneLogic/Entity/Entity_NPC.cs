@@ -483,13 +483,13 @@ namespace My.Map
         }
 
 
-        protected override void UnitOnHpChanged(long delta, long? srcEntityId, Vector2? hitDir, bool isEnmity, EDmgFlag deltaFlags)
+        protected override void UnitOnHpChanged(long finalDelta, long? srcEntityId, Vector2? hitDir, bool isEnmity, EDmgFlag deltaFlags)
         {
-            base.UnitOnHpChanged(delta, srcEntityId, hitDir, isEnmity, deltaFlags);
+            base.UnitOnHpChanged(finalDelta, srcEntityId, hitDir, isEnmity, deltaFlags);
 
             if(srcEntityId != null)
             {
-                AggroSystem?.OnTakeDamage(srcEntityId.Value, Math.Abs(delta));
+                AggroSystem?.OnTakeDamage(srcEntityId.Value, Math.Abs(finalDelta));
             }
         }
 
