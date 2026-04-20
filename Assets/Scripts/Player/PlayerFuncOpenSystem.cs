@@ -16,7 +16,7 @@ namespace My
         {
             Invalid,
             Hunger,
-            San,
+            Desire,
             Clothes,
             Expose,
 

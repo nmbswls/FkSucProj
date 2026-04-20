@@ -146,11 +146,11 @@ namespace My.UI
             var sanGo = PropLineContainer.Find("PlayerSan");
             {
                 var ball = new PlayerPropBall();
-                ball.AttrId = AttrIdConsts.PlayerSan;
+                ball.AttrId = AttrIdConsts.PlayerDesire;
                 ball.Root = sanGo as RectTransform;
                 ball.CG = sanGo.GetComponent<CanvasGroup>();
                 ball.BarValue = sanGo.Find("Bar").GetComponent<Image>();
-                PlayerBallMap.Add(AttrIdConsts.PlayerSan, ball);
+                PlayerBallMap.Add(AttrIdConsts.PlayerDesire, ball);
 
                 ball.Root.gameObject.SetActive(false);
             }
@@ -324,13 +324,13 @@ namespace My.UI
                 PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(false);
             }
 
-            if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.San))
+            if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Desire))
             {
-                PlayerBallMap[AttrIdConsts.PlayerSan].Root.gameObject.SetActive(true);
+                PlayerBallMap[AttrIdConsts.PlayerDesire].Root.gameObject.SetActive(true);
             }
             else
             {
-                PlayerBallMap[AttrIdConsts.PlayerSan].Root.gameObject.SetActive(false);
+                PlayerBallMap[AttrIdConsts.PlayerDesire].Root.gameObject.SetActive(false);
             }
 
             bool disguising = false;
@@ -803,9 +803,9 @@ namespace My.UI
             {
                 ShowBallAppearEffect(AttrIdConsts.PlayerHunger);
             }
-            else if (e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.San)
+            else if (e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Desire)
             {
-                ShowBallAppearEffect(AttrIdConsts.PlayerSan);
+                ShowBallAppearEffect(AttrIdConsts.PlayerDesire);
             }
             else if(e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Clothes)
             {

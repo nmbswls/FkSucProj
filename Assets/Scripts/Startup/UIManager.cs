@@ -40,7 +40,7 @@ namespace My.UI
         [Header("Debug")]
         [SerializeField] private bool logConsumption = false;
 
-        // è¿è?Œæ??
+        // è¿ï¿½?ï¿½ï¿½??
         private readonly Dictionary<string, PanelResource> catalogMap = new();
         private readonly Dictionary<string, IPanel> activePanels = new();
         private readonly Dictionary<string, PanelPool> pools = new();
@@ -126,7 +126,7 @@ namespace My.UI
 
 
         private List<IPanel> _tickCacheList = new();
-        // è¾“å…¥å†’æ³¡åˆ†å??
+        // è¾“å…¥å†’æ³¡åˆ†ï¿½??
         private bool TryConsumeByLayers(Func<IInputConsumer, bool> call)
         {
             for (int layer = (int)UILayer.System; layer >= (int)UILayer.HUD; layer--)
@@ -157,7 +157,7 @@ namespace My.UI
 
         private int GetPriority(IPanel p) => (p is IFocusable f) ? f.FocusPriority : 0;
 
-        /// Óë DispatchNavigate ÏàÍ¬µÄ²ãĞò£ºÊÇ·ñ´æÔÚÉùÃ÷Õ¼ÓÃµ¼º½ÖáµÄÃæ°å£¨Ô­Ê¼×´Ì¬£¬²»º¬ÅÉ·¢Óë³¡¾°²ßÂÔ£©
+        /// ï¿½ï¿½ DispatchNavigate ï¿½ï¿½Í¬ï¿½Ä²ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å£¨Ô­Ê¼×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É·ï¿½ï¿½ë³¡ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½
         public bool IsNavigateAxisCapturedByUi()
         {
             for (int layer = (int)UILayer.System; layer >= (int)UILayer.HUD; layer--)
@@ -291,11 +291,11 @@ namespace My.UI
                 Debug.LogError($"Prefab {res.resourcePath} missing IPanel component");
                 return null;
             }
-            (panel as PanelBase)?.Hide(); // åˆå????šè—??
+            (panel as PanelBase)?.Hide(); // åˆï¿½????ï¿½ï¿½ï¿½??
             return panel;
         }
 
-        // Loading å¿?æ?
+        // Loading ï¿½?ï¿½?
         public void ShowLoading(string text = "Loading...") { ShowPanel(loadingPanelId, text, UILayer.System); }
         public void HideLoading() { HidePanel(loadingPanelId); }
 
@@ -358,7 +358,7 @@ namespace My.UI
         private Tween coHideBlack;
 
         /// <summary>
-        /// æ˜¾ç¤º???‘å??
+        /// æ˜¾ç¤º???ï¿½ï¿½??
         /// </summary>
         public void FadeShowBlack(float duration = 1.0f)
         {

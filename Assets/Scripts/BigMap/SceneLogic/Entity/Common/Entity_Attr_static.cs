@@ -9,13 +9,19 @@ namespace My.Map.Entity
     public static class AttrIdConsts
     {
         public const string Attack = "Attack";
+        public const string Defense = "Defense";
+
+
         public const string Special_JianShang = "Special_JianShang";
         public const string Special_YiShang = "Special_YiShang";
-        public const string PlayerGcThreshold = "PlayerGcThreshold";
+
         public const string Basic_JianShang = "Basic_JianShang";
         public const string Basic_MoveSpeed = "Basic_MoveSpeed";
         public const string Basic_ExtraDmg = "Basic_ExtraDmg";
         public const string Spe_Player_ExtraDmg = "Spe_Player_ExtraDmg";
+
+
+        public const string PlayerGcThreshold = "PlayerGcThreshold";
 
         public const string Player_AttrctPower = "Player_AttrctPower";
 
@@ -48,9 +54,8 @@ namespace My.Map.Entity
 
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes";
-        public const string PlayerPleasure = "PlayerPleasure";
-        public const string PlayerSan = "PlayerSan";
-        public const string PlayerFaQingVal = "PlayerFaQingVal";
+        public const string PlayerPleasure = "PlayerPleasure"; // 快乐条
+        public const string PlayerDesire = "PlayerDesire";
         public const string PlayerOriginPower = "PlayerOriginPower";
 
         public const string PlayerKnockDown = "PlayerKnockDown";

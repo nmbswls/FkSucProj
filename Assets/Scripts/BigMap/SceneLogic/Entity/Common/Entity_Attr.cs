@@ -62,9 +62,9 @@ namespace My.Map
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
-                case AttrIdConsts.PlayerSan:
                 case AttrIdConsts.PlayerHunger:
                 case AttrIdConsts.PlayerPleasure:
+                case AttrIdConsts.PlayerDesire:
                 case AttrIdConsts.PlayerClothes:
                 case AttrIdConsts.PlayerNaiLi:
                 case AttrIdConsts.UnitHVal:
@@ -593,13 +593,12 @@ namespace My.Map
                 case AttrIdConsts.HP:
                 case AttrIdConsts.PlayerNaiLi:
                 case AttrIdConsts.PlayerHunger:
-                case AttrIdConsts.PlayerSan:
+                case AttrIdConsts.PlayerDesire:
                 case AttrIdConsts.PlayerClothes:
                 case AttrIdConsts.PlayerPleasure:
                 case AttrIdConsts.UnitHVal:
                 case AttrIdConsts.DeepZhaChance:
                 case AttrIdConsts.UnitHShield:
-                case AttrIdConsts.PlayerFaQingVal:
                 case AttrIdConsts.PlayerOriginPower:
                 case AttrIdConsts.SJProgress:
                     {
