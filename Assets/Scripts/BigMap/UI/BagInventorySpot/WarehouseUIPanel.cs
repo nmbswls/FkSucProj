@@ -5,15 +5,12 @@ using My.Player.Bag;
 using My.UI;
 using SuperScrollView;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace My.UI.Bag
 {
-    /// <summary>
-    /// 右侧仓库：多页、类型筛选、与主背包拖拽互通；数据在 <see cref="PlayerInventoryModel.WarehousePageBags"/>。
-    /// </summary>
+    // 右侧仓库：多页、类型筛选、与主背包拖拽互通；数据在 PlayerInventoryModel.WarehousePageBags。
     public class WarehouseUIPanel : PanelBase, IInputConsumer
     {
         public static WarehouseUIPanel Instance
@@ -34,102 +31,126 @@ namespace My.UI.Bag
         public int Columns = 5;
         public string ItemPrefabName = "OneItem";
 
-        // 与 PlayerBag 预制体槽位名兼容：特殊背包区隐藏，页签行复用为仓库分页。
-        public RectTransform SpeBagPanel;
-        public Button CollapseSpeBagBtn;
-        public LoopGridView SpeGridView;
+        [Tooltip("顺序：全 / 普 / 币 / 装 / 挂 / 插，与代码中类型筛选值绑定")]
+        public Button[] warehouseTypeFilterButtons;
 
-        /// <summary>当前仓库页 0..WarehouseConfig.PageCount-1（复用预制字段名）。</summary>
-        public int CurrExpandSpeBag;
+        public Transform warehousePageTabsRoot;
 
-        public Transform SpecBagSelectionsTr;
-
-        public class InnerSpeBagItem
-        {
-            public RectTransform Root;
-            public Button Btn;
-            public Image SelectHint;
-            public TextMeshProUGUI StackCount;
-        }
-
-        public List<InnerSpeBagItem> SpeBagItems = new List<InnerSpeBagItem>();
+        public int currentWarehousePage;
 
         public PlayerInventoryModel BindingInventory =>
             MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
 
+        public class WarehousePageTabEntry
+        {
+            public RectTransform Root;
+            public Button Btn;
+            public Image SelectHint;
+            public Text PageCountText;
+        }
+
+        public List<WarehousePageTabEntry> warehousePageTabs = new List<WarehousePageTabEntry>();
+
+        private static readonly int[] WarehouseTypeFilterValues =
+        {
+            -1,
+            (int)EItemType.Normal,
+            (int)EItemType.Currency,
+            (int)EItemType.Equip,
+            (int)EItemType.Pocket,
+            (int)EItemType.Insertion,
+        };
+
         private bool markDirty;
         private int typeFilter = -1;
-        private bool filterStripBuilt;
 
         private void Awake()
         {
             GridView.InitGridView(0, OnGetItemByIndex);
             GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
 
-            if (SpeBagPanel != null)
-            {
-                SpeBagPanel.gameObject.SetActive(false);
-            }
-            if (SpeGridView != null)
-            {
-                SpeGridView.gameObject.SetActive(false);
-            }
-            if (CollapseSpeBagBtn != null)
-            {
-                CollapseSpeBagBtn.gameObject.SetActive(false);
-            }
+            WarehousePanelChromeFactory.EnsureChrome(this);
+            BindWarehouseTypeFilters();
+            BindWarehousePageTabsFromRoot();
+        }
 
-            SpeBagItems.Clear();
-            if (SpecBagSelectionsTr != null)
+        private void BindWarehouseTypeFilters()
+        {
+            if (warehouseTypeFilterButtons == null)
             {
-                for (int i = 0; i < SpecBagSelectionsTr.childCount; i++)
+                return;
+            }
+            for (int i = 0; i < warehouseTypeFilterButtons.Length && i < WarehouseTypeFilterValues.Length; i++)
+            {
+                var btn = warehouseTypeFilterButtons[i];
+                if (btn == null)
                 {
-                    var childOne = SpecBagSelectionsTr.GetChild(i);
-                    var item = new InnerSpeBagItem
-                    {
-                        Root = childOne.GetComponent<RectTransform>(),
-                        Btn = childOne.GetComponentInChildren<Button>(),
-                    };
-                    int page = i;
-                    item.Btn.onClick.RemoveAllListeners();
-                    item.Btn.onClick.AddListener(() => SwitchPage(page));
-
-                    var selTr = childOne.Find("Select");
-                    item.SelectHint = selTr != null ? selTr.GetComponent<Image>() : null;
-                    var hintTr = childOne.Find("Hint");
-                    item.StackCount = hintTr != null ? hintTr.GetComponentInChildren<TextMeshProUGUI>() : null;
-
-                    if (item.SelectHint != null)
-                    {
-                        item.SelectHint.gameObject.SetActive(false);
-                    }
-                    if (item.StackCount != null)
-                    {
-                        item.StackCount.gameObject.SetActive(true);
-                    }
-
-                    SpeBagItems.Add(item);
+                    continue;
                 }
+                int fv = WarehouseTypeFilterValues[i];
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() =>
+                {
+                    typeFilter = fv;
+                    GridView.RefreshAllShownItem();
+                });
             }
+        }
 
-            CurrExpandSpeBag = 0;
+        private void BindWarehousePageTabsFromRoot()
+        {
+            warehousePageTabs.Clear();
+            if (warehousePageTabsRoot == null)
+            {
+                return;
+            }
+            for (int i = 0; i < warehousePageTabsRoot.childCount; i++)
+            {
+                var childOne = warehousePageTabsRoot.GetChild(i);
+                var item = new WarehousePageTabEntry
+                {
+                    Root = childOne.GetComponent<RectTransform>(),
+                    Btn = childOne.GetComponentInChildren<Button>(),
+                };
+                int page = i;
+                if (item.Btn != null)
+                {
+                    item.Btn.onClick.RemoveAllListeners();
+                    item.Btn.onClick.AddListener(() => SwitchWarehousePage(page));
+                }
+
+                var selTr = childOne.Find("Select");
+                item.SelectHint = selTr != null ? selTr.GetComponent<Image>() : null;
+                var hintTr = childOne.Find("Hint");
+                item.PageCountText = hintTr != null ? hintTr.GetComponent<Text>() : null;
+
+                if (item.SelectHint != null)
+                {
+                    item.SelectHint.gameObject.SetActive(false);
+                }
+                if (item.PageCountText != null)
+                {
+                    item.PageCountText.gameObject.SetActive(true);
+                }
+
+                warehousePageTabs.Add(item);
+            }
         }
 
         public override void Show()
         {
             base.Show();
-            EnsureTypeFilterStrip();
-            foreach (var it in SpeBagItems)
+            foreach (var it in warehousePageTabs)
             {
                 if (it.SelectHint != null)
                 {
                     it.SelectHint.gameObject.SetActive(false);
                 }
             }
-            if (SpeBagItems.Count > 0 && CurrExpandSpeBag >= 0 && CurrExpandSpeBag < SpeBagItems.Count
-                && SpeBagItems[CurrExpandSpeBag].SelectHint != null)
+            if (warehousePageTabs.Count > 0 && currentWarehousePage >= 0 && currentWarehousePage < warehousePageTabs.Count
+                && warehousePageTabs[currentWarehousePage].SelectHint != null)
             {
-                SpeBagItems[CurrExpandSpeBag].SelectHint.gameObject.SetActive(true);
+                warehousePageTabs[currentWarehousePage].SelectHint.gameObject.SetActive(true);
             }
             OnWarehouseDataChanged();
         }
@@ -150,33 +171,33 @@ namespace My.UI.Bag
 
         private void OnWarehouseDataChanged()
         {
-            var bag = CurrentBag();
-            if (bag != null)
+            var warehousePage = CurrentWarehousePageStorage();
+            if (warehousePage != null)
             {
-                GridView.SetListItemCount(bag.BasicCapacity + bag.MaxExtraCapacity);
+                GridView.SetListItemCount(warehousePage.BasicCapacity + warehousePage.MaxExtraCapacity);
             }
             GridView.RefreshAllShownItem();
-            RefreshPageTabHints();
+            RefreshWarehousePageTabHints();
         }
 
-        private PlayerBag CurrentBag()
+        private PlayerBag CurrentWarehousePageStorage()
         {
-            int page = Mathf.Clamp(CurrExpandSpeBag, 0, WarehouseConfig.PageCount - 1);
+            int page = Mathf.Clamp(currentWarehousePage, 0, WarehouseConfig.PageCount - 1);
             return BindingInventory.GetBagById(WarehouseConfig.BagIdFirst + page);
         }
 
-        private void SwitchPage(int page)
+        private void SwitchWarehousePage(int page)
         {
             if (page < 0 || page >= WarehouseConfig.PageCount)
             {
                 return;
             }
-            if (CurrExpandSpeBag == page)
+            if (currentWarehousePage == page)
             {
                 return;
             }
 
-            foreach (var item in SpeBagItems)
+            foreach (var item in warehousePageTabs)
             {
                 if (item.SelectHint != null)
                 {
@@ -184,33 +205,33 @@ namespace My.UI.Bag
                 }
             }
 
-            CurrExpandSpeBag = page;
-            if (page < SpeBagItems.Count && SpeBagItems[page].SelectHint != null)
+            currentWarehousePage = page;
+            if (page < warehousePageTabs.Count && warehousePageTabs[page].SelectHint != null)
             {
-                SpeBagItems[page].SelectHint.gameObject.SetActive(true);
+                warehousePageTabs[page].SelectHint.gameObject.SetActive(true);
             }
 
             OnWarehouseDataChanged();
         }
 
-        private void RefreshPageTabHints()
+        private void RefreshWarehousePageTabHints()
         {
-            for (int i = 0; i < SpeBagItems.Count && i < WarehouseConfig.PageCount; i++)
+            for (int i = 0; i < warehousePageTabs.Count && i < WarehouseConfig.PageCount; i++)
             {
-                var bag = BindingInventory.GetBagById(WarehouseConfig.BagIdFirst + i);
-                if (bag == null || SpeBagItems[i].StackCount == null)
+                var warehousePage = BindingInventory.GetBagById(WarehouseConfig.BagIdFirst + i);
+                if (warehousePage == null || warehousePageTabs[i].PageCountText == null)
                 {
                     continue;
                 }
                 int used = 0;
-                foreach (var s in bag.NormalSlots)
+                foreach (var s in warehousePage.NormalSlots)
                 {
                     if (s != null && !s.IsEmpty)
                     {
                         used++;
                     }
                 }
-                SpeBagItems[i].StackCount.text = $"{used}/{bag.NormalSlots.Count}";
+                warehousePageTabs[i].PageCountText.text = $"{used}/{warehousePage.NormalSlots.Count}";
             }
         }
 
@@ -219,17 +240,17 @@ namespace My.UI.Bag
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 
-            var bag = CurrentBag();
-            if (bag == null)
+            var warehousePage = CurrentWarehousePageStorage();
+            if (warehousePage == null)
             {
                 return item;
             }
 
-            if (itemIndex < bag.BasicCapacity)
+            if (itemIndex < warehousePage.BasicCapacity)
             {
-                var stack = bag.GetItemByIdx(itemIndex);
+                var stack = warehousePage.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                int bid = WarehouseConfig.BagIdFirst + Mathf.Clamp(CurrExpandSpeBag, 0, WarehouseConfig.PageCount - 1);
+                int bid = WarehouseConfig.BagIdFirst + Mathf.Clamp(currentWarehousePage, 0, WarehouseConfig.PageCount - 1);
                 cell.Bind(stack, itemIndex, EContainerType.Warehouse, bid, null);
 
                 bool dim = stack != null && !stack.IsEmpty && !PassesTypeFilter(stack);
@@ -260,96 +281,6 @@ namespace My.UI.Bag
                 return true;
             }
             return (int)def.ItemType == typeFilter;
-        }
-
-        private void EnsureTypeFilterStrip()
-        {
-            if (filterStripBuilt)
-            {
-                return;
-            }
-            RectTransform mainBagRt = null;
-            foreach (var rt in GetComponentsInChildren<RectTransform>(true))
-            {
-                if (rt.gameObject.name == "MainBag")
-                {
-                    mainBagRt = rt;
-                    break;
-                }
-            }
-            if (mainBagRt == null)
-            {
-                return;
-            }
-
-            var strip = new GameObject("WarehouseTypeFilterStrip", typeof(RectTransform));
-            strip.transform.SetParent(mainBagRt, false);
-            var rtStrip = strip.GetComponent<RectTransform>();
-            rtStrip.SetAsFirstSibling();
-            rtStrip.anchorMin = new Vector2(0f, 1f);
-            rtStrip.anchorMax = new Vector2(1f, 1f);
-            rtStrip.pivot = new Vector2(0.5f, 1f);
-            rtStrip.sizeDelta = new Vector2(-16f, 28f);
-            rtStrip.anchoredPosition = new Vector2(0f, -6f);
-
-            var le = strip.AddComponent<LayoutElement>();
-            le.minHeight = 28f;
-            le.preferredHeight = 28f;
-
-            var hlg = strip.AddComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 4f;
-            hlg.childAlignment = TextAnchor.MiddleLeft;
-            hlg.childControlHeight = true;
-            hlg.childControlWidth = false;
-            hlg.childForceExpandHeight = true;
-            hlg.childForceExpandWidth = false;
-            hlg.padding = new RectOffset(4, 4, 0, 0);
-
-            void AddFilterButton(string label, int filterVal)
-            {
-                var go = new GameObject("Btn_" + label, typeof(RectTransform), typeof(Image), typeof(Button));
-                go.transform.SetParent(strip.transform, false);
-                var img = go.GetComponent<Image>();
-                img.color = new Color(0.22f, 0.18f, 0.32f, 0.95f);
-                var btn = go.GetComponent<Button>();
-                var rtBtn = go.GetComponent<RectTransform>();
-                rtBtn.sizeDelta = new Vector2(72f, 24f);
-
-                var leB = go.AddComponent<LayoutElement>();
-                leB.minWidth = 72f;
-                leB.preferredWidth = 72f;
-
-                var txtGo = new GameObject("Text", typeof(RectTransform), typeof(Text));
-                txtGo.transform.SetParent(go.transform, false);
-                var text = txtGo.GetComponent<Text>();
-                text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                text.text = label;
-                text.alignment = TextAnchor.MiddleCenter;
-                text.color = new Color(0.92f, 0.88f, 1f, 1f);
-                text.fontSize = 12;
-                text.resizeTextForBestFit = true;
-                var rtT = txtGo.GetComponent<RectTransform>();
-                rtT.anchorMin = Vector2.zero;
-                rtT.anchorMax = Vector2.one;
-                rtT.offsetMin = Vector2.zero;
-                rtT.offsetMax = Vector2.zero;
-
-                int fv = filterVal;
-                btn.onClick.AddListener(() =>
-                {
-                    typeFilter = fv;
-                    GridView.RefreshAllShownItem();
-                });
-            }
-
-            AddFilterButton("全", -1);
-            AddFilterButton("普", (int)EItemType.Normal);
-            AddFilterButton("币", (int)EItemType.Currency);
-            AddFilterButton("装", (int)EItemType.Equip);
-            AddFilterButton("挂", (int)EItemType.Pocket);
-            AddFilterButton("插", (int)EItemType.Insertion);
-
-            filterStripBuilt = true;
         }
 
         public bool OnConfirm()

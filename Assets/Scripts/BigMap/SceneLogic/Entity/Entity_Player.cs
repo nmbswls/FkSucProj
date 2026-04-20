@@ -129,12 +129,12 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
 
             attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100_000, 100_000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerSan, null, 100_000, 100_000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerDesire, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100_000, 100_000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 0);
+            //attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 300_000);
             
 
@@ -427,26 +427,18 @@ namespace My.Map
                 LogicManager.viewer.ShowFakeFxEffect("饿", this.Pos);
             }
 
-            long autoFaqing = 0;
-            var san = GetAttr(AttrIdConsts.PlayerSan);
-            if (san < 25_000)
+            // 欲望高时自动增长快乐
+            var desire  = GetAttr(AttrIdConsts.PlayerDesire);
+            if(desire > 50_000)
             {
-                autoFaqing = 5;
+                ApplyResourceChange(AttrIdConsts.PlayerPleasure, 100, false, EDmgFlag.None, null);
             }
-            else if(san < 50_000)
-            {
-                autoFaqing = 2;
-            }
-            else if (san < 75_000)
-            {
-                autoFaqing = 1;
-            }
-
-            var addFaqing = (int)(autoFaqing * (interval * 1000) / 1000);
-            if(addFaqing > 0)
-            {
-                ApplyResourceChange(AttrIdConsts.PlayerFaQingVal, addFaqing, false, EDmgFlag.None, null);
-            }
+            
+            //var addFaqing = (int)(autoFaqing * (interval * 1000) / 1000);
+            //if(addFaqing > 0)
+            //{
+            //    ApplyResourceChange(AttrIdConsts.PlayerFaQingVal, addFaqing, false, EDmgFlag.None, null);
+            //}
         }
 
 
@@ -545,11 +537,12 @@ namespace My.Map
 
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_yishang", layer: 100);
 
-            if(!isSelfGc)
+            // 非自慰需要扣san
+            if(GetAttr(AttrIdConsts.PlayerDesire) > 60_000)
             {
-                // 非自慰需要扣san
-                ApplyResourceChange(AttrIdConsts.PlayerSan, -500, false, FightStruct.EDmgFlag.None, this.Id);
+                ApplyResourceChange(AttrIdConsts.PlayerDesire, -10000, false, FightStruct.EDmgFlag.None, this.Id);
             }
+            
 
             ForceSetResource(AttrIdConsts.PlayerPleasure, 0);
 
@@ -576,7 +569,7 @@ namespace My.Map
                 //     2.靠理智强行（待定）
                 //     3.时间脱离
 
-                if (canLeave)
+                if (canLeave) 
                 {
                     LogicManager.globalBuffManager.RemoveAllBuffById(Id, "player_faqing");
                     IsFaQing = false;
@@ -591,11 +584,11 @@ namespace My.Map
 
                 bool checkEnter = false;
 
-                var faqingVal = GetAttr(AttrIdConsts.PlayerFaQingVal);
-                if(faqingVal >= 100_000)
-                {
-                    checkEnter = true;
-                }
+                //var faqingVal = GetAttr(AttrIdConsts.PlayerFaQingVal);
+                //if(faqingVal >= 100_000)
+                //{
+                //    checkEnter = true;
+                //}
 
                 if(checkEnter)
                 {
@@ -605,7 +598,7 @@ namespace My.Map
 
                     EventOnFaQingStateChange?.Invoke();
 
-                    attributeStore.SetResource(AttrIdConsts.PlayerFaQingVal, 0);
+                    //attributeStore.SetResource(AttrIdConsts.PlayerFaQingVal, 0);
                 }
             }
         }
@@ -635,15 +628,15 @@ namespace My.Map
             long delta = intent.delta;
             switch (attrId)
             {
-                case AttrIdConsts.PlayerFaQingVal:
-                    {
-                        if(IsFaQing)
-                        {
-                            return 0;
-                        }
-                        return delta;
-                    }
-                    break;
+                //case AttrIdConsts.PlayerFaQingVal:
+                //    {
+                //        if(IsFaQing)
+                //        {
+                //            return 0;
+                //        }
+                //        return delta;
+                //    }
+                //    break;
                 default:
                     {
                         return base.CalculateResourceCostAmount(attrId, intent);
