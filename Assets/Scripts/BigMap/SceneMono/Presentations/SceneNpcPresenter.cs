@@ -212,7 +212,11 @@ namespace My.Map.Scene
             if (!OverworldHUDPanel.Instance.IsHunterMode) return false;
 
             if (NpcEntity.CheckHasState(AttrIdConsts.NoInteract)) return false;
-            // h模式下可以背刺
+
+
+            if (NpcEntity.CheckHasState(AttrIdConsts.Charmed)) return true;
+
+            // 背刺
             if (!MainGameManager.Instance.VisionSenser2D.SimpleCanSee(transform.position, NpcEntity.CurrentLook, MainGameManager.Instance.playerScenePresenter.transform.position, 6.0f, 150f))
             {
                 return true;

@@ -1,4 +1,5 @@
 using cfg.demo;
+using My;
 using My.Config;
 using My.Map;
 using My.Map.Entity;
@@ -246,6 +247,20 @@ namespace My.Player.Bag
         LootPoint,
         SpecialInventory,
         Shop,
+        /// <summary>
+        /// 仓库分页格；与 Inventory 叠加上限规则一致。
+        /// </summary>
+        Warehouse,
+    }
+
+    /// <summary>
+    /// 仓库分页：BagId 为 BagIdFirst + 页索引（0..PageCount-1）。
+    /// </summary>
+    public static class WarehouseConfig
+    {
+        public const int BagIdFirst = 100;
+        public const int PageCount = 4;
+        public const int SlotsPerPage = 45;
     }
 
     [Serializable]
@@ -267,6 +282,10 @@ namespace My.Player.Bag
             if(BagId == 0)
             {
                 return ItemCatalog.GetMaxStackByType(itemId, EContainerType.Inventory);
+            }
+            if (BagId >= WarehouseConfig.BagIdFirst && BagId < WarehouseConfig.BagIdFirst + WarehouseConfig.PageCount)
+            {
+                return ItemCatalog.GetMaxStackByType(itemId, EContainerType.Warehouse);
             }
             return ItemCatalog.GetMaxStackByType(itemId, EContainerType.SpecialInventory);
         }
@@ -629,6 +648,10 @@ namespace My.Player.Bag
 
         public Dictionary<int, PlayerBag> SpeBags = new Dictionary<int, PlayerBag>();
 
+        /// <summary>
+        /// 仓库分页，与 <see cref="WarehouseConfig.BagIdFirst"/> 起的 BagId 一一对应。
+        /// </summary>
+        public readonly List<PlayerBag> WarehousePageBags = new List<PlayerBag>();
 
         public Dictionary<string, float> ItemUseCd = new();
 
@@ -648,6 +671,14 @@ namespace My.Player.Bag
                 bag.InitBag(i, 5, 3);
 
                 SpeBags[bag.BagId] = bag;
+            }
+
+            WarehousePageBags.Clear();
+            for (int p = 0; p < WarehouseConfig.PageCount; p++)
+            {
+                var wb = new PlayerBag();
+                wb.InitBag(WarehouseConfig.BagIdFirst + p, WarehouseConfig.SlotsPerPage, 0);
+                WarehousePageBags.Add(wb);
             }
         }
 
@@ -854,11 +885,143 @@ namespace My.Player.Bag
             return ItemUtils.MoveOrMergeOrSwapItem(srcBag, srcIndex, dstBag, dstIndex);
         }
 
+        /// <summary>
+        /// 任意已注册背包（含仓库页）内拆分堆叠。
+        /// </summary>
+        public bool TrySplitItemInBag(int bagId, int index, long count)
+        {
+            var bag = GetBagById(bagId);
+            if (bag == null)
+            {
+                return false;
+            }
+            return bag.TrySplit(index, count);
+        }
+
+        /// <summary>
+        /// 从指定背包格移除并生成世界掉落（主背包、特殊栏、仓库等）。
+        /// </summary>
+        public void DropItemToGround(int bagId, int index, long count)
+        {
+            var bag = GetBagById(bagId);
+            if (bag == null)
+            {
+                Debug.LogError($"DropItemToGround fail bag not found {bagId}");
+                return;
+            }
+            var item = bag.GetItemByIdx(index);
+            if (item == null)
+            {
+                return;
+            }
+            long dropCount = bag.RemoveAt(index, count);
+            if (dropCount > 0 && MainGameManager.Instance != null && MainGameManager.Instance.playerScenePresenter != null)
+            {
+                Vector2 centerPos = MainGameManager.Instance.playerScenePresenter.GetWorldPosition();
+                MainGameManager.Instance.gameLogicManager.globalDropCollection.CreateDrop(
+                    item.ItemID,
+                    dropCount,
+                    centerPos + UnityEngine.Random.insideUnitCircle * 0.3f,
+                    false,
+                    centerPos);
+            }
+            bag.ClearEmptyItems();
+        }
+
         public PlayerBag GetBagById(int bagId)
         {
             if (bagId == 0) return MainBag;
+            if (bagId >= WarehouseConfig.BagIdFirst)
+            {
+                int idx = bagId - WarehouseConfig.BagIdFirst;
+                if (idx >= 0 && idx < WarehousePageBags.Count)
+                {
+                    return WarehousePageBags[idx];
+                }
+                return null;
+            }
             SpeBags.TryGetValue(bagId, out var bag);
             return bag;
+        }
+
+        /// <summary>
+        /// 从存档恢复仓库各页槽位（缺页则扩容空页）。
+        /// </summary>
+        public void ApplyWarehouseFromSave(My.Saving.SaveData save)
+        {
+            if (save?.WarehousePages == null)
+            {
+                return;
+            }
+
+            while (WarehousePageBags.Count < WarehouseConfig.PageCount)
+            {
+                var wb = new PlayerBag();
+                wb.InitBag(WarehouseConfig.BagIdFirst + WarehousePageBags.Count, WarehouseConfig.SlotsPerPage, 0);
+                WarehousePageBags.Add(wb);
+            }
+
+            for (int p = 0; p < WarehousePageBags.Count && p < save.WarehousePages.Count; p++)
+            {
+                var bag = WarehousePageBags[p];
+                var page = save.WarehousePages[p];
+                for (int i = 0; i < bag.NormalSlots.Count; i++)
+                {
+                    bag.NormalSlots[i] = null;
+                }
+                if (page?.Slots == null)
+                {
+                    continue;
+                }
+                for (int s = 0; s < page.Slots.Count && s < bag.NormalSlots.Count; s++)
+                {
+                    var slot = page.Slots[s];
+                    if (slot == null || string.IsNullOrEmpty(slot.ItemId) || slot.Count <= 0)
+                    {
+                        continue;
+                    }
+                    bag.NormalSlots[s] = ItemCatalog.CreateItemStack(slot.ItemId, slot.Count);
+                    if (bag.NormalSlots[s] != null && slot.ItemInstanceId != 0)
+                    {
+                        bag.NormalSlots[s].ItemInstanceId = slot.ItemInstanceId;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将仓库各页写入存档列表（长度固定为页数）。
+        /// </summary>
+        public void WriteWarehouseToSave(My.Saving.SaveData save)
+        {
+            if (save == null)
+            {
+                return;
+            }
+            save.WarehousePages ??= new List<My.Saving.WarehousePagePersist>();
+            save.WarehousePages.Clear();
+            foreach (var bag in WarehousePageBags)
+            {
+                var page = new My.Saving.WarehousePagePersist();
+                for (int i = 0; i < bag.NormalSlots.Count; i++)
+                {
+                    var st = bag.NormalSlots[i];
+                    if (st == null || st.IsEmpty)
+                    {
+                        page.Slots.Add(new My.Saving.WarehouseSlotPersist());
+                    }
+                    else
+                    {
+                        page.Slots.Add(new My.Saving.WarehouseSlotPersist
+                        {
+                            ItemId = st.ItemID,
+                            Count = st.Count,
+                            ItemInstanceId = st.ItemInstanceId,
+                        });
+                    }
+                }
+                save.WarehousePages.Add(page);
+            }
         }
 
         public bool CanGainItems(string itemId, long count)

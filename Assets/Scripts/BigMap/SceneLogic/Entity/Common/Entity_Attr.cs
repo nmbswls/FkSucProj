@@ -43,6 +43,7 @@ namespace My.Map
                 case AttrIdConsts.Invisible:
                 case AttrIdConsts.Sleep:
                 case AttrIdConsts.NoKiller:
+                case AttrIdConsts.Charmed:
 
                     return EAttrType.State;
 
@@ -628,6 +629,7 @@ namespace My.Map
         public bool CheckHasState(string attrId)
         {
             numerics.TryGetValue(attrId, out var e);
+            if(e == null ) return false;
             return e.finalValue > 0;
         }
         #endregion

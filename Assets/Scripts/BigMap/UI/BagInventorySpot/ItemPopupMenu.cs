@@ -102,7 +102,8 @@ namespace My.UI
             //UseBtn.interactable = canUse;
 
             if (cell.ContainerType == EContainerType.Inventory
-                || cell.ContainerType == EContainerType.SpecialInventory)
+                || cell.ContainerType == EContainerType.SpecialInventory
+                || cell.ContainerType == EContainerType.Warehouse)
             {
                 if (stack.Count > 1)
                 {
@@ -120,7 +121,7 @@ namespace My.UI
                     //var item = 
                 }
 
-                if(ItemCatalog.CanUse(stack.ItemID))
+                if(cell.ContainerType == EContainerType.Inventory && ItemCatalog.CanUse(stack.ItemID))
                 {
                     UseBtnGo.SetActive(true);
                 }
@@ -171,7 +172,8 @@ namespace My.UI
         private void OnClickSplit()
         {
             if (currentCell.ContainerType != EContainerType.Inventory
-                && currentCell.ContainerType != EContainerType.SpecialInventory) 
+                && currentCell.ContainerType != EContainerType.SpecialInventory
+                && currentCell.ContainerType != EContainerType.Warehouse)
             { 
                 Close(); 
                 return; 
@@ -190,7 +192,12 @@ namespace My.UI
             {
                 if (chossed > 0)
                 {
-                    PlayerBagUIPanel.Instance?.SplitItem(bagId, currentIndex, chossed);
+                    var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+                    if (inv.TrySplitItemInBag(bagId, currentIndex, chossed))
+                    {
+                        PlayerBagUIPanel.Instance?.RefreshContent();
+                        WarehouseUIPanel.Instance?.RefreshContent();
+                    }
                 }
             });
             
@@ -200,14 +207,18 @@ namespace My.UI
         private void OnClickDrop()
         {
             if (currentCell.ContainerType != EContainerType.Inventory
-                && currentCell.ContainerType != EContainerType.SpecialInventory)
+                && currentCell.ContainerType != EContainerType.SpecialInventory
+                && currentCell.ContainerType != EContainerType.Warehouse)
             {
                 Close();
                 return;
             }
 
             // 将整堆丢到玩家脚下世界掉落
-            PlayerBagUIPanel.Instance?.DropItemToGround(currentCell.ContainerId, currentIndex, currentStack.Count);
+            MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.DropItemToGround(
+                currentCell.ContainerId, currentIndex, currentStack.Count);
+            PlayerBagUIPanel.Instance?.RefreshContent();
+            WarehouseUIPanel.Instance?.RefreshContent();
             Close();
         }
 

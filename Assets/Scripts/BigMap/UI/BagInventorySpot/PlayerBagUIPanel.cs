@@ -129,6 +129,7 @@ namespace My.UI.Bag
         public void RefreshContent()
         {
             markDirty = true;
+            WarehouseUIPanel.Instance?.RefreshContent();
         }
 
 
@@ -268,23 +269,7 @@ namespace My.UI.Bag
 
         public void DropItemToGround(int bagId, int index, long count)
         {
-            var bag = BindingInventory.GetBagById(bagId);
-            if (bag == null)
-            {
-                Debug.LogError($"DropItemToGround item fail bag not found {bagId}");
-                return;
-            }
-
-            var item = bag.GetItemByIdx(index);
-            long dropCount = bag.RemoveAt(index, count);
-            // 从背包移除后在玩家附近生成世界掉落
-            //UIBus.RaiseInventoryAllChanged();
-            if (dropCount > 0)
-            {
-                Vector2 centerPos = MainGameManager.Instance.playerScenePresenter.GetWorldPosition();
-                MainGameManager.Instance.gameLogicManager.globalDropCollection.CreateDrop(item.ItemID, count, centerPos + UnityEngine.Random.insideUnitCircle * 0.3f, false, centerPos);
-            }            
-
+            BindingInventory.DropItemToGround(bagId, index, count);
             OnInventoryAllChanged();
         }
 

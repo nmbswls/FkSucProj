@@ -146,7 +146,8 @@ namespace My.Config
                 return 0;
             }
 
-            if (containerMode == EContainerType.Inventory || containerMode == EContainerType.SpecialInventory)
+            if (containerMode == EContainerType.Inventory || containerMode == EContainerType.SpecialInventory
+                || containerMode == EContainerType.Warehouse)
             {
                 if (def.MaxStackInventory > 0)
                 {
@@ -180,7 +181,8 @@ namespace My.Config
 
             if (def.StackType == EItemStackType.Size1)
             {
-                if (containerMode == EContainerType.Inventory || containerMode == EContainerType.SpecialInventory)
+                if (containerMode == EContainerType.Inventory || containerMode == EContainerType.SpecialInventory
+                    || containerMode == EContainerType.Warehouse)
                 {
                     return 10;
                 }

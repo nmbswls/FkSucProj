@@ -51,6 +51,23 @@ namespace My.Saving
         public int Amount;
     }
 
+    /// <summary>
+    /// 单格仓库道具（空格 ItemId 为空或 Count 为 0）。
+    /// </summary>
+    [Serializable]
+    public class WarehouseSlotPersist
+    {
+        public string ItemId;
+        public long Count;
+        public long ItemInstanceId;
+    }
+
+    [Serializable]
+    public class WarehousePagePersist
+    {
+        public List<WarehouseSlotPersist> Slots = new List<WarehouseSlotPersist>();
+    }
+
     // 跨地图的全局运行时（警戒条、通缉等），不随单张地图卸载而丢失
     [Serializable]
     public class GlobalRuntimePersistData
@@ -125,6 +142,11 @@ namespace My.Saving
 
         public List<InventoryItemData> Inventory;
 
+        /// <summary>
+        /// 仓库分页数据，顺序与运行时页索引一致。
+        /// </summary>
+        public List<WarehousePagePersist> WarehousePages;
+
         public string CurrentMapId;
         public Vector2 CurrentPos;
 
@@ -142,6 +164,7 @@ namespace My.Saving
             Meta = new MetaData();
             PlayerData = new PlayerData();
             Inventory = new List<InventoryItemData>();
+            WarehousePages = new List<WarehousePagePersist>();
             PlayerBuffs = new List<BuffPersistData>();
         }
 
@@ -153,6 +176,7 @@ namespace My.Saving
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
             data.PlayerData.FishingSpotByUniqName ??= new Dictionary<string, FishingSpotRuntimeSave>();
             data.Inventory ??= new List<InventoryItemData>();
+            data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.GlobalRuntime ??= new GlobalRuntimePersistData();
             data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();

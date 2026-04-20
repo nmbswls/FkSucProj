@@ -123,6 +123,11 @@ namespace My.UI
                 DoSwitchZhaZhiMode();
             });
 
+            BtnHomeStorage.onClick.AddListener(() =>
+            {
+                UIOrchestrator.Instance.ToggleWarehousePanel();
+            });
+
             InitializePropBalls();
         }
 

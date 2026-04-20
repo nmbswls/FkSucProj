@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Config;
+using My.Map;
 using My.Player.Bag;
 using My.UI.Bag;
 using TMPro;
@@ -127,6 +128,7 @@ namespace My.UI
             {
                 case EContainerType.Inventory:
                 case EContainerType.SpecialInventory:
+                case EContainerType.Warehouse:
                     {
                         OnDropToInventory(droppedItem.ContainerId, payload, dstIndex);
                         break;
@@ -157,12 +159,13 @@ namespace My.UI
                 }
                 var srcContainer = LootPointUIPanel.Instance.Loot.GetLootItemContainer();
 
-                var bag = PlayerBagUIPanel.Instance.BindingInventory.GetBagById(bagId);
+                var bag = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.GetBagById(bagId);
                 var modified = ItemUtils.MoveOrMergeOrSwapItem(srcContainer, payload.SourceIndex, bag, dstIndex);
                 if (modified)
                 {
                     LootPointUIPanel.Instance.RefreshContent();
-                    PlayerBagUIPanel.Instance.RefreshContent();
+                    PlayerBagUIPanel.Instance?.RefreshContent();
+                    WarehouseUIPanel.Instance?.RefreshContent();
                 }
             }
             else if(payload.SourceContainerType == EContainerType.Shop)
@@ -176,7 +179,8 @@ namespace My.UI
                         if (buy)
                         {
                             ShopNormalUIPanel.Instance.RefreshContent();
-                            PlayerBagUIPanel.Instance.RefreshContent();
+                            PlayerBagUIPanel.Instance?.RefreshContent();
+                            WarehouseUIPanel.Instance?.RefreshContent();
                         }
                     });
                 }
@@ -186,22 +190,26 @@ namespace My.UI
                     if (buy)
                     {
                         ShopNormalUIPanel.Instance.RefreshContent();
-                        PlayerBagUIPanel.Instance.RefreshContent();
+                        PlayerBagUIPanel.Instance?.RefreshContent();
+                        WarehouseUIPanel.Instance?.RefreshContent();
                     }
                 }
                 
             }
             else if (payload.SourceContainerType == EContainerType.Inventory
-                || payload.SourceContainerType == EContainerType.SpecialInventory)
+                || payload.SourceContainerType == EContainerType.SpecialInventory
+                || payload.SourceContainerType == EContainerType.Warehouse)
             {
                 int fromBag = payload.SourceContainerId;
                 int toBag = bagId;
 
                 // 背包内部移动/堆叠/交换
-                bool ok = PlayerBagUIPanel.Instance.BindingInventory.TrySwapOrMove(fromBag, payload.SourceIndex, toBag, dstIndex);
+                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+                bool ok = inv.TrySwapOrMove(fromBag, payload.SourceIndex, toBag, dstIndex);
                 if (ok)
                 {
-                    PlayerBagUIPanel.Instance.RefreshContent();
+                    PlayerBagUIPanel.Instance?.RefreshContent();
+                    WarehouseUIPanel.Instance?.RefreshContent();
                 }
             }
         }
@@ -230,16 +238,19 @@ namespace My.UI
             }
             // 从背包拖动到loot点
             else if (payload.SourceContainerType == EContainerType.Inventory
-                || payload.SourceContainerType == EContainerType.SpecialInventory)
+                || payload.SourceContainerType == EContainerType.SpecialInventory
+                || payload.SourceContainerType == EContainerType.Warehouse)
             {
                 var container = LootPointUIPanel.Instance.Loot.GetLootItemContainer();
-                var fromBag = PlayerBagUIPanel.Instance.BindingInventory.GetBagById(payload.SourceContainerId);
+                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+                var fromBag = inv.GetBagById(payload.SourceContainerId);
 
                 var modified = ItemUtils.MoveOrMergeOrSwapItem(fromBag, payload.SourceIndex, container, dstIndex);
                 if (modified)
                 {
                     LootPointUIPanel.Instance.RefreshContent();
-                    PlayerBagUIPanel.Instance.RefreshContent();
+                    PlayerBagUIPanel.Instance?.RefreshContent();
+                    WarehouseUIPanel.Instance?.RefreshContent();
                 }
             }
         }
@@ -256,9 +267,11 @@ namespace My.UI
 
             // 尝试售卖
             if (payload.SourceContainerType == EContainerType.Inventory
-                || payload.SourceContainerType == EContainerType.SpecialInventory)
+                || payload.SourceContainerType == EContainerType.SpecialInventory
+                || payload.SourceContainerType == EContainerType.Warehouse)
             {
-                var fromBag = PlayerBagUIPanel.Instance.BindingInventory.GetBagById(payload.SourceContainerId);
+                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+                var fromBag = inv.GetBagById(payload.SourceContainerId);
 
                 //
                 if(payload.ItemCnt> 0)
@@ -271,7 +284,8 @@ namespace My.UI
                 if (sell)
                 {
                     ShopNormalUIPanel.Instance.RefreshContent();
-                    PlayerBagUIPanel.Instance.RefreshContent();
+                    PlayerBagUIPanel.Instance?.RefreshContent();
+                    WarehouseUIPanel.Instance?.RefreshContent();
                 }
 
                 

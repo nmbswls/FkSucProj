@@ -151,6 +151,11 @@ namespace My.Player
         public void InitPlayerData(SaveData savingData)
         {
             InitBagInfo();
+            if (savingData != null)
+            {
+                SaveData.EnsureHydrated(savingData);
+                inventoryModel?.ApplyWarehouseFromSave(savingData);
+            }
 
             this.GlobalSwitchMap.Clear();
             if (savingData?.PlayerData?.GlobalSwitchMap != null)
@@ -204,6 +209,8 @@ namespace My.Player
                     LastRestockSettlementDayIndex = kv.Value.LastRestockSettlementDayIndex,
                 };
             }
+
+            inventoryModel?.WriteWarehouseToSave(data);
         }
 
         public FishingSpotRuntimeSave GetOrCreateFishingSpotState(string uniqName, string cfgId, int settlementDayIndex)

@@ -177,6 +177,7 @@ namespace My.Map.Entity
                     BuffId = "social_charmed",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Charmed, ModifierValue = 1 }
                     },
                     DefaultDuration = -1,
                 };

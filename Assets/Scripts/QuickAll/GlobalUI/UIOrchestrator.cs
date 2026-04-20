@@ -71,6 +71,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = "WarehousePanel",
+                resourcePath = "UI/Prefabs/WarehousePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "LootPoint",
                 resourcePath = "UI/Prefabs/LootPoint",
                 defaultLayer = UILayer.Popup,
@@ -303,7 +311,7 @@ namespace My.UI
                 {
                     groupName = "bag",
                     singleInGroup = false,
-                    panelIds = new() { "PlayerBag" },
+                    panelIds = new() { "PlayerBag", "WarehousePanel" },
                     isExclusive = false,
                 };
                 UIOrchestrator.Instance.AddGroupPolicy(bagPolicy);
@@ -596,6 +604,20 @@ namespace My.UI
             ShowInGroup("PlayerBag");
         }
 
+        /// <summary>
+        /// 切换右侧仓库面板；打开时确保拖拽层已显示。
+        /// </summary>
+        public void ToggleWarehousePanel()
+        {
+            if (UIManager.Instance.IsPanelVisible("WarehousePanel"))
+            {
+                UIManager.Instance.HidePanel("WarehousePanel");
+                return;
+            }
+            ShowInGroup("ItemDragDrop");
+            ShowInGroup("WarehousePanel");
+        }
+
 
         public void TryEnterLootDetailMode(ILootableObj lootObj)
         {
@@ -614,6 +636,7 @@ namespace My.UI
         {
             UIManager.Instance.HidePanel("ItemDragDrop");
             UIManager.Instance.HidePanel("PlayerBag");
+            UIManager.Instance.HidePanel("WarehousePanel");
             UIManager.Instance.HidePanel("LootPoint");
         }
 
