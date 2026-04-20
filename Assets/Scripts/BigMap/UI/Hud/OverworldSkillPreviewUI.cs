@@ -24,7 +24,6 @@ namespace My.UI
         public GameObject PreviewCastRangePrefab;
 
         public TextMeshProUGUI HintText;
-        public string PreviewSkillName;
         protected EntitySkillCfg skillCfg;
         protected MapAbilitySpecConfig mainAbilityCfg;
 
@@ -107,9 +106,8 @@ namespace My.UI
             PreviewRect.gameObject.SetActive(false);
             PreviewCastRange.SetActive(false);
 
-            PreviewSkillName = null;
-
             skillCfg = null;
+
             mainAbilityCfg = null;
 
             cbOnConfirm = null;
@@ -205,7 +203,7 @@ namespace My.UI
 
             }
 
-            MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(PreviewSkillName, castVec: wp);
+            MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillCfg.SkillId, castVec: wp);
 
             cbOnConfirm?.Invoke(true);
 
