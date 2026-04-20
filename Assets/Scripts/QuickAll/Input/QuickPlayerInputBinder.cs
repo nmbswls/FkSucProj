@@ -404,8 +404,8 @@ namespace My.Input
                 return;
             }
 
-            //if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            //    return;
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
 
 
             if (uiRouter == null || !uiRouter.DispatchClick(0, LastPos))

@@ -69,7 +69,6 @@ namespace My.UI.Bag
             GridView.InitGridView(0, OnGetItemByIndex);
             GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
 
-            WarehousePanelChromeFactory.EnsureChrome(this);
             BindWarehouseTypeFilters();
             BindWarehousePageTabsFromRoot();
         }
