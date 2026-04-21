@@ -765,6 +765,11 @@ namespace My.Map.Entity
                         continue; 
                     }
 
+                    if(candidate is BaseUnitLogicEntity unitTarget && unitTarget.IsDead)
+                    {
+                        continue;
+                    }
+
                     if (realCfg.TargetEntityType != EEntityType.None && candidate.Type != realCfg.TargetEntityType)
                     {
                         continue;

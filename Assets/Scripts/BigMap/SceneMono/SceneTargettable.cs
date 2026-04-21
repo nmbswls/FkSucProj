@@ -37,8 +37,8 @@ namespace My
         {
             var zOffset = BelongPresenter.GetLogicEntity().OffsetZ;
 
-            float heightMax = Collider.bounds.max.y;
-            float heightMin = Collider.bounds.min.y;
+            float heightMax = Collider.bounds.max.y - Collider.transform.position.y;
+            float heightMin = Collider.bounds.min.y - Collider.transform.position.y;
 
             if(atkHeight - 0.1f >  heightMax + zOffset)
             {

@@ -172,8 +172,8 @@ namespace My
                 if (!heightMatch)
                 {
                     // 产生重叠但高度不符，发生错位，忽略判定
-                    //Debug.Log($"错位");
-                    //continue;
+                    Debug.Log($"错位");
+                    continue;
                 }
                 
 
@@ -242,8 +242,8 @@ namespace My
                 bool heightMatch = targettable.CheckHitHeightValid(atkHeight);
                 if (!heightMatch)
                 {
-                    //Debug.Log($"错位");
-                    //continue;
+                    Debug.Log($"错位");
+                    continue;
                 }
 
                 if (filter != null)
