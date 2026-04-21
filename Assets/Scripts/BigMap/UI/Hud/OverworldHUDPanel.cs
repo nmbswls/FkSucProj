@@ -69,6 +69,8 @@ namespace My.UI
         public Button BtnHomeStorage;
         public Button BtnHomeNextPeriod;
 
+        public ParticleSystem FaQingPS;
+
         public class PlayerPropBall
         {
             public string AttrId;
