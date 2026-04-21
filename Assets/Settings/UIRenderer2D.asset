@@ -10,16 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11145981673336645838492a2d98e247, type: 3}
-  m_Name: Renderer2D
+  m_Name: UIRenderer2D
   m_EditorClassIdentifier: 
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
-  m_RendererFeatures:
-  - {fileID: 7161275607166290003}
-  - {fileID: 3374525878262149320}
-  - {fileID: 5324102286573443096}
-  m_RendererFeatureMap: 5308d1ff38f66163c8b02d4368b9d42e18180e43d202e349
+  m_RendererFeatures: []
+  m_RendererFeatureMap: 
   m_UseNativeRenderPass: 0
   m_LayerMask:
     serializedVersion: 2
@@ -67,63 +64,3 @@ MonoBehaviour:
   m_DefaultLitMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_DefaultUnlitMaterial: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_DefaultMaskMaterial: {fileID: 2100000, guid: 15d0c3709176029428a0da2f8cecf0b5, type: 2}
---- !u!114 &3374525878262149320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 473a86c9e274347dfbdde619584cebe9, type: 3}
-  m_Name: HighlightPlusRenderPassFeature
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  renderPassEvent: 600
-  clearStencil: 0
-  previewInEditMode: 1
-  showInPreviewCamera: 1
---- !u!114 &5324102286573443096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d613f08f173d4dd895bb07b3230baa9, type: 3}
-  m_Name: FullScreenHuntingDesireDistort
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  injectionPoint: 600
-  fetchColorBuffer: 1
-  requirements: 0
-  passMaterial: {fileID: 2100000, guid: c3fe4577d57cc0944beae3138ff2437f, type: 2}
-  passIndex: 0
-  bindDepthStencilAttachment: 0
-  m_Version: 1
---- !u!114 &7161275607166290003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9025c9ff21d63c149b94e1516e5db0ef, type: 3}
-  m_Name: MaskBlurRendererFeature
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  settings:
-    injectionPoint: 500
-    blurMaterial: {fileID: 2100000, guid: dcb18b49b56658a4db228a23cfd3c5cd, type: 2}
-    sourceMaskRT: {fileID: 8400000, guid: ccf047611ca83404a82bbfc3afabe3ea, type: 2}
-    screenMaskMaterial: {fileID: 2100000, guid: 465fee0865b48fe44b4395743d816dfd, type: 2}
-    maskTexturePropertyName: _LightMask
-    blurRadius: 0
-    blurSigma: 0
-    filterMode: 1
-    outputFormat: 0

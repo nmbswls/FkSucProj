@@ -38,6 +38,9 @@ namespace My.Map.Scene
         private LensDistortion lensDistortion;
         private ColorAdjustments colorAdjustments;
 
+
+        private Renderer2DData HuntingDistortFeature;
+
         private Vignette vignette; // 新增：暗角组件
 
         private void Awake()

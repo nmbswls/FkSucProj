@@ -64,14 +64,14 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   colorFilter:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: {r: 0.9433962, g: 0, b: 0, a: 1}
   hueShift:
     m_OverrideState: 0
     m_Value: 0
   saturation:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: -100
 --- !u!114 &5218550939660214305
 MonoBehaviour:
   m_ObjectHideFlags: 3

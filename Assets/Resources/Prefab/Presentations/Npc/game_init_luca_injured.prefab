@@ -160,12 +160,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba3e617cc2e13904699d53503c931326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsShown: 0
+  WeaponName: 
   weaponAnim: {fileID: 0}
   weaponAnimancer: {fileID: 0}
   WeaponCtrl: {fileID: 0}
   innerShowClip: {fileID: 0}
   HitId: 0
   slashEffects: []
+  WeaponViewLength: 0
+  weaponParts: []
+  posLerpSpeed: 15
+  radiusX: 0.2
+  radiusY: 0.4
+  maxAngle: 60
+  minAngle: -60
+  centerOffset: {x: -0.15, y: -0}
 --- !u!1 &5619127808843060262
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,6 +340,7 @@ MonoBehaviour:
   UnitPresenter: {fileID: 0}
   WeaponOnes: []
   ySortOrder: {fileID: 0}
+  CurrEquipWeapon: 
 --- !u!1 &6716341979371502919
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,7 +430,6 @@ MonoBehaviour:
   ShadowView: {fileID: 5242637832211512431}
   AgentView: {fileID: 6614107088177408671}
   ViewPoint: {fileID: 0}
-  faceIndicator: {fileID: 8933406555717738629}
   HitPivot: {fileID: 0}
   WeaponCtrl: {fileID: 637426610165199311}
   navAgent: {fileID: 0}
@@ -652,7 +662,7 @@ MonoBehaviour:
   cameraDistanceFadeFar: 1000
   normalsOption: 0
   ignore: 0
-  _highlighted: 0
+  _highlighted: 1
   fadeInDuration: 0
   fadeOutDuration: 0
   flipY: 0
@@ -715,19 +725,19 @@ MonoBehaviour:
   glowBlendMode: 0
   outlineBlitDebug: 0
   outlineIndependent: 0
-  outlineContourStyle: 0
+  outlineContourStyle: 1
   outlineMaskMode: 0
   glow: 0
   glowWidth: 0.4
   glowQuality: 2
-  glowBlurMethod: 0
+  glowBlurMethod: 1
   glowDownsampling: 2
   glowHQColor: {r: 0.64, g: 1, b: 0, a: 1}
   glowDithering: 1
   glowDitheringStyle: 0
   glowMagicNumber1: 0.75
   glowMagicNumber2: 0.5
-  glowAnimationSpeed: 1
+  glowAnimationSpeed: 5
   glowVisibility: 0
   glowBlitDebug: 0
   glowBlendPasses: 1
@@ -751,7 +761,7 @@ MonoBehaviour:
   innerGlowBlendMode: 0
   innerGlowVisibility: 0
   targetFX: 0
-  targetFXTexture: {fileID: 0}
+  targetFXTexture: {fileID: 2800000, guid: 1de3c566a6c8c405b9f6f453137273ec, type: 3}
   targetFXColor: {r: 1, g: 1, b: 1, a: 1}
   targetFXCenter: {fileID: 0}
   targetFXRotationSpeed: 50
