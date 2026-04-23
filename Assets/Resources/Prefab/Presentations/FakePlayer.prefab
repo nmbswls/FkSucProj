@@ -958,7 +958,7 @@ MonoBehaviour:
   cameraDistanceFadeFar: 1000
   normalsOption: 0
   ignore: 0
-  _highlighted: 1
+  _highlighted: 0
   fadeInDuration: 0
   fadeOutDuration: 0
   flipY: 0

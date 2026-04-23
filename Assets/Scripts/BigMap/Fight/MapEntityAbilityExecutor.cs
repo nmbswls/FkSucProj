@@ -223,7 +223,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            return TryStart(config, inputVec: inputVec, castVec1: castVec, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims);
+            return TryStart(config, inputVec: inputVec, castVec1: castVec, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims, onAbilityEnd: onAbilityEnd);
         }
 
         public void Tick(float dt)
@@ -299,6 +299,8 @@ namespace My.Map.Entity
                 CastVec1 = castVec1,
                 FaceDir = EntityOwner.FinalLook,
                 Position = EntityOwner.Pos,
+
+                OneAbilityEnd = onAbilityEnd,
 
                 PhaseOverrideAnims = phaseOverrideAnims,
             };
