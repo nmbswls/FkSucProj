@@ -108,6 +108,7 @@ namespace My.Map.Entity
 
         public string EnterDebugString = string.Empty;
         public List<string> PhaseBuff = new();
+        public bool EnableVariablePhaseBuff;
 
         public bool ShowRangePreview = false;
         public MapPreviewIntent PreviewIntent = new();

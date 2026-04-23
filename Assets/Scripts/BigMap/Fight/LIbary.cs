@@ -381,10 +381,17 @@ namespace My.Map.Entity
             {
                 _abilityDict = new();
 
+                // 玩家通用能力
+                {
+                    var ab = CreatePlayerCommonInteract();
+                    _abilityDict[ab.Id] = ab;
+                }
+
                 {
                     var ab = CreateDefaultUnlockLootPoint();
                     _abilityDict[ab.Id] = ab;
                 }
+
                 {
                     var ab = CreateDefaultUseLootPoint();
                     _abilityDict[ab.Id] = ab;
@@ -603,6 +610,29 @@ namespace My.Map.Entity
             return abConfig;
         }
 
+        private static MapAbilitySpecConfig CreatePlayerCommonInteract()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_common_interact";
+            spec.TypeTag = AbilityTypeTag.Interaction;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Interacting",
+                LockMovement = true,
+                LockRotation = true,
+                EnableVariablePhaseBuff = true, 
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    ReferName = "InteractTime"
+                },
+            };
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
 
         private static MapAbilitySpecConfig CreateDefaultUnlockLootPoint()
         {

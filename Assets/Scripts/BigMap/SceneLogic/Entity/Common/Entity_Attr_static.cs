@@ -55,7 +55,8 @@ namespace My.Map.Entity
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes";
         public const string PlayerPleasure = "PlayerPleasure"; // 快乐条
-        public const string PlayerDesire = "PlayerDesire";
+        public const string PlayerSanity = "PlayerSanity";
+        public const string PlayerEstrusProgrss = "PlayerEstrusProgrss";
         public const string PlayerOriginPower = "PlayerOriginPower";
 
         public const string PlayerKnockDown = "PlayerKnockDown";

@@ -119,6 +119,7 @@ namespace My
             gameLogicManager.EventOnSwitchStageUpdate += HandleOnSwitchStageUpdate;
             gameLogicManager.EventOnLocalRoomTeleportRequested += OnLocalRoomTeleportFade;
             gameLogicManager.EventOnHardAreaClearStarting += OnHardAreaClearStarting;
+            gameLogicManager.EventOnNextDayPeriod += HandleNextDayPeriod;
 
             //Cursor.lockState = CursorLockMode.Confined;
         }
@@ -713,6 +714,11 @@ namespace My
             {
                 dmgResource.Spawn(worldPos, content, bindTrans);
             }
+        }
+
+        private void HandleNextDayPeriod()
+        {
+            UIManager.Instance.DoFadeInAndOut(0.25f, 0.25f, null, null);
         }
     }
 

@@ -11,6 +11,7 @@ using UnityEngine.UIElements;
 using My.Input;
 using System.Linq;
 using DG.Tweening;
+using static UnityEngine.ParticleSystem;
 
 namespace My.UI
 {
@@ -75,6 +76,11 @@ namespace My.UI
             activePanels.Clear();
             layerPanels.Clear();
             pools.Clear();
+        }
+
+        void Update()
+        {
+            TickFadeInAndOut();
         }
 
         public void RegisterPanel(PanelResource rsc)
@@ -410,6 +416,90 @@ namespace My.UI
                     TopBlackMaskCG.alpha = 1.0f;
                 }).SetLink(gameObject);
 
+        }
+
+        public class FadeInAndOutIntent
+        {
+            public float FadeInTime;
+            public float FadeOutTime;
+
+            public Action? doAction;
+            public Func<bool>? checkCond;
+            public Action? postAction;
+
+            public int Priority = 1;
+        }
+
+        private List<FadeInAndOutIntent> PendingFadeInAndOutIntents { get; set; } = new();
+        private Coroutine _localFadeInAndOutCo;
+
+        private void TickFadeInAndOut()
+        {
+            if (PendingFadeInAndOutIntents.Count == 0)
+            {
+                return;
+            }
+
+            if(_localFadeInAndOutCo != null)
+            {
+                return;
+            }
+
+            var first = PendingFadeInAndOutIntents.First();
+            PendingFadeInAndOutIntents.RemoveAt(0);
+
+            _localFadeInAndOutCo = StartCoroutine(InnerCoFadeInOut(first.FadeInTime, first.FadeOutTime, first.doAction, first.checkCond, first.postAction));
+        }
+        /// <summary>
+        /// 处理渐进检出效果
+        /// </summary>
+        /// <param name="fadeInTime"></param>
+        /// <param name="fadeOutTime"></param>
+        /// <param name="doAction"></param>
+        /// <param name="checkCond"></param>
+        public void DoFadeInAndOut(float fadeInTime, float fadeOutTime, Action? doAction = null, Func<bool>? checkCond = null, Action? postAction = null)
+        {
+            if(PendingFadeInAndOutIntents.Count > 0)
+            {
+                PendingFadeInAndOutIntents.Add(new FadeInAndOutIntent()
+                {
+                    FadeInTime = fadeInTime,
+                    FadeOutTime = fadeOutTime,
+                    doAction = doAction,
+                    checkCond = checkCond
+                });
+                return;
+            }
+
+            if (_localFadeInAndOutCo != null)
+            {
+                StopCoroutine(_localFadeInAndOutCo);
+                _localFadeInAndOutCo = null;
+            }
+            _localFadeInAndOutCo = StartCoroutine(InnerCoFadeInOut(fadeInTime, fadeOutTime, doAction, checkCond));
+        }
+
+        private IEnumerator InnerCoFadeInOut(float fadeToBlackDuration, float fadeFromBlackDuration, Action? doAction, Func<bool>? checkCond, Action? postAction = null)
+        {
+            try
+            {
+                FadeShowBlack(fadeToBlackDuration);
+                yield return new WaitForSecondsRealtime(fadeToBlackDuration + 0.05f);
+                doAction?.Invoke();
+                if(checkCond != null)
+                {
+                    while(!checkCond())
+                    {
+                        yield return null;
+                    }
+                }
+                FadeHideBlack(fadeFromBlackDuration);
+            }
+            finally
+            {
+                postAction?.Invoke();
+                _localFadeInAndOutCo = null;
+            }
         }
 
     }

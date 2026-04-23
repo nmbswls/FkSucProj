@@ -37,6 +37,7 @@ public partial class Tables
     public demo.TbDreamInfiltrationSpot TbDreamInfiltrationSpot {get; }
     public demo.TbFishingSpot TbFishingSpot {get; }
     public demo.TbFishingSpotFish TbFishingSpotFish {get; }
+    public demo.TbPlayerDesireLevel TbPlayerDesireLevel {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -63,6 +64,7 @@ public partial class Tables
         TbDreamInfiltrationSpot = new demo.TbDreamInfiltrationSpot(loader("demo_tbdreaminfiltrationspot"));
         TbFishingSpot = new demo.TbFishingSpot(loader("demo_tbfishingspot"));
         TbFishingSpotFish = new demo.TbFishingSpotFish(loader("demo_tbfishingspotfish"));
+        TbPlayerDesireLevel = new demo.TbPlayerDesireLevel(loader("demo_tbplayerdesirelevel"));
         ResolveRef();
     }
     
@@ -91,6 +93,7 @@ public partial class Tables
         TbDreamInfiltrationSpot.ResolveRef(this);
         TbFishingSpot.ResolveRef(this);
         TbFishingSpotFish.ResolveRef(this);
+        TbPlayerDesireLevel.ResolveRef(this);
     }
 }
 

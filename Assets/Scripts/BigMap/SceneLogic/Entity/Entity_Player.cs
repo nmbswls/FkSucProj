@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Config;
+using My.Config;
 using My.Map.Entity;
 using My.Map.Fight;
 using My.Map.Logic;
@@ -55,6 +56,8 @@ namespace My.Map
 
         private float _lowFreqStateTimer;
         private float _highFreqStateTimer;
+
+        public int DesireLevel { get; private set; }
 
         public PlayerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
@@ -129,7 +132,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
 
             attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100_000, 100_000);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerDesire, null, 100_000, 100_000);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerSanity, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerPleasure, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100_000, 100_000);
@@ -397,6 +400,8 @@ namespace My.Map
 
             _highFreqStateTimer += 0.2f;
 
+            RefreshPlayerDesireLevel();
+
             TickPlayerGcYishang();
 
             TickBeingGazedInfo();
@@ -427,20 +432,53 @@ namespace My.Map
                 LogicManager.viewer.ShowFakeFxEffect("饿", this.Pos);
             }
 
-            // 欲望高时自动增长快乐
-            var desire  = GetAttr(AttrIdConsts.PlayerDesire);
-            if(desire > 50_000)
+            // 将发情缓慢提升到标准线
+            int basicEstrus = GetBasicEstrusByDesireLevel();
+            long curEstrus = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
+
+            // 发情较低时缓慢上升
+            if (curEstrus < basicEstrus * 1000) 
             {
-                ApplyResourceChange(AttrIdConsts.PlayerPleasure, 100, false, EDmgFlag.None, null);
+                ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 100, false, EDmgFlag.None, null);
             }
-            
-            //var addFaqing = (int)(autoFaqing * (interval * 1000) / 1000);
-            //if(addFaqing > 0)
-            //{
-            //    ApplyResourceChange(AttrIdConsts.PlayerFaQingVal, addFaqing, false, EDmgFlag.None, null);
-            //}
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private void RefreshPlayerDesireLevel()
+        {
+            DesireLevel = 0;
+            var cfgs = CfgMgr.Cfgs.TbPlayerDesireLevel.DataList;
+
+            var sanity = GetAttr(AttrIdConsts.PlayerSanity);
+
+            for (int i = 0; i < cfgs.Count; i++)
+            {
+                int sanLine = cfgs[i].SanLine;
+                if (sanity >= sanLine * 1000)
+                {
+                    DesireLevel = cfgs[i].Level;
+                    return;
+                }
+            }
+
+            DesireLevel = cfgs[cfgs.Count - 1].Level;
+        }
+
+        /// <summary>
+        /// 获取快感基准
+        /// </summary>
+        /// <returns></returns>
+        private int GetBasicEstrusByDesireLevel()
+        {
+            var desireCfg = CfgMgr.Cfgs.TbPlayerDesireLevel.GetOrDefault(DesireLevel);
+            if(desireCfg == null)
+            {
+                return 0;
+            }
+            return desireCfg.BasicEstrus;
+        }
 
         /// <summary>
         /// 更新身上的高潮易伤
@@ -538,9 +576,9 @@ namespace My.Map
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_yishang", layer: 100);
 
             // 非自慰需要扣san
-            if(GetAttr(AttrIdConsts.PlayerDesire) > 60_000)
+            if(GetAttr(AttrIdConsts.PlayerSanity) > 60_000)
             {
-                ApplyResourceChange(AttrIdConsts.PlayerDesire, -10000, false, FightStruct.EDmgFlag.None, this.Id);
+                ApplyResourceChange(AttrIdConsts.PlayerSanity, -10000, false, FightStruct.EDmgFlag.None, this.Id);
             }
             
 

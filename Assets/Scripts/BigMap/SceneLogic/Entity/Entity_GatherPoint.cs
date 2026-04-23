@@ -52,6 +52,7 @@ namespace My.Map.Entity
             }
         }
 
+
         /// <summary>
         /// 执行拾取
         /// </summary>
@@ -84,8 +85,11 @@ namespace My.Map.Entity
                 string itemId = item.Item1;
                 int cnt = item.Item2;
 
-                var put = 0;
-                //var put = LogicManager.playerDataManager.TryGiveItem(itemId, cnt);
+                long put = 0;
+                if(!cacheConfig.GatherOnGround)
+                {
+                    put = LogicManager.playerDataManager.InventorySystem.MainBag.TryGiveItem(itemId, cnt);
+                }
                 if(put < cnt)
                 {
                     Debug.Log("bag full create drop");

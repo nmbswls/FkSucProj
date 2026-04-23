@@ -68,11 +68,21 @@ namespace My.Map.Scene
         public bool TriggerInteract(int selectionId)
         {
             //GatherPointEntity.DoGather();
-            MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("default_interact",  overrideParams: new Dictionary<string, string>()
+
+            
+            MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("player_common_interact", overrideParams: new Dictionary<string, string>()
             {
                 ["InteractTime"] = GatherPointEntity.cacheConfig.GatherTime.ToString(),
-                ["EntityId"] = this.Id.ToString(),
-                ["SelectId"] = "1",
+            }, phaseOverrideAnims: new Dictionary<string, string>()
+            {
+                ["Interacting"] = GatherPointEntity.cacheConfig.GatherAnim
+            },
+            onAbilityEnd: (complete) => 
+            {
+                if(complete)
+                {
+                    GatherPointEntity.DoGather();
+                }
             });
 
             return true;

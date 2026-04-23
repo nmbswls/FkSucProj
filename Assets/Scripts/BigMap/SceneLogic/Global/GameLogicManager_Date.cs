@@ -46,6 +46,8 @@ namespace My
 
         public GameDateInfo DateInfo = new();
 
+        public event Action EventOnNextDayPeriod;
+
         public class OneDayBalanceInfo
         {
 
@@ -62,6 +64,8 @@ namespace My
             {
                 HandleOneDayBalance();
             }
+
+            EventOnNextDayPeriod?.Invoke();
         }
 
         /// <summary>

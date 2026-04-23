@@ -470,6 +470,12 @@ namespace My.Map
                         }
                         break;
 
+                    case LogicInteractOutput.EOutputType.NextDayPeriod:
+                        {
+                            Owner.LogicManager.GoToNextPeriod();
+                        }
+                        break;
+
                     #region group相关
 
                     case Config.LogicInteractOutput.EOutputType.EGMemberActivate:
@@ -505,7 +511,6 @@ namespace My.Map
                         break;
 
                     #endregion
-
 
 
                     #region pending 持续性的

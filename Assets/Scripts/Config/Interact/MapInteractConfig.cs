@@ -41,6 +41,8 @@ namespace My.Config
             StartRetreat,
             TriggerSpawner,
 
+            NextDayPeriod,
+
             EGMemberChangeState = 100,
             EGMemberActivate = 101,
         }
@@ -50,6 +52,8 @@ namespace My.Config
         public long Param2;
         public string Param3;
         public string Param4;
+        public long Param5;
+        public long Param6;
 
         public float DelayTime;
 

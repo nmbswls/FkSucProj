@@ -19,5 +19,7 @@ namespace Config.Unit
         public float GatherTime = 1.5f;
 
         public int DropBundleId;
+        public string GatherAnim = "default_gather";
+        public bool GatherOnGround = false;
     }
 }

@@ -8,6 +8,7 @@ using My.Map.Entity;
 using My.Map.Scene;
 using My.Quest;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static My.PlayerFuncOpenSystem;
@@ -15,6 +16,12 @@ using static My.PlayerFuncOpenSystem;
 
 namespace My.UI
 {
+
+    public class OverworldHudDayPeriodIndicator : MonoBehaviour
+    {
+        public TextMeshProUGUI PeriodText;
+    }
+
 
     public class OverworldHUDPanel : PanelBase, IInputConsumer, IRefreshable
     {
@@ -31,6 +38,7 @@ namespace My.UI
             }
         }
 
+        public OverworldHudDayPeriodIndicator PeriodIndicator;
 
         public BottomProgressPanel bottomProgressPanel;
 
@@ -99,10 +107,6 @@ namespace My.UI
             //BottomProgressPanel.Setup();
 
             SkilBar.InitSkills(this);
-
-
-            
-
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
@@ -131,6 +135,13 @@ namespace My.UI
             });
 
             InitializePropBalls();
+
+            var dayPeriodObj = transform.Find("PeriodIndicator");
+            if (dayPeriodObj != null)
+            {
+                PeriodIndicator = dayPeriodObj.AddComponent<OverworldHudDayPeriodIndicator>();
+                PeriodIndicator.PeriodText = PeriodIndicator.transform.Find("PeriodText").GetComponent<TextMeshProUGUI>();
+            }
         }
 
         private void InitializePropBalls()
@@ -148,11 +159,11 @@ namespace My.UI
             var sanGo = PropLineContainer.Find("PlayerSan");
             {
                 var ball = new PlayerPropBall();
-                ball.AttrId = AttrIdConsts.PlayerDesire;
+                ball.AttrId = AttrIdConsts.PlayerSanity;
                 ball.Root = sanGo as RectTransform;
                 ball.CG = sanGo.GetComponent<CanvasGroup>();
                 ball.BarValue = sanGo.Find("Bar").GetComponent<Image>();
-                PlayerBallMap.Add(AttrIdConsts.PlayerDesire, ball);
+                PlayerBallMap.Add(AttrIdConsts.PlayerSanity, ball);
 
                 ball.Root.gameObject.SetActive(false);
             }
@@ -242,7 +253,7 @@ namespace My.UI
 
             CheckDisguiseState();
 
-            
+            UpdateEstrusStateHint();
         }
 
         /// <summary>
@@ -328,11 +339,11 @@ namespace My.UI
 
             if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Desire))
             {
-                PlayerBallMap[AttrIdConsts.PlayerDesire].Root.gameObject.SetActive(true);
+                PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(true);
             }
             else
             {
-                PlayerBallMap[AttrIdConsts.PlayerDesire].Root.gameObject.SetActive(false);
+                PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(false);
             }
 
             bool disguising = false;
@@ -809,7 +820,7 @@ namespace My.UI
             }
             else if (e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Desire)
             {
-                ShowBallAppearEffect(AttrIdConsts.PlayerDesire);
+                ShowBallAppearEffect(AttrIdConsts.PlayerSanity);
             }
             else if(e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Clothes)
             {
@@ -819,6 +830,17 @@ namespace My.UI
 
 
         #endregion
+
+
+        #region 发情效果
+
+        private void UpdateEstrusStateHint()
+        {
+            // 
+        }
+
+        #endregion
     }
+
 
 }
