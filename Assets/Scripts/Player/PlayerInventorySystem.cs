@@ -49,12 +49,15 @@ namespace My.Player.Bag
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
+            this.LogicManager = ctx;
+
             MainBag.InitBag(0, 60, 0);
 
             int storageSlots = 100;
             WarehouseBag.InitBag(EPlayerBagId.Storage, storageSlots, 0);
 
             var secretBag = new PlayerBag();
+            var slots = ctx.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.SecretSlot);
             secretBag.InitBag(EPlayerBagId.Secret, 5, 3);
             SpeBags[EPlayerBagId.Secret] = secretBag;
 
@@ -175,7 +178,7 @@ namespace My.Player.Bag
             }
             _bagTimer = LogicTime.time;
 
-            if (LogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
+            if ( LogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
             {
                 return;
             }

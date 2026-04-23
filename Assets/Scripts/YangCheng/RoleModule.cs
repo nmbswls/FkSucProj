@@ -2,8 +2,29 @@
 using System.Collections.Generic;
 using System;
 
-namespace My
+namespace My.Player
 {
+    /// <summary>
+    /// 养成提供器
+    /// </summary>
+    public class BasicProgressionProvider : IProgressionSource
+    {
+        public BasicProgressionProvider()
+        {
+            
+        }
+
+        public EProgressionModule ModuleName => EProgressionModule.Basic;
+
+        public event Action<IProgressionSource> OnStatsChanged;
+
+        public void EvaluateStats(StatMap targetMap)
+        {
+            targetMap.Add((int)EYCAttribute.SecretSlot, 3);
+        }
+    }
+
+
     /// <summary>
     /// 养成提供器
     /// </summary>
@@ -13,8 +34,8 @@ namespace My
 
         private int _level = 1;
         // 模拟配置表数据：每升一级加多少属性
-        private Dictionary<int, float> _growthRates;
-        private Dictionary<int, float> _baseStats;
+        private Dictionary<int, float> _growthRates = new();
+        private Dictionary<int, float> _baseStats = new();
 
         public EProgressionModule ModuleName => EProgressionModule.Level;
 

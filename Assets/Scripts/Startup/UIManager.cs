@@ -466,7 +466,8 @@ namespace My.UI
                     FadeInTime = fadeInTime,
                     FadeOutTime = fadeOutTime,
                     doAction = doAction,
-                    checkCond = checkCond
+                    checkCond = checkCond,
+                    postAction = postAction,
                 });
                 return;
             }

@@ -6,17 +6,25 @@ using UnityEngine;
 using static Unity.VisualScripting.Metadata;
 
 
-namespace My
+namespace My.Player
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum EYCAttribute
+    {
+        None,
+        SecretSlot,
+    }
 
     // 2. 极简存储结构（用于叶子节点存储数据，省内存）
     [System.Serializable]
     public struct StatPair
     {
         public int ID;
-        public float Value;
+        public long Value;
 
-        public StatPair(int id, float val)
+        public StatPair(int id, long val)
         {
             ID = id;
             Value = val;
@@ -96,6 +104,7 @@ namespace My
     public enum EProgressionModule
     {
         None,
+        Basic,
         Level,
         Gear,
         Talent,

@@ -173,8 +173,6 @@ namespace My.Player
             FuncOpenSystem.InitSystem(logicManager, savingData);
             InventorySystem.InitSystem(logicManager, savingData);
 
-            InventorySystem?.ApplyWarehouseFromSave(savingData);
-
 
             _fishingRuntime.Clear();
             if (savingData?.PlayerData?.FishingSpotByUniqName != null)

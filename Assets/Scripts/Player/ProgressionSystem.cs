@@ -17,12 +17,13 @@ namespace My.Player
 
         protected GameLogicManager LogicManager { get; private set; }
 
+        public PlayerMain BaseStats { get; private set; } 
         public PlayerGearManager GearManager;
         public PlayerTalentManager TalentManager;
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
 
-        //public ProgressionNode BaseStatsModule { get; private set; } // 基础成长(升级/转生)
+        
 
         //public LevelProgression LevelData { get; private set; }
 
@@ -31,14 +32,18 @@ namespace My.Player
             this.LogicManager = ctx;
 
             TalentManager = new();
-            TalentManager.Initialize();
+            TalentManager.Initialize(savingData);
 
             GearManager = new();
-            GearManager.Initialize();
+            GearManager.Initialize(savingData);
+
+            BaseStats = new();
+            BaseStats.Initialize(savingData);
 
             ProgressionRoot = new("Root");
-            ProgressionRoot.AddChild(TalentManager.TalentAggregator);
+            ProgressionRoot.AddChild(BaseStats.MainAggregator);
             ProgressionRoot.AddChild(GearManager.GearAggregator);
+            ProgressionRoot.AddChild(TalentManager.TalentAggregator);
 
             ProgressionRoot.OnStatsChanged += (src) => {
                 RefreshPlayerBigMapAttr();
@@ -99,21 +104,33 @@ namespace My.Player
     }
 
 
-    public class PlayerBasicGrowth
+    public class PlayerMain
     {
-        public ProgressionAggregator BasicAggregator;
+        public ProgressionAggregator MainAggregator;
+
+        private BasicProgressionProvider BasicProvider;
+        private LevelProgressionProvider LevelProvider;
 
         public void Initialize(SaveData savingData = null)
         {
-            BasicAggregator = new("BasicTotal");
+            MainAggregator = new("Main");
+
+            BasicProvider = new();
+            LevelProvider = new();
+
+            if(savingData != null)
+            {
+                LevelProvider.SetLevel(savingData.PlayerData.Level);
+            }
+
+            MainAggregator.AddChild(BasicProvider);
+            MainAggregator.AddChild(LevelProvider);
         }
 
 
-        public void LevelUp(int newLevel)
+        public void OnLevelUpdate(int newLevel)
         {
-            //LevelData.SetLevel(newLevel);
-            // 此时 BaseStatsModule 脏了 -> TotalStats 脏了
-            // 下次 GetValue 时会自动重算
+            LevelProvider.SetLevel(newLevel);
         }
     }
 
@@ -131,7 +148,6 @@ namespace My.Player
         {
             GearAggregator = new("GearTotal");
         }
-
     }
 
     public class PlayerTalentManager
@@ -143,9 +159,7 @@ namespace My.Player
         public void Initialize(SaveData savingData = null)
         {
             TalentAggregator = new("TalentTotal");
-
         }
-
     }
 
     public class PlayerTalentNode

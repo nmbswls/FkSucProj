@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace My
+namespace My.Player
 {
     public class PlayerGear : IProgressionSource
     {
