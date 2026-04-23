@@ -94,7 +94,7 @@ namespace My
 
             gameLogicManager.playerDataManager.CostItem(shopItem.CostItemId, shopItem.CostCount);
 
-            long addCnt = gameLogicManager.playerDataManager.inventoryModel.MainBag.TryGiveItem(giveItem, giveCount);
+            long addCnt = gameLogicManager.playerDataManager.InventorySystem.MainBag.TryGiveItem(giveItem, giveCount);
             Debug.Log("TryBuyFromShop try buy " + giveItem + " " + addCnt);
 
             return true;
@@ -103,7 +103,7 @@ namespace My
 
         public bool TrySellFromBag(int bagId, int itemIdx)
         {
-            var bag = gameLogicManager.playerDataManager.inventoryModel.GetBagById(bagId);
+            var bag = gameLogicManager.playerDataManager.InventorySystem.GetBagById(bagId);
 
             var item = bag.GetItemByIdx(itemIdx);
             if(item == null || item.Count <= 0)

@@ -38,8 +38,8 @@ namespace My.UI.Bag
 
         public int currentWarehousePage;
 
-        public PlayerInventoryModel BindingInventory =>
-            MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+        public PlayerInventorySystem BindingInventory =>
+            MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem;
 
         public class WarehousePageTabEntry
         {

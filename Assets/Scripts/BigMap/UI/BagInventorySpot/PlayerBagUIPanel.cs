@@ -53,7 +53,7 @@ namespace My.UI.Bag
         public List<InnerSpeBagItem> SpeBagItems = new();
 
 
-        public PlayerInventoryModel BindingInventory { get { return MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel; } }
+        public PlayerInventorySystem BindingInventory { get { return MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem; } }
 
 
         private bool markDirty = false;
@@ -210,7 +210,7 @@ namespace My.UI.Bag
                 bag.ClearEmptyItems();
             }
 
-            MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.ItemUseCd.TryGetValue(stack.ItemID, out var lastUseTime);
+            MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.ItemUseCd.TryGetValue(stack.ItemID, out var lastUseTime);
             if(lastUseTime != 0 && useRow.UseCd > 0 && LogicTime.time - lastUseTime < useRow.UseCd)
             {
                 Debug.LogError($"use item fail cd {lastUseTime}");

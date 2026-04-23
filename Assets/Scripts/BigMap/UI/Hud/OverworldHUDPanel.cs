@@ -20,6 +20,11 @@ namespace My.UI
     public class OverworldHudDayPeriodIndicator : MonoBehaviour
     {
         public TextMeshProUGUI PeriodText;
+
+        public void RefreshView(GameLogicManager glm)
+        {
+
+        }
     }
 
 
@@ -87,14 +92,6 @@ namespace My.UI
             public Image BarValue;
         }
 
-        //public RectTransform PlayerClothesRoot;
-        //public CanvasGroup PlayerClothesCG;
-        //public Image ClothesBar;
-
-        //public RectTransform PlayerExposeRoot;
-        //public CanvasGroup PlayerExposeCG;
-        //public Image ExposeBar;
-
         public RectTransform PropLineContainer;
         private Dictionary<string, PlayerPropBall> PlayerBallMap = new();
 
@@ -136,7 +133,7 @@ namespace My.UI
 
             InitializePropBalls();
 
-            var dayPeriodObj = transform.Find("PeriodIndicator");
+            var dayPeriodObj = transform.Find("DayPeriodIndicator");
             if (dayPeriodObj != null)
             {
                 PeriodIndicator = dayPeriodObj.AddComponent<OverworldHudDayPeriodIndicator>();

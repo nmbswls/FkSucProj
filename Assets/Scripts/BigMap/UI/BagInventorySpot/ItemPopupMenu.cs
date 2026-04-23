@@ -115,7 +115,7 @@ namespace My.UI
                 {
                     DropBtnGo.gameObject.SetActive(true);
                 }
-                var bag = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.GetBagById(cell.ContainerId);
+                var bag = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.GetBagById(cell.ContainerId);
                 if(bag != null)
                 {
                     //var item = 
@@ -132,7 +132,7 @@ namespace My.UI
         {
             if(UseBtnGo.activeSelf)
             {
-                MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.ItemUseCd.TryGetValue(currentStack.ItemID, out var useTime);
+                MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.ItemUseCd.TryGetValue(currentStack.ItemID, out var useTime);
                 
                 // 使用冷却剩余秒数
                 if (cachePrimaryUse == null)
@@ -192,7 +192,7 @@ namespace My.UI
             {
                 if (chossed > 0)
                 {
-                    var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+                    var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem;
                     if (inv.TrySplitItemInBag(bagId, currentIndex, chossed))
                     {
                         PlayerBagUIPanel.Instance?.RefreshContent();
@@ -215,7 +215,7 @@ namespace My.UI
             }
 
             // 将整堆丢到玩家脚下世界掉落
-            MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.DropItemToGround(
+            MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.DropItemToGround(
                 currentCell.ContainerId, currentIndex, currentStack.Count);
             PlayerBagUIPanel.Instance?.RefreshContent();
             WarehouseUIPanel.Instance?.RefreshContent();

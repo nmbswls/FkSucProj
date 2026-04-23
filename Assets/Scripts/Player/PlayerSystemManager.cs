@@ -26,7 +26,6 @@ namespace My.Player
         public GameLogicManager logicManager { get;private set; }
 
         public long ItemInstanceIdCounter = 100;
-        public PlayerInventoryModel inventoryModel;
 
         public string[] QuickSlotItemSet = new string[10];
 
@@ -43,6 +42,9 @@ namespace My.Player
         public DialogTriggerSystem DialogTriggerSystem { get; private set; }
 
         public PlayerFuncOpenSystem FuncOpenSystem { get; private set; }
+
+        public PlayerInventorySystem InventorySystem { get; private set; }
+
 
         /// <summary>
         /// 垂钓点运行时状态（键为地图 UniqName）；存盘写入 SaveData.PlayerData.FishingSpotByUniqName。
@@ -118,6 +120,7 @@ namespace My.Player
             QuestSystem = new();
             DialogTriggerSystem = new();
             FuncOpenSystem = new();
+            InventorySystem = new();
 
             QuickSlotItemSet[0] = "feidao";
 
@@ -154,7 +157,6 @@ namespace My.Player
             if (savingData != null)
             {
                 SaveData.EnsureHydrated(savingData);
-                inventoryModel?.ApplyWarehouseFromSave(savingData);
             }
 
             this.GlobalSwitchMap.Clear();
@@ -170,6 +172,9 @@ namespace My.Player
             QuestSystem.InitSystem(logicManager, savingData);
             DialogTriggerSystem.InitSystem(logicManager, savingData);
             FuncOpenSystem.InitSystem(logicManager, savingData);
+
+            InventorySystem?.ApplyWarehouseFromSave(savingData);
+
 
             _fishingRuntime.Clear();
             if (savingData?.PlayerData?.FishingSpotByUniqName != null)
@@ -210,7 +215,7 @@ namespace My.Player
                 };
             }
 
-            inventoryModel?.WriteWarehouseToSave(data);
+            InventorySystem?.WriteWarehouseToSave(data);
         }
 
         public FishingSpotRuntimeSave GetOrCreateFishingSpotState(string uniqName, string cfgId, int settlementDayIndex)
@@ -282,7 +287,7 @@ namespace My.Player
 
         public void InitBagInfo()
         {
-            inventoryModel = new(this);
+            InventorySystem = new(this);
 
             if (CfgMgr.Cfgs == null)
             {
@@ -290,7 +295,7 @@ namespace My.Player
                 return;
             }
 
-            var mainBag = inventoryModel.MainBag;
+            var mainBag = InventorySystem.MainBag;
             mainBag.NormalSlots[0] = ItemCatalog.CreateItemStack("banana", 2);
             mainBag.NormalSlots[1] = ItemCatalog.CreateItemStack("qiezi", 3);
             mainBag.NormalSlots[2] = ItemCatalog.CreateItemStack("bangbangtang", 3);
@@ -307,7 +312,7 @@ namespace My.Player
 
         public void Tick(float dt)
         {
-            inventoryModel.Tick(dt);
+            InventorySystem.Tick(dt);
 
             ProgressionSystem.Tick(dt);
             QuestSystem.Tick(dt);
@@ -336,12 +341,12 @@ namespace My.Player
         }
         public bool CheckHaveItem(string itemId, long count)
         {
-            return inventoryModel.CheckHaveItem(itemId, count);
+            return InventorySystem.CheckHaveItem(itemId, count);
         }
 
         public long CostItem(string itemId, long count)
         {
-            return inventoryModel.CostItem(itemId, count);
+            return InventorySystem.CostItem(itemId, count);
         }
 
         /// <summary>
@@ -363,7 +368,7 @@ namespace My.Player
                 return true;
             }
 
-            if(inventoryModel.CanGainItems(itemId, count))
+            if(InventorySystem.CanGainItems(itemId, count))
             {
                 return true;
             }
@@ -378,7 +383,7 @@ namespace My.Player
         /// <returns></returns>
         public long TryGiveItem(string itemId, long count, int bagId)
         {
-            return inventoryModel.GiveItem(itemId, count, bagId);
+            return InventorySystem.GiveItem(itemId, count, bagId);
         }
 
         /// <summary>

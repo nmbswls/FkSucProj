@@ -171,7 +171,7 @@ namespace My
 
             
 
-            playerDataManager.inventoryModel.EventOnGainItem += (itemId, count) =>
+            playerDataManager.InventorySystem.EventOnGainItem += (itemId, count) =>
             {
                 if(UIGainSideNotifyPanel.Instance != null)
                 {

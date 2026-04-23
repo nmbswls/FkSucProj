@@ -159,7 +159,7 @@ namespace My.UI
                 }
                 var srcContainer = LootPointUIPanel.Instance.Loot.GetLootItemContainer();
 
-                var bag = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel.GetBagById(bagId);
+                var bag = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.GetBagById(bagId);
                 var modified = ItemUtils.MoveOrMergeOrSwapItem(srcContainer, payload.SourceIndex, bag, dstIndex);
                 if (modified)
                 {
@@ -204,7 +204,7 @@ namespace My.UI
                 int toBag = bagId;
 
                 // 背包内部移动/堆叠/交换
-                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem;
                 bool ok = inv.TrySwapOrMove(fromBag, payload.SourceIndex, toBag, dstIndex);
                 if (ok)
                 {
@@ -242,7 +242,7 @@ namespace My.UI
                 || payload.SourceContainerType == EContainerType.Warehouse)
             {
                 var container = LootPointUIPanel.Instance.Loot.GetLootItemContainer();
-                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem;
                 var fromBag = inv.GetBagById(payload.SourceContainerId);
 
                 var modified = ItemUtils.MoveOrMergeOrSwapItem(fromBag, payload.SourceIndex, container, dstIndex);
@@ -270,7 +270,7 @@ namespace My.UI
                 || payload.SourceContainerType == EContainerType.SpecialInventory
                 || payload.SourceContainerType == EContainerType.Warehouse)
             {
-                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.inventoryModel;
+                var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem;
                 var fromBag = inv.GetBagById(payload.SourceContainerId);
 
                 //

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using cfg.demo;
 using My.Map;
+using My.Player;
 using My.Player.Bag;
 using UnityEngine;
 using static My.UI.AnyContainerItemCell;

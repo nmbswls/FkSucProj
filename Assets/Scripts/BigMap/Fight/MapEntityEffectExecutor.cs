@@ -224,7 +224,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            ctx.Env.playerDataManager.inventoryModel.ItemUseCd[useItemId] = LogicTime.time;
+            ctx.Env.playerDataManager.InventorySystem.ItemUseCd[useItemId] = LogicTime.time;
 
             var srcIdxStr = ctx.GetVariatyRawVal(realCfg.UseItemSrcIdx);
             int.TryParse(srcIdxStr, out var srcIdx);
