@@ -477,7 +477,7 @@ namespace My.UI
                 StopCoroutine(_localFadeInAndOutCo);
                 _localFadeInAndOutCo = null;
             }
-            _localFadeInAndOutCo = StartCoroutine(InnerCoFadeInOut(fadeInTime, fadeOutTime, doAction, checkCond));
+            _localFadeInAndOutCo = StartCoroutine(InnerCoFadeInOut(fadeInTime, fadeOutTime, doAction, checkCond, postAction));
         }
 
         private IEnumerator InnerCoFadeInOut(float fadeToBlackDuration, float fadeFromBlackDuration, Action? doAction, Func<bool>? checkCond, Action? postAction = null)

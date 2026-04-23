@@ -18,5 +18,5 @@ MonoBehaviour:
   MaxCount: 3
   GatherTime: 1.2
   DropBundleId: 1
-  GatherAnim: default_gather
+  GatherAnim: player_gather_default
   GatherOnGround: 0
