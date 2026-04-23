@@ -10,6 +10,7 @@ using My.Player.Bag;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using static My.Map.Fight.FightStruct;
+using My.Player;
 
 
 namespace My.Map

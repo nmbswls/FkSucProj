@@ -280,7 +280,7 @@ namespace My.UI
                     UIManager.Instance.ShowPanel("ItemCountChooseBox", new Dictionary<int, long>());
                 }
 
-                bool sell = ShopNormalUIPanel.Instance.BindShop.TrySellFromBag(fromBag.BagId, payload.SourceIndex);
+                bool sell = ShopNormalUIPanel.Instance.BindShop.TrySellFromBag((int)fromBag.BagId, payload.SourceIndex);
                 if (sell)
                 {
                     ShopNormalUIPanel.Instance.RefreshContent();

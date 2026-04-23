@@ -1,8 +1,9 @@
 
 using System;
 using My.Config;
+using UnityEngine;
 
-namespace My.Player
+namespace My
 {
 
     [Serializable]
@@ -66,25 +67,35 @@ namespace My.Player
 
     public static class ItemUtils
     {
-        /// <summary>
-        /// 在容器间移动、合并堆叠或整格交换道具
-        /// </summary>
-        /// <returns></returns>
+        static void PostPlayerBagMutation(IItemContainer a, IItemContainer b)
+        {
+            //if (ReferenceEquals(a, b) && a is PlayerBag same)
+            //{
+            //    same.AfterSlotMutation();
+            //    return;
+            //}
+            //if (a is PlayerBag pa)
+            //{
+            //    pa.AfterSlotMutation();
+            //}
+            //if (b is PlayerBag pb)
+            //{
+            //    pb.AfterSlotMutation();
+            //}
+        }
+
         public static bool MoveOrMergeOrSwapItem(IItemContainer srcContainer, int srcIdx, IItemContainer dstContainer, int dstIdx)
         {
-            // 校验源槽位索引
             if (!srcContainer.IsSlotIdxValid(srcIdx))
             {
                 return false;
             }
 
-            // 校验目标槽位索引
             if (!dstContainer.IsSlotIdxValid(dstIdx))
             {
                 return false;
             }
 
-            // 读取源槽道具，无效则失败
             var srcItem = srcContainer.GetItemByIdx(srcIdx);
             if (srcItem == null || srcItem.Count <= 0)
             {
@@ -94,20 +105,21 @@ namespace My.Player
 
             var dstItem = dstContainer.GetItemByIdx(dstIdx);
 
-            // 目标槽为空：整格迁入，或拆出一部分迁入（受叠加上限约束）
+            // ?????????????????????????????????????????
             if (dstItem == null || dstItem.Count <= 0)
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
 
-                // 整堆不超过目标容器单格上限时直接迁入
+                // ???????????????????????????????
                 if (srcItem.Count <= srcItemNewStackMax)
                 {
                     dstContainer.SetItemData(dstIdx, srcItem);
                     srcContainer.SetItemData(srcIdx, null);
+                    PostPlayerBagMutation(srcContainer, dstContainer);
                     return true;
                 }
 
-                // 带实例 ID 的堆叠不可拆分迁入，只能整格操作
+                // ????? ID ???????????????????????
                 if (srcItem.ItemInstanceId != 0)
                 {
                     return false;
@@ -118,9 +130,10 @@ namespace My.Player
                 dstContainer.SetItemData(dstIdx, newItem);
                 srcContainer.SetItemCount(srcIdx, srcItem.Count - canMove);
 
+                PostPlayerBagMutation(srcContainer, dstContainer);
                 return true;
             }
-            // 目标槽已有同 ID 且无实例：尝试双向匀量合并
+            // ????????? ID ???????????????????????
             else if (dstItem.ItemID == srcItem.ItemID && srcItem.ItemInstanceId == 0 && dstItem.ItemInstanceId == 0)
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
@@ -128,13 +141,13 @@ namespace My.Player
 
                 long canMove1 = srcItemNewStackMax - dstItem.Count;
                 long canMove2 = dstItemNewStackMax - srcItem.Count;
-                // 两侧格均已满，无法再互相匀量
+                // ????????????????????????
                 if (canMove1 <= 0 && canMove2 <= 0)
                 {
                     return false;
                 }
 
-                // 优先从源向目标补充可合并空间
+                // ???????????????????
                 if (canMove1 > 0)
                 {
                     dstContainer.SetItemCount(dstIdx, dstItem.Count + canMove1);
@@ -160,9 +173,10 @@ namespace My.Player
                     }
                 }
 
+                PostPlayerBagMutation(srcContainer, dstContainer);
                 return true;
             }
-            // 不同道具或存在实例：整格互换（需双方数量均不超过对方容器单格上限）
+            // ????????????????????????????????????????????????????????
             else
             {
                 var srcItemNewStackMax = dstContainer.GetMaxStack(srcItem.ItemID);
@@ -177,13 +191,73 @@ namespace My.Player
                     return false;
                 }
 
-                // 整格交换两堆道具
-                // todo：带 ItemInstanceId 时需额外校验是否允许交换
+                // ????????????
+                // todo???? ItemInstanceId ?????????????????????
                 dstContainer.SetItemData(dstIdx, srcItem);
                 srcContainer.SetItemData(srcIdx, dstItem);
 
+                PostPlayerBagMutation(srcContainer, dstContainer);
                 return true;
             }
         }
+    }
+
+    public interface IItemContainer
+    {
+        long GetMaxStack(string itemId);
+
+        /// <summary>
+        /// ??????????????????null ???????
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="item"></param>
+        void SetItemData(int idx, ItemStack item);
+
+        /// <summary>
+        /// ?????????????????????
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="item"></param>
+        void SetItemCount(int idx, long count);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        bool IsSlotIdxValid(int slotIDx);
+
+
+        /// <summary>
+        /// ?????????? ID ????????????????
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        long GetItemCount(string itemId);
+
+        /// <summary>
+        /// ????????????????
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
+        ItemStack GetItemByIdx(int idx);
+    }
+
+    public enum EContainerType
+    {
+        Inventory,
+        LootPoint,
+        SpecialInventory,
+        Shop,
+        /// <summary>
+        /// ????????? Inventory ???????????????
+        /// </summary>
+        Warehouse,
+    }
+
+
+    public enum EBagStorageLayout
+    {
+        Grid,
+        Compact,
     }
 }

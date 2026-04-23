@@ -1,6 +1,7 @@
 using cfg.demo;
 using My.Config;
 using My.Map;
+using My.Player;
 using My.Player.Bag;
 using My.UI;
 using SuperScrollView;
@@ -10,7 +11,7 @@ using UnityEngine.UI;
 
 namespace My.UI.Bag
 {
-    // 右侧仓库：多页、类型筛选、与主背包拖拽互通；数据在 PlayerInventoryModel.WarehousePageBags。
+    // 右侧仓库：单背包、类型筛选、与主背包拖拽互通；分类槽位索引见 PlayerInventorySystem.GetWarehouseSlotIndicesForItemTypeFilter。
     public class WarehouseUIPanel : PanelBase, IInputConsumer
     {
         public static WarehouseUIPanel Instance
@@ -170,19 +171,18 @@ namespace My.UI.Bag
 
         private void OnWarehouseDataChanged()
         {
-            var warehousePage = CurrentWarehousePageStorage();
-            if (warehousePage != null)
+            var warehouseBag = GetWarehouseBag();
+            if (warehouseBag != null)
             {
-                GridView.SetListItemCount(warehousePage.BasicCapacity + warehousePage.MaxExtraCapacity);
+                GridView.SetListItemCount(warehouseBag.BasicCapacity + warehouseBag.MaxExtraCapacity);
             }
             GridView.RefreshAllShownItem();
             RefreshWarehousePageTabHints();
         }
 
-        private PlayerBag CurrentWarehousePageStorage()
+        private PlayerBag GetWarehouseBag()
         {
-            int page = Mathf.Clamp(currentWarehousePage, 0, WarehouseConfig.PageCount - 1);
-            return BindingInventory.GetBagById(WarehouseConfig.BagIdFirst + page);
+            return BindingInventory.GetBagById((int)EPlayerBagId.Storage);
         }
 
         private void SwitchWarehousePage(int page)
@@ -215,22 +215,27 @@ namespace My.UI.Bag
 
         private void RefreshWarehousePageTabHints()
         {
-            for (int i = 0; i < warehousePageTabs.Count && i < WarehouseConfig.PageCount; i++)
+            var warehousePage = GetWarehouseBag();
+            if (warehousePage == null)
             {
-                var warehousePage = BindingInventory.GetBagById(WarehouseConfig.BagIdFirst + i);
-                if (warehousePage == null || warehousePageTabs[i].PageCountText == null)
+                return;
+            }
+            int used = 0;
+            foreach (var s in warehousePage.NormalSlots)
+            {
+                if (s != null && !s.IsEmpty)
+                {
+                    used++;
+                }
+            }
+            var summary = $"{used}/{warehousePage.NormalSlots.Count}";
+            for (int i = 0; i < warehousePageTabs.Count; i++)
+            {
+                if (warehousePageTabs[i].PageCountText == null)
                 {
                     continue;
                 }
-                int used = 0;
-                foreach (var s in warehousePage.NormalSlots)
-                {
-                    if (s != null && !s.IsEmpty)
-                    {
-                        used++;
-                    }
-                }
-                warehousePageTabs[i].PageCountText.text = $"{used}/{warehousePage.NormalSlots.Count}";
+                warehousePageTabs[i].PageCountText.text = i == 0 ? summary : "";
             }
         }
 
@@ -239,7 +244,7 @@ namespace My.UI.Bag
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 
-            var warehousePage = CurrentWarehousePageStorage();
+            var warehousePage = GetWarehouseBag();
             if (warehousePage == null)
             {
                 return item;
@@ -249,7 +254,7 @@ namespace My.UI.Bag
             {
                 var stack = warehousePage.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                int bid = WarehouseConfig.BagIdFirst + Mathf.Clamp(currentWarehousePage, 0, WarehouseConfig.PageCount - 1);
+                int bid = (int)EPlayerBagId.Storage;
                 cell.Bind(stack, itemIndex, EContainerType.Warehouse, bid, null);
 
                 bool dim = stack != null && !stack.IsEmpty && !PassesTypeFilter(stack);

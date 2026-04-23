@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using TMPro;
 using static UnityEditor.Progress;
 using My.Map;
+using System;
 
 namespace My.UI.Bag
 {
@@ -123,7 +124,7 @@ namespace My.UI.Bag
         public void InitilaizeView()
         {
             var mainBag = BindingInventory.GetBagById(0);
-            GridView.SetListItemCount(mainBag.BasicCapacity + mainBag.MaxExtraCapacity);
+            GridView.SetListItemCount(mainBag.BasicCapacity + Math.Max(mainBag.MaxExtraCapacity, mainBag.ExtraSlots.Count));
         }
 
         public void RefreshContent()
@@ -148,7 +149,7 @@ namespace My.UI.Bag
         private void OnInventoryAllChanged()
         {
             var mainBag = BindingInventory.GetBagById(0);
-            GridView.SetListItemCount(mainBag.BasicCapacity + mainBag.MaxExtraCapacity);
+            GridView.SetListItemCount(mainBag.BasicCapacity + Math.Max(mainBag.MaxExtraCapacity, mainBag.ExtraSlots.Count));
             GridView.RefreshAllShownItem();
 
             if (CurrExpandSpeBag != -1)
@@ -173,9 +174,14 @@ namespace My.UI.Bag
                 item.gameObject.SetActive(true);
                 cell.Bind(stack, itemIndex, EContainerType.Inventory, 0, null);
             }
+            else if (itemIndex < mainBag.BasicCapacity + mainBag.ExtraSlots.Count)
+            {
+                var stack = mainBag.GetItemByIdx(itemIndex);
+                item.gameObject.SetActive(true);
+                cell.Bind(stack, itemIndex, EContainerType.Inventory, 0, null, AnyContainerItemCell.EStyleType.Red);
+            }
             else
             {
-                //item.gameObject.SetActive(false);
                 cell.ClearEmpty();
             }
             return item;

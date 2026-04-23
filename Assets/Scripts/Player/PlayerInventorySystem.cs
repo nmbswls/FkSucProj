@@ -16,6 +16,7 @@ using UnityEngine;
 using static My.Map.Fight.FightStruct;
 using static My.UI.AnyContainerItemCell;
 using static UnityEditor.Progress;
+using My.Player;
 
 namespace My.Player.Bag
 {
@@ -23,14 +24,14 @@ namespace My.Player.Bag
     
     public class PlayerInventorySystem : IPlayerSystem
     {
-        public PlayerSystemManager DataManager;
+        protected GameLogicManager LogicManager { get; private set; }
+
         public PlayerBag MainBag;
+        public PlayerBag WarehouseBag;
         public Dictionary<EPlayerBagId, PlayerBag> SpeBags = new Dictionary<EPlayerBagId, PlayerBag>();
 
-        ///// <summary>
-        ///// 仓库分页，与 <see cref="WarehouseConfig.BagIdFirst"/> 起的 BagId 一一对应。
-        ///// </summary>
-        //public readonly List<PlayerBag> WarehousePageBags = new List<PlayerBag>();
+        readonly Dictionary<EItemType, List<int>> _warehouseTypeToIndices = new Dictionary<EItemType, List<int>>();
+        bool _warehouseCategoryDirty = true;
 
         public Dictionary<string, float> ItemUseCd = new();
 
@@ -39,54 +40,129 @@ namespace My.Player.Bag
         public event Action<EPlayerBagId, string, long> EventOnGainItem;
 
 
+        public PlayerInventorySystem()
+        {
+            MainBag = new PlayerBag();
+            WarehouseBag = new PlayerBag();
+            
+        }
+
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
-            MainBag = new();
             MainBag.InitBag(0, 60, 0);
 
-            if(true)
-            {
-                var bagId = EPlayerBagId.Secret;
-                var bag = new PlayerBag();
+            int storageSlots = 100;
+            WarehouseBag.InitBag(EPlayerBagId.Storage, storageSlots, 0);
 
-                // 通过savingData 搜集背包扩容信息
-                bag.InitBag(bagId, 5, 3);
+            var secretBag = new PlayerBag();
+            secretBag.InitBag(EPlayerBagId.Secret, 5, 3);
+            SpeBags[EPlayerBagId.Secret] = secretBag;
+
+            WarehouseBag.EvOnBagUpdate += delegate { MarkWarehouseCategoryDirty(); };
+
+            ApplyWarehouseFromSave(savingData);
+        }
+
+        void MarkWarehouseCategoryDirty()
+        {
+            _warehouseCategoryDirty = true;
+        }
+
+        void EnsureWarehouseCategoryIndex()
+        {
+            if (!_warehouseCategoryDirty || WarehouseBag == null)
+            {
+                return;
+            }
+            _warehouseTypeToIndices.Clear();
+            for (int i = 0; i < WarehouseBag.NormalSlots.Count; i++)
+            {
+                var st = WarehouseBag.NormalSlots[i];
+                if (st == null || st.IsEmpty)
+                {
+                    continue;
+                }
+                var def = ItemCatalog.GetItemDef(st.ItemID);
+                var et = def != null ? def.ItemType : EItemType.Normal;
+                if (!_warehouseTypeToIndices.TryGetValue(et, out var li))
+                {
+                    li = new List<int>();
+                    _warehouseTypeToIndices[et] = li;
+                }
+                li.Add(i);
+            }
+            _warehouseCategoryDirty = false;
+        }
+
+        public IReadOnlyList<int> GetWarehouseSlotIndicesForItemTypeFilter(int typeFilterInt)
+        {
+            EnsureWarehouseCategoryIndex();
+            if (typeFilterInt < 0)
+            {
+                return null;
+            }
+            var t = (EItemType)typeFilterInt;
+            if (_warehouseTypeToIndices.TryGetValue(t, out var list))
+            {
+                return list;
+            }
+            return Array.Empty<int>();
+        }
+
+
+        /// <summary>
+        /// 从存档中读取
+        /// </summary>
+        /// <param name="save"></param>
+        private void ApplyWarehouseFromSave(SaveData save)
+        {
+            if (WarehouseBag == null)
+            {
+                return;
+            }
+            for (int i = 0; i < WarehouseBag.NormalSlots.Count; i++)
+            {
+                WarehouseBag.NormalSlots[i] = null;
+            }
+            WarehouseBag.ExtraSlots.Clear();
+
+            if (save?.WarehousePages == null || save.WarehousePages.Count == 0)
+            {
+                MarkWarehouseCategoryDirty();
+                return;
             }
 
+            var flat = new List<ItemStack>();
+            foreach (var page in save.WarehousePages)
+            {
+                if (page?.Slots == null)
+                {
+                    continue;
+                }
+                foreach (var slot in page.Slots)
+                {
+                    if (slot == null || string.IsNullOrEmpty(slot.ItemId) || slot.Count <= 0)
+                    {
+                        continue;
+                    }
+                    var st = ItemCatalog.CreateItemStack(slot.ItemId, slot.Count);
+                    if (st != null && slot.ItemInstanceId != 0)
+                    {
+                        st.ItemInstanceId = slot.ItemInstanceId;
+                    }
+                    if (st != null)
+                    {
+                        flat.Add(st);
+                    }
+                }
+            }
 
-            //while (WarehousePageBags.Count < WarehouseConfig.PageCount)
-            //{
-            //    var wb = new PlayerBag();
-            //    wb.InitBag(WarehouseConfig.BagIdFirst + WarehousePageBags.Count, WarehouseConfig.SlotsPerPage, 0);
-            //    WarehousePageBags.Add(wb);
-            //}
-
-            //for (int p = 0; p < WarehousePageBags.Count && p < save.WarehousePages.Count; p++)
-            //{
-            //    var bag = WarehousePageBags[p];
-            //    var page = save.WarehousePages[p];
-            //    for (int i = 0; i < bag.NormalSlots.Count; i++)
-            //    {
-            //        bag.NormalSlots[i] = null;
-            //    }
-            //    if (page?.Slots == null)
-            //    {
-            //        continue;
-            //    }
-            //    for (int s = 0; s < page.Slots.Count && s < bag.NormalSlots.Count; s++)
-            //    {
-            //        var slot = page.Slots[s];
-            //        if (slot == null || string.IsNullOrEmpty(slot.ItemId) || slot.Count <= 0)
-            //        {
-            //            continue;
-            //        }
-            //        bag.NormalSlots[s] = ItemCatalog.CreateItemStack(slot.ItemId, slot.Count);
-            //        if (bag.NormalSlots[s] != null && slot.ItemInstanceId != 0)
-            //        {
-            //            bag.NormalSlots[s].ItemInstanceId = slot.ItemInstanceId;
-            //        }
-            //    }
-            //}
+            for (int i = 0; i < WarehouseBag.NormalSlots.Count; i++)
+            {
+                WarehouseBag.NormalSlots[i] = i < flat.Count ? flat[i] : null;
+            }
+            WarehouseBag.AfterSlotMutation();
+            MarkWarehouseCategoryDirty();
         }
 
         private float _bagTimer;
@@ -99,57 +175,81 @@ namespace My.Player.Bag
             }
             _bagTimer = LogicTime.time;
 
+            if (LogicManager.MainStage != GameLogicManager.EMainGameStage.Running)
+            {
+                return;
+            }
+
+            TickInsertionBuffsOnBag(MainBag, dt);
+            TickInsertionBuffsOnBag(WarehouseBag, dt);
             foreach (var bag in SpeBags.Values)
             {
-                for(int i=0;i<bag.NormalSlots.Count;i++)
+                TickInsertionBuffsOnBag(bag, dt);
+            }
+        }
+
+        void TickInsertionBuffsOnBag(PlayerBag bag, float dt)
+        {
+            if (bag == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < bag.NormalSlots.Count; i++)
+            {
+                if (bag.NormalSlots[i] == null)
                 {
-                    if (bag.NormalSlots[i] == null)continue;
+                    continue;
+                }
 
-                    if(bag.NormalSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
+                if (bag.NormalSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
+                {
+                    var itemConf = ItemCatalog.GetItemDef(bag.NormalSlots[i].ItemID);
+                    if (itemConf != null && itemConf.AutoDestroy)
                     {
-                        var itemConf = ItemCatalog.GetItemDef(bag.NormalSlots[i].ItemID);
-                        if(itemConf != null && itemConf.AutoDestroy)
+                        insertion.Lifetime -= dt;
+                        if (insertion.Lifetime <= 0)
                         {
-                            insertion.Lifetime -= dt;
-                            if(insertion.Lifetime <= 0)
-                            {
-                                bag.NormalSlots[i] = null;
-                                continue;
-                            }
+                            bag.NormalSlots[i] = null;
+                            continue;
+                        }
 
-                            if(!string.IsNullOrEmpty(itemConf.SpecialBuffId) && LogicTime.time - insertion.BuffTickTimer > itemConf.SpecialBuffInterval)
-                            {
-                                insertion.BuffTickTimer += itemConf.SpecialBuffInterval;
+                        if (!string.IsNullOrEmpty(itemConf.SpecialBuffId) && LogicTime.time - insertion.BuffTickTimer > itemConf.SpecialBuffInterval)
+                        {
+                            insertion.BuffTickTimer += itemConf.SpecialBuffInterval;
 
-                                DataManager.logicManager.globalBuffManager.RequestAddBuff(DataManager.logicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
-                            }
+                            LogicManager.globalBuffManager.RequestAddBuff(LogicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
                         }
                     }
                 }
+            }
 
-                for(int i=bag.ExtraSlots.Count -1; i>=0; i--)
+            for (int i = bag.ExtraSlots.Count - 1; i >= 0; i--)
+            {
+                if (bag.ExtraSlots[i] == null)
                 {
-                    if (bag.ExtraSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
+                    continue;
+                }
+
+                if (bag.ExtraSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
+                {
+                    var itemConf = ItemCatalog.GetItemDef(bag.ExtraSlots[i].ItemID);
+                    if (itemConf != null && itemConf.AutoDestroy)
                     {
-                        var itemConf = ItemCatalog.GetItemDef(bag.ExtraSlots[i].ItemID);
-                        if (itemConf != null && itemConf.AutoDestroy)
+                        insertion.Lifetime -= dt;
+                        if (insertion.Lifetime <= 0)
                         {
-                            insertion.Lifetime -= dt;
-                            if (insertion.Lifetime <= 0)
-                            {
-                                bag.ExtraSlots.RemoveAt(i);
+                            bag.ExtraSlots.RemoveAt(i);
 
+                            LogicManager.viewer.ShowFakeFxEffect("-" + itemConf.DisplayName, LogicManager.playerLogicEntity.Pos);
+                            continue;
+                        }
 
-                                DataManager.logicManager.viewer.ShowFakeFxEffect("-"+itemConf.DisplayName, DataManager.logicManager.playerLogicEntity.Pos);
-                                continue;
-                            }
+                        if (!string.IsNullOrEmpty(itemConf.SpecialBuffId) && LogicTime.time - insertion.BuffTickTimer > itemConf.SpecialBuffInterval)
+                        {
+                            insertion.BuffTickTimer += itemConf.SpecialBuffInterval;
 
-                            if (!string.IsNullOrEmpty(itemConf.SpecialBuffId) && LogicTime.time - insertion.BuffTickTimer > itemConf.SpecialBuffInterval)
-                            {
-                                insertion.BuffTickTimer += itemConf.SpecialBuffInterval;
-
-                                DataManager.logicManager.globalBuffManager.RequestAddBuff(DataManager.logicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
-                            }
+                            LogicManager.globalBuffManager.RequestAddBuff(LogicManager.playerLogicEntity.Id, itemConf.SpecialBuffId, 1);
                         }
                     }
                 }
@@ -161,16 +261,28 @@ namespace My.Player.Bag
         {
             long totalNum = 0;
 
-            for (int bagId = 0; bagId <= 4; bagId++)
+            void Acc(PlayerBag bag)
             {
-                var bag = GetBagById(bagId);
                 if (bag == null)
                 {
-                    continue;
+                    return;
                 }
+                totalNum += bag.GetItemCount(itemId);
+            }
 
-                var bagCount = bag.GetItemCount(itemId);
-                totalNum += bagCount;
+            Acc(MainBag);
+            if (totalNum >= count)
+            {
+                return true;
+            }
+            Acc(WarehouseBag);
+            if (totalNum >= count)
+            {
+                return true;
+            }
+            foreach (var bag in SpeBags.Values)
+            {
+                Acc(bag);
                 if (totalNum >= count)
                 {
                     return true;
@@ -211,20 +323,21 @@ namespace My.Player.Bag
                 }
             }
 
-            for (int bagId = 0; bagId <= 4; bagId++)
+            leftCount = MainBag.TryCostItem(itemId, leftCount);
+            if (leftCount > 0)
             {
-                var bag = GetBagById(bagId);
-                if (bag == null)
+                foreach (var bag in SpeBags.Values)
                 {
-                    continue;
+                    leftCount = bag.TryCostItem(itemId, leftCount);
+                    if (leftCount <= 0)
+                    {
+                        break;
+                    }
                 }
-
-                leftCount = bag.TryCostItem(itemId, leftCount);
-
-                if (leftCount <= 0)
-                {
-                    break;
-                }
+            }
+            if (leftCount > 0 && WarehouseBag != null)
+            {
+                leftCount = WarehouseBag.TryCostItem(itemId, leftCount);
             }
 
             return leftCount;
@@ -249,7 +362,7 @@ namespace My.Player.Bag
                 var useRow = ItemCatalog.GetPrimaryUse(itemId);
                 if (useRow != null)
                 {
-                    DataManager.logicManager.HandleUseItem(DataManager.logicManager.playerLogicEntity.Id, amount, useRow);
+                    LogicManager.HandleUseItem(LogicManager.playerLogicEntity.Id, amount, useRow);
                 }
 
                 return amount;
@@ -263,7 +376,7 @@ namespace My.Player.Bag
 
             var put = bag.TryGiveItem(itemId, amount);
 
-            EventOnGainItem?.Invoke(itemId, put);
+            EventOnGainItem?.Invoke((EPlayerBagId)bagId, itemId, put);
 
             return put;
         }
@@ -332,63 +445,49 @@ namespace My.Player.Bag
                     false,
                     centerPos);
             }
-            bag.ClearEmptyItems();
         }
 
         public PlayerBag GetBagById(int bagId)
         {
-            if (bagId == 0) return MainBag;
-            if (bagId >= WarehouseConfig.BagIdFirst)
+            if (bagId == 0)
             {
-                int idx = bagId - WarehouseConfig.BagIdFirst;
-                if (idx >= 0 && idx < WarehousePageBags.Count)
-                {
-                    return WarehousePageBags[idx];
-                }
-                return null;
+                return MainBag;
             }
-            SpeBags.TryGetValue(bagId, out var bag);
+            if (bagId == (int)EPlayerBagId.Storage)
+            {
+                return WarehouseBag;
+            }
+            SpeBags.TryGetValue((EPlayerBagId)bagId, out var bag);
             return bag;
         }
 
-        /// <summary>
-        /// 从存档恢复仓库各页槽位（缺页则扩容空页）。
-        /// </summary>
-        
-
-        /// <summary>
-        /// 将仓库各页写入存档列表（长度固定为页数）。
-        /// </summary>
         public void WriteWarehouseToSave(My.Saving.SaveData save)
         {
-            if (save == null)
+            if (save == null || WarehouseBag == null)
             {
                 return;
             }
             save.WarehousePages ??= new List<My.Saving.WarehousePagePersist>();
             save.WarehousePages.Clear();
-            foreach (var bag in WarehousePageBags)
+            var page = new My.Saving.WarehousePagePersist();
+            for (int i = 0; i < WarehouseBag.NormalSlots.Count; i++)
             {
-                var page = new My.Saving.WarehousePagePersist();
-                for (int i = 0; i < bag.NormalSlots.Count; i++)
+                var st = WarehouseBag.NormalSlots[i];
+                if (st == null || st.IsEmpty)
                 {
-                    var st = bag.NormalSlots[i];
-                    if (st == null || st.IsEmpty)
-                    {
-                        page.Slots.Add(new My.Saving.WarehouseSlotPersist());
-                    }
-                    else
-                    {
-                        page.Slots.Add(new My.Saving.WarehouseSlotPersist
-                        {
-                            ItemId = st.ItemID,
-                            Count = st.Count,
-                            ItemInstanceId = st.ItemInstanceId,
-                        });
-                    }
+                    page.Slots.Add(new My.Saving.WarehouseSlotPersist());
                 }
-                save.WarehousePages.Add(page);
+                else
+                {
+                    page.Slots.Add(new My.Saving.WarehouseSlotPersist
+                    {
+                        ItemId = st.ItemID,
+                        Count = st.Count,
+                        ItemInstanceId = st.ItemInstanceId,
+                    });
+                }
             }
+            save.WarehousePages.Add(page);
         }
 
         public bool CanGainItems(string itemId, long count)

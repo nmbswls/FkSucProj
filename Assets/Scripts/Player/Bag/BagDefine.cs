@@ -7,70 +7,8 @@ using UnityEngine;
 
 namespace My.Player
 {
+
     
-
-
-    public interface IItemContainer
-    {
-        long GetMaxStack(string itemId);
-
-        /// <summary>
-        /// 写入指定槽位的道具堆（null 表示清空）
-        /// </summary>
-        /// <param name="idx"></param>
-        /// <param name="item"></param>
-        void SetItemData(int idx, ItemStack item);
-
-        /// <summary>
-        /// 仅修改指定槽中堆叠的数量
-        /// </summary>
-        /// <param name="idx"></param>
-        /// <param name="item"></param>
-        void SetItemCount(int idx, long count);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        bool IsSlotIdxValid(int slotIDx);
-
-
-        /// <summary>
-        /// 统计指定道具 ID 在本容器内的总数量
-        /// </summary>
-        /// <param name="itemId"></param>
-        /// <returns></returns>
-        long GetItemCount(string itemId);
-
-        /// <summary>
-        /// 读取指定槽位的道具堆
-        /// </summary>
-        /// <param name="idx"></param>
-        /// <returns></returns>
-        ItemStack GetItemByIdx(int idx);
-    }
-
-    public enum EContainerType
-    {
-        Inventory,
-        LootPoint,
-        SpecialInventory,
-        Shop,
-        /// <summary>
-        /// 仓库分页格；与 Inventory 叠加上限规则一致。
-        /// </summary>
-        Warehouse,
-    }
-
-    /// <summary>
-    /// 仓库分页：BagId 为 BagIdFirst + 页索引（0..PageCount-1）。
-    /// </summary>
-    public static class WarehouseConfig
-    {
-        public const int BagIdFirst = 100;
-        public const int PageCount = 4;
-        public const int SlotsPerPage = 45;
-    }
 
     [Serializable]
     public class PlayerBag : IItemContainer
@@ -85,14 +23,20 @@ namespace My.Player
 
         public bool Locked = false;
 
+        public EBagStorageLayout StorageLayout { get; private set; }
+
+        public static EBagStorageLayout ResolveStorageLayout(EPlayerBagId bagId)
+        {
+            return (int)bagId == 0 ? EBagStorageLayout.Grid : EBagStorageLayout.Compact;
+        }
+
         public long GetMaxStack(string itemId)
         {
-            // 主背包与特殊背包按容器类型取不同叠加上限
             if (BagId == 0)
             {
                 return ItemCatalog.GetMaxStackByType(itemId, EContainerType.Inventory);
             }
-            if (BagId >= WarehouseConfig.BagIdFirst && BagId < WarehouseConfig.BagIdFirst + WarehouseConfig.PageCount)
+            if (BagId == EPlayerBagId.Storage)
             {
                 return ItemCatalog.GetMaxStackByType(itemId, EContainerType.Warehouse);
             }
@@ -177,6 +121,7 @@ namespace My.Player
             }
 
             ClearEmptyItems();
+            AfterSlotMutation();
 
             return leftCount;
         }
@@ -224,6 +169,10 @@ namespace My.Player
             this.BagId = bagId;
             this.BasicCapacity = capacity;
             this.MaxExtraCapacity = extraCapacity;
+            StorageLayout = ResolveStorageLayout(bagId);
+
+            NormalSlots.Clear();
+            ExtraSlots.Clear();
 
             for (int i = 0; i < capacity; i++)
             {
@@ -231,12 +180,96 @@ namespace My.Player
             }
         }
 
+        public void CompactPackPrimary()
+        {
+            if (StorageLayout != EBagStorageLayout.Compact)
+            {
+                return;
+            }
+
+            int w = 0;
+            for (int r = 0; r < NormalSlots.Count; r++)
+            {
+                var s = NormalSlots[r];
+                if (s != null && !s.IsEmpty)
+                {
+                    if (w != r)
+                    {
+                        NormalSlots[w] = s;
+                    }
+                    w++;
+                }
+            }
+            for (; w < NormalSlots.Count; w++)
+            {
+                NormalSlots[w] = null;
+            }
+        }
+
+        bool NormalHasVacancy()
+        {
+            foreach (var s in NormalSlots)
+            {
+                if (s == null || s.IsEmpty)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void FlushExtraIntoPrimaryWherePossible()
+        {
+            if (MaxExtraCapacity <= 0)
+            {
+                return;
+            }
+
+            while (ExtraSlots.Count > 0 && NormalHasVacancy())
+            {
+                var st = ExtraSlots[0];
+                ExtraSlots.RemoveAt(0);
+                if (st == null || st.IsEmpty)
+                {
+                    continue;
+                }
+                long c = st.Count;
+                long absorbed = TryGiveItem(st.ItemID, c, -1, allowExtra: false);
+                if (absorbed <= 0)
+                {
+                    ExtraSlots.Insert(0, st);
+                    break;
+                }
+                if (absorbed < c)
+                {
+                    ExtraSlots.Insert(0, ItemCatalog.CreateItemStack(st.ItemID, c - absorbed));
+                    break;
+                }
+            }
+
+            if (StorageLayout == EBagStorageLayout.Compact)
+            {
+                CompactPackPrimary();
+            }
+        }
+
+        public void AfterSlotMutation()
+        {
+            ClearEmptyItems();
+            if (StorageLayout == EBagStorageLayout.Compact)
+            {
+                CompactPackPrimary();
+            }
+            FlushExtraIntoPrimaryWherePossible();
+            EvOnBagUpdate?.Invoke();
+        }
+
         /// <summary>
-        /// 将道具发放进本背包：优先槽合并、再全表合并、空位新建堆，最后扩展栏
+        /// ???????????????????????????????????????????????????????
         /// </summary>
         /// <param name="incoming"></param>
         /// <returns></returns>
-        public long TryGiveItem(string itemId, long count, int preferredIdx = -1)
+        public long TryGiveItem(string itemId, long count, int preferredIdx = -1, bool allowExtra = true)
         {
             if (itemId == null || count <= 0) return 0;
             var itemConf = ItemCatalog.GetItemDef(itemId);
@@ -247,10 +280,10 @@ namespace My.Player
 
 
             var maxStack = GetMaxStack(itemId);
-            // 若指定了优先槽，先尝试在该普通栏位合并或占位
+            // ????????????????????????????????????
             if (preferredIdx != -1)
             {
-                // 优先槽须落在普通栏索引范围内
+                // ??????????????????????????
                 if (preferredIdx < NormalSlots.Count)
                 {
                     var s = NormalSlots[preferredIdx];
@@ -268,7 +301,7 @@ namespace My.Player
                 }
             }
 
-            // 扫描普通栏：向已有同 ID 且未满的堆合并
+            // ????????????????? ID ???????????
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 var s = NormalSlots[i];
@@ -281,10 +314,15 @@ namespace My.Player
 
             if (remaining <= 0)
             {
+                if (StorageLayout == EBagStorageLayout.Compact)
+                {
+                    CompactPackPrimary();
+                }
+                EvOnBagUpdate?.Invoke();
                 return count;
             }
 
-            // 普通栏找空槽新建堆叠
+            // ???????????????
             for (int i = 0; i < NormalSlots.Count && remaining > 0; i++)
             {
                 if (NormalSlots[i] == null || NormalSlots[i].IsEmpty)
@@ -297,13 +335,16 @@ namespace My.Player
 
             if (remaining <= 0)
             {
+                if (StorageLayout == EBagStorageLayout.Compact)
+                {
+                    CompactPackPrimary();
+                }
+                EvOnBagUpdate?.Invoke();
                 return count;
             }
 
-            // 仍有剩余且允许扩展栏：先合并进已有扩展堆
-            if (MaxExtraCapacity > 0)
+            if (allowExtra && MaxExtraCapacity > 0)
             {
-                // 扩展栏内同 ID 未满格
                 for (int i = 0; i < ExtraSlots.Count && remaining > 0; i++)
                 {
                     var s = ExtraSlots[i];
@@ -316,7 +357,6 @@ namespace My.Player
 
                 if (remaining > 0)
                 {
-                    // 扩展栏未满则追加新堆，直到扩展上限
                     while (ExtraSlots.Count < MaxExtraCapacity && remaining > 0)
                     {
                         var put = Math.Min(maxStack, remaining);
@@ -327,29 +367,36 @@ namespace My.Player
                 }
             }
 
+            if (StorageLayout == EBagStorageLayout.Compact)
+            {
+                CompactPackPrimary();
+            }
+
+            EvOnBagUpdate?.Invoke();
             return count - remaining;
         }
         public bool TrySplit(int srcIndex, long count)
         {
-            // 仅在普通栏支持拆分（扩展栏逻辑未实现）
+            // ?????????????????????????????
             if (srcIndex < NormalSlots.Count)
             {
                 var src = NormalSlots[srcIndex];
                 if (src == null || src.IsEmpty) return false;
                 if (count <= 0 || count >= src.Count) return false;
 
-                // 带实例 ID 的堆叠不允许拆分
+                // ????? ID ?????????????
                 if (src.ItemInstanceId != 0)
                 {
                     return false;
                 }
 
-                // 找第一个空槽放置拆出的数量
+                // ?????????????????????
                 int emptyIdx = NormalSlots.FindIndex(s => s == null || s.IsEmpty);
                 if (emptyIdx < 0) return false;
 
                 src.RemoveFromStack(count);
                 NormalSlots[emptyIdx] = ItemCatalog.CreateItemStack(src.ItemID, count);
+                AfterSlotMutation();
                 return true;
             }
 
@@ -359,12 +406,27 @@ namespace My.Player
 
         public long RemoveAt(int index, long count)
         {
-            if (index < NormalSlots.Count)
+            if (index >= 0 && index < NormalSlots.Count)
             {
                 var s = NormalSlots[index];
                 if (s == null) return 0;
                 var removed = s.RemoveFromStack(count);
                 if (s.Count <= 0) NormalSlots[index] = null;
+                AfterSlotMutation();
+                return removed;
+            }
+
+            int extraIdx = index - BasicCapacity;
+            if (extraIdx >= 0 && extraIdx < ExtraSlots.Count)
+            {
+                var s = ExtraSlots[extraIdx];
+                if (s == null) return 0;
+                var removed = s.RemoveFromStack(count);
+                if (s.Count <= 0)
+                {
+                    ExtraSlots.RemoveAt(extraIdx);
+                }
+                AfterSlotMutation();
                 return removed;
             }
 
@@ -400,27 +462,28 @@ namespace My.Player
         }
 
         /// <summary>
-        /// 槽位索引是否落在普通栏或扩展栏合法范围内
+        /// ????????????????????????????????????
         /// </summary>
         /// <param name="slotIdx"></param>
         /// <returns></returns>
         public bool IsSlotIdxValid(int slotIdx)
         {
-            if (slotIdx < NormalSlots.Count)
+            if (slotIdx >= 0 && slotIdx < BasicCapacity)
             {
                 return true;
             }
 
-            if (slotIdx - BasicCapacity <= ExtraSlots.Count)
+            if (MaxExtraCapacity <= 0)
             {
-                return true;
+                return false;
             }
 
-            return false;
+            int e = slotIdx - BasicCapacity;
+            return e >= 0 && e <= ExtraSlots.Count && e < MaxExtraCapacity;
         }
 
         /// <summary>
-        /// 按全局槽索引修改对应堆叠的数量
+        /// ????????????????????????
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="count"></param>
@@ -454,6 +517,6 @@ namespace My.Player
         Default,
         Secret = 1,
         Pet = 2,
-        Storage,
+        Storage = 100,
     }
 }

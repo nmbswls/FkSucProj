@@ -153,7 +153,6 @@ namespace My.Player
 
         public void InitPlayerData(SaveData savingData)
         {
-            InitBagInfo();
             if (savingData != null)
             {
                 SaveData.EnsureHydrated(savingData);
@@ -172,6 +171,7 @@ namespace My.Player
             QuestSystem.InitSystem(logicManager, savingData);
             DialogTriggerSystem.InitSystem(logicManager, savingData);
             FuncOpenSystem.InitSystem(logicManager, savingData);
+            InventorySystem.InitSystem(logicManager, savingData);
 
             InventorySystem?.ApplyWarehouseFromSave(savingData);
 
@@ -287,7 +287,6 @@ namespace My.Player
 
         public void InitBagInfo()
         {
-            InventorySystem = new(this);
 
             if (CfgMgr.Cfgs == null)
             {
