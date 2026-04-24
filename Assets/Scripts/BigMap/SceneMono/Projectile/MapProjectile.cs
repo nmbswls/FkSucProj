@@ -178,7 +178,10 @@ namespace My
             var md = (ParabolaMotionData)bindingProjInfo.pData.motionData;
             // body 抬升
             Vector2 bodyPos = new Vector2(groundPos.x, groundPos.y + z * md.lift);
-            if (_body != null) _body.position = bodyPos;
+            //if (_body != null) _body.position = bodyPos;
+
+            if (_body != null) 
+                _body.localPosition = new Vector3(0, z * md.lift, 0);
 
             //// 朝向
             //if (bindingProjInfo.pData.rotateBodyToVelocity && _body != null && forward.sqrMagnitude > 0.0001f)
@@ -189,12 +192,13 @@ namespace My
             {
                 _shadow.position = groundPos;
                 float zAbs = Mathf.Max(0f, z);
-                float scale = md.shadowScaleByZ.Evaluate(zAbs);
+                float t = Mathf.Clamp01(zAbs / 5f);
+                float scale = Mathf.Lerp(1f, 0.5f, t);
                 _shadow.localScale = Vector3.one * scale;
 
                 if (_shadowSR != null)
                 {
-                    float a = md.shadowAlphaByZ.Evaluate(zAbs);
+                    float a = Mathf.Lerp(1f, 0.5f, t);
                     var c = _shadowSR.color; c.a = a; _shadowSR.color = c;
                 }
             }

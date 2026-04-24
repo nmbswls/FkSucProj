@@ -57,33 +57,14 @@ namespace My
 
     public class ParabolaMotionData : MotionDataBase
     {
-        [Header("Horizontal")]
+        // 仅非制导抛物使用；制导时水平速率由「目标距离 / 飞行时间」推出，不看本字段
         public float horizontalSpeed = 7f;
-        public float horizontalDrag = 0f;
-
-        [Header("Vertical (Pseudo-Z)")]
         public float gravity = 20f;
         public float arcHeight = 2f;
-        public bool overrideVzByFlightTime = false;
-        public float flightTime = 0f;
-
-        [Header("Visual")]
+        public float hitRadius = 0.55f;
         public float lift = 0.6f;
-        public AnimationCurve shadowScaleByZ = AnimationCurve.Linear(0, 1, 5, 0.5f);
-        public AnimationCurve shadowAlphaByZ = AnimationCurve.Linear(0, 1, 5, 0.5f);
-
-        [Header("Explode")]
-        public float aoeRadius = 2f;
-
-        [Header("飞行中命中")]
-        // 伪 Z 与 SceneTargettable.CheckHitHeightValid(atkHeight) 使用同一套逻辑高度语义
-        public float directHitRadius = 0.55f;
-        public float perTargetHitCooldown = 0.18f;
-
-        [Header("空地落地爆炸")]
-        // 伪 Z 落到该值及以下且（可选）处于下落时，若本 Tick 未因命中结束，则触发空地爆炸（OnProjectileExplode）
-        public float emptyGroundExplodeAtZ = 0f;
-        public bool emptyGroundRequireDescending = true;
+        // 制导：竖直估算落地时间若短于此值，则抬到该时间并重算 vz，使与水平 dist/T 同一条轨迹自洽
+        public float minFlightTime = 0.3f;
     }
 
     public class MapProjectileLinearMotion : IMapProjectileMotion
@@ -380,44 +361,105 @@ namespace My
         private int _hitsRemaining;
         private readonly Dictionary<long, float> _perTargetNextHitTime = new();
         private bool _emptyGroundExplodeDone;
+        private float _peakZ;
+        private float _zLaunch;
+
+        private const float PerTargetHitCooldown = 0.18f;
+        private const float SinkZ = -0.45f;
+        // 首帧 z 很小、vz 经一步积分后易同时满足「落地」，且 Overlap 与出生点重叠 → 需延迟再判命中/落地
+        private const float ArmedDelay = 0.08f;
 
         public bool IsFinished => _finished;
-        public Vector2 Position => _pos;           // 地面位置（阴影位置）
+        public Vector2 Position => _pos;
         public Vector2 Forward => _vxy.sqrMagnitude > 0.0001f ? _vxy.normalized : Vector2.right;
 
         public void Initialize(MapProjectile owner)
         {
-            this.Owner = owner;
-            //_ctx = ctx;
-            _pos = owner.bindingProjInfo.spawnPos; ;
-            var dir = Owner.bindingProjInfo.initialDir.sqrMagnitude > 0.0001f ? Owner.bindingProjInfo.initialDir.normalized : Vector2.right;
+            Owner = owner;
+            _pos = owner.bindingProjInfo.spawnPos;
+
+            Vector2 dir;
+            ILogicEntity homingTgt = null;
             if (PD.isHoming)
             {
-                long homingTarget = owner.bindingProjInfo.homingTargetId ?? 0;
-                var homingTargetEntity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(homingTarget, false);
-                if (homingTargetEntity != null)
+                long homingId = owner.bindingProjInfo.homingTargetId ?? 0;
+                homingTgt = MainGameManager.Instance.gameLogicManager.GetLogicEntity(homingId, false);
+                if (homingTgt != null)
                 {
-                    dir = homingTargetEntity.Pos - _pos;
+                    Vector2 toT = (Vector2)homingTgt.Pos - _pos;
+                    dir = toT.sqrMagnitude > 1e-8f ? toT.normalized : Vector2.right;
+                }
+                else
+                {
+                    dir = InitialDirNormalized();
                 }
             }
-            _vxy = dir * Mathf.Max(0.01f, D.horizontalSpeed);
-
-            if (D.overrideVzByFlightTime && D.flightTime > 0.02f)
-                _vz = D.gravity * (D.flightTime * 0.5f);
             else
-                _vz = Mathf.Sqrt(Mathf.Max(0.0001f, 2f * D.gravity * Mathf.Max(0f, D.arcHeight)));
+            {
+                dir = InitialDirNormalized();
+            }
 
-            _z = 0.01f;
+            float g = Mathf.Max(0.01f, D.gravity);
+            float vzFromArc = Mathf.Sqrt(Mathf.Max(0.0001f, 2f * g * Mathf.Max(0f, D.arcHeight)));
+            _zLaunch = 0.12f;
+            _z = _zLaunch;
+            _peakZ = _z;
+
+            float horizScalar;
+            if (PD.isHoming && homingTgt != null)
+            {
+                float dist = Vector2.Distance(_pos, (Vector2)homingTgt.Pos);
+                dist = Mathf.Max(0.02f, dist);
+                _vz = vzFromArc;
+                float tNat = EstimateTimeToPseudoGround(_z, _vz, g);
+                float tUse = tNat;
+                if (D.minFlightTime > 0.02f)
+                {
+                    tUse = Mathf.Max(tNat, D.minFlightTime);
+                }
+
+                if (tUse > tNat + 1e-4f)
+                {
+                    // z0 + vz*T - g*T^2/2 = 0 => vz = g*T/2 - z0/T，与水平 dist/T 共用同一 T
+                    _vz = g * 0.5f * tUse - _z / tUse;
+                    _vz = Mathf.Max(0.08f, _vz);
+                }
+
+                horizScalar = Mathf.Clamp(dist / Mathf.Max(0.08f, tUse), 0.15f, 80f);
+            }
+            else
+            {
+                _vz = vzFromArc;
+                horizScalar = Mathf.Max(0.01f, D.horizontalSpeed);
+            }
+
+            _vxy = dir * horizScalar;
             _time = 0f;
             _lifetime = PD.maxLifetime;
             _finished = false;
             _perTargetNextHitTime.Clear();
             _hitsRemaining = PD.maxPenetration > 0 ? PD.maxPenetration : 1;
             _emptyGroundExplodeDone = false;
-
-            // 设置视觉（阴影/抬升）由外层Projectile负责（根据Motion类型）
             Owner.ConfigureParabolaVisual(D);
+        }
 
+        // z(t)=z0+vz*t-g/2*t^2=0 的正根：水平射程 ≈ |vxy|*t 时应接近目标距离
+        private static float EstimateTimeToPseudoGround(float z0, float vz, float g)
+        {
+            float disc = vz * vz + 2f * g * z0;
+            if (disc < 0f)
+            {
+                return Mathf.Max(0.2f, 2f * Mathf.Abs(vz) / g);
+            }
+
+            float t = (vz + Mathf.Sqrt(disc)) / g;
+            return Mathf.Clamp(t, 0.12f, 40f);
+        }
+
+        private Vector2 InitialDirNormalized()
+        {
+            Vector2 d = Owner.bindingProjInfo.initialDir;
+            return d.sqrMagnitude > 0.0001f ? d.normalized : Vector2.right;
         }
 
         public void Tick(float dt)
@@ -431,38 +473,33 @@ namespace My
                 return;
             }
 
-            if (D.horizontalDrag > 0f)
-            {
-                float k = Mathf.Clamp01(D.horizontalDrag * dt);
-                _vxy *= (1f - k);
-            }
-
             _pos += _vxy * dt;
             _vz -= D.gravity * dt;
             _z += _vz * dt;
-
-            // 视觉更新
+            _peakZ = Mathf.Max(_peakZ, _z);
             Owner.UpdateParabolaVisual(_pos, _z, Forward);
 
-            TryFlightHits();
-
-            if (_finished)
+            if (_time >= ArmedDelay)
             {
-                return;
-            }
-
-            if (!_emptyGroundExplodeDone)
-            {
-                bool descendingOk = !D.emptyGroundRequireDescending || _vz <= 0f;
-                if (_z <= D.emptyGroundExplodeAtZ && descendingOk)
+                TryFlightHits();
+                if (_finished)
                 {
-                    _emptyGroundExplodeDone = true;
-                    DoTimeoutFinishWithoutGroundHit();
                     return;
                 }
             }
 
-            if (_z < -0.45f)
+            if (!_emptyGroundExplodeDone
+                && _time >= ArmedDelay
+                && _vz <= 0f
+                && _z <= 0f
+                && (_peakZ >= _zLaunch + 0.02f || _time >= 0.5f))
+            {
+                _emptyGroundExplodeDone = true;
+                DoTimeoutFinishWithoutGroundHit();
+                return;
+            }
+
+            if (_time >= ArmedDelay && _z < SinkZ)
             {
                 DoTimeoutFinishWithoutGroundHit();
                 return;
@@ -495,11 +532,7 @@ namespace My
                 return;
             }
 
-            float hitR = D.directHitRadius > 0.01f ? D.directHitRadius : D.aoeRadius;
-            if (hitR < 0.05f)
-            {
-                hitR = 0.4f;
-            }
+            float hitR = Mathf.Max(0.05f, D.hitRadius);
 
             var filter = new EntityFilterParam
             {
@@ -543,7 +576,7 @@ namespace My
 
                 ProjectileUtil.HandleHitOutput(Owner.bindingProjInfo, _pos, hitDir, pres);
                 _hitsRemaining--;
-                float cd = Mathf.Max(0.02f, D.perTargetHitCooldown);
+                float cd = Mathf.Max(0.02f, PerTargetHitCooldown);
                 _perTargetNextHitTime[unit.Id] = _time + cd;
 
                 if (_hitsRemaining <= 0)

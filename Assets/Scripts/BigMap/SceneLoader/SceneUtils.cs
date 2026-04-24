@@ -142,7 +142,7 @@ namespace My
         public Collider2D[] hits = new Collider2D[128];
 
         private Dictionary<long, (ILogicEntity, string)> tmpHitDict = new();
-        public IEnumerable<ILogicEntity> OverlapBoxAllEntity(Vector2 orgPos, Vector2 dir, Vector2 size, EntityFilterParam? filter, float atkHeight = 0.3f)
+        public IEnumerable<ILogicEntity> OverlapBoxAllEntity(Vector2 orgPos, Vector2 dir, Vector2 size, EntityFilterParam? filter, float atkHeight = 0.3f, float heightTolerance = 0.2f)
         {
             tmpHitDict.Clear();
 
@@ -168,7 +168,7 @@ namespace My
                     continue;
                 }
 
-                bool heightMatch = targettable.CheckHitHeightValid(atkHeight);
+                bool heightMatch = targettable.CheckHitHeightValid(atkHeight, heightTolerance);
                 if (!heightMatch)
                 {
                     // 产生重叠但高度不符，发生错位，忽略判定
@@ -215,7 +215,7 @@ namespace My
         //}
 
 
-        public IEnumerable<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter, float atkHeight = 0.3f)
+        public IEnumerable<ILogicEntity> OverlapCircleAllEntity(Vector2 orgPos, float radius, EntityFilterParam? filter, float atkHeight = 0.3f, float heightTolerance = 0.2f)
         {
             tmpHitDict.Clear();
             var hitCount = Physics2D.OverlapCircleNonAlloc(orgPos, radius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
@@ -239,7 +239,7 @@ namespace My
                     continue;
                 }
 
-                bool heightMatch = targettable.CheckHitHeightValid(atkHeight);
+                bool heightMatch = targettable.CheckHitHeightValid(atkHeight, heightTolerance);
                 if (!heightMatch)
                 {
                     Debug.Log($"错位");

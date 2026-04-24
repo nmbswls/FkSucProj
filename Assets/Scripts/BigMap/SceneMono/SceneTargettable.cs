@@ -33,19 +33,19 @@ namespace My
         /// </summary>
         /// <param name="atkHeight"></param>
         /// <returns></returns>
-        public bool CheckHitHeightValid(float atkHeight)
+        public bool CheckHitHeightValid(float atkHeight, float tolerance = 0.2f)
         {
             var zOffset = BelongPresenter.GetLogicEntity().OffsetZ;
 
             float heightMax = Collider.bounds.max.y - Collider.transform.position.y;
             float heightMin = Collider.bounds.min.y - Collider.transform.position.y;
 
-            if(atkHeight - 0.1f >  heightMax + zOffset)
+            if(atkHeight - tolerance >  heightMax + zOffset)
             {
                 return false;
             }
 
-            if (atkHeight + 0.1f < heightMin + zOffset)
+            if (atkHeight + tolerance < heightMin + zOffset)
             {
                 return false;
             }
