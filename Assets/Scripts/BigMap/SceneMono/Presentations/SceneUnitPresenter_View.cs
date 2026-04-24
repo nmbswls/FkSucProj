@@ -63,7 +63,7 @@ namespace My.Map.Scene
 
                     if(existCtx == null)
                     {
-                        existCtx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, buff.Def.DurationEffect.ParamFloat1, buff.Def.DurationEffect.ParamStr, this.Id);
+                        existCtx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, buff.Def.DurationEffect.ParamFloat1, buff.Def.DurationEffect.ParamStr1, this.Id);
                         if (existCtx != null)
                         {
                             existCtx.BindingUnitVec = new Vector2(0, 0.555f);
@@ -125,28 +125,25 @@ namespace My.Map.Scene
 
         protected virtual void OnEventAnimPlay(string animName, int layer, bool clearAll)
         {
-            if (layer == 0)
+            if (AnimHolder == null)
             {
-                if (AnimHolder == null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                var clipInfo = AnimHolder.AnimClips.Find(item=>item.Name == animName);
+            var clipInfo = AnimHolder.AnimClips.Find(item => item.Name == animName);
 
-                if(clipInfo == null)
-                {
-                    Debug.LogError("OnEventAnimPlay no clip " + animName);
-                    return;
-                }
+            if (clipInfo == null)
+            {
+                Debug.LogError("OnEventAnimPlay no clip " + animName);
+                return;
+            }
 
-                var state = MainAgentAnimator.Play(clipInfo.Clip, 0, FadeMode.FromStart);
-                state.Speed = clipInfo.Speed;
+            var state = MainAgentAnimator.Play(clipInfo.Clip, 0, FadeMode.FromStart);
+            state.Speed = clipInfo.Speed;
 
-                if(!clipInfo.Clip.isLooping)
-                {
-                    state.Events.OnEnd = () => MainAgentAnimator.Play(_Idle);
-                }
+            if (!clipInfo.Clip.isLooping)
+            {
+                state.Events.OnEnd = () => MainAgentAnimator.Play(_Idle);
             }
         }
 

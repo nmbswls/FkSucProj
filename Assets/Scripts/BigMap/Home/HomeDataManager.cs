@@ -96,7 +96,7 @@ namespace My.Home
 
             rec.Position = worldPos;
             LogicManager.AreaManager.UpdatePosition(rid, worldPos);
-            var ent = LogicManager.AreaManager.GetLogicEntiy(rid, false);
+            var ent = LogicManager.AreaManager.GetLogicEntiy(rid, false) as LogicEntityBase;
             ent?.SetPosition(worldPos);
         }
 

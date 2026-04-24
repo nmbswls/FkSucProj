@@ -126,13 +126,12 @@ namespace My.Player
 
             NormalSkillSlots[3] = "queen_dash_down";
             NormalSkillSlots[4] = "queen_pull_all";
-            
+            NormalSkillSlots[5] = "player_mortar_acquire_01";
 
             HumanSkillSlots[3] = "player_small_staggering";
             HumanSkillSlots[4] = "player_dark_dance";
             HumanSkillSlots[5] = "player_push_surround";
             HumanSkillSlots[6] = "player_trace_bullet_01";
-            HumanSkillSlots[7] = "player_mortar_acquire_01";
 
             FaQingSkillSlots[0] = "player_ziwei";
 

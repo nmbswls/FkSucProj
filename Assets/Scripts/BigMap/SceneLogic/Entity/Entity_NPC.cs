@@ -495,7 +495,7 @@ namespace My.Map
 
         public void DoAnimation(string animName)
         {
-            AddAnimLayer(animName);
+            PlayerAnim(animName);
         }
         // 是否可被处决
         public bool CheckCanExecute()

@@ -153,22 +153,6 @@ namespace My.Map.Scene
             return true;
         }
 
-        public void OnEventAnimLayerUpdate()
-        {
-            if (UnitEntity.AnimLayers.Count > 0)
-            {
-                var firstAnim = UnitEntity.AnimLayers[0];
-
-                if (string.IsNullOrEmpty(firstAnim.Name) && _Animancer != null)
-                {
-                    _animCacheDict.TryGetValue(firstAnim.Name, out var clip);
-                    if(clip != null)
-                    {
-                        _Animancer.Play(clip);
-                    }
-                }
-            }
-        }
 
         public bool CanInteractEnable()
         {

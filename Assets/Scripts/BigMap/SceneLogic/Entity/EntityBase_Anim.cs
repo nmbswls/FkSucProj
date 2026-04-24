@@ -14,44 +14,38 @@ namespace My.Map
         private uint _nextAnimId = 1;
 
         /// <summary>
-        /// 使用新的基础层级
+        /// 获取 动画覆盖
+        /// 如；覆盖idle 需要从 这里获取
         /// </summary>
-        public List<string> AnimOverrideList { get; protected set; } = new();
+        /// <param name="rawAnimName"></param>
+        /// <returns></returns>
+        public string GetAnimOverride(string rawAnimName)
+        {
+            var buffs = BuffContainer.Values;
+            foreach (var b in buffs)
+            {
+                if(b.Def.DurationEffect == null)
+                {
+                    continue;
+                }
+                if(b.Def.DurationEffect.DurationType != Entity.EBuffDurationType.AnimOverride)
+                {
+                    continue;
+                }
 
-        //public List<AnimLayerStruct> AnimLayers { get; set; } = new();
+                if(b.Def.DurationEffect.ParamStr1 == rawAnimName)
+                {
+                    return b.Def.DurationEffect.ParamStr2;
+                }
+            }
 
-        //public virtual void AddAnimLayer(string animName, int layer = 0, int priorirt = 1)
-        //{
-        //    foreach (var a in AnimLayers)
-        //    {
-        //        if (a.Name == animName)
-        //        {
-        //            return;
-        //        }
-        //    }
+            return rawAnimName;
+        }
 
-        //    AnimLayers.Add(new AnimLayerStruct()
-        //    {
-        //        Layer = layer,
-        //        Name = animName,
-        //        Priority = priorirt
-        //    });
-
-        //    EventOnAnimLayerUpdate?.Invoke();
-        //}
-
-        //public virtual void RemoveAnimLayer(string animName)
-        //{
-        //    AnimLayers.RemoveAll(a => a.Name == animName);
-
-        //    EventOnAnimLayerUpdate?.Invoke();
-        //}
 
         public void PlayerAnim(string animName, int layer = 0)
         {
             EventOnAnimPlay?.Invoke(animName, layer, false);
         }
-
-
     }
 }

@@ -270,7 +270,7 @@ namespace My.Map.Entity
                     DurationEffect = new BuffDurationEffet()
                     {
                         DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr = "test",
+                        ParamStr1 = "test",
                     },
                     TriggerList = new()
                     {
@@ -348,7 +348,7 @@ namespace My.Map.Entity
                     DurationEffect = new BuffDurationEffet()
                     {
                         DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr = "test",
+                        ParamStr1 = "test",
                     },
                     TriggerList = new()
                     {
@@ -414,7 +414,7 @@ namespace My.Map.Entity
                     DurationEffect = new BuffDurationEffet()
                     {
                         DurationType = EBuffDurationType.HitEffect,
-                        ParamStr = "Hit / player_shield",
+                        ParamStr1 = "Hit / player_shield",
                         ParamFloat1 = 0.3f,
                     },
 
@@ -515,7 +515,7 @@ namespace My.Map.Entity
                     DurationEffect = new BuffDurationEffet()
                     {
                         DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr = "test",
+                        ParamStr1 = "test",
                     },
                 };
 
@@ -677,8 +677,10 @@ namespace My.Map.Entity
     {
         public EBuffDurationType DurationType;
 
-        public string ParamStr;
+        public string ParamStr1;
+        public string ParamStr2;
         public float ParamFloat1;
+        public float ParamFloat2;
 
         public bool CommonFlag1;
         public bool CommonFlag2;
@@ -1284,7 +1286,6 @@ namespace My.Map.Entity
                 {
                     if (Def.DurationEffect.DurationType == EBuffDurationType.AnimOverride)
                     {
-                        BuffOwner.AnimOverrideList.Add("1");
                     }
                 }
             }
@@ -1492,7 +1493,6 @@ namespace My.Map.Entity
             {
                 if (Def.DurationEffect.DurationType == EBuffDurationType.AnimOverride)
                 {
-                    BuffOwner.AnimOverrideList.Remove("1");
                 }
             }
         }

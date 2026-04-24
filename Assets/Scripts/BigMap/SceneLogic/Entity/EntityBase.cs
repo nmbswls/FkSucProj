@@ -50,9 +50,6 @@ namespace My.Map
 
         Vector2 Pos { get; }
 
-
-        List<string> AnimOverrideList { get; }
-
         IEnumerable<ILogicEntity> FindEntityInRange(Vector2 pos, float radius);
 
         GlobalBuffManager BuffManager { get; }
@@ -140,7 +137,7 @@ namespace My.Map
 
     
 
-    public abstract partial class LogicEntityBase : ILogicEntity, IEntityBuffOwner, IEntityAttributeOwner, IWithAnim, IWithMotor
+    public abstract partial class LogicEntityBase : ILogicEntity, IEntityBuffOwner, IEntityAttributeOwner, IWithMotor
     {
 
         public GlobalBuffManager BuffManager

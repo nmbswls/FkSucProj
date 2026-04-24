@@ -184,18 +184,6 @@ namespace My.Map.Scene
             //if (knockBackIntent.knockbackTimeLeft <= 0f || externalVel.magnitude < knockBackIntent.knockbackMinEndSpeed)
             //    ClearKnockbackIntent();
 
-            if (srs != null)
-            {
-                if (UnitEntity.AnimOverrideList.Count > 0)
-                {
-                    //icon.color = Color.cyan;
-                }
-                else
-                {
-                    //icon.color = Color.white;
-                }
-            }
-
             UpdateFaceDirIndicator();
 
 
