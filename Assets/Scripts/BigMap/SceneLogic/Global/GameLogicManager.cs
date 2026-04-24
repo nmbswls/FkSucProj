@@ -133,7 +133,7 @@ namespace My
 
             });
 
-            worldPersistState = new GameWorldPersistStateManager(this);
+            worldPersistState = new GameWorldPersistStateManager();
             if (saveData != null)
             {
                 SaveData.EnsureHydrated(saveData);
@@ -672,7 +672,7 @@ namespace My
         /// <returns></returns>
         public string GetCurrentReviveMap()
         {
-            if(worldPersistState == null || !worldPersistState.CheckHasParam("base_clear"))
+            if(playerDataManager == null || !playerDataManager.CheckHasParam("base_clear"))
             {
                 return "game_init";
             }

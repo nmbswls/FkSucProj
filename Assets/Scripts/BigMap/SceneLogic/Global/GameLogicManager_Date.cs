@@ -5,46 +5,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace My
-
 {
-    public class GameDateInfo
-    {
-        public int CurrDay = 1;
-
-        public enum EDayPeriod
-        {
-            Day,
-            Dawn,
-            Night,
-        }
-
-        public EDayPeriod DayPeriod;
-
-        public void NextPeriod()
-        {
-
-            if(DayPeriod == EDayPeriod.Day)
-            {
-                DayPeriod = EDayPeriod.Dawn;
-            }
-            else if(DayPeriod == EDayPeriod.Dawn)
-            {
-                DayPeriod = EDayPeriod.Night;
-            }
-            else if (DayPeriod == EDayPeriod.Night)
-            {
-                DayPeriod = EDayPeriod.Day;
-
-                CurrDay += 1;
-            }
-        }
-    }
-
 
     public partial class GameLogicManager
     {
-
-        public GameDateInfo DateInfo = new();
+        public int CurrDay = 1;
+        public int DayPeriodLeft = 2;
 
         public event Action EventOnNextDayPeriod;
 
@@ -54,24 +20,39 @@ namespace My
         }
         public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
 
-        public void GoToNextPeriod()
+
+
+        public bool CheckPeriodEnough(int period)
         {
-            int currDay = DateInfo.CurrDay;
-
-            DateInfo.NextPeriod();
-
-            if(DateInfo.CurrDay != currDay)
+            if(period <= DayPeriodLeft)
             {
-                HandleOneDayBalance();
+                return true;
+            }
+            return false;
+        }
+
+        public void TryCostPeriod(int period)
+        {
+            DayPeriodLeft -= period;
+            if(DayPeriodLeft < 0)
+            {
+                DayPeriodLeft = 0;
             }
 
             EventOnNextDayPeriod?.Invoke();
         }
 
+        public void FinishOneDay()
+        {
+            CurrDay += 1;
+            HandleOneDayBalance();
+            DayPeriodLeft = 2;
+        }
+
         /// <summary>
         /// 
         /// </summary>
-        public void HandleOneDayBalance()
+        private void HandleOneDayBalance()
         {
             OneDayBalanceInfo balanceInfo = new OneDayBalanceInfo();
             //

@@ -41,9 +41,9 @@ namespace My
                                 executor?.Apply(fightEffectWrapper.effectConf, fightEffectWrapper.ctx);
                             }
                             break;
-                        case DelayedNextPeriodEffectWrapper nextPeriodWrapper:
+                        case DelayedCostPeriodEffectWrapper nextPeriodWrapper:
                             {
-                                GoToNextPeriod();
+                                TryCostPeriod(nextPeriodWrapper.CostPeriod);
                             }
                             break;
                     }
@@ -66,8 +66,9 @@ namespace My
         {
         }
 
-        public class DelayedNextPeriodEffectWrapper : DelayedEffectWrapper
+        public class DelayedCostPeriodEffectWrapper : DelayedEffectWrapper
         {
+            public int CostPeriod;
         }
 
         public List<DelayedEffectWrapper> DelayedEffectQueue = new();
@@ -101,7 +102,7 @@ namespace My
             _delayQueueDirty = true;
         }
 
-        public void PendingGoToNextPeriod()
+        public void PendingCostDayPeriod(int period = 1)
         {
             float preExecTime = LogicTime.time + 0.1f;
             if (DelayedEffectQueue.Count != 0)
@@ -109,8 +110,9 @@ namespace My
                 preExecTime = DelayedEffectQueue.Last().fixedExeTime + 0.1f;
             }
 
-            DelayedEffectQueue.Add(new DelayedNextPeriodEffectWrapper()
+            DelayedEffectQueue.Add(new DelayedCostPeriodEffectWrapper()
             {
+                CostPeriod = period,
             });
             _delayQueueDirty = true;
         }

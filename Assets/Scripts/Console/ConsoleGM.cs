@@ -107,7 +107,7 @@ public class ConsoleGM : MonoBehaviour
                 
                 Log($"设置变量 id={id}");
 
-                MainGameManager.Instance.gameLogicManager.worldPersistState?.SetVariable(id);
+                MainGameManager.Instance.gameLogicManager.playerDataManager?.SetVariable(id);
 
             });
 

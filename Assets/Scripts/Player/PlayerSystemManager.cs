@@ -43,6 +43,9 @@ namespace My.Player
 
         public PlayerInventorySystem InventorySystem { get; private set; }
 
+        // RPG Maker 式全局开关（存 PlayerData.GlobalSwitchMap），与地图点位状态语义分离
+        public Dictionary<string, bool> GlobalSwitchMap = new();
+
         public List<string> PlayerSkillList = new() 
         {
             "queen_attack",
@@ -144,6 +147,15 @@ namespace My.Player
                 SaveData.EnsureHydrated(savingData);
             }
 
+            GlobalSwitchMap.Clear();
+            if (savingData?.PlayerData?.GlobalSwitchMap != null)
+            {
+                foreach (var kv in savingData.PlayerData.GlobalSwitchMap)
+                {
+                    GlobalSwitchMap[kv.Key] = kv.Value;
+                }
+            }
+
             ProgressionSystem.InitSystem(logicManager, savingData);
             QuestSystem.InitSystem(logicManager, savingData);
             DialogTriggerSystem.InitSystem(logicManager, savingData);
@@ -153,7 +165,35 @@ namespace My.Player
 
         public void ApplyRuntimeToSaveData(SaveData data)
         {
+            if (data.PlayerData == null)
+            {
+                data.PlayerData = new PlayerData();
+            }
+
+            data.PlayerData.GlobalSwitchMap.Clear();
+            foreach (var kv in GlobalSwitchMap)
+            {
+                data.PlayerData.GlobalSwitchMap[kv.Key] = kv.Value;
+            }
+
             InventorySystem?.WriteWarehouseToSave(data);
+        }
+
+        public bool CheckHasParam(string id)
+        {
+            GlobalSwitchMap.TryGetValue(id, out var val);
+            return val;
+        }
+
+        public void SetVariable(string id)
+        {
+            GlobalSwitchMap[id] = true;
+
+            logicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()
+            {
+                Name = id,
+                AfterVal = 1,
+            });
         }
 
         public void InitBagInfo()

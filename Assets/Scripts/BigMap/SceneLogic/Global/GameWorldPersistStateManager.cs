@@ -1,9 +1,8 @@
-// 跨图世界交互持久状态（垂钓点、废墟、全局开关）。
+// 跨图「地图实体」交互持久状态（垂钓点、废墟等），非 RPG 全局开关。
 // 当前随 SaveData 整体进内存；若未来拆分 per-map 存档或联机分 Region，再评估按图分桶或按需从盘加载。
 
 using System.Collections.Generic;
 using System.Linq;
-using Map.Logic.Events;
 using My.Config;
 using My.Saving;
 using UnityEngine;
@@ -12,29 +11,15 @@ namespace My
 {
     public class GameWorldPersistStateManager
     {
-        private readonly GameLogicManager _logicManager;
-
         private readonly Dictionary<string, FishingSpotRuntimeSave> _fishingRuntime = new();
         private readonly Dictionary<string, RepairPointRuntimeSave> _ruinRuntime = new();
 
-        public Dictionary<string, bool> GlobalSwitchMap { get; } = new();
-
-        public GameWorldPersistStateManager(GameLogicManager logicManager)
+        public GameWorldPersistStateManager()
         {
-            _logicManager = logicManager;
         }
 
         public void InitFromSave(SaveData savingData)
         {
-            GlobalSwitchMap.Clear();
-            if (savingData?.PlayerData?.GlobalSwitchMap != null)
-            {
-                foreach (var kv in savingData.PlayerData.GlobalSwitchMap)
-                {
-                    GlobalSwitchMap[kv.Key] = kv.Value;
-                }
-            }
-
             _fishingRuntime.Clear();
             if (savingData?.PlayerData?.FishingSpotByUniqName != null)
             {
@@ -80,12 +65,6 @@ namespace My
             if (data.PlayerData == null)
             {
                 data.PlayerData = new PlayerData();
-            }
-
-            data.PlayerData.GlobalSwitchMap.Clear();
-            foreach (var kv in GlobalSwitchMap)
-            {
-                data.PlayerData.GlobalSwitchMap[kv.Key] = kv.Value;
             }
 
             data.PlayerData.FishingSpotByUniqName.Clear();
@@ -208,23 +187,6 @@ namespace My
                     kv.Value.LastRestockSettlementDayIndex = newSettlementDayIndex;
                 }
             }
-        }
-
-        public bool CheckHasParam(string id)
-        {
-            GlobalSwitchMap.TryGetValue(id, out var val);
-            return val;
-        }
-
-        public void SetVariable(string id)
-        {
-            GlobalSwitchMap[id] = true;
-
-            _logicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()
-            {
-                Name = id,
-                AfterVal = 1,
-            });
         }
     }
 }

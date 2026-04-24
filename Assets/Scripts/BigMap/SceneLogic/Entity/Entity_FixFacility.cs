@@ -161,7 +161,7 @@ namespace My.Map
             // 在这里抛一个阻塞上去
             OnRepairFinish();
 
-            LogicManager.PendingGoToNextPeriod();
+            LogicManager.PendingCostDayPeriod();
         }
 
         public void OnRepairFinish()

@@ -718,7 +718,17 @@ namespace My
 
         private void HandleNextDayPeriod()
         {
-            UIManager.Instance.DoFadeInAndOut(0.25f, 0.25f, null, null);
+            UIManager.Instance.DoFadeInAndOut(0.25f, 0.25f, ()=>
+            {
+                if(gameLogicManager.DayPeriodLeft == 0)
+                {
+                    SceneMaskPanel.Instance?.ShowDawn();
+                }
+                else
+                {
+                    SceneMaskPanel.Instance?.ShowDayTime();
+                }
+            }, null, null);
         }
     }
 

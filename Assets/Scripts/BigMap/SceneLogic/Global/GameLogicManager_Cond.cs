@@ -89,11 +89,11 @@ namespace My
                         {
                             checkHas = true;
                         }
-                        if(checkHas && worldPersistState != null && worldPersistState.CheckHasParam(cond.Param5))
+                        if(checkHas && playerDataManager != null && playerDataManager.CheckHasParam(cond.Param5))
                         {
                             return true;
                         }
-                        if (!checkHas && worldPersistState != null && !worldPersistState.CheckHasParam(cond.Param5))
+                        if (!checkHas && playerDataManager != null && !playerDataManager.CheckHasParam(cond.Param5))
                         {
                             return true;
                         }

@@ -472,7 +472,7 @@ namespace My.Map
 
                     case LogicInteractOutput.EOutputType.NextDayPeriod:
                         {
-                            Owner.LogicManager.PendingGoToNextPeriod();
+                            Owner.LogicManager.PendingCostDayPeriod();
                         }
                         break;
 
