@@ -51,6 +51,15 @@ namespace My.Map.Entity
         PlayerNonHunterMode,
     }
 
+    /// <summary>
+    /// 阶段吸附垫步：继承技能根配置，或使用本 phase 独立配置
+    /// </summary>
+    public enum EPhaseStepSnapSource
+    {
+        InheritFromAbility,
+        PhaseCustom,
+    }
+
     [Serializable]
     public class PhaseEffectEvent
     {
@@ -114,6 +123,13 @@ namespace My.Map.Entity
         public MapPreviewIntent PreviewIntent = new();
 
         public string UsePhaseHitAsTarget; // 特殊属性 如果非空 则进入当前phase时 使用特定phase的击中目标当作新技能target
+
+        [Header("阶段开始吸附（垫步/拉向目标）")]
+        public EPhaseStepSnapSource StepSnapSource = EPhaseStepSnapSource.InheritFromAbility;
+        public float DefaultStepDistance = 0f;
+        public bool AddTargetCorrection = false;
+        public float MaxCorrectionValue = 0.5f;
+        public float GoodCorrectionnDist = 0.8f;
     }
 
 
@@ -171,7 +187,7 @@ namespace My.Map.Entity
 
 
         /// <summary>
-        /// 施法吸附
+        /// 施法吸附（技能级默认；各 phase 在 StepSnapSource==InheritFromAbility 时沿用此处）
         /// </summary>
         public float DefaultStepDistance = 0.0f;
         public bool AddTargetCorrection = false; // 是否增加吸附

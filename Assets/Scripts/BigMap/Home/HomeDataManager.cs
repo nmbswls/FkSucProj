@@ -11,9 +11,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.MapExport;
 using My.Saving;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static My.MapExport.MapExportDatabase;
 
 namespace My.Home
 {
@@ -44,6 +42,9 @@ namespace My.Home
             public bool Removed = false;
 
             public HomeFacilityCfg CfgRef;
+
+            // LogicEntityRecord4HomeFacility 的 Id，与 BindingFacilityId=InstId 对应
+            public long HomeFacilityLogicRecordId;
         }
 
         public class HomePlacementDetailInfo
@@ -53,6 +54,51 @@ namespace My.Home
         public List<HomeFacilityInstance> PlacementInfos = new();
 
         private Dictionary<long, HomeFacilityInstance> homePlacementMap = new();
+
+        // 场景加载后：把 Repo 里 HomeFacility 记录写回 placement，便于移动与调试
+        public void SyncPlacementLogicRecordIdsFromRepo()
+        {
+            if (LogicManager?.AreaManager?.Repo?.Records == null)
+            {
+                return;
+            }
+
+            foreach (var p in PlacementInfos)
+            {
+                if (p.Removed)
+                {
+                    continue;
+                }
+
+                foreach (var kv in LogicManager.AreaManager.Repo.Records)
+                {
+                    if (kv.Value is LogicEntityRecord4HomeFacility hf && hf.BindingFacilityId == p.InstId)
+                    {
+                        p.HomeFacilityLogicRecordId = kv.Key;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void ApplyPlacementWorldPosToLogicRecord(HomeFacilityInstance inst, Vector2 worldPos)
+        {
+            long rid = inst.HomeFacilityLogicRecordId;
+            if (rid == 0 || LogicManager?.AreaManager?.Repo?.Records == null)
+            {
+                return;
+            }
+
+            if (!LogicManager.AreaManager.Repo.Records.TryGetValue(rid, out var rec))
+            {
+                return;
+            }
+
+            rec.Position = worldPos;
+            LogicManager.AreaManager.UpdatePosition(rid, worldPos);
+            var ent = LogicManager.AreaManager.GetLogicEntiy(rid, false);
+            ent?.SetPosition(worldPos);
+        }
 
         /// <summary>
         /// 查找设施
@@ -130,7 +176,58 @@ namespace My.Home
 
         public void OnPlayerEnterHome()
         {
+            EnsureHomeFacilityRecordsRegistered();
+        }
 
+        // 内城 placement 与大地图动态刷新无关：进内城时直接建 Record 并注册（与 AddPlacement 同路径）。
+        public void EnsureHomeFacilityRecordsRegistered()
+        {
+            if (LogicManager?.AreaManager == null)
+            {
+                return;
+            }
+
+            var area = LogicManager.AreaManager;
+
+            foreach (var p in PlacementInfos)
+            {
+                if (p.Removed || p.CfgRef == null)
+                {
+                    continue;
+                }
+
+                long existingId = 0;
+                foreach (var kv in area.Repo.Records)
+                {
+                    if (kv.Value is LogicEntityRecord4HomeFacility hf && hf.BindingFacilityId == p.InstId)
+                    {
+                        existingId = kv.Key;
+                        break;
+                    }
+                }
+
+                if (existingId != 0)
+                {
+                    p.HomeFacilityLogicRecordId = existingId;
+                    continue;
+                }
+
+                var initInfo = new EntityInitInfo4HomePlacement
+                {
+                    CfgId = p.Id,
+                    Position = (Vector2)CellToWorld(p.PivotPos),
+                    BindingFacilityId = p.InstId,
+                };
+
+                var record = area.CreateEntityRecordFromInitInfo(initInfo);
+                if (record == null)
+                {
+                    continue;
+                }
+
+                p.HomeFacilityLogicRecordId = record.Id;
+                area.RegisterEntityRecord(record, isCreate: false);
+            }
         }
 
         public Vector3Int WorldToCell(Vector3 worldPos)
@@ -210,6 +307,7 @@ namespace My.Home
             initInfo.BindingFacilityId = newInfo.InstId;
 
             var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
+            newInfo.HomeFacilityLogicRecordId = record.Id;
 
 
             //if(placementCfg.BindingEntityInfoList.Count > 0)
@@ -254,6 +352,26 @@ namespace My.Home
                 findIt.PivotPos = pivorPos; 
                 findIt.Rot = rot;
 
+                var worldPos = (Vector2)CellToWorld(pivorPos);
+                if (findIt.HomeFacilityLogicRecordId == 0)
+                {
+                    SyncPlacementLogicRecordIdsFromRepo();
+                }
+
+                if (findIt.HomeFacilityLogicRecordId == 0 && LogicManager?.AreaManager?.Repo?.Records != null)
+                {
+                    foreach (var kv in LogicManager.AreaManager.Repo.Records)
+                    {
+                        if (kv.Value is LogicEntityRecord4HomeFacility hf && hf.BindingFacilityId == findIt.InstId)
+                        {
+                            findIt.HomeFacilityLogicRecordId = kv.Key;
+                            break;
+                        }
+                    }
+                }
+
+                ApplyPlacementWorldPosToLogicRecord(findIt, worldPos);
+
                 EvOnPlacementUpdate?.Invoke(findIt);
             }
         }
@@ -283,48 +401,6 @@ namespace My.Home
             }
 
             return ret;
-        }
-
-        public List<DynamicEntityRefreshInfo> GetAllValidLogicEntites()
-        {
-            List<DynamicEntityRefreshInfo> retList = new();
-
-            int uniqId = 10;
-            //// home状态 读取信息
-            //{
-            //    var refreshInfo = new DynamicEntityRefreshInfo();
-            //    refreshInfo.UniqId = uniqId++;
-            //    refreshInfo.EntityType = EEntityType.InteractPoint;
-            //    refreshInfo.CfgId = "teleport";
-            //    refreshInfo.Position = new Vector2(2.0f, 2.0f);
-
-
-            //    retList.Add(refreshInfo);
-            //}
-
-            {
-
-                //var refreshInfo = new DynamicEntityRefreshInfo();
-                //refreshInfo.UniqId = uniqId++;
-                //refreshInfo.InitInfo = new EntityInitInfo4Npc()
-                //{
-                //    CfgId = "home_liki",
-                //    Position = new Vector2(2.0f, 0f),
-                //    IsPeace = true,
-                //    MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove
-                //};
-
-                //refreshInfo.AppearCond = new CommonCheckCond()
-                //{
-                //    Type = ECommonCheckType.CheckVariable,
-                //    Param1 = 1,
-                //    Param5 = "liki",
-                //};
-
-                //retList.Add(refreshInfo);
-            }
-
-            return retList;
         }
 
         public void RefreshProduceValue()

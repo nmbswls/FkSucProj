@@ -4,7 +4,7 @@ using My.Map;
 
 namespace My
 {
-    public class WantedManager
+    public class AreaWantedManager
     {
 
         public int CurrentWantedVal;

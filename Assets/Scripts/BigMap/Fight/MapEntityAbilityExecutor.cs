@@ -353,70 +353,107 @@ namespace My.Map.Entity
             
             EventOnUseAbility?.Invoke(abilityConf.Id);
 
-            CheckApplyAdditiveMove(abilityConf);
-
             Debug.Log($"entity {EntityOwner.Id} TryStart {abilityConf.Id}");
 
             return true;
         }
 
-        private void CheckApplyAdditiveMove(MapAbilitySpecConfig abilityConf)
+        private static void ResolveStepSnapParams(MapAbilityPhase phase, MapAbilitySpecConfig spec, out float defaultStep, out bool addTargetCorrection, out float maxCorrectionValue, out float goodCorrectionDist)
         {
+            if (phase.StepSnapSource == EPhaseStepSnapSource.PhaseCustom)
+            {
+                defaultStep = phase.DefaultStepDistance;
+                addTargetCorrection = phase.AddTargetCorrection;
+                maxCorrectionValue = phase.MaxCorrectionValue;
+                goodCorrectionDist = phase.GoodCorrectionnDist;
+            }
+            else
+            {
+                defaultStep = spec.DefaultStepDistance;
+                addTargetCorrection = spec.AddTargetCorrection;
+                maxCorrectionValue = spec.MaxCorrectionValue;
+                goodCorrectionDist = spec.GoodCorrectionnDist;
+            }
+        }
+
+        private BaseUnitLogicEntity ResolveSnapTargetUnit()
+        {
+            if (CurrentCtx?.Target is BaseUnitLogicEntity ctxUnit && !ctxUnit.MarkDestroyed && !ctxUnit.IsDead)
+            {
+                return ctxUnit;
+            }
+
+            var mainTargetId = EntityOwner.CurrentTargetId;
+            if (mainTargetId == 0)
+            {
+                return null;
+            }
+
+            var mainTarget = EntityOwner.LogicManager.GetLogicEntity(mainTargetId, false);
+            if (mainTarget is not BaseUnitLogicEntity mainTargetUnit)
+            {
+                return null;
+            }
+
+            if (mainTargetUnit.IsDead || mainTargetUnit.MarkDestroyed)
+            {
+                return null;
+            }
+
+            return mainTargetUnit;
+        }
+
+        /// <summary>
+        /// 在阶段开始时执行吸附/垫步（在 UsePhaseHitAsTarget 刷新 CurrentCtx.Target 之后调用）
+        /// </summary>
+        private void ApplyPhaseStepSnap(MapAbilityPhase phase, MapAbilitySpecConfig abilityConf)
+        {
+            ResolveStepSnapParams(phase, abilityConf, out var defaultStep, out var addTargetCorrection, out var maxCorrectionValue, out var goodCorrectionDist);
+
             bool withTargetCorrection = false;
             Vector2? correctPoint = null;
             do
             {
-
-                if (!abilityConf.AddTargetCorrection)
+                if (!addTargetCorrection)
                 {
                     break;
                 }
 
-                var mainTargetId = EntityOwner.CurrentTargetId;
-                if(mainTargetId == 0)
-                {
-                    break;
-                }
-                var mainTarget = EntityOwner.LogicManager.GetLogicEntity(mainTargetId, false);
-                if(mainTarget == null || mainTarget is not BaseUnitLogicEntity mainTargetUnit)
-                {
-                    break;
-                }
-                if(mainTargetUnit.IsDead || mainTargetUnit.MarkDestroyed)
+                var mainTargetUnit = ResolveSnapTargetUnit();
+                if (mainTargetUnit == null)
                 {
                     break;
                 }
 
                 withTargetCorrection = true;
-                var diff = mainTarget.Pos - EntityOwner.Pos;
-                // 不需要吸附
-                if (diff.magnitude < abilityConf.GoodCorrectionnDist)
+                var diff = mainTargetUnit.Pos - EntityOwner.Pos;
+                if (diff.magnitude < goodCorrectionDist)
                 {
                     correctPoint = null;
                 }
                 else
                 {
-                    correctPoint = EntityOwner.Pos + diff.normalized * abilityConf.MaxCorrectionValue;
+                    correctPoint = EntityOwner.Pos + diff.normalized * maxCorrectionValue;
                 }
             }
             while (false);
-            
-            // 没有吸附时才处理默认垫步
-            if(!withTargetCorrection)
+
+            if (!withTargetCorrection)
             {
-                if (abilityConf.DefaultStepDistance > 0)
+                if (defaultStep > 0)
                 {
-                    correctPoint = EntityOwner.Pos + EntityOwner.FinalLook * abilityConf.DefaultStepDistance;
+                    correctPoint = EntityOwner.Pos + EntityOwner.FinalLook * defaultStep;
                 }
             }
 
-            if(correctPoint != null)
+            if (correctPoint != null)
             {
                 var dashDir = correctPoint.Value - EntityOwner.Pos;
-                if(dashDir.magnitude < 0.05f)
+                if (dashDir.magnitude < 0.05f)
                 {
                     return;
                 }
+
                 float correctionTime = 0.15f;
                 EntityOwner.StartDash(dashDir.normalized, correctionTime, dashDir.magnitude / correctionTime, null);
             }
@@ -479,6 +516,8 @@ namespace My.Map.Entity
                     }
                 }
             }
+
+            ApplyPhaseStepSnap(phase, CurrentCtx.AbilityConfig);
 
             // 安排该阶段的事件
             CurrentCtx._scheduled.Clear();

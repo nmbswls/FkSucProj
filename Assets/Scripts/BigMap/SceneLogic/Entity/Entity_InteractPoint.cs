@@ -214,13 +214,7 @@ namespace My.Map.Entity
             EventOnStatusChange?.Invoke(changeView);
         }
 
-        public void DoAnimation(string animName)
-        {
-            //
-            Debug.Log("DoAnimation doanimation");
-
-            AddAnimLayer(animName);
-        }
+        
 
         protected virtual void OnStatusChange(int preStage)
         {

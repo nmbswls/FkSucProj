@@ -37,7 +37,7 @@ namespace My.Map
 
         void SetLocalSwitch(string switchName, bool isOn);
 
-        void DoAnimation(string animName);
+        //void DoAnimation(string animName);
     }
 
 
@@ -527,7 +527,7 @@ namespace My.Map
                             _pendingParam1 = 0;
 
                             var animName = output.Param3;
-                            Owner.DoAnimation(animName);
+                            //Owner.DoAnimation(animName);
                         }
                         break;
 

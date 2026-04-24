@@ -126,14 +126,14 @@ namespace My.Map.Scene
         {
             base.RegisterEvents();
 
-            UnitEntity.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
+            //UnitEntity.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
         }
 
         protected override void UnregisterEvents()
         {
             base.UnregisterEvents();
 
-            UnitEntity.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
+            //UnitEntity.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
         }
 
 

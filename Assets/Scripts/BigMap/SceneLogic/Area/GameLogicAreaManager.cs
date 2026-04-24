@@ -182,12 +182,6 @@ namespace My.Map.Logic
                 Repo = new();
             }
 
-            if(cacheMapCfg != null && cacheMapCfg.IsHome)
-            {
-                var homeRefreshs = logicManager.homeDataManager.GetAllValidLogicEntites();
-                EntityRefreshInfo.AddRange(homeRefreshs);
-            }
-
             RebuildRefreshInfoByStaticId();
 
             BuildIndexFromRecords();

@@ -11,6 +11,10 @@ namespace My.Map.Entity
         public const string Attack = "Attack";
         public const string Defense = "Defense";
 
+        public const string PlayerHPower = "PlayerHPower";
+        public const string PlayerHDefend = "PlayerHDefend";
+        public const string PlayerSensitivity = "PlayerSensitivity";
+        
 
         public const string Special_JianShang = "Special_JianShang";
         public const string Special_YiShang = "Special_YiShang";

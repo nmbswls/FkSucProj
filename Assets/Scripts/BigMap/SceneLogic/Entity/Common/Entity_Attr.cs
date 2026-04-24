@@ -49,6 +49,11 @@ namespace My.Map
 
                 case AttrIdConsts.Attack:
                 case AttrIdConsts.HP_MAX:
+
+                case AttrIdConsts.PlayerHPower:
+                case AttrIdConsts.PlayerHDefend:
+                case AttrIdConsts.PlayerSensitivity:
+
                 case AttrIdConsts.PlayerGcThreshold:
                 case AttrIdConsts.Basic_PleasureAdd:
                 case AttrIdConsts.Basic_HungerCost:

@@ -112,7 +112,7 @@ namespace My
         public MapExportDatabase cacheMapDb;
 
         public GameLogicAreaManager AreaManager;
-        public WantedManager WantedManager;
+        public AreaWantedManager WantedManager;
 
         public PlayerSystemManager playerDataManager;
         public GameWorldPersistStateManager worldPersistState;

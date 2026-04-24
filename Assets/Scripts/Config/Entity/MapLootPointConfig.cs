@@ -54,5 +54,8 @@ namespace Config.Map
         /// 对应drop id
         /// </summary>
         public int DefaultDropId;
+
+        public bool HasOwner;
+        public bool IsPrecious;
     }
 }

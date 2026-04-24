@@ -142,7 +142,7 @@ namespace My.Map.Scene
 
             RealLogic.EventOnStatusChange += OnStatusChanged;
 
-            RealLogic.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
+            //RealLogic.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
         }
 
         public override void Unbind()
@@ -150,7 +150,7 @@ namespace My.Map.Scene
             if(RealLogic != null)
             {
                 RealLogic.EventOnStatusChange -= OnStatusChanged;
-                RealLogic.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
+                //RealLogic.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
             }
 
             IsSwitching = false;
