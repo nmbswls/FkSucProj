@@ -147,7 +147,7 @@ namespace My.Map.Scene
 
             foreach (var part in weaponParts)
             {
-                part.rotator.rotation = Quaternion.AngleAxis(realAimAngle + part.angleOffset, Vector3.forward);
+                part.rotator.rotation = Quaternion.AngleAxis(realAimAngle + (isFacingRight ? part.angleOffset : -part.angleOffset), Vector3.forward);
 
                 if (part.spriteVisual != null)
                 {

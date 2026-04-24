@@ -130,7 +130,12 @@ public class ConsoleGM : MonoBehaviour
             {
                 MainGameManager.Instance.gameLogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerClothes, -20000, false, FightStruct.EDmgFlag.None, null);
             });
-
+        Register("hungry", "饿了",
+            null,
+            args =>
+            {
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerHunger, -100000, false, FightStruct.EDmgFlag.None, null);
+            });
         Register("m1", "刷怪",
             null,
             args =>

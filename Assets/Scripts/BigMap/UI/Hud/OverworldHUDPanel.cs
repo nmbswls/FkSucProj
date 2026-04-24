@@ -993,15 +993,15 @@ namespace My.UI
         /// <param name="e"></param>
         private void HandleOnPlayerFuncOpen(PlayerFuncUnlockEvent e)
         {
-            if(e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Hunger)
+            if(e.OpenType == EFuncOpenType.Hunger)
             {
                 ShowBallAppearEffect(AttrIdConsts.PlayerHunger);
             }
-            else if (e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Desire)
+            else if (e.OpenType == EFuncOpenType.Desire)
             {
                 ShowBallAppearEffect(AttrIdConsts.PlayerSanity);
             }
-            else if(e.OpenType == PlayerFuncOpenSystem.EFuncOpenType.Clothes)
+            else if(e.OpenType == EFuncOpenType.Clothes)
             {
                 ShowBallAppearEffect(AttrIdConsts.PlayerClothes);
             }

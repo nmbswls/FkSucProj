@@ -142,13 +142,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 397364799357573608}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.2588191, w: 0.9659258}
-  m_LocalPosition: {x: 0.037, y: 0.067, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.082, y: 0.014, z: 0}
   m_LocalScale: {x: 0.5999999, y: 0.5999999, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8344531708845028510}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 30}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6420445353585651546
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -431,7 +431,7 @@ MonoBehaviour:
     Clip: {fileID: 7400000, guid: acb103d8ad5f3224eb33c8bb3a0e6a10, type: 2}
     Speed: 1
   - Name: move
-    Clip: {fileID: 7400000, guid: acb103d8ad5f3224eb33c8bb3a0e6a10, type: 2}
+    Clip: {fileID: 7400000, guid: 418ee7168eafcd34496ee76c483ea95e, type: 2}
     Speed: 1
 --- !u!1 &1221229975014566784
 GameObject:
@@ -2932,7 +2932,7 @@ MonoBehaviour:
     NeedFlipObjs:
     - {fileID: 8308015543660762187}
     - {fileID: 7655222459300442932}
-    angleOffset: 0
+    angleOffset: -20
   posLerpSpeed: 15
   radiusX: 0.2
   radiusY: 0.4
@@ -5208,14 +5208,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9197511185883199968}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.29904068, w: 0.9542404}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4063400411594789597}
   m_Father: {fileID: 5831707807201753912}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -34.8}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1295487005784070837
 PrefabInstance:
   m_ObjectHideFlags: 0

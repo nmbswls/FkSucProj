@@ -89,6 +89,7 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 } },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
                 _library["lock_face"] = new BuffDefinition()
                 {
@@ -96,13 +97,16 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 } },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
+
                 _library["fast_turn"] = new BuffDefinition()
                 {
                     BuffId = "fast_turn",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.FastTurn, ModifierValue = 1 } },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["immune_knock"] = new BuffDefinition()
@@ -111,6 +115,7 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneKnock, ModifierValue = 1 } },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["super_armor"] = new BuffDefinition()
@@ -127,6 +132,7 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmumeKaiYou, ModifierValue = 1 } },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["player_faqing"] = new BuffDefinition()
@@ -141,8 +147,10 @@ namespace My.Map.Entity
                 {
                     BuffId = "player_hungry",
                     LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = 25000 } },
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = 2500 } },
                     DefaultDuration = -1,
+
+                    Icon = "player_hungry",
                 };
 
                 _library["player_zhazhi"] = new BuffDefinition()
@@ -187,6 +195,7 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Charmed, ModifierValue = 1 }
                     },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
 
@@ -211,6 +220,7 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoSelect, ModifierValue = 1 } ,
                     },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["system_no_logic"] = new BuffDefinition()
@@ -226,6 +236,7 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoInteract, ModifierValue = 1 } ,
                     },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
 
@@ -235,6 +246,7 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneEvilShock, ModifierValue = 1 } },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["evil_shock"] = new BuffDefinition()
@@ -264,6 +276,7 @@ namespace My.Map.Entity
                         }
                     },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["beizha"] = new BuffDefinition()
@@ -305,6 +318,7 @@ namespace My.Map.Entity
                         }
                     },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["give_hide_aura"] = new BuffDefinition()
@@ -314,6 +328,7 @@ namespace My.Map.Entity
                     AuraRange = 1.0f,
                     IsAura = true,
                     AuraBuffId = "give_hide",
+                    IsHidden = true,
                 };
 
                 _library["give_hide"] = new BuffDefinition()
@@ -325,6 +340,7 @@ namespace My.Map.Entity
                     ModifierAttrs = new() {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HideView, ModifierValue = 1 } ,
                     },
+                    IsHidden = true,
                 };
 
                 _library["hide_marked"] = new BuffDefinition()
@@ -334,12 +350,14 @@ namespace My.Map.Entity
                     //ModifierAttrs = new() {
                     //    new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HidingMask, ModifierValue = 1 } ,
                     //},
+                    IsHidden = true,
                 };
 
                 _library["unsensored"] = new BuffDefinition()
                 {
                     BuffId = "unsensored",
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["be_fcked"] = new BuffDefinition()
@@ -375,6 +393,7 @@ namespace My.Map.Entity
                         }
                     },
                     DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["jian_su_self"] = new BuffDefinition()
@@ -699,6 +718,7 @@ namespace My.Map.Entity
     {
         public string BuffId;
 
+        public string Icon = "fallback";
         public EBuffLayerOverrideType LayerOverrideType;
         public int MaxStackLayer;
 

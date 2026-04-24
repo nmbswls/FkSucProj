@@ -7,21 +7,20 @@ using System.Collections.Generic;
 
 namespace My
 {
+    public enum EFuncOpenType
+    {
+        Invalid,
+        Hunger,
+        Desire,
+        Clothes,
+        Expose,
+
+        Skills,
+    }
 
     public class PlayerFuncOpenSystem : IPlayerSystem
     {
         protected GameLogicManager LogicManager { get; private set; }
-
-        public enum EFuncOpenType
-        {
-            Invalid,
-            Hunger,
-            Desire,
-            Clothes,
-            Expose,
-
-            Skills,
-        }
 
         public HashSet<EFuncOpenType> FuncOpenSet { get; private set; } = new();
 
@@ -30,6 +29,10 @@ namespace My
         {
             this.LogicManager = ctx;
 
+            foreach (var f in savingData.FuncOpenList)
+            {
+                FuncOpenSet.Add(f);
+            }
         }
 
         public void Tick(float dt)

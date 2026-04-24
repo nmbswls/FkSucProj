@@ -169,6 +169,8 @@ namespace My.Saving
 
         public GlobalRuntimePersistData GlobalRuntime;
 
+        public List<EFuncOpenType> FuncOpenList = new();
+
         public Dictionary<string, MapRuntimePersistData> MapRuntimeByMapId = new();
 
         public long NextLogicEntityIdHint;

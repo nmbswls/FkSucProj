@@ -22,7 +22,7 @@ namespace My.Quest
     // 功能解锁
     public struct PlayerFuncUnlockEvent
     {
-        public My.PlayerFuncOpenSystem.EFuncOpenType OpenType;
+        public EFuncOpenType OpenType;
 
         public EPlayerEventType EventType { get { return EPlayerEventType.OpenFunc; } }
     }
