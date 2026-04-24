@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using My.Map;
 using My.Map.Fight;
 using UnityEngine;
 
@@ -56,6 +57,7 @@ namespace My.Map.Entity
     /// </summary>
     public enum EPhaseStepSnapSource
     {
+        None,
         InheritFromAbility,
         PhaseCustom,
     }
@@ -103,6 +105,8 @@ namespace My.Map.Entity
         
         public string AnimTag; // 可用于驱动动画状态
 
+        // 为 0 时使用运行时默认（阶段结束 / 技能结束 / 片段结束）
+        public EAnimReleasePolicy AnimReleasePolicy;
 
         public EAbilityInterruptMask InterruptMask; // 自定义Flags
         public bool ForbidDodge = false;
@@ -125,7 +129,7 @@ namespace My.Map.Entity
         public string UsePhaseHitAsTarget; // 特殊属性 如果非空 则进入当前phase时 使用特定phase的击中目标当作新技能target
 
         [Header("阶段开始吸附（垫步/拉向目标）")]
-        public EPhaseStepSnapSource StepSnapSource = EPhaseStepSnapSource.InheritFromAbility;
+        public EPhaseStepSnapSource StepSnapSource = EPhaseStepSnapSource.None;
         public float DefaultStepDistance = 0f;
         public bool AddTargetCorrection = false;
         public float MaxCorrectionValue = 0.5f;

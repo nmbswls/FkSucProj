@@ -157,6 +157,9 @@ namespace My.Map.Entity
             public string DebugSavedAnimTag;
             public float DebugSavedAnimTagTimer;
 
+            public long AbilityAnimSessionId;
+            public long PhaseAnimHandle;
+
             public List<ScheduledEvent> _scheduled = new();
 
             public long ShowProgressShowId = 0;
@@ -206,6 +209,7 @@ namespace My.Map.Entity
         public AbilityRunningContext CurrentCtx;
         private bool _running = false;
 
+        private static long s_abilityAnimSessionSeq;
 
         //private Dictionary<string, float> _sharedCooldown = new();
 
@@ -341,6 +345,8 @@ namespace My.Map.Entity
                 OneAbilityEnd = onAbilityEnd,
 
                 PhaseOverrideAnims = phaseOverrideAnims,
+
+                AbilityAnimSessionId = System.Threading.Interlocked.Increment(ref s_abilityAnimSessionSeq),
             };
             foreach (var e in abilityConf.OnStartEffects)
             {
@@ -367,12 +373,19 @@ namespace My.Map.Entity
                 maxCorrectionValue = phase.MaxCorrectionValue;
                 goodCorrectionDist = phase.GoodCorrectionnDist;
             }
-            else
+            else if(phase.StepSnapSource == EPhaseStepSnapSource.InheritFromAbility)
             {
                 defaultStep = spec.DefaultStepDistance;
                 addTargetCorrection = spec.AddTargetCorrection;
                 maxCorrectionValue = spec.MaxCorrectionValue;
                 goodCorrectionDist = spec.GoodCorrectionnDist;
+            }
+            else
+            {
+                defaultStep = 0;
+                addTargetCorrection = false;
+                maxCorrectionValue = 0;
+                goodCorrectionDist= 0;
             }
         }
 
@@ -455,6 +468,7 @@ namespace My.Map.Entity
                 }
 
                 float correctionTime = 0.15f;
+                Debug.LogError("adjusttttttttt");
                 EntityOwner.StartDash(dashDir.normalized, correctionTime, dashDir.magnitude / correctionTime, null);
             }
         }
@@ -489,9 +503,23 @@ namespace My.Map.Entity
             if (!string.IsNullOrEmpty(animTag))
             {
                 CurrentCtx.DebugSavedAnimTag = animTag;
-                EntityOwner.PlayerAnim(animTag, 0);
-                //var executor = GetExecutor(e);
-                //new PlayAnimEffect { AnimTag = phase.AnimTag }.Apply(Current, Ctx);
+                var policy = phase.AnimReleasePolicy == 0
+                    ? AnimReleasePolicyUtil.DefaultAbilityPhase
+                    : phase.AnimReleasePolicy;
+                var resolved = EntityOwner.GetAnimOverride(animTag);
+                CurrentCtx.PhaseAnimHandle = EntityOwner.PushAnimRequest(new AnimPlayRequest
+                {
+                    AnimName = resolved,
+                    Layer = 0,
+                    Source = EAnimRequestSource.AbilityPhase,
+                    ReleasePolicy = policy,
+                    AbilitySessionId = CurrentCtx.AbilityAnimSessionId,
+                    AbilityPhaseIndex = index,
+                });
+            }
+            else
+            {
+                CurrentCtx.PhaseAnimHandle = 0;
             }
             if (!string.IsNullOrEmpty(phase.EnterDebugString))
             {
@@ -684,6 +712,12 @@ namespace My.Map.Entity
         public void CleanupPhase(bool isInterrupt = false)
         {
             // 关闭命中盒、停止位移曲线、回收特效、重置输入锁等
+
+            if (CurrentCtx.PhaseAnimHandle != 0)
+            {
+                EntityOwner.ReleaseAnimRequestForced(CurrentCtx.PhaseAnimHandle);
+                CurrentCtx.PhaseAnimHandle = 0;
+            }
 
             // 移除phase附加状态
             foreach (var buffId in CurrentCtx.PhaseBindBuffs)
@@ -922,10 +956,12 @@ namespace My.Map.Entity
 
             CleanupPhase();
 
+            var sessionId = CurrentCtx.AbilityAnimSessionId;
             CurrentCtx.OneAbilityEnd?.Invoke(true);
 
             _running = false;
             Debug.Log($"Ability {CurrentCtx.AbilityConfig.Id} complete");
+            EntityOwner.ReleaseAnimRequestsByAbilitySession(sessionId);
             CurrentCtx = null;
 
             EventOnAbilityEnd?.Invoke(abName, 0);
@@ -951,12 +987,14 @@ namespace My.Map.Entity
 
             CleanupPhase();
 
+            var sessionId = CurrentCtx.AbilityAnimSessionId;
 
             _running = false;
             Debug.Log($"Ability {CurrentCtx.AbilityConfig.Id} Cancel");
 
             CurrentCtx.OneAbilityEnd?.Invoke(false);
 
+            EntityOwner.ReleaseAnimRequestsByAbilitySession(sessionId);
             CurrentCtx = null;
 
             //  清理绑定绑定的冲刺呢？

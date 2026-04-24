@@ -189,6 +189,8 @@ namespace My.Map.Scene
 
             UpdateOffsetZView();
 
+            TickLocomotionAnim(dt);
+
             if(UnitEntity.IsDialogMoving)
             {
                 mainCol.enabled = false;
@@ -426,9 +428,6 @@ namespace My.Map.Scene
             UnitEntity.EventOnBuffRegister += OnEventBuffRegister;
             UnitEntity.EventOnBuffUnregister += OnEventBuffUnregister;
 
-            UnitEntity.EventOnAnimPlay += OnEventAnimPlay;
-            
-
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
             //    UnitEntity.externalVel = intent.dashDir.normalized * intent.dashSpeed;
@@ -455,8 +454,6 @@ namespace My.Map.Scene
             UnitEntity.EventOnInvisibleChange -= OnEventInvisibleChange;
             UnitEntity.EventOnBuffRegister -= OnEventBuffRegister;
             UnitEntity.EventOnBuffUnregister -= OnEventBuffUnregister;
-
-            UnitEntity.EventOnAnimPlay -= OnEventAnimPlay;
         }
 
 

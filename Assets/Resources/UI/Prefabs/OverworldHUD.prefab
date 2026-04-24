@@ -469,7 +469,7 @@ GameObject:
   - component: {fileID: 1257546151209510121}
   - component: {fileID: 1773349806666839821}
   m_Layer: 0
-  m_Name: ps
+  m_Name: MainPs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1133,7 +1133,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 10, y: 2, z: 1}
+    m_Scale: {x: 5, y: 2, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -5347,7 +5347,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1865843859853761574}
   - {fileID: 367612229616577964}
   - {fileID: 4402226956153850922}
   - {fileID: 5935832181653327288}
@@ -6614,6 +6613,7 @@ RectTransform:
   - {fileID: 6271861284090191116}
   - {fileID: 7064761768682446222}
   - {fileID: 330609167736021164}
+  - {fileID: 1865843859853761574}
   - {fileID: 75957498355358689}
   - {fileID: 8625343199140646910}
   - {fileID: 5267337810198593610}
@@ -6642,6 +6642,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panelId: OverworldHUD
   canvasGroup: {fileID: 2470184966518924316}
+  PeriodIndicator: {fileID: 0}
+  EstrusIndicator: {fileID: 0}
   bottomProgressPanel: {fileID: 1694354168929897967}
   homeBuildPanel: {fileID: 3918985113526740112}
   overworldSkillPreviewUI: {fileID: 8443359879082057917}
@@ -9253,7 +9255,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1865843859853761574}
   m_Layer: 0
-  m_Name: FaQingEffects
+  m_Name: EstrusIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9266,17 +9268,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4339930789562438001}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 4.5508304}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3431490696299568640}
-  m_Father: {fileID: 75957498355358689}
+  m_Father: {fileID: 5807231530789451218}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -243.9, y: -305}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4398276634335118087

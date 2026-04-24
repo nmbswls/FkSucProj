@@ -430,6 +430,9 @@ MonoBehaviour:
   - Name: player_gather_default
     Clip: {fileID: 7400000, guid: acb103d8ad5f3224eb33c8bb3a0e6a10, type: 2}
     Speed: 1
+  - Name: move
+    Clip: {fileID: 7400000, guid: acb103d8ad5f3224eb33c8bb3a0e6a10, type: 2}
+    Speed: 1
 --- !u!1 &1221229975014566784
 GameObject:
   m_ObjectHideFlags: 0

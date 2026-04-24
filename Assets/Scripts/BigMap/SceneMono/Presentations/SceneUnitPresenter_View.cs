@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using Animancer;
+using My.Map;
 using UnityEngine;
 using static MapSceneEffectManager;
 
@@ -16,6 +17,8 @@ namespace My.Map.Scene
         public UnitAnimHolder AnimHolder;
 
         private AnimationClip _Idle;
+        private AnimationClip _moveClip;
+        private bool _locomotionVisualMove;
 
         private float _pendingOffsetZ = 0;
         private void InitAnimComps()
@@ -28,11 +31,150 @@ namespace My.Map.Scene
                 {
                     _Idle = clipInfo.Clip;
                 }
-                var state = MainAgentAnimator.Play(_Idle);
-                state.Events.Clear();
+
+                var moveInfo = AnimHolder.AnimClips.Find(item => item.Name == "move");
+                if (moveInfo == null)
+                {
+                    moveInfo = AnimHolder.AnimClips.Find(item => item.Name == "walk");
+                }
+                if (moveInfo != null)
+                {
+                    _moveClip = moveInfo.Clip;
+                }
+
+                if (_Idle != null && EnsureAnimancerReady())
+                {
+                    var state = MainAgentAnimator.Layers[0].Play(_Idle);
+                    state.Events.Clear();
+                }
             }
-            
-            //OnEventAnimPlay("attack_01", 0);
+        }
+
+        // Animancer 在首次访问 Layers[n] 前 Count 可能为 0；访问 Layers[0] 会 SetMinCount 创建默认层。
+        private bool EnsureAnimancerReady()
+        {
+            if (MainAgentAnimator == null)
+            {
+                return false;
+            }
+
+            MainAgentAnimator.InitializePlayable();
+            _ = MainAgentAnimator.Layers[0];
+            return true;
+        }
+
+        // 不依赖预制体上是否已「加层」：未配置的更高逻辑层一律落到 Base（0），仍能播放。
+        private AnimancerLayer ResolveAnimancerLayer(int layerIndex)
+        {
+            if (!EnsureAnimancerReady())
+            {
+                return null;
+            }
+
+            if (layerIndex < 0)
+            {
+                layerIndex = 0;
+            }
+
+            if (layerIndex >= MainAgentAnimator.Layers.Count)
+            {
+                return MainAgentAnimator.Layers[0];
+            }
+
+            return MainAgentAnimator.Layers[layerIndex];
+        }
+
+        protected override void OnAnimLayerRefreshed(object sender, AnimLayerRefreshEventArgs e)
+        {
+            ApplyAnimLayerRefresh(e);
+        }
+
+        private void ApplyAnimLayerRefresh(AnimLayerRefreshEventArgs e)
+        {
+            if (AnimHolder == null || MainAgentAnimator == null || UnitEntity == null)
+            {
+                return;
+            }
+
+            var lyr = ResolveAnimancerLayer(e.Layer);
+            if (lyr == null)
+            {
+                return;
+            }
+
+            if (e.Top == null || e.Top.Value.IsEmpty)
+            {
+                if (e.Layer == 0)
+                {
+                    PlayLocomotionClipOnLayer0();
+                }
+                return;
+            }
+
+            var top = e.Top.Value;
+            var clipInfo = AnimHolder.AnimClips.Find(item => item.Name == top.AnimName);
+
+            if (clipInfo == null)
+            {
+                Debug.LogError("ApplyAnimLayerRefresh no clip " + top.AnimName);
+                return;
+            }
+
+            var state = lyr.Play(clipInfo.Clip, 0.08f, FadeMode.FromStart);
+            state.Speed = clipInfo.Speed;
+            state.Events.OnEnd = null;
+
+            if (top.ReleasePolicy.HasFlag(EAnimReleasePolicy.OnClipEnd) && !clipInfo.Clip.isLooping)
+            {
+                var capturedHandle = top.Handle;
+                state.Events.OnEnd = () =>
+                {
+                    if (UnitEntity is LogicEntityBase le)
+                    {
+                        le.ReleaseAnimRequest(capturedHandle, EAnimReleaseReason.ClipEnded);
+                    }
+                };
+            }
+        }
+
+        private void PlayLocomotionClipOnLayer0()
+        {
+            if (!EnsureAnimancerReady())
+            {
+                return;
+            }
+
+            var lyr = MainAgentAnimator.Layers[0];
+            bool wantMove = _moveClip != null && UnitEntity != null && UnitEntity.GetDesiredVelocity().sqrMagnitude > 0.02f;
+            var clip = wantMove ? _moveClip : _Idle;
+            if (clip == null)
+            {
+                return;
+            }
+
+            lyr.Play(clip, 0.12f, FadeMode.FixedSpeed);
+            _locomotionVisualMove = wantMove;
+        }
+
+        public void TickLocomotionAnim(float dt)
+        {
+            if (AnimHolder == null || UnitEntity == null || MainAgentAnimator == null)
+            {
+                return;
+            }
+
+            if (UnitEntity is LogicEntityBase le && le.TryPeekAnimStackTop(0, out var top) && !top.IsEmpty)
+            {
+                return;
+            }
+
+            bool wantMove = _moveClip != null && UnitEntity.GetDesiredVelocity().sqrMagnitude > 0.02f;
+            if (wantMove == _locomotionVisualMove)
+            {
+                return;
+            }
+
+            PlayLocomotionClipOnLayer0();
         }
 
         
@@ -120,33 +262,6 @@ namespace My.Map.Scene
         {
 
         }
-
-
-
-        protected virtual void OnEventAnimPlay(string animName, int layer, bool clearAll)
-        {
-            if (AnimHolder == null)
-            {
-                return;
-            }
-
-            var clipInfo = AnimHolder.AnimClips.Find(item => item.Name == animName);
-
-            if (clipInfo == null)
-            {
-                Debug.LogError("OnEventAnimPlay no clip " + animName);
-                return;
-            }
-
-            var state = MainAgentAnimator.Play(clipInfo.Clip, 0, FadeMode.FromStart);
-            state.Speed = clipInfo.Speed;
-
-            if (!clipInfo.Clip.isLooping)
-            {
-                state.Events.OnEnd = () => MainAgentAnimator.Play(_Idle);
-            }
-        }
-
 
     }
 }

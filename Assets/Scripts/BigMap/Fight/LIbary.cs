@@ -2290,6 +2290,7 @@ namespace My.Map.Entity
                 },
 
                 AnimTag = "attack_01",
+                StepSnapSource = EPhaseStepSnapSource.InheritFromAbility,
             });
 
             var mainPhase = new MapAbilityPhase()
@@ -2365,6 +2366,7 @@ namespace My.Map.Entity
                     RawVal = "0.15"
                 },
                 AnimTag = "attack_02",
+                StepSnapSource = EPhaseStepSnapSource.InheritFromAbility,
             });
 
             var mainPhase = new MapAbilityPhase()
@@ -2455,6 +2457,7 @@ namespace My.Map.Entity
                 },
 
                 AnimTag = "queen_attack_03_down",
+                StepSnapSource = EPhaseStepSnapSource.InheritFromAbility,
             };
 
             //var newEffect = new MapAbilityEffectUseWeaponCfg()

@@ -27,6 +27,122 @@ namespace My.UI
         }
     }
 
+    public class OverworldHudEstrusIndicator : MonoBehaviour
+    {
+        public ParticleSystem MainPs;
+
+        private int cachedPlayerEstrusLevel = -1;
+        public void Init()
+        {
+            MainPs = transform.Find("MainPs").GetComponent<ParticleSystem>();
+        }
+
+        public void CheckEstrusUpdate()
+        {
+            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            if (player == null)
+            {
+                return;
+            }
+
+            int level = (int)(player.GetAttr(AttrIdConsts.PlayerEstrusProgrss) / 1000 / 20);
+            if(cachedPlayerEstrusLevel == level)
+            {
+                return;
+            }
+
+            cachedPlayerEstrusLevel = level;
+
+            switch (cachedPlayerEstrusLevel)
+            {
+                case 0:
+                    {
+                        ModifyParticleStyle(null, 0.7f, 0, 0, 2.0f);
+                    }
+                    break;
+                case 1:
+                    {
+                        ModifyParticleStyle(null, 0.7f, 0, 2, 2.0f);
+                    }
+                    break;
+                case 2:
+                    {
+                        ModifyParticleStyle(null, 0.7f, 0, 4, 2.0f);
+                    }
+                    break;
+                case 3:
+                    {
+                        ModifyParticleStyle(null, 0.7f, 0, 6, 2.0f);
+                    }
+                    break;
+                case 4:
+                    {
+                        ModifyParticleStyle(null, 0.7f, 0, 7, 2.0f);
+                    }
+                    break;
+                case 5:
+                    {
+                        ModifyParticleStyle(null, 0.7f, 0, 10, 2.0f);
+                    }
+                    break;
+            }
+        }
+
+
+        public void ModifyParticleStyle(Texture2D newTexture, float alpha, float startSpeed, float density, float duration)
+        {
+            if (MainPs == null)
+            {
+                Debug.LogError("未绑定 ParticleSystem!");
+                return;
+            }
+
+            // ================= 1. 修改 Main 模块 (主模块) =================
+            var mainModule = MainPs.main;
+
+            // 修改持续时间
+            mainModule.duration = duration;
+
+            // 修改发射速度
+            mainModule.startSpeed = startSpeed;
+
+            // 修改透明度 (通过修改 Start Color 的 Alpha 通道)
+            // 注意：Start Color 可能是一个渐变或随机颜色，这里假设它是单一颜色 (Color)
+            Color currentColor = mainModule.startColor.color;
+            currentColor.a = Mathf.Clamp01(alpha); // 限制在 0-1 之间
+            mainModule.startColor = currentColor;
+
+
+            // ================= 2. 修改 Emission 模块 (发射模块) =================
+            var emissionModule = MainPs.emission;
+
+            // 修改密度 (Rate over Time：每秒发射的粒子数量)
+            emissionModule.rateOverTime = density;
+
+
+            // ================= 3. 修改图案 (Renderer 模块) =================
+            if (newTexture != null)
+            {
+                // 图案通常由粒子系统的 Renderer 组件上的材质(Material)决定
+                ParticleSystemRenderer psRenderer = MainPs.GetComponent<ParticleSystemRenderer>();
+
+                if (psRenderer != null && psRenderer.material != null)
+                {
+                    // 修改材质的主贴图。
+                    // 注意：如果是内置渲染管线(Standard)，通常是 "_MainTex"
+                    // 如果是 URP/HDRP 管线，通常是 "_BaseMap"
+                    psRenderer.material.SetTexture("_MainTex", newTexture);
+                }
+            }
+
+            // ================= 4. 应用生效 =================
+            // 对于 duration（持续时间）等某些属性的修改，需要重启粒子系统才能立即应用完美生效
+            MainPs.Stop();
+            MainPs.Clear(); // 清除当前屏幕上已有的旧粒子
+            MainPs.Play();  // 重新播放
+        }
+    }
+
 
     public class OverworldHUDPanel : PanelBase, IInputConsumer, IRefreshable
     {
@@ -44,6 +160,7 @@ namespace My.UI
         }
 
         public OverworldHudDayPeriodIndicator PeriodIndicator;
+        public OverworldHudEstrusIndicator EstrusIndicator;
 
         public BottomProgressPanel bottomProgressPanel;
 
@@ -138,6 +255,13 @@ namespace My.UI
             {
                 PeriodIndicator = dayPeriodObj.AddComponent<OverworldHudDayPeriodIndicator>();
                 PeriodIndicator.PeriodText = PeriodIndicator.transform.Find("PeriodText").GetComponent<TextMeshProUGUI>();
+            }
+
+            var estrusObj = transform.Find("EstrusIndicator");
+            if (estrusObj != null)
+            {
+                EstrusIndicator = estrusObj.AddComponent<OverworldHudEstrusIndicator>();
+                EstrusIndicator.Init();
             }
         }
 
@@ -251,6 +375,8 @@ namespace My.UI
             CheckDisguiseState();
 
             UpdateEstrusStateHint();
+
+            EstrusIndicator?.CheckEstrusUpdate();
         }
 
         /// <summary>

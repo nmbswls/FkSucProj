@@ -124,14 +124,24 @@ namespace My
         {
             _logic.EventOnEntityMove += OnEntityMove;
             _logic.EventOnDestroyed += OnEventEntityDestroyed;
-
+            if (_logic is LogicEntityBase le)
+            {
+                le.EventOnAnimLayerRefreshed += OnAnimLayerRefreshed;
+            }
         }
         protected virtual void UnregisterEvents()
         {
             _logic.EventOnEntityMove -= OnEntityMove;
             _logic.EventOnDestroyed -= OnEventEntityDestroyed;
+            if (_logic is LogicEntityBase le)
+            {
+                le.EventOnAnimLayerRefreshed -= OnAnimLayerRefreshed;
+            }
         }
 
+        protected virtual void OnAnimLayerRefreshed(object sender, AnimLayerRefreshEventArgs e)
+        {
+        }
 
         protected virtual void OnEventEntityDestroyed(long entityId)
         {
