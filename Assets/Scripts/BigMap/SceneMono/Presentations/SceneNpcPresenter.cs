@@ -40,7 +40,8 @@ namespace My.Map.Scene
         public static int ID_DeepAbsorbEnable = 99;
         public static int ID_DeepAbsorbDisable = 100;
         public static int ID_PickDropInteractId = 101;
-        public static int ID_BackHit = 102;
+        //public static int ID_BackHit = 102;
+        public static int ID_ForcePushDown = 103; // 强推
 
         public HighlightCtrl highlightCtrl;
         public bool InteractDetailMode { get; set; }
@@ -89,7 +90,8 @@ namespace My.Map.Scene
         {
             get
             {
-                if (CheckCanBackHit())
+                // 猎杀模式 不可展开
+                if (OverworldHUDPanel.Instance.IsHunterMode)
                 {
                     return false;
                 }
@@ -163,28 +165,38 @@ namespace My.Map.Scene
 
             if (NpcEntity.IsAttaching) return false;
 
-            // 拾取相关
-            if(UnitEntity.IsDead)
+            if (OverworldHUDPanel.Instance.IsHunterMode)
             {
-                return true;
+                if (!UnitEntity.IsDead && !UnitEntity.MarkUnsensored)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                // 拾取相关
+                if (UnitEntity.IsDead)
+                {
+                    return true;
+                }
+
+                // 可开启深度榨取
+                if (UnitEntity.MarkUnsensored)
+                {
+                    return true;
+                }
+
+                // 可开启普通对话
+                if (CheckNpcPeaceDialog())
+                {
+                    return true;
+                }
             }
 
-            // 可开启深度榨取
-            if (UnitEntity.MarkUnsensored)
-            {
-                return true;
-            }
-            
-            // 可开启普通对话
-            if (CheckNpcPeaceDialog())
-            {
-                return true;
-            }
-            
-            if(CheckCanBackHit())
-            {
-                return true;
-            }
+            //if (CheckCanBackHit())
+            //{
+            //    return true;
+            //}
 
             return false;
         }
@@ -294,19 +306,9 @@ namespace My.Map.Scene
                     });
                 }
             }
-            else if(selectionId == ID_BackHit)
+            else if(selectionId == ID_ForcePushDown)
             {
-                if(CheckCanBackHit())
-                {
-                    // 显示层事件
-                    MainGameManager.Instance.gameLogicManager.LogicEventBus.Publish(new MLECommonGameEvent()
-                    {
-                        Name = "BackHit",
-                        Param3 = this.Id,
-                    });
-
-                    MainGameManager.Instance.playerScenePresenter.PlayerEntity.abilityController.TryUseAbility("zhaqu", target: NpcEntity);
-                }
+                PlayerHCalculater.CheckHForceDownSuccess(MainGameManager.Instance.gameLogicManager, NpcEntity);
             }
 
             return true;
@@ -333,61 +335,75 @@ namespace My.Map.Scene
             if (NpcEntity.IsAttaching) return ret;
             if (UnitEntity.MarkUnsensored) return ret;
 
-            if (UnitEntity.IsDead || UnitEntity.MarkUnsensored)
+            if(OverworldHUDPanel.Instance.IsHunterMode)
             {
-                ret.Add(new SceneInteractSelection()
-                {
-                    SelectId = ID_PickDropInteractId,
-                    SelectContent = "搜刮",
-                    Selectable = true
-                }); 
-            }
-
-            if (UnitEntity.MarkUnsensored)
-            {
-                if (UnitEntity.GetAttr(AttrIdConsts.DeepZhaChance) != 0)
+                if (!UnitEntity.IsDead && !UnitEntity.MarkUnsensored)
                 {
                     ret.Add(new SceneInteractSelection()
                     {
-                        SelectId = ID_DeepAbsorbEnable,
-                        SelectContent = "深度榨取",
+                        SelectId = ID_ForcePushDown,
+                        SelectContent = "强推",
                         Selectable = true
                     });
                 }
-                else
+            }
+            else
+            {
+                if (CheckNpcPeaceDialog())
+                {
+                    if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
+                    {
+                        ret.Add(new SceneInteractSelection()
+                        {
+                            SelectId = ID_NormalDialog,
+                            SelectContent = "交谈",
+                            Selectable = true
+                        });
+                    }
+                }
+
+                if (UnitEntity.IsDead || UnitEntity.MarkUnsensored)
                 {
                     ret.Add(new SceneInteractSelection()
                     {
-                        SelectId = ID_DeepAbsorbDisable,
-                        SelectContent = "深度榨取(无）",
-                        Selectable = false
+                        SelectId = ID_PickDropInteractId,
+                        SelectContent = "搜刮",
+                        Selectable = true
                     });
                 }
-            }
 
-
-            if(CheckNpcPeaceDialog())
-            {
-                if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
+                if (UnitEntity.MarkUnsensored)
                 {
-                    ret.Add(new SceneInteractSelection()
+                    if (UnitEntity.GetAttr(AttrIdConsts.DeepZhaChance) != 0)
                     {
-                        SelectId = ID_NormalDialog,
-                        SelectContent = "交谈",
-                        Selectable = true
-                    }); ;
+                        ret.Add(new SceneInteractSelection()
+                        {
+                            SelectId = ID_DeepAbsorbEnable,
+                            SelectContent = "深度榨取",
+                            Selectable = true
+                        });
+                    }
+                    else
+                    {
+                        ret.Add(new SceneInteractSelection()
+                        {
+                            SelectId = ID_DeepAbsorbDisable,
+                            SelectContent = "深度榨取(无）",
+                            Selectable = false
+                        });
+                    }
                 }
             }
 
-            if(CheckCanBackHit())
-            {
-                ret.Add(new SceneInteractSelection()
-                {
-                    SelectId = ID_BackHit,
-                    SelectContent = "被刺",
-                    Selectable = true
-                }); ;
-            }
+            //if(CheckCanBackHit())
+            //{
+            //    ret.Add(new SceneInteractSelection()
+            //    {
+            //        SelectId = ID_BackHit,
+            //        SelectContent = "被刺",
+            //        Selectable = true
+            //    }); ;
+            //}
 
             return ret;
         }

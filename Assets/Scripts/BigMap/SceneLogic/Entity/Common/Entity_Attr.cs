@@ -50,7 +50,7 @@ namespace My.Map
                 case AttrIdConsts.Attack:
                 case AttrIdConsts.HP_MAX:
 
-                case AttrIdConsts.PlayerHPower:
+                case AttrIdConsts.PhysicalForm:
                 case AttrIdConsts.PlayerHDefend:
                 case AttrIdConsts.PlayerSensitivity:
 
