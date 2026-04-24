@@ -29,9 +29,12 @@ namespace My
         {
             this.LogicManager = ctx;
 
-            foreach (var f in savingData.FuncOpenList)
+            if(savingData != null)
             {
-                FuncOpenSet.Add(f);
+                foreach (var f in savingData.FuncOpenList)
+                {
+                    FuncOpenSet.Add(f);
+                }
             }
         }
 
