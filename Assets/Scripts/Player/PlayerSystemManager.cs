@@ -1,5 +1,4 @@
 
-using System.Collections;
 using System.Collections.Generic;
 using cfg.demo;
 using Map.Logic.Events;
@@ -9,7 +8,6 @@ using My.Player.Bag;
 using My.Quest;
 using My.Saving;
 using UnityEngine;
-using System.Linq;
 
 namespace My.Player
 {
@@ -44,18 +42,6 @@ namespace My.Player
         public PlayerFuncOpenSystem FuncOpenSystem { get; private set; }
 
         public PlayerInventorySystem InventorySystem { get; private set; }
-
-
-        /// <summary>
-        /// 垂钓点运行时状态（键为地图 UniqName）；存盘写入 SaveData.PlayerData.FishingSpotByUniqName。
-        /// </summary>
-        private readonly Dictionary<string, FishingSpotRuntimeSave> _fishingRuntime = new();
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Dictionary<string, bool> GlobalSwitchMap = new();
 
         public List<string> PlayerSkillList = new() 
         {
@@ -158,129 +144,16 @@ namespace My.Player
                 SaveData.EnsureHydrated(savingData);
             }
 
-            this.GlobalSwitchMap.Clear();
-            if (savingData?.PlayerData?.GlobalSwitchMap != null)
-            {
-                foreach (var kv in savingData.PlayerData.GlobalSwitchMap)
-                {
-                    this.GlobalSwitchMap[kv.Key] = kv.Value;
-                }
-            }
-
             ProgressionSystem.InitSystem(logicManager, savingData);
             QuestSystem.InitSystem(logicManager, savingData);
             DialogTriggerSystem.InitSystem(logicManager, savingData);
             FuncOpenSystem.InitSystem(logicManager, savingData);
             InventorySystem.InitSystem(logicManager, savingData);
-
-
-            _fishingRuntime.Clear();
-            if (savingData?.PlayerData?.FishingSpotByUniqName != null)
-            {
-                foreach (var kv in savingData.PlayerData.FishingSpotByUniqName)
-                {
-                    _fishingRuntime[kv.Key] = new FishingSpotRuntimeSave
-                    {
-                        CfgId = kv.Value.CfgId,
-                        Remaining = kv.Value.Remaining,
-                        LastRestockSettlementDayIndex = kv.Value.LastRestockSettlementDayIndex,
-                    };
-                }
-            }
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
         {
-            if (data.PlayerData == null)
-            {
-                data.PlayerData = new PlayerData();
-            }
-
-            data.PlayerData.GlobalSwitchMap.Clear();
-            foreach (var kv in GlobalSwitchMap)
-            {
-                data.PlayerData.GlobalSwitchMap[kv.Key] = kv.Value;
-            }
-
-            data.PlayerData.FishingSpotByUniqName.Clear();
-            foreach (var kv in _fishingRuntime)
-            {
-                data.PlayerData.FishingSpotByUniqName[kv.Key] = new FishingSpotRuntimeSave
-                {
-                    CfgId = kv.Value.CfgId,
-                    Remaining = kv.Value.Remaining,
-                    LastRestockSettlementDayIndex = kv.Value.LastRestockSettlementDayIndex,
-                };
-            }
-
             InventorySystem?.WriteWarehouseToSave(data);
-        }
-
-        public FishingSpotRuntimeSave GetOrCreateFishingSpotState(string uniqName, string cfgId, int settlementDayIndex)
-        {
-            if (string.IsNullOrEmpty(uniqName))
-            {
-                return null;
-            }
-
-            if (_fishingRuntime.TryGetValue(uniqName, out var existing))
-            {
-                return existing;
-            }
-
-            var cfg = CfgMgr.Cfgs.TbFishingSpot.GetOrDefault(cfgId);
-            int cap = cfg != null ? cfg.Capacity : 0;
-            var created = new FishingSpotRuntimeSave
-            {
-                CfgId = cfgId,
-                Remaining = cap,
-                LastRestockSettlementDayIndex = settlementDayIndex,
-            };
-            _fishingRuntime[uniqName] = created;
-            return created;
-        }
-
-        public FishingSpotRuntimeSave GetFishingSpotStateOrNull(string uniqName)
-        {
-            if (string.IsNullOrEmpty(uniqName))
-            {
-                return null;
-            }
-
-            _fishingRuntime.TryGetValue(uniqName, out var s);
-            return s;
-        }
-
-        public void TryConsumeOneFishingUse(string uniqName)
-        {
-            if (string.IsNullOrEmpty(uniqName))
-            {
-                return;
-            }
-
-            if (_fishingRuntime.TryGetValue(uniqName, out var st))
-            {
-                st.Remaining = Mathf.Max(0, st.Remaining - 1);
-            }
-        }
-
-        public void ApplyFishingRestockForSettlement(int newSettlementDayIndex)
-        {
-            foreach (var kv in _fishingRuntime.ToList())
-            {
-                var cfg = CfgMgr.Cfgs.TbFishingSpot.GetOrDefault(kv.Value.CfgId);
-                if (cfg == null)
-                {
-                    continue;
-                }
-
-                int n = Mathf.Max(1, cfg.RestockEveryNDays);
-                if (newSettlementDayIndex - kv.Value.LastRestockSettlementDayIndex >= n)
-                {
-                    kv.Value.Remaining = cfg.Capacity;
-                    kv.Value.LastRestockSettlementDayIndex = newSettlementDayIndex;
-                }
-            }
         }
 
         public void InitBagInfo()
@@ -317,25 +190,6 @@ namespace My.Player
             FuncOpenSystem.Tick(dt);
         }
 
-
-
-        public bool CheckHasParam(string id)
-        {
-            GlobalSwitchMap.TryGetValue(id, out var val);
-            return val;
-        }
-
-        public void SetVariable(string id)
-        {
-            GlobalSwitchMap[id] = true;
-
-            // 广播全局开关变更事件
-            logicManager.LogicEventBus.Publish(new MLEVariableChangeEvent()
-            {
-                Name = id,
-                AfterVal = 1,
-            });
-        }
         public bool CheckHaveItem(string itemId, long count)
         {
             return InventorySystem.CheckHaveItem(itemId, count);

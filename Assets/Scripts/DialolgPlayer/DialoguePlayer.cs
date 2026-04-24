@@ -649,7 +649,7 @@ public partial class DialoguePlayer : MonoBehaviour
                     {
                         case EDialogSimpleFuncType.SetGlobalSwitch:
                             {
-                                MainGameManager.Instance.gameLogicManager.playerDataManager.GlobalSwitchMap[cd4Func.Param5] = true;
+                                MainGameManager.Instance.gameLogicManager.worldPersistState?.SetVariable(cd4Func.Param5);
                             }
                             break;
 

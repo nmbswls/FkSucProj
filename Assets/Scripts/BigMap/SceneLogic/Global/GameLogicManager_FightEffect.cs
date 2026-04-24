@@ -4,6 +4,8 @@ using My.Map.Entity;
 using My.Map;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using static My.UI.UIManager;
 
 namespace My
 
@@ -331,36 +333,6 @@ namespace My
             }
         }
 
-        public abstract class DelayedEffectWrapper
-        {
-            public float exeTIme;
-        }
-        public class DelayedFightEffectWrapper : DelayedEffectWrapper
-        {
-            public MapFightEffectCfg effectConf;
-            public LogicFightEffectContext ctx;
-        }
-        public List<DelayedEffectWrapper> DelayedEffectQueue = new();
-
-        private bool _delayQueueDirty = false;
-
-        public void HandleLogicFightEffect(MapFightEffectCfg effectConf, LogicFightEffectContext effectCtx)
-        {
-            if (effectConf.PendingTime > 0)
-            {
-                DelayedEffectQueue.Add(new DelayedFightEffectWrapper()
-                {
-                    effectConf = effectConf,
-                    ctx = effectCtx,
-                    exeTIme = LogicTime.time + effectConf.PendingTime,
-                });
-                _delayQueueDirty = true;
-                return;
-            }
-
-            var executor = GetLogicFightEffectExecutor(effectConf);
-            executor?.Apply(effectConf, effectCtx);
-        }
-
+        
     }
 }

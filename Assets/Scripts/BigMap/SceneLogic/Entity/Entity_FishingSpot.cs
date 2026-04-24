@@ -72,7 +72,6 @@ namespace My.Map.Entity
     public class FishingSpotLogicEntity : LogicEntityBase
     {
         public FishingSpot CacheCfg { get; private set; }
-        public string UniqName { get; private set; }
 
         public int RemainingUses { get; private set; }
 
@@ -82,7 +81,7 @@ namespace My.Map.Entity
             : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var fishRec = bindingRecord as LogicEntityRecord4FishingSpot;
-            UniqName = fishRec != null ? fishRec.UniqName : string.Empty;
+            SrcUniqName = fishRec != null ? fishRec.SrcUniqName : string.Empty;
             CacheCfg = CfgMgr.Cfgs.TbFishingSpot.GetOrDefault(cfgId);
             if (CacheCfg == null)
             {
@@ -90,7 +89,7 @@ namespace My.Map.Entity
             }
 
             var day = logicManager.SettlementDayIndex;
-            var st = logicManager.playerDataManager.GetOrCreateFishingSpotState(UniqName, cfgId, day);
+            var st = logicManager.worldPersistState.GetOrCreateFishingSpotState(SrcUniqName, cfgId, day);
             if (st == null)
             {
                 Debug.LogError($"[FishingSpot] invalid UniqName for entity cfg={cfgId}; Remaining forced to 0.");
@@ -116,7 +115,7 @@ namespace My.Map.Entity
 
         public void ReloadRemainingFromPlayerSave()
         {
-            var st = LogicManager.playerDataManager.GetFishingSpotStateOrNull(UniqName);
+            var st = LogicManager.worldPersistState.GetFishingSpotStateOrNull(SrcUniqName);
             if (st != null)
             {
                 RemainingUses = st.Remaining;
@@ -147,7 +146,7 @@ namespace My.Map.Entity
             }
 
             LogicManager.playerDataManager.TryGiveItem(fishId, 1, 0);
-            LogicManager.playerDataManager.TryConsumeOneFishingUse(UniqName);
+            LogicManager.worldPersistState.TryConsumeOneFishingUse(SrcUniqName);
             RemainingUses = Mathf.Max(0, RemainingUses - 1);
             return true;
         }

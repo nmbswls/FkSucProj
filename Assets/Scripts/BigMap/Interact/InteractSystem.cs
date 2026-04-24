@@ -134,6 +134,10 @@ public class SceneInteractSystem
         {
             return false;
         }
+        if(!MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.IsActionable())
+        {
+            return false;
+        }
 
         return true;
     }

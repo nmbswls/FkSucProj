@@ -222,9 +222,11 @@ namespace My.Map.Logic
                 return;
             }
 
-            if (record is LogicEntityRecord4FishingSpot fishRec)
+            
+
+            if(!string.IsNullOrEmpty(refreshInfo.UniqName))
             {
-                fishRec.UniqName = refreshInfo.UniqName;
+                record.SrcUniqName = refreshInfo.UniqName;
             }
 
             RegisterEntityRecord(record);

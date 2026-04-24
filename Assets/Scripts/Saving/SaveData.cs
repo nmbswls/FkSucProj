@@ -42,6 +42,7 @@ namespace My.Saving
         public Dictionary<string, bool> GlobalSwitchMap = new();
 
         public Dictionary<string, FishingSpotRuntimeSave> FishingSpotByUniqName = new();
+        public Dictionary<string, RepairPointRuntimeSave> HomeRuinByUniqName = new();
     }
 
     [Serializable]
@@ -91,6 +92,19 @@ namespace My.Saving
         public string CfgId;
         public int Remaining;
         public int LastRestockSettlementDayIndex;
+    }
+
+
+    /// <summary>
+    /// 废墟垂钓存档（键为地图刷新项 UniqName）
+    /// </summary>
+    [Serializable]
+    public class RepairPointRuntimeSave
+    {
+        public string UniqName;
+        public bool IsRepaired;
+        public Dictionary<string, long> PutMaterial;
+        public int RepairProgress;
     }
 
     [Serializable]
@@ -175,6 +189,7 @@ namespace My.Saving
             data.PlayerData ??= new PlayerData();
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
             data.PlayerData.FishingSpotByUniqName ??= new Dictionary<string, FishingSpotRuntimeSave>();
+            data.PlayerData.HomeRuinByUniqName ??= new Dictionary<string, RepairPointRuntimeSave>();
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

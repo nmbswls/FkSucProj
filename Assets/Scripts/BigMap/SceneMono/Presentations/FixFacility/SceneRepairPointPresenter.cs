@@ -10,9 +10,9 @@ using UnityEngine;
 
 namespace My.Map.Scene
 {
-    public class SceneFacilityRuinPresenter : ScenePresentationBase<LogicEntityFacilityRuin>, ISceneInteractable
+    public class SceneFacilityRuinPresenter : ScenePresentationBase<LogicEntityRepairPoint>, ISceneInteractable
     {
-        public LogicEntityFacilityRuin FacilityRuinEntity { get { return (LogicEntityFacilityRuin)_logic; } }
+        public LogicEntityRepairPoint RepairPointEntity { get { return (LogicEntityRepairPoint)_logic; } }
 
         public string ShowName => "废墟";
 
@@ -26,18 +26,18 @@ namespace My.Map.Scene
 
         public Transform HintPivot;
 
-        public bool InteractFocused { get; set; }
-        public bool IsInteractDetail
+        private bool interactFocused;
+        public bool InteractFocused
         {
-            get { return isInteractDetail; }
+            get { return interactFocused; }
             set
             {
-                isInteractDetail = value;
+                interactFocused = value;
 
-                if(isInteractDetail)
+                if (interactFocused)
                 {
                     var realPanel = UIManager.Instance.ShowPanel("RepairDetailPanel") as RepairDetailPanel;
-                    if(realPanel != null)
+                    if (realPanel != null)
                     {
                         realPanel.UpdateBind(this);
                     }
@@ -49,9 +49,39 @@ namespace My.Map.Scene
             }
         }
 
-        private bool isInteractDetail;
+        public bool IsInteractDetail { get; set; }
 
-        public bool WithInteractDetail => true;
+        //public bool IsInteractDetail
+        //{
+        //    get { return isInteractDetail; }
+        //    set
+        //    {
+        //        isInteractDetail = value;
+
+        //        if(isInteractDetail)
+        //        {
+        //            var realPanel = UIManager.Instance.ShowPanel("RepairDetailPanel") as RepairDetailPanel;
+        //            if(realPanel != null)
+        //            {
+        //                realPanel.UpdateBind(this);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            UIManager.Instance.HidePanel("RepairDetailPanel");
+        //        }
+        //    }
+        //}
+
+        //private bool isInteractDetail;
+
+        public bool WithInteractDetail
+        {
+            get
+            {
+                return false;
+            }
+        }
 
 
         [ContextMenu("Auto Collect Child Sprites")]
@@ -77,7 +107,7 @@ namespace My.Map.Scene
         {
             base.Bind(logic);
 
-            if(FacilityRuinEntity.IsRepaired)
+            if(RepairPointEntity.IsRepaired)
             {
                 if (_sprites != null)
                 {
@@ -98,14 +128,14 @@ namespace My.Map.Scene
         {
             base.RegisterEvents();
 
-            FacilityRuinEntity.EventOnRepaired += OnRuinRepaired;
+            RepairPointEntity.EventOnRepaired += OnRuinRepaired;
         }
 
         protected override void UnregisterEvents()
         {
             base.UnregisterEvents();
 
-            FacilityRuinEntity.EventOnRepaired -= OnRuinRepaired;
+            RepairPointEntity.EventOnRepaired -= OnRuinRepaired;
         }
 
         protected override void OnEventEntityDestroyed(long entityId)
@@ -131,18 +161,20 @@ namespace My.Map.Scene
             {
                 MainBlock.gameObject.SetActive(false);
             }
+
+            MainGameManager.Instance.gameLogicManager.PushPendingBlock(1.0f);
         }
 
 
 
         public bool CanInteractEnable()
         {
-            if(FacilityRuinEntity.IsRepaired)
+            if(RepairPointEntity.IsRepaired)
             {
                 return false;
             }
 
-            if(FacilityRuinEntity.Cfg.AutoRepair)
+            if(RepairPointEntity.Cfg.AutoRepair)
             {
                 return false;
             }
@@ -152,13 +184,46 @@ namespace My.Map.Scene
 
         public bool TriggerInteract(int selectionId)
         {
-            if (FacilityRuinEntity.Cfg.AutoRepair)
+            if (RepairPointEntity.Cfg.AutoRepair)
             {
-                MainGameManager.Instance.ShowMapSpeachBubble(FacilityRuinEntity.Id, "没修好。", 1f);
+                MainGameManager.Instance.ShowMapSpeachBubble(RepairPointEntity.Id, "没修好。", 1f);
+                return true;
             }
+
+            bool repairOpen = RepairPointEntity.CheckIsRepairOpen();
+
+            if (!repairOpen)
+            {
+                if (RepairPointEntity.Cfg.ShwoWhenLocked)
+                {
+                    MainGameManager.Instance.ShowMapSpeachBubble(RepairPointEntity.Id, "没修好。", 1f);
+                }
+                return true;
+            }
+
+            // 材料足够 
+            if (RepairPointEntity.CheckEnoughRepairMaterial())
+            {
+                MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("player_common_interact", overrideParams: new Dictionary<string, string>()
+                {
+                    ["InteractTime"] = "3.0",
+                }, phaseOverrideAnims: new Dictionary<string, string>()
+                {
+                    ["Interacting"] = "repair"
+                },
+                onAbilityEnd: (complete) =>
+                {
+                    if (complete)
+                    {
+                        RepairPointEntity.TryManualRepair();
+                    }
+                });
+            }
+            // 材料不足
             else
             {
-                FacilityRuinEntity.TryManualRepair();
+                // 放材料
+                RepairPointEntity.TryPutInMaterial();
             }
 
             return true;
@@ -177,13 +242,33 @@ namespace My.Map.Scene
         {
             var ret = new List<SceneInteractSelection>();
 
+            if (RepairPointEntity.IsRepaired)
+            {
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 1,
+                    SelectContent = "未知",
+                });
+                return ret;
+            }
 
-            if (FacilityRuinEntity.Cfg.AutoRepair)
+            if (RepairPointEntity.Cfg.AutoRepair)
             {
                 ret.Add(new SceneInteractSelection()
                 {
                     SelectId = 1,
                     SelectContent = "查看",
+                });
+                return ret;
+            }
+
+            bool enoughMat = RepairPointEntity.CheckEnoughRepairMaterial();
+            if(enoughMat)
+            {
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 1,
+                    SelectContent = "修理",
                 });
             }
             else
@@ -191,7 +276,7 @@ namespace My.Map.Scene
                 ret.Add(new SceneInteractSelection()
                 {
                     SelectId = 1,
-                    SelectContent = "修理",
+                    SelectContent = "放入材料",
                 });
             }
 

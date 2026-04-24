@@ -29,6 +29,7 @@ namespace My.Map.Logic
         public bool Activated = true;
         public long LifeBindEntityId;
         //public bool AlwaysActive;
+        public string SrcUniqName = string.Empty;
 
         public List<string> LocalSwitches = null;
         public bool MarkDestroyed = false; // 逻辑死亡/销毁标记，由 RefreshEntityRecordInfo 等与运行时对齐
@@ -160,10 +161,6 @@ namespace My.Map.Logic
     [Serializable]
     public class LogicEntityRecord4FishingSpot : LogicEntityRecord
     {
-        /// <summary>
-        /// 与 DynamicEntityRefreshInfo.UniqName 一致，用于玩家档键。
-        /// </summary>
-        public string UniqName = string.Empty;
     }
 }
 

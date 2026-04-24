@@ -95,7 +95,7 @@ namespace My
         public void AdvanceSettlementDayAndApplyFishingRules()
         {
             SettlementDayIndex++;
-            playerDataManager?.ApplyFishingRestockForSettlement(SettlementDayIndex);
+            worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);
         }
 
 
@@ -115,6 +115,7 @@ namespace My
         public WantedManager WantedManager;
 
         public PlayerSystemManager playerDataManager;
+        public GameWorldPersistStateManager worldPersistState;
         public HomeDataManager homeDataManager;
         public ShopDataManager shopDataManager;
 
@@ -131,6 +132,14 @@ namespace My
             {
 
             });
+
+            worldPersistState = new GameWorldPersistStateManager(this);
+            if (saveData != null)
+            {
+                SaveData.EnsureHydrated(saveData);
+            }
+
+            worldPersistState.InitFromSave(saveData);
 
             playerDataManager = new(this);
             playerDataManager.InitPlayerData(saveData);
@@ -294,7 +303,7 @@ namespace My
 
             globalDropCollection?.Tick(dt);
 
-            TickPendingEffect();
+            TickPendingDelayedEffect();
 
             TickPeaceMode();
 
@@ -318,42 +327,7 @@ namespace My
             pendingNewEntities.Add((record, isCreate));
         }
 
-
-        private void TickPendingEffect()
-        {
-            if(_delayQueueDirty)
-            {
-                _delayQueueDirty = false;
-                DelayedEffectQueue.Sort((itemA, itemB) => { return itemA.exeTIme.CompareTo(itemB.exeTIme); });
-            }
-
-            if(DelayedEffectQueue.Count > 0)
-            {
-                int handled = 0;
-                while(DelayedEffectQueue.Count > 0 && handled < 10)
-                {
-                    if(LogicTime.time < DelayedEffectQueue[0].exeTIme)
-                    {
-                        break;
-                    }
-
-                    var wrapped = DelayedEffectQueue[0];
-                    DelayedEffectQueue.RemoveAt(0);
-
-                    switch(wrapped)
-                    {
-                        case DelayedFightEffectWrapper fightEffectWrapper:
-                            {
-                                var executor = GetLogicFightEffectExecutor(fightEffectWrapper.effectConf);
-                                executor?.Apply(fightEffectWrapper.effectConf, fightEffectWrapper.ctx);
-                            }
-                            break;
-                    }
-                    
-                    handled += 1;
-                }
-            }
-        }
+        
 
 
         private HashSet<long> InBattleUnitDict = new();
@@ -547,7 +521,7 @@ namespace My
                     break;
                 case EEntityType.FacilityRuin:
                     {
-                        var newGatherPoint = new LogicEntityFacilityRuin(this, record.Id, record.CfgId, record.Position, record);
+                        var newGatherPoint = new LogicEntityRepairPoint(this, record.Id, record.CfgId, record.Position, record);
                         newEntity = newGatherPoint;
                     }
                     break;
@@ -698,7 +672,7 @@ namespace My
         /// <returns></returns>
         public string GetCurrentReviveMap()
         {
-            if(!playerDataManager.CheckHasParam("base_clear"))
+            if(worldPersistState == null || !worldPersistState.CheckHasParam("base_clear"))
             {
                 return "game_init";
             }
@@ -938,6 +912,7 @@ namespace My
 
             data.NextLogicEntityIdHint = maxEntityId;
 
+            worldPersistState?.ApplyRuntimeToSaveData(data);
             playerDataManager?.ApplyRuntimeToSaveData(data);
 
             data.PlayerBuffs ??= new List<BuffPersistData>();

@@ -16,9 +16,9 @@ namespace Config.Map
         public string CfgId;
 
         public bool AutoRepair;
-        public List<CommonCheckCond> AutoRepairCond;
-
+        public bool ShwoWhenLocked;
         public List<CommonCheckCond> OpenRepairCond;
+
         public SerializableDict<string, int> RepairMaterials;
 
         /// <summary>

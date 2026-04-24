@@ -181,6 +181,8 @@ namespace My.Map
 
         public string BelongRoomId { get; set; } = string.Empty;
 
+        public string SrcUniqName { get; set; } = string.Empty;
+
         /// <summary>
         /// ���ͼ��M���ر����ͣ�Ĭ�ϲ���ʾ
         /// </summary>
@@ -243,6 +245,11 @@ namespace My.Map
             this.LifeBindEntityId = bindingRecord.LifeBindEntityId;
 
             BindingRecord = bindingRecord;
+
+            if(!string.IsNullOrEmpty(bindingRecord.SrcUniqName))
+            {
+                this.SrcUniqName = bindingRecord.SrcUniqName;
+            }
 
             if (bindingRecord.LocalSwitches != null)
             {
@@ -593,7 +600,7 @@ namespace My.Map
 
         public struct AnimLayerStruct
         {
-            public int Layer;
+            public int Layer; // 0 默认移动 1 主动技能 2 覆盖
             public string Name;
             public int Priority;
         }
