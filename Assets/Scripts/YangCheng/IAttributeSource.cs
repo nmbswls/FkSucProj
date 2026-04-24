@@ -15,6 +15,7 @@ namespace My.Player
     {
         None,
         SecretSlot,
+        Charm,
     }
 
     // 2. 极简存储结构（用于叶子节点存储数据，省内存）
@@ -35,16 +36,16 @@ namespace My.Player
     public class StatMap
     {
         // 只有在聚合节点才真正创建 Dictionary
-        private Dictionary<int, float> _map = new Dictionary<int, float>();
+        private Dictionary<int, long> _map = new Dictionary<int, long>();
 
         // 获取值，没有则返回 0
-        public float Get(int id)
+        public long Get(int id)
         {
-            return _map.TryGetValue(id, out float val) ? val : 0f;
+            return _map.TryGetValue(id, out long val) ? val : 0;
         }
 
         // 设置/添加
-        public void Add(int id, float value)
+        public void Add(int id, long value)
         {
             if (_map.ContainsKey(id))
                 _map[id] += value;
@@ -80,11 +81,11 @@ namespace My.Player
         }
 
         // 调试用
-        public Dictionary<int, float> GetRawDict() => _map;
+        public Dictionary<int, long> GetRawDict() => _map;
 
         // 新增：暴露迭代器供外部遍历
         // 注意：尽量避免直接暴露 Dictionary，防止外部修改
-        public Dictionary<int, float>.Enumerator GetEnumerator()
+        public Dictionary<int, long>.Enumerator GetEnumerator()
         {
             return _map.GetEnumerator();
         }
@@ -179,7 +180,7 @@ namespace My.Player
         //}
 
         // 2. 优化 GetValue：不再产生 GC
-        public float GetValue(int id)
+        public long GetValue(int id)
         {
             RebuildCache(); // 确保脏标记被清除，缓存最新
             return _cache.Get(id);

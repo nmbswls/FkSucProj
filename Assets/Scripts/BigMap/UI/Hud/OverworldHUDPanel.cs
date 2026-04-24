@@ -96,6 +96,7 @@ namespace My.UI
                 Debug.LogError("未绑定 ParticleSystem!");
                 return;
             }
+            MainPs.Stop();
 
             // ================= 1. 修改 Main 模块 (主模块) =================
             var mainModule = MainPs.main;
@@ -137,7 +138,7 @@ namespace My.UI
 
             // ================= 4. 应用生效 =================
             // 对于 duration（持续时间）等某些属性的修改，需要重启粒子系统才能立即应用完美生效
-            MainPs.Stop();
+            
             MainPs.Clear(); // 清除当前屏幕上已有的旧粒子
             MainPs.Play();  // 重新播放
         }
@@ -189,9 +190,12 @@ namespace My.UI
 
         public GameObject botHintTextPrefab;
         public OverworldSkillBar SkilBar;
+        public OverworldPlayerBuffBar PlayerBuffBar;
         //public OverworldSkillBar ItemBar;
 
         public bool IsHunterMode = false;
+
+        private LogicEntityBase _buffEventsPlayer;
 
         public Image zhaZhiSwitchOne;
         public Button BtnZhaZhiSwitch;
@@ -262,6 +266,15 @@ namespace My.UI
             {
                 EstrusIndicator = estrusObj.AddComponent<OverworldHudEstrusIndicator>();
                 EstrusIndicator.Init();
+            }
+
+            if (PlayerBuffBar == null)
+            {
+                var buffBarTr = transform.Find("PlayerBuffBar");
+                if (buffBarTr != null)
+                {
+                    PlayerBuffBar = buffBarTr.GetComponent<OverworldPlayerBuffBar>();
+                }
             }
         }
 
@@ -502,13 +515,56 @@ namespace My.UI
                 BtnHomeStorage.gameObject.SetActive(false);
                 BtnHomeNextPeriod.gameObject.SetActive(false);
             }
+
+            TrySubscribePlayerBuffEvents();
         }
 
         public override void Hide()
         {
             base.Hide();
 
+            UnsubscribePlayerBuffEvents();
+            PlayerBuffBar?.RefreshFromPlayer();
+
             PlayerEventBus.Unsubscribe<PlayerFuncUnlockEvent>(HandleOnPlayerFuncOpen);
+        }
+
+        private void OnPlayerBuffRegister(BuffInstance _)
+        {
+            PlayerBuffBar?.RefreshFromPlayer();
+        }
+
+        private void OnPlayerBuffUnregister(long _)
+        {
+            PlayerBuffBar?.RefreshFromPlayer();
+        }
+
+        private void TrySubscribePlayerBuffEvents()
+        {
+            UnsubscribePlayerBuffEvents();
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (player == null)
+            {
+                PlayerBuffBar?.RefreshFromPlayer();
+                return;
+            }
+
+            player.EventOnBuffRegister += OnPlayerBuffRegister;
+            player.EventOnBuffUnregister += OnPlayerBuffUnregister;
+            _buffEventsPlayer = player;
+            PlayerBuffBar?.RefreshFromPlayer();
+        }
+
+        private void UnsubscribePlayerBuffEvents()
+        {
+            if (_buffEventsPlayer == null)
+            {
+                return;
+            }
+
+            _buffEventsPlayer.EventOnBuffRegister -= OnPlayerBuffRegister;
+            _buffEventsPlayer.EventOnBuffUnregister -= OnPlayerBuffUnregister;
+            _buffEventsPlayer = null;
         }
 
 

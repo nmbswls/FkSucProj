@@ -23,7 +23,7 @@ namespace My.UI
 
 
 
-        public RectTransform GetHoverUIRange()
+        public RectTransform GetHoverUIRange() 
         {
             return boxTr;
         }

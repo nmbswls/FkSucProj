@@ -42,6 +42,7 @@ namespace My.UI
     {
         Invalid,
         Main3Ball,
+        PlayerBuff,
     }
 
 
@@ -146,11 +147,9 @@ namespace My.UI
 
                 OnHoverOneUpdate(currHoverOne);
             }
-            else if (currHoverOne == null)
+            else if (currHoverOne == null && prevHoverOne != null)
             {
-                //tooltip.Hide();
                 OnLeaveHover();
-
             }
         }
 
@@ -291,6 +290,11 @@ namespace My.UI
             {
 
                 var p = HoverDescList.Find(item=>item.TipType == tipParams.TipType);
+                if (p == null || string.IsNullOrEmpty(p.TipPanelName))
+                {
+                    Debug.LogError($"UIHoverManager: no HoverDescList entry for {tipParams.TipType}");
+                    yield break;
+                }
 
                 var request = Resources.LoadAsync<GameObject>($"UI/Prefabs/Tips/{p.TipPanelName}");
                 while(!request.isDone)
@@ -306,6 +310,10 @@ namespace My.UI
 
                 hoverTip.Root = a.Result[0];
                 hoverTip.TipPanel = hoverTip.Root.GetComponent<IHoverTipPanel>();
+                if (hoverTip.TipPanel == null)
+                {
+                    Debug.LogError($"UIHoverManager: tip prefab '{p.TipPanelName}' has no IHoverTipPanel on root.");
+                }
             }
 
             if (hoverTip.Root == null)

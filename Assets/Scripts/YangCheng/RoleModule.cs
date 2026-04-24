@@ -20,6 +20,7 @@ namespace My.Player
 
         public void EvaluateStats(StatMap targetMap)
         {
+            targetMap.Add((int)EYCAttribute.Charm, 10);
             targetMap.Add((int)EYCAttribute.SecretSlot, 3);
         }
     }
@@ -34,8 +35,8 @@ namespace My.Player
 
         private int _level = 1;
         // 模拟配置表数据：每升一级加多少属性
-        private Dictionary<int, float> _growthRates = new();
-        private Dictionary<int, float> _baseStats = new();
+        private Dictionary<int, long> _growthRates = new();
+        private Dictionary<int, long> _baseStats = new();
 
         public EProgressionModule ModuleName => EProgressionModule.Level;
 
@@ -56,8 +57,8 @@ namespace My.Player
             // 逻辑：基础值 + (等级-1 * 成长率)
             foreach (var pair in _baseStats)
             {
-                float growth = _growthRates.ContainsKey(pair.Key) ? _growthRates[pair.Key] : 0;
-                float total = pair.Value + ((_level - 1) * growth);
+                long growth = _growthRates.ContainsKey(pair.Key) ? _growthRates[pair.Key] : 0;
+                long total = pair.Value + ((_level - 1) * growth);
                 targetMap.Add(pair.Key, total);
             }
         }

@@ -468,7 +468,6 @@ namespace My.Map.Entity
                 }
 
                 float correctionTime = 0.15f;
-                Debug.LogError("adjusttttttttt");
                 EntityOwner.StartDash(dashDir.normalized, correctionTime, dashDir.magnitude / correctionTime, null);
             }
         }

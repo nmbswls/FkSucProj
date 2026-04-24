@@ -135,7 +135,14 @@ namespace My.Map.Entity
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     //ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmumeKaiYou, ModifierValue = 1 } },
                     DefaultDuration = -1,
-                    IsHidden = true,
+                };
+
+                _library["player_hungry"] = new BuffDefinition()
+                {
+                    BuffId = "player_hungry",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = 25000 } },
+                    DefaultDuration = -1,
                 };
 
                 _library["player_zhazhi"] = new BuffDefinition()

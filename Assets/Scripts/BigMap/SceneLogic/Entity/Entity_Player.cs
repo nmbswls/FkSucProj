@@ -7,6 +7,7 @@ using My.Config;
 using My.Map.Entity;
 using My.Map.Fight;
 using My.Map.Logic;
+using My.Player;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
@@ -126,7 +127,7 @@ namespace My.Map
         {
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
-
+            attributeStore.RegisterNumeric(AttrIdConsts.Charmed, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.Charm));
 
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
@@ -388,6 +389,24 @@ namespace My.Map
             TickRefreshSpiritMonster();
 
             TickApplyAuraHVal();
+
+            {
+                var hunger = GetAttr(AttrIdConsts.PlayerHunger);
+                if (hunger <= 0)
+                {
+                    if (!LogicManager.globalBuffManager.CheckHasBuff(this.Id, "player_hungry"))
+                    {
+                        LogicManager.globalBuffManager.AddBuff(this.Id, "player_hungry");
+                    }
+                }
+                else
+                {
+                    if (LogicManager.globalBuffManager.CheckHasBuff(this.Id, "player_hungry"))
+                    {
+                        LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "player_hungry");
+                    }
+                }
+            }
         }
 
 
@@ -399,6 +418,8 @@ namespace My.Map
             }
 
             _highFreqStateTimer += 0.2f;
+
+            
 
             RefreshPlayerDesireLevel();
 
@@ -426,10 +447,15 @@ namespace My.Map
             var baseHungerCost = attributeStore.GetAttr(AttrIdConsts.Basic_HungerCost);
             ApplyResourceChange(AttrIdConsts.PlayerHunger, -baseHungerCost, false, EDmgFlag.None, null);
 
-            if (GetAttr(AttrIdConsts.PlayerHunger) <= 0)
+            var hunger = GetAttr(AttrIdConsts.PlayerHunger);
+            if (hunger <= 0)
             {
                 ApplyResourceChange(AttrIdConsts.HP, -500, false, EDmgFlag.None, null);
                 LogicManager.viewer.ShowFakeFxEffect("饿", this.Pos);
+            }
+            else if(hunger >= 90000)
+            {
+                ApplyResourceChange(AttrIdConsts.HP, 100, false, EDmgFlag.None, null);
             }
 
             // 将发情缓慢提升到标准线

@@ -2434,7 +2434,6 @@ namespace My.Map.Entity
             {
                 PhaseName = "Pre",
                 LockMovement = true,
-                LockRotation = true,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,

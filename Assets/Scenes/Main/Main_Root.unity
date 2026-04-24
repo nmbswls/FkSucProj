@@ -2800,6 +2800,8 @@ MonoBehaviour:
   HoverDescList:
   - TipType: 1
     TipPanelName: OneTip1
+  - TipType: 2
+    TipPanelName: PlayerBuffTip
 --- !u!1 &1248278157
 GameObject:
   m_ObjectHideFlags: 0

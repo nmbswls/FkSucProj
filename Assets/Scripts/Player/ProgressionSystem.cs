@@ -85,7 +85,7 @@ namespace My.Player
         }
 
         // 获取战斗属性 (高频调用)
-        public float GetFinalAttribute(int id)
+        public long GetFinalAttribute(int id)
         {
             return ProgressionRoot.GetValue(id);
         }
