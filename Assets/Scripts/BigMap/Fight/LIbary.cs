@@ -119,6 +119,16 @@ namespace My.Map.Entity
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_mortar_acquire_01";
+                    cfg.MainAbilityId = "player_mortar_acquire_01";
+                    cfg.CoolDown = 6.0f;
+                    cfg.DesiredUseDistance = 10.0f;
+                    cfg.IconPath = "icon_01";
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
 
                 {
                     var cfg = new EntitySkillCfg();
@@ -460,6 +470,11 @@ namespace My.Map.Entity
 
                 {
                     var ab = CreatePlayerTraceBullet1Ability();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreatePlayerMortarAcquireAbility();
                     _abilityDict[ab.Id] = ab;
                 }
 
@@ -1877,6 +1892,76 @@ namespace My.Map.Entity
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnExit });
             }
 
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreatePlayerMortarAcquireAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_mortar_acquire_01";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+            spec.Range1 = 10f;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.35"
+                },
+            };
+
+            var spawnBullet = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = "player_trace_bullet_01",
+                MotionData = new ParabolaMotionData()
+                {
+                    horizontalSpeed = 11f,
+                    arcHeight = 4.2f,
+                    gravity = 26f,
+                    directHitRadius = 0.7f,
+                    perTargetHitCooldown = 0.2f,
+                },
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.AlignHoming,
+                isHoming = true,
+                homingSelectPolicy = ETargetSelectPolicy.NearestEnemyInRadius,
+                nearestEnemyAcquireRadius = 10f,
+                bulletMaxPenetration = 1,
+                lifeTime = 12f,
+                showRangeWarn = false,
+                BulletHitResult = new HitResult()
+                {
+                    OnHitEffects = new List<MapFightEffectCfg>
+                    {
+                        new MapAbilityEffectHitBoxCfg()
+                        {
+                            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                            Radius = 0.85f,
+                            CampFilterType = ECampFilterType.NotSelf,
+                            HitResult = new HitResult()
+                            {
+                                OnHitEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId = AttrIdConsts.UnitHVal,
+                                        AddValue = 42000,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = spawnBullet, Kind = PhaseEventKind.OnExit });
             spec.Phases.Add(mainPhase);
             return spec;
         }

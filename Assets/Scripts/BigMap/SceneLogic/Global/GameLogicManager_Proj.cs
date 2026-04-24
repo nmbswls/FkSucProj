@@ -39,32 +39,32 @@ namespace My
 
         public void OnProjectileExplode(long projectileId, Vector2 explodePos)
         {
-            ProjectileInfos.TryGetValue(projectileId, out var pInfo);
-            if (pInfo != null)
+            if (!ProjectileInfos.TryGetValue(projectileId, out var pInfo) || pInfo == null)
             {
-                // give effect
-                //pInfo.
-                // 计算explode
-                if (pInfo.pData.ExplodeEffects != null)
+                return;
+            }
+
+            if (pInfo.pData.ExplodeEffects != null)
+            {
+                foreach (var ef in pInfo.pData.ExplodeEffects)
                 {
-                    foreach (var ef in pInfo.pData.ExplodeEffects)
+                    var srcInfo = new GameLogicManager.EffectSourceInfo()
                     {
-                        var srcInfo = new GameLogicManager.EffectSourceInfo()
-                        {
-                            SrcType = GameLogicManager.ESourceType.Bullet,
-                            SrcInstId = pInfo.instId,
-                            SrcEntityId = pInfo.ownerEntity.Id,
-                            SrcFactionId = pInfo.ownerEntity.FactionId,
-                        };
+                        SrcType = GameLogicManager.ESourceType.Bullet,
+                        SrcInstId = pInfo.instId,
+                        SrcEntityId = pInfo.ownerEntity.Id,
+                        SrcFactionId = pInfo.ownerEntity.FactionId,
+                    };
 
 
-                        var efCtx = new GameLogicManager.LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, EFightCtxType.Bullet, srcInfo);
-                        efCtx.TriggerPos = explodePos;
+                    var efCtx = new GameLogicManager.LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, EFightCtxType.Bullet, srcInfo);
+                    efCtx.TriggerPos = explodePos;
 
-                        MainGameManager.Instance.gameLogicManager.HandleLogicFightEffect(ef, efCtx);
-                    }
+                    MainGameManager.Instance.gameLogicManager.HandleLogicFightEffect(ef, efCtx);
                 }
             }
+
+            ProjectileInfos.Remove(projectileId);
         }
 
     }

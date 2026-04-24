@@ -46,6 +46,12 @@ namespace My.Map.Entity
 
         public bool showRangeWarn;
 
+        /// <summary>与 NearestEnemyInRadius 配合：索敌球半径</summary>
+        public float nearestEnemyAcquireRadius = 10f;
+
+        /// <summary>直线子弹穿透次数；抛物落地命中按次数对多个单位尝试</summary>
+        public int bulletMaxPenetration = 1;
+
         // 最长时间
         public float lifeTime;
         public FightStruct.Shape BulletShape = new();

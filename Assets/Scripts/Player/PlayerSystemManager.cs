@@ -55,6 +55,7 @@ namespace My.Player
             "fix_clothes",
             "spawn_attract",
             "queen_pull_all",
+            "player_mortar_acquire_01",
 
             "player_enter_queen",
             "player_quit_queen",
@@ -76,6 +77,7 @@ namespace My.Player
             "player_ziwei",
             "player_push_surround",
             "player_trace_bullet_01",
+            "player_mortar_acquire_01",
         };
 
         public string[] NormalSkillSlots = new string[8];
@@ -130,7 +132,7 @@ namespace My.Player
             HumanSkillSlots[4] = "player_dark_dance";
             HumanSkillSlots[5] = "player_push_surround";
             HumanSkillSlots[6] = "player_trace_bullet_01";
-            
+            HumanSkillSlots[7] = "player_mortar_acquire_01";
 
             FaQingSkillSlots[0] = "player_ziwei";
 

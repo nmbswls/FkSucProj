@@ -37,6 +37,8 @@ namespace My.Map.Fight
             LowHpAlly,
             LowHpEnmity,
             Random,
+            /// <summary>施法者周围半径内最近敌对单位（用于抛物弹等索敌）</summary>
+            NearestEnemyInRadius,
         }
 
         /// <summary>

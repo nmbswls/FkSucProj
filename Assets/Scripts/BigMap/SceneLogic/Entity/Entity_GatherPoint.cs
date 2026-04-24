@@ -93,7 +93,7 @@ namespace My.Map.Entity
                 if(put < cnt)
                 {
                     Debug.Log("bag full create drop");
-                    LogicManager.globalDropCollection.CreateDrop(item.Item1, cnt - put, Pos + UnityEngine.Random.insideUnitCircle, false, Pos);
+                    LogicManager.globalDropCollection.CreateDrop(item.Item1, cnt - put, Pos + UnityEngine.Random.insideUnitCircle * 0.4f, false, Pos);
                 }
             }
 

@@ -74,6 +74,16 @@ namespace My
 
         [Header("Explode")]
         public float aoeRadius = 2f;
+
+        [Header("飞行中命中")]
+        // 伪 Z 与 SceneTargettable.CheckHitHeightValid(atkHeight) 使用同一套逻辑高度语义
+        public float directHitRadius = 0.55f;
+        public float perTargetHitCooldown = 0.18f;
+
+        [Header("空地落地爆炸")]
+        // 伪 Z 落到该值及以下且（可选）处于下落时，若本 Tick 未因命中结束，则触发空地爆炸（OnProjectileExplode）
+        public float emptyGroundExplodeAtZ = 0f;
+        public bool emptyGroundRequireDescending = true;
     }
 
     public class MapProjectileLinearMotion : IMapProjectileMotion
@@ -367,7 +377,9 @@ namespace My
         private float _lifetime;
         private bool _finished;
 
-        private float _exposeHeight = 0.3f;
+        private int _hitsRemaining;
+        private readonly Dictionary<long, float> _perTargetNextHitTime = new();
+        private bool _emptyGroundExplodeDone;
 
         public bool IsFinished => _finished;
         public Vector2 Position => _pos;           // 地面位置（阴影位置）
@@ -399,6 +411,9 @@ namespace My
             _time = 0f;
             _lifetime = PD.maxLifetime;
             _finished = false;
+            _perTargetNextHitTime.Clear();
+            _hitsRemaining = PD.maxPenetration > 0 ? PD.maxPenetration : 1;
+            _emptyGroundExplodeDone = false;
 
             // 设置视觉（阴影/抬升）由外层Projectile负责（根据Motion类型）
             Owner.ConfigureParabolaVisual(D);
@@ -410,7 +425,11 @@ namespace My
             if (_finished) return;
             _time += dt;
             _lifetime -= dt;
-            if (_lifetime <= 0f) { Explode(); return; }
+            if (_lifetime <= 0f)
+            {
+                DoTimeoutFinishWithoutGroundHit();
+                return;
+            }
 
             if (D.horizontalDrag > 0f)
             {
@@ -425,33 +444,115 @@ namespace My
             // 视觉更新
             Owner.UpdateParabolaVisual(_pos, _z, Forward);
 
-            if (_z <= _exposeHeight)
+            TryFlightHits();
+
+            if (_finished)
             {
-                Explode();
+                return;
+            }
+
+            if (!_emptyGroundExplodeDone)
+            {
+                bool descendingOk = !D.emptyGroundRequireDescending || _vz <= 0f;
+                if (_z <= D.emptyGroundExplodeAtZ && descendingOk)
+                {
+                    _emptyGroundExplodeDone = true;
+                    DoTimeoutFinishWithoutGroundHit();
+                    return;
+                }
+            }
+
+            if (_z < -0.45f)
+            {
+                DoTimeoutFinishWithoutGroundHit();
+                return;
             }
         }
 
-        private void Explode()
+        private void DoTimeoutFinishWithoutGroundHit()
         {
-            _finished = true;
-            //if (PD.explodeFX) ProjectileUtil.PlayFX(PD.explodeFX, _pos, Vector2.up);
-
-            if (D.aoeRadius > 0.01f)
+            if (_finished)
             {
-                var cols = Physics2D.OverlapCircleAll(_pos, D.aoeRadius);
-                foreach (var c in cols)
-                {
-                    if (c == null) continue;
-                    var unitPresent = c.GetComponentInParent<SceneUnitPresenter>();
-                    if (unitPresent == null) continue;
-                    //if (!PD.friendlyFire && _ctx.owner != null && tgt.transform.root == _ctx.owner.root)
-                    //    return false;
-                    long entityId = unitPresent.Id;
-                    //_hitCD[id] = _time + PD.hitCooldown;
-                    //ProjectileUtil.ApplyDamage(unitPresent, PD.damage, Owner.bindingProjInfo.ownerEntity.Id);
+                return;
+            }
 
-                    //if (!PD.friendlyFire && _ctx.owner != null && c.transform.root == _ctx.owner.root)
-                    //    continue;
+            _finished = true;
+            MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(
+                Owner.bindingProjInfo.instId,
+                _pos);
+        }
+
+        private void TryFlightHits()
+        {
+            if (PD.EntityHitResult == null || _hitsRemaining <= 0)
+            {
+                return;
+            }
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm?.visionSenser == null)
+            {
+                return;
+            }
+
+            float hitR = D.directHitRadius > 0.01f ? D.directHitRadius : D.aoeRadius;
+            if (hitR < 0.05f)
+            {
+                hitR = 0.4f;
+            }
+
+            var filter = new EntityFilterParam
+            {
+                FilterType = EEntityType.None,
+                CampFilterType = ECampFilterType.NotSelf,
+                SelfCampId = Owner.bindingProjInfo.ownerEntity.FactionId,
+            };
+
+            Vector2 hitDir = Forward;
+            float atkHeight = _z;
+
+            foreach (var ent in glm.visionSenser.OverlapCircleAllEntity(_pos, hitR, filter, atkHeight))
+            {
+                if (_hitsRemaining <= 0)
+                {
+                    break;
+                }
+
+                if (ent is not BaseUnitLogicEntity unit)
+                {
+                    continue;
+                }
+
+                if (unit.MarkDestroyed || unit.IsDead)
+                {
+                    continue;
+                }
+
+                if (_perTargetNextHitTime.TryGetValue(unit.Id, out var nextT) && _time < nextT)
+                {
+                    continue;
+                }
+
+                var pres = SceneAOIManager.Instance != null
+                    ? SceneAOIManager.Instance.GetActivePresentation(unit.Id) as SceneUnitPresenter
+                    : null;
+                if (pres == null || !pres.CheckValid())
+                {
+                    continue;
+                }
+
+                ProjectileUtil.HandleHitOutput(Owner.bindingProjInfo, _pos, hitDir, pres);
+                _hitsRemaining--;
+                float cd = Mathf.Max(0.02f, D.perTargetHitCooldown);
+                _perTargetNextHitTime[unit.Id] = _time + cd;
+
+                if (_hitsRemaining <= 0)
+                {
+                    _finished = true;
+                    MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(
+                        Owner.bindingProjInfo.instId,
+                        _pos);
+                    return;
                 }
             }
         }

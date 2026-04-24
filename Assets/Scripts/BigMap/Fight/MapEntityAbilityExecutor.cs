@@ -33,7 +33,7 @@ namespace My.Map.Entity
         /// <param name="targetSelectPolicy"></param>
         /// <param name="casterUnit"></param>
         /// <returns></returns>
-        public static long GetTargetByPolicy(FightStruct.ETargetSelectPolicy targetSelectPolicy, BaseUnitLogicEntity casterUnit)
+        public static long GetTargetByPolicy(FightStruct.ETargetSelectPolicy targetSelectPolicy, BaseUnitLogicEntity casterUnit, float acquireRadius = 0f)
         {
             switch(targetSelectPolicy)
             {
@@ -72,6 +72,44 @@ namespace My.Map.Entity
                         }
 
                         return 0;
+                    }
+                    break;
+                case ETargetSelectPolicy.NearestEnemyInRadius:
+                    {
+                        float r = acquireRadius > 0.01f ? acquireRadius : 8f;
+                        BaseUnitLogicEntity best = null;
+                        float bestSqr = float.MaxValue;
+                        foreach (var oneEntity in casterUnit.FindEntityInRange(casterUnit.Pos, r))
+                        {
+                            if (oneEntity is not BaseUnitLogicEntity unitEntity)
+                            {
+                                continue;
+                            }
+
+                            if (unitEntity.Id == casterUnit.Id)
+                            {
+                                continue;
+                            }
+
+                            if (unitEntity.FactionId == casterUnit.FactionId)
+                            {
+                                continue;
+                            }
+
+                            if (unitEntity.MarkDestroyed || unitEntity.IsDead)
+                            {
+                                continue;
+                            }
+
+                            float sqr = (unitEntity.Pos - casterUnit.Pos).sqrMagnitude;
+                            if (sqr < bestSqr)
+                            {
+                                bestSqr = sqr;
+                                best = unitEntity;
+                            }
+                        }
+
+                        return best != null ? best.Id : 0;
                     }
                     break;
             }

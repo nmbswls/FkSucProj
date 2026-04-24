@@ -108,6 +108,7 @@ namespace My.Map.Entity
             pData.EntityHitResult = realCfg.BulletHitResult;
             pData.ExplodeEffects = realCfg.ExplodeEffects;
             pData.motionData = realCfg.MotionData;
+            pData.maxPenetration = realCfg.bulletMaxPenetration;
 
             ILogicEntity? caster = null;
             if(ctx.SourceInfo.SrcEntityId != 0)
@@ -175,25 +176,32 @@ namespace My.Map.Entity
             long? homingTarget = null;
             if(realCfg.isHoming)
             {
-                switch(realCfg.homingSelectPolicy)
+                var casterUnit = caster as BaseUnitLogicEntity;
+                if (casterUnit != null)
                 {
-                    case ETargetSelectPolicy.PrimaryTarget:
-                        {
-                            var casterUnit = caster as BaseUnitLogicEntity;
-
-                            if (casterUnit != null)
+                    switch(realCfg.homingSelectPolicy)
+                    {
+                        case ETargetSelectPolicy.PrimaryTarget:
                             {
-                                var mainTargetId = casterUnit.CurrentTargetId;
-                                homingTarget = mainTargetId;
+                                homingTarget = casterUnit.CurrentTargetId;
                             }
-
-                        }
-                        break;
+                            break;
+                        case ETargetSelectPolicy.NearestEnemyInRadius:
+                            {
+                                homingTarget = EntityAbilityHelper.GetTargetByPolicy(
+                                    realCfg.homingSelectPolicy,
+                                    casterUnit,
+                                    realCfg.nearestEnemyAcquireRadius);
+                            }
+                            break;
+                    }
                 }
 
-                if(homingTarget == null)
+                if (realCfg.homingSelectPolicy == ETargetSelectPolicy.NearestEnemyInRadius &&
+                    (homingTarget == null || homingTarget == 0))
                 {
-                    Debug.LogError("AbilityEffectExecutor4SpawnBullet not found target");
+                    Debug.LogWarning("AbilityEffectExecutor4SpawnBullet: no enemy in acquire radius, skip spawn.");
+                    return;
                 }
             }
             ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir.Value, homingTarget: homingTarget);
