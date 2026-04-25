@@ -398,6 +398,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreatePlayerSneakBackstab();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateDefaultUnlockLootPoint();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -646,6 +651,31 @@ namespace My.Map.Entity
             };
 
             spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreatePlayerSneakBackstab()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_sneak_backstab";
+            spec.TypeTag = AbilityTypeTag.Interaction;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Interacting",
+                LockMovement = true,
+                LockRotation = true,
+                EnableVariablePhaseBuff = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    ReferName = "InteractTime",
+                },
+            };
+
+            spec.Phases.Add(mainPhase);
+            spec.OnCompleteEffects.Add(new MapAbilityEffectSneakBackstabResolveCfg());
             return spec;
         }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using cfg.demo;
 using My.Config;
+using My.Map;
 using My.Map.Logic;
 using My.Player.Bag;
 using Unity.VisualScripting;
@@ -1595,6 +1596,52 @@ namespace My.Map.Entity
                 {
                     ctx.Env.HandleLogicFightEffect(innerEffect, ctx);
                 }
+            }
+        }
+    }
+
+    public class AbilityEffectExecutor4SneakBackstabResolve : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectSneakBackstabResolveCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4SneakBackstabResolve cfg error");
+                return;
+            }
+
+            var player = ctx.Env.playerLogicEntity;
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId) as NpcUnitLogicEntity;
+            if (player == null || target == null)
+            {
+                Debug.LogWarning("Sneak backstab: missing player or target");
+                return;
+            }
+
+            if (!PlayerGamePlayRule.CanPlayerSneakThisNpc(player, target))
+            {
+                Debug.Log("Sneak backstab: conditions invalid at resolve");
+                return;
+            }
+
+            long phy = target.GetAttr(AttrIdConsts.PhysicalForm);
+            float p = Mathf.Clamp01(realCfg.BaseSuccessChance - phy * realCfg.PhysicalFormPenalty);
+            bool success = UnityEngine.Random.value < p;
+
+            if (success)
+            {
+                target.MarkUnsensored = true;
+                target.UnitBaseRecord.Unsensored = true;
+                ctx.Env.globalBuffManager.RequestAddBuff(target.Id, "unsensored");
+                MainGameManager.Instance?.ShowFakeFxEffect("\u5077\u88ad\u6210\u529f", player.Pos);
+                Debug.Log($"Sneak backstab SUCCESS vs entity {target.Id}, p={p:F3}, PhysicalForm={phy}");
+            }
+            else
+            {
+                target.EnmitySystem.AddTempEnmity(realCfg.FailTempEnmity);
+                MainGameManager.Instance?.ShowFakeFxEffect("\u5077\u88ad\u5931\u8d25", player.Pos);
+                Debug.Log($"Sneak backstab FAIL vs entity {target.Id}, p={p:F3}, PhysicalForm={phy}");
             }
         }
     }

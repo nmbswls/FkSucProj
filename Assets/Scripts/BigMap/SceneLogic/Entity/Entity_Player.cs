@@ -41,6 +41,26 @@ namespace My.Map
 
         public bool IsZhaZhiMode = false;
 
+        // 特殊蹲伏：Ctrl 切换；降速 + 交互变为可偷袭（规则见 PlayerGamePlayRule，菜单见 SceneNpcPresenter）
+        public bool IsSpecialCrouchStance { get; private set; }
+
+        public void SetSpecialCrouchStance(bool value)
+        {
+            if (IsSpecialCrouchStance == value)
+            {
+                return;
+            }
+
+            IsSpecialCrouchStance = value;
+            if (value)
+            {
+                LogicManager.globalBuffManager.AddBuff(Id, "player_crouch_stance");
+            }
+            else
+            {
+                LogicManager.globalBuffManager.RemoveAllBuffById(Id, "player_crouch_stance");
+            }
+        }
 
         public long? gcCuaseId;
         public bool isSelfGc;

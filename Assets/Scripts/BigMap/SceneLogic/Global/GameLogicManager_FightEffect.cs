@@ -214,6 +214,11 @@ namespace My
                             executor = new AbilityFightExecutor4ShowEffect();
                         }
                         break;
+                    case MapAbilityEffectSneakBackstabResolveCfg:
+                        {
+                            executor = new AbilityEffectExecutor4SneakBackstabResolve();
+                        }
+                        break;
                         
 
 

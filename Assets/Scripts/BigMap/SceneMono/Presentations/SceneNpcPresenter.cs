@@ -43,6 +43,7 @@ namespace My.Map.Scene
         //public static int ID_BackHit = 102;
         public static int ID_ForcePushDown = 103; // 强推
         public static int ID_CarryBody = 104;      // 搬运尸体/昏迷单位
+        public static int ID_SneakBackstab = 105;  // 蹲伏偷袭
 
         public HighlightCtrl highlightCtrl;
         public bool InteractDetailMode { get; set; }
@@ -175,6 +176,12 @@ namespace My.Map.Scene
             }
             else
             {
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                if (player != null && PlayerGamePlayRule.CanPlayerSneakThisNpc(player, NpcEntity))
+                {
+                    return true;
+                }
+
                 // 拾取相关
                 if (UnitEntity.IsDead)
                 {
@@ -311,6 +318,23 @@ namespace My.Map.Scene
             {
                 PlayerNpcCarryService.TryStartCarryInteract(NpcEntity);
             }
+            else if (selectionId == ID_SneakBackstab)
+            {
+                var pl = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                if (pl != null && PlayerGamePlayRule.CanPlayerSneakThisNpc(pl, NpcEntity))
+                {
+                    pl.abilityController.TryUseAbility("player_sneak_backstab",
+                        target: NpcEntity,
+                        overrideParams: new Dictionary<string, string>()
+                        {
+                            ["InteractTime"] = "0.38",
+                        },
+                        phaseOverrideAnims: new Dictionary<string, string>()
+                        {
+                            ["Interacting"] = string.Empty,
+                        });
+                }
+            }
             else if(selectionId == ID_ForcePushDown)
             {
                 PlayerHCalculater.CheckHForceDownSuccess(MainGameManager.Instance.gameLogicManager, NpcEntity);
@@ -353,16 +377,30 @@ namespace My.Map.Scene
             }
             else
             {
-                if (CheckNpcPeaceDialog())
+                var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+                if (player != null && PlayerGamePlayRule.CanPlayerSneakThisNpc(player, NpcEntity))
                 {
-                    if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
+                    ret.Add(new SceneInteractSelection()
                     {
-                        ret.Add(new SceneInteractSelection()
+                        SelectId = ID_SneakBackstab,
+                        SelectContent = "\u5077\u88ad",
+                        Selectable = true
+                    });
+                }
+
+                if (player == null || !player.IsSpecialCrouchStance)
+                {
+                    if (CheckNpcPeaceDialog())
+                    {
+                        if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
                         {
-                            SelectId = ID_NormalDialog,
-                            SelectContent = "交谈",
-                            Selectable = true
-                        });
+                            ret.Add(new SceneInteractSelection()
+                            {
+                                SelectId = ID_NormalDialog,
+                                SelectContent = "交谈",
+                                Selectable = true
+                            });
+                        }
                     }
                 }
 

@@ -106,6 +106,8 @@ namespace My.Map.Scene
                 return;
             }
 
+            player.SetSpecialCrouchStance(false);
+
             var gbm = glm.globalBuffManager;
             gbm.AddBuff(npcId,    "give_hide");
             gbm.AddBuff(player.Id, "player_carry_slow");

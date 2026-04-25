@@ -93,6 +93,7 @@ namespace My.Input
             Num10,
 
             Ctrl,
+            C,
         }
 
         //public static string MouseRight = "MouseRight";
@@ -603,6 +604,21 @@ namespace My.Input
             else if(keyName == EInputKey.Tab.ToString())
             {
                 MapPlayerRadialMenu.ShowMenu();
+            }
+            else if (keyName == EInputKey.C.ToString())
+            {
+                var p = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+                if (p == null || MainGameManager.Instance.dialoguePlayer.IsPlaying)
+                {
+                    return;
+                }
+
+                if (PlayerNpcCarryService.IsCarrying)
+                {
+                    return;
+                }
+
+                p.SetSpecialCrouchStance(!p.IsSpecialCrouchStance);
             }
         }
 

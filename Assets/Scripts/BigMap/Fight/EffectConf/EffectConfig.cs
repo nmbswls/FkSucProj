@@ -49,5 +49,14 @@ using UnityEngine;
     {
         public string EffectText;
     }
+
+    // 玩家蹲伏偷袭：结算成功率（依目标 PhysicalForm）与成功/失败后果
+    [Serializable]
+    public class MapAbilityEffectSneakBackstabResolveCfg : MapFightEffectCfg
+    {
+        public float BaseSuccessChance = 0.62f;
+        public float PhysicalFormPenalty = 0.00003f;
+        public float FailTempEnmity = 42f;
+    }
 }
 

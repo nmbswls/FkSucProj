@@ -404,6 +404,16 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                // 玩家蹲伏：基础移速降低（与 QuickPlayerInputBinder Ctrl 切换联动）
+                _library["player_crouch_stance"] = new BuffDefinition()
+                {
+                    BuffId = "player_crouch_stance",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -4500 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
                 // 搬运尸体：移速降低
                 _library["player_carry_slow"] = new BuffDefinition()
                 {
