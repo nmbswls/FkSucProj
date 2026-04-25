@@ -39,6 +39,10 @@ namespace My.Saving
         public float CurrentHP;
         public float MaxHP;
 
+        // 内城：繁荣度、当前人口（与 HomeDataManager 同步）
+        public int HomeProsperity;
+        public int HomeCurrentPopulation;
+
         public Dictionary<string, bool> GlobalSwitchMap = new();
 
         public Dictionary<string, FishingSpotRuntimeSave> FishingSpotByUniqName = new();
@@ -192,6 +196,8 @@ namespace My.Saving
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
             data.PlayerData.FishingSpotByUniqName ??= new Dictionary<string, FishingSpotRuntimeSave>();
             data.PlayerData.HomeRuinByUniqName ??= new Dictionary<string, RepairPointRuntimeSave>();
+            data.PlayerData.HomeProsperity = Math.Max(0, data.PlayerData.HomeProsperity);
+            data.PlayerData.HomeCurrentPopulation = Math.Max(0, data.PlayerData.HomeCurrentPopulation);
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

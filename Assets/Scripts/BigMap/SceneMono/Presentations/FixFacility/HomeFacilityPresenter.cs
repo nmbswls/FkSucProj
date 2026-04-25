@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Scene;
-using UnityEditor;
 using UnityEngine;
 
 namespace My
 {
-    /// <summary>
-    /// 建筑物
-    /// </summary>
     public class HomeFacilityPresenter : ScenePresentationBase<HomeFacilityLogicEntity>, ISubInteractHolder
     {
 
@@ -20,10 +16,18 @@ namespace My
         [SerializeField]
         private SpriteRenderer[] _sprites;
 
-        /// <summary>
-        /// 
-        /// </summary>
         public SubInteractHandle[] Handles;
+
+        private HomeFacility _homeFacility;
+        private readonly List<HomeBgNpc> _bgWorkers = new();
+
+        [SerializeField]
+        private float workPhaseSeconds = 4f;
+
+        [SerializeField]
+        private float restPhaseSeconds = 3f;
+
+        private Dictionary<int, float> _interactCdTimer = new();
 
         protected override void Awake()
         {
@@ -38,38 +42,115 @@ namespace My
             }
         }
 
-
-        [ContextMenu("Auto Collect Child Sprites")]
-        private void CollectSprites()
+        public override void Bind(ILogicEntity logic)
         {
-            _sprites = ViewRoot.GetComponentsInChildren<SpriteRenderer>(true);
-
-            Debug.Log($"已收集 {_sprites.Length} 个 SpriteRenderer");
-
-            // 标记对象已修改，确保 Unity 保存这个列表，否则重启后会丢失
-#if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(this);
-#endif
+            base.Bind(logic);
+            _homeFacility = GetComponentInChildren<HomeFacility>(true);
+            RefreshWorkforceVisuals();
         }
 
-        private Dictionary<int, float> _interactCdTimer = new();
+        public override void Unbind()
+        {
+            ReleaseWorkforceVisuals();
+            _homeFacility = null;
+            base.Unbind();
+        }
+
+        public void RefreshWorkforceVisuals()
+        {
+            ReleaseWorkforceVisuals();
+            if (_logic == null || FacilityEntity?.InnerFacilityRef == null)
+            {
+                return;
+            }
+
+            var inst = FacilityEntity.InnerFacilityRef;
+            int n = Mathf.Max(0, inst.ArrangePeopleNum);
+            if (n == 0 || inst.CfgRef == null || !inst.CfgRef.SupportsWorkforceAssignment)
+            {
+                return;
+            }
+
+            if (_homeFacility == null)
+            {
+                _homeFacility = GetComponentInChildren<HomeFacility>(true);
+            }
+
+            var workSpots = new List<HomeActionSpot>();
+            var restSpots = new List<HomeActionSpot>();
+            if (_homeFacility != null)
+            {
+                foreach (var s in _homeFacility.GetComponentsInChildren<HomeActionSpot>(true))
+                {
+                    if (s.Type == HomeActionSpot.SpotType.Work)
+                    {
+                        workSpots.Add(s);
+                    }
+                    else if (s.Type == HomeActionSpot.SpotType.Social)
+                    {
+                        restSpots.Add(s);
+                    }
+                }
+            }
+
+            Transform parent = ViewRoot != null ? ViewRoot : transform;
+            for (int i = 0; i < n; i++)
+            {
+                Vector3 wPos = ResolveSpotPos(workSpots, i);
+                Vector3 rPos = restSpots.Count > 0
+                    ? ResolveSpotPos(restSpots, i)
+                    : wPos + new Vector3(0.6f, -0.2f, 0f);
+
+                var npc = HomeBgNpcPool.Rent(i % HomeBgNpcPool.StyleCount, parent);
+                if (npc == null)
+                {
+                    continue;
+                }
+
+                npc.transform.position = wPos;
+                npc.BeginFacilityWorkRestLoop(wPos, rPos, workPhaseSeconds, restPhaseSeconds);
+                _bgWorkers.Add(npc);
+            }
+        }
+
+        private Vector3 ResolveSpotPos(List<HomeActionSpot> spots, int workerIndex)
+        {
+            if (spots == null || spots.Count == 0)
+            {
+                return transform.position + new Vector3(0.35f * (workerIndex % 4), -0.15f * (workerIndex / 4), 0f);
+            }
+
+            var spot = spots[workerIndex % spots.Count];
+            int slot = workerIndex / spots.Count;
+            return spot.GetApproximateSlotWorldPosition(slot);
+        }
+
+        private void ReleaseWorkforceVisuals()
+        {
+            foreach (var npc in _bgWorkers)
+            {
+                HomeBgNpcPool.Return(npc);
+            }
+
+            _bgWorkers.Clear();
+        }
 
         public bool CanSubInteractEnable(int subIdx)
         {
             _interactCdTimer.TryGetValue(subIdx, out var lastCd);
-            if(lastCd != 0 && LogicTime.time - lastCd < 1.0f)
+            if (lastCd != 0 && LogicTime.time - lastCd < 1.0f)
             {
                 return false;
             }
 
             var innerCfg = FacilityEntity.InnerFacilityRef.CfgRef;
-            if(innerCfg == null)
+            if (innerCfg == null)
             {
                 return false;
             }
 
-            var func = innerCfg.SubFuncInfos.Find(item=>item.SubHandleIdx == subIdx);
-            if(func == null)
+            var func = innerCfg.SubFuncInfos.Find(item => item.SubHandleIdx == subIdx);
+            if (func == null)
             {
                 return false;
             }
@@ -96,33 +177,6 @@ namespace My
             MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"我是{FacilityEntity.InnerFacilityRef.Id}。", 1f);
             _interactCdTimer[subIdx] = LogicTime.time;
             return true;
-        }
-
-        public override void Bind(ILogicEntity logic)
-        {
-            base.Bind(logic);
-
-            //Vector2 faceDir = Vector2.right;
-            //switch (rot)
-            //{
-            //    case EPlacementRotation.R90:
-            //        {
-            //            faceDir = new Vector2(0, 1);
-            //        }
-            //        break;
-            //    case EPlacementRotation.R180:
-            //        {
-            //            faceDir = new Vector2(-1, 0);
-            //        }
-            //        break;
-            //    case EPlacementRotation.R270:
-            //        {
-            //            faceDir = new Vector2(0, -1);
-            //        }
-            //        break;
-            //}
-
-            //record.FaceDir = faceDir;
         }
     }
 }

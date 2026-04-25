@@ -135,6 +135,9 @@ namespace My.Map.Logic
     public class LogicEntityRecord4HomeFacility : LogicEntityRecord4InteractPoint
     {
         public long BindingFacilityId;
+
+        // 城镇岗位分配人数（与 HomeFacilityInstance.ArrangePeopleNum 同步）
+        public int ArrangePeopleNum;
     }
 
     // 

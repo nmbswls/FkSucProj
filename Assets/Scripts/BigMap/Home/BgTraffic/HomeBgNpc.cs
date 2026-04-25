@@ -1,107 +1,104 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace My.Map
 {
-    [RequireComponent(typeof(Animator))]
+    // 内城设施旁背景 NPC：池化实例 + 工作/休息两点循环
     public class HomeBgNpc : MonoBehaviour
     {
-        private Queue<Vector3> _pathQueue;
-        private Vector3 _currentTarget;
-        private Vector3 _pathOffset; // 个人专属的路径偏移量
-        private float _speed;
-
         private SpriteRenderer _sr;
         private Animator _anim;
 
-        public bool IsActive { get; private set; } = false;
+        public int LastStyleId { get; private set; }
+        public bool IsActive { get; private set; }
 
-        void Awake()
+        private Coroutine _routine;
+        private float _moveSpeed = 1.2f;
+
+        private void Awake()
         {
             _sr = GetComponentInChildren<SpriteRenderer>();
             _anim = GetComponent<Animator>();
         }
 
-        public void Init(Vector3 startPos, Queue<Vector3> pathRoute, Vector3 offset)
+        public void ApplyStyle(int styleId)
         {
-            transform.position = startPos;
-            _pathQueue = pathRoute;
-            _pathOffset = offset;
-            _speed = Random.Range(1.0f, 1.5f); // 随机速度
-
-            // 随机颜色差异
-            float grey = Random.Range(0.9f, 1f);
-            _sr.color = new Color(grey, grey, grey, 1f);
-
-            // 随机动画起始帧
-            if (_anim)
+            LastStyleId = styleId;
+            if (_sr != null)
             {
-                _anim.Play("Walk", 0, Random.value);
-                _anim.speed = _speed * 0.3f;
-            }
-
-            IsActive = true;
-            gameObject.SetActive(true);
-
-            SetNextTarget();
-        }
-
-        void SetNextTarget()
-        {
-            if (_pathQueue.Count > 0)
-            {
-                // 取出下一个点，并加上偏移量
-                _currentTarget = _pathQueue.Dequeue() + _pathOffset;
-            }
-            else
-            {
-                // 没路了，回收
-                Recycle();
+                _sr.color = HomeBgNpcPool.GetStyleTint(styleId);
             }
         }
 
-        void Update()
+        public void BeginFacilityWorkRestLoop(Vector3 workPos, Vector3 restPos, float workSeconds, float restSeconds)
         {
-            if (!IsActive) return;
-
-            // 1. 移动逻辑
-            Vector3 dir = (_currentTarget - transform.position);
-            float dist = dir.magnitude;
-
-            // 如果距离很近，就算到达
-            if (dist < 0.1f)
-            {
-                SetNextTarget();
-                return;
-            }
-
-            Vector3 moveDir = dir.normalized;
-            transform.position += moveDir * _speed * Time.deltaTime;
-
-            // 2. 视觉表现 (Top-Down 专属)
-
-            // A. 左右翻转 (根据 X 轴移动方向)
-            if (Mathf.Abs(moveDir.x) > 0.1f)
-            {
-                _sr.flipX = moveDir.x < 0;
-            }
-
-            // B. 层级排序 (Y-Sorting)
-            // 在 Top-Down 游戏中，Y 越大(越靠上)应该被遮挡，Order 越小
-            // 将 Y 坐标映射为 Order，精度设为 100
-            _sr.sortingOrder = -(int)(transform.position.y * 100);
-
-            // C. (可选) 如果你有 4 方向动画，这里根据 moveDir 的 x/y 切换 Animator 状态
-            // if (Mathf.Abs(moveDir.y) > Mathf.Abs(moveDir.x)) { Play("WalkUp/Down"); }
+            StopFacilityRoutine();
+            _routine = StartCoroutine(FacilityLoop(workPos, restPos, workSeconds, restSeconds));
         }
 
-        void Recycle()
+        public void StopFacilityRoutine()
         {
+            if (_routine != null)
+            {
+                StopCoroutine(_routine);
+                _routine = null;
+            }
+
             IsActive = false;
-            gameObject.SetActive(false);
+            if (_anim != null)
+            {
+                _anim.speed = 0f;
+            }
+        }
+
+        private IEnumerator FacilityLoop(Vector3 workPos, Vector3 restPos, float workSeconds, float restSeconds)
+        {
+            IsActive = true;
+            while (gameObject.activeInHierarchy)
+            {
+                yield return MoveTo(workPos);
+                yield return PlayIdle(workSeconds, atWork: true);
+                yield return MoveTo(restPos);
+                yield return PlayIdle(restSeconds, atWork: false);
+            }
+        }
+
+        private IEnumerator MoveTo(Vector3 target)
+        {
+            if (_anim != null && _anim.runtimeAnimatorController != null)
+            {
+                _anim.speed = 0.35f;
+                _anim.Play("Walk", 0, Random.value);
+            }
+
+            while ((target - transform.position).sqrMagnitude > 0.02f)
+            {
+                Vector3 dir = (target - transform.position).normalized;
+                transform.position += dir * (_moveSpeed * Time.deltaTime);
+                if (_sr != null && Mathf.Abs(dir.x) > 0.05f)
+                {
+                    _sr.flipX = dir.x < 0;
+                    _sr.sortingOrder = -(int)(transform.position.y * 100);
+                }
+
+                yield return null;
+            }
+        }
+
+        private IEnumerator PlayIdle(float seconds, bool atWork)
+        {
+            if (_anim != null && _anim.runtimeAnimatorController != null)
+            {
+                _anim.speed = 1f;
+                _anim.Play(atWork ? "Working" : "Idle", 0, 0f);
+            }
+
+            float t = 0f;
+            while (t < seconds)
+            {
+                t += Time.deltaTime;
+                yield return null;
+            }
         }
     }
-
 }
-

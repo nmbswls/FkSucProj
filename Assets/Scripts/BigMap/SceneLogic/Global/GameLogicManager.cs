@@ -914,6 +914,7 @@ namespace My
 
             worldPersistState?.ApplyRuntimeToSaveData(data);
             playerDataManager?.ApplyRuntimeToSaveData(data);
+            homeDataManager?.ApplyToSaveData(data);
 
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.PlayerBuffs.Clear();

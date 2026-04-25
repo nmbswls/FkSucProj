@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Config;
 using Map.Logic.Events;
+using My;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Logic;
@@ -19,6 +20,12 @@ namespace My.Home
     public class HomeDataManager
     {
         public GameLogicManager LogicManager { get; private set; }
+
+        // 内城生态：繁荣度、当前人口（存档于 SaveData.PlayerData）
+        public int TownProsperity { get; private set; }
+        public int TownCurrentPopulation { get; private set; }
+
+        public event Action EvOnTownEcoChanged;
 
         public long HomePlacementIdCounter = 100;
 
@@ -75,6 +82,7 @@ namespace My.Home
                     if (kv.Value is LogicEntityRecord4HomeFacility hf && hf.BindingFacilityId == p.InstId)
                     {
                         p.HomeFacilityLogicRecordId = kv.Key;
+                        p.ArrangePeopleNum = hf.ArrangePeopleNum;
                         break;
                     }
                 }
@@ -135,6 +143,9 @@ namespace My.Home
         /// <param name="saveData"></param>
         public void LoadHomeData(SaveData saveData)
         {
+            TownProsperity = saveData?.PlayerData?.HomeProsperity ?? 0;
+            TownCurrentPopulation = saveData?.PlayerData?.HomeCurrentPopulation ?? 0;
+
             //// 初始化placement
             //foreach (var one in PlacementInfos)
             //{
@@ -174,6 +185,107 @@ namespace My.Home
             //}
         }
 
+        public void ApplyToSaveData(SaveData data)
+        {
+            if (data?.PlayerData == null)
+            {
+                return;
+            }
+
+            data.PlayerData.HomeProsperity = Mathf.Max(0, TownProsperity);
+            data.PlayerData.HomeCurrentPopulation = Mathf.Max(0, TownCurrentPopulation);
+        }
+
+        public void SetTownProsperity(int value)
+        {
+            value = Mathf.Max(0, value);
+            if (TownProsperity == value)
+            {
+                return;
+            }
+
+            TownProsperity = value;
+            EvOnTownEcoChanged?.Invoke();
+        }
+
+        public void SetTownCurrentPopulation(int value)
+        {
+            value = Mathf.Max(0, value);
+            if (TownCurrentPopulation == value)
+            {
+                return;
+            }
+
+            TownCurrentPopulation = value;
+            EvOnTownEcoChanged?.Invoke();
+        }
+
+        public int ComputeAssignedWorkforceTotal()
+        {
+            int sum = 0;
+            foreach (var p in PlacementInfos)
+            {
+                if (p.Removed)
+                {
+                    continue;
+                }
+
+                sum += Mathf.Max(0, p.ArrangePeopleNum);
+            }
+
+            return sum;
+        }
+
+        public bool TrySetPlacementWorkforce(long placementInstId, int workers, out string failReason)
+        {
+            failReason = null;
+            var p = FindPlacementById(placementInstId);
+            if (p == null || p.Removed || p.CfgRef == null)
+            {
+                failReason = "Invalid placement";
+                return false;
+            }
+
+            if (!p.CfgRef.SupportsWorkforceAssignment)
+            {
+                failReason = "Not a workplace facility";
+                return false;
+            }
+
+            int max = Mathf.Max(0, p.CfgRef.MaxWorkforce);
+            workers = Mathf.Clamp(workers, 0, max);
+            p.ArrangePeopleNum = workers;
+
+            if (p.HomeFacilityLogicRecordId != 0 &&
+                LogicManager?.AreaManager?.Repo?.Records.TryGetValue(p.HomeFacilityLogicRecordId, out var rec) == true &&
+                rec is LogicEntityRecord4HomeFacility hf)
+            {
+                hf.ArrangePeopleNum = workers;
+            }
+
+            EvOnPlacementUpdate?.Invoke(p);
+            EvOnTownEcoChanged?.Invoke();
+
+            TryRefreshFacilityPresenterWorkforce(p.HomeFacilityLogicRecordId);
+            return true;
+        }
+
+        private static void TryRefreshFacilityPresenterWorkforce(long logicEntityId)
+        {
+            if (logicEntityId == 0 || MainGameManager.Instance == null)
+            {
+                return;
+            }
+
+            var pres = SceneAOIManager.Instance != null
+                ? SceneAOIManager.Instance.GetActivePresentation(logicEntityId)
+                : null;
+            if (pres is HomeFacilityPresenter hfp)
+            {
+                hfp.RefreshWorkforceVisuals();
+            }
+        }
+
         public void OnPlayerEnterHome()
         {
             EnsureHomeFacilityRecordsRegistered();
@@ -209,6 +321,12 @@ namespace My.Home
                 if (existingId != 0)
                 {
                     p.HomeFacilityLogicRecordId = existingId;
+                    if (area.Repo.Records.TryGetValue(existingId, out var existRec) &&
+                        existRec is LogicEntityRecord4HomeFacility hfExist)
+                    {
+                        p.ArrangePeopleNum = hfExist.ArrangePeopleNum;
+                    }
+
                     continue;
                 }
 
@@ -309,6 +427,10 @@ namespace My.Home
             var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
             newInfo.HomeFacilityLogicRecordId = record.Id;
 
+            if (record is LogicEntityRecord4HomeFacility hfNew)
+            {
+                hfNew.ArrangePeopleNum = newInfo.ArrangePeopleNum;
+            }
 
             //if(placementCfg.BindingEntityInfoList.Count > 0)
             //{

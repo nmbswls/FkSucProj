@@ -23,6 +23,11 @@ namespace My
 
         public bool IsFixed = false; // 固定设施 
 
+        [Header("城镇 / 岗位")]
+        // 是否可在城镇管理面板分配工作人员（生产类设施等）
+        public bool SupportsWorkforceAssignment = false;
+        public int MaxWorkforce = 4;
+
         [Header("Footprint Config")]
         // pivot 为占格的参考点（相对左下角为 0,0）
         public Vector2Int pivot = new Vector2Int(0, 0);

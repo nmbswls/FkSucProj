@@ -30,7 +30,20 @@ namespace My.Map
             base.Initialize();
 
             InnerFacilityRef = LogicManager.homeDataManager.FindPlacementById(HomePlacementId);
+            if (BindingRecord is LogicEntityRecord4HomeFacility hf && InnerFacilityRef != null)
+            {
+                InnerFacilityRef.ArrangePeopleNum = hf.ArrangePeopleNum;
+            }
 
+        }
+
+        public override void SyncRecordForPersistence()
+        {
+            base.SyncRecordForPersistence();
+            if (BindingRecord is LogicEntityRecord4HomeFacility hf && InnerFacilityRef != null)
+            {
+                hf.ArrangePeopleNum = InnerFacilityRef.ArrangePeopleNum;
+            }
         }
         public long HomePlacementId;
         public HomeFacilityInstance InnerFacilityRef;

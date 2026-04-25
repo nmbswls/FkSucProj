@@ -298,6 +298,14 @@ namespace My.UI
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = MapTownManagementPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/MapTownManagementPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
             
         }
 

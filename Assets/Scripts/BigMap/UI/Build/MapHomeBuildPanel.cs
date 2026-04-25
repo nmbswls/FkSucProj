@@ -30,6 +30,8 @@ namespace My.UI
         public RectTransform buildListContent;
         public string buildItemPrefabName;
 
+        public UnityEngine.UI.Button btnOpenTownManagement;
+
         private int currentIndex = 0;   // 鼠标滚轮移动的当前项
         private int selectedIndex = -1; // 确认选择项
 
@@ -39,6 +41,10 @@ namespace My.UI
         public void Awake()
         {
             buildItemsList.InitListView(0, OnGetBuildItemByIndex);
+            if (btnOpenTownManagement != null)
+            {
+                btnOpenTownManagement.onClick.AddListener(MapTownManagementPanel.TryOpenFromHud);
+            }
         }
 
         public void InitShow()

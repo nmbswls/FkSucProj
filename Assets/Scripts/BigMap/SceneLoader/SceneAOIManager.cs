@@ -5,6 +5,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.MapExport;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,9 @@ using static UnityEngine.Rendering.DebugUI.Table;
 public class SceneAOIManager : MonoBehaviour
 {
     public static SceneAOIManager Instance { get { return MainGameManager.Instance.AOIManager; } }
+
+    // Presenter 已 Bind 且 SetVisible(true) 之后触发；UI 等可订阅，避免在 AOI 内写业务分支
+    public event Action<IScenePresentation, ILogicEntity> AfterPresentationShown;
 
     public string MapName
     {
@@ -540,6 +544,7 @@ public class SceneAOIManager : MonoBehaviour
         if (entry.pres == null) return;
         entry.pres.Bind(entry.entity);
         entry.pres.SetVisible(true);
+        AfterPresentationShown?.Invoke(entry.pres, entry.entity);
         entry.entity.OnEnterAOI();
 
     }

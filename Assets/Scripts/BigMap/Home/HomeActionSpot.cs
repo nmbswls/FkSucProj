@@ -75,6 +75,19 @@ namespace My.Map
         }
 
         /// <summary>
+        /// 背景 NPC 等不占用槽位时，按槽位推算世界坐标
+        /// </summary>
+        public Vector3 GetApproximateSlotWorldPosition(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= _slots.Count)
+            {
+                return transform.position;
+            }
+
+            return transform.position + transform.rotation * _slots[slotIndex].Offset;
+        }
+
+        /// <summary>
         /// 尝试获取一个空槽位
         /// </summary>
         /// <returns>返回槽位索引，-1表示满了</returns>
