@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using My.Map.Entity;
 
 namespace My.Map
 {
@@ -31,7 +32,7 @@ namespace My.Map
         /// 获取 动画覆盖
         /// 如；覆盖idle 需要从 这里获取
         /// </summary>
-        public string GetAnimOverride(string rawAnimName)
+        public virtual string GetAnimOverride(string rawAnimName)
         {
             var buffs = BuffContainer.Values;
             foreach (var b in buffs)
@@ -75,7 +76,7 @@ namespace My.Map
             }
 
             list.Add(entry);
-            EmitAnimLayerRefresh(request.Layer);
+            RequestAnimLayerRefresh(request.Layer);
             return handle;
         }
 
@@ -107,7 +108,7 @@ namespace My.Map
                         _animStacks.Remove(kv.Key);
                     }
 
-                    EmitAnimLayerRefresh(kv.Key);
+                    RequestAnimLayerRefresh(kv.Key);
                     return true;
                 }
             }
@@ -139,7 +140,7 @@ namespace My.Map
                         _animStacks.Remove(kv.Key);
                     }
 
-                    EmitAnimLayerRefresh(kv.Key);
+                    RequestAnimLayerRefresh(kv.Key);
                     return true;
                 }
             }
@@ -183,7 +184,7 @@ namespace My.Map
 
             foreach (var layer in refreshedLayers)
             {
-                EmitAnimLayerRefresh(layer);
+                RequestAnimLayerRefresh(layer);
             }
         }
 
@@ -226,7 +227,8 @@ namespace My.Map
             };
         }
 
-        private void EmitAnimLayerRefresh(int layer)
+        // 动画栈变化或「仅影响 GetAnimOverride 的状态」（如 AnimOverride Buff、蹲伏）变化时，通知表现层重算该层展示
+        protected void RequestAnimLayerRefresh(int layer)
         {
             AnimStackTopSnapshot? top = null;
             if (TryPeekAnimStackTop(layer, out var snap))
@@ -235,6 +237,23 @@ namespace My.Map
             }
 
             EventOnAnimLayerRefreshed?.Invoke(this, new AnimLayerRefreshEventArgs(layer, top));
+        }
+
+        // RegisterBuff / UnregisterBuff 用：仅 AnimOverride 类 Buff 会影响层 0 的 locomotion 解析
+        private void RequestAnimLayerRefreshIfAnimOverrideBuff(BuffDefinition def)
+        {
+            if (def?.DurationEffect == null || def.DurationEffect.DurationType != EBuffDurationType.AnimOverride)
+            {
+                return;
+            }
+
+            RequestAnimLayerRefresh(0);
+        }
+
+        // BuffInstance.OnBuffAddOrUpdate 等非 EntityBase 路径调用
+        public void NotifyAnimLayerRefreshIfAnimOverrideBuff(BuffDefinition def)
+        {
+            RequestAnimLayerRefreshIfAnimOverrideBuff(def);
         }
     }
 }

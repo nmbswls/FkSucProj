@@ -10,6 +10,7 @@ using TMPro;
 using static UnityEditor.Progress;
 using My.Map;
 using System;
+using My.Player;
 
 namespace My.UI.Bag
 {
@@ -39,7 +40,7 @@ namespace My.UI.Bag
         public RectTransform SpeBagPanel;
         public Button CollapseSpeBagBtn;
         public LoopGridView SpeGridView;
-        public int CurrExpandSpeBag; // 当前展开的特殊背包 BagId，-1 表示未展开
+        public EPlayerBagId CurrExpandBagId; // 当前展开的特殊背包 BagId，0 表示未展开
 
         public Transform SpecBagSelectionsTr;
 
@@ -65,9 +66,16 @@ namespace My.UI.Bag
 
             GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
 
+            List<EPlayerBagId> enableBags = new() { EPlayerBagId.Secret, EPlayerBagId.Pet };
             for (int i = 0; i < SpecBagSelectionsTr.childCount; i++)
             {
                 var childOne = SpecBagSelectionsTr.GetChild(i);
+
+                if (i >= enableBags.Count)
+                {
+                    childOne.gameObject.SetActive(false);
+                    continue;
+                }
 
                 var item = new InnerSpeBagItem()
                 {
@@ -78,11 +86,10 @@ namespace My.UI.Bag
                 var btn = childOne.GetComponentInChildren<Button>();
                 item.Btn = btn;
 
-                int partId = i + 1;
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() =>
                 {
-                    SwitchSpeBag(partId);
+                    SwitchSpeBag(enableBags[i]);
                 });
 
                 item.SelectHint = childOne.Find("Select").GetComponent<Image>();
@@ -152,9 +159,9 @@ namespace My.UI.Bag
             GridView.SetListItemCount(mainBag.BasicCapacity + Math.Max(mainBag.MaxExtraCapacity, mainBag.ExtraSlots.Count));
             GridView.RefreshAllShownItem();
 
-            if (CurrExpandSpeBag != -1)
+            if (CurrExpandBagId != 0)
             {
-                var speBag = BindingInventory.GetBagById(CurrExpandSpeBag);
+                var speBag = BindingInventory.GetBagById((int)CurrExpandBagId);
                 SpeGridView.SetListItemCount(speBag.BasicCapacity + speBag.ExtraSlots.Count + 1);
                 SpeGridView.RefreshAllShownItem();
             }
@@ -285,7 +292,7 @@ namespace My.UI.Bag
 
             SpeGridView.SetListItemCount(0);
             SpeGridView.RefreshAllShownItem();
-            this.CurrExpandSpeBag = -1;
+            this.CurrExpandBagId = 0;
 
             foreach (var item in SpeBagItems)
             {
@@ -293,16 +300,10 @@ namespace My.UI.Bag
             }
         }
 
-        void SwitchSpeBag(int partId)
+        void SwitchSpeBag(EPlayerBagId badId)
         {
-            if(partId > 0 && MainGameManager.Instance.gameLogicManager.playerLogicEntity.AtttachingObjList.Count > 0)
-            {
-                FakeHintTextManager.ShowWorld("存在附着物时无法打开分栏背包", MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
-                return;
-            }
-
-            int oldIdx = this.CurrExpandSpeBag;
-            if (this.CurrExpandSpeBag == partId)
+            var oldId = this.CurrExpandBagId;
+            if (this.CurrExpandBagId == oldId)
             {
                 return;
             }
@@ -310,24 +311,26 @@ namespace My.UI.Bag
             {
                 item.SelectHint.gameObject.SetActive(false);
             }
-            this.CurrExpandSpeBag = partId;
-            if(oldIdx == -1)
+            this.CurrExpandBagId = oldId;
+            if(oldId == 0)
             {
                 
             }
 
-            var bag = BindingInventory.GetBagById(CurrExpandSpeBag);
+            var bag = BindingInventory.GetBagById((int)CurrExpandBagId);
             SpeBagPanel.gameObject.SetActive(true);
 
             SpeGridView.SetListItemCount(bag.NormalSlots.Count + bag.ExtraSlots.Count + 1);
             SpeGridView.RefreshAllShownItem();
 
-            SpeBagItems[partId - 1].SelectHint.gameObject.SetActive(true);
+            List<EPlayerBagId> enableBags = new() { EPlayerBagId.Secret, EPlayerBagId.Pet };
+            var findIdx = enableBags.IndexOf(badId);
+            SpeBagItems[findIdx].SelectHint.gameObject.SetActive(true);
         }
 
         LoopGridViewItem OnSpeGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
         {
-            if(CurrExpandSpeBag == -1)
+            if(CurrExpandBagId == 0)
             {
                 return null;
             }
@@ -336,25 +339,26 @@ namespace My.UI.Bag
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 
+
             //int slotIndex = row * Columns + column;
-            var specBag = BindingInventory.GetBagById(CurrExpandSpeBag);
+            var specBag = BindingInventory.GetBagById((int)CurrExpandBagId);
             if (itemIndex < specBag.BasicCapacity)
             {
                 var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, CurrExpandSpeBag, null);
+                cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, (int)CurrExpandBagId, null);
             }
             // 扩展栏动态槽位
             else if(itemIndex < specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, CurrExpandSpeBag, null, AnyContainerItemCell.EStyleType.Red);
+                cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, (int)CurrExpandBagId, null, AnyContainerItemCell.EStyleType.Red);
             }
             else if(itemIndex == specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 item.gameObject.SetActive(true);
-                cell.Bind(null, itemIndex, EContainerType.SpecialInventory, CurrExpandSpeBag, null, AnyContainerItemCell.EStyleType.AddIcon);
+                cell.Bind(null, itemIndex, EContainerType.SpecialInventory, (int)CurrExpandBagId, null, AnyContainerItemCell.EStyleType.AddIcon);
             }
             else
             {

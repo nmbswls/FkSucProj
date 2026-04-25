@@ -575,9 +575,11 @@ namespace My.Map.Entity
                 return false;
             }
 
-            // 停止技能输入 
-            if(OwnerEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
+
+            // 不能放技能 
+            if (!OwnerEntity.CanActiveUseSkill())
             {
+                Debug.Log("use skill check fail.");
                 return false;
             }
 

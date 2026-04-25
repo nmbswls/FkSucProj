@@ -7,6 +7,7 @@ using My.Config;
 using My.Map.Entity;
 using My.Map.Fight;
 using My.Map.Logic;
+using My.Map.Scene;
 using My.Player;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.PackageManager.UI;
@@ -41,8 +42,13 @@ namespace My.Map
 
         public bool IsZhaZhiMode = false;
 
-        // 特殊蹲伏：Ctrl 切换；降速 + 交互变为可偷袭（规则见 PlayerGamePlayRule，菜单见 SceneNpcPresenter）
+        // 特殊蹲伏
         public bool IsSpecialCrouchStance { get; private set; }
+
+        public void CheckCanSwitchCrouchStance()
+        {
+
+        }
 
         public void SetSpecialCrouchStance(bool value)
         {
@@ -60,6 +66,107 @@ namespace My.Map
             {
                 LogicManager.globalBuffManager.RemoveAllBuffById(Id, "player_crouch_stance");
             }
+
+            RequestAnimLayerRefresh(0);
+        }
+
+        // ---------- 搬运 NPC 尸体/昏迷单位（权威状态在逻辑层，供 AI/规则/交互读取）----------
+
+        public const float CarryPutDownSearchRadius = 2.2f;
+        public const float CarryPutDownClearanceRadius = 0.28f;
+
+        public long CarriedNpcEntityId { get; private set; }
+
+        public bool IsCarryingNpcBody => CarriedNpcEntityId != 0;
+
+        // 逻辑层中止搬运时通知表现层（HUD、Locomotion 等），避免仅清 Buff 而 UI 仍显示搬运中
+        public event Action EventOnCarryNpcBodyAborted;
+
+        public bool TryBeginCarryNpcBody(NpcUnitLogicEntity npc)
+        {
+            if (npc == null || npc.MarkDestroyed)
+            {
+                return false;
+            }
+
+            if (!npc.IsDead && !npc.MarkUnsensored)
+            {
+                return false;
+            }
+
+            if (IsCarryingNpcBody)
+            {
+                return false;
+            }
+
+            SetSpecialCrouchStance(false);
+
+            var gbm = LogicManager.globalBuffManager;
+            gbm.AddBuff(npc.Id, "give_hide");
+            gbm.AddBuff(Id, "player_carry_slow");
+            gbm.AddBuff(Id, "player_carry_ov_idle");
+            gbm.AddBuff(Id, "player_carry_ov_move");
+            gbm.AddBuff(Id, "player_carry_ov_walk");
+
+            CarriedNpcEntityId = npc.Id;
+            return true;
+        }
+
+        // 尝试在附近放下搬运单位；failedNoEmptySpot 表示仍保持搬运状态
+        public bool TryPutDownCarriedNpcBody(out bool failedNoEmptySpot)
+        {
+            failedNoEmptySpot = false;
+            if (!IsCarryingNpcBody)
+            {
+                return false;
+            }
+
+            var npc = LogicManager.AreaManager.GetLogicEntiy(CarriedNpcEntityId) as NpcUnitLogicEntity;
+            if (npc == null || npc.MarkDestroyed)
+            {
+                AbortCarryNpcBodyClearPlayerOnly();
+                return false;
+            }
+
+            if (!MapWorldEmptySpotUtil.TryFindEmptySpotNear(
+                    Pos,
+                    CarryPutDownSearchRadius,
+                    CarryPutDownClearanceRadius,
+                    CarriedNpcEntityId,
+                    Id,
+                    out var spot))
+            {
+                failedNoEmptySpot = true;
+                return false;
+            }
+
+            LogicManager.globalBuffManager.RemoveAllBuffById(npc.Id, "give_hide");
+            npc.SetPosition(spot);
+            CarriedNpcEntityId = 0;
+            RemovePlayerCarryBodyBuffs();
+            return true;
+        }
+
+        // NPC 已销毁等异常：仅清除玩家侧搬运状态（不尝试改 NPC）
+        public void AbortCarryNpcBodyClearPlayerOnly()
+        {
+            if (!IsCarryingNpcBody)
+            {
+                return;
+            }
+
+            CarriedNpcEntityId = 0;
+            RemovePlayerCarryBodyBuffs();
+            EventOnCarryNpcBodyAborted?.Invoke();
+        }
+
+        private void RemovePlayerCarryBodyBuffs()
+        {
+            var gbm = LogicManager.globalBuffManager;
+            gbm.RemoveAllBuffById(Id, "player_carry_slow");
+            gbm.RemoveAllBuffById(Id, "player_carry_ov_idle");
+            gbm.RemoveAllBuffById(Id, "player_carry_ov_move");
+            gbm.RemoveAllBuffById(Id, "player_carry_ov_walk");
         }
 
         public long? gcCuaseId;
@@ -121,6 +228,8 @@ namespace My.Map
         {
             base.OnTick(dt);
 
+            TickCarriedNpcBodyConsistency();
+
             TickPlayerStateLowFreq();
 
             TickPlayerStateHighFreq();
@@ -128,6 +237,20 @@ namespace My.Map
             TickAttachingObj(dt);
 
             TickRetreating();
+        }
+
+        private void TickCarriedNpcBodyConsistency()
+        {
+            if (!IsCarryingNpcBody)
+            {
+                return;
+            }
+
+            var npc = LogicManager.AreaManager.GetLogicEntiy(CarriedNpcEntityId) as NpcUnitLogicEntity;
+            if (npc == null || npc.MarkDestroyed)
+            {
+                AbortCarryNpcBodyClearPlayerOnly();
+            }
         }
 
 
@@ -1062,6 +1185,44 @@ namespace My.Map
 
                 LogicManager.globalBuffManager.AddBuff(this.Id, "player_zhazhi");
             }
+        }
+
+        public override string  GetAnimOverride(string rawAnimName)
+        {
+            var changedAnim = base.GetAnimOverride(rawAnimName);
+            if(changedAnim != rawAnimName)
+            {
+                return changedAnim;
+            }
+
+            if(IsSpecialCrouchStance)
+            {
+                if(rawAnimName == "move")
+                {
+                    return "move_c";
+                }
+                if (rawAnimName == "idle")
+                {
+                    return "idle_c";
+                }
+            }
+
+            return rawAnimName;
+        }
+
+        public override bool CanActiveUseSkill()
+        {
+            if(!base.CanActiveUseSkill())
+            {
+                return false;
+            }
+
+            if(IsCarryingNpcBody)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

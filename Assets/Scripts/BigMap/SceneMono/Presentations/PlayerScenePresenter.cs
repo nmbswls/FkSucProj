@@ -374,6 +374,8 @@ namespace My.Map.Scene
             PlayerEntity.EventOnAttachmentUpdate += OnEventAttachmentUpdate;
 
             PlayerEntity.EventOnRequestAimHelper += OnRequestAimHelper;
+
+            PlayerEntity.EventOnCarryNpcBodyAborted += OnCarryNpcBodyAbortedFromLogic;
         }
 
         protected override void UnregisterEvents()
@@ -382,6 +384,14 @@ namespace My.Map.Scene
 
             PlayerEntity.EventOnAttachmentUpdate -= OnEventAttachmentUpdate;
             PlayerEntity.EventOnRequestAimHelper -= OnRequestAimHelper;
+
+            PlayerEntity.EventOnCarryNpcBodyAborted -= OnCarryNpcBodyAbortedFromLogic;
+        }
+
+        private void OnCarryNpcBodyAbortedFromLogic()
+        {
+            OverworldHUDPanel.Instance?.SetCarryBodyHintVisible(false);
+            RefreshLocomotionAnimIfNoStack();
         }
 
         private void OnEventAttachmentUpdate(long e)

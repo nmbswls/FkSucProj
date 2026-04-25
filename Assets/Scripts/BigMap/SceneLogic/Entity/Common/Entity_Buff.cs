@@ -1,6 +1,7 @@
 using Map.Entity;
 using Map.Logic;
 using Map.Logic.Events;
+using My.Map;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -404,12 +405,13 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
-                // 玩家蹲伏：基础移速降低（与 QuickPlayerInputBinder Ctrl 切换联动）
+                // 玩家蹲伏：基础移速降低
                 _library["player_crouch_stance"] = new BuffDefinition()
                 {
                     BuffId = "player_crouch_stance",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -4500 } },
+                    
                     DefaultDuration = -1,
                     IsHidden = true,
                 };
@@ -1370,14 +1372,10 @@ namespace My.Map.Entity
                 }
             }
 
-            if (isAdd)
+            // 新实例：RegisterBuff 之后会统一 Notify；此处仅处理已存在实例的层数/持续时间变更
+            if (!isAdd && BuffOwner is LogicEntityBase leOwner)
             {
-                if (Def.DurationEffect != null)
-                {
-                    if (Def.DurationEffect.DurationType == EBuffDurationType.AnimOverride)
-                    {
-                    }
-                }
+                leOwner.NotifyAnimLayerRefreshIfAnimOverrideBuff(Def);
             }
         }
 

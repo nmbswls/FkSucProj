@@ -1257,6 +1257,19 @@ namespace My.Map
                 }
             }
         }
+
+        public virtual bool CanActiveUseSkill()
+        {
+            if(CheckHasState(AttrIdConsts.ForbidSkillOp))
+            {
+                return false;
+            }
+            if (CheckHasState(AttrIdConsts.Stun))
+            {
+                return false;
+            }
+            return true;
+        }
     }
 
 

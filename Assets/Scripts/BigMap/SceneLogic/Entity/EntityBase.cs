@@ -566,17 +566,21 @@ namespace My.Map
         {
             BuffContainer.Add(buffInst.InstanceId, buffInst);
             EventOnBuffRegister?.Invoke(buffInst);
+            RequestAnimLayerRefreshIfAnimOverrideBuff(buffInst.Def);
         }
 
         public void RegisterBuffDirect(BuffInstance buffInst)
         {
             BuffContainer[buffInst.InstanceId] = buffInst;
+            RequestAnimLayerRefreshIfAnimOverrideBuff(buffInst.Def);
         }
 
         public void UnregisterBuff(BuffInstance buffInst)
         {
+            var def = buffInst.Def;
             BuffContainer.Remove(buffInst.InstanceId);
             EventOnBuffUnregister?.Invoke(buffInst.InstanceId);
+            RequestAnimLayerRefreshIfAnimOverrideBuff(def);
         }
 
         public virtual void OnMapLogicEvent(IMapLogicEvent evt)

@@ -98,6 +98,11 @@ namespace My.Map.Scene
                     return false;
                 }
 
+                if(MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsSpecialCrouchStance)
+                {
+                    return false;
+                }
+
                 return true;
             }
         }
