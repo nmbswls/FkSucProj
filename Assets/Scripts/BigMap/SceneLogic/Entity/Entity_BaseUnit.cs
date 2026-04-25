@@ -148,7 +148,7 @@ namespace My.Map
             base.OnTick(dt);
             // 计时、条件检查、冷却等
 
-            if(!MarkNoLogic && !IsDead)
+            if(!MarkNoLogic && !IsDead && !MarkUnsensored)
             {
                 TickActivateState(dt);
             }
