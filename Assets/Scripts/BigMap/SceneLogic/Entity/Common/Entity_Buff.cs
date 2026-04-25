@@ -404,6 +404,59 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                // 搬运尸体：移速降低
+                _library["player_carry_slow"] = new BuffDefinition()
+                {
+                    BuffId = "player_carry_slow",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -7000 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                // 搬运动画覆盖：idle/move/walk -> carry_hold（需要 AnimHolder 里有同名 clip；若没有则表现回退到原动画）
+                _library["player_carry_ov_idle"] = new BuffDefinition()
+                {
+                    BuffId = "player_carry_ov_idle",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.AnimOverride,
+                        ParamStr1 = "idle",
+                        ParamStr2 = "carry_hold",
+                    },
+                };
+
+                _library["player_carry_ov_move"] = new BuffDefinition()
+                {
+                    BuffId = "player_carry_ov_move",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.AnimOverride,
+                        ParamStr1 = "move",
+                        ParamStr2 = "carry_hold",
+                    },
+                };
+
+                _library["player_carry_ov_walk"] = new BuffDefinition()
+                {
+                    BuffId = "player_carry_ov_walk",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.AnimOverride,
+                        ParamStr1 = "walk",
+                        ParamStr2 = "carry_hold",
+                    },
+                };
+
                 _library["throwing"] = new BuffDefinition()
                 {
                     BuffId = "throwing",

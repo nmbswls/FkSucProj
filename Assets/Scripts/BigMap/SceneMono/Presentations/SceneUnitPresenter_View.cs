@@ -137,6 +137,31 @@ namespace My.Map.Scene
             }
         }
 
+        private AnimationClip ResolveLocomotionClipWithOverride(string baseName, AnimationClip fallback)
+        {
+            if (AnimHolder == null)
+            {
+                return fallback;
+            }
+
+            string resolved = baseName;
+            if (UnitEntity is LogicEntityBase le)
+            {
+                resolved = le.GetAnimOverride(baseName);
+            }
+
+            if (resolved != baseName)
+            {
+                var overrideInfo = AnimHolder.AnimClips.Find(c => c.Name == resolved);
+                if (overrideInfo != null)
+                {
+                    return overrideInfo.Clip;
+                }
+            }
+
+            return fallback;
+        }
+
         private void PlayLocomotionClipOnLayer0()
         {
             if (!EnsureAnimancerReady())
@@ -146,7 +171,19 @@ namespace My.Map.Scene
 
             var lyr = MainAgentAnimator.Layers[0];
             bool wantMove = _moveClip != null && UnitEntity != null && UnitEntity.GetDesiredVelocity().sqrMagnitude > 0.02f;
-            var clip = wantMove ? _moveClip : _Idle;
+
+            AnimationClip clip;
+            if (wantMove)
+            {
+                // 优先用 "move" 的覆盖，若未配置则再查 "walk" 覆盖，最后回退原始 move clip
+                clip = ResolveLocomotionClipWithOverride("move", null)
+                    ?? ResolveLocomotionClipWithOverride("walk", _moveClip);
+            }
+            else
+            {
+                clip = ResolveLocomotionClipWithOverride("idle", _Idle);
+            }
+
             if (clip == null)
             {
                 return;
@@ -154,6 +191,17 @@ namespace My.Map.Scene
 
             lyr.Play(clip, 0.12f, FadeMode.FixedSpeed);
             _locomotionVisualMove = wantMove;
+        }
+
+        // 外部调用：当 AnimOverride buff 变化时，若层 0 栈为空，立即刷新当前 locomotion 表现
+        public void RefreshLocomotionAnimIfNoStack()
+        {
+            if (UnitEntity is LogicEntityBase le && le.TryPeekAnimStackTop(0, out var top) && !top.IsEmpty)
+            {
+                return;
+            }
+
+            PlayLocomotionClipOnLayer0();
         }
 
         public void TickLocomotionAnim(float dt)

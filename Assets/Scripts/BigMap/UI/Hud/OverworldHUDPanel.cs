@@ -168,6 +168,8 @@ namespace My.UI
         public MapHomeBuildPanel homeBuildPanel;
         public OverworldSkillPreviewUI overworldSkillPreviewUI;
 
+        // 搬运提示根节点：屏幕中下，默认 Inactive；子物体可放 TMP「搬运中，按 X 放下」
+        public GameObject carryBodyHintRoot;
 
         public TextMeshProUGUI PlayerHpText;
 
@@ -228,6 +230,14 @@ namespace My.UI
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
+
+        public void SetCarryBodyHintVisible(bool visible)
+        {
+            if (carryBodyHintRoot != null)
+            {
+                carryBodyHintRoot.SetActive(visible);
+            }
+        }
 
         public enum EHudMode
         { 
@@ -369,6 +379,11 @@ namespace My.UI
                 {
                     EnterBuildMode();
                 }
+            }
+
+            if (My.Map.Scene.PlayerNpcCarryService.IsCarrying && UnityEngine.Input.GetKeyDown(KeyCode.X))
+            {
+                My.Map.Scene.PlayerNpcCarryService.TryPutDownCarriedBody();
             }
 
             AlertValText.text = MainGameManager.Instance.gameLogicManager.AreaManager.AreaAlertValue.ToString();

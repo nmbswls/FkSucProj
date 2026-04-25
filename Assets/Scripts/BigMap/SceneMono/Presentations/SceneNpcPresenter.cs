@@ -42,6 +42,7 @@ namespace My.Map.Scene
         public static int ID_PickDropInteractId = 101;
         //public static int ID_BackHit = 102;
         public static int ID_ForcePushDown = 103; // 强推
+        public static int ID_CarryBody = 104;      // 搬运尸体/昏迷单位
 
         public HighlightCtrl highlightCtrl;
         public bool InteractDetailMode { get; set; }
@@ -306,6 +307,10 @@ namespace My.Map.Scene
                     });
                 }
             }
+            else if (selectionId == ID_CarryBody)
+            {
+                PlayerNpcCarryService.TryStartCarryInteract(NpcEntity);
+            }
             else if(selectionId == ID_ForcePushDown)
             {
                 PlayerHCalculater.CheckHForceDownSuccess(MainGameManager.Instance.gameLogicManager, NpcEntity);
@@ -333,7 +338,6 @@ namespace My.Map.Scene
         {
             var ret = new List<SceneInteractSelection>();
             if (NpcEntity.IsAttaching) return ret;
-            if (UnitEntity.MarkUnsensored) return ret;
 
             if(OverworldHUDPanel.Instance.IsHunterMode)
             {
@@ -369,6 +373,12 @@ namespace My.Map.Scene
                         SelectId = ID_PickDropInteractId,
                         SelectContent = "搜刮",
                         Selectable = true
+                    });
+                    ret.Add(new SceneInteractSelection()
+                    {
+                        SelectId = ID_CarryBody,
+                        SelectContent = "搬运单位",
+                        Selectable = !PlayerNpcCarryService.IsCarrying,
                     });
                 }
 
