@@ -255,9 +255,27 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Ctrl"",
+                    ""name"": ""HView"",
                     ""type"": ""Button"",
                     ""id"": ""e9c2e81d-36c8-4a3e-8451-d0c44381fc6f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Crouch"",
+                    ""type"": ""Button"",
+                    ""id"": ""05727376-f7b0-4d8c-88ca-c336b1a53bb2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SceneCancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""120c5f44-dad9-4852-97dc-55324d60dfbf"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -514,7 +532,29 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Ctrl"",
+                    ""action"": ""HView"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""210d49bf-53c5-40f8-86d0-75ca4943a36b"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""12de23c3-a1c3-4cf4-82b2-4d32da705391"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SceneCancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -599,7 +639,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_Q = m_OverworldMap.FindAction("Q", throwIfNotFound: true);
         m_OverworldMap_E = m_OverworldMap.FindAction("E", throwIfNotFound: true);
         m_OverworldMap_R = m_OverworldMap.FindAction("R", throwIfNotFound: true);
-        m_OverworldMap_Ctrl = m_OverworldMap.FindAction("Ctrl", throwIfNotFound: true);
+        m_OverworldMap_HView = m_OverworldMap.FindAction("HView", throwIfNotFound: true);
+        m_OverworldMap_Crouch = m_OverworldMap.FindAction("Crouch", throwIfNotFound: true);
+        m_OverworldMap_SceneCancel = m_OverworldMap.FindAction("SceneCancel", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -706,7 +748,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_Q;
     private readonly InputAction m_OverworldMap_E;
     private readonly InputAction m_OverworldMap_R;
-    private readonly InputAction m_OverworldMap_Ctrl;
+    private readonly InputAction m_OverworldMap_HView;
+    private readonly InputAction m_OverworldMap_Crouch;
+    private readonly InputAction m_OverworldMap_SceneCancel;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -791,9 +835,17 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @R => m_Wrapper.m_OverworldMap_R;
         /// <summary>
-        /// Provides access to the underlying input action "OverworldMap/Ctrl".
+        /// Provides access to the underlying input action "OverworldMap/HView".
         /// </summary>
-        public InputAction @Ctrl => m_Wrapper.m_OverworldMap_Ctrl;
+        public InputAction @HView => m_Wrapper.m_OverworldMap_HView;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/Crouch".
+        /// </summary>
+        public InputAction @Crouch => m_Wrapper.m_OverworldMap_Crouch;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/SceneCancel".
+        /// </summary>
+        public InputAction @SceneCancel => m_Wrapper.m_OverworldMap_SceneCancel;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -874,9 +926,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @R.started += instance.OnR;
             @R.performed += instance.OnR;
             @R.canceled += instance.OnR;
-            @Ctrl.started += instance.OnCtrl;
-            @Ctrl.performed += instance.OnCtrl;
-            @Ctrl.canceled += instance.OnCtrl;
+            @HView.started += instance.OnHView;
+            @HView.performed += instance.OnHView;
+            @HView.canceled += instance.OnHView;
+            @Crouch.started += instance.OnCrouch;
+            @Crouch.performed += instance.OnCrouch;
+            @Crouch.canceled += instance.OnCrouch;
+            @SceneCancel.started += instance.OnSceneCancel;
+            @SceneCancel.performed += instance.OnSceneCancel;
+            @SceneCancel.canceled += instance.OnSceneCancel;
         }
 
         /// <summary>
@@ -942,9 +1000,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @R.started -= instance.OnR;
             @R.performed -= instance.OnR;
             @R.canceled -= instance.OnR;
-            @Ctrl.started -= instance.OnCtrl;
-            @Ctrl.performed -= instance.OnCtrl;
-            @Ctrl.canceled -= instance.OnCtrl;
+            @HView.started -= instance.OnHView;
+            @HView.performed -= instance.OnHView;
+            @HView.canceled -= instance.OnHView;
+            @Crouch.started -= instance.OnCrouch;
+            @Crouch.performed -= instance.OnCrouch;
+            @Crouch.canceled -= instance.OnCrouch;
+            @SceneCancel.started -= instance.OnSceneCancel;
+            @SceneCancel.performed -= instance.OnSceneCancel;
+            @SceneCancel.canceled -= instance.OnSceneCancel;
         }
 
         /// <summary>
@@ -1304,12 +1368,26 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnR(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Ctrl" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "HView" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnCtrl(InputAction.CallbackContext context);
+        void OnHView(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Crouch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCrouch(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SceneCancel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSceneCancel(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

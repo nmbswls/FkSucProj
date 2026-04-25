@@ -769,7 +769,7 @@ namespace My.UI
         {
             if(HudMode == EHudMode.Normal)
             {
-                if(keyName == "Ctrl")
+                if(keyName == QuickPlayerInputBinder.EInputKey.HView.ToString())
                 {
                     SwitchHunterMode();
                     return true;

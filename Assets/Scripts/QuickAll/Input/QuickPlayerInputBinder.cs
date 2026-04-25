@@ -92,8 +92,8 @@ namespace My.Input
             Num9,
             Num10,
 
-            Ctrl,
-            C,
+            HView,
+            Crouch,
         }
 
         //public static string MouseRight = "MouseRight";
@@ -309,7 +309,10 @@ namespace My.Input
 
             actions.OverworldMap.Scroll.performed += OnMouseScroll;
 
-            actions.OverworldMap.Ctrl.performed += OnHotKeyCtrl;
+            actions.OverworldMap.HView.performed += OnHotKeyHView;
+
+            actions.OverworldMap.Crouch.performed += OnHotKeyCrouch;
+            
 
             actions.OverworldMap.HotKey1.performed += OnHotKey1;
             actions.OverworldMap.HotKey2.performed += OnHotKey2;
@@ -351,7 +354,7 @@ namespace My.Input
 
             actions.OverworldMap.Scroll.performed -= OnMouseScroll;
 
-            actions.OverworldMap.Ctrl.performed -= OnHotKeyCtrl;
+            actions.OverworldMap.HView.performed -= OnHotKeyHView;
 
             actions.OverworldMap.HotKey1.performed -= OnHotKey1;
             actions.OverworldMap.HotKey2.performed -= OnHotKey2;
@@ -498,10 +501,12 @@ namespace My.Input
         //public void OnTabHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(EInputKey.Tab.ToString());
         //public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.Tab.ToString());
 
-        public void OnHotKeyCtrl(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Ctrl.ToString());
+        public void OnHotKeyHView(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.HView.ToString());
 
         //public void OnMouseRightHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(EInputKey.MouseRight.ToString());
         public void OnMouseRightHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.MouseRight.ToString());
+
+        public void OnHotKeyCrouch(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Crouch.ToString());
 
         public void OnKeyPress(InputAction.CallbackContext ctx, string keyName)
         {
@@ -605,7 +610,7 @@ namespace My.Input
             {
                 MapPlayerRadialMenu.ShowMenu();
             }
-            else if (keyName == EInputKey.C.ToString())
+            else if (keyName == EInputKey.Crouch.ToString())
             {
                 var p = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
                 if (p == null || MainGameManager.Instance.dialoguePlayer.IsPlaying)

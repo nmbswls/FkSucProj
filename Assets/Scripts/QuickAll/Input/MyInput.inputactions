@@ -169,9 +169,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Ctrl",
+                    "name": "HView",
                     "type": "Button",
                     "id": "e9c2e81d-36c8-4a3e-8451-d0c44381fc6f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Crouch",
+                    "type": "Button",
+                    "id": "05727376-f7b0-4d8c-88ca-c336b1a53bb2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SceneCancel",
+                    "type": "Button",
+                    "id": "120c5f44-dad9-4852-97dc-55324d60dfbf",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -428,7 +446,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Ctrl",
+                    "action": "HView",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "210d49bf-53c5-40f8-86d0-75ca4943a36b",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "12de23c3-a1c3-4cf4-82b2-4d32da705391",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SceneCancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
