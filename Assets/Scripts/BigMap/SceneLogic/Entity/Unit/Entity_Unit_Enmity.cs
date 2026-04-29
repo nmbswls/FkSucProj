@@ -212,6 +212,11 @@ namespace My.Map.Unit
                 return false;
             }
 
+            if(UnitEntity.FactionId == EFactionId.Ally)
+            {
+                return false;
+            }
+
             // 自身h模式下 对主角特殊敌对
             if (UnitEntity is NpcUnitLogicEntity npcUnit && npcUnit.IsInHMode())
             {
@@ -219,7 +224,7 @@ namespace My.Map.Unit
             }
 
             // 面对女王模式下的主角 始终敌对
-            if (playerEntity.IsQueenMode)
+            if (playerEntity.IsExposed)
             {
                 return true;
             }

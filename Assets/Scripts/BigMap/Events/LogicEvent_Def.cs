@@ -42,6 +42,16 @@ namespace Map.Logic.Events
         public ResourceDeltaIntent? LastIntent;
     }
 
+    public partial struct MLEUnitCantAlert : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.UnitCantAlert; } }
+
+        public long EntityId;
+    }
+    
+
+
     public partial struct MLEObjWithOwnerDestroyedEvent : IMapLogicEvent
     {
         public MapLogicEventContext Ctx { get; set; }

@@ -352,10 +352,9 @@ namespace My.Map
             bool seeEvil = false;
             if (VisionSystem.IsTargetVisible(LogicManager.playerLogicEntity.Id))
             {
-                if (LogicManager.playerLogicEntity.IsQueenMode)
+                if (LogicManager.playerLogicEntity.IsExposed)
                 {
                     seeEvil = true;
-                    
                 }
             }
 

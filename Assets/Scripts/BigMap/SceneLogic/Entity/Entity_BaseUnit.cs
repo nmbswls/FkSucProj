@@ -11,6 +11,7 @@ using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using static My.Map.Fight.FightStruct;
 using My.Player;
+using Unity.VisualScripting;
 
 
 namespace My.Map
@@ -228,32 +229,46 @@ namespace My.Map
 
         public virtual void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
-            this.IsDead = true;
+            if (lastIntent != null && lastIntent.deltaFlags.HasFlag(EDmgFlag.Nonlethal))
+            {
+                LogicManager.globalBuffManager.RequestAddBuff(this.Id, "unsensored");
+                this.MarkUnsensored = true;
+            }
+            else
+            {
+                this.IsDead = true;
+
+                EventOnDie?.Invoke(this.Id);
+
+                LogicManager.LogicEventBus.Publish(new MLEUnitDie()
+                {
+                    Ctx = new()
+                    {
+
+                        HappenPos = Pos,
+                        SourceEntity = LogicManager.playerLogicEntity,
+                    },
+                    EntityId = this.Id,
+                    Pos = Pos,
+                    LastIntent = lastIntent
+                });
+            }
 
             TryInterrupt(new InterruptRequest()
             {
                 source = EInterruptSource.Die,
             });
-
-            EventOnDie?.Invoke(this.Id);
-
-            LogicManager.LogicEventBus.Publish(new MLEUnitDie()
+            
+            LogicManager.LogicEventBus.Publish(new MLEUnitCantAlert()
             {
                 Ctx = new()
                 {
-                    
+
                     HappenPos = Pos,
                     SourceEntity = LogicManager.playerLogicEntity,
                 },
                 EntityId = this.Id,
-                Pos = Pos,
-                LastIntent = lastIntent
             });
-
-            {
-                LogicManager.globalBuffManager.RequestAddBuff(this.Id, "unsensored");
-                this.MarkUnsensored = true;
-            }
         }
 
 
@@ -902,6 +917,11 @@ namespace My.Map
 
         public virtual void ProcessHit(long? srcEntityId, Vector2? hitDir)
         {
+            TryInterrupt(new InterruptRequest()
+            {
+                source = EInterruptSource.Hit,
+                priority = 1,
+            });
             EventOnHit?.Invoke(this.Id, srcEntityId);
         }
 
@@ -1053,6 +1073,16 @@ namespace My.Map
             IsAttaching = true;
 
             OnConvertToAttachment();
+
+            LogicManager.LogicEventBus.Publish(new MLEUnitCantAlert()
+            {
+                Ctx = new()
+                {
+                    HappenPos = Pos,
+                    SourceEntity = LogicManager.playerLogicEntity,
+                },
+                EntityId = this.Id,
+            });
         }
 
         public void RestoreFromAttach()

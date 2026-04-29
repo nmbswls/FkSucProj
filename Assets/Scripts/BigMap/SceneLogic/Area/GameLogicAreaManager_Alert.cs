@@ -255,7 +255,7 @@ namespace My.Map.Logic
             return (long)tempSum;
         }
 
-        public void AlertOnEntityDie(long entityId)
+        public void ClearUnitRelateAlert(long entityId)
         {
             if(entityPendingAlerts.TryGetValue(entityId, out var pendingList))
             {

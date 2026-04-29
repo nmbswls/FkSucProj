@@ -427,7 +427,7 @@ namespace My
                             });
                         };
 
-                        playerLogicEntity.EventOnExposeStateChange += () =>
+                        playerLogicEntity.EventOnExposeStateChange += (isBroken) =>
                         {
                             LogicEventBus.Publish(new MLEPlayerExposeStatusChangeEvent()
                             {

@@ -1466,7 +1466,31 @@ namespace My.Map.Entity
             ctx.Env.playerDataManager.TryGiveItem(realCfg.ItemId, realCfg.Count, realCfg.SpecificBagId);
         }
     }
-    
+
+    public class AbilityEffectExecutor4FixExpose : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectFixExposeCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4FixExpose err");
+                return;
+            }
+
+            var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (caster == null || caster is not PlayerLogicEntity playerEntity)
+            {
+                Debug.LogError("AbilityEffectExecutor4HModeBlurt unit not found.");
+                return;
+            }
+
+            playerEntity.ExitExposeState(realCfg.RestoreValue);
+        }
+    }
+
+
 
     public class AbilityEffectExecutor4HModeBlurt : AbilityEffectExecutor
     {

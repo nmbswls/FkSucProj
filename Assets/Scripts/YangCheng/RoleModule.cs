@@ -20,8 +20,10 @@ namespace My.Player
 
         public void EvaluateStats(StatMap targetMap)
         {
-            targetMap.Add((int)EYCAttribute.Charm, 10);
+            targetMap.Add((int)EYCAttribute.StaticCharm, 10);
             targetMap.Add((int)EYCAttribute.SecretSlot, 3);
+
+
         }
     }
 

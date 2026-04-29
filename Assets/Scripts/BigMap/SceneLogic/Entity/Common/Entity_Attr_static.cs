@@ -10,15 +10,16 @@ namespace My.Map.Entity
     {
         public const string Attack = "Attack";
         public const string Defense = "Defense";
+
+        public const string PhysicalPower = "PhysicalPower"; // 肉体强度
+        public const string HPower = "HPower"; // H能力
         public const string Will = "Will"; // 意志
 
-
-        public const string PhysicalForm = "PhysicalForm"; // 肉体强度
-
-        public const string PlayerHDefend = "PlayerHDefend";
+        public const string Arm_White = "Arm_White"; // 白字护甲
+        public const string PhysicalResist = "PhysicalResist"; // 肉体耐受 目前只有玩家应用
 
         public const string PlayerSensitivity = "PlayerSensitivity";
-        public const string PlayerCharm = "PlayerCharm"; // 魅力
+        public const string PlayerCharm = "PlayerCharm"; // 白字魅力
 
         public const string Special_JianShang = "Special_JianShang";
         public const string Special_YiShang = "Special_YiShang";

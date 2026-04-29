@@ -209,6 +209,17 @@ namespace My.Map
             return e;
         }
 
+        public void RefreshAttrBaseNum(string attrId, long initialBase)
+        {
+            numerics.TryGetValue(attrId, out var e);
+            if(e != null && e.baseValue != initialBase)
+            {
+                e.baseValue = initialBase;
+
+                // todo需要触发连锁更新
+            }
+        }
+
         // 注册资源（绑定 Max 到某个数值属性，例如 "HP.Max"）
         public ResourceEntry RegisterResource(string resourceId, string maxAttrId = null, long? fixMaxValue = null, long initialCurrent = 0, MaxChangePolicy policy = MaxChangePolicy.KeepRatio)
         {

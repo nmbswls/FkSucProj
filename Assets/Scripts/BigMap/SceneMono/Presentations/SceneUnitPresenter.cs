@@ -286,7 +286,7 @@ namespace My.Map.Scene
 
 
             bool visible = false;
-            if(MainGameManager.Instance.playerScenePresenter.PlayerEntity.IsQueenMode)
+            if(MainGameManager.Instance.playerScenePresenter.PlayerEntity.IsExposed)
             {
                 visible = true;
             }

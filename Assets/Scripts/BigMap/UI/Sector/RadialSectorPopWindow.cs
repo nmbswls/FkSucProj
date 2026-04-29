@@ -11,13 +11,15 @@ using TMPro;
 namespace My.UI
 {
 
-    
+    /// <summary>
+    /// 轮盘menu
+    /// </summary>
     public class MapPlayerRadialMenu : PanelWithInput
     {
         [System.Serializable]
         public class RadialItem
         {
-            public string abilityId;
+            public string skillId;
             public bool interactable = true;
         }
 
@@ -56,8 +58,8 @@ namespace My.UI
             }
 
             List<RadialItem> builds = new();
-            builds.Add(new RadialItem() { abilityId = "player_ziwei", interactable = true });
-            builds.Add(new RadialItem() { abilityId = "fix_clothes", interactable = true });
+            builds.Add(new RadialItem() { skillId = "player_ziwei", interactable = true });
+            builds.Add(new RadialItem() { skillId = "fix_clothes", interactable = true });
             
             panel.BuildMenu(builds);
         }    
@@ -82,7 +84,7 @@ namespace My.UI
                 inst.index = i;
                 if(i < items.Count)
                 {
-                    inst.SetData(items[i].abilityId,
+                    inst.SetData(items[i].skillId,
                              items[i].interactable,
                              colorNormal, fillAmount);
                 }
@@ -122,11 +124,11 @@ namespace My.UI
 
             List<RadialItem> builds = new();
             builds.Add(
-                new RadialItem() { abilityId = "player_ziwei", interactable = true }
+                new RadialItem() { skillId = "player_ziwei", interactable = true }
 
                 );
 
-            builds.Add(new RadialItem() { abilityId = "fix_clothes", interactable = true });
+            builds.Add(new RadialItem() { skillId = "fix_clothes", interactable = true });
             BuildMenu(builds);
 
             sectorPrefab.gameObject.SetActive(false);
@@ -202,7 +204,7 @@ namespace My.UI
 
             if(idx < builds.Count)
             {
-                chosenAbilityLabel.text = builds[idx].abilityId;
+                chosenAbilityLabel.text = builds[idx].skillId;
             }
             else
             {
@@ -234,9 +236,10 @@ namespace My.UI
         {
             if (currentIndex < 0 || currentIndex >= sectors.Count) return;
             var sector = sectors[currentIndex];
-            if (string.IsNullOrEmpty(sector.AbilityId)) return;
+            if (string.IsNullOrEmpty(sector.SkillId)) return;
 
-            MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility(sector.AbilityId);
+            MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.UseSkill(sector.SkillId);
+            //MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility(sector.AbilityId);
         }
 
         public void SetOpen(bool open, bool instant = false)

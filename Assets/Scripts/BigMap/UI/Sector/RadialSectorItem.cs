@@ -1,4 +1,5 @@
 
+using My.Map.Entity;
 using TMPro;
 using UnityEditor.Playables;
 using UnityEngine;
@@ -15,18 +16,29 @@ namespace My.UI
         public TextMeshProUGUI label;
         public Image icon;
 
-        [HideInInspector] public string AbilityId;
+        [HideInInspector] public string SkillId;
         [HideInInspector] public int index;
 
-        public void SetData(string abId, bool interactable, Color normal, float fillAmount)
+        public void SetData(string skillId, bool interactable, Color normal, float fillAmount)
         {
-            AbilityId = abId;
+            SkillId = skillId;
             if (sectorBg != null)
             {
                 sectorBg.fillAmount = fillAmount - 2 * 1.0f / 360f; // 填充=扇区角度/360
                 sectorBg.color = normal;
             }
-            //if (icon != null) icon.sprite = iconSprite;
+
+            var skillCfg = SkillLibrary.GetSkillConfig(skillId);
+
+            if (icon != null)
+            {
+                icon.sprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillCfg.IconPath}");
+            }
+            else
+            {
+                icon.sprite = null;
+            }
+
             SetInteractable(interactable);
         }
 

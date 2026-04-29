@@ -252,7 +252,7 @@ namespace My
 
             if (playerScenePresenter != null)
             {
-                if (playerScenePresenter.PlayerEntity.IsQueenMode)
+                if (playerScenePresenter.PlayerEntity.IsExposed)
                 {
                     postProcessVignette.SetDangerState(true);
                     FovGenerator.NeedMask = false;

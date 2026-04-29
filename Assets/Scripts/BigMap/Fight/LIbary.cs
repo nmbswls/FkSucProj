@@ -30,6 +30,18 @@ namespace My.Map.Entity
 
                 {
                     var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "queen_desire_charm_01";
+                    cfg.IsPassive = true;
+                    cfg.PassiveBuffId = "queen_desire_charm_01";
+
+                    cfg.IconPath = "icon_01";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+
+                {
+                    var cfg = new EntitySkillCfg();
                     cfg.SkillId = "queen_attack";
                     cfg.MainAbilityId = "queen_attack_01";
                     cfg.IsCombo = true;
@@ -52,7 +64,17 @@ namespace My.Map.Entity
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
-                
+
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "fix_clothes";
+                    cfg.MainAbilityId = "fix_clothes";
+                    cfg.CoolDown = 0.5f;
+
+                    cfg.IconPath = "fix_clothes";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
 
                 {
                     var cfg = new EntitySkillCfg();
@@ -1789,18 +1811,19 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 WithProgress = true,
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "2"
+                    RawVal = "5"
                 },
             };
 
 
-            var effect = new MapAbilityEffectAddResourceCfg()
+            var effect = new MapFightEffectFixExposeCfg()
             {
-                ResourceId = AttrIdConsts.PlayerClothes,
-                AddValue = 80000,
+                RestoreValue = 80000,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
 

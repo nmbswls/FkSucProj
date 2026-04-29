@@ -50,6 +50,8 @@ namespace My.Map.Fight
             None,
             ZiWei = 0x08,
             Xixue = 1 << 4,
+
+            Nonlethal = 1 << 5,
         }
 
         public enum EInterruptSource

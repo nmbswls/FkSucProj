@@ -25,7 +25,9 @@ namespace Map.Logic.Events
         ObjWithOwnerDestroyed,
         PlayerFaQingStatusChange,
         PlayerExposeStatusChange,
-        
+
+        UnitCantAlert,
+
     }
 
 

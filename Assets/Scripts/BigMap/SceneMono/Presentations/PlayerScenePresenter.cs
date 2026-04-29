@@ -133,7 +133,7 @@ namespace My.Map.Scene
                 return (PlayerLogicEntity)_logic;
             }
         }
-
+         
         public string ShowName => "Self";
 
         public Vector2 Pos => transform.position;
@@ -376,6 +376,8 @@ namespace My.Map.Scene
             PlayerEntity.EventOnRequestAimHelper += OnRequestAimHelper;
 
             PlayerEntity.EventOnCarryNpcBodyAborted += OnCarryNpcBodyAbortedFromLogic;
+
+            PlayerEntity.EventOnExposeStateChange += HandleExposeStateChange;
         }
 
         protected override void UnregisterEvents()
@@ -386,6 +388,8 @@ namespace My.Map.Scene
             PlayerEntity.EventOnRequestAimHelper -= OnRequestAimHelper;
 
             PlayerEntity.EventOnCarryNpcBodyAborted -= OnCarryNpcBodyAbortedFromLogic;
+
+            PlayerEntity.EventOnExposeStateChange -= HandleExposeStateChange;
         }
 
         private void OnCarryNpcBodyAbortedFromLogic()
@@ -519,6 +523,14 @@ namespace My.Map.Scene
             if((oldPos - newPos).sqrMagnitude > 5)
             {
                 MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
+            }
+        }
+
+        private void HandleExposeStateChange(bool isBroken)
+        {
+            if(isBroken)
+            {
+                MainGameManager.Instance.ShowFakeFxEffect("破衣", PlayerEntity.Pos);
             }
         }
     }

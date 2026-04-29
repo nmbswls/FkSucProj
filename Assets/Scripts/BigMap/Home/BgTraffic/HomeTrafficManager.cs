@@ -48,7 +48,7 @@ namespace My.Map
             _timer -= Time.deltaTime;
             if (_timer <= 0)
             {
-                TrySpawnNpc();
+                //TrySpawnNpc();
                 _timer = SpawnInterval + Random.Range(-0.2f, 0.2f);
             }
         }
@@ -92,7 +92,7 @@ namespace My.Map
             Vector3 offset = roundOffsetList[offsetIdx];
 
             // 加上偏移量
-            npc.Init(startNode.transform.position + offset, route, offset);
+            //npc.Init(startNode.transform.position + offset, route, offset);
         }
 
         Queue<Vector3> GenerateRouteToAnyExit(HomeTrafficNode startNode)

@@ -1,5 +1,6 @@
 using My;
 using My.Map.Entity;
+using System;
 using UnityEngine;
 
 namespace My.Map
@@ -8,8 +9,30 @@ namespace My.Map
     // 避免散落在 Presenter / EffectExecutor 等处。后续新增同类规则请优先加到这里并在此文件顶部补充说明。
     public static class PlayerGamePlayRule
     {
+        public const float ClothesStartBreakLine = 0.7f;
+        public const float DefaultClothesOverRate = 100;
+
+
         public const float SneakVisionRange = 6f;
         public const float SneakVisionFovDeg = 150f;
+
+
+        public static float GetBreakClothesParam(long currentClothes)
+        {
+            return Math.Max(0, 1 - (currentClothes) * 1.0f / (ClothesStartBreakLine * 100_000));
+        }
+
+
+        public static int CalculateBreakClothesInnerRate(long currentClothes, long rawOverRate)
+        {
+            float brokeParam = PlayerGamePlayRule.GetBreakClothesParam(currentClothes);
+            long clothesOverRate = rawOverRate; // 衣物覆盖率
+
+            int applyRate = (int)((1 - (clothesOverRate * 0.0001f * (1 - brokeParam))) * 10000);
+            applyRate = applyRate / 500 * 500; // 使用500档位
+
+            return applyRate;
+        }
 
         public static bool IsPlayerBehindNpcForSneak(NpcUnitLogicEntity npc, PlayerLogicEntity player)
         {

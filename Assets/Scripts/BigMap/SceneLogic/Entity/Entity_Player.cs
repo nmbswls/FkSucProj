@@ -9,6 +9,7 @@ using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.Player;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
@@ -36,7 +37,7 @@ namespace My.Map
         public bool IsFaQing = false; // 是否发情中
         public float LastFaQingTimer; // 进入发情时间
 
-        
+        public bool DisguiseIfPossible; // 希望伪装自身
         public bool IsExposed = false; // 暴露状态
         public float LastExposeTimer; // 进入暴露时间
 
@@ -44,6 +45,8 @@ namespace My.Map
 
         // 特殊蹲伏
         public bool IsSpecialCrouchStance { get; private set; }
+
+        private bool _dirst_clothes { get; set; }
 
         public void CheckCanSwitchCrouchStance()
         {
@@ -180,7 +183,7 @@ namespace My.Map
         public event Action EventOnRequestAimHelper;
 
         public event Action EventOnFaQingStateChange;
-        public event Action EventOnExposeStateChange;
+        public event Action<bool> EventOnExposeStateChange;
 
         private float _lowFreqStateTimer;
         private float _highFreqStateTimer;
@@ -270,7 +273,7 @@ namespace My.Map
         {
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
-            attributeStore.RegisterNumeric(AttrIdConsts.Charmed, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.Charm));
+            attributeStore.RegisterNumeric(AttrIdConsts.Charmed, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm));
 
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
@@ -550,6 +553,14 @@ namespace My.Map
                     }
                 }
             }
+
+            // 刷新衣物提供属性
+            if(_dirst_clothes)
+            {
+                // 刷新衣装产生的基础属性影响
+                RefreshClothesRelateYCAttrs();
+                _dirst_clothes = false;
+            }
         }
 
 
@@ -562,7 +573,6 @@ namespace My.Map
 
             _highFreqStateTimer += 0.2f;
 
-            
 
             RefreshPlayerDesireLevel();
 
@@ -570,8 +580,8 @@ namespace My.Map
 
             TickBeingGazedInfo();
 
-            // 检查玩家衣着暴露
-            TickPlayerExpose();
+            // 检查玩家衣着
+            TickPlayerClothesBroken();
 
             // 检查是否进入高潮
             TickGc();
@@ -683,36 +693,42 @@ namespace My.Map
         /// <summary>
         /// 检查是否进入暴露状态
         /// </summary>
-        private void TickPlayerExpose()
+        private void TickPlayerClothesBroken()
         {
-            if(!MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            // 对于非伪装地图 不检查
+            // todo 是否支持强行伪装
+
+            do
             {
-                return;
+                if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg != null && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+                {
+                    DisguiseIfPossible = true;
+                    break;
+                }
+
+                DisguiseIfPossible = false;
+
             }
+            while (false);
 
             var clothes = GetAttr(AttrIdConsts.PlayerClothes);
 
-            if(IsExposed)
+            // 检查不需要伪装的状态
+            if (!DisguiseIfPossible)
             {
-                
-
-
-                if (clothes > 0)
+                if(!IsExposed)
                 {
-                    IsExposed = false;
-                    LogicManager.globalBuffManager.AddBuff(this.Id, "player_clothes_expose");
-
-                    EventOnExposeStateChange?.Invoke();
+                    EnterExposeState(clothes > 0 ? false : true);
                 }
+                return;
             }
-            else
+
+            if(!IsExposed)
             {
+
                 if (clothes <= 0)
                 {
-                    IsExposed = true;
-                    LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "player_clothes_expose");
-
-                    EventOnExposeStateChange?.Invoke();
+                    EnterExposeState(true);
                 }
             }
         }
@@ -1223,6 +1239,46 @@ namespace My.Map
             }
 
             return true;
+        }
+
+
+        /// <summary>
+        /// 根据当前衣装状态 刷新自身场景内属性
+        /// </summary>
+        public void RefreshClothesRelateYCAttrs()
+        {
+            int applyRate = 10000;
+            if(!IsExposed)
+            {
+                long clothes = GetAttr(AttrIdConsts.PlayerClothes);
+                long rawOverRate = 10000;
+                applyRate = PlayerGamePlayRule.CalculateBreakClothesInnerRate(clothes, rawOverRate);
+            }
+
+            var innerCharm = LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.InnerCharm);
+            var innerArm = LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.InnerArm);
+
+            long finalBasicCharm = (long)(innerCharm * (applyRate * 0.0001f)) + LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm);
+            long finalBasicArm = (long)(innerArm * (applyRate * 0.0001f)) + LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticArm);
+
+            attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm, finalBasicCharm);
+            attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_White, finalBasicArm);
+        }
+
+        private void EnterExposeState(bool isBroken)
+        {
+            IsExposed = true;
+            LogicManager.globalBuffManager.AddBuff(this.Id, "player_clothes_expose"); // todo 这里
+            EventOnExposeStateChange?.Invoke(isBroken);
+        }
+
+        public void ExitExposeState(long clothesValue)
+        {
+            IsExposed = false;
+            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "player_clothes_expose"); // todo 这里
+
+            attributeStore.SetResource(AttrIdConsts.PlayerClothes, clothesValue);
+            EventOnExposeStateChange?.Invoke(false);
         }
     }
 }

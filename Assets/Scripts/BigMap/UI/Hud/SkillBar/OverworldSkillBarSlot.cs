@@ -59,7 +59,7 @@ namespace My.UI
             this.skillData = skillData;
             if (skillData.cacheConfig != null)
             {
-                var spriteRes = Resources.Load<Sprite>($"Sprites/Skill/{skillData.cacheConfig.IconPath}");
+                var spriteRes = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillData.cacheConfig.IconPath}");
                 //IconPath
                 icon.sprite = spriteRes;
             }
