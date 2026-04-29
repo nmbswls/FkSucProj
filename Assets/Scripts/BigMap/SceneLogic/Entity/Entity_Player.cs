@@ -1248,9 +1248,10 @@ namespace My.Map
         public void RefreshClothesRelateYCAttrs()
         {
             int applyRate = 10000;
-            if(!IsExposed)
+            long clothes = GetAttr(AttrIdConsts.PlayerClothes);
+
+            if (!IsExposed)
             {
-                long clothes = GetAttr(AttrIdConsts.PlayerClothes);
                 long rawOverRate = 10000;
                 applyRate = PlayerGamePlayRule.CalculateBreakClothesInnerRate(clothes, rawOverRate);
             }
@@ -1263,6 +1264,12 @@ namespace My.Map
 
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm, finalBasicCharm);
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_White, finalBasicArm);
+
+            // 计算肉身抗性获得的护甲
+            var physicalResist = GetAttr(AttrIdConsts.PhysicalResist);
+            var physicalRssit2Arm = GetAttr(AttrIdConsts.PhysicalResistArmRate);
+            long armExtra1 = (long)(physicalResist * (physicalRssit2Arm * 0.0001) * (applyRate * 0.0001));
+            attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_Extra_1, armExtra1);
         }
 
         private void EnterExposeState(bool isBroken)
@@ -1313,6 +1320,11 @@ namespace My.Map
                 delta = -dmg;
             }
             return delta;
+        }
+
+        public override int GetUnitLevel()
+        {
+            return LogicManager.playerDataManager.Level;
         }
     }
 }

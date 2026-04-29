@@ -594,6 +594,13 @@ namespace My.Map
             return string.IsNullOrEmpty(bestDialogId) ? fallback : bestDialogId;
         }
 
+        public override int GetUnitLevel()
+        {
+            var attrCfg = CfgMgr.Cfgs.TbUnitNpcAttr.GetOrDefault(NpcConfig.AttrTemplateId);
+            if (attrCfg == null) return 1;
+            return attrCfg.Level;
+        }
+
     }
 }
 

@@ -30,6 +30,8 @@ namespace My.Player
         public string SavedBornPoint = "initial";
         //public string SavedReviveMap = "initial";
 
+        public int Level { get; set; } = 0;
+
         /// <summary>
         /// 玩家进度（养成等）子系统
         /// </summary>
@@ -156,6 +158,8 @@ namespace My.Player
                     GlobalSwitchMap[kv.Key] = kv.Value;
                 }
             }
+
+            Level = savingData.PlayerData.Level;
 
             ProgressionSystem.InitSystem(logicManager, savingData);
             QuestSystem.InitSystem(logicManager, savingData);

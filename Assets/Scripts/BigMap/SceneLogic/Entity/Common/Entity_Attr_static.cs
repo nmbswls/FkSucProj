@@ -18,7 +18,10 @@ namespace My.Map.Entity
         public const string Arm_White = "Arm_White"; // 白字护甲
         public const string ArmPercent_White = "Arm_White"; // 白字护甲额外
 
+        public const string Arm_Extra_1 = "Arm_Extra_Body"; // 来自肉体耐受的护甲
+
         public const string PhysicalResist = "PhysicalResist"; // 肉体耐受 目前只有玩家应用
+        public const string PhysicalResistArmRate = "PhysicalResistArmRate"; // 肉体耐受 转化为护甲的效率 10000表示1
 
         public const string PlayerSensitivity = "PlayerSensitivity";
         public const string PlayerCharm = "PlayerCharm"; // 白字魅力

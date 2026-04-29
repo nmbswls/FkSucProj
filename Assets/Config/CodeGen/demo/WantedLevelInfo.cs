@@ -14,39 +14,29 @@ using SimpleJSON;
 namespace cfg.demo
 {
 [System.Serializable]
-public sealed partial class UnitNpcAttr : Luban.BeanBase
+public sealed partial class WantedLevelInfo : Luban.BeanBase
 {
-    public UnitNpcAttr(JSONNode _buf) 
+    public WantedLevelInfo(JSONNode _buf) 
     {
-        { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
-        { if(!_buf["hp"].IsNumber) { throw new SerializationException(); }  Hp = _buf["hp"]; }
-        { if(!_buf["move_speed"].IsNumber) { throw new SerializationException(); }  MoveSpeed = _buf["move_speed"]; }
+        { if(!_buf["need_val"].IsNumber) { throw new SerializationException(); }  NeedVal = _buf["need_val"]; }
     }
 
-    public static UnitNpcAttr DeserializeUnitNpcAttr(JSONNode _buf)
+    public static WantedLevelInfo DeserializeWantedLevelInfo(JSONNode _buf)
     {
-        return new demo.UnitNpcAttr(_buf);
+        return new demo.WantedLevelInfo(_buf);
     }
 
     /// <summary>
     /// id
     /// </summary>
-    public int Id;
-    /// <summary>
-    /// 等级
-    /// </summary>
     public int Level;
     /// <summary>
-    /// 生命
+    /// id
     /// </summary>
-    public int Hp;
-    /// <summary>
-    /// 移速
-    /// </summary>
-    public float MoveSpeed;
+    public int NeedVal;
    
-    public const int __ID__ = -1255865693;
+    public const int __ID__ = 712038968;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -56,10 +46,8 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
-        + "id:" + Id + ","
         + "level:" + Level + ","
-        + "hp:" + Hp + ","
-        + "moveSpeed:" + MoveSpeed + ","
+        + "needVal:" + NeedVal + ","
         + "}";
     }
 }

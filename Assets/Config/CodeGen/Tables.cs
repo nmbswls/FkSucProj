@@ -38,6 +38,8 @@ public partial class Tables
     public demo.TbFishingSpot TbFishingSpot {get; }
     public demo.TbFishingSpotFish TbFishingSpotFish {get; }
     public demo.TbPlayerDesireLevel TbPlayerDesireLevel {get; }
+    public demo.TbWantedLevelInfo TbWantedLevelInfo {get; }
+    public demo.TbWantedBehaveInfo TbWantedBehaveInfo {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -65,6 +67,8 @@ public partial class Tables
         TbFishingSpot = new demo.TbFishingSpot(loader("demo_tbfishingspot"));
         TbFishingSpotFish = new demo.TbFishingSpotFish(loader("demo_tbfishingspotfish"));
         TbPlayerDesireLevel = new demo.TbPlayerDesireLevel(loader("demo_tbplayerdesirelevel"));
+        TbWantedLevelInfo = new demo.TbWantedLevelInfo(loader("demo_tbwantedlevelinfo"));
+        TbWantedBehaveInfo = new demo.TbWantedBehaveInfo(loader("demo_tbwantedbehaveinfo"));
         ResolveRef();
     }
     
@@ -94,6 +98,8 @@ public partial class Tables
         TbFishingSpot.ResolveRef(this);
         TbFishingSpotFish.ResolveRef(this);
         TbPlayerDesireLevel.ResolveRef(this);
+        TbWantedLevelInfo.ResolveRef(this);
+        TbWantedBehaveInfo.ResolveRef(this);
     }
 }
 

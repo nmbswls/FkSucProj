@@ -23,7 +23,9 @@ namespace My.Map
             var armWhite = entity.GetAttr(AttrIdConsts.Arm_White);
             var armPercent = entity.GetAttr(AttrIdConsts.ArmPercent_White);
 
-            return (long)(armWhite * (10000 + armPercent) * 0.0001);
+            var armExtra1 = entity.GetAttr(AttrIdConsts.Arm_Extra_1);
+
+            return (long)(armWhite * (10000 + armPercent) * 0.0001 + armExtra1);
         }
 
         public static long CalcDmgReduceRate10000ByArm(int attackLevel, long armValue)

@@ -1,26 +1,31 @@
 [
   {
     "id": 10000,
+    "level": 1,
     "hp": 100,
     "move_speed": 2
   },
   {
     "id": 10001,
+    "level": 1,
     "hp": 110,
     "move_speed": 2
   },
   {
     "id": 10002,
+    "level": 1,
     "hp": 120,
     "move_speed": 2
   },
   {
     "id": 10003,
+    "level": 1,
     "hp": 130,
     "move_speed": 2
   },
   {
     "id": 10004,
+    "level": 1,
     "hp": 140,
     "move_speed": 2
   }
