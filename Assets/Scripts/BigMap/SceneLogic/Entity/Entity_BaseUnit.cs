@@ -272,6 +272,11 @@ namespace My.Map
         }
 
 
+        public virtual int GetUnitLevel()
+        {
+            return 1;
+        }
+
         #region 移动控制
 
 
@@ -1177,18 +1182,41 @@ namespace My.Map
         protected virtual long CalculateUnitHpChange(string attrId, ResourceDeltaIntent intent)
         {
             long delta = intent.delta;
+
             if (delta < 0)
             {
-                var dmg = Math.Abs(delta);
+                var srcEntity = LogicManager.GetLogicEntity(intent?.srcEntityId ?? 0);
+
+                var rawDmg = Math.Abs(delta);
+                var dmg = rawDmg; // 1000倍
+                var extra1 = attributeStore.GetAttr(AttrIdConsts.Basic_ExtraDmg);
+                if(extra1 < -9500)
+                {
+                    extra1 = -9500;
+                }
+                dmg = (long)(dmg * (10000 + extra1) * 0.0001);
+
+
+                var srcLevel = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.SrcLevel_Pipeline) ?? 0;
+                long selfArm = this.GetFinalArm();
+                long armReduce10000 = PlayerGamePlayRule.CalcDmgReduceRate10000ByArm((int)srcLevel, selfArm);
+                // 护甲减伤极限80%
+                if(armReduce10000 > 8000)
+                {
+                    armReduce10000 = 8000;
+                }
+                dmg = (long)(dmg * (10000 - armReduce10000) * 0.0001);
 
                 var basicJs = attributeStore.GetAttr(AttrIdConsts.Basic_JianShang);
-                if (basicJs > 9900)
+                if (basicJs > 9000)
                 {
-                    basicJs = 9900;
+                    basicJs = 9000;
                 }
                 dmg = (long)(dmg * (10000 - basicJs) * 0.0001);
+
                 return -dmg;
             }
+
             return delta;
         }
 

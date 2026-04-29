@@ -1160,12 +1160,25 @@ namespace My.Map.Entity
                 return;
             }
 
-            var baseVal = realCfg.BaseDamage;
+            ILogicEntity srcEntity = null;
+            if(ctx.SourceInfo.SrcEntityId != 0)
+            {
+                srcEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+
+
+                
+            }
+
+            var dmgVal = realCfg.BaseDamage;
             foreach(var onePair in realCfg.ExtraDamageRate)
             {
                 // todo 获取attr
-                long getAttr = 0;
-                baseVal += (long)(getAttr * onePair.Val * 0.0001f);
+                //if(ctx.CacheAttrVal)
+                if(srcEntity != null)
+                {
+                    var getVal =  srcEntity.GetAttr(onePair.AttrId);
+                    dmgVal += (long)(getVal * onePair.Val * 0.0001f);
+                }
             }
 
             Dictionary<string, long> extraAttrs = null;
@@ -1178,15 +1191,57 @@ namespace My.Map.Entity
                 }
             }
 
-            target.ApplyResourceChange(AttrIdConsts.HP, -baseVal, true, EDmgFlag.None, ctx.SourceInfo.SrcEntityId, extraAttrs);
+            if(srcEntity is BaseUnitLogicEntity unitEntity)
+            {
+                extraAttrs[AttrIdConsts.SrcLevel_Pipeline] = unitEntity.GetUnitLevel();
+            }
+
+            float hRate = 0;
+            if (realCfg.HRate == 0)
+            {
+                if (!string.IsNullOrEmpty(ctx.SourceInfo.SrcAbilityId))
+                {
+                    var abCfg = AbilityLibrary.GetAbilityConfig(ctx.SourceInfo.SrcAbilityId);
+                    if (abCfg != null)
+                    {
+                        switch (abCfg.HImpulseMode)
+                        {
+                            case EHImpluseMode.Light:
+                                {
+                                    hRate = 0.5f;
+                                }
+                                break;
+                            case EHImpluseMode.Middle:
+                                {
+                                    hRate = 1f;
+                                }
+                                break;
+                            case EHImpluseMode.Heavy:
+                                {
+                                    hRate = 1.5f;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                hRate = realCfg.HRate;
+            }
+
+            extraAttrs[AttrIdConsts.HImpulse_Pipeline] = (long)(hRate * 10000);
+
+            // 在这里传递原始数据吗
+            target.ApplyResourceChange(AttrIdConsts.HP, -dmgVal, true, EDmgFlag.None, ctx.SourceInfo.SrcEntityId, extraAttrs);
 
             var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
             if (realCfg.KnockBackForce > 0 && actor != null)
             {
                 // 对目标击打
-                if(realCfg.TargetType == 0)
+                if (realCfg.TargetType == 0)
                 {
-                    if(target is BaseUnitLogicEntity unitEntity)
+                    if (target is BaseUnitLogicEntity unitEntity)
                     {
                         var diff = target.Pos - actor.Pos;
                         unitEntity.ApplyKnockBack(diff, realCfg.KnockBackForce);

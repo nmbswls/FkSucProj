@@ -16,6 +16,8 @@ namespace My.Map.Entity
         public const string Will = "Will"; // 意志
 
         public const string Arm_White = "Arm_White"; // 白字护甲
+        public const string ArmPercent_White = "Arm_White"; // 白字护甲额外
+
         public const string PhysicalResist = "PhysicalResist"; // 肉体耐受 目前只有玩家应用
 
         public const string PlayerSensitivity = "PlayerSensitivity";
@@ -26,9 +28,13 @@ namespace My.Map.Entity
 
         public const string Basic_JianShang = "Basic_JianShang";
         public const string Basic_MoveSpeed = "Basic_MoveSpeed";
-        public const string Basic_ExtraDmg = "Basic_ExtraDmg";
+        public const string Basic_ExtraDmg = "Basic_ExtraDmg"; // 额外伤害
         public const string Spe_Player_ExtraDmg = "Spe_Player_ExtraDmg";
 
+        public const string Final_JianShang = "Final_JianShang";
+
+        public const string HImpulse_Pipeline = "HImpulse_Pipeline";
+        public const string SrcLevel_Pipeline = "SrcLevel_Pipeline";
 
         public const string PlayerGcThreshold = "PlayerGcThreshold";
 
@@ -41,6 +47,8 @@ namespace My.Map.Entity
 
         public const string HP = "HP";
         public const string HP_MAX = "HP.Max";
+
+        public const string UnitHVal = "UnitHVal";
 
         public const string Unmovable = "Unmovable";
         public const string LockFace = "LockFace";
@@ -62,10 +70,10 @@ namespace My.Map.Entity
         public const string NoKiller = "NoKiller";
 
         public const string PlayerHunger = "PlayerHunger";
-        public const string PlayerClothes = "PlayerClothes";
+        public const string PlayerClothes = "PlayerClothes"; // 衣装
         public const string PlayerPleasure = "PlayerPleasure"; // 快乐条
         public const string PlayerSanity = "PlayerSanity";
-        public const string PlayerEstrusProgrss = "PlayerEstrusProgrss";
+        public const string PlayerEstrusProgrss = "PlayerEstrusProgrss"; // 发情值
         public const string PlayerOriginPower = "PlayerOriginPower";
 
         public const string PlayerKnockDown = "PlayerKnockDown";
@@ -74,7 +82,6 @@ namespace My.Map.Entity
         public const string PlayerNaiLi_Recovery = "PlayerNaiLi.Recovery";
 
 
-        public const string UnitHVal = "UnitHVal";
         public const string UnitHShield = "UnitHShield";
         public const string StatUnstoppable = "StatUnstoppable";
         public const string SJProgress = "SJProgress";

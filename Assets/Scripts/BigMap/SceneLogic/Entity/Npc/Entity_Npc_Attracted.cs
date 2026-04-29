@@ -1,4 +1,5 @@
 
+using My.Map.Entity;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,11 +35,25 @@ namespace My.Map
             }
         }
 
+
+
+        /// <summary>
+        /// 尝试进行社交魅惑
+        /// </summary>
+        /// <param name="srcPlayer"></param>
         public void ApplySocialCharmed(PlayerLogicEntity srcPlayer)
         {
-            AIBrain.CharmedTrigger = true;
+            long rate10000 = PlayerGamePlayRule.GetCharmWillCompare(srcPlayer.GetAttr(AttrIdConsts.PlayerCharm), this.GetAttr(AttrIdConsts.Will));
 
-            LogicManager.globalBuffManager.AddBuff(this.Id, "social_charmed", overrideDuration : 15.0f, casterId: srcPlayer.Id);
+            if(UnityEngine.Random.Range(0, 10000) < rate10000)
+            {
+                AIBrain.CharmedTrigger = true;
+                LogicManager.globalBuffManager.AddBuff(this.Id, "social_charmed", overrideDuration: 15.0f, casterId: srcPlayer.Id);
+            }
+            else
+            {
+                LogicManager.viewer.ShowFakeFxEffect("失败", this.Pos);
+            }
         }
     }
 }

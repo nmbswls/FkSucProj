@@ -136,6 +136,14 @@ namespace My.Map.Entity
         public float GoodCorrectionnDist = 0.8f;
     }
 
+    public enum EHImpluseMode
+    {
+        None,
+        Light,
+        Middle,
+        Heavy,
+    }
+
 
     [CreateAssetMenu(menuName = "GP/Ability/Action")]
     [Serializable]
@@ -169,8 +177,12 @@ namespace My.Map.Entity
         public bool IsDodge;
         public bool AdjustFaceDir;
 
+
+        // h冲击配置
+        public EHImpluseMode HImpulseMode = EHImpluseMode.None;
+
         // ai 相关
-        
+
 
         public bool CauseAttract = false;
         public float AttractPower = 0;

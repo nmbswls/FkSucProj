@@ -1,6 +1,7 @@
 using My;
 using My.Map.Entity;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace My.Map
@@ -16,6 +17,31 @@ namespace My.Map
         public const float SneakVisionRange = 6f;
         public const float SneakVisionFovDeg = 150f;
 
+
+        public static long GetFinalArm(this ILogicEntity entity)
+        {
+            var armWhite = entity.GetAttr(AttrIdConsts.Arm_White);
+            var armPercent = entity.GetAttr(AttrIdConsts.ArmPercent_White);
+
+            return (long)(armWhite * (10000 + armPercent) * 0.0001);
+        }
+
+        public static long CalcDmgReduceRate10000ByArm(int attackLevel, long armValue)
+        {
+            float K = 100 + attackLevel * 10;
+            return (long)((armValue * 1.0f) / (armValue + K) * 1000);
+        }
+
+        public static long GetCharmWillCompare(long charmVal, long will)
+        {
+            long baseRate = 6000;
+            long crushThread = 50_000;
+            long minChange = 500;
+
+            long rate = baseRate + (long)(((charmVal - will) * 1.0 / crushThread) / (10000 - baseRate));
+            rate = Math.Clamp(rate, 0, 10000);
+            return rate;
+        }
 
         public static float GetBreakClothesParam(long currentClothes)
         {

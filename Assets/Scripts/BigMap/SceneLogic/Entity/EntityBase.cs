@@ -79,8 +79,11 @@ namespace My.Map
         void ExpireModifierBySource(ModSourceKey sk);
 
         void UpdateAttrModifier(Modifier m);
+    }
 
-
+    public interface IAttributeStoreEnv
+    {
+        long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent);
     }
 
     public interface ILogicEntity : IEntityBuffOwner, IEntityAttributeOwner

@@ -28,6 +28,8 @@ namespace My.Map.Entity
         public int TargetType; // 在不同触发语境下 该值的含义不同
         public float KnockBackForce;
 
+        public float HRate; // 覆盖hrate
+
     }
 }
 
