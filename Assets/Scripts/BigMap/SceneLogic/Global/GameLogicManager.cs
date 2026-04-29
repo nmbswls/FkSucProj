@@ -465,6 +465,22 @@ namespace My
                     {
                         var newNpc = new NpcUnitLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                         newEntity = newNpc;
+
+                        newNpc.VisionSystem.EventOnMarkVisible += (targetId) =>
+                        {
+                            if(targetId == playerLogicEntity.Id)
+                            {
+                                playerLogicEntity.OnGazeEnter(newNpc.Id);
+                            }
+                        };
+
+                        newNpc.VisionSystem.EventOnMarkHidden += (targetId) =>
+                        {
+                            if (targetId == playerLogicEntity.Id)
+                            {
+                                playerLogicEntity.OnGazeLeave(newNpc.Id);
+                            }
+                        };
                     }
                     break;
                 case EEntityType.AreaEffect:

@@ -26,6 +26,9 @@ namespace My.Map.Unit
 
         private float EntryExpireAfter = 2.0f;
 
+        public event Action<long> EventOnMarkVisible;
+        public event Action<long> EventOnMarkHidden;
+
         public class VisibilityEntry
         {
             public long TargetId;
@@ -187,12 +190,16 @@ namespace My.Map.Unit
             e.LastSeenTime = now;
             e.LastKnownPos = pos;
             e.LastUpdateTime = now;
+
+            EventOnMarkVisible?.Invoke(e.TargetId);
         }
 
         private void MarkHidden(VisibilityEntry e, float now)
         {
             e.IsInView = false;
             e.LastUpdateTime = now;
+
+            EventOnMarkHidden?.Invoke(e.TargetId);
         }
 
         private void ExpireEntries(float now)

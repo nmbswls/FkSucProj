@@ -14,8 +14,8 @@ namespace My.Map
     {
         public static bool CheckHForceDownSuccess(GameLogicManager logicManager, NpcUnitLogicEntity npcEntity)
         {
-            var playerPhysicalForm = logicManager.playerLogicEntity.GetAttr(AttrIdConsts.PhysicalForm);
-            var targetPhysicalForm = npcEntity.GetAttr(AttrIdConsts.PhysicalForm);
+            var playerPhysicalForm = logicManager.playerLogicEntity.GetAttr(AttrIdConsts.PhysicalPower);
+            var targetPhysicalForm = npcEntity.GetAttr(AttrIdConsts.PhysicalPower);
 
             if (playerPhysicalForm < 5) playerPhysicalForm = 5;
             if (targetPhysicalForm < 5) targetPhysicalForm = 5;

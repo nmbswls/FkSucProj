@@ -13,10 +13,76 @@ namespace My.Map
         public const float ClothesStartBreakLine = 0.7f;
         public const float DefaultClothesOverRate = 100;
 
+        public const float MaxSensitiveBonus = 4.0f;
 
         public const float SneakVisionRange = 6f;
         public const float SneakVisionFovDeg = 150f;
 
+        public static int GetPleasuAddByGazePower(int playerLevel, int gazePower)
+        {
+            return 1;
+        }
+
+        public static int CalculateUnitAttractedLevel(int playerLevel, long playerCharm, long exposeRate, long will)
+        {
+            long attactPower = playerCharm * 1 + (long)(exposeRate * 0.0001 * 50_000);
+
+            float K = 100 + playerLevel * 10;
+            long costRate = (long)((will * 0.001) / (will * 0.001 + K) * 10000);
+            if(costRate > 9500)
+            {
+                costRate = 9500;
+            }
+            attactPower = (long)(attactPower * (10000 - costRate) * 0.0001);
+
+            if(attactPower > 30_000)
+            {
+                return 1;
+            }
+            return 0;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="desireLevel"></param>
+        /// <param name="distNow"></param>
+        /// <param name="willProtect"></param>
+        /// <returns></returns>
+        public static long CalculatePlayerDesireAuraEffect(int desireLevel, float distNow, float willProtect)
+        {
+            long baseVal = 100; // 0.1 每秒
+            float distMin = 0.5f;
+            float distMax = 2.5f;
+
+            float distRate = (distNow - distMin) / (distMax - distMin);
+            distRate = Mathf.Clamp(distRate, 0, 1);
+            distRate = 1 - distRate;
+            
+            return (long)(baseVal * (distRate) * willProtect);
+        }
+
+        /// <summary>
+        /// 计算一般情况下魅力与意志对抗的抵抗力
+        /// 永远在0-1之间
+        /// </summary>
+        /// <param name="playerLevel"></param>
+        /// <param name="unitLevel"></param>
+        /// <param name="playerCharm"></param>
+        /// <param name="unitWill"></param>
+        /// <returns></returns>
+        public static float CalculateUnitWIillProtectParam(int playerLevel, int unitLevel, long playerCharm, long unitWill)
+        {
+            float k1 = 1.0f;
+            var districtP = (playerCharm * 0.001) / ((playerCharm * 0.001) + unitWill * 0.001 * k1);
+            return (float)districtP;
+        }
+
+        public static long GetFaQingIncreaseByJingYuLayer(long layer)
+        {
+            return 500;
+        }
 
         public static long GetFinalArm(this ILogicEntity entity)
         {
@@ -28,10 +94,39 @@ namespace My.Map
             return (long)(armWhite * (10000 + armPercent) * 0.0001 + armExtra1);
         }
 
+        public static long GetFinalHPower(this ILogicEntity entity)
+        {
+            return entity.GetAttr(AttrIdConsts.HPower);
+        }
+
+        public static long GetFinalCharm(this PlayerLogicEntity player)
+        {
+            return player.GetAttr(AttrIdConsts.PlayerCharm);
+        }
+
+        /// <summary>
+        /// 将敏感度应用渐进模型压缩
+        /// </summary>
+        /// <param name="rawValue"></param>
+        /// <returns></returns>
+        public static long CalculateSensitiveBonus(long rawValue)
+        {
+            float K = 200;
+            long ret = (long)((1 + MaxSensitiveBonus * (rawValue) / (rawValue + K)) * 10000);
+            return ret;
+        }
+
+
         public static long CalcDmgReduceRate10000ByArm(int attackLevel, long armValue)
         {
             float K = 100 + attackLevel * 10;
-            return (long)((armValue * 1.0f) / (armValue + K) * 1000);
+            return (long)((armValue * 0.001) / (armValue * 0.001 + K) * 10000);
+        }
+
+        public static long CalcDmgReduceRate10000ByH(long hPowerAttacker, long hPowerTarget)
+        {
+            float K = 0.5f;
+            return (long)((hPowerAttacker * 1.0f) / (hPowerAttacker + K * hPowerTarget) * 1000);
         }
 
         public static long GetCharmWillCompare(long charmVal, long will)

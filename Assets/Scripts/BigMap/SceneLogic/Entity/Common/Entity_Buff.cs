@@ -84,6 +84,21 @@ namespace My.Map.Entity
             {
                 _library = new();
 
+                // 玩家爆衣buff 增加魅力
+                _library["player_expose_charm"] = new BuffDefinition()
+                {
+                    BuffId = "player_expose_charm",
+
+                    Desc = "衣服少了",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerCharm, ModifierValue = 5000 } },
+                    DefaultDuration = -1,
+
+                    Icon = "player_expose_charm",
+                };
+                //
+                
+
                 _library["lock_move"] = new BuffDefinition()
                 {
                     BuffId = "lock_move",
@@ -396,6 +411,15 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                     IsHidden = true,
                 };
+
+
+                _library["jingyu"] = new BuffDefinition()
+                {
+                    BuffId = "jingyu",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    DefaultDuration = -1,
+                };
+
 
                 _library["jian_su_self"] = new BuffDefinition()
                 {
@@ -782,6 +806,8 @@ namespace My.Map.Entity
     public class BuffDefinition
     {
         public string BuffId;
+
+        public string Desc;
 
         public string Icon = "fallback";
         public EBuffLayerOverrideType LayerOverrideType;
@@ -1378,6 +1404,14 @@ namespace My.Map.Entity
                 leOwner.NotifyAnimLayerRefreshIfAnimOverrideBuff(Def);
             }
         }
+
+
+        public void SetBuffLayerDirect(int layer)
+        {
+            this.Layer = layer;
+            OnBuffAddOrUpdate(false);
+        }
+
 
         public Dictionary<string, long> GetAttributeByLayer()
         {

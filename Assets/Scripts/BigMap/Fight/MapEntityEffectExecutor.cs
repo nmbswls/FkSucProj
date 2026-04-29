@@ -1191,10 +1191,13 @@ namespace My.Map.Entity
                 }
             }
 
-            if(srcEntity is BaseUnitLogicEntity unitEntity)
             {
-                extraAttrs[AttrIdConsts.SrcLevel_Pipeline] = unitEntity.GetUnitLevel();
+                if (srcEntity is BaseUnitLogicEntity unitEntity)
+                {
+                    extraAttrs[AttrIdConsts.SrcLevel_Pipeline] = unitEntity.GetUnitLevel();
+                }
             }
+            
 
             float hRate = 0;
             if (realCfg.HRate == 0)
@@ -1233,7 +1236,7 @@ namespace My.Map.Entity
             extraAttrs[AttrIdConsts.HImpulse_Pipeline] = (long)(hRate * 10000);
 
             // 在这里传递原始数据吗
-            target.ApplyResourceChange(AttrIdConsts.HP, -dmgVal, true, EDmgFlag.None, ctx.SourceInfo.SrcEntityId, extraAttrs);
+            target.ApplyResourceChange(AttrIdConsts.HP, -dmgVal, true, EDmgFlag.None, ctx.SourceInfo.SrcEntityId, extraAttrs, realCfg.DamageCategory);
 
             var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
             if (realCfg.KnockBackForce > 0 && actor != null)
@@ -1704,7 +1707,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            long phy = target.GetAttr(AttrIdConsts.PhysicalForm);
+            long phy = target.GetAttr(AttrIdConsts.PhysicalPower);
             float p = Mathf.Clamp01(realCfg.BaseSuccessChance - phy * realCfg.PhysicalFormPenalty);
             bool success = UnityEngine.Random.value < p;
 

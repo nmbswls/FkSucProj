@@ -1196,16 +1196,31 @@ namespace My.Map
                 }
                 dmg = (long)(dmg * (10000 + extra1) * 0.0001);
 
-
-                var srcLevel = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.SrcLevel_Pipeline) ?? 0;
-                long selfArm = this.GetFinalArm();
-                long armReduce10000 = PlayerGamePlayRule.CalcDmgReduceRate10000ByArm((int)srcLevel, selfArm);
-                // 护甲减伤极限80%
-                if(armReduce10000 > 8000)
+                if(intent.DmgCategory == EDmgCategory.Physics)
                 {
-                    armReduce10000 = 8000;
+                    var srcLevel = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.SrcLevel_Pipeline) ?? 0;
+                    long selfArm = this.GetFinalArm();
+                    long armReduce10000 = PlayerGamePlayRule.CalcDmgReduceRate10000ByArm((int)srcLevel, selfArm);
+                    // 护甲减伤极限80%
+                    if (armReduce10000 > 8000)
+                    {
+                        armReduce10000 = 8000;
+                    }
+                    dmg = (long)(dmg * (10000 - armReduce10000) * 0.0001);
                 }
-                dmg = (long)(dmg * (10000 - armReduce10000) * 0.0001);
+                else if (intent.DmgCategory == EDmgCategory.H)
+                {
+                    var srcHpower = srcEntity?.GetAttr(AttrIdConsts.HPower) ?? 0;
+                    long selfHPower = this.GetFinalHPower();
+
+                    long hReduce10000 = PlayerGamePlayRule.CalcDmgReduceRate10000ByH(srcHpower, selfHPower);
+                    // 护甲减伤极限80%
+                    if (hReduce10000 > 8000)
+                    {
+                        hReduce10000 = 8000;
+                    }
+                    dmg = (long)(dmg * (10000 - hReduce10000) * 0.0001);
+                }
 
                 var basicJs = attributeStore.GetAttr(AttrIdConsts.Basic_JianShang);
                 if (basicJs > 9000)
@@ -1219,6 +1234,9 @@ namespace My.Map
 
             return delta;
         }
+
+       
+
 
         #region alert
 

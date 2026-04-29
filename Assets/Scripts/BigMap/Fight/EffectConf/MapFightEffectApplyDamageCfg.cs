@@ -8,13 +8,15 @@ using UnityEngine;
 
 namespace My.Map.Entity
 {
-    [Flags]
-    public enum EDamageFlag
+
+    public enum EDmgCategory
     {
         None = 0,
-        Crit,
-    }
+        Physics,
 
+        Magic,
+        H,
+    }
 
     [Serializable]
     public class MapFightEffectApplyDamageCfg : MapFightEffectCfg
@@ -23,7 +25,9 @@ namespace My.Map.Entity
 
         public List<AttrKvPair> ExtraAttrs = new();
         public List<AttrKvPair> ExtraDamageRate = new();
-        public EDamageFlag Flags;
+        //public EDamageFlag Flags;
+        public EDmgCategory DamageCategory;
+
 
         public int TargetType; // 在不同触发语境下 该值的含义不同
         public float KnockBackForce;

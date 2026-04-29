@@ -67,7 +67,7 @@ namespace My.Map
         long GetAttr(string attrId);
         bool CheckHasState(string attrId);
 
-        void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null);
+        void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCat = EDmgCategory.None);
 
         long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent);
         /// <summary>
@@ -318,9 +318,9 @@ namespace My.Map
         {
             return attributeStore.CheckHasState(attrId);
         }
-        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
+        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCat = EDmgCategory.None)
         {
-            attributeStore.ApplyResourceChange(resourceId, delta, isEnmity, flags, srcEntityId, extraAttrs);
+            attributeStore.ApplyResourceChange(resourceId, delta, isEnmity, flags, srcEntityId, extraAttrs, dmgCategory: dmgCat);
         }
 
         /// <summary>
@@ -354,7 +354,6 @@ namespace My.Map
 
         public virtual void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
         {
-            // 4.3 �??��?��?步伤害�?计�?
         }
 
         public Modifier AddAttrModifier(ModSourceKey source, string attrId, long val)

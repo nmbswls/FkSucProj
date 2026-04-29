@@ -50,8 +50,15 @@ namespace My.Map
                 case AttrIdConsts.Attack:
                 case AttrIdConsts.HP_MAX:
 
-                case AttrIdConsts.PhysicalForm:
-                case AttrIdConsts.PlayerHDefend:
+                case AttrIdConsts.PhysicalPower:
+                case AttrIdConsts.HPower:
+                case AttrIdConsts.Will:
+                case AttrIdConsts.Arm_White:
+                case AttrIdConsts.ArmPercent_White:
+                case AttrIdConsts.Arm_Extra_1:
+                case AttrIdConsts.PlayerCharm:
+                    
+
                 case AttrIdConsts.PlayerSensitivity:
 
                 case AttrIdConsts.PlayerGcThreshold:
@@ -71,7 +78,9 @@ namespace My.Map
                 case AttrIdConsts.PlayerPleasure:
                 case AttrIdConsts.PlayerSanity:
                 case AttrIdConsts.PlayerClothes:
+                case AttrIdConsts.PlayerEstrusProgrss:
                 case AttrIdConsts.PlayerNaiLi:
+
                 case AttrIdConsts.UnitHVal:
                     return EAttrType.Resource;
 
@@ -157,6 +166,8 @@ namespace My.Map
 
         public Vector2? HitDir;
         public long finalDelta;
+
+        public EDmgCategory DmgCategory;
     }
 
     public sealed class AttrCalcContext
@@ -476,7 +487,7 @@ namespace My.Map
 
 
         // 3) 聚合资源变化
-        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null)
+        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCategory = EDmgCategory.None)
         {
             if (!resources.TryGetValue(resourceId, out var r)) 
             {
@@ -491,6 +502,7 @@ namespace My.Map
                 isEnmity = isEnmity,
                 deltaFlags = flags,
                 extraAttrs = extraAttrs,
+                DmgCategory = dmgCategory,
             });
         }
 

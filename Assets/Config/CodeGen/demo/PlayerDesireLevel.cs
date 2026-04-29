@@ -21,6 +21,8 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
         { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
         { if(!_buf["san_line"].IsNumber) { throw new SerializationException(); }  SanLine = _buf["san_line"]; }
         { if(!_buf["basic_estrus"].IsNumber) { throw new SerializationException(); }  BasicEstrus = _buf["basic_estrus"]; }
+        { if(!_buf["aura_base_effect"].IsNumber) { throw new SerializationException(); }  AuraBaseEffect = _buf["aura_base_effect"]; }
+        { if(!_buf["aura_max_range"].IsNumber) { throw new SerializationException(); }  AuraMaxRange = _buf["aura_max_range"]; }
     }
 
     public static PlayerDesireLevel DeserializePlayerDesireLevel(JSONNode _buf)
@@ -40,6 +42,14 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     /// 基准发情
     /// </summary>
     public int BasicEstrus;
+    /// <summary>
+    /// 每秒传播
+    /// </summary>
+    public float AuraBaseEffect;
+    /// <summary>
+    /// 每秒传播
+    /// </summary>
+    public float AuraMaxRange;
    
     public const int __ID__ = -1173769842;
     public override int GetTypeId() => __ID__;
@@ -54,6 +64,8 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
         + "level:" + Level + ","
         + "sanLine:" + SanLine + ","
         + "basicEstrus:" + BasicEstrus + ","
+        + "auraBaseEffect:" + AuraBaseEffect + ","
+        + "auraMaxRange:" + AuraMaxRange + ","
         + "}";
     }
 }

@@ -301,6 +301,19 @@ namespace My.Map
             // 4.3 死亡判断窗口：仅在含伤害时检查
             switch (attrId)
             {
+                case AttrIdConsts.PlayerEstrusProgrss:
+                    {
+                        // 溢出部分转换为高潮条
+                        if (before < after && after > 100_000)
+                        {
+                            long overflow = after - 100_000;
+                            long toPleasure = (long)(overflow * 0.3);
+                            attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, toPleasure, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+                        }
+                    }
+
+                    break;
+
                 case AttrIdConsts.PlayerPleasure:
                     {
                         if(IsPendingGc)
@@ -318,6 +331,7 @@ namespace My.Map
                             else
                             {
                                 isSelfGc = false;
+                                gcCuaseId = intent.srcEntityId;
                             }
                             break;
                         }
@@ -578,8 +592,6 @@ namespace My.Map
 
             TickPlayerGcYishang();
 
-            TickBeingGazedInfo();
-
             // 检查玩家衣着
             TickPlayerClothesBroken();
 
@@ -611,15 +623,34 @@ namespace My.Map
                 ApplyResourceChange(AttrIdConsts.HP, 100, false, EDmgFlag.None, null);
             }
 
-            // 将发情缓慢提升到标准线
-            int basicEstrus = GetBasicEstrusByDesireLevel();
-            long curEstrus = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
 
-            // 发情较低时缓慢上升
-            if (curEstrus < basicEstrus * 1000) 
+            if(!IsFaQing)
             {
-                ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 100, false, EDmgFlag.None, null);
+                // 将发情缓慢提升到标准线
+                int basicEstrus = GetBasicEstrusByDesireLevel();
+                long curEstrus = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
+                if (curEstrus < basicEstrus * 1000)
+                {
+                    ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 100, false, EDmgFlag.None, null);
+                }
+
+                // 计算精浴增加速率
+                var jingyuBuff = FindBuffById("jingyu");
+                var jingyuLayer = jingyuBuff?.Layer ?? 0;
+
+                long addRate = PlayerGamePlayRule.GetFaQingIncreaseByJingYuLayer(jingyuLayer);
+                if(addRate > 0)
+                {
+                    ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, addRate, false, EDmgFlag.None, null);
+                }
             }
+            else
+            {
+                // 每秒降低1点
+                ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, -1000, false, EDmgFlag.None, null);
+            }
+
+            TickBeingGazedInfo();
         }
 
         /// <summary>
@@ -763,10 +794,9 @@ namespace My.Map
             // 非自慰需要扣san
             if(GetAttr(AttrIdConsts.PlayerSanity) > 60_000)
             {
-                ApplyResourceChange(AttrIdConsts.PlayerSanity, -10000, false, FightStruct.EDmgFlag.None, this.Id);
+                ApplyResourceChange(AttrIdConsts.PlayerSanity, -10_000, false, FightStruct.EDmgFlag.None, this.Id);
             }
             
-
             ForceSetResource(AttrIdConsts.PlayerPleasure, 0);
 
             LogicManager.viewer.ShowPauseCloseupWindow("gc", 1.0f);
@@ -781,11 +811,17 @@ namespace My.Map
             if (IsFaQing)
             {
                 bool canLeave = false;
-
-                if (LogicTime.time - LastFaQingTimer > 60.0f)
+                long curEstrus = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
+                do
                 {
-                    canLeave = true;
+                    // 下降到冷静线就可以推出了
+                    if(curEstrus < 20_000)
+                    {
+                        canLeave = true;
+                        break;
+                    }
                 }
+                while (false);
 
                 // 发情状态下，有以下情况会进行脱离：
                 //     1.高潮脱离 走另一条路线
@@ -851,15 +887,23 @@ namespace My.Map
             long delta = intent.delta;
             switch (attrId)
             {
-                //case AttrIdConsts.PlayerFaQingVal:
+                //case AttrIdConsts.PlayerEstrusProgrss:
                 //    {
-                //        if(IsFaQing)
-                //        {
-                //            return 0;
-                //        }
-                //        return delta;
+
                 //    }
                 //    break;
+                case AttrIdConsts.PlayerPleasure:
+                    {
+                        if(delta > 0)
+                        {
+                            var sensi = this.GetAttr(AttrIdConsts.PlayerSensitivity);
+                            long sensitiveBonus = PlayerGamePlayRule.CalculateSensitiveBonus(sensi);
+                            delta = (long)(delta * (10000 + sensitiveBonus) * 0.0001);
+                        }
+                        return delta;
+                    }
+                    break;
+
                 default:
                     {
                         return base.CalculateResourceCostAmount(attrId, intent);
@@ -883,33 +927,53 @@ namespace My.Map
         /// </summary>
         protected void TickApplyAuraHVal()
         {
-            float auraRange = 3.0f;
+
+            if(DesireLevel == 0)
+            {
+                return;
+            }
+
+            var desireCfg = CfgMgr.Cfgs.TbPlayerDesireLevel.Get(DesireLevel);
+            float auraRange = desireCfg.AuraMaxRange;
             // 
-            var units = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 3.0f, new EntityFilterParam()
+            var candidates = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 3.0f, new EntityFilterParam()
             {
                 FilterParamLists = new() { EEntityType.Npc },
                 CampFilterType = ECampFilterType.NotSelf,
                 SelfCampId = EFactionId.Player,
             });
 
-            var effect = new MapAbilityEffectAddResourceCfg()
+            foreach (var candidate in candidates)
             {
-                ResourceId = AttrIdConsts.UnitHVal,
-                AddValue = 50,
-                IsEnmity = true,
-            };
 
-            foreach (var unit in units)
-            {
+                if(candidate is not BaseUnitLogicEntity unit)
+                {
+                    continue;
+                }
+
+                var willProtect = PlayerGamePlayRule.CalculateUnitWIillProtectParam(this.GetUnitLevel(), unit.GetUnitLevel(), this.GetFinalCharm(), unit.GetAttr(AttrIdConsts.Will));
+
+                var dist = (candidate.Pos - this.Pos).magnitude;
+                var addPerSec = PlayerGamePlayRule.CalculatePlayerDesireAuraEffect(DesireLevel, dist, willProtect);
+
+                var effect = new MapAbilityEffectAddResourceCfg()
+                {
+                    ResourceId = AttrIdConsts.UnitHVal,
+                    AddValue = addPerSec,
+                    IsEnmity = true,
+                };
+                Debug.Log($"TickApplyAuraHVal apply to {unit.Id} val:{addPerSec}");
                 var sourceInfo = new EffectSourceInfo()
                 {
                     SrcType = ESourceType.Mechanism,
                     SrcEntityId = this.Id,
                 };
+
                 GameLogicManager.LogicFightEffectContext ctx = new(LogicManager, EFightCtxType.None, sourceInfo)
                 {
                     TargetId = unit.Id,
                 };
+
                 LogicManager.HandleLogicFightEffect(effect, ctx);
             }
         }
@@ -921,49 +985,93 @@ namespace My.Map
 
         #region watch
 
-        private Dictionary<long, float> BeingGazedTrack = new();
+        public class PlayerGazedRec
+        {
+            public long SrcEntityId;
+            public float LastTriggerTime;
+            public int Power;
+        }
+
+        private Dictionary<long, PlayerGazedRec> BeingGazedTrack = new();
 
         /// <summary>
         /// tick 被注视效果
         /// </summary>
         private void TickBeingGazedInfo()
-        { 
+        {
 
-            foreach(var key in BeingGazedTrack.Keys.ToList())
+            long rawOverRate = 10000;
+            var exposeRate10000 = PlayerGamePlayRule.CalculateBreakClothesInnerRate(GetAttr(AttrIdConsts.PlayerClothes), rawOverRate);
+
+            foreach (var key in BeingGazedTrack.Keys.ToList())
             {
-                if (BeingGazedTrack[key] + 2.0f < LogicTime.time)
+                if (BeingGazedTrack[key].LastTriggerTime + 3f < LogicTime.time)
                 {
                     BeingGazedTrack.Remove(key);
+                    continue;
+                }
+
+                var gazingEntity = LogicManager.GetLogicEntity(key);
+
+                if(gazingEntity == null || gazingEntity.MarkDestroyed)
+                {
+                    BeingGazedTrack.Remove(key);
+                    continue;
+                }
+
+                if(gazingEntity is not BaseUnitLogicEntity unit)
+                {
+                    BeingGazedTrack.Remove(key);
+                    continue;
+                }
+
+                if(unit.IsDead || unit.IsAttaching || unit.MarkUnsensored)
+                {
+                    BeingGazedTrack.Remove(key);
+                    continue;
+                }
+
+                // 更新视线强度
+                int attractLevel = PlayerGamePlayRule.CalculateUnitAttractedLevel(this.GetUnitLevel(), GetAttr(AttrIdConsts.PlayerCharm), exposeRate10000, unit.GetAttr(AttrIdConsts.Will));
+                if(attractLevel > 0)
+                {
+                    BeingGazedTrack[key].Power = 1;
+                }
+                else
+                {
+                    BeingGazedTrack[key].Power = 0;
                 }
             }
 
-            if(WillBeGazed())
+            int totalGazePower = 0;
+            foreach(var gaze in BeingGazedTrack.Values)
             {
-                if (BeingGazedTrack.Count > 1)
+                totalGazePower += gaze.Power;
+            }
+
+            if(totalGazePower > 0)
+            {
+                long addRate = PlayerGamePlayRule.GetPleasuAddByGazePower(this.GetUnitLevel(), totalGazePower);
+
+                if (addRate > 0)
                 {
-                    //attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 100, false, EDmgFlag.None, null);
+                    Debug.Log($"remove sanity by gaze {addRate}");
+                    ApplyResourceChange(AttrIdConsts.PlayerSanity, -addRate, false, EDmgFlag.None, null);
                 }
             }
             
         }
 
-        /// <summary>
-        /// 只有衣装满足条件时 才成为被注视对象
-        /// </summary>
-        /// <returns></returns>
-        public bool WillBeGazed()
-        {
-            if (GetAttr(AttrIdConsts.PlayerClothes) > 80000)
-            {
-                return false;
-            }
-
-            return true;
-        }
 
         public void OnGazeEnter(long srcId)
         {
-            BeingGazedTrack[srcId] = LogicTime.time;
+            if(!BeingGazedTrack.TryGetValue(srcId, out var info))
+            {
+                info = new() { SrcEntityId = srcId };
+                BeingGazedTrack[srcId] = info;
+            }
+
+            BeingGazedTrack[srcId].LastTriggerTime = LogicTime.time;
         }
 
         public void OnGazeLeave(long srcId)
@@ -1261,6 +1369,18 @@ namespace My.Map
 
             long finalBasicCharm = (long)(innerCharm * (applyRate * 0.0001f)) + LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm);
             long finalBasicArm = (long)(innerArm * (applyRate * 0.0001f)) + LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticArm);
+
+            var clothesCharmBuff = FindBuffById("player_expose_charm");
+            int buffLayer = (applyRate - 1) / 10_000 + 1;
+            if (clothesCharmBuff == null)
+            {
+                LogicManager.globalBuffManager.AddBuff(this.Id, "player_expose_charm", buffLayer);
+            }
+            else
+            {
+                clothesCharmBuff.SetBuffLayerDirect(buffLayer); // set 0 也没事把
+            }
+            //finalBasicCharm += (20_000 * (applyRate) * 0.0001);
 
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm, finalBasicCharm);
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_White, finalBasicArm);
