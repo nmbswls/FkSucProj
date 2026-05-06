@@ -1,19 +1,9 @@
-
-using Map.Logic;
-using Map.Logic.Events;
-using System;
-using System.Collections;
+using My;
+using My.Map;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using Unity.VisualScripting.FullSerializer;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.WSA;
-using static My.Map.Entity.MapEntityAbilityExecutor;
 using static My.Map.Fight.FightStruct;
-
-
 
 namespace My.Map.Entity
 {
@@ -40,7 +30,6 @@ namespace My.Map.Entity
         void OnThrowStart();
     }
 
-
     public class GlobalThrowManager
     {
         public GameLogicManager logicManager;
@@ -48,23 +37,9 @@ namespace My.Map.Entity
 
         public static long ThrowCtxInstIdCounter = 1000;
 
-        public class ThrowContext
-        {
-            public long CtxId;
-            public IThrowLauncher throwLauncher;
-            public IThrowTarget throwTarget;
-            public string srcAbilityId;
-            public float throwStartTime;
-            public float throwDuration;
-            public int Priority;
-            public EAbilityInterruptMask InterruptMask;
-            public List<long> throwBuffIds = new();
-        }
-
-        private Dictionary<long, ThrowContext> ContextContainer = new();
-
-        private Dictionary<long, long> target2ContextMap = new();
-        private Dictionary<long, long> launcher2ContextMap = new();
+        private readonly Dictionary<long, ThrowContext> _contextById = new();
+        private readonly Dictionary<long, long> _targetToContextId = new();
+        private readonly Dictionary<long, long> _launcherToContextId = new();
 
         public GlobalThrowManager(GameLogicManager logicManager)
         {
@@ -73,149 +48,195 @@ namespace My.Map.Entity
 
         public void Tick(float dt)
         {
-            TickRunningCtx(dt);
+            TickRunningCtx();
         }
 
-        private float tickTimer;
+        float _fxAcc;
 
-        public void TickRunningCtx(float dt)
+        public void TickRunningCtx()
         {
-            tickTimer -= dt;
-            if (tickTimer > 0) return;
-            tickTimer = 0.3f;
-            foreach (var ctxKey in ContextContainer.Keys.ToList())
+            foreach (var key in _contextById.Keys.ToList())
             {
-                var ctx = ContextContainer[ctxKey];
-                logicManager.viewer.ShowFakeFxEffect("fcked", ctx.throwTarget.Pos);
-                logicManager.viewer.ShowFakeFxEffect("fcking", ctx.throwLauncher.Pos);
-                if (ctx.throwDuration >= 0 && LogicTime.time > ctx.throwStartTime + ctx.throwDuration)
+                if (!_contextById.TryGetValue(key, out var ctx))
+                    continue;
+
+                ctx.TryDispatchTimelineEvents(LogicTime.time);
+                TryDispatchImpact(ctx);
+
+                if (ctx.Duration >= 0 && LogicTime.time > ctx.StartTime + ctx.Duration)
+                    CleanOneThrowContext(ctx, ThrowEndReason.Complete);
+            }
+
+            _fxAcc += LogicTime.deltaTime;
+            if (_fxAcc >= 0.15f)
+            {
+                _fxAcc = 0f;
+                foreach (var ctx in _contextById.Values)
                 {
-                    CleanOneThrowContext(ctx);
+                    logicManager.viewer.ShowFakeFxEffect("fcked", ctx.Target.Pos);
+                    logicManager.viewer.ShowFakeFxEffect("fcking", ctx.Launcher.Pos);
                 }
             }
         }
 
-        public bool TryLaunchThrow(IThrowLauncher launcher, IThrowTarget target, string srcAbilityId, float duration, string efffectBuffId, int priority = 1)
+        void TryDispatchImpact(ThrowContext ctx)
         {
+            if (ctx.ImpactFired || ctx.SourceCfg == null)
+                return;
 
-            if(launcher2ContextMap.TryGetValue(launcher.Id, out var launcherOldCtxId))
+            var tNorm = ctx.SourceCfg.ImpactAtNormalizedTime;
+            if (tNorm < 0f || tNorm > 1f || ctx.Duration <= 0f)
+                return;
+
+            if ((LogicTime.time - ctx.StartTime) / ctx.Duration < tNorm)
+                return;
+
+            ctx.ImpactFired = true;
+            ctx.DispatchThrowEffects(ThrowEventKind.Impact);
+        }
+
+        public bool TryLaunchThrow(IThrowLauncher launcher, IThrowTarget target, MapAbilityEffectThrowStartCfg cfg,
+            string srcAbilityId)
+        {
+            cfg ??= new MapAbilityEffectThrowStartCfg();
+
+            if (_launcherToContextId.TryGetValue(launcher.Id, out var launcherOldCtxId))
             {
-                if(ContextContainer.TryGetValue(launcherOldCtxId, out var launcherOldCtx))
+                if (_contextById.TryGetValue(launcherOldCtxId, out _))
                 {
                     Debug.LogError("cant throw when throwing " + launcher.Id);
                     return false;
                 }
-                else
-                {
-                    Debug.LogError("interrupt status error wrong state");
-                    launcher2ContextMap.Remove(launcher.Id);
-                }
+
+                Debug.LogError("interrupt status error wrong state (launcher)");
+                _launcherToContextId.Remove(launcher.Id);
             }
 
-            if(target2ContextMap.TryGetValue(target.Id, out var targetOldCtxId))
+            if (_targetToContextId.TryGetValue(target.Id, out var targetOldCtxId))
             {
-                if (ContextContainer.TryGetValue(targetOldCtxId, out var targetOldCtx))
+                if (_contextById.TryGetValue(targetOldCtxId, out var targetOldCtx))
                 {
-                    if(priority <= targetOldCtx.Priority)
+                    if (cfg.Priority <= targetOldCtx.Priority)
                     {
-                        Debug.Log("target is being throw no bigger prioty");
+                        Debug.Log("target is being throw no bigger priority");
                         return false;
                     }
 
-                    CleanOneThrowContext(targetOldCtx);
+                    CleanOneThrowContext(targetOldCtx, ThrowEndReason.Superseded);
                 }
                 else
                 {
-                    Debug.LogError("interrupt status error wrong state");
-                    launcher2ContextMap.Remove(launcher.Id);
+                    Debug.LogError("interrupt status error wrong state (target ctx missing)");
+                    _targetToContextId.Remove(target.Id);
                 }
             }
 
-            // open context
-            var newCtx = new ThrowContext();
-            newCtx.CtxId = ThrowCtxInstIdCounter++;
-            newCtx.throwLauncher = launcher;
-            newCtx.throwTarget = target;
+            var newCtx = new ThrowContext
+            {
+                CtxId = ThrowCtxInstIdCounter++,
+                Launcher = launcher,
+                Target = target,
+                SrcAbilityId = srcAbilityId ?? string.Empty,
+                Priority = cfg.Priority,
+                StartTime = LogicTime.time,
+                Duration = cfg.Duration,
+                InterruptMask = default,
+                SourceCfg = cfg,
+                Env = logicManager,
+            };
 
-            newCtx.srcAbilityId = srcAbilityId;
-            newCtx.Priority = priority;
-            newCtx.throwStartTime = LogicTime.time;
-            newCtx.throwDuration = duration;
-
-            // 增加
             launcher.OnThrowStart();
             target.OnBeingThrowStart();
 
-            var id1 = logicManager.globalBuffManager.AddBuff(launcher.Id, "throwing");
-            var id2 = logicManager.globalBuffManager.AddBuff(target.Id, "throwing");
-            var id3 = logicManager.globalBuffManager.AddBuff(target.Id, efffectBuffId, casterId: launcher.Id);
+            var useLegacyEffects = cfg.ThrowPhaseEffects == null || cfg.ThrowPhaseEffects.Count == 0;
 
-            newCtx.throwBuffIds.Add(id1);
-            newCtx.throwBuffIds.Add(id2);
-            newCtx.throwBuffIds.Add(id3);
+            if (cfg.AutoApplyThrowingStateBuff)
+            {
+                TrackBuff(newCtx, logicManager.globalBuffManager.AddBuff(launcher.Id, "throwing"));
+                TrackBuff(newCtx, logicManager.globalBuffManager.AddBuff(target.Id, "throwing"));
+            }
 
-            launcher2ContextMap[launcher.Id] = newCtx.CtxId;
-            target2ContextMap[target.Id] = newCtx.CtxId;
+            if (useLegacyEffects && !string.IsNullOrEmpty(cfg.ThrowMainBuffId))
+                TrackBuff(newCtx, logicManager.globalBuffManager.AddBuff(target.Id, cfg.ThrowMainBuffId, casterId: launcher.Id));
 
-            ContextContainer[newCtx.CtxId] = newCtx;
+            if (!useLegacyEffects)
+            {
+                newCtx.DispatchThrowEffects(ThrowEventKind.Accept);
+                newCtx.DispatchThrowEffects(ThrowEventKind.Align);
+            }
+
+            _launcherToContextId[launcher.Id] = newCtx.CtxId;
+            _targetToContextId[target.Id] = newCtx.CtxId;
+            _contextById[newCtx.CtxId] = newCtx;
 
             return true;
+        }
+
+        static void TrackBuff(ThrowContext ctx, long buffInstanceId)
+        {
+            if (buffInstanceId != 0)
+                ctx.TrackedBuffIds.Add(buffInstanceId);
         }
 
         public bool TryInterruptThrowByLauncher(IThrowLauncher launcher, InterruptRequest req)
         {
-
-            if (!launcher2ContextMap.TryGetValue(launcher.Id, out var launcherCtxId))
-            {
+            if (!_launcherToContextId.TryGetValue(launcher.Id, out var launcherCtxId))
                 return false;
-            }
 
-            if (!ContextContainer.TryGetValue(launcherCtxId, out var launcherCtx))
+            if (!_contextById.TryGetValue(launcherCtxId, out var launcherCtx))
             {
                 Debug.LogError("interrupt status error wrong state");
-                launcher2ContextMap.Remove(launcher.Id);
+                _launcherToContextId.Remove(launcher.Id);
                 return false;
             }
 
-            if(req.source != EInterruptSource.Stun
-                && req.source != EInterruptSource.System)
-            {
+            if (req.source != EInterruptSource.Stun && req.source != EInterruptSource.System)
                 return false;
-            }
 
-            // 处理
-            CleanOneThrowContext(launcherCtx);
-
+            CleanOneThrowContext(launcherCtx, ThrowEndReason.InterruptLauncher);
             return true;
         }
 
-
-        private void CleanOneThrowContext(ThrowContext ctx)
+        public bool TryInterruptThrowByTarget(IThrowTarget target, InterruptRequest req)
         {
-            // clean 
-            var oldlauncher = ctx.throwLauncher;
-            var oldTarget = ctx.throwTarget;
+            if (!_targetToContextId.TryGetValue(target.Id, out var ctxId))
+                return false;
 
-            oldlauncher.OnThrownInterrupt();
-            oldTarget.OnBeingThrowInterrupt();
-
-            foreach(var buffId in ctx.throwBuffIds)
+            if (!_contextById.TryGetValue(ctxId, out var ctx))
             {
+                Debug.LogError("interrupt status error wrong state (target interrupt)");
+                _targetToContextId.Remove(target.Id);
+                return false;
+            }
+
+            if (req.source != EInterruptSource.Stun
+                && req.source != EInterruptSource.System
+                && req.source != EInterruptSource.Cast)
+                return false;
+
+            CleanOneThrowContext(ctx, ThrowEndReason.InterruptTarget);
+            return true;
+        }
+
+        void CleanOneThrowContext(ThrowContext ctx, ThrowEndReason reason)
+        {
+            var launcher = ctx.Launcher;
+            var victim = ctx.Target;
+
+            ctx.DispatchThrowEffects(ThrowEndReasonUtil.ToEventKind(reason));
+
+            launcher.OnThrownInterrupt();
+            victim.OnBeingThrowInterrupt();
+
+            foreach (var buffId in ctx.TrackedBuffIds)
                 logicManager.globalBuffManager.RequestRemoveBuff(null, buffId);
-            }
 
-            target2ContextMap.Remove(oldTarget.Id);
-            launcher2ContextMap.Remove(oldlauncher.Id);
+            _targetToContextId.Remove(victim.Id);
+            _launcherToContextId.Remove(launcher.Id);
+            _contextById.Remove(ctx.CtxId);
 
-            ContextContainer.Remove(ctx.CtxId);
-
-            if(oldTarget != null)
-            {
-                if(oldTarget is BaseUnitLogicEntity unit)
-                {
-                    unit.ApplyKnockBack(UnityEngine.Random.insideUnitCircle, 0.2f);
-                }
-            }
+            if (victim is BaseUnitLogicEntity unit)
+                unit.ApplyKnockBack(UnityEngine.Random.insideUnitCircle, 0.2f);
         }
     }
 }

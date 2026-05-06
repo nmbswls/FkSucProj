@@ -1280,7 +1280,10 @@ namespace My.Map.Entity
                 Debug.LogError("AbilityEffectExecutor4CostResource throwLauncher err");
                 return;
             }
-            ctx.Env.globalThrowManager.TryLaunchThrow(throwLauncher, throwTarget, "", realCfg.Duration, realCfg.ThrowMainBuffId, realCfg.Priority);
+            var ok = ctx.Env.globalThrowManager.TryLaunchThrow(throwLauncher, throwTarget, realCfg,
+                ctx.SourceInfo.SrcAbilityId);
+            if (!ok && realCfg.ThrowFailEffect != null)
+                ctx.Env.HandleLogicFightEffect(realCfg.ThrowFailEffect, ctx);
         }
     }
 
