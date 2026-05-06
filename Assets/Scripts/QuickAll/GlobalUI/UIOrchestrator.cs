@@ -4,6 +4,7 @@ using My.Map.View;
 using My.MiniGame;
 using My.MiniGame.Dream;
 using My.Player.Bag;
+using My.UI.SkillLoadout;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -303,6 +304,14 @@ namespace My.UI
             {
                 panelId = MapTownManagementPanel.PanelIdConst,
                 resourcePath = "UI/Prefabs/MapTownManagementPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = SkillLoadoutPanel.Pid,
+                resourcePath = "UI/Prefabs/SkillLoadoutPanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

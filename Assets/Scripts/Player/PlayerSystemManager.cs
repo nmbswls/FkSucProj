@@ -45,44 +45,15 @@ namespace My.Player
 
         public PlayerInventorySystem InventorySystem { get; private set; }
 
+        public PlayerSkillSystem SkillSystem { get; private set; }
+
+        public List<string> PlayerSkillList => SkillSystem.learnedSkillIds;
+
+        public string[] NormalSkillSlots => SkillSystem.NormalSkillSlots;
+
         // RPG Maker 式全局开关（存 PlayerData.GlobalSwitchMap），与地图点位状态语义分离
         public Dictionary<string, bool> GlobalSwitchMap = new();
 
-        public List<string> PlayerSkillList = new() 
-        {
-            "queen_attack",
-            "queen_attack_heavy",
-            "queen_dash",
-            "queen_shoot",
-            "fix_clothes",
-            "spawn_attract",
-            "queen_pull_all",
-            "player_mortar_acquire_01",
-
-            "player_enter_queen",
-            "player_quit_queen",
-
-            "queen_dash_down",
-
-
-            "h_mode_execute",
-
-            "queen_counter",
-            "player_small_staggering",
-
-            "default_push",
-            "player_normal_defend",
-            "crazy_fire",
-
-            "player_dark_dance",
-
-            "player_ziwei",
-            "player_push_surround",
-            "player_trace_bullet_01",
-            "player_mortar_acquire_01",
-        };
-
-        public string[] NormalSkillSlots = new string[8];
         public string[] HumanSkillSlots = new string[8];
         public string[] FaQingSkillSlots = new string[8];
 
@@ -114,21 +85,13 @@ namespace My.Player
             DialogTriggerSystem = new();
             FuncOpenSystem = new();
             InventorySystem = new();
+            SkillSystem = new PlayerSkillSystem();
 
             QuickSlotItemSet[0] = "feidao";
 
-
-            NormalSkillSlots[0] = "queen_attack";
             HumanSkillSlots[0] = "default_push";
 
-            NormalSkillSlots[1] = "queen_attack_heavy";
-
-            NormalSkillSlots[2] = "queen_dash";
             HumanSkillSlots[2] = "queen_dash";
-
-            NormalSkillSlots[3] = "queen_dash_down";
-            NormalSkillSlots[4] = "queen_pull_all";
-            NormalSkillSlots[5] = "player_mortar_acquire_01";
 
             HumanSkillSlots[3] = "player_small_staggering";
             HumanSkillSlots[4] = "player_dark_dance";
@@ -166,6 +129,7 @@ namespace My.Player
             DialogTriggerSystem.InitSystem(logicManager, savingData);
             FuncOpenSystem.InitSystem(logicManager, savingData);
             InventorySystem.InitSystem(logicManager, savingData);
+            SkillSystem.InitSystem(logicManager, savingData);
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -182,6 +146,7 @@ namespace My.Player
             }
 
             InventorySystem?.WriteWarehouseToSave(data);
+            SkillSystem?.WriteToSave(data);
         }
 
         public bool CheckHasParam(string id)
@@ -299,7 +264,7 @@ namespace My.Player
             {
                 if (player.IsExposed)
                 {
-                    showSkills = NormalSkillSlots;
+                    showSkills = SkillSystem.NormalSkillSlots;
                 }
                 else
                 {

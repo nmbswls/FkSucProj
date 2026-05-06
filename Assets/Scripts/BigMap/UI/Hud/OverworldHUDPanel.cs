@@ -640,8 +640,6 @@ namespace My.UI
         public string GetSkillIdByKey(string keyName)
         {
             string skillId = string.Empty;
-            var playerData = MainGameManager.Instance.gameLogicManager.playerDataManager.NormalSkillSlots;
-
             var showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.GetSkillSlotsByState();
 
             bool isSkillSlot = false;

@@ -47,6 +47,10 @@ namespace My.Saving
 
         public Dictionary<string, FishingSpotRuntimeSave> FishingSpotByUniqName = new();
         public Dictionary<string, RepairPointRuntimeSave> HomeRuinByUniqName = new();
+
+        // 技能：已学习列表、Normal 栏位 3~7 的可编辑装配（长度 5，顺序对应槽 3,4,5,6,7）
+        public List<string> LearnedSkillIds = new();
+        public List<string> NormalSkillSlotOverrides = new();
     }
 
     [Serializable]
@@ -198,6 +202,8 @@ namespace My.Saving
             data.PlayerData.HomeRuinByUniqName ??= new Dictionary<string, RepairPointRuntimeSave>();
             data.PlayerData.HomeProsperity = Math.Max(0, data.PlayerData.HomeProsperity);
             data.PlayerData.HomeCurrentPopulation = Math.Max(0, data.PlayerData.HomeCurrentPopulation);
+            data.PlayerData.LearnedSkillIds ??= new List<string>();
+            data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

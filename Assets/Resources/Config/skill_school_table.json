@@ -1,0 +1,46 @@
+{
+  "Schools": [
+    {
+      "Id": "queen_style",
+      "DisplayName": "Queen",
+      "SkillIds": [
+        "queen_attack",
+        "queen_attack_heavy",
+        "queen_dash",
+        "queen_shoot",
+        "queen_pull_all",
+        "queen_dash_down",
+        "queen_counter",
+        "player_enter_queen",
+        "player_quit_queen",
+        "h_mode_execute",
+        "spawn_attract"
+      ]
+    },
+    {
+      "Id": "field_ops",
+      "DisplayName": "Field",
+      "SkillIds": [
+        "fix_clothes",
+        "spawn_attract",
+        "player_mortar_acquire_01",
+        "player_normal_defend",
+        "default_push",
+        "player_small_staggering",
+        "crazy_fire",
+        "player_dark_dance",
+        "player_push_surround",
+        "player_trace_bullet_01"
+      ]
+    },
+    {
+      "Id": "misc",
+      "DisplayName": "Misc",
+      "SkillIds": [
+        "player_ziwei",
+        "player_mortar_acquire_01",
+        "fix_clothes"
+      ]
+    }
+  ]
+}
