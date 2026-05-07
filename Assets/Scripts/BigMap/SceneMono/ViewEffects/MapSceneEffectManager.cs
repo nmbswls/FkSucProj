@@ -114,8 +114,8 @@ public class MapSceneEffectManager : MonoBehaviour
             // 计算角度（弧度转角度）
             float angle = Mathf.Atan2(dir.Value.y, dir.Value.x) * Mathf.Rad2Deg;
 
-            // 赋值给localEulerAngles，仅在Z轴旋转
-            transform.localEulerAngles = new Vector3(0, 0, angle);
+            // 赋值给特效实例，仅在 Z 轴旋转
+            newGo.transform.localEulerAngles = new Vector3(0, 0, angle);
         }
 
         ctx.UniqId = id;
@@ -130,7 +130,7 @@ public class MapSceneEffectManager : MonoBehaviour
             ctx.EffectCtrl.Show();
         }
 
-        if (duration < 0)
+        if (duration <= 0)
         {
             ctx.CleanUpTimer = -1;
         }

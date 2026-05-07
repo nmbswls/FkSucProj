@@ -1,35 +1,35 @@
 [
   {
     "level": 0,
-    "san_line": 999,
+    "san_line": 75,
     "basic_estrus": 0,
     "aura_base_effect": 0,
     "aura_max_range": 0
   },
   {
     "level": 1,
-    "san_line": 75,
+    "san_line": 50,
     "basic_estrus": 20,
     "aura_base_effect": 1,
     "aura_max_range": 1
   },
   {
     "level": 2,
-    "san_line": 50,
+    "san_line": 35,
     "basic_estrus": 40,
     "aura_base_effect": 1.5,
     "aura_max_range": 1.3
   },
   {
     "level": 3,
-    "san_line": 35,
+    "san_line": 20,
     "basic_estrus": 60,
     "aura_base_effect": 2,
     "aura_max_range": 1.6
   },
   {
     "level": 4,
-    "san_line": 20,
+    "san_line": 0,
     "basic_estrus": 90,
     "aura_base_effect": 3,
     "aura_max_range": 2

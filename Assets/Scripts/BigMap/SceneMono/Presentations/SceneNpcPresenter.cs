@@ -131,9 +131,8 @@ namespace My.Map.Scene
             {
                 if(_faqingEffectUId == 0)
                 {
-                    MainGameManager.Instance.ShowSceneFxEffect("SceneFaQing", transform.position, Vector2.right);
-
-                    var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(PivotHeader.transform.position, 0, "SceneFaQing", NpcEntity.Id);
+                    // duration < 0：不自动清理，由 IsFaQing==false 时 ForceDestroy
+                    var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(PivotHeader.transform.position, -1, "SceneFaQing", NpcEntity.Id, Vector2.right);
                     if (fxCtx == null)
                     {
                         return;

@@ -13,6 +13,7 @@ public class MapSceneEffectCtrl : MonoBehaviour
 
     public AnimancerComponent AnimancerComp;
     public AnimationClip ShowClip;
+
     public void Show()
     {
         if(AnimancerComp != null)
