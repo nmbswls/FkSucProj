@@ -155,6 +155,7 @@ namespace My.Player
             InventorySystem?.WriteWarehouseToSave(data);
             SkillSystem?.WriteToSave(data);
             MagicClothes.SaveTo(data.PlayerData);
+            ProgressionSystem?.TalentManager?.SaveTo(data.PlayerData);
         }
 
         public bool CheckHasParam(string id)

@@ -39,10 +39,10 @@ namespace My.UI
         public void UpdateView()
         {
             if (bindingNpc == null) return;
-            var sjProgress = bindingNpc.NpcEntity.GetAttr(AttrIdConsts.SJProgress);
+            var sjProgress = bindingNpc.NpcEntity.GetAttr(AttrIdConsts.NPCSJProgress);
             SJProgressBar.fillAmount = sjProgress * 1.0f / 100_000;
 
-            var hVal = bindingNpc.NpcEntity.GetAttr(AttrIdConsts.UnitHVal);
+            var hVal = bindingNpc.NpcEntity.GetAttr(AttrIdConsts.NPCHVal);
             if(hVal < 20_000)
             {
                 FaQingFireHint.color = Color.white;

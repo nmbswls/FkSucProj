@@ -5,6 +5,7 @@ using My.MiniGame;
 using My.MiniGame.Dream;
 using My.Player.Bag;
 using My.UI.SkillLoadout;
+using My.UI.Talent;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -312,6 +313,14 @@ namespace My.UI
             {
                 panelId = SkillLoadoutPanel.Pid,
                 resourcePath = "UI/Prefabs/SkillLoadoutPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = TalentTreePanel.Pid,
+                resourcePath = "UI/Prefabs/TalentTreePanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

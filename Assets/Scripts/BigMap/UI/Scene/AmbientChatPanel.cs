@@ -125,7 +125,7 @@ namespace My.Map
                 return;
             }
 
-            if(!playerPrenster.IsInBusyZone)
+            if(!playerPrenster.PlayerEntity.IsInBusyZone)
             { 
                 return; 
             }

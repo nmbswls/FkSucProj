@@ -1,4 +1,5 @@
 using My;
+using My.Config;
 using My.Map.Entity;
 using System;
 using Unity.VisualScripting;
@@ -18,6 +19,30 @@ namespace My.Map
         public const float SneakVisionRange = 6f;
         public const float SneakVisionFovDeg = 150f;
 
+
+        public static long GetFinalBlurtDmg(string npcCfgId, long sjPlus1, long sjPlus2)
+        {
+            var npcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(npcCfgId);
+            var attr = CfgMgr.Cfgs.TbUnitNpcAttr.GetOrDefault(npcCfg?.AttrTemplateId??0);
+            if(attr == null)
+            {
+                return 10000;
+            }
+            var amount = attr.BaseBlurtAmount;
+            amount = (amount + sjPlus1 * 0.001f) * (1 + sjPlus2 * 0.0001f);
+            if(amount <= 0)
+            {
+                return 0;
+            }
+
+            var dmgPerAmount = attr.BaseBlurtDmg;
+
+            return (long)(amount * dmgPerAmount * 1000);
+        }
+
+
+
+
         public static string GetHSpiritByPlayerStatus(int desireLevel, int level)
         {
             if (desireLevel <= 2) return string.Empty;
@@ -35,7 +60,11 @@ namespace My.Map
         }
         public static int GetPleasuAddByGazePower(int playerLevel, int gazePower)
         {
-            return 1;
+            if(gazePower > 5)
+            {
+                return 100;
+            }
+            return 0;
         }
 
         public static int CalculateUnitAttractedLevel(int playerLevel, long playerCharm, long exposeRate, long will)

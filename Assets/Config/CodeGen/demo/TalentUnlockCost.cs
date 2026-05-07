@@ -14,29 +14,29 @@ using SimpleJSON;
 namespace cfg.demo
 {
 [System.Serializable]
-public sealed partial class WantedLevelInfo : Luban.BeanBase
+public sealed partial class TalentUnlockCost : Luban.BeanBase
 {
-    public WantedLevelInfo(JSONNode _buf) 
+    public TalentUnlockCost(JSONNode _buf) 
     {
-        { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
-        { if(!_buf["need_val"].IsNumber) { throw new SerializationException(); }  NeedVal = _buf["need_val"]; }
+        { if(!_buf["item_id"].IsString) { throw new SerializationException(); }  ItemId = _buf["item_id"]; }
+        { if(!_buf["count"].IsNumber) { throw new SerializationException(); }  Count = _buf["count"]; }
     }
 
-    public static WantedLevelInfo DeserializeWantedLevelInfo(JSONNode _buf)
+    public static TalentUnlockCost DeserializeTalentUnlockCost(JSONNode _buf)
     {
-        return new demo.WantedLevelInfo(_buf);
+        return new demo.TalentUnlockCost(_buf);
     }
 
     /// <summary>
-    /// id
+    /// 道具 id
     /// </summary>
-    public int Level;
+    public string ItemId;
     /// <summary>
-    /// 累计通缉阈值(&#215;1000 后与实际 CurrentWantedVal 比较)
+    /// 数量
     /// </summary>
-    public int NeedVal;
+    public long Count;
    
-    public const int __ID__ = 712038968;
+    public const int __ID__ = 380986376;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -46,8 +46,8 @@ public sealed partial class WantedLevelInfo : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
-        + "level:" + Level + ","
-        + "needVal:" + NeedVal + ","
+        + "itemId:" + ItemId + ","
+        + "count:" + Count + ","
         + "}";
     }
 }

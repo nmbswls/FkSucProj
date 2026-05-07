@@ -435,7 +435,6 @@ namespace My.Map.Scene
         private float _checkAreaTiker = 0;
         private Collider2D[] zoneTriggerCache = new Collider2D[16];
 
-        public bool IsInBusyZone = false;
         
         /// <summary>
         /// 高频检查 保证精度
@@ -464,7 +463,6 @@ namespace My.Map.Scene
                 {
                     isInBusy = true;
                 }
-
             }
 
             if(isInAlert)
@@ -476,7 +474,7 @@ namespace My.Map.Scene
                 MainGameManager.Instance.gameLogicManager.AreaManager.PlayerInAlertArea = false;
             }
 
-            IsInBusyZone = isInBusy;
+            PlayerEntity.IsInBusyZone = isInBusy;
         }
 
 

@@ -23,7 +23,11 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
         { if(!_buf["hp"].IsNumber) { throw new SerializationException(); }  Hp = _buf["hp"]; }
         { if(!_buf["move_speed"].IsNumber) { throw new SerializationException(); }  MoveSpeed = _buf["move_speed"]; }
         { if(!_buf["base_atk"].IsNumber) { throw new SerializationException(); }  BaseAtk = _buf["base_atk"]; }
+        { if(!_buf["physical_power"].IsNumber) { throw new SerializationException(); }  PhysicalPower = _buf["physical_power"]; }
         { if(!_buf["h_power"].IsNumber) { throw new SerializationException(); }  HPower = _buf["h_power"]; }
+        { if(!_buf["base_blurt_amount"].IsNumber) { throw new SerializationException(); }  BaseBlurtAmount = _buf["base_blurt_amount"]; }
+        { if(!_buf["base_blurt_dmg"].IsNumber) { throw new SerializationException(); }  BaseBlurtDmg = _buf["base_blurt_dmg"]; }
+        { if(!_buf["default_h_shield"].IsNumber) { throw new SerializationException(); }  DefaultHShield = _buf["default_h_shield"]; }
     }
 
     public static UnitNpcAttr DeserializeUnitNpcAttr(JSONNode _buf)
@@ -52,9 +56,25 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
     /// </summary>
     public float BaseAtk;
     /// <summary>
+    /// 肉体能力
+    /// </summary>
+    public float PhysicalPower;
+    /// <summary>
     /// h能力
     /// </summary>
     public float HPower;
+    /// <summary>
+    /// 基础射精量
+    /// </summary>
+    public float BaseBlurtAmount;
+    /// <summary>
+    /// 基础射精伤害
+    /// </summary>
+    public float BaseBlurtDmg;
+    /// <summary>
+    /// h默认盾
+    /// </summary>
+    public float DefaultHShield;
    
     public const int __ID__ = -1255865693;
     public override int GetTypeId() => __ID__;
@@ -71,7 +91,11 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
         + "hp:" + Hp + ","
         + "moveSpeed:" + MoveSpeed + ","
         + "baseAtk:" + BaseAtk + ","
+        + "physicalPower:" + PhysicalPower + ","
         + "hPower:" + HPower + ","
+        + "baseBlurtAmount:" + BaseBlurtAmount + ","
+        + "baseBlurtDmg:" + BaseBlurtDmg + ","
+        + "defaultHShield:" + DefaultHShield + ","
         + "}";
     }
 }

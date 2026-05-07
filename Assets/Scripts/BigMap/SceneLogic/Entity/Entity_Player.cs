@@ -174,6 +174,8 @@ namespace My.Map
 
         public long? gcCuaseId;
         public bool isSelfGc;
+        public float? gcCauseParam = 0;
+
 
         public bool IsRetreating;
         public float RetreatingStartTime;
@@ -303,11 +305,6 @@ namespace My.Map
             //attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 300_000);
             
-
-            // 资源类
-            attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 0);
-            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 3);
-
         }
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
@@ -323,7 +320,7 @@ namespace My.Map
                         if (before < after && after > 100_000)
                         {
                             long overflow = after - 100_000;
-                            long toPleasure = (long)(overflow * 0.3);
+                            long toPleasure = (long)(overflow * 0.2);
                             attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, toPleasure, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
                         }
                     }
@@ -348,6 +345,8 @@ namespace My.Map
                             {
                                 isSelfGc = false;
                                 gcCuaseId = intent.srcEntityId;
+
+                                //gcCauseParam
                             }
                             break;
                         }
@@ -832,13 +831,23 @@ namespace My.Map
 
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_yishang", layer: 100);
 
-            // 非自慰需要扣san
-            if(GetAttr(AttrIdConsts.PlayerSanity) > 60_000)
+            if(!isSelfGc)
             {
                 ApplyResourceChange(AttrIdConsts.PlayerSanity, -10_000, false, FightStruct.EDmgFlag.None, this.Id);
             }
             
             ForceSetResource(AttrIdConsts.PlayerPleasure, 0);
+
+            // 尝试结束发情
+            if(IsFaQing)
+            {
+                //var randVal = UnityEngine.Random.Range(0, 10000);
+                LogicManager.globalBuffManager.RemoveAllBuffById(Id, "player_faqing");
+                IsFaQing = false;
+                Debug.Log("player leave faqing");
+
+                EventOnFaQingStateChange?.Invoke();
+            }
 
             LogicManager.viewer.ShowPauseCloseupWindow("gc", 1.0f);
         }
@@ -959,6 +968,11 @@ namespace My.Map
         /// </summary>
         protected void TickApplyAuraHVal()
         {
+            // 人类形态不触发
+            if(LogicManager.PlayerHumanMode)
+            {
+                return;
+            }
 
             if(DesireLevel == 0)
             {
@@ -977,7 +991,6 @@ namespace My.Map
 
             foreach (var candidate in candidates)
             {
-
                 if(candidate is not BaseUnitLogicEntity unit)
                 {
                     continue;
@@ -988,9 +1001,13 @@ namespace My.Map
                 var dist = (candidate.Pos - this.Pos).magnitude;
                 var addPerSec = PlayerGamePlayRule.CalculatePlayerDesireAuraEffect(DesireLevel, dist, willProtect);
 
+                if(addPerSec <= 0)
+                {
+                    continue;
+                }
                 var effect = new MapAbilityEffectAddResourceCfg()
                 {
-                    ResourceId = AttrIdConsts.UnitHVal,
+                    ResourceId = AttrIdConsts.NPCHVal,
                     AddValue = addPerSec,
                     IsEnmity = true,
                 };
@@ -1031,6 +1048,11 @@ namespace My.Map
         /// </summary>
         private void TickBeingGazedInfo()
         {
+
+            if(LogicManager.PlayerHumanMode)
+            {
+                return;
+            }
 
             long rawOverRate = GetClothesRawOverRate10000ForGameplay();
             var exposeRate10000 = PlayerGamePlayRule.CalculateBreakClothesInnerRate(GetAttr(AttrIdConsts.PlayerClothes), rawOverRate);
@@ -1081,6 +1103,11 @@ namespace My.Map
                 totalGazePower += gaze.Power;
             }
 
+            if(IsInBusyZone)
+            {
+                totalGazePower += 5;
+            }
+
             if(totalGazePower > 0)
             {
                 long addRate = PlayerGamePlayRule.GetPleasuAddByGazePower(this.GetUnitLevel(), totalGazePower);
@@ -1091,7 +1118,6 @@ namespace My.Map
                     ApplyResourceChange(AttrIdConsts.PlayerSanity, -addRate, false, EDmgFlag.None, null);
                 }
             }
-            
         }
 
 
@@ -1572,6 +1598,9 @@ namespace My.Map
         {
 
         }
+
+        public bool IsInBusyZone = false;
+
     }
 }
 

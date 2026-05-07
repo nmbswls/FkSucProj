@@ -1,108 +1,93 @@
 
+using System;
 using System.Collections.Generic;
-using My.Player;
+using cfg.demo;
+using My.Config;
 using My.Saving;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 namespace My.Player
 {
-
-
-    /// <summary>
-    /// 系统
-    /// </summary>
     public class PlayerProgressionSystem : IPlayerSystem
     {
-
         protected GameLogicManager LogicManager { get; private set; }
 
-        public PlayerMain BaseStats { get; private set; } 
+        public PlayerMain BaseStats { get; private set; }
         public PlayerGearManager GearManager;
         public PlayerTalentManager TalentManager;
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
 
-        
-
-        //public LevelProgression LevelData { get; private set; }
-
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
-            this.LogicManager = ctx;
+            LogicManager = ctx;
 
-            TalentManager = new();
-            TalentManager.Initialize(savingData);
+            TalentManager = new PlayerTalentManager();
+            TalentManager.Initialize(ctx, savingData);
 
-            GearManager = new();
+            GearManager = new PlayerGearManager();
             GearManager.Initialize(savingData);
 
-            BaseStats = new();
+            BaseStats = new PlayerMain();
             BaseStats.Initialize(savingData);
 
-            ProgressionRoot = new("Root");
+            ProgressionRoot = new ProgressionAggregator("Root");
             ProgressionRoot.AddChild(BaseStats.MainAggregator);
             ProgressionRoot.AddChild(GearManager.GearAggregator);
             ProgressionRoot.AddChild(TalentManager.TalentAggregator);
 
-            ProgressionRoot.OnStatsChanged += (src) => {
+            ProgressionRoot.OnStatsChanged += (src) =>
+            {
                 RefreshPlayerBigMapAttr();
             };
         }
 
-
         public void Tick(float dt)
         {
-
         }
 
         private Dictionary<int, float> _lastKnownValues = new Dictionary<int, float>();
+
         public void RefreshPlayerBigMapAttr()
         {
-            //TotalStats.GetFinalAttribute(StatID.Attack);
-
-            // 1. 获取最新的养成数据 (触发 RebuildCache)
             StatMap currentStats = ProgressionRoot.GetRawCache();
 
-            // 2. 遍历养成系统的所有生效属性
             foreach (var kvp in currentStats)
             {
                 int statId = kvp.Key;
                 float newValue = kvp.Value;
 
-                // --- 优化点：值比对 ---
-                // 只有当值真的变了，才通知战斗系统
-                // 这一步能拦截掉 99% 的“无效更新”（比如其他属性变了，但攻击力没变）
                 if (_lastKnownValues.TryGetValue(statId, out float oldValue))
                 {
-                    if (Mathf.Approximately(oldValue, newValue)) continue;
+                    if (Mathf.Approximately(oldValue, newValue))
+                    {
+                        continue;
+                    }
                 }
 
-                // 3. 应用变更
-                //_combatEntity.SetAttribute(statId, newValue);
-                _lastKnownValues[statId] = newValue; // 更新本地缓存
+                _lastKnownValues[statId] = newValue;
             }
         }
 
-        // 获取战斗属性 (高频调用)
         public long GetFinalAttribute(int id)
         {
             return ProgressionRoot.GetValue(id);
         }
 
-
-        #region 监听
-
         public void OnPlayerKillUnit()
         {
-            
         }
 
-        #endregion
+        public bool TryUnlockTalentNode(int nodeId, out string failReason)
+        {
+            return TalentManager.TryUnlockNode(nodeId, out failReason);
+        }
 
-
+        public PlayerTalentManager.TalentNodeVisualState GetTalentNodeVisualState(int nodeId)
+        {
+            return TalentManager.GetNodeVisualState(nodeId);
+        }
     }
-
 
     public class PlayerMain
     {
@@ -113,12 +98,12 @@ namespace My.Player
 
         public void Initialize(SaveData savingData = null)
         {
-            MainAggregator = new("Main");
+            MainAggregator = new ProgressionAggregator("Main");
 
-            BasicProvider = new();
-            LevelProvider = new();
+            BasicProvider = new BasicProgressionProvider();
+            LevelProvider = new LevelProgressionProvider();
 
-            if(savingData != null)
+            if (savingData != null)
             {
                 LevelProvider.SetLevel(savingData.PlayerData.Level);
             }
@@ -127,58 +112,253 @@ namespace My.Player
             MainAggregator.AddChild(LevelProvider);
         }
 
-
         public void OnLevelUpdate(int newLevel)
         {
             LevelProvider.SetLevel(newLevel);
         }
     }
 
-
     public class PlayerGearManager
     {
         public ProgressionAggregator GearAggregator;
 
-        /// <summary>
-        /// 装备映射
-        /// </summary>
         public Dictionary<int, PlayerGear> Slot2Gears = new();
 
         public void Initialize(SaveData savingData = null)
         {
-            GearAggregator = new("GearTotal");
+            GearAggregator = new ProgressionAggregator("GearTotal");
         }
     }
 
-    public class PlayerTalentManager
+    public sealed class PlayerTalentManager
     {
-        public ProgressionAggregator TalentAggregator;
-
-        public Dictionary<int, PlayerTalentNode> TalentNodeDict = new();
-
-        public void Initialize(SaveData savingData = null)
+        public enum TalentNodeVisualState
         {
-            TalentAggregator = new("TalentTotal");
+            Locked,
+            Unlockable,
+            Unlocked,
+        }
+
+        GameLogicManager _logic;
+        readonly HashSet<int> _unlocked = new();
+        readonly List<TalentNodeProgressionProvider> _activeProviders = new();
+
+        public ProgressionAggregator TalentAggregator { get; private set; }
+
+        public Dictionary<int, PlayerTalentNode> TalentNodeDict { get; } = new();
+
+        public void Initialize(GameLogicManager logic, SaveData savingData)
+        {
+            _logic = logic;
+            TalentAggregator = new ProgressionAggregator("TalentTotal");
+            _unlocked.Clear();
+            _activeProviders.Clear();
+            TalentNodeDict.Clear();
+
+            if (savingData?.PlayerData?.UnlockedTalentNodeIds != null)
+            {
+                foreach (var id in savingData.PlayerData.UnlockedTalentNodeIds)
+                {
+                    _unlocked.Add(id);
+                }
+            }
+
+            RebuildProvidersFromUnlockState();
+        }
+
+        public void SaveTo(PlayerData pd)
+        {
+            if (pd == null)
+            {
+                return;
+            }
+
+            pd.UnlockedTalentNodeIds ??= new List<int>();
+            pd.UnlockedTalentNodeIds.Clear();
+            foreach (var id in _unlocked)
+            {
+                pd.UnlockedTalentNodeIds.Add(id);
+            }
+        }
+
+        public bool IsUnlocked(int nodeId) => _unlocked.Contains(nodeId);
+
+        public TalentNodeVisualState GetNodeVisualState(int nodeId)
+        {
+            if (_unlocked.Contains(nodeId))
+            {
+                return TalentNodeVisualState.Unlocked;
+            }
+
+            if (ValidateUnlockRequirements(nodeId, out _))
+            {
+                return TalentNodeVisualState.Unlockable;
+            }
+
+            return TalentNodeVisualState.Locked;
+        }
+
+        public bool TryUnlockNode(int nodeId, out string failReason)
+        {
+            failReason = null;
+            if (!ValidateUnlockRequirements(nodeId, out failReason))
+            {
+                return false;
+            }
+
+            var cfg = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(nodeId);
+            if (cfg == null)
+            {
+                failReason = "no_cfg";
+                return false;
+            }
+
+            if (cfg.UnlockCosts != null)
+            {
+                foreach (var c in cfg.UnlockCosts)
+                {
+                    if (c == null || string.IsNullOrEmpty(c.ItemId) || c.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    _logic.playerDataManager.CostItem(c.ItemId, c.Count);
+                }
+            }
+
+            _unlocked.Add(nodeId);
+            AddProviderForCfg(cfg);
+
+            if (!string.IsNullOrEmpty(cfg.PassiveSkillId))
+            {
+                _logic.playerDataManager.TryAddLearnedSkill(cfg.PassiveSkillId);
+                _logic.playerDataManager.SyncLearnedSkillsToPlayerEntity();
+            }
+
+            return true;
+        }
+
+        bool ValidateUnlockRequirements(int nodeId, out string failReason)
+        {
+            failReason = null;
+            if (_logic?.playerDataManager == null)
+            {
+                failReason = "no_player_mgr";
+                return false;
+            }
+
+            if (_unlocked.Contains(nodeId))
+            {
+                failReason = "already_unlocked";
+                return false;
+            }
+
+            var cfg = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(nodeId);
+            if (cfg == null)
+            {
+                failReason = "no_cfg";
+                return false;
+            }
+
+            if (cfg.PrereqNodeIds != null)
+            {
+                foreach (var pre in cfg.PrereqNodeIds)
+                {
+                    if (!_unlocked.Contains(pre))
+                    {
+                        failReason = "prereq";
+                        return false;
+                    }
+                }
+            }
+
+            if (cfg.UnlockConds != null && cfg.UnlockConds.Count > 0)
+            {
+                if (!_logic.CheckCommonCondsAll(cfg.UnlockConds))
+                {
+                    failReason = "conds";
+                    return false;
+                }
+            }
+
+            if (cfg.UnlockCosts != null)
+            {
+                foreach (var c in cfg.UnlockCosts)
+                {
+                    if (c == null || string.IsNullOrEmpty(c.ItemId) || c.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    if (!_logic.playerDataManager.CheckHaveItem(c.ItemId, c.Count))
+                    {
+                        failReason = "cost_" + c.ItemId;
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        void RebuildProvidersFromUnlockState()
+        {
+            foreach (var p in _activeProviders)
+            {
+                TalentAggregator.RemoveChild(p);
+            }
+
+            _activeProviders.Clear();
+            TalentNodeDict.Clear();
+
+            var table = CfgMgr.Cfgs?.TbTalentNode;
+            if (table == null)
+            {
+                return;
+            }
+
+            foreach (var id in _unlocked)
+            {
+                var cfg = table.GetOrDefault(id);
+                if (cfg == null)
+                {
+                    continue;
+                }
+
+                AddProviderForCfg(cfg);
+            }
+        }
+
+        void AddProviderForCfg(TalentNode cfg)
+        {
+            var pairs = new List<StatPair>();
+            if (cfg.StatBonuses != null)
+            {
+                foreach (var b in cfg.StatBonuses)
+                {
+                    if (b == null)
+                    {
+                        continue;
+                    }
+
+                    pairs.Add(new StatPair(b.AttrId, b.Val));
+                }
+            }
+
+            var provider = new TalentNodeProgressionProvider(pairs);
+            TalentAggregator.AddChild(provider);
+            _activeProviders.Add(provider);
+            TalentNodeDict[cfg.NodeId] = new PlayerTalentNode
+            {
+                NodeId = cfg.NodeId,
+                Provider = provider,
+            };
         }
     }
 
     public class PlayerTalentNode
     {
+        public int NodeId;
         public TalentNodeProgressionProvider Provider;
-
-        public PlayerTalentNode()
-        {
-            Provider = new();
-            OnInfoRefresh();
-        }
-
-        public void OnInfoRefresh()
-        {
-
-        }
     }
-
-
-
 }
-

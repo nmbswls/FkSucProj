@@ -159,6 +159,11 @@ namespace My.Input
                 DreamInfiltrationBootstrap.OpenEntry();
             }
 
+            if (UnityEngine.Input.GetKeyDown(KeyCode.F10))
+            {
+                My.UI.Talent.TalentTreePanel.Toggle();
+            }
+
             if (GlobalLock) return;
 
             // 2. 持续输入（Hold）的每帧 Update，直接问询 Input System

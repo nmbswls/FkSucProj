@@ -15,6 +15,8 @@ namespace cfg.demo
     {
         None = 0,
         StealSmall = 1,
+        StealValuable = 2,
+        AssaultCitizen = 3,
     }
 
 } 

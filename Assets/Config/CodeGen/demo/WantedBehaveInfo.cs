@@ -21,6 +21,7 @@ public sealed partial class WantedBehaveInfo : Luban.BeanBase
         { if(!_buf["BehaveType"].IsNumber) { throw new SerializationException(); }  BehaveType = (demo.EWantedBehaveType)_buf["BehaveType"].AsInt; }
         { if(!_buf["add_wanted"].IsNumber) { throw new SerializationException(); }  AddWanted = _buf["add_wanted"]; }
         { if(!_buf["trigger_range"].IsNumber) { throw new SerializationException(); }  TriggerRange = _buf["trigger_range"]; }
+        { if(!_buf["max_add_once"].IsNumber) { throw new SerializationException(); }  MaxAddOnce = _buf["max_add_once"]; }
     }
 
     public static WantedBehaveInfo DeserializeWantedBehaveInfo(JSONNode _buf)
@@ -33,13 +34,17 @@ public sealed partial class WantedBehaveInfo : Luban.BeanBase
     /// </summary>
     public demo.EWantedBehaveType BehaveType;
     /// <summary>
-    /// 增加通缉
+    /// 每次基础增量(传入 AddWantedVal 的逻辑量，会再&#215;1000)
     /// </summary>
     public int AddWanted;
     /// <summary>
-    /// 触发视线
+    /// NPC 感知/视线相关占位
     /// </summary>
     public float TriggerRange;
+    /// <summary>
+    /// 单次叠加封顶(逻辑量，0=不限制)与 add_wanted 取较小
+    /// </summary>
+    public int MaxAddOnce;
    
     public const int __ID__ = 695006291;
     public override int GetTypeId() => __ID__;
@@ -54,6 +59,7 @@ public sealed partial class WantedBehaveInfo : Luban.BeanBase
         + "BehaveType:" + BehaveType + ","
         + "addWanted:" + AddWanted + ","
         + "triggerRange:" + TriggerRange + ","
+        + "maxAddOnce:" + MaxAddOnce + ","
         + "}";
     }
 }

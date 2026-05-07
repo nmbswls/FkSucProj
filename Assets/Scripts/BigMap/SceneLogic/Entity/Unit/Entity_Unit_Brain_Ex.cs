@@ -232,11 +232,11 @@ namespace My.Map.Unit
                 return;
             }
 
-            // 检查是否需要进入通缉状态
+            // 检查是否需要进入通缉状态（与 wanted_level_info 星级一致）
             if(_brain.Config.IsGuard)
             {
-                int wantedVal = _brain.LogicManager.WantedManager.CurrentWantedVal;
-                if (wantedVal > 20000 && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
+                if (_brain.LogicManager.WantedManager.GetWantedStarLevel() >= 1
+                    && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
                 {
                     _brain.ChangeState(_brain.StateChaseWanted);
                     return;
@@ -890,11 +890,11 @@ namespace My.Map.Unit
                 return;
             }
 
-            // 检查是否需要进入通缉状态
+            // 检查是否需要进入通缉状态（与 wanted_level_info 星级一致）
             if (_brain.Config.IsGuard)
             {
-                int wantedVal = _brain.LogicManager.WantedManager.CurrentWantedVal;
-                if (wantedVal > 20000 && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
+                if (_brain.LogicManager.WantedManager.GetWantedStarLevel() >= 1
+                    && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
                 {
                     _brain.ChangeState(_brain.StateChaseWanted);
                     return;
@@ -1071,8 +1071,7 @@ namespace My.Map.Unit
 
         public override void OnUpdate()
         {
-            int wantedVal = _brain.GetAreaWantedVal();
-            if (wantedVal < 0)
+            if (_brain.LogicManager.WantedManager.GetWantedStarLevel() <= 0)
             {
                 if(chaseChillTimer == 0)
                 {

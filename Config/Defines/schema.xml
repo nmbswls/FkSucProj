@@ -57,7 +57,22 @@
 	<enum name="EWantedBehaveType">
         <var name="None" value="0"/>
 		<var name="StealSmall" value="1"/>
+		<var name="StealValuable" value="2"/>
+		<var name="AssaultCitizen" value="3"/>
     </enum>
+
+	<!-- 通缉守卫档位由 wanted.xlsx#wanted_guard_spawn 表头定义（TbWantedGuardSpawnTier），勿在此重复定义同名 bean -->
     <!-- DreamInfiltrationSpot、FishingSpot、FishingSpotFish 均在 xlsx 表头定义（read_schema_from_file）；鱼种行通过 spot_id 关联钓点 id -->
+
+    <!-- 天赋树：主表 talent.xlsx 用 read_schema_from_file；嵌套类型在此定义 -->
+    <bean name="TalentUnlockCost" tags="sep=,">
+        <var name="item_id" type="string" comment="道具 id"/>
+        <var name="count" type="long" comment="数量"/>
+    </bean>
+
+    <bean name="TalentStatBonus" tags="sep=,">
+        <var name="attr_id" type="int" comment="EYCAttribute 枚举整型"/>
+        <var name="val" type="long" comment="固定加成"/>
+    </bean>
 
 </module>

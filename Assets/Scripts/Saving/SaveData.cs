@@ -62,6 +62,9 @@ namespace My.Saving
         // 魔力衣装（潜入选定后锁定）
         public string MagicClothesDefId;
         public bool MagicClothesLockedForStealth;
+
+        // 已解锁天赋节点（对应 Luban TbTalentNode / PlayerTalentManager）
+        public List<int> UnlockedTalentNodeIds = new();
     }
 
     [Serializable]
@@ -230,6 +233,7 @@ namespace My.Saving
             data.PlayerData.LearnedSkillLevels ??= new List<LearnedSkillLevelEntry>();
             data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
+            data.PlayerData.UnlockedTalentNodeIds ??= new List<int>();
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

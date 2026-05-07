@@ -10,7 +10,9 @@ using My.Map.Logic;
 using My.Map.Scene;
 using My.Map;
 using My.UI;
+using My.UI.Talent;
 using My.Map.Fight;
+using cfg.demo;
 
 public class ConsoleGM : MonoBehaviour
 {
@@ -222,6 +224,13 @@ public class ConsoleGM : MonoBehaviour
                 UIOrchestrator.Instance.ShowShop(shopInfo);
             });
 
+        Register("talent_ui", "Toggle talent tree panel (same as F10)",
+            null,
+            _ =>
+            {
+                TalentTreePanel.Toggle();
+            });
+
         Register("gc", "加gc",
             new[] { new CmdParam("val", "int，值") },
             args =>
@@ -327,6 +336,27 @@ public class ConsoleGM : MonoBehaviour
             args =>
             {
                 MainGameManager.Instance.gameLogicManager.WantedManager.AddWantedVal(50000);
+            });
+
+        Register("wanted_behave", "按 Luban 通缉行为加星（含 max_add_once）",
+            new[] { new CmdParam("name", "StealSmall | StealValuable | AssaultCitizen") },
+            args =>
+            {
+                if (args.Count < 1)
+                {
+                    LogError("usage: wanted_behave StealSmall");
+                    return;
+                }
+
+                if (!System.Enum.TryParse<EWantedBehaveType>(args[0], true, out var b) || b == EWantedBehaveType.None)
+                {
+                    LogError("invalid EWantedBehaveType: " + args[0]);
+                    return;
+                }
+
+                var wm = MainGameManager.Instance.gameLogicManager.WantedManager;
+                wm.AddWantedForBehavior(b);
+                Log($"wanted_behave {b} -> star {wm.GetWantedStarLevel()} val {wm.CurrentWantedVal}");
             });
 
         Register("add_quest_value", "开shop",

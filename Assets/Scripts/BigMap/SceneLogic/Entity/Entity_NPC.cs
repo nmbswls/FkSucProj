@@ -42,6 +42,9 @@ namespace My.Map
 
         public event Action EventOnHModeChange;
 
+        public bool IsFaQing { get; private set; }
+
+
         //public EntityInteractComp InteractComp;
 
         public string GetRuntimeVariable(string paramName)
@@ -230,10 +233,10 @@ namespace My.Map
             }
 
             // H 模式相关资源注册
-            attributeStore.RegisterResource(AttrIdConsts.UnitHVal, null, 100_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.NPCHVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
-            attributeStore.RegisterResource(AttrIdConsts.SJProgress, null, 100_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.NPCSJProgress, null, 100_000, 0);
         }
 
         public override bool IsOmniVision()
@@ -282,7 +285,7 @@ namespace My.Map
 
                 TickAttractState();
 
-                TickHMode();
+                TickHRelateProperties();
 
                 CheckSeeEvil();
             }
@@ -300,7 +303,12 @@ namespace My.Map
 
             switch (attrId)
             {
-                case AttrIdConsts.UnitHVal:
+                case AttrIdConsts.NPCHVal:
+                    {
+                        _lastHModeTimer = LogicTime.time;
+                    }
+                    break;
+                case AttrIdConsts.NPCSJProgress:
                     {
                         _lastHModeTimer = LogicTime.time;
                     }
@@ -315,14 +323,15 @@ namespace My.Map
 
 
         // H 模式与护盾相关 Tick
-        protected void TickHMode()
+        protected void TickHRelateProperties()
         {
-            bool currHmode = IsInHMode();
+            //bool currHmode = IsInHMode();
 
             // 盾破后超过五分钟恢复部分护盾
             if (hShieldBroken && LogicTime.time - _lastHModeTimer > 5 * 60)
             {
-                ForceSetResource(AttrIdConsts.UnitHShield, 10000);
+                var hShieldMax = GetAttr(AttrIdConsts.Basic_ExtraDmg);
+                ForceSetResource(AttrIdConsts.UnitHShield, hShieldMax);
             }
 
             if(!hShieldBroken)
@@ -335,12 +344,34 @@ namespace My.Map
                 }
             }
 
-            // H 模式满值时触发爆发逻辑
-            if(currHmode)
+            // 
+
+            if(!IsFaQing)
             {
                 var hValMax = GetHValMax();
-                var hVal = GetAttr(AttrIdConsts.UnitHVal);
-                if (hVal >= hValMax)
+                var hVal = GetAttr(AttrIdConsts.NPCHVal);
+                if (hVal >= hValMax * 0.6f)
+                {
+                    IsFaQing = true;
+                }
+            }
+            else
+            {
+                var hValMax = GetHValMax();
+                var hVal = GetAttr(AttrIdConsts.NPCHVal);
+                if (hVal < hValMax * 0.3f)
+                {
+                    IsFaQing = false;
+                }
+            }
+
+
+            if(CheckCanNpcBlurt())
+            {
+                var blurtValue = GetAttr(AttrIdConsts.NPCSJProgress);
+                var blurMax = GetBlurtMax();
+
+                if(blurtValue >= blurMax)
                 {
                     OnNpcBlurt();
                 }
@@ -436,9 +467,8 @@ namespace My.Map
             switch (attrId)
             {
                 
-                case AttrIdConsts.UnitHVal:
+                case AttrIdConsts.NPCHVal:
                     {
-
                         // 正值伤害先扣 H 盾
                         if(delta > 0)
                         {
@@ -456,7 +486,12 @@ namespace My.Map
                                 delta = delta - shieldVal;
                             }
                         }
-                        
+                    }
+                    break;
+
+                case AttrIdConsts.NPCSJProgress:
+                    {
+
                     }
                     break;
                 default:
@@ -468,19 +503,44 @@ namespace My.Map
             return delta;
         }
 
+        protected virtual long GetBlurtMax()
+        {
+            return 100_000;
+        }
+
         protected virtual long GetHValMax()
         {
             return 100_000;
         }
 
+        /// <summary>
+        /// 检查单位是否可喷射
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckCanNpcBlurt()
+        {
+            if(!abilityController.IsActionable())
+            {
+                return false;
+            }
+            return true;
+        }
+
+
         protected virtual void OnNpcBlurt()
         {
-            ForceSetResource(AttrIdConsts.UnitHVal, 0);
+            ForceSetResource(AttrIdConsts.NPCSJProgress, 0); // 清空射精条
 
             LogicManager.viewer.ShowFakeFxEffect("npc_h_burst", this.Pos);
 
+            var player = LogicManager.playerLogicEntity;
+            var sjPlus1 = player.GetAttr(AttrIdConsts.PlayerSJAmount_Fixed);
+            var sjPlus2 = player.GetAttr(AttrIdConsts.PlayerSJAmount_Precent);
+
+            long baseDmg = PlayerGamePlayRule.GetFinalBlurtDmg(CfgId, sjPlus1, sjPlus2);
+
             // 附加 HP 伤害
-            ApplyResourceChange(AttrIdConsts.HP, -80000, false, Fight.FightStruct.EDmgFlag.None, this.Id);
+            ApplyResourceChange(AttrIdConsts.HP, -baseDmg, false, Fight.FightStruct.EDmgFlag.None, this.Id);
 
             TryInterrupt(new InterruptRequest()
             {

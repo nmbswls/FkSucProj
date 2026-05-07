@@ -1,0 +1,163 @@
+[
+  {
+    "node_id": 1,
+    "display_name": "天分-魅力根基",
+    "prereq_node_ids": [],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [],
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "val": 1200
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 2,
+    "display_name": "天分-护甲理解",
+    "prereq_node_ids": [
+      1
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 2
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 4,
+        "val": 800
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 3,
+    "display_name": "天分-意志魅力",
+    "prereq_node_ids": [
+      1
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "stick",
+        "count": 1
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 3,
+        "val": 600
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 4,
+    "display_name": "天分-双防雏形",
+    "prereq_node_ids": [
+      2
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 1
+      },
+      {
+        "item_id": "stick",
+        "count": 1
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 5,
+        "val": 700
+      },
+      {
+        "attr_id": 4,
+        "val": 400
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 5,
+    "display_name": "天分-统合",
+    "prereq_node_ids": [
+      2,
+      3
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "gold",
+        "count": 5
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "val": 500
+      },
+      {
+        "attr_id": 5,
+        "val": 300
+      }
+    ],
+    "passive_skill_id": ""
+  }
+]

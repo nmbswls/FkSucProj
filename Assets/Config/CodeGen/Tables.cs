@@ -40,6 +40,8 @@ public partial class Tables
     public demo.TbPlayerDesireLevel TbPlayerDesireLevel {get; }
     public demo.TbWantedLevelInfo TbWantedLevelInfo {get; }
     public demo.TbWantedBehaveInfo TbWantedBehaveInfo {get; }
+    public demo.TbTalentNode TbTalentNode {get; }
+    public demo.TbWantedGuardSpawnTier TbWantedGuardSpawnTier {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -69,6 +71,8 @@ public partial class Tables
         TbPlayerDesireLevel = new demo.TbPlayerDesireLevel(loader("demo_tbplayerdesirelevel"));
         TbWantedLevelInfo = new demo.TbWantedLevelInfo(loader("demo_tbwantedlevelinfo"));
         TbWantedBehaveInfo = new demo.TbWantedBehaveInfo(loader("demo_tbwantedbehaveinfo"));
+        TbTalentNode = new demo.TbTalentNode(loader("demo_tbtalentnode"));
+        TbWantedGuardSpawnTier = new demo.TbWantedGuardSpawnTier(loader("demo_tbwantedguardspawntier"));
         ResolveRef();
     }
     
@@ -100,6 +104,8 @@ public partial class Tables
         TbPlayerDesireLevel.ResolveRef(this);
         TbWantedLevelInfo.ResolveRef(this);
         TbWantedBehaveInfo.ResolveRef(this);
+        TbTalentNode.ResolveRef(this);
+        TbWantedGuardSpawnTier.ResolveRef(this);
     }
 }
 

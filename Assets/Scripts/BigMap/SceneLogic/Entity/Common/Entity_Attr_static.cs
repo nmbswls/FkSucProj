@@ -53,7 +53,9 @@ namespace My.Map.Entity
         public const string HP = "HP";
         public const string HP_MAX = "HP.Max";
 
-        public const string UnitHVal = "UnitHVal";
+        public const string NPCHVal = "NPCHVal";
+        public const string NPCSJProgress = "NPCSJProgress";
+
 
         public const string Unmovable = "Unmovable";
         public const string LockFace = "LockFace";
@@ -83,13 +85,17 @@ namespace My.Map.Entity
 
         public const string PlayerKnockDown = "PlayerKnockDown";
 
+        public const string PlayerSJAmount_Fixed = "PlayerSJAmount_Fixed";
+        public const string PlayerSJAmount_Precent = "PlayerSJAmount_Precent";
+
         public const string PlayerNaiLi = "PlayerNaiLi";
         public const string PlayerNaiLi_Recovery = "PlayerNaiLi.Recovery";
 
 
         public const string UnitHShield = "UnitHShield";
+        public const string UnitHShieldMax = "UnitHShieldMax";
+
         public const string StatUnstoppable = "StatUnstoppable";
-        public const string SJProgress = "SJProgress";
 
         public const string DamageXiXue = "DamageXiXue";
 

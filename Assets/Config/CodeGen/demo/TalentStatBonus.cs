@@ -14,29 +14,29 @@ using SimpleJSON;
 namespace cfg.demo
 {
 [System.Serializable]
-public sealed partial class WantedLevelInfo : Luban.BeanBase
+public sealed partial class TalentStatBonus : Luban.BeanBase
 {
-    public WantedLevelInfo(JSONNode _buf) 
+    public TalentStatBonus(JSONNode _buf) 
     {
-        { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
-        { if(!_buf["need_val"].IsNumber) { throw new SerializationException(); }  NeedVal = _buf["need_val"]; }
+        { if(!_buf["attr_id"].IsNumber) { throw new SerializationException(); }  AttrId = _buf["attr_id"]; }
+        { if(!_buf["val"].IsNumber) { throw new SerializationException(); }  Val = _buf["val"]; }
     }
 
-    public static WantedLevelInfo DeserializeWantedLevelInfo(JSONNode _buf)
+    public static TalentStatBonus DeserializeTalentStatBonus(JSONNode _buf)
     {
-        return new demo.WantedLevelInfo(_buf);
+        return new demo.TalentStatBonus(_buf);
     }
 
     /// <summary>
-    /// id
+    /// EYCAttribute 枚举整型
     /// </summary>
-    public int Level;
+    public int AttrId;
     /// <summary>
-    /// 累计通缉阈值(&#215;1000 后与实际 CurrentWantedVal 比较)
+    /// 固定加成
     /// </summary>
-    public int NeedVal;
+    public long Val;
    
-    public const int __ID__ = 712038968;
+    public const int __ID__ = 832119924;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -46,8 +46,8 @@ public sealed partial class WantedLevelInfo : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
-        + "level:" + Level + ","
-        + "needVal:" + NeedVal + ","
+        + "attrId:" + AttrId + ","
+        + "val:" + Val + ","
         + "}";
     }
 }

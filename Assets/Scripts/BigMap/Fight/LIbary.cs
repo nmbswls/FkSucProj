@@ -982,7 +982,7 @@ namespace My.Map.Entity
                                 {
                                     new MapAbilityEffectAddResourceCfg()
                                     {
-                                        ResourceId  = AttrIdConsts.UnitHVal,
+                                        ResourceId  = AttrIdConsts.NPCHVal,
                                         AddValue = 50000,
                                     }
                                 }
@@ -1090,7 +1090,7 @@ namespace My.Map.Entity
                                      {
                                         new MapAbilityEffectAddResourceCfg()
                                         {
-                                            ResourceId  = AttrIdConsts.UnitHVal,
+                                            ResourceId  = AttrIdConsts.NPCHVal,
                                             AddValue = 50_000,
                                         }
                                      }
@@ -1147,7 +1147,7 @@ namespace My.Map.Entity
                                     {
                                         new MapAbilityEffectAddResourceCfg()
                                         {
-                                            ResourceId  = AttrIdConsts.UnitHVal,
+                                            ResourceId  = AttrIdConsts.NPCHVal,
                                             AddValue = 50000,
                                         }
                                     }
@@ -1204,7 +1204,7 @@ namespace My.Map.Entity
                                     {
                                         new MapAbilityEffectAddResourceCfg()
                                         {
-                                            ResourceId  = AttrIdConsts.UnitHVal,
+                                            ResourceId  = AttrIdConsts.NPCHVal,
                                             AddValue = 50000,
                                         }
                                     }
@@ -1258,7 +1258,7 @@ namespace My.Map.Entity
                                 {
                                     new MapAbilityEffectAddResourceCfg()
                                     {
-                                        ResourceId  = AttrIdConsts.UnitHVal,
+                                        ResourceId  = AttrIdConsts.NPCHVal,
                                         AddValue = 50000,
                                     }
                                 }
@@ -1312,7 +1312,7 @@ namespace My.Map.Entity
                                     {
                                         new MapAbilityEffectAddResourceCfg()
                                         {
-                                            ResourceId  = AttrIdConsts.UnitHVal,
+                                            ResourceId  = AttrIdConsts.NPCHVal,
                                             AddValue = 50000,
                                         }
                                     }
@@ -1800,7 +1800,7 @@ namespace My.Map.Entity
                                 {
                                     new MapAbilityEffectAddResourceCfg()
                                     {
-                                        ResourceId  = AttrIdConsts.UnitHVal,
+                                        ResourceId  = AttrIdConsts.NPCHVal,
                                         AddValue = 50000,
                                     }
                                 }
@@ -2122,7 +2122,7 @@ namespace My.Map.Entity
                                 {
                                     new MapAbilityEffectAddResourceCfg()
                                     {
-                                        ResourceId = AttrIdConsts.UnitHVal,
+                                        ResourceId = AttrIdConsts.NPCHVal,
                                         AddValue = 42000,
                                     }
                                 }
@@ -3012,7 +3012,7 @@ namespace My.Map.Entity
                     //},
                     new MapAbilityEffectAddResourceCfg()
                     {
-                        ResourceId = AttrIdConsts.UnitHVal,
+                        ResourceId = AttrIdConsts.NPCHVal,
                         AddValue = 10000,
                         IsEnmity = false,
                     },
@@ -3920,7 +3920,7 @@ namespace My.Map.Entity
 
                 var addHEffect = new MapAbilityEffectAddResourceCfg()
                 {
-                    ResourceId = AttrIdConsts.UnitHVal,
+                    ResourceId = AttrIdConsts.NPCHVal,
                     AddValue = 100_000,
                     IsEnmity = false,
                 };

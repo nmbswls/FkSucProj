@@ -535,7 +535,7 @@ namespace My.Map.Entity
                             {
                                 new MapAbilityEffectAddResourceCfg()
                                 {
-                                    ResourceId = AttrIdConsts.UnitHVal,
+                                    ResourceId = AttrIdConsts.NPCHVal,
                                     AddValue = 500,
                                     IsEnmity = true,
                                 }

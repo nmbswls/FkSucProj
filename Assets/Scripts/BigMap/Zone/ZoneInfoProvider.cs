@@ -21,6 +21,8 @@ namespace My
 
         public bool IsForbidden;
         public List<CommonCheckCond> EnableCondition = new();
+
+        public int ZoneBusyValue;
     }
 }
 

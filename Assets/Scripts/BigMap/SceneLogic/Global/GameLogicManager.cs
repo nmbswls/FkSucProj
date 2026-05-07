@@ -113,6 +113,7 @@ namespace My
 
         public GameLogicAreaManager AreaManager;
         public AreaWantedManager WantedManager;
+        public WantedDynamicGuardController WantedGuardSpawner;
 
         public PlayerSystemManager playerDataManager;
         public GameWorldPersistStateManager worldPersistState;
@@ -176,6 +177,8 @@ namespace My
             controlEventManager.Initialize();
 
             WantedManager = new();
+            WantedGuardSpawner = new WantedDynamicGuardController(this);
+            EventOnHardAreaClearStarting += OnWantedGuardAreaClear;
 
             DropUtils.InitializeDropGroups();
 
@@ -312,8 +315,14 @@ namespace My
             globalBuffManager.Tick(dt);
 
             WantedManager?.Tick(dt);
+            WantedGuardSpawner?.Tick(dt);
         }
 
+
+        void OnWantedGuardAreaClear()
+        {
+            WantedGuardSpawner?.ClearAll();
+        }
 
         private void TickStageSwitching()
         {

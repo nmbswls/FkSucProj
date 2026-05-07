@@ -1,46 +1,37 @@
-
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 
 namespace My.Player
 {
-
-    /// <summary>
-    /// 养成提供器
-    /// </summary>
+    // 单个已解锁天赋节点：通过 IProgressionSource 累加固定属性（与 Luban TalentNode.stat_bonuses 对应）
     public class TalentNodeProgressionProvider : IProgressionSource
     {
         public event Action<IProgressionSource> OnStatsChanged;
 
-        private int _level = 1;
-        // 模拟配置表数据：每升一级加多少属性
-        private Dictionary<int, long> _growthRates;
-        private Dictionary<int, long> _baseStats;
+        readonly List<StatPair> _bonuses;
 
-        public EProgressionModule ModuleName => EProgressionModule.Level;
+        public EProgressionModule ModuleName => EProgressionModule.Talent;
 
-        public TalentNodeProgressionProvider()
+        public TalentNodeProgressionProvider(IReadOnlyList<StatPair> bonuses)
         {
-            //_growthRates = new Dictionary<int, float> { { StatID.Health, 100 }, { StatID.Attack, 10 } };
-            //_baseStats = new Dictionary<int, float> { { StatID.Health, 500 }, { StatID.Attack, 50 } };
-        }
-
-        public void SetLevel(int level)
-        {
-            _level = level;
-            OnStatsChanged?.Invoke(this);
+            _bonuses = new List<StatPair>();
+            if (bonuses != null)
+            {
+                _bonuses.AddRange(bonuses);
+            }
         }
 
         public void EvaluateStats(StatMap targetMap)
         {
-            // 逻辑：基础值 + (等级-1 * 成长率)
-            foreach (var pair in _baseStats)
+            for (int i = 0; i < _bonuses.Count; i++)
             {
-                long growth = _growthRates.ContainsKey(pair.Key) ? _growthRates[pair.Key] : 0;
-                long total = pair.Value + ((_level - 1) * growth);
-                targetMap.Add(pair.Key, total);
+                targetMap.Add(_bonuses[i].ID, _bonuses[i].Value);
             }
         }
-    }
 
+        public void NotifyChanged()
+        {
+            OnStatsChanged?.Invoke(this);
+        }
+    }
 }

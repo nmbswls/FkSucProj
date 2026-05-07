@@ -72,6 +72,8 @@ namespace My.Map
                 case AttrIdConsts.Spe_Player_ExtraDmg:
                 case AttrIdConsts.PhysicalResist:
                 case AttrIdConsts.PhysicalResistArmRate:
+                case AttrIdConsts.UnitHShieldMax:
+                    
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
@@ -83,7 +85,8 @@ namespace My.Map
                 case AttrIdConsts.PlayerNaiLi:
                 case AttrIdConsts.PlayerOriginPower:
 
-                case AttrIdConsts.UnitHVal:
+                case AttrIdConsts.NPCHVal:
+                case AttrIdConsts.NPCSJProgress:
                 case AttrIdConsts.UnitHShield:
                     return EAttrType.Resource;
 
