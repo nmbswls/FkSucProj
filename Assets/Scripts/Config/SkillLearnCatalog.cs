@@ -45,13 +45,7 @@ namespace My.Config
 
         public static bool TryGetEntitySkillData(string skillId, out EntitySkillData data)
         {
-            data = null;
-            if (CfgMgr.Cfgs == null || string.IsNullOrEmpty(skillId))
-            {
-                return false;
-            }
-
-            data = CfgMgr.Cfgs.TbEntitySkillData.GetOrDefault(skillId);
+            data = My.Map.Entity.SkillLibrary.GetSkillConfig(skillId);
             return data != null;
         }
     }

@@ -125,6 +125,7 @@ namespace My.Map
                 ablilityManager.ReconcileRegisteredSkills(NpcConfig.SkillList);
             }
 
+            ablilityManager.RegisterSkill("default_h_attack");
 
             abilityController.EventOnInputCancelPhaseStart += () =>
             {
@@ -680,6 +681,17 @@ namespace My.Map
             return true;
         }
 
+
+        public override bool IsEnmityWith(BaseUnitLogicEntity otherUnit)
+        {
+            // 
+            if(otherUnit is PlayerLogicEntity && this.IsFaQing)
+            {
+                return true;
+            }
+
+            return EnmitySystem.IsEnmityWith(otherUnit);
+        }
     }
 }
 

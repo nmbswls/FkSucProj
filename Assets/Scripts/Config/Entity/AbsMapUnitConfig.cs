@@ -9,77 +9,77 @@ using UnityEngine;
 namespace Config.Unit
 {
 
-    [Serializable]
-    public class EntitySkillCfg
-    {
-        public string SkillId;
+    //[Serializable]
+    //public class EntitySkillCfg
+    //{
+    //    public string SkillId;
 
-        public string MainAbilityId;
-        public bool IsPassive;
-        public string PassiveBuffId;
+    //    public string MainAbilityId;
+    //    public bool IsPassive;
+    //    public string PassiveBuffId;
 
-        // 被动 Buff 层数：从 RuntimeAbilityExtraVariables /  AbilityExtraVariables 副本中读该键的整型；为空则用默认键 PassiveLevel
-        public string PassiveBuffLevelVariableKey;
+    //    // 被动 Buff 层数：从 RuntimeAbilityExtraVariables /  AbilityExtraVariables 副本中读该键的整型；为空则用默认键 PassiveLevel
+    //    public string PassiveBuffLevelVariableKey;
 
-        public bool IsCombo;
+    //    public bool IsCombo;
 
-        /// <summary>
-        /// 使用条件
-        /// </summary>
-        public bool NeedHMode;
+    //    /// <summary>
+    //    /// 使用条件
+    //    /// </summary>
+    //    public bool NeedHMode;
 
-        public bool InterruptCombo = true;
+    //    public bool InterruptCombo = true;
 
-        public bool IsDerived;
+    //    public bool IsDerived;
 
-        public float CoolDown = 5.0f;
-        public int StackCount = 0;
+    //    public float CoolDown = 5.0f;
+    //    public int StackCount = 0;
 
-        public string IconPath;
+    //    public string IconPath;
 
 
-        public int Priority = 10;
-        public float DesiredUseAngle;
-        public float DesiredUseDistance;
+    //    public int Priority = 10;
+    //    public float DesiredUseAngle;
+    //    public float DesiredUseDistance;
 
-        public float BufferCacheTime = 0.1f;
+    //    public float BufferCacheTime = 0.1f;
 
-        public Dictionary<string, string> AbilityExtraVariables = new();
+    //    public Dictionary<string, string> AbilityExtraVariables = new();
 
-        public enum ECastConditionType
-        {
-            None,
-            HMode,
+    //    public enum ECastConditionType
+    //    {
+    //        None,
+    //        HMode,
 
-            QueenMode,
-            NoQueenMode,
-        }
+    //        QueenMode,
+    //        NoQueenMode,
+    //    }
 
-        [Serializable]
-        public class CastCondition
-        {
-            public ECastConditionType Type;
-            public long Param1;
-            public long Param2;
-            public string Param3;
-            public string Param4;
-        }
+    //    [Serializable]
+    //    public class CastCondition
+    //    {
+    //        public ECastConditionType Type;
+    //        public long Param1;
+    //        public long Param2;
+    //        public string Param3;
+    //        public string Param4;
+    //    }
 
-        public List<CastCondition> CastConditions = new();
+    //    public List<CastCondition> CastConditions = new();
 
-        //public enum ETargetType
-        //{
-        //    NoTarget,
-        //    Point,
-        //    Circle,
-        //    Rect,
-        //    LockTarget,
-        //    Self,
-        //}
-        //public ETargetType TargetType;
-        //public float Range1;
-        //public float Range2;
-    }
+    //    //public enum ETargetType
+    //    //{
+    //    //    NoTarget,
+    //    //    Point,
+    //    //    Circle,
+    //    //    Rect,
+    //    //    LockTarget,
+    //    //    Self,
+    //    //}
+    //    //public ETargetType TargetType;
+    //    //public float Range1;
+    //    //public float Range2;
+    //}
 
 
     //[Serializable]

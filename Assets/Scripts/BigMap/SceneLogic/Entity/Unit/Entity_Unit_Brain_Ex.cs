@@ -1,7 +1,7 @@
 
 
 using System.Collections.Generic;
-using Config.Unit;
+using cfg.demo;
 using My.Map.Entity;
 using My.Map.Fight;
 using UnityEditor.Experimental.GraphView;
@@ -417,7 +417,7 @@ namespace My.Map.Unit
         private float attackRestTimer = 0; // 暂停攻击逻辑
 
 
-        private EntitySkillCfg? intentSkillCfgOrigin;
+        private EntitySkillData? intentSkillCfgOrigin;
         private MapAbilitySpecConfig? intentAbilityCfgCurrent;
         private bool hasCastAbility;
         private float castOverTimer;

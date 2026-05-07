@@ -445,7 +445,7 @@ namespace My.Player
         public bool TryReplaceSkill(string oldSkillId, string newSkillId) =>
             TryReplaceLearnedSkill(oldSkillId, newSkillId);
 
-        // 入口：更新已学技能在本实体上的能力附加参数（不改全局 SkillLibrary）
+        // 入口：更新已学技能在本实体上的能力附加参数（不修改 Luban 表内 AbilityExtra）
         public bool TryUpdateLearnedSkillAttachedAttributes(string skillId, IReadOnlyDictionary<string, string> updates)
         {
             if (string.IsNullOrEmpty(skillId) || updates == null || updates.Count == 0)

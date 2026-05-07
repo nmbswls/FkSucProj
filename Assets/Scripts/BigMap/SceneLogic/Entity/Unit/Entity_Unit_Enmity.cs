@@ -339,7 +339,7 @@ namespace My.Map
             EnmitySystem = new(this);
         }
 
-        public bool IsEnmityWith(BaseUnitLogicEntity otherUnit)
+        public virtual bool IsEnmityWith(BaseUnitLogicEntity otherUnit)
         {
             return EnmitySystem.IsEnmityWith(otherUnit);
         }

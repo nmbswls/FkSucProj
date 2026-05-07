@@ -1,5 +1,4 @@
 using cfg.demo;
-using Config.Unit;
 using Map.Entity;
 using My.Config;
 using My.Map.Entity;
@@ -9,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
-using static Config.Unit.EntitySkillCfg;
 using static My.Config.LogicInteractOutput;
 using static My.Map.Entity.MapAbilityEffectDashStartCfg;
 using static My.Map.Entity.MapAbilitySpecConfig;
@@ -22,104 +20,62 @@ namespace My.Map.Entity
 
     public static class SkillLibrary
     {
-        public static Dictionary<string, EntitySkillCfg> _skillDict = null;
+        static bool _passiveValidated;
 
-        public static EntitySkillCfg GetSkillConfig(string skillName)
+        // Luban：demo_tbentityskilldata.json ← Config/Datas/skill.xlsx
+        public static EntitySkillData GetSkillConfig(string skillName)
         {
-            if (_skillDict == null)
+            if (string.IsNullOrEmpty(skillName))
             {
-                BuildFromLubanTables();
+                return null;
             }
 
-            _skillDict.TryGetValue(skillName, out var skillCfg);
-            return skillCfg;
-        }
-
-        // 技能定义数据来自 Config/Datas/skill.xlsx（Luban -> demo_tbentityskilldata.json）
-        private static void BuildFromLubanTables()
-        {
-            _skillDict = new Dictionary<string, EntitySkillCfg>();
             var tables = CfgMgr.Cfgs;
             if (tables == null)
             {
                 Debug.LogError("[SkillLibrary] CfgMgr.Cfgs is null. Call CfgMgr.LoadGameConfigs before using skills.");
+                return null;
+            }
+
+            if (!_passiveValidated)
+            {
+                ValidatePassiveSkillRows(tables.TbEntitySkillData);
+                _passiveValidated = true;
+            }
+
+            return tables.TbEntitySkillData.GetOrDefault(skillName);
+        }
+
+        public static Dictionary<string, string> CloneAbilityExtraMap(EntitySkillData row)
+        {
+            var d = new Dictionary<string, string>(StringComparer.Ordinal);
+            if (row?.AbilityExtra == null)
+            {
+                return d;
+            }
+
+            foreach (var p in row.AbilityExtra)
+            {
+                if (p == null || string.IsNullOrEmpty(p.Key))
+                {
+                    continue;
+                }
+
+                d[p.Key] = p.Val ?? "";
+            }
+
+            return d;
+        }
+
+        private static void ValidatePassiveSkillRows(TbEntitySkillData table)
+        {
+            if (table?.DataList == null)
+            {
                 return;
             }
 
-            foreach (var row in tables.TbEntitySkillData.DataList)
+            foreach (var cfg in table.DataList)
             {
-                _skillDict[row.SkillId] = FromLuban(row);
-            }
-
-            ValidatePassiveSkillConfigsInternal();
-        }
-
-        private static EntitySkillCfg FromLuban(EntitySkillData row)
-        {
-            var cfg = new EntitySkillCfg
-            {
-                SkillId = row.SkillId,
-                MainAbilityId = row.MainAbilityId ?? "",
-                IsPassive = row.IsPassive,
-                PassiveBuffId = row.PassiveBuffId ?? "",
-                PassiveBuffLevelVariableKey = row.PassiveBuffLevelVariableKey ?? "",
-                IsCombo = row.IsCombo,
-                NeedHMode = row.NeedHMode,
-                InterruptCombo = row.InterruptCombo,
-                IsDerived = row.IsDerived,
-                CoolDown = row.CoolDown,
-                StackCount = row.StackCount,
-                IconPath = row.IconPath ?? "",
-                Priority = row.Priority,
-                DesiredUseAngle = row.DesiredUseAngle,
-                DesiredUseDistance = row.DesiredUseDistance,
-                BufferCacheTime = row.BufferCacheTime,
-                AbilityExtraVariables = new Dictionary<string, string>(),
-                CastConditions = new List<EntitySkillCfg.CastCondition>(),
-            };
-
-            if (row.AbilityExtra != null)
-            {
-                foreach (var p in row.AbilityExtra)
-                {
-                    if (p == null || string.IsNullOrEmpty(p.Key))
-                    {
-                        continue;
-                    }
-
-                    cfg.AbilityExtraVariables[p.Key] = p.Val ?? "";
-                }
-            }
-
-            if (row.CastConditions != null)
-            {
-                foreach (var c in row.CastConditions)
-                {
-                    if (c == null)
-                    {
-                        continue;
-                    }
-
-                    cfg.CastConditions.Add(new CastCondition
-                    {
-                        Type = (ECastConditionType)(int)c.Type,
-                        Param1 = c.Param1,
-                        Param2 = c.Param2,
-                        Param3 = c.Param3 ?? "",
-                        Param4 = c.Param4 ?? "",
-                    });
-                }
-            }
-
-            return cfg;
-        }
-
-        // 被动技能必须配置 PassiveBuffId，且 BuffLibrary 中存在对应 Buff 定义
-        private static void ValidatePassiveSkillConfigsInternal()
-        {
-            foreach (var kv in _skillDict)
-            {
-                var cfg = kv.Value;
                 if (cfg == null || !cfg.IsPassive)
                 {
                     continue;

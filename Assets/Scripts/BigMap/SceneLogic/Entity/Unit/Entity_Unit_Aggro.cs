@@ -164,7 +164,8 @@ namespace My.Map.Unit
                 var seeOneEntity = _unit.LogicManager.GetLogicEntity(pairInfo.Value.TargetId, false);
                 if (seeOneEntity == null || seeOneEntity is not BaseUnitLogicEntity otherUnit) continue;
 
-                if(!_unit.EnmitySystem.IsEnmityWith(otherUnit))
+
+                if(!_unit.IsEnmityWith(otherUnit))
                 {
                     continue;
                 }

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Config;
-using Config.Unit;
+using cfg.demo;
 using My.UI;
 using Newtonsoft.Json;
 using UnityEditor.Experimental.GraphView;
@@ -450,9 +450,9 @@ namespace My.Map.Entity
         public float cooldown;
         public float stackCount;
 
-        public EntitySkillCfg cacheConfig;
+        public EntitySkillData cacheConfig;
 
-        // 施法用可变副本，避免改到 SkillLibrary 全局配置
+        // 施法用可变副本；表数据为 Luban 行，勿写入 AbilityExtra 列表
         public Dictionary<string, string> RuntimeAbilityExtraVariables;
 
         // 被动 Buff 层：当变量字典无合法整数时使用；合法值 >=1，并受 Buff MaxStackLayer 限制
@@ -514,7 +514,7 @@ namespace My.Map.Entity
             {
                 SkillName = skillId,
                 cacheConfig = skillCfg,
-                RuntimeAbilityExtraVariables = CloneAbilityExtraTemplate(skillCfg.AbilityExtraVariables),
+                RuntimeAbilityExtraVariables = SkillLibrary.CloneAbilityExtraMap(skillCfg),
                 PassiveBuffLayer = 1,
             };
 
@@ -523,23 +523,7 @@ namespace My.Map.Entity
             return true;
         }
 
-        static Dictionary<string, string> CloneAbilityExtraTemplate(Dictionary<string, string> template)
-        {
-            var d = new Dictionary<string, string>(StringComparer.Ordinal);
-            if (template == null)
-            {
-                return d;
-            }
-
-            foreach (var kv in template)
-            {
-                d[kv.Key] = kv.Value;
-            }
-
-            return d;
-        }
-
-        // 合并更新本实体已注册技能的 Ability 覆盖参数（不影响 SkillLibrary）
+        // 合并更新本实体已注册技能的 Ability 覆盖参数（不写回 Luban）
         public bool TryMergeSkillAbilityExtraVariables(string skillId, IReadOnlyDictionary<string, string> updates)
         {
             if (string.IsNullOrEmpty(skillId) || updates == null || updates.Count == 0)
@@ -554,7 +538,7 @@ namespace My.Map.Entity
 
             if (rt.RuntimeAbilityExtraVariables == null)
             {
-                rt.RuntimeAbilityExtraVariables = CloneAbilityExtraTemplate(rt.cacheConfig?.AbilityExtraVariables);
+                rt.RuntimeAbilityExtraVariables = SkillLibrary.CloneAbilityExtraMap(rt.cacheConfig);
             }
 
             foreach (var kv in updates)
@@ -660,7 +644,7 @@ namespace My.Map.Entity
 
         const string DefaultPassiveBuffLevelKey = "PassiveLevel";
 
-        static string GetPassiveBuffLevelVariableKey(EntitySkillCfg cfg)
+        static string GetPassiveBuffLevelVariableKey(EntitySkillData cfg)
         {
             if (cfg == null || string.IsNullOrEmpty(cfg.PassiveBuffLevelVariableKey))
             {
@@ -721,7 +705,7 @@ namespace My.Map.Entity
             rt.PassiveBuffLayer = clamped;
             if (rt.RuntimeAbilityExtraVariables == null)
             {
-                rt.RuntimeAbilityExtraVariables = CloneAbilityExtraTemplate(cfg.AbilityExtraVariables);
+                rt.RuntimeAbilityExtraVariables = SkillLibrary.CloneAbilityExtraMap(cfg);
             }
 
             string key = GetPassiveBuffLevelVariableKey(cfg);
@@ -939,7 +923,7 @@ namespace My.Map.Entity
                 }
             }
 
-            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams: skillRuntime.RuntimeAbilityExtraVariables ?? skillRuntime.cacheConfig?.AbilityExtraVariables))
+            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams: skillRuntime.RuntimeAbilityExtraVariables ?? SkillLibrary.CloneAbilityExtraMap(skillRuntime.cacheConfig)))
             {
                 Debug.Log("UseSkill fail");
                 comboOrchestrator.TransitCombo(0);

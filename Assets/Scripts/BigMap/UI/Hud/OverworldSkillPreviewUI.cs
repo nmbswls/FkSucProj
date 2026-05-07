@@ -1,7 +1,7 @@
 
 
 using System;
-using Config.Unit;
+using cfg.demo;
 using My.Map;
 using My.Map.Entity;
 using TMPro;
@@ -24,7 +24,7 @@ namespace My.UI
         public GameObject PreviewCastRangePrefab;
 
         public TextMeshProUGUI HintText;
-        protected EntitySkillCfg skillCfg;
+        protected EntitySkillData skillCfg;
         protected MapAbilitySpecConfig mainAbilityCfg;
 
 
@@ -56,7 +56,7 @@ namespace My.UI
         {
             //this.PreviewSkillName = skillId;
             this.skillCfg = SkillLibrary.GetSkillConfig(skillId);
-            this.mainAbilityCfg = AbilityLibrary.GetAbilityConfig(skillCfg.MainAbilityId);
+            this.mainAbilityCfg = skillCfg != null ? AbilityLibrary.GetAbilityConfig(skillCfg.MainAbilityId) : null;
 
             this.cbOnConfirm = onConfirm;
 
@@ -64,6 +64,11 @@ namespace My.UI
             PreviewRect.gameObject.SetActive(false);
             PreviewCastRange.SetActive(false);
 
+            if (skillCfg == null || mainAbilityCfg == null)
+            {
+                HUDPanel.CancelSkillCast();
+                return;
+            }
 
             if (mainAbilityCfg.CastType == ECastType.NoTarget)
             {
@@ -116,7 +121,7 @@ namespace My.UI
 
         public void TickPreviewState()
         {
-            if (skillCfg == null)
+            if (skillCfg == null || mainAbilityCfg == null)
             {
                 return;
             }
@@ -181,7 +186,7 @@ namespace My.UI
 
         public void ConfirmSkillCast(Vector2 mousePos)
         {
-            if (skillCfg == null)
+            if (skillCfg == null || mainAbilityCfg == null)
             {
                 return;
             }

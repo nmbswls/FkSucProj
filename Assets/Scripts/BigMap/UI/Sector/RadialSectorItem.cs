@@ -29,14 +29,16 @@ namespace My.UI
             }
 
             var skillCfg = SkillLibrary.GetSkillConfig(skillId);
-
             if (icon != null)
             {
-                icon.sprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillCfg.IconPath}");
-            }
-            else
-            {
-                icon.sprite = null;
+                if (skillCfg != null && !string.IsNullOrEmpty(skillCfg.IconPath))
+                {
+                    icon.sprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillCfg.IconPath}");
+                }
+                else
+                {
+                    icon.sprite = null;
+                }
             }
 
             SetInteractable(interactable);
