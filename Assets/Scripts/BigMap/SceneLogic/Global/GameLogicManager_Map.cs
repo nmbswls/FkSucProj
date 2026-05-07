@@ -212,7 +212,29 @@ namespace My
 
         public void PostNewAreaLoaded()
         {
+            SyncPlayerMagicClothesAfterMapLoad();
+        }
 
+        void SyncPlayerMagicClothesAfterMapLoad()
+        {
+            var player = playerLogicEntity;
+            if (player == null || playerDataManager == null)
+            {
+                return;
+            }
+
+            var magic = playerDataManager.MagicClothes;
+            var cfg = AreaManager.cacheMapCfg;
+            if (cfg != null && cfg.DefaultDisguise)
+            {
+                magic.OnStealthMapPlayerInitialized(player);
+                return;
+            }
+
+            if (magic.IsLockedWithSelection)
+            {
+                magic.ApplyToPlayer(player);
+            }
         }
 
         // 玩家同地图房间传送：仅发事件 + Commit 回调，不直接调 MainGameManager / UI

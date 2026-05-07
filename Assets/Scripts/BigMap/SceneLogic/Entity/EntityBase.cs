@@ -221,6 +221,13 @@ namespace My.Map
             {
                 EntityLocalSwitches.Remove(switchName);
             }
+
+            OnLocalSwitchesMutated();
+        }
+
+        // 具名 NPC 等在 LocalSwitch 变更时同步到 WorldNpcCharacterPersistRegistry，勿挂到 Record 存盘周期
+        protected virtual void OnLocalSwitchesMutated()
+        {
         }
 
         #endregion

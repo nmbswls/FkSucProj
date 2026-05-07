@@ -188,6 +188,11 @@ namespace My.Map
         private float _lowFreqStateTimer;
         private float _highFreqStateTimer;
 
+        private float _magicClothesMoveWearDistanceAccum;
+        private bool _magicClothesMoveWearSampleInit;
+
+        private Vector2 _magicClothesLastWearSamplePos;
+
         public int DesireLevel { get; private set; }
 
         public PlayerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -267,6 +272,17 @@ namespace My.Map
             {
                 IsExposed = true;
             }
+
+            var magic = LogicManager.playerDataManager.MagicClothes;
+            if (magic.IsLockedWithSelection)
+            {
+                magic.ApplyToPlayer(this);
+            }
+
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            {
+                magic.OnStealthMapPlayerInitialized(this);
+            }
         }
 
         protected override void RegisterSpecAttrs()
@@ -336,6 +352,10 @@ namespace My.Map
                             break;
                         }
                     }
+                    break;
+
+                case AttrIdConsts.PlayerClothes:
+                    _dirst_clothes = true;
                     break;
             }
         }
@@ -567,8 +587,6 @@ namespace My.Map
 
             TickResourceChange(1.0f);
 
-            TickRefreshSpiritMonster();
-
             TickApplyAuraHVal();
 
             {
@@ -615,6 +633,8 @@ namespace My.Map
 
             // 检查玩家衣着
             TickPlayerClothesBroken();
+
+            TickMagicClothesMoveWear(0.2f);
 
             // 检查是否进入高潮
             TickGc();
@@ -932,16 +952,7 @@ namespace My.Map
             }
         }
 
-        private float lastRefreshSpiritTime; // 上次更新时间
-
-        /// <summary>
-        /// 检查精灵怪物
-        /// </summary>
-        protected void TickRefreshSpiritMonster()
-        {
-            
-        }
-
+        
 
         /// <summary>
         /// 检查向周围传播hval
@@ -1021,7 +1032,7 @@ namespace My.Map
         private void TickBeingGazedInfo()
         {
 
-            long rawOverRate = 10000;
+            long rawOverRate = GetClothesRawOverRate10000ForGameplay();
             var exposeRate10000 = PlayerGamePlayRule.CalculateBreakClothesInnerRate(GetAttr(AttrIdConsts.PlayerClothes), rawOverRate);
 
             foreach (var key in BeingGazedTrack.Keys.ToList())
@@ -1084,7 +1095,7 @@ namespace My.Map
         }
 
 
-        public void OnGazeEnter(long srcId)
+        public override void OnGazeEnter(long srcId)
         {
             if(!BeingGazedTrack.TryGetValue(srcId, out var info))
             {
@@ -1095,7 +1106,7 @@ namespace My.Map
             BeingGazedTrack[srcId].LastTriggerTime = LogicTime.time;
         }
 
-        public void OnGazeLeave(long srcId)
+        public override void OnGazeLeave(long srcId)
         {
             BeingGazedTrack.Remove(srcId);
         }
@@ -1371,6 +1382,95 @@ namespace My.Map
         }
 
 
+        // 魔力衣装：由 PlayerMagicClothesManager 调整 PlayerClothes 固定上限并刷新关联属性
+        public void ApplyMagicClothesRuntime(long maxClothes)
+        {
+            attributeStore.SetResourceFixMax(AttrIdConsts.PlayerClothes, maxClothes);
+            RefreshClothesRelateYCAttrs();
+        }
+
+        long GetClothesRawOverRate10000ForGameplay()
+        {
+            var magicMgr = LogicManager.playerDataManager.MagicClothes;
+            if (magicMgr.IsLockedWithSelection)
+            {
+                return magicMgr.GetRawOverRate10000ForRefresh();
+            }
+
+            return 10000L;
+        }
+
+        private void TickMagicClothesMoveWear(float interval)
+        {
+            var mgr = LogicManager.playerDataManager.MagicClothes;
+            if (!mgr.ShouldApplyMoveWear(this))
+            {
+                _magicClothesMoveWearSampleInit = false;
+                _magicClothesMoveWearDistanceAccum = 0f;
+                return;
+            }
+
+            var def = mgr.GetActiveDef();
+            if (def == null || def.MoveWearDistancePerCheck <= 0.01f)
+            {
+                return;
+            }
+
+            if (!_magicClothesMoveWearSampleInit)
+            {
+                _magicClothesLastWearSamplePos = Pos;
+                _magicClothesMoveWearSampleInit = true;
+                return;
+            }
+
+            // 仅用实际位移累加：有按键但顶墙不动时 Pos 不变，不会增加磨损距离（与 ShouldApplyMoveWear 的输入条件配合）
+            float moved = Vector2.Distance(Pos, _magicClothesLastWearSamplePos);
+            const float moveWearDisplacementEpsilon = 0.002f;
+            if (moved < moveWearDisplacementEpsilon)
+            {
+                moved = 0f;
+            }
+
+            float maxStep = GetCurrSpeed() * interval * 2f;
+            if (moved > maxStep)
+            {
+                moved = maxStep;
+            }
+
+            _magicClothesLastWearSamplePos = Pos;
+            _magicClothesMoveWearDistanceAccum += moved;
+
+            bool lossed = false;
+            while (_magicClothesMoveWearDistanceAccum >= def.MoveWearDistancePerCheck)
+            {
+                _magicClothesMoveWearDistanceAccum -= def.MoveWearDistancePerCheck;
+                int chance = mgr.GetMoveWearEffectiveChancePermille(def);
+                if (chance <= 0)
+                {
+                    continue;
+                }
+
+                int roll = UnityEngine.Random.Range(0, 1000);
+                if (roll >= chance)
+                {
+                    continue;
+                }
+
+                long loss = mgr.ComputeMoveWearLoss(def);
+                if (loss > 0)
+                {
+                    ApplyResourceChange(AttrIdConsts.PlayerClothes, -loss, false, EDmgFlag.None, null);
+                    lossed = true;
+                }
+            }
+
+            if(lossed)
+            {
+                LogicManager.viewer.ShowFakeFxEffect("撕裂", Pos);
+            }
+
+        }
+
         /// <summary>
         /// 根据当前衣装状态 刷新自身场景内属性
         /// </summary>
@@ -1381,7 +1481,7 @@ namespace My.Map
 
             if (!IsExposed)
             {
-                long rawOverRate = 10000;
+                long rawOverRate = GetClothesRawOverRate10000ForGameplay();
                 applyRate = PlayerGamePlayRule.CalculateBreakClothesInnerRate(clothes, rawOverRate);
             }
 
@@ -1466,6 +1566,11 @@ namespace My.Map
         public override int GetUnitLevel()
         {
             return LogicManager.playerDataManager.Level;
+        }
+
+        public override void InitVisionSystem()
+        {
+
         }
     }
 }

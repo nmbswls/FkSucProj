@@ -107,11 +107,34 @@ namespace My.Map.Unit
                     
                     _infos[conf.CfgId] = conf;
                 }
+                {
+                    var conf = new UnitEnmity4PlayerCfg();
+                    conf.CfgId = "h_spirit";
+                    conf.AlwaysEnmity = true;
+
+                    _infos[conf.CfgId] = conf;
+                }
+                
+
 
                 {
                     var conf = new UnitEnmity4PlayerCfg();
                     conf.CfgId = "default_guard";
-                    conf.AlwaysEnmity = true;
+                    conf.WantedEnmity = true;
+                    conf.Behaves = new List<UnitEnmityBehave>()
+                    {
+                        new UnitEnmityBehave()
+                        {
+                            EnmityType = EEnmityBehaveType.Loot,
+                            Param1 = 40
+                        },
+
+                        new UnitEnmityBehave()
+                        {
+                            EnmityType = EEnmityBehaveType.EnterRoom,
+                            Param1 = 20,
+                        },
+                    };
 
                     _infos[conf.CfgId] = conf;
                 }

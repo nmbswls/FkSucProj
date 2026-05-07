@@ -6,38 +6,29 @@ namespace My.Map
 {
     public partial class NpcUnitLogicEntity
     {
-        ///// <summary>
-        ///// todo 扩充为多个
-        ///// </summary>
-        //public bool IsWatchingPlayer;
+        public override void InitVisionSystem()
+        {
+            VisionSystem = new(this);
 
-        //public virtual bool CanWatch()
-        //{
-        //    return false;
-        //}
+            VisionSystem.EventOnMarkVisible += (targetId) =>
+            {
+                var targetEntity = LogicManager.GetLogicEntity(targetId);
+                if(targetEntity is BaseUnitLogicEntity unitTarget)
+                {
+                    unitTarget.OnGazeEnter(Id);
+                }
+            };
 
-        //public void TickGaze()
-        //{
-        //    if(!CanWatch())
-        //    {
-        //        return;
-        //    }
+            VisionSystem.EventOnMarkHidden += (targetId) =>
+            {
+                var targetEntity = LogicManager.GetLogicEntity(targetId);
+                if (targetEntity is BaseUnitLogicEntity unitTarget)
+                {
+                    unitTarget.OnGazeLeave(Id);
+                }
+            };
 
-        //    IsWatchingPlayer = false;
-
-        //    if(combatStateComp.CombatState != NpcCombatStateComp.ECombatState.NotCombat)
-        //    {
-        //        return;
-        //    }
-
-        //    if (VisibilityComp.IsTargetVisible(LogicManager.playerLogicEntity.Id))
-        //    {
-        //        if(LogicManager.playerLogicEntity.WillBeGazed())
-        //        {
-        //            LogicManager.playerLogicEntity.UpdateWatchedInfo(this.Id);
-        //            IsWatchingPlayer = true;
-        //        }
-        //    }
-        //}
+            
+        }
     }
 }

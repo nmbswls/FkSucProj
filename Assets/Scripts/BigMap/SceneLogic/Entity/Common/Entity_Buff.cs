@@ -17,9 +17,11 @@ namespace My.Map.Entity
 {
     public enum ETriggerType
     {
+        Default,
         Tick,
         OnSkillUsed,
         OnHit,
+        OnDie,
     }
 
 
@@ -895,7 +897,7 @@ namespace My.Map.Entity
                     {
                         foreach(var e in  triggerInfo.config.OutputFightEffects)
                         {
-                            HandleBuffTriggerEffect(e);
+                            HandleBuffTriggerEffect(e, ETriggerType.Tick);
                         }
                     }
                 }
@@ -936,7 +938,7 @@ namespace My.Map.Entity
                 {
                     foreach (var fightEffect in t.config.OutputFightEffects)
                     {
-                        HandleBuffTriggerEffect(fightEffect);
+                        HandleBuffTriggerEffect(fightEffect, triggerType);
                     }
                 }
 
@@ -953,7 +955,7 @@ namespace My.Map.Entity
         /// 处理触发效果
         /// </summary>
         /// <param name="triggerRuntime"></param>
-        protected void HandleBuffTriggerEffect(MapFightEffectCfg fightEffect)
+        protected void HandleBuffTriggerEffect(MapFightEffectCfg fightEffect, ETriggerType triggerType)
         {
             switch (fightEffect)
             {
@@ -978,6 +980,7 @@ namespace My.Map.Entity
 
                         ctx.TriggerPos = BuffOwner.Pos;
                         ctx.TargetId = BuffOwner.Id;
+
 
                         Debug.Log($"HandleBuffTriggerEffect handle trigger effect {fightEffect.GetType()}");
                         BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);
@@ -1040,7 +1043,7 @@ namespace My.Map.Entity
             {
                 foreach(var fightEffect in  Def.OnDetachEffects)
                 {
-                    HandleBuffTriggerEffect(fightEffect);
+                    HandleBuffTriggerEffect(fightEffect, ETriggerType.Default);
                 }
             }
 

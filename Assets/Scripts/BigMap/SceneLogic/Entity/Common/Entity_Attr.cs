@@ -70,7 +70,8 @@ namespace My.Map
                 case AttrIdConsts.Basic_MoveSpeed:
                 case AttrIdConsts.Basic_ExtraDmg:
                 case AttrIdConsts.Spe_Player_ExtraDmg:
-                    
+                case AttrIdConsts.PhysicalResist:
+                case AttrIdConsts.PhysicalResistArmRate:
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
@@ -515,6 +516,24 @@ namespace My.Map
             }
 
             r.current = newVal;
+        }
+
+        // 调整固定上限资源（无 max 数值属性的 Resource）；用于魔力衣装等动态上限
+        public void SetResourceFixMax(string resourceId, long newMax)
+        {
+            if (!resources.TryGetValue(resourceId, out var r))
+            {
+                return;
+            }
+
+            r.maxFixVal = newMax;
+            r.cacheMaxVal = newMax;
+            if (r.current > newMax)
+            {
+                r.current = newMax;
+            }
+
+            r.dirty = true;
         }
 
 

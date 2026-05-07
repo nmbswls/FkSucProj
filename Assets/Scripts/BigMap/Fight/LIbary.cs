@@ -361,8 +361,8 @@ namespace My.Map.Entity
 
                 {
                     var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "default_orc_attack";
-                    cfg.MainAbilityId = "default_orc_attack";
+                    cfg.SkillId = "default_normal_attack";
+                    cfg.MainAbilityId = "default_normal_attack";
                     cfg.CoolDown = 2.0f;
                     cfg.DesiredUseDistance = 1.0f;
 
@@ -372,6 +372,19 @@ namespace My.Map.Entity
                     _skillDict[cfg.SkillId] = cfg;
                 }
 
+                {
+                    var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "default_h_attack";
+                    cfg.MainAbilityId = "default_h_attack";
+                    cfg.CoolDown = 2.0f;
+                    cfg.DesiredUseDistance = 1.0f;
+
+                    cfg.AbilityExtraVariables["DefaultAttackPre"] = "0.5";
+                    cfg.AbilityExtraVariables["DefaultAttackTime"] = "0.4";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+                
                 {
                     var cfg = new EntitySkillCfg();
                     cfg.SkillId = "npc_shoot_01";
@@ -505,7 +518,14 @@ namespace My.Map.Entity
                     var ab = CreateDefaultOrcAttack();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                {
+                    var ab = CreateDefaultHAttack();
+                    _abilityDict[ab.Id] = ab;
+                }
                 
+
+
                 {
                     var ab = CreateDefaultMonsterAttack();
                     _abilityDict[ab.Id] = ab;
@@ -1494,7 +1514,7 @@ namespace My.Map.Entity
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
-            spec.Id = "default_orc_attack";
+            spec.Id = "default_normal_attack"; // 表示一次最简单的挥打
             spec.TypeTag = AbilityTypeTag.Combat;
 
             spec.CastType = ECastType.NoTarget;
@@ -1509,11 +1529,12 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
 
-                AnimTag = "default_attack",
+                AnimTag = "normal_attack",
 
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
+                    RawVal = "0.3",
                     ReferName = "DefaultAttackPre",
                 },
             });
@@ -1545,19 +1566,12 @@ namespace My.Map.Entity
                     {
                         new MapFightEffectApplyDamageCfg()
                         {
-                            BaseDamage = 5000,
                             ExtraDamageRate = new()
                             {
                                 new AttrKvPair(){AttrId = AttrIdConsts.Attack, Val = 10000}
                             },
                             KnockBackForce = 0.4f,
                         },
-                        //new MapAbilityEffectCostResourceCfg()
-                        //{
-                        //    ResourceId  = AttrIdConsts.HP,
-                        //    CostValue = 500,
-                        //    IsEnmity = true,
-                        //},
                     }
                 },
 
@@ -1568,7 +1582,78 @@ namespace My.Map.Entity
             return spec;
         }
 
+        private static MapAbilitySpecConfig CreateDefaultHAttack()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
+            spec.Id = "default_h_attack"; // 表示一次最简单的挥打
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+
+            // 抬手动画
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+
+                AnimTag = "normal_attack",
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3",
+                    ReferName = "DefaultAttackPre",
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3",
+                    ReferName = "DefaultAttackTime"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectHitBoxCfg()
+            {
+                Shape = MapAbilityEffectHitBoxCfg.EShape.Direction,
+                TargetEntityType = EEntityType.Player,
+                CampFilterType = ECampFilterType.NotSelf,
+                Width = 1f,
+                Length = 1.2f,
+
+                HitResult = new()
+                {
+                    OnHitEffects = new()
+                    {
+                        new MapFightEffectApplyDamageCfg()
+                        {
+                            DamageCategory = EDmgCategory.H,
+                            ExtraDamageRate = new()
+                            {
+                                new AttrKvPair(){AttrId = AttrIdConsts.Attack, Val = 10000}
+                            },
+                            KnockBackForce = 0.4f,
+                        },
+                    }
+                },
+
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
 
         private static MapAbilitySpecConfig CreateDefaultMonsterAttack()
         {

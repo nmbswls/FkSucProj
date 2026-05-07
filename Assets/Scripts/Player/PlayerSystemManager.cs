@@ -56,6 +56,8 @@ namespace My.Player
         // RPG Maker 式全局开关（存 PlayerData.GlobalSwitchMap），与地图点位状态语义分离
         public Dictionary<string, bool> GlobalSwitchMap = new();
 
+        public PlayerMagicClothesManager MagicClothes { get; private set; }
+
         public string[] HumanSkillSlots = new string[8];
         public string[] FaQingSkillSlots = new string[8];
 
@@ -88,6 +90,8 @@ namespace My.Player
             FuncOpenSystem = new();
             InventorySystem = new();
             SkillSystem = new PlayerSkillSystem();
+
+            MagicClothes = new PlayerMagicClothesManager(this);
 
             QuickSlotItemSet[0] = "feidao";
 
@@ -132,6 +136,7 @@ namespace My.Player
             FuncOpenSystem.InitSystem(logicManager, savingData);
             InventorySystem.InitSystem(logicManager, savingData);
             SkillSystem.InitSystem(logicManager, savingData);
+            MagicClothes.LoadFromSave(savingData?.PlayerData);
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -149,6 +154,7 @@ namespace My.Player
 
             InventorySystem?.WriteWarehouseToSave(data);
             SkillSystem?.WriteToSave(data);
+            MagicClothes.SaveTo(data.PlayerData);
         }
 
         public bool CheckHasParam(string id)
@@ -191,6 +197,11 @@ namespace My.Player
             //inventoryModel.NormalSlots[6] = new ItemStack() { ItemID = "chanzi", Count = 1 };
         }
 
+
+        public bool TrySelectMagicClothesForStealthEntry(string defId)
+        {
+            return MagicClothes.TrySelectAndLock(defId, logicManager?.playerLogicEntity);
+        }
 
         public void Tick(float dt)
         {

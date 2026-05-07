@@ -68,6 +68,11 @@ namespace My.Map
             get;
         }
 
+        public virtual bool CanUnsensored()
+        {
+            return true;
+        }
+
         public UnitMoveBehaveInfo MoveBehaveInfo;
 
         public CompFightMeleeSlot MeleeSlotManager;
@@ -130,8 +135,9 @@ namespace My.Map
             {
                 InitEnmitySystem();
                 InitAggroSystem();
-                InitVisionSystem();
             }
+
+            InitVisionSystem();
 
             InitGazeModule();
 
@@ -229,7 +235,7 @@ namespace My.Map
 
         public virtual void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
-            if (lastIntent != null && lastIntent.deltaFlags.HasFlag(EDmgFlag.Nonlethal))
+            if (lastIntent != null && lastIntent.deltaFlags.HasFlag(EDmgFlag.Nonlethal) && CanUnsensored())
             {
                 LogicManager.globalBuffManager.RequestAddBuff(this.Id, "unsensored");
                 this.MarkUnsensored = true;
@@ -252,6 +258,11 @@ namespace My.Map
                     Pos = Pos,
                     LastIntent = lastIntent
                 });
+            }
+
+            foreach(var b in BuffContainer.Values)
+            {
+                b.DoBuffTrigger(ETriggerType.OnDie);
             }
 
             TryInterrupt(new InterruptRequest()

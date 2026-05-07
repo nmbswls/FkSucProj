@@ -80,6 +80,10 @@ namespace My.Map.Logic
     [Serializable]
     public class LogicEntityRecord4Npc : LogicEntityRecord4UnitBase
     {
+        // 叙事/档案主键（导出填表）。有 CharacterKey 时 LocalSwitches 在 Spawn 时由 WorldNpcCharacterPersistRegistry 注入；运行时随 SetLocalSwitch 只写 Registry 不写回本 Record 的存盘周期。
+        // MarkDefeated / MarkAttaching / Unsensored 等为当前地图 Record 范畴，不由 CharacterKey 全局档案同步。
+        public string CharacterKey = string.Empty;
+
         public bool IsPeace;
 
         public UnitMoveBehaveInfo.EMoveBehaveType MoveBehaveType;

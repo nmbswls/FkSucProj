@@ -23,6 +23,7 @@ namespace My
         private void Awake()
         {
             Instance = this;
+
         }
 
 
@@ -37,6 +38,8 @@ namespace My
                     _originFeatureState[feature.name] = feature.isActive;
                 }
             }
+
+            SetHuntingDistortionEffect(false);
         }
 
         /// <summary>
@@ -48,7 +51,7 @@ namespace My
             {
                 if(kv.Key == HuntingDesireDistortFeature)
                 {
-                    kv.Value.SetActive(true);
+                    kv.Value.SetActive(isOn);
                 }
             }
         }

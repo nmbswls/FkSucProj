@@ -226,14 +226,23 @@ namespace My.Map
     {
         public UnitVisionSystem VisionSystem { get; set; }
 
-        public void InitVisionSystem()
+        public virtual void InitVisionSystem()
         {
-            VisionSystem = new(this);
+            
         }
 
         public bool IsTargetVisible(long targetId)
         {
             return VisionSystem.IsTargetVisible(targetId);
+        }
+
+        public virtual void OnGazeEnter(long srcId)
+        {
+        }
+
+        public virtual void OnGazeLeave(long srcId)
+        {
+            
         }
     }
 }

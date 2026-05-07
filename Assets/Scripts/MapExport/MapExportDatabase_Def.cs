@@ -108,6 +108,9 @@ namespace My.MapExport
 
         public bool InitUnsensored;
         public bool InitNoLogic;
+
+        // 具名 NPC 跨场景档案主键；空则不走 WorldNpcCharacterPersistRegistry
+        public string CharacterKey = string.Empty;
     }
 
     [Serializable]

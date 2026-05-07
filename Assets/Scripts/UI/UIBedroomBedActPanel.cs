@@ -263,6 +263,8 @@ namespace My.UI
                 UIManager.Instance.HidePanel(panelId);
 
             glm.PreparePlayerSwitchArea(_selected.Id, true);
+
+            glm.PlayerHumanMode = false; // todo 标准化流程
         }
 
         private void OnClickOpenDream()

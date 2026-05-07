@@ -17,6 +17,8 @@ namespace My.Map.Entity
         public EDmgFlag Flags;
 
         public List<AttrKvPair> ExtraAttrInfos;
+
+        public bool IsSelf;
     }
 }
 

@@ -18,6 +18,21 @@ namespace My.Map
         public const float SneakVisionRange = 6f;
         public const float SneakVisionFovDeg = 150f;
 
+        public static string GetHSpiritByPlayerStatus(int desireLevel, int level)
+        {
+            if (desireLevel <= 2) return string.Empty;
+
+            if(level < 10)
+            {
+                return "h_spirit_small_01";
+            }
+            return "h_spirit_small_02";
+        }
+
+        public static long GetHSpiritRestoreSan(string cfgId)
+        {
+            return 5000;
+        }
         public static int GetPleasuAddByGazePower(int playerLevel, int gazePower)
         {
             return 1;

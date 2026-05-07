@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using static My.Map.Entity.MapFightEffectShowEffect;
 
 namespace My.Map.Entity
 {
@@ -18,7 +19,7 @@ namespace My.Map.Entity
                 {
                     BuffId = "player_expose_charm",
 
-                    Desc = "?¡¤?????",
+                    Desc = "?Â·?????",
                     LayerOverrideType = EBuffLayerOverrideType.AddLayer,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerCharm, ModifierValue = 5000 } },
                     DefaultDuration = -1,
@@ -127,7 +128,7 @@ namespace My.Map.Entity
 
 
                 // ????buff?????? ?????????
-                // ??????? ????¦¶???h?
+                // ??????? ????Î§???h?
                 _library["player_clothes_expose"] = new BuffDefinition()
                 {
                     BuffId = "player_clothes_expose",
@@ -386,7 +387,7 @@ namespace My.Map.Entity
                     IsHidden = true,
                 };
 
-                // ??????‰Ø???????
+                // ??????å£º???????
                 _library["player_carry_slow"] = new BuffDefinition()
                 {
                     BuffId = "player_carry_slow",
@@ -465,7 +466,7 @@ namespace My.Map.Entity
                 };
 
 
-                // ?????üf??
+                // ?????é»¤??
                 _library["gc_self_yishang"] = new BuffDefinition()
                 {
                     BuffId = "gc_self_yishang",
@@ -685,7 +686,7 @@ namespace My.Map.Entity
                     },
                 };
 
-                /// §³???????????????
+                /// Ð¡???????????????
                 _library["insertion_debuff_small"] = new BuffDefinition()
                 {
                     BuffId = "insertion_debuff_small",
@@ -731,6 +732,37 @@ namespace My.Map.Entity
                     },
                     DefaultDuration = -1,
                     Icon = "queen_desire_charm_01",
+                };
+
+                _library["h_spirit_killed_give"] = new BuffDefinition()
+                {
+                    BuffId = "h_spirit_killed_give",
+
+                    Desc = "æˆ‘æ­»å•¦",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.OnDie,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddResourceCfg()
+                                {
+                                    ResourceId = AttrIdConsts.PlayerSanity,
+                                    AddValue = 5000,
+                                },
+                                new MapFightEffectShowEffect()
+                                {
+                                    ShowMode = EShowMode.TargetAligned,
+                                    IsFake = true,
+                                },
+                            },
+                            RemoveOnTrigger = true,
+                        }
+                    }
                 };
             }
 

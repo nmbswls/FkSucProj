@@ -14,6 +14,8 @@ namespace My
         private readonly Dictionary<string, FishingSpotRuntimeSave> _fishingRuntime = new();
         private readonly Dictionary<string, RepairPointRuntimeSave> _ruinRuntime = new();
 
+        public readonly WorldNpcCharacterPersistRegistry NpcCharacters = new();
+
         public GameWorldPersistStateManager()
         {
         }
@@ -58,6 +60,8 @@ namespace My
                     };
                 }
             }
+
+            NpcCharacters.LoadFromSave(savingData?.PlayerData?.NpcCharacterPersistByKey);
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -99,6 +103,8 @@ namespace My
                     PutMaterial = put,
                 };
             }
+
+            NpcCharacters.SaveTo(data.PlayerData);
         }
 
         public FishingSpotRuntimeSave GetOrCreateFishingSpotState(string uniqName, string cfgId, int settlementDayIndex)

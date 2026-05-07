@@ -55,6 +55,13 @@ namespace My.Saving
         public List<LearnedSkillLevelEntry> LearnedSkillLevels = new();
 
         public List<string> NormalSkillSlotOverrides = new();
+
+        // 重要具名 NPC：键为 CharacterKey；LocalSwitches 由 Registry 在运行时维护（随 SetLocalSwitch 更新），与单图 Record 存盘周期解耦
+        public Dictionary<string, NpcCharacterPersistData> NpcCharacterPersistByKey = new();
+
+        // 魔力衣装（潜入选定后锁定）
+        public string MagicClothesDefId;
+        public bool MagicClothesLockedForStealth;
     }
 
     [Serializable]
@@ -62,6 +69,12 @@ namespace My.Saving
     {
         public string SkillId;
         public int Level;
+    }
+
+    [Serializable]
+    public class NpcCharacterPersistData
+    {
+        public List<string> LocalSwitches;
     }
 
     [Serializable]
@@ -216,6 +229,7 @@ namespace My.Saving
             data.PlayerData.LearnedSkillIds ??= new List<string>();
             data.PlayerData.LearnedSkillLevels ??= new List<LearnedSkillLevelEntry>();
             data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
+            data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

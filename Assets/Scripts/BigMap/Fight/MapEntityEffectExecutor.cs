@@ -381,8 +381,21 @@ namespace My.Map.Entity
                 Debug.LogError("AbilityFightExecutor4SpecialMoveTo cfg error");
                 return;
             }
+            Vector2 p = Vector2.zero;
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if(realCfg.ShowMode == MapFightEffectShowEffect.EShowMode.TargetAligned)
+            {
+                p = target.Pos;
+            }
 
-            ctx.Env.viewer.ShowSceneFxEffect(realCfg.EffectName, Vector2.zero, Vector2.right);
+            if(realCfg.IsFake)
+            {
+                ctx.Env.viewer.ShowFakeFxEffect(realCfg.EffectName, p);
+            }
+            else
+            {
+                ctx.Env.viewer.ShowSceneFxEffect(realCfg.EffectName, p, Vector2.right);
+            }
         }
     }
 

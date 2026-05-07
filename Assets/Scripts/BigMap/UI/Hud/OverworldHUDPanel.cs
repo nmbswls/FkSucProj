@@ -969,11 +969,10 @@ namespace My.UI
 
         public void SwitchHunterMode()
         {
-            
             if(IsHunterMode)
             {
                 SceneVolumnManager.Instance.EnterHuntingMode(false);
-                URPFeatureController.Instance?.SetHuntingDistortionEffect(true);
+                URPFeatureController.Instance?.SetHuntingDistortionEffect(false);
 
                 //SceneSmallIconLayerPanel.Instance?.Switch();
                 IsHunterMode = false;
@@ -981,7 +980,7 @@ namespace My.UI
             else
             {
                 SceneVolumnManager.Instance.EnterHuntingMode(true);
-                URPFeatureController.Instance?.SetHuntingDistortionEffect(false);
+                URPFeatureController.Instance?.SetHuntingDistortionEffect(true);
                 IsHunterMode = true;
             }
         }

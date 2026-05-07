@@ -57,6 +57,15 @@ namespace My.Map.Unit
                     _configs["default_guard"] = config;
                     config.IsGuard = true;
                 }
+
+                {
+                    //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
+                    var config = new AIBrainConfig();
+                    config.ChaseRange = 999;
+                    config.IdleType = IdleType.Hunting;
+
+                    _configs["h_spirit"] = config;
+                }
             }
 
             _configs.TryGetValue(name, out var result);

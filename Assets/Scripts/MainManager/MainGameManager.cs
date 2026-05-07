@@ -252,7 +252,7 @@ namespace My
 
             if (playerScenePresenter != null)
             {
-                if (playerScenePresenter.PlayerEntity.IsExposed)
+                if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise && playerScenePresenter.PlayerEntity.IsExposed)
                 {
                     postProcessVignette.SetDangerState(true);
                     FovGenerator.NeedMask = false;

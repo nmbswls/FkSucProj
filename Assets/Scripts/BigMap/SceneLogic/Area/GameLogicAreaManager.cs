@@ -296,8 +296,19 @@ namespace My.Map.Logic
             {
                 case EMapLogicEventType.UnitCantAlert:
                     {
-                        var realEv = (MLEUnitDie)ev;
+                        var realEv = (MLEUnitCantAlert)ev;
                         ClearUnitRelateAlert(realEv.EntityId);
+                    }
+                    break;
+
+                case EMapLogicEventType.UnitDie:
+                    {
+                        var realEv = (MLEUnitDie)ev;
+
+                        if (_runningSpriteEntites.Contains(realEv.EntityId))
+                        {
+                            OnHSpiritClear(realEv.EntityId);
+                        }
                     }
                     break;
             }
@@ -374,6 +385,8 @@ namespace My.Map.Logic
 
             // 区域邪恶警戒等
             TickEvilAlerts();
+
+            TickRefreshSpiritMonster();
         }
 
         private float _lowFreqTickTimer = 0;
@@ -729,6 +742,11 @@ namespace My.Map.Logic
             }
 
             if (!Repo.Records.TryGetValue(entityId, out var rec)) return null;
+
+            if (rec is LogicEntityRecord4Npc npcRec)
+            {
+                logicManager.worldPersistState?.NpcCharacters.TryApplyToRecordBeforeSpawn(npcRec);
+            }
 
             var ent = logicManager.CreateEntityByRecord(rec);
             Repo.Loaded[entityId] = ent;

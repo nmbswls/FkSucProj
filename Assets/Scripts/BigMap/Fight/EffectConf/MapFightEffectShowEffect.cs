@@ -12,13 +12,16 @@ namespace My.Map.Entity
         public enum EShowMode
         {
             Fixed,
-            EntityAligned,
+            TargetAligned,
+            CasterAligned,
         }
         public EShowMode ShowMode;
 
         public Vector2 ShowPos;
         public Vector2 ShorRotation;
         public string EffectName;
+
+        public bool IsFake;
     }
 
 }

@@ -124,6 +124,7 @@ namespace My
         public FactionRelationManager factionRelationManager;
 
         public bool PlayerPeaceMode { get; set; } = false;
+        public bool PlayerHumanMode { get; set; } = true;
 
         public void OnGameLogicInit(SaveData saveData)
         {
@@ -329,7 +330,6 @@ namespace My
 
         
 
-
         private HashSet<long> InBattleUnitDict = new();
         public void OnUnitCombatStateUpdate(BaseUnitLogicEntity unit)
         {
@@ -465,22 +465,6 @@ namespace My
                     {
                         var newNpc = new NpcUnitLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                         newEntity = newNpc;
-
-                        newNpc.VisionSystem.EventOnMarkVisible += (targetId) =>
-                        {
-                            if(targetId == playerLogicEntity.Id)
-                            {
-                                playerLogicEntity.OnGazeEnter(newNpc.Id);
-                            }
-                        };
-
-                        newNpc.VisionSystem.EventOnMarkHidden += (targetId) =>
-                        {
-                            if (targetId == playerLogicEntity.Id)
-                            {
-                                playerLogicEntity.OnGazeLeave(newNpc.Id);
-                            }
-                        };
                     }
                     break;
                 case EEntityType.AreaEffect:

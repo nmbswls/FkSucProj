@@ -10,7 +10,7 @@
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
-      "default_orc_attack"
+      "default_normal_attack"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -18,7 +18,8 @@
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
   },
   {
     "id": "initial_orc_02",
@@ -31,7 +32,7 @@
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
-      "default_orc_attack"
+      "default_normal_attack"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -39,7 +40,8 @@
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
   },
   {
     "id": "initial_orc_big",
@@ -52,7 +54,7 @@
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
-      "default_orc_attack"
+      "default_normal_attack"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -60,7 +62,8 @@
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
   },
   {
     "id": "game_init_luca_injured",
@@ -79,7 +82,8 @@
     "not_target": true,
     "always_h_mode": false,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
   },
   {
     "id": "qigai_default",
@@ -98,7 +102,8 @@
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 1,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
   },
   {
     "id": "hunhun",
@@ -111,7 +116,7 @@
     "move_style": 1,
     "ai_brain_id": "default",
     "skill_list": [
-      "default_orc_attack"
+      "default_normal_attack"
     ],
     "is_peace": false,
     "peace_dialog_id": "qigai_01",
@@ -119,7 +124,8 @@
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
   },
   {
     "id": "slime_red",
@@ -140,7 +146,8 @@
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
   },
   {
     "id": "civil",
@@ -159,7 +166,8 @@
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
   },
   {
     "id": "civil_sleeping",
@@ -178,6 +186,214 @@
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false
+  },
+  {
+    "id": "h_spirit_small_01",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_small",
+    "attr_template_id": 300,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
+  },
+  {
+    "id": "h_spirit_small_02",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_small",
+    "attr_template_id": 301,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
+  },
+  {
+    "id": "h_spirit_small_03",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_small",
+    "attr_template_id": 302,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
+  },
+  {
+    "id": "h_spirit_middle_01",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_middle",
+    "attr_template_id": 400,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
+  },
+  {
+    "id": "h_spirit_middle_02",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_middle",
+    "attr_template_id": 401,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
+  },
+  {
+    "id": "h_spirit_middle_03",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_middle",
+    "attr_template_id": 402,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
+  },
+  {
+    "id": "h_spirit_big_01",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_big",
+    "attr_template_id": 501,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
+  },
+  {
+    "id": "h_spirit_big_02",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_big",
+    "attr_template_id": 502,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
+  },
+  {
+    "id": "h_spirit_big_03",
+    "name": "鬼",
+    "desc": "",
+    "prefab_name": "h_spirit_big",
+    "attr_template_id": 503,
+    "emnity_cfg_id": "h_spirit",
+    "faction_id": 6,
+    "move_style": 3,
+    "ai_brain_id": "h_spirit",
+    "skill_list": [
+      "default_h_attack",
+      "h_spirit_killed"
+    ],
+    "is_peace": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true
   }
 ]

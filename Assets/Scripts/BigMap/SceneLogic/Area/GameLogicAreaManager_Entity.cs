@@ -420,6 +420,7 @@ namespace My.Map.Logic
                         unitRecord.EnmityConfId = initInfo4Unit.EnmityConfId;
                         unitRecord.Unsensored = initInfo4Unit.InitUnsensored;
                         unitRecord.MarkNoLogic = initInfo4Unit.InitNoLogic;
+                        unitRecord.CharacterKey = initInfo4Unit.CharacterKey ?? string.Empty;
 
                         record = unitRecord;
                         break;

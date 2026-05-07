@@ -1,6 +1,8 @@
 using Map.Entity;
 using Map.Logic.Events;
 using My.Map.Entity;
+using My.Map.Fight;
+using My.MapExport;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -204,6 +206,85 @@ namespace My.Map.Logic
                 SpawnedWalkerRecords.Add(rec.Id);
             }
         }
+
+
+        #region 处理影怪刷新
+
+        private float lastRefreshSpiritTime; // 上次更新时间
+
+        private List<long> _pendingSpriteEntites = new(); // 存放用于表演的假hspirit
+        private List<long> _runningSpriteEntites = new(); // 存放实例化的hspirit
+
+        private float lastClearHSpiritsTime;
+        /// <summary>
+        /// 检查精灵怪物
+        /// </summary>
+        protected void TickRefreshSpiritMonster()
+        {
+            if(LogicTime.time - lastRefreshSpiritTime < 1.0f)
+            {
+                return;
+            }
+
+            lastRefreshSpiritTime = LogicTime.time;
+
+            if(logicManager.PlayerHumanMode)
+            {
+                return;
+            }
+
+            if(_runningSpriteEntites.Count > 0)
+            {
+                return;
+            }
+
+            if(lastClearHSpiritsTime != 0 && LogicTime.time - lastClearHSpiritsTime < 15.0f)
+            {
+                return;
+            }
+
+            var monsterCfg = PlayerGamePlayRule.GetHSpiritByPlayerStatus(logicManager.playerLogicEntity.DesireLevel, logicManager.playerDataManager.Level);
+
+            var initInfo = new EntityInitInfo4Npc();
+            initInfo.CfgId = monsterCfg;
+            initInfo.Position = logicManager.playerLogicEntity.Pos + new Vector2(2, 2);
+
+            var record = CreateEntityRecordFromInitInfo(initInfo);
+            if (record == null)
+            {
+                Debug.LogError($"TickRefreshSpiritMonster spawn fail.");
+                return;
+            }
+
+            logicManager.AddNewEntityRecord(record);
+
+            _runningSpriteEntites.Add(record.Id);
+        }
+
+        protected void OnHSpiritClear(long entityId)
+        {
+            if (_runningSpriteEntites.Contains(entityId))
+            {
+                _runningSpriteEntites.Remove(entityId);
+
+                if(_runningSpriteEntites.Count == 0)
+                {
+                    lastClearHSpiritsTime = LogicTime.time;
+                }
+
+                Repo.Records.TryGetValue(entityId, out var rawRec);
+
+                var restore = PlayerGamePlayRule.GetHSpiritRestoreSan(rawRec.CfgId);
+                Debug.Log("影怪击杀 恢复"+ restore);
+                {
+                    logicManager.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerSanity, restore, false, FightStruct.EDmgFlag.None, null);
+                }
+            }
+        }
+
+
+
+        #endregion
     }
 }
 

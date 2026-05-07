@@ -86,6 +86,18 @@ namespace My.Map
             this.MoveBehaveInfo.MovePath = npcRecord.MovePath;
         }
 
+        protected override void OnLocalSwitchesMutated()
+        {
+            base.OnLocalSwitchesMutated();
+            var key = NpcRecord.CharacterKey;
+            if (string.IsNullOrEmpty(key) || LogicManager?.worldPersistState == null)
+            {
+                return;
+            }
+
+            LogicManager.worldPersistState.NpcCharacters.ReplaceRuntimeLocalSwitches(key, EntityLocalSwitches);
+        }
+
         public override EEntityType Type => EEntityType.Npc;
 
         public override WorldMapLandmarkKind WorldMapLandmark
@@ -596,6 +608,16 @@ namespace My.Map
             var attrCfg = CfgMgr.Cfgs.TbUnitNpcAttr.GetOrDefault(NpcConfig.AttrTemplateId);
             if (attrCfg == null) return 1;
             return attrCfg.Level;
+        }
+
+        public override bool CanUnsensored()
+        {
+            if(NpcConfig.NoUnsensored)
+            {
+                return false;
+            }
+
+            return true;
         }
 
     }

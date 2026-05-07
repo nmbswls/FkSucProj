@@ -22,6 +22,8 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
         { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
         { if(!_buf["hp"].IsNumber) { throw new SerializationException(); }  Hp = _buf["hp"]; }
         { if(!_buf["move_speed"].IsNumber) { throw new SerializationException(); }  MoveSpeed = _buf["move_speed"]; }
+        { if(!_buf["base_atk"].IsNumber) { throw new SerializationException(); }  BaseAtk = _buf["base_atk"]; }
+        { if(!_buf["h_power"].IsNumber) { throw new SerializationException(); }  HPower = _buf["h_power"]; }
     }
 
     public static UnitNpcAttr DeserializeUnitNpcAttr(JSONNode _buf)
@@ -45,6 +47,14 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
     /// 移速
     /// </summary>
     public float MoveSpeed;
+    /// <summary>
+    /// 基础攻击
+    /// </summary>
+    public float BaseAtk;
+    /// <summary>
+    /// h能力
+    /// </summary>
+    public float HPower;
    
     public const int __ID__ = -1255865693;
     public override int GetTypeId() => __ID__;
@@ -60,6 +70,8 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
         + "level:" + Level + ","
         + "hp:" + Hp + ","
         + "moveSpeed:" + MoveSpeed + ","
+        + "baseAtk:" + BaseAtk + ","
+        + "hPower:" + HPower + ","
         + "}";
     }
 }
