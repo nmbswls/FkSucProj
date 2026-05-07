@@ -30,6 +30,16 @@ namespace My.Map.Entity
 
                 {
                     var cfg = new EntitySkillCfg();
+                    cfg.SkillId = "player_naishou_to_jianshang";
+                    cfg.IsPassive = true;
+                    cfg.PassiveBuffId = "player_naishou_to_jianshang";
+
+                    _skillDict[cfg.SkillId] = cfg;
+                }
+
+
+                {
+                    var cfg = new EntitySkillCfg();
                     cfg.SkillId = "queen_desire_charm_01";
                     cfg.IsPassive = true;
                     cfg.PassiveBuffId = "queen_desire_charm_01";
@@ -393,11 +403,35 @@ namespace My.Map.Entity
 
                     _skillDict[cfg.SkillId] = cfg;
                 }
-                
+                ValidatePassiveSkillConfigsInternal();
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
             return skillCfg;
+        }
+
+        // 被动技能必须配置 PassiveBuffId，且 BuffLibrary 中存在对应 Buff 定义
+        private static void ValidatePassiveSkillConfigsInternal()
+        {
+            foreach (var kv in _skillDict)
+            {
+                var cfg = kv.Value;
+                if (cfg == null || !cfg.IsPassive)
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(cfg.PassiveBuffId))
+                {
+                    Debug.LogWarning($"[SkillLibrary] Passive skill '{cfg.SkillId}' has empty PassiveBuffId.");
+                    continue;
+                }
+
+                if (BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId) == null)
+                {
+                    Debug.LogWarning($"[SkillLibrary] Passive skill '{cfg.SkillId}' PassiveBuffId '{cfg.PassiveBuffId}' missing in BuffLibrary.");
+                }
+            }
         }
     }
 

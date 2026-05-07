@@ -50,7 +50,18 @@ namespace My.Saving
 
         // 技能：已学习列表、Normal 栏位 3~7 的可编辑装配（长度 5，顺序对应槽 3,4,5,6,7）
         public List<string> LearnedSkillIds = new();
+
+        // 与 LearnedSkillIds 对应；未出现的技能在运行时视为等级 1
+        public List<LearnedSkillLevelEntry> LearnedSkillLevels = new();
+
         public List<string> NormalSkillSlotOverrides = new();
+    }
+
+    [Serializable]
+    public class LearnedSkillLevelEntry
+    {
+        public string SkillId;
+        public int Level;
     }
 
     [Serializable]
@@ -203,6 +214,7 @@ namespace My.Saving
             data.PlayerData.HomeProsperity = Math.Max(0, data.PlayerData.HomeProsperity);
             data.PlayerData.HomeCurrentPopulation = Math.Max(0, data.PlayerData.HomeCurrentPopulation);
             data.PlayerData.LearnedSkillIds ??= new List<string>();
+            data.PlayerData.LearnedSkillLevels ??= new List<LearnedSkillLevelEntry>();
             data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();

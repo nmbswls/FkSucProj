@@ -107,10 +107,7 @@ namespace My.Map
 
             if (NpcConfig != null)
             {
-                foreach (var skillId in NpcConfig.SkillList)
-                {
-                    ablilityManager.RegisterSkill(skillId);
-                }
+                ablilityManager.ReconcileRegisteredSkills(NpcConfig.SkillList);
             }
 
 

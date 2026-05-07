@@ -190,6 +190,25 @@ public class ConsoleGM : MonoBehaviour
             });
         
 
+        Register("dump_player_attr", "Print all registered numeric and resource attributes on the player",
+            null,
+            args =>
+            {
+                var glm = MainGameManager.Instance?.gameLogicManager;
+                var player = glm?.playerLogicEntity;
+                if (player == null)
+                {
+                    LogError("playerLogicEntity is null");
+                    return;
+                }
+
+                Log("[GM] === player attributes (registered in AttributeStore) ===");
+                player.DebugGmEnumerateAllAttributes(
+                    (id, val) => { Log($"{id} = {val}"); Debug.Log($"{id} = {val}"); }
+                    );
+                Log("[GM] === end ===");
+            });
+
         Register("shop", "开shop",
             new[] { new CmdParam("shop id", "int，值") },
             args =>
@@ -207,7 +226,7 @@ public class ConsoleGM : MonoBehaviour
             new[] { new CmdParam("val", "int，值") },
             args =>
             {
-                var val = int.Parse(args[0]);
+                var val = int.Parse(args[0]) * 1000;
                 var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
 
                 player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, val, false, FightStruct.EDmgFlag.None, null);

@@ -616,27 +616,12 @@ namespace My.Map
 
         public long GetAttr(string attrId)
         {
-            switch(attrId)
+            if(AttrUtils.GetAttrType(attrId) == EAttrType.Resource)
             {
-                case AttrIdConsts.HP:
-                case AttrIdConsts.PlayerNaiLi:
-                case AttrIdConsts.PlayerHunger:
-                case AttrIdConsts.PlayerSanity:
-                case AttrIdConsts.PlayerClothes:
-                case AttrIdConsts.PlayerPleasure:
-                case AttrIdConsts.UnitHVal:
-                case AttrIdConsts.DeepZhaChance:
-                case AttrIdConsts.UnitHShield:
-                case AttrIdConsts.PlayerOriginPower:
-                case AttrIdConsts.SJProgress:
-                    {
-                        return GetResourceCurrent(attrId);
-                    }
-                default:
-                    {
-                        return GetNumericAttr(attrId);
-                    }
+                return GetResourceCurrent(attrId);
             }
+
+            return GetNumericAttr(attrId);
         }
 
 
@@ -658,6 +643,27 @@ namespace My.Map
             numerics.TryGetValue(attrId, out var e);
             if(e == null ) return false;
             return e.finalValue > 0;
+        }
+
+        // GM / 调试：遍历本实体已注册的数值属性与资源（当前值/上限）
+        public void DebugEnumerateAllAttributes(Action<string, long> emit)
+        {
+            if (emit == null)
+            {
+                return;
+            }
+
+            foreach (var kv in numerics.OrderBy(k => k.Key, StringComparer.Ordinal))
+            {
+                emit(kv.Key, kv.Value.finalValue);
+            }
+
+            foreach (var kv in resources.OrderBy(k => k.Key, StringComparer.Ordinal))
+            {
+                ResourceEntry r = kv.Value;
+                emit(r.resourceId + ".Current", r.current);
+                emit(r.resourceId + ".Max", r.cacheMaxVal);
+            }
         }
         #endregion
     }

@@ -193,6 +193,9 @@ namespace My.UI
         public GameObject botHintTextPrefab;
         public OverworldSkillBar SkilBar;
         public OverworldPlayerBuffBar PlayerBuffBar;
+
+        public Image PleasureBar;
+
         //public OverworldSkillBar ItemBar;
 
         public bool IsHunterMode = false;
@@ -343,6 +346,8 @@ namespace My.UI
                 PlayerHpText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.HP) * 0.001f)).ToString();
                 //PlayerClothesText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) * 0.001f)).ToString();
                 PlayerPleasureText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f)).ToString();
+
+                PleasureBar.fillAmount = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f / 100;
 
                 //PlayerHungerText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerHunger) * 0.001f)).ToString();
                 //PlayerSanText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSan) * 0.001f)).ToString();

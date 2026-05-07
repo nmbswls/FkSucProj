@@ -18,6 +18,9 @@ namespace Config.Unit
         public bool IsPassive;
         public string PassiveBuffId;
 
+        // 被动 Buff 层数：从 RuntimeAbilityExtraVariables /  AbilityExtraVariables 副本中读该键的整型；为空则用默认键 PassiveLevel
+        public string PassiveBuffLevelVariableKey;
+
         public bool IsCombo;
 
         /// <summary>

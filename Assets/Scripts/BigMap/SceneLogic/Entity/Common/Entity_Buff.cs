@@ -10,7 +10,6 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static My.GameLogicManager;
 
 
 
@@ -75,716 +74,15 @@ namespace My.Map.Entity
     }
 
 
-    public static class BuffLibrary
-    {
-        public static Dictionary<string, BuffDefinition> _library;
-        public static BuffDefinition GetBuffDefinition(string buffId)
-        {
-            if(_library == null)
-            {
-                _library = new();
-
-                // 玩家爆衣buff 增加魅力
-                _library["player_expose_charm"] = new BuffDefinition()
-                {
-                    BuffId = "player_expose_charm",
-
-                    Desc = "衣服少了",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerCharm, ModifierValue = 5000 } },
-                    DefaultDuration = -1,
-
-                    Icon = "player_expose_charm",
-                };
-                //
-                
-
-                _library["lock_move"] = new BuffDefinition()
-                {
-                    BuffId = "lock_move",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 } },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-                _library["lock_face"] = new BuffDefinition()
-                {
-                    BuffId = "lock_face",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 } },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["fast_turn"] = new BuffDefinition()
-                {
-                    BuffId = "fast_turn",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.FastTurn, ModifierValue = 1 } },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["immune_knock"] = new BuffDefinition()
-                {
-                    BuffId = "immune_knock",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneKnock, ModifierValue = 1 } },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["super_armor"] = new BuffDefinition()
-                {
-                    BuffId = "super_armor",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.SuperArmor, ModifierValue = 1 } },
-                    DefaultDuration = -1,
-                };
-
-                _library["immune_kaiyou"] = new BuffDefinition()
-                {
-                    BuffId = "immune_kaiyou",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmumeKaiYou, ModifierValue = 1 } },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["player_faqing"] = new BuffDefinition()
-                {
-                    BuffId = "player_faqing",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    //ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmumeKaiYou, ModifierValue = 1 } },
-                    DefaultDuration = -1,
-                };
-
-                _library["player_hungry"] = new BuffDefinition()
-                {
-                    BuffId = "player_hungry",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = 2500 } },
-                    DefaultDuration = -1,
-
-                    Icon = "player_hungry",
-                };
-
-                _library["player_zhazhi"] = new BuffDefinition()
-                {
-                    BuffId = "player_zhazhi",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoKiller, ModifierValue = 1,},
-                    new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_ExtraDmg, ModifierValue = -9000,}},
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-                
-
-                // 当该buff被移除时 恢复一定衣装
-                // 暴露状态下 向周围扩散h值
-                _library["player_clothes_expose"] = new BuffDefinition()
-                {
-                    BuffId = "player_clothes_expose",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    //ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmumeKaiYou, ModifierValue = 1 } },
-
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-                
-
-                _library["player_push_surround_debuff"] = new BuffDefinition()
-                {
-                    BuffId = "player_push_surround_debuff",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -3000 } },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-
-                _library["social_charmed"] = new BuffDefinition()
-                {
-                    BuffId = "social_charmed",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Charmed, ModifierValue = 1 }
-                    },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-
-                _library["force_stun"] = new BuffDefinition()
-                {
-                    BuffId = "force_stun",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
-                    },
-                    DefaultDuration = -1,
-                };
-
-                _library["not_fight_target"] = new BuffDefinition()
-                {
-                    BuffId = "not_fight_target",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoSelect, ModifierValue = 1 } ,
-                    },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["system_no_logic"] = new BuffDefinition()
-                {
-                    BuffId = "system_no_logic",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoSelect, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Sleep, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoInteract, ModifierValue = 1 } ,
-                    },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-
-                _library["immune_evil_shock"] = new BuffDefinition()
-                {
-                    BuffId = "immune_evil_shock",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneEvilShock, ModifierValue = 1 } },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["evil_shock"] = new BuffDefinition()
-                {
-                    BuffId = "evil_shock",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 }
-                    },
-                    OnAttachEffects = new()
-                    { 
-                        new MapFightEffectEasyEffect()
-                        {
-                            EffectText = "惊吓"
-                        },
-                    },
-                    HeadHintPriority = 1,
-                    OnDetachEffects = new()
-                    {
-                        new MapFightEffectTriggerAlert()
-                        {
-                            AlertDuration = 15f,
-                        }
-                    },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["beizha"] = new BuffDefinition()
-                {
-                    BuffId = "beizha",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
-                    ModifierAttrs = new() { 
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 }
-                    },
-                    DurationEffect = new BuffDurationEffet()
-                    {
-                        DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr1 = "test",
-                    },
-                    TriggerList = new()
-                    {
-                        new BuffTriggerRuleConfig()
-                        {
-                            TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 200, // 每0.2秒一次
-                            //OutputEffects = new()
-                            //{
-                            //    new BuffEffectCfg()
-                            //    {
-                            //        EffectType = EBuffEffectType.ShowFx,
-                            //    },
-                            //},
-                            OutputFightEffects = new()
-                            {
-                                new MapAbilityEffectCostResourceCfg()
-                                {
-                                    ResourceId = AttrIdConsts.HP,
-                                    CostValue = 5,
-                                    IsEnmity = true,
-                                    ExtraAttrInfos = new List<AttrKvPair>(){new(){ AttrId  = AttrIdConsts.DamageXiXue, Val = 2000} }
-                                }
-                            }
-                        }
-                    },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["give_hide_aura"] = new BuffDefinition()
-                {
-                    BuffId = "give_hide_aura",
-                    DefaultDuration = -1,
-                    AuraRange = 1.0f,
-                    IsAura = true,
-                    AuraBuffId = "give_hide",
-                    IsHidden = true,
-                };
-
-                _library["give_hide"] = new BuffDefinition()
-                {
-                    BuffId = "give_hide",
-                    DefaultDuration = -1,
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-
-                    ModifierAttrs = new() {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HideView, ModifierValue = 1 } ,
-                    },
-                    IsHidden = true,
-                };
-
-                _library["hide_marked"] = new BuffDefinition()
-                {
-                    BuffId = "hide_marked",
-                    DefaultDuration = -1,
-                    //ModifierAttrs = new() {
-                    //    new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HidingMask, ModifierValue = 1 } ,
-                    //},
-                    IsHidden = true,
-                };
-
-                _library["unsensored"] = new BuffDefinition()
-                {
-                    BuffId = "unsensored",
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                _library["be_fcked"] = new BuffDefinition()
-                {
-                    BuffId = "be_fcked",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
-                    ModifierAttrs = new() {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
-                    },
-                    DurationEffect = new BuffDurationEffet()
-                    {
-                        DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr1 = "test",
-                    },
-                    TriggerList = new()
-                    {
-                        new BuffTriggerRuleConfig()
-                        {
-                            TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 200, // 每0.2秒一次
-                            OutputFightEffects = new()
-                            {
-                                new MapAbilityEffectAddResourceCfg()
-                                {
-                                    ResourceId = AttrIdConsts.PlayerKnockDown,
-                                    AddValue = 2,
-                                    IsEnmity = true,
-                                }
-                            }
-                        }
-                    },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-
-                _library["jingyu"] = new BuffDefinition()
-                {
-                    BuffId = "jingyu",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
-                    DefaultDuration = -1,
-                };
-
-
-                _library["jian_su_self"] = new BuffDefinition()
-                {
-                    BuffId = "jian_su_self",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -8000 } },
-                    DefaultDuration = -1,
-                };
-
-                // 玩家蹲伏：基础移速降低
-                _library["player_crouch_stance"] = new BuffDefinition()
-                {
-                    BuffId = "player_crouch_stance",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -4500 } },
-                    
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                // 搬运尸体：移速降低
-                _library["player_carry_slow"] = new BuffDefinition()
-                {
-                    BuffId = "player_carry_slow",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -7000 } },
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                };
-
-                // 搬运动画覆盖：idle/move/walk -> carry_hold（需要 AnimHolder 里有同名 clip；若没有则表现回退到原动画）
-                _library["player_carry_ov_idle"] = new BuffDefinition()
-                {
-                    BuffId = "player_carry_ov_idle",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                    DurationEffect = new BuffDurationEffet()
-                    {
-                        DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr1 = "idle",
-                        ParamStr2 = "carry_hold",
-                    },
-                };
-
-                _library["player_carry_ov_move"] = new BuffDefinition()
-                {
-                    BuffId = "player_carry_ov_move",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                    DurationEffect = new BuffDurationEffet()
-                    {
-                        DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr1 = "move",
-                        ParamStr2 = "carry_hold",
-                    },
-                };
-
-                _library["player_carry_ov_walk"] = new BuffDefinition()
-                {
-                    BuffId = "player_carry_ov_walk",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    DefaultDuration = -1,
-                    IsHidden = true,
-                    DurationEffect = new BuffDurationEffet()
-                    {
-                        DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr1 = "walk",
-                        ParamStr2 = "carry_hold",
-                    },
-                };
-
-                _library["throwing"] = new BuffDefinition()
-                {
-                    BuffId = "throwing",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() 
-                    { 
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 }
-                    },
-                    DefaultDuration = -1,
-                };
-
-                _library["phase_move"] = new BuffDefinition()
-                {
-                    BuffId = "phase_move",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoSelect, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Ghost, ModifierValue = 1 }
-                    },
-                    DefaultDuration = -1,
-                };
-
-
-                // 玩家发情护盾
-                _library["gc_self_yishang"] = new BuffDefinition()
-                {
-                    BuffId = "gc_self_yishang",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
-                    DefaultDuration = -1,
-
-                    DurationEffect = new BuffDurationEffet()
-                    {
-                        DurationType = EBuffDurationType.HitEffect,
-                        ParamStr1 = "Hit / player_shield",
-                        ParamFloat1 = 0.3f,
-                    },
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Special_YiShang, ModifierValue = 1000 },
-                    },
-                };
-
-
-                // 玩家gc易伤
-                _library["gc_self_yishang"] = new BuffDefinition()
-                {
-                    BuffId = "gc_self_yishang",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
-                    DefaultDuration = -1,
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Special_YiShang, ModifierValue = 1000 },
-                    },
-                };
-
-
-
-
-                _library["gc_self_debuff"] = new BuffDefinition()
-                {
-                    BuffId = "gc_self_debuff",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    DefaultDuration = 5f,
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -5000 },
-                    },
-                };
-
-                _library["ground_gc_liquid"] = new BuffDefinition()
-                {
-                    BuffId = "ground_gc_liquid",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    DefaultDuration = -1,
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HValYiShang, ModifierValue = 1000 },
-                    },
-
-                    TriggerList = new()
-                    {
-                        new BuffTriggerRuleConfig()
-                        {
-                            TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 500, // 每0.5秒一次
-                            OutputFightEffects = new()
-                            {
-                                new MapAbilityEffectAddResourceCfg()
-                                {
-                                    ResourceId = AttrIdConsts.UnitHVal,
-                                    AddValue = 500,
-                                    IsEnmity = true,
-                                }
-                            }
-                        }
-                    },
-                };
-
-                _library["player_stealth"] = new BuffDefinition()
-                {
-                    BuffId = "player_stealth",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    DefaultDuration = -1,
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Ghost, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Invisible, ModifierValue = 1 },
-                    },
-                };
-
-                _library["player_normal_defend_on"] = new BuffDefinition()
-                {
-                    BuffId = "player_normal_defend_on",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    DefaultDuration = -1,
-                    
-                    EffectId = "Skill/player_shield",
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_JianShang, ModifierValue = 5000 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -3000 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneKnock, ModifierValue = 1 },
-                    },
-
-                    DurationEffect = new BuffDurationEffet()
-                    {
-                        DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr1 = "test",
-                    },
-                };
-
-                _library["queen_countering"] = new BuffDefinition()
-                {
-                    BuffId = "queen_countering",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    DefaultDuration = 2.0f,
-                    ZOffsetOverride = 0.2f,
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_JianShang, ModifierValue = 9000 },
-                    },
-
-                    TriggerList = new()
-                    {
-                        new BuffTriggerRuleConfig()
-                        {
-                            TriggerType = ETriggerType.OnHit,
-                            OutputFightEffects = new()
-                            {
-                                new MapAbilityEffectCastSkillCfg()
-                                {
-                                    UseTargetAsTarget = true,
-                                    UseTargetAsCastVec = true,
-                                    SkillId = "queen_counter_payback",
-                                }
-                            },
-                            RemoveOnTrigger = true,
-                        }
-                    },
-                };
-
-                _library["as_attaching"] = new BuffDefinition()
-                {
-                    BuffId = "as_attaching",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    DefaultDuration = -1,
-                    ZOffsetOverride = 0.08f,
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HideView, ModifierValue = 1 },
-                    },
-                };
-
-                _library["attach_small"] = new BuffDefinition()
-                {
-                    BuffId = "attach_small",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
-                    DefaultDuration = -1,
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_PleasureAdd, ModifierValue = 20 },
-                    },
-                };
-
-
-                _library["queen_mode_on"] = new BuffDefinition()
-                {
-                    BuffId = "queen_mode_on",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    DefaultDuration = 15.0f,
-
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_KnockResistent, ModifierValue = 8000 },
-                    },
-
-                    OnDetachEffects = new()
-                    {
-                        new MapFightEffectQueueModeCfg()
-                        {
-                            InEnter = false
-                        }
-                    },
-                };
-
-                _library["player_ziwei"] = new BuffDefinition()
-                {
-                    BuffId = "player_ziwei",
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_PleasureAdd, ModifierValue = 100 },
-                    },
-                    DefaultDuration = -1,
-
-                    TriggerList = new()
-                    {
-                        new BuffTriggerRuleConfig()
-                        {
-                            TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 1000, // 每0.2秒一次
-                            OutputFightEffects = new()
-                            {
-                                new MapFightEffectBroadcastAttractCfg()
-                                {
-                                    Power = 0.8f,
-                                    Range = 5f,
-                                }
-                            }
-                        }
-                    },
-                };
-
-                /// 小物品产生的阶段性冲击
-                _library["insertion_debuff_small"] = new BuffDefinition()
-                {
-                    BuffId = "insertion_debuff_small",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
-                    },
-                    DefaultDuration = 0.5f,
-
-                    OnAttachEffects = new()
-                    {
-                        new MapAbilityEffectAddResourceCfg()
-                        {
-                            ResourceId = AttrIdConsts.PlayerPleasure,
-                            AddValue = 200,
-                        }
-                    },
-                };
-
-                _library["dark_dance"] = new BuffDefinition()
-                {
-                    BuffId = "dark_dance",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new()
-                    {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Invisible, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = 5000 },
-                    },
-                    EffectId = "dark_dance_aura",
-                    DefaultDuration = 5f,
-                };
-            }
-
-
-            _library.TryGetValue(buffId, out BuffDefinition def);
-            return def;
-        }
-    }
-
+    
     public enum EBuffDurationType
     {
         Invalid,
         AnimOverride,
         HitEffect, // ParamStr:效果名  ParamFloat1:单次时间
+
+        // RelativeAttr: ParamStr1=源属性A, ParamStr2=目标属性B上的独立加成, ParamFloat1=比例(结果=floor(A*比例*层数))
+        RelativeAttr,
     }
 
     [Serializable]
@@ -799,6 +97,152 @@ namespace My.Map.Entity
 
         public bool CommonFlag1;
         public bool CommonFlag2;
+    }
+
+    // Buff 持续时间侧效果：与 Lifetime 并行，按 DurationType 多态处理持续期逻辑。
+    public abstract class BuffDurationInstanceBase
+    {
+        public abstract void OnBuffConfigureChanged(BuffInstance inst);
+        public abstract void OnDetached(BuffInstance inst);
+        public abstract void OnTick(BuffInstance inst, float dt);
+    }
+
+    internal static class BuffDurationInstanceFactory
+    {
+        internal const string RelativeAttrModAbilitySlot = "__BuffDuration_RelativeAttr";
+
+        public static BuffDurationInstanceBase Create(BuffDurationEffet eff)
+        {
+            if (eff == null)
+            {
+                return null;
+            }
+
+            switch (eff.DurationType)
+            {
+                case EBuffDurationType.RelativeAttr:
+                    return new BuffDurationRelativeAttrInstance(eff);
+                default:
+                    return null;
+            }
+        }
+    }
+
+    // RelativeAttr：依据持有者属性 A 按比例折算为对属性 B 的独立 Modifier，Tick 检测 A 变化并刷新。
+    internal sealed class BuffDurationRelativeAttrInstance : BuffDurationInstanceBase
+    {
+        private readonly string _srcAttrId;
+        private readonly string _dstAttrId;
+        private readonly float _ratio;
+        private Modifier _linkedMod;
+        private long _lastSrcSnapshot;
+
+        public BuffDurationRelativeAttrInstance(BuffDurationEffet cfg)
+        {
+            _srcAttrId = cfg.ParamStr1;
+            _dstAttrId = cfg.ParamStr2;
+            _ratio = cfg.ParamFloat1;
+        }
+
+        public override void OnBuffConfigureChanged(BuffInstance inst)
+        {
+            if (!IsConfigValid(inst))
+            {
+                return;
+            }
+
+            var owner = inst.BuffOwner;
+            long srcNow = owner.GetAttr(_srcAttrId);
+            _lastSrcSnapshot = srcNow;
+            ApplyMod(inst, owner, ComputeModValue(srcNow, inst.Layer));
+        }
+
+        public override void OnDetached(BuffInstance inst)
+        {
+            if (_linkedMod != null && inst.BuffOwner != null)
+            {
+                inst.BuffOwner.ExpireModifierBySource(_linkedMod.source);
+            }
+
+            _linkedMod = null;
+            _lastSrcSnapshot = 0;
+        }
+
+        public override void OnTick(BuffInstance inst, float dt)
+        {
+            if (!IsConfigValid(inst))
+            {
+                return;
+            }
+
+            var owner = inst.BuffOwner;
+            long srcNow = owner.GetAttr(_srcAttrId);
+            if (srcNow == _lastSrcSnapshot && _linkedMod != null)
+            {
+                return;
+            }
+
+            _lastSrcSnapshot = srcNow;
+            ApplyMod(inst, owner, ComputeModValue(srcNow, inst.Layer));
+        }
+
+        private bool IsConfigValid(BuffInstance inst)
+        {
+            if (string.IsNullOrEmpty(_srcAttrId) || string.IsNullOrEmpty(_dstAttrId))
+            {
+                return false;
+            }
+
+            return inst.BuffOwner != null;
+        }
+
+        private static ModSourceKey MakeSourceKey(BuffInstance inst)
+        {
+            return new ModSourceKey()
+            {
+                entityId = inst.CasterId,
+                buffId = inst.InstanceId,
+                abilityName = BuffDurationInstanceFactory.RelativeAttrModAbilitySlot,
+            };
+        }
+
+        private long ComputeModValue(long srcAttrValue, int layer)
+        {
+            double v = srcAttrValue * _ratio;
+            if (layer != 1)
+            {
+                v *= layer;
+            }
+
+            if (v > long.MaxValue)
+            {
+                return long.MaxValue;
+            }
+
+            if (v < long.MinValue)
+            {
+                return long.MinValue;
+            }
+
+            return (long)v;
+        }
+
+        private void ApplyMod(BuffInstance inst, IEntityBuffOwner owner, long modVal)
+        {
+            if (_linkedMod == null)
+            {
+                _linkedMod = owner.AddAttrModifier(MakeSourceKey(inst), _dstAttrId, modVal);
+                return;
+            }
+
+            if (_linkedMod.value == modVal)
+            {
+                return;
+            }
+
+            _linkedMod.value = modVal;
+            owner.UpdateAttrModifier(_linkedMod);
+        }
     }
 
 
@@ -1337,6 +781,8 @@ namespace My.Map.Entity
 
         public AuraRuntimeInfo? auraRuntimeInfo = null;
 
+        private readonly BuffDurationInstanceBase _durationLogic;
+
         public BuffInstance(IEntityBuffOwner owner, long instId, string buffId, int layer, float lifeTIme = -1, long? casterId = null, long? srcBuffId = null)
         {
             this.InstanceId = instId;
@@ -1350,6 +796,7 @@ namespace My.Map.Entity
 
 
             Def = BuffLibrary.GetBuffDefinition(buffId);
+            _durationLogic = BuffDurationInstanceFactory.Create(Def.DurationEffect);
 
             foreach (var trigger in Def.TriggerList)
             {
@@ -1403,6 +850,8 @@ namespace My.Map.Entity
             {
                 leOwner.NotifyAnimLayerRefreshIfAnimOverrideBuff(Def);
             }
+
+            _durationLogic?.OnBuffConfigureChanged(this);
         }
 
 
@@ -1456,6 +905,8 @@ namespace My.Map.Entity
             {
                 TickAuraEffect();
             }
+
+            _durationLogic?.OnTick(this, dt);
         }
 
         public void DoBuffTrigger(ETriggerType triggerType)
@@ -1517,13 +968,13 @@ namespace My.Map.Entity
                     {
                         long srcEntity = CasterId;
 
-                        var srcInfo = new EffectSourceInfo()
+                        var srcInfo = new GameLogicManager.EffectSourceInfo()
                         {
-                            SrcType = ESourceType.BuffEffect,
+                            SrcType = GameLogicManager.ESourceType.BuffEffect,
                             SrcEntityId = srcEntity,
                             SrcBuffId = InstanceId,
                         };
-                        var ctx = new LogicFightEffectContext(BuffOwner.BuffManager.logicManager, EFightCtxType.Buff, srcInfo);
+                        var ctx = new GameLogicManager.LogicFightEffectContext(BuffOwner.BuffManager.logicManager, GameLogicManager.EFightCtxType.Buff, srcInfo);
 
                         ctx.TriggerPos = BuffOwner.Pos;
                         ctx.TargetId = BuffOwner.Id;
@@ -1592,6 +1043,8 @@ namespace My.Map.Entity
                     HandleBuffTriggerEffect(fightEffect);
                 }
             }
+
+            _durationLogic?.OnDetached(this);
 
             if (registeredModifiers != null)
             {

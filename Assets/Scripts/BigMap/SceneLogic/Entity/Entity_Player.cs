@@ -343,14 +343,35 @@ namespace My.Map
 
         public float applyHValTimer;
 
+        // 与 PlayerSkillList 对齐技能运行时；失去/替换技能时需调用以解绑旧被动 Buff
+        public void ReconcileSkillsWithLearnedList(IReadOnlyCollection<string> skillIds)
+        {
+            ablilityManager?.ReconcileRegisteredSkills(skillIds);
+        }
+
+        // 更新已注册技能的能力覆盖字典（仅本实体，不改表）
+        public bool TryUpdateSkillAttachedAttributes(string skillId, IReadOnlyDictionary<string, string> updates)
+        {
+            return ablilityManager != null && ablilityManager.TryMergeSkillAbilityExtraVariables(skillId, updates);
+        }
+
+        public bool TrySetPassiveSkillBuffLayer(string skillId, int layer)
+        {
+            return ablilityManager != null && ablilityManager.TrySetPassiveSkillBuffLayer(skillId, layer);
+        }
+
+        // 仅本实体运行时替换技能 id（NPC 等无「已学列表」时用）；玩家优先走 PlayerSystemManager.TryReplaceSkill
+        public bool TryReplaceRegisteredSkillOnEntity(string oldSkillId, string newSkillId)
+        {
+            return ablilityManager != null && ablilityManager.TryReplaceRegisteredSkill(oldSkillId, newSkillId);
+        }
+
         protected override void InitAbility()
         {
             base.InitAbility();
 
-            foreach(var skill in LogicManager.playerDataManager.PlayerSkillList)
-            {
-                ablilityManager.RegisterSkill(skill);
-            }
+            ablilityManager.ReconcileRegisteredSkills(LogicManager.playerDataManager.PlayerSkillList);
+            LogicManager.playerDataManager.ApplyLearnedPassiveBuffLayersToPlayerEntity();
 
             abilityController.EventOnUseAbility += (abilityName) =>
             {

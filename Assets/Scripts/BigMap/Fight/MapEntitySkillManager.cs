@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Config;
 using Config.Unit;
 using My.UI;
@@ -450,6 +451,15 @@ namespace My.Map.Entity
         public float stackCount;
 
         public EntitySkillCfg cacheConfig;
+
+        // 施法用可变副本，避免改到 SkillLibrary 全局配置
+        public Dictionary<string, string> RuntimeAbilityExtraVariables;
+
+        // 被动 Buff 层：当变量字典无合法整数时使用；合法值 >=1，并受 Buff MaxStackLayer 限制
+        public int PassiveBuffLayer = 1;
+
+        // 被动技能绑定 Buff：RegisterSkill 时附加，UnregisterSkill 时按实例移除
+        public long PassiveBuffBoundInstanceId;
     }
 
     public class MapEntitySkillManager
@@ -503,11 +513,312 @@ namespace My.Map.Entity
             var newState = new SkillRuntime()
             {
                 SkillName = skillId,
-                cacheConfig = skillCfg
+                cacheConfig = skillCfg,
+                RuntimeAbilityExtraVariables = CloneAbilityExtraTemplate(skillCfg.AbilityExtraVariables),
+                PassiveBuffLayer = 1,
             };
 
             SkillRuntimes[newState.SkillName] = newState;
+            TryAttachPassiveBuffForRuntime(newState);
             return true;
+        }
+
+        static Dictionary<string, string> CloneAbilityExtraTemplate(Dictionary<string, string> template)
+        {
+            var d = new Dictionary<string, string>(StringComparer.Ordinal);
+            if (template == null)
+            {
+                return d;
+            }
+
+            foreach (var kv in template)
+            {
+                d[kv.Key] = kv.Value;
+            }
+
+            return d;
+        }
+
+        // 合并更新本实体已注册技能的 Ability 覆盖参数（不影响 SkillLibrary）
+        public bool TryMergeSkillAbilityExtraVariables(string skillId, IReadOnlyDictionary<string, string> updates)
+        {
+            if (string.IsNullOrEmpty(skillId) || updates == null || updates.Count == 0)
+            {
+                return false;
+            }
+
+            if (!SkillRuntimes.TryGetValue(skillId, out var rt))
+            {
+                return false;
+            }
+
+            if (rt.RuntimeAbilityExtraVariables == null)
+            {
+                rt.RuntimeAbilityExtraVariables = CloneAbilityExtraTemplate(rt.cacheConfig?.AbilityExtraVariables);
+            }
+
+            foreach (var kv in updates)
+            {
+                if (string.IsNullOrEmpty(kv.Key))
+                {
+                    continue;
+                }
+
+                rt.RuntimeAbilityExtraVariables[kv.Key] = kv.Value;
+            }
+
+            if (rt.cacheConfig is { IsPassive: true } && !string.IsNullOrEmpty(rt.cacheConfig.PassiveBuffId))
+            {
+                TryAttachPassiveBuffForRuntime(rt);
+            }
+
+            return true;
+        }
+
+        // 检查已注册技能中的被动项，补挂缺失的 PassiveBuff（例如读档后 Buff 被清空）
+        public void SyncPassiveBuffBindings()
+        {
+            foreach (var rt in SkillRuntimes.Values)
+            {
+                TryAttachPassiveBuffForRuntime(rt);
+            }
+        }
+
+        public bool UnregisterSkill(string skillId)
+        {
+            if (!SkillRuntimes.TryGetValue(skillId, out var rt))
+            {
+                return false;
+            }
+
+            DetachPassiveBuffBinding(rt);
+            SkillRuntimes.Remove(skillId);
+            return true;
+        }
+
+        // 与外部「已拥有技能列表」对齐：多出的技能 Unregister（会解绑被动 Buff），缺少的 Register
+        public void ReconcileRegisteredSkills(IReadOnlyCollection<string> desiredSkillIds)
+        {
+            var want = new HashSet<string>(StringComparer.Ordinal);
+            if (desiredSkillIds != null)
+            {
+                foreach (var id in desiredSkillIds)
+                {
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        want.Add(id);
+                    }
+                }
+            }
+
+            foreach (var key in SkillRuntimes.Keys.ToArray())
+            {
+                if (!want.Contains(key))
+                {
+                    UnregisterSkill(key);
+                }
+            }
+
+            foreach (var id in want)
+            {
+                if (!SkillRuntimes.ContainsKey(id))
+                {
+                    RegisterSkill(id);
+                }
+            }
+
+            SyncPassiveBuffBindings();
+        }
+
+        // 无「已学列表」场景下直接替换运行时技能（如 NPC）；先卸旧再挂新
+        public bool TryReplaceRegisteredSkill(string oldSkillId, string newSkillId)
+        {
+            if (string.IsNullOrEmpty(oldSkillId) || string.IsNullOrEmpty(newSkillId))
+            {
+                return false;
+            }
+
+            if (string.Equals(oldSkillId, newSkillId, StringComparison.Ordinal))
+            {
+                return SkillRuntimes.ContainsKey(oldSkillId);
+            }
+
+            if (!SkillRuntimes.ContainsKey(oldSkillId))
+            {
+                return false;
+            }
+
+            if (SkillRuntimes.ContainsKey(newSkillId))
+            {
+                UnregisterSkill(oldSkillId);
+                return true;
+            }
+
+            UnregisterSkill(oldSkillId);
+            return RegisterSkill(newSkillId);
+        }
+
+        const string DefaultPassiveBuffLevelKey = "PassiveLevel";
+
+        static string GetPassiveBuffLevelVariableKey(EntitySkillCfg cfg)
+        {
+            if (cfg == null || string.IsNullOrEmpty(cfg.PassiveBuffLevelVariableKey))
+            {
+                return DefaultPassiveBuffLevelKey;
+            }
+
+            return cfg.PassiveBuffLevelVariableKey;
+        }
+
+        int GetResolvedPassiveBuffLayer(SkillRuntime rt)
+        {
+            var cfg = rt.cacheConfig;
+            if (cfg == null || string.IsNullOrEmpty(cfg.PassiveBuffId))
+            {
+                return 1;
+            }
+
+            string key = GetPassiveBuffLevelVariableKey(cfg);
+            int layer = rt.PassiveBuffLayer;
+            if (rt.RuntimeAbilityExtraVariables != null &&
+                rt.RuntimeAbilityExtraVariables.TryGetValue(key, out var raw) &&
+                int.TryParse(raw, out var parsed))
+            {
+                layer = parsed;
+            }
+
+            layer = Math.Max(1, layer);
+            BuffDefinition def = BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId);
+            if (def != null && def.MaxStackLayer > 0)
+            {
+                layer = Math.Min(layer, def.MaxStackLayer);
+            }
+
+            return layer;
+        }
+
+        // 设置被动等级（Buff 层数）：同步 Runtime 字典并刷新已绑定的 Buff 实例；不配 PassiveBuffLevelVariableKey 时默认键 PassiveLevel
+        public bool TrySetPassiveSkillBuffLayer(string skillId, int layer)
+        {
+            if (string.IsNullOrEmpty(skillId) || !SkillRuntimes.TryGetValue(skillId, out var rt))
+            {
+                return false;
+            }
+
+            var cfg = rt.cacheConfig;
+            if (cfg == null || !cfg.IsPassive || string.IsNullOrEmpty(cfg.PassiveBuffId))
+            {
+                return false;
+            }
+
+            int clamped = Math.Max(1, layer);
+            BuffDefinition def = BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId);
+            if (def != null && def.MaxStackLayer > 0)
+            {
+                clamped = Math.Min(clamped, def.MaxStackLayer);
+            }
+
+            rt.PassiveBuffLayer = clamped;
+            if (rt.RuntimeAbilityExtraVariables == null)
+            {
+                rt.RuntimeAbilityExtraVariables = CloneAbilityExtraTemplate(cfg.AbilityExtraVariables);
+            }
+
+            string key = GetPassiveBuffLevelVariableKey(cfg);
+            rt.RuntimeAbilityExtraVariables[key] = clamped.ToString();
+            TryAttachPassiveBuffForRuntime(rt);
+            return true;
+        }
+
+        void TryAttachPassiveBuffForRuntime(SkillRuntime rt)
+        {
+            var cfg = rt.cacheConfig;
+            if (cfg == null || !cfg.IsPassive)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(cfg.PassiveBuffId))
+            {
+                Debug.LogWarning($"[Skill] Passive skill '{cfg.SkillId}' has empty PassiveBuffId.");
+                return;
+            }
+
+            if (BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId) == null)
+            {
+                Debug.LogWarning($"[Skill] Passive skill '{cfg.SkillId}' PassiveBuffId '{cfg.PassiveBuffId}' not found in BuffLibrary.");
+                return;
+            }
+
+            if (OwnerEntity == null)
+            {
+                return;
+            }
+
+            int wantLayer = GetResolvedPassiveBuffLayer(rt);
+
+            if (rt.PassiveBuffBoundInstanceId != 0
+                && OwnerEntity.BuffContainer.TryGetValue(rt.PassiveBuffBoundInstanceId, out var boundInst)
+                && boundInst != null
+                && boundInst.BuffId == cfg.PassiveBuffId)
+            {
+                if (boundInst.Layer != wantLayer)
+                {
+                    boundInst.SetBuffLayerDirect(wantLayer);
+                }
+
+                return;
+            }
+
+            if (OwnerEntity.BuffManager.CheckHasBuff(OwnerEntity.Id, cfg.PassiveBuffId))
+            {
+                BuffInstance chosen = null;
+                foreach (var kv in OwnerEntity.BuffContainer)
+                {
+                    if (kv.Value == null || kv.Value.BuffId != cfg.PassiveBuffId)
+                    {
+                        continue;
+                    }
+
+                    if (kv.Value.CasterId == OwnerEntity.Id)
+                    {
+                        chosen = kv.Value;
+                        break;
+                    }
+
+                    chosen ??= kv.Value;
+                }
+
+                if (chosen != null)
+                {
+                    rt.PassiveBuffBoundInstanceId = chosen.InstanceId;
+                    if (chosen.Layer != wantLayer)
+                    {
+                        chosen.SetBuffLayerDirect(wantLayer);
+                    }
+
+                    return;
+                }
+            }
+
+            rt.PassiveBuffBoundInstanceId = OwnerEntity.BuffManager.AddBuff(
+                OwnerEntity.Id,
+                cfg.PassiveBuffId,
+                layer: wantLayer,
+                overrideDuration: -1,
+                casterId: OwnerEntity.Id);
+        }
+
+        void DetachPassiveBuffBinding(SkillRuntime rt)
+        {
+            if (OwnerEntity == null || rt.PassiveBuffBoundInstanceId == 0)
+            {
+                rt.PassiveBuffBoundInstanceId = 0;
+                return;
+            }
+
+            OwnerEntity.BuffManager.RequestRemoveBuff(OwnerEntity, rt.PassiveBuffBoundInstanceId);
+            rt.PassiveBuffBoundInstanceId = 0;
         }
 
         public void Tick(float dt)
@@ -628,7 +939,7 @@ namespace My.Map.Entity
                 }
             }
 
-            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams:skillRuntime.cacheConfig.AbilityExtraVariables))
+            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams: skillRuntime.RuntimeAbilityExtraVariables ?? skillRuntime.cacheConfig?.AbilityExtraVariables))
             {
                 Debug.Log("UseSkill fail");
                 comboOrchestrator.TransitCombo(0);

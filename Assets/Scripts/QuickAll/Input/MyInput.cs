@@ -280,6 +280,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill"",
+                    ""type"": ""Button"",
+                    ""id"": ""dbdfc528-a4dd-4586-bf0a-89df5f69669e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -557,6 +566,17 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""action"": ""SceneCancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""200970e8-ef20-4518-bdde-bb242b1ff9b7"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -642,6 +662,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_HView = m_OverworldMap.FindAction("HView", throwIfNotFound: true);
         m_OverworldMap_Crouch = m_OverworldMap.FindAction("Crouch", throwIfNotFound: true);
         m_OverworldMap_SceneCancel = m_OverworldMap.FindAction("SceneCancel", throwIfNotFound: true);
+        m_OverworldMap_Skill = m_OverworldMap.FindAction("Skill", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -751,6 +772,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_HView;
     private readonly InputAction m_OverworldMap_Crouch;
     private readonly InputAction m_OverworldMap_SceneCancel;
+    private readonly InputAction m_OverworldMap_Skill;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -847,6 +869,10 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SceneCancel => m_Wrapper.m_OverworldMap_SceneCancel;
         /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/Skill".
+        /// </summary>
+        public InputAction @Skill => m_Wrapper.m_OverworldMap_Skill;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_OverworldMap; }
@@ -935,6 +961,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @SceneCancel.started += instance.OnSceneCancel;
             @SceneCancel.performed += instance.OnSceneCancel;
             @SceneCancel.canceled += instance.OnSceneCancel;
+            @Skill.started += instance.OnSkill;
+            @Skill.performed += instance.OnSkill;
+            @Skill.canceled += instance.OnSkill;
         }
 
         /// <summary>
@@ -1009,6 +1038,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @SceneCancel.started -= instance.OnSceneCancel;
             @SceneCancel.performed -= instance.OnSceneCancel;
             @SceneCancel.canceled -= instance.OnSceneCancel;
+            @Skill.started -= instance.OnSkill;
+            @Skill.performed -= instance.OnSkill;
+            @Skill.canceled -= instance.OnSkill;
         }
 
         /// <summary>
@@ -1388,6 +1420,13 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSceneCancel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

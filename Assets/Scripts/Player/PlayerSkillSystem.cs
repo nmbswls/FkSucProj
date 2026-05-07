@@ -14,6 +14,9 @@ namespace My.Player
         // 已学习技能（当前需求：默认全部视为已学，存档可覆盖）
         public List<string> learnedSkillIds = new();
 
+        // 技能等级（仅已学技能有意义；缺省在 GetSkillLevel 中为 1）
+        private readonly Dictionary<string, int> learnedSkillLevelById = new(StringComparer.Ordinal);
+
         // 暴露形态 / 特定 HUD 使用的 8 槽技能栏
         public readonly string[] NormalSkillSlots = new string[8];
 
@@ -32,6 +35,7 @@ namespace My.Player
             "queen_dash_down",
             "h_mode_execute",
             "queen_counter",
+            "queen_desire_charm_01",
             "player_small_staggering",
             "default_push",
             "player_normal_defend",
@@ -40,6 +44,8 @@ namespace My.Player
             "player_ziwei",
             "player_push_surround",
             "player_trace_bullet_01",
+
+            "player_naishou_to_jianshang",
         };
 
         public PlayerSkillSystem()
@@ -57,12 +63,14 @@ namespace My.Player
         private void SeedDefaultLearnedList()
         {
             learnedSkillIds.Clear();
+            learnedSkillLevelById.Clear();
             var seen = new HashSet<string>(StringComparer.Ordinal);
             foreach (var id in DefaultLearnedSeed)
             {
                 if (string.IsNullOrEmpty(id) || seen.Contains(id)) continue;
                 seen.Add(id);
                 learnedSkillIds.Add(id);
+                learnedSkillLevelById[id] = 1;
             }
         }
 
@@ -82,6 +90,7 @@ namespace My.Player
             if (pd.LearnedSkillIds is { Count: > 0 })
             {
                 learnedSkillIds.Clear();
+                learnedSkillLevelById.Clear();
                 var seen = new HashSet<string>(StringComparer.Ordinal);
                 foreach (var id in pd.LearnedSkillIds)
                 {
@@ -89,6 +98,21 @@ namespace My.Player
                     seen.Add(id);
                     learnedSkillIds.Add(id);
                 }
+
+                if (pd.LearnedSkillLevels is { Count: > 0 })
+                {
+                    foreach (var row in pd.LearnedSkillLevels)
+                    {
+                        if (row == null || string.IsNullOrEmpty(row.SkillId) || !seen.Contains(row.SkillId))
+                        {
+                            continue;
+                        }
+
+                        learnedSkillLevelById[row.SkillId] = Math.Max(1, row.Level);
+                    }
+                }
+
+                EnsureLevelsForAllLearnedDefault1();
             }
             else
             {
@@ -108,6 +132,21 @@ namespace My.Player
                 data.PlayerData = new PlayerData();
 
             data.PlayerData.LearnedSkillIds = new List<string>(learnedSkillIds);
+
+            data.PlayerData.LearnedSkillLevels = new List<LearnedSkillLevelEntry>();
+            foreach (var id in learnedSkillIds)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    continue;
+                }
+
+                data.PlayerData.LearnedSkillLevels.Add(new LearnedSkillLevelEntry()
+                {
+                    SkillId = id,
+                    Level = GetSkillLevel(id),
+                });
+            }
 
             data.PlayerData.NormalSkillSlotOverrides = new List<string>(5);
             for (int i = 0; i < 5; i++)
@@ -139,6 +178,78 @@ namespace My.Player
                     return true;
             }
             return false;
+        }
+
+        void EnsureLevelsForAllLearnedDefault1()
+        {
+            foreach (var id in learnedSkillIds)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    continue;
+                }
+
+                if (!learnedSkillLevelById.ContainsKey(id))
+                {
+                    learnedSkillLevelById[id] = 1;
+                }
+            }
+        }
+
+        public int GetSkillLevel(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId) || !IsLearned(skillId))
+            {
+                return 1;
+            }
+
+            return learnedSkillLevelById.TryGetValue(skillId, out var lv) ? Math.Max(1, lv) : 1;
+        }
+
+        public bool TrySetSkillLevel(string skillId, int level)
+        {
+            if (string.IsNullOrEmpty(skillId) || !IsLearned(skillId) || level < 1)
+            {
+                return false;
+            }
+
+            learnedSkillLevelById[skillId] = level;
+            return true;
+        }
+
+        internal void OnSkillLearned(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return;
+            }
+
+            learnedSkillLevelById.TryAdd(skillId, 1);
+        }
+
+        internal void OnSkillForgotten(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return;
+            }
+
+            learnedSkillLevelById.Remove(skillId);
+        }
+
+        internal void OnReplaceSkillId(string oldSkillId, string newSkillId)
+        {
+            if (string.IsNullOrEmpty(oldSkillId) || string.IsNullOrEmpty(newSkillId))
+            {
+                return;
+            }
+
+            int carry = learnedSkillLevelById.TryGetValue(oldSkillId, out var lv) ? lv : 1;
+            learnedSkillLevelById.Remove(oldSkillId);
+            if (!learnedSkillLevelById.ContainsKey(newSkillId))
+            {
+                learnedSkillLevelById[newSkillId] = Math.Max(1, carry);
+            }
         }
 
         // 将技能装配到 Normal 槽位；0~2 为固定槽，不可通过此处修改
@@ -190,5 +301,23 @@ namespace My.Player
 
         public bool BelongsToSchoolPool(string schoolId, string skillId) =>
             SkillSchoolTable.Instance.SkillDefinedInSchool(schoolId, skillId);
+
+        // 技能 id 替换时同步 Normal 槽位引用（3~7 可装配区及固定展示槽）
+        public void ReplaceSkillIdInNormalSlots(string oldSkillId, string newSkillId)
+        {
+            if (string.IsNullOrEmpty(oldSkillId))
+            {
+                return;
+            }
+
+            for (int i = 0; i < NormalSkillSlots.Length; i++)
+            {
+                var s = NormalSkillSlots[i];
+                if (s != null && string.Equals(s, oldSkillId, StringComparison.Ordinal))
+                {
+                    NormalSkillSlots[i] = newSkillId;
+                }
+            }
+        }
     }
 }

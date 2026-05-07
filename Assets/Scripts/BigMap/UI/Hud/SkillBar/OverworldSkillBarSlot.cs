@@ -2,6 +2,7 @@
 using DG.Tweening;
 using My.Map.Entity;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -57,14 +58,22 @@ namespace My.UI
         public void BindingSkill(SkillRuntime skillData, bool hint = false)
         {
             this.skillData = skillData;
-            if (skillData.cacheConfig != null)
+
+            Sprite iconSprite = null;
+            if (skillData.cacheConfig != null && !string.IsNullOrEmpty(skillData.cacheConfig.IconPath))
             {
-                var spriteRes = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillData.cacheConfig.IconPath}");
+                iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillData.cacheConfig.IconPath}");
                 //IconPath
-                icon.sprite = spriteRes;
+            }
+            
+            if(iconSprite == null)
+            {
+                iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/fallback");
             }
 
-            if(hint)
+            icon.sprite = iconSprite;
+
+            if (hint)
             {
                 DoRefreshHint();
             }

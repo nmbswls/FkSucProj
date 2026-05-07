@@ -314,6 +314,11 @@ namespace My.Map
             return attributeStore.GetAttr(attrId);
         }
 
+        public void DebugGmEnumerateAllAttributes(System.Action<string, long> emit)
+        {
+            attributeStore?.DebugEnumerateAllAttributes(emit);
+        }
+
         public bool CheckHasState(string attrId)
         {
             return attributeStore.CheckHasState(attrId);

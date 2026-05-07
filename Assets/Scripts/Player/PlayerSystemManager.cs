@@ -1,8 +1,10 @@
 
+using System;
 using System.Collections.Generic;
 using cfg.demo;
 using Map.Logic.Events;
 using My.Config;
+using My.Map.Entity;
 using My.Map.Logic;
 using My.Player.Bag;
 using My.Quest;
@@ -322,6 +324,183 @@ namespace My.Player
                 }
                 
             }
+        }
+
+        public void SyncLearnedSkillsToPlayerEntity()
+        {
+            var player = logicManager?.playerLogicEntity;
+            if (player == null)
+            {
+                return;
+            }
+
+            player.ReconcileSkillsWithLearnedList(PlayerSkillList);
+            ApplyLearnedPassiveBuffLayersToPlayerEntity();
+        }
+
+        public void ApplyLearnedPassiveBuffLayersToPlayerEntity()
+        {
+            var player = logicManager?.playerLogicEntity;
+            if (player == null)
+            {
+                return;
+            }
+
+            foreach (var skillId in SkillSystem.learnedSkillIds)
+            {
+                if (string.IsNullOrEmpty(skillId))
+                {
+                    continue;
+                }
+
+                var cfg = SkillLibrary.GetSkillConfig(skillId);
+                if (cfg == null || !cfg.IsPassive || string.IsNullOrEmpty(cfg.PassiveBuffId))
+                {
+                    continue;
+                }
+
+                int lvl = SkillSystem.GetSkillLevel(skillId);
+                player.TrySetPassiveSkillBuffLayer(skillId, lvl);
+            }
+        }
+
+        public bool TryAddLearnedSkill(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId) || SkillSystem.IsLearned(skillId))
+            {
+                return false;
+            }
+
+            SkillSystem.learnedSkillIds.Add(skillId);
+            SkillSystem.OnSkillLearned(skillId);
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryRemoveLearnedSkill(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            int removed = SkillSystem.learnedSkillIds.RemoveAll(id =>
+                string.Equals(id, skillId, StringComparison.Ordinal));
+            if (removed == 0)
+            {
+                return false;
+            }
+
+            SkillSystem.OnSkillForgotten(skillId);
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryReplaceLearnedSkill(string oldSkillId, string newSkillId)
+        {
+            if (string.IsNullOrEmpty(newSkillId))
+            {
+                return false;
+            }
+
+            int removed = 0;
+            for (int i = SkillSystem.learnedSkillIds.Count - 1; i >= 0; i--)
+            {
+                if (string.Equals(SkillSystem.learnedSkillIds[i], oldSkillId, StringComparison.Ordinal))
+                {
+                    SkillSystem.learnedSkillIds.RemoveAt(i);
+                    removed++;
+                }
+            }
+
+            if (removed == 0)
+            {
+                return false;
+            }
+
+            if (!SkillSystem.IsLearned(newSkillId))
+            {
+                SkillSystem.learnedSkillIds.Add(newSkillId);
+            }
+
+            SkillSystem.OnReplaceSkillId(oldSkillId, newSkillId);
+            SkillSystem.ReplaceSkillIdInNormalSlots(oldSkillId, newSkillId);
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        // 入口：替换已学技能（列表去重、槽位同步、实体 Unregister/Register 与被动 Buff）
+        public bool TryReplaceSkill(string oldSkillId, string newSkillId) =>
+            TryReplaceLearnedSkill(oldSkillId, newSkillId);
+
+        // 入口：更新已学技能在本实体上的能力附加参数（不改全局 SkillLibrary）
+        public bool TryUpdateLearnedSkillAttachedAttributes(string skillId, IReadOnlyDictionary<string, string> updates)
+        {
+            if (string.IsNullOrEmpty(skillId) || updates == null || updates.Count == 0)
+            {
+                return false;
+            }
+
+            if (!SkillSystem.IsLearned(skillId))
+            {
+                return false;
+            }
+
+            var player = logicManager?.playerLogicEntity;
+            return player != null && player.TryUpdateSkillAttachedAttributes(skillId, updates);
+        }
+
+        // 入口：已学技能等级（存档 + 被动 Buff 层同步；主动技能仅存档）
+        public bool TrySetLearnedSkillLevel(string skillId, int level)
+        {
+            if (!SkillSystem.IsLearned(skillId) || level < 1)
+            {
+                return false;
+            }
+
+            int effective = level;
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            if (cfg != null && cfg.IsPassive && !string.IsNullOrEmpty(cfg.PassiveBuffId))
+            {
+                BuffDefinition def = BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId);
+                if (def != null && def.MaxStackLayer > 0)
+                {
+                    effective = Math.Min(effective, def.MaxStackLayer);
+                }
+            }
+
+            if (!SkillSystem.TrySetSkillLevel(skillId, effective))
+            {
+                return false;
+            }
+
+            if (cfg != null && cfg.IsPassive && !string.IsNullOrEmpty(cfg.PassiveBuffId))
+            {
+                var player = logicManager?.playerLogicEntity;
+                if (player != null)
+                {
+                    player.TrySetPassiveSkillBuffLayer(skillId, effective);
+                }
+            }
+
+            return true;
+        }
+
+        // 入口：被动专用；须为被动技能，写入等级并刷新 Buff 层
+        public bool TrySetLearnedPassiveSkillBuffLayer(string skillId, int level)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            if (cfg == null || !cfg.IsPassive)
+            {
+                return false;
+            }
+
+            return TrySetLearnedSkillLevel(skillId, level);
         }
     }
 }
