@@ -15,7 +15,7 @@ namespace My
         Clothes,
         Expose,
 
-        Skills,
+        Skills = 10,
     }
 
     public class PlayerFuncOpenSystem : IPlayerSystem
@@ -49,6 +49,30 @@ namespace My
 
                     var e = new PlayerFuncUnlockEvent();
                     e.OpenType = EFuncOpenType.Hunger;
+                    PlayerEventBus.Publish(e);
+                }
+            }
+
+            if (!FuncOpenSet.Contains(EFuncOpenType.Desire))
+            {
+                if (LogicManager.playerDataManager.QuestSystem.CheckQuestFinish(101))
+                {
+                    FuncOpenSet.Add(EFuncOpenType.Desire);
+
+                    var e = new PlayerFuncUnlockEvent();
+                    e.OpenType = EFuncOpenType.Desire;
+                    PlayerEventBus.Publish(e);
+                }
+            }
+
+            if (!FuncOpenSet.Contains(EFuncOpenType.Clothes))
+            {
+                if (LogicManager.playerDataManager.QuestSystem.CheckQuestFinish(101))
+                {
+                    FuncOpenSet.Add(EFuncOpenType.Clothes);
+
+                    var e = new PlayerFuncUnlockEvent();
+                    e.OpenType = EFuncOpenType.Clothes;
                     PlayerEventBus.Publish(e);
                 }
             }

@@ -11,6 +11,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static My.GameLogicManager;
 using static My.PlayerFuncOpenSystem;
 
 
@@ -483,60 +484,9 @@ namespace My.UI
 
             PlayerEventBus.Subscribe<PlayerFuncUnlockEvent>(HandleOnPlayerFuncOpen);
 
+            MainGameManager.Instance.gameLogicManager.EventOnSwitchStageUpdate += HandleSwitchStageUpdate;
 
-            if(MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Hunger))
-            {
-                PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(true);
-            }
-            else
-            {
-                PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(false);
-            }
-
-            if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Desire))
-            {
-                PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(true);
-            }
-            else
-            {
-                PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(false);
-            }
-
-            bool disguising = false;
-
-            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
-            {
-                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
-                {
-                    disguising = true;
-                }
-            }
-
-            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
-            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
-
-            if (disguising && MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Clothes))
-            {
-                PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
-            }
-
-            if(!disguising && MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Expose))
-            {
-                PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(true);
-            }
-
-            if(MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsHome)
-            {
-                BtnHomeStorage.gameObject.SetActive(true);
-                BtnHomeNextPeriod.gameObject.SetActive(true);
-            }
-            else
-            {
-                BtnHomeStorage.gameObject.SetActive(false);
-                BtnHomeNextPeriod.gameObject.SetActive(false);
-            }
-
-            TrySubscribePlayerBuffEvents();
+            RefreshUILayout();
         }
 
         public override void Hide()
@@ -547,7 +497,17 @@ namespace My.UI
             PlayerBuffBar?.RefreshFromPlayer();
 
             PlayerEventBus.Unsubscribe<PlayerFuncUnlockEvent>(HandleOnPlayerFuncOpen);
+
+            MainGameManager.Instance.gameLogicManager.EventOnSwitchStageUpdate -= HandleSwitchStageUpdate;
         }
+        private void HandleSwitchStageUpdate(EMapSwitchStep step)
+        {
+            if(step >= EMapSwitchStep.Loaded)
+            {
+                RefreshUILayout();
+            }
+        }
+
 
         private void OnPlayerBuffRegister(BuffInstance _)
         {
@@ -625,8 +585,67 @@ namespace My.UI
                 homeBuildPanel.gameObject.SetActive(true);
                 homeBuildPanel.InitShow();
             }
+
+            RefreshUILayout();
         }
 
+        private void RefreshUILayout()
+        {
+
+            if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Hunger))
+            {
+                PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(true);
+            }
+            else
+            {
+                PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(false);
+            }
+
+            if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Desire))
+            {
+                PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(true);
+            }
+            else
+            {
+                PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(false);
+            }
+
+            bool disguising = false;
+
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            {
+                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
+                {
+                    disguising = true;
+                }
+            }
+
+            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
+            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
+
+            if (disguising && MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Clothes))
+            {
+                PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
+            }
+
+            if (!disguising && MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Expose))
+            {
+                PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(true);
+            }
+
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsHome)
+            {
+                BtnHomeStorage.gameObject.SetActive(true);
+                BtnHomeNextPeriod.gameObject.SetActive(true);
+            }
+            else
+            {
+                BtnHomeStorage.gameObject.SetActive(false);
+                BtnHomeNextPeriod.gameObject.SetActive(false);
+            }
+
+            TrySubscribePlayerBuffEvents();
+        }
 
         public override int FocusPriority => 0;
         public bool OnConfirm() => false;

@@ -30,23 +30,33 @@ namespace My.UI
 
             var uiHover = (BaseUIHoverProvider)provider;
 
-            if(uiHover.name == "PlayerClothes")
+            if(tipParams.Param1 == 1)
+            {
+                TitleText.text = "饱腹";
+                ValueText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerHunger) * 0.001f)).ToString();
+
+                DescText.text = "归零就会暴露";
+            }
+            else if (tipParams.Param1 == 2)
+            {
+                TitleText.text = "理智";
+                ValueText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSanity) * 0.001f)).ToString();
+
+                DescText.text = "理智降低，莉莉丝将无法控制自己的欲望本能。";
+            }
+            else if (tipParams.Param1 == 3)
             {
                 TitleText.text = "衣装";
                 ValueText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) * 0.001f)).ToString();
 
-                DescText.text = "归零就会暴露";
+                DescText.text = "伪装进度";
             }
-            else if (uiHover.name == "PlayerExpose")
+            else if (tipParams.Param1 == 4)
             {
                 TitleText.text = "真身";
-                ValueText.text = "999";
+                ValueText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerOriginPower) * 0.001f)).ToString();
 
                 DescText.text = "你以恶魔姿态现身，积攒能量";
-            }
-            else
-            {
-                TitleText.text = "未知";
             }
         }
     }

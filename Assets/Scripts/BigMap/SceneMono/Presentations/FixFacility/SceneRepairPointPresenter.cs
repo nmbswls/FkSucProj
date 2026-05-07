@@ -213,7 +213,7 @@ namespace My.Map.Scene
                 },
                 onAbilityEnd: (complete) =>
                 {
-                    if (complete)
+                    if (complete && RepairPointEntity != null && !RepairPointEntity.MarkDespawn)
                     {
                         RepairPointEntity.TryManualRepair();
                     }

@@ -14,12 +14,11 @@ namespace My.Map.Entity
             {
                 _library = new();
 
-                // ??????buff ????????
                 _library["player_expose_charm"] = new BuffDefinition()
                 {
                     BuffId = "player_expose_charm",
 
-                    Desc = "?·?????",
+                    Desc = "魅力暴露",
                     LayerOverrideType = EBuffLayerOverrideType.AddLayer,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerCharm, ModifierValue = 5000 } },
                     DefaultDuration = -1,

@@ -15,6 +15,8 @@ namespace My.UI
     {
         public EHoverTipType TipType;
         public Vector3 BindPos;
+
+        public int Param1;
     }
 
     public interface IHoverInfoProvider
@@ -364,7 +366,6 @@ namespace My.UI
             {
                 return;
             }
-            if (hoverTip.IsVisible == visible) return;
             hoverTip.IsVisible = visible;
 
             if (hoverTip.TipPanel != null)

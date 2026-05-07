@@ -27,7 +27,6 @@ namespace My.Map
                     unitTarget.OnGazeLeave(Id);
                 }
             };
-
             
         }
     }

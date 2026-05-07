@@ -81,8 +81,10 @@ namespace My.Map
                 case AttrIdConsts.PlayerClothes:
                 case AttrIdConsts.PlayerEstrusProgrss:
                 case AttrIdConsts.PlayerNaiLi:
+                case AttrIdConsts.PlayerOriginPower:
 
                 case AttrIdConsts.UnitHVal:
+                case AttrIdConsts.UnitHShield:
                     return EAttrType.Resource;
 
                 default:

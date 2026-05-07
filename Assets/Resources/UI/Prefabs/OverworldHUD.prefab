@@ -5880,6 +5880,7 @@ MonoBehaviour:
   InnerParams:
     TipType: 1
     BindPos: {x: 0, y: 0, z: 0}
+    Param1: 2
 --- !u!1 &1216060319099468501
 GameObject:
   m_ObjectHideFlags: 0
@@ -7277,6 +7278,7 @@ MonoBehaviour:
   InnerParams:
     TipType: 1
     BindPos: {x: 0, y: 0, z: 0}
+    Param1: 4
 --- !u!1 &2437210248613069094
 GameObject:
   m_ObjectHideFlags: 0
@@ -12209,6 +12211,7 @@ MonoBehaviour:
   InnerParams:
     TipType: 1
     BindPos: {x: 0, y: 0, z: 0}
+    Param1: 1
 --- !u!1 &7085466757772317975
 GameObject:
   m_ObjectHideFlags: 0
@@ -14038,6 +14041,7 @@ MonoBehaviour:
   InnerParams:
     TipType: 1
     BindPos: {x: 0, y: 0, z: 0}
+    Param1: 3
 --- !u!1 &8593542534854771594
 GameObject:
   m_ObjectHideFlags: 0

@@ -244,7 +244,10 @@ namespace My.Map.Logic
             }
 
             var monsterCfg = PlayerGamePlayRule.GetHSpiritByPlayerStatus(logicManager.playerLogicEntity.DesireLevel, logicManager.playerDataManager.Level);
-
+            if(string.IsNullOrEmpty(monsterCfg))
+            {
+                return;
+            }
             var initInfo = new EntityInitInfo4Npc();
             initInfo.CfgId = monsterCfg;
             initInfo.Position = logicManager.playerLogicEntity.Pos + new Vector2(2, 2);
