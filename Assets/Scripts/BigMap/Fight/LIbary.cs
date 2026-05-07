@@ -1,5 +1,7 @@
+using cfg.demo;
 using Config.Unit;
 using Map.Entity;
+using My.Config;
 using My.Map.Entity;
 using My.Map.Fight;
 using System;
@@ -26,401 +28,90 @@ namespace My.Map.Entity
         {
             if (_skillDict == null)
             {
-                _skillDict = new();
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_naishou_to_jianshang";
-                    cfg.IsPassive = true;
-                    cfg.PassiveBuffId = "player_naishou_to_jianshang";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "queen_desire_charm_01";
-                    cfg.IsPassive = true;
-                    cfg.PassiveBuffId = "queen_desire_charm_01";
-
-                    cfg.IconPath = "icon_01";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "queen_attack";
-                    cfg.MainAbilityId = "queen_attack_01";
-                    cfg.IsCombo = true;
-                    cfg.CoolDown = 0.2f;
-                    cfg.DesiredUseDistance = 0.8f;
-
-                    cfg.IconPath = "icon_01";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "queen_attack_heavy";
-                    cfg.MainAbilityId = "queen_attack_heavy";
-                    cfg.CoolDown = 0.2f;
-                    cfg.DesiredUseDistance = 0.8f;
-
-                    cfg.IconPath = "icon_01";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "fix_clothes";
-                    cfg.MainAbilityId = "fix_clothes";
-                    cfg.CoolDown = 0.5f;
-
-                    cfg.IconPath = "fix_clothes";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "queen_dash";
-                    cfg.MainAbilityId = "queen_dash";
-                    cfg.CoolDown = 1.0f;
-                    cfg.DesiredUseDistance = 999f;
-                    cfg.BufferCacheTime = 0.2f;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "queen_shoot";
-                    cfg.MainAbilityId = "queen_shoot";
-                    cfg.CoolDown = 5.0f;
-                    cfg.DesiredUseDistance = 5.0f;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "default_push";
-                    cfg.MainAbilityId = "default_push";
-                    cfg.CoolDown = 0.6f;
-                    cfg.DesiredUseDistance = 1.0f;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "default_dash_slash";
-                    cfg.MainAbilityId = "default_dash_slash";
-                    cfg.CoolDown = 8.0f;
-                    cfg.DesiredUseDistance = 2.0f;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_push_surround";
-                    cfg.MainAbilityId = "player_push_surround";
-                    cfg.CoolDown = 8.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-
-                    cfg.IconPath = "icon_01";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_trace_bullet_01";
-                    cfg.MainAbilityId = "player_trace_bullet_01";
-                    cfg.CoolDown = 8.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-
-                    cfg.IconPath = "icon_01";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_mortar_acquire_01";
-                    cfg.MainAbilityId = "player_mortar_acquire_01";
-                    cfg.CoolDown = 6.0f;
-                    cfg.DesiredUseDistance = 10.0f;
-                    cfg.IconPath = "icon_01";
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_small_staggering";
-                    cfg.MainAbilityId = "player_small_staggering";
-                    cfg.CoolDown = 1.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-                    cfg.IconPath = "cost_yellow";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "basic_aoe_slash";
-                    cfg.MainAbilityId = "basic_aoe_slash";
-                    cfg.CoolDown = 6.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "default_enemy_qinfan";
-                    cfg.MainAbilityId = "default_enemy_qinfan";
-                    cfg.CoolDown = 6.0f;
-                    cfg.DesiredUseDistance = 0.8f;
-                    cfg.NeedHMode = true;
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "guard_attack";
-                    cfg.MainAbilityId = "guard_attack";
-                    cfg.CoolDown = 1.0f;
-                    cfg.DesiredUseDistance = 0.8f;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "crazy_fire";
-                    cfg.MainAbilityId = "crazy_fire";
-                    cfg.CoolDown = 21.0f;
-                    cfg.DesiredUseDistance = 5f;
-                    cfg.Priority = 2000;
-
-                    cfg.IconPath = "icon_01";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "queen_counter";
-                    cfg.MainAbilityId = "queen_counter";
-                    cfg.CoolDown = 10.0f;
-                    cfg.DesiredUseDistance = 0f;
-                    cfg.Priority = 1;
-                    //cfg.tar
-                    
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "spawn_attract";
-                    cfg.MainAbilityId = "spawn_attract";
-                    cfg.CoolDown = 10.0f;
-                    cfg.DesiredUseDistance = 5f;
-                    cfg.Priority = 1;
-
-                    cfg.StackCount = 5;
-
-                    cfg.IconPath = "icon_01";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_ziwei";
-                    cfg.MainAbilityId = "player_ziwei";
-                    cfg.CoolDown = 1.0f;
-                    cfg.DesiredUseDistance = 0f;
-                    cfg.Priority = 1;
-
-                    cfg.IconPath = "cost_yellow";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "queen_pull_all";
-                    cfg.MainAbilityId = "queen_pull_all";
-                    cfg.CoolDown = 3.0f;
-                    cfg.DesiredUseDistance = 5f;
-                    cfg.Priority = 1;
-
-                    cfg.IconPath = "icon_01";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "evil_child_attach";
-                    cfg.MainAbilityId = "evil_child_attach";
-                    cfg.CoolDown = 6.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-                    cfg.Priority = 1;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "evil_child_insertion";
-                    cfg.MainAbilityId = "evil_child_insertion";
-                    cfg.CoolDown = 6.0f;
-                    cfg.DesiredUseDistance = 0.3f;
-                    cfg.Priority = 1;
-
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_normal_defend";
-                    cfg.MainAbilityId = "player_normal_defend";
-                    cfg.CoolDown = 1.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-                    cfg.Priority = 1;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_enter_queen";
-                    cfg.MainAbilityId = "player_enter_queen";
-                    cfg.CoolDown = 1.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-                    cfg.Priority = 1;
-
-                    cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.NoQueenMode});
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_ziwei";
-                    cfg.MainAbilityId = "player_ziwei";
-
-                    cfg.IconPath = "cost_yellow";
-
-                    cfg.CastConditions.Add(new CastCondition() { Type = ECastConditionType.NoQueenMode });
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "h_mode_execute";
-                    cfg.MainAbilityId = "h_mode_execute";
-                    cfg.CoolDown = 10.0f;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "player_dark_dance";
-                    cfg.MainAbilityId = "player_dark_dance";
-                    cfg.CoolDown = 20.0f;
-
-
-                    cfg.IconPath = "icon_01";
-
-                    //cfg.TargetType = ETargetType.Self;
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "default_npc_attack";
-                    cfg.MainAbilityId = "attack";
-                    cfg.CoolDown = 5.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "default_normal_attack";
-                    cfg.MainAbilityId = "default_normal_attack";
-                    cfg.CoolDown = 2.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-
-                    cfg.AbilityExtraVariables["DefaultAttackPre"] = "0.5";
-                    cfg.AbilityExtraVariables["DefaultAttackTime"] = "0.4";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "default_h_attack";
-                    cfg.MainAbilityId = "default_h_attack";
-                    cfg.CoolDown = 2.0f;
-                    cfg.DesiredUseDistance = 1.0f;
-
-                    cfg.AbilityExtraVariables["DefaultAttackPre"] = "0.5";
-                    cfg.AbilityExtraVariables["DefaultAttackTime"] = "0.4";
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "npc_shoot_01";
-                    cfg.MainAbilityId = "default_range_attack";
-                    cfg.CoolDown = 10.0f;
-                    cfg.DesiredUseDistance = 5.0f;
-                    cfg.Priority = 5;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "npc_shoot_02";
-                    cfg.MainAbilityId = "default_range_attack";
-                    cfg.CoolDown = 10.0f;
-                    cfg.DesiredUseDistance = 5.0f;
-                    cfg.Priority = 5;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-
-                {
-                    var cfg = new EntitySkillCfg();
-                    cfg.SkillId = "chongzhuang_slime";
-                    cfg.MainAbilityId = "chongzhuang";
-                    cfg.CoolDown = 5.0f;
-                    cfg.DesiredUseDistance = 1.5f;
-                    cfg.Priority = 5;
-
-                    _skillDict[cfg.SkillId] = cfg;
-                }
-                ValidatePassiveSkillConfigsInternal();
+                BuildFromLubanTables();
             }
 
             _skillDict.TryGetValue(skillName, out var skillCfg);
             return skillCfg;
+        }
+
+        // 技能定义数据来自 Config/Datas/skill.xlsx（Luban -> demo_tbentityskilldata.json）
+        private static void BuildFromLubanTables()
+        {
+            _skillDict = new Dictionary<string, EntitySkillCfg>();
+            var tables = CfgMgr.Cfgs;
+            if (tables == null)
+            {
+                Debug.LogError("[SkillLibrary] CfgMgr.Cfgs is null. Call CfgMgr.LoadGameConfigs before using skills.");
+                return;
+            }
+
+            foreach (var row in tables.TbEntitySkillData.DataList)
+            {
+                _skillDict[row.SkillId] = FromLuban(row);
+            }
+
+            ValidatePassiveSkillConfigsInternal();
+        }
+
+        private static EntitySkillCfg FromLuban(EntitySkillData row)
+        {
+            var cfg = new EntitySkillCfg
+            {
+                SkillId = row.SkillId,
+                MainAbilityId = row.MainAbilityId ?? "",
+                IsPassive = row.IsPassive,
+                PassiveBuffId = row.PassiveBuffId ?? "",
+                PassiveBuffLevelVariableKey = row.PassiveBuffLevelVariableKey ?? "",
+                IsCombo = row.IsCombo,
+                NeedHMode = row.NeedHMode,
+                InterruptCombo = row.InterruptCombo,
+                IsDerived = row.IsDerived,
+                CoolDown = row.CoolDown,
+                StackCount = row.StackCount,
+                IconPath = row.IconPath ?? "",
+                Priority = row.Priority,
+                DesiredUseAngle = row.DesiredUseAngle,
+                DesiredUseDistance = row.DesiredUseDistance,
+                BufferCacheTime = row.BufferCacheTime,
+                AbilityExtraVariables = new Dictionary<string, string>(),
+                CastConditions = new List<EntitySkillCfg.CastCondition>(),
+            };
+
+            if (row.AbilityExtra != null)
+            {
+                foreach (var p in row.AbilityExtra)
+                {
+                    if (p == null || string.IsNullOrEmpty(p.Key))
+                    {
+                        continue;
+                    }
+
+                    cfg.AbilityExtraVariables[p.Key] = p.Val ?? "";
+                }
+            }
+
+            if (row.CastConditions != null)
+            {
+                foreach (var c in row.CastConditions)
+                {
+                    if (c == null)
+                    {
+                        continue;
+                    }
+
+                    cfg.CastConditions.Add(new CastCondition
+                    {
+                        Type = (ECastConditionType)(int)c.Type,
+                        Param1 = c.Param1,
+                        Param2 = c.Param2,
+                        Param3 = c.Param3 ?? "",
+                        Param4 = c.Param4 ?? "",
+                    });
+                }
+            }
+
+            return cfg;
         }
 
         // 被动技能必须配置 PassiveBuffId，且 BuffLibrary 中存在对应 Buff 定义

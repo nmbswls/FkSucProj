@@ -1,0 +1,34 @@
+[
+  {
+    "entry_id": 1,
+    "school_id": 1,
+    "display_name": "普通斩击学习",
+    "learn_conds": [],
+    "skill_id": "default_normal_attack",
+    "skill_level": 1
+  },
+  {
+    "entry_id": 2,
+    "school_id": 2,
+    "display_name": "女王普攻",
+    "learn_conds": [],
+    "skill_id": "queen_attack",
+    "skill_level": 1
+  },
+  {
+    "entry_id": 3,
+    "school_id": 2,
+    "display_name": "女王重击",
+    "learn_conds": [],
+    "skill_id": "queen_attack_heavy",
+    "skill_level": 1
+  },
+  {
+    "entry_id": 4,
+    "school_id": 3,
+    "display_name": "耐受到减伤被动",
+    "learn_conds": [],
+    "skill_id": "player_naishou_to_jianshang",
+    "skill_level": 1
+  }
+]

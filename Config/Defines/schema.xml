@@ -75,4 +75,25 @@
         <var name="val" type="long" comment="固定加成"/>
     </bean>
 
+    <!-- 战斗技能（原 SkillLibrary 硬编码，与 Config.Unit.EntitySkillCfg 字段对应） -->
+    <enum name="ESkillCastConditionType">
+        <var name="None" value="0"/>
+        <var name="HMode" value="1"/>
+        <var name="QueenMode" value="2"/>
+        <var name="NoQueenMode" value="3"/>
+    </enum>
+
+    <bean name="SkillAbilityExtraPair" tags="sep=,">
+        <var name="key" type="string"/>
+        <var name="val" type="string"/>
+    </bean>
+
+    <bean name="SkillCastCondition" tags="sep=,">
+        <var name="type" type="ESkillCastConditionType"/>
+        <var name="param1" type="long"/>
+        <var name="param2" type="long"/>
+        <var name="param3" type="string"/>
+        <var name="param4" type="string"/>
+    </bean>
+
 </module>
