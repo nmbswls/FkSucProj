@@ -48,6 +48,9 @@ namespace My.Map.Scene
         public HighlightCtrl highlightCtrl;
         public bool InteractDetailMode { get; set; }
 
+
+        private int _faqingEffectUId { get; set; }
+
         public bool InteractFocused
         {
             get { return interactFocused; }
@@ -124,6 +127,28 @@ namespace My.Map.Scene
         {
             base.Tick(dt);
 
+            if(NpcEntity.IsFaQing)
+            {
+                if(_faqingEffectUId == 0)
+                {
+                    MainGameManager.Instance.ShowSceneFxEffect("SceneFaQing", transform.position, Vector2.right);
+
+                    var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(PivotHeader.transform.position, 0, "SceneFaQing", NpcEntity.Id);
+                    if (fxCtx == null)
+                    {
+                        return;
+                    }
+                    _faqingEffectUId = fxCtx.UniqId;
+                }
+            }
+            else
+            {
+                if (_faqingEffectUId != 0)
+                {
+                    MapSceneEffectManager.Instance.ForceDestroy(_faqingEffectUId);
+                    _faqingEffectUId = 0;
+                }
+            }
         }
 
         public override void Bind(ILogicEntity logic)

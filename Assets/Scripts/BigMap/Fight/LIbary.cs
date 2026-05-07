@@ -3013,7 +3013,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectAddResourceCfg()
                     {
                         ResourceId = AttrIdConsts.NPCHVal,
-                        AddValue = 10000,
+                        AddValue = 40_000,
                         IsEnmity = false,
                     },
                     new MapAbilityEffectCostResourceCfg()
