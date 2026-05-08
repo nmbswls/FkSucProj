@@ -130,7 +130,7 @@ namespace My
         public bool PlayerHumanMode { get; private set; } = true;
 
         // 玩家在家园地图内主动切换人类/真身形态（非家园返回 false）
-        public bool TrySetPlayerHumanModeFromPlayerInput(bool wantHuman)
+        public bool TrySetPlayerHumanMode(bool wantHuman)
         {
             if (AreaManager?.cacheMapCfg == null || !AreaManager.cacheMapCfg.IsHome)
             {

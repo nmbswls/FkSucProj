@@ -16,11 +16,20 @@ namespace My.UI
     /// </summary>
     public class MapPlayerRadialMenu : PanelWithInput
     {
+        public enum ERadialFunc
+        {
+            UseSkill,
+            ChangeHuman,
+        }
+
+
         [System.Serializable]
         public class RadialItem
         {
-            public string skillId;
-            public bool interactable = true;
+            public ERadialFunc RadialFunc;
+
+            public string SkillId;
+            public bool Interactable = true;
         }
 
         public int SectorCount = 8;
@@ -47,7 +56,7 @@ namespace My.UI
 
         private float LastHoldUpdateTime;
 
-        private List<RadialItem> builds = new();
+        private List<RadialItem> builds;
 
         public static void ShowMenu()
         {
@@ -56,23 +65,34 @@ namespace My.UI
             {
                 return;
             }
-
-            List<RadialItem> builds = new();
-            builds.Add(new RadialItem() { skillId = "player_ziwei", interactable = true });
-            builds.Add(new RadialItem() { skillId = "fix_clothes", interactable = true });
             
-            panel.BuildMenu(builds);
+            panel.BuildMenu();
         }    
 
 
+        private void CollectRadialItems()
+        {
+            if (builds == null)
+            {
+                builds = new();
+                for (int i = 0; i < 9; i++)
+                {
+                    builds.Add(null);
+                }
+            }
+            builds.Add(new RadialItem() { RadialFunc = ERadialFunc.UseSkill, SkillId = "player_ziwei", Interactable = true });
+            builds.Add(new RadialItem() { RadialFunc = ERadialFunc.UseSkill, SkillId = "fix_clothes", Interactable = true });
 
+            builds.Add(new RadialItem() { RadialFunc = ERadialFunc.ChangeHuman, Interactable = true });
+        }
 
         // 动态设置条目
-        public void BuildMenu(List<RadialItem> items)
+        public void BuildMenu()
         {
             Clear();
 
-            builds.AddRange(items);
+            CollectRadialItems();
+
             float count = SectorCount;
             float step = 360f / count;
             float fillAmount = step / 360f;
@@ -82,15 +102,14 @@ namespace My.UI
                 var inst = Instantiate(sectorPrefab, sectorContainer);
                 inst.gameObject.SetActive(true);
                 inst.index = i;
-                if(i < items.Count)
+                if(i < builds.Count)
                 {
-                    inst.SetData(items[i].skillId,
-                             items[i].interactable,
+                    inst.SetData(builds[i],
                              colorNormal, fillAmount);
                 }
                 else
                 {
-                    inst.SetData(null, false, colorNormal, fillAmount);
+                    inst.SetData(null, colorNormal, fillAmount);
                 }
 
                 // 设置旋转/摆放
@@ -122,14 +141,7 @@ namespace My.UI
             if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
                 uiCam = canvas.worldCamera;
 
-            List<RadialItem> builds = new();
-            builds.Add(
-                new RadialItem() { skillId = "player_ziwei", interactable = true }
-
-                );
-
-            builds.Add(new RadialItem() { skillId = "fix_clothes", interactable = true });
-            BuildMenu(builds);
+            BuildMenu();
 
             sectorPrefab.gameObject.SetActive(false);
         }
@@ -204,7 +216,7 @@ namespace My.UI
 
             if(idx < builds.Count)
             {
-                chosenAbilityLabel.text = builds[idx].skillId;
+                chosenAbilityLabel.text = builds[idx].SkillId;
             }
             else
             {
@@ -236,9 +248,22 @@ namespace My.UI
         {
             if (currentIndex < 0 || currentIndex >= sectors.Count) return;
             var sector = sectors[currentIndex];
-            if (string.IsNullOrEmpty(sector.SkillId)) return;
+            if (sector.innerItem == null) return;
 
-            MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.UseSkill(sector.SkillId);
+            switch(sector.innerItem.RadialFunc)
+            {
+                case ERadialFunc.UseSkill:
+                    {
+                        MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.UseSkill(sector.innerItem.SkillId);
+                    }
+                    break;
+                case ERadialFunc.ChangeHuman:
+                    {
+                        MainGameManager.Instance.gameLogicManager.TrySetPlayerHumanMode(!MainGameManager.Instance.gameLogicManager.PlayerHumanMode);
+                    }
+                    break;
+            }
+            
             //MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility(sector.AbilityId);
         }
 

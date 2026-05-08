@@ -4,6 +4,7 @@ using TMPro;
 using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.UI;
+using static My.UI.MapPlayerRadialMenu;
 
 namespace My.UI
 {
@@ -16,32 +17,40 @@ namespace My.UI
         public TextMeshProUGUI label;
         public Image icon;
 
-        [HideInInspector] public string SkillId;
         [HideInInspector] public int index;
 
-        public void SetData(string skillId, bool interactable, Color normal, float fillAmount)
+        public RadialItem innerItem { get; private set; }
+
+        public void SetData(RadialItem innerItem, Color normal, float fillAmount)
         {
-            SkillId = skillId;
+            this.innerItem = innerItem;
+
             if (sectorBg != null)
             {
                 sectorBg.fillAmount = fillAmount - 2 * 1.0f / 360f; // 填充=扇区角度/360
                 sectorBg.color = normal;
             }
 
-            var skillCfg = SkillLibrary.GetSkillConfig(skillId);
-            if (icon != null)
+            Sprite iconSprite = null;
+            if(innerItem.RadialFunc == ERadialFunc.UseSkill)
             {
+                var skillCfg = SkillLibrary.GetSkillConfig(innerItem.SkillId);
+
                 if (skillCfg != null && !string.IsNullOrEmpty(skillCfg.IconPath))
                 {
-                    icon.sprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillCfg.IconPath}");
-                }
-                else
-                {
-                    icon.sprite = null;
+                    iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillCfg.IconPath}");
                 }
             }
-
-            SetInteractable(interactable);
+            else if(innerItem.RadialFunc == ERadialFunc.ChangeHuman)
+            {
+                iconSprite = SimpleResManager.Load<Sprite>($"Sprites/change_human_mode");
+            }
+            
+            if(icon != null)
+            {
+                icon.sprite = iconSprite;
+            }
+            SetInteractable(innerItem.Interactable);
         }
 
         public void SetHighlight(bool on, Color normal, Color highlight)

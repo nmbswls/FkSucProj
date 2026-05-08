@@ -333,6 +333,7 @@ namespace My.Input
             //actions.OverworldMap.RightClickHold.canceled += OnMouseRightHoldEnd;
 
             actions.OverworldMap.Tab.started += OnHotKeyTab;
+            actions.OverworldMap.Tab.performed += OnHotKeyTab;
             actions.OverworldMap.Tab.canceled += OnHotKeyTabEnd;
             
             //actions.OverworldMap.TabHold.started += OnTabHoldStart;
@@ -377,6 +378,7 @@ namespace My.Input
             actions.OverworldMap.PointerPos.performed -= OnPointerMove;
 
             actions.OverworldMap.Tab.started -= OnHotKeyTab;
+            actions.OverworldMap.Tab.performed -= OnHotKeyTab;
             actions.OverworldMap.Tab.canceled -= OnHotKeyTabEnd;
             //actions.OverworldMap.TabHold.started -= OnTabHoldStart;
             //actions.OverworldMap.TabHold.canceled -= OnTabHoldEnd;
@@ -803,7 +805,6 @@ namespace My.Input
 
         public void OnSceneHoldEnd(string keyName)
         {
-
             if(keyName == EInputKey.MouseRight.ToString())
             {
                 if (!LogicTime.paused)
