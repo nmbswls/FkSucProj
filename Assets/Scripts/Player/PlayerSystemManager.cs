@@ -201,7 +201,12 @@ namespace My.Player
 
         public bool TrySelectMagicClothesForStealthEntry(string defId)
         {
-            return MagicClothes.TrySelectAndLock(defId, logicManager?.playerLogicEntity);
+            if (logicManager == null || logicManager.PlayerHumanMode)
+            {
+                return false;
+            }
+
+            return MagicClothes.TrySelectAndLock(defId, logicManager.playerLogicEntity);
         }
 
         public void Tick(float dt)
@@ -276,7 +281,8 @@ namespace My.Player
             }
             else
             {
-                if (player.IsExposed)
+                bool exposedForGameplay = !logicManager.PlayerHumanMode && player.IsExposed;
+                if (exposedForGameplay)
                 {
                     showSkills = SkillSystem.NormalSkillSlots;
                 }

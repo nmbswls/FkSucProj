@@ -270,21 +270,8 @@ namespace My.Map
 
             DefaultControlledByVelocity = false;
 
-            if (!MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
-            {
-                IsExposed = true;
-            }
-
-            var magic = LogicManager.playerDataManager.MagicClothes;
-            if (magic.IsLockedWithSelection)
-            {
-                magic.ApplyToPlayer(this);
-            }
-
-            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
-            {
-                magic.OnStealthMapPlayerInitialized(this);
-            }
+            // 与地图加载后的 PostNewAreaLoaded 使用同一套同步逻辑，避免 Initialize 后短时间状态不一致
+            LogicManager.RefreshPlayerMagicClothesAndExposeForCurrentMode();
         }
 
         protected override void RegisterSpecAttrs()
@@ -766,12 +753,18 @@ namespace My.Map
         /// </summary>
         private void TickPlayerClothesBroken()
         {
+            // 人类形态不维护暴露 / 伪装衣装逻辑
+            if (LogicManager.PlayerHumanMode)
+            {
+                return;
+            }
+
             // 对于非伪装地图 不检查
             // todo 是否支持强行伪装
 
             do
             {
-                if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg != null && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+                if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg != null && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsCivilArea)
                 {
                     DisguiseIfPossible = true;
                     break;
@@ -1411,12 +1404,37 @@ namespace My.Map
         // 魔力衣装：由 PlayerMagicClothesManager 调整 PlayerClothes 固定上限并刷新关联属性
         public void ApplyMagicClothesRuntime(long maxClothes)
         {
+            if (LogicManager.PlayerHumanMode)
+            {
+                return;
+            }
+
             attributeStore.SetResourceFixMax(AttrIdConsts.PlayerClothes, maxClothes);
+            RefreshClothesRelateYCAttrs();
+        }
+
+        // 人类形态：解除暴露态并重置衣装固定上限为默认（魔力衣装数值不生效）
+        public void ApplyHumanModeShieldingState()
+        {
+            const long defaultClothesMax = 100_000;
+
+            if (IsExposed)
+            {
+                long cur = GetAttr(AttrIdConsts.PlayerClothes);
+                ExitExposeState(cur);
+            }
+
+            attributeStore.SetResourceFixMax(AttrIdConsts.PlayerClothes, defaultClothesMax);
             RefreshClothesRelateYCAttrs();
         }
 
         long GetClothesRawOverRate10000ForGameplay()
         {
+            if (LogicManager.PlayerHumanMode)
+            {
+                return 10000L;
+            }
+
             var magicMgr = LogicManager.playerDataManager.MagicClothes;
             if (magicMgr.IsLockedWithSelection)
             {
@@ -1428,6 +1446,11 @@ namespace My.Map
 
         private void TickMagicClothesMoveWear(float interval)
         {
+            if (LogicManager.PlayerHumanMode)
+            {
+                return;
+            }
+
             var mgr = LogicManager.playerDataManager.MagicClothes;
             if (!mgr.ShouldApplyMoveWear(this))
             {
@@ -1505,7 +1528,7 @@ namespace My.Map
             int applyRate = 10000;
             long clothes = GetAttr(AttrIdConsts.PlayerClothes);
 
-            if (!IsExposed)
+            if (!LogicManager.PlayerHumanMode && !IsExposed)
             {
                 long rawOverRate = GetClothesRawOverRate10000ForGameplay();
                 applyRate = PlayerGamePlayRule.CalculateBreakClothesInnerRate(clothes, rawOverRate);

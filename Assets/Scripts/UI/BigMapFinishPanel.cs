@@ -35,7 +35,7 @@ namespace My.UI
             tpMapName = MainGameManager.Instance.gameLogicManager.GetCurrentReviveMap();
             MainGameManager.Instance.gameLogicManager.PreparePlayerSwitchArea(tpMapName, true);
 
-            MainGameManager.Instance.gameLogicManager.PlayerHumanMode = true;
+            MainGameManager.Instance.gameLogicManager.ForcePlayerHumanMode(true);
         }
     }
 }

@@ -1357,6 +1357,11 @@ namespace My.Map
             }
             return true;
         }
+
+        public virtual bool IsInHMode()
+        {
+            return false;
+        }
     }
 
 

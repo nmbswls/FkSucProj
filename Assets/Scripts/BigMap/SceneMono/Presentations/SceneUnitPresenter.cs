@@ -285,8 +285,12 @@ namespace My.Map.Scene
             }
 
 
+            var glm = MainGameManager.Instance.gameLogicManager;
+            bool exposeForGameplay = glm != null && !glm.PlayerHumanMode &&
+                                     MainGameManager.Instance.playerScenePresenter.PlayerEntity.IsExposed;
+
             bool visible = false;
-            if(MainGameManager.Instance.playerScenePresenter.PlayerEntity.IsExposed)
+            if (exposeForGameplay)
             {
                 visible = true;
             }

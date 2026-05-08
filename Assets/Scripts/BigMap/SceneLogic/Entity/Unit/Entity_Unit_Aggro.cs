@@ -191,14 +191,41 @@ namespace My.Map.Unit
             List<long> toRemove = null;
             foreach (var kv in _threatTable)
             {
+                var ent = _unit.LogicManager.GetLogicEntity(kv.Key, false) as BaseUnitLogicEntity;
+
+                // 发情结束等：视野仇恨不再满足 IsEnmityWith，且从未被目标打出实质伤害时立刻清掉，避免卡在战斗状态等 8s 超时
+                if (ent != null
+                    && kv.Value.TotalDamage <= 0f
+                    && !_unit.IsEnmityWith(ent))
+                {
+                    if (toRemove == null)
+                    {
+                        toRemove = new List<long>();
+                    }
+
+                    toRemove.Add(kv.Key);
+                    continue;
+                }
+
                 // 规则：超时 或者 目标死亡/失效
                 if (LogicTime.time - kv.Value.LastInteractionTime > OutOfCombatTime)
                 {
-                    if (toRemove == null) toRemove = new List<long>();
+                    if (toRemove == null)
+                    {
+                        toRemove = new List<long>();
+                    }
+
                     toRemove.Add(kv.Key);
                 }
             }
-            if (toRemove != null) foreach (var id in toRemove) _threatTable.Remove(id);
+
+            if (toRemove != null)
+            {
+                foreach (var id in toRemove)
+                {
+                    _threatTable.Remove(id);
+                }
+            }
         }
 
         private void ReevaluateTarget()

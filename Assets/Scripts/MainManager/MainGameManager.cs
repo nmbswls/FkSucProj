@@ -252,7 +252,11 @@ namespace My
 
             if (playerScenePresenter != null)
             {
-                if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise && playerScenePresenter.PlayerEntity.IsExposed)
+                var glm = MainGameManager.Instance.gameLogicManager;
+                var mapCfg = glm?.AreaManager?.cacheMapCfg;
+                if (glm != null && mapCfg != null && mapCfg.IsCivilArea
+                    && !glm.PlayerHumanMode
+                    && playerScenePresenter.PlayerEntity.IsExposed)
                 {
                     postProcessVignette.SetDangerState(true);
                     FovGenerator.NeedMask = false;

@@ -6,7 +6,8 @@
     "scene_name": "Main_Home",
     "is_home": true,
     "always_alert": false,
-    "default_disguise": false,
+    "is_civil_area": false,
+    "is_danger_area": false,
     "hunting_target": false,
     "hunting_unlock_conds": []
   },
@@ -17,7 +18,8 @@
     "scene_name": "Main_Area_01",
     "is_home": false,
     "always_alert": true,
-    "default_disguise": true,
+    "is_civil_area": true,
+    "is_danger_area": false,
     "hunting_target": true,
     "hunting_unlock_conds": []
   },
@@ -28,7 +30,8 @@
     "scene_name": "Main_Area_02",
     "is_home": false,
     "always_alert": true,
-    "default_disguise": true,
+    "is_civil_area": true,
+    "is_danger_area": false,
     "hunting_target": true,
     "hunting_unlock_conds": []
   },
@@ -39,7 +42,8 @@
     "scene_name": "Main_Init",
     "is_home": false,
     "always_alert": true,
-    "default_disguise": false,
+    "is_civil_area": false,
+    "is_danger_area": false,
     "hunting_target": false,
     "hunting_unlock_conds": []
   },
@@ -50,7 +54,8 @@
     "scene_name": "Main_Home_Fight",
     "is_home": false,
     "always_alert": true,
-    "default_disguise": false,
+    "is_civil_area": false,
+    "is_danger_area": false,
     "hunting_target": false,
     "hunting_unlock_conds": []
   }

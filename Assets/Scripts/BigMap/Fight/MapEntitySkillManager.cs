@@ -1061,14 +1061,14 @@ namespace My.Map.Entity
         public List<SkillRuntime> GetAllReadySkills()
         {
             List<SkillRuntime> ret = new();
-            foreach (var abName in SkillRuntimes.Keys)
+            foreach (var skillId in SkillRuntimes.Keys)
             {
-                if (!IsSkillReady(abName))
+                if (!IsSkillReady(skillId))
                 {
                     continue;
                 }
 
-                ret.Add(SkillRuntimes[abName]);
+                ret.Add(SkillRuntimes[skillId]);
             }
 
             return ret;
@@ -1098,17 +1098,17 @@ namespace My.Map.Entity
 
             if (!skillRuntime.cacheConfig.NeedHMode)
             {
-                //if (OwnerEntity.IsHMode)
-                //{
-                //    return false;
-                //}
+                if (OwnerEntity.IsInHMode())
+                {
+                    return false;
+                }
             }
             else
             {
-                //if (!OwnerEntity.IsHMode)
-                //{
-                //    return false;
-                //}
+                if (!OwnerEntity.IsInHMode())
+                {
+                    return false;
+                }
             }
 
             return true;

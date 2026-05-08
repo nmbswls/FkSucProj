@@ -393,7 +393,7 @@ namespace My.Map
             bool seeEvil = false;
             if (VisionSystem.IsTargetVisible(LogicManager.playerLogicEntity.Id))
             {
-                if (LogicManager.playerLogicEntity.IsExposed)
+                if (LogicManager.playerLogicEntity.IsExposed && !LogicManager.PlayerHumanMode)
                 {
                     seeEvil = true;
                 }
@@ -438,14 +438,14 @@ namespace My.Map
             }
         }
 
-        public bool IsInHMode()
+        public override bool IsInHMode()
         {
             if(NpcConfig.AlwaysHMode)
             {
                 return true;
             }
 
-            return hShieldBroken;
+            return IsFaQing;
         }
 
         protected override void OnConvertToAttachment()

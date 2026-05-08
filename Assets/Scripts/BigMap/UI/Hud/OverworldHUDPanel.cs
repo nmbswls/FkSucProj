@@ -419,27 +419,37 @@ namespace My.UI
         private void CheckDisguiseState()
         {
             bool disguising = false;
+            var lgm = MainGameManager.Instance.gameLogicManager;
 
-            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg != null
-                && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
+            // 只有真身形态 才有伪装概念
+            if (!lgm.PlayerHumanMode)
             {
-                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
+                if (lgm.AreaManager.cacheMapCfg != null
+                    && lgm.AreaManager.cacheMapCfg.IsCivilArea
+                    && !lgm.playerLogicEntity.IsExposed)
                 {
                     disguising = true;
                 }
             }
+            
             
             if(isUIDisguiseMode == disguising)
             {
                 return;
             }
 
-            if(isUIDisguiseMode)
+            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
+            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
+
+            if(!MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Clothes))
+            {
+                return;
+            }
+
+            if (isUIDisguiseMode)
             {
                 PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
                 PlayerBallMap[AttrIdConsts.PlayerClothes].CG.alpha = 0;
-                //PlayerClothesRoot.gameObject.SetActive(true);
-                //PlayerClothesCG.alpha = 0;
 
                 disguiseSwitchTween = DOTween.Sequence()
                         .Append(PlayerBallMap[AttrIdConsts.PlayerClothes].CG.DOFade(1, 0.3f))
@@ -610,28 +620,9 @@ namespace My.UI
                 PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(false);
             }
 
-            bool disguising = false;
+            CheckDisguiseState();
 
-            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.DefaultDisguise)
-            {
-                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes) > 0)
-                {
-                    disguising = true;
-                }
-            }
-
-            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
-            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
-
-            if (disguising && MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Clothes))
-            {
-                PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
-            }
-
-            if (!disguising && MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Expose))
-            {
-                PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(true);
-            }
+            
 
             if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsHome)
             {

@@ -212,10 +212,11 @@ namespace My
 
         public void PostNewAreaLoaded()
         {
-            SyncPlayerMagicClothesAfterMapLoad();
+            RefreshPlayerMagicClothesAndExposeForCurrentMode();
         }
 
-        void SyncPlayerMagicClothesAfterMapLoad()
+        // 按当前 PlayerHumanMode 与地图类型同步魔力衣装运行时与人类形态屏蔽（暴露/衣装上限等）
+        public void RefreshPlayerMagicClothesAndExposeForCurrentMode()
         {
             var player = playerLogicEntity;
             if (player == null || playerDataManager == null)
@@ -223,9 +224,15 @@ namespace My
                 return;
             }
 
+            if (PlayerHumanMode)
+            {
+                player.ApplyHumanModeShieldingState();
+                return;
+            }
+
             var magic = playerDataManager.MagicClothes;
             var cfg = AreaManager.cacheMapCfg;
-            if (cfg != null && cfg.DefaultDisguise)
+            if (cfg != null && cfg.IsCivilArea)
             {
                 magic.OnStealthMapPlayerInitialized(player);
                 return;

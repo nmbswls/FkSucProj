@@ -611,7 +611,7 @@
     "passive_buff_id": "",
     "passive_buff_level_variable_key": "",
     "is_combo": false,
-    "need_h_mode": false,
+    "need_h_mode": true,
     "interrupt_combo": true,
     "is_derived": false,
     "cool_down": 2,

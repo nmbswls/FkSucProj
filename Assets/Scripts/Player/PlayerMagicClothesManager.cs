@@ -126,6 +126,12 @@ namespace My.Player
                 return false;
             }
 
+            if (player.LogicManager.PlayerHumanMode)
+            {
+                Debug.LogWarning("PlayerMagicClothesManager.TrySelectAndLock: player is in human mode");
+                return false;
+            }
+
             SelectedDefId = defId;
             LockedForStealth = true;
             ApplyToPlayer(player);
@@ -136,6 +142,11 @@ namespace My.Player
         public void OnStealthMapPlayerInitialized(PlayerLogicEntity player)
         {
             if (player == null)
+            {
+                return;
+            }
+
+            if (player.LogicManager.PlayerHumanMode)
             {
                 return;
             }
@@ -156,6 +167,11 @@ namespace My.Player
                 return;
             }
 
+            if (player.LogicManager.PlayerHumanMode)
+            {
+                return;
+            }
+
             var def = GetActiveDef();
             if (def == null)
             {
@@ -168,6 +184,11 @@ namespace My.Player
         public bool ShouldApplyMoveWear(PlayerLogicEntity p)
         {
             if (p == null || !IsLockedWithSelection)
+            {
+                return false;
+            }
+
+            if (p.LogicManager.PlayerHumanMode)
             {
                 return false;
             }

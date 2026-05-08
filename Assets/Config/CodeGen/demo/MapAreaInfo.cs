@@ -24,7 +24,8 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
         { if(!_buf["is_home"].IsBoolean) { throw new SerializationException(); }  IsHome = _buf["is_home"]; }
         { if(!_buf["always_alert"].IsBoolean) { throw new SerializationException(); }  AlwaysAlert = _buf["always_alert"]; }
-        { if(!_buf["default_disguise"].IsBoolean) { throw new SerializationException(); }  DefaultDisguise = _buf["default_disguise"]; }
+        { if(!_buf["is_civil_area"].IsBoolean) { throw new SerializationException(); }  IsCivilArea = _buf["is_civil_area"]; }
+        { if(!_buf["is_danger_area"].IsBoolean) { throw new SerializationException(); }  IsDangerArea = _buf["is_danger_area"]; }
         { if(!_buf["hunting_target"].IsBoolean) { throw new SerializationException(); }  HuntingTarget = _buf["hunting_target"]; }
         { var __json0 = _buf["hunting_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } HuntingUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  HuntingUnlockConds.Add(__v0); }   }
     }
@@ -59,9 +60,13 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// </summary>
     public bool AlwaysAlert;
     /// <summary>
-    /// 默认伪装
+    /// 是否为文明区域<br/>城镇地带默认进行伪装
     /// </summary>
-    public bool DefaultDisguise;
+    public bool IsCivilArea;
+    /// <summary>
+    /// 是否为危险区域<br/>危险区域无法以人形前往
+    /// </summary>
+    public bool IsDangerArea;
     /// <summary>
     /// 是否是出击目标
     /// </summary>
@@ -88,7 +93,8 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         + "sceneName:" + SceneName + ","
         + "isHome:" + IsHome + ","
         + "alwaysAlert:" + AlwaysAlert + ","
-        + "defaultDisguise:" + DefaultDisguise + ","
+        + "isCivilArea:" + IsCivilArea + ","
+        + "isDangerArea:" + IsDangerArea + ","
         + "huntingTarget:" + HuntingTarget + ","
         + "huntingUnlockConds:" + Luban.StringUtil.CollectionToString(HuntingUnlockConds) + ","
         + "}";

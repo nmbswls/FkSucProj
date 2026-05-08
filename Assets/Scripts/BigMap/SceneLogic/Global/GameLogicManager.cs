@@ -125,7 +125,38 @@ namespace My
         public FactionRelationManager factionRelationManager;
 
         public bool PlayerPeaceMode { get; set; } = false;
-        public bool PlayerHumanMode { get; set; } = true;
+
+        // true = 人类形态；false = 真身形态（仅真身下维持衣装/暴露等玩法）
+        public bool PlayerHumanMode { get; private set; } = true;
+
+        // 玩家在家园地图内主动切换人类/真身形态（非家园返回 false）
+        public bool TrySetPlayerHumanModeFromPlayerInput(bool wantHuman)
+        {
+            if (AreaManager?.cacheMapCfg == null || !AreaManager.cacheMapCfg.IsHome)
+            {
+                return false;
+            }
+
+            ForcePlayerHumanMode(wantHuman, refreshDespitePendingSwitch: true);
+            return true;
+        }
+
+        // 系统或界面强制形态（床铺潜入、结算回城等）；地图切换进行中时默认推迟到 PostNewAreaLoaded 再刷新运行时
+        public void ForcePlayerHumanMode(bool human, bool refreshDespitePendingSwitch = false)
+        {
+            if (PlayerHumanMode == human)
+            {
+                return;
+            }
+
+            PlayerHumanMode = human;
+            if (SwitchAreaIntent != null && !refreshDespitePendingSwitch)
+            {
+                return;
+            }
+
+            RefreshPlayerMagicClothesAndExposeForCurrentMode();
+        }
 
         public void OnGameLogicInit(SaveData saveData)
         {

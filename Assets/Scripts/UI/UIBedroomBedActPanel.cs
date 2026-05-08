@@ -264,7 +264,8 @@ namespace My.UI
 
             glm.PreparePlayerSwitchArea(_selected.Id, true);
 
-            glm.PlayerHumanMode = false; // todo 标准化流程
+            // 潜入目标地图：强制真身形态，衣装在 PostNewAreaLoaded / civil 流程中应用
+            glm.ForcePlayerHumanMode(false);
         }
 
         private void OnClickOpenDream()

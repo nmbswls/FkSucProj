@@ -247,7 +247,7 @@ namespace My.Map.Unit
             }
 
             // 面对女王模式下的主角 始终敌对
-            if (playerEntity.IsExposed)
+            if (!playerEntity.LogicManager.PlayerHumanMode && playerEntity.IsExposed)
             {
                 return true;
             }
