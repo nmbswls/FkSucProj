@@ -285,7 +285,7 @@ namespace My.UI
             sectors.Clear();
             currentIndex = -1;
 
-            builds.Clear();
+            builds?.Clear();
         }
 
         public override bool OnNavigate(Vector2 dir)

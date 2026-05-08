@@ -1,0 +1,18 @@
+[
+  {
+    "id": "village_01_wq0",
+    "map_id": "village_01",
+    "segment_order": 0,
+    "unlock_after_minutes": 0,
+    "quota": 2,
+    "attach_chance_permille": 150
+  },
+  {
+    "id": "village_01_wq1",
+    "map_id": "village_01",
+    "segment_order": 1,
+    "unlock_after_minutes": 5,
+    "quota": 2,
+    "attach_chance_permille": 120
+  }
+]

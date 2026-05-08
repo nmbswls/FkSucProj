@@ -72,6 +72,7 @@ namespace My.Map.Entity
         public const string FastTurn = "FastTurn";
         public const string NoInteract = "NoInteract";
         public const string Charmed = "Charmed";
+        public const string ImmuneJianSu = "ImmuneJianSu";
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";
         public const string NoKiller = "NoKiller";
@@ -82,6 +83,7 @@ namespace My.Map.Entity
         public const string PlayerSanity = "PlayerSanity";
         public const string PlayerEstrusProgrss = "PlayerEstrusProgrss"; // 发情值
         public const string PlayerOriginPower = "PlayerOriginPower";
+        public const string PlayerJingYu = "PlayerJingYu"; // 精浴用属性做 buff只负责显示
 
         public const string PlayerKnockDown = "PlayerKnockDown";
 

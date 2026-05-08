@@ -96,4 +96,6 @@
         <var name="param4" type="string"/>
     </bean>
 
+    <!-- 欲望结晶：TbDesireCrystalDef / TbMapDesireCrystalBudget / TbMapWalkerDesireCrystalQuota / TbNamedNpcDesireCrystal 在 Config/Datas/desire_crystal.xlsx；TbUnitNpc 字段 desire_crystal_random_attachable 在 unit_npc.xlsx；生成脚本 gen_desire_crystal_tables.py -->
+
 </module>

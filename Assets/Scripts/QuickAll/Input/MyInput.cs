@@ -219,15 +219,6 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""TabHold"",
-                    ""type"": ""Button"",
-                    ""id"": ""ec6b3573-4d37-47f8-9d8a-319a70db05e3"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""Hold"",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Q"",
                     ""type"": ""Button"",
                     ""id"": ""5ca89802-312f-47fc-bc69-dc3edf75ea6c"",
@@ -492,17 +483,6 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""e52b3592-5144-4160-931c-7c4188a7d31b"",
-                    ""path"": ""<Keyboard>/tab"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""TabHold"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""cdf2cc66-e36e-4535-bcfe-6f4186dccf01"",
                     ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
@@ -655,7 +635,6 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_PointerPos = m_OverworldMap.FindAction("PointerPos", throwIfNotFound: true);
         m_OverworldMap_RightClickHold = m_OverworldMap.FindAction("RightClickHold", throwIfNotFound: true);
         m_OverworldMap_Tab = m_OverworldMap.FindAction("Tab", throwIfNotFound: true);
-        m_OverworldMap_TabHold = m_OverworldMap.FindAction("TabHold", throwIfNotFound: true);
         m_OverworldMap_Q = m_OverworldMap.FindAction("Q", throwIfNotFound: true);
         m_OverworldMap_E = m_OverworldMap.FindAction("E", throwIfNotFound: true);
         m_OverworldMap_R = m_OverworldMap.FindAction("R", throwIfNotFound: true);
@@ -765,7 +744,6 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_PointerPos;
     private readonly InputAction m_OverworldMap_RightClickHold;
     private readonly InputAction m_OverworldMap_Tab;
-    private readonly InputAction m_OverworldMap_TabHold;
     private readonly InputAction m_OverworldMap_Q;
     private readonly InputAction m_OverworldMap_E;
     private readonly InputAction m_OverworldMap_R;
@@ -840,10 +818,6 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "OverworldMap/Tab".
         /// </summary>
         public InputAction @Tab => m_Wrapper.m_OverworldMap_Tab;
-        /// <summary>
-        /// Provides access to the underlying input action "OverworldMap/TabHold".
-        /// </summary>
-        public InputAction @TabHold => m_Wrapper.m_OverworldMap_TabHold;
         /// <summary>
         /// Provides access to the underlying input action "OverworldMap/Q".
         /// </summary>
@@ -940,9 +914,6 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Tab.started += instance.OnTab;
             @Tab.performed += instance.OnTab;
             @Tab.canceled += instance.OnTab;
-            @TabHold.started += instance.OnTabHold;
-            @TabHold.performed += instance.OnTabHold;
-            @TabHold.canceled += instance.OnTabHold;
             @Q.started += instance.OnQ;
             @Q.performed += instance.OnQ;
             @Q.canceled += instance.OnQ;
@@ -1017,9 +988,6 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Tab.started -= instance.OnTab;
             @Tab.performed -= instance.OnTab;
             @Tab.canceled -= instance.OnTab;
-            @TabHold.started -= instance.OnTabHold;
-            @TabHold.performed -= instance.OnTabHold;
-            @TabHold.canceled -= instance.OnTabHold;
             @Q.started -= instance.OnQ;
             @Q.performed -= instance.OnQ;
             @Q.canceled -= instance.OnQ;
@@ -1371,13 +1339,6 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTab(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "TabHold" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnTabHold(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Q" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -133,15 +133,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "TabHold",
-                    "type": "Button",
-                    "id": "ec6b3573-4d37-47f8-9d8a-319a70db05e3",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "Hold",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Q",
                     "type": "Button",
                     "id": "5ca89802-312f-47fc-bc69-dc3edf75ea6c",
@@ -401,17 +392,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Tab",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e52b3592-5144-4160-931c-7c4188a7d31b",
-                    "path": "<Keyboard>/tab",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "TabHold",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

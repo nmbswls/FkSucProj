@@ -25,32 +25,41 @@ namespace My.UI
         {
             this.innerItem = innerItem;
 
-            if (sectorBg != null)
+            if(innerItem != null)
             {
-                sectorBg.fillAmount = fillAmount - 2 * 1.0f / 360f; // 填充=扇区角度/360
-                sectorBg.color = normal;
-            }
+                gameObject.SetActive(true);
 
-            Sprite iconSprite = null;
-            if(innerItem.RadialFunc == ERadialFunc.UseSkill)
-            {
-                var skillCfg = SkillLibrary.GetSkillConfig(innerItem.SkillId);
-
-                if (skillCfg != null && !string.IsNullOrEmpty(skillCfg.IconPath))
+                if (sectorBg != null)
                 {
-                    iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillCfg.IconPath}");
+                    sectorBg.fillAmount = fillAmount - 2 * 1.0f / 360f; // 填充=扇区角度/360
+                    sectorBg.color = normal;
                 }
+
+                Sprite iconSprite = null;
+                if (innerItem.RadialFunc == ERadialFunc.UseSkill)
+                {
+                    var skillCfg = SkillLibrary.GetSkillConfig(innerItem.SkillId);
+
+                    if (skillCfg != null && !string.IsNullOrEmpty(skillCfg.IconPath))
+                    {
+                        iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{skillCfg.IconPath}");
+                    }
+                }
+                else if (innerItem.RadialFunc == ERadialFunc.ChangeHuman)
+                {
+                    iconSprite = SimpleResManager.Load<Sprite>($"Sprites/change_human_mode");
+                }
+
+                if (icon != null)
+                {
+                    icon.sprite = iconSprite;
+                }
+                SetInteractable(innerItem.Interactable);
             }
-            else if(innerItem.RadialFunc == ERadialFunc.ChangeHuman)
+            else
             {
-                iconSprite = SimpleResManager.Load<Sprite>($"Sprites/change_human_mode");
+                gameObject.SetActive(false);
             }
-            
-            if(icon != null)
-            {
-                icon.sprite = iconSprite;
-            }
-            SetInteractable(innerItem.Interactable);
         }
 
         public void SetHighlight(bool on, Color normal, Color highlight)

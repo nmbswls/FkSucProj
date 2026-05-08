@@ -1190,6 +1190,11 @@ namespace My.Map
             }
         }
 
+        protected virtual void OnDamageBeforeFinalReduce(long dmg, ResourceDeltaIntent intent)
+        {
+
+        }
+
         protected virtual long CalculateUnitHpChange(string attrId, ResourceDeltaIntent intent)
         {
             long delta = intent.delta;
@@ -1239,6 +1244,13 @@ namespace My.Map
                     basicJs = 9000;
                 }
                 dmg = (long)(dmg * (10000 - basicJs) * 0.0001);
+
+                OnDamageBeforeFinalReduce(dmg, intent);
+
+                var fix_dr = GetAttr(AttrIdConsts.Final_Fix_DR_All);
+                dmg -= fix_dr;
+                if (dmg <= 0) dmg = 0;
+
 
                 return -dmg;
             }

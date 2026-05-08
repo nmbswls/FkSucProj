@@ -196,6 +196,8 @@ namespace My.Map.Logic
             checkRefreshTimer = LogicTime.time;
 
             logicManager.ApplyPendingMapRuntimeAfterMapInit(mapName);
+
+            SetupDesireCrystalSession(mapName);
         }
 
         public void CleanArea()
@@ -217,6 +219,8 @@ namespace My.Map.Logic
             }
             subs.Clear();
             DialogForceStaticIds.Clear();
+
+            ClearDesireCrystalSession();
 
             EntityRefreshInfo.Clear();
 
@@ -746,6 +750,7 @@ namespace My.Map.Logic
             if (rec is LogicEntityRecord4Npc npcRec)
             {
                 logicManager.worldPersistState?.NpcCharacters.TryApplyToRecordBeforeSpawn(npcRec);
+                DesireCrystalSpawnLogic.ApplyOnNpcBeforeSpawn(logicManager, this, npcRec);
             }
 
             var ent = logicManager.CreateEntityByRecord(rec);

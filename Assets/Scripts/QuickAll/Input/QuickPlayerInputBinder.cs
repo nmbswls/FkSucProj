@@ -167,7 +167,7 @@ namespace My.Input
             if (GlobalLock) return;
 
             // 2. 持续输入（Hold）的每帧 Update，直接问询 Input System
-            // 前提：actions.OverworldMap.RightClickHold 没有被 Disable
+            // 前提：actions.OverworldMap.RightClickHold / Tab 没有被 Disable
             if (actions.OverworldMap.enabled)
             {
                 if (actions.OverworldMap.RightClickHold.IsPressed())
@@ -175,7 +175,7 @@ namespace My.Input
                     OnKeyHoldingUpdate(keyMouseRight);
                 }
 
-                if (actions.OverworldMap.TabHold.IsPressed())
+                if (actions.OverworldMap.Tab.IsPressed())
                 {
                     OnKeyHoldingUpdate(keyTab);
                 }
@@ -235,7 +235,7 @@ namespace My.Input
                 {
                     OnKeyHoldEnd(keyMouseRight);
                 }
-                if (actions.OverworldMap.TabHold.IsPressed())
+                if (actions.OverworldMap.Tab.IsPressed())
                 {
                     OnKeyHoldEnd(keyTab);
                 }
@@ -335,9 +335,6 @@ namespace My.Input
             actions.OverworldMap.Tab.started += OnHotKeyTab;
             actions.OverworldMap.Tab.performed += OnHotKeyTab;
             actions.OverworldMap.Tab.canceled += OnHotKeyTabEnd;
-            
-            //actions.OverworldMap.TabHold.started += OnTabHoldStart;
-            //actions.OverworldMap.TabHold.canceled += OnTabHoldEnd;
 
             actions.OverworldMap.Q.performed += OnHotKeyQ;
             actions.OverworldMap.E.performed += OnHotKeyE;
@@ -380,8 +377,6 @@ namespace My.Input
             actions.OverworldMap.Tab.started -= OnHotKeyTab;
             actions.OverworldMap.Tab.performed -= OnHotKeyTab;
             actions.OverworldMap.Tab.canceled -= OnHotKeyTabEnd;
-            //actions.OverworldMap.TabHold.started -= OnTabHoldStart;
-            //actions.OverworldMap.TabHold.canceled -= OnTabHoldEnd;
 
             actions.OverworldMap.Q.performed -= OnHotKeyQ;
             actions.OverworldMap.E.performed -= OnHotKeyE;
@@ -504,9 +499,6 @@ namespace My.Input
         public void OnHotKeySpace(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Space.ToString());
         public void OnHotKeyTab(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Tab.ToString());
         public void OnHotKeyTabEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.Tab.ToString());
-
-        //public void OnTabHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(EInputKey.Tab.ToString());
-        //public void OnTabHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.Tab.ToString());
 
         public void OnHotKeyHView(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.HView.ToString());
 

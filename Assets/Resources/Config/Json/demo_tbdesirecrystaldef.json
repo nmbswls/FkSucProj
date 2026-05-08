@@ -1,0 +1,17 @@
+[
+  {
+    "id": "dc_fire",
+    "item_id": "banana",
+    "random_pick_weight": 100
+  },
+  {
+    "id": "dc_ice",
+    "item_id": "qiezi",
+    "random_pick_weight": 100
+  },
+  {
+    "id": "dc_void",
+    "item_id": "bangbangtang",
+    "random_pick_weight": 50
+  }
+]

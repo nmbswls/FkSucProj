@@ -733,35 +733,21 @@ namespace My.Map.Entity
                     Icon = "queen_desire_charm_01",
                 };
 
-                _library["h_spirit_killed_give"] = new BuffDefinition()
+                _library["h_spirit_immune"] = new BuffDefinition()
                 {
-                    BuffId = "h_spirit_killed_give",
+                    BuffId = "h_spirit_immune",
 
                     Desc = "我死啦",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     DefaultDuration = -1,
 
-                    TriggerList = new()
+                    ModifierAttrs = new()
                     {
-                        new BuffTriggerRuleConfig()
-                        {
-                            TriggerType = ETriggerType.OnDie,
-                            OutputFightEffects = new()
-                            {
-                                new MapAbilityEffectAddResourceCfg()
-                                {
-                                    ResourceId = AttrIdConsts.PlayerSanity,
-                                    AddValue = 5000,
-                                },
-                                new MapFightEffectShowEffect()
-                                {
-                                    ShowMode = EShowMode.TargetAligned,
-                                    IsFake = true,
-                                },
-                            },
-                            RemoveOnTrigger = true,
-                        }
-                    }
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneKnock, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = 1 },
+                        
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Final_Fix_DR_All, ModifierValue = 99999999 },
+                    },
                 };
             }
 

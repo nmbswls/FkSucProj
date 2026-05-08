@@ -651,6 +651,14 @@ namespace My.Map
         public float GetCurrSpeed()
         {
             var basicMove = GetAttr(AttrIdConsts.Basic_MoveSpeed);
+            
+            if(CheckHasState(AttrIdConsts.ImmuneJianSu))
+            {
+                if(basicMove < 0)
+                {
+                    basicMove = 0;
+                }
+            }
             long rate = 10000 + basicMove;
 
             if (rate > 50000)

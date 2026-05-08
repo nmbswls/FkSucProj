@@ -61,6 +61,7 @@ namespace My
             return new NpcCharacterPersistData
             {
                 LocalSwitches = CloneList(s.LocalSwitches),
+                DesireCrystalTaken = s.DesireCrystalTaken,
             };
         }
 
@@ -124,6 +125,35 @@ namespace My
             }
 
             rec.LocalSwitches = CloneList(st.LocalSwitches);
+        }
+
+        public bool IsDesireCrystalTaken(string characterKey)
+        {
+            return !string.IsNullOrEmpty(characterKey)
+                   && _byKey.TryGetValue(characterKey, out var st)
+                   && st != null
+                   && st.DesireCrystalTaken;
+        }
+
+        public void SetDesireCrystalTaken(string characterKey, bool taken)
+        {
+            if (string.IsNullOrEmpty(characterKey))
+            {
+                return;
+            }
+
+            if (!_byKey.TryGetValue(characterKey, out var st))
+            {
+                st = new NpcCharacterPersistData();
+                _byKey[characterKey] = st;
+            }
+
+            st.DesireCrystalTaken = taken;
+        }
+
+        public void RestoreNamedNpcDesireCrystal(string characterKey)
+        {
+            SetDesireCrystalTaken(characterKey, false);
         }
 
         public bool TryGetSnapshot(string characterKey, out NpcCharacterPersistData data)

@@ -45,6 +45,10 @@ public partial class Tables
     public demo.TbEntitySkillData TbEntitySkillData {get; }
     public demo.TbSkillSchool TbSkillSchool {get; }
     public demo.TbSkillLearnEntry TbSkillLearnEntry {get; }
+    public demo.TbDesireCrystalDef TbDesireCrystalDef {get; }
+    public demo.TbMapDesireCrystalBudget TbMapDesireCrystalBudget {get; }
+    public demo.TbMapWalkerDesireCrystalQuota TbMapWalkerDesireCrystalQuota {get; }
+    public demo.TbNamedNpcDesireCrystal TbNamedNpcDesireCrystal {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -79,6 +83,10 @@ public partial class Tables
         TbEntitySkillData = new demo.TbEntitySkillData(loader("demo_tbentityskilldata"));
         TbSkillSchool = new demo.TbSkillSchool(loader("demo_tbskillschool"));
         TbSkillLearnEntry = new demo.TbSkillLearnEntry(loader("demo_tbskilllearnentry"));
+        TbDesireCrystalDef = new demo.TbDesireCrystalDef(loader("demo_tbdesirecrystaldef"));
+        TbMapDesireCrystalBudget = new demo.TbMapDesireCrystalBudget(loader("demo_tbmapdesirecrystalbudget"));
+        TbMapWalkerDesireCrystalQuota = new demo.TbMapWalkerDesireCrystalQuota(loader("demo_tbmapwalkerdesirecrystalquota"));
+        TbNamedNpcDesireCrystal = new demo.TbNamedNpcDesireCrystal(loader("demo_tbnamednpcdesirecrystal"));
         ResolveRef();
     }
     
@@ -115,6 +123,10 @@ public partial class Tables
         TbEntitySkillData.ResolveRef(this);
         TbSkillSchool.ResolveRef(this);
         TbSkillLearnEntry.ResolveRef(this);
+        TbDesireCrystalDef.ResolveRef(this);
+        TbMapDesireCrystalBudget.ResolveRef(this);
+        TbMapWalkerDesireCrystalQuota.ResolveRef(this);
+        TbNamedNpcDesireCrystal.ResolveRef(this);
     }
 }
 

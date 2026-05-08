@@ -76,6 +76,9 @@ namespace My.Map
             }
         }
 
+        public bool HasAttachedDesireCrystal =>
+            !string.IsNullOrEmpty(NpcRecord.AttachedDesireCrystalTypeId);
+
         public NpcUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var npcRecord = (LogicEntityRecord4Npc)bindingRecord;
@@ -538,17 +541,22 @@ namespace My.Map
             var sjPlus1 = player.GetAttr(AttrIdConsts.PlayerSJAmount_Fixed);
             var sjPlus2 = player.GetAttr(AttrIdConsts.PlayerSJAmount_Precent);
 
-            long baseDmg = PlayerGamePlayRule.GetFinalBlurtDmg(CfgId, sjPlus1, sjPlus2);
+            var npcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(CfgId);
+            var attr = CfgMgr.Cfgs.TbUnitNpcAttr.GetOrDefault(npcCfg?.AttrTemplateId ?? 0);
 
-            // 附加 HP 伤害
-            ApplyResourceChange(AttrIdConsts.HP, -baseDmg, false, Fight.FightStruct.EDmgFlag.None, this.Id);
+            float sjAmount = attr?.BaseBlurtAmount ?? 1.0f;
+            float dmgPerAmount = attr?.BaseBlurtDmg ?? 1.0f;
 
             TryInterrupt(new InterruptRequest()
             {
                 source = EInterruptSource.System,
             });
 
-            abilityController.TryUseAbility("unit_h_mode_sj");
+            abilityController.TryUseAbility("unit_h_mode_sj", overrideParams: new Dictionary<string, string>()
+            {
+                ["SJ_Amount"] = sjAmount.ToString(),
+                ["SJ_Damage"] = dmgPerAmount.ToString(),
+            });
         }
 
 

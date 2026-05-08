@@ -48,6 +48,7 @@ namespace My.Map.Scene
         public HighlightCtrl highlightCtrl;
         public bool InteractDetailMode { get; set; }
 
+        [SerializeField] GameObject desireCrystalHuntingFxRoot;
 
         private int _faqingEffectUId { get; set; }
 
@@ -127,6 +128,8 @@ namespace My.Map.Scene
         {
             base.Tick(dt);
 
+            TickDesireCrystalHuntingFx();
+
             if(NpcEntity.IsFaQing)
             {
                 if(_faqingEffectUId == 0)
@@ -148,6 +151,18 @@ namespace My.Map.Scene
                     _faqingEffectUId = 0;
                 }
             }
+        }
+
+        void TickDesireCrystalHuntingFx()
+        {
+            if (desireCrystalHuntingFxRoot == null)
+            {
+                return;
+            }
+
+            bool hunter = OverworldHUDPanel.Instance != null && OverworldHUDPanel.Instance.IsHunterMode;
+            bool hasCrystal = NpcEntity != null && NpcEntity.HasAttachedDesireCrystal;
+            desireCrystalHuntingFxRoot.SetActive(hunter && hasCrystal);
         }
 
         public override void Bind(ILogicEntity logic)

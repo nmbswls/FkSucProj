@@ -19,7 +19,8 @@
     "always_h_mode": false,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "initial_orc_02",
@@ -41,7 +42,8 @@
     "always_h_mode": false,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "initial_orc_big",
@@ -63,7 +65,8 @@
     "always_h_mode": false,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "game_init_luca_injured",
@@ -83,7 +86,8 @@
     "always_h_mode": false,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "qigai_default",
@@ -103,7 +107,8 @@
     "always_h_mode": false,
     "ignore_attract_level": 1,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "hunhun",
@@ -125,7 +130,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "slime_red",
@@ -147,7 +153,8 @@
     "always_h_mode": false,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "civil",
@@ -167,7 +174,8 @@
     "always_h_mode": false,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "civil_sleeping",
@@ -187,7 +195,8 @@
     "always_h_mode": false,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": false
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_small_01",
@@ -201,7 +210,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -210,7 +219,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_small_02",
@@ -224,7 +234,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -233,7 +243,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_small_03",
@@ -247,7 +258,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -256,7 +267,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_middle_01",
@@ -270,7 +282,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -279,7 +291,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_middle_02",
@@ -293,7 +306,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -302,7 +315,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_middle_03",
@@ -316,7 +330,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -325,7 +339,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_big_01",
@@ -339,7 +354,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -348,7 +363,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_big_02",
@@ -362,7 +378,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -371,7 +387,8 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   },
   {
     "id": "h_spirit_big_03",
@@ -385,7 +402,7 @@
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
-      "h_spirit_killed"
+      "h_spirit_immune"
     ],
     "is_peace": false,
     "peace_dialog_id": "",
@@ -394,6 +411,7 @@
     "always_h_mode": true,
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
-    "no_unsensored": true
+    "no_unsensored": true,
+    "desire_crystal_random_attachable": false
   }
 ]

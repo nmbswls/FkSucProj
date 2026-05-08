@@ -17,6 +17,7 @@ using static My.GameLogicManager;
 using static My.Map.Entity.EntitySkillComboGraph;
 using static My.Map.Entity.MapEntitySkillManager;
 using static My.Map.Fight.FightStruct;
+using static UnityEngine.Rendering.VolumeComponent;
 
 
 namespace My.Map
@@ -1578,36 +1579,35 @@ namespace My.Map
             EventOnExposeStateChange?.Invoke(false);
         }
 
+        protected override void OnDamageBeforeFinalReduce(long dmg, ResourceDeltaIntent intent)
+        {
+            base.OnDamageBeforeFinalReduce(dmg, intent);
+            var impulseRate = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HImpulse_Pipeline) ?? 0;
+
+            var hVal = (long)((Math.Pow(dmg * 0.001, 0.5) * impulseRate * 0.0001) * 1000);
+
+            var naishou = GetAttr(AttrIdConsts.PhysicalResist);
+
+            double p_k = 2.0;
+            double p = (dmg * 0.001) / (dmg * 0.001 + naishou * 0.001 + p_k); // 计算p穿透率 一部分冲击力变为发情条 一部分施加给高潮条
+
+            double kEstrus = 0.2;
+            long pleasureAdd = (long)Math.Ceiling(hVal * (p));
+            long faqingAdd = (long)Math.Round(hVal * (1 - p) * kEstrus);
+
+            Debug.Log("OnDamageBeforeFinalReduce dmg impulse h " + hVal + " dmg " + dmg + " " + faqingAdd + " " + pleasureAdd);
+            // 叠加高潮条（快乐条）
+            attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, pleasureAdd, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+            attributeStore.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, faqingAdd, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+        }
+
         protected override long CalculateUnitHpChange(string attrId, ResourceDeltaIntent intent)
         {
             long delta = base.CalculateUnitHpChange(attrId, intent);
 
             if(delta < 0)
             {
-                var impulseRate = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HImpulse_Pipeline) ?? 0;
-
-                var dmg = Math.Abs(delta);
-                var hVal = (long)((Math.Pow(dmg * 0.001, 0.5) * impulseRate * 0.0001) * 1000);
-
-                var naishou = GetAttr(AttrIdConsts.PhysicalResist);
-
-                double p_k = 2.0;
-                double p = (dmg * 0.001) / (dmg * 0.001 + naishou * 0.001 + p_k); // 计算p穿透率 一部分冲击力变为发情条 一部分施加给高潮条
-
-                double kEstrus = 0.5;
-                long pleasureAdd = (long)Math.Ceiling(hVal * (p));
-                long faqingAdd = (long)Math.Round(hVal * (1-p) * kEstrus);
-
-                Debug.Log("dmg impulse h " + hVal + " dmg " + delta + " " + faqingAdd  + " " + pleasureAdd);
-                // 叠加高潮条（快乐条）
-                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, pleasureAdd, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
-                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, faqingAdd, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
-
-                // 根据肉体抗性 减少伤害 可以减到0
-                dmg -= GetAttr(AttrIdConsts.PhysicalResist);
-                if (dmg <= 0) dmg = 0;
-
-                delta = -dmg;
+                
             }
             return delta;
         }

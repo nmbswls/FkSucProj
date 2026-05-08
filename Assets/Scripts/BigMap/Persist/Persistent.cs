@@ -99,6 +99,9 @@ namespace My.Map.Logic
         public float CurrPathProgress = 0;
 
         public bool IsForeigner;
+
+        // 欲望结晶类型 id（TbDesireCrystalDef）；空表示当前未附着；在刷新/生成时已决定，非死亡掉落时再算
+        public string AttachedDesireCrystalTypeId = string.Empty;
     }
 
 

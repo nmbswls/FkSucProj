@@ -44,6 +44,7 @@ namespace My.Map
                 case AttrIdConsts.Sleep:
                 case AttrIdConsts.NoKiller:
                 case AttrIdConsts.Charmed:
+                case AttrIdConsts.ImmuneJianSu:
 
                     return EAttrType.State;
 
@@ -84,6 +85,7 @@ namespace My.Map
                 case AttrIdConsts.PlayerEstrusProgrss:
                 case AttrIdConsts.PlayerNaiLi:
                 case AttrIdConsts.PlayerOriginPower:
+                case AttrIdConsts.PlayerJingYu:
 
                 case AttrIdConsts.NPCHVal:
                 case AttrIdConsts.NPCSJProgress:
