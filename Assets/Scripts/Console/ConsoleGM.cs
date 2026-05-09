@@ -301,7 +301,14 @@ public class ConsoleGM : MonoBehaviour
                 var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
                 player.ApplyResourceChange(AttrIdConsts.HP, -val, false, FightStruct.EDmgFlag.None, null);
             });
-
+        Register("san", "san 变化",
+            new[] { new CmdParam("val", "int，值") },
+            args =>
+            {
+                var val = int.Parse(args[0]) * 1000;
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                player.ApplyResourceChange(AttrIdConsts.PlayerSanity, val, false, FightStruct.EDmgFlag.None, null);
+            });
         Register("give_item", "给item",
             new[] { new CmdParam("itemId", "string，变量名"),
              new CmdParam("count", "string，变量名")},

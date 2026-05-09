@@ -443,6 +443,7 @@ namespace My.UI
         /// </summary>
         private void CheckDisguiseState()
         {
+            if (disguiseSwitchTween != null) return;
             bool disguising = false;
             var lgm = MainGameManager.Instance.gameLogicManager;
 
@@ -466,12 +467,15 @@ namespace My.UI
             PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
             PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
 
-            if(!MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Clothes))
+            if (!MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Clothes))
             {
                 return;
             }
+            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
+            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(true);
 
-            if (isUIDisguiseMode)
+
+            if (disguising)
             {
                 PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
                 PlayerBallMap[AttrIdConsts.PlayerClothes].CG.alpha = 0;
@@ -483,12 +487,15 @@ namespace My.UI
                         {
                             disguiseSwitchTween = null;
                             PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
+                            isUIDisguiseMode = disguising;
+
                         }).SetLink(gameObject);
+
             }
             else
             {
-                PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
-                PlayerBallMap[AttrIdConsts.PlayerClothes].CG.alpha = 0;
+                PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(true);
+                PlayerBallMap[AttrIdConsts.PlayerOriginPower].CG.alpha = 0;
 
                 disguiseSwitchTween = DOTween.Sequence()
                         .Append(PlayerBallMap[AttrIdConsts.PlayerOriginPower].CG.DOFade(1, 0.3f))
@@ -497,7 +504,10 @@ namespace My.UI
                         {
                             disguiseSwitchTween = null;
                             PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
+                            isUIDisguiseMode = disguising;
+
                         }).SetLink(gameObject);
+
             }
         }
 
