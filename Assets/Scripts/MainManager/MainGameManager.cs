@@ -394,8 +394,8 @@ namespace My
 
             var ring = fxCtx.EffectGo.GetComponent<MapNoiseRing>();
             //ring.transform.position = worldPos;
-            //ring.gameObject.SetActive(true);
-            //ring.Play(Mathf.Clamp01(intensity), worldPos);
+            ring.gameObject.SetActive(true);
+            ring.Play(Mathf.Clamp01(intensity), worldPos);
             //ring.autoDestroy = false;
         }
 

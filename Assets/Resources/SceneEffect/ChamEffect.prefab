@@ -94,7 +94,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6427991141216582898}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e7c7f0da3eaaee43a5158770b086c30, type: 3}
+  m_Script: {fileID: 11500000, guid: 93a6bc0ab40e2344db80399b289094f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   baseAlpha: 0.8
@@ -126,7 +126,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ringColor: {r: 1, g: 0, b: 0, a: 1}
+  ringColor: {r: 1, g: 1, b: 1, a: 1}
   useAdditiveMaterial: 0
+  autoTrigger: 1
   autoDestroy: 1
+  autoStrength: 0.2
   extraLife: 0.05

@@ -193,7 +193,12 @@ namespace My
                             executor = new AbilityEffectExecutor4InterruptCaster();
                         }
                         break;
-                        
+
+                    case MapFightEffectCauseNoise:
+                        {
+                            executor = new AbilityEffectExecutor4CauseNoise();
+                        }
+                        break;
                     case MapAbilityEffectGiveItemCfg:
                         {
                             executor = new AbilityEffectExecutor4GiveItem();

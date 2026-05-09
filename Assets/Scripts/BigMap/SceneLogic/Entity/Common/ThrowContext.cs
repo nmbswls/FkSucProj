@@ -17,7 +17,6 @@ namespace My.Map.Entity
         public readonly List<long> TrackedBuffIds = new();
         public MapAbilityEffectThrowStartCfg SourceCfg;
         public GameLogicManager Env;
-        public bool ImpactFired;
         readonly HashSet<int> _firedTimelineIndices = new();
 
         public GameLogicManager.LogicFightEffectContext BuildFightEffectContext(long targetEntityId)
@@ -36,22 +35,47 @@ namespace My.Map.Entity
             return efCtx;
         }
 
-        public void DispatchThrowEffects(ThrowEventKind kind)
+        void RunEffectList(List<MapFightEffectCfg> effects, long primaryTargetEntityId)
         {
-            if (SourceCfg?.ThrowPhaseEffects == null || Env == null)
-                return;
-
-            foreach (var spec in SourceCfg.ThrowPhaseEffects)
+            if (effects == null || Env == null)
             {
-                if (spec == null || spec.Kind != kind || spec.Effects == null)
-                    continue;
+                return;
+            }
 
-                foreach (var eff in spec.Effects)
+            foreach (var eff in effects)
+            {
+                if (eff == null)
                 {
-                    if (eff == null) continue;
-                    var ctx = BuildFightEffectContext(Target.Id);
-                    Env.HandleLogicFightEffect(eff, ctx);
+                    continue;
                 }
+
+                var ctx = BuildFightEffectContext(primaryTargetEntityId);
+                Env.HandleLogicFightEffect(eff, ctx);
+            }
+        }
+
+        public void DispatchTerminationEffects(ThrowEndReason reason)
+        {
+            var cfg = SourceCfg;
+            if (cfg == null || Env == null)
+            {
+                return;
+            }
+
+            switch (reason)
+            {
+                case ThrowEndReason.Complete:
+                    RunEffectList(cfg.OnThrowCompleteEffects, Target.Id);
+                    break;
+                case ThrowEndReason.InterruptLauncher:
+                    RunEffectList(cfg.OnInterruptLauncherEffects, Target.Id);
+                    break;
+                case ThrowEndReason.InterruptTarget:
+                    RunEffectList(cfg.OnInterruptTargetEffects, Target.Id);
+                    break;
+                case ThrowEndReason.Superseded:
+                    RunEffectList(cfg.OnSupersededEffects, Target.Id);
+                    break;
             }
         }
 
@@ -59,27 +83,31 @@ namespace My.Map.Entity
         {
             var list = SourceCfg?.ThrowTimelineEvents;
             if (list == null || list.Count == 0 || Env == null)
+            {
                 return;
+            }
 
             var elapsed = logicTimeNow - StartTime;
             for (var i = 0; i < list.Count; i++)
             {
                 if (_firedTimelineIndices.Contains(i))
+                {
                     continue;
+                }
 
                 var row = list[i];
                 if (row == null || row.Effects == null)
+                {
                     continue;
+                }
+
                 if (elapsed < row.TimeFromStart)
+                {
                     continue;
+                }
 
                 _firedTimelineIndices.Add(i);
-                foreach (var eff in row.Effects)
-                {
-                    if (eff == null) continue;
-                    var ctx = BuildFightEffectContext(Target.Id);
-                    Env.HandleLogicFightEffect(eff, ctx);
-                }
+                RunEffectList(row.Effects, Target.Id);
             }
         }
     }

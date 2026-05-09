@@ -1,23 +1,15 @@
 using Map.Entity;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace My.Map.Entity
 {
-    [Serializable]
-    public class ThrowEventSpec
-    {
-        public ThrowEventKind Kind;
-        [SerializeReference]
-        public List<MapFightEffectCfg> Effects = new();
-    }
-
+    // 投技时间轴：相对 StartTime，到达后本条只触发一次；可多条 TimeFromStart=0 串联首帧效果。
     [Serializable]
     public class ThrowTimelineEventSpec
     {
-        [Tooltip("相对投技逻辑开始时刻的时间（秒），到达后触发本组 Effects 一次")]
+        [Tooltip("相对投技逻辑 StartTime 的时刻（秒）")]
         public float TimeFromStart;
 
         [SerializeReference]
@@ -30,23 +22,29 @@ namespace My.Map.Entity
         public int Priority;
         public float Duration;
 
-        [Tooltip("是否自动为双方添加 throwing 状态 Buff（与旧逻辑一致，结束时统一移除）")]
-        public bool AutoApplyThrowingStateBuff = true;
 
-        [Tooltip("Legacy: 投技主效果 Buff；新流程请在 ThrowPhaseEffects 的 Accept 中配置 MapAbilityEffectAddBuffCfg")]
+        [Tooltip("Legacy：无 ThrowTimelineEvents 时给目标的 Buff id")]
         public string ThrowMainBuffId;
 
-        [Tooltip("按阶段触发的效果链，经 LogicFightEffectContext 派发，可配置位移、加 Buff、伤害等")]
-        public List<ThrowEventSpec> ThrowPhaseEffects = new();
-
-        [Tooltip("0~1：进程到达该比例时触发 Impact 阶段；-1 表示不自动触发")]
-        public float ImpactAtNormalizedTime = -1f;
-
-        [Tooltip("相对投技开始的时间轴事件（如 0.3s、0.9s 各打一次伤害），每条只触发一次，可复用 MapFightEffectCfg")]
+        [Tooltip("时间轴事件")]
         public List<ThrowTimelineEventSpec> ThrowTimelineEvents = new();
+
+        [Tooltip("持续时间结束（正常完结）")]
+        [SerializeReference]
+        public List<MapFightEffectCfg> OnThrowCompleteEffects = new();
+
+        [Tooltip("出手方打断（如眩晕）")]
+        [SerializeReference]
+        public List<MapFightEffectCfg> OnInterruptLauncherEffects = new();
+
+        [Tooltip("受击方打断")]
+        [SerializeReference]
+        public List<MapFightEffectCfg> OnInterruptTargetEffects = new();
+
+        [Tooltip("被更高优先级投技顶替")]
+        [SerializeReference]
+        public List<MapFightEffectCfg> OnSupersededEffects = new();
 
         public MapFightEffectCfg ThrowFailEffect;
     }
 }
-
-

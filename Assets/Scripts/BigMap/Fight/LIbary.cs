@@ -1095,8 +1095,21 @@ namespace My.Map.Entity
                 var throwCfg = new MapAbilityEffectThrowStartCfg()
                 {
                     Priority = 999,
-                    Duration = 2.0f,
-                    ThrowMainBuffId = "beizha",
+                    Duration = 3.0f,
+                    ThrowMainBuffId = "force_zha_target_buff",
+
+                    OnThrowCompleteEffects = new()
+                    {
+                        new MapAbilityEffectAddResourceCfg()
+                        {
+                            ResourceId = AttrIdConsts.NPCHVal,
+                            AddValue = 30_000,
+                        },
+                        new MapFightEffectKnockBackCfg()
+                        {
+                            DirType = MapFightEffectKnockBackCfg.EKnockBackType.CastDir,
+                        }
+                    }
                 };
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = throwCfg, Kind = PhaseEventKind.OnEnter });
             }
@@ -2656,7 +2669,7 @@ namespace My.Map.Entity
             {
                 Priority = 999,
                 Duration = 5.0f,
-                ThrowMainBuffId = "beizha",
+                ThrowMainBuffId = "force_zha_target_buff",
             };
 
             var exec2Effect = new MapFightEffectEasyEffect()

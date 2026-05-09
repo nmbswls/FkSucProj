@@ -284,25 +284,22 @@ namespace My.Map.Entity
                     IsHidden = true,
                 };
 
-                _library["beizha"] = new BuffDefinition()
+                _library["force_zha_target_buff"] = new BuffDefinition()
                 {
-                    BuffId = "beizha",
-                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    BuffId = "force_zha_target_buff",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 } ,
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 }
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NpcFcked, ModifierValue = 1 }
                     },
-                    DurationEffect = new BuffDurationEffet()
-                    {
-                        DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr1 = "test",
-                    },
+                    
                     TriggerList = new()
                     {
                         new BuffTriggerRuleConfig()
                         {
                             TriggerType = ETriggerType.Tick,
-                            TriggerParam1 = 200, // ?0.2?????
+                            TriggerParam1 = 500, // ?0.2?????
                             //OutputEffects = new()
                             //{
                             //    new BuffEffectCfg()
@@ -312,12 +309,16 @@ namespace My.Map.Entity
                             //},
                             OutputFightEffects = new()
                             {
-                                new MapAbilityEffectCostResourceCfg()
+                                new MapAbilityEffectAddResourceCfg()
                                 {
-                                    ResourceId = AttrIdConsts.HP,
-                                    CostValue = 5,
+                                    ResourceId = AttrIdConsts.NPCHVal,
+                                    AddValue = 10_000,
                                     IsEnmity = true,
-                                    ExtraAttrInfos = new List<AttrKvPair>(){new(){ AttrId  = AttrIdConsts.DamageXiXue, Val = 2000} }
+                                    //ExtraAttrInfos = new List<AttrKvPair>(){new(){ AttrId  = AttrIdConsts.DamageXiXue, Val = 2000} }
+                                },
+                                new MapFightEffectCauseNoise()
+                                {
+                                    
                                 }
                             }
                         }
@@ -492,7 +493,8 @@ namespace My.Map.Entity
                     {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 }
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.SuperArmor, ModifierValue = 1 },
                     },
                     DefaultDuration = -1,
                 };

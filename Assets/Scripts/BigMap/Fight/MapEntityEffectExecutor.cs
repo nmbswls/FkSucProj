@@ -1564,6 +1564,26 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4CauseNoise : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectCauseNoise;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4FixExpose err");
+                return;
+            }
+
+            if (ctx.TriggerPos != null)
+            {
+                ctx.Env.viewer.ShowNoiseEffect(0.5f, ctx.TriggerPos.Value);
+            }
+        }
+    }
+
+    
     public class AbilityEffectExecutor4InterruptCaster : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)

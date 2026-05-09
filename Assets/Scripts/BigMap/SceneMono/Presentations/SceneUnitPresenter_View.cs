@@ -170,7 +170,9 @@ namespace My.Map.Scene
             }
 
             var lyr = MainAgentAnimator.Layers[0];
-            bool wantMove = _moveClip != null && UnitEntity != null && UnitEntity.GetDesiredVelocity().sqrMagnitude > 0.02f;
+            bool locomotionAllowed = CheckCanActiveMove();
+            bool wantMove = locomotionAllowed && _moveClip != null && UnitEntity != null
+                && UnitEntity.GetDesiredVelocity().sqrMagnitude > 0.02f;
 
             AnimationClip clip;
             if (wantMove)
@@ -216,7 +218,8 @@ namespace My.Map.Scene
                 return;
             }
 
-            bool wantMove = _moveClip != null && UnitEntity.GetDesiredVelocity().sqrMagnitude > 0.02f;
+            bool locomotionAllowed = CheckCanActiveMove();
+            bool wantMove = locomotionAllowed && _moveClip != null && UnitEntity.GetDesiredVelocity().sqrMagnitude > 0.02f;
             if (wantMove == _locomotionVisualMove)
             {
                 return;
