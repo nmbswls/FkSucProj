@@ -96,7 +96,9 @@ namespace My.Player
             QuickSlotItemSet[0] = "feidao";
 
             HumanSkillSlots[0] = "default_push";
+            HumanSkillSlots[1] = "force_dash_push_down";
 
+            
             HumanSkillSlots[2] = "queen_dash";
 
             HumanSkillSlots[3] = "player_small_staggering";

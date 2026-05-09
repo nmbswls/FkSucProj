@@ -275,6 +275,12 @@ namespace My.Map
 
                 ApplyKnockBack(impluse, 0.5f);
             }
+
+            // 当且仅当伤害非致命时 才执行欲望结晶掉落
+            if(lastIntent != null && lastIntent.deltaFlags.HasFlag(EDmgFlag.Nonlethal))
+            {
+                LogicManager.TryCreateDesireCrystalFromNpc(this);
+            }
         }
 
         private float _checkAlertTimer;

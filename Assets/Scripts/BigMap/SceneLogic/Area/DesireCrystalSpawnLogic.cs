@@ -37,7 +37,7 @@ namespace My.Map.Logic
                 return;
             }
 
-            if (rec.IsForeigner || rec.EnmityConfId == "default_guard")
+            if (!rec.IsFixed)
             {
                 if (area.TryConsumeWalkerDesireCrystalRoll(out var cid))
                 {

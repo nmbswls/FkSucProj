@@ -57,18 +57,33 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     /// 每秒传播
     /// </summary>
     public float AuraMaxRange;
-
-    // 可同时存在的「实战影怪」总预算（由各类型 budget_cost 累加占用）
+    /// <summary>
+    /// 实战影怪总预算(各类型 budget_cost 之和上限)
+    /// </summary>
     public int SpiritMonsterTotalBudget;
-    // 按预算尝试补全影怪的时间间隔（秒）
+    /// <summary>
+    /// 按预算补全影怪的刷新间隔(秒)
+    /// </summary>
     public float SpiritMonsterRefreshIntervalSec;
-    // 后场氛围假影怪数量（仅占位动画，不占逻辑预算）
+    /// <summary>
+    /// 后场氛围假影怪数量
+    /// </summary>
     public int AmbientSpiritCount;
+    /// <summary>
+    /// 后场环绕最小半径
+    /// </summary>
     public float AmbientSpiritRadiusMin;
+    /// <summary>
+    /// 后场环绕最大半径
+    /// </summary>
     public float AmbientSpiritRadiusMax;
-    // Resources 下路径，不含 「Resources/」 与扩展名；空则禁用
+    /// <summary>
+    /// Resources路径(无扩展名), 空则不生成
+    /// </summary>
     public string AmbientSpiritPrefab;
-    // 绕玩家漂移角速度缩放
+    /// <summary>
+    /// 后场漂移速度系数
+    /// </summary>
     public float AmbientSpiritDriftSpeed;
    
     public const int __ID__ = -1173769842;

@@ -337,6 +337,18 @@ namespace My.UI
 
                 ball.Root.gameObject.SetActive(false);
             }
+            var jingyuGo = PropLineContainer.Find("PlayerJingYu");
+            {
+                var ball = new PlayerPropBall();
+                ball.AttrId = AttrIdConsts.PlayerJingYu;
+                ball.Root = jingyuGo as RectTransform;
+                ball.CG = jingyuGo.GetComponent<CanvasGroup>();
+                ball.BarValue = jingyuGo.Find("Bar").GetComponent<Image>();
+                PlayerBallMap.Add(AttrIdConsts.PlayerJingYu, ball);
+
+                ball.Root.gameObject.SetActive(false);
+            }
+            
         }
 
         public void Update()

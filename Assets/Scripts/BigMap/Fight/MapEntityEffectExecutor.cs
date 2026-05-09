@@ -1564,6 +1564,32 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4InterruptCaster : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectInterruptCaster;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4BroadcastAttract err");
+                return;
+            }
+
+            var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (caster == null || caster is not BaseUnitLogicEntity unitEntity)
+            {
+                Debug.LogError("AbilityEffectExecutor4BroadcastAttract unit not found.");
+                return;
+            }
+
+            unitEntity.TryInterrupt(new InterruptRequest()
+            {
+                source = EInterruptSource.Cast,
+            });
+        }
+    }
+    
 
 
     public class AbilityEffectExecutor4HModeBlurt : AbilityEffectExecutor

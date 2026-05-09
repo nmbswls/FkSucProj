@@ -222,8 +222,8 @@ namespace My.Map.Logic
                 return;
             }
 
-            
 
+            record.IsFixed = true;
             if(!string.IsNullOrEmpty(refreshInfo.UniqName))
             {
                 record.SrcUniqName = refreshInfo.UniqName;

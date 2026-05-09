@@ -75,8 +75,8 @@ namespace My.Saving
     {
         public List<string> LocalSwitches;
 
-        // 具名 NPC：欲望结晶是否已被收取（可由全局剧情事件 RestoreNamedNpcDesireCrystal 复位）
         public bool DesireCrystalTaken;
+        public int DesireCrystalTakenDay; // 获取天数
     }
 
     [Serializable]

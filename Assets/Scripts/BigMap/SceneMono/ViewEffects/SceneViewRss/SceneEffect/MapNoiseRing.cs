@@ -19,6 +19,7 @@ public class MapNoiseRing : MonoBehaviour
     public bool useAdditiveMaterial = false; // 使用加色材质可更像特效
 
     [Header("回收")]
+    public bool autoTrigger = true;
     public bool autoDestroy = true;
     public float extraLife = 0.05f; // 动画结束后延时销毁/回收
 
@@ -33,6 +34,14 @@ public class MapNoiseRing : MonoBehaviour
         {
             // 可在项目里准备一个加色材质 "Sprites/Default-Additive"
             // _sr.material = Resources.Load<Material>("Sprites/Default-Additive");
+        }
+    }
+
+    private void OnEnable()
+    {
+        if(autoTrigger)
+        {
+            Play(1.0f, transform.position);
         }
     }
 

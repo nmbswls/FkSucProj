@@ -75,6 +75,8 @@ namespace My.Player
             "player_naishou_to_jianshang",
 
             "player_burst_h_voice",
+
+            "force_dash_push_down",
         };
 
         public PlayerSkillSystem()

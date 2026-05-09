@@ -30,6 +30,7 @@ namespace My.Map.Logic
         public long LifeBindEntityId;
         //public bool AlwaysActive;
         public string SrcUniqName = string.Empty;
+        public bool IsFixed;
 
         public List<string> LocalSwitches = null;
         public bool MarkDestroyed = false; // 逻辑死亡/销毁标记，由 RefreshEntityRecordInfo 等与运行时对齐

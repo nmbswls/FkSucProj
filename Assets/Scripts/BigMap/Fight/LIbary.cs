@@ -241,7 +241,7 @@ namespace My.Map.Entity
                 }
 
                 {
-                    var ab = CreateQueenDashDown();
+                    var ab = CreateForceDashPushDown();
                     _abilityDict[ab.Id] = ab;
                 }
                 
@@ -2527,11 +2527,11 @@ namespace My.Map.Entity
         /// 扑到
         /// </summary>
         /// <returns></returns>
-        private static MapAbilitySpecConfig CreateQueenDashDown()
+        private static MapAbilitySpecConfig CreateForceDashPushDown()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
-            spec.Id = "queen_dash_down";
+            spec.Id = "force_dash_push_down";
             spec.TypeTag = AbilityTypeTag.Combat;
             spec.DefaultStepDistance = 0.3f;
             spec.AdjustFaceDir = true;
@@ -2540,20 +2540,52 @@ namespace My.Map.Entity
             spec.DesiredUseDistance = 1.0f;
             spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
-            //spec.AddTargetCorrection = true;
-            //spec.GoodCorrectionnDist = 1.0f;
-            //spec.MaxCorrectionValue = 0.8f;
-
             spec.Phases.Add(new MapAbilityPhase()
             {
-                PhaseName = "Pre",
+                PhaseName = "XuLi",
+                HoldingPhase = true,
+
+                AnimTag = "",
 
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.4"
+                    RawVal = "99.0"
                 },
             });
+
+            var xuliEffect = new MapFightEffectXuLiStageCfg()
+            {
+                CheckPhaseName = "XuLi",
+
+                StageInfos =
+                {
+                    new MapFightEffectXuLiStageCfg.EStageInfo()
+                    {
+                        NeedTime = 5.0f,
+
+                        StageEffects = new()
+                        {
+                            
+                        }
+                    },
+
+
+                    new MapFightEffectXuLiStageCfg.EStageInfo()
+                    {
+                        NeedTime = 0.0f,
+
+                        StageEffects = new()
+                        {
+                            new MapFightEffectInterruptCaster()
+                            {
+                                
+                            }
+                        }
+                    },
+                }
+            };
+
 
             var dashEffect = new MapAbilityEffectDashStartCfg()
             {
@@ -2603,8 +2635,13 @@ namespace My.Map.Entity
                 BuffId = "force_stun",
                 Duration = 3.0f,
             };
+            var exec2Effect = new MapFightEffectEasyEffect()
+            {
+                EffectText = "抓",
+            };
 
             executePhase.Events.Add(new PhaseEffectEvent() { Effect = execEffect, Kind = PhaseEventKind.OnEnter });
+            executePhase.Events.Add(new PhaseEffectEvent() { Effect = exec2Effect, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(executePhase);
             return spec;
         }

@@ -188,6 +188,12 @@ namespace My
                             executor = new AbilityEffectExecutor4HModeBlurt();
                         }
                         break;
+                    case MapFightEffectInterruptCaster:
+                        {
+                            executor = new AbilityEffectExecutor4InterruptCaster();
+                        }
+                        break;
+                        
                     case MapAbilityEffectGiveItemCfg:
                         {
                             executor = new AbilityEffectExecutor4GiveItem();

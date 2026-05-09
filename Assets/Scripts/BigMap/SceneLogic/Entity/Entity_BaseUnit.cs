@@ -232,7 +232,11 @@ namespace My.Map
         }
 
 
-
+        /// <summary>
+        /// 死亡或失去意识
+        /// </summary>
+        /// <param name="reason"></param>
+        /// <param name="lastIntent"></param>
         public virtual void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
             if (lastIntent != null && lastIntent.deltaFlags.HasFlag(EDmgFlag.Nonlethal) && CanUnsensored())

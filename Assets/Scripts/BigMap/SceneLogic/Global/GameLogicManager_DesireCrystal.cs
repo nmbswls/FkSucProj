@@ -13,14 +13,8 @@ namespace My
             worldPersistState?.NpcCharacters?.RestoreNamedNpcDesireCrystal(characterKey);
         }
 
-        public bool TryHarvestDesireCrystalFromNpc(long npcEntityId)
+        public bool TryCreateDesireCrystalFromNpc(NpcUnitLogicEntity npc)
         {
-            var npc = AreaManager.GetLogicEntiy(npcEntityId, false) as NpcUnitLogicEntity;
-            if (npc == null)
-            {
-                return false;
-            }
-
             var rec = npc.NpcRecord;
             if (string.IsNullOrEmpty(rec.AttachedDesireCrystalTypeId))
             {
@@ -34,11 +28,7 @@ namespace My
                 return false;
             }
 
-            long put = playerDataManager.GiveItemToPlayer(def.ItemId, 1);
-            if (put <= 0)
-            {
-                return false;
-            }
+            globalDropCollection.CreateDrop(def.ItemId, 1, npc.Pos + UnityEngine.Random.insideUnitCircle * 0.5f, true, npc.Pos);
 
             if (!string.IsNullOrEmpty(rec.CharacterKey))
             {

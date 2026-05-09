@@ -371,10 +371,10 @@ namespace My
             }
 
             var ring = fxCtx.EffectGo.GetComponent<MapNoiseRing>();
-            ring.transform.position = worldPos;
-            ring.gameObject.SetActive(true);
-            ring.Play(Mathf.Clamp01(intensity), worldPos);
-            ring.autoDestroy = false;
+            //ring.transform.position = worldPos;
+            //ring.gameObject.SetActive(true);
+            //ring.Play(Mathf.Clamp01(intensity), worldPos);
+            //ring.autoDestroy = false;
         }
 
         public void ShowClickkkWindow(string windowType, Vector2 showPos, float duration)

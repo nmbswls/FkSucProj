@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace My.Map.Logic
 {
-    public sealed class DesireCrystalWalkerSegmentRuntime
+    public sealed class DesireCrystalDynamicSegmentRuntime
     {
         public float UnlockAtLogicTime;
         public int Remaining;
@@ -19,7 +19,7 @@ namespace My.Map.Logic
     {
         internal HashSet<int> DesireCrystalFixedRefreshStaticIds;
 
-        readonly List<DesireCrystalWalkerSegmentRuntime> _desireCrystalWalkerSegments = new();
+        readonly List<DesireCrystalDynamicSegmentRuntime> _desireCrystalDynamicSegments = new();
 
         float _desireCrystalSessionEnterLogicTime;
 
@@ -27,14 +27,14 @@ namespace My.Map.Logic
         {
             DesireCrystalFixedRefreshStaticIds?.Clear();
             DesireCrystalFixedRefreshStaticIds = null;
-            _desireCrystalWalkerSegments.Clear();
+            _desireCrystalDynamicSegments.Clear();
             _desireCrystalSessionEnterLogicTime = 0f;
         }
 
         internal void SetupDesireCrystalSession(string mapName)
         {
             ClearDesireCrystalSession();
-            if (cacheMapCfg == null || !cacheMapCfg.HuntingTarget)
+            if (cacheMapCfg == null)
             {
                 return;
             }
@@ -46,7 +46,7 @@ namespace My.Map.Logic
                          .Where(x => x.MapId == mapName)
                          .OrderBy(x => x.SegmentOrder))
             {
-                _desireCrystalWalkerSegments.Add(new DesireCrystalWalkerSegmentRuntime
+                _desireCrystalDynamicSegments.Add(new DesireCrystalDynamicSegmentRuntime
                 {
                     UnlockAtLogicTime = _desireCrystalSessionEnterLogicTime + q.UnlockAfterMinutes * 60f,
                     Remaining = q.Quota,
@@ -58,13 +58,13 @@ namespace My.Map.Logic
         internal bool TryConsumeWalkerDesireCrystalRoll(out string crystalTypeId)
         {
             crystalTypeId = null;
-            if (_desireCrystalWalkerSegments.Count == 0)
+            if (_desireCrystalDynamicSegments.Count == 0)
             {
                 return false;
             }
 
             var now = LogicTime.time;
-            foreach (var seg in _desireCrystalWalkerSegments)
+            foreach (var seg in _desireCrystalDynamicSegments)
             {
                 if (now < seg.UnlockAtLogicTime || seg.Remaining <= 0)
                 {
