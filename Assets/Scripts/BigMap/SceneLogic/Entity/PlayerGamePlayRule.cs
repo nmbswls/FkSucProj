@@ -21,7 +21,10 @@ namespace My.Map
         public const float SneakVisionFovDeg = 150f;
 
 
-
+        public static string GetTrueHSpiritName(string npcBase, int playerLevel)
+        {
+            return "h_spirit_small_01";
+        }
 
         public static int GetJingYuLevel(long jingyuVal)
         {
@@ -59,8 +62,6 @@ namespace My.Map
         }
 
 
-
-
         public static long GetHSpiritRestoreSan(string cfgId)
         {
             if (string.IsNullOrEmpty(cfgId))
@@ -68,13 +69,13 @@ namespace My.Map
                 return 5000;
             }
 
-            foreach (var row in CfgMgr.Cfgs.TbSpiritMonsterTypeBudget.DataList)
-            {
-                if (row != null && row.NpcCfgId == cfgId)
-                {
-                    return row.RestoreSan;
-                }
-            }
+            //foreach (var row in CfgMgr.Cfgs.TbSpiritMonsterTypeBudget.DataList)
+            //{
+            //    if (row != null && row.NpcCfgId == cfgId)
+            //    {
+            //        return row.RestoreSan;
+            //    }
+            //}
 
             return 5000;
         }

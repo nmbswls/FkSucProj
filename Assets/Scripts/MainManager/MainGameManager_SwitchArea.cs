@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using My.Input;
+using My.Map.View;
 using My.UI;
 using UnityEngine;
 using static My.GameLogicManager;
@@ -19,6 +20,8 @@ namespace My
 
         private void OnHardAreaClearStarting()
         {
+            _ambientSpiritVisuals?.Shutdown();
+
             if (_localRoomTeleportFadeCo != null)
             {
                 StopCoroutine(_localRoomTeleportFadeCo);

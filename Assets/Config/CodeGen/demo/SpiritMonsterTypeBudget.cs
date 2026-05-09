@@ -19,7 +19,7 @@ public sealed partial class SpiritMonsterTypeBudget : Luban.BeanBase
     public SpiritMonsterTypeBudget(JSONNode _buf) 
     {
         { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
-        { if(!_buf["npc_cfg_id"].IsString) { throw new SerializationException(); }  NpcCfgId = _buf["npc_cfg_id"]; }
+        { if(!_buf["npc_base_type"].IsString) { throw new SerializationException(); }  NpcBaseType = _buf["npc_base_type"]; }
         { if(!_buf["budget_cost"].IsNumber) { throw new SerializationException(); }  BudgetCost = _buf["budget_cost"]; }
         { if(!_buf["min_desire_level"].IsNumber) { throw new SerializationException(); }  MinDesireLevel = _buf["min_desire_level"]; }
         { if(!_buf["restore_san"].IsNumber) { throw new SerializationException(); }  RestoreSan = _buf["restore_san"]; }
@@ -38,7 +38,7 @@ public sealed partial class SpiritMonsterTypeBudget : Luban.BeanBase
     /// <summary>
     /// TbUnitNpc id
     /// </summary>
-    public string NpcCfgId;
+    public string NpcBaseType;
     /// <summary>
     /// budget cost per spawn
     /// </summary>
@@ -67,7 +67,7 @@ public sealed partial class SpiritMonsterTypeBudget : Luban.BeanBase
     {
         return "{ "
         + "id:" + Id + ","
-        + "npcCfgId:" + NpcCfgId + ","
+        + "npcBaseType:" + NpcBaseType + ","
         + "budgetCost:" + BudgetCost + ","
         + "minDesireLevel:" + MinDesireLevel + ","
         + "restoreSan:" + RestoreSan + ","

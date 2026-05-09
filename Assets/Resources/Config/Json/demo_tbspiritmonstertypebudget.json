@@ -1,17 +1,33 @@
 [
   {
-    "id": "h_spirit_small_01_d3",
-    "npc_cfg_id": "h_spirit_small_01",
+    "id": "1",
+    "npc_base_type": "h_spirit_small",
     "budget_cost": 2,
-    "min_desire_level": 3,
+    "min_desire_level": 1,
     "restore_san": 5000,
     "spawn_weight": 100
   },
   {
-    "id": "h_spirit_small_02_d4",
-    "npc_cfg_id": "h_spirit_small_02",
+    "id": "2",
+    "npc_base_type": "h_spirit_small",
     "budget_cost": 3,
-    "min_desire_level": 4,
+    "min_desire_level": 1,
+    "restore_san": 5000,
+    "spawn_weight": 100
+  },
+  {
+    "id": "3",
+    "npc_base_type": "h_spirit_small",
+    "budget_cost": 2,
+    "min_desire_level": 2,
+    "restore_san": 5000,
+    "spawn_weight": 100
+  },
+  {
+    "id": "4",
+    "npc_base_type": "h_spirit_small",
+    "budget_cost": 3,
+    "min_desire_level": 2,
     "restore_san": 5000,
     "spawn_weight": 100
   }

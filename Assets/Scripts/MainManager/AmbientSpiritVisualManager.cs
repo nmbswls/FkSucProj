@@ -2,19 +2,19 @@ using System.Collections.Generic;
 using cfg.demo;
 using My;
 using My.Config;
+using My.Map;
 using UnityEngine;
 
-namespace My.Map.Logic.Spirit
+namespace My.Map.View
 {
-    // 后场氛围影怪（假影怪）：无逻辑实体，仅用与实战影怪一致的外观在玩家外围漂移。
-    // 预制体路径：Resources/<AmbientVisualResourcesRoot>/<TbUnitNpc.prefab_name>，
-    // 其中 prefab_name 由 spirit_monster_budget 行的 npc_cfg_id 解析得到。
+    // 后场氛围影怪（纯表现）：无逻辑实体，外观与 TbSpiritMonsterTypeBudget + TbUnitNpc.prefab_name 对齐。
+    // 由 MainGameManager 持有并驱动 Tick；挂载在独立的 AmbientSpiritLayer 层级下。
     public sealed class AmbientSpiritVisualManager
     {
-        // Resources 子目录名，预制体资源名与 TbUnitNpc.prefab_name 一致（如 h_spirit_small）
         private const string AmbientVisualResourcesRoot = "SpiritMonsterAmbient";
 
         private readonly GameLogicManager _glm;
+        private readonly Transform _visualRoot;
 
         private struct Entry
         {
@@ -28,11 +28,11 @@ namespace My.Map.Logic.Spirit
         private readonly List<Entry> _entries = new();
         private readonly List<SpiritMonsterTypeBudget> _eligibleBudgetRows = new();
         private string _lastAmbientRebuildKey = string.Empty;
-        private Transform _fallbackParent;
 
-        public AmbientSpiritVisualManager(GameLogicManager glm)
+        public AmbientSpiritVisualManager(GameLogicManager glm, Transform visualRoot)
         {
             _glm = glm;
+            _visualRoot = visualRoot;
         }
 
         private PlayerDesireLevel TryGetPlayerDesireCfg()
@@ -42,19 +42,6 @@ namespace My.Map.Logic.Spirit
                 return null;
             }
             return CfgMgr.Cfgs.TbPlayerDesireLevel.GetOrDefault(_glm.playerLogicEntity.DesireLevel);
-        }
-
-        private static Transform FindSceneRootFallback()
-        {
-            var roots = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
-            foreach (var r in roots)
-            {
-                if (r.CompareTag("MapRoot"))
-                {
-                    return r.transform;
-                }
-            }
-            return roots.Length > 0 ? roots[0].transform : null;
         }
 
         private void CollectEligibleSpiritRows(int desireLevel)
@@ -73,12 +60,6 @@ namespace My.Map.Logic.Spirit
                 }
 
                 if (desireLevel < row.MinDesireLevel)
-                {
-                    continue;
-                }
-
-                var npc = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(row.NpcCfgId);
-                if (npc == null || string.IsNullOrEmpty(npc.PrefabName))
                 {
                     continue;
                 }
@@ -215,6 +196,12 @@ namespace My.Map.Logic.Spirit
         {
             ClearInstances();
 
+            if (_visualRoot == null)
+            {
+                Debug.LogError("AmbientSpiritVisualManager: visual root is null.");
+                return;
+            }
+
             if (desireCfg.AmbientSpiritCount <= 0 || _glm.playerLogicEntity == null)
             {
                 return;
@@ -225,8 +212,6 @@ namespace My.Map.Logic.Spirit
             {
                 return;
             }
-
-            _fallbackParent ??= FindSceneRootFallback();
 
             float rMin = Mathf.Max(0.1f, Mathf.Min(desireCfg.AmbientSpiritRadiusMin, desireCfg.AmbientSpiritRadiusMax));
             float rMax = Mathf.Max(rMin + 0.1f, Mathf.Max(desireCfg.AmbientSpiritRadiusMin, desireCfg.AmbientSpiritRadiusMax));
@@ -246,13 +231,8 @@ namespace My.Map.Logic.Spirit
                     break;
                 }
 
-                var npc = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(row.NpcCfgId);
-                if (npc == null || string.IsNullOrEmpty(npc.PrefabName))
-                {
-                    continue;
-                }
 
-                string loadPath = $"{AmbientVisualResourcesRoot}/{npc.PrefabName}";
+                string loadPath = $"{AmbientVisualResourcesRoot}/{row.NpcBaseType}";
                 var prefab = Resources.Load<GameObject>(loadPath);
                 if (prefab == null)
                 {
@@ -260,8 +240,8 @@ namespace My.Map.Logic.Spirit
                     continue;
                 }
 
-                var go = Object.Instantiate(prefab, _fallbackParent);
-                go.name = $"{npc.PrefabName}_ambient_{i}";
+                var go = Object.Instantiate(prefab, _visualRoot);
+                go.name = $"{row.NpcBaseType}_ambient_{i}";
 
                 float phase = Random.Range(0f, Mathf.PI * 2f);
                 float rad = Random.Range(rMin, rMax);

@@ -16,8 +16,8 @@ using My.Map.Entity.AI;
 using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
-using My.Map.SmallGame.Zha;
 using My.Map.View;
+using My.Map.SmallGame.Zha;
 using My.MiniGame;
 using My.Player.Bag;
 using My.Saving;
@@ -54,6 +54,11 @@ namespace My
 
         [Header("层")]
         public Transform SceneEffectLayer;
+
+        // 后场氛围影怪专用父节点（可为空，运行时自动挂在 MainGameManager 下创建）
+        public Transform AmbientSpiritLayer;
+
+        private AmbientSpiritVisualManager _ambientSpiritVisuals;
 
         public PlayerScenePresenter playerScenePresenter { get; set; }
 
@@ -121,7 +126,23 @@ namespace My
             gameLogicManager.EventOnHardAreaClearStarting += OnHardAreaClearStarting;
             gameLogicManager.EventOnNextDayPeriod += HandleNextDayPeriod;
 
+            EnsureAmbientSpiritLayer();
+            _ambientSpiritVisuals = new AmbientSpiritVisualManager(gameLogicManager, AmbientSpiritLayer);
+
             //Cursor.lockState = CursorLockMode.Confined;
+        }
+
+        private void EnsureAmbientSpiritLayer()
+        {
+            if (AmbientSpiritLayer != null)
+            {
+                return;
+            }
+
+            var go = new GameObject("AmbientSpiritLayer");
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = Vector3.zero;
+            AmbientSpiritLayer = go.transform;
         }
 
         private void OnDestroy()
@@ -207,6 +228,7 @@ namespace My
             {
                 var a = Time.deltaTime;
                 gameLogicManager.Tick(LogicTime.deltaTime);
+                _ambientSpiritVisuals?.Tick(LogicTime.deltaTime);
             }
 
             if (gameLogicManager.MainStage == GameLogicManager.EMainGameStage.Running)

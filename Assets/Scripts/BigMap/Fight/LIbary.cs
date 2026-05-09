@@ -2642,22 +2642,29 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.65"
+                    RawVal = "0.3"
                 },
                 UsePhaseHitAsTarget = "Dash",
             };
 
-            var execEffect = new MapAbilityEffectAddBuffCfg()
+            //var execEffect = new MapAbilityEffectAddBuffCfg()
+            //{
+            //    BuffId = "force_stun",
+            //    Duration = 3.0f,
+            //};
+            var throwCfg = new MapAbilityEffectThrowStartCfg()
             {
-                BuffId = "force_stun",
-                Duration = 3.0f,
+                Priority = 999,
+                Duration = 5.0f,
+                ThrowMainBuffId = "beizha",
             };
+
             var exec2Effect = new MapFightEffectEasyEffect()
             {
                 EffectText = "抓",
             };
 
-            executePhase.Events.Add(new PhaseEffectEvent() { Effect = execEffect, Kind = PhaseEventKind.OnEnter });
+            executePhase.Events.Add(new PhaseEffectEvent() { Effect = throwCfg, Kind = PhaseEventKind.OnEnter });
             executePhase.Events.Add(new PhaseEffectEvent() { Effect = exec2Effect, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(executePhase);
             return spec;

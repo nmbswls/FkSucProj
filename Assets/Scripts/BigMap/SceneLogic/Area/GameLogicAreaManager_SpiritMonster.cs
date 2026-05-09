@@ -173,10 +173,12 @@ namespace My.Map.Logic
 
         private bool SpiritMonster_TrySpawnOne(SpiritMonsterTypeBudget row)
         {
-            var npcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(row.NpcCfgId);
+            var npcId = PlayerGamePlayRule.GetTrueHSpiritName(row.NpcBaseType, logicManager.playerDataManager.Level);
+
+            var npcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(npcId);
             if (npcCfg == null)
             {
-                Debug.LogError($"SpiritMonster_TrySpawnOne missing npc cfg {row.NpcCfgId}");
+                Debug.LogError($"SpiritMonster_TrySpawnOne missing npc cfg {npcId}");
                 return false;
             }
 
@@ -186,7 +188,7 @@ namespace My.Map.Logic
 
             var initInfo = new EntityInitInfo4Npc
             {
-                CfgId = row.NpcCfgId,
+                CfgId = npcId,
                 Position = logicManager.playerLogicEntity.Pos + offset,
                 IsPeace = npcCfg.IsPeace,
                 EnmityConfId = npcCfg.EmnityCfgId,
@@ -210,8 +212,6 @@ namespace My.Map.Logic
 
         protected void TickRefreshSpiritMonster(float dt)
         {
-            ambientSpiritMgr?.Tick(dt);
-
             if (logicManager.playerLogicEntity == null || Repo == null)
             {
                 return;
