@@ -4,6 +4,7 @@ using Map.Logic.Events;
 using My.Config;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Logic.Spirit;
 using My.MapExport;
 using System;
 using System.Collections;
@@ -71,6 +72,8 @@ namespace My.Map.Logic
 
         private GameLogicManager logicManager;
 
+        private AmbientSpiritVisualManager ambientSpiritMgr;
+
         public InnerListener innerListener;
         public List<DynamicEntityRefreshInfo> EntityRefreshInfo = new List<DynamicEntityRefreshInfo>();
 
@@ -91,6 +94,8 @@ namespace My.Map.Logic
         {
             this.settings = settings;
             this.logicManager = logicManager;
+
+            ambientSpiritMgr = new AmbientSpiritVisualManager(logicManager);
 
             UnitGridIndex = new UniformGridIndex<long>(GridCellSize);
             RoomGridIndex = new UniformGridIndex<string>(GridCellSize);
@@ -223,6 +228,9 @@ namespace My.Map.Logic
             ClearDesireCrystalSession();
 
             EntityRefreshInfo.Clear();
+
+            ambientSpiritMgr?.Shutdown();
+            SpiritMonster_OnAreaCleanBeforeRepoClear();
 
             if(Repo != null)
             {
@@ -390,7 +398,7 @@ namespace My.Map.Logic
             // 区域邪恶警戒等
             TickEvilAlerts();
 
-            TickRefreshSpiritMonster();
+            TickRefreshSpiritMonster(dt);
         }
 
         private float _lowFreqTickTimer = 0;

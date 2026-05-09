@@ -20,7 +20,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "initial_orc_02",
@@ -43,7 +44,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "initial_orc_big",
@@ -66,7 +68,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "game_init_luca_injured",
@@ -87,7 +90,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "qigai_default",
@@ -108,7 +112,8 @@
     "ignore_attract_level": 1,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "hunhun",
@@ -131,7 +136,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "slime_red",
@@ -154,7 +160,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "civil",
@@ -175,7 +182,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "civil_sleeping",
@@ -196,7 +204,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false
   },
   {
     "id": "h_spirit_small_01",
@@ -220,7 +229,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   },
   {
     "id": "h_spirit_small_02",
@@ -244,7 +254,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   },
   {
     "id": "h_spirit_small_03",
@@ -268,7 +279,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   },
   {
     "id": "h_spirit_middle_01",
@@ -292,7 +304,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   },
   {
     "id": "h_spirit_middle_02",
@@ -316,7 +329,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   },
   {
     "id": "h_spirit_middle_03",
@@ -340,7 +354,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   },
   {
     "id": "h_spirit_big_01",
@@ -364,7 +379,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   },
   {
     "id": "h_spirit_big_02",
@@ -388,7 +404,8 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   },
   {
     "id": "h_spirit_big_03",
@@ -412,6 +429,7 @@
     "ignore_attract_level": 0,
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
-    "desire_crystal_random_attachable": false
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": true
   }
 ]

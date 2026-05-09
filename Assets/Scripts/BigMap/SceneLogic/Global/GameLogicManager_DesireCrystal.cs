@@ -34,7 +34,7 @@ namespace My
                 return false;
             }
 
-            long put = playerDataManager.TryGiveItem(def.ItemId, 1, 0);
+            long put = playerDataManager.GiveItemToPlayer(def.ItemId, 1);
             if (put <= 0)
             {
                 return false;

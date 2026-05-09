@@ -22,6 +22,8 @@ namespace My.Map.Entity
         OnSkillUsed,
         OnHit,
         OnDie,
+
+        PlayerHVoice = 100,
     }
 
 

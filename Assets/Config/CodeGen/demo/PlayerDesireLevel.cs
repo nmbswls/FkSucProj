@@ -23,6 +23,13 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
         { if(!_buf["basic_estrus"].IsNumber) { throw new SerializationException(); }  BasicEstrus = _buf["basic_estrus"]; }
         { if(!_buf["aura_base_effect"].IsNumber) { throw new SerializationException(); }  AuraBaseEffect = _buf["aura_base_effect"]; }
         { if(!_buf["aura_max_range"].IsNumber) { throw new SerializationException(); }  AuraMaxRange = _buf["aura_max_range"]; }
+        { if(!_buf["spirit_monster_total_budget"].IsNumber) { throw new SerializationException(); }  SpiritMonsterTotalBudget = _buf["spirit_monster_total_budget"]; }
+        { if(!_buf["spirit_monster_refresh_interval_sec"].IsNumber) { throw new SerializationException(); }  SpiritMonsterRefreshIntervalSec = _buf["spirit_monster_refresh_interval_sec"]; }
+        { if(!_buf["ambient_spirit_count"].IsNumber) { throw new SerializationException(); }  AmbientSpiritCount = _buf["ambient_spirit_count"]; }
+        { if(!_buf["ambient_spirit_radius_min"].IsNumber) { throw new SerializationException(); }  AmbientSpiritRadiusMin = _buf["ambient_spirit_radius_min"]; }
+        { if(!_buf["ambient_spirit_radius_max"].IsNumber) { throw new SerializationException(); }  AmbientSpiritRadiusMax = _buf["ambient_spirit_radius_max"]; }
+        { if(!_buf["ambient_spirit_prefab"].IsString) { throw new SerializationException(); }  AmbientSpiritPrefab = _buf["ambient_spirit_prefab"]; }
+        { if(!_buf["ambient_spirit_drift_speed"].IsNumber) { throw new SerializationException(); }  AmbientSpiritDriftSpeed = _buf["ambient_spirit_drift_speed"]; }
     }
 
     public static PlayerDesireLevel DeserializePlayerDesireLevel(JSONNode _buf)
@@ -50,6 +57,19 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     /// 每秒传播
     /// </summary>
     public float AuraMaxRange;
+
+    // 可同时存在的「实战影怪」总预算（由各类型 budget_cost 累加占用）
+    public int SpiritMonsterTotalBudget;
+    // 按预算尝试补全影怪的时间间隔（秒）
+    public float SpiritMonsterRefreshIntervalSec;
+    // 后场氛围假影怪数量（仅占位动画，不占逻辑预算）
+    public int AmbientSpiritCount;
+    public float AmbientSpiritRadiusMin;
+    public float AmbientSpiritRadiusMax;
+    // Resources 下路径，不含 「Resources/」 与扩展名；空则禁用
+    public string AmbientSpiritPrefab;
+    // 绕玩家漂移角速度缩放
+    public float AmbientSpiritDriftSpeed;
    
     public const int __ID__ = -1173769842;
     public override int GetTypeId() => __ID__;
@@ -66,6 +86,13 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
         + "basicEstrus:" + BasicEstrus + ","
         + "auraBaseEffect:" + AuraBaseEffect + ","
         + "auraMaxRange:" + AuraMaxRange + ","
+        + "spiritMonsterTotalBudget:" + SpiritMonsterTotalBudget + ","
+        + "spiritMonsterRefreshIntervalSec:" + SpiritMonsterRefreshIntervalSec + ","
+        + "ambientSpiritCount:" + AmbientSpiritCount + ","
+        + "ambientSpiritRadiusMin:" + AmbientSpiritRadiusMin + ","
+        + "ambientSpiritRadiusMax:" + AmbientSpiritRadiusMax + ","
+        + "ambientSpiritPrefab:" + AmbientSpiritPrefab + ","
+        + "ambientSpiritDriftSpeed:" + AmbientSpiritDriftSpeed + ","
         + "}";
     }
 }

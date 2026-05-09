@@ -1537,7 +1537,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            ctx.Env.playerDataManager.TryGiveItem(realCfg.ItemId, realCfg.Count, realCfg.SpecificBagId);
+            ctx.Env.playerDataManager.GiveItemToPlayer(realCfg.ItemId, realCfg.Count);
         }
     }
 
@@ -1600,58 +1600,59 @@ namespace My.Map.Entity
                 float.TryParse(p1, out sjDamage);
             }
 
-            var totalDamage = (long)(sjAmount * sjDamage * 1000);
+            npcUnit.OnNpcBlurt(sjAmount, sjDamage);
 
-            // 自身hp大伤害
-            npcUnit.ApplyResourceChange(AttrIdConsts.HP, -totalDamage, false, Fight.FightStruct.EDmgFlag.None, ctx.Env.playerLogicEntity.Id);
 
-            // 进入该技能时  一定就是地喷射
-            var diff = ctx.Env.playerLogicEntity.Pos - npcUnit.Pos;
-            // 
-            bool absorb = false;
-            if (diff.magnitude < 0.1f)
+            if(!npcUnit.NpcConfig.NoRealJing)
             {
-                absorb = true;
-            }
-            else if (diff.magnitude < 1.0f)
-            {
-                var signedAngle = Vector2.SignedAngle(diff, npcUnit.CurrentLook);
-                if (signedAngle < 45)
+                // 进入该技能时  一定就是地喷射
+                var diff = ctx.Env.playerLogicEntity.Pos - npcUnit.Pos;
+                // 
+                bool absorb = false;
+                if (diff.magnitude < 0.1f)
                 {
                     absorb = true;
                 }
-            }
-
-            // 特效
-            {
-                var effectCtx = MapSceneEffectManager.Instance.ShowSceneEffect(npcUnit.Pos, 1.5f, "Hit/Style02", npcUnit.Id);
-                if (effectCtx != null)
+                else if (diff.magnitude < 1.0f)
                 {
-                    effectCtx.BindingUnitVec = new Vector2(0, 0.05f);
-                    var dir = npcUnit.FinalLook;
-                    effectCtx.EffectGo.transform.right = -dir;
-                }
-            }
-
-            // 被主角吸收
-            if (absorb)
-            {
-                Debug.Log("AbilityEffectExecutor4HModeBlurt sj to player");
-                //ctx.Env.viewer.ShowPauseCloseupWindow("jingyu", 0.5f);
-                ctx.Env.viewer.ShowFakeFxEffect("精浴", ctx.Env.playerLogicEntity.Pos);
-
-                var goodVal = sjAmount * 0.5f;
-                ctx.Env.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerJingYu, (long)(goodVal * 1000), false, Fight.FightStruct.EDmgFlag.None, npcUnit.Id);
-            }
-            else
-            {
-                var dropPos = npcUnit.Pos + npcUnit.CurrentLook * 0.5f;
-                for (int i = 0; i < 4; i++)
-                {
-                    ctx.Env.globalDropCollection.CreateDrop("j_drop_small", 1, dropPos + UnityEngine.Random.insideUnitCircle * 0.5f, true, npcUnit.Pos);
+                    var signedAngle = Vector2.SignedAngle(diff, npcUnit.CurrentLook);
+                    if (signedAngle < 45)
+                    {
+                        absorb = true;
+                    }
                 }
 
-                ctx.Env.viewer.ShowFakeFxEffect("落地", dropPos);
+                // 特效
+                {
+                    var effectCtx = MapSceneEffectManager.Instance.ShowSceneEffect(npcUnit.Pos, 1.5f, "Hit/blurt_default", npcUnit.Id);
+                    if (effectCtx != null)
+                    {
+                        effectCtx.BindingUnitVec = new Vector2(0, 0.05f);
+                        var dir = npcUnit.FinalLook;
+                        effectCtx.EffectGo.transform.right = -dir;
+                    }
+                }
+
+                // 被主角吸收
+                if (absorb)
+                {
+                    Debug.Log("AbilityEffectExecutor4HModeBlurt sj to player");
+                    //ctx.Env.viewer.ShowPauseCloseupWindow("jingyu", 0.5f);
+                    ctx.Env.viewer.ShowFakeFxEffect("精浴", ctx.Env.playerLogicEntity.Pos);
+
+                    var goodVal = sjAmount * 0.5f;
+                    ctx.Env.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerJingYu, (long)(goodVal * 1000), false, Fight.FightStruct.EDmgFlag.None, npcUnit.Id);
+                }
+                else
+                {
+                    var dropPos = npcUnit.Pos + npcUnit.CurrentLook * 0.5f;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        ctx.Env.globalDropCollection.CreateDrop("j_drop_small", 1, dropPos + UnityEngine.Random.insideUnitCircle * 0.5f, true, npcUnit.Pos);
+                    }
+
+                    ctx.Env.viewer.ShowFakeFxEffect("落地", dropPos);
+                }
             }
         }
     }

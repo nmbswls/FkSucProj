@@ -47,6 +47,11 @@ namespace My.Map
         // 特殊蹲伏
         public bool IsSpecialCrouchStance { get; private set; }
 
+        PlayerHostileDamageBurstTracker _hostileDamageBurstTracker;
+
+        // 敌意短时受伤次数监控（滑动窗口）
+        public PlayerHostileDamageBurstTracker HostileDamageBurstTracker => _hostileDamageBurstTracker;
+
         private bool _dirst_clothes { get; set; }
 
         public void CheckCanSwitchCrouchStance()
@@ -271,8 +276,13 @@ namespace My.Map
 
             DefaultControlledByVelocity = false;
 
+            _hostileDamageBurstTracker?.Dispose();
+            _hostileDamageBurstTracker = new PlayerHostileDamageBurstTracker(this, 5f, 5, 5_000);
+
             // 与地图加载后的 PostNewAreaLoaded 使用同一套同步逻辑，避免 Initialize 后短时间状态不一致
             LogicManager.RefreshPlayerMagicClothesAndExposeForCurrentMode();
+
+            _hostileDamageBurstTracker.EventOnQuickDamagedBurst += HandleQuickDamagedBurst;
         }
 
         protected override void RegisterSpecAttrs()
@@ -291,8 +301,8 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100_000, 100_000);
             //attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 0);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 300_000);
-            
+            attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerJingYu, null, 1000_000, 0);
         }
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
@@ -679,6 +689,21 @@ namespace My.Map
             }
 
             TickBeingGazedInfo();
+
+            var jingyuVal = GetAttr(AttrIdConsts.PlayerJingYu);
+            int jingyuLevel = PlayerGamePlayRule.GetJingYuLevel(jingyuVal);
+
+            if (jingyuLevel > 0)
+            {
+                ApplyResourceChange(AttrIdConsts.PlayerJingYu, -500, false, EDmgFlag.None, null);
+                ApplyResourceChange(AttrIdConsts.HP, 100, false, EDmgFlag.None, null);
+            }
+
+            // 身上有jingyu时 需要累计发情进度
+            if(jingyuLevel > 0)
+            {
+                ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 1000, false, EDmgFlag.None, null);
+            }
         }
 
         /// <summary>
@@ -1607,7 +1632,18 @@ namespace My.Map
 
             if(delta < 0)
             {
-                
+                var maxHp = GetAttr(AttrIdConsts.HP_MAX);
+                if(Math.Abs(delta) > maxHp * 0.15f)
+                {
+                    LogicManager.viewer.ShowMapSpeachBubble(this.Id, "哎呦", 1.0f);
+
+                    LogicManager.viewer.ShowSceneFxEffect("h_voice_vfx", Pos, Vector2.right);
+
+                    foreach (var b in BuffContainer.Values)
+                    {
+                        b.DoBuffTrigger(ETriggerType.PlayerHVoice);
+                    }
+                }
             }
             return delta;
         }
@@ -1623,6 +1659,139 @@ namespace My.Map
         }
 
         public bool IsInBusyZone = false;
+
+        public void OnAbsorbBlurtDirectly(float absorbVal)
+        {
+            long hungerBaseRate = 2000;
+            var hungerVal = (long)(absorbVal * (hungerBaseRate * 0.0001) * 10000);
+            Debug.Log("直接吸取 hunger " + hungerVal);
+
+            if(hungerVal > 0)
+            {
+                ApplyResourceChange(AttrIdConsts.PlayerHunger, +hungerVal, false, EDmgFlag.None, null);
+                ApplyResourceChange(AttrIdConsts.HP, +hungerVal, false, EDmgFlag.None, null);
+
+                int addJingYuan = (int)hungerVal / 1000;
+
+                if(addJingYuan > 0)
+                {
+                    LogicManager.playerDataManager.InventorySystem.GiveItemToPlayer("jingyuan", addJingYuan);
+                }
+            }
+        }
+
+
+        private float _lastTriggerHVoiceBlurtTime = 0;
+        private const float TriggerHVoiceInterval = 2.0f;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tracker"></param>
+        private void HandleQuickDamagedBurst()
+        {
+            if(_lastTriggerHVoiceBlurtTime != 0 && LogicTime.time - _lastTriggerHVoiceBlurtTime < TriggerHVoiceInterval)
+            {
+                return;
+            }
+
+            _lastTriggerHVoiceBlurtTime = LogicTime.time;
+
+            LogicManager.viewer.ShowMapSpeachBubble(this.Id, "嗯哼", 1.0f);
+
+            LogicManager.viewer.ShowSceneFxEffect("h_voice_vfx", Pos, Vector2.right);
+
+            foreach (var b in BuffContainer.Values)
+            {
+                b.DoBuffTrigger(ETriggerType.PlayerHVoice);
+            }
+        }
+    }
+
+    // 滑动窗口内敌意 HP 损失次数；单次损失不低于 minDamagePerHit 才计数；达标抛事件并清空窗口
+    public sealed class PlayerHostileDamageBurstTracker : IDisposable
+    {
+        readonly PlayerLogicEntity _player;
+        readonly Queue<float> _hitLogicTimes = new();
+        readonly float _windowSeconds;
+        readonly int _hitCountThreshold;
+        readonly long _minDamagePerHit;
+
+        bool _disposed;
+
+        public PlayerHostileDamageBurstTracker(PlayerLogicEntity player, float windowSeconds, int hitCountThreshold, long minDamagePerHit)
+        {
+            _player = player ?? throw new ArgumentNullException(nameof(player));
+            _windowSeconds = Math.Max(0.05f, windowSeconds);
+            _hitCountThreshold = Math.Max(1, hitCountThreshold);
+            _minDamagePerHit = Math.Max(0L, minDamagePerHit);
+
+            _player.EventOnHpChanged += OnHpChanged;
+            _player.EventOnDestroyed += OnPlayerDestroyed;
+        }
+
+        // 滑动窗口内敌意受伤计数达标并清空窗口后触发
+        public event Action EventOnQuickDamagedBurst;
+
+        public int DebugQueuedHitCount => _hitLogicTimes.Count;
+
+        void OnPlayerDestroyed(long _)
+        {
+            Dispose();
+        }
+
+        void OnHpChanged(long entityId, long? srcEntityId, long finalDelta)
+        {
+            if (_disposed || entityId != _player.Id)
+            {
+                return;
+            }
+
+            // UnitOnHpChanged 仅在敌意意图下触发；finalDelta 受伤为负
+            if (finalDelta >= 0)
+            {
+                return;
+            }
+
+            long loss = Math.Abs(finalDelta);
+            if (loss < _minDamagePerHit)
+            {
+                return;
+            }
+
+            float now = LogicTime.time;
+            PruneOlderThan(now - _windowSeconds);
+
+            _hitLogicTimes.Enqueue(now);
+
+            PruneOlderThan(now - _windowSeconds);
+
+            if (_hitLogicTimes.Count >= _hitCountThreshold)
+            {
+                EventOnQuickDamagedBurst?.Invoke();
+                _hitLogicTimes.Clear();
+            }
+        }
+
+        void PruneOlderThan(float cutoff)
+        {
+            while (_hitLogicTimes.Count > 0 && _hitLogicTimes.Peek() < cutoff)
+            {
+                _hitLogicTimes.Dequeue();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed || _player == null)
+            {
+                return;
+            }
+
+            _disposed = true;
+            _player.EventOnHpChanged -= OnHpChanged;
+            _player.EventOnDestroyed -= OnPlayerDestroyed;
+            _hitLogicTimes.Clear();
+        }
 
     }
 }

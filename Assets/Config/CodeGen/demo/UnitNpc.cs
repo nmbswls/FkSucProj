@@ -37,6 +37,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["unit_bottom_size"].IsNumber) { throw new SerializationException(); }  UnitBottomSize = _buf["unit_bottom_size"]; }
         { if(!_buf["no_unsensored"].IsBoolean) { throw new SerializationException(); }  NoUnsensored = _buf["no_unsensored"]; }
         { if(!_buf["desire_crystal_random_attachable"].IsBoolean) { throw new SerializationException(); }  DesireCrystalRandomAttachable = _buf["desire_crystal_random_attachable"]; }
+        { if(!_buf["no_real_jing"].IsBoolean) { throw new SerializationException(); }  NoRealJing = _buf["no_real_jing"]; }
     }
 
     public static UnitNpc DeserializeUnitNpc(JSONNode _buf)
@@ -117,6 +118,10 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// False
     /// </summary>
     public bool DesireCrystalRandomAttachable;
+    /// <summary>
+    /// 永远h
+    /// </summary>
+    public bool NoRealJing;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -147,6 +152,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "unitBottomSize:" + UnitBottomSize + ","
         + "noUnsensored:" + NoUnsensored + ","
         + "desireCrystalRandomAttachable:" + DesireCrystalRandomAttachable + ","
+        + "noRealJing:" + NoRealJing + ","
         + "}";
     }
 }

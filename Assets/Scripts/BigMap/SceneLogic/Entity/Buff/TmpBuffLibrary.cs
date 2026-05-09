@@ -42,7 +42,50 @@ namespace My.Map.Entity
                     }
                 };
 
+                _library["player_burst_h_voice"] = new BuffDefinition()
+                {
+                    BuffId = "player_burst_h_voice",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = -1,
+                    IsHidden = true,
 
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.PlayerHVoice,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectHitBoxCfg()
+                                {
+                                    Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                    Width = 2.5f,
+                                    CampFilterType = ECampFilterType.NotSelf,
+
+                                    HitResult = new()
+                                    {
+                                        OnHitEffects = new()
+                                        {
+                                            new MapAbilityEffectAddBuffCfg()
+                                            {
+                                                BuffId = "force_stun",
+                                                Duration = 1.0f,
+                                            },
+                                            new MapAbilityEffectAddResourceCfg()
+                                            {
+                                                ResourceId = AttrIdConsts.NPCHVal,
+                                                AddValue = 15_000,
+                                            },
+                                        }
+                                    }
+                                },
+
+                            }
+                        }
+                    },
+                };
+
+                
 
 
                 _library["lock_move"] = new BuffDefinition()
@@ -331,6 +374,8 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NpcFcked, ModifierValue = 1 },
+                        
                     },
                     DurationEffect = new BuffDurationEffet()
                     {
@@ -737,9 +782,25 @@ namespace My.Map.Entity
                 {
                     BuffId = "h_spirit_immune",
 
-                    Desc = "我死啦",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     DefaultDuration = -1,
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.OnHit,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddResourceCfg()
+                                {
+                                    ResourceId = AttrIdConsts.NPCSJProgress,
+                                    AddValue = 20_000,
+                                }
+                            },
+                            RemoveOnTrigger = true,
+                        }
+                    },
 
                     ModifierAttrs = new()
                     {
@@ -748,6 +809,8 @@ namespace My.Map.Entity
                         
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Final_Fix_DR_All, ModifierValue = 99999999 },
                     },
+
+                    IsHidden = true,
                 };
             }
 

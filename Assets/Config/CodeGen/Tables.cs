@@ -49,6 +49,7 @@ public partial class Tables
     public demo.TbMapDesireCrystalBudget TbMapDesireCrystalBudget {get; }
     public demo.TbMapWalkerDesireCrystalQuota TbMapWalkerDesireCrystalQuota {get; }
     public demo.TbNamedNpcDesireCrystal TbNamedNpcDesireCrystal {get; }
+    public demo.TbSpiritMonsterTypeBudget TbSpiritMonsterTypeBudget {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -87,6 +88,7 @@ public partial class Tables
         TbMapDesireCrystalBudget = new demo.TbMapDesireCrystalBudget(loader("demo_tbmapdesirecrystalbudget"));
         TbMapWalkerDesireCrystalQuota = new demo.TbMapWalkerDesireCrystalQuota(loader("demo_tbmapwalkerdesirecrystalquota"));
         TbNamedNpcDesireCrystal = new demo.TbNamedNpcDesireCrystal(loader("demo_tbnamednpcdesirecrystal"));
+        TbSpiritMonsterTypeBudget = new demo.TbSpiritMonsterTypeBudget(loader("demo_tbspiritmonstertypebudget"));
         ResolveRef();
     }
     
@@ -127,6 +129,7 @@ public partial class Tables
         TbMapDesireCrystalBudget.ResolveRef(this);
         TbMapWalkerDesireCrystalQuota.ResolveRef(this);
         TbNamedNpcDesireCrystal.ResolveRef(this);
+        TbSpiritMonsterTypeBudget.ResolveRef(this);
     }
 }
 

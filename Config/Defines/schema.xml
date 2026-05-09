@@ -98,4 +98,6 @@
 
     <!-- 欲望结晶：TbDesireCrystalDef / TbMapDesireCrystalBudget / TbMapWalkerDesireCrystalQuota / TbNamedNpcDesireCrystal 在 Config/Datas/desire_crystal.xlsx；TbUnitNpc 字段 desire_crystal_random_attachable 在 unit_npc.xlsx；生成脚本 gen_desire_crystal_tables.py -->
 
+    <!-- 影怪：player_status.xlsx#player_desire_level 含总预算与刷新间隔、后场假影怪参数；独立表 demo_tbspiritmonstertypebudget（建议在 player_status 增加 spirit_monster_budget sheet 后由 Luban 生成） -->
+
 </module>

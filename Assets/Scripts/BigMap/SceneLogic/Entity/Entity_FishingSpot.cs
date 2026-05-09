@@ -145,7 +145,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            LogicManager.playerDataManager.TryGiveItem(fishId, 1, 0);
+            LogicManager.playerDataManager.GiveItemToPlayer(fishId, 1);
             LogicManager.worldPersistState.TryConsumeOneFishingUse(SrcUniqName);
             RemainingUses = Mathf.Max(0, RemainingUses - 1);
             return true;

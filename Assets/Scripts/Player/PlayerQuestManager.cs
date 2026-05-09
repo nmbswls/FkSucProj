@@ -376,7 +376,7 @@ namespace My.Player
             {
                 foreach (var pair in cacheCfg.FinishReward)
                 {
-                    ctx.Ctx.playerDataManager.TryGiveItem(pair.Key, pair.Value, 0);
+                    ctx.Ctx.playerDataManager.GiveItemToPlayer(pair.Key, pair.Value);
                 }
             }
         }

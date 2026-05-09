@@ -45,7 +45,7 @@ namespace My.Map
                 case AttrIdConsts.NoKiller:
                 case AttrIdConsts.Charmed:
                 case AttrIdConsts.ImmuneJianSu:
-
+                case AttrIdConsts.NpcFcked:
                     return EAttrType.State;
 
                 case AttrIdConsts.Attack:
@@ -58,7 +58,9 @@ namespace My.Map
                 case AttrIdConsts.ArmPercent_White:
                 case AttrIdConsts.Arm_Extra_1:
                 case AttrIdConsts.PlayerCharm:
-                    
+                case AttrIdConsts.Final_Fix_DR_All:
+                case AttrIdConsts.Final_HImpulse_Reduce_Fix:
+
 
                 case AttrIdConsts.PlayerSensitivity:
 

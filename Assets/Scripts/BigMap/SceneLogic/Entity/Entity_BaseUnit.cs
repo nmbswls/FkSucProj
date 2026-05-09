@@ -906,15 +906,6 @@ namespace My.Map
                 }
             }
             
-            // 高于5.00的伤害才触发打断
-            //if(Math.Abs(delta) > 500)
-            //{
-            //    TryInterrupt(new InterruptRequest()
-            //    {
-            //        source = EInterruptSource.Hit,
-            //    });
-            //}
-
             EventOnHpChanged?.Invoke(this.Id, srcEntityId, finalDelta);
 
             if (Math.Abs(finalDelta) > 1)

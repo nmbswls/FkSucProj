@@ -33,6 +33,8 @@ namespace My.Player.Bag
         readonly Dictionary<EItemType, List<int>> _warehouseTypeToIndices = new Dictionary<EItemType, List<int>>();
         bool _warehouseCategoryDirty = true;
 
+        public PlayerBag ImportantItemBag; // 仅用来存放珍贵物品 极少量
+
         public Dictionary<string, float> ItemUseCd = new();
 
         public Dictionary<string, long> CurrencyBag = new();
@@ -346,7 +348,7 @@ namespace My.Player.Bag
             return leftCount;
         }
 
-        public long GiveItem(string itemId, long amount, int bagId)
+        public long GiveItemToPlayer(string itemId, long amount)
         {
             var itemConf = ItemCatalog.GetItemDef(itemId);
             if (itemConf == null)
@@ -354,9 +356,15 @@ namespace My.Player.Bag
                 return 0;
             }
 
+            // 货币不检查格子 但检查上限
             if (itemConf.ItemType == EItemType.Currency)
             {
                 CurrencyBag[itemId] = CurrencyBag.GetValueOrDefault(itemId) + amount;
+                var max = PlayerGamePlayRule.GetCurrencyMaxStack(LogicManager, itemId);
+                if (CurrencyBag[itemId] > max)
+                {
+                    CurrencyBag[itemId] = max;
+                }
                 return amount;
             }
 
@@ -371,7 +379,7 @@ namespace My.Player.Bag
                 return amount;
             }
 
-            var bag = GetBagById(bagId);
+            var bag = GetBagById(0);
             if (bag == null)
             {
                 return 0;
@@ -379,7 +387,7 @@ namespace My.Player.Bag
 
             var put = bag.TryGiveItem(itemId, amount);
 
-            EventOnGainItem?.Invoke((EPlayerBagId)bagId, itemId, put);
+            EventOnGainItem?.Invoke(0, itemId, put);
 
             return put;
         }

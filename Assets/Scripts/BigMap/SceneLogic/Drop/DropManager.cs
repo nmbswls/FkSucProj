@@ -60,7 +60,7 @@ namespace My.Map.Drop
 
                 // ʰȡ
                 Debug.Log("PickDrop " + id);
-                logicManager.playerDataManager.TryGiveItem(dropData.ItemId, dropData.Amount, 0);
+                logicManager.playerDataManager.GiveItemToPlayer(dropData.ItemId, dropData.Amount);
             }
         }
 

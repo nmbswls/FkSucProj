@@ -95,7 +95,7 @@ namespace My
                 {
                     // 注意：这里建议把 itemName 和 count 也传进去，如果你后续逻辑需要的话
                     // 目前你的代码写死传了 "1" 和 5
-                    MainGameManager.Instance.gameLogicManager.playerDataManager.TryGiveItem("1", 5, 0);
+                    MainGameManager.Instance.gameLogicManager.playerDataManager.GiveItemToPlayer(itemName, count);
                 }
 
                 // C. (可选) 如果你还要之前的侧边日志功能，可以在这里调用 NotificationPanelController

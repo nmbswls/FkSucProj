@@ -58,6 +58,13 @@ namespace My.UI
 
                 DescText.text = "你以恶魔姿态现身，积攒能量";
             }
+            else if (tipParams.Param1 == 5)
+            {
+                TitleText.text = "精浴";
+                ValueText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerJingYu) * 0.001f)).ToString();
+
+                DescText.text = "主键消耗并回血";
+            }
         }
     }
 

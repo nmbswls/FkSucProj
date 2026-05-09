@@ -372,6 +372,17 @@ namespace My.UI
                 {
                     RetreatHint.gameObject.SetActive(false);
                 }
+
+                var jingyuVal = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerJingYu);
+                int layer = (int)(jingyuVal / 1000);
+                if (layer > 0)
+                {
+                    PlayerBallMap[AttrIdConsts.PlayerJingYu].Root.gameObject.SetActive(true);
+                }
+                else
+                {
+                    PlayerBallMap[AttrIdConsts.PlayerJingYu].Root.gameObject.SetActive(false);
+                }
             }
 
             if(HudMode == EHudMode.PreviewSkill)
@@ -411,6 +422,8 @@ namespace My.UI
             UpdateEstrusStateHint();
 
             EstrusIndicator?.CheckEstrusUpdate();
+
+            
         }
 
         /// <summary>
@@ -622,8 +635,6 @@ namespace My.UI
 
             CheckDisguiseState();
 
-            
-
             if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsHome)
             {
                 BtnHomeStorage.gameObject.SetActive(true);
@@ -636,6 +647,8 @@ namespace My.UI
             }
 
             TrySubscribePlayerBuffEvents();
+
+            
         }
 
         public override int FocusPriority => 0;

@@ -21,6 +21,7 @@ namespace My.Map.Entity
         public const string Arm_Extra_1 = "Arm_Extra_1"; // 来自肉体耐受的护甲
 
         public const string Final_Fix_DR_All = "Final_Fix_DR_All"; // 白字最终减伤
+        public const string Final_HImpulse_Reduce_Fix = "Final_HImpulse_Reduce_Fix"; // h冲击力最终减少
 
         public const string PhysicalResist = "PhysicalResist"; // 肉体耐受 目前只有玩家应用
         public const string PhysicalResistArmRate = "PhysicalResistArmRate"; // 肉体耐受 转化为护甲的效率 10000表示1
@@ -73,6 +74,7 @@ namespace My.Map.Entity
         public const string NoInteract = "NoInteract";
         public const string Charmed = "Charmed";
         public const string ImmuneJianSu = "ImmuneJianSu";
+        public const string NpcFcked = "NpcFcked"; // 特殊状态
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";
         public const string NoKiller = "NoKiller";

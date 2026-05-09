@@ -1,9 +1,9 @@
 [
   {
-    "item_id": "1",
-    "display_name": "1",
-    "item_type": 0,
-    "stack_type": 1,
+    "item_id": "jingyuan",
+    "display_name": "精元",
+    "item_type": 1,
+    "stack_type": 5,
     "stack_count": 0,
     "max_stack_inventory": 0,
     "max_stack_shop": 0,

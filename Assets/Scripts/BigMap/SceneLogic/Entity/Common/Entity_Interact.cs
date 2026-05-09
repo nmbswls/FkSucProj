@@ -419,7 +419,7 @@ namespace My.Map
                         {
                             string itemId = output.Param3;
                             long count = output.Param1;
-                            Owner.LogicManager.playerDataManager.TryGiveItem(itemId, count, 0);
+                            Owner.LogicManager.playerDataManager.GiveItemToPlayer(itemId, count);
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.SetLocalSwitch:

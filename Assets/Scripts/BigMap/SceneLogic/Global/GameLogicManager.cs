@@ -762,7 +762,7 @@ namespace My
                             var items = DropUtils.GetBundleDropItems(dropId);
                             for (int i = 0; i < items.Count; i++)
                             {
-                                playerDataManager.TryGiveItem(items[i].Item1, items[i].Item2, 0);
+                                playerDataManager.GiveItemToPlayer(items[i].Item1, items[i].Item2);
                             }
                         }
                     }
@@ -977,6 +977,7 @@ namespace My
         }
 
         #endregion
+
 
     }
 

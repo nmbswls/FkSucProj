@@ -15,6 +15,7 @@ using My.Map.Unit;
 using UnityEditor;
 using cfg.demo;
 using My.Config;
+using static My.UI.FishingMiniGamePanel;
 
 
 namespace My.Map
@@ -310,6 +311,15 @@ namespace My.Map
                 case AttrIdConsts.NPCHVal:
                     {
                         _lastHModeTimer = LogicTime.time;
+
+                        var hValMax = GetHValMax();
+                        // 溢出部分转换为高潮条
+                        if (before < after && after > hValMax)
+                        {
+                            long overflow = after - hValMax;
+                            long toBlurt = (long)(overflow * 0.2f);
+                            attributeStore.ApplyResourceChange(AttrIdConsts.NPCSJProgress, toBlurt, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+                        }
                     }
                     break;
                 case AttrIdConsts.NPCSJProgress:
@@ -369,15 +379,38 @@ namespace My.Map
                 }
             }
 
+            var blurtValue = GetAttr(AttrIdConsts.NPCSJProgress);
+            var blurMax = GetBlurtMax();
 
-            if(CheckCanNpcBlurt())
+            if (blurtValue >= blurMax)
             {
-                var blurtValue = GetAttr(AttrIdConsts.NPCSJProgress);
-                var blurMax = GetBlurtMax();
+                var fcked = CheckHasState(AttrIdConsts.NpcFcked);
 
-                if(blurtValue >= blurMax)
+                if(fcked)
                 {
-                    OnNpcBlurt();
+                    var player = LogicManager.playerLogicEntity;
+                    var sjPlus1 = player.GetAttr(AttrIdConsts.PlayerSJAmount_Fixed);
+                    var sjPlus2 = player.GetAttr(AttrIdConsts.PlayerSJAmount_Precent);
+
+                    var npcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(CfgId);
+                    var attr = CfgMgr.Cfgs.TbUnitNpcAttr.GetOrDefault(npcCfg?.AttrTemplateId ?? 0);
+
+                    float sjAmount = attr?.BaseBlurtAmount ?? 1.0f;
+                    float dmgPerAmount = attr?.BaseBlurtDmg ?? 1.0f;
+
+                    OnNpcBlurt(sjAmount, dmgPerAmount);
+
+                    player.OnAbsorbBlurtDirectly(sjAmount);
+
+                    LogicManager.viewer.ShowFakeFxEffect("直接榨取", this.Pos);
+
+                }
+                else
+                {
+                    if (CheckCanNpcBlurt())
+                    {
+                        TryUseBlurtSkill();
+                    }
                 }
             }
         }
@@ -531,11 +564,16 @@ namespace My.Map
         }
 
 
-        protected virtual void OnNpcBlurt()
+        public void OnNpcBlurt(float sjAmount, float sjDamage)
         {
             ForceSetResource(AttrIdConsts.NPCSJProgress, 0); // 清空射精条
+            var totalDamage = (long)(sjAmount * sjDamage * 1000);
+            // 自身hp大伤害
+            ApplyResourceChange(AttrIdConsts.HP, -totalDamage, false, Fight.FightStruct.EDmgFlag.None, LogicManager.playerLogicEntity.Id);
+        }
 
-            LogicManager.viewer.ShowFakeFxEffect("npc_h_burst", this.Pos);
+        protected void TryUseBlurtSkill()
+        {
 
             var player = LogicManager.playerLogicEntity;
             var sjPlus1 = player.GetAttr(AttrIdConsts.PlayerSJAmount_Fixed);
@@ -558,7 +596,6 @@ namespace My.Map
                 ["SJ_Damage"] = dmgPerAmount.ToString(),
             });
         }
-
 
         protected override void UnitOnHpChanged(long finalDelta, long? srcEntityId, Vector2? hitDir, bool isEnmity, EDmgFlag deltaFlags)
         {

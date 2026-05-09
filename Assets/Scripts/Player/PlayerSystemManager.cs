@@ -49,7 +49,7 @@ namespace My.Player
 
         public PlayerSkillSystem SkillSystem { get; private set; }
 
-        public List<string> PlayerSkillList => SkillSystem.learnedSkillIds;
+        public IReadOnlyList<string> PlayerSkillList => SkillSystem.LearnedSkillIdsView;
 
         public string[] NormalSkillSlots => SkillSystem.NormalSkillSlots;
 
@@ -261,9 +261,9 @@ namespace My.Player
         /// <param name="itemId"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public long TryGiveItem(string itemId, long count, int bagId)
+        public long GiveItemToPlayer(string itemId, long count)
         {
-            return InventorySystem.GiveItem(itemId, count, bagId);
+            return InventorySystem.GiveItemToPlayer(itemId, count);
         }
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace My.Player
                 return;
             }
 
-            foreach (var skillId in SkillSystem.learnedSkillIds)
+            foreach (var skillId in SkillSystem.LearnedSkillIdsView)
             {
                 if (string.IsNullOrEmpty(skillId))
                 {
@@ -389,8 +389,11 @@ namespace My.Player
                 return false;
             }
 
-            SkillSystem.learnedSkillIds.Add(skillId);
-            SkillSystem.OnSkillLearned(skillId);
+            if (!SkillSystem.TryAddLearned(skillId))
+            {
+                return false;
+            }
+
             SyncLearnedSkillsToPlayerEntity();
             return true;
         }
@@ -402,14 +405,11 @@ namespace My.Player
                 return false;
             }
 
-            int removed = SkillSystem.learnedSkillIds.RemoveAll(id =>
-                string.Equals(id, skillId, StringComparison.Ordinal));
-            if (removed == 0)
+            if (!SkillSystem.TryRemoveLearned(skillId))
             {
                 return false;
             }
 
-            SkillSystem.OnSkillForgotten(skillId);
             SyncLearnedSkillsToPlayerEntity();
             return true;
         }
@@ -421,28 +421,11 @@ namespace My.Player
                 return false;
             }
 
-            int removed = 0;
-            for (int i = SkillSystem.learnedSkillIds.Count - 1; i >= 0; i--)
-            {
-                if (string.Equals(SkillSystem.learnedSkillIds[i], oldSkillId, StringComparison.Ordinal))
-                {
-                    SkillSystem.learnedSkillIds.RemoveAt(i);
-                    removed++;
-                }
-            }
-
-            if (removed == 0)
+            if (!SkillSystem.TryReplaceLearnedSkill(oldSkillId, newSkillId))
             {
                 return false;
             }
 
-            if (!SkillSystem.IsLearned(newSkillId))
-            {
-                SkillSystem.learnedSkillIds.Add(newSkillId);
-            }
-
-            SkillSystem.OnReplaceSkillId(oldSkillId, newSkillId);
-            SkillSystem.ReplaceSkillIdInNormalSlots(oldSkillId, newSkillId);
             SyncLearnedSkillsToPlayerEntity();
             return true;
         }
