@@ -1585,7 +1585,7 @@ namespace My.Map.Entity
 
             unitEntity.TryInterrupt(new InterruptRequest()
             {
-                source = EInterruptSource.Cast,
+                source = EInterruptSource.System,
             });
         }
     }

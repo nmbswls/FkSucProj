@@ -2544,7 +2544,8 @@ namespace My.Map.Entity
             {
                 PhaseName = "XuLi",
                 HoldingPhase = true,
-
+                LockMovement = true,
+                ImmuneKnock = true,
                 AnimTag = "",
 
                 DurationValue = new()
@@ -2553,6 +2554,19 @@ namespace My.Map.Entity
                     RawVal = "99.0"
                 },
             });
+
+            var intervalPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Inteval",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
 
             var xuliEffect = new MapFightEffectXuLiStageCfg()
             {
@@ -2566,7 +2580,7 @@ namespace My.Map.Entity
 
                         StageEffects = new()
                         {
-                            
+
                         }
                     },
 
@@ -2579,14 +2593,17 @@ namespace My.Map.Entity
                         {
                             new MapFightEffectInterruptCaster()
                             {
-                                
+
                             }
                         }
                     },
                 }
             };
 
+            intervalPhase.Events.Add(new PhaseEffectEvent() { Effect = xuliEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(intervalPhase);
 
+            
             var dashEffect = new MapAbilityEffectDashStartCfg()
             {
                 DashMode = EDashMode.FixDistance,
