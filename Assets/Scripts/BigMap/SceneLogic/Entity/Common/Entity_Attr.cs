@@ -76,7 +76,8 @@ namespace My.Map
                 case AttrIdConsts.PhysicalResist:
                 case AttrIdConsts.PhysicalResistArmRate:
                 case AttrIdConsts.UnitHShieldMax:
-                    
+                case AttrIdConsts.DamageXiXue:
+
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:

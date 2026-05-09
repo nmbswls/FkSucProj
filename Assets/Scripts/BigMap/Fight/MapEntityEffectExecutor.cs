@@ -1728,6 +1728,9 @@ namespace My.Map.Entity
             ctx.RunningStorage.TryGetValue(key, out var xuliTime);
             float realTime = xuliTime * 0.001f;
             int stageIdx = -1;
+
+            Debug.Log("AbilityFightExecutor4XuLiStage time" + realTime);
+
             for (int i=0;i<realCfg.StageInfos.Count;i++)
             {
                 if (realTime >= realCfg.StageInfos[i].NeedTime)

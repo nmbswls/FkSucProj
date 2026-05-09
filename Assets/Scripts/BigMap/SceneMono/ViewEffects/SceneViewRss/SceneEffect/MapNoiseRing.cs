@@ -21,6 +21,7 @@ public class MapNoiseRing : MonoBehaviour
     [Header("回收")]
     public bool autoTrigger = true;
     public bool autoDestroy = true;
+    public float autoStrength = 0.2f;
     public float extraLife = 0.05f; // 动画结束后延时销毁/回收
 
     private SpriteRenderer _sr;
@@ -41,7 +42,7 @@ public class MapNoiseRing : MonoBehaviour
     {
         if(autoTrigger)
         {
-            Play(1.0f, transform.position);
+            Play(autoStrength, transform.position);
         }
     }
 

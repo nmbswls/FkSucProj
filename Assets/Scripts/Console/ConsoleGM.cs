@@ -294,11 +294,12 @@ public class ConsoleGM : MonoBehaviour
             });
 
         Register("dmg", "造成伤害",
-            null,
+            new[] { new CmdParam("val", "int，值") },
             args =>
             {
+                var val = int.Parse(args[0]) * 1000;
                 var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-                player.ApplyResourceChange(AttrIdConsts.HP, -9999999, false, FightStruct.EDmgFlag.None, null);
+                player.ApplyResourceChange(AttrIdConsts.HP, -val, false, FightStruct.EDmgFlag.None, null);
             });
 
         Register("give_item", "给item",

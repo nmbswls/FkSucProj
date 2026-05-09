@@ -817,25 +817,27 @@ namespace My.Map.Entity
 
         private void TickIntern(float dt)
         {
-            CurrentCtx.AbilityTime += dt;
-            CurrentCtx.PhaseElapsed += dt;
+            var ctx = CurrentCtx;
+
+            ctx.AbilityTime += dt;
+            ctx.PhaseElapsed += dt;
 
             // debug
-            if (!string.IsNullOrEmpty(CurrentCtx.DebugSavedAnimTag))
+            if (!string.IsNullOrEmpty(ctx.DebugSavedAnimTag))
             {
-                CurrentCtx.DebugSavedAnimTagTimer += dt;
-                if (CurrentCtx.DebugSavedAnimTagTimer > 0.2f)
+                ctx.DebugSavedAnimTagTimer += dt;
+                if (ctx.DebugSavedAnimTagTimer > 0.2f)
                 {
                     //EntityOwner.viewer.ShowFakeFxEffect(CurrentCtx.DebugSavedAnimTag, EntityOwner.Pos);
-                    CurrentCtx.DebugSavedAnimTagTimer = 0;
+                    ctx.DebugSavedAnimTagTimer = 0;
                 }
             }
 
             // 执行定时事件（相对当前阶段时间）
-            for (int i = 0; i < CurrentCtx._scheduled.Count; ++i)
+            for (int i = 0; i < ctx._scheduled.Count; ++i)
             {
-                var s = CurrentCtx._scheduled[i];
-                while (s.Left > 0 && CurrentCtx.PhaseElapsed >= s.FireTime)
+                var s = ctx._scheduled[i];
+                while (s.Left > 0 && ctx.PhaseElapsed >= s.FireTime)
                 {
                     //var executor = GetExecutor(s.Source.Effect);
                     //executor?.Apply(s.Source.Effect, CurrentCtx);
@@ -864,43 +866,44 @@ namespace My.Map.Entity
 
                     if(effectCtx.OutHitWindowIds.Count > 0)
                     {
-                        CurrentCtx.phaseHitWindows.AddRange(effectCtx.OutHitWindowIds);
+                        ctx.phaseHitWindows.AddRange(effectCtx.OutHitWindowIds);
                     }
                 }
             }
 
+
             // 检查是否是引导
-            var phase = CurrentCtx.AbilityConfig.Phases[CurrentCtx.PhaseIndex];
+            var phase = ctx.AbilityConfig.Phases[ctx.PhaseIndex];
             if(phase != null) 
             {
-                if(CurrentCtx.PhaseIntentEffectId != 0)
+                if(ctx.PhaseIntentEffectId != 0)
                 {
-                    EntityOwner.LogicManager.viewer.UpdateRangeWarnEffect(CurrentCtx.PhaseIntentEffectId, EntityOwner.Pos, EntityOwner.FinalLook);
+                    EntityOwner.LogicManager.viewer.UpdateRangeWarnEffect(ctx.PhaseIntentEffectId, EntityOwner.Pos, EntityOwner.FinalLook);
                 }
             }
 
             bool phaseFinish = false;
-            if(CurrentCtx.PhaseMarkSkip)
+            if(ctx.PhaseMarkSkip)
             {
                 phaseFinish = true;
             }
             // 检查非holding阶段
             else if(!phase.HoldingPhase)
             {
-                if(CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
+                if(ctx.PhaseElapsed >= ctx.PhaseDuration)
                 {
                     phaseFinish = true;
                 }
             }
             else if(phase.HoldingPhase)
             {
-                if(LogicTime.time - CurrentCtx.LastPhaseHoldTime > 0.5f)
+                if(LogicTime.time - ctx.LastPhaseHoldTime > 0.5f)
                 {
                     phaseFinish = true;
                 }
                 
                 // 时间太长也不行
-                if(CurrentCtx.PhaseDuration != 0 && CurrentCtx.PhaseElapsed >= CurrentCtx.PhaseDuration)
+                if(ctx.PhaseDuration != 0 && ctx.PhaseElapsed >= ctx.PhaseDuration)
                 {
                     phaseFinish = true;
                 }
@@ -909,9 +912,9 @@ namespace My.Map.Entity
             // 阶段结束
             if (phaseFinish)
             {
-                ExitPhase(CurrentCtx.PhaseIndex);
-                var next = CurrentCtx.PhaseIndex + 1;
-                if (next < CurrentCtx.AbilityConfig.Phases.Count)
+                ExitPhase(ctx.PhaseIndex);
+                var next = ctx.PhaseIndex + 1;
+                if (next < ctx.AbilityConfig.Phases.Count)
                 {
                     EnterPhase(next);
                 }

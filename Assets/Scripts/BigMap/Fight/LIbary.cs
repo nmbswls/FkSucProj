@@ -2576,7 +2576,7 @@ namespace My.Map.Entity
                 {
                     new MapFightEffectXuLiStageCfg.EStageInfo()
                     {
-                        NeedTime = 5.0f,
+                        NeedTime = 2.0f,
 
                         StageEffects = new()
                         {
@@ -2600,7 +2600,7 @@ namespace My.Map.Entity
                 }
             };
 
-            intervalPhase.Events.Add(new PhaseEffectEvent() { Effect = xuliEffect, Kind = PhaseEventKind.OnEnter });
+            intervalPhase.Events.Add(new PhaseEffectEvent() { Effect = xuliEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.01f});
             spec.Phases.Add(intervalPhase);
 
             
