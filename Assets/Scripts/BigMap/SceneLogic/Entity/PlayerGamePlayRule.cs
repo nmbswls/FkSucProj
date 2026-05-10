@@ -28,17 +28,18 @@ namespace My.Map
 
         public static int GetJingYuLevel(long jingyuVal)
         {
-            if(jingyuVal < 10_000)
+            var cfgs = CfgMgr.Cfgs.TbPlayerJingYuLevel.DataList;
+            int level = 0;
+            for (int i=0;i< cfgs.Count;i++)
             {
-                return 0;
+                int needAmount = cfgs[i].NeedAmount;
+                if (jingyuVal < needAmount * 1000)
+                {
+                    break;
+                }
+                level = cfgs[i].Level - 1;
             }
-
-            if(jingyuVal < 50_000)
-            {
-                return 1;
-            }
-
-            return 2;
+            return level;
         }
 
         public static long GetFinalBlurtDmg(string npcCfgId, long sjPlus1, long sjPlus2)

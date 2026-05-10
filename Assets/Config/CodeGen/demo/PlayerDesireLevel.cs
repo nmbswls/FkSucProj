@@ -37,7 +37,7 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     /// </summary>
     public int Level;
     /// <summary>
-    /// 理智线
+    /// 欲望线
     /// </summary>
     public int DesireLine;
     /// <summary>

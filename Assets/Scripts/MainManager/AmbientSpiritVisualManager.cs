@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace My.Map.View
 {
-    // 后场氛围影怪：玩家附近徘徊「或」在给定世界矩形外缘横穿闪过 → 隐身再现身；掠过范围由玩家理智与欲望环半径决定（不绑相机）。
+        // 后场氛围影怪：徘徊/横扫范围由欲望等级、理智与 player_desire_level 的 Aura 衍生，不再读表 AmbientSpiritRadiusMax。
     public sealed class AmbientSpiritVisualManager
     {
         private const string AmbientVisualResourcesRoot = "SpiritMonsterAmbient";
@@ -50,7 +50,7 @@ namespace My.Map.View
         private const float WanderMin = 1.25f;
         private const float WanderMax = 2.75f;
 
-        // 徘徊层内半径：仅由 max 推导，避免与横扫/矩形策略叠加重复配置 min
+        // 徘徊内圈 = 外环 * 比例；外环由 ResolveAmbientRingRadiusMax 从等级/理智/光环配置推导
         private const float WanderInnerRadiusFromMax = 0.42f;
 
         private const float HiddenMin = 0.22f;
@@ -173,7 +173,13 @@ namespace My.Map.View
 
             Vector2 anchor = _glm.playerLogicEntity.Pos;
             float drift = Mathf.Max(0.25f, desireCfg.AmbientSpiritDriftSpeed);
-            float rMax = Mathf.Max(0.2f, desireCfg.AmbientSpiritRadiusMax);
+            float san01 = 1f;
+            if (_glm.playerLogicEntity != null)
+            {
+                san01 = Mathf.Clamp01(_glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSanity) / 100_000f);
+            }
+
+            float rMax = ResolveAmbientRingRadiusMax(desireCfg, lv, san01);
             float rMin = Mathf.Max(0.1f, rMax * WanderInnerRadiusFromMax);
 
             float lt = LogicTime.time;
@@ -461,6 +467,42 @@ namespace My.Map.View
             return true;
         }
 
+        // 后场假影怪数量：与历史表一致（Lv0 不生，Lv1–4 为 3/5/8/10），高于 4 按 10 封顶
+        static int ResolveAmbientSpiritCount(int desireLevel)
+        {
+            if (desireLevel <= 0)
+            {
+                return 0;
+            }
+
+            if (desireLevel == 1)
+            {
+                return 3;
+            }
+
+            if (desireLevel == 2)
+            {
+                return 5;
+            }
+
+            if (desireLevel == 3)
+            {
+                return 8;
+            }
+
+            return 10;
+        }
+
+        float ResolveAmbientRingRadiusMax(PlayerDesireLevel c, int desireLevel, float sanity01)
+        {
+            float lvT = Mathf.Clamp01(desireLevel / 4f);
+            float baseR = Mathf.Lerp(10f, 16f, lvT);
+            float aura = c != null ? Mathf.Clamp(c.AuraMaxRange, 0.5f, 4f) : 1f;
+            float auraScale = Mathf.Lerp(0.92f, 1.18f, Mathf.Clamp01((aura - 1f) / 2f));
+            float sanScale = Mathf.Lerp(0.88f, 1.05f, Mathf.Clamp01(sanity01));
+            return Mathf.Max(6f, baseR * auraScale * sanScale);
+        }
+
         private string BuildAmbientRebuildKey(int desireLevel, PlayerDesireLevel c)
         {
             if (c == null)
@@ -490,7 +532,7 @@ namespace My.Map.View
             }
 
             return
-                $"{desireLevel}|{c.AmbientSpiritCount}|{sig}|{c.AmbientSpiritRadiusMax:F2}|{c.AmbientSpiritDriftSpeed:F2}";
+                $"{desireLevel}|{sig}|{c.AmbientSpiritDriftSpeed:F2}|{c.AuraMaxRange:F2}";
         }
 
         private void Rebuild(PlayerDesireLevel desireCfg)
@@ -505,7 +547,9 @@ namespace My.Map.View
                 return;
             }
 
-            if (desireCfg.AmbientSpiritCount <= 0 || _glm.playerLogicEntity == null)
+            int n = ResolveAmbientSpiritCount(_glm.playerLogicEntity.DesireLevel);
+
+            if (n <= 0 || _glm.playerLogicEntity == null)
             {
 
                 return;
@@ -520,8 +564,6 @@ namespace My.Map.View
             }
 
             float lt = LogicTime.time;
-
-            int n = desireCfg.AmbientSpiritCount;
 
             for (int i = 0; i < n; i++)
             {

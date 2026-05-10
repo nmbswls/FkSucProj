@@ -1,0 +1,22 @@
+[
+  {
+    "level": 0,
+    "san_line": 75,
+    "basic_estrus": 0
+  },
+  {
+    "level": 1,
+    "san_line": 50,
+    "basic_estrus": 30
+  },
+  {
+    "level": 2,
+    "san_line": 25,
+    "basic_estrus": 70
+  },
+  {
+    "level": 3,
+    "san_line": 0,
+    "basic_estrus": 100
+  }
+]

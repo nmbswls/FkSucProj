@@ -1,0 +1,42 @@
+[
+  {
+    "level": 0,
+    "need_amount": 0,
+    "estrus_up": 0,
+    "cost_per_sec": 0,
+    "hunger_per_sec": 0,
+    "hp_per_sec": 0
+  },
+  {
+    "level": 1,
+    "need_amount": 50,
+    "estrus_up": 0.5,
+    "cost_per_sec": 1,
+    "hunger_per_sec": 0.5,
+    "hp_per_sec": 0.1
+  },
+  {
+    "level": 2,
+    "need_amount": 200,
+    "estrus_up": 1,
+    "cost_per_sec": 2,
+    "hunger_per_sec": 1,
+    "hp_per_sec": 0.2
+  },
+  {
+    "level": 3,
+    "need_amount": 500,
+    "estrus_up": 1.5,
+    "cost_per_sec": 3,
+    "hunger_per_sec": 1.5,
+    "hp_per_sec": 0.5
+  },
+  {
+    "level": 4,
+    "need_amount": 1000,
+    "estrus_up": 2,
+    "cost_per_sec": 5,
+    "hunger_per_sec": 2,
+    "hp_per_sec": 1
+  }
+]

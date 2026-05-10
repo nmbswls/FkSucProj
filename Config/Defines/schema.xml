@@ -98,6 +98,6 @@
 
     <!-- 欲望结晶：TbDesireCrystalDef / TbMapDesireCrystalBudget / TbMapWalkerDesireCrystalQuota / TbNamedNpcDesireCrystal 在 Config/Datas/desire_crystal.xlsx；TbUnitNpc 字段 desire_crystal_random_attachable 在 unit_npc.xlsx；生成脚本 gen_desire_crystal_tables.py -->
 
-    <!-- 影怪：player_desire_level 含后场数量、ambient_spirit_radius_max、drift（后场徘徊内半径由代码按 max 比例推导；ambient_spirit_prefab 已废弃；外观走 spirit_monster_budget + TbUnitNpc.prefab_name → Resources/SpiritMonsterAmbient）；实战预算与同文件 spirit_monster_budget；__tables__ 挂载见 gen_spirit_monster_budget_tables.py -->
+    <!-- 影怪：player_desire_level 含 drift、Aura 等；后场徘徊环半径与假影怪数量由 AmbientSpiritVisualManager 按等级/理智推导；ambient_spirit_prefab 已废弃；外观 spirit_monster_budget + TbUnitNpc → Resources/SpiritMonsterAmbient；__tables__ 见 gen_spirit_monster_budget_tables.py -->
 
 </module>

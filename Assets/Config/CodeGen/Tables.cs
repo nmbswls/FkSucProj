@@ -38,6 +38,8 @@ public partial class Tables
     public demo.TbFishingSpot TbFishingSpot {get; }
     public demo.TbFishingSpotFish TbFishingSpotFish {get; }
     public demo.TbPlayerDesireLevel TbPlayerDesireLevel {get; }
+    public demo.TbPlayerJingYuLevel TbPlayerJingYuLevel {get; }
+    public demo.TbPlayerSanCorruptLevel TbPlayerSanCorruptLevel {get; }
     public demo.TbWantedLevelInfo TbWantedLevelInfo {get; }
     public demo.TbWantedBehaveInfo TbWantedBehaveInfo {get; }
     public demo.TbTalentNode TbTalentNode {get; }
@@ -79,6 +81,8 @@ public partial class Tables
         TbFishingSpot = new demo.TbFishingSpot(loader("demo_tbfishingspot"));
         TbFishingSpotFish = new demo.TbFishingSpotFish(loader("demo_tbfishingspotfish"));
         TbPlayerDesireLevel = new demo.TbPlayerDesireLevel(loader("demo_tbplayerdesirelevel"));
+        TbPlayerJingYuLevel = new demo.TbPlayerJingYuLevel(loader("demo_tbplayerjingyulevel"));
+        TbPlayerSanCorruptLevel = new demo.TbPlayerSanCorruptLevel(loader("demo_tbplayersancorruptlevel"));
         TbWantedLevelInfo = new demo.TbWantedLevelInfo(loader("demo_tbwantedlevelinfo"));
         TbWantedBehaveInfo = new demo.TbWantedBehaveInfo(loader("demo_tbwantedbehaveinfo"));
         TbTalentNode = new demo.TbTalentNode(loader("demo_tbtalentnode"));
@@ -122,6 +126,8 @@ public partial class Tables
         TbFishingSpot.ResolveRef(this);
         TbFishingSpotFish.ResolveRef(this);
         TbPlayerDesireLevel.ResolveRef(this);
+        TbPlayerJingYuLevel.ResolveRef(this);
+        TbPlayerSanCorruptLevel.ResolveRef(this);
         TbWantedLevelInfo.ResolveRef(this);
         TbWantedBehaveInfo.ResolveRef(this);
         TbTalentNode.ResolveRef(this);

@@ -28,7 +28,7 @@
   },
   {
     "level": 4,
-    "desire_line": 100,
+    "desire_line": 999,
     "aura_h_effect": 3,
     "aura_max_range": 2,
     "spirit_monster_total_budget": 9,

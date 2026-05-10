@@ -202,7 +202,7 @@ namespace My.Map
         private Vector2 _magicClothesLastWearSamplePos;
 
         public int DesireLevel { get; private set; }
-
+        public int SanCorruptLevel { get; private set; }
         public PlayerLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
 
@@ -625,6 +625,7 @@ namespace My.Map
 
 
             RefreshPlayerDesireLevel();
+            RefreshPlayerSanCorruptLevel();
 
             TickPlayerGcYishang();
 
@@ -695,14 +696,37 @@ namespace My.Map
 
             if (jingyuLevel > 0)
             {
-                ApplyResourceChange(AttrIdConsts.PlayerJingYu, -500, false, EDmgFlag.None, null);
-                ApplyResourceChange(AttrIdConsts.HP, 100, false, EDmgFlag.None, null);
+                var jingyuCfg = CfgMgr.Cfgs.TbPlayerJingYuLevel.GetOrDefault(jingyuLevel);
+                if(jingyuCfg != null)
+                {
+                    if(jingyuCfg.CostPerSec > 0)
+                    {
+                        ApplyResourceChange(AttrIdConsts.PlayerJingYu, -(long)(jingyuCfg.CostPerSec * interval * 1000), false, EDmgFlag.None, null);
+                    }
+
+                    if(jingyuCfg.HpPerSec > 0)
+                    {
+                        ApplyResourceChange(AttrIdConsts.HP, (long)(jingyuCfg.HpPerSec * interval * 1000), false, EDmgFlag.None, null);
+                    }
+
+                    if(jingyuCfg.HungerPerSec > 0)
+                    {
+                        ApplyResourceChange(AttrIdConsts.PlayerHunger, (long)(jingyuCfg.HungerPerSec * interval * 1000), false, EDmgFlag.None, null);
+
+                    }
+
+                    if(jingyuCfg.EstrusUp > 0)
+                    {
+                        ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, (long)(jingyuCfg.EstrusUp * interval * 1000), false, EDmgFlag.None, null);
+
+                    }
+                }
+
             }
 
             // 身上有jingyu时 需要累计发情进度
             if(jingyuLevel > 0)
             {
-                ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 1000, false, EDmgFlag.None, null);
             }
         }
 
@@ -714,19 +738,37 @@ namespace My.Map
             DesireLevel = 0;
             var cfgs = CfgMgr.Cfgs.TbPlayerDesireLevel.DataList;
 
-            var EstrusVal = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
+            var estrusVal = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
 
             for (int i = 0; i < cfgs.Count; i++)
             {
                 int desireLine = cfgs[i].DesireLine;
-                if (EstrusVal >= desireLine * 1000)
+                if (estrusVal < desireLine * 1000)
                 {
-                    DesireLevel = cfgs[i].Level;
+                    break;
+                }
+                DesireLevel = cfgs[i].Level - 1;
+            }
+        }
+
+        private void RefreshPlayerSanCorruptLevel()
+        {
+            SanCorruptLevel = 0;
+            var cfgs = CfgMgr.Cfgs.TbPlayerSanCorruptLevel.DataList;
+
+            var sanVal = GetAttr(AttrIdConsts.PlayerSanity);
+
+            for (int i = 0; i < cfgs.Count; i++)
+            {
+                int sanLine = cfgs[i].SanLine;
+                if (sanVal >= sanLine * 1000)
+                {
+                    SanCorruptLevel = cfgs[i].Level;
                     return;
                 }
             }
 
-            DesireLevel = cfgs[cfgs.Count - 1].Level;
+            SanCorruptLevel = cfgs[cfgs.Count - 1].Level;
         }
 
         /// <summary>
@@ -735,7 +777,7 @@ namespace My.Map
         /// <returns></returns>
         private int GetBasicEstrusByDesireLevel()
         {
-            var desireCfg = CfgMgr.Cfgs.TbPlayerDesireLevel.GetOrDefault(DesireLevel);
+            var desireCfg = CfgMgr.Cfgs.TbPlayerSanCorruptLevel.GetOrDefault(SanCorruptLevel);
             if(desireCfg == null)
             {
                 return 0;
