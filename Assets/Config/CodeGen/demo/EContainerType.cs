@@ -11,15 +11,13 @@
 
 namespace cfg.demo
 { 
-    public enum EItemStackType
+    public enum EContainerType
     {
-        NoStack = 0,
-        Size1 = 1,
-        Size2 = 2,
-        Size3 = 3,
-        Size4 = 4,
-        Custom = 5,
-        NoLimit = 6,
+        Inventory = 0,
+        LootPoint = 1,
+        SpecialInventory = 2,
+        Shop = 3,
+        Warehouse = 4,
     }
 
 } 

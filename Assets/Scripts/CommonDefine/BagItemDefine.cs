@@ -242,15 +242,13 @@ namespace My
         ItemStack GetItemByIdx(int idx);
     }
 
+    // 须与 cfg.demo.EContainerType 数值一致（Inventory=0 … Warehouse=4）
     public enum EContainerType
     {
         Inventory,
         LootPoint,
         SpecialInventory,
         Shop,
-        /// <summary>
-        /// ????????? Inventory ???????????????
-        /// </summary>
         Warehouse,
     }
 

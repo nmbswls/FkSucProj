@@ -714,12 +714,12 @@ namespace My.Map
             DesireLevel = 0;
             var cfgs = CfgMgr.Cfgs.TbPlayerDesireLevel.DataList;
 
-            var sanity = GetAttr(AttrIdConsts.PlayerSanity);
+            var EstrusVal = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
 
             for (int i = 0; i < cfgs.Count; i++)
             {
-                int sanLine = cfgs[i].SanLine;
-                if (sanity >= sanLine * 1000)
+                int desireLine = cfgs[i].DesireLine;
+                if (EstrusVal >= desireLine * 1000)
                 {
                     DesireLevel = cfgs[i].Level;
                     return;

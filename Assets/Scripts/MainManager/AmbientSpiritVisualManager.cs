@@ -50,6 +50,9 @@ namespace My.Map.View
         private const float WanderMin = 1.25f;
         private const float WanderMax = 2.75f;
 
+        // 徘徊层内半径：仅由 max 推导，避免与横扫/矩形策略叠加重复配置 min
+        private const float WanderInnerRadiusFromMax = 0.42f;
+
         private const float HiddenMin = 0.22f;
         private const float HiddenMax = 0.92f;
 
@@ -170,8 +173,8 @@ namespace My.Map.View
 
             Vector2 anchor = _glm.playerLogicEntity.Pos;
             float drift = Mathf.Max(0.25f, desireCfg.AmbientSpiritDriftSpeed);
-            float rMin = Mathf.Max(0.1f, Mathf.Min(desireCfg.AmbientSpiritRadiusMin, desireCfg.AmbientSpiritRadiusMax));
-            float rMax = Mathf.Max(rMin + 0.1f, Mathf.Max(desireCfg.AmbientSpiritRadiusMin, desireCfg.AmbientSpiritRadiusMax));
+            float rMax = Mathf.Max(0.2f, desireCfg.AmbientSpiritRadiusMax);
+            float rMin = Mathf.Max(0.1f, rMax * WanderInnerRadiusFromMax);
 
             float lt = LogicTime.time;
             foreach (var e in _entries)
@@ -246,7 +249,13 @@ namespace My.Map.View
             }
         }
 
+        private static void ApplyWorldPos(AmbientSpiritEntry e, Vector2 posWorld)
         {
+            if (e?.Instance == null)
+            {
+                return;
+            }
+
             var tr = e.Instance.transform;
             tr.position = new Vector3(posWorld.x, posWorld.y, tr.position.z);
         }
@@ -481,7 +490,7 @@ namespace My.Map.View
             }
 
             return
-                $"{desireLevel}|{c.AmbientSpiritCount}|{sig}|{c.AmbientSpiritRadiusMin:F2}|{c.AmbientSpiritRadiusMax:F2}|{c.AmbientSpiritDriftSpeed:F2}";
+                $"{desireLevel}|{c.AmbientSpiritCount}|{sig}|{c.AmbientSpiritRadiusMax:F2}|{c.AmbientSpiritDriftSpeed:F2}";
         }
 
         private void Rebuild(PlayerDesireLevel desireCfg)

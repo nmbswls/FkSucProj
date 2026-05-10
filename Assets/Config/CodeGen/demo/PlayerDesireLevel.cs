@@ -19,16 +19,11 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     public PlayerDesireLevel(JSONNode _buf) 
     {
         { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
-        { if(!_buf["san_line"].IsNumber) { throw new SerializationException(); }  SanLine = _buf["san_line"]; }
-        { if(!_buf["basic_estrus"].IsNumber) { throw new SerializationException(); }  BasicEstrus = _buf["basic_estrus"]; }
-        { if(!_buf["aura_base_effect"].IsNumber) { throw new SerializationException(); }  AuraBaseEffect = _buf["aura_base_effect"]; }
+        { if(!_buf["desire_line"].IsNumber) { throw new SerializationException(); }  DesireLine = _buf["desire_line"]; }
+        { if(!_buf["aura_h_effect"].IsNumber) { throw new SerializationException(); }  AuraHEffect = _buf["aura_h_effect"]; }
         { if(!_buf["aura_max_range"].IsNumber) { throw new SerializationException(); }  AuraMaxRange = _buf["aura_max_range"]; }
         { if(!_buf["spirit_monster_total_budget"].IsNumber) { throw new SerializationException(); }  SpiritMonsterTotalBudget = _buf["spirit_monster_total_budget"]; }
         { if(!_buf["spirit_monster_refresh_interval_sec"].IsNumber) { throw new SerializationException(); }  SpiritMonsterRefreshIntervalSec = _buf["spirit_monster_refresh_interval_sec"]; }
-        { if(!_buf["ambient_spirit_count"].IsNumber) { throw new SerializationException(); }  AmbientSpiritCount = _buf["ambient_spirit_count"]; }
-        { if(!_buf["ambient_spirit_radius_min"].IsNumber) { throw new SerializationException(); }  AmbientSpiritRadiusMin = _buf["ambient_spirit_radius_min"]; }
-        { if(!_buf["ambient_spirit_radius_max"].IsNumber) { throw new SerializationException(); }  AmbientSpiritRadiusMax = _buf["ambient_spirit_radius_max"]; }
-        { if(!_buf["ambient_spirit_prefab"].IsString) { throw new SerializationException(); }  AmbientSpiritPrefab = _buf["ambient_spirit_prefab"]; }
         { if(!_buf["ambient_spirit_drift_speed"].IsNumber) { throw new SerializationException(); }  AmbientSpiritDriftSpeed = _buf["ambient_spirit_drift_speed"]; }
     }
 
@@ -44,15 +39,11 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     /// <summary>
     /// 理智线
     /// </summary>
-    public int SanLine;
+    public int DesireLine;
     /// <summary>
-    /// 基准发情
+    /// 光环值
     /// </summary>
-    public int BasicEstrus;
-    /// <summary>
-    /// 每秒传播
-    /// </summary>
-    public float AuraBaseEffect;
+    public float AuraHEffect;
     /// <summary>
     /// 每秒传播
     /// </summary>
@@ -65,22 +56,6 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     /// 按预算补全影怪的刷新间隔(秒)
     /// </summary>
     public float SpiritMonsterRefreshIntervalSec;
-    /// <summary>
-    /// 后场氛围假影怪数量
-    /// </summary>
-    public int AmbientSpiritCount;
-    /// <summary>
-    /// 后场环绕最小半径
-    /// </summary>
-    public float AmbientSpiritRadiusMin;
-    /// <summary>
-    /// 后场环绕最大半径
-    /// </summary>
-    public float AmbientSpiritRadiusMax;
-    /// <summary>
-    /// Resources路径(无扩展名), 空则不生成
-    /// </summary>
-    public string AmbientSpiritPrefab;
     /// <summary>
     /// 后场漂移速度系数
     /// </summary>
@@ -97,16 +72,11 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     {
         return "{ "
         + "level:" + Level + ","
-        + "sanLine:" + SanLine + ","
-        + "basicEstrus:" + BasicEstrus + ","
-        + "auraBaseEffect:" + AuraBaseEffect + ","
+        + "desireLine:" + DesireLine + ","
+        + "auraHEffect:" + AuraHEffect + ","
         + "auraMaxRange:" + AuraMaxRange + ","
         + "spiritMonsterTotalBudget:" + SpiritMonsterTotalBudget + ","
         + "spiritMonsterRefreshIntervalSec:" + SpiritMonsterRefreshIntervalSec + ","
-        + "ambientSpiritCount:" + AmbientSpiritCount + ","
-        + "ambientSpiritRadiusMin:" + AmbientSpiritRadiusMin + ","
-        + "ambientSpiritRadiusMax:" + AmbientSpiritRadiusMax + ","
-        + "ambientSpiritPrefab:" + AmbientSpiritPrefab + ","
         + "ambientSpiritDriftSpeed:" + AmbientSpiritDriftSpeed + ","
         + "}";
     }

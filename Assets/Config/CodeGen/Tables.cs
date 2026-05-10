@@ -50,6 +50,8 @@ public partial class Tables
     public demo.TbMapWalkerDesireCrystalQuota TbMapWalkerDesireCrystalQuota {get; }
     public demo.TbNamedNpcDesireCrystal TbNamedNpcDesireCrystal {get; }
     public demo.TbSpiritMonsterTypeBudget TbSpiritMonsterTypeBudget {get; }
+    public demo.TbContainerItemStackOverride TbContainerItemStackOverride {get; }
+    public demo.TbContainerStackTagRule TbContainerStackTagRule {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -89,6 +91,8 @@ public partial class Tables
         TbMapWalkerDesireCrystalQuota = new demo.TbMapWalkerDesireCrystalQuota(loader("demo_tbmapwalkerdesirecrystalquota"));
         TbNamedNpcDesireCrystal = new demo.TbNamedNpcDesireCrystal(loader("demo_tbnamednpcdesirecrystal"));
         TbSpiritMonsterTypeBudget = new demo.TbSpiritMonsterTypeBudget(loader("demo_tbspiritmonstertypebudget"));
+        TbContainerItemStackOverride = new demo.TbContainerItemStackOverride(loader("demo_tbcontaineritemstackoverride"));
+        TbContainerStackTagRule = new demo.TbContainerStackTagRule(loader("demo_tbcontainerstacktagrule"));
         ResolveRef();
     }
     
@@ -130,6 +134,8 @@ public partial class Tables
         TbMapWalkerDesireCrystalQuota.ResolveRef(this);
         TbNamedNpcDesireCrystal.ResolveRef(this);
         TbSpiritMonsterTypeBudget.ResolveRef(this);
+        TbContainerItemStackOverride.ResolveRef(this);
+        TbContainerStackTagRule.ResolveRef(this);
     }
 }
 

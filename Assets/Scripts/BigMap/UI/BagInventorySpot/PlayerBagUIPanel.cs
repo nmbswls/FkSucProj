@@ -342,23 +342,24 @@ namespace My.UI.Bag
 
             //int slotIndex = row * Columns + column;
             var specBag = BindingInventory.GetBagById((int)CurrExpandBagId);
+            var speCt = specBag.StackContainerType;
             if (itemIndex < specBag.BasicCapacity)
             {
                 var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, (int)CurrExpandBagId, null);
+                cell.Bind(stack, itemIndex, speCt, (int)CurrExpandBagId, null);
             }
             // 扩展栏动态槽位
             else if(itemIndex < specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, (int)CurrExpandBagId, null, AnyContainerItemCell.EStyleType.Red);
+                cell.Bind(stack, itemIndex, speCt, (int)CurrExpandBagId, null, AnyContainerItemCell.EStyleType.Red);
             }
             else if(itemIndex == specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 item.gameObject.SetActive(true);
-                cell.Bind(null, itemIndex, EContainerType.SpecialInventory, (int)CurrExpandBagId, null, AnyContainerItemCell.EStyleType.AddIcon);
+                cell.Bind(null, itemIndex, speCt, (int)CurrExpandBagId, null, AnyContainerItemCell.EStyleType.AddIcon);
             }
             else
             {

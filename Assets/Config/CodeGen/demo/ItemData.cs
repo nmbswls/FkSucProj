@@ -21,11 +21,9 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["item_id"].IsString) { throw new SerializationException(); }  ItemId = _buf["item_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
         { if(!_buf["item_type"].IsNumber) { throw new SerializationException(); }  ItemType = (demo.EItemType)_buf["item_type"].AsInt; }
-        { if(!_buf["stack_type"].IsNumber) { throw new SerializationException(); }  StackType = (demo.EItemStackType)_buf["stack_type"].AsInt; }
+        { if(!_buf["stackable"].IsBoolean) { throw new SerializationException(); }  Stackable = _buf["stackable"]; }
         { if(!_buf["stack_count"].IsNumber) { throw new SerializationException(); }  StackCount = _buf["stack_count"]; }
-        { if(!_buf["max_stack_inventory"].IsNumber) { throw new SerializationException(); }  MaxStackInventory = _buf["max_stack_inventory"]; }
-        { if(!_buf["max_stack_shop"].IsNumber) { throw new SerializationException(); }  MaxStackShop = _buf["max_stack_shop"]; }
-        { if(!_buf["max_stack_loot"].IsNumber) { throw new SerializationException(); }  MaxStackLoot = _buf["max_stack_loot"]; }
+        { var __json0 = _buf["stack_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } StackTags = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  StackTags.Add(__v0); }   }
         { if(!_buf["sprite_name"].IsString) { throw new SerializationException(); }  SpriteName = _buf["sprite_name"]; }
         { if(!_buf["can_drop"].IsBoolean) { throw new SerializationException(); }  CanDrop = _buf["can_drop"]; }
         { if(!_buf["rare_tier"].IsNumber) { throw new SerializationException(); }  RareTier = _buf["rare_tier"]; }
@@ -58,25 +56,17 @@ public sealed partial class ItemData : Luban.BeanBase
     /// </summary>
     public demo.EItemType ItemType;
     /// <summary>
-    /// stack_type
+    /// stackable
     /// </summary>
-    public demo.EItemStackType StackType;
+    public bool Stackable;
     /// <summary>
     /// stack_count
     /// </summary>
     public int StackCount;
     /// <summary>
-    /// max_stack_inventory
+    /// stack_tags
     /// </summary>
-    public int MaxStackInventory;
-    /// <summary>
-    /// max_stack_shop
-    /// </summary>
-    public int MaxStackShop;
-    /// <summary>
-    /// max_stack_loot
-    /// </summary>
-    public int MaxStackLoot;
+    public System.Collections.Generic.List<string> StackTags;
     /// <summary>
     /// sprite_name
     /// </summary>
@@ -139,11 +129,9 @@ public sealed partial class ItemData : Luban.BeanBase
         + "itemId:" + ItemId + ","
         + "displayName:" + DisplayName + ","
         + "itemType:" + ItemType + ","
-        + "stackType:" + StackType + ","
+        + "stackable:" + Stackable + ","
         + "stackCount:" + StackCount + ","
-        + "maxStackInventory:" + MaxStackInventory + ","
-        + "maxStackShop:" + MaxStackShop + ","
-        + "maxStackLoot:" + MaxStackLoot + ","
+        + "stackTags:" + Luban.StringUtil.CollectionToString(StackTags) + ","
         + "spriteName:" + SpriteName + ","
         + "canDrop:" + CanDrop + ","
         + "rareTier:" + RareTier + ","

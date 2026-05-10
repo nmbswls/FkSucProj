@@ -1,6 +1,7 @@
 <module name="demo">
 
-    <!-- 道具主表用枚举；EItemUseType 各类型参数见 item.xlsx 的 item_use 表头注释与 schema 末尾说明 -->
+    <!-- 道具主表用枚举；可堆叠用 stackable + stack_count（0 表示走默认基数 10；货币等大堆叠填 stack_count=999999）；堆叠 tag 见 stack_tags；容器规则见 container_stack.xlsx -->
+    <!-- EItemUseType 各类型参数见 item.xlsx 的 item_use 表头注释与 schema 末尾说明 -->
     <enum name="EItemType">
         <var name="Normal" value="0"/>
         <var name="Currency" value="1"/>
@@ -9,14 +10,13 @@
         <var name="Insertion" value="4"/>
     </enum>
 
-    <enum name="EItemStackType">
-        <var name="NoStack" value="0"/>
-        <var name="Size1" value="1"/>
-        <var name="Size2" value="2"/>
-        <var name="Size3" value="3"/>
-        <var name="Size4" value="4"/>
-        <var name="Custom" value="5"/>
-        <var name="NoLimit" value="6"/>
+    <!-- 与 My.EContainerType 数值必须一致 -->
+    <enum name="EContainerType">
+        <var name="Inventory" value="0"/>
+        <var name="LootPoint" value="1"/>
+        <var name="SpecialInventory" value="2"/>
+        <var name="Shop" value="3"/>
+        <var name="Warehouse" value="4"/>
     </enum>
 
     <enum name="EItemRevealEffectType">
@@ -98,6 +98,6 @@
 
     <!-- 欲望结晶：TbDesireCrystalDef / TbMapDesireCrystalBudget / TbMapWalkerDesireCrystalQuota / TbNamedNpcDesireCrystal 在 Config/Datas/desire_crystal.xlsx；TbUnitNpc 字段 desire_crystal_random_attachable 在 unit_npc.xlsx；生成脚本 gen_desire_crystal_tables.py -->
 
-    <!-- 影怪：player_desire_level 含后场数量/半径/drift（ambient_spirit_prefab 已由代码废弃，后场外观走 spirit_monster_budget + TbUnitNpc.prefab_name → Resources/SpiritMonsterAmbient）；实战预算与同文件 spirit_monster_budget；__tables__ 挂载见 gen_spirit_monster_budget_tables.py -->
+    <!-- 影怪：player_desire_level 含后场数量、ambient_spirit_radius_max、drift（后场徘徊内半径由代码按 max 比例推导；ambient_spirit_prefab 已废弃；外观走 spirit_monster_budget + TbUnitNpc.prefab_name → Resources/SpiritMonsterAmbient）；实战预算与同文件 spirit_monster_budget；__tables__ 挂载见 gen_spirit_monster_budget_tables.py -->
 
 </module>

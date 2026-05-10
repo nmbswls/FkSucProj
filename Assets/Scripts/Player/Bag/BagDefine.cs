@@ -1,5 +1,6 @@
 
 
+using My;
 using My.Config;
 using System.Collections.Generic;
 using System;
@@ -14,6 +15,7 @@ namespace My.Player
     public class PlayerBag : IItemContainer
     {
         public EPlayerBagId BagId;
+        public EContainerType StackContainerType { get; private set; }
         public int BasicCapacity = 30;
         public int MaxExtraCapacity = 10;
 
@@ -30,17 +32,22 @@ namespace My.Player
             return (int)bagId == 0 ? EBagStorageLayout.Grid : EBagStorageLayout.Compact;
         }
 
+        public static EContainerType ResolveStackContainerType(EPlayerBagId bagId)
+        {
+            switch (bagId)
+            {
+                case EPlayerBagId.Storage:
+                    return EContainerType.Warehouse;
+                case EPlayerBagId.Default:
+                    return EContainerType.Inventory;
+                default:
+                    return EContainerType.SpecialInventory;
+            }
+        }
+
         public long GetMaxStack(string itemId)
         {
-            if (BagId == 0)
-            {
-                return ItemCatalog.GetMaxStackByType(itemId, EContainerType.Inventory);
-            }
-            if (BagId == EPlayerBagId.Storage)
-            {
-                return ItemCatalog.GetMaxStackByType(itemId, EContainerType.Warehouse);
-            }
-            return ItemCatalog.GetMaxStackByType(itemId, EContainerType.SpecialInventory);
+            return ItemCatalog.GetMaxStackByType(itemId, StackContainerType);
         }
 
         public long GetItemCount(string itemId)
@@ -167,6 +174,7 @@ namespace My.Player
         public void InitBag(EPlayerBagId bagId, int capacity, int extraCapacity)
         {
             this.BagId = bagId;
+            StackContainerType = ResolveStackContainerType(bagId);
             this.BasicCapacity = capacity;
             this.MaxExtraCapacity = extraCapacity;
             StorageLayout = ResolveStorageLayout(bagId);

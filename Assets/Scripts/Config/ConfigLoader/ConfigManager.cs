@@ -64,6 +64,7 @@ namespace My.Config
             }
 
             ItemCatalog.RebuildItemCaches();
+            ItemStackPolicy.RebuildCaches();
         }
     }
 }

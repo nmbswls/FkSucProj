@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using cfg.demo;
+using My;
 using My.Map;
 using My.Player;
-using My.Player.Bag;
 using UnityEngine;
-using static My.UI.AnyContainerItemCell;
 
 namespace My.Config
 {
@@ -147,54 +146,52 @@ namespace My.Config
                 return 0;
             }
 
-            if (containerMode == EContainerType.Inventory || containerMode == EContainerType.SpecialInventory
-                || containerMode == EContainerType.Warehouse)
+            const int quasiUnlimitedThreshold = 999_000;
+
+            if (!def.Stackable)
             {
-                if (def.MaxStackInventory > 0)
+                if (ItemStackPolicy.TryGetAbsoluteOverride(containerMode, itemId, out var absNs))
                 {
-                    return def.MaxStackInventory;
+                    return Mathf.Max(1, absNs);
                 }
-            }
-            else if (containerMode == EContainerType.Shop)
-            {
-                if (def.MaxStackShop > 0)
-                {
-                    return def.MaxStackShop;
-                }
-            }
-            else if (containerMode == EContainerType.LootPoint)
-            {
-                if (def.MaxStackLoot > 0)
-                {
-                    return def.MaxStackLoot;
-                }
+
+                return 1;
             }
 
-            if (def.StackType == EItemStackType.NoStack)
+            var intrinsic = GetIntrinsicBaseMaxStack(def);
+
+            if (ItemStackPolicy.TryGetAbsoluteOverride(containerMode, itemId, out var abs))
+            {
+                return Mathf.Max(1, abs);
+            }
+
+            var ratio = ItemStackPolicy.ResolveStackRatio(containerMode, def);
+            var scaled = (long)System.Math.Floor(intrinsic * (double)ratio);
+            var result = (int)System.Math.Max(1L, scaled);
+
+            if (def.StackCount >= quasiUnlimitedThreshold)
+            {
+                return (int)System.Math.Min(999_999L, result);
+            }
+
+            return result;
+        }
+
+        // 默认堆叠基数：可堆叠且 stack_count>0 用 stack_count；否则 10。货币等大堆叠在表内填 stack_count=999999
+
+        static int GetIntrinsicBaseMaxStack(ItemData def)
+        {
+            if (!def.Stackable)
             {
                 return 1;
             }
 
-            if (def.StackType == EItemStackType.NoLimit)
+            if (def.StackCount > 0)
             {
-                return 999_999;
+                return def.StackCount;
             }
 
-            if (def.StackType == EItemStackType.Size1)
-            {
-                if (containerMode == EContainerType.Inventory || containerMode == EContainerType.SpecialInventory
-                    || containerMode == EContainerType.Warehouse)
-                {
-                    return 10;
-                }
-
-                if (containerMode == EContainerType.Shop)
-                {
-                    return 5;
-                }
-            }
-
-            return 5;
+            return 10;
         }
 
         public static Sprite GetIcon(string id)
