@@ -78,6 +78,9 @@ namespace My.Map
                 case AttrIdConsts.UnitHShieldMax:
                 case AttrIdConsts.DamageXiXue:
 
+                case AttrIdConsts.Special_YiShang:
+                case AttrIdConsts.HValYiShang:
+
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:

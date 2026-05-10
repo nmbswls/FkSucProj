@@ -2670,6 +2670,47 @@ namespace My.Map.Entity
                 Priority = 999,
                 Duration = 5.0f,
                 ThrowMainBuffId = "force_zha_target_buff",
+                OnQteBreakFreeEffects = new List<MapFightEffectCfg>
+                {
+                    new MapFightEffectEasyEffect() { EffectText = "\u6349\u6297\u5931\u8d25" },
+                },
+                ThrowTimelineEvents = new List<ThrowTimelineEventSpec>
+                {
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 0f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowQtePromptCfg
+                            {
+                                QteId = "force_dash_push_down_throw",
+                                PromptText = "\u6291\u5236\u4e2d\uff01\u8fde\u6309 \u7a7a\u683c \u5b8c\u6210\u69a8\u53d6",
+                                ResultVarKey = "ThrowQte",
+                                TimeoutSeconds = 2.4f,
+                            },
+                        },
+                    },
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 0f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowQteBranchCfg
+                            {
+                                ResultVarKey = "ThrowQte",
+                                SuccessValue = "1",
+                                SuccessBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectDeepZhaquCfg(),
+                                },
+                                FailBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectThrowBreakFreeCfg(),
+                                },
+                            },
+                        },
+                    },
+                },
             };
 
             var exec2Effect = new MapFightEffectEasyEffect()

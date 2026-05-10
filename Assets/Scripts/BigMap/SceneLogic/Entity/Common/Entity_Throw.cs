@@ -61,6 +61,7 @@ namespace My.Map.Entity
                     continue;
                 }
 
+                TickThrowQteInput(ctx);
                 ctx.TryDispatchTimelineEvents(LogicTime.time);
 
                 if (ctx.Duration >= 0 && LogicTime.time > ctx.StartTime + ctx.Duration)
@@ -77,6 +78,60 @@ namespace My.Map.Entity
                 {
                 }
             }
+        }
+
+        void TickThrowQteInput(ThrowContext ctx)
+        {
+            if (ctx.ActiveQte == null || ctx.ActiveQte.Resolved)
+            {
+                return;
+            }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
+            {
+                ResolveThrowQteSession(ctx, true);
+                return;
+            }
+
+            if (LogicTime.time >= ctx.ActiveQte.TimeoutAtLogicTime)
+            {
+                ResolveThrowQteSession(ctx, false);
+            }
+        }
+
+        static void ResolveThrowQteSession(ThrowContext ctx, bool success)
+        {
+            var q = ctx.ActiveQte;
+            if (q == null || q.Resolved)
+            {
+                return;
+            }
+
+            q.Resolved = true;
+            ctx.RunningVars[q.ResultVarKey] = success ? q.SuccessValue : q.FailValue;
+            My.UI.PlayerHeadQteHintView.Hide();
+            ctx.ActiveQte = null;
+        }
+
+        public bool TryGetThrowContextByTargetId(long targetId, out ThrowContext ctx)
+        {
+            if (_targetToContextId.TryGetValue(targetId, out var ctxId) && _contextById.TryGetValue(ctxId, out ctx))
+            {
+                return true;
+            }
+
+            ctx = null;
+            return false;
+        }
+
+        public void EndThrowAsQteBreakFree(ThrowContext ctx)
+        {
+            if (ctx == null || !_contextById.ContainsKey(ctx.CtxId))
+            {
+                return;
+            }
+
+            CleanOneThrowContext(ctx, ThrowEndReason.QteBreakFree);
         }
 
         public bool TryLaunchThrow(IThrowLauncher launcher, IThrowTarget target, MapAbilityEffectThrowStartCfg cfg,
@@ -139,6 +194,10 @@ namespace My.Map.Entity
             TrackBuff(newCtx, logicManager.globalBuffManager.AddBuff(target.Id, "throwing"));
 
             if (legacyBuffOnly)
+            {
+                TrackBuff(newCtx, logicManager.globalBuffManager.AddBuff(target.Id, cfg.ThrowMainBuffId, casterId: launcher.Id));
+            }
+            else if (hasTimeline && !string.IsNullOrEmpty(cfg.ThrowMainBuffId))
             {
                 TrackBuff(newCtx, logicManager.globalBuffManager.AddBuff(target.Id, cfg.ThrowMainBuffId, casterId: launcher.Id));
             }
@@ -210,6 +269,9 @@ namespace My.Map.Entity
 
         void CleanOneThrowContext(ThrowContext ctx, ThrowEndReason reason)
         {
+            ctx.ActiveQte = null;
+            My.UI.PlayerHeadQteHintView.Hide();
+
             var launcher = ctx.Launcher;
             var victim = ctx.Target;
 

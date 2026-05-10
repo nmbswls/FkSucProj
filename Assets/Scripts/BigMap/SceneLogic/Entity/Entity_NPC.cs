@@ -221,6 +221,11 @@ namespace My.Map
                 LogicManager.globalBuffManager.RequestAddBuff(this.Id, "not_fight_target");
             }
 
+            if(NpcConfig.MoveStyle != 1)
+            {
+                MotorSystem.IgnoreGround = true;
+            }
+
             //InteractComp = new(this);
 
             //InteractComp.RefreshInteractInfo();

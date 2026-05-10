@@ -8,15 +8,15 @@ using UnityEngine;
 
 namespace My.Map.View
 {
-        // 后场氛围影怪：徘徊/横扫范围由欲望等级、理智与 player_desire_level 的 Aura 衍生，不再读表 AmbientSpiritRadiusMax。
+    // 后场氛围影怪：仅在「刷新出现」瞬时用玩家附近坐标生成世界锚点，之后与普通单位一样按自有世界坐标运动；不出现快速掠过屏幕。
     public sealed class AmbientSpiritVisualManager
     {
         private const string AmbientVisualResourcesRoot = "SpiritMonsterAmbient";
 
         private enum AmbientSpiritPhase
         {
-            Wander,
-            Sweep,
+            IdleIntro,
+            WalkOut,
             Hidden,
         }
 
@@ -29,15 +29,15 @@ namespace My.Map.View
             public AmbientSpiritPhase Phase;
             public float PhaseEndLogicTime;
 
-            public Vector2 BaseOffsetRel;
+            // 出现当帧写入的世界坐标锚点（不再每帧跟随玩家）
+            public Vector2 SpawnWorld;
             public Vector2 WanderSeed;
-
             public float WanderStaggerNoise;
 
-            public Vector2 SweepStartWorld;
-            public Vector2 SweepEndWorld;
-            public float SweepStartLogicTime;
-            public float SweepDuration;
+            public Vector2 MoveFromWorld;
+            public Vector2 DepartTargetWorld;
+            public float MoveStartLogicTime;
+            public float MoveDuration;
         }
 
         private readonly GameLogicManager _glm;
@@ -47,10 +47,14 @@ namespace My.Map.View
         private readonly List<SpiritMonsterTypeBudget> _eligibleBudgetRows = new();
         private string _lastAmbientRebuildKey = string.Empty;
 
-        private const float WanderMin = 1.25f;
-        private const float WanderMax = 2.75f;
+        private const float IdleAnimMin = 0.85f;
+        private const float IdleAnimMax = 2.15f;
 
-        // 徘徊内圈 = 外环 * 比例；外环由 ResolveAmbientRingRadiusMax 从等级/理智/光环配置推导
+        // 离场位移：相对当前世界位置的一段步行距离（世界坐标，与玩家后续移动无关）
+        private const float DepartDistMin = 2.1f;
+        private const float DepartDistMax = 6.6f;
+
+        // 徘徊内圈 = 外环 * 比例；外环由 Tick 内 rMax 推导（与理智等无关的占位，保持原结构）
         private const float WanderInnerRadiusFromMax = 0.42f;
 
         private const float HiddenMin = 0.22f;
@@ -173,11 +177,6 @@ namespace My.Map.View
 
             Vector2 anchor = _glm.playerLogicEntity.Pos;
             float drift = Mathf.Max(0.25f, sanCorruptCfg.AmbientSpiritDriftSpeed);
-            float san01 = 1f;
-            if (_glm.playerLogicEntity != null)
-            {
-                san01 = Mathf.Clamp01(_glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSanity) / 100_000f);
-            }
 
             float rMax = 4.0f;
             float rMin = Mathf.Max(0.1f, rMax * WanderInnerRadiusFromMax);
@@ -207,11 +206,10 @@ namespace My.Map.View
 
                     break;
 
-                case AmbientSpiritPhase.Wander:
+                case AmbientSpiritPhase.IdleIntro:
                     {
-                        float wAmp = Mathf.Lerp(0.12f, 0.4f, Mathf.Clamp01(drift / 4f));
-
-                        float t = LogicTime.time * (1.05f + 0.42f * drift) + e.WanderStaggerNoise;
+                        float wAmp = Mathf.Lerp(0.06f, 0.14f, Mathf.Clamp01(drift / 4f));
+                        float t = LogicTime.time * (1.05f + 0.35f * drift) + e.WanderStaggerNoise;
 
                         Vector2 jig = new(
                             Mathf.Sin(t * 2.05f + e.WanderSeed.x) +
@@ -219,31 +217,30 @@ namespace My.Map.View
                             Mathf.Cos(t * 1.91f + e.WanderSeed.y) +
                             Mathf.Sin(t * 1.57f + e.WanderSeed.x * 0.33f));
 
-                        jig *= 0.225f * wAmp;
+                        jig *= 0.12f * wAmp;
 
-                        ApplyWorldPos(e, anchor + e.BaseOffsetRel + jig);
-                        SetAnimatorGhostSpeed(e.CachedAnimator, Mathf.Max(0.22f, drift * 0.48f));
+                        ApplyWorldPos(e, e.SpawnWorld + jig);
+                        SetAnimatorGhostSpeed(e.CachedAnimator, Mathf.Clamp(0.2f + drift * 0.22f, 0.18f, 0.62f));
 
                         if (logicTimeNow >= e.PhaseEndLogicTime)
                         {
-                            EnterHidden(e, logicTimeNow);
+                            BeginDepartWalk(e, logicTimeNow, drift);
                         }
 
                         break;
                     }
 
-                case AmbientSpiritPhase.Sweep:
+                case AmbientSpiritPhase.WalkOut:
                     {
-                        float u = e.SweepDuration <= 1e-5f
+                        float u = e.MoveDuration <= 1e-5f
                             ? 1f
-                            : Mathf.Clamp01((logicTimeNow - e.SweepStartLogicTime) / e.SweepDuration);
+                            : Mathf.Clamp01((logicTimeNow - e.MoveStartLogicTime) / e.MoveDuration);
 
-                        // 正交横穿：线性插值更接近「一道影子闪过」
-                        Vector2 pos = Vector2.Lerp(e.SweepStartWorld, e.SweepEndWorld, u);
+                        Vector2 pos = Vector2.Lerp(e.MoveFromWorld, e.DepartTargetWorld, u);
 
                         ApplyWorldPos(e, pos);
 
-                        SetAnimatorGhostSpeed(e.CachedAnimator, Mathf.Max(1.25f, drift * 2.1f));
+                        SetAnimatorGhostSpeed(e.CachedAnimator, Mathf.Clamp(0.38f + drift * 0.18f, 0.32f, 1.05f));
 
                         if (u >= 1f - 1e-4f || logicTimeNow >= e.PhaseEndLogicTime + 0.05f)
                         {
@@ -289,87 +286,26 @@ namespace My.Map.View
             return new Vector2(Mathf.Cos(angRad), Mathf.Sin(angRad)) * rad;
         }
 
-        // 以玩家为中心的世界矩形：半边长 = 基础(随理智)+欲望环；起终点在边外 margin，横穿模拟「掠过屏幕」。
-        private void BeginScreenCrossFlashSweep(AmbientSpiritEntry e, Vector2 anchor, float rMin, float rMax, float drift)
+        private void BeginDepartWalk(AmbientSpiritEntry e, float logicTimeNow, float drift)
         {
-            float san01 = 1f;
-            if (_glm.playerLogicEntity != null)
+            Vector2 from = e.SpawnWorld;
+            if (e.Instance != null)
             {
-                san01 = Mathf.Clamp01(_glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSanity) / 100_000f);
+                var p = e.Instance.transform.position;
+                from = new Vector2(p.x, p.y);
             }
 
-            float halfSpan = Mathf.Lerp(17f, 10f, san01) + rMax * 0.4f;
-            halfSpan = Mathf.Max(halfSpan, rMin + 4f);
+            e.MoveFromWorld = from;
+            float ang = Random.Range(0f, Mathf.PI * 2f);
+            float dist = Random.Range(DepartDistMin, DepartDistMax);
+            e.DepartTargetWorld = from + Polar(ang, dist);
 
-            float vxMin = anchor.x - halfSpan;
-            float vxMax = anchor.x + halfSpan;
-            float vyMin = anchor.y - halfSpan;
-            float vyMax = anchor.y + halfSpan;
-
-            float vw = vxMax - vxMin;
-            float vh = vyMax - vyMin;
-            float marginX = Mathf.Max(0.4f, vw * 0.08f);
-            float marginY = Mathf.Max(0.4f, vh * 0.08f);
-
-            float yLo = vyMin + marginY * 0.3f;
-            float yHi = vyMax - marginY * 0.3f;
-            float xLo = vxMin + marginX * 0.3f;
-            float xHi = vxMax - marginX * 0.3f;
-
-            int mode = Random.Range(0, 10);
-
-            Vector2 a;
-            Vector2 b;
-
-            if (mode <= 4)
-            {
-                float y0 = Random.Range(yLo, yHi);
-                float y1 = Mathf.Clamp(y0 + Random.Range(-vh * 0.14f, vh * 0.14f), vyMin + marginY * 0.1f, vyMax - marginY * 0.1f);
-                if (Random.value < 0.55f)
-                {
-                    a = new Vector2(vxMax + marginX, y0);
-                    b = new Vector2(vxMin - marginX, y1);
-                }
-                else
-                {
-                    a = new Vector2(vxMin - marginX, y0);
-                    b = new Vector2(vxMax + marginX, y1);
-                }
-            }
-            else if (mode <= 7)
-            {
-                float x0 = Random.Range(xLo, xHi);
-                float x1 = Mathf.Clamp(x0 + Random.Range(-vw * 0.12f, vw * 0.12f), vxMin + marginX * 0.1f, vxMax - marginX * 0.1f);
-                if (Random.value < 0.5f)
-                {
-                    a = new Vector2(x0, vyMax + marginY);
-                    b = new Vector2(x1, vyMin - marginY);
-                }
-                else
-                {
-                    a = new Vector2(x0, vyMin - marginY);
-                    b = new Vector2(x1, vyMax + marginY);
-                }
-            }
-            else
-            {
-                a = new Vector2(vxMax + marginX, Random.Range(yLo, yHi));
-                b = new Vector2(vxMin - marginX, Random.Range(yLo, yHi));
-            }
-
-            e.SweepStartWorld = a;
-            e.SweepEndWorld = b;
-            e.SweepStartLogicTime = LogicTime.time;
-
-            float chord = Vector2.Distance(a, b);
-            float speed = Random.Range(34f, 56f) * Mathf.Lerp(0.88f, 1.32f, Mathf.Clamp01(drift / 4f));
-            e.SweepDuration = Mathf.Clamp(chord / speed, 0.26f, 1.08f);
-
-            ApplyWorldPos(e, e.SweepStartWorld);
-
-            e.PhaseEndLogicTime = e.SweepStartLogicTime + e.SweepDuration + 0.15f;
-
-            SetAnimatorGhostSpeed(e.CachedAnimator, Mathf.Max(1.15f, drift * 2.05f));
+            float chord = Vector2.Distance(e.MoveFromWorld, e.DepartTargetWorld);
+            float walkSpeed = Mathf.Lerp(1.25f, 2.65f, Mathf.Clamp01(drift / 4f));
+            e.MoveDuration = Mathf.Clamp(chord / Mathf.Max(0.2f, walkSpeed), 0.5f, 6f);
+            e.MoveStartLogicTime = logicTimeNow;
+            e.Phase = AmbientSpiritPhase.WalkOut;
+            e.PhaseEndLogicTime = logicTimeNow + e.MoveDuration + 0.12f;
         }
 
         private void BeginAppearCycle(AmbientSpiritEntry e, Vector2 anchor, float rMin, float rMax, float drift)
@@ -391,27 +327,15 @@ namespace My.Map.View
             float rBand = Mathf.Lerp(rMin, rMax, 0.14f + Random.value * 0.72f);
             float ang = Random.Range(0f, Mathf.PI * 2f);
 
-            bool doWander = Random.value < 0.53f;
+            e.SpawnWorld = anchor + Polar(ang, rBand) + Polar(Random.Range(0f, Mathf.PI * 2f), Random.Range(0.02f, 0.12f));
 
-            if (doWander)
-            {
-                e.Phase = AmbientSpiritPhase.Wander;
-                e.BaseOffsetRel = Polar(ang, rBand);
+            ApplyWorldPos(e, e.SpawnWorld);
 
-                ApplyWorldPos(e, anchor + e.BaseOffsetRel + Polar(Random.Range(0f, Mathf.PI * 2f), Random.Range(0.02f, 0.1f)));
-
-                float dwell = Random.Range(WanderMin, WanderMax);
-
-                dwell += Mathf.Repeat(Mathf.Abs(e.WanderStaggerNoise), 0.42f);
-
-                e.PhaseEndLogicTime = LogicTime.time + dwell;
-                SetAnimatorGhostSpeed(e.CachedAnimator, Mathf.Max(0.28f, 1f));
-            }
-            else
-            {
-                e.Phase = AmbientSpiritPhase.Sweep;
-                BeginScreenCrossFlashSweep(e, anchor, rMin, rMax, drift);
-            }
+            e.Phase = AmbientSpiritPhase.IdleIntro;
+            float dwell = Random.Range(IdleAnimMin, IdleAnimMax);
+            dwell += Mathf.Repeat(Mathf.Abs(e.WanderStaggerNoise), 0.42f);
+            e.PhaseEndLogicTime = LogicTime.time + dwell;
+            SetAnimatorGhostSpeed(e.CachedAnimator, Mathf.Clamp(0.22f + drift * 0.12f, 0.2f, 0.55f));
 
             if (e.Instance != null && !e.Instance.activeSelf)
             {
@@ -467,7 +391,6 @@ namespace My.Map.View
             return true;
         }
 
-        // 后场假影怪数量：与历史表一致（Lv0 不生，Lv1–4 为 3/5/8/10），高于 4 按 10 封顶
         static int ResolveAmbientSpiritCount(int desireLevel)
         {
             if (desireLevel <= 0)
@@ -492,7 +415,6 @@ namespace My.Map.View
 
             return 10;
         }
-
 
         private string BuildAmbientRebuildKey(int sanLevel, PlayerSanCorruptLevel c)
         {

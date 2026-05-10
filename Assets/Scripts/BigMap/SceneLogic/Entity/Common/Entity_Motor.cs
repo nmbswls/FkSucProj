@@ -67,6 +67,9 @@ namespace My.Map.Entity
 
         public EMotorState MotorState { get; private set; } = EMotorState.Free;
 
+        // true：不走 Nav 建路/重规划，仅直线追 _currentGoal（飞行、穿障碍等）
+        public bool IgnoreGround = false;
+
         private NavPath _path;
         private int _pathIndex;
 
@@ -136,6 +139,16 @@ namespace My.Map.Entity
                 }
             }
 
+            if (IgnoreGround)
+            {
+                _path = default;
+                _pathIndex = -1;
+                this._stopDistance = stopDistance;
+                this._moveSpeedRate = moveSpeedRate;
+                EnterPathing(destination);
+                return;
+            }
+
             if (navProvider.TryBuildPath(Owner.Pos, destination, out var newPath) && newPath.Length > 0)
             {
                 TruncateNewPath(newPath);
@@ -196,8 +209,17 @@ namespace My.Map.Entity
             if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var goal))
             {
                 _currentGoal = goal;
-                navProvider.TryBuildPath(Owner.Pos, goal,  out _path);
-                EnterFollowing();
+                if (IgnoreGround)
+                {
+                    _path = default;
+                    _pathIndex = -1;
+                    EnterFollowing();
+                }
+                else
+                {
+                    navProvider.TryBuildPath(Owner.Pos, goal, out _path);
+                    EnterFollowing();
+                }
             }
             else
             {
@@ -334,8 +356,12 @@ namespace My.Map.Entity
                 if (navProvider.TryGetFollowPoint(_followTarget, _followPrediction, _followOffset, out var goal))
                 {
                     _currentGoal = goal;
-                    // 若直线可达且距离不大，禁用路径改用直线Steering
-                    if (navProvider.Linecast(Owner.Pos, goal, out var hit))
+                    if (IgnoreGround)
+                    {
+                        _path = default;
+                        _pathIndex = -1;
+                    }
+                    else if (navProvider.Linecast(Owner.Pos, goal, out var hit))
                     {
                         // 有阻挡：重新规划
                         navProvider.TryReplan(Owner.Pos, goal, out var newPath);
@@ -511,6 +537,14 @@ namespace My.Map.Entity
                 }
             }
 
+            if (IgnoreGround)
+            {
+                _path = default;
+                _pathIndex = -1;
+                _currentGoal = goal;
+                return;
+            }
+
             if (navProvider.TryReplan(Owner.Pos, goal, out var newPath))
             {
                 _path = newPath;
@@ -640,6 +674,18 @@ namespace My.Map
         }
 
         public Vector2 FreeMoveInput { get { return MotorSystem.FreeMoveInput; } set { MotorSystem.FreeMoveInput = value; } }
+
+        public bool MotorIgnoreGround
+        {
+            get => MotorSystem != null && MotorSystem.IgnoreGround;
+            set
+            {
+                if (MotorSystem != null)
+                {
+                    MotorSystem.IgnoreGround = value;
+                }
+            }
+        }
 
 
         public float moveSpeed = 4.0f;

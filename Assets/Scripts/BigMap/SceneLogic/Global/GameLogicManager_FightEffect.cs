@@ -230,6 +230,21 @@ namespace My
                             executor = new AbilityEffectExecutor4SneakBackstabResolve();
                         }
                         break;
+                    case MapAbilityEffectThrowQtePromptCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ThrowQtePrompt();
+                        }
+                        break;
+                    case MapAbilityEffectThrowQteBranchCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ThrowQteBranch();
+                        }
+                        break;
+                    case MapAbilityEffectThrowBreakFreeCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ThrowBreakFree();
+                        }
+                        break;
                         
 
 
@@ -323,6 +338,8 @@ namespace My
             public List<int> BindSceneFxIds = new();
 
             public List<long> OutHitWindowIds = new();
+
+            public int ThrowTimelineEventIndex = -1;
 
             public string GetVariatyRawVal(OneVariaty oneVariaty)
             {

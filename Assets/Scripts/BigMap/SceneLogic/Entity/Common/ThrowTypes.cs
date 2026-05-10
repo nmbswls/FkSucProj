@@ -6,5 +6,6 @@ namespace My.Map.Entity
         InterruptLauncher,
         InterruptTarget,
         Superseded,
+        QteBreakFree,
     }
 }

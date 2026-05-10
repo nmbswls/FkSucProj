@@ -300,7 +300,8 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.PlayerKnockDown, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerHunger, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerNaiLi, null, 100_000, 100_000);
-            //attributeStore.RegisterResource(AttrIdConsts.PlayerFaQingVal, null, 100_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerEstrusProgrss, null, 100_000, 0);
+
             attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerJingYu, null, 1000_000, 0);
         }

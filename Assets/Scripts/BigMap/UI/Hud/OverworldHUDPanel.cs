@@ -97,7 +97,7 @@ namespace My.UI
                 Debug.LogError("未绑定 ParticleSystem!");
                 return;
             }
-            MainPs.Stop();
+            MainPs.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
             // ================= 1. 修改 Main 模块 (主模块) =================
             var mainModule = MainPs.main;

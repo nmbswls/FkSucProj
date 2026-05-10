@@ -45,6 +45,10 @@ namespace My.Map.Entity
         [SerializeReference]
         public List<MapFightEffectCfg> OnSupersededEffects = new();
 
+        [Tooltip("QTE 失败等导致的受害者挣脱（ThrowBreakFree 效果）")]
+        [SerializeReference]
+        public List<MapFightEffectCfg> OnQteBreakFreeEffects = new();
+
         public MapFightEffectCfg ThrowFailEffect;
     }
 }

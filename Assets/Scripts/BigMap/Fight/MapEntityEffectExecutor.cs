@@ -1819,4 +1819,109 @@ namespace My.Map.Entity
             }
         }
     }
+
+    public class AbilityEffectExecutor4ThrowQtePrompt : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var cfg = effectConf as MapAbilityEffectThrowQtePromptCfg;
+            if (cfg == null)
+            {
+                Debug.LogError("[ThrowQte] cfg null");
+                return;
+            }
+
+            if (!ctx.Env.globalThrowManager.TryGetThrowContextByTargetId(ctx.TargetId, out var tctx))
+            {
+                Debug.LogError("[ThrowQte] no throw context for target " + ctx.TargetId);
+                return;
+            }
+
+            if (tctx.ActiveQte != null && !tctx.ActiveQte.Resolved)
+            {
+                Debug.LogWarning("[ThrowQte] QTE already active");
+                return;
+            }
+
+            float timeout = LogicTime.time + Mathf.Max(0.05f, cfg.TimeoutSeconds);
+            tctx.ActiveQte = new ThrowQteSession
+            {
+                QteId = cfg.QteId,
+                PromptText = cfg.PromptText,
+                ResultVarKey = cfg.ResultVarKey,
+                SuccessValue = cfg.SuccessValue,
+                FailValue = cfg.FailValue,
+                TimeoutAtLogicTime = timeout,
+                HoldTimelineAfterIndex = ctx.ThrowTimelineEventIndex,
+            };
+
+            Transform follow = null;
+            if (My.MainGameManager.Instance != null && My.MainGameManager.Instance.playerScenePresenter != null)
+            {
+                follow = My.MainGameManager.Instance.playerScenePresenter.transform;
+            }
+
+            My.UI.PlayerHeadQteHintView.Show(cfg.PromptText, KeyCode.Space, follow);
+        }
+    }
+
+    public class AbilityEffectExecutor4ThrowQteBranch : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var cfg = effectConf as MapAbilityEffectThrowQteBranchCfg;
+            if (cfg == null)
+            {
+                Debug.LogError("[ThrowQteBranch] cfg null");
+                return;
+            }
+
+            if (!ctx.Env.globalThrowManager.TryGetThrowContextByTargetId(ctx.TargetId, out var tctx))
+            {
+                foreach (var e in cfg.FailBranchEffects)
+                {
+                    if (e != null)
+                    {
+                        ctx.Env.HandleLogicFightEffect(e, ctx);
+                    }
+                }
+
+                return;
+            }
+
+            bool success = tctx.RunningVars.TryGetValue(cfg.ResultVarKey, out var val) && val == cfg.SuccessValue;
+            var list = success ? cfg.SuccessBranchEffects : cfg.FailBranchEffects;
+            if (list == null)
+            {
+                return;
+            }
+
+            foreach (var e in list)
+            {
+                if (e != null)
+                {
+                    ctx.Env.HandleLogicFightEffect(e, ctx);
+                }
+            }
+        }
+    }
+
+    public class AbilityEffectExecutor4ThrowBreakFree : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            if (effectConf is not MapAbilityEffectThrowBreakFreeCfg)
+            {
+                Debug.LogError("[ThrowBreakFree] cfg type");
+                return;
+            }
+
+            if (!ctx.Env.globalThrowManager.TryGetThrowContextByTargetId(ctx.TargetId, out var tctx))
+            {
+                return;
+            }
+
+            ctx.Env.globalThrowManager.EndThrowAsQteBreakFree(tctx);
+        }
+    }
 }
