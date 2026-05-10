@@ -174,6 +174,8 @@ namespace My.Map.Scene
             CheckTriggerTeleporter();
 
             TickForbiddenAreaMove();
+
+            TickDesireBodyGrazing(dt);
         }
 
         private float _checkTeleporterTimer = 0;

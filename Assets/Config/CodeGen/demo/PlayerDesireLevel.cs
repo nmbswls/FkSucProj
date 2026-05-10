@@ -20,11 +20,11 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     {
         { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
         { if(!_buf["desire_line"].IsNumber) { throw new SerializationException(); }  DesireLine = _buf["desire_line"]; }
+        { if(!_buf["extra_charm"].IsNumber) { throw new SerializationException(); }  ExtraCharm = _buf["extra_charm"]; }
+        { if(!_buf["extra_damage_reduce"].IsNumber) { throw new SerializationException(); }  ExtraDamageReduce = _buf["extra_damage_reduce"]; }
+        { if(!_buf["h_collide_rate"].IsNumber) { throw new SerializationException(); }  HCollideRate = _buf["h_collide_rate"]; }
         { if(!_buf["aura_h_effect"].IsNumber) { throw new SerializationException(); }  AuraHEffect = _buf["aura_h_effect"]; }
         { if(!_buf["aura_max_range"].IsNumber) { throw new SerializationException(); }  AuraMaxRange = _buf["aura_max_range"]; }
-        { if(!_buf["spirit_monster_total_budget"].IsNumber) { throw new SerializationException(); }  SpiritMonsterTotalBudget = _buf["spirit_monster_total_budget"]; }
-        { if(!_buf["spirit_monster_refresh_interval_sec"].IsNumber) { throw new SerializationException(); }  SpiritMonsterRefreshIntervalSec = _buf["spirit_monster_refresh_interval_sec"]; }
-        { if(!_buf["ambient_spirit_drift_speed"].IsNumber) { throw new SerializationException(); }  AmbientSpiritDriftSpeed = _buf["ambient_spirit_drift_speed"]; }
     }
 
     public static PlayerDesireLevel DeserializePlayerDesireLevel(JSONNode _buf)
@@ -41,6 +41,18 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     /// </summary>
     public int DesireLine;
     /// <summary>
+    /// 额外魅力
+    /// </summary>
+    public float ExtraCharm;
+    /// <summary>
+    /// 额外免伤
+    /// </summary>
+    public int ExtraDamageReduce;
+    /// <summary>
+    /// h碰撞千分比
+    /// </summary>
+    public int HCollideRate;
+    /// <summary>
     /// 光环值
     /// </summary>
     public float AuraHEffect;
@@ -48,18 +60,6 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
     /// 每秒传播
     /// </summary>
     public float AuraMaxRange;
-    /// <summary>
-    /// 实战影怪总预算(各类型 budget_cost 之和上限)
-    /// </summary>
-    public int SpiritMonsterTotalBudget;
-    /// <summary>
-    /// 按预算补全影怪的刷新间隔(秒)
-    /// </summary>
-    public float SpiritMonsterRefreshIntervalSec;
-    /// <summary>
-    /// 后场漂移速度系数
-    /// </summary>
-    public float AmbientSpiritDriftSpeed;
    
     public const int __ID__ = -1173769842;
     public override int GetTypeId() => __ID__;
@@ -73,11 +73,11 @@ public sealed partial class PlayerDesireLevel : Luban.BeanBase
         return "{ "
         + "level:" + Level + ","
         + "desireLine:" + DesireLine + ","
+        + "extraCharm:" + ExtraCharm + ","
+        + "extraDamageReduce:" + ExtraDamageReduce + ","
+        + "hCollideRate:" + HCollideRate + ","
         + "auraHEffect:" + AuraHEffect + ","
         + "auraMaxRange:" + AuraMaxRange + ","
-        + "spiritMonsterTotalBudget:" + SpiritMonsterTotalBudget + ","
-        + "spiritMonsterRefreshIntervalSec:" + SpiritMonsterRefreshIntervalSec + ","
-        + "ambientSpiritDriftSpeed:" + AmbientSpiritDriftSpeed + ","
         + "}";
     }
 }

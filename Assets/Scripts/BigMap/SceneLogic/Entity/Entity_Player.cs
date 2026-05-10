@@ -735,19 +735,27 @@ namespace My.Map
         /// </summary>
         private void RefreshPlayerDesireLevel()
         {
+            // 发情中暂时锁定欲望等级为最高
+            // 等待自然褪去
+            if(IsFaQing)
+            {
+                return;
+            }
+
             DesireLevel = 0;
             var cfgs = CfgMgr.Cfgs.TbPlayerDesireLevel.DataList;
 
             var estrusVal = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
 
-            for (int i = 0; i < cfgs.Count; i++)
+            for (int i = cfgs.Count - 1; i >= 0; i--)
             {
                 int desireLine = cfgs[i].DesireLine;
-                if (estrusVal < desireLine * 1000)
+
+                if (estrusVal >= desireLine * 1000)
                 {
+                    DesireLevel = cfgs[i].Level;
                     break;
                 }
-                DesireLevel = cfgs[i].Level - 1;
             }
         }
 

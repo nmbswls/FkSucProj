@@ -62,17 +62,17 @@ namespace My.Map.View
             _visualRoot = visualRoot;
         }
 
-        private PlayerDesireLevel TryGetPlayerDesireCfg()
+        private PlayerSanCorruptLevel TryGetPlayerSanCorruptCfg()
         {
             if (_glm.playerLogicEntity == null)
             {
                 return null;
             }
 
-            return CfgMgr.Cfgs.TbPlayerDesireLevel.GetOrDefault(_glm.playerLogicEntity.DesireLevel);
+            return CfgMgr.Cfgs.TbPlayerSanCorruptLevel.GetOrDefault(_glm.playerLogicEntity.SanCorruptLevel);
         }
 
-        private void CollectEligibleSpiritRows(int desireLevel)
+        private void CollectEligibleSpiritRows(int sanCorruptLevel)
         {
             _eligibleBudgetRows.Clear();
             if (CfgMgr.Cfgs == null)
@@ -87,7 +87,7 @@ namespace My.Map.View
                     continue;
                 }
 
-                if (desireLevel < row.MinDesireLevel)
+                if (sanCorruptLevel < row.MinSanCorruptLevel)
                 {
                     continue;
                 }
@@ -146,8 +146,8 @@ namespace My.Map.View
                 return;
             }
 
-            var desireCfg = TryGetPlayerDesireCfg();
-            if (desireCfg == null)
+            var sanCorruptCfg = TryGetPlayerSanCorruptCfg();
+            if (sanCorruptCfg == null)
             {
                 if (_entries.Count != 0)
                 {
@@ -159,10 +159,10 @@ namespace My.Map.View
             }
 
             int lv = _glm.playerLogicEntity.DesireLevel;
-            string nextKey = BuildAmbientRebuildKey(lv, desireCfg);
+            string nextKey = BuildAmbientRebuildKey(lv, sanCorruptCfg);
             if (nextKey != _lastAmbientRebuildKey)
             {
-                Rebuild(desireCfg);
+                Rebuild(sanCorruptCfg);
                 _lastAmbientRebuildKey = nextKey;
             }
 
@@ -172,14 +172,14 @@ namespace My.Map.View
             }
 
             Vector2 anchor = _glm.playerLogicEntity.Pos;
-            float drift = Mathf.Max(0.25f, desireCfg.AmbientSpiritDriftSpeed);
+            float drift = Mathf.Max(0.25f, sanCorruptCfg.AmbientSpiritDriftSpeed);
             float san01 = 1f;
             if (_glm.playerLogicEntity != null)
             {
                 san01 = Mathf.Clamp01(_glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerSanity) / 100_000f);
             }
 
-            float rMax = ResolveAmbientRingRadiusMax(desireCfg, lv, san01);
+            float rMax = 4.0f;
             float rMin = Mathf.Max(0.1f, rMax * WanderInnerRadiusFromMax);
 
             float lt = LogicTime.time;
@@ -493,17 +493,8 @@ namespace My.Map.View
             return 10;
         }
 
-        float ResolveAmbientRingRadiusMax(PlayerDesireLevel c, int desireLevel, float sanity01)
-        {
-            float lvT = Mathf.Clamp01(desireLevel / 4f);
-            float baseR = Mathf.Lerp(10f, 16f, lvT);
-            float aura = c != null ? Mathf.Clamp(c.AuraMaxRange, 0.5f, 4f) : 1f;
-            float auraScale = Mathf.Lerp(0.92f, 1.18f, Mathf.Clamp01((aura - 1f) / 2f));
-            float sanScale = Mathf.Lerp(0.88f, 1.05f, Mathf.Clamp01(sanity01));
-            return Mathf.Max(6f, baseR * auraScale * sanScale);
-        }
 
-        private string BuildAmbientRebuildKey(int desireLevel, PlayerDesireLevel c)
+        private string BuildAmbientRebuildKey(int sanLevel, PlayerSanCorruptLevel c)
         {
             if (c == null)
             {
@@ -511,7 +502,7 @@ namespace My.Map.View
                 return string.Empty;
             }
 
-            CollectEligibleSpiritRows(desireLevel);
+            CollectEligibleSpiritRows(sanLevel);
 
             _eligibleBudgetRows.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));
 
@@ -532,10 +523,10 @@ namespace My.Map.View
             }
 
             return
-                $"{desireLevel}|{sig}|{c.AmbientSpiritDriftSpeed:F2}|{c.AuraMaxRange:F2}";
+                $"{sanLevel}|{sig}";
         }
 
-        private void Rebuild(PlayerDesireLevel desireCfg)
+        private void Rebuild(PlayerSanCorruptLevel desireCfg)
         {
             ClearInstances();
 

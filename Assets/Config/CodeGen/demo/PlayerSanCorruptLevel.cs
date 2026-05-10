@@ -21,6 +21,9 @@ public sealed partial class PlayerSanCorruptLevel : Luban.BeanBase
         { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
         { if(!_buf["san_line"].IsNumber) { throw new SerializationException(); }  SanLine = _buf["san_line"]; }
         { if(!_buf["basic_estrus"].IsNumber) { throw new SerializationException(); }  BasicEstrus = _buf["basic_estrus"]; }
+        { if(!_buf["spirit_monster_total_budget"].IsNumber) { throw new SerializationException(); }  SpiritMonsterTotalBudget = _buf["spirit_monster_total_budget"]; }
+        { if(!_buf["spirit_monster_refresh_interval_sec"].IsNumber) { throw new SerializationException(); }  SpiritMonsterRefreshIntervalSec = _buf["spirit_monster_refresh_interval_sec"]; }
+        { if(!_buf["ambient_spirit_drift_speed"].IsNumber) { throw new SerializationException(); }  AmbientSpiritDriftSpeed = _buf["ambient_spirit_drift_speed"]; }
     }
 
     public static PlayerSanCorruptLevel DeserializePlayerSanCorruptLevel(JSONNode _buf)
@@ -40,6 +43,18 @@ public sealed partial class PlayerSanCorruptLevel : Luban.BeanBase
     /// 基准发情
     /// </summary>
     public int BasicEstrus;
+    /// <summary>
+    /// 实战影怪总预算(各类型 budget_cost 之和上限)
+    /// </summary>
+    public int SpiritMonsterTotalBudget;
+    /// <summary>
+    /// 按预算补全影怪的刷新间隔(秒)
+    /// </summary>
+    public float SpiritMonsterRefreshIntervalSec;
+    /// <summary>
+    /// 后场漂移速度系数
+    /// </summary>
+    public float AmbientSpiritDriftSpeed;
    
     public const int __ID__ = 1190698603;
     public override int GetTypeId() => __ID__;
@@ -54,6 +69,9 @@ public sealed partial class PlayerSanCorruptLevel : Luban.BeanBase
         + "level:" + Level + ","
         + "sanLine:" + SanLine + ","
         + "basicEstrus:" + BasicEstrus + ","
+        + "spiritMonsterTotalBudget:" + SpiritMonsterTotalBudget + ","
+        + "spiritMonsterRefreshIntervalSec:" + SpiritMonsterRefreshIntervalSec + ","
+        + "ambientSpiritDriftSpeed:" + AmbientSpiritDriftSpeed + ","
         + "}";
     }
 }

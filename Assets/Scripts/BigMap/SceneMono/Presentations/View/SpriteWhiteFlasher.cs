@@ -43,33 +43,85 @@ namespace My.Map
 
         IEnumerator FlashProcess()
         {
+            _savedBaseColor = sr.color;
+            yield return FlashProcessCore(multiplyPeakColor: null);
+            if (sr != null)
+            {
+                sr.color = _savedBaseColor;
+            }
+        }
+
+        IEnumerator FlashProcessCore(Color? multiplyPeakColor)
+        {
             float t = 0f;
             float up = duration * 0.35f;
             float down = duration - up;
 
-            // 1. 上升阶段
             while (t < up)
             {
                 t += Time.deltaTime;
                 float val = Mathf.Lerp(0f, peakAmount, t / up);
-                UpdateMaterial(val); // 封装设置逻辑
+                UpdateMaterial(val);
+                ApplyOptionalColorTint(multiplyPeakColor, val);
                 yield return null;
             }
 
             t = 0f;
 
-            // 2. 下降阶段
             while (t < down)
             {
                 t += Time.deltaTime;
                 float val = Mathf.Lerp(peakAmount, 0f, t / down);
                 UpdateMaterial(val);
+                ApplyOptionalColorTint(multiplyPeakColor, val);
                 yield return null;
             }
 
-            // 3. 归零确保干净
             UpdateMaterial(0f);
+            if (multiplyPeakColor != null && sr != null)
+            {
+                sr.color = _savedBaseColor;
+            }
+
             routine = null;
+        }
+
+        Color _savedBaseColor = Color.white;
+
+        void ApplyOptionalColorTint(Color? multiplyPeakColor, float amountNormalized)
+        {
+            if (multiplyPeakColor == null || sr == null)
+            {
+                return;
+            }
+
+            float k = amountNormalized * 0.55f;
+            Color c = Color.Lerp(_savedBaseColor, multiplyPeakColor.Value, k);
+            c.a = _savedBaseColor.a;
+            sr.color = c;
+        }
+
+        public void TriggerPinkBodyGrazingFlash()
+        {
+            if (sr == null)
+            {
+                return;
+            }
+
+            if (routine != null)
+            {
+                StopCoroutine(routine);
+            }
+
+            _savedBaseColor = sr.color;
+            var pink = new Color(1f, 0.72f, 0.88f, 1f);
+            routine = StartCoroutine(FlashProcessCore(pink));
+        }
+
+        [ContextMenu("Test Pink Flash")]
+        public void TestPinkFlash()
+        {
+            TriggerPinkBodyGrazingFlash();
         }
 
         // 核心优化方法

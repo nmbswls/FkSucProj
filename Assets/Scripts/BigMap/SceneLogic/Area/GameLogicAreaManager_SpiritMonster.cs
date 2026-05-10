@@ -115,7 +115,7 @@ namespace My.Map.Logic
         private SpiritMonsterTypeBudget SpiritMonster_PickWeightedSpawn(int remainingBudget)
         {
             _spiritSpawnScratch.Clear();
-            int desireLevel = logicManager.playerLogicEntity.DesireLevel;
+            int sanCorruptLevel = logicManager.playerLogicEntity.SanCorruptLevel;
             foreach (var row in CfgMgr.Cfgs.TbSpiritMonsterTypeBudget.DataList)
             {
                 if (row == null)
@@ -124,7 +124,7 @@ namespace My.Map.Logic
                 }
 
                 int cost = Mathf.Max(1, row.BudgetCost);
-                if (desireLevel < row.MinDesireLevel)
+                if (sanCorruptLevel < row.MinSanCorruptLevel)
                 {
                     continue;
                 }
@@ -225,20 +225,20 @@ namespace My.Map.Logic
 
             SpiritMonster_SweepStaleTracked();
 
-            var desireCfg = CfgMgr.Cfgs.TbPlayerDesireLevel.GetOrDefault(logicManager.playerLogicEntity.DesireLevel);
-            if (desireCfg == null)
+            var sanCfg = CfgMgr.Cfgs.TbPlayerSanCorruptLevel.GetOrDefault(logicManager.playerLogicEntity.SanCorruptLevel);
+            if (sanCfg == null)
             {
                 return;
             }
 
-            int maxBudget = Mathf.Max(0, desireCfg.SpiritMonsterTotalBudget);
-            float interval = Mathf.Max(0.25f, desireCfg.SpiritMonsterRefreshIntervalSec);
+            int maxBudget = Mathf.Max(0, sanCfg.SpiritMonsterTotalBudget);
+            float interval = Mathf.Max(0.25f, sanCfg.SpiritMonsterRefreshIntervalSec);
 
             if (maxBudget <= 0)
             {
                 if (_runningSpriteEntites.Count > 0)
                 {
-                    SpiritMonster_DestroyAllTracked("spirit_desire_budget_zero");
+                    SpiritMonster_DestroyAllTracked("spirit_san_budget_zero");
                 }
 
                 return;

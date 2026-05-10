@@ -3,7 +3,7 @@
     "id": "1",
     "npc_base_type": "h_spirit_small",
     "budget_cost": 2,
-    "min_desire_level": 1,
+    "min_san_corrupt_level": 1,
     "restore_san": 5000,
     "spawn_weight": 100
   },
@@ -11,7 +11,7 @@
     "id": "2",
     "npc_base_type": "h_spirit_small",
     "budget_cost": 3,
-    "min_desire_level": 1,
+    "min_san_corrupt_level": 1,
     "restore_san": 5000,
     "spawn_weight": 100
   },
@@ -19,7 +19,7 @@
     "id": "3",
     "npc_base_type": "h_spirit_small",
     "budget_cost": 2,
-    "min_desire_level": 2,
+    "min_san_corrupt_level": 2,
     "restore_san": 5000,
     "spawn_weight": 100
   },
@@ -27,7 +27,7 @@
     "id": "4",
     "npc_base_type": "h_spirit_small",
     "budget_cost": 3,
-    "min_desire_level": 2,
+    "min_san_corrupt_level": 2,
     "restore_san": 5000,
     "spawn_weight": 100
   }
