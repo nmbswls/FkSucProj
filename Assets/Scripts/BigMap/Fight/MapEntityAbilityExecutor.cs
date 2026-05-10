@@ -625,7 +625,8 @@ namespace My.Map.Entity
 
         private void ExitPhase(int index)
         {
-            var phase = CurrentCtx.AbilityConfig.Phases[index];
+            var ctx = CurrentCtx;
+            var phase = ctx.AbilityConfig.Phases[index];
 
             // 触发 OnExit
             foreach (var ev in phase.Events)
@@ -636,10 +637,10 @@ namespace My.Map.Entity
                     EntityOwner.LogicManager.HandleLogicFightEffect(ev.Effect, effectCtx);
                 }
             }
-            CurrentCtx._scheduled.Clear();
+            ctx._scheduled.Clear();
 
             string phaseName = phase.PhaseName;
-            CurrentCtx.PhaseXuLiInfos[phaseName] = CurrentCtx.PhaseElapsed;
+            ctx.PhaseXuLiInfos[phaseName] = ctx.PhaseElapsed;
 
             CleanupPhase();
         }
@@ -711,45 +712,45 @@ namespace My.Map.Entity
         public void CleanupPhase(bool isInterrupt = false)
         {
             // 关闭命中盒、停止位移曲线、回收特效、重置输入锁等
-
-            if (CurrentCtx.PhaseAnimHandle != 0)
+            var ctx = CurrentCtx;
+            if (ctx.PhaseAnimHandle != 0)
             {
-                EntityOwner.ReleaseAnimRequestForced(CurrentCtx.PhaseAnimHandle);
-                CurrentCtx.PhaseAnimHandle = 0;
+                EntityOwner.ReleaseAnimRequestForced(ctx.PhaseAnimHandle);
+                ctx.PhaseAnimHandle = 0;
             }
 
             // 移除phase附加状态
-            foreach (var buffId in CurrentCtx.PhaseBindBuffs)
+            foreach (var buffId in ctx.PhaseBindBuffs)
             {
                 EntityOwner.LogicManager.globalBuffManager.RequestRemoveBuff(null, buffId);
             }
 
-            CurrentCtx.PhaseMarkSkip = false;
+            ctx.PhaseMarkSkip = false;
 
-            CurrentCtx.PhaseBindBuffs.Clear();
+            ctx.PhaseBindBuffs.Clear();
 
             // 检查是否要立刻中止冲刺 现在一定中止
             if (EntityOwner.controlledMoveCtx != null 
                 && !string.IsNullOrEmpty(EntityOwner.controlledMoveCtx.BindAbilityId)
-                && EntityOwner.controlledMoveCtx.BindAbilityId == CurrentCtx.AbilityConfig.Id && EntityOwner.controlledMoveCtx.BindAbilityPhaseIdx == CurrentCtx.PhaseIndex)
+                && EntityOwner.controlledMoveCtx.BindAbilityId == ctx.AbilityConfig.Id && EntityOwner.controlledMoveCtx.BindAbilityPhaseIdx == ctx.PhaseIndex)
             {
                 EntityOwner.EndControlledMove(5);
             }
 
-            if (CurrentCtx.phaseHitWindows.Count > 0)
+            if (ctx.phaseHitWindows.Count > 0)
             {
-                foreach(var winId in CurrentCtx.phaseHitWindows)
+                foreach(var winId in ctx.phaseHitWindows)
                 {
                     EntityOwner.HitWindowRegistry.CloseHitWindow(winId);
                 }
 
-                CurrentCtx.phaseHitWindows.Clear();
+                ctx.phaseHitWindows.Clear();
             }
 
-            if (!string.IsNullOrEmpty(CurrentCtx.openClickkkType))
+            if (!string.IsNullOrEmpty(ctx.openClickkkType))
             {
-                EntityOwner.LogicManager.viewer.CloseClickkkWindow(CurrentCtx.openClickkkType, isInterrupt);
-                CurrentCtx.openClickkkType = null;
+                EntityOwner.LogicManager.viewer.CloseClickkkWindow(ctx.openClickkkType, isInterrupt);
+                ctx.openClickkkType = null;
             }
 
             //if(CurrentCtx.phaseBindEffectIds.Count > 0)
@@ -762,10 +763,10 @@ namespace My.Map.Entity
             //    CurrentCtx.phaseBindEffectIds.Clear();
             //}
 
-            if (CurrentCtx.PhaseIntentEffectId != 0)
+            if (ctx.PhaseIntentEffectId != 0)
             {
-                EntityOwner.LogicManager.viewer.DestroySceneFxEffect(CurrentCtx.PhaseIntentEffectId);
-                CurrentCtx.PhaseIntentEffectId = 0;
+                EntityOwner.LogicManager.viewer.DestroySceneFxEffect(ctx.PhaseIntentEffectId);
+                ctx.PhaseIntentEffectId = 0;
             }
 
             if (!isInterrupt)

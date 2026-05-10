@@ -2553,7 +2553,8 @@ namespace My.Map.Entity
             spec.DesiredUseDistance = 1.0f;
             spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
-            spec.Phases.Add(new MapAbilityPhase()
+
+            var xuliPhase = new MapAbilityPhase()
             {
                 PhaseName = "XuLi",
                 HoldingPhase = true,
@@ -2566,22 +2567,9 @@ namespace My.Map.Entity
                     ValType = EOneVariatyType.Float,
                     RawVal = "99.0"
                 },
-            });
-
-            var intervalPhase = new MapAbilityPhase()
-            {
-                PhaseName = "Inteval",
-                LockMovement = true,
-                LockRotation = true,
-                ImmuneKnock = true,
-                DurationValue = new()
-                {
-                    ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
-                },
             };
 
-            var xuliEffect = new MapFightEffectXuLiStageCfg()
+            var xuliEndEffect = new MapFightEffectXuLiStageCfg()
             {
                 CheckPhaseName = "XuLi",
 
@@ -2589,7 +2577,7 @@ namespace My.Map.Entity
                 {
                     new MapFightEffectXuLiStageCfg.EStageInfo()
                     {
-                        NeedTime = 2.0f,
+                        NeedTime = 1.0f,
 
                         StageEffects = new()
                         {
@@ -2612,9 +2600,24 @@ namespace My.Map.Entity
                     },
                 }
             };
+            xuliPhase.Events.Add(new PhaseEffectEvent() { Effect = xuliEndEffect, Kind = PhaseEventKind.OnExit });
+            spec.Phases.Add(xuliPhase);
 
-            intervalPhase.Events.Add(new PhaseEffectEvent() { Effect = xuliEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.01f});
-            spec.Phases.Add(intervalPhase);
+            //var intervalPhase = new MapAbilityPhase()
+            //{
+            //    PhaseName = "Inteval",
+            //    LockMovement = true,
+            //    LockRotation = true,
+            //    ImmuneKnock = true,
+            //    DurationValue = new()
+            //    {
+            //        ValType = EOneVariatyType.Float,
+            //        RawVal = "0.2"
+            //    },
+            //};
+
+            //intervalPhase.Events.Add(new PhaseEffectEvent() { Effect = xuliEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.01f});
+            //spec.Phases.Add(intervalPhase);
 
             
             var dashEffect = new MapAbilityEffectDashStartCfg()
