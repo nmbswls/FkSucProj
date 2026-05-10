@@ -628,6 +628,9 @@ namespace My.Map.Entity
             var ctx = CurrentCtx;
             var phase = ctx.AbilityConfig.Phases[index];
 
+            string phaseName = phase.PhaseName;
+            ctx.PhaseXuLiInfos[phaseName] = ctx.PhaseElapsed;
+
             // 触发 OnExit
             foreach (var ev in phase.Events)
             {
@@ -638,9 +641,6 @@ namespace My.Map.Entity
                 }
             }
             ctx._scheduled.Clear();
-
-            string phaseName = phase.PhaseName;
-            ctx.PhaseXuLiInfos[phaseName] = ctx.PhaseElapsed;
 
             CleanupPhase();
         }

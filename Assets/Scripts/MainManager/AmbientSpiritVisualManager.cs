@@ -162,7 +162,7 @@ namespace My.Map.View
                 return;
             }
 
-            int lv = _glm.playerLogicEntity.DesireLevel;
+            int lv = _glm.playerLogicEntity.SanCorruptLevel;
             string nextKey = BuildAmbientRebuildKey(lv, sanCorruptCfg);
             if (nextKey != _lastAmbientRebuildKey)
             {
@@ -391,24 +391,24 @@ namespace My.Map.View
             return true;
         }
 
-        static int ResolveAmbientSpiritCount(int desireLevel)
+        static int ResolveAmbientSpiritCount(int sanLevel)
         {
-            if (desireLevel <= 0)
+            if (sanLevel <= 0)
             {
                 return 0;
             }
 
-            if (desireLevel == 1)
+            if (sanLevel == 1)
             {
                 return 3;
             }
 
-            if (desireLevel == 2)
+            if (sanLevel == 2)
             {
                 return 5;
             }
 
-            if (desireLevel == 3)
+            if (sanLevel == 3)
             {
                 return 8;
             }
@@ -448,7 +448,7 @@ namespace My.Map.View
                 $"{sanLevel}|{sig}";
         }
 
-        private void Rebuild(PlayerSanCorruptLevel desireCfg)
+        private void Rebuild(PlayerSanCorruptLevel sanCfg)
         {
             ClearInstances();
 
@@ -460,7 +460,7 @@ namespace My.Map.View
                 return;
             }
 
-            int n = ResolveAmbientSpiritCount(_glm.playerLogicEntity.DesireLevel);
+            int n = ResolveAmbientSpiritCount(_glm.playerLogicEntity.SanCorruptLevel);
 
             if (n <= 0 || _glm.playerLogicEntity == null)
             {
@@ -468,7 +468,7 @@ namespace My.Map.View
                 return;
             }
 
-            CollectEligibleSpiritRows(_glm.playerLogicEntity.DesireLevel);
+            CollectEligibleSpiritRows(_glm.playerLogicEntity.SanCorruptLevel);
 
             if (_eligibleBudgetRows.Count == 0)
             {

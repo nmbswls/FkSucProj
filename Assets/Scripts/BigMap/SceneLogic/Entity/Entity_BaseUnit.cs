@@ -707,6 +707,11 @@ namespace My.Map
         public void OnBeingThrowStart()
         {
             Debug.Log($"unit thrown interrput {Id}");
+
+            TryInterrupt(new InterruptRequest()
+            {
+                source = EInterruptSource.Stun,
+            });
         }
 
         public void OnBeingThrowInterrupt()
@@ -895,6 +900,11 @@ namespace My.Map
             if(intent.isEnmity)
             {
                 EventOnEnmityBehave?.Invoke(this.Id);
+
+                if(intent.srcEntityId != null)
+                {
+                    AggroSystem?.OnTakeDamage(intent.srcEntityId.Value, 111);
+                }
             }
         }
 
@@ -1240,12 +1250,24 @@ namespace My.Map
                 }
                 dmg = (long)(dmg * (10000 - basicJs) * 0.0001);
 
+                
+
+                if(intent.DmgCategory != EDmgCategory.H)
+                {
+                    var nonHJianShangRate = attributeStore.GetAttr(AttrIdConsts.NonH_JianShang_Rate);
+                    if (nonHJianShangRate > 9000)
+                    {
+                        nonHJianShangRate = 9000;
+                    }
+
+                    dmg = (long)(dmg * (10000 - nonHJianShangRate) * 0.0001);
+                }
+
                 OnDamageBeforeFinalReduce(dmg, intent);
 
                 var fix_dr = GetAttr(AttrIdConsts.Final_Fix_DR_All);
                 dmg -= fix_dr;
                 if (dmg <= 0) dmg = 0;
-
 
                 return -dmg;
             }

@@ -22,8 +22,10 @@ namespace My.Map.Entity
         public int Priority;
         public float Duration;
 
+        [Tooltip("投技持续期间出手方动画标签（GetAnimOverride）；空则不改 Layer0 栈")]
+        public string LauncherHoldAnimTag;
 
-        [Tooltip("Legacy：无 ThrowTimelineEvents 时给目标的 Buff id")]
+        [Tooltip("Legacy：ThrowTimelineEvents 为空时给目标的 Buff id")]
         public string ThrowMainBuffId;
 
         [Tooltip("时间轴事件")]
@@ -45,9 +47,9 @@ namespace My.Map.Entity
         [SerializeReference]
         public List<MapFightEffectCfg> OnSupersededEffects = new();
 
-        [Tooltip("QTE 失败等导致的受害者挣脱（ThrowBreakFree 效果）")]
+        [Tooltip("受害者挣脱等（ThrowBreakFree）：终止效果链")]
         [SerializeReference]
-        public List<MapFightEffectCfg> OnQteBreakFreeEffects = new();
+        public List<MapFightEffectCfg> OnPlayerBreakFreeEffects = new();
 
         public MapFightEffectCfg ThrowFailEffect;
     }

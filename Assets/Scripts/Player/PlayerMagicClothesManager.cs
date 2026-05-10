@@ -34,7 +34,7 @@ namespace My.Player
                     RawOverRate10000 = 10000,
                     MaxClothes = 100_000,
                     Firmness10000 = 10000,
-                    MoveWearDistancePerCheck = 30f,
+                    MoveWearDistancePerCheck = 3.0f,
                     MoveWearChancePermille = 60,
                     MoveWearBaseLoss = 1200,
                 },
@@ -44,7 +44,7 @@ namespace My.Player
                     RawOverRate10000 = 11500,
                     MaxClothes = 85_000,
                     Firmness10000 = 8000,
-                    MoveWearDistancePerCheck = 25f,
+                    MoveWearDistancePerCheck = 2.5f,
                     MoveWearChancePermille = 75,
                     MoveWearBaseLoss = 1500,
                 },
@@ -54,7 +54,7 @@ namespace My.Player
                     RawOverRate10000 = 9200,
                     MaxClothes = 120_000,
                     Firmness10000 = 14500,
-                    MoveWearDistancePerCheck = 35f,
+                    MoveWearDistancePerCheck = 3.5f,
                     MoveWearChancePermille = 45,
                     MoveWearBaseLoss = 900,
                 },
@@ -193,22 +193,12 @@ namespace My.Player
                 return false;
             }
 
-            if (p.IsZhaZhiMode)
-            {
-                return false;
-            }
-
             if (p.IsExposed)
             {
                 return false;
             }
 
             if (p.MotorState != EMotorState.Free)
-            {
-                return false;
-            }
-
-            if (p.FreeMoveInput.sqrMagnitude < 0.01f)
             {
                 return false;
             }

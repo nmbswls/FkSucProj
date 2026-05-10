@@ -68,6 +68,9 @@ namespace My.Map
                 case AttrIdConsts.Basic_PleasureAdd:
                 case AttrIdConsts.Basic_HungerCost:
                 case AttrIdConsts.Basic_JianShang:
+                case AttrIdConsts.NonH_JianShang_Rate:
+                    
+
                 case AttrIdConsts.Special_JianShang:
                 case AttrIdConsts.Basic_KnockResistent:
                 case AttrIdConsts.Basic_MoveSpeed:

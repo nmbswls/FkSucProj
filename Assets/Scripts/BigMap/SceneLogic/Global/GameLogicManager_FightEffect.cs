@@ -230,14 +230,19 @@ namespace My
                             executor = new AbilityEffectExecutor4SneakBackstabResolve();
                         }
                         break;
-                    case MapAbilityEffectThrowQtePromptCfg:
+                    case MapAbilityEffectThrowAlignLauncherToTargetCfg:
                         {
-                            executor = new AbilityEffectExecutor4ThrowQtePrompt();
+                            executor = new AbilityEffectExecutor4ThrowAlignLauncherToTarget();
                         }
                         break;
-                    case MapAbilityEffectThrowQteBranchCfg:
+                    case MapAbilityEffectThrowTimedInputCfg:
                         {
-                            executor = new AbilityEffectExecutor4ThrowQteBranch();
+                            executor = new AbilityEffectExecutor4ThrowTimedInput();
+                        }
+                        break;
+                    case MapAbilityEffectThrowTimedInputBranchCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ThrowTimedInputBranch();
                         }
                         break;
                     case MapAbilityEffectThrowBreakFreeCfg:

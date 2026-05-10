@@ -283,6 +283,9 @@ namespace My.Map
             LogicManager.RefreshPlayerMagicClothesAndExposeForCurrentMode();
 
             _hostileDamageBurstTracker.EventOnQuickDamagedBurst += HandleQuickDamagedBurst;
+
+            LogicManager.globalBuffManager.AddBuff(this.Id, "desire_level_charm", 0);
+            LogicManager.globalBuffManager.AddBuff(this.Id, "desire_level_damage_resist", 0);
         }
 
         protected override void RegisterSpecAttrs()
@@ -743,7 +746,8 @@ namespace My.Map
                 return;
             }
 
-            DesireLevel = 0;
+            int nowDesireLevel = 0;
+            nowDesireLevel = 0;
             var cfgs = CfgMgr.Cfgs.TbPlayerDesireLevel.DataList;
 
             var estrusVal = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
@@ -754,9 +758,47 @@ namespace My.Map
 
                 if (estrusVal >= desireLine * 1000)
                 {
-                    DesireLevel = cfgs[i].Level;
+                    nowDesireLevel = cfgs[i].Level;
                     break;
                 }
+            }
+
+            if(nowDesireLevel != DesireLevel)
+            {
+                var uLevelCfg = CfgMgr.Cfgs.TbPlayerDesireLevel.GetOrDefault(DesireLevel);
+
+                {
+                    int layer = 0;
+                    if (uLevelCfg != null)
+                    {
+                        layer = (int)(uLevelCfg.ExtraCharm * 1000);
+                    }
+
+                    var buff = FindBuffById("desire_level_charm");
+
+                    if (buff != null)
+                    {
+                        buff.SetBuffLayerDirect(layer);
+                    }
+                }
+
+
+                {
+                    int layer = 0;
+                    if (uLevelCfg != null)
+                    {
+                        layer = uLevelCfg.ExtraDamageReduce;
+                    }
+
+                    var buff = FindBuffById("desire_level_damage_resist");
+
+                    if (buff != null)
+                    {
+                        buff.SetBuffLayerDirect(layer);
+                    }
+                }
+
+                this.DesireLevel = nowDesireLevel;
             }
         }
 

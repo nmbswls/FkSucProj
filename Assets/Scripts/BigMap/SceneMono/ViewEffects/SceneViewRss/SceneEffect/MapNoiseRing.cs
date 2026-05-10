@@ -91,7 +91,7 @@ public class MapNoiseRing : MonoBehaviour
                 Destroy(gameObject);
             else
                 gameObject.SetActive(false);
-        });
+        }).SetLink(gameObject);
     }
 
     private void OnDisable()

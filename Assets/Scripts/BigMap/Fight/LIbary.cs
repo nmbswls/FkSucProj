@@ -2558,7 +2558,7 @@ namespace My.Map.Entity
             {
                 PhaseName = "XuLi",
                 HoldingPhase = true,
-                LockMovement = true,
+                PhaseBuff = new() { "jian_su_self" },
                 ImmuneKnock = true,
                 AnimTag = "",
 
@@ -2671,12 +2671,22 @@ namespace My.Map.Entity
             var throwCfg = new MapAbilityEffectThrowStartCfg()
             {
                 Priority = 999,
-                Duration = 5.0f,
-                ThrowMainBuffId = "force_zha_target_buff",
-                OnQteBreakFreeEffects = new List<MapFightEffectCfg>
+                Duration = 2.5f,
+                LauncherHoldAnimTag = "player_force_grapple",
+                //ThrowMainBuffId = "force_zha_target_buff",
+                OnPlayerBreakFreeEffects = new List<MapFightEffectCfg>
                 {
-                    new MapFightEffectEasyEffect() { EffectText = "\u6349\u6297\u5931\u8d25" },
+                    new MapFightEffectEasyEffect() { EffectText = "失败了。" },
                 },
+                OnThrowCompleteEffects = new List<MapFightEffectCfg>
+                {
+                    new MapAbilityEffectAddBuffCfg() 
+                    {
+                        BuffId = "force_stun",
+                        Duration = 2.0f,
+                    },
+                },
+
                 ThrowTimelineEvents = new List<ThrowTimelineEventSpec>
                 {
                     new ThrowTimelineEventSpec
@@ -2684,12 +2694,12 @@ namespace My.Map.Entity
                         TimeFromStart = 0f,
                         Effects = new List<MapFightEffectCfg>
                         {
-                            new MapAbilityEffectThrowQtePromptCfg
+                            new MapAbilityEffectThrowAlignLauncherToTargetCfg(),
+                            new MapAbilityEffectThrowTimedInputCfg
                             {
-                                QteId = "force_dash_push_down_throw",
-                                PromptText = "\u6291\u5236\u4e2d\uff01\u8fde\u6309 \u7a7a\u683c \u5b8c\u6210\u69a8\u53d6",
-                                ResultVarKey = "ThrowQte",
-                                TimeoutSeconds = 2.4f,
+                                PromptText = "点击Space",
+                                ResultVarKey = "ThrowTimedInput",
+                                TimeoutSeconds = 1.2f,
                             },
                         },
                     },
@@ -2698,13 +2708,106 @@ namespace My.Map.Entity
                         TimeFromStart = 0f,
                         Effects = new List<MapFightEffectCfg>
                         {
-                            new MapAbilityEffectThrowQteBranchCfg
+                            new MapAbilityEffectThrowTimedInputBranchCfg
                             {
-                                ResultVarKey = "ThrowQte",
-                                SuccessValue = "1",
+                                ResultVarKey = "ThrowTimedInput",
                                 SuccessBranchEffects = new List<MapFightEffectCfg>
                                 {
-                                    new MapAbilityEffectDeepZhaquCfg(),
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId = AttrIdConsts.NPCHVal,
+                                        AddValue = 20_000,
+                                        IsEnmity = true,
+                                        //ExtraAttrInfos = new List<AttrKvPair>(){new(){ AttrId  = AttrIdConsts.DamageXiXue, Val = 2000} }
+                                    },
+                                    new MapFightEffectCauseNoise()
+                                    {
+
+                                    }
+                                },
+                                FailBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectThrowBreakFreeCfg(),
+                                },
+                            },
+                        },
+                    },
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 1f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputCfg
+                            {
+                                PromptText = "点击Space",
+                                ResultVarKey = "ThrowTimedInput",
+                                TimeoutSeconds = 1.2f,
+                            },
+                        },
+                    },
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 1,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputBranchCfg
+                            {
+                                ResultVarKey = "ThrowTimedInput",
+                                SuccessBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId = AttrIdConsts.NPCHVal,
+                                        AddValue = 20_000,
+                                        IsEnmity = true,
+                                        //ExtraAttrInfos = new List<AttrKvPair>(){new(){ AttrId  = AttrIdConsts.DamageXiXue, Val = 2000} }
+                                    },
+                                    new MapFightEffectCauseNoise()
+                                    {
+
+                                    }
+                                },
+                                FailBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectThrowBreakFreeCfg(),
+                                },
+                            },
+                        },
+                    },
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 2f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputCfg
+                            {
+                                PromptText = "点击Space",
+                                ResultVarKey = "ThrowTimedInput",
+                                TimeoutSeconds = 1.2f,
+                            },
+                        },
+                    },
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 2f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputBranchCfg
+                            {
+                                ResultVarKey = "ThrowTimedInput",
+                                SuccessBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId = AttrIdConsts.NPCHVal,
+                                        AddValue = 20_000,
+                                        IsEnmity = true,
+                                        //ExtraAttrInfos = new List<AttrKvPair>(){new(){ AttrId  = AttrIdConsts.DamageXiXue, Val = 2000} }
+                                    },
+                                    new MapFightEffectCauseNoise()
+                                    {
+
+                                    }
                                 },
                                 FailBranchEffects = new List<MapFightEffectCfg>
                                 {

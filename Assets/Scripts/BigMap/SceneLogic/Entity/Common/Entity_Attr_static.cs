@@ -33,6 +33,7 @@ namespace My.Map.Entity
         public const string Special_YiShang = "Special_YiShang";
 
         public const string Basic_JianShang = "Basic_JianShang";
+        public const string NonH_JianShang_Rate = "NonH_JianShang_Rate";
         public const string Basic_MoveSpeed = "Basic_MoveSpeed";
         public const string Basic_ExtraDmg = "Basic_ExtraDmg"; // 额外伤害
         public const string Spe_Player_ExtraDmg = "Spe_Player_ExtraDmg";

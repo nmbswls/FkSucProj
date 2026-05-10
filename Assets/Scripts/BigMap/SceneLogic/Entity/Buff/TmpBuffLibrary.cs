@@ -25,6 +25,28 @@ namespace My.Map.Entity
 
                     Icon = "player_expose_charm",
                 };
+
+                _library["desire_level_charm"] = new BuffDefinition()
+                {
+                    BuffId = "desire_level_charm",
+
+                    Desc = "",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerCharm, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+                _library["desire_level_damage_resist"] = new BuffDefinition()
+                {
+                    BuffId = "desire_level_damage_resist",
+
+                    Desc = "",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NonH_JianShang_Rate, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
                 //
 
                 _library["player_naishou_to_jianshang"] = new BuffDefinition()

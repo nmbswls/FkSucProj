@@ -441,6 +441,9 @@ MonoBehaviour:
   - Name: move_c
     Clip: {fileID: 7400000, guid: c7da8de0c08dba44f99c7e6555ac8dcc, type: 2}
     Speed: 1
+  - Name: player_force_grapple
+    Clip: {fileID: 7400000, guid: 8f2fadca2215dda4ca23a9627272787e, type: 2}
+    Speed: 1
 --- !u!212 &7672229108084523351
 SpriteRenderer:
   m_ObjectHideFlags: 0

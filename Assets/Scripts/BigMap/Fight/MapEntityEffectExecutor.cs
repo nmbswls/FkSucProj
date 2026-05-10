@@ -1820,39 +1820,54 @@ namespace My.Map.Entity
         }
     }
 
-    public class AbilityEffectExecutor4ThrowQtePrompt : AbilityEffectExecutor
+    public class AbilityEffectExecutor4ThrowAlignLauncherToTarget : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
-            var cfg = effectConf as MapAbilityEffectThrowQtePromptCfg;
+            if (effectConf is not MapAbilityEffectThrowAlignLauncherToTargetCfg cfg)
+            {
+                Debug.LogError("[ThrowAlignLauncher] cfg type");
+                return;
+            }
+
+            long launcherId = ctx.SourceInfo.SrcEntityId;
+            var dest = ctx.TriggerPos.Value + cfg.LogicOffset;
+            ctx.Env.EntityTeleportTo(launcherId, dest);
+        }
+    }
+
+    public class AbilityEffectExecutor4ThrowTimedInput : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var cfg = effectConf as MapAbilityEffectThrowTimedInputCfg;
             if (cfg == null)
             {
-                Debug.LogError("[ThrowQte] cfg null");
+                Debug.LogError("[ThrowTimedInput] cfg null");
                 return;
             }
 
             if (!ctx.Env.globalThrowManager.TryGetThrowContextByTargetId(ctx.TargetId, out var tctx))
             {
-                Debug.LogError("[ThrowQte] no throw context for target " + ctx.TargetId);
+                Debug.LogError("[ThrowTimedInput] no throw context for target " + ctx.TargetId);
                 return;
             }
 
-            if (tctx.ActiveQte != null && !tctx.ActiveQte.Resolved)
+            if (tctx.ActiveHold != null && !tctx.ActiveHold.Resolved)
             {
-                Debug.LogWarning("[ThrowQte] QTE already active");
+                Debug.LogWarning("[ThrowTimedInput] timed input session already active");
                 return;
             }
 
-            float timeout = LogicTime.time + Mathf.Max(0.05f, cfg.TimeoutSeconds);
-            tctx.ActiveQte = new ThrowQteSession
+            float start = LogicTime.time;
+            float timeout = start + Mathf.Max(0.05f, cfg.TimeoutSeconds);
+
+            tctx.ActiveHold = new TimelineHoldSession
             {
-                QteId = cfg.QteId,
-                PromptText = cfg.PromptText,
                 ResultVarKey = cfg.ResultVarKey,
-                SuccessValue = cfg.SuccessValue,
-                FailValue = cfg.FailValue,
+                StartLogicTime = start,
                 TimeoutAtLogicTime = timeout,
-                HoldTimelineAfterIndex = ctx.ThrowTimelineEventIndex,
+                HoldBlocksTimelineRowsAfterIndex = ctx.ThrowTimelineEventIndex,
             };
 
             Transform follow = null;
@@ -1861,18 +1876,18 @@ namespace My.Map.Entity
                 follow = My.MainGameManager.Instance.playerScenePresenter.transform;
             }
 
-            My.UI.PlayerHeadQteHintView.Show(cfg.PromptText, KeyCode.Space, follow);
+            My.UI.PlayerHeadThrowQteHud.ShowSession(tctx, cfg.PromptText, follow);
         }
     }
 
-    public class AbilityEffectExecutor4ThrowQteBranch : AbilityEffectExecutor
+    public class AbilityEffectExecutor4ThrowTimedInputBranch : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
-            var cfg = effectConf as MapAbilityEffectThrowQteBranchCfg;
+            var cfg = effectConf as MapAbilityEffectThrowTimedInputBranchCfg;
             if (cfg == null)
             {
-                Debug.LogError("[ThrowQteBranch] cfg null");
+                Debug.LogError("[ThrowTimedInputBranch] cfg null");
                 return;
             }
 
@@ -1889,7 +1904,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            bool success = tctx.RunningVars.TryGetValue(cfg.ResultVarKey, out var val) && val == cfg.SuccessValue;
+            bool success = tctx.RunningVars.TryGetValue(cfg.ResultVarKey, out var val) && val == TimelineHoldSession.OutcomeSuccess;
             var list = success ? cfg.SuccessBranchEffects : cfg.FailBranchEffects;
             if (list == null)
             {
@@ -1921,7 +1936,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            ctx.Env.globalThrowManager.EndThrowAsQteBreakFree(tctx);
+            ctx.Env.globalThrowManager.EndThrowAsPlayerBreakFree(tctx);
         }
     }
 }

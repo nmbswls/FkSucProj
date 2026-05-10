@@ -9,6 +9,7 @@ namespace My.Map
         AbilityPhase = 1,
         Buff = 2,
         Dialog = 3,
+        ThrowContext = 4,
     }
 
     // 何时允许从栈中移除该请求（可多选）

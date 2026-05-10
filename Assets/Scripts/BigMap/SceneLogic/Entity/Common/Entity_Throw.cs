@@ -61,10 +61,9 @@ namespace My.Map.Entity
                     continue;
                 }
 
-                TickThrowQteInput(ctx);
                 ctx.TryDispatchTimelineEvents(LogicTime.time);
 
-                if (ctx.Duration >= 0 && LogicTime.time > ctx.StartTime + ctx.Duration)
+                if (ctx.Duration >= 0 && ctx.ThrowNonHoldElapsed > ctx.Duration)
                 {
                     CleanOneThrowContext(ctx, ThrowEndReason.Complete);
                 }
@@ -80,39 +79,6 @@ namespace My.Map.Entity
             }
         }
 
-        void TickThrowQteInput(ThrowContext ctx)
-        {
-            if (ctx.ActiveQte == null || ctx.ActiveQte.Resolved)
-            {
-                return;
-            }
-
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-            {
-                ResolveThrowQteSession(ctx, true);
-                return;
-            }
-
-            if (LogicTime.time >= ctx.ActiveQte.TimeoutAtLogicTime)
-            {
-                ResolveThrowQteSession(ctx, false);
-            }
-        }
-
-        static void ResolveThrowQteSession(ThrowContext ctx, bool success)
-        {
-            var q = ctx.ActiveQte;
-            if (q == null || q.Resolved)
-            {
-                return;
-            }
-
-            q.Resolved = true;
-            ctx.RunningVars[q.ResultVarKey] = success ? q.SuccessValue : q.FailValue;
-            My.UI.PlayerHeadQteHintView.Hide();
-            ctx.ActiveQte = null;
-        }
-
         public bool TryGetThrowContextByTargetId(long targetId, out ThrowContext ctx)
         {
             if (_targetToContextId.TryGetValue(targetId, out var ctxId) && _contextById.TryGetValue(ctxId, out ctx))
@@ -124,14 +90,14 @@ namespace My.Map.Entity
             return false;
         }
 
-        public void EndThrowAsQteBreakFree(ThrowContext ctx)
+        public void EndThrowAsPlayerBreakFree(ThrowContext ctx)
         {
             if (ctx == null || !_contextById.ContainsKey(ctx.CtxId))
             {
                 return;
             }
 
-            CleanOneThrowContext(ctx, ThrowEndReason.QteBreakFree);
+            CleanOneThrowContext(ctx, ThrowEndReason.PlayerBreakFree);
         }
 
         public bool TryLaunchThrow(IThrowLauncher launcher, IThrowTarget target, MapAbilityEffectThrowStartCfg cfg,
@@ -206,6 +172,7 @@ namespace My.Map.Entity
             _targetToContextId[target.Id] = newCtx.CtxId;
             _contextById[newCtx.CtxId] = newCtx;
 
+            newCtx.TryStartLauncherHoldAnim();
             newCtx.TryDispatchTimelineEvents(LogicTime.time);
 
             return true;
@@ -269,8 +236,8 @@ namespace My.Map.Entity
 
         void CleanOneThrowContext(ThrowContext ctx, ThrowEndReason reason)
         {
-            ctx.ActiveQte = null;
-            My.UI.PlayerHeadQteHintView.Hide();
+            ctx.ClearLauncherHoldAnim();
+            ctx.OnThrowTermination();
 
             var launcher = ctx.Launcher;
             var victim = ctx.Target;
