@@ -915,6 +915,22 @@ namespace My.Map.Entity
                         }
                     }
                     break;
+                case MapAbilityEffectIfBranchCfg.ECheckType.HasTarget:
+                    {
+                        if(ctx.TargetId == 0)
+                        {
+                            isTrue = false;
+                            break;
+                        }
+
+                        var entity = ctx.Env.GetLogicEntity(ctx.TargetId);
+                        if (entity == null)
+                        {
+                            isTrue = false;
+                            break;
+                        }
+                    }
+                    break;
             }
 
             if(isTrue)
@@ -1817,22 +1833,6 @@ namespace My.Map.Entity
                 MainGameManager.Instance?.ShowFakeFxEffect("\u5077\u88ad\u5931\u8d25", player.Pos);
                 Debug.Log($"Sneak backstab FAIL vs entity {target.Id}, p={p:F3}, PhysicalForm={phy}");
             }
-        }
-    }
-
-    public class AbilityEffectExecutor4ThrowAlignLauncherToTarget : AbilityEffectExecutor
-    {
-        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
-        {
-            if (effectConf is not MapAbilityEffectThrowAlignLauncherToTargetCfg cfg)
-            {
-                Debug.LogError("[ThrowAlignLauncher] cfg type");
-                return;
-            }
-
-            long launcherId = ctx.SourceInfo.SrcEntityId;
-            var dest = ctx.TriggerPos.Value + cfg.LogicOffset;
-            ctx.Env.EntityTeleportTo(launcherId, dest);
         }
     }
 

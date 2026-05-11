@@ -31,6 +31,9 @@ namespace My.Map.Entity
         // 出手方 Layer0 动画栈句柄；投技结束时 ReleaseAnimRequestForced
         public long LauncherHoldAnimHandle;
 
+        // true 时：TryBeginLauncherAlignSmooth 成功发起了 Dash，用于 FreezeThrowTimelineDuringLauncherAlign
+        bool _launcherAlignClockFreezeActive;
+
         public float ThrowNonHoldElapsed => _throwTimelineProgressClock;
 
         // 表现层结算：写入 RunningVars、清空 ActiveHold（不调用 UI；HUD 自行关闭）
@@ -99,6 +102,51 @@ namespace My.Map.Entity
             }
 
             LauncherHoldAnimHandle = 0;
+        }
+
+        public void TryBeginLauncherAlignSmooth()
+        {
+            _launcherAlignClockFreezeActive = false;
+            if (Env == null || SourceCfg == null || Launcher == null || Target == null)
+            {
+                return;
+            }
+
+            if (!SourceCfg.AlignLauncherToTargetOnStart || SourceCfg.AlignLauncherDuration <= 1e-4f)
+            {
+                return;
+            }
+
+            if (Env.GetLogicEntity(Launcher.Id, false) is not BaseUnitLogicEntity unit)
+            {
+                return;
+            }
+
+            Vector2 dest = Target.Pos + SourceCfg.AlignLauncherLogicOffset;
+            Vector2 delta = dest - unit.Pos;
+            float dist = delta.magnitude;
+            if (dist < 0.02f)
+            {
+                return;
+            }
+
+            float t = Mathf.Max(1e-3f, SourceCfg.AlignLauncherDuration);
+            float speed = dist / t;
+            unit.StartDash(delta.normalized, t, speed, null, false, false, string.Empty, SourceCfg.AlignLauncherStopOnWall, false);
+            _launcherAlignClockFreezeActive = true;
+        }
+
+        public void StopLauncherControlledMoveIfAny()
+        {
+            if (Env == null || Launcher == null)
+            {
+                return;
+            }
+
+            if (Env.GetLogicEntity(Launcher.Id, false) is BaseUnitLogicEntity unit && unit.controlledMoveCtx != null)
+            {
+                unit.EndControlledMove(0);
+            }
         }
 
         public GameLogicManager.LogicFightEffectContext BuildFightEffectContext(long targetEntityId, int throwTimelineEventIndex = -1)
@@ -184,7 +232,12 @@ namespace My.Map.Entity
             }
 
             float dtWall = Mathf.Max(0f, logicTimeNow - _throwTimelineLastWallTime);
-            if (ActiveHold == null)
+            bool holdBlocksClock = ActiveHold != null && !ActiveHold.Resolved;
+            bool alignFreeze = _launcherAlignClockFreezeActive
+                && SourceCfg != null
+                && SourceCfg.FreezeThrowTimelineDuringLauncherAlign
+                && logicTimeNow < StartTime + SourceCfg.AlignLauncherDuration;
+            if (!holdBlocksClock && !alignFreeze)
             {
                 _throwTimelineProgressClock += dtWall;
             }

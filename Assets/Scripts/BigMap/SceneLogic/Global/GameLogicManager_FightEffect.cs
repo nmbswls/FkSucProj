@@ -230,11 +230,6 @@ namespace My
                             executor = new AbilityEffectExecutor4SneakBackstabResolve();
                         }
                         break;
-                    case MapAbilityEffectThrowAlignLauncherToTargetCfg:
-                        {
-                            executor = new AbilityEffectExecutor4ThrowAlignLauncherToTarget();
-                        }
-                        break;
                     case MapAbilityEffectThrowTimedInputCfg:
                         {
                             executor = new AbilityEffectExecutor4ThrowTimedInput();

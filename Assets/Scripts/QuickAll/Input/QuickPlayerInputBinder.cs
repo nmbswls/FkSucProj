@@ -94,6 +94,9 @@ namespace My.Input
 
             HView,
             Crouch,
+
+            Bag,
+            Skill,
         }
 
         //public static string MouseRight = "MouseRight";
@@ -143,12 +146,6 @@ namespace My.Input
         private readonly string keyTab = EInputKey.Tab.ToString();
         private void Update()
         {
-            // 1. 普通按键检测
-            if (UnityEngine.Input.GetKeyDown(KeyCode.I))
-            {
-                UIOrchestrator.Instance.EnsurePlayerBag();
-            }
-
             if (UnityEngine.Input.GetKeyDown(KeyCode.M))
             {
                 WorldMapRuntime.TryToggle();
@@ -340,6 +337,9 @@ namespace My.Input
             actions.OverworldMap.E.performed += OnHotKeyE;
             actions.OverworldMap.R.performed += OnHotKeyR;
 
+            actions.OverworldMap.Skill.performed += OnHotKeySkill;
+            actions.OverworldMap.Bag.performed += OnHotKeyBag;
+
             actions.OverworldMap.PointerPos.performed += OnPointerMove;
         }
 
@@ -381,6 +381,9 @@ namespace My.Input
             actions.OverworldMap.Q.performed -= OnHotKeyQ;
             actions.OverworldMap.E.performed -= OnHotKeyE;
             actions.OverworldMap.R.performed -= OnHotKeyR;
+
+            actions.OverworldMap.Skill.performed += OnHotKeySkill;
+            actions.OverworldMap.Bag.performed += OnHotKeyBag;
 
             actions.OverworldMap.Disable();
             actions.BattleMap.Disable();
@@ -507,6 +510,9 @@ namespace My.Input
 
         public void OnHotKeyCrouch(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Crouch.ToString());
 
+        public void OnHotKeyBag(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Bag.ToString());
+        public void OnHotKeySkill(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Skill.ToString());
+
         public void OnKeyPress(InputAction.CallbackContext ctx, string keyName)
         {
             if (GlobalLock)
@@ -623,6 +629,10 @@ namespace My.Input
                 }
 
                 p.SetSpecialCrouchStance(!p.IsSpecialCrouchStance);
+            }
+            else if(keyName == EInputKey.Bag.ToString())
+            {
+                UIOrchestrator.Instance.EnsurePlayerBag();
             }
         }
 

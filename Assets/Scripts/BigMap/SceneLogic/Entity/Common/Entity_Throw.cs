@@ -172,6 +172,7 @@ namespace My.Map.Entity
             _targetToContextId[target.Id] = newCtx.CtxId;
             _contextById[newCtx.CtxId] = newCtx;
 
+            newCtx.TryBeginLauncherAlignSmooth();
             newCtx.TryStartLauncherHoldAnim();
             newCtx.TryDispatchTimelineEvents(LogicTime.time);
 
@@ -237,13 +238,14 @@ namespace My.Map.Entity
         void CleanOneThrowContext(ThrowContext ctx, ThrowEndReason reason)
         {
             ctx.ClearLauncherHoldAnim();
+            ctx.StopLauncherControlledMoveIfAny();
             ctx.OnThrowTermination();
 
             var launcher = ctx.Launcher;
             var victim = ctx.Target;
 
             ctx.DispatchTerminationEffects(reason);
-
+ 
             launcher.OnThrownInterrupt();
             victim.OnBeingThrowInterrupt();
 

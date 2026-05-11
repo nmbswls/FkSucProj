@@ -18,6 +18,7 @@ namespace My.Map.Entity
         public EDmgFlag Flags;
 
         public int TargetType; // 在不同触发语境下 该值的含义不同
+        public bool IsSelf;
 
         public List<AttrKvPair> ExtraAttrInfos;
     }

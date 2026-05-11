@@ -11,6 +11,7 @@ using static UnityEditor.Progress;
 using My.Map;
 using System;
 using My.Player;
+using static My.Input.QuickPlayerInputBinder;
 
 namespace My.UI.Bag
 {
@@ -44,6 +45,8 @@ namespace My.UI.Bag
 
         public Transform SpecBagSelectionsTr;
 
+        public Button CloseButton;
+
         public class InnerSpeBagItem
         {
             public RectTransform Root;
@@ -66,6 +69,15 @@ namespace My.UI.Bag
 
             GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
 
+            if(CloseButton != null)
+            {
+                CloseButton.onClick.AddListener(() =>
+                {
+                    UIManager.Instance.HidePanel("PlayerBag");
+                });
+            }
+            
+
             List<EPlayerBagId> enableBags = new() { EPlayerBagId.Secret, EPlayerBagId.Pet };
             for (int i = 0; i < SpecBagSelectionsTr.childCount; i++)
             {
@@ -86,10 +98,12 @@ namespace My.UI.Bag
                 var btn = childOne.GetComponentInChildren<Button>();
                 item.Btn = btn;
 
+                EPlayerBagId bagId = enableBags[i];
+
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() =>
                 {
-                    SwitchSpeBag(enableBags[i]);
+                    SwitchSpeBag(bagId);
                 });
 
                 item.SelectHint = childOne.Find("Select").GetComponent<Image>();
@@ -387,6 +401,11 @@ namespace My.UI.Bag
 
         public bool OnHotkey(string keyName)
         {
+            if(keyName == EInputKey.Bag.ToString())
+            {
+                UIManager.Instance.HidePanel("PlayerBag");
+                return true;
+            }
             return false;
         }
 

@@ -12,7 +12,11 @@ namespace My.Map.Entity
         public enum ECheckType
         {
             HasBuff,
-            AttrGreater
+            AttrGreater,
+
+            HasTarget,
+
+            BodyVsWin,
         }
 
         public ECheckType CheckType;

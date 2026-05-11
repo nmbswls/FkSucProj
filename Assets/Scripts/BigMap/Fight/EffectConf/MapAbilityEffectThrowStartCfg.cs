@@ -28,6 +28,21 @@ namespace My.Map.Entity
         [Tooltip("Legacy：ThrowTimelineEvents 为空时给目标的 Buff id")]
         public string ThrowMainBuffId;
 
+        [Header("投技开始时：出手方滑向受害者逻辑位置")]
+        [Tooltip("true：投技创建后立即用受控 Dash 滑向目标（平滑）；false：不对齐")]
+        public bool AlignLauncherToTargetOnStart;
+
+        [Tooltip("滑向时长（秒）；AlignLauncherToTargetOnStart 且 >0 时生效")]
+        public float AlignLauncherDuration = 0.15f;
+
+        public Vector2 AlignLauncherLogicOffset;
+
+        [Tooltip("对齐 Dash 撞墙是否结束")]
+        public bool AlignLauncherStopOnWall = true;
+
+        [Tooltip("true：对齐持续时间内不推进投技时间轴时钟（与挂起类似，避免 QTE 在对齐完成前触发）")]
+        public bool FreezeThrowTimelineDuringLauncherAlign = true;
+
         [Tooltip("时间轴事件")]
         public List<ThrowTimelineEventSpec> ThrowTimelineEvents = new();
 

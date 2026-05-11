@@ -2649,30 +2649,81 @@ namespace My.Map.Entity
             dashPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(dashPhase);
 
-            var executePhase = new MapAbilityPhase()
-            {
-                PhaseName = "Execute",
-                LockMovement = true,
-                LockRotation = true,
-                ImmuneKnock = true,
-                DurationValue = new()
-                {
-                    ValType = EOneVariatyType.Float,
-                    RawVal = "0.3"
-                },
-                UsePhaseHitAsTarget = "Dash",
-            };
 
-            //var execEffect = new MapAbilityEffectAddBuffCfg()
-            //{
-            //    BuffId = "force_stun",
-            //    Duration = 3.0f,
-            //};
+            // 检查必须由目标
+            {
+                var checkPhase1 = new MapAbilityPhase()
+                {
+                    PhaseName = "Check1",
+                    LockMovement = true,
+                    LockRotation = true,
+                    ImmuneKnock = true,
+                    DurationValue = new()
+                    {
+                        ValType = EOneVariatyType.Float,
+                        RawVal = "0"
+                    },
+                    UsePhaseHitAsTarget = "Dash",
+                };
+
+                var checkHitCfg = new MapAbilityEffectIfBranchCfg()
+                {
+                    CheckType = MapAbilityEffectIfBranchCfg.ECheckType.HasTarget,
+                    FalseBranchEffects = new()
+                    {
+
+                    }
+                };
+                checkPhase1.Events.Add(new PhaseEffectEvent() { Effect = checkHitCfg, Kind = PhaseEventKind.OnEnter });
+                spec.Phases.Add(checkPhase1);
+            }
+
+            // 检查必须成功触发对抗判定
+            {
+                var checkPhase2 = new MapAbilityPhase()
+                {
+                    PhaseName = "Check2",
+                    LockMovement = true,
+                    LockRotation = true,
+                    ImmuneKnock = true,
+                    DurationValue = new()
+                    {
+                        ValType = EOneVariatyType.Float,
+                        RawVal = "0"
+                    },
+                };
+
+                var checkWinCfg = new MapAbilityEffectIfBranchCfg()
+                {
+                    CheckType = MapAbilityEffectIfBranchCfg.ECheckType.BodyVsWin,
+                    FalseBranchEffects = new()
+                    {
+                        new MapAbilityEffectCostResourceCfg()
+                        {
+                            IsSelf = true,
+                            ResourceId = AttrIdConsts.PlayerClothes,
+                            CostValue = -10_000,
+                        },
+
+                        new MapFightEffectInterruptCaster()
+                        {
+
+                        }
+                    }
+                };
+                checkPhase2.Events.Add(new PhaseEffectEvent() { Effect = checkWinCfg, Kind = PhaseEventKind.OnEnter });
+                spec.Phases.Add(checkPhase2);
+            }
+
+
             var throwCfg = new MapAbilityEffectThrowStartCfg()
             {
                 Priority = 999,
                 Duration = 2.5f,
                 LauncherHoldAnimTag = "player_force_grapple",
+                AlignLauncherToTargetOnStart = true,
+                AlignLauncherDuration = 0.12f,
+                FreezeThrowTimelineDuringLauncherAlign = true,
                 //ThrowMainBuffId = "force_zha_target_buff",
                 OnPlayerBreakFreeEffects = new List<MapFightEffectCfg>
                 {
@@ -2694,7 +2745,6 @@ namespace My.Map.Entity
                         TimeFromStart = 0f,
                         Effects = new List<MapFightEffectCfg>
                         {
-                            new MapAbilityEffectThrowAlignLauncherToTargetCfg(),
                             new MapAbilityEffectThrowTimedInputCfg
                             {
                                 PromptText = "点击Space",
@@ -2819,13 +2869,27 @@ namespace My.Map.Entity
                 },
             };
 
-            var exec2Effect = new MapFightEffectEasyEffect()
+            var throwEffectCfg = new MapFightEffectEasyEffect()
             {
                 EffectText = "抓",
             };
 
+            var executePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Execute",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+                UsePhaseHitAsTarget = "Dash",
+            };
+
             executePhase.Events.Add(new PhaseEffectEvent() { Effect = throwCfg, Kind = PhaseEventKind.OnEnter });
-            executePhase.Events.Add(new PhaseEffectEvent() { Effect = exec2Effect, Kind = PhaseEventKind.OnEnter });
+            executePhase.Events.Add(new PhaseEffectEvent() { Effect = throwEffectCfg, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(executePhase);
             return spec;
         }

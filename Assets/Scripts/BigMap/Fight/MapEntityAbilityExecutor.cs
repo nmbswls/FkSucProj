@@ -642,7 +642,7 @@ namespace My.Map.Entity
             }
             ctx._scheduled.Clear();
 
-            CleanupPhase();
+            CleanupPhase(ctx);
         }
 
 
@@ -709,10 +709,9 @@ namespace My.Map.Entity
             return true;
         }
 
-        public void CleanupPhase(bool isInterrupt = false)
+        public void CleanupPhase(AbilityRunningContext ctx, bool isInterrupt = false)
         {
             // 关闭命中盒、停止位移曲线、回收特效、重置输入锁等
-            var ctx = CurrentCtx;
             if (ctx.PhaseAnimHandle != 0)
             {
                 EntityOwner.ReleaseAnimRequestForced(ctx.PhaseAnimHandle);
@@ -957,7 +956,7 @@ namespace My.Map.Entity
 
             //_cooldownEnd = Time.time + CurrentCtx.AbilityConfig.Cooldown;
 
-            CleanupPhase();
+            CleanupPhase(CurrentCtx);
 
             var sessionId = CurrentCtx.AbilityAnimSessionId;
             CurrentCtx.OneAbilityEnd?.Invoke(true);
@@ -988,7 +987,7 @@ namespace My.Map.Entity
                 EntityOwner.viewer.TryCancelButtomProgress(CurrentCtx.ShowProgressShowId);
             }
 
-            CleanupPhase();
+            CleanupPhase(CurrentCtx);
 
             var sessionId = CurrentCtx.AbilityAnimSessionId;
 
