@@ -40,6 +40,7 @@ public partial class Tables
     public demo.TbPlayerDesireLevel TbPlayerDesireLevel {get; }
     public demo.TbPlayerJingYuLevel TbPlayerJingYuLevel {get; }
     public demo.TbPlayerSanCorruptLevel TbPlayerSanCorruptLevel {get; }
+    public demo.TbPlayerClothesExposeInfo TbPlayerClothesExposeInfo {get; }
     public demo.TbWantedLevelInfo TbWantedLevelInfo {get; }
     public demo.TbWantedBehaveInfo TbWantedBehaveInfo {get; }
     public demo.TbTalentNode TbTalentNode {get; }
@@ -54,6 +55,7 @@ public partial class Tables
     public demo.TbSpiritMonsterTypeBudget TbSpiritMonsterTypeBudget {get; }
     public demo.TbContainerItemStackOverride TbContainerItemStackOverride {get; }
     public demo.TbContainerStackTagRule TbContainerStackTagRule {get; }
+    public demo.TbMapAreaEffect TbMapAreaEffect {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -83,6 +85,7 @@ public partial class Tables
         TbPlayerDesireLevel = new demo.TbPlayerDesireLevel(loader("demo_tbplayerdesirelevel"));
         TbPlayerJingYuLevel = new demo.TbPlayerJingYuLevel(loader("demo_tbplayerjingyulevel"));
         TbPlayerSanCorruptLevel = new demo.TbPlayerSanCorruptLevel(loader("demo_tbplayersancorruptlevel"));
+        TbPlayerClothesExposeInfo = new demo.TbPlayerClothesExposeInfo(loader("demo_tbplayerclothesexposeinfo"));
         TbWantedLevelInfo = new demo.TbWantedLevelInfo(loader("demo_tbwantedlevelinfo"));
         TbWantedBehaveInfo = new demo.TbWantedBehaveInfo(loader("demo_tbwantedbehaveinfo"));
         TbTalentNode = new demo.TbTalentNode(loader("demo_tbtalentnode"));
@@ -97,6 +100,7 @@ public partial class Tables
         TbSpiritMonsterTypeBudget = new demo.TbSpiritMonsterTypeBudget(loader("demo_tbspiritmonstertypebudget"));
         TbContainerItemStackOverride = new demo.TbContainerItemStackOverride(loader("demo_tbcontaineritemstackoverride"));
         TbContainerStackTagRule = new demo.TbContainerStackTagRule(loader("demo_tbcontainerstacktagrule"));
+        TbMapAreaEffect = new demo.TbMapAreaEffect(loader("demo_tbmapareaeffect"));
         ResolveRef();
     }
     
@@ -128,6 +132,7 @@ public partial class Tables
         TbPlayerDesireLevel.ResolveRef(this);
         TbPlayerJingYuLevel.ResolveRef(this);
         TbPlayerSanCorruptLevel.ResolveRef(this);
+        TbPlayerClothesExposeInfo.ResolveRef(this);
         TbWantedLevelInfo.ResolveRef(this);
         TbWantedBehaveInfo.ResolveRef(this);
         TbTalentNode.ResolveRef(this);
@@ -142,6 +147,7 @@ public partial class Tables
         TbSpiritMonsterTypeBudget.ResolveRef(this);
         TbContainerItemStackOverride.ResolveRef(this);
         TbContainerStackTagRule.ResolveRef(this);
+        TbMapAreaEffect.ResolveRef(this);
     }
 }
 

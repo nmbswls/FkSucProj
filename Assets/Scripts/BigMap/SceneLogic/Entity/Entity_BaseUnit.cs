@@ -12,6 +12,7 @@ using UnityEngine;
 using static My.Map.Fight.FightStruct;
 using My.Player;
 using Unity.VisualScripting;
+using static My.UI.FishingMiniGamePanel;
 
 
 namespace My.Map
@@ -50,7 +51,7 @@ namespace My.Map
         public float fovDegrees = 90f;
 
         public bool MarkNoLogic; // 
-        public bool MarkUnsensored;
+        public bool MarkUnsensored { get; set; }
 
         public LogicEntityRecord4UnitBase UnitBaseRecord 
         { 
@@ -286,6 +287,32 @@ namespace My.Map
             });
         }
 
+
+        public void ForceUnitUnsensored(int reason, long srcId)
+        {
+            //foreach (var b in BuffContainer.Values)
+            //{
+            //    b.DoBuffTrigger(ETriggerType.OnDie);
+            //}
+            MarkUnsensored = true;
+            LogicManager.globalBuffManager.RequestAddBuff(this.Id, "unsensored");
+
+            TryInterrupt(new InterruptRequest()
+            {
+                source = EInterruptSource.Die,
+            });
+
+            LogicManager.LogicEventBus.Publish(new MLEUnitCantAlert()
+            {
+                Ctx = new()
+                {
+
+                    HappenPos = Pos,
+                    SourceEntity = LogicManager.playerLogicEntity,
+                },
+                EntityId = this.Id,
+            });
+        }
 
         public virtual int GetUnitLevel()
         {
@@ -644,8 +671,6 @@ namespace My.Map
             // 数值类
             RegisterUnitCommonNumeris();
             
-            // 资源类
-            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 100_000);
 
             RegisterUnitCommonStates();
 
@@ -679,7 +704,7 @@ namespace My.Map
         {
             attributeStore.RegisterNumeric("Attack", initialBase: 100);
             attributeStore.RegisterNumeric("Strength", initialBase: 10);
-            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 100_000);
+            //attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 100_000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
         }
         
@@ -1267,6 +1292,12 @@ namespace My.Map
 
                 var fix_dr = GetAttr(AttrIdConsts.Final_Fix_DR_All);
                 dmg -= fix_dr;
+
+                foreach (var b in BuffContainer.Values)
+                {
+                    b.DoBuffTrigger(ETriggerType.FinalDmgReduced, (int)fix_dr);
+                }
+
                 if (dmg <= 0) dmg = 0;
 
                 return -dmg;

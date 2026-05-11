@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using My.Map.Entity;
 using My.Map.View;
 using My.UI;
 using TMPro;
@@ -149,10 +150,33 @@ namespace My.MiniGame
             });
         }
 
+
+        private Dictionary<string, long> CalcAbsorbGainResult(int successCnt, int perfectCnt)
+        {
+            return new();
+        }
+
         private void OnMiniGameFinish()
         {
             //MainGameManager.Instance.OnSmallGameFinish(ZhaQuTargetId, success, null);
-            
+
+            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            long cnt = (successCnt + perfectCnt);
+            long costSan = cnt * 1000;
+
+            // 按照成功次数扣减理智
+            player.ApplyResourceChange(AttrIdConsts.PlayerSanity, -costSan, false, Map.Fight.FightStruct.EDmgFlag.None, null);
+            if(player.DesireLevel <= 2)
+            {
+                player.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, cnt * 1000, false, Map.Fight.FightStruct.EDmgFlag.None, null);
+            }
+            else
+            {
+                player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, cnt * 1000, false, Map.Fight.FightStruct.EDmgFlag.None, null);
+            }
+
+            var reward = CalcAbsorbGainResult(successCnt, perfectCnt);
+
 
             DOVirtual.DelayedCall(1.2f, () =>
             {

@@ -187,6 +187,8 @@ public interface ISceneAbilityViewer
 
     void ShowMapSpeachBubble(long entityId, string content, float duration, int priority = 1, float extraInteval = 0);
 
+    // 投技对齐：从目标单位 Presenter 解析抓取挂点世界坐标并转逻辑坐标；失败则调用方回退 Target.Pos
+    bool TryGetThrowGrappleLogicPos(long targetEntityId, string socketPath, out Vector2 logicPos);
 
     //void ShowDamageNumber(Vector2 worldPos, string content);
 }

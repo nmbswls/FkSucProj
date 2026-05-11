@@ -100,4 +100,19 @@
 
     <!-- 影怪：player_desire_level 含 drift、Aura 等；后场徘徊环半径与假影怪数量由 AmbientSpiritVisualManager 按等级/理智推导；ambient_spirit_prefab 已废弃；外观 spirit_monster_budget + TbUnitNpc → Resources/SpiritMonsterAmbient；__tables__ 见 gen_spirit_monster_budget_tables.py -->
 
+    <!-- 区域效果：与 FightStruct.EShapeType / ECampFilterType 数值对齐 -->
+    <enum name="EAreaShapeType">
+        <var name="None" value="0"/>
+        <var name="Square" value="1"/>
+        <var name="Circle" value="2"/>
+        <var name="Sector" value="3"/>
+    </enum>
+
+    <enum name="EAreaCampFilter">
+        <var name="All" value="0"/>
+        <var name="NotSelf" value="1"/>
+        <var name="OnlySelf" value="2"/>
+    </enum>
+
+    <!-- MapAreaEffect 记录结构由 map_area_effect.xlsx 表头 read_schema_from_file 推断 -->
 </module>

@@ -54,9 +54,7 @@ using UnityEngine;
     [Serializable]
     public class MapAbilityEffectSneakBackstabResolveCfg : MapFightEffectCfg
     {
-        public float BaseSuccessChance = 0.62f;
-        public float PhysicalFormPenalty = 0.00003f;
-        public float FailTempEnmity = 42f;
+        
     }
 }
 

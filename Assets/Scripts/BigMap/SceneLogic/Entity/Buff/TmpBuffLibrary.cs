@@ -107,7 +107,56 @@ namespace My.Map.Entity
                     },
                 };
 
-                
+                _library["player_burst_milk"] = new BuffDefinition()
+                {
+                    BuffId = "player_burst_milk",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            ShowSpecific = true,
+
+                            TriggerType = ETriggerType.FinalDmgReduced,
+                            NeedCount = 6000,
+
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectEasyEffect()
+                                {
+                                    EffectText = "爆乳",
+                                },
+                                new MapAbilityEffectHitBoxCfg()
+                                {
+                                    Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                    Width = 2.5f,
+                                    CampFilterType = ECampFilterType.NotSelf,
+
+                                    HitResult = new()
+                                    {
+                                        OnHitEffects = new()
+                                        {
+                                            new MapAbilityEffectAddBuffCfg()
+                                            {
+                                                BuffId = "force_stun",
+                                                Duration = 1.0f,
+                                            },
+                                            new MapAbilityEffectAddResourceCfg()
+                                            {
+                                                ResourceId = AttrIdConsts.NPCHVal,
+                                                AddValue = 15_000,
+                                            },
+                                        }
+                                    }
+                                },
+
+                            }
+                        }
+                    },
+                };
 
 
                 _library["lock_move"] = new BuffDefinition()
@@ -610,6 +659,42 @@ namespace My.Map.Entity
                                 }
                             }
                         }
+                    },
+                };
+
+                _library["ground_fire_1"] = new BuffDefinition()
+                {
+                    BuffId = "ground_fire_1",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 800,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddResourceCfg()
+                                {
+                                    ResourceId = AttrIdConsts.HP,
+                                    AddValue = -200,
+                                    IsEnmity = true,
+                                }
+                            }
+                        }
+                    },
+                };
+
+                // 移动粉雾区效（TbMapAreaEffect player_pink_mist_trail）；数值可再调
+                _library["player_pink_mist"] = new BuffDefinition()
+                {
+                    BuffId = "player_pink_mist",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -1500 },
                     },
                 };
 

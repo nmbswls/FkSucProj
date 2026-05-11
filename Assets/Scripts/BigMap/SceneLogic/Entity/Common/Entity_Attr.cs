@@ -84,6 +84,9 @@ namespace My.Map
                 case AttrIdConsts.Special_YiShang:
                 case AttrIdConsts.HValYiShang:
 
+                case AttrIdConsts.PlayerSJAmount_Fixed:
+                case AttrIdConsts.PlayerSJAmount_Precent:
+
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:

@@ -103,36 +103,6 @@ namespace Config
         }
     }
 
-    public static class MapAreaEffectLoader
-    {
-
-        private static Dictionary<string, MapAreaEffectConfig> _byId = new Dictionary<string, MapAreaEffectConfig>();
-
-        public static MapAreaEffectConfig Get(string cfgId)
-        {
-            if (_byId.TryGetValue(cfgId, out var data))
-                return data;
-
-            var loadOne = Load(cfgId);
-            _byId[cfgId] = loadOne;
-            return loadOne;
-        }
-
-
-        private static MapAreaEffectConfig Load(string cfgId)
-        {
-            var data = Resources.Load<MapAreaEffectConfig>($"Config/Entity/AreaEffect/{cfgId}");
-            if (data == null)
-                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Entity/AreaEffect/{cfgId}");
-            return data;
-        }
-
-        public static void Clear()
-        {
-            _byId.Clear();
-        }
-    }
-
     public static class MapInteractPointLoader
     {
 

@@ -1,12 +1,10 @@
-using Config.Map;
 using Map.Entity;
+using My.Map;
 using My.Map.Entity;
 using My.Map.Fight;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace My.Map.Scene
 {
@@ -21,7 +19,6 @@ namespace My.Map.Scene
 
         public AreaEffectLogicEntity AreaEffectEntity { get { return (AreaEffectLogicEntity)_logic; } }
 
-
         public override void Tick(float dt)
         {
             base.Tick(dt);
@@ -35,37 +32,53 @@ namespace My.Map.Scene
 
         public void TryTriggerActivate(float dt)
         {
-            if (LogicTime.time  < _checkTriggerTimer)
+            if (LogicTime.time < _checkTriggerTimer)
             {
                 return;
             }
 
             _checkTriggerTimer = LogicTime.time + 0.5f;
 
+            var row = AreaEffectEntity.CfgRow;
+            if (row == null)
+            {
+                return;
+            }
+
+            var shape = MapAreaEffectBind.ToShape(row);
             _candidates.Clear();
             int count = 0;
-            switch (AreaEffectEntity.cacheCfg.ShapeInfo.Type)
+            int layerMask = 1 << LayerMask.NameToLayer("MapTarget");
+            switch (shape.Type)
             {
                 case FightStruct.EShapeType.Square:
-                    {
-                        count = Physics2D.OverlapBoxNonAlloc(transform.position, new Vector2(AreaEffectEntity.cacheCfg.ShapeInfo.Width, AreaEffectEntity.cacheCfg.ShapeInfo.Length), 0, hits, 1 << LayerMask.NameToLayer("MapTarget"));
-                    }
+                    count = Physics2D.OverlapBoxNonAlloc(
+                        transform.position,
+                        new Vector2(shape.Width, shape.Length),
+                        0,
+                        hits,
+                        layerMask);
                     break;
                 case FightStruct.EShapeType.Circle:
+                    count = Physics2D.OverlapCircleNonAlloc(transform.position, shape.Radius, hits, layerMask);
+                    break;
+                default:
                     {
-                        count = Physics2D.OverlapCircleNonAlloc(transform.position, AreaEffectEntity.cacheCfg.ShapeInfo.Radius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
+                        float r = Mathf.Max(0.08f, shape.Radius);
+                        count = Physics2D.OverlapCircleNonAlloc(transform.position, r, hits, layerMask);
                     }
                     break;
             }
 
-            // 遍历命中，筛选实现了接口的对象
+            var campFilter = MapAreaEffectBind.ToCampFilter(row);
             for (int i = 0; i < count; i++)
             {
                 var col = hits[i];
-                if (col == null) continue;
+                if (col == null)
+                {
+                    continue;
+                }
 
-                // 在 Collider 或其父节点上寻找接口
-                // 注意：GetComponentInParent 会产生少量 GC，若极致无 GC，可预缓存或自定义映射
                 var presentation = col.GetComponentInParent<IScenePresentation>();
                 if (presentation == null)
                 {
@@ -73,20 +86,25 @@ namespace My.Map.Scene
                 }
 
                 var logic = presentation.GetLogicEntity();
-                if(logic  == null) continue;
+                if (logic == null)
+                {
+                    continue;
+                }
+
                 if (logic is not BaseUnitLogicEntity unitEntity)
                 {
                     continue;
                 }
 
-                switch(AreaEffectEntity.cacheCfg.CampFilterType)
+                switch (campFilter)
                 {
                     case ECampFilterType.OnlySelf:
                         {
-                            if(unitEntity.FactionId != AreaEffectEntity.FactionId)
+                            if (unitEntity.FactionId != AreaEffectEntity.FactionId)
                             {
                                 continue;
                             }
+
                             break;
                         }
                     case ECampFilterType.NotSelf:
@@ -95,15 +113,15 @@ namespace My.Map.Scene
                             {
                                 continue;
                             }
+
                             break;
                         }
                 }
+
                 _candidates.Add(logic);
             }
-
 
             AreaEffectEntity.UpdateAffectedLogics(_candidates);
         }
     }
-
 }

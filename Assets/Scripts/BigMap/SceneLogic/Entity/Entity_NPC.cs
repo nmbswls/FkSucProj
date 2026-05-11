@@ -242,11 +242,21 @@ namespace My.Map
                 moveSpeed = attrCfg.MoveSpeed;
             }
 
+            var initHp = (long)(attrCfg.Hp * 1000);
+            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: initHp);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, initHp);
+
             // H 模式相关资源注册
             attributeStore.RegisterResource(AttrIdConsts.NPCHVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
-            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 3);
+            attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 1);
             attributeStore.RegisterResource(AttrIdConsts.NPCSJProgress, null, 100_000, 0);
+
+            var bodyPower = attrCfg.PhysicalPower;
+            attributeStore.RegisterNumeric(AttrIdConsts.PhysicalPower, (long)(bodyPower * 1000));
+            var hPower = attrCfg.HPower;
+            attributeStore.RegisterNumeric(AttrIdConsts.HPower, (long)(hPower * 1000));
+
         }
 
         public override bool IsOmniVision()

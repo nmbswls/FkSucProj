@@ -1,33 +1,23 @@
-using Config.Unit;
-using Config;
-using UnityEngine;
-using Config.Map;
 using System.Collections.Generic;
-using System;
-using Map.Logic;
+using cfg.demo;
+using My;
+using My.Config;
 using My.Map.Logic;
-using static My.GameLogicManager;
-using System.Linq;
-using System.Security.Principal;
-
+using UnityEngine;
 
 namespace My.Map
 {
     public class AreaEffectLogicEntity : LogicEntityBase
     {
+        public MapAreaEffect CfgRow { get; private set; }
 
-        public MapAreaEffectConfig cacheCfg;
         public AreaEffectLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
-
         }
-
 
         public HashSet<long> currAffectedEntites = new();
         public HashSet<long> newEntities = new();
         public int TotalTriggerCnt = 0;
-
-        private float _lastCheckTimer;
 
         public override EEntityType Type => EEntityType.AreaEffect;
 
@@ -35,7 +25,11 @@ namespace My.Map
         {
             base.Initialize();
 
-            cacheCfg = MapAreaEffectLoader.Get(CfgId);
+            CfgRow = CfgMgr.Cfgs?.TbMapAreaEffect?.GetOrDefault(CfgId);
+            if (CfgRow == null)
+            {
+                Debug.LogError($"AreaEffectLogicEntity Luban row missing: {CfgId}");
+            }
         }
 
         protected override void OnTick(float dt)
@@ -45,23 +39,27 @@ namespace My.Map
 
         public void UpdateAffectedLogics(List<ILogicEntity> inEnties)
         {
+            if (CfgRow == null || string.IsNullOrEmpty(CfgRow.AreaBuffId))
+            {
+                return;
+            }
+
             newEntities.Clear();
             foreach (var inEntity in inEnties)
             {
-                // 新的
-                if(!currAffectedEntites.Contains(inEntity.Id))
+                if (!currAffectedEntites.Contains(inEntity.Id))
                 {
-                    LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, cacheCfg.AreaBuffId, casterId:Id);
+                    LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, CfgRow.AreaBuffId, casterId: Id);
                 }
-                // 维护tmp2
+
                 newEntities.Add(inEntity.Id);
             }
 
             foreach (var curEntity in currAffectedEntites)
             {
-                if(!newEntities.Contains(curEntity))
+                if (!newEntities.Contains(curEntity))
                 {
-                    LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, cacheCfg.AreaBuffId, casterId: Id);
+                    LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, CfgRow.AreaBuffId, casterId: Id);
                 }
             }
 
@@ -70,21 +68,19 @@ namespace My.Map
             newEntities = t;
         }
 
-
         public override void DoEntityDestroyed(string reason)
         {
             base.DoEntityDestroyed(reason);
 
-            // 清理
-            foreach(var curEntity in currAffectedEntites)
+            if (CfgRow != null && !string.IsNullOrEmpty(CfgRow.AreaBuffId))
             {
-                LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, cacheCfg.AreaBuffId, casterId: Id);
+                foreach (var curEntity in currAffectedEntites)
+                {
+                    LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, CfgRow.AreaBuffId, casterId: Id);
+                }
             }
+
             currAffectedEntites.Clear();
         }
     }
-
-
-
 }
-

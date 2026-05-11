@@ -1,0 +1,32 @@
+[
+  {
+    "level": 0,
+    "name": "完好",
+    "line_min": 80,
+    "line_max": 999
+  },
+  {
+    "level": 1,
+    "name": "破损",
+    "line_min": 50,
+    "line_max": 80
+  },
+  {
+    "level": 2,
+    "name": "半裸",
+    "line_min": 30,
+    "line_max": 50
+  },
+  {
+    "level": 3,
+    "name": "全裸",
+    "line_min": 10,
+    "line_max": 30
+  },
+  {
+    "level": 4,
+    "name": "真身",
+    "line_min": 0,
+    "line_max": 10
+  }
+]

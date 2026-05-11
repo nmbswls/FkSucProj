@@ -475,38 +475,40 @@ namespace My.Map.Entity
 
         private void EnterPhase(int index)
         {
-            CurrentCtx.PhaseIndex = index;
-            CurrentCtx.PhaseElapsed = 0f;
+            if (CurrentCtx == null) return; // 技能可能已打断
+            var ctx = CurrentCtx;
+            ctx.PhaseIndex = index;
+            ctx.PhaseElapsed = 0f;
             
-            var phase = CurrentCtx.AbilityConfig.Phases[index];
+            var phase = ctx.AbilityConfig.Phases[index];
 
             if(phase.HoldingPhase)
             {
-                CurrentCtx.LastPhaseHoldTime = LogicTime.time;
+                ctx.LastPhaseHoldTime = LogicTime.time;
             }
             // 锁动作
-            var phaseDurRaw = CurrentCtx.GetVariatyRawVal(phase.DurationValue);
+            var phaseDurRaw = ctx.GetVariatyRawVal(phase.DurationValue);
             var phaseDur = 0f;
             if (!string.IsNullOrEmpty(phaseDurRaw) && !float.TryParse(phaseDurRaw, out phaseDur))
             {
                 Debug.LogError("TickIntern wrong param");
             }
-            CurrentCtx.PhaseDuration = phaseDur;
+            ctx.PhaseDuration = phaseDur;
 
             // 默认：进入即播放自身AnimTag（也可当作一个事件）
             var animTag = phase.AnimTag;
-            if (CurrentCtx.PhaseOverrideAnims != null && CurrentCtx.PhaseOverrideAnims.TryGetValue(phase.PhaseName, out var overrideAnim))
+            if (ctx.PhaseOverrideAnims != null && ctx.PhaseOverrideAnims.TryGetValue(phase.PhaseName, out var overrideAnim))
             {
                 animTag = overrideAnim;
             }
             if (!string.IsNullOrEmpty(animTag))
             {
-                CurrentCtx.DebugSavedAnimTag = animTag;
+                ctx.DebugSavedAnimTag = animTag;
                 var policy = phase.AnimReleasePolicy == 0
                     ? AnimReleasePolicyUtil.DefaultAbilityPhase
                     : phase.AnimReleasePolicy;
                 var resolved = EntityOwner.GetAnimOverride(animTag);
-                CurrentCtx.PhaseAnimHandle = EntityOwner.PushAnimRequest(new AnimPlayRequest
+                ctx.PhaseAnimHandle = EntityOwner.PushAnimRequest(new AnimPlayRequest
                 {
                     AnimName = resolved,
                     Layer = 0,
@@ -518,7 +520,7 @@ namespace My.Map.Entity
             }
             else
             {
-                CurrentCtx.PhaseAnimHandle = 0;
+                ctx.PhaseAnimHandle = 0;
             }
             if (!string.IsNullOrEmpty(phase.EnterDebugString))
             {
@@ -527,18 +529,18 @@ namespace My.Map.Entity
 
             if (phase.WithProgress)
             {
-                CurrentCtx.ShowProgressShowId = EntityOwner.viewer.ShowBottomProgress("Checking", CurrentCtx.PhaseDuration);
+                ctx.ShowProgressShowId = EntityOwner.viewer.ShowBottomProgress("Checking", ctx.PhaseDuration);
             }
 
             if(!string.IsNullOrEmpty(phase.UsePhaseHitAsTarget))
             {
                 var targetStorageName = $"{phase.UsePhaseHitAsTarget}.FirstHit";
-                if(CurrentCtx.RunningStorage.TryGetValue(targetStorageName, out var entityId))
+                if(ctx.RunningStorage.TryGetValue(targetStorageName, out var entityId))
                 {
                     var targetE = EntityOwner.LogicManager.GetLogicEntity(entityId, false);
                     if (targetE != null)
                     {
-                        Debug.Log($"entity:{EntityOwner.Id} ability:{CurrentCtx.AbilityConfig.Id} phase:{phase.PhaseName} change target :{entityId}");
+                        Debug.Log($"entity:{EntityOwner.Id} ability:{ctx.AbilityConfig.Id} phase:{phase.PhaseName} change target :{entityId}");
                         CurrentCtx.Target = targetE;
                     }
                 }
@@ -572,13 +574,15 @@ namespace My.Map.Entity
                 }
             }
 
+            if (CurrentCtx == null) return; // 技能可能已打断
+
             // 世家buff
-            if(phase.PhaseBuff != null)
+            if (phase.PhaseBuff != null)
             {
                 foreach(var buffId in phase.PhaseBuff)
                 {
                     var instId = EntityOwner.BuffManager.AddBuff(EntityOwner.Id, buffId, casterId: EntityOwner.Id);
-                    CurrentCtx.PhaseBindBuffs.Add(instId);
+                    ctx.PhaseBindBuffs.Add(instId);
                 }
             }
 
@@ -591,7 +595,7 @@ namespace My.Map.Entity
                 //    instanceId = 0,
                 //};
                 //var modifier = EntityOwner.AddAttrModifier(srcKey, AttrIdConsts.Unmovable, 1);
-                CurrentCtx.PhaseBindBuffs.Add(instId);
+                ctx.PhaseBindBuffs.Add(instId);
             }
             if (phase.LockRotation)
             {
@@ -602,19 +606,19 @@ namespace My.Map.Entity
                 //    instanceId = 0,
                 //};
                 //var modifier = EntityOwner.AddAttrModifier(srcKey, AttrIdConsts.LockFace, 1);
-                CurrentCtx.PhaseBindBuffs.Add(instId);
+                ctx.PhaseBindBuffs.Add(instId);
             }
             if (phase.ImmuneKnock)
             {
                 var instId = EntityOwner.BuffManager.AddBuff(EntityOwner.Id, "immune_knock");
-                CurrentCtx.PhaseBindBuffs.Add(instId);
+                ctx.PhaseBindBuffs.Add(instId);
             }
             
 
             if (phase.ShowRangePreview)
             {
                 var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(phase.PreviewIntent.ShapeInfo,  EntityOwner.Pos, EntityOwner.FinalLook, phaseDur, phase.PreviewIntent.FaceOffset);
-                CurrentCtx.PhaseIntentEffectId = eId;
+                ctx.PhaseIntentEffectId = eId;
             }
 
             if(phase.InterruptMask.HasFlag(EAbilityInterruptMask.Cast))

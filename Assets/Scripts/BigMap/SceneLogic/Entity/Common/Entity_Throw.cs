@@ -238,6 +238,7 @@ namespace My.Map.Entity
         void CleanOneThrowContext(ThrowContext ctx, ThrowEndReason reason)
         {
             ctx.ClearLauncherHoldAnim();
+            ctx.ClearLauncherAlignState();
             ctx.StopLauncherControlledMoveIfAny();
             ctx.OnThrowTermination();
 
@@ -260,6 +261,7 @@ namespace My.Map.Entity
 
             if (victim is BaseUnitLogicEntity unit)
             {
+
                 unit.ApplyKnockBack(UnityEngine.Random.insideUnitCircle, 0.2f);
             }
         }

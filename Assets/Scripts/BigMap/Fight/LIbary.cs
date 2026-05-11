@@ -2671,7 +2671,10 @@ namespace My.Map.Entity
                     CheckType = MapAbilityEffectIfBranchCfg.ECheckType.HasTarget,
                     FalseBranchEffects = new()
                     {
+                        new MapFightEffectInterruptCaster()
+                            {
 
+                            }
                     }
                 };
                 checkPhase1.Events.Add(new PhaseEffectEvent() { Effect = checkHitCfg, Kind = PhaseEventKind.OnEnter });
@@ -2696,6 +2699,8 @@ namespace My.Map.Entity
                 var checkWinCfg = new MapAbilityEffectIfBranchCfg()
                 {
                     CheckType = MapAbilityEffectIfBranchCfg.ECheckType.BodyVsWin,
+                    Param5 = 10000,
+                    Param6 = 4000, // 防守方弱势
                     FalseBranchEffects = new()
                     {
                         new MapAbilityEffectCostResourceCfg()
@@ -2734,7 +2739,7 @@ namespace My.Map.Entity
                     new MapAbilityEffectAddBuffCfg() 
                     {
                         BuffId = "force_stun",
-                        Duration = 2.0f,
+                        Duration = 2.5f,
                     },
                 },
 

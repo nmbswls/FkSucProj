@@ -28,16 +28,19 @@ namespace My.Map.Entity
         [Tooltip("Legacy：ThrowTimelineEvents 为空时给目标的 Buff id")]
         public string ThrowMainBuffId;
 
-        [Header("投技开始时：出手方滑向受害者逻辑位置")]
-        [Tooltip("true：投技创建后立即用受控 Dash 滑向目标（平滑）；false：不对齐")]
+        [Header("投技开始时：出手方插值移向受害者侧抓取点/逻辑位置")]
+        [Tooltip("true：投技创建后立即按 AlignLauncherDuration 平滑移向目标；不经 Dash/受控移动，无视阻挡")]
         public bool AlignLauncherToTargetOnStart;
 
-        [Tooltip("滑向时长（秒）；AlignLauncherToTargetOnStart 且 >0 时生效")]
+        [Tooltip("插值时长（秒）；AlignLauncherToTargetOnStart 且 >0 时生效")]
         public float AlignLauncherDuration = 0.15f;
 
         public Vector2 AlignLauncherLogicOffset;
 
-        [Tooltip("对齐 Dash 撞墙是否结束")]
+        [Tooltip("受害者 SceneUnitPresenter 上挂点：支持层级路径（transform.Find）或子孙中唯一名称；空则用 ThrowGrapplePoint/HitPivot")]
+        public string AlignTargetGrappleSocketPath;
+
+        [Tooltip("Legacy：原 Dash 对齐撞墙结束；独立对齐路径已忽略")]
         public bool AlignLauncherStopOnWall = true;
 
         [Tooltip("true：对齐持续时间内不推进投技时间轴时钟（与挂起类似，避免 QTE 在对齐完成前触发）")]

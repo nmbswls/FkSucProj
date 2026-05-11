@@ -31,8 +31,10 @@ namespace My.Map.Entity
         // 出手方 Layer0 动画栈句柄；投技结束时 ReleaseAnimRequestForced
         public long LauncherHoldAnimHandle;
 
-        // true 时：TryBeginLauncherAlignSmooth 成功发起了 Dash，用于 FreezeThrowTimelineDuringLauncherAlign
+        // true：投技对齐进行中，用于 FreezeThrowTimelineDuringLauncherAlign；不经 Dash
         bool _launcherAlignClockFreezeActive;
+        Vector2 _launcherAlignStartPos;
+        Vector2 _launcherAlignEndPos;
 
         public float ThrowNonHoldElapsed => _throwTimelineProgressClock;
 
@@ -122,7 +124,17 @@ namespace My.Map.Entity
                 return;
             }
 
-            Vector2 dest = Target.Pos + SourceCfg.AlignLauncherLogicOffset;
+            Vector2 dest;
+            if (Env.viewer != null
+                && Env.viewer.TryGetThrowGrappleLogicPos(Target.Id, SourceCfg.AlignTargetGrappleSocketPath, out var gripLogic))
+            {
+                dest = gripLogic + SourceCfg.AlignLauncherLogicOffset;
+            }
+            else
+            {
+                dest = Target.Pos + SourceCfg.AlignLauncherLogicOffset;
+            }
+
             Vector2 delta = dest - unit.Pos;
             float dist = delta.magnitude;
             if (dist < 0.02f)
@@ -130,10 +142,37 @@ namespace My.Map.Entity
                 return;
             }
 
-            float t = Mathf.Max(1e-3f, SourceCfg.AlignLauncherDuration);
-            float speed = dist / t;
-            unit.StartDash(delta.normalized, t, speed, null, false, false, string.Empty, SourceCfg.AlignLauncherStopOnWall, false);
+            _launcherAlignStartPos = unit.Pos;
+            _launcherAlignEndPos = dest;
             _launcherAlignClockFreezeActive = true;
+        }
+
+        public void ClearLauncherAlignState()
+        {
+            _launcherAlignClockFreezeActive = false;
+        }
+
+        void AdvanceLauncherAlignInterpolated(float logicTimeNow)
+        {
+            if (!_launcherAlignClockFreezeActive || SourceCfg == null || Env == null || Launcher == null)
+            {
+                return;
+            }
+
+            if (Env.GetLogicEntity(Launcher.Id, false) is not BaseUnitLogicEntity unit)
+            {
+                _launcherAlignClockFreezeActive = false;
+                return;
+            }
+
+            float dur = Mathf.Max(1e-4f, SourceCfg.AlignLauncherDuration);
+            float u = Mathf.Clamp01((logicTimeNow - StartTime) / dur);
+            Vector2 p = Vector2.Lerp(_launcherAlignStartPos, _launcherAlignEndPos, u);
+            unit.TeleportTo(p);
+            if (u >= 1f - 1e-5f)
+            {
+                _launcherAlignClockFreezeActive = false;
+            }
         }
 
         public void StopLauncherControlledMoveIfAny()
@@ -224,6 +263,8 @@ namespace My.Map.Entity
             {
                 return;
             }
+
+            AdvanceLauncherAlignInterpolated(logicTimeNow);
 
             if (!_throwTimelineWallAnchored)
             {

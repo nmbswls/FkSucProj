@@ -313,7 +313,14 @@ public class SceneInteractSystem
             SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(currInteractPoints);
         }
 
-        SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(currExecuteTarget);
+        if(OverworldHUDPanel.Instance != null && OverworldHUDPanel.Instance.IsHunterMode)
+        {
+            SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(currExecuteTarget);
+        }
+        else
+        {
+            SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(null);
+        }
     }
     
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using My;
 using My.Map.Entity;
 using UnityEngine;
 using UnityEngine.AI;
@@ -46,6 +47,9 @@ namespace My.Map.Scene
         public SimpleCharacterController CharacterController;
 
         public Collider2D targetCol;
+
+        // 投技受害方默认抓取挂点（可在子物体上再配骨骼路径覆盖）
+        [SerializeField] Transform throwGrapplePoint;
 
         public BaseUnitLogicEntity UnitEntity
         {
@@ -715,6 +719,58 @@ namespace My.Map.Scene
             return targetCol;
         }
 
+        // socketPath：非空时先 transform.Find(层级路径)，否则在子孙中按名称查找；仍失败则用 throwGrapplePoint ?? HitPivot
+        public bool TryGetThrowGrappleLogicPos(string socketPath, out Vector2 logicPos)
+        {
+            logicPos = default;
+            Transform t = null;
+            var trimmed = string.IsNullOrWhiteSpace(socketPath) ? null : socketPath.Trim();
+            if (!string.IsNullOrEmpty(trimmed))
+            {
+                t = transform.Find(trimmed);
+                if (t == null)
+                {
+                    t = FindDescendantTransformByName(transform, trimmed);
+                }
+            }
+
+            if (t == null && throwGrapplePoint != null)
+            {
+                t = throwGrapplePoint;
+            }
+
+            if (t == null && HitPivot != null)
+            {
+                t = HitPivot;
+            }
+
+            if (t == null)
+            {
+                return false;
+            }
+
+            logicPos = MainGameManager.Instance.GetLogicPosFromWorldPos(t.position);
+            return true;
+        }
+
+        static Transform FindDescendantTransformByName(Transform root, string name)
+        {
+            if (root.name == name)
+            {
+                return root;
+            }
+
+            for (var i = 0; i < root.childCount; i++)
+            {
+                var found = FindDescendantTransformByName(root.GetChild(i), name);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+
+            return null;
+        }
 
         #region 脚底 
 

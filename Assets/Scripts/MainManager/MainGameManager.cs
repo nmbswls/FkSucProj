@@ -723,6 +723,18 @@ namespace My
             MapSpeechBubbleManager.Instance.Say(pres, content, duration, priority);
         }
 
+        public bool TryGetThrowGrappleLogicPos(long targetEntityId, string socketPath, out Vector2 logicPos)
+        {
+            logicPos = default;
+            var pres = SceneAOIManager.Instance?.GetActivePresentation(targetEntityId);
+            if (pres is not SceneUnitPresenter sup)
+            {
+                return false;
+            }
+
+            return sup.TryGetThrowGrappleLogicPos(socketPath, out logicPos);
+        }
+
         /// <summary>
         /// 显示跳字
         /// </summary>

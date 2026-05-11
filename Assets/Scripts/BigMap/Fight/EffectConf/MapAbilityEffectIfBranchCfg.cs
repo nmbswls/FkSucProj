@@ -24,6 +24,9 @@ namespace My.Map.Entity
         public string Param2;
         public int Param3;
 
+        public long Param5;
+        public long Param6;
+
 
         [SerializeReference]
         public List<MapFightEffectCfg> TrueBranchEffects = new();

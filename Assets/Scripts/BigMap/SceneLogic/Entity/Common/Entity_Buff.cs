@@ -22,6 +22,7 @@ namespace My.Map.Entity
         OnSkillUsed,
         OnHit,
         OnDie,
+        FinalDmgReduced, // 累计最终减伤
 
         PlayerHVoice = 100,
     }
@@ -30,6 +31,8 @@ namespace My.Map.Entity
     [Serializable]
     public class BuffTriggerRuleConfig
     {
+        public bool ShowSpecific = false;
+
         public ETriggerType TriggerType;
         public int TriggerParam1;
         public int TriggerParam2;
@@ -39,6 +42,9 @@ namespace My.Map.Entity
         public List<MapFightEffectCfg> OutputFightEffects;
 
         public bool RemoveOnTrigger;
+
+        public int NeedCount = 1;
+        public float TriggerInterval = 0;
     }
 
     public enum EBuffEffectType
@@ -774,6 +780,8 @@ namespace My.Map.Entity
         {
             public float lastTriggerTime;
             public BuffTriggerRuleConfig config;
+
+            public int Counter;
         }
 
         public class AuraRuntimeInfo
@@ -913,7 +921,7 @@ namespace My.Map.Entity
             _durationLogic?.OnTick(this, dt);
         }
 
-        public void DoBuffTrigger(ETriggerType triggerType)
+        public void DoBuffTrigger(ETriggerType triggerType, int val = 1)
         {
             if (triggerRuntimes == null)
             {
@@ -935,6 +943,22 @@ namespace My.Map.Entity
                         }
                         break;
                 }
+
+                if (t.config.TriggerInterval != 0 && LogicTime.time - t.lastTriggerTime < t.config.TriggerInterval)
+                {
+                    continue;
+                }
+
+                t.lastTriggerTime = LogicTime.time;
+                t.Counter += val;
+
+                if (t.config.NeedCount > 0 && t.Counter < t.config.NeedCount)
+                {
+                    continue;
+                }
+
+                t.Counter = 0;
+                Debug.Log("buff trigger " + BuffId);
 
                 if (t.config.OutputFightEffects != null)
                 {

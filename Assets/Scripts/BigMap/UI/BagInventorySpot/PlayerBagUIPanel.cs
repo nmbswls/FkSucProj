@@ -317,7 +317,7 @@ namespace My.UI.Bag
         void SwitchSpeBag(EPlayerBagId badId)
         {
             var oldId = this.CurrExpandBagId;
-            if (this.CurrExpandBagId == oldId)
+            if (badId == oldId)
             {
                 return;
             }
@@ -325,7 +325,7 @@ namespace My.UI.Bag
             {
                 item.SelectHint.gameObject.SetActive(false);
             }
-            this.CurrExpandBagId = oldId;
+            this.CurrExpandBagId = badId;
             if(oldId == 0)
             {
                 

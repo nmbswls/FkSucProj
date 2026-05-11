@@ -5,12 +5,8 @@ using My.MiniGame;
 using My.UI;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEditor.Rendering.CameraUI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
-
 
 namespace My.Map.Scene
 {
@@ -48,7 +44,10 @@ namespace My.Map.Scene
         public HighlightCtrl highlightCtrl;
         public bool InteractDetailMode { get; set; }
 
-        [SerializeField] GameObject desireCrystalHuntingFxRoot;
+        // 猎杀模式 + 附着欲望结晶：从 Resources 实例化占位预制体（见 Prefab/SceneEffect/desire_crystal_hunting_placeholder）
+        public const string DesireCrystalHuntingFxPrefabResourcePath = "Prefab/SceneEffect/desire_crystal_hunting_placeholder";
+
+        Transform _desireCrystalHuntingFxRoot;
 
         private int _faqingEffectUId { get; set; }
 
@@ -155,19 +154,61 @@ namespace My.Map.Scene
 
         void TickDesireCrystalHuntingFx()
         {
-            if (desireCrystalHuntingFxRoot == null)
+            if (_desireCrystalHuntingFxRoot == null)
             {
                 return;
             }
 
             bool hunter = OverworldHUDPanel.Instance != null && OverworldHUDPanel.Instance.IsHunterMode;
             bool hasCrystal = NpcEntity != null && NpcEntity.HasAttachedDesireCrystal;
-            desireCrystalHuntingFxRoot.SetActive(hunter && hasCrystal);
+            _desireCrystalHuntingFxRoot.gameObject.SetActive(hunter && hasCrystal);
         }
 
         public override void Bind(ILogicEntity logic)
         {
             base.Bind(logic);
+            EnsureDesireCrystalHuntingFxBuilt();
+            if (_desireCrystalHuntingFxRoot != null)
+            {
+                _desireCrystalHuntingFxRoot.gameObject.SetActive(false);
+            }
+        }
+
+        public override void Unbind()
+        {
+            DestroyDesireCrystalHuntingFx();
+            base.Unbind();
+        }
+
+        void DestroyDesireCrystalHuntingFx()
+        {
+            if (_desireCrystalHuntingFxRoot != null)
+            {
+                Destroy(_desireCrystalHuntingFxRoot.gameObject);
+                _desireCrystalHuntingFxRoot = null;
+            }
+        }
+
+        void EnsureDesireCrystalHuntingFxBuilt()
+        {
+            if (_desireCrystalHuntingFxRoot != null)
+            {
+                return;
+            }
+
+            var prefab = Resources.Load<GameObject>(DesireCrystalHuntingFxPrefabResourcePath);
+            if (prefab == null)
+            {
+                Debug.LogError($"SceneNpcPresenter: Resources.Load failed '{DesireCrystalHuntingFxPrefabResourcePath}'");
+                return;
+            }
+
+            Transform parent = PivotHeader != null ? PivotHeader : transform;
+            var inst = Instantiate(prefab, parent);
+            inst.transform.localPosition = Vector3.zero;
+            inst.transform.localRotation = Quaternion.identity;
+            inst.transform.localScale = Vector3.one;
+            _desireCrystalHuntingFxRoot = inst.transform;
         }
 
         protected override void RegisterEvents()
@@ -409,15 +450,15 @@ namespace My.Map.Scene
 
             if(OverworldHUDPanel.Instance.IsHunterMode)
             {
-                if (!UnitEntity.IsDead && !UnitEntity.MarkUnsensored)
-                {
-                    ret.Add(new SceneInteractSelection()
-                    {
-                        SelectId = ID_ForcePushDown,
-                        SelectContent = "强推",
-                        Selectable = true
-                    });
-                }
+                //if (!UnitEntity.IsDead && !UnitEntity.MarkUnsensored)
+                //{
+                //    ret.Add(new SceneInteractSelection()
+                //    {
+                //        SelectId = ID_ForcePushDown,
+                //        SelectContent = "强推",
+                //        Selectable = true
+                //    });
+                //}
             }
             else
             {
@@ -471,7 +512,7 @@ namespace My.Map.Scene
                         ret.Add(new SceneInteractSelection()
                         {
                             SelectId = ID_DeepAbsorbEnable,
-                            SelectContent = "深度榨取",
+                            SelectContent = "榨干",
                             Selectable = true
                         });
                     }
@@ -480,7 +521,7 @@ namespace My.Map.Scene
                         ret.Add(new SceneInteractSelection()
                         {
                             SelectId = ID_DeepAbsorbDisable,
-                            SelectContent = "深度榨取(无）",
+                            SelectContent = "榨干(无）",
                             Selectable = false
                         });
                     }

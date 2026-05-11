@@ -44,6 +44,10 @@ namespace My.Map
 
         public bool IsZhaZhiMode = false;
 
+        // 沿路径投放 player_pink_mist_trail 的上一采样点
+        Vector2 _pinkMistLastTrailPos;
+        bool _pinkMistTrailPosInited;
+
         // 特殊蹲伏
         public bool IsSpecialCrouchStance { get; private set; }
 
@@ -253,6 +257,8 @@ namespace My.Map
             TickAttachingObj(dt);
 
             TickRetreating();
+
+            TickPlayerPinkMistTrail();
         }
 
         private void TickCarriedNpcBodyConsistency()
@@ -286,10 +292,17 @@ namespace My.Map
 
             LogicManager.globalBuffManager.AddBuff(this.Id, "desire_level_charm", 0);
             LogicManager.globalBuffManager.AddBuff(this.Id, "desire_level_damage_resist", 0);
+
+            _pinkMistTrailPosInited = false;
         }
 
         protected override void RegisterSpecAttrs()
         {
+            attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, 250_000);
+            attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 250_000);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.PhysicalPower, 20_000);
+
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
             attributeStore.RegisterNumeric(AttrIdConsts.Charmed, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm));
@@ -307,6 +320,8 @@ namespace My.Map
 
             attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerJingYu, null, 1000_000, 0);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.Final_Fix_DR_All, initialBase: 5_000);
         }
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
@@ -916,6 +931,66 @@ namespace My.Map
             }
         }
 
+
+        const string PinkMistTrailCfgId = "player_pink_mist_trail";
+        const float PinkMistTrailMinSpacing = 0.45f;
+        const float PinkMistTrailTeleportResetSqr = 25f;
+
+        // 移动超过间距时在脚下创建粉雾区效（与 TbMapAreaEffect / Prefab 管线一致）
+        void TickPlayerPinkMistTrail()
+        {
+            if (MarkDestroyed || !IsActive)
+            {
+                return;
+            }
+
+            var table = CfgMgr.Cfgs?.TbMapAreaEffect;
+            if (table == null)
+            {
+                return;
+            }
+
+            var row = table.GetOrDefault(PinkMistTrailCfgId);
+            if (row == null)
+            {
+                return;
+            }
+
+            if (!_pinkMistTrailPosInited)
+            {
+                _pinkMistLastTrailPos = Pos;
+                _pinkMistTrailPosInited = true;
+                return;
+            }
+
+            var delta = Pos - _pinkMistLastTrailPos;
+            var sq = delta.sqrMagnitude;
+            if (sq < PinkMistTrailMinSpacing * PinkMistTrailMinSpacing)
+            {
+                return;
+            }
+
+            // 大位移视为传送/切场景，不连成线段
+            if (sq > PinkMistTrailTeleportResetSqr)
+            {
+                _pinkMistLastTrailPos = Pos;
+                return;
+            }
+
+            _pinkMistLastTrailPos = Pos;
+
+            float life = row.DefaultLifetime > 0f ? row.DefaultLifetime : 8f;
+            var rec = new LogicEntityRecord
+            {
+                Id = GameLogicManager.LogicEntityIdInst++,
+                EntityType = EEntityType.AreaEffect,
+                CfgId = PinkMistTrailCfgId,
+                LifeTime = life,
+                Position = Pos,
+                FactionId = FactionId,
+            };
+            LogicManager.AddNewEntityRecord(rec);
+        }
 
         /// <summary>
         /// 检查高潮状态

@@ -880,19 +880,19 @@ namespace My.Map.Entity
                 return;
             }
 
-            var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
-            if (targetEntity == null)
-            {
-                Debug.LogError($"AbilityEffectExecutor4IfBranch target err :{ctx.TargetId}");
-                return;
-            }
-
             bool isTrue = true;
             switch(realCfg.CheckType)
             {
                 case MapAbilityEffectIfBranchCfg.ECheckType.HasBuff:
                     {
-                        if(targetEntity.BuffManager.CheckHasBuff(targetEntity.Id, realCfg.Param1))
+                        var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
+                        if (targetEntity == null)
+                        {
+                            Debug.LogError($"AbilityEffectExecutor4IfBranch target err :{ctx.TargetId}");
+                            return;
+                        }
+
+                        if (targetEntity.BuffManager.CheckHasBuff(targetEntity.Id, realCfg.Param1))
                         {
                             isTrue = true;
                         }
@@ -904,6 +904,13 @@ namespace My.Map.Entity
                     break;
                 case MapAbilityEffectIfBranchCfg.ECheckType.AttrGreater:
                     {
+                        var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
+                        if (targetEntity == null)
+                        {
+                            Debug.LogError($"AbilityEffectExecutor4IfBranch target err :{ctx.TargetId}");
+                            return;
+                        }
+
                         long val = targetEntity.GetAttr(realCfg.Param1);
                         if (val > realCfg.Param3)
                         {
@@ -925,6 +932,53 @@ namespace My.Map.Entity
 
                         var entity = ctx.Env.GetLogicEntity(ctx.TargetId);
                         if (entity == null)
+                        {
+                            isTrue = false;
+                            break;
+                        }
+                    }
+                    break;
+                case MapAbilityEffectIfBranchCfg.ECheckType.BodyVsWin:
+                    {
+                        if(ctx.SourceInfo.SrcEntityId == 0)
+                        {
+                            isTrue = false;
+                            break;
+                        }
+
+                        var atkEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+                        if(atkEntity == null)
+                        {
+                            isTrue = false;
+                            break;
+                        }
+                        if (ctx.TargetId == 0)
+                        {
+                            isTrue = false;
+                            break;
+                        }
+                        var targetEntity = ctx.Env.GetLogicEntity(ctx.TargetId);
+                        if (targetEntity == null)
+                        {
+                            isTrue = false;
+                            break;
+                        }
+                        var atkBody = atkEntity.GetAttr(AttrIdConsts.PhysicalPower);
+                        var defBody = targetEntity.GetAttr(AttrIdConsts.PhysicalPower);
+
+                        long atkBonus = realCfg.Param5 > 0 ? realCfg.Param5 : 10000;
+                        long defBonus = realCfg.Param6 > 0 ? realCfg.Param6 : 10000;
+
+                        atkBody = (long)(atkBody * (10000 + atkBonus) * 0.0001);
+                        defBody = (long)(defBody * (10000 + defBonus) * 0.0001);
+                        var rate10000 = PlayerGamePlayRule.CalcBodyVsRate(atkBody, defBody);
+                        var rand = UnityEngine.Random.Range(0, 10000);
+                        if(rand < rate10000)
+                        {
+                            isTrue = true;
+                            break;
+                        }
+                        else
                         {
                             isTrue = false;
                             break;
@@ -1816,21 +1870,21 @@ namespace My.Map.Entity
             }
 
             long phy = target.GetAttr(AttrIdConsts.PhysicalPower);
-            float p = Mathf.Clamp01(realCfg.BaseSuccessChance - phy * realCfg.PhysicalFormPenalty);
+
+            float p = Mathf.Clamp01(PlayerGamePlayRule.BaseSuccessChance - phy * PlayerGamePlayRule.PhysicalFormPenalty);
             bool success = UnityEngine.Random.value < p;
 
             if (success)
             {
-                target.MarkUnsensored = true;
-                target.UnitBaseRecord.Unsensored = true;
-                ctx.Env.globalBuffManager.RequestAddBuff(target.Id, "unsensored");
-                MainGameManager.Instance?.ShowFakeFxEffect("\u5077\u88ad\u6210\u529f", player.Pos);
+                target.ForceUnitUnsensored(0, player.Id);
+
+                MainGameManager.Instance?.ShowFakeFxEffect("偷袭成功", player.Pos);
                 Debug.Log($"Sneak backstab SUCCESS vs entity {target.Id}, p={p:F3}, PhysicalForm={phy}");
             }
             else
             {
-                target.EnmitySystem.AddTempEnmity(realCfg.FailTempEnmity);
-                MainGameManager.Instance?.ShowFakeFxEffect("\u5077\u88ad\u5931\u8d25", player.Pos);
+                target.EnmitySystem.AddTempEnmity(PlayerGamePlayRule.FailTempEnmity);
+                MainGameManager.Instance?.ShowFakeFxEffect("偷袭失败", player.Pos);
                 Debug.Log($"Sneak backstab FAIL vs entity {target.Id}, p={p:F3}, PhysicalForm={phy}");
             }
         }

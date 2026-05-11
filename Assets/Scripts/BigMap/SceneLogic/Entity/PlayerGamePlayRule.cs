@@ -21,6 +21,54 @@ namespace My.Map
         public const float SneakVisionFovDeg = 150f;
 
 
+        public const float BaseSuccessChance = 0.62f;
+        public const float PhysicalFormPenalty = 0.00003f;
+        public const float FailTempEnmity = 42f;
+
+
+        //public static float GetBaseBackHitSuccessChange()
+        //{
+        //    return BaseSuccessChance;
+        //}
+
+
+        /// <summary>
+        /// 计算对抗成功几率
+        /// 10000万分比
+        /// </summary>
+        /// <param name="body1"></param>
+        /// <param name="body2"></param>
+        /// <returns></returns>
+        public static long CalcBodyVsRate(long body1, long body2)
+        {
+            if (body1 <= 0) return 0;
+            if (body2 <= 0) return 10000;
+
+            if(body1 >= body2)
+            {
+                double v = 1 - (body2 * 0.001) / (2 * body1 * 0.001);
+                return (long)(v * 10000);
+            }
+            else
+            {
+                double v = (body1 * 0.001) / (2 * body2 * 0.001);
+                return (long)(v * 10000);
+            }
+        }
+
+        /// <summary>
+        /// 计算对抗成功几率
+        /// 10000万分比
+        /// </summary>
+        /// <param name="body1"></param>
+        /// <param name="body2"></param>
+        /// <returns></returns>
+        public static long CalcBodyVs(long body1, long body2)
+        {
+            double v = (body1 * 0.001 * body1 * 0.001) * 1.0 / (body1 * 0.001 * body1 * 0.001 + body2 * 0.001 * body2 * 0.001);
+            return (long)(v * 10000);
+        }
+
         public static string GetTrueHSpiritName(string npcBase, int playerLevel)
         {
             return "h_spirit_small_01";
