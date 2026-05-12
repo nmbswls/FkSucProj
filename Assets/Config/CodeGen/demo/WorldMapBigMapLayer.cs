@@ -19,7 +19,7 @@ public sealed partial class WorldMapBigMapLayer : Luban.BeanBase
     public WorldMapBigMapLayer(JSONNode _buf) 
     {
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
-        { if(!_buf["map_id"].IsString) { throw new SerializationException(); }  MapId = _buf["map_id"]; }
+        { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
         { if(!_buf["region_key"].IsString) { throw new SerializationException(); }  RegionKey = _buf["region_key"]; }
         { if(!_buf["room_id"].IsString) { throw new SerializationException(); }  RoomId = _buf["room_id"]; }
         { if(!_buf["rule_priority"].IsNumber) { throw new SerializationException(); }  RulePriority = _buf["rule_priority"]; }
@@ -41,9 +41,9 @@ public sealed partial class WorldMapBigMapLayer : Luban.BeanBase
     /// </summary>
     public int Id;
     /// <summary>
-    /// MapName
+    /// SceneName
     /// </summary>
-    public string MapId;
+    public string SceneName;
     /// <summary>
     /// 策划分区名
     /// </summary>
@@ -83,7 +83,7 @@ public sealed partial class WorldMapBigMapLayer : Luban.BeanBase
     {
         return "{ "
         + "id:" + Id + ","
-        + "mapId:" + MapId + ","
+        + "sceneName:" + SceneName + ","
         + "regionKey:" + RegionKey + ","
         + "roomId:" + RoomId + ","
         + "rulePriority:" + RulePriority + ","

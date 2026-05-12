@@ -286,6 +286,8 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
                     },
                     DefaultDuration = -1,
+
+                    Icon = "force_stun",
                 };
 
                 _library["not_fight_target"] = new BuffDefinition()

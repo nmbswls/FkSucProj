@@ -145,7 +145,6 @@ ParticleSystem:
   InitialModule:
     serializedVersion: 3
     enabled: 1
-    simulationSpace: 0
     startLifetime:
       serializedVersion: 2
       minMaxState: 0

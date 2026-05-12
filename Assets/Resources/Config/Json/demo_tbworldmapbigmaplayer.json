@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "map_id": "base_01",
+    "scene_name": "Main_Home",
     "region_key": "default",
     "room_id": "",
     "rule_priority": 0,
@@ -14,7 +14,7 @@
   },
   {
     "id": 2,
-    "map_id": "village_01",
+    "scene_name": "Main_Area_01",
     "region_key": "default",
     "room_id": "",
     "rule_priority": 0,
@@ -27,7 +27,7 @@
   },
   {
     "id": 3,
-    "map_id": "game_init",
+    "scene_name": "Main_Init",
     "region_key": "default",
     "room_id": "",
     "rule_priority": 0,

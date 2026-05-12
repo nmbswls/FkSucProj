@@ -1,17 +1,17 @@
 [
   {
     "id": "dc_fire",
-    "item_id": "desire_crystal_fire",
+    "item_id": "desire_crystal_01",
     "random_pick_weight": 100
   },
   {
     "id": "dc_ice",
-    "item_id": "desire_crystal_ice",
+    "item_id": "desire_crystal_02",
     "random_pick_weight": 100
   },
   {
     "id": "dc_void",
-    "item_id": "desire_crystal_void",
+    "item_id": "desire_crystal_03",
     "random_pick_weight": 50
   }
 ]

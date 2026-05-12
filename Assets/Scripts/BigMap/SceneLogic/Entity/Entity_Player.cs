@@ -323,7 +323,6 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerJingYu, null, 1000_000, 0);
 
-            attributeStore.RegisterNumeric(AttrIdConsts.Final_Fix_DR_All, initialBase: 5_000);
         }
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)

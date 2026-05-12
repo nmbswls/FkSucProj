@@ -235,7 +235,10 @@ namespace My.Map
         public NumericEntry RegisterNumeric(string attrId, long initialBase = 0)
         {
             if (numerics.ContainsKey(attrId))
-                throw new InvalidOperationException($"Numeric attr already registered: {attrId}");
+            {
+                Debug.LogError($"Numeric attr already registered: {attrId}");
+                return null;
+            }
 
             var e = new NumericEntry { attrId = attrId, baseValue = initialBase, finalValue = initialBase, dirty = true };
             numerics[attrId] = e;

@@ -95,11 +95,11 @@ namespace My.Map
             return cfgRoomId == playerRoomId;
         }
 
-        private static WorldMapBigMapLayer PickBigMapLayer(IReadOnlyList<WorldMapBigMapLayer> list, string mapId, string roomId)
+        private static WorldMapBigMapLayer PickBigMapLayer(IReadOnlyList<WorldMapBigMapLayer> list, string sceneName, string roomId)
         {
-            if (list == null || string.IsNullOrEmpty(mapId)) return null;
+            if (list == null || string.IsNullOrEmpty(sceneName)) return null;
             return list
-                .Where(r => r.MapId == mapId)
+                .Where(r => r.SceneName == sceneName)
                 .Where(r => RoomFilterMatches(r.RoomId, roomId))
                 .OrderByDescending(r => r.RulePriority)
                 .FirstOrDefault();
@@ -157,7 +157,9 @@ namespace My.Map
             var global = cfgs?.TbWorldMapGlobal;
             var bigList = cfgs?.TbWorldMapBigMapLayer?.DataList;
 
-            var bigWinner = PickBigMapLayer(bigList, mapId, roomId);
+            var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(mapId);
+
+            var bigWinner = PickBigMapLayer(bigList, mapCfg.SceneName, roomId);
 
             if (bigWinner == null)
             {

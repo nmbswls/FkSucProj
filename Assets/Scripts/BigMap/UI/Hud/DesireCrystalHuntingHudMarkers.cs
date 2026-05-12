@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Logic;
 using My.Map.Scene;
 using UnityEngine;
 using UnityEngine.UI;
