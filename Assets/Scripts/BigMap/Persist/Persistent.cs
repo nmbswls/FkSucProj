@@ -173,5 +173,14 @@ namespace My.Map.Logic
     public class LogicEntityRecord4FishingSpot : LogicEntityRecord
     {
     }
+
+    [Serializable]
+    public class LogicEntityRecord4Trap : LogicEntityRecord
+    {
+        public bool Armed = true;
+
+        // LogicTime.time，0 表示未在沉睡；非 0 且大于当前逻辑时间则仍处于沉睡
+        public float SleepWakeAtLogicTime;
+    }
 }
 

@@ -46,6 +46,7 @@ namespace My.Map
                 case AttrIdConsts.Charmed:
                 case AttrIdConsts.ImmuneJianSu:
                 case AttrIdConsts.NpcFcked:
+                case AttrIdConsts.DesireMistAffected:
                     return EAttrType.State;
 
                 case AttrIdConsts.Attack:
@@ -69,7 +70,9 @@ namespace My.Map
                 case AttrIdConsts.Basic_HungerCost:
                 case AttrIdConsts.Basic_JianShang:
                 case AttrIdConsts.NonH_JianShang_Rate:
-                    
+
+                case AttrIdConsts.NPCHVal_Basic_Up:
+                case AttrIdConsts.NPCSJProgress_Basic_Up:
 
                 case AttrIdConsts.Special_JianShang:
                 case AttrIdConsts.Basic_KnockResistent:

@@ -197,7 +197,6 @@ namespace My.Map
         public event Action EventOnFaQingStateChange;
         public event Action<bool> EventOnExposeStateChange;
 
-        private float _lowFreqStateTimer;
         private float _highFreqStateTimer;
 
         private float _magicClothesMoveWearDistanceAccum;
@@ -306,6 +305,9 @@ namespace My.Map
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
             attributeStore.RegisterNumeric(AttrIdConsts.Charmed, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm));
+
+            attributeStore.RegisterNumeric(AttrIdConsts.Final_Fix_DR_All, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.FixDmgReduceFinal));
+            
 
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
@@ -431,7 +433,7 @@ namespace My.Map
                         var unit = surround as NpcUnitLogicEntity;
                         if (unit != null)
                         {
-                            unit.ApplyAttracted(Pos, abilityConf.AttractPower, this);
+                            unit.ApplyAttracted(ENpcAttractSrcType.PointOnce, abilityConf.AttractPower, Pos, 0);
                         }
                     }
                 }
@@ -662,7 +664,7 @@ namespace My.Map
         /// <summary>
         /// 检查玩家状态变化
         /// </summary>
-        private void TickResourceChange(float interval)
+        protected override void TickResourceChange(float interval)
         {
             var baseGc = attributeStore.GetAttr(AttrIdConsts.Basic_PleasureAdd);
             ApplyResourceChange(AttrIdConsts.PlayerPleasure, baseGc, false, EDmgFlag.None, null);
@@ -682,7 +684,11 @@ namespace My.Map
             }
 
 
-            if(!IsFaQing)
+            var jingyuVal = GetAttr(AttrIdConsts.PlayerJingYu);
+            int jingyuLevel = PlayerGamePlayRule.GetJingYuLevel(jingyuVal);
+            var jingyuCfg = CfgMgr.Cfgs.TbPlayerJingYuLevel.GetOrDefault(jingyuLevel);
+
+            if (!IsFaQing)
             {
                 // 将发情缓慢提升到标准线
                 int basicEstrus = GetBasicEstrusByDesireLevel();
@@ -692,14 +698,9 @@ namespace My.Map
                     ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 100, false, EDmgFlag.None, null);
                 }
 
-                // 计算精浴增加速率
-                var jingyuBuff = FindBuffById("jingyu");
-                var jingyuLayer = jingyuBuff?.Layer ?? 0;
-
-                long addRate = PlayerGamePlayRule.GetFaQingIncreaseByJingYuLayer(jingyuLayer);
-                if(addRate > 0)
+                if(jingyuCfg != null && jingyuCfg.EstrusUp > 0)
                 {
-                    ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, addRate, false, EDmgFlag.None, null);
+                    ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, (long)(jingyuCfg.EstrusUp * interval), false, EDmgFlag.None, null);
                 }
             }
             else
@@ -710,12 +711,9 @@ namespace My.Map
 
             TickBeingGazedInfo();
 
-            var jingyuVal = GetAttr(AttrIdConsts.PlayerJingYu);
-            int jingyuLevel = PlayerGamePlayRule.GetJingYuLevel(jingyuVal);
 
             if (jingyuLevel > 0)
             {
-                var jingyuCfg = CfgMgr.Cfgs.TbPlayerJingYuLevel.GetOrDefault(jingyuLevel);
                 if(jingyuCfg != null)
                 {
                     if(jingyuCfg.CostPerSec > 0)
@@ -731,12 +729,6 @@ namespace My.Map
                     if(jingyuCfg.HungerPerSec > 0)
                     {
                         ApplyResourceChange(AttrIdConsts.PlayerHunger, (long)(jingyuCfg.HungerPerSec * interval * 1000), false, EDmgFlag.None, null);
-
-                    }
-
-                    if(jingyuCfg.EstrusUp > 0)
-                    {
-                        ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, (long)(jingyuCfg.EstrusUp * interval * 1000), false, EDmgFlag.None, null);
 
                     }
                 }
@@ -946,6 +938,11 @@ namespace My.Map
 
             var table = CfgMgr.Cfgs?.TbMapAreaEffect;
             if (table == null)
+            {
+                return;
+            }
+
+            if(DesireLevel == 0)
             {
                 return;
             }
@@ -1241,7 +1238,7 @@ namespace My.Map
                 return;
             }
 
-            long rawOverRate = GetClothesRawOverRate10000ForGameplay();
+            long rawOverRate = PlayerGamePlayRule.GetClothesRawOverRate10000ForGameplay(LogicManager);
             var exposeRate10000 = PlayerGamePlayRule.CalculateBreakClothesInnerRate(GetAttr(AttrIdConsts.PlayerClothes), rawOverRate);
 
             foreach (var key in BeingGazedTrack.Keys.ToList())
@@ -1273,7 +1270,7 @@ namespace My.Map
                 }
 
                 // 更新视线强度
-                int attractLevel = PlayerGamePlayRule.CalculateUnitAttractedLevel(this.GetUnitLevel(), GetAttr(AttrIdConsts.PlayerCharm), exposeRate10000, unit.GetAttr(AttrIdConsts.Will));
+                int attractLevel = PlayerGamePlayRule.CalculateUnitAttractedLevel(LogicManager, unit.GetAttr(AttrIdConsts.Will));
                 if(attractLevel > 0)
                 {
                     BeingGazedTrack[key].Power = 1;
@@ -1281,6 +1278,15 @@ namespace My.Map
                 else
                 {
                     BeingGazedTrack[key].Power = 0;
+                }
+
+                // 只要吸引力等级超过0 就执行attract
+                if(attractLevel > 0)
+                {
+                    if (unit is NpcUnitLogicEntity npcEntity)
+                    {
+                        npcEntity.ApplyAttracted(ENpcAttractSrcType.Player, 99, this.Pos, this.Id);
+                    }
                 }
             }
 
@@ -1305,6 +1311,8 @@ namespace My.Map
                     ApplyResourceChange(AttrIdConsts.PlayerSanity, -addRate, false, EDmgFlag.None, null);
                 }
             }
+
+            
         }
 
 
@@ -1622,21 +1630,7 @@ namespace My.Map
             RefreshClothesRelateYCAttrs();
         }
 
-        long GetClothesRawOverRate10000ForGameplay()
-        {
-            if (LogicManager.PlayerHumanMode)
-            {
-                return 10000L;
-            }
-
-            var magicMgr = LogicManager.playerDataManager.MagicClothes;
-            if (magicMgr.IsLockedWithSelection)
-            {
-                return magicMgr.GetRawOverRate10000ForRefresh();
-            }
-
-            return 10000L;
-        }
+        
 
         private void TickMagicClothesMoveWear(float interval)
         {
@@ -1724,7 +1718,7 @@ namespace My.Map
 
             if (!LogicManager.PlayerHumanMode && !IsExposed)
             {
-                long rawOverRate = GetClothesRawOverRate10000ForGameplay();
+                long rawOverRate = PlayerGamePlayRule.GetClothesRawOverRate10000ForGameplay(LogicManager);
                 applyRate = PlayerGamePlayRule.CalculateBreakClothesInnerRate(clothes, rawOverRate);
             }
 

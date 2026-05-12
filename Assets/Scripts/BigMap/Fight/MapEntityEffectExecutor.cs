@@ -316,57 +316,149 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (realCfg.KnockBackForce <= 0)
+            if (realCfg.KnockBackForce <= 0f)
             {
-                Debug.LogError("AbilityFightExecutor4KnockBack param inbalid");
+                Debug.LogError("AbilityFightExecutor4KnockBack KnockBackForce invalid");
                 return;
             }
 
-            // 对目标施加
-            if(realCfg.TargetType == 0)
+            var applyTarget = realCfg.ApplyTarget;
+            var applySelf = realCfg.ApplySelf;
+            if (!applyTarget && !applySelf)
+            {
+                applyTarget = true;
+            }
+
+            if (applyTarget)
             {
                 var targetUnit = ctx.Env.GetLogicEntity(ctx.TargetId) as BaseUnitLogicEntity;
                 if (targetUnit == null)
                 {
                     Debug.LogWarning("AbilityFightExecutor4KnockBack target not found.");
-                    return;
                 }
-
-                Vector2? dir = null;
-                switch (realCfg.DirType)
+                else
                 {
-                    case MapFightEffectKnockBackCfg.EKnockBackType.CastDir:
-                        {
-                            dir = ctx.CastVec1.Value;
-                        }
-                        break;
-                    case MapFightEffectKnockBackCfg.EKnockBackType.Random:
-                        {
-                            dir = UnityEngine.Random.insideUnitCircle.normalized; 
-                        }
-                        break;
+                    var dir = ResolveKnockDirection(realCfg, ctx, targetUnit, recipientIsSelf: false);
+                    if (dir == null)
+                    {
+                        Debug.LogError("AbilityFightExecutor4KnockBack dir err (target).");
+                    }
+                    else
+                    {
+                        targetUnit.ApplyKnockBack(dir.Value, realCfg.KnockBackForce);
+                    }
                 }
-
-                if(dir == null)
-                {
-                    Debug.LogError("AbilityFightExecutor4KnockBack dir err.");
-                    return;
-                }
-
-                targetUnit.ApplyKnockBack(dir.Value, realCfg.KnockBackForce);
             }
-            else
+
+            if (applySelf)
             {
-                var srcUnit = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
-                if (srcUnit == null)
+                var selfUnit = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
+                if (selfUnit == null)
                 {
-                    //Debug.LogError("AbilityFightExecutor4KnockBack target not found.");
-                    return;
+                    Debug.LogWarning("AbilityFightExecutor4KnockBack caster not found.");
                 }
-
-                var diff = ctx.CastVec1.Value - ctx.TriggerPos.Value;
-                srcUnit.ApplyKnockBack(diff, realCfg.KnockBackForce);
+                else
+                {
+                    var dir = ResolveKnockDirection(realCfg, ctx, selfUnit, recipientIsSelf: true);
+                    if (dir == null)
+                    {
+                        Debug.LogError("AbilityFightExecutor4KnockBack dir err (self).");
+                    }
+                    else
+                    {
+                        selfUnit.ApplyKnockBack(dir.Value, realCfg.KnockBackForce);
+                    }
+                }
             }
+        }
+
+        static Vector2? ResolveKnockDirection(
+            MapFightEffectKnockBackCfg cfg,
+            LogicFightEffectContext ctx,
+            BaseUnitLogicEntity recipient,
+            bool recipientIsSelf)
+        {
+            var srcUnit = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
+            var targetUnit = ctx.Env.GetLogicEntity(ctx.TargetId) as BaseUnitLogicEntity;
+
+            switch (cfg.DirType)
+            {
+                case MapFightEffectKnockBackCfg.EKnockBackType.None:
+                    return null;
+
+                case MapFightEffectKnockBackCfg.EKnockBackType.CastDir:
+                    {
+                        if (ctx.CastVec1 != null)
+                        {
+                            var d = ctx.CastVec1.Value;
+                            if (d.sqrMagnitude < 1e-8f)
+                            {
+                                break;
+                            }
+
+                            return d.normalized;
+                        }
+
+                        if (srcUnit != null && srcUnit.FinalLook.sqrMagnitude > 1e-8f)
+                        {
+                            return srcUnit.FinalLook.normalized;
+                        }
+
+                        break;
+                    }
+
+                case MapFightEffectKnockBackCfg.EKnockBackType.AwayFromSrc:
+                    {
+                        if (recipientIsSelf)
+                        {
+                            Debug.LogWarning("AbilityFightExecutor4KnockBack AwayFromSrc 不适用于 ApplySelf（施法者与 Src 同体）。");
+                            return null;
+                        }
+
+                        if (srcUnit == null || recipient == null)
+                        {
+                            return null;
+                        }
+
+                        var d = recipient.Pos - srcUnit.Pos;
+                        if (d.sqrMagnitude < 1e-8f)
+                        {
+                            return null;
+                        }
+
+                        return d.normalized;
+                    }
+
+                case MapFightEffectKnockBackCfg.EKnockBackType.AwayFromTarget:
+                    {
+                        if (!recipientIsSelf)
+                        {
+                            Debug.LogWarning("AbilityFightExecutor4KnockBack AwayFromTarget 仅应在 ApplySelf 时使用。");
+                            return null;
+                        }
+
+                        if (targetUnit == null || recipient == null)
+                        {
+                            return null;
+                        }
+
+                        var d = recipient.Pos - targetUnit.Pos;
+                        if (d.sqrMagnitude < 1e-8f)
+                        {
+                            return null;
+                        }
+
+                        return d.normalized;
+                    }
+
+                case MapFightEffectKnockBackCfg.EKnockBackType.Random:
+                    return UnityEngine.Random.insideUnitCircle.normalized;
+
+                default:
+                    return null;
+            }
+
+            return null;
         }
     }
 
@@ -1649,6 +1741,75 @@ namespace My.Map.Entity
             if (ctx.TriggerPos != null)
             {
                 ctx.Env.viewer.ShowNoiseEffect(0.5f, ctx.TriggerPos.Value);
+            }
+        }
+    }
+
+    public class AbilityEffectExecutor4WantedIncidentBroadcast : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectWantedIncidentBroadcastCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4WantedIncidentBroadcast: invalid cfg type");
+                return;
+            }
+
+            if (ctx.Env?.WantedManager == null || ctx.Env.AreaManager == null)
+            {
+                Debug.LogWarning("AbilityEffectExecutor4WantedIncidentBroadcast: env missing");
+                return;
+            }
+
+            ctx.Env.WantedManager.AddWantedForBehavior(realCfg.Behave);
+
+            Vector2 center;
+            if (ctx.TriggerPos.HasValue)
+            {
+                center = ctx.TriggerPos.Value;
+            }
+            else if (ctx.TargetId != 0 && ctx.Env.GetLogicEntity(ctx.TargetId) is BaseUnitLogicEntity tpos)
+            {
+                center = tpos.Pos;
+            }
+            else if (ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) is BaseUnitLogicEntity spos)
+            {
+                center = spos.Pos;
+            }
+            else
+            {
+                Debug.LogWarning("AbilityEffectExecutor4WantedIncidentBroadcast: no center position");
+                return;
+            }
+
+            long playerId = ctx.Env.playerLogicEntity != null ? ctx.Env.playerLogicEntity.Id : 0L;
+            foreach (var ent in ctx.Env.AreaManager.FindEntityInRange(center, realCfg.Radius))
+            {
+                if (ent == null || ent.MarkDestroyed)
+                {
+                    continue;
+                }
+
+                if (ent.Id == ctx.SourceInfo.SrcEntityId)
+                {
+                    continue;
+                }
+
+                if (ent is not NpcUnitLogicEntity npc)
+                {
+                    continue;
+                }
+
+                if (realCfg.OnlyPeaceNpc && !npc.NpcConfig.IsPeace)
+                {
+                    continue;
+                }
+
+                if (playerId != 0)
+                {
+                    npc.EnmitySystem.AddTempEnmity(realCfg.TempEnmityAmount);
+                }
             }
         }
     }

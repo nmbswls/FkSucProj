@@ -491,6 +491,11 @@ namespace My.Map.Logic
                         record = new LogicEntityRecord4FishingSpot();
                         break;
                     }
+                case EEntityType.Trap:
+                    {
+                        record = new LogicEntityRecord4Trap();
+                        break;
+                    }
                 default:
                     {
                         record = new LogicEntityRecord();

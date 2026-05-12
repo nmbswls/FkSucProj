@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using My.Map;
 using My.Map.Entity;
 using My.Map.View;
 using My.UI;
@@ -11,12 +12,13 @@ using static My.MiniGame.DeepAbsorbQteBar;
 
 namespace My.MiniGame
 {
-    public class DeepAbsorbPanel : PanelWithInput
+    public class MiniStaticAbsorbPanel : PanelWithInput
     {
-        public static DeepAbsorbPanel Show(long targetId, int difficulty, int tryCnt)
+        public const string Id = "MiniStaticAbsorbPanel";
+        public static MiniStaticAbsorbPanel Show(long targetId, int difficulty, int tryCnt)
         {
 
-            var panel = UIManager.Instance.ShowPanel("DeepAbsorbPanel") as DeepAbsorbPanel;
+            var panel = UIManager.Instance.ShowPanel(Id) as MiniStaticAbsorbPanel;
             if (panel == null)
             {
                 Debug.LogError("PauseCloseupWindow err");
@@ -28,12 +30,12 @@ namespace My.MiniGame
         }
 
 
-        public static DeepAbsorbPanel Instance
+        public static MiniStaticAbsorbPanel Instance
         {
             get
             {
-                var panel = UIManager.Instance.GetShowingPanel("DeepAbsorbPanel");
-                if (panel != null && panel is DeepAbsorbPanel panel2)
+                var panel = UIManager.Instance.GetShowingPanel(Id);
+                if (panel != null && panel is MiniStaticAbsorbPanel panel2)
                 {
                     return panel2;
                 }
@@ -64,6 +66,7 @@ namespace My.MiniGame
         public int Difficulty = 3;
 
         private int chanceLeft = 0;
+
         private int successCnt = 0;
         private int perfectCnt = 0;
 
@@ -161,33 +164,42 @@ namespace My.MiniGame
             //MainGameManager.Instance.OnSmallGameFinish(ZhaQuTargetId, success, null);
 
             var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-            long cnt = (successCnt + perfectCnt);
-            long costSan = cnt * 1000;
+
+
+            long costSan = TotalChance * 1000;
 
             // 按照成功次数扣减理智
             player.ApplyResourceChange(AttrIdConsts.PlayerSanity, -costSan, false, Map.Fight.FightStruct.EDmgFlag.None, null);
             if(player.DesireLevel <= 2)
             {
-                player.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, cnt * 1000, false, Map.Fight.FightStruct.EDmgFlag.None, null);
+                player.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, TotalChance * 1000, false, Map.Fight.FightStruct.EDmgFlag.None, null);
             }
             else
             {
-                player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, cnt * 1000, false, Map.Fight.FightStruct.EDmgFlag.None, null);
+                player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, TotalChance * 1000, false, Map.Fight.FightStruct.EDmgFlag.None, null);
             }
 
             var reward = CalcAbsorbGainResult(successCnt, perfectCnt);
 
+            int score = successCnt * 1 + perfectCnt * 2;
+            int bundleId = PlayerGamePlayRule.GetDropBundleFromStaticZha(score);
+
+            var drops = DropUtils.GetBundleDropItems(bundleId);
 
             DOVirtual.DelayedCall(1.2f, () =>
             {
                 if(UIGainRewardCoordinator.Instance != null)
                 {
-                    UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
+                    foreach(var oneDrop in drops)
+                    {
+                        UIGainRewardCoordinator.Instance.CreateScreenItem(oneDrop.Item1, oneDrop.Item2, null);
+                        MainGameManager.Instance.gameLogicManager.playerDataManager.GiveItemToPlayer(oneDrop.Item1, oneDrop.Item2);
+                    }
                 }
 
                 canvasGroup.DOFade(0, 0.2f).OnComplete(() =>
                 {
-                    UIManager.Instance.HidePanel("DeepAbsorbPanel");
+                    UIManager.Instance.HidePanel(Id);
                 });
             });
         }

@@ -58,6 +58,8 @@ namespace My.Map.Entity
         public const string NPCHVal = "NPCHVal";
         public const string NPCSJProgress = "NPCSJProgress";
 
+        public const string NPCHVal_Basic_Up = "NPCHVal_Up"; // NPCHVal 自然上涨
+        public const string NPCSJProgress_Basic_Up = "NPCSJProgress_Basic_Up"; // NPCHVal 自然上涨
 
         public const string Unmovable = "Unmovable";
         public const string LockFace = "LockFace";
@@ -76,6 +78,7 @@ namespace My.Map.Entity
         public const string Charmed = "Charmed";
         public const string ImmuneJianSu = "ImmuneJianSu";
         public const string NpcFcked = "NpcFcked"; // 特殊状态
+        public const string DesireMistAffected = "DesireMistAffected";
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";
         public const string NoKiller = "NoKiller";

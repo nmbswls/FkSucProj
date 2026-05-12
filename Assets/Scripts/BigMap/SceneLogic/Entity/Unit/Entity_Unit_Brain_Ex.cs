@@ -219,13 +219,6 @@ namespace My.Map.Unit
                 return;
             }
 
-
-            if(_brain.AttractTrigger)
-            {
-                _brain.ChangeState(_brain.StateAttracted);
-                return;
-            }
-
             if (_brain.SuspiciousPos != null)
             {
                 _brain.ChangeState(_brain.StateSearch);
@@ -255,7 +248,10 @@ namespace My.Map.Unit
         }
     }
 
-    // --- Idle 状态 ---
+    // --- attracted 状态 ---
+    /// <summary>
+    /// 
+    /// </summary>
     public class AIStateAttracted : AIBaseState
     {
         public override string StateName => "Attracted";
@@ -268,65 +264,126 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
-            if (_brain.LatestAttrctInfo == null || LogicTime.time - _brain.LatestAttrctInfo.HappenTime > 5.0f)
+            if (_brain.NpcEntity.LatestAttrctInfo == null || LogicTime.time - _brain.NpcEntity.LatestAttrctInfo.HappenTime > 5.0f)
             {
                 return;
             }
-            _brain.NpcEntity.RegisterGaze("Attracted", _brain.LatestAttrctInfo.AttractSrcId, _brain.LatestAttrctInfo.HappenPos, EGazePriority.Interact, 0);
+            _brain.NpcEntity.RegisterGaze("Attracted", _brain.NpcEntity.LatestAttrctInfo.AttractSrcId, _brain.NpcEntity.LatestAttrctInfo.HappenPos, EGazePriority.Interact, 0);
         }
 
         private float _enterAttractedTimer = 0;
         public override void OnUpdate()
         {
-            if(_brain.LatestAttrctInfo == null || LogicTime.time - _brain.LatestAttrctInfo.HappenTime > 5.0f)
+            if(_brain.NpcEntity.LatestAttrctInfo == null || LogicTime.time - _brain.NpcEntity.LatestAttrctInfo.HappenTime > 5.0f)
             {
-                _brain.ChangeState(_brain.StateReturn);
+                _brain.ChangeState(_brain.StateSearch);
                 return;
             }
 
-
-            IAttractSource attractSource = null;
-            if (_brain.LatestAttrctInfo.AttractSrcId != 0)
+            switch(_brain.NpcEntity.LatestAttrctInfo.SrcType)
             {
-                attractSource = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.LatestAttrctInfo.AttractSrcId) as IAttractSource;
-                if (attractSource != null)
+                case ENpcAttractSrcType.PlayerMist:
+                    {
+                        UpdateAttractByMist();
+                    }
+                    break;
+                case ENpcAttractSrcType.SrcEntity:
+                    {
+                        var attractSrc = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.LatestAttrctInfo.AttractSrcId) as IAttractSource;
+                        if (attractSrc != null)
+                        {
+                            _brain.NpcEntity.TryMoveTo(attractSrc.Pos, moveSpeedRate: 0.5f);
+                        }
+                    }
+                    break;
+                case ENpcAttractSrcType.PointOnce:
+                    {
+                        _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.LatestAttrctInfo.HappenPos, moveSpeedRate: 0.5f);
+                    }
+                    break;
+                case ENpcAttractSrcType.Player:
+                    {
+                        var playerEntity = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.LatestAttrctInfo.AttractSrcId) as PlayerLogicEntity;
+
+                        if (playerEntity == null)
+                        {
+                            Debug.LogError("AIStateAttracted err 1");
+                            break;
+                        }
+
+                        var attractLevel = PlayerGamePlayRule.CalculateUnitAttractedLevel(_brain.NpcEntity.LogicManager, _brain.NpcEntity.GetAttr(AttrIdConsts.Will));
+
+                        // 进行移动
+                        if (attractLevel >= 3)
+                        {
+                            _brain.NpcEntity.TryMoveTo(playerEntity.Pos, moveSpeedRate: 0.8f);
+                        }
+                        else if (attractLevel >= 2)
+                        {
+                            // 2级以上 
+                            _brain.NpcEntity.TryMoveTo(playerEntity.Pos, moveSpeedRate: 0.4f);
+                        }
+                        else
+                        {
+                            _brain.NpcEntity.StopMove();
+                        }
+
+                        // 条件满足时执行揩油
+                        if (attractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
+                        {
+                            if (!playerEntity.CheckHasState(AttrIdConsts.ImmumeKaiYou))
+                            {
+                                var diff = playerEntity.Pos - _brain.NpcEntity.Pos;
+                                if (diff.magnitude < 0.8f)
+                                {
+                                    _brain.NpcEntity.abilityController.TryUseAbility("close_kaiyou", target: playerEntity);
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            
+        }
+
+
+        private void UpdateAttractByMist()
+        {
+            // 寻找附近的entity
+            const string mistCfg = "player_pink_mist_trail";
+            var candidates = _brain.NpcEntity.LogicManager.FindEntityInRange(_brain.NpcEntity.Pos, 3f);
+
+            AreaEffectLogicEntity lastestOne = null;
+
+            foreach (var candidate in candidates)
+            {
+                if(candidate is not AreaEffectLogicEntity aeEntity)
                 {
-                    _brain.LatestAttrctInfo.HappenPos = attractSource.Pos;
-                    _brain.LatestAttrctInfo.AttractLevel = attractSource.AttractLevel;
+                    continue;
+                }
+
+                if(aeEntity.CfgId != mistCfg)
+                {
+                    continue;
+                }
+
+                if(lastestOne == null || aeEntity.LifeTime >= lastestOne.LifeTime)
+                {
+                    lastestOne = aeEntity;
                 }
             }
-
-
-            // 进行移动
-            if (_brain.LatestAttrctInfo.AttractLevel >= 3)
+            
+            if(lastestOne == null)
             {
-                _brain.NpcEntity.TryMoveTo(_brain.LatestAttrctInfo.HappenPos, moveSpeedRate: 0.9f);
-                //_brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract fast", _brain.NpcEntity.Pos);
-            }
-            else if (_brain.LatestAttrctInfo.AttractLevel >= 2)
-            {
-                // 2级以上 
-                _brain.NpcEntity.TryMoveTo(attractSource.Pos, moveSpeedRate: 0.1f);
-                _brain.NpcEntity.LogicManager.viewer.ShowFakeFxEffect("attract slow", _brain.NpcEntity.Pos);
+                _brain.ChangeState(_brain.StateSearch);
             }
             else
             {
-                _brain.NpcEntity.StopMove();
-            }
-
-            // 条件满足时执行揩油
-            if (_brain.LatestAttrctInfo.AttractLevel >= 2 && _brain.NpcEntity.abilityController.IsActionable())
-            {
-                if (attractSource is PlayerLogicEntity playerEntity && !playerEntity.CheckHasState(AttrIdConsts.ImmumeKaiYou))
-                {
-                    var diff = playerEntity.Pos - _brain.NpcEntity.Pos;
-                    if (diff.magnitude < 0.8f)
-                    {
-                        _brain.NpcEntity.abilityController.TryUseAbility("close_kaiyou", target: playerEntity);
-                    }
-                }
+                _brain.NpcEntity.TryMoveTo(lastestOne.Pos, moveSpeedRate: 0.5f);
             }
         }
+
 
         public override void OnExit()
         {
@@ -543,8 +600,9 @@ namespace My.Map.Unit
                 return true;
             }
 
-            float distToTarget = Vector3.Distance(_brain.NpcEntity.Pos, _currentTarget.Pos);
-            if (distToTarget > _brain.Config.ChaseRange)
+            float distToHome = Vector3.Distance(_brain.NpcEntity.Pos, _brain.HomePos.Value);
+            //float distToTarget = Vector3.Distance(_brain.NpcEntity.Pos, _currentTarget.Pos);
+            if (distToHome > _brain.Config.ChaseRange)
             {
                 // 放弃追击，清除仇恨，回家
                 _brain.Aggro.ClearTarget();
@@ -877,12 +935,6 @@ namespace My.Map.Unit
                 return;
             }
 
-
-            if (_brain.AttractTrigger)
-            {
-                _brain.ChangeState(_brain.StateAttracted);
-                return;
-            }
 
             if (_brain.SuspiciousPos != null)
             {

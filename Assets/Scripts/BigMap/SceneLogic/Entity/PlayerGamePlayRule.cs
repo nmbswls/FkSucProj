@@ -31,6 +31,22 @@ namespace My.Map
         //    return BaseSuccessChance;
         //}
 
+        public static int GetDropBundleFromStaticZha(int score)
+        {
+            if(score <= 2)
+            {
+                return 10000;
+            }
+            else if(score <= 6)
+            {
+                return 10001;
+            }
+            else
+            {
+                return 10002;
+            }
+        }
+
 
         /// <summary>
         /// 计算对抗成功几率
@@ -137,23 +153,50 @@ namespace My.Map
             return 0;
         }
 
-        public static int CalculateUnitAttractedLevel(int playerLevel, long playerCharm, long exposeRate, long will)
+        public static long GetClothesRawOverRate10000ForGameplay(GameLogicManager glm)
         {
-            long attactPower = playerCharm * 1 + (long)(exposeRate * 0.0001 * 50_000);
-
-            float K = 100 + playerLevel * 10;
-            long costRate = (long)((will * 0.001) / (will * 0.001 + K) * 10000);
-            if(costRate > 9500)
+            if (glm.PlayerHumanMode)
             {
-                costRate = 9500;
+                return 10000L;
             }
-            attactPower = (long)(attactPower * (10000 - costRate) * 0.0001);
 
-            if(attactPower > 30_000)
+            var magicMgr = glm.playerDataManager.MagicClothes;
+            if (magicMgr.IsLockedWithSelection)
+            {
+                return magicMgr.GetRawOverRate10000ForRefresh();
+            }
+
+            return 10000L;
+        }
+
+        public static int CalculateUnitAttractedLevel(GameLogicManager glm,  long will)
+        {
+            long rawOverRate = GetClothesRawOverRate10000ForGameplay(glm);
+            var exposeRate10000 = PlayerGamePlayRule.CalculateBreakClothesInnerRate(glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes), rawOverRate);
+
+            float aMax = 100;
+            float w1 = 0.7f;
+            float w2 = 0.3f;
+            var aBase = aMax * (w1 * (1 - exposeRate10000 * 0.0001) * (1 - exposeRate10000 * 0.0001) + w2 * glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerEstrusProgrss) * 1.0 / 100_000);
+            var charm = glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerCharm);
+            float weff = Math.Max(0, will - charm);
+
+            float K = 100 + glm.playerDataManager.Level * 10;
+
+            double sF = aBase * (K) / (K + weff);
+            if(sF < 30)
+            {
+                return 0;
+            }
+            else if(sF < 60)
             {
                 return 1;
             }
-            return 0;
+            else if(sF < 85)
+            {
+                return 2;
+            }
+            return 3;
         }
 
 
@@ -193,10 +236,6 @@ namespace My.Map
             return (float)districtP;
         }
 
-        public static long GetFaQingIncreaseByJingYuLayer(long layer)
-        {
-            return 500;
-        }
 
         public static long GetFinalArm(this ILogicEntity entity)
         {
@@ -260,6 +299,13 @@ namespace My.Map
         }
 
 
+        /// <summary>
+        /// 返回的是0-10000的实际覆盖率
+        /// 综合考虑衣物本身覆盖率
+        /// </summary>
+        /// <param name="currentClothes"></param>
+        /// <param name="rawOverRate"></param>
+        /// <returns></returns>
         public static int CalculateBreakClothesInnerRate(long currentClothes, long rawOverRate)
         {
             float brokeParam = PlayerGamePlayRule.GetBreakClothesParam(currentClothes);

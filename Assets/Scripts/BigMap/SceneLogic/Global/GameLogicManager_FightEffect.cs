@@ -199,6 +199,11 @@ namespace My
                             executor = new AbilityEffectExecutor4CauseNoise();
                         }
                         break;
+                    case MapFightEffectWantedIncidentBroadcastCfg:
+                        {
+                            executor = new AbilityEffectExecutor4WantedIncidentBroadcast();
+                        }
+                        break;
                     case MapAbilityEffectGiveItemCfg:
                         {
                             executor = new AbilityEffectExecutor4GiveItem();
@@ -302,6 +307,7 @@ namespace My
             HitBox,
             HitWeapon,
             Buff,
+            Trap,
         }
 
         public class LogicFightEffectContext

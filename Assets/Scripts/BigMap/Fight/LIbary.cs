@@ -530,7 +530,7 @@ namespace My.Map.Entity
             //spec.CoolDown = 1.0f;
 
             spec.CauseAttract = true;
-            spec.AttractPower = 10.0f;
+            spec.AttractPower = 10;
             spec.AttractRange = 2.0f;
 
             spec.CastType = ECastType.NoTarget;
@@ -2713,7 +2713,15 @@ namespace My.Map.Entity
                         new MapFightEffectInterruptCaster()
                         {
 
-                        }
+                        },
+
+                        new MapFightEffectKnockBackCfg()
+                        {
+                            ApplyTarget = false,
+                            ApplySelf = true,
+                            DirType = MapFightEffectKnockBackCfg.EKnockBackType.AwayFromTarget,
+                            KnockBackForce = 0.85f,
+                        },
                     }
                 };
                 checkPhase2.Events.Add(new PhaseEffectEvent() { Effect = checkWinCfg, Kind = PhaseEventKind.OnEnter });
@@ -2740,6 +2748,14 @@ namespace My.Map.Entity
                     {
                         BuffId = "force_stun",
                         Duration = 2.5f,
+                    },
+                    new MapFightEffectWantedIncidentBroadcastCfg()
+                    {
+                        Behave = EWantedBehaveType.ForceExtractAssault,
+                        Radius = 10f,
+                        TempEnmityAmount = 30f,
+                        EvilAlertDuration = 8f,
+                        OnlyPeaceNpc = true,
                     },
                 },
 

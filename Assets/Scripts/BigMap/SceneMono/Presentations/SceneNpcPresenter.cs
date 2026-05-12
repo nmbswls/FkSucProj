@@ -44,11 +44,6 @@ namespace My.Map.Scene
         public HighlightCtrl highlightCtrl;
         public bool InteractDetailMode { get; set; }
 
-        // 猎杀模式 + 附着欲望结晶：从 Resources 实例化占位预制体（见 Prefab/SceneEffect/desire_crystal_hunting_placeholder）
-        public const string DesireCrystalHuntingFxPrefabResourcePath = "Prefab/SceneEffect/desire_crystal_hunting_placeholder";
-
-        Transform _desireCrystalHuntingFxRoot;
-
         private int _faqingEffectUId { get; set; }
 
         public bool InteractFocused
@@ -127,8 +122,6 @@ namespace My.Map.Scene
         {
             base.Tick(dt);
 
-            TickDesireCrystalHuntingFx();
-
             if(NpcEntity.IsFaQing)
             {
                 if(_faqingEffectUId == 0)
@@ -151,80 +144,6 @@ namespace My.Map.Scene
                 }
             }
         }
-
-        void TickDesireCrystalHuntingFx()
-        {
-            if (_desireCrystalHuntingFxRoot == null)
-            {
-                return;
-            }
-
-            bool hunter = OverworldHUDPanel.Instance != null && OverworldHUDPanel.Instance.IsHunterMode;
-            bool hasCrystal = NpcEntity != null && NpcEntity.HasAttachedDesireCrystal;
-            _desireCrystalHuntingFxRoot.gameObject.SetActive(hunter && hasCrystal);
-        }
-
-        public override void Bind(ILogicEntity logic)
-        {
-            base.Bind(logic);
-            EnsureDesireCrystalHuntingFxBuilt();
-            if (_desireCrystalHuntingFxRoot != null)
-            {
-                _desireCrystalHuntingFxRoot.gameObject.SetActive(false);
-            }
-        }
-
-        public override void Unbind()
-        {
-            DestroyDesireCrystalHuntingFx();
-            base.Unbind();
-        }
-
-        void DestroyDesireCrystalHuntingFx()
-        {
-            if (_desireCrystalHuntingFxRoot != null)
-            {
-                Destroy(_desireCrystalHuntingFxRoot.gameObject);
-                _desireCrystalHuntingFxRoot = null;
-            }
-        }
-
-        void EnsureDesireCrystalHuntingFxBuilt()
-        {
-            if (_desireCrystalHuntingFxRoot != null)
-            {
-                return;
-            }
-
-            var prefab = Resources.Load<GameObject>(DesireCrystalHuntingFxPrefabResourcePath);
-            if (prefab == null)
-            {
-                Debug.LogError($"SceneNpcPresenter: Resources.Load failed '{DesireCrystalHuntingFxPrefabResourcePath}'");
-                return;
-            }
-
-            Transform parent = PivotHeader != null ? PivotHeader : transform;
-            var inst = Instantiate(prefab, parent);
-            inst.transform.localPosition = Vector3.zero;
-            inst.transform.localRotation = Quaternion.identity;
-            inst.transform.localScale = Vector3.one;
-            _desireCrystalHuntingFxRoot = inst.transform;
-        }
-
-        protected override void RegisterEvents()
-        {
-            base.RegisterEvents();
-
-            //UnitEntity.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
-        }
-
-        protected override void UnregisterEvents()
-        {
-            base.UnregisterEvents();
-
-            //UnitEntity.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
-        }
-
 
         public override bool CheckCanActiveMove()
         {
@@ -382,7 +301,7 @@ namespace My.Map.Scene
             }
             else if (selectionId == ID_DeepAbsorbEnable)
             {
-               DeepAbsorbPanel.Show(UnitEntity.Id, 5, 3);
+               MiniStaticAbsorbPanel.Show(UnitEntity.Id, 5, 3);
             }
             else if(selectionId == ID_PickDropInteractId)
             {

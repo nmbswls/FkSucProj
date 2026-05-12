@@ -42,6 +42,8 @@ namespace My.Map
         /// ????????????????UniqName ???
         /// </summary>
         FishingSpot,
+
+        Trap,
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner

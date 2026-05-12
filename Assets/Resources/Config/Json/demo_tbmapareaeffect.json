@@ -30,6 +30,6 @@
     "shape_angle": 0,
     "area_buff_id": "player_pink_mist",
     "camp_filter": 1,
-    "default_lifetime": 8
+    "default_lifetime": 3
   }
 ]

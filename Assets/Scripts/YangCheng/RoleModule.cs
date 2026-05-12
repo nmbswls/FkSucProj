@@ -23,7 +23,7 @@ namespace My.Player
             targetMap.Add((int)EYCAttribute.StaticCharm, 10);
             targetMap.Add((int)EYCAttribute.SecretSlot, 3);
 
-
+            targetMap.Add((int)EYCAttribute.FixDmgReduceFinal, 5000);
         }
     }
 

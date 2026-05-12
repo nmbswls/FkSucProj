@@ -17,6 +17,7 @@ namespace cfg.demo
         StealSmall = 1,
         StealValuable = 2,
         AssaultCitizen = 3,
+        ForceExtractAssault = 4,
     }
 
 } 

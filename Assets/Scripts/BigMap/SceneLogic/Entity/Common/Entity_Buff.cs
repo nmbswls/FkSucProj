@@ -2,6 +2,7 @@ using Map.Entity;
 using Map.Logic;
 using Map.Logic.Events;
 using My.Map;
+using My.Saving;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -81,6 +82,12 @@ namespace My.Map.Entity
         Replace = 1,
         MaxTurn = 2,
         AddTurn = 3,
+    }
+
+    public enum EBuffLayerStackMode
+    {
+        Classic,
+        IndependentStack,
     }
 
 
@@ -164,7 +171,7 @@ namespace My.Map.Entity
             var owner = inst.BuffOwner;
             long srcNow = owner.GetAttr(_srcAttrId);
             _lastSrcSnapshot = srcNow;
-            ApplyMod(inst, owner, ComputeModValue(srcNow, inst.Layer));
+            ApplyMod(inst, owner, ComputeModValue(srcNow, inst.GetModifierScaleLayer()));
         }
 
         public override void OnDetached(BuffInstance inst)
@@ -193,7 +200,7 @@ namespace My.Map.Entity
             }
 
             _lastSrcSnapshot = srcNow;
-            ApplyMod(inst, owner, ComputeModValue(srcNow, inst.Layer));
+            ApplyMod(inst, owner, ComputeModValue(srcNow, inst.GetModifierScaleLayer()));
         }
 
         private bool IsConfigValid(BuffInstance inst)
@@ -266,6 +273,7 @@ namespace My.Map.Entity
         public string Icon = "fallback";
         public EBuffLayerOverrideType LayerOverrideType;
         public int MaxStackLayer;
+        public EBuffLayerStackMode LayerStackMode = EBuffLayerStackMode.Classic;
 
         public EBuffTurnOverrideType TurnOverrideType;
 
@@ -299,6 +307,21 @@ namespace My.Map.Entity
         public BuffDurationEffet DurationEffect;
 
         public List<BuffTriggerRuleConfig> TriggerList = new();
+    }
+
+    // IndependentStack：每层独立剩余时间，可选记录 Caster/SrcBuff
+    public sealed class BuffLayerStackEntry
+    {
+        public float RemainingLifetime;
+        public long CasterId;
+        public long SrcBuffId;
+
+        public BuffLayerStackEntry(float remainingLifetime, long casterId, long srcBuffId)
+        {
+            RemainingLifetime = remainingLifetime;
+            CasterId = casterId;
+            SrcBuffId = srcBuffId;
+        }
     }
 
 
@@ -439,7 +462,7 @@ namespace My.Map.Entity
             foreach (var buffInst in _buffs.Values)
             {
                 buffInst.Tick(dt);
-                if(buffInst.Lifetime != -1)
+                if (!buffInst.UsesIndependentStack && buffInst.Lifetime != -1)
                 {
                     buffInst.Lifetime -= dt;
 
@@ -504,10 +527,31 @@ namespace My.Map.Entity
 
             long? caster = data.CasterEntityId != 0 ? data.CasterEntityId : (long?)null;
             long? srcBuff = data.SrcBuffId != 0 ? data.SrcBuffId : (long?)null;
-            var inst = new BuffInstance(owner, ++BuffInstIdCounter, data.BuffId, data.Layer, data.RemainingLifetime, casterId: caster, srcBuffId: srcBuff);
-            inst.OnBuffAddOrUpdate(true);
-            _buffs[inst.InstanceId] = inst;
-            owner.RegisterBuffDirect(inst);
+            var def = BuffLibrary.GetBuffDefinition(data.BuffId);
+
+            if (def.LayerStackMode == EBuffLayerStackMode.IndependentStack)
+            {
+                if (data.StackLayers != null && data.StackLayers.Count > 0)
+                {
+                    var inst = new BuffInstance(owner, ++BuffInstIdCounter, data.BuffId, 0, -1, casterId: caster, srcBuffId: srcBuff);
+                    inst.LoadIndependentStackFromPersist(data.StackLayers);
+                    inst.OnBuffAddOrUpdate(true);
+                    _buffs[inst.InstanceId] = inst;
+                    owner.RegisterBuffDirect(inst);
+                    return;
+                }
+
+                var legacyStack = new BuffInstance(owner, ++BuffInstIdCounter, data.BuffId, data.Layer, data.RemainingLifetime, casterId: caster, srcBuffId: srcBuff);
+                legacyStack.OnBuffAddOrUpdate(true);
+                _buffs[legacyStack.InstanceId] = legacyStack;
+                owner.RegisterBuffDirect(legacyStack);
+                return;
+            }
+
+            var classic = new BuffInstance(owner, ++BuffInstIdCounter, data.BuffId, data.Layer, data.RemainingLifetime, casterId: caster, srcBuffId: srcBuff);
+            classic.OnBuffAddOrUpdate(true);
+            _buffs[classic.InstanceId] = classic;
+            owner.RegisterBuffDirect(classic);
         }
 
         // 外部接口：请求添加 Buff（可在效果中调用）
@@ -521,7 +565,8 @@ namespace My.Map.Entity
             _removeRequests.Add((0, buffInstId));
         }
 
-        public void RemoveAllBuffById(long entityId, string buffId, int layer = 1, long? casterId = null, long? srcBuffId = null)
+        // subtractLayer：0 整实例移除（Classic）或按规则摘层（Independent 见实现）；>0 减层
+        public void RemoveAllBuffById(long entityId, string buffId, int subtractLayer = 0, long? casterId = null, long? srcBuffId = null)
         {
             var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId, false);
             if(targetEntity == null)
@@ -537,12 +582,50 @@ namespace My.Map.Entity
                     continue;
                 }
 
+                if (buffInst.UsesIndependentStack)
+                {
+                    bool hasFilter = casterId != null || srcBuffId != null;
+                    if (subtractLayer <= 0 && !hasFilter)
+                    {
+                        RequestRemoveBuff(targetEntity, buffInst.InstanceId);
+                    }
+                    else if (subtractLayer <= 0 && hasFilter)
+                    {
+                        buffInst.RemoveIndependentStackEntries(0, casterId, srcBuffId, removeAllMatchingFilter: true);
+                    }
+                    else
+                    {
+                        buffInst.RemoveIndependentStackEntries(subtractLayer, casterId, srcBuffId, removeAllMatchingFilter: false);
+                    }
+                    continue;
+                }
+
                 if(casterId != null && casterId != buffInst.CasterId)
                 {
                     continue;
                 }
 
-                RequestRemoveBuff(targetEntity, buffInst.InstanceId);
+                if (srcBuffId != null && buffInst.SrcBuffId != srcBuffId.Value)
+                {
+                    continue;
+                }
+
+                if (subtractLayer > 0)
+                {
+                    int newLayer = buffInst.Layer - subtractLayer;
+                    if (newLayer <= 0)
+                    {
+                        RequestRemoveBuff(targetEntity, buffInst.InstanceId);
+                    }
+                    else
+                    {
+                        buffInst.SetBuffLayerDirect(newLayer);
+                    }
+                }
+                else
+                {
+                    RequestRemoveBuff(targetEntity, buffInst.InstanceId);
+                }
             }
         }
 
@@ -573,6 +656,51 @@ namespace My.Map.Entity
             _addRequests.Clear();
         }
 
+        private static BuffInstance FindMergeTarget(Dictionary<long, BuffInstance> table, IEntityBuffOwner target, BuffDefinition def, string buffId)
+        {
+            if (def.LayerOverrideType == EBuffLayerOverrideType.Duplicate
+                && def.LayerStackMode != EBuffLayerStackMode.IndependentStack)
+            {
+                return null;
+            }
+
+            foreach (var b in table.Values)
+            {
+                if (b.BuffOwner == target && b.BuffId == buffId)
+                {
+                    return b;
+                }
+            }
+
+            return null;
+        }
+
+        private static float ComputeIndependentPerEntryDuration(EBuffTurnOverrideType turn, float incoming, float refLife)
+        {
+            switch (turn)
+            {
+                case EBuffTurnOverrideType.NoOp:
+                case EBuffTurnOverrideType.Replace:
+                    return incoming;
+                case EBuffTurnOverrideType.MaxTurn:
+                    if (refLife < 0)
+                    {
+                        return -1;
+                    }
+
+                    return Math.Max(incoming, refLife);
+                case EBuffTurnOverrideType.AddTurn:
+                    if (refLife < 0)
+                    {
+                        return -1;
+                    }
+
+                    return refLife + incoming;
+                default:
+                    return incoming;
+            }
+        }
+
         protected BuffInstance AddBuffInternal(ILogicEntity target, string buffId, int layer, float overrideDuration, long? casterId, long? srcBuffId)
         {
             var buffDef = BuffLibrary.GetBuffDefinition(buffId);
@@ -582,8 +710,55 @@ namespace My.Map.Entity
             {
                 duration = overrideDuration;
             }
+
+            var existing = FindMergeTarget(_buffs, target, buffDef, buffId);
+
+            if (buffDef.LayerStackMode == EBuffLayerStackMode.IndependentStack)
+            {
+                if (existing == null)
+                {
+                    var inst = new BuffInstance(target, ++BuffInstIdCounter, buffId, layer, duration, casterId: casterId, srcBuffId: srcBuffId);
+                    inst.OnBuffAddOrUpdate(true);
+
+                    _buffs.Add(inst.InstanceId, inst);
+                    target.RegisterBuff(inst);
+
+                    var ev = new MLEApplyBuff()
+                    {
+                        Ctx = new MapLogicEventContext { CorrelationId = Guid.NewGuid() },
+                        CasterId = casterId ?? 0,
+                        TargetId = target.Id,
+                        BuffId = buffId,
+                        Layer = inst.Layer,
+                    };
+                    logicManager.LogicEventBus.Publish(ev);
+                    return inst;
+                }
+
+                float refLife = existing.GetStackTurnReferenceLifetime();
+                float perEntry = ComputeIndependentPerEntryDuration(buffDef.TurnOverrideType, duration, refLife);
+
+                switch (buffDef.LayerOverrideType)
+                {
+                    case EBuffLayerOverrideType.NoOp:
+                        break;
+                    case EBuffLayerOverrideType.Replace:
+                        existing.ReplaceIndependentStack(layer, perEntry, casterId, srcBuffId);
+                        break;
+                    case EBuffLayerOverrideType.AddLayer:
+                    case EBuffLayerOverrideType.Duplicate:
+                        existing.PushIndependentLayers(layer, perEntry, casterId, srcBuffId);
+                        break;
+                    default:
+                        Debug.LogError("Buff Override Error");
+                        break;
+                }
+
+                return existing;
+            }
+
+            // Classic
             bool needCreate = false;
-            var existing = _buffs.FirstOrDefault(b => b.Value.BuffOwner == target && b.Value.Def.BuffId == buffId).Value;
             if (existing != null)
             {
                 var layerOverrideType = buffDef.LayerOverrideType;
@@ -594,7 +769,6 @@ namespace My.Map.Entity
 
                         }
                         break;
-                    // 重置
                     case EBuffLayerOverrideType.Replace:
                         {
                             existing.Layer = layer;
@@ -624,38 +798,40 @@ namespace My.Map.Entity
                         }
                 }
 
-                var turnOverrideType = buffDef.TurnOverrideType;
-                switch (turnOverrideType)
+                if (!needCreate)
                 {
-                    case EBuffTurnOverrideType.NoOp:
-                        {
+                    var turnOverrideType = buffDef.TurnOverrideType;
+                    switch (turnOverrideType)
+                    {
+                        case EBuffTurnOverrideType.NoOp:
+                            {
 
-                        }
-                        break;
-                    // 重置
-                    case EBuffTurnOverrideType.Replace:
-                        {
-                            existing.Lifetime = duration;
+                            }
                             break;
-                        }
-                    case EBuffTurnOverrideType.MaxTurn:
-                        {
-                            existing.Lifetime = Math.Max(duration, existing.Lifetime);
-                            break;
-                        }
-                    case EBuffTurnOverrideType.AddTurn:
-                        {
-                            existing.Lifetime += duration;
-                            break;
-                        }
+                        case EBuffTurnOverrideType.Replace:
+                            {
+                                existing.Lifetime = duration;
+                                break;
+                            }
+                        case EBuffTurnOverrideType.MaxTurn:
+                            {
+                                existing.Lifetime = Math.Max(duration, existing.Lifetime);
+                                break;
+                            }
+                        case EBuffTurnOverrideType.AddTurn:
+                            {
+                                existing.Lifetime += duration;
+                                break;
+                            }
 
-                    default:
-                        {
-                            Debug.LogError("Buff Override Error");
-                            break;
-                        }
+                        default:
+                            {
+                                Debug.LogError("Buff Override Error");
+                                break;
+                            }
+                    }
+                    existing.OnBuffAddOrUpdate(false);
                 }
-                existing.OnBuffAddOrUpdate(false);
             }
             else
             {
@@ -666,7 +842,7 @@ namespace My.Map.Entity
             {
                 existing = new BuffInstance(target, ++BuffInstIdCounter, buffId, layer, lifeTIme: duration, casterId:casterId, srcBuffId:srcBuffId);
                 existing.OnBuffAddOrUpdate(true);
-                
+
                 _buffs.Add(existing.InstanceId, existing);
                 target.RegisterBuff(existing);
 
@@ -750,7 +926,33 @@ namespace My.Map.Entity
     {
         public long InstanceId;
         public string BuffId;
-        public int Layer;
+
+        private int _classicLayer;
+        private List<BuffLayerStackEntry> _independentStack;
+
+        public int Layer
+        {
+            get
+            {
+                if (Def != null && Def.LayerStackMode == EBuffLayerStackMode.IndependentStack && _independentStack != null)
+                {
+                    return _independentStack.Count;
+                }
+
+                return _classicLayer;
+            }
+            set
+            {
+                if (Def != null && Def.LayerStackMode == EBuffLayerStackMode.IndependentStack && _independentStack != null)
+                {
+                    Debug.LogWarning($"Set Layer ignored for independent-stack buff {BuffId}");
+                    return;
+                }
+
+                _classicLayer = value;
+            }
+        }
+
         public float Lifetime;
 
         public long CasterId;
@@ -771,6 +973,8 @@ namespace My.Map.Entity
         public bool MarkedForRemove;
 
         public float? tickIntervalSec; // null 表示非周期
+
+        public bool UsesIndependentStack => Def != null && Def.LayerStackMode == EBuffLayerStackMode.IndependentStack;
 
         private List<Modifier?> registeredModifiers;
 
@@ -797,18 +1001,33 @@ namespace My.Map.Entity
 
         public BuffInstance(IEntityBuffOwner owner, long instId, string buffId, int layer, float lifeTIme = -1, long? casterId = null, long? srcBuffId = null)
         {
-            this.InstanceId = instId;
-            this.BuffId = buffId;
-            this.CasterId = casterId??0;
-            this.SrcBuffId = srcBuffId ?? 0;
-            this.Layer = layer;
-
+            InstanceId = instId;
+            BuffId = buffId;
             BuffOwner = owner;
-            Lifetime = lifeTIme;
-
 
             Def = BuffLibrary.GetBuffDefinition(buffId);
+            CasterId = casterId ?? 0;
+            SrcBuffId = srcBuffId ?? 0;
+
             _durationLogic = BuffDurationInstanceFactory.Create(Def.DurationEffect);
+
+            if (Def.LayerStackMode == EBuffLayerStackMode.IndependentStack)
+            {
+                Lifetime = -1;
+                _independentStack = new List<BuffLayerStackEntry>();
+                for (int i = 0; i < layer; i++)
+                {
+                    _independentStack.Add(new BuffLayerStackEntry(lifeTIme, CasterId, SrcBuffId));
+                }
+
+                _classicLayer = 0;
+            }
+            else
+            {
+                Lifetime = lifeTIme;
+                _classicLayer = layer;
+                _independentStack = null;
+            }
 
             foreach (var trigger in Def.TriggerList)
             {
@@ -829,11 +1048,224 @@ namespace My.Map.Entity
             }
         }
 
+        public int GetModifierScaleLayer()
+        {
+            int n = Layer;
+            if (Def.LayerStackMode == EBuffLayerStackMode.IndependentStack && Def.MaxStackLayer > 0)
+            {
+                return Math.Min(n, Def.MaxStackLayer);
+            }
+
+            return n;
+        }
+
+        public List<BuffLayerPersistEntry> ExportStackLayersForPersist()
+        {
+            var list = new List<BuffLayerPersistEntry>(_independentStack?.Count ?? 0);
+            if (_independentStack == null)
+            {
+                return list;
+            }
+
+            foreach (var e in _independentStack)
+            {
+                list.Add(new BuffLayerPersistEntry
+                {
+                    RemainingLifetime = e.RemainingLifetime,
+                    CasterEntityId = e.CasterId,
+                    SrcBuffId = e.SrcBuffId,
+                });
+            }
+
+            return list;
+        }
+
+        public void LoadIndependentStackFromPersist(IList<BuffLayerPersistEntry> rows)
+        {
+            if (_independentStack == null)
+            {
+                _independentStack = new List<BuffLayerStackEntry>();
+            }
+            else
+            {
+                _independentStack.Clear();
+            }
+
+            if (rows == null)
+            {
+                return;
+            }
+
+            foreach (var row in rows)
+            {
+                _independentStack.Add(new BuffLayerStackEntry(row.RemainingLifetime, row.CasterEntityId, row.SrcBuffId));
+            }
+        }
+
+        public float GetStackTurnReferenceLifetime()
+        {
+            if (_independentStack == null || _independentStack.Count == 0)
+            {
+                return 0;
+            }
+
+            foreach (var e in _independentStack)
+            {
+                if (e.RemainingLifetime < 0)
+                {
+                    return -1;
+                }
+            }
+
+            float max = 0;
+            foreach (var e in _independentStack)
+            {
+                max = Math.Max(max, e.RemainingLifetime);
+            }
+
+            return max;
+        }
+
+        public void PushIndependentLayers(int count, float perEntryDur, long? casterId, long? srcBuffId)
+        {
+            if (!UsesIndependentStack || _independentStack == null || count <= 0)
+            {
+                return;
+            }
+
+            long c = casterId ?? 0;
+            long s = srcBuffId ?? 0;
+            for (int i = 0; i < count; i++)
+            {
+                _independentStack.Add(new BuffLayerStackEntry(perEntryDur, c, s));
+            }
+
+            OnBuffAddOrUpdate(false);
+        }
+
+        public void ReplaceIndependentStack(int count, float perEntryDur, long? casterId, long? srcBuffId)
+        {
+            if (!UsesIndependentStack || _independentStack == null)
+            {
+                return;
+            }
+
+            _independentStack.Clear();
+            if (count <= 0)
+            {
+                MarkedForRemove = true;
+                return;
+            }
+
+            PushIndependentLayers(count, perEntryDur, casterId, srcBuffId);
+        }
+
+        public void RemoveIndependentStackEntries(int subtractLayer, long? casterId, long? srcBuffId, bool removeAllMatchingFilter)
+        {
+            if (!UsesIndependentStack || _independentStack == null)
+            {
+                return;
+            }
+
+            int before = _independentStack.Count;
+            if (removeAllMatchingFilter && subtractLayer <= 0 && (casterId != null || srcBuffId != null))
+            {
+                _independentStack.RemoveAll(e => MatchesStackEntryFilter(e, casterId, srcBuffId));
+            }
+            else if (subtractLayer > 0)
+            {
+                int removed = 0;
+                if (casterId != null || srcBuffId != null)
+                {
+                    for (int i = _independentStack.Count - 1; i >= 0 && removed < subtractLayer; i--)
+                    {
+                        if (MatchesStackEntryFilter(_independentStack[i], casterId, srcBuffId))
+                        {
+                            _independentStack.RemoveAt(i);
+                            removed++;
+                        }
+                    }
+                }
+                else
+                {
+                    while (removed < subtractLayer && _independentStack.Count > 0)
+                    {
+                        _independentStack.RemoveAt(_independentStack.Count - 1);
+                        removed++;
+                    }
+                }
+            }
+
+            if (_independentStack.Count == 0)
+            {
+                MarkedForRemove = true;
+            }
+            else if (_independentStack.Count != before)
+            {
+                OnBuffAddOrUpdate(false);
+            }
+        }
+
+        private static bool MatchesStackEntryFilter(BuffLayerStackEntry e, long? casterId, long? srcBuffId)
+        {
+            if (casterId != null && e.CasterId != casterId.Value)
+            {
+                return false;
+            }
+
+            if (srcBuffId != null && e.SrcBuffId != srcBuffId.Value)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void TickIndependentStack(float dt)
+        {
+            if (!UsesIndependentStack || _independentStack == null || _independentStack.Count == 0)
+            {
+                return;
+            }
+
+            bool changed = false;
+            for (int i = _independentStack.Count - 1; i >= 0; i--)
+            {
+                var e = _independentStack[i];
+                if (e.RemainingLifetime < 0)
+                {
+                    continue;
+                }
+
+                e.RemainingLifetime -= dt;
+                if (e.RemainingLifetime < 0)
+                {
+                    _independentStack.RemoveAt(i);
+                    changed = true;
+                }
+            }
+
+            if (!changed)
+            {
+                return;
+            }
+
+            if (_independentStack.Count == 0)
+            {
+                MarkedForRemove = true;
+            }
+            else
+            {
+                OnBuffAddOrUpdate(false);
+            }
+        }
+
         /// <summary>
         /// 当buff添加或改变是 
         /// </summary>
         public void OnBuffAddOrUpdate(bool isAdd)
         {
+            int modLayer = GetModifierScaleLayer();
             if (registeredModifiers == null)
             {
                 registeredModifiers = new();
@@ -844,7 +1276,7 @@ namespace My.Map.Entity
                         entityId = CasterId,
                         buffId = InstanceId,
                     };
-                    var modifier = BuffOwner.AddAttrModifier(srcKey, oneAttr.ModifierAttrId, oneAttr.ModifierValue * Layer);
+                    var modifier = BuffOwner.AddAttrModifier(srcKey, oneAttr.ModifierAttrId, oneAttr.ModifierValue * modLayer);
                     registeredModifiers.Add(modifier);
                 }
             }
@@ -852,7 +1284,7 @@ namespace My.Map.Entity
             {
                 for (int i = 0; i < Def.ModifierAttrs.Count; i++)
                 {
-                    registeredModifiers[i].value = Def.ModifierAttrs[i].ModifierValue * Layer;
+                    registeredModifiers[i].value = Def.ModifierAttrs[i].ModifierValue * modLayer;
                     BuffOwner.UpdateAttrModifier(registeredModifiers[i]);
                 }
             }
@@ -869,7 +1301,31 @@ namespace My.Map.Entity
 
         public void SetBuffLayerDirect(int layer)
         {
-            this.Layer = layer;
+            if (UsesIndependentStack && _independentStack != null)
+            {
+                while (_independentStack.Count > layer)
+                {
+                    _independentStack.RemoveAt(_independentStack.Count - 1);
+                }
+
+                while (_independentStack.Count < layer)
+                {
+                    _independentStack.Add(new BuffLayerStackEntry(-1, CasterId, SrcBuffId));
+                }
+
+                if (layer <= 0)
+                {
+                    MarkedForRemove = true;
+                }
+                else
+                {
+                    OnBuffAddOrUpdate(false);
+                }
+
+                return;
+            }
+
+            _classicLayer = layer;
             OnBuffAddOrUpdate(false);
         }
 
@@ -881,6 +1337,7 @@ namespace My.Map.Entity
 
         public void Tick(float dt)
         {
+            TickIndependentStack(dt);
             if (triggerRuntimes != null)
             {
                 foreach (var triggerInfo in triggerRuntimes)
@@ -994,6 +1451,7 @@ namespace My.Map.Entity
                 case MapFightEffectBroadcastAttractCfg:
                 case MapFightEffectTriggerAlert:
                 case MapFightEffectCauseNoise:
+                case MapFightEffectWantedIncidentBroadcastCfg:
                     {
                         long srcEntity = CasterId;
 

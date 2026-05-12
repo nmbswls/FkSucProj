@@ -685,7 +685,7 @@ public partial class DialoguePlayer : MonoBehaviour
                             break;
                         case EDialogSimpleFuncType.ClearWanted:
                             {
-                                MainGameManager.Instance.gameLogicManager.WantedManager.CurrentWantedVal = 0;
+                                MainGameManager.Instance.gameLogicManager.WantedManager.ClearAllWanted();
                             }
                             break;
                         case EDialogSimpleFuncType.Charmed:

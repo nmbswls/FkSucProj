@@ -185,7 +185,7 @@ namespace My.Map.Entity
 
 
         public bool CauseAttract = false;
-        public float AttractPower = 0;
+        public int AttractPower = 0;
         public float AttractRange = 2.0f;
 
         public enum ECastType

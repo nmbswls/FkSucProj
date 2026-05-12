@@ -19,8 +19,20 @@ namespace My.Map.Scene
 
         public AreaEffectLogicEntity AreaEffectEntity { get { return (AreaEffectLogicEntity)_logic; } }
 
+        protected override void OnEventEntityDestroyed(long entityId)
+        {
+            // 逻辑已销毁时立刻屏蔽表现，避免 AO 回收前粒子 / 预制体仍留在屏幕上
+            SetVisible(false);
+        }
+
         public override void Tick(float dt)
         {
+            if (_logic is AreaEffectLogicEntity ae && ae.MarkDestroyed)
+            {
+                SetVisible(false);
+                return;
+            }
+
             base.Tick(dt);
 
             TryTriggerActivate(dt);

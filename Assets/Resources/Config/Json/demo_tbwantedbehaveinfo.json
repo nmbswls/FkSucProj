@@ -3,18 +3,28 @@
     "BehaveType": 1,
     "add_wanted": 1,
     "trigger_range": 3,
-    "max_add_once": 8
+    "max_add_once": 8,
+    "channel_cap": 25
   },
   {
     "BehaveType": 2,
     "add_wanted": 3,
     "trigger_range": 5,
-    "max_add_once": 15
+    "max_add_once": 15,
+    "channel_cap": 40
   },
   {
     "BehaveType": 3,
     "add_wanted": 2,
     "trigger_range": 8,
-    "max_add_once": 12
+    "max_add_once": 12,
+    "channel_cap": 35
+  },
+  {
+    "BehaveType": 4,
+    "add_wanted": 4,
+    "trigger_range": 12,
+    "max_add_once": 15,
+    "channel_cap": 50
   }
 ]

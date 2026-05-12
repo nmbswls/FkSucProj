@@ -223,6 +223,12 @@ namespace My.MapExport
     }
 
     [Serializable]
+    public class EntityInitInfo4Trap : EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.Trap;
+    }
+
+    [Serializable]
     public class EntityInitInfo4PatrolGroup : EntityInitInfo
     {
         public enum ELoopMode

@@ -594,6 +594,11 @@ namespace My
                         newEntity = new FishingSpotLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                     }
                     break;
+                case EEntityType.Trap:
+                    {
+                        newEntity = new TrapLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                    }
+                    break;
                 default:
                     {
                         ;
@@ -837,9 +842,16 @@ namespace My
             if (saveData.GlobalRuntime != null)
             {
                 AlertVal = saveData.GlobalRuntime.AlertVal;
-                WantedManager.CurrentWantedVal = saveData.GlobalRuntime.WantedScaledVal;
-                WantedManager.LastWantedTime = saveData.GlobalRuntime.WantedLastTime;
                 SettlementDayIndex = saveData.GlobalRuntime.SettlementDayIndex;
+                WantedManager.LastWantedTime = saveData.GlobalRuntime.WantedLastTime;
+                if (saveData.GlobalRuntime.WantedChannels != null && saveData.GlobalRuntime.WantedChannels.Count > 0)
+                {
+                    WantedManager.ImportFromPersist(saveData.GlobalRuntime.WantedChannels);
+                }
+                else
+                {
+                    WantedManager.MigrateLegacySingleScalar(saveData.GlobalRuntime.WantedScaledVal);
+                }
             }
             else
             {
@@ -926,6 +938,7 @@ namespace My
             data.GlobalRuntime.AlertVal = AlertVal;
             data.GlobalRuntime.WantedScaledVal = WantedManager != null ? WantedManager.CurrentWantedVal : 0;
             data.GlobalRuntime.WantedLastTime = WantedManager != null ? WantedManager.LastWantedTime : 0f;
+            data.GlobalRuntime.WantedChannels = WantedManager != null ? WantedManager.ExportToPersist() : null;
             data.GlobalRuntime.SettlementDayIndex = SettlementDayIndex;
 
             data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
@@ -965,14 +978,21 @@ namespace My
 
             foreach (var b in playerLogicEntity.BuffContainer.Values)
             {
-                data.PlayerBuffs.Add(new BuffPersistData
+                var row = new BuffPersistData
                 {
                     BuffId = b.BuffId,
                     Layer = b.Layer,
                     RemainingLifetime = b.Lifetime,
                     CasterEntityId = b.CasterId,
                     SrcBuffId = b.SrcBuffId,
-                });
+                };
+                if (b.UsesIndependentStack)
+                {
+                    row.StackLayers = b.ExportStackLayersForPersist();
+                    row.RemainingLifetime = -1f;
+                }
+
+                data.PlayerBuffs.Add(row);
             }
         }
 

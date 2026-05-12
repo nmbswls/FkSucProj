@@ -412,7 +412,9 @@ namespace My.Map.Entity
                 {
                     BuffId = "give_hide",
                     DefaultDuration = -1,
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    LayerStackMode = EBuffLayerStackMode.IndependentStack,
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    MaxStackLayer = 1,
 
                     ModifierAttrs = new() {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HideView, ModifierValue = 1 } ,
@@ -690,11 +692,15 @@ namespace My.Map.Entity
                 _library["player_pink_mist"] = new BuffDefinition()
                 {
                     BuffId = "player_pink_mist",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    LayerStackMode = EBuffLayerStackMode.IndependentStack,
+                    MaxStackLayer = 1,
                     DefaultDuration = -1,
                     ModifierAttrs = new()
                     {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -1500 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -4500 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NPCHVal_Basic_Up, ModifierValue = 1000 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.DesireMistAffected, ModifierValue = 1 },
                     },
                 };
 

@@ -16,6 +16,14 @@ namespace My.Saving
     }
 
     [Serializable]
+    public class BuffLayerPersistEntry
+    {
+        public float RemainingLifetime;
+        public long CasterEntityId;
+        public long SrcBuffId;
+    }
+
+    [Serializable]
     public class BuffPersistData
     {
         public string BuffId;
@@ -23,6 +31,8 @@ namespace My.Saving
         public float RemainingLifetime;
         public long CasterEntityId;
         public long SrcBuffId;
+        // IndependentStack：逐层时长与可选来源；null 时用 Layer/RemainingLifetime 旧字段还原
+        public List<BuffLayerPersistEntry> StackLayers;
     }
 
     [Serializable]
@@ -105,11 +115,24 @@ namespace My.Saving
 
     // 跨地图的全局运行时（警戒条、通缉等），不随单张地图卸载而丢失
     [Serializable]
+    public class WantedChannelPersist
+    {
+        public int BehaveType;
+
+        public int ScaledVal;
+    }
+
+    [Serializable]
     public class GlobalRuntimePersistData
     {
         public int AlertVal;
+
+        /// <summary>兼容旧档：effective 通缉（各通道 max）的镜像，便于排查。</summary>
         public int WantedScaledVal;
         public float WantedLastTime;
+
+        /// <summary>新：分罪类通道缩放值；非空时优先于 WantedScaledVal 迁入逻辑。</summary>
+        public List<WantedChannelPersist> WantedChannels;
 
         /// <summary>
         /// 世界结算日计数；每推进一次触发垂钓点按 N 日补满等逻辑。

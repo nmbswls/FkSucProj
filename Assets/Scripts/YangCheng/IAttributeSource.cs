@@ -22,6 +22,8 @@ namespace My.Player
         StaticArm,
 
         ExtraJingYuanSlot,
+
+        FixDmgReduceFinal,
     }
 
     // 2. 极简存储结构（用于叶子节点存储数据，省内存）

@@ -201,6 +201,11 @@ namespace My.UI
 
         public bool IsHunterMode = false;
 
+        /// <summary>
+        /// 猎杀模式切换时广播，供场景表现（如欲望结晶狩猎特效）订阅。
+        /// </summary>
+        public static event Action<bool> HunterModeChanged;
+
         private LogicEntityBase _buffEventsPlayer;
 
         public Image zhaZhiSwitchOne;
@@ -289,6 +294,11 @@ namespace My.UI
                 {
                     PlayerBuffBar = buffBarTr.GetComponent<OverworldPlayerBuffBar>();
                 }
+            }
+
+            if (GetComponent<DesireCrystalHuntingHudMarkers>() == null)
+            {
+                gameObject.AddComponent<DesireCrystalHuntingHudMarkers>();
             }
         }
 
@@ -532,6 +542,8 @@ namespace My.UI
             MainGameManager.Instance.gameLogicManager.EventOnSwitchStageUpdate += HandleSwitchStageUpdate;
 
             RefreshUILayout();
+
+            HunterModeChanged?.Invoke(IsHunterMode);
         }
 
         public override void Hide()
@@ -1028,6 +1040,8 @@ namespace My.UI
                 URPFeatureController.Instance?.SetHuntingDistortionEffect(true);
                 IsHunterMode = true;
             }
+
+            HunterModeChanged?.Invoke(IsHunterMode);
         }
 
         public void DoSwitchZhaZhiMode()

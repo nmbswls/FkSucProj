@@ -29,6 +29,13 @@ namespace My.Map
             if (CfgRow == null)
             {
                 Debug.LogError($"AreaEffectLogicEntity Luban row missing: {CfgId}");
+                return;
+            }
+
+            // 地图导出等路径常得到 LifeTime==0 的 Record，基类 TickLifeTime 只在 LifeTime>0 时递减，会永不销毁
+            if (LifeTime <= 0f && CfgRow.DefaultLifetime > 0f)
+            {
+                LifeTime = CfgRow.DefaultLifetime;
             }
         }
 

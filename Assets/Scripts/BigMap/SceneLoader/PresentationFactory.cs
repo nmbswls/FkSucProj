@@ -88,6 +88,10 @@ namespace My
                         }
                         return $"Prefab/Presentations/FishingSpot/{spotCfg.PrefabPath}";
                     }
+                case EEntityType.Trap:
+                    {
+                        return $"Prefab/Presentations/Trap/{cfgId}";
+                    }
                 case EEntityType.AttractPoint:
                     {
                         return $"Prefab/Presentations/AttractPoint/{cfgId}";

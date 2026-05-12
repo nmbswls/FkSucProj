@@ -726,7 +726,8 @@ namespace My.Map.Logic
 
                 if (!runtimeStates.TryGetValue(id, out var st)) continue;
 
-                st.DeathRemainTimer -= dt;
+                // 与本函数触发间隔一致；原先误用帧 dt，导致 DeathRemainTimer 几乎不降、实体长期不真正 Despawn
+                st.DeathRemainTimer -= interval;
                 if (st.DeathRemainTimer > 0f)
                 {
                     // 死亡计时未到，重新入队

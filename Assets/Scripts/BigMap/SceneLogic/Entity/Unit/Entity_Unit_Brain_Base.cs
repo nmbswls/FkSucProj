@@ -192,7 +192,7 @@ namespace My.Map.Unit
 
             if (LogicTime.time - _lastBrainUpdate > ActionsFrequency)
             {
-                CurrentState?.OnUpdate();
+                CurrentState?.Update();
                 _lastBrainUpdate = LogicTime.time;
 
 
@@ -204,8 +204,6 @@ namespace My.Map.Unit
                     }
                 }
             }
-
-            
         }
 
         public void ChangeState(AIBaseState newState)
@@ -225,34 +223,8 @@ namespace My.Map.Unit
         public bool CharmedTrigger;
 
         public bool AttractTrigger;
-        public class AttrctInfo
-        {
-            public float HappenTime;
-            public Vector2 HappenPos;
-            public int AttractLevel;
-            public long AttractSrcId;
-        }
-        public AttrctInfo? LatestAttrctInfo;
-        public void AddAttractInfo(Vector2 attractPos, int attractLevel, long attractSrcId)
-        {
-            if(LatestAttrctInfo != null)
-            {
-                if(attractLevel < LatestAttrctInfo.AttractLevel)
-                {
-                    Debug.Log("AddAttractInfo attract level not bigger");
-                    return;
-                }
-            }
-            this.AttractTrigger = true;
-
-            var attractInfo = new AttrctInfo();
-            attractInfo.HappenTime = LogicTime.time;
-            attractInfo.HappenPos = attractPos;
-            attractInfo.AttractLevel = attractLevel;
-            attractInfo.AttractSrcId = attractSrcId;
-
-            LatestAttrctInfo = attractInfo;
-        }
+        
+        
 
         /// <summary>
         /// 

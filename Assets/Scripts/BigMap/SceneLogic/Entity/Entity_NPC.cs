@@ -257,6 +257,8 @@ namespace My.Map
             var hPower = attrCfg.HPower;
             attributeStore.RegisterNumeric(AttrIdConsts.HPower, (long)(hPower * 1000));
 
+            attributeStore.RegisterNumeric(AttrIdConsts.Will, 10_000);
+
         }
 
         public override bool IsOmniVision()
@@ -300,6 +302,28 @@ namespace My.Map
 
         private float _checkAlertTimer;
 
+        protected override void TickResourceChange(float interval)
+        {
+            var hValUp = GetAttr(AttrIdConsts.NPCHVal_Basic_Up);
+            if(hValUp > 0)
+            {
+                var addVal = (long)Math.Ceiling(hValUp * interval);
+                if(addVal > 0)
+                {
+                    ApplyResourceChange(AttrIdConsts.NPCHVal, addVal, false, EDmgFlag.None, null);
+                }
+            }
+
+            var sjValUp = GetAttr(AttrIdConsts.NPCSJProgress_Basic_Up);
+            if (sjValUp > 0)
+            {
+                var addVal = (long)Math.Ceiling(sjValUp * interval);
+                if (addVal > 0)
+                {
+                    ApplyResourceChange(AttrIdConsts.NPCSJProgress, addVal, false, EDmgFlag.None, null);
+                }
+            }
+        }
 
         protected override void TickActivateState(float dt)
         {
@@ -307,9 +331,9 @@ namespace My.Map
 
             if(!IsAttaching)
             {
-                AIBrain?.Tick(dt);
+                TickPlayerMist();
 
-                TickAttractState();
+                AIBrain?.Tick(dt);
 
                 TickHRelateProperties();
 

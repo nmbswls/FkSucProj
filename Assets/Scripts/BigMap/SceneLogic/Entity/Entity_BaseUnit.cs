@@ -99,6 +99,7 @@ namespace My.Map
         // id, 来源实体, 实际 applied 的 HP 变化量（finalDelta，负数为扣血）
         public event Action<long, long?, long> EventOnHpChanged;
 
+        protected float _lowFreqStateTimer;
 
         protected float externalDecay = 30f;          // 外力自然衰减（每秒）
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -200,10 +201,29 @@ namespace My.Map
             UpdateUnitOffsetZ();
         }
 
-        protected virtual void TickActivateState(float dt)
+
+        /// <summary>
+        /// 低频进行player相关逻辑
+        /// </summary>
+        private void TickStateLowFreq()
+        {
+            if (LogicTime.time < _lowFreqStateTimer + 1.0f)
+            {
+                return;
+            }
+
+            _lowFreqStateTimer += 1.0f;
+
+            TickResourceChange(1.0f);
+        }
+
+        protected virtual void TickResourceChange(float interval)
         {
 
+        }
 
+        protected virtual void TickActivateState(float dt)
+        {
             UpdateGazeModule();
 
             AggroSystem?.Tick(dt);
@@ -1319,6 +1339,8 @@ namespace My.Map
         
         /// <summary>
         /// 开始告警
+        /// 告警当且仅当涉及到恶魔真身的逻辑才会调用
+        /// 普通的通缉并不会触发evil告警
         /// </summary>
         /// <param name="duration"></param>
         public void StartEvilAlert(float duration)

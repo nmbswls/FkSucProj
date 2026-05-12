@@ -2,39 +2,79 @@
 using My.Map.Entity;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 namespace My.Map
 {
+    /// <summary>
+    /// 吸引源类型
+    /// </summary>
+    public enum ENpcAttractSrcType
+    {
+        Inlivad,
+        PointOnce, // 坐标点单次吸引
+        Player, // 某个单位 可能是玩家或召唤物
+        PlayerMist, // 玩家留下的迷雾
+        SrcEntity,
+    }
+
+    public class NpcAttrctedInfo
+    {
+        public ENpcAttractSrcType SrcType;
+
+        public float HappenTime;
+        public Vector2 HappenPos;
+        public int AttractPower;
+
+        public long AttractSrcId;
+    }
+
     public partial class NpcUnitLogicEntity
     {
-
-        public void TickAttractState()
+        public NpcAttrctedInfo? LatestAttrctInfo;
+        public void ApplyAttracted(ENpcAttractSrcType srcType, int attractPower, Vector2 attractPos, long attractSrcId)
         {
-
-        }
-
-        public void ApplyAttracted(Vector2 pos, float power, ILogicEntity? attractSrc)
-        {
-            // 仅处理玩家产生的吸引
-            if(attractSrc == null || attractSrc is not PlayerLogicEntity playerEntity)
+            if (LatestAttrctInfo != null)
             {
-                return;
+                if (attractPower < LatestAttrctInfo.AttractPower)
+                {
+                    Debug.Log("AddAttractInfo attract level not bigger");
+                    return;
+                }
             }
 
-            int attractLevel = playerEntity.AttractLevel;
+            var attractInfo = new NpcAttrctedInfo();
+            attractInfo.SrcType = srcType;
+            attractInfo.HappenTime = LogicTime.time;
+            attractInfo.HappenPos = attractPos;
+            attractInfo.AttractPower = attractPower;
+            attractInfo.AttractSrcId = attractSrcId;
 
-            if (attractLevel == 0 || NpcConfig.IgnoreAttractLevel >= attractLevel)
-            {
-                return;
-            }
+            LatestAttrctInfo = attractInfo;
 
             if (AIBrain != null && AIBrain.CurrentState.CanBeAttract)
             {
                 AIBrain.AttractTrigger = true;
-                AIBrain.AddAttractInfo(pos, attractLevel, attractSrc?.Id ?? 0);
             }
         }
 
+        /// <summary>
+        /// 检查应用被mist吸引
+        /// </summary>
+        private void TickPlayerMist()
+        {
+            // 检查是否由
+            if(CheckHasState(AttrIdConsts.DesireMistAffected))
+            {
+                long attractPower = 1;
+                if(LatestAttrctInfo != null && LatestAttrctInfo.AttractPower >= attractPower)
+                {
+                    return;
+                }
+
+                ApplyAttracted(ENpcAttractSrcType.PlayerMist, 1, this.Pos,  0);
+            }
+        }
 
 
         /// <summary>

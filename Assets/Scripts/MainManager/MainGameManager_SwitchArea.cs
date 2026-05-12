@@ -1,5 +1,4 @@
-
-
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using My.Input;
@@ -77,44 +76,65 @@ namespace My
         /// </summary>
         private void HandleStepClearing(SwitchAreaIntent intent)
         {
-             _ = AsyncHandleStepClearing(intent).ContinueWith(t =>
-             {
-                 if (t.IsFaulted)
-                 {
-                     Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
-                 }
+            RunHandleStepClearingAsync(intent);
+        }
 
-                 gameLogicManager.NextSwitchStep(EMapSwitchStep.Loading);
-
-             }, TaskScheduler.FromCurrentSynchronizationContext()); ;
+        private async void RunHandleStepClearingAsync(SwitchAreaIntent intent)
+        {
+            try
+            {
+                await AsyncHandleStepClearing(intent).ConfigureAwait(true);
+                if (gameLogicManager != null)
+                {
+                    gameLogicManager.NextSwitchStep(EMapSwitchStep.Loading);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
         }
 
         private void HandleStepLoading(SwitchAreaIntent intent)
         {
-            _ = AsyncHandleStepLoading(intent).ContinueWith(t =>
+            RunHandleStepLoadingAsync(intent);
+        }
+
+        private async void RunHandleStepLoadingAsync(SwitchAreaIntent intent)
+        {
+            try
             {
-                if (t.IsFaulted)
+                await AsyncHandleStepLoading(intent).ConfigureAwait(true);
+                if (gameLogicManager != null)
                 {
-                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+                    gameLogicManager.NextSwitchStep(EMapSwitchStep.Loading);
                 }
-
-                gameLogicManager.NextSwitchStep(EMapSwitchStep.Loading);
-
-            }, TaskScheduler.FromCurrentSynchronizationContext()); ;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
         }
 
         private void HandleAfterSwitchArea(SwitchAreaIntent intent)
         {
-            _ = AsyncHandleAfterSwitchArea(intent).ContinueWith(t =>
+            RunHandleAfterSwitchAreaAsync(intent);
+        }
+
+        private async void RunHandleAfterSwitchAreaAsync(SwitchAreaIntent intent)
+        {
+            try
             {
-                if (t.IsFaulted)
+                await AsyncHandleAfterSwitchArea(intent).ConfigureAwait(true);
+                if (gameLogicManager != null)
                 {
-                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+                    gameLogicManager.NextSwitchStep(EMapSwitchStep.Loaded);
                 }
-
-                gameLogicManager.NextSwitchStep(EMapSwitchStep.Loaded);
-
-            }, TaskScheduler.FromCurrentSynchronizationContext()); ;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
         }
 
         ///// <summary>

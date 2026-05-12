@@ -22,6 +22,7 @@ public sealed partial class WantedBehaveInfo : Luban.BeanBase
         { if(!_buf["add_wanted"].IsNumber) { throw new SerializationException(); }  AddWanted = _buf["add_wanted"]; }
         { if(!_buf["trigger_range"].IsNumber) { throw new SerializationException(); }  TriggerRange = _buf["trigger_range"]; }
         { if(!_buf["max_add_once"].IsNumber) { throw new SerializationException(); }  MaxAddOnce = _buf["max_add_once"]; }
+        { if(!_buf["channel_cap"].IsNumber) { throw new SerializationException(); }  ChannelCap = _buf["channel_cap"]; }
     }
 
     public static WantedBehaveInfo DeserializeWantedBehaveInfo(JSONNode _buf)
@@ -34,7 +35,7 @@ public sealed partial class WantedBehaveInfo : Luban.BeanBase
     /// </summary>
     public demo.EWantedBehaveType BehaveType;
     /// <summary>
-    /// 每次基础增量(传入 AddWantedVal 的逻辑量，会再&#215;1000)
+    /// 每次基础增量(逻辑量，再&#215;WantedValScale)
     /// </summary>
     public int AddWanted;
     /// <summary>
@@ -42,9 +43,13 @@ public sealed partial class WantedBehaveInfo : Luban.BeanBase
     /// </summary>
     public float TriggerRange;
     /// <summary>
-    /// 单次叠加封顶(逻辑量，0=不限制)与 add_wanted 取较小
+    /// 单次事件封顶(逻辑量，0=不限制)
     /// </summary>
     public int MaxAddOnce;
+    /// <summary>
+    /// 该罪类通道累计上限(逻辑量，0=不限制)；全局通缉=各通道max
+    /// </summary>
+    public int ChannelCap;
    
     public const int __ID__ = 695006291;
     public override int GetTypeId() => __ID__;
@@ -60,6 +65,7 @@ public sealed partial class WantedBehaveInfo : Luban.BeanBase
         + "addWanted:" + AddWanted + ","
         + "triggerRange:" + TriggerRange + ","
         + "maxAddOnce:" + MaxAddOnce + ","
+        + "channelCap:" + ChannelCap + ","
         + "}";
     }
 }

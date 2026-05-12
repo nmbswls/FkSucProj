@@ -73,7 +73,7 @@ namespace My.Map
                     var unit = surround as NpcUnitLogicEntity;
                     if (unit != null)
                     {
-                        unit.ApplyAttracted(Pos, 3.0f, this);
+                        unit.ApplyAttracted(ENpcAttractSrcType.SrcEntity, 10, Pos, 3);
                     }
                 }
 

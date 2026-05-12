@@ -148,6 +148,9 @@ namespace My.Map
                 // 更新现有请求
                 existing.Priority = (int)priority;
                 existing.ExpirationTime = duration > 0 ? Time.time + duration : -1;
+
+                existing.TargetPos = lockPosition;
+                existing.LockTargetId = lockTargetId;
             }
             else
             {

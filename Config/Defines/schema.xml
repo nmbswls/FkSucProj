@@ -59,6 +59,7 @@
 		<var name="StealSmall" value="1"/>
 		<var name="StealValuable" value="2"/>
 		<var name="AssaultCitizen" value="3"/>
+		<var name="ForceExtractAssault" value="4"/>
     </enum>
 
 	<!-- 通缉守卫档位由 wanted.xlsx#wanted_guard_spawn 表头定义（TbWantedGuardSpawnTier），勿在此重复定义同名 bean -->

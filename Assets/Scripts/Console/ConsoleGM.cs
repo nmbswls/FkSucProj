@@ -247,7 +247,7 @@ public class ConsoleGM : MonoBehaviour
             {
                 var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
 
-                player.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 200_000, false, FightStruct.EDmgFlag.None, null);
+                player.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 40_000, false, FightStruct.EDmgFlag.None, null);
             });
 
 

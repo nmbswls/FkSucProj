@@ -685,7 +685,7 @@ namespace My.Input
                 {
                     break;
                 }
-                if (DeepAbsorbPanel.Instance != null)
+                if (MiniStaticAbsorbPanel.Instance != null)
                 {
                     break;
                 }

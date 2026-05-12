@@ -246,8 +246,8 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
-                panelId = "DeepAbsorbPanel",
-                resourcePath = "UI/Prefabs/DeepAbsorbPanel",
+                panelId = "MiniStaticAbsorbPanel",
+                resourcePath = "UI/Prefabs/MiniStaticAbsorbPanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

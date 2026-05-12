@@ -125,7 +125,7 @@ public class SceneInteractSystem
         {
             return false;
         }
-        if (DeepAbsorbPanel.Instance != null)
+        if (MiniStaticAbsorbPanel.Instance != null)
         {
             return false;
         }
