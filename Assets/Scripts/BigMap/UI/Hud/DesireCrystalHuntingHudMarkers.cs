@@ -41,8 +41,6 @@ namespace My.UI
         readonly Queue<RectTransform> _pool = new();
         readonly List<long> _removeIds = new();
 
-        Camera _worldCam;
-
         void Awake()
         {
             EnsureMarkersParent();
@@ -122,18 +120,33 @@ namespace My.UI
                 return;
             }
 
-            TryCacheWorldCamera();
-            var ui = UIManager.Instance;
-            if (ui == null || markersParent == null)
+            if (markersParent == null)
             {
                 return;
             }
 
             var canvas = markersParent.GetComponentInParent<Canvas>();
-            if (!TryResolveHudProjectionCameras(canvas, ui, out Camera worldToScreenCam, out Camera screenToLocalCam))
+            if (canvas == null)
             {
                 return;
             }
+
+            Canvas rootCanvas = canvas.rootCanvas;
+            if (rootCanvas.transform is not RectTransform rootRt)
+            {
+                return;
+            }
+
+            // WorldToScreen 必须用「拍场景的输出相机」（通常与 CinemachineBrain 同体）。勿用 canvas.worldCamera 去投世界坐标，否则 z 大量误≤0，标记会被全裁掉。
+            Camera gameplayCam = ResolveGameplayWorldCamera();
+            if (gameplayCam == null)
+            {
+                return;
+            }
+
+            Camera eventCamera = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay
+                ? null
+                : rootCanvas.worldCamera != null ? rootCanvas.worldCamera : gameplayCam;
 
             var want = new HashSet<long>();
             foreach (var ent in area.Repo.Loaded.Values)
@@ -168,21 +181,26 @@ namespace My.UI
                 }
 
                 Vector3 anchor = pres.GetWorldPosition() + WorldAnchorOffset;
-                Vector3 screen = worldToScreenCam.WorldToScreenPoint(anchor);
-                if (screen.z <= 0f)
+                // 背面剔除只看「游戏相机」视锥，与 screen.z（依赖任意 Camera）无关
+                if (gameplayCam.WorldToViewportPoint(anchor).z <= 0f)
                 {
                     RecycleMarker(id);
                     continue;
                 }
 
+                Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(gameplayCam, anchor);
                 if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                        markersParent,
-                        new Vector2(screen.x, screen.y),
-                        screenToLocalCam,
-                        out Vector2 local))
+                        rootRt,
+                        screenPoint,
+                        eventCamera,
+                        out Vector2 localInRoot))
                 {
                     continue;
                 }
+
+                Vector3 worldOnCanvas = rootRt.TransformPoint(new Vector3(localInRoot.x, localInRoot.y, 0f));
+                Vector3 lm = markersParent.InverseTransformPoint(worldOnCanvas);
+                var local = new Vector2(lm.x, lm.y);
 
                 RectTransform markerRt = RentMarker(id);
                 markerRt.gameObject.SetActive(true);
@@ -190,22 +208,33 @@ namespace My.UI
             }
         }
 
-        void TryCacheWorldCamera()
+        static Camera ResolveGameplayWorldCamera()
         {
-            if (_worldCam != null && _worldCam.gameObject.activeInHierarchy)
+            var mgm = MainGameManager.Instance;
+            if (mgm == null)
             {
-                return;
+                return Camera.main;
             }
 
-            if (MainGameManager.Instance?.CameraCtrl != null)
+            if (mgm.CineBrain != null)
             {
-                _worldCam = MainGameManager.Instance.CameraCtrl.GetComponent<Camera>();
+                var c = mgm.CineBrain.GetComponent<Camera>();
+                if (c != null && c.isActiveAndEnabled)
+                {
+                    return c;
+                }
             }
 
-            if (_worldCam == null)
+            if (mgm.CameraCtrl != null)
             {
-                _worldCam = Camera.main;
+                var c = mgm.CameraCtrl.GetComponent<Camera>();
+                if (c != null && c.isActiveAndEnabled)
+                {
+                    return c;
+                }
             }
+
+            return Camera.main;
         }
 
         RectTransform RentMarker(long entityId)
@@ -317,52 +346,6 @@ namespace My.UI
             }
 
             _byEntity.Clear();
-        }
-
-        static bool TryResolveHudProjectionCameras(Canvas canvas, UIManager ui, out Camera worldToScreenCam, out Camera screenToLocalCam)
-        {
-            worldToScreenCam = null;
-            screenToLocalCam = null;
-
-            if (canvas != null)
-            {
-                if (canvas.renderMode == RenderMode.ScreenSpaceCamera && canvas.worldCamera != null)
-                {
-                    worldToScreenCam = canvas.worldCamera;
-                    screenToLocalCam = canvas.worldCamera;
-                    return true;
-                }
-
-                if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
-                {
-                    if (MainGameManager.Instance?.CameraCtrl != null)
-                    {
-                        worldToScreenCam = MainGameManager.Instance.CameraCtrl.GetComponent<Camera>();
-                    }
-
-                    if (worldToScreenCam == null)
-                    {
-                        worldToScreenCam = Camera.main;
-                    }
-
-                    screenToLocalCam = null;
-                    return worldToScreenCam != null;
-                }
-            }
-
-            worldToScreenCam = ui.UICamera;
-            screenToLocalCam = ui.UICamera;
-            if (worldToScreenCam == null && MainGameManager.Instance?.CameraCtrl != null)
-            {
-                worldToScreenCam = MainGameManager.Instance.CameraCtrl.GetComponent<Camera>();
-            }
-
-            if (worldToScreenCam == null)
-            {
-                worldToScreenCam = Camera.main;
-            }
-
-            return worldToScreenCam != null;
         }
 
         static void RestartMarkerParticles(RectTransform slotRt)
