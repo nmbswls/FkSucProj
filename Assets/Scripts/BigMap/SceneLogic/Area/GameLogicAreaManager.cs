@@ -14,6 +14,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static My.MapExport.MapExportDatabase;
+using static My.UI.FishingMiniGamePanel;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.VolumeComponent;
 
@@ -163,7 +164,7 @@ namespace My.Map.Logic
 
 
             // 加载地图导出数据库
-            cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{mapName}");
+            cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapCfg.MapDataName}");
 
             DialogForceStaticIds.Clear();
             EntityRefreshInfo.Clear();
@@ -918,6 +919,46 @@ namespace My.Map.Logic
         {
             for (int i = 0; i < iterations; i++)
                 TickEntityLifeCycle(dt);
+        }
+
+
+        public void OnWantedBehaviourHappend(EWantedBehaveType behaveType, Vector2? center, bool onlyPeace = false)
+        {
+            logicManager.WantedManager.AddWantedForBehavior(behaveType);
+
+            long playerId = logicManager.playerLogicEntity != null ? logicManager.playerLogicEntity.Id : 0L;
+
+            if(center != null)
+            {
+                foreach (var ent in logicManager.AreaManager.FindEntityInRange(center.Value, 4.0f))
+                {
+                    if (ent == null || ent.MarkDestroyed)
+                    {
+                        continue;
+                    }
+
+                    if (ent.Id == playerId)
+                    {
+                        continue;
+                    }
+
+                    if (ent is not NpcUnitLogicEntity npc)
+                    {
+                        continue;
+                    }
+
+                    if (onlyPeace && !npc.NpcConfig.IsPeace)
+                    {
+                        continue;
+                    }
+
+                    if (playerId != 0)
+                    {
+                        npc.EnmitySystem.AddTempEnmity(100);
+                    }
+                }
+            }
+            
         }
 
     }

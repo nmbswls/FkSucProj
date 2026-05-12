@@ -1762,9 +1762,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            ctx.Env.WantedManager.AddWantedForBehavior(realCfg.Behave);
-
-            Vector2 center;
+            Vector2? center = null;
             if (ctx.TriggerPos.HasValue)
             {
                 center = ctx.TriggerPos.Value;
@@ -1780,37 +1778,9 @@ namespace My.Map.Entity
             else
             {
                 Debug.LogWarning("AbilityEffectExecutor4WantedIncidentBroadcast: no center position");
-                return;
             }
 
-            long playerId = ctx.Env.playerLogicEntity != null ? ctx.Env.playerLogicEntity.Id : 0L;
-            foreach (var ent in ctx.Env.AreaManager.FindEntityInRange(center, realCfg.Radius))
-            {
-                if (ent == null || ent.MarkDestroyed)
-                {
-                    continue;
-                }
-
-                if (ent.Id == ctx.SourceInfo.SrcEntityId)
-                {
-                    continue;
-                }
-
-                if (ent is not NpcUnitLogicEntity npc)
-                {
-                    continue;
-                }
-
-                if (realCfg.OnlyPeaceNpc && !npc.NpcConfig.IsPeace)
-                {
-                    continue;
-                }
-
-                if (playerId != 0)
-                {
-                    npc.EnmitySystem.AddTempEnmity(realCfg.TempEnmityAmount);
-                }
-            }
+            ctx.Env.AreaManager.OnWantedBehaviourHappend(realCfg.Behave, center);
         }
     }
 

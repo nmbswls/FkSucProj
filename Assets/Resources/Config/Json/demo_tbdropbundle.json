@@ -48,5 +48,55 @@
     "drop_group_weights": [
       10000
     ]
+  },
+  {
+    "id": 1000,
+    "name": "0档静态榨取",
+    "drop_group_ids": [
+      10000,
+      10001
+    ],
+    "drop_group_weights": [
+      10000,
+      10000
+    ]
+  },
+  {
+    "id": 1001,
+    "name": "1档静态榨取",
+    "drop_group_ids": [
+      10010,
+      10011,
+      10012
+    ],
+    "drop_group_weights": [
+      10000,
+      10000,
+      1000
+    ]
+  },
+  {
+    "id": 1002,
+    "name": "2档静态榨取",
+    "drop_group_ids": [
+      10020,
+      10021,
+      10022
+    ],
+    "drop_group_weights": [
+      10000,
+      10000,
+      1000
+    ]
+  },
+  {
+    "id": 99,
+    "name": "随机欲望结晶",
+    "drop_group_ids": [
+      99
+    ],
+    "drop_group_weights": [
+      10000
+    ]
   }
 ]

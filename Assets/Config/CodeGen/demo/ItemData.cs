@@ -96,11 +96,11 @@ public sealed partial class ItemData : Luban.BeanBase
     /// </summary>
     public bool AutoDestroy;
     /// <summary>
-    /// auto_destroy_time
+    /// 自动销毁时间
     /// </summary>
     public float AutoDestroyTime;
     /// <summary>
-    /// special_buff_id
+    /// 特殊buffid
     /// </summary>
     public string SpecialBuffId;
     /// <summary>

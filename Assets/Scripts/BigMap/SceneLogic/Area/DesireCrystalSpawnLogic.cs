@@ -13,7 +13,7 @@ namespace My.Map.Logic
                 return;
             }
 
-            if (area.cacheMapCfg == null || !area.cacheMapCfg.HuntingTarget)
+            if (area.cacheMapCfg == null || gm.PlayerHumanMode)
             {
                 return;
             }

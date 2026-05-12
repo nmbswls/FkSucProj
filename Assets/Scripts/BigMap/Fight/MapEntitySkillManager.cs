@@ -489,6 +489,18 @@ namespace My.Map.Entity
 
         public List<SkillIntent> inputBuffer = new List<SkillIntent>();
 
+        // 单槽脱手：可行动时优先于 inputBuffer，仅 MainAbilityId、不走连招图
+        class DetachedSkillPending
+        {
+            public string SkillId;
+            public Vector2? InputVec;
+            public Vector2? CastVec;
+            public long TargetEntityId;
+            public float EnqueueTime;
+        }
+
+        DetachedSkillPending _detachedPending;
+        int _detachedExecutionDepth;
 
         public MapEntitySkillManager(BaseUnitLogicEntity ownerEntity, EntitySkillComboGraph comboGraph = null)
         {
@@ -805,6 +817,37 @@ namespace My.Map.Entity
             rt.PassiveBuffBoundInstanceId = 0;
         }
 
+        // 入队脱手施法（单槽覆盖）；正在执行脱手技时拒绝嵌套入队
+        public bool EnqueueDetachedSkill(string skillId, Vector2? inputVec = null, Vector2? castVec = null, ILogicEntity target = null)
+        {
+            if (_detachedExecutionDepth > 0)
+            {
+                Debug.Log($"EnqueueDetachedSkill skipped (nested): {skillId}");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(skillId) || Executor == null || !SkillRuntimes.ContainsKey(skillId))
+            {
+                return false;
+            }
+
+            _detachedPending = new DetachedSkillPending
+            {
+                SkillId = skillId,
+                InputVec = inputVec,
+                CastVec = castVec,
+                TargetEntityId = target?.Id ?? 0,
+                EnqueueTime = LogicTime.time,
+            };
+            return true;
+        }
+
+        // 丢弃未执行的脱手意图（如死亡、切场景）
+        public void ClearDetachedSkillIntent()
+        {
+            _detachedPending = null;
+        }
+
         public void Tick(float dt)
         {
             comboOrchestrator?.Tick(dt);
@@ -824,10 +867,35 @@ namespace My.Map.Entity
                 CurrentAbilityId = null;
             }
 
-            // 如果可以使用技能 检查input buffer
+            // 如果可以使用技能：先消费脱手队列，再处理 input buffer
             if (Executor.IsActionable())
             {
-                if(inputBuffer.Count > 0)
+                if (_detachedPending != null)
+                {
+                    var pending = _detachedPending;
+                    _detachedPending = null;
+
+                    ILogicEntity targetEntity = null;
+                    if (pending.TargetEntityId != 0)
+                    {
+                        targetEntity = OwnerEntity.LogicManager.GetLogicEntity(pending.TargetEntityId, ensureExist: false);
+                    }
+
+                    _detachedExecutionDepth++;
+                    try
+                    {
+                        if (!UseSkillDetached(pending.SkillId, pending.InputVec, pending.CastVec, targetEntity))
+                        {
+                            Debug.Log($"UseSkillDetached failed for {pending.SkillId} (cooldown / CanActiveUseSkill / TryUseAbility)");
+                        }
+                    }
+                    finally
+                    {
+                        _detachedExecutionDepth--;
+                    }
+                }
+
+                if (inputBuffer.Count > 0)
                 {
                     var lastInput = inputBuffer[inputBuffer.Count - 1];
 
@@ -954,6 +1022,54 @@ namespace My.Map.Entity
             {
                 skillRuntime.cooldown = skillRuntime.cacheConfig.CoolDown;
             }
+            skillRuntime.lastUseTime = LogicTime.time;
+
+            return true;
+        }
+
+        // 脱手施法：不打连招，只用 MainAbilityId；仅应在 IsActionable 时调用
+        bool UseSkillDetached(string skillId, Vector2? inputVec, Vector2? castVec, ILogicEntity target)
+        {
+            if (!SkillRuntimes.TryGetValue(skillId, out var skillRuntime))
+            {
+                return false;
+            }
+
+            if (!OwnerEntity.CanActiveUseSkill())
+            {
+                return false;
+            }
+
+            if (!Executor.IsActionable())
+            {
+                return false;
+            }
+
+            comboOrchestrator?.TransitCombo(0);
+
+            string realAbilityId = skillRuntime.cacheConfig.MainAbilityId;
+            if (!IsSkillReady(skillId))
+            {
+                return false;
+            }
+
+            if (!Executor.TryUseAbility(realAbilityId,
+                    inputVec: inputVec,
+                    castVec: castVec,
+                    target: target,
+                    overrideParams: skillRuntime.RuntimeAbilityExtraVariables ?? SkillLibrary.CloneAbilityExtraMap(skillRuntime.cacheConfig)))
+            {
+                return false;
+            }
+
+            CurrentSkillId = skillId;
+            CurrentAbilityId = realAbilityId;
+
+            if (skillRuntime.cacheConfig.CoolDown > 0)
+            {
+                skillRuntime.cooldown = skillRuntime.cacheConfig.CoolDown;
+            }
+
             skillRuntime.lastUseTime = LogicTime.time;
 
             return true;

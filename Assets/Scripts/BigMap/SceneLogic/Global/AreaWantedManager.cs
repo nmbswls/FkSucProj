@@ -19,6 +19,8 @@ namespace My
         // 各罪类通道的最大值（缩放后），与 TbWantedLevelInfo.need_val * WantedValScale 比较
         public int CurrentWantedVal => GetEffectiveWantedScaled();
 
+        
+
         public int GetEffectiveWantedScaled()
         {
             if (_channelScaled.Count == 0)
@@ -36,7 +38,7 @@ namespace My
         }
 
         // GM 等：归入 StealSmall 通道并尊重配置 channel_cap
-        public void AddWantedVal(int val)
+        public void DebugAddWantedVal(int val)
         {
             ApplyLogicalIncrementToChannel(EWantedBehaveType.StealSmall, val);
             LastWantedTime = LogicTime.time;
@@ -129,24 +131,6 @@ namespace My
             }
 
             return r;
-        }
-
-        public void MigrateLegacySingleScalar(int legacyScaledTotal)
-        {
-            _channelScaled.Clear();
-            if (legacyScaledTotal <= 0)
-            {
-                return;
-            }
-
-            var row = CfgMgr.Cfgs?.TbWantedBehaveInfo?.GetOrDefault(EWantedBehaveType.StealSmall);
-            int capped = legacyScaledTotal;
-            if (row != null && row.ChannelCap > 0)
-            {
-                capped = System.Math.Min(capped, row.ChannelCap * WantedValScale);
-            }
-
-            _channelScaled[EWantedBehaveType.StealSmall] = capped;
         }
 
         public int GetWantedStarLevel()

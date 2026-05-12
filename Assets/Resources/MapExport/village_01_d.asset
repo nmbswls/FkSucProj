@@ -1,0 +1,1333 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6212abf8aa90cb84b9a9eccb7abfa07f, type: 3}
+  m_Name: village_01_d
+  m_EditorClassIdentifier: 
+  AreaId: 
+  Buckets:
+  - Chunk:
+      X: 0
+      Y: 0
+    StaticItems:
+    - ItemId: 101
+      Key: 1/P1
+      Position: {x: 4, y: 0.5, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    FovStaticSegments:
+    - segmentId: 1
+      a: {x: 3, y: -1.5}
+      b: {x: 5, y: -1.5}
+      bounds:
+        m_Center: {x: 4, y: -1.5, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 2
+      a: {x: 5, y: -1.5}
+      b: {x: 5, y: 2.5}
+      bounds:
+        m_Center: {x: 5, y: 0.5, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 3
+      a: {x: 5, y: 2.5}
+      b: {x: 3, y: 2.5}
+      bounds:
+        m_Center: {x: 4, y: 2.5, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 4
+      a: {x: 3, y: 2.5}
+      b: {x: 3, y: -1.5}
+      bounds:
+        m_Center: {x: 3, y: 0.5, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 5
+      a: {x: 3, y: -1.5}
+      b: {x: 5, y: -1.5}
+      bounds:
+        m_Center: {x: 4, y: -1.5, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 6
+      a: {x: 5, y: -1.5}
+      b: {x: 5, y: 2.5}
+      bounds:
+        m_Center: {x: 5, y: 0.5, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 7
+      a: {x: 5, y: 2.5}
+      b: {x: 3, y: 2.5}
+      bounds:
+        m_Center: {x: 4, y: 2.5, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 8
+      a: {x: 3, y: 2.5}
+      b: {x: 3, y: -1.5}
+      bounds:
+        m_Center: {x: 3, y: 0.5, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 29
+      a: {x: 5.62, y: 5.7999997}
+      b: {x: 5.4860253, y: 6.2999997}
+      bounds:
+        m_Center: {x: 5.553013, y: 6.0499997, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 30
+      a: {x: 5.4860253, y: 6.2999997}
+      b: {x: 5.12, y: 6.666025}
+      bounds:
+        m_Center: {x: 5.303013, y: 6.483012, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 31
+      a: {x: 5.12, y: 6.666025}
+      b: {x: 4.62, y: 6.7999997}
+      bounds:
+        m_Center: {x: 4.87, y: 6.733012, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 32
+      a: {x: 4.62, y: 6.7999997}
+      b: {x: 4.12, y: 6.666025}
+      bounds:
+        m_Center: {x: 4.37, y: 6.733012, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 33
+      a: {x: 4.12, y: 6.666025}
+      b: {x: 3.7539744, y: 6.2999997}
+      bounds:
+        m_Center: {x: 3.9369872, y: 6.483012, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 34
+      a: {x: 3.7539744, y: 6.2999997}
+      b: {x: 3.62, y: 5.7999997}
+      bounds:
+        m_Center: {x: 3.6869872, y: 6.0499997, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 35
+      a: {x: 3.62, y: 5.7999997}
+      b: {x: 3.7539747, y: 5.2999997}
+      bounds:
+        m_Center: {x: 3.6869874, y: 5.5499997, z: 0}
+        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
+    - segmentId: 36
+      a: {x: 3.7539747, y: 5.2999997}
+      b: {x: 4.12, y: 4.9339743}
+      bounds:
+        m_Center: {x: 3.9369874, y: 5.116987, z: 0}
+        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
+    - segmentId: 37
+      a: {x: 4.12, y: 4.9339743}
+      b: {x: 4.62, y: 4.7999997}
+      bounds:
+        m_Center: {x: 4.37, y: 4.866987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 38
+      a: {x: 4.62, y: 4.7999997}
+      b: {x: 5.12, y: 4.9339743}
+      bounds:
+        m_Center: {x: 4.87, y: 4.866987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 39
+      a: {x: 5.12, y: 4.9339743}
+      b: {x: 5.4860253, y: 5.3}
+      bounds:
+        m_Center: {x: 5.303013, y: 5.116987, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301296, z: 0}
+    - segmentId: 40
+      a: {x: 5.4860253, y: 5.3}
+      b: {x: 5.62, y: 5.7999997}
+      bounds:
+        m_Center: {x: 5.553013, y: 5.55, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.24999976, z: 0}
+  - Chunk:
+      X: -1
+      Y: 0
+    StaticItems:
+    - ItemId: 102
+      Key: 1/P1
+      Position: {x: -4.28, y: -0.09, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    FovStaticSegments:
+    - segmentId: 9
+      a: {x: -5.28, y: -2.09}
+      b: {x: -3.2800002, y: -2.09}
+      bounds:
+        m_Center: {x: -4.28, y: -2.09, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 10
+      a: {x: -3.2800002, y: -2.09}
+      b: {x: -3.2800002, y: 1.91}
+      bounds:
+        m_Center: {x: -3.2800002, y: -0.089999974, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 11
+      a: {x: -3.2800002, y: 1.91}
+      b: {x: -5.28, y: 1.91}
+      bounds:
+        m_Center: {x: -4.28, y: 1.91, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 12
+      a: {x: -5.28, y: 1.91}
+      b: {x: -5.28, y: -2.09}
+      bounds:
+        m_Center: {x: -5.28, y: -0.089999974, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 13
+      a: {x: -5.28, y: -2.09}
+      b: {x: -3.2800002, y: -2.09}
+      bounds:
+        m_Center: {x: -4.28, y: -2.09, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 14
+      a: {x: -3.2800002, y: -2.09}
+      b: {x: -3.2800002, y: 1.91}
+      bounds:
+        m_Center: {x: -3.2800002, y: -0.089999974, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 15
+      a: {x: -3.2800002, y: 1.91}
+      b: {x: -5.28, y: 1.91}
+      bounds:
+        m_Center: {x: -4.28, y: 1.91, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 16
+      a: {x: -5.28, y: 1.91}
+      b: {x: -5.28, y: -2.09}
+      bounds:
+        m_Center: {x: -5.28, y: -0.089999974, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 53
+      a: {x: -1.9300001, y: 5.95}
+      b: {x: -2.0639746, y: 6.45}
+      bounds:
+        m_Center: {x: -1.9969873, y: 6.2, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 54
+      a: {x: -2.0639746, y: 6.45}
+      b: {x: -2.43, y: 6.8160253}
+      bounds:
+        m_Center: {x: -2.2469873, y: 6.633013, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 55
+      a: {x: -2.43, y: 6.8160253}
+      b: {x: -2.93, y: 6.95}
+      bounds:
+        m_Center: {x: -2.68, y: 6.883013, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 56
+      a: {x: -2.93, y: 6.95}
+      b: {x: -3.43, y: 6.8160253}
+      bounds:
+        m_Center: {x: -3.18, y: 6.883013, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 57
+      a: {x: -3.43, y: 6.8160253}
+      b: {x: -3.7960255, y: 6.45}
+      bounds:
+        m_Center: {x: -3.6130128, y: 6.633013, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 58
+      a: {x: -3.7960255, y: 6.45}
+      b: {x: -3.93, y: 5.95}
+      bounds:
+        m_Center: {x: -3.8630128, y: 6.2, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 59
+      a: {x: -3.93, y: 5.95}
+      b: {x: -3.7960253, y: 5.45}
+      bounds:
+        m_Center: {x: -3.8630128, y: 5.7, z: 0}
+        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
+    - segmentId: 60
+      a: {x: -3.7960253, y: 5.45}
+      b: {x: -3.43, y: 5.0839744}
+      bounds:
+        m_Center: {x: -3.6130128, y: 5.266987, z: 0}
+        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
+    - segmentId: 61
+      a: {x: -3.43, y: 5.0839744}
+      b: {x: -2.93, y: 4.95}
+      bounds:
+        m_Center: {x: -3.18, y: 5.016987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 62
+      a: {x: -2.93, y: 4.95}
+      b: {x: -2.43, y: 5.0839744}
+      bounds:
+        m_Center: {x: -2.68, y: 5.016987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 63
+      a: {x: -2.43, y: 5.0839744}
+      b: {x: -2.0639744, y: 5.45}
+      bounds:
+        m_Center: {x: -2.2469873, y: 5.266987, z: 0}
+        m_Extent: {x: 0.18301284, y: 0.18301272, z: 0}
+    - segmentId: 64
+      a: {x: -2.0639744, y: 5.45}
+      b: {x: -1.9300001, y: 5.95}
+      bounds:
+        m_Center: {x: -1.9969872, y: 5.7, z: 0}
+        m_Extent: {x: 0.06698716, y: 0.25, z: 0}
+  - Chunk:
+      X: 0
+      Y: -1
+    StaticItems:
+    - ItemId: 103
+      Key: 1/Room01
+      Position: {x: 4.11, y: 6.31, z: -0.5}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    FovStaticSegments:
+    - segmentId: 17
+      a: {x: 5.65, y: 5.81}
+      b: {x: 5.5160255, y: 6.31}
+      bounds:
+        m_Center: {x: 5.5830126, y: 6.06, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 18
+      a: {x: 5.5160255, y: 6.31}
+      b: {x: 5.15, y: 6.6760254}
+      bounds:
+        m_Center: {x: 5.3330126, y: 6.4930124, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 19
+      a: {x: 5.15, y: 6.6760254}
+      b: {x: 4.65, y: 6.81}
+      bounds:
+        m_Center: {x: 4.9, y: 6.7430124, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 20
+      a: {x: 4.65, y: 6.81}
+      b: {x: 4.15, y: 6.6760254}
+      bounds:
+        m_Center: {x: 4.4, y: 6.7430124, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 21
+      a: {x: 4.15, y: 6.6760254}
+      b: {x: 3.7839746, y: 6.31}
+      bounds:
+        m_Center: {x: 3.9669874, y: 6.4930124, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 22
+      a: {x: 3.7839746, y: 6.31}
+      b: {x: 3.65, y: 5.81}
+      bounds:
+        m_Center: {x: 3.7169874, y: 6.06, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 23
+      a: {x: 3.65, y: 5.81}
+      b: {x: 3.783975, y: 5.31}
+      bounds:
+        m_Center: {x: 3.7169876, y: 5.56, z: 0}
+        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
+    - segmentId: 24
+      a: {x: 3.783975, y: 5.31}
+      b: {x: 4.15, y: 4.9439745}
+      bounds:
+        m_Center: {x: 3.9669876, y: 5.1269875, z: 0}
+        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
+    - segmentId: 25
+      a: {x: 4.15, y: 4.9439745}
+      b: {x: 4.65, y: 4.81}
+      bounds:
+        m_Center: {x: 4.4, y: 4.8769875, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 26
+      a: {x: 4.65, y: 4.81}
+      b: {x: 5.15, y: 4.9439745}
+      bounds:
+        m_Center: {x: 4.9, y: 4.8769875, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 27
+      a: {x: 5.15, y: 4.9439745}
+      b: {x: 5.5160255, y: 5.3100004}
+      bounds:
+        m_Center: {x: 5.3330126, y: 5.1269875, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301296, z: 0}
+    - segmentId: 28
+      a: {x: 5.5160255, y: 5.3100004}
+      b: {x: 5.65, y: 5.81}
+      bounds:
+        m_Center: {x: 5.5830126, y: 5.5600004, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.24999976, z: 0}
+  - Chunk:
+      X: -1
+      Y: -1
+    StaticItems:
+    - ItemId: 104
+      Key: 1/Room01
+      Position: {x: -3.44, y: 6.46, z: -0.5}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    FovStaticSegments:
+    - segmentId: 41
+      a: {x: -1.9300001, y: 5.95}
+      b: {x: -2.0639746, y: 6.45}
+      bounds:
+        m_Center: {x: -1.9969873, y: 6.2, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 42
+      a: {x: -2.0639746, y: 6.45}
+      b: {x: -2.43, y: 6.8160253}
+      bounds:
+        m_Center: {x: -2.2469873, y: 6.633013, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 43
+      a: {x: -2.43, y: 6.8160253}
+      b: {x: -2.93, y: 6.95}
+      bounds:
+        m_Center: {x: -2.68, y: 6.883013, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 44
+      a: {x: -2.93, y: 6.95}
+      b: {x: -3.43, y: 6.8160253}
+      bounds:
+        m_Center: {x: -3.18, y: 6.883013, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 45
+      a: {x: -3.43, y: 6.8160253}
+      b: {x: -3.7960255, y: 6.45}
+      bounds:
+        m_Center: {x: -3.6130128, y: 6.633013, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 46
+      a: {x: -3.7960255, y: 6.45}
+      b: {x: -3.93, y: 5.95}
+      bounds:
+        m_Center: {x: -3.8630128, y: 6.2, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 47
+      a: {x: -3.93, y: 5.95}
+      b: {x: -3.7960253, y: 5.45}
+      bounds:
+        m_Center: {x: -3.8630128, y: 5.7, z: 0}
+        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
+    - segmentId: 48
+      a: {x: -3.7960253, y: 5.45}
+      b: {x: -3.43, y: 5.0839744}
+      bounds:
+        m_Center: {x: -3.6130128, y: 5.266987, z: 0}
+        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
+    - segmentId: 49
+      a: {x: -3.43, y: 5.0839744}
+      b: {x: -2.93, y: 4.95}
+      bounds:
+        m_Center: {x: -3.18, y: 5.016987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 50
+      a: {x: -2.93, y: 4.95}
+      b: {x: -2.43, y: 5.0839744}
+      bounds:
+        m_Center: {x: -2.68, y: 5.016987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 51
+      a: {x: -2.43, y: 5.0839744}
+      b: {x: -2.0639744, y: 5.45}
+      bounds:
+        m_Center: {x: -2.2469873, y: 5.266987, z: 0}
+        m_Extent: {x: 0.18301284, y: 0.18301272, z: 0}
+    - segmentId: 52
+      a: {x: -2.0639744, y: 5.45}
+      b: {x: -1.9300001, y: 5.95}
+      bounds:
+        m_Center: {x: -1.9969872, y: 5.7, z: 0}
+        m_Extent: {x: 0.06698716, y: 0.25, z: 0}
+  EntityRefreshInfo:
+  - StaticId: 100
+    UniqName: gp_03
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401392
+  - StaticId: 101
+    UniqName: gp_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401393
+  - StaticId: 102
+    UniqName: gp_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401394
+  - StaticId: 103
+    UniqName: 
+    AppearCond:
+      Type: 1
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401395
+  - StaticId: 104
+    UniqName: 
+    AppearCond:
+      Type: 1
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401396
+  - StaticId: 105
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401397
+  - StaticId: 106
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401398
+  - StaticId: 107
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401399
+  - StaticId: 108
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401400
+  - StaticId: 109
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401401
+  - StaticId: 110
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401402
+  - StaticId: 111
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401403
+  - StaticId: 112
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401404
+  - StaticId: 113
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401405
+  - StaticId: 114
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401406
+  - StaticId: 115
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401407
+  - StaticId: 116
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401408
+  - StaticId: 117
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401409
+  - StaticId: 118
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401410
+  - StaticId: 119
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401411
+  - StaticId: 120
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401412
+  - StaticId: 121
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977856943432401413
+  NamedPoints:
+  - Name: default
+    PointType: 1
+    Position: {x: -10.88, y: -27.09, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: building_01_out
+    PointType: 0
+    Position: {x: -10.41, y: 1.31, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: building_01_in
+    PointType: 0
+    Position: {x: -42.53, y: 46.48, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: 1
+    PointType: 0
+    Position: {x: 2.42, y: 6.73, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_point_01
+    PointType: 0
+    Position: {x: -5, y: 7.45, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_point_02
+    PointType: 0
+    Position: {x: -1.49, y: 7.37, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_point_03
+    PointType: 0
+    Position: {x: -1.54, y: 4.58, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_point_04
+    PointType: 0
+    Position: {x: -4.69, y: 4.42, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_01
+    PointType: 4
+    Position: {x: -9.3, y: 0.15, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_02
+    PointType: 4
+    Position: {x: 22.46, y: -17.11, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_03
+    PointType: 4
+    Position: {x: 24.4, y: 12.99, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_001
+    PointType: 0
+    Position: {x: 23.17, y: 3.45, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_002
+    PointType: 0
+    Position: {x: 23, y: -3.33, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_003
+    PointType: 0
+    Position: {x: -0.14, y: -0.18, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_004
+    PointType: 0
+    Position: {x: 6.41, y: -9.78, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_005
+    PointType: 0
+    Position: {x: 7.31, y: 9.94, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_006
+    PointType: 0
+    Position: {x: 14.67, y: 9.94, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: entry_bottom
+    PointType: 0
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  NamedPaths:
+  - Name: walker_01
+    Points:
+    - walker_born_01
+    - p_003
+    - walker_born_02
+    Tag: walker
+  - Name: walker_02
+    Points:
+    - walker_born_01
+    - p_005
+    - p_006
+    - walker_born_03
+    Tag: walker
+  - Name: walker_03
+    Points:
+    - walker_born_02
+    - p_002
+    - p_001
+    - walker_born_03
+    Tag: walker
+  references:
+    version: 2
+    RefIds:
+    - rid: 5977856943432401392
+      type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: gather_grass
+        Position: {x: -9.71, y: -19.47}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401393
+      type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: gather_grass
+        Position: {x: -7.47, y: -19.47}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401394
+      type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: gather_grass
+        Position: {x: -8.26, y: -18.08}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401395
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 0
+        Position: {x: 99.52, y: 100.73}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: 
+        TargetNamedPoint: building_01_out
+    - rid: 5977856943432401396
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 0
+        Position: {x: -10.48, y: 2.121}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: 
+        TargetNamedPoint: building_01_in
+    - rid: 5977856943432401397
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hide_point_01
+        Position: {x: -2.28, y: -0.19}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 5977856943432401398
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hide_point_01
+        Position: {x: -7.14, y: 4.28}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 5977856943432401399
+      type: {class: EntityInitInfo4EventGroup, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: city_insult_girl
+        Position: {x: 0.4, y: 6.77}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 5977856943432401400
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: retreat_point
+        Position: {x: -7.02, y: -10.79}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 5977856943432401401
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: retreat_point
+        Position: {x: -7.02, y: 5.93}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 5977856943432401402
+      type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: -6.09, y: 5.01}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveSpeed: 0.2
+        Waypoints:
+        - patrol_point_01
+        - patrol_point_02
+        - patrol_point_03
+        - patrol_point_04
+        LoopMode: 2
+        GroupUnits:
+        - GroupIdx: 0
+          InitInfo:
+            rid: 5977856943432401414
+        - GroupIdx: 1
+          InitInfo:
+            rid: 5977856943432401415
+    - rid: 5977856943432401403
+      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: good_obj_01
+        Position: {x: 2, y: 3.33}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401404
+      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: obj_01
+        Position: {x: -0.686, y: 4.108}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401405
+      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: obj_01
+        Position: {x: -1.58, y: 4.078}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401406
+      type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: obj_01
+        Position: {x: -1.58, y: 3.33}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401407
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_red
+        Position: {x: -8.91, y: -18.32}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: city_bad
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+    - rid: 5977856943432401408
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_red
+        Position: {x: 0.335, y: -7.79}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: city_bad
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+    - rid: 5977856943432401409
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: 0.335, y: 1.706}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: city_bad
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+    - rid: 5977856943432401410
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: qigai_default
+        Position: {x: 0.76, y: -2.34}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 0
+        EnmityConfId: default_peace
+        IsPeace: 1
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+    - rid: 5977856943432401411
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: dig_01
+        Position: {x: 5.07, y: -3.09}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401412
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: box_01
+        Position: {x: 4.99, y: 5.56}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401413
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: box_01
+        Position: {x: -2.42, y: 2.51}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 5977856943432401414
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: 0.2, y: 0.2}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 4
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+    - rid: 5977856943432401415
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: hunhun
+        Position: {x: -0.2, y: 0.2}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 3
+        MoveMode: 4
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 

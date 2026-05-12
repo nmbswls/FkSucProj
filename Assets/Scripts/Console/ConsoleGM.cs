@@ -47,6 +47,10 @@ public class ConsoleGM : MonoBehaviour
     private List<string> candidates = new();
     private int candidateIndex = 0;
 
+    // 多候选已顶到公共前缀时再按 Tab：循环整词（-1 表示尚未循环）
+    int _tabCycleIndex = -1;
+    string _autocompleteHeadSnapshot;
+
     // 参数提示缓存
     private string paramHint = "";
 
@@ -343,7 +347,7 @@ public class ConsoleGM : MonoBehaviour
             null,
             args =>
             {
-                MainGameManager.Instance.gameLogicManager.WantedManager.AddWantedVal(50000);
+                MainGameManager.Instance.gameLogicManager.WantedManager.DebugAddWantedVal(50000);
             });
 
         Register("wanted_behave", "按 Luban 通缉行为加星（含 max_add_once）",
@@ -540,6 +544,8 @@ public class ConsoleGM : MonoBehaviour
         input = "";
         candidates.Clear();
         paramHint = "";
+        _tabCycleIndex = -1;
+        _autocompleteHeadSnapshot = null;
 
         // 解析命令
         var tokens = Tokenize(line);
@@ -590,6 +596,12 @@ public class ConsoleGM : MonoBehaviour
         var tokens = Tokenize(prefix);
         if (tokens.Count == 0)
         {
+            if (!string.IsNullOrEmpty(_autocompleteHeadSnapshot))
+            {
+                _tabCycleIndex = -1;
+                _autocompleteHeadSnapshot = "";
+            }
+
             candidates = commands.Keys.OrderBy(k => k).ToList();
             candidateIndex = 0;
             paramHint = "";
@@ -604,11 +616,19 @@ public class ConsoleGM : MonoBehaviour
 
         if (tokens.Count == 1)
         {
-            // 命令名自动完成
             string head = tokens[0];
+            if (head != _autocompleteHeadSnapshot)
+            {
+                _tabCycleIndex = -1;
+                _autocompleteHeadSnapshot = head;
+            }
+
+            // 命令名自动完成
             candidates = commands.Keys.Where(k => k.StartsWith(head, StringComparison.OrdinalIgnoreCase))
                                       .OrderBy(k => k).ToList();
-            candidateIndex = 0;
+            candidateIndex = (_tabCycleIndex >= 0 && _tabCycleIndex < candidates.Count)
+                ? _tabCycleIndex
+                : 0;
 
             // 参数提示：显示该命令的参数签名
             if (commands.TryGetValue(head, out var cmdExact))
@@ -626,6 +646,8 @@ public class ConsoleGM : MonoBehaviour
         }
         else
         {
+            _autocompleteHeadSnapshot = null;
+
             // 已确定命令名，给参数提示
             string cmdName = tokens[0];
             if (commands.TryGetValue(cmdName, out var cmd))
@@ -641,33 +663,84 @@ public class ConsoleGM : MonoBehaviour
 
     private void DoAutoComplete()
     {
-        var tokens = Tokenize(input);
         bool addingSpace = input.EndsWith(" ");
+        var tokens = Tokenize(input);
 
-        if (tokens.Count == 0 || (tokens.Count == 1 && !addingSpace))
+        if (tokens.Count > 1 || (tokens.Count == 1 && addingSpace))
         {
-            // 在命令名阶段进行补全
-            if (candidates.Count == 0)
-            {
-                candidates = commands.Keys.OrderBy(k => k).ToList();
-                candidateIndex = 0;
-            }
-            else
-            {
-                // 循环选择候选
-                candidateIndex = (candidateIndex + 1) % candidates.Count;
-            }
+            return;
+        }
 
-            if (candidates.Count > 0)
+        string head = tokens.Count == 0 ? "" : tokens[0];
+        var matches = commands.Keys
+            .Where(k => k.StartsWith(head, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(k => k)
+            .ToList();
+
+        if (matches.Count == 0)
+        {
+            return;
+        }
+
+        candidates = matches;
+        candidateIndex = 0;
+
+        if (matches.Count == 1)
+        {
+            input = matches[0] + " ";
+            _tabCycleIndex = -1;
+            return;
+        }
+
+        string lcp = LongestCommonPrefixIgnoreCase(matches);
+        if (lcp.Length > head.Length)
+        {
+            input = lcp;
+            _tabCycleIndex = -1;
+            return;
+        }
+
+        _tabCycleIndex = (_tabCycleIndex + 1) % matches.Count;
+        candidateIndex = _tabCycleIndex;
+        input = matches[_tabCycleIndex] + " ";
+    }
+
+    // 忽略大小写比较，返回用首个候选的 casing 表示的公共前缀
+    static string LongestCommonPrefixIgnoreCase(IReadOnlyList<string> strings)
+    {
+        if (strings == null || strings.Count == 0)
+        {
+            return "";
+        }
+
+        if (strings.Count == 1)
+        {
+            return strings[0];
+        }
+
+        int minLen = int.MaxValue;
+        foreach (var s in strings)
+        {
+            if (s.Length < minLen)
             {
-                input = candidates[candidateIndex] + " ";
-                // 将光标放到末尾
+                minLen = s.Length;
             }
         }
-        else
+
+        var first = strings[0];
+        for (int i = 0; i < minLen; i++)
         {
-            // 参数补全：此处留空，若需要可根据命令自定义
+            char c0 = first[i];
+            for (int j = 1; j < strings.Count; j++)
+            {
+                if (char.ToLowerInvariant(strings[j][i]) != char.ToLowerInvariant(c0))
+                {
+                    return first.Substring(0, i);
+                }
+            }
         }
+
+        return first.Substring(0, minLen);
     }
 
     private void BrowseHistory(int delta)

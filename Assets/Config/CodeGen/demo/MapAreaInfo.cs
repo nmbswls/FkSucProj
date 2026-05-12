@@ -21,7 +21,9 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
+        { if(!_buf["day_period_limit"].IsNumber) { throw new SerializationException(); }  DayPeriodLimit = _buf["day_period_limit"]; }
         { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
+        { if(!_buf["map_data_name"].IsString) { throw new SerializationException(); }  MapDataName = _buf["map_data_name"]; }
         { if(!_buf["is_home"].IsBoolean) { throw new SerializationException(); }  IsHome = _buf["is_home"]; }
         { if(!_buf["always_alert"].IsBoolean) { throw new SerializationException(); }  AlwaysAlert = _buf["always_alert"]; }
         { if(!_buf["is_civil_area"].IsBoolean) { throw new SerializationException(); }  IsCivilArea = _buf["is_civil_area"]; }
@@ -48,11 +50,19 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// </summary>
     public string Desc;
     /// <summary>
+    /// 时间要求
+    /// </summary>
+    public int DayPeriodLimit;
+    /// <summary>
     /// 场景名
     /// </summary>
     public string SceneName;
     /// <summary>
-    /// 警戒标记
+    /// 数据文件名
+    /// </summary>
+    public string MapDataName;
+    /// <summary>
+    /// home标记
     /// </summary>
     public bool IsHome;
     /// <summary>
@@ -90,7 +100,9 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "desc:" + Desc + ","
+        + "dayPeriodLimit:" + DayPeriodLimit + ","
         + "sceneName:" + SceneName + ","
+        + "mapDataName:" + MapDataName + ","
         + "isHome:" + IsHome + ","
         + "alwaysAlert:" + AlwaysAlert + ","
         + "isCivilArea:" + IsCivilArea + ","

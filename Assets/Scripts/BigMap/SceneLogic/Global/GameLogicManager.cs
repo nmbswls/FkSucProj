@@ -848,10 +848,6 @@ namespace My
                 {
                     WantedManager.ImportFromPersist(saveData.GlobalRuntime.WantedChannels);
                 }
-                else
-                {
-                    WantedManager.MigrateLegacySingleScalar(saveData.GlobalRuntime.WantedScaledVal);
-                }
             }
             else
             {

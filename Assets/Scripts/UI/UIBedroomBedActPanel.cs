@@ -141,6 +141,11 @@ namespace My.UI
                 if (m == null || string.IsNullOrEmpty(m.Id)) continue;
                 if (!m.HuntingTarget) continue;
 
+                if(m.DayPeriodLimit == 1)
+                {
+                    continue;
+                }
+
                 var conds = m.HuntingUnlockConds;
                 bool passed = true;
                 foreach (var cond in conds)
