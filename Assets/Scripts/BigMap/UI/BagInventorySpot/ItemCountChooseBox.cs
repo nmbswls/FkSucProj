@@ -187,7 +187,7 @@ namespace My.UI
             minValue = 1;
             maxValue = 1;
 
-            Hide();
+            UIManager.Instance.HidePanel("ItemCountChooseBox");
         }
         
     }

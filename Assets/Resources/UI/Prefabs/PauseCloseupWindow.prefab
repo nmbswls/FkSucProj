@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2987719498107875037}
-  - component: {fileID: 1457238843374848987}
+  - component: {fileID: -5644007705097255381}
   m_Layer: 5
   m_Name: PauseCloseupWindow
   m_TagString: Untagged
@@ -38,7 +38,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &1457238843374848987
+--- !u!114 &-5644007705097255381
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -47,13 +47,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7666801489784737148}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3790ce1f9650dbe4286cef33bdb20d09, type: 3}
+  m_Script: {fileID: 11500000, guid: c6ac0005071c6184a8473ab9f3763f37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   panelId: 
   canvasGroup: {fileID: 0}
   Mask: {fileID: 0}
-  ShowPic: {fileID: 0}
   Duration: 0
 --- !u!1 &8086883605807896623
 GameObject:
@@ -142,7 +141,7 @@ GameObject:
   - component: {fileID: 4830088177832193275}
   - component: {fileID: 3232704773979016587}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Pic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -195,7 +194,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: d911c05a6abff544fb1134c4dcac3ee5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

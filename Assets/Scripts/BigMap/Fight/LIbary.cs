@@ -244,6 +244,10 @@ namespace My.Map.Entity
                     var ab = CreateForceDashPushDown();
                     _abilityDict[ab.Id] = ab;
                 }
+                {
+                    var ab = CreateNpcGrapplePushPlayer();
+                    _abilityDict[ab.Id] = ab;
+                }
                 
                 {
                     var ab = CreateDefaultPushAbility();
@@ -2710,17 +2714,14 @@ namespace My.Map.Entity
                             CostValue = -10_000,
                         },
 
+                        new MapFightEffectEnqueueDetachedSkillFromVictimCfg()
+                        {
+                            SkillId = "npc_grapple_push_player",
+                        },
+
                         new MapFightEffectInterruptCaster()
                         {
 
-                        },
-
-                        new MapFightEffectKnockBackCfg()
-                        {
-                            ApplyTarget = false,
-                            ApplySelf = true,
-                            DirType = MapFightEffectKnockBackCfg.EKnockBackType.AwayFromTarget,
-                            KnockBackForce = 0.85f,
                         },
                     }
                 };
@@ -2798,6 +2799,10 @@ namespace My.Map.Entity
                                 },
                                 FailBranchEffects = new List<MapFightEffectCfg>
                                 {
+                                    new MapFightEffectEnqueueDetachedSkillFromVictimCfg()
+                                    {
+                                        SkillId = "npc_grapple_push_player",
+                                    },
                                     new MapAbilityEffectThrowBreakFreeCfg(),
                                 },
                             },
@@ -2840,6 +2845,10 @@ namespace My.Map.Entity
                                 },
                                 FailBranchEffects = new List<MapFightEffectCfg>
                                 {
+                                    new MapFightEffectEnqueueDetachedSkillFromVictimCfg()
+                                    {
+                                        SkillId = "npc_grapple_push_player",
+                                    },
                                     new MapAbilityEffectThrowBreakFreeCfg(),
                                 },
                             },
@@ -2882,6 +2891,10 @@ namespace My.Map.Entity
                                 },
                                 FailBranchEffects = new List<MapFightEffectCfg>
                                 {
+                                    new MapFightEffectEnqueueDetachedSkillFromVictimCfg()
+                                    {
+                                        SkillId = "npc_grapple_push_player",
+                                    },
                                     new MapAbilityEffectThrowBreakFreeCfg(),
                                 },
                             },
@@ -2912,6 +2925,45 @@ namespace My.Map.Entity
             executePhase.Events.Add(new PhaseEffectEvent() { Effect = throwCfg, Kind = PhaseEventKind.OnEnter });
             executePhase.Events.Add(new PhaseEffectEvent() { Effect = throwEffectCfg, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(executePhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateNpcGrapplePushPlayer()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "npc_grapple_push_player";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0f;
+            spec.AdjustFaceDir = true;
+            spec.CastType = ECastType.NoTarget;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            var phase = new MapAbilityPhase()
+            {
+                PhaseName = "Push",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.12"
+                },
+            };
+
+            phase.Events.Add(new PhaseEffectEvent()
+            {
+                Effect = new MapFightEffectKnockBackCfg()
+                {
+                    ApplyTarget = true,
+                    DirType = MapFightEffectKnockBackCfg.EKnockBackType.AwayFromSrc,
+                    KnockBackForce = 0.85f,
+                },
+                Kind = PhaseEventKind.OnEnter,
+            });
+
+            spec.Phases.Add(phase);
             return spec;
         }
 

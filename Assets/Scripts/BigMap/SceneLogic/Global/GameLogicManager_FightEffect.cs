@@ -250,6 +250,11 @@ namespace My
                             executor = new AbilityEffectExecutor4ThrowBreakFree();
                         }
                         break;
+                    case MapFightEffectEnqueueDetachedSkillFromVictimCfg:
+                        {
+                            executor = new AbilityEffectExecutor4EnqueueDetachedSkillFromVictim();
+                        }
+                        break;
                         
 
 

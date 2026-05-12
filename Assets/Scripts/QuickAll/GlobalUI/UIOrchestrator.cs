@@ -192,7 +192,15 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
-                panelId = "PauseCloseupWindow",
+                panelId = PauseCloseupKaiYouWindow.ID,
+                resourcePath = "UI/Prefabs/PauseCloseupKaiYouWindow",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = PauseCloseupWindow.ID,
                 resourcePath = "UI/Prefabs/PauseCloseupWindow",
                 defaultLayer = UILayer.Popup,
                 pooled = false,

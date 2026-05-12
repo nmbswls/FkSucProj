@@ -1033,7 +1033,7 @@ namespace My.Map
                 EventOnFaQingStateChange?.Invoke();
             }
 
-            LogicManager.viewer.ShowPauseCloseupWindow("gc", 1.0f);
+            LogicManager.viewer.ShowGcCloseupWindow("gc", 1.0f);
         }
 
         /// <summary>

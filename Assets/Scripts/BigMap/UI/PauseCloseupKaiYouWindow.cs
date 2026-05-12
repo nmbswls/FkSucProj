@@ -10,12 +10,12 @@ namespace My.Map.View
 {
 
 
-    public class PauseCloseupWindow : PanelBase, IInputConsumer
+    public class PauseCloseupKaiYouWindow : PanelBase, IInputConsumer
     {
-        public const string ID = "PauseCloseupWindow";
-        public static PauseCloseupWindow Show(string showType, float duration)
+        public const string ID = "PauseCloseupKaiYouWindow";
+        public static PauseCloseupKaiYouWindow Show(long srcEntityId, string showName, float duration)
         {
-            var panel = UIManager.Instance.ShowPanel(ID) as PauseCloseupWindow;
+            var panel = UIManager.Instance.ShowPanel(ID) as PauseCloseupKaiYouWindow;
             if (panel == null)
             {
                 Debug.LogError("PauseCloseupWindow err");
@@ -27,19 +27,51 @@ namespace My.Map.View
         }
 
         public RectTransform Mask;
+        public Image NormalPic;
+        public Image CounterPic;
+        public GameObject CounterHint;
 
         public float Duration;
+        public float CounterExtraShow;
+
+        private bool isCounterPeriod = false;
+        private bool isCounterSuccess = false;
 
         private float _timer;
 
+        private bool triggerCounter;
 
         private void Update()
         {
             _timer += Time.deltaTime;
-            if(_timer > Duration)
+            if(_timer > Duration + CounterExtraShow)
             {
                 HandleInteractFinish();
                 return;
+            }
+
+            if(_timer > Duration * 0.5f && _timer < Duration * 0.8f)
+            {
+                isCounterPeriod = true;
+            }
+            else
+            {
+                isCounterPeriod = false;
+            }
+
+            if(isCounterPeriod && !isCounterSuccess)
+            {
+                if (!CounterHint.activeSelf)
+                {
+                    CounterHint.SetActive(true);
+                }
+            }
+            else
+            {
+                if (CounterHint.activeSelf)
+                {
+                    CounterHint.SetActive(false);
+                }
             }
         }
 
@@ -56,8 +88,18 @@ namespace My.Map.View
 
             _timer = 0;
 
-            LogicTime.ReleasePause("PauseCloseup");
-            LogicTime.RequestPause("PauseCloseup");
+            LogicTime.ReleasePause("PauseCloseupWindow");
+            LogicTime.RequestPause("PauseCloseupWindow");
+
+            CounterHint.SetActive(false);
+
+            NormalPic.gameObject.SetActive(true);
+            CounterPic.gameObject.SetActive(false);
+
+            isCounterPeriod = false;
+            isCounterSuccess = false;
+
+            CounterExtraShow = 0;
         }
 
         private void SwitchToCounterMode()
@@ -84,13 +126,18 @@ namespace My.Map.View
         private void HandleInteractFinish()
         {
 
+            if(isCounterSuccess)
+            {
+
+            }
+
             UIManager.Instance.HidePanel(ID);
         }
         
         public override void Hide()
         {
             base.Hide();
-            LogicTime.ReleasePause("PauseCloseup");
+            LogicTime.ReleasePause("PauseCloseupWindow");
         }
 
         public bool OnConfirm()
@@ -110,6 +157,16 @@ namespace My.Map.View
 
         public bool OnHotkey(string keyName)
         {
+            if(keyName == QuickPlayerInputBinder.EInputKey.Space.ToString())
+            {
+                if (isCounterPeriod)
+                {
+                    isCounterSuccess = true;
+                    NormalPic.gameObject.SetActive(false);
+                    CounterPic.gameObject.SetActive(true);
+                    CounterExtraShow = 3.0f;
+                }
+            }
             return true;
         }
 

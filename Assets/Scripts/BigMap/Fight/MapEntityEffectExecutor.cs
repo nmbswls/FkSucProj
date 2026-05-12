@@ -1134,7 +1134,7 @@ namespace My.Map.Entity
                 return;
             }
             //unitEntity.
-            ctx.Env.viewer.ShowPauseCloseupWindow(realCfg.WindowType, realCfg.Duration);
+            ctx.Env.viewer.ShowKaiYouCloseupWindow(ctx.SourceInfo.SrcEntityId, realCfg.WindowType, realCfg.Duration);
         }
     }
 
@@ -2122,6 +2122,49 @@ namespace My.Map.Entity
             }
 
             ctx.Env.globalThrowManager.EndThrowAsPlayerBreakFree(tctx);
+        }
+    }
+
+    public class AbilityEffectExecutor4EnqueueDetachedSkillFromVictim : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            if (effectConf is not MapFightEffectEnqueueDetachedSkillFromVictimCfg cfg
+                || string.IsNullOrEmpty(cfg.SkillId))
+            {
+                return;
+            }
+
+            if (ctx.Env.GetLogicEntity(ctx.TargetId, false) is not BaseUnitLogicEntity victim)
+            {
+                return;
+            }
+
+            if (ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false) is not BaseUnitLogicEntity launcher)
+            {
+                return;
+            }
+
+            if (victim.ablilityManager == null)
+            {
+                return;
+            }
+
+            Vector2 castPoint = launcher.Pos;
+            var delta = castPoint - victim.Pos;
+            if (delta.sqrMagnitude < 1e-6f)
+            {
+                if (ctx.CastVec1 != null && ctx.CastVec1.Value.sqrMagnitude > 1e-6f)
+                {
+                    castPoint = victim.Pos + ctx.CastVec1.Value.normalized;
+                }
+                else if (victim.FinalLook.sqrMagnitude > 1e-6f)
+                {
+                    castPoint = victim.Pos + victim.FinalLook.normalized;
+                }
+            }
+
+            victim.ablilityManager.EnqueueDetachedSkill(cfg.SkillId, castVec: castPoint, target: launcher);
         }
     }
 }

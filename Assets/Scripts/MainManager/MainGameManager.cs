@@ -410,10 +410,16 @@ namespace My
         }
 
 
-        public void ShowPauseCloseupWindow(string showName, float duration)
+        public void ShowKaiYouCloseupWindow(long srcEntityId, string showName, float duration)
+        {
+            PauseCloseupKaiYouWindow.Show(srcEntityId, showName, duration);
+        }
+
+        public void ShowGcCloseupWindow(string showName, float duration)
         {
             PauseCloseupWindow.Show(showName, duration);
         }
+
 
         public void DoDeepZhaquSmallGame(long targetUnitId, object extraParam)
         {

@@ -826,7 +826,12 @@ namespace My.Map.Entity
                 return false;
             }
 
-            if (string.IsNullOrEmpty(skillId) || Executor == null || !SkillRuntimes.ContainsKey(skillId))
+            if (string.IsNullOrEmpty(skillId) || Executor == null)
+            {
+                return false;
+            }
+
+            if (!SkillRuntimes.ContainsKey(skillId) && SkillLibrary.GetSkillConfig(skillId) == null)
             {
                 return false;
             }
@@ -886,7 +891,7 @@ namespace My.Map.Entity
                     {
                         if (!UseSkillDetached(pending.SkillId, pending.InputVec, pending.CastVec, targetEntity))
                         {
-                            Debug.Log($"UseSkillDetached failed for {pending.SkillId} (cooldown / CanActiveUseSkill / TryUseAbility)");
+                            Debug.Log($"UseSkillDetached failed for {pending.SkillId} (missing skill/ability config / not actionable / TryUseAbility failed)");
                         }
                     }
                     finally
@@ -1027,15 +1032,12 @@ namespace My.Map.Entity
             return true;
         }
 
-        // 脱手施法：不打连招，只用 MainAbilityId；仅应在 IsActionable 时调用
+        // 脱手施法：不打连招，只用 MainAbilityId；不查 CD/CanActiveUseSkill/是否注册；仅应在 IsActionable 时由 Tick 调用
         bool UseSkillDetached(string skillId, Vector2? inputVec, Vector2? castVec, ILogicEntity target)
         {
-            if (!SkillRuntimes.TryGetValue(skillId, out var skillRuntime))
-            {
-                return false;
-            }
-
-            if (!OwnerEntity.CanActiveUseSkill())
+            if (!TryResolveDetachedSkillConfig(skillId,
+                    out string realAbilityId,
+                    out Dictionary<string, string> overrideParams))
             {
                 return false;
             }
@@ -1047,31 +1049,40 @@ namespace My.Map.Entity
 
             comboOrchestrator?.TransitCombo(0);
 
-            string realAbilityId = skillRuntime.cacheConfig.MainAbilityId;
-            if (!IsSkillReady(skillId))
-            {
-                return false;
-            }
-
             if (!Executor.TryUseAbility(realAbilityId,
                     inputVec: inputVec,
                     castVec: castVec,
                     target: target,
-                    overrideParams: skillRuntime.RuntimeAbilityExtraVariables ?? SkillLibrary.CloneAbilityExtraMap(skillRuntime.cacheConfig)))
+                    overrideParams: overrideParams))
             {
                 return false;
             }
 
             CurrentSkillId = skillId;
             CurrentAbilityId = realAbilityId;
+            return true;
+        }
 
-            if (skillRuntime.cacheConfig.CoolDown > 0)
+        bool TryResolveDetachedSkillConfig(string skillId, out string mainAbilityId, out Dictionary<string, string> overrideParams)
+        {
+            mainAbilityId = null;
+            overrideParams = null;
+
+            if (SkillRuntimes.TryGetValue(skillId, out var rt))
             {
-                skillRuntime.cooldown = skillRuntime.cacheConfig.CoolDown;
+                mainAbilityId = rt.cacheConfig.MainAbilityId;
+                overrideParams = rt.RuntimeAbilityExtraVariables ?? SkillLibrary.CloneAbilityExtraMap(rt.cacheConfig);
+                return !string.IsNullOrEmpty(mainAbilityId);
             }
 
-            skillRuntime.lastUseTime = LogicTime.time;
+            var row = SkillLibrary.GetSkillConfig(skillId);
+            if (row == null || string.IsNullOrEmpty(row.MainAbilityId))
+            {
+                return false;
+            }
 
+            mainAbilityId = row.MainAbilityId;
+            overrideParams = SkillLibrary.CloneAbilityExtraMap(row);
             return true;
         }
 
