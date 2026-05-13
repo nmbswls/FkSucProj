@@ -113,6 +113,7 @@ namespace My
         public MapExportDatabase cacheMapDb;
 
         public GameLogicAreaManager AreaManager;
+        public RumorIntelMapSpawn RumorIntelSpawn;
         public AreaWantedManager WantedManager;
         public WantedDynamicGuardController WantedGuardSpawner;
 
@@ -166,6 +167,7 @@ namespace My
             {
 
             });
+            RumorIntelSpawn = new RumorIntelMapSpawn(this);
 
             worldPersistState = new GameWorldPersistStateManager();
             if (saveData != null)

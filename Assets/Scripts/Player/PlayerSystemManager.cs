@@ -149,7 +149,7 @@ namespace My.Player
             EquipmentManager = new PlayerEquipmentManager(this);
             EquipmentManager.InitializeFromSave(savingData);
             EquipmentManager.BindProgressionGear();
-            RumorIntel.LoadFrom(savingData?.PlayerData);
+            RumorIntel.InitSystem(logicManager, savingData);
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -241,6 +241,7 @@ namespace My.Player
             QuestSystem.Tick(dt);
             DialogTriggerSystem.Tick(dt);
             FuncOpenSystem.Tick(dt);
+            RumorIntel.Tick(dt);
         }
 
         public bool CheckHaveItem(string itemId, long count)

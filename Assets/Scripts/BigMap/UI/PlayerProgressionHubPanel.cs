@@ -10,6 +10,7 @@ namespace My.UI
         Skills = 0,
         Talents = 1,
         Gear = 2,
+        World = 3,
     }
 
     public sealed class ProgressionHubOpenArgs
@@ -33,6 +34,7 @@ namespace My.UI
         const string PathSkill = "UI/Prefabs/PlayerProgressionHubPanelSub/SkillLoadoutPanel";
         const string PathTalent = "UI/Prefabs/PlayerProgressionHubPanelSub/TalentTreePanel";
         const string PathGear = "UI/Prefabs/PlayerProgressionHubPanelSub/PlayerGearEquipPanel";
+        const string PathWorld = "UI/Prefabs/PlayerProgressionHubPanelSub/GlobalWorldPanel";
 
         public ProgressionHubTab CurrentTab { get; private set; }
 
@@ -42,12 +44,18 @@ namespace My.UI
         RectTransform _skillHost;
         RectTransform _talentHost;
         RectTransform _gearHost;
+        RectTransform _worldHost;
         Button _tabSkill;
         Button _tabTalent;
         Button _tabGear;
+        Button _tabWorld;
         SkillLoadoutPanel _skill;
         TalentTreePanel _talent;
         PlayerGearEquipPanel _gear;
+        GlobalWorldPanel _world;
+
+        // 与 UIManager 路径对齐：Hub 重复 ShowPanel 时传入的 data；子页按需 Setup
+        object _lastHubSetupData;
 
         void Awake()
         {
@@ -70,6 +78,8 @@ namespace My.UI
 
         public static void OpenGear() => Open(ProgressionHubTab.Gear);
 
+        public static void OpenWorld() => Open(ProgressionHubTab.World);
+
         // 旧 panelId 仍可能被外部 ShowPanel 调用时转发到统一 Hub
         public static string RemapLegacyCatalogId(string panelId, ref object data)
         {
@@ -88,6 +98,12 @@ namespace My.UI
             if (panelId == PlayerGearEquipPanel.Pid)
             {
                 data = new ProgressionHubOpenArgs { InitialTab = ProgressionHubTab.Gear };
+                return Pid;
+            }
+
+            if (panelId == GlobalWorldPanel.Pid)
+            {
+                data = new ProgressionHubOpenArgs { InitialTab = ProgressionHubTab.World };
                 return Pid;
             }
 
@@ -121,6 +137,7 @@ namespace My.UI
         public override void Setup(object data = null)
         {
             base.Setup(data);
+            _lastHubSetupData = data;
             BindShellRefs();
             if (data is ProgressionHubOpenArgs args)
             {
@@ -144,6 +161,7 @@ namespace My.UI
             _skill?.Hide();
             _talent?.Hide();
             _gear?.Hide();
+            _world?.Hide();
             base.Hide();
         }
 
@@ -152,9 +170,11 @@ namespace My.UI
             _skill?.Teardown();
             _talent?.Teardown();
             _gear?.Teardown();
+            _world?.Teardown();
             _skill = null;
             _talent = null;
             _gear = null;
+            _world = null;
             base.Teardown();
         }
 
@@ -170,9 +190,11 @@ namespace My.UI
             _skillHost = root.Find("Window/ContentHost/SkillHost") as RectTransform;
             _talentHost = root.Find("Window/ContentHost/TalentHost") as RectTransform;
             _gearHost = root.Find("Window/ContentHost/GearHost") as RectTransform;
+            _worldHost = root.Find("Window/ContentHost/WorldHost") as RectTransform;
             _tabSkill = root.Find("Window/HubTabs/TabSkill")?.GetComponent<Button>();
             _tabTalent = root.Find("Window/HubTabs/TabTalent")?.GetComponent<Button>();
             _tabGear = root.Find("Window/HubTabs/TabGear")?.GetComponent<Button>();
+            _tabWorld = root.Find("Window/HubTabs/TabWorld")?.GetComponent<Button>();
             if (_tabSkill != null)
             {
                 _tabSkill.onClick.RemoveAllListeners();
@@ -189,6 +211,12 @@ namespace My.UI
             {
                 _tabGear.onClick.RemoveAllListeners();
                 _tabGear.onClick.AddListener(() => SelectTab(ProgressionHubTab.Gear));
+            }
+
+            if (_tabWorld != null)
+            {
+                _tabWorld.onClick.RemoveAllListeners();
+                _tabWorld.onClick.AddListener(() => SelectTab(ProgressionHubTab.World));
             }
 
             WireShellChrome(root);
@@ -211,6 +239,38 @@ namespace My.UI
             }
         }
 
+        // Hub 托管子页：Resources 实例化不会自动走 UIManager；此处统一 Instantiate → 绑 Host → Hide。
+        // 子页 Setup 由 ApplySetupForTab 在选中 Tab 时调用，与 UIManager 每次 Show 前再 Setup 的习惯对齐。
+        void EnsureEmbeddedPage<T>(
+            ref T cache,
+            string resourcePath,
+            RectTransform host,
+            System.Action<T, IPlayerProgressionHubHost> bindHost)
+            where T : PanelBase
+        {
+            if (cache != null || host == null)
+            {
+                return;
+            }
+
+            var pf = Resources.Load<GameObject>(resourcePath);
+            if (pf == null)
+            {
+                return;
+            }
+
+            var go = Instantiate(pf, host, false);
+            StretchToParent(go);
+            cache = go.GetComponent<T>();
+            if (cache == null)
+            {
+                return;
+            }
+
+            bindHost?.Invoke(cache, this);
+            cache.Hide();
+        }
+
         void EnsurePages()
         {
             BindShellRefs();
@@ -219,55 +279,31 @@ namespace My.UI
                 return;
             }
 
-            if (_skill == null)
+            EnsureEmbeddedPage(ref _skill, PathSkill, _skillHost, (p, h) => p.SetProgressionHubHost(h));
+            EnsureEmbeddedPage(ref _talent, PathTalent, _talentHost, (p, h) => p.SetProgressionHubHost(h));
+            EnsureEmbeddedPage(ref _gear, PathGear, _gearHost, (p, h) => p.SetProgressionHubHost(h));
+            if (_worldHost != null)
             {
-                var pf = Resources.Load<GameObject>(PathSkill);
-                if (pf != null)
-                {
-                    var go = Instantiate(pf, _skillHost, false);
-                    StretchToParent(go);
-                    _skill = go.GetComponent<SkillLoadoutPanel>();
-                    if (_skill != null)
-                    {
-                        _skill.SetProgressionHubHost(this);
-                        _skill.Setup(null);
-                        _skill.Hide();
-                    }
-                }
+                EnsureEmbeddedPage(ref _world, PathWorld, _worldHost, (p, h) => p.SetProgressionHubHost(h));
             }
+        }
 
-            if (_talent == null)
+        void ApplySetupForTab(ProgressionHubTab tab, object data)
+        {
+            switch (tab)
             {
-                var pf = Resources.Load<GameObject>(PathTalent);
-                if (pf != null)
-                {
-                    var go = Instantiate(pf, _talentHost, false);
-                    StretchToParent(go);
-                    _talent = go.GetComponent<TalentTreePanel>();
-                    if (_talent != null)
-                    {
-                        _talent.SetProgressionHubHost(this);
-                        _talent.Setup(null);
-                        _talent.Hide();
-                    }
-                }
-            }
-
-            if (_gear == null)
-            {
-                var pf = Resources.Load<GameObject>(PathGear);
-                if (pf != null)
-                {
-                    var go = Instantiate(pf, _gearHost, false);
-                    StretchToParent(go);
-                    _gear = go.GetComponent<PlayerGearEquipPanel>();
-                    if (_gear != null)
-                    {
-                        _gear.SetProgressionHubHost(this);
-                        _gear.Setup(null);
-                        _gear.Hide();
-                    }
-                }
+                case ProgressionHubTab.Skills:
+                    _skill?.Setup(data);
+                    break;
+                case ProgressionHubTab.Talents:
+                    _talent?.Setup(data);
+                    break;
+                case ProgressionHubTab.Gear:
+                    _gear?.Setup(data);
+                    break;
+                case ProgressionHubTab.World:
+                    _world?.Setup(data);
+                    break;
             }
         }
 
@@ -293,6 +329,7 @@ namespace My.UI
             _skill?.Hide();
             _talent?.Hide();
             _gear?.Hide();
+            _world?.Hide();
 
             if (_skillHost != null)
             {
@@ -309,6 +346,12 @@ namespace My.UI
                 _gearHost.gameObject.SetActive(tab == ProgressionHubTab.Gear);
             }
 
+            if (_worldHost != null)
+            {
+                _worldHost.gameObject.SetActive(tab == ProgressionHubTab.World);
+            }
+
+            ApplySetupForTab(CurrentTab, _lastHubSetupData);
             RefreshActivePage();
         }
 
@@ -329,6 +372,9 @@ namespace My.UI
                     break;
                 case ProgressionHubTab.Gear:
                     _gear?.Show();
+                    break;
+                case ProgressionHubTab.World:
+                    _world?.Show();
                     break;
             }
         }

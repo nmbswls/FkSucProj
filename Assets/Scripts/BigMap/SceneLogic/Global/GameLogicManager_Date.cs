@@ -10,7 +10,6 @@ namespace My
 
     public partial class GameLogicManager
     {
-        public int CurrDay = 1;
         public int DayPeriodLeft = 2;
 
         public event Action EventOnNextDayPeriod;
@@ -46,7 +45,7 @@ namespace My
 
         public void FinishOneDay()
         {
-            CurrDay += 1;
+            AdvanceSettlementDayAndApplyFishingRules();
             HandleOneDayBalance();
             DayPeriodLeft = 2;
         }

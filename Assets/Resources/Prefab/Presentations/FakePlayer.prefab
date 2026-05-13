@@ -352,7 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8ebff5bf9e2e24b84fdad08a5d674a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sr: {fileID: 8866554067678978095}
+  sr: {fileID: 3502232313553543200}
   peakAmount: 0.9
 --- !u!95 &2905468353745998255
 Animator:
@@ -1714,6 +1714,7 @@ MonoBehaviour:
   mainCol: {fileID: 0}
   CharacterController: {fileID: 0}
   targetCol: {fileID: 0}
+  throwGrapplePoint: {fileID: 0}
   maxTurnSpeedDegPerSec: 720
   smoothTime: 0.12
   selfRadius: 0.5

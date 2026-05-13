@@ -10,38 +10,44 @@ using UnityEngine;
 
 namespace My
 {
-    // 非文明区地图加载后：消耗已购秘闻并刷宝箱/NPC（选点：ENamedPointType.RumorCandidate）
-    public static class RumorIntelMapSpawn
+    // 与 AreaManager 平级挂在 GameLogicManager 上：非文明区加载完成后刷秘闻实体
+    public sealed class RumorIntelMapSpawn
     {
-        public static void ApplyPurchasedRumorsOnMapLoaded(GameLogicManager glm)
+        readonly GameLogicManager _glm;
+
+        public RumorIntelMapSpawn(GameLogicManager glm)
         {
-            if (glm?.AreaManager == null || glm.playerDataManager == null)
+            _glm = glm;
+        }
+
+        public void ApplyPurchasedRumorsOnMapLoaded()
+        {
+            if (_glm?.AreaManager == null || _glm.playerDataManager == null)
             {
                 return;
             }
 
-            var areaCfg = glm.AreaManager.cacheMapCfg;
+            var areaCfg = _glm.AreaManager.cacheMapCfg;
             if (areaCfg == null || areaCfg.IsCivilArea)
             {
                 return;
             }
 
-            var mapId = glm.AreaManager.MapName;
+            var mapId = _glm.AreaManager.MapName;
             if (string.IsNullOrEmpty(mapId) || CfgMgr.Cfgs == null)
             {
                 return;
             }
 
-            var progress = glm.playerDataManager.RumorIntel;
-            var day = glm.SettlementDayIndex;
-            var actives = progress.GetActiveSnapshot(mapId, day);
+            var rumor = _glm.playerDataManager.RumorIntel;
+            var actives = rumor.GetActiveSnapshot(mapId);
             if (actives == null || actives.Count == 0)
             {
                 return;
             }
 
             var rumorPoints = new List<NamedPoint>();
-            var db = glm.AreaManager.cacheDatabase;
+            var db = _glm.AreaManager.cacheDatabase;
             if (db?.NamedPoints != null)
             {
                 foreach (var p in db.NamedPoints)
@@ -61,7 +67,7 @@ namespace My
                     continue;
                 }
 
-                var pos = PickPos(rumorPoints, glm);
+                var pos = PickPos(rumorPoints);
 
                 switch (def.EffectType)
                 {
@@ -71,7 +77,7 @@ namespace My
                             continue;
                         }
 
-                        glm.AddNewEntityRecord(new LogicEntityRecord4LootPoint
+                        _glm.AddNewEntityRecord(new LogicEntityRecord4LootPoint
                         {
                             Id = GameLogicManager.LogicEntityIdInst++,
                             EntityType = EEntityType.LootPoint,
@@ -86,7 +92,7 @@ namespace My
                             continue;
                         }
 
-                        glm.AddNewEntityRecord(new LogicEntityRecord4Npc
+                        _glm.AddNewEntityRecord(new LogicEntityRecord4Npc
                         {
                             Id = GameLogicManager.LogicEntityIdInst++,
                             EntityType = EEntityType.Npc,
@@ -101,10 +107,10 @@ namespace My
                 }
             }
 
-            progress.ConsumeAllActiveForMap(mapId, day);
+            rumor.ConsumeAllActiveForMap(mapId);
         }
 
-        static Vector2 PickPos(List<NamedPoint> rumorPoints, GameLogicManager glm)
+        Vector2 PickPos(List<NamedPoint> rumorPoints)
         {
             if (rumorPoints.Count > 0)
             {
@@ -113,7 +119,7 @@ namespace My
             }
 
             Debug.LogWarning("[RumorIntel] No RumorCandidate named points in map export; spawn at player.");
-            return glm.playerLogicEntity != null ? glm.playerLogicEntity.Pos : Vector2.zero;
+            return _glm.playerLogicEntity != null ? _glm.playerLogicEntity.Pos : Vector2.zero;
         }
     }
 }

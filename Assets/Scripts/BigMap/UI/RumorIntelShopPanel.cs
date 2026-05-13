@@ -215,7 +215,7 @@ namespace My.UI
             var rumor = glm.playerDataManager.RumorIntel;
 
             AddSection("=== Fixed ===");
-            var fixedList = rumor.ListPurchasableFixed(_mapId, glm);
+            var fixedList = rumor.ListPurchasableFixed(_mapId);
             foreach (var def in fixedList)
             {
                 AddBuyRow(def.ThumbName, def.CostItemId, def.CostCount, () => TryBuy(def.RumorId));
@@ -233,7 +233,7 @@ namespace My.UI
             }
             else
             {
-                rumor.EnsureRandomOffersForShop(_mapId, glm);
+                rumor.EnsureRandomOffersForShop(_mapId);
                 foreach (var rid in rumor.GetRandomOfferIds(_mapId))
                 {
                     var def = CfgMgr.Cfgs.TbRumorIntel.GetOrDefault(rid);
@@ -247,7 +247,7 @@ namespace My.UI
             }
 
             AddSection("=== Pending (next infiltration) ===");
-            var actives = rumor.GetActiveSnapshot(_mapId, glm.SettlementDayIndex);
+            var actives = rumor.GetActiveSnapshot(_mapId);
             foreach (var a in actives)
             {
                 var def = CfgMgr.Cfgs.TbRumorIntel.GetOrDefault(a.RumorId);
@@ -271,7 +271,7 @@ namespace My.UI
                 return;
             }
 
-            var ok = glm.playerDataManager.RumorIntel.TryPurchase(_mapId, rumorId, glm, out var err);
+            var ok = glm.playerDataManager.RumorIntel.TryPurchase(_mapId, rumorId, out var err);
             if (!ok)
             {
                 Debug.LogWarning("[RumorIntelShop] Purchase failed: " + err);

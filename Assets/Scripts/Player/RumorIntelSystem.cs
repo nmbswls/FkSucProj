@@ -7,23 +7,32 @@ using UnityEngine;
 
 namespace My.Player
 {
-    // 大世界秘闻情报：购买、随机池展示、过期与进图消耗由 RumorIntelMapSpawn 处理
-    public sealed class RumorIntelSystem
+    // 秘闻情报：存档在 PlayerData.MapRumorByMapId；世界日与 GameLogicManager.SettlementDayIndex 对齐
+    public sealed class RumorIntelSystem : IPlayerSystem
     {
+        GameLogicManager _glm;
+
         readonly Dictionary<string, MapRumorPersist> _byMap = new();
 
-        public void LoadFrom(PlayerData playerData)
+        int Day => _glm != null ? _glm.SettlementDayIndex : 0;
+
+        public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
+            _glm = ctx;
             _byMap.Clear();
-            if (playerData?.MapRumorByMapId == null)
+            if (savingData?.PlayerData?.MapRumorByMapId == null)
             {
                 return;
             }
 
-            foreach (var kv in playerData.MapRumorByMapId)
+            foreach (var kv in savingData.PlayerData.MapRumorByMapId)
             {
                 _byMap[kv.Key] = CloneBlock(kv.Value);
             }
+        }
+
+        public void Tick(float dt)
+        {
         }
 
         public void SaveTo(PlayerData playerData)
@@ -80,11 +89,11 @@ namespace My.Player
             return b;
         }
 
-        public void PruneExpiredRumors(int settlementDayIndex)
+        public void PruneExpiredRumors(int worldDay)
         {
             foreach (var b in _byMap.Values)
             {
-                b.ActiveIntel.RemoveAll(a => settlementDayIndex >= a.ExpireSettlementDay);
+                b.ActiveIntel.RemoveAll(a => worldDay >= a.ExpireSettlementDay);
             }
         }
 
@@ -102,12 +111,12 @@ namespace My.Player
             return false;
         }
 
-        public bool IsRumorActive(string mapId, string rumorId, int settlementDay)
+        public bool IsRumorActive(string mapId, string rumorId, int worldDay)
         {
             var b = GetOrCreateBlock(mapId);
             foreach (var a in b.ActiveIntel)
             {
-                if (a.RumorId == rumorId && settlementDay < a.ExpireSettlementDay)
+                if (a.RumorId == rumorId && worldDay < a.ExpireSettlementDay)
                 {
                     return true;
                 }
@@ -116,9 +125,14 @@ namespace My.Player
             return false;
         }
 
-        void RollRandomOffers(string mapId, GameLogicManager glm)
+        void RollRandomOffers(string mapId)
         {
-            var cfgGlobal = CfgMgr.Cfgs?.TbRumorGlobal?.GetOrDefault("default");
+            if (_glm == null || CfgMgr.Cfgs == null)
+            {
+                return;
+            }
+
+            var cfgGlobal = CfgMgr.Cfgs.TbRumorGlobal?.GetOrDefault("default");
             if (cfgGlobal == null)
             {
                 return;
@@ -174,29 +188,29 @@ namespace My.Player
                 weights.RemoveAt(pick);
             }
 
-            block.RandomRollSettlementDay = glm.SettlementDayIndex;
+            block.RandomRollSettlementDay = Day;
         }
 
-        public void EnsureRandomOffersForShop(string mapId, GameLogicManager glm)
+        public void EnsureRandomOffersForShop(string mapId)
         {
-            if (glm == null || CfgMgr.Cfgs == null)
+            if (_glm == null || CfgMgr.Cfgs == null)
             {
                 return;
             }
 
-            PruneExpiredRumors(glm.SettlementDayIndex);
+            PruneExpiredRumors(Day);
             if (HasActiveRandomIntel(mapId))
             {
                 return;
             }
 
             var block = GetOrCreateBlock(mapId);
-            if (block.RandomRollSettlementDay == glm.SettlementDayIndex && block.RandomOfferRumorIds.Count > 0)
+            if (block.RandomRollSettlementDay == Day && block.RandomOfferRumorIds.Count > 0)
             {
                 return;
             }
 
-            RollRandomOffers(mapId, glm);
+            RollRandomOffers(mapId);
         }
 
         public IReadOnlyList<string> GetRandomOfferIds(string mapId)
@@ -204,15 +218,15 @@ namespace My.Player
             return GetOrCreateBlock(mapId).RandomOfferRumorIds;
         }
 
-        public List<RumorIntel> ListPurchasableFixed(string mapId, GameLogicManager glm)
+        public List<RumorIntel> ListPurchasableFixed(string mapId)
         {
             var result = new List<RumorIntel>();
-            if (CfgMgr.Cfgs == null || glm == null)
+            if (CfgMgr.Cfgs == null || _glm == null)
             {
                 return result;
             }
 
-            var day = glm.SettlementDayIndex;
+            var day = Day;
             foreach (var row in CfgMgr.Cfgs.TbRumorIntel.DataList)
             {
                 if (row.IntelKind != ERumorIntelKind.Fixed)
@@ -225,7 +239,7 @@ namespace My.Player
                     continue;
                 }
 
-                if (!glm.CheckCommonCondsAll(row.AppearConds))
+                if (!_glm.CheckCommonCondsAll(row.AppearConds))
                 {
                     continue;
                 }
@@ -236,10 +250,10 @@ namespace My.Player
             return result;
         }
 
-        public bool TryPurchase(string mapId, string rumorId, GameLogicManager glm, out string error)
+        public bool TryPurchase(string mapId, string rumorId, out string error)
         {
             error = null;
-            if (glm?.playerDataManager == null || CfgMgr.Cfgs == null)
+            if (_glm?.playerDataManager == null || CfgMgr.Cfgs == null)
             {
                 error = "rumor_no_context";
                 return false;
@@ -252,7 +266,7 @@ namespace My.Player
                 return false;
             }
 
-            var day = glm.SettlementDayIndex;
+            var day = Day;
             if (IsRumorActive(mapId, rumorId, day))
             {
                 error = "rumor_already_active";
@@ -269,7 +283,7 @@ namespace My.Player
                     return false;
                 }
 
-                EnsureRandomOffersForShop(mapId, glm);
+                EnsureRandomOffersForShop(mapId);
                 if (!block.RandomOfferRumorIds.Contains(rumorId))
                 {
                     error = "rumor_not_in_offer";
@@ -278,20 +292,20 @@ namespace My.Player
             }
             else
             {
-                if (!glm.CheckCommonCondsAll(def.AppearConds))
+                if (!_glm.CheckCommonCondsAll(def.AppearConds))
                 {
                     error = "rumor_cond_fail";
                     return false;
                 }
             }
 
-            if (!glm.playerDataManager.CheckHaveItem(def.CostItemId, def.CostCount))
+            if (!_glm.playerDataManager.CheckHaveItem(def.CostItemId, def.CostCount))
             {
                 error = "rumor_cost";
                 return false;
             }
 
-            var left = glm.playerDataManager.CostItem(def.CostItemId, def.CostCount);
+            var left = _glm.playerDataManager.CostItem(def.CostItemId, def.CostCount);
             if (left != 0)
             {
                 error = "rumor_cost";
@@ -316,16 +330,18 @@ namespace My.Player
             return true;
         }
 
-        public List<RumorActiveEntry> GetActiveSnapshot(string mapId, int settlementDay)
+        public List<RumorActiveEntry> GetActiveSnapshot(string mapId)
         {
             var b = GetOrCreateBlock(mapId);
-            return b.ActiveIntel.FindAll(a => settlementDay < a.ExpireSettlementDay);
+            var day = Day;
+            return b.ActiveIntel.FindAll(a => day < a.ExpireSettlementDay);
         }
 
-        public void ConsumeAllActiveForMap(string mapId, int settlementDay)
+        public void ConsumeAllActiveForMap(string mapId)
         {
             var b = GetOrCreateBlock(mapId);
-            b.ActiveIntel.RemoveAll(a => settlementDay < a.ExpireSettlementDay);
+            var day = Day;
+            b.ActiveIntel.RemoveAll(a => day < a.ExpireSettlementDay);
         }
     }
 }
