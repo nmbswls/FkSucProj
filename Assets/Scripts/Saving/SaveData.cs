@@ -76,6 +76,8 @@ namespace My.Saving
         // 已解锁天赋节点（对应 Luban TbTalentNode / PlayerTalentManager）
         public List<int> UnlockedTalentNodeIds = new();
 
+        public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
+
         // 角色装备（与主背包互斥：穿上时从背包扣除；存档需与背包一致）
         public List<EquippedGearEntry> EquippedGear = new();
     }
@@ -205,6 +207,25 @@ namespace My.Saving
         }
     }
 
+    [Serializable]
+    public class RumorActiveEntry
+    {
+        public string RumorId;
+        public int PurchasedSettlementDay;
+        /// <summary>到期日：当 SettlementDayIndex >= ExpireSettlementDay 时过期</summary>
+        public int ExpireSettlementDay;
+        public bool IsRandomKind;
+        public bool Revealed;
+    }
+
+    [Serializable]
+    public class MapRumorPersist
+    {
+        public List<RumorActiveEntry> ActiveIntel = new();
+        public int RandomRollSettlementDay = -1;
+        public List<string> RandomOfferRumorIds = new();
+    }
+
     // 单张地图上的逻辑状态：区域邪恶警戒、动态刷新 CD、实体 Record 快照
     [Serializable]
     public class MapRuntimePersistData
@@ -271,7 +292,7 @@ namespace My.Saving
             data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.PlayerData.UnlockedTalentNodeIds ??= new List<int>();
-            data.PlayerData.EquippedGear ??= new List<EquippedGearEntry>();
+            data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

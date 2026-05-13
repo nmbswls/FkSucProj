@@ -57,6 +57,11 @@ public partial class Tables
     public demo.TbContainerStackTagRule TbContainerStackTagRule {get; }
     public demo.TbMapAreaEffect TbMapAreaEffect {get; }
     public demo.TbFallenAmountProgressInfo TbFallenAmountProgressInfo {get; }
+    public demo.TbRumorIntel TbRumorIntel {get; }
+    public demo.TbRumorRandomPool TbRumorRandomPool {get; }
+    public demo.TbRumorGlobal TbRumorGlobal {get; }
+    public demo.TbCharacterInfo TbCharacterInfo {get; }
+    public demo.TbCharacterFavorInfo TbCharacterFavorInfo {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -103,6 +108,11 @@ public partial class Tables
         TbContainerStackTagRule = new demo.TbContainerStackTagRule(loader("demo_tbcontainerstacktagrule"));
         TbMapAreaEffect = new demo.TbMapAreaEffect(loader("demo_tbmapareaeffect"));
         TbFallenAmountProgressInfo = new demo.TbFallenAmountProgressInfo(loader("demo_tbfallenamountprogressinfo"));
+        TbRumorIntel = new demo.TbRumorIntel(loader("demo_tbrumorintel"));
+        TbRumorRandomPool = new demo.TbRumorRandomPool(loader("demo_tbrumorrandompool"));
+        TbRumorGlobal = new demo.TbRumorGlobal(loader("demo_tbrumorglobal"));
+        TbCharacterInfo = new demo.TbCharacterInfo(loader("demo_tbcharacterinfo"));
+        TbCharacterFavorInfo = new demo.TbCharacterFavorInfo(loader("demo_tbcharacterfavorinfo"));
         ResolveRef();
     }
     
@@ -151,6 +161,11 @@ public partial class Tables
         TbContainerStackTagRule.ResolveRef(this);
         TbMapAreaEffect.ResolveRef(this);
         TbFallenAmountProgressInfo.ResolveRef(this);
+        TbRumorIntel.ResolveRef(this);
+        TbRumorRandomPool.ResolveRef(this);
+        TbRumorGlobal.ResolveRef(this);
+        TbCharacterInfo.ResolveRef(this);
+        TbCharacterFavorInfo.ResolveRef(this);
     }
 }
 

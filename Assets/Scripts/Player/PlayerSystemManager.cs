@@ -53,6 +53,8 @@ namespace My.Player
 
         public PlayerEquipmentManager EquipmentManager { get; private set; }
 
+        public RumorIntelSystem RumorIntel { get; } = new();
+
         public IReadOnlyList<string> PlayerSkillList => SkillSystem.LearnedSkillIdsView;
 
         public string[] NormalSkillSlots => SkillSystem.NormalSkillSlots;
@@ -147,6 +149,7 @@ namespace My.Player
             EquipmentManager = new PlayerEquipmentManager(this);
             EquipmentManager.InitializeFromSave(savingData);
             EquipmentManager.BindProgressionGear();
+            RumorIntel.LoadFrom(savingData?.PlayerData);
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -167,6 +170,7 @@ namespace My.Player
             MagicClothes.SaveTo(data.PlayerData);
             ProgressionSystem?.TalentManager?.SaveTo(data.PlayerData);
             EquipmentManager?.SaveTo(data.PlayerData);
+            RumorIntel.SaveTo(data.PlayerData);
 
 
             // 存道具

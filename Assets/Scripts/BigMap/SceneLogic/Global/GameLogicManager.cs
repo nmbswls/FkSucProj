@@ -96,6 +96,7 @@ namespace My
         {
             SettlementDayIndex++;
             worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);
+            playerDataManager?.RumorIntel?.PruneExpiredRumors(SettlementDayIndex);
         }
 
 

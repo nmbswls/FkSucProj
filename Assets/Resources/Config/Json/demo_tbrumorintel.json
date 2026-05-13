@@ -1,0 +1,94 @@
+[
+  {
+    "rumor_id": "rumor_fix_chest_demo",
+    "thumb_name": "??? 线索（宝箱）",
+    "full_text": "北巷库房有人藏了一批物资，夜半可取之。",
+    "cost_item_id": "evil_scroll_01",
+    "cost_count": 1,
+    "duration_days": 3,
+    "effect_type": 0,
+    "loot_point_cfg_id": "spoil_small",
+    "npc_cfg_id": "",
+    "intel_kind": 0,
+    "appear_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ]
+  },
+  {
+    "rumor_id": "rumor_fix_npc_demo",
+    "thumb_name": "??? 线索（眼线）",
+    "full_text": "城东暗线会现身，可试着接触。",
+    "cost_item_id": "evil_scroll_01",
+    "cost_count": 1,
+    "duration_days": 2,
+    "effect_type": 1,
+    "loot_point_cfg_id": "",
+    "npc_cfg_id": "civil",
+    "intel_kind": 0,
+    "appear_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ]
+  },
+  {
+    "rumor_id": "rumor_rand_a",
+    "thumb_name": "??? 传闻·甲",
+    "full_text": "随机秘闻甲：特殊宝箱。",
+    "cost_item_id": "evil_scroll_01",
+    "cost_count": 2,
+    "duration_days": 1,
+    "effect_type": 0,
+    "loot_point_cfg_id": "spoil_small",
+    "npc_cfg_id": "",
+    "intel_kind": 1,
+    "appear_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ]
+  },
+  {
+    "rumor_id": "rumor_rand_b",
+    "thumb_name": "??? 传闻·乙",
+    "full_text": "随机秘闻乙：特殊 NPC。",
+    "cost_item_id": "evil_scroll_01",
+    "cost_count": 2,
+    "duration_days": 1,
+    "effect_type": 1,
+    "loot_point_cfg_id": "",
+    "npc_cfg_id": "civil",
+    "intel_kind": 1,
+    "appear_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ]
+  }
+]

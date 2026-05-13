@@ -116,4 +116,14 @@
     </enum>
 
     <!-- MapAreaEffect 记录结构由 map_area_effect.xlsx 表头 read_schema_from_file 推断 -->
+
+    <enum name="ERumorIntelKind">
+        <var name="Fixed" value="0"/>
+        <var name="RandomPoolEntry" value="1"/>
+    </enum>
+
+    <enum name="ERumorEffectType">
+        <var name="Chest" value="0"/>
+        <var name="Npc" value="1"/>
+    </enum>
 </module>

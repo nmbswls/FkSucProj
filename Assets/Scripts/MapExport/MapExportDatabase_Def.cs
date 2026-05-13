@@ -19,6 +19,11 @@ namespace My.MapExport
         WalkerStart,
 
         PatrolPoint, // 路点类型
+
+        /// <summary>
+        /// 秘闻宝箱/NPC 随机落点候选（地图 NamedPoint + 导出）
+        /// </summary>
+        RumorCandidate,
     }
 
 

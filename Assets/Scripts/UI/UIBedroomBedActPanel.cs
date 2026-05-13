@@ -32,8 +32,8 @@ namespace My.UI
         [Header("入梦")]
         [SerializeField] private Button btnDream;
 
-        [Header("关闭")]
-        [SerializeField] private Button btnClose;
+        [Header("秘闻情报（可选；未绑定则隐藏）")]
+        [SerializeField] private Button btnRumorIntel;
 
         private readonly List<MapAreaInfo> _huntMaps = new();
         private readonly List<Button> _spawnedMapRows = new();
@@ -81,11 +81,11 @@ namespace My.UI
                 tabDream.onClick.AddListener(() => ShowPage(1));
             }
 
-            if (btnClose != null)
-            {
-                btnClose.onClick.RemoveAllListeners();
-                btnClose.onClick.AddListener(TryCloseSelf);
-            }
+            //if (btnClose != null)
+            //{
+            //    btnClose.onClick.RemoveAllListeners();
+            //    btnClose.onClick.AddListener(TryCloseSelf);
+            //}
 
             if (btnTeleport != null)
             {
@@ -97,6 +97,12 @@ namespace My.UI
             {
                 btnDream.onClick.RemoveAllListeners();
                 btnDream.onClick.AddListener(OnClickOpenDream);
+            }
+
+            if (btnRumorIntel != null)
+            {
+                btnRumorIntel.onClick.RemoveAllListeners();
+                btnRumorIntel.onClick.AddListener(OnClickOpenRumorIntel);
             }
 
             if (mapRowTemplate != null)
@@ -278,6 +284,17 @@ namespace My.UI
             if (UIManager.Instance != null)
                 UIManager.Instance.HidePanel(panelId);
             DreamInfiltrationBootstrap.OpenEntry();
+        }
+
+        private void OnClickOpenRumorIntel()
+        {
+            if (_selected == null)
+            {
+                Debug.LogWarning("[UIBedroomBedAct] Select a map before opening intel shop.");
+                return;
+            }
+
+            RumorIntelShopPanel.OpenForMap(_selected.Id);
         }
     }
 }

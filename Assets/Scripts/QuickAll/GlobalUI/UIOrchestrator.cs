@@ -252,6 +252,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = RumorIntelShopPanel.Pid,
+                resourcePath = "UI/Prefabs/RumorIntelShopPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "MiniStaticAbsorbPanel",
                 resourcePath = "UI/Prefabs/MiniStaticAbsorbPanel",
                 defaultLayer = UILayer.Popup,
