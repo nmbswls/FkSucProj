@@ -199,6 +199,8 @@ namespace My.UI
 
         public Image PleasureBar;
 
+        public TextMeshProUGUI TextWantedLevel;
+
         //public OverworldSkillBar ItemBar;
 
         public bool IsHunterMode = false;
@@ -409,7 +411,19 @@ namespace My.UI
                 }
             }
 
-            if(HudMode == EHudMode.PreviewSkill)
+
+            if (!MainGameManager.Instance.gameLogicManager.PlayerHumanMode && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsDangerArea)
+            {
+                var wantedLevel = MainGameManager.Instance.gameLogicManager.WantedManager.GetWantedStarLevel();
+                TextWantedLevel.gameObject.SetActive(true);
+                TextWantedLevel.text = "通缉" + wantedLevel;
+            }
+            else
+            {
+                TextWantedLevel.gameObject.SetActive(false);
+            }
+
+            if (HudMode == EHudMode.PreviewSkill)
             {
                 overworldSkillPreviewUI.TickPreviewState();
             }

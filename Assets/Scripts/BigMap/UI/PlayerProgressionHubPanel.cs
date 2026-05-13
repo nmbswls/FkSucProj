@@ -30,9 +30,9 @@ namespace My.UI
     {
         public const string Pid = "PlayerProgressionHub";
 
-        const string PathSkill = "UI/Prefabs/SkillLoadoutPanel";
-        const string PathTalent = "UI/Prefabs/TalentTreePanel";
-        const string PathGear = "UI/Prefabs/PlayerGearEquipPanel";
+        const string PathSkill = "UI/Prefabs/PlayerProgressionHubPanelSub/SkillLoadoutPanel";
+        const string PathTalent = "UI/Prefabs/PlayerProgressionHubPanelSub/TalentTreePanel";
+        const string PathGear = "UI/Prefabs/PlayerProgressionHubPanelSub/PlayerGearEquipPanel";
 
         public ProgressionHubTab CurrentTab { get; private set; }
 
