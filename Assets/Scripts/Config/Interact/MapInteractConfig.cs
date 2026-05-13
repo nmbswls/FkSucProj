@@ -42,6 +42,7 @@ namespace My.Config
             TriggerSpawner,
 
             NextDayPeriod,
+            MarkCharacterValue, // 标记人物变量
 
             EGMemberChangeState = 100,
             EGMemberActivate = 101,

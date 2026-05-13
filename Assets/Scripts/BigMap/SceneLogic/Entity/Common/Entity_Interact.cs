@@ -476,6 +476,13 @@ namespace My.Map
                         }
                         break;
 
+                    case LogicInteractOutput.EOutputType.MarkCharacterValue:
+                        {
+                            string charKey = output.Param3;
+                            //Owner.LogicManager.worldPersistState?.NpcCharacters?.SetDesireCrystalTaken(charKey, true);
+                        }
+                        break;
+
                     #region group相关
 
                     case Config.LogicInteractOutput.EOutputType.EGMemberActivate:

@@ -112,6 +112,12 @@ namespace My
             st.LocalSwitches = list == null || list.Count == 0 ? null : new List<string>(list);
         }
 
+        public void AddCharLocalSwitches()
+        {
+
+        }
+
+
         public void TryApplyToRecordBeforeSpawn(LogicEntityRecord4Npc rec)
         {
             if (rec == null || string.IsNullOrEmpty(rec.CharacterKey))
