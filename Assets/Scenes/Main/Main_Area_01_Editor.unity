@@ -303,7 +303,7 @@ MonoBehaviour:
     - rid: 1384458314864918739
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: hunhun
+        CfgId: default_guard_01
         Position: {x: 0.2, y: 0.2}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
@@ -319,7 +319,7 @@ MonoBehaviour:
     - rid: 1384458314864918741
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: hunhun
+        CfgId: default_guard_01
         Position: {x: -0.2, y: 0.2}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 

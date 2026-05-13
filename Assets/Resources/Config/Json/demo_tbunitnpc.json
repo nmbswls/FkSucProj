@@ -208,6 +208,28 @@
     "no_real_jing": false
   },
   {
+    "id": "default_guard_01",
+    "name": "守卫1",
+    "desc": "",
+    "prefab_name": "default_guard_01",
+    "attr_template_id": 10000,
+    "emnity_cfg_id": "default_guard",
+    "faction_id": 0,
+    "move_style": 1,
+    "ai_brain_id": "default",
+    "skill_list": [],
+    "is_peace": true,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 1,
+    "not_target": false,
+    "always_h_mode": false,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": true,
+    "no_real_jing": false
+  },
+  {
     "id": "h_spirit_small_01",
     "name": "鬼",
     "desc": "",

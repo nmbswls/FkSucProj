@@ -367,7 +367,7 @@ namespace My.Map.Logic
         }
 
 
-        public LogicEntityRecord CreateEntityRecordFromInitInfo(EntityInitInfo initInfo)
+        public LogicEntityRecord CreateEntityRecordFromInitInfo(EntityInitInfo initInfo, long groupId = 0)
         {
             LogicEntityRecord record = null;
             var id = GameLogicManager.LogicEntityIdInst++;
@@ -401,8 +401,18 @@ namespace My.Map.Logic
                                 Debug.Log("PatrolGroup group unit create fail " + one.GroupIdx);
                                 continue;
                             }
+
+                            groupRecord.Position = initInfo.Position + one.InitInfo.Position;
+
                             patrolGroupRecord.PatrolUnitIds.Add(groupRecord.Id);
                             RegisterEntityRecord(groupRecord);
+
+                            if(groupRecord is LogicEntityRecord4Npc rec4Npc)
+                            {
+                                rec4Npc.PatrolFollowId = id;
+                                rec4Npc.PatrolGroupRelativePos = one.InitInfo.Position;
+                            }
+
                         }
                         record = patrolGroupRecord;
                         break;
@@ -434,7 +444,6 @@ namespace My.Map.Logic
                                 unitRecord.PatrolCycleNodeIds = new List<string>(npcMore.PatrolCycleNodeIds);
                             }
                         }
-
                         record = unitRecord;
                         break;
                     }

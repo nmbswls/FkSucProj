@@ -614,6 +614,8 @@ namespace My.Map.Unit
             ResetAttackState();
 
             attackRestTimer = LogicTime.time + 0.5f; // 进入状态时先休眠一会
+
+            _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "杀", 1.0f); 
         }
 
         private void ResetAttackState()
@@ -1028,6 +1030,7 @@ namespace My.Map.Unit
         public override bool CanBeAttract => true;
 
         private float _homeLessMinStayTime = 5.0f;
+        private float _startReturnTime = 0;
 
         public override void OnEnter()
         {
@@ -1036,11 +1039,12 @@ namespace My.Map.Unit
             {
                 _brain.NpcEntity.TryMoveTo(_brain.HomePos.Value, moveSpeedRate: 0.7f);
             }
+            _startReturnTime = LogicTime.time;
         }
 
         public override void OnUpdate()
         {
-            if (_brain.Aggro.HasHostile)
+            if (_brain.Aggro.HasHostile && LogicTime.time - _startReturnTime > 5.0f)
             {
                 if (_brain.Config.IsPeace)
                 {

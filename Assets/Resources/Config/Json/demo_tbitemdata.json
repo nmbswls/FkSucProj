@@ -526,9 +526,9 @@
   {
     "item_id": "rumor_points",
     "display_name": "流言点",
-    "item_type": 0,
+    "item_type": 1,
     "stackable": false,
-    "stack_count": 1,
+    "stack_count": 999999,
     "stack_tags": [],
     "sprite_name": "rumor_points",
     "can_drop": false,
