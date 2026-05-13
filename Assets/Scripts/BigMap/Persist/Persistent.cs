@@ -103,6 +103,12 @@ namespace My.Map.Logic
 
         // 欲望结晶类型 id（TbDesireCrystalDef）；空表示当前未附着；在刷新/生成时已决定，非死亡掉落时再算
         public string AttachedDesireCrystalTypeId = string.Empty;
+
+        // 路网巡逻：对应导出的 PortalNetworkProvider.networkId；空且仅一张网时自动用该网
+        public string PatrolPortalNetworkId = string.Empty;
+
+        // 有序闭环节点 id（与路网节点 GameObject 名一致）；相邻及首尾段分别最短路拼接
+        public List<string> PatrolCycleNodeIds = new();
     }
 
 
@@ -113,7 +119,21 @@ namespace My.Map.Logic
         public float MoveSpeed;
         public int WayPointIdx = 0;
         public float WayPointDistance;
+        /// <summary>
+        /// 旧版：NamedPoint 名称序列，直线连接各点。
+        /// </summary>
         public List<string> WayPointList = new();
+
+        /// <summary>
+        /// 路网巡逻：PortalNetworkProvider.networkId；空且地图仅一张网时由运行时解析。
+        /// </summary>
+        public string PatrolPortalNetworkId = string.Empty;
+
+        /// <summary>
+        /// 闭环节点 id（与路网节点名一致）；≥2 时优先走路网最短路展开，忽略 WayPointList。
+        /// </summary>
+        public List<string> PatrolCycleNodeIds = new();
+
         public bool IsBack = false;
 
         public List<long> PatrolUnitIds = new();

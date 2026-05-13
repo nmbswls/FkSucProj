@@ -171,8 +171,20 @@ namespace My.Map
                         break;
                     case InteractCheckCond.ECheckType.HasLocalSwitch:
                         {
+                            // Param3：开关名；Param4 可选：具名角色 CharacterKey（与 Owner 无关时查 Registry）
                             string switchName = oneCond.Param3;
-                            if(!Owner.CheckLocalSwitch(switchName))
+                            string characterKey = oneCond.Param4;
+                            bool has;
+                            if (!string.IsNullOrEmpty(characterKey) && Owner.LogicManager?.playerDataManager != null)
+                            {
+                                has = Owner.LogicManager.playerDataManager.NamedNpcHasLocalSwitch(characterKey, switchName);
+                            }
+                            else
+                            {
+                                has = Owner.CheckLocalSwitch(switchName);
+                            }
+
+                            if (!has)
                             {
                                 passed = false;
                             }
@@ -180,8 +192,20 @@ namespace My.Map
                         break;
                     case InteractCheckCond.ECheckType.NoLocalSwitch:
                         {
+                            // Param3：开关名；Param4 可选：具名角色 CharacterKey
                             string switchName = oneCond.Param3;
-                            if (Owner.CheckLocalSwitch(switchName))
+                            string characterKey = oneCond.Param4;
+                            bool has;
+                            if (!string.IsNullOrEmpty(characterKey) && Owner.LogicManager?.playerDataManager != null)
+                            {
+                                has = Owner.LogicManager.playerDataManager.NamedNpcHasLocalSwitch(characterKey, switchName);
+                            }
+                            else
+                            {
+                                has = Owner.CheckLocalSwitch(switchName);
+                            }
+
+                            if (has)
                             {
                                 passed = false;
                             }
@@ -424,14 +448,31 @@ namespace My.Map
                         break;
                     case Config.LogicInteractOutput.EOutputType.SetLocalSwitch:
                         {
+                            // Param3：开关名；Param4 可选：具名角色 CharacterKey（写 WorldNpcCharacterPersistRegistry，场内同 Key 的 NPC 立即可查）
                             string switchName = output.Param3;
-                            Owner.SetLocalSwitch(switchName, true);
+                            string characterKey = output.Param4;
+                            if (!string.IsNullOrEmpty(characterKey))
+                            {
+                                Owner.LogicManager.playerDataManager?.SetNamedNpcLocalSwitch(characterKey, switchName, true);
+                            }
+                            else
+                            {
+                                Owner.SetLocalSwitch(switchName, true);
+                            }
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.UnsetLocalSwitch:
                         {
                             string switchName = output.Param3;
-                            Owner.SetLocalSwitch(switchName, false);
+                            string characterKey = output.Param4;
+                            if (!string.IsNullOrEmpty(characterKey))
+                            {
+                                Owner.LogicManager.playerDataManager?.SetNamedNpcLocalSwitch(characterKey, switchName, false);
+                            }
+                            else
+                            {
+                                Owner.SetLocalSwitch(switchName, false);
+                            }
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.OpenDialog:

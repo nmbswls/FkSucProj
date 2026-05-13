@@ -420,5 +420,7 @@ namespace My.MiniGame.Dream
         public int MaxHp = 100;
         public int BulletDamage = 15;
         public int PickupScore = 12;
+
+
     }
 }

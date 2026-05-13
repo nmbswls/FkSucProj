@@ -200,6 +200,10 @@ namespace My.MapExport
     public class EntityInitInfo4Npc : EntityInitInfo4Unit
     {
         public override EEntityType EntityType => EEntityType.Npc;
+
+        public string PatrolPortalNetworkId = string.Empty;
+
+        public List<string> PatrolCycleNodeIds = new();
     }
 
     [Serializable]
@@ -312,7 +316,13 @@ namespace My.MapExport
         public override EEntityType EntityType => EEntityType.PatrolGroup;
 
         public float MoveSpeed = 0.2f;
+        /// <summary>旧版：NamedPoint 名称。</summary>
         public List<string> Waypoints = new();
+
+        public string PatrolPortalNetworkId = string.Empty;
+
+        public List<string> PatrolCycleNodeIds = new();
+
         public ELoopMode LoopMode;
         public List<PatrolOneInfo> GroupUnits = new();
     }

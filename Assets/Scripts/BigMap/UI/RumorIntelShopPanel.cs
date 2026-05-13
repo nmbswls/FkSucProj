@@ -7,17 +7,22 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    // 资源路径：UI/Prefabs/RumorIntelShopPanel；数据：Setup(string mapId)
+    // 资源路径：Resources/UI/Prefabs/RumorIntelShopPanel；Inspector 绑定 listHost / closeButton / titleLabel / blockerDismissButton（可选）
+    // 打开入口：卧室床行动面板 UIBedroomBedActPanel 的 btnRumorIntel（须先在地图列表中选中一张图）→ RumorIntelShopPanel.OpenForMap(mapId)
     public class RumorIntelShopPanel : PanelWithInput
     {
         public const string Pid = "RumorIntelShop";
 
         [SerializeField] RectTransform listHost;
+
         [SerializeField] Button closeButton;
+
+        [Tooltip("点遮罩关闭；可在 Prefab 里与半透明 Blocker 上的 Button 绑定")]
+        [SerializeField] Button blockerDismissButton;
+
         [SerializeField] TMP_Text titleLabel;
 
         string _mapId;
-        GameObject _rowTemplate;
 
         void Awake()
         {
@@ -37,127 +42,33 @@ namespace My.UI
                 canvasGroup = gameObject.AddComponent<CanvasGroup>();
             }
 
+            WireDismissButtons();
+
             if (listHost == null)
             {
-                BuildDefaultShell();
-            }
-            else if (closeButton != null)
-            {
-                closeButton.onClick.RemoveAllListeners();
-                closeButton.onClick.AddListener(() => UIManager.Instance?.HidePanel(Pid));
+                Debug.LogError(
+                    "[RumorIntelShop] listHost is not assigned on prefab. Assign the VerticalLayoutGroup content RectTransform (e.g. ListHost) in RumorIntelShopPanel.prefab.");
             }
         }
 
-        void BuildDefaultShell()
+        void WireDismissButtons()
         {
-            var rt = GetComponent<RectTransform>();
-            if (rt == null)
+            if (closeButton != null)
             {
-                return;
+                closeButton.onClick.RemoveAllListeners();
+                closeButton.onClick.AddListener(HideSelf);
             }
 
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
+            if (blockerDismissButton != null)
+            {
+                blockerDismissButton.onClick.RemoveAllListeners();
+                blockerDismissButton.onClick.AddListener(HideSelf);
+            }
+        }
 
-            var blocker = new GameObject("Blocker", typeof(RectTransform), typeof(Image), typeof(Button));
-            blocker.transform.SetParent(transform, false);
-            var blRt = blocker.GetComponent<RectTransform>();
-            blRt.anchorMin = Vector2.zero;
-            blRt.anchorMax = Vector2.one;
-            blRt.offsetMin = Vector2.zero;
-            blRt.offsetMax = Vector2.zero;
-            blocker.GetComponent<Image>().color = new Color(0, 0, 0, 0.55f);
-            blocker.GetComponent<Button>().onClick.AddListener(() => UIManager.Instance?.HidePanel(Pid));
-
-            var win = new GameObject("Window", typeof(RectTransform), typeof(Image));
-            win.transform.SetParent(transform, false);
-            var winRt = win.GetComponent<RectTransform>();
-            winRt.anchorMin = new Vector2(0.5f, 0.5f);
-            winRt.anchorMax = new Vector2(0.5f, 0.5f);
-            winRt.pivot = new Vector2(0.5f, 0.5f);
-            winRt.sizeDelta = new Vector2(720f, 520f);
-            win.GetComponent<Image>().color = new Color(0.14f, 0.15f, 0.18f, 0.98f);
-
-            titleLabel = new GameObject("Title", typeof(RectTransform), typeof(TextMeshProUGUI))
-                .GetComponent<TextMeshProUGUI>();
-            titleLabel.transform.SetParent(win.transform, false);
-            var tRt = titleLabel.GetComponent<RectTransform>();
-            tRt.anchorMin = new Vector2(0, 1);
-            tRt.anchorMax = new Vector2(1, 1);
-            tRt.pivot = new Vector2(0.5f, 1f);
-            tRt.anchoredPosition = new Vector2(0, -8f);
-            tRt.sizeDelta = new Vector2(-16f, 36f);
-            titleLabel.fontSize = 22;
-            titleLabel.color = Color.white;
-            titleLabel.alignment = TextAlignmentOptions.Center;
-
-            closeButton = new GameObject("CloseBtn", typeof(RectTransform), typeof(Image), typeof(Button)).GetComponent<Button>();
-            closeButton.transform.SetParent(win.transform, false);
-            var cRt = closeButton.GetComponent<RectTransform>();
-            cRt.anchorMin = new Vector2(1, 1);
-            cRt.anchorMax = new Vector2(1, 1);
-            cRt.pivot = new Vector2(1f, 1f);
-            cRt.anchoredPosition = new Vector2(-8f, -8f);
-            cRt.sizeDelta = new Vector2(88f, 32f);
-            var cImg = closeButton.GetComponent<Image>();
-            cImg.color = new Color(0.35f, 0.38f, 0.42f, 1f);
-            closeButton.targetGraphic = cImg;
-            var cTxt = new GameObject("T", typeof(RectTransform), typeof(TextMeshProUGUI)).GetComponent<TextMeshProUGUI>();
-            cTxt.transform.SetParent(closeButton.transform, false);
-            var cTr = cTxt.GetComponent<RectTransform>();
-            cTr.anchorMin = Vector2.zero;
-            cTr.anchorMax = Vector2.one;
-            cTr.offsetMin = Vector2.zero;
-            cTr.offsetMax = Vector2.zero;
-            cTxt.text = "Close";
-            cTxt.fontSize = 16;
-            cTxt.alignment = TextAlignmentOptions.Center;
-
-            closeButton.onClick.AddListener(() => UIManager.Instance?.HidePanel(Pid));
-
-            var scrollGo = new GameObject("Scroll", typeof(RectTransform), typeof(Image), typeof(ScrollRect));
-            scrollGo.transform.SetParent(win.transform, false);
-            var scRt = scrollGo.GetComponent<RectTransform>();
-            scRt.anchorMin = new Vector2(0, 0);
-            scRt.anchorMax = new Vector2(1, 1);
-            scRt.offsetMin = new Vector2(12f, 48f);
-            scRt.offsetMax = new Vector2(-12f, -52f);
-            scrollGo.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.12f, 1f);
-            var scroll = scrollGo.GetComponent<ScrollRect>();
-
-            var vp = new GameObject("Viewport", typeof(RectTransform), typeof(Mask));
-            vp.transform.SetParent(scrollGo.transform, false);
-            var vpRt = vp.GetComponent<RectTransform>();
-            vpRt.anchorMin = Vector2.zero;
-            vpRt.anchorMax = Vector2.one;
-            vpRt.offsetMin = new Vector2(4f, 4f);
-            vpRt.offsetMax = new Vector2(-4f, -4f);
-            vp.GetComponent<Mask>().showMaskGraphic = false;
-
-            listHost = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup)).GetComponent<RectTransform>();
-            listHost.transform.SetParent(vp.transform, false);
-            var lRt = listHost;
-            lRt.anchorMin = new Vector2(0, 1);
-            lRt.anchorMax = new Vector2(1, 1);
-            lRt.pivot = new Vector2(0.5f, 1f);
-            lRt.sizeDelta = new Vector2(0, 0);
-            var vlg = listHost.GetComponent<VerticalLayoutGroup>();
-            vlg.spacing = 8f;
-            vlg.childAlignment = TextAnchor.UpperCenter;
-            vlg.childControlHeight = true;
-            vlg.childForceExpandHeight = false;
-            scroll.content = listHost;
-            scroll.viewport = vpRt;
-            scroll.vertical = true;
-            scroll.horizontal = false;
-
-            _rowTemplate = new GameObject("RowTemplate", typeof(RectTransform), typeof(HorizontalLayoutGroup));
-            _rowTemplate.SetActive(false);
-            _rowTemplate.transform.SetParent(listHost, false);
-            var rowRt = _rowTemplate.GetComponent<RectTransform>();
-            rowRt.sizeDelta = new Vector2(0, 36f);
+        static void HideSelf()
+        {
+            UIManager.Instance?.HidePanel(Pid);
         }
 
         public override void Setup(object data = null)
@@ -174,7 +85,7 @@ namespace My.UI
 
         public override bool OnCancel()
         {
-            UIManager.Instance?.HidePanel(Pid);
+            HideSelf();
             return true;
         }
 
@@ -203,13 +114,7 @@ namespace My.UI
 
             for (var i = listHost.childCount - 1; i >= 0; i--)
             {
-                var ch = listHost.GetChild(i).gameObject;
-                if (_rowTemplate != null && ch == _rowTemplate)
-                {
-                    continue;
-                }
-
-                Destroy(ch);
+                Destroy(listHost.GetChild(i).gameObject);
             }
 
             var rumor = glm.playerDataManager.RumorIntel;
@@ -286,7 +191,7 @@ namespace My.UI
             go.transform.SetParent(listHost, false);
             var tmp = go.GetComponent<TextMeshProUGUI>();
             tmp.text = title;
-            tmp.fontSize =17;
+            tmp.fontSize = 17;
             tmp.fontStyle = FontStyles.Bold;
             tmp.color = new Color(0.85f, 0.9f, 1f);
             var rt = go.GetComponent<RectTransform>();

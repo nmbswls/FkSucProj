@@ -16,9 +16,9 @@ namespace My.Map.Unit
         public float SearchDuration = 5.0f;  // 搜索持续时间
         public float IdleWaitTime = 3.0f;
 
-        public IdleType IdleType = IdleType.StandStill; // 枚举定义闲置类型
-        public List<Vector3> PatrolPoints;   // 巡逻点数据
-        public float WanderInterval = 5.0f;
+        //public IdleType IdleType = IdleType.StandStill; // 枚举定义闲置类型
+        //public List<Vector3> PatrolPoints;   // 巡逻点数据
+        //public float WanderInterval = 5.0f;
 
         public bool IsPeace; // 和平单位只会逃
         public float CombatCloseDistance = 2.0f;
@@ -62,7 +62,6 @@ namespace My.Map.Unit
                     //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
                     var config = new AIBrainConfig();
                     config.ChaseRange = 999;
-                    config.IdleType = IdleType.Hunting;
 
                     _configs["h_spirit"] = config;
                 }

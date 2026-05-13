@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 107
+    StaticId: 110
     UniqName: 
     AppearCond:
       Type: 0
@@ -288,6 +288,10 @@ MonoBehaviour:
         - patrol_point_02
         - patrol_point_03
         - patrol_point_04
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds:
+        - patrol_001
+        - patrol_006
         LoopMode: 2
         GroupUnits:
         - GroupIdx: 0
@@ -305,11 +309,13 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 3
         MoveMode: 4
-        EnmityConfId: default_monster
+        EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
         InitNoLogic: 0
         CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
     - rid: 1384458314864918741
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
@@ -319,11 +325,13 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 3
         MoveMode: 4
-        EnmityConfId: default_monster
+        EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
         InitNoLogic: 0
         CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
 --- !u!1001 &143831673
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -433,7 +441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 105
+    StaticId: 108
     UniqName: 
     AppearCond:
       Type: 0
@@ -567,7 +575,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 115
+    StaticId: 119
     UniqName: 
     AppearCond:
       Type: 0
@@ -698,7 +706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 100
+    StaticId: 103
     UniqName: 
     AppearCond:
       Type: 1
@@ -727,7 +735,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
-        Position: {x: -42.49, y: 45.36}
+        Position: {x: 99.52, y: 100.73}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -1001,7 +1009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 104
+    StaticId: 107
     UniqName: 
     AppearCond:
       Type: 0
@@ -1285,6 +1293,15 @@ Transform:
   - {fileID: 1126251296}
   - {fileID: 1568874771}
   - {fileID: 1165750757}
+  - {fileID: 1992042318}
+  - {fileID: 1889585191}
+  - {fileID: 1692677382}
+  - {fileID: 1067280828}
+  - {fileID: 818338693}
+  - {fileID: 1457017119}
+  - {fileID: 636471717}
+  - {fileID: 1024874568}
+  - {fileID: 804855850}
   m_Father: {fileID: 1520095625}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &436256065
@@ -1538,7 +1555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 101
     UniqName: gp_02
     AppearCond:
       Type: 0
@@ -1567,7 +1584,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
-        Position: {x: 0, y: 0}
+        Position: {x: -7.47, y: -19.47}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -1713,7 +1730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 113
+    StaticId: 117
     UniqName: 
     AppearCond:
       Type: 0
@@ -1752,6 +1769,8 @@ MonoBehaviour:
         InitUnsensored: 0
         InitNoLogic: 0
         CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
 --- !u!1001 &538087708
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1817,6 +1836,89 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7459329641669662566, guid: ccd96f8d9f070ea4f90700d626f5fc72, type: 3}
   m_PrefabInstance: {fileID: 538087708}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &574113936
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 574113937}
+  - component: {fileID: 574113938}
+  m_Layer: 0
+  m_Name: PortalNetworks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &574113937
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 574113936}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1520095625}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &574113938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 574113936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4e8c2a91b5d4e6f807192a3b4c5d6e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  networkId: 
+  nodes:
+  - {fileID: 1992042318}
+  - {fileID: 1889585191}
+  - {fileID: 1692677382}
+  - {fileID: 1067280828}
+  - {fileID: 818338693}
+  - {fileID: 1457017119}
+  - {fileID: 636471717}
+  - {fileID: 1024874568}
+  - {fileID: 804855850}
+  edges:
+  - a: {fileID: 1992042318}
+    b: {fileID: 1889585191}
+    weight: 0
+  - a: {fileID: 1889585191}
+    b: {fileID: 1692677382}
+    weight: 0
+  - a: {fileID: 1692677382}
+    b: {fileID: 1067280828}
+    weight: 0
+  - a: {fileID: 1067280828}
+    b: {fileID: 818338693}
+    weight: 0
+  - a: {fileID: 818338693}
+    b: {fileID: 1457017119}
+    weight: 0
+  - a: {fileID: 1457017119}
+    b: {fileID: 636471717}
+    weight: 0
+  - a: {fileID: 636471717}
+    b: {fileID: 1024874568}
+    weight: 0
+  - a: {fileID: 1024874568}
+    b: {fileID: 804855850}
+    weight: 0
+  - a: {fileID: 804855850}
+    b: {fileID: 1992042318}
+    weight: 0
 --- !u!1 &604939362
 GameObject:
   m_ObjectHideFlags: 0
@@ -1863,7 +1965,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 102
     UniqName: gp_01
     AppearCond:
       Type: 0
@@ -1892,7 +1994,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
-        Position: {x: 0, y: 0}
+        Position: {x: -8.26, y: -18.08}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -2023,6 +2125,37 @@ Transform:
   - {fileID: 463449008}
   - {fileID: 1155351302}
   m_Father: {fileID: 377818216}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &636471716
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 636471717}
+  m_Layer: 0
+  m_Name: patrol_007
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &636471717
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 636471716}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 23.27, y: 10.08, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &682967931
 PrefabInstance:
@@ -2270,7 +2403,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 110
+    StaticId: 113
     UniqName: 
     AppearCond:
       Type: 0
@@ -2396,6 +2529,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 422780440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &804855849
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 804855850}
+  m_Layer: 0
+  m_Name: patrol_009
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &804855850
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 804855849}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -13.97, y: 10.08, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &818338692
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 818338693}
+  m_Layer: 0
+  m_Name: patrol_005
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &818338693
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818338692}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 12.53, y: -12.39, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &856143836
 GameObject:
   m_ObjectHideFlags: 0
@@ -2442,7 +2637,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 109
+    StaticId: 112
     UniqName: 
     AppearCond:
       Type: 0
@@ -2844,6 +3039,68 @@ MonoBehaviour:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     Scale: {x: 0, y: 0, z: 0}
+--- !u!1 &1024874567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1024874568}
+  m_Layer: 0
+  m_Name: patrol_008
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1024874568
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024874567}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.56, y: 10.08, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1067280827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1067280828}
+  m_Layer: 0
+  m_Name: patrol_004
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1067280828
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067280827}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.55, y: -9.96, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1092678706
 GameObject:
   m_ObjectHideFlags: 0
@@ -2975,7 +3232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 114
+    StaticId: 118
     UniqName: 
     AppearCond:
       Type: 0
@@ -3014,6 +3271,8 @@ MonoBehaviour:
         InitUnsensored: 0
         InitNoLogic: 0
         CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
 --- !u!1 &1126251295
 GameObject:
   m_ObjectHideFlags: 0
@@ -3110,7 +3369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 100
     UniqName: gp_03
     AppearCond:
       Type: 0
@@ -3139,7 +3398,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
-        Position: {x: 0, y: 0}
+        Position: {x: -9.71, y: -19.47}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -3314,7 +3573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 115
     UniqName: 
     AppearCond:
       Type: 0
@@ -3343,7 +3602,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
-        Position: {x: 0.335, y: -7.79}
+        Position: {x: -8.91, y: -18.32}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 4
@@ -3353,6 +3612,8 @@ MonoBehaviour:
         InitUnsensored: 0
         InitNoLogic: 0
         CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
 --- !u!1 &1179048164
 GameObject:
   m_ObjectHideFlags: 0
@@ -3431,7 +3692,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 101
+    StaticId: 104
     UniqName: 
     AppearCond:
       Type: 1
@@ -3512,7 +3773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 102
+    StaticId: 105
     UniqName: 
     AppearCond:
       Type: 0
@@ -3798,6 +4059,37 @@ MonoBehaviour:
   - {fileID: 2017377928}
   - {fileID: 881921492}
   Tag: walker
+--- !u!1 &1457017118
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1457017119}
+  m_Layer: 0
+  m_Name: patrol_006
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1457017119
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457017118}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 23.27, y: -9.26, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1460362602
 GameObject:
   m_ObjectHideFlags: 0
@@ -3879,7 +4171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 117
+    StaticId: 121
     UniqName: 
     AppearCond:
       Type: 0
@@ -4030,6 +4322,7 @@ Transform:
   - {fileID: 422780440}
   - {fileID: 1784646540}
   - {fileID: 1730449424}
+  - {fileID: 574113937}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1520095626
@@ -4303,7 +4596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 116
+    StaticId: 120
     UniqName: 
     AppearCond:
       Type: 0
@@ -4516,6 +4809,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7459329641669662566, guid: 53e67ee5d36ef48459c41a6381661cfc, type: 3}
   m_PrefabInstance: {fileID: 1682587994}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1692677381
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1692677382}
+  m_Layer: 0
+  m_Name: patrol_003
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1692677382
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1692677381}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.43, y: -7.57, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1729851326
 GameObject:
   m_ObjectHideFlags: 0
@@ -4759,7 +5083,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 106
+    StaticId: 109
     UniqName: 
     AppearCond:
       Type: 0
@@ -4931,6 +5255,37 @@ Transform:
   - {fileID: 856143837}
   - {fileID: 2084321368}
   m_Father: {fileID: 377818216}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1889585190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1889585191}
+  m_Layer: 0
+  m_Name: patrol_002
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1889585191
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889585190}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -11.35, y: -3.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1931011152
 GameObject:
@@ -5138,6 +5493,37 @@ MonoBehaviour:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     Scale: {x: 0, y: 0, z: 0}
+--- !u!1 &1992042317
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1992042318}
+  m_Layer: 0
+  m_Name: patrol_001
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1992042318
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1992042317}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -16.72, y: 2.76, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 422780440}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1993811048
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5274,7 +5660,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 103
+    StaticId: 106
     UniqName: 
     AppearCond:
       Type: 0
@@ -5694,7 +6080,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 108
+    StaticId: 111
     UniqName: 
     AppearCond:
       Type: 0
@@ -5873,7 +6259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 112
+    StaticId: 116
     UniqName: 
     AppearCond:
       Type: 0
@@ -5912,6 +6298,8 @@ MonoBehaviour:
         InitUnsensored: 0
         InitNoLogic: 0
         CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
 --- !u!1 &1506638571185466369
 GameObject:
   m_ObjectHideFlags: 0
@@ -6181,7 +6569,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 111
+    StaticId: 114
     UniqName: 
     AppearCond:
       Type: 0

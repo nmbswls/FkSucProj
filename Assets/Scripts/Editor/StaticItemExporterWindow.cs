@@ -391,11 +391,20 @@ public class StaticItemExporterWindow : EditorWindow
                 continue;
             }
 
+            Vector2 pa = eb.a.transform.position;
+            Vector2 pb = eb.b.transform.position;
+
+            float weight = eb.weight;
+            if (weight == 0)
+            {
+                weight = (pa - pb).magnitude;
+            }
+
             export.Edges.Add(new PortalNetworkEdgeExport
             {
                 NodeA = lo,
                 NodeB = hi,
-                Weight = eb.weight,
+                Weight = weight,
             });
         }
 

@@ -106,7 +106,7 @@ namespace My.Saving
         public bool DesireCrystalTaken;
         public int DesireCrystalTakenDay; // 获取天数
 
-        public List<string> FinishedUniqDreamingIds = new();
+        public List<string> FinishedUniqDreamingIds = new(); // 已完成的唯一入梦入口
     }
 
     [Serializable]

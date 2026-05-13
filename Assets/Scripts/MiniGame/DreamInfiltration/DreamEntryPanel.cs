@@ -8,6 +8,12 @@ using UnityEngine.UI;
 
 namespace My.MiniGame.Dream
 {
+
+    public class DreamEntry4SpecialCharacter
+    {
+        public string CharacterKey { get; set; }
+    }
+
     public class DreamEntryPanel : PanelWithInput
     {
         [Header("Prefab（必填，勿在运行时创建 UI）")]
@@ -17,6 +23,11 @@ namespace My.MiniGame.Dream
         private TbDreamInfiltrationSpot _dreamSpotTable;
         private RectTransform _rootRt;
         private readonly List<(string themeId, string themeDisplayName)> _rolledThemes = new();
+
+        /// <summary>
+        /// 特殊入口列表
+        /// </summary>
+        public List<DreamEntry4SpecialCharacter> SpecialCharacterEntrys { get; private set; } = new();
 
         public override int FocusPriority => 820;
 
@@ -148,6 +159,10 @@ namespace My.MiniGame.Dream
                 ThemeId = rolled.themeId,
                 ThemeDisplayName = rolled.themeDisplayName,
             };
+
+            // 读取配置
+
+
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.EntryPanel);
             UIManager.Instance?.ShowPanel(DreamInfiltrationIds.GameplayPanel, ctx, UILayer.Overlay);
         }

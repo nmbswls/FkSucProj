@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using My.Map.Logic;
+using My.MapExport;
 
 namespace My.Map
 {
@@ -22,19 +23,44 @@ namespace My.Map
             this.IsBack = record.IsBack;
 
             this.WayPointInfos.Clear();
-            foreach (var s in record.WayPointList)
+            if (record.PatrolCycleNodeIds != null && record.PatrolCycleNodeIds.Count >= 2)
             {
-                var p = LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(s);
-                if (p == null) continue;
-                this.WayPointInfos.Add(p.Value.Position);
+                var expanded = new List<Vector2>();
+                if (PortalPatrolPathBuilder.TryBuildCycleWorldPath(
+                        LogicManager.AreaManager.cacheDatabase,
+                        record.PatrolPortalNetworkId,
+                        record.PatrolCycleNodeIds,
+                        expanded)
+                    && expanded.Count > 0)
+                {
+                    this.WayPointInfos.AddRange(expanded);
+                }
+                else
+                {
+                    Debug.LogWarning($"[PatrolGroup] Portal patrol path failed for entity {instId}, cfg {cfgId}.");
+                }
+            }
+
+            if (this.WayPointInfos.Count < 2)
+            {
+                foreach (var s in record.WayPointList)
+                {
+                    var p = LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(s);
+                    if (p == null)
+                    {
+                        continue;
+                    }
+
+                    this.WayPointInfos.Add(p.Value.Position);
+                }
             }
 
             this.PatrolUnitIds.Clear();
             this.PatrolUnitIds.AddRange(record.PatrolUnitIds);
 
-            if(WayPointIdx >= this.WayPointInfos.Count)
+            if (WayPointInfos.Count > 0 && WayPointIdx >= WayPointInfos.Count)
             {
-                WayPointIdx = this.WayPointInfos.Count - 1;
+                WayPointIdx = WayPointInfos.Count - 1;
             }
         }
 
@@ -59,6 +85,11 @@ namespace My.Map
         protected override void OnTick(float dt)
         {
             base.OnTick(dt);
+
+            if (WayPointInfos.Count < 2)
+            {
+                return;
+            }
 
             foreach(var uid in PatrolUnitIds)
             {

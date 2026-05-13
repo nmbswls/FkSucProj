@@ -384,10 +384,14 @@ namespace My.Map.Logic
                         patrolGroupRecord.WayPointDistance = 0;
 
                         patrolGroupRecord.MoveSpeed = initInfo4PatrolGroup.MoveSpeed;
+                        patrolGroupRecord.PatrolPortalNetworkId = initInfo4PatrolGroup.PatrolPortalNetworkId ?? string.Empty;
+                        if (initInfo4PatrolGroup.PatrolCycleNodeIds != null && initInfo4PatrolGroup.PatrolCycleNodeIds.Count > 0)
+                        {
+                            patrolGroupRecord.PatrolCycleNodeIds = new List<string>(initInfo4PatrolGroup.PatrolCycleNodeIds);
+                        }
+
                         patrolGroupRecord.WayPointList.AddRange(initInfo4PatrolGroup.Waypoints);
 
-                        var pName = patrolGroupRecord.WayPointList[patrolGroupRecord.WayPointIdx];
-                        Vector2 point = cacheDatabase.FindNamedPointByName(pName)?.Position ?? Vector3.zero;
                         // 初始化巡逻组各单位 Record
                         foreach (var one in initInfo4PatrolGroup.GroupUnits)
                         {
@@ -421,6 +425,15 @@ namespace My.Map.Logic
                         unitRecord.Unsensored = initInfo4Unit.InitUnsensored;
                         unitRecord.MarkNoLogic = initInfo4Unit.InitNoLogic;
                         unitRecord.CharacterKey = initInfo4Unit.CharacterKey ?? string.Empty;
+
+                        if (initInfo is EntityInitInfo4Npc npcMore)
+                        {
+                            unitRecord.PatrolPortalNetworkId = npcMore.PatrolPortalNetworkId ?? string.Empty;
+                            if (npcMore.PatrolCycleNodeIds != null && npcMore.PatrolCycleNodeIds.Count > 0)
+                            {
+                                unitRecord.PatrolCycleNodeIds = new List<string>(npcMore.PatrolCycleNodeIds);
+                            }
+                        }
 
                         record = unitRecord;
                         break;

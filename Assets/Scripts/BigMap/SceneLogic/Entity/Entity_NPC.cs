@@ -91,6 +91,12 @@ namespace My.Map
             this.MoveBehaveInfo.PatrolGroupRelativePos = npcRecord.PatrolGroupRelativePos;
             this.MoveBehaveInfo.DisappearOnArrive = npcRecord.DisappearOnArrive;
             this.MoveBehaveInfo.MovePath = npcRecord.MovePath;
+            this.MoveBehaveInfo.PatrolPortalNetworkId = npcRecord.PatrolPortalNetworkId ?? string.Empty;
+            this.MoveBehaveInfo.PatrolCycleNodeIds.Clear();
+            if (npcRecord.PatrolCycleNodeIds != null && npcRecord.PatrolCycleNodeIds.Count > 0)
+            {
+                this.MoveBehaveInfo.PatrolCycleNodeIds.AddRange(npcRecord.PatrolCycleNodeIds);
+            }
         }
 
         public override bool CheckLocalSwitch(string switchName)

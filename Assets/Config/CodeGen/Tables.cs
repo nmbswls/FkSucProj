@@ -35,6 +35,7 @@ public partial class Tables
     public demo.TbWorldMapGlobal TbWorldMapGlobal {get; }
     public demo.TbWorldMapBigMapLayer TbWorldMapBigMapLayer {get; }
     public demo.TbDreamInfiltrationSpot TbDreamInfiltrationSpot {get; }
+    public demo.TbCharDreamEntryInfo TbCharDreamEntryInfo {get; }
     public demo.TbFishingSpot TbFishingSpot {get; }
     public demo.TbFishingSpotFish TbFishingSpotFish {get; }
     public demo.TbPlayerDesireLevel TbPlayerDesireLevel {get; }
@@ -86,6 +87,7 @@ public partial class Tables
         TbWorldMapGlobal = new demo.TbWorldMapGlobal(loader("demo_tbworldmapglobal"));
         TbWorldMapBigMapLayer = new demo.TbWorldMapBigMapLayer(loader("demo_tbworldmapbigmaplayer"));
         TbDreamInfiltrationSpot = new demo.TbDreamInfiltrationSpot(loader("demo_tbdreaminfiltrationspot"));
+        TbCharDreamEntryInfo = new demo.TbCharDreamEntryInfo(loader("demo_tbchardreamentryinfo"));
         TbFishingSpot = new demo.TbFishingSpot(loader("demo_tbfishingspot"));
         TbFishingSpotFish = new demo.TbFishingSpotFish(loader("demo_tbfishingspotfish"));
         TbPlayerDesireLevel = new demo.TbPlayerDesireLevel(loader("demo_tbplayerdesirelevel"));
@@ -139,6 +141,7 @@ public partial class Tables
         TbWorldMapGlobal.ResolveRef(this);
         TbWorldMapBigMapLayer.ResolveRef(this);
         TbDreamInfiltrationSpot.ResolveRef(this);
+        TbCharDreamEntryInfo.ResolveRef(this);
         TbFishingSpot.ResolveRef(this);
         TbFishingSpotFish.ResolveRef(this);
         TbPlayerDesireLevel.ResolveRef(this);

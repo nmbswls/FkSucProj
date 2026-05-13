@@ -1,6 +1,7 @@
 
 
 using System.Collections.Generic;
+using My.MapExport;
 using cfg.demo;
 using My.Map.Entity;
 using My.Map.Fight;
@@ -68,14 +69,29 @@ namespace My.Map.Unit
     // 简单的工厂类
     public static class MovePolicyFactory
     {
-        public static IIdlePolicy Create(IdleType type)
+        public static IIdlePolicy CreateFromMoveBehave(UnitMoveBehaveInfo behave)
         {
-            switch (type)
+            if (behave == null)
             {
-                case IdleType.Patrol: return new Policy_Patrol();
-                case IdleType.StandStill: return new Policy_StandStill();
-                case IdleType.Wander: return new Policy_Wander();
-                default: return new Policy_StandStill();
+                return new Policy_StandStill();
+            }
+
+            switch (behave.MoveBehaveMode)
+            {
+                case UnitMoveBehaveInfo.EMoveBehaveType.Patrol:
+                    if (behave.PatrolCycleNodeIds != null && behave.PatrolCycleNodeIds.Count >= 2)
+                    {
+                        return new Policy_GraphPatrol();
+                    }
+
+                    Debug.LogWarning("[MovePolicyFactory] Patrol mode requires PatrolCycleNodeIds (>=2); falling back to StandStill.");
+                    return new Policy_StandStill();
+                case UnitMoveBehaveInfo.EMoveBehaveType.MovePath:
+                case UnitMoveBehaveInfo.EMoveBehaveType.NoMove:
+                case UnitMoveBehaveInfo.EMoveBehaveType.Hunting:
+                case UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup:
+                default:
+                    return new Policy_StandStill();
             }
         }
     }
@@ -122,50 +138,72 @@ namespace My.Map.Unit
 
         protected void TickWanderPoint(AIBrainV2 brain)
         {
-            if(LogicTime.time - _wanderTimer < brain.Config.WanderInterval)
-            {
-                return;
-            }
+            //if(LogicTime.time - _wanderTimer < brain.Config.WanderInterval)
+            //{
+            //    return;
+            //}
 
-            _wanderTimer = LogicTime.time;
+            //_wanderTimer = LogicTime.time;
 
-            Vector2 wandarOrg = brain.HomePos == null ? brain.NpcEntity.Pos : brain.HomePos.Value;
-            _currWanderPoint = UnityEngine.Random.insideUnitCircle * 1.0f + wandarOrg;
+            //Vector2 wandarOrg = brain.HomePos == null ? brain.NpcEntity.Pos : brain.HomePos.Value;
+            //_currWanderPoint = UnityEngine.Random.insideUnitCircle * 1.0f + wandarOrg;
 
-            brain.NpcEntity.TryMoveTo(_currWanderPoint.Value);
+            //brain.NpcEntity.TryMoveTo(_currWanderPoint.Value);
         }
 
 
         public void OnExit(AIBrainV2 brain) { }
     }
 
-
-    // 2. 巡逻策略
-    public class Policy_Patrol : IIdlePolicy
+    public class Policy_GraphPatrol : IIdlePolicy
     {
-        private int _index = 0;
+        private readonly List<Vector2> _worldPath = new();
+
+        private int _idx;
+        private bool _ok;
 
         public void OnEnter(AIBrainV2 brain)
         {
-            MoveToNext(brain);
+            _worldPath.Clear();
+            _idx = 0;
+            _ok = false;
+            var db = brain.LogicManager.AreaManager.cacheDatabase;
+            var behave = brain.NpcEntity.MoveBehaveInfo;
+            if (db == null || behave.PatrolCycleNodeIds == null || behave.PatrolCycleNodeIds.Count < 2)
+            {
+                return;
+            }
+
+            if (!PortalPatrolPathBuilder.TryBuildCycleWorldPath(
+                    db,
+                    behave.PatrolPortalNetworkId,
+                    behave.PatrolCycleNodeIds,
+                    _worldPath)
+                || _worldPath.Count == 0)
+            {
+                Debug.LogWarning("[Policy_GraphPatrol] Failed to build patrol path; NPC stays idle.");
+                return;
+            }
+
+            _ok = true;
+            TryMoveToCurrent(brain);
         }
 
         public void OnTick(AIBrainV2 brain, float dt)
         {
-            var points = brain.Config.PatrolPoints;
-            if (points == null || points.Count == 0) return;
-
-            Vector3 target = points[_index];
-
-            // 简单判断是否到达
-            if (Vector3.Distance(brain.NpcEntity.Pos, target) < 0.5f)
+            if (!_ok || _worldPath.Count == 0)
             {
-                // 到了，去下一个点
-                _index = (_index + 1) % points.Count;
-                MoveToNext(brain);
+                brain.HomePos = brain.NpcEntity.Pos;
+                return;
             }
 
-            // 站着需要经常
+            Vector2 target = _worldPath[_idx];
+            if (Vector2.Distance(brain.NpcEntity.Pos, target) < 0.5f)
+            {
+                _idx = (_idx + 1) % _worldPath.Count;
+                TryMoveToCurrent(brain);
+            }
+
             brain.HomePos = brain.NpcEntity.Pos;
         }
 
@@ -174,13 +212,14 @@ namespace My.Map.Unit
             brain.NpcEntity.StopMove();
         }
 
-        private void MoveToNext(AIBrainV2 brain)
+        void TryMoveToCurrent(AIBrainV2 brain)
         {
-            var points = brain.Config.PatrolPoints;
-            if (points != null && points.Count > 0)
+            if (_worldPath.Count == 0)
             {
-                brain.NpcEntity.TryMoveTo(points[_index]);
+                return;
             }
+
+            brain.NpcEntity.TryMoveTo(_worldPath[_idx]);
         }
     }
 
@@ -194,8 +233,7 @@ namespace My.Map.Unit
 
         public AIStateIdle(AIBrainV2 brain) : base(brain)
         {
-            // 从配置创建策略
-            _idlePolicy = MovePolicyFactory.Create(brain.Config.IdleType);
+            _idlePolicy = MovePolicyFactory.CreateFromMoveBehave(brain.NpcEntity.MoveBehaveInfo);
         }
 
         public override void OnEnter()

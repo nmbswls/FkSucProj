@@ -40,6 +40,10 @@ namespace My.Map
         public bool DisappearOnArrive;
         public string MovePath = null;
 
+        // 路网巡逻实例数据（来自 LogicEntityRecord4Npc / 导出）
+        public string PatrolPortalNetworkId = string.Empty;
+
+        public List<string> PatrolCycleNodeIds = new();
     }
 
     public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity,
