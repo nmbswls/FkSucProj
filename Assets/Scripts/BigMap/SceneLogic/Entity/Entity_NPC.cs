@@ -93,16 +93,27 @@ namespace My.Map
             this.MoveBehaveInfo.MovePath = npcRecord.MovePath;
         }
 
-        protected override void OnLocalSwitchesMutated()
+        public override bool CheckLocalSwitch(string switchName)
         {
-            base.OnLocalSwitchesMutated();
             var key = NpcRecord.CharacterKey;
-            if (string.IsNullOrEmpty(key) || LogicManager?.worldPersistState == null)
+            if (!string.IsNullOrEmpty(key) && LogicManager?.playerDataManager != null)
             {
+                return LogicManager.playerDataManager.NamedNpcHasLocalSwitch(key, switchName);
+            }
+
+            return base.CheckLocalSwitch(switchName);
+        }
+
+        public override void SetLocalSwitch(string switchName, bool isOn)
+        {
+            var key = NpcRecord.CharacterKey;
+            if (!string.IsNullOrEmpty(key) && LogicManager?.playerDataManager != null)
+            {
+                LogicManager.playerDataManager.SetNamedNpcLocalSwitch(key, switchName, isOn);
                 return;
             }
 
-            LogicManager.worldPersistState.NpcCharacters.ReplaceRuntimeLocalSwitches(key, EntityLocalSwitches);
+            base.SetLocalSwitch(switchName, isOn);
         }
 
         public override EEntityType Type => EEntityType.Npc;

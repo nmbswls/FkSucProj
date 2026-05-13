@@ -233,6 +233,16 @@ namespace My.Player
             return MagicClothes.TrySelectAndLock(defId, logicManager.playerLogicEntity);
         }
 
+        public bool NamedNpcHasLocalSwitch(string characterKey, string switchName)
+        {
+            return logicManager?.worldPersistState?.NpcCharacters?.ContainsRuntimeLocalSwitch(characterKey, switchName) ?? false;
+        }
+
+        public void SetNamedNpcLocalSwitch(string characterKey, string switchName, bool isOn)
+        {
+            logicManager?.worldPersistState?.NpcCharacters?.SetRuntimeLocalSwitch(characterKey, switchName, isOn);
+        }
+
         public void Tick(float dt)
         {
             InventorySystem.Tick(dt);

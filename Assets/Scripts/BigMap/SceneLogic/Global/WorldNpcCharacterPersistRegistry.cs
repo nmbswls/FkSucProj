@@ -5,7 +5,7 @@ using My.Saving;
 
 namespace My
 {
-    // CharacterKey 档案：内存为权威来源；仅在 Spawn 时 Apply 到 Record；运行时仅随 SetLocalSwitch 写入本 Registry
+    // CharacterKey 档案：具名 NPC 的运行时 LocalSwitch 以本 Registry 为唯一真相源；Spawn 时 TryApplyToRecordBeforeSpawn 注入 Record。
     public sealed class WorldNpcCharacterPersistRegistry
     {
         readonly Dictionary<string, NpcCharacterPersistData> _byKey = new(StringComparer.Ordinal);
@@ -110,6 +110,61 @@ namespace My
             }
 
             st.LocalSwitches = list == null || list.Count == 0 ? null : new List<string>(list);
+        }
+
+        public bool ContainsRuntimeLocalSwitch(string characterKey, string switchName)
+        {
+            if (string.IsNullOrEmpty(characterKey) || string.IsNullOrEmpty(switchName))
+            {
+                return false;
+            }
+
+            if (!_byKey.TryGetValue(characterKey, out var st) || st?.LocalSwitches == null)
+            {
+                return false;
+            }
+
+            return st.LocalSwitches.Contains(switchName);
+        }
+
+        public void SetRuntimeLocalSwitch(string characterKey, string switchName, bool isOn)
+        {
+            if (string.IsNullOrEmpty(characterKey) || string.IsNullOrEmpty(switchName))
+            {
+                return;
+            }
+
+            if (!_byKey.TryGetValue(characterKey, out var st))
+            {
+                st = new NpcCharacterPersistData();
+                _byKey[characterKey] = st;
+            }
+
+            var list = st.LocalSwitches;
+            if (isOn)
+            {
+                if (list == null)
+                {
+                    list = new List<string>();
+                    st.LocalSwitches = list;
+                }
+
+                if (!list.Contains(switchName))
+                {
+                    list.Add(switchName);
+                    list.Sort(StringComparer.Ordinal);
+                }
+            }
+            else
+            {
+                if (list == null)
+                {
+                    return;
+                }
+
+                list.Remove(switchName);
+                st.LocalSwitches = list.Count == 0 ? null : list;
+            }
         }
 
         public void AddCharLocalSwitches()

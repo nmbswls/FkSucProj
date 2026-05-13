@@ -208,12 +208,12 @@ namespace My.Map
         #region �?�????��???
 
         protected HashSet<string> EntityLocalSwitches = new();
-        public bool CheckLocalSwitch(string switchName)
+        public virtual bool CheckLocalSwitch(string switchName)
         {
             return EntityLocalSwitches.Contains(switchName);
         }
 
-        public void SetLocalSwitch(string switchName, bool isOn)
+        public virtual void SetLocalSwitch(string switchName, bool isOn)
         {
             if(isOn)
             {
