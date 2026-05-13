@@ -323,6 +323,8 @@ namespace My.Map
                     ApplyResourceChange(AttrIdConsts.NPCSJProgress, addVal, false, EDmgFlag.None, null);
                 }
             }
+
+            TickPlayerMist();
         }
 
         protected override void TickActivateState(float dt)
@@ -331,6 +333,8 @@ namespace My.Map
 
             if(!IsAttaching)
             {
+                TickStimulusAttract();
+
                 TickPlayerMist();
 
                 AIBrain?.Tick(dt);

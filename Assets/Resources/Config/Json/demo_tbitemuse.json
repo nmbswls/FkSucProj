@@ -2,7 +2,7 @@
   {
     "id": 1,
     "item_id": "banana",
-    "slot": 1,
+    "slot": 0,
     "usable": true,
     "cost_on_use": true,
     "use_cd": 10,
@@ -18,7 +18,7 @@
   {
     "id": 2,
     "item_id": "j_drop_small",
-    "slot": 1,
+    "slot": 0,
     "usable": true,
     "cost_on_use": true,
     "use_cd": 0,
@@ -34,7 +34,7 @@
   {
     "id": 3,
     "item_id": "evil_scroll_01",
-    "slot": 1,
+    "slot": 0,
     "usable": true,
     "cost_on_use": true,
     "use_cd": 5,
@@ -61,6 +61,22 @@
     "p3": 0,
     "p4": 0,
     "s1": "",
+    "s2": ""
+  },
+  {
+    "id": 5,
+    "item_id": "feidao",
+    "slot": 0,
+    "usable": true,
+    "cost_on_use": true,
+    "use_cd": 5,
+    "use_time": 0,
+    "use_type": 3,
+    "p1": 0,
+    "p2": 0,
+    "p3": 0,
+    "p4": 0,
+    "s1": "shoot_feidao",
     "s2": ""
   }
 ]

@@ -75,6 +75,7 @@ namespace My.Player
             "player_naishou_to_jianshang",
 
             "player_burst_h_voice",
+            "player_burst_milk",
 
             "force_dash_push_down",
         };
@@ -187,6 +188,7 @@ namespace My.Player
                 int idx = 3 + i;
                 data.PlayerData.NormalSkillSlotOverrides.Add(NormalSkillSlots[idx] ?? string.Empty);
             }
+
         }
 
         private void ApplyNormalSlotOverridesFromSave(List<string> saved)

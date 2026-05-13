@@ -49,6 +49,8 @@ namespace My.Saving
         public float CurrentHP;
         public float MaxHP;
 
+        public long TotalFallPeopleAmount = 0;
+
         // 内城：繁荣度、当前人口（与 HomeDataManager 同步）
         public int HomeProsperity;
         public int HomeCurrentPopulation;
@@ -62,6 +64,7 @@ namespace My.Saving
         public List<LearnedSkillEntry> LearnedSkills = new();
 
         public List<string> NormalSkillSlotOverrides = new();
+        public List<string> ItemSlotOverrides = new();
 
         // 重要具名 NPC：键为 CharacterKey；LocalSwitches 由 Registry 在运行时维护（随 SetLocalSwitch 更新），与单图 Record 存盘周期解耦
         public Dictionary<string, NpcCharacterPersistData> NpcCharacterPersistByKey = new();
@@ -72,6 +75,19 @@ namespace My.Saving
 
         // 已解锁天赋节点（对应 Luban TbTalentNode / PlayerTalentManager）
         public List<int> UnlockedTalentNodeIds = new();
+
+        // 角色装备（与主背包互斥：穿上时从背包扣除；存档需与背包一致）
+        public List<EquippedGearEntry> EquippedGear = new();
+    }
+
+    [Serializable]
+    public class EquippedGearEntry
+    {
+        public int Category;
+        public int SlotIndex;
+        public string ItemId;
+        public long ItemInstanceId;
+        public long EquipAuxData;
     }
 
     [Serializable]
@@ -255,6 +271,7 @@ namespace My.Saving
             data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.PlayerData.UnlockedTalentNodeIds ??= new List<int>();
+            data.PlayerData.EquippedGear ??= new List<EquippedGearEntry>();
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

@@ -56,6 +56,7 @@ public partial class Tables
     public demo.TbContainerItemStackOverride TbContainerItemStackOverride {get; }
     public demo.TbContainerStackTagRule TbContainerStackTagRule {get; }
     public demo.TbMapAreaEffect TbMapAreaEffect {get; }
+    public demo.TbFallenAmountProgressInfo TbFallenAmountProgressInfo {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -101,6 +102,7 @@ public partial class Tables
         TbContainerItemStackOverride = new demo.TbContainerItemStackOverride(loader("demo_tbcontaineritemstackoverride"));
         TbContainerStackTagRule = new demo.TbContainerStackTagRule(loader("demo_tbcontainerstacktagrule"));
         TbMapAreaEffect = new demo.TbMapAreaEffect(loader("demo_tbmapareaeffect"));
+        TbFallenAmountProgressInfo = new demo.TbFallenAmountProgressInfo(loader("demo_tbfallenamountprogressinfo"));
         ResolveRef();
     }
     
@@ -148,6 +150,7 @@ public partial class Tables
         TbContainerItemStackOverride.ResolveRef(this);
         TbContainerStackTagRule.ResolveRef(this);
         TbMapAreaEffect.ResolveRef(this);
+        TbFallenAmountProgressInfo.ResolveRef(this);
     }
 }
 

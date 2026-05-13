@@ -13,10 +13,13 @@ namespace My.Map.Scene
         const float DesireGrazeMinRollIntervalSec = 0.28f;
         const float DesireGrazeTriggerChance = 0.32f;
         const long DesireGrazePleasureAdd = 3200;
-        const float DesireGrazeKnockImpulse = 3.4f;
+        // ApplyKnockBack 初速 = knockDist * decayRate；对齐原约 3.4 的瞬时冲量感
+        const float DesireGrazeKnockDist = 0.425f;
+        const float DesireGrazeKnockDecay = 8f;
         const float DesireGrazeOverlapRadius = 0.72f;
 
-        const string DesireGrazeEffectName = "scene_h_collide";
+        // Resources/SceneEffect/scene_h_graze_knock（剐蹭击退专用，与通用 H 碰撞特效分离）
+        const string DesireGrazeKnockEffectName = "scene_h_graze_knock";
 
         float _nextDesireGrazeProcAllowedTime;
         float _nextDesireGrazeRollAllowedTime;
@@ -65,7 +68,7 @@ namespace My.Map.Scene
                 return;
             }
 
-            int layerMask = 1 << LayerMask.NameToLayer("MapTarget");
+            int layerMask = 1 << LayerMask.NameToLayer("UnitsOther");
             int count = Physics2D.OverlapCircleNonAlloc(
                 transform.position,
                 DesireGrazeOverlapRadius,
@@ -140,13 +143,18 @@ namespace My.Map.Scene
                 push = Random.insideUnitCircle.normalized;
             }
 
-            PlayerEntity.externalVel += push * DesireGrazeKnockImpulse;
+            PlayerEntity.ApplyKnockBack(push, DesireGrazeKnockDist, DesireGrazeKnockDecay);
 
             PlayerEntity.ApplyResourceChange(AttrIdConsts.PlayerPleasure, DesireGrazePleasureAdd, false, EDmgFlag.None, null);
 
             if (MapSceneEffectManager.Instance != null)
             {
-                MapSceneEffectManager.Instance.ShowSceneEffect(PlayerEntity.Pos, 0.55f, DesireGrazeEffectName, PlayerEntity.Id);
+                MapSceneEffectManager.Instance.ShowSceneEffect(
+                    PlayerEntity.Pos,
+                    0.55f,
+                    DesireGrazeKnockEffectName,
+                    PlayerEntity.Id,
+                    dir: push);
             }
 
             if (MainFlasher != null)

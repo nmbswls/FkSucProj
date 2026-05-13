@@ -155,9 +155,11 @@ namespace My.Map
         protected override void OnTick(float dt)
         {
             base.OnTick(dt);
+
+            TickStateLowFreq();
             // 计时、条件检查、冷却等
 
-            if(!MarkNoLogic && !IsDead && !MarkUnsensored)
+            if (!MarkNoLogic && !IsDead && !MarkUnsensored)
             {
                 TickActivateState(dt);
             }

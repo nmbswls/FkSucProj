@@ -39,7 +39,7 @@ namespace My.Map
         public float LastFaQingTimer; // 进入发情时间
 
         public bool DisguiseIfPossible; // 希望伪装自身
-        public bool IsExposed = false; // 暴露状态
+        public bool IsExposed { get; set; } = false; // 暴露状态 只有
         public float LastExposeTimer; // 进入暴露时间
 
         public bool IsZhaZhiMode = false;
@@ -432,7 +432,7 @@ namespace My.Map
                         var unit = surround as NpcUnitLogicEntity;
                         if (unit != null)
                         {
-                            unit.ApplyAttracted(ENpcAttractSrcType.PointOnce, abilityConf.AttractPower, Pos, 0);
+                            unit.OnReceiveStimulus(new StimulusEvent(this.Pos, 25, 100, EStimulusType.Evil_Ability, this.Id));
                         }
                     }
                 }
@@ -1284,7 +1284,8 @@ namespace My.Map
                 {
                     if (unit is NpcUnitLogicEntity npcEntity)
                     {
-                        npcEntity.ApplyAttracted(ENpcAttractSrcType.Player, 99, this.Pos, this.Id);
+                        npcEntity.OnReceiveStimulus(new StimulusEvent(this.Pos, 99, 100, EStimulusType.Player_Attract, this.Id));
+                        //npcEntity.ApplyAttracted(ENpcAttractSrcType.Player, 99, this.Pos, this.Id);
                     }
                 }
             }

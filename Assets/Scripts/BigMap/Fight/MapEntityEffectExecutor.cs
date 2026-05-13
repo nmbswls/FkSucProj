@@ -6,6 +6,7 @@ using cfg.demo;
 using My.Config;
 using My.Map;
 using My.Map.Logic;
+using My.MapExport;
 using My.Player.Bag;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -1744,6 +1745,28 @@ namespace My.Map.Entity
             }
         }
     }
+    public class AbilityEffectExecutor4CreateAreaEffect : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectCreateAreaEffectCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4FixExpose err");
+                return;
+            }
+
+            EntityInitInfo initInfo = new EntityInitInfo4AreaEffect();
+            initInfo.CfgId = realCfg.CfgId;
+            initInfo.Position = ctx.TriggerPos.Value;
+
+            var gcLiquidEntity = ctx.Env.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
+            gcLiquidEntity.LifeTime = realCfg.LifeTime;
+        }
+    }
+    
+
 
     public class AbilityEffectExecutor4WantedIncidentBroadcast : AbilityEffectExecutor
     {

@@ -27,12 +27,14 @@ namespace My.Player
 
         public long ItemInstanceIdCounter = 100;
 
-        public string[] QuickSlotItemSet = new string[10];
+        public string[] QuickSlotItemSet = new string[5];
 
         public string SavedBornPoint = "initial";
+
         //public string SavedReviveMap = "initial";
 
         public int Level { get; set; } = 0;
+        public long TotalFallPeopleAmount { get; set; } // 总诱惑人数
 
         /// <summary>
         /// 玩家进度（养成等）子系统
@@ -48,6 +50,8 @@ namespace My.Player
         public PlayerInventorySystem InventorySystem { get; private set; }
 
         public PlayerSkillSystem SkillSystem { get; private set; }
+
+        public PlayerEquipmentManager EquipmentManager { get; private set; }
 
         public IReadOnlyList<string> PlayerSkillList => SkillSystem.LearnedSkillIdsView;
 
@@ -139,6 +143,10 @@ namespace My.Player
             InventorySystem.InitSystem(logicManager, savingData);
             SkillSystem.InitSystem(logicManager, savingData);
             MagicClothes.LoadFromSave(savingData?.PlayerData);
+
+            EquipmentManager = new PlayerEquipmentManager(this);
+            EquipmentManager.InitializeFromSave(savingData);
+            EquipmentManager.BindProgressionGear();
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -158,6 +166,16 @@ namespace My.Player
             SkillSystem?.WriteToSave(data);
             MagicClothes.SaveTo(data.PlayerData);
             ProgressionSystem?.TalentManager?.SaveTo(data.PlayerData);
+            EquipmentManager?.SaveTo(data.PlayerData);
+
+
+            // 存道具
+            data.PlayerData.ItemSlotOverrides = new List<string>(5);
+            for (int i = 0; i < 5; i++)
+            {
+                int idx = i;
+                data.PlayerData.ItemSlotOverrides.Add(QuickSlotItemSet[idx] ?? string.Empty);
+            }
         }
 
         public bool CheckHasParam(string id)
@@ -303,6 +321,10 @@ namespace My.Player
         public string[] GetItemSlotsByState()
         {
             var player = logicManager.playerLogicEntity;
+            if(player.IsExposed)
+            {
+                return QuickSlotItemSet;
+            }
             return QuickSlotItemSet;
         }
 

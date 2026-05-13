@@ -295,7 +295,7 @@ namespace My.UI
 
         public override bool OnHoldUpdate(string holdKey)
         {
-            if(holdKey == QuickPlayerInputBinder.EInputKey.Tab.ToString())
+            if(holdKey == EInputKey.Tab.ToString())
             {
                 this.LastHoldUpdateTime = LogicTime.time;
                 return true;
@@ -305,7 +305,7 @@ namespace My.UI
 
         public override bool OnHoldingEnd(string holdKey)
         {
-            if (holdKey == QuickPlayerInputBinder.EInputKey.Tab.ToString())
+            if (holdKey == EInputKey.Tab.ToString())
             {
                 this.LastHoldUpdateTime = 0;
                 return true;

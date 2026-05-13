@@ -30,6 +30,16 @@ namespace My.Map.Logic
                 }
             }
         }
+
+        /// <summary>
+        /// 构建重要巡逻点
+        /// 结果是一张图
+        /// 搜集所有
+        /// </summary>
+        public void BuildMapImportantPatrolPoint()
+        {
+
+        }
     }
 }
 

@@ -81,7 +81,7 @@ namespace My.UI
 
         public override bool OnHotkey(string keyName)
         {
-            if(keyName == QuickPlayerInputBinder.EInputKey.Space.ToString())
+            if(keyName == EInputKey.Space.ToString())
             {
                 CatchVal -= 8;
                 return true;

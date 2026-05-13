@@ -16,7 +16,7 @@ namespace cfg.demo
         None = 0,
         AddHunger = 1,
         GiveDrop = 2,
-        UseAbility = 3,
+        UseSkill = 3,
     }
 
 } 

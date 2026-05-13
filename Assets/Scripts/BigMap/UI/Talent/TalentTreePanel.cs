@@ -1,4 +1,5 @@
 using My.Player;
+using My.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,24 +10,28 @@ namespace My.UI.Talent
     {
         public const string Pid = "TalentTreePanel";
 
+        IPlayerProgressionHubHost _progressionHubHost;
+
         [SerializeField] TalentTreeNodeView[] nodeViews;
         [SerializeField] Button closeButton;
         [SerializeField] TextMeshProUGUI debugTipText;
 
         public static TalentTreePanel Open()
         {
-            return UIManager.Instance.ShowPanel(Pid) as TalentTreePanel;
+            PlayerProgressionHubPanel.OpenTalents();
+            var hubMono = UIManager.Instance.GetShowingPanel(PlayerProgressionHubPanel.Pid) as MonoBehaviour;
+            return hubMono != null ? hubMono.GetComponentInChildren<TalentTreePanel>(true) : null;
         }
 
         public static void Toggle()
         {
-            if (UIManager.Instance.IsPanelVisible(Pid))
-            {
-                UIManager.Instance.HidePanel(Pid);
-                return;
-            }
+            PlayerProgressionHubPanel.ToggleTalents();
+        }
 
-            Open();
+        public void SetProgressionHubHost(IPlayerProgressionHubHost host)
+        {
+            _progressionHubHost = host;
+            WireCloseButton();
         }
 
         void Awake()
@@ -36,11 +41,18 @@ namespace My.UI.Talent
                 panelId = Pid;
             }
 
-            if (closeButton != null)
+            WireCloseButton();
+        }
+
+        void WireCloseButton()
+        {
+            if (closeButton == null)
             {
-                closeButton.onClick.RemoveListener(OnCloseClicked);
-                closeButton.onClick.AddListener(OnCloseClicked);
+                return;
             }
+
+            closeButton.onClick.RemoveAllListeners();
+            closeButton.onClick.AddListener(OnCloseClicked);
         }
 
         public override void Setup(object data = null)
@@ -81,7 +93,14 @@ namespace My.UI.Talent
 
         void OnCloseClicked()
         {
-            UIManager.Instance.HidePanel(Pid);
+            if (_progressionHubHost != null)
+            {
+                _progressionHubHost.CloseHub();
+            }
+            else
+            {
+                UIManager.Instance.HidePanel(Pid);
+            }
         }
     }
 }

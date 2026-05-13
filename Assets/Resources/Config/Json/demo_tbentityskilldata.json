@@ -754,6 +754,26 @@
     "cast_conditions": []
   },
   {
+    "skill_id": "player_burst_milk",
+    "main_ability_id": "",
+    "is_passive": true,
+    "passive_buff_id": "player_burst_milk",
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": false,
+    "is_derived": false,
+    "cool_down": 0,
+    "stack_count": 0,
+    "icon_path": "",
+    "priority": 0,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0,
+    "buffer_cache_time": 0,
+    "ability_extra": [],
+    "cast_conditions": []
+  },
+  {
     "skill_id": "npc_grapple_push_player",
     "main_ability_id": "npc_grapple_push_player",
     "is_passive": false,

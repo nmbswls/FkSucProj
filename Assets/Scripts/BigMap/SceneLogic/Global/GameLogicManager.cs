@@ -457,6 +457,8 @@ namespace My
 
                         newEntity = playerLogicEntity;
 
+                        playerDataManager?.EquipmentManager?.NotifyPlayerReady(this);
+
                         playerLogicEntity.EventOnFaQingStateChange += () =>
                         {
                             LogicEventBus.Publish(new MLEPlayerFaQingStatusChangeEvent()

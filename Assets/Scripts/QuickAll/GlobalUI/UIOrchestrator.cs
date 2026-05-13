@@ -4,8 +4,6 @@ using My.Map.View;
 using My.MiniGame;
 using My.MiniGame.Dream;
 using My.Player.Bag;
-using My.UI.SkillLoadout;
-using My.UI.Talent;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -319,16 +317,8 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
-                panelId = SkillLoadoutPanel.Pid,
-                resourcePath = "UI/Prefabs/SkillLoadoutPanel",
-                defaultLayer = UILayer.Popup,
-                pooled = false,
-            });
-
-            UIManager.Instance.RegisterPanel(new PanelResource()
-            {
-                panelId = TalentTreePanel.Pid,
-                resourcePath = "UI/Prefabs/TalentTreePanel",
+                panelId = PlayerProgressionHubPanel.Pid,
+                resourcePath = "UI/Prefabs/PlayerProgressionHubPanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
@@ -349,6 +339,17 @@ namespace My.UI
                     isExclusive = false,
                 };
                 UIOrchestrator.Instance.AddGroupPolicy(bagPolicy);
+            }
+
+            {
+                var progressionPolicy = new UIOrchestrator.UIGroupPolicy()
+                {
+                    groupName = "player_progression",
+                    singleInGroup = false,
+                    panelIds = new() { PlayerProgressionHubPanel.Pid },
+                    isExclusive = false,
+                };
+                UIOrchestrator.Instance.AddGroupPolicy(progressionPolicy);
             }
 
             {

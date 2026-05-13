@@ -133,7 +133,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Q",
+                    "name": "S01",
                     "type": "Button",
                     "id": "5ca89802-312f-47fc-bc69-dc3edf75ea6c",
                     "expectedControlType": "",
@@ -142,7 +142,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "E",
+                    "name": "S02",
                     "type": "Button",
                     "id": "a965de26-1703-4cd8-ae0c-a6797f571f0f",
                     "expectedControlType": "",
@@ -151,9 +151,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "R",
+                    "name": "S03",
                     "type": "Button",
                     "id": "aa53342c-b5a6-442d-bdb2-6f7a679f25de",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "S04",
+                    "type": "Button",
+                    "id": "28ad0468-bccf-4e53-8445-e917e13fef1b",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "Press",
@@ -411,7 +420,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Q",
+                    "action": "S01",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -422,7 +431,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "E",
+                    "action": "S02",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -433,7 +442,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "R",
+                    "action": "S03",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9d7affce-571f-4c72-a6c5-8b9616cbe9cb",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "S04",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

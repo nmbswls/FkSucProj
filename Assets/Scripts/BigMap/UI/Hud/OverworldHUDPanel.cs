@@ -1,7 +1,9 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using My.Config;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
@@ -699,6 +701,33 @@ namespace My.UI
             return false;
         }
 
+
+        public bool IsItemKeys(string keyName)
+        {
+            if (keyName == EInputKey.Num1.ToString())
+            {
+                return true;
+            }
+            else if (keyName == EInputKey.Num2.ToString())
+            {
+                return true;
+            }
+            else if (keyName == EInputKey.Num3.ToString())
+            {
+                return true;
+            }
+            else if (keyName == EInputKey.Num4.ToString())
+            {
+                return true;
+            }
+            else if (keyName == EInputKey.Num5.ToString())
+            {
+                return true;
+            }
+            return false;
+        }
+
+
         public string GetSkillIdByKey(string keyName)
         {
             string skillId = string.Empty;
@@ -707,42 +736,42 @@ namespace My.UI
             bool isSkillSlot = false;
             int skillSLotIdx = -1;
 
-            if (keyName == QuickPlayerInputBinder.EInputKey.MouseLeft.ToString())
+            if (keyName == EInputKey.MouseLeft.ToString())
             {
                 skillSLotIdx = 0;
                 isSkillSlot = true;
             }
-            else if(keyName == QuickPlayerInputBinder.EInputKey.MouseRight.ToString())
+            else if(keyName == EInputKey.MouseRight.ToString())
             {
                 skillSLotIdx = 1;
                 isSkillSlot = true;
             }
-            if (keyName == QuickPlayerInputBinder.EInputKey.Space.ToString())
+            if (keyName == EInputKey.Space.ToString())
             {
                 skillSLotIdx = 2;
                 isSkillSlot = true;
             }
-            if (keyName == QuickPlayerInputBinder.EInputKey.Num1.ToString())
+            if (keyName == EInputKey.Num1.ToString())
             {
                 skillSLotIdx = 3;
                 isSkillSlot = true;
             }
-            else if (keyName == QuickPlayerInputBinder.EInputKey.Num2.ToString())
+            else if (keyName == EInputKey.Num2.ToString())
             {
                 skillSLotIdx = 4;
                 isSkillSlot = true;
             }
-            else if (keyName == QuickPlayerInputBinder.EInputKey.Num3.ToString())
+            else if (keyName == EInputKey.Num3.ToString())
             {
                 skillSLotIdx = 5;
                 isSkillSlot = true;
             }
-            else if (keyName == QuickPlayerInputBinder.EInputKey.Num4.ToString())
+            else if (keyName == EInputKey.Num4.ToString())
             {
                 skillSLotIdx = 6;
                 isSkillSlot = true;
             }
-            else if (keyName == QuickPlayerInputBinder.EInputKey.Num5.ToString())
+            else if (keyName == EInputKey.Num5.ToString())
             {
                 skillSLotIdx = 7;
                 isSkillSlot = true;
@@ -762,20 +791,27 @@ namespace My.UI
             {
                 return false;
             }
-            var skillId = GetSkillIdByKey(keyName);
 
-            if (string.IsNullOrEmpty(skillId))
+            if(IsItemKeys(keyName))
             {
-                return false;
+                OnClickUseItem(0);
             }
+            else
+            {
+                var skillId = GetSkillIdByKey(keyName);
 
-            OnClickUseSkill(skillId);
+                if (string.IsNullOrEmpty(skillId))
+                {
+                    return false;
+                }
 
+                OnClickUseSkill(skillId);
+            }
             return true;
         }
 
 
-        public void OnClickUseSkill(string skillId, Action<bool> onConfirm = null)
+        public void OnClickUseSkill(string skillId, Action<bool> onConfirm = null, bool isExtend = false)
         {
             var skillConf = SkillLibrary.GetSkillConfig(skillId);
             if(skillConf.IsCombo)
@@ -821,6 +857,32 @@ namespace My.UI
             EnterSkillPreviewMode(skillId);
         }
 
+        /// <summary>
+        /// 点击使用道具
+        /// </summary>
+        /// <param name="skillId"></param>
+        /// <param name="onConfirm"></param>
+        public void OnClickUseItem(int itemIdx)
+        {
+            var slots = MainGameManager.Instance.gameLogicManager.playerDataManager.GetItemSlotsByState();
+            var itemId = slots[itemIdx];
+
+            var itemUseCfg = ItemCatalog.GetPrimaryUse(itemId);
+            if (itemUseCfg.UseType != cfg.demo.EItemUseType.UseSkill)
+            {
+                return;
+            }
+            var skillId = itemUseCfg.S1;
+
+            OnClickUseSkill(skillId, (ret) =>
+            {
+                if (itemUseCfg.CostOnUse)
+                {
+                    MainGameManager.Instance.gameLogicManager.playerDataManager.CostItem(itemId, 1);
+                }
+            });
+        }
+
 
         public bool OnNavigate(Vector2 dir) => false;
 
@@ -829,7 +891,7 @@ namespace My.UI
         {
             if(HudMode == EHudMode.Normal)
             {
-                if(keyName == QuickPlayerInputBinder.EInputKey.HView.ToString())
+                if(keyName == EInputKey.HView.ToString())
                 {
                     SwitchHunterMode();
                     return true;
@@ -897,11 +959,11 @@ namespace My.UI
             {
                 if(button == 0)
                 {
-                    PeeviewUseSkillByKey(QuickPlayerInputBinder.EInputKey.MouseLeft.ToString());
+                    PeeviewUseSkillByKey(EInputKey.MouseLeft.ToString());
                 }
                 else if(button == 1)
                 {
-                    PeeviewUseSkillByKey(QuickPlayerInputBinder.EInputKey.MouseRight.ToString());
+                    PeeviewUseSkillByKey(EInputKey.MouseRight.ToString());
                 }
             }
             else if (HudMode == EHudMode.PreviewSkill)

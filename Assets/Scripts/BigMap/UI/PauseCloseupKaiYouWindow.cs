@@ -157,7 +157,7 @@ namespace My.Map.View
 
         public bool OnHotkey(string keyName)
         {
-            if(keyName == QuickPlayerInputBinder.EInputKey.Space.ToString())
+            if(keyName == EInputKey.Space.ToString())
             {
                 if (isCounterPeriod)
                 {

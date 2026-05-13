@@ -264,46 +264,47 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
-            if (_brain.NpcEntity.LatestAttrctInfo == null || LogicTime.time - _brain.NpcEntity.LatestAttrctInfo.HappenTime > 5.0f)
+            if (_brain.NpcEntity.CurrentFocus == null || LogicTime.time - _brain.NpcEntity.CurrentFocus.Timestamp > 15.0f)
             {
                 return;
             }
-            _brain.NpcEntity.RegisterGaze("Attracted", _brain.NpcEntity.LatestAttrctInfo.AttractSrcId, _brain.NpcEntity.LatestAttrctInfo.HappenPos, EGazePriority.Interact, 0);
+            //_brain.NpcEntity.RegisterGaze("Attracted", _brain.NpcEntity.LatestAttrctInfo.AttractSrcId, _brain.NpcEntity.LatestAttrctInfo.HappenPos, EGazePriority.Interact, 0);
+            _brain.NpcEntity.RegisterGaze("Attracted", _brain.NpcEntity.CurrentFocus.SourceID, _brain.NpcEntity.CurrentFocus.Position, EGazePriority.Interact, 0);
         }
 
         private float _enterAttractedTimer = 0;
         public override void OnUpdate()
         {
-            if(_brain.NpcEntity.LatestAttrctInfo == null || LogicTime.time - _brain.NpcEntity.LatestAttrctInfo.HappenTime > 5.0f)
+            if(_brain.NpcEntity.CurrentFocus == null || LogicTime.time - _brain.NpcEntity.CurrentFocus.Timestamp > 15.0f)
             {
                 _brain.ChangeState(_brain.StateSearch);
                 return;
             }
 
-            switch(_brain.NpcEntity.LatestAttrctInfo.SrcType)
+            switch(_brain.NpcEntity.CurrentFocus.Type)
             {
-                case ENpcAttractSrcType.PlayerMist:
+                case EStimulusType.Player_Mist:
                     {
                         UpdateAttractByMist();
                     }
                     break;
-                case ENpcAttractSrcType.SrcEntity:
+                case EStimulusType.Src_Entity:
                     {
-                        var attractSrc = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.LatestAttrctInfo.AttractSrcId) as IAttractSource;
+                        var attractSrc = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.CurrentFocus.SourceID) as IAttractSource;
                         if (attractSrc != null)
                         {
                             _brain.NpcEntity.TryMoveTo(attractSrc.Pos, moveSpeedRate: 0.5f);
                         }
                     }
                     break;
-                case ENpcAttractSrcType.PointOnce:
+                case EStimulusType.Audio_Normal:
                     {
-                        _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.LatestAttrctInfo.HappenPos, moveSpeedRate: 0.5f);
+                        _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.CurrentFocus.Position, moveSpeedRate: 0.5f);
                     }
                     break;
-                case ENpcAttractSrcType.Player:
+                case EStimulusType.Player_Attract:
                     {
-                        var playerEntity = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.LatestAttrctInfo.AttractSrcId) as PlayerLogicEntity;
+                        var playerEntity = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.CurrentFocus.SourceID) as PlayerLogicEntity;
 
                         if (playerEntity == null)
                         {

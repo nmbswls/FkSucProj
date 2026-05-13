@@ -219,7 +219,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Q"",
+                    ""name"": ""S01"",
                     ""type"": ""Button"",
                     ""id"": ""5ca89802-312f-47fc-bc69-dc3edf75ea6c"",
                     ""expectedControlType"": """",
@@ -228,7 +228,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""E"",
+                    ""name"": ""S02"",
                     ""type"": ""Button"",
                     ""id"": ""a965de26-1703-4cd8-ae0c-a6797f571f0f"",
                     ""expectedControlType"": """",
@@ -237,9 +237,18 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""R"",
+                    ""name"": ""S03"",
                     ""type"": ""Button"",
                     ""id"": ""aa53342c-b5a6-442d-bdb2-6f7a679f25de"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""S04"",
+                    ""type"": ""Button"",
+                    ""id"": ""28ad0468-bccf-4e53-8445-e917e13fef1b"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": ""Press"",
@@ -497,7 +506,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Q"",
+                    ""action"": ""S01"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -508,7 +517,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""E"",
+                    ""action"": ""S02"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -519,7 +528,18 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""R"",
+                    ""action"": ""S03"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d7affce-571f-4c72-a6c5-8b9616cbe9cb"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""S04"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -655,9 +675,10 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_PointerPos = m_OverworldMap.FindAction("PointerPos", throwIfNotFound: true);
         m_OverworldMap_RightClickHold = m_OverworldMap.FindAction("RightClickHold", throwIfNotFound: true);
         m_OverworldMap_Tab = m_OverworldMap.FindAction("Tab", throwIfNotFound: true);
-        m_OverworldMap_Q = m_OverworldMap.FindAction("Q", throwIfNotFound: true);
-        m_OverworldMap_E = m_OverworldMap.FindAction("E", throwIfNotFound: true);
-        m_OverworldMap_R = m_OverworldMap.FindAction("R", throwIfNotFound: true);
+        m_OverworldMap_S01 = m_OverworldMap.FindAction("S01", throwIfNotFound: true);
+        m_OverworldMap_S02 = m_OverworldMap.FindAction("S02", throwIfNotFound: true);
+        m_OverworldMap_S03 = m_OverworldMap.FindAction("S03", throwIfNotFound: true);
+        m_OverworldMap_S04 = m_OverworldMap.FindAction("S04", throwIfNotFound: true);
         m_OverworldMap_HView = m_OverworldMap.FindAction("HView", throwIfNotFound: true);
         m_OverworldMap_Crouch = m_OverworldMap.FindAction("Crouch", throwIfNotFound: true);
         m_OverworldMap_SceneCancel = m_OverworldMap.FindAction("SceneCancel", throwIfNotFound: true);
@@ -765,9 +786,10 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_PointerPos;
     private readonly InputAction m_OverworldMap_RightClickHold;
     private readonly InputAction m_OverworldMap_Tab;
-    private readonly InputAction m_OverworldMap_Q;
-    private readonly InputAction m_OverworldMap_E;
-    private readonly InputAction m_OverworldMap_R;
+    private readonly InputAction m_OverworldMap_S01;
+    private readonly InputAction m_OverworldMap_S02;
+    private readonly InputAction m_OverworldMap_S03;
+    private readonly InputAction m_OverworldMap_S04;
     private readonly InputAction m_OverworldMap_HView;
     private readonly InputAction m_OverworldMap_Crouch;
     private readonly InputAction m_OverworldMap_SceneCancel;
@@ -841,17 +863,21 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Tab => m_Wrapper.m_OverworldMap_Tab;
         /// <summary>
-        /// Provides access to the underlying input action "OverworldMap/Q".
+        /// Provides access to the underlying input action "OverworldMap/S01".
         /// </summary>
-        public InputAction @Q => m_Wrapper.m_OverworldMap_Q;
+        public InputAction @S01 => m_Wrapper.m_OverworldMap_S01;
         /// <summary>
-        /// Provides access to the underlying input action "OverworldMap/E".
+        /// Provides access to the underlying input action "OverworldMap/S02".
         /// </summary>
-        public InputAction @E => m_Wrapper.m_OverworldMap_E;
+        public InputAction @S02 => m_Wrapper.m_OverworldMap_S02;
         /// <summary>
-        /// Provides access to the underlying input action "OverworldMap/R".
+        /// Provides access to the underlying input action "OverworldMap/S03".
         /// </summary>
-        public InputAction @R => m_Wrapper.m_OverworldMap_R;
+        public InputAction @S03 => m_Wrapper.m_OverworldMap_S03;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/S04".
+        /// </summary>
+        public InputAction @S04 => m_Wrapper.m_OverworldMap_S04;
         /// <summary>
         /// Provides access to the underlying input action "OverworldMap/HView".
         /// </summary>
@@ -940,15 +966,18 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Tab.started += instance.OnTab;
             @Tab.performed += instance.OnTab;
             @Tab.canceled += instance.OnTab;
-            @Q.started += instance.OnQ;
-            @Q.performed += instance.OnQ;
-            @Q.canceled += instance.OnQ;
-            @E.started += instance.OnE;
-            @E.performed += instance.OnE;
-            @E.canceled += instance.OnE;
-            @R.started += instance.OnR;
-            @R.performed += instance.OnR;
-            @R.canceled += instance.OnR;
+            @S01.started += instance.OnS01;
+            @S01.performed += instance.OnS01;
+            @S01.canceled += instance.OnS01;
+            @S02.started += instance.OnS02;
+            @S02.performed += instance.OnS02;
+            @S02.canceled += instance.OnS02;
+            @S03.started += instance.OnS03;
+            @S03.performed += instance.OnS03;
+            @S03.canceled += instance.OnS03;
+            @S04.started += instance.OnS04;
+            @S04.performed += instance.OnS04;
+            @S04.canceled += instance.OnS04;
             @HView.started += instance.OnHView;
             @HView.performed += instance.OnHView;
             @HView.canceled += instance.OnHView;
@@ -1017,15 +1046,18 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Tab.started -= instance.OnTab;
             @Tab.performed -= instance.OnTab;
             @Tab.canceled -= instance.OnTab;
-            @Q.started -= instance.OnQ;
-            @Q.performed -= instance.OnQ;
-            @Q.canceled -= instance.OnQ;
-            @E.started -= instance.OnE;
-            @E.performed -= instance.OnE;
-            @E.canceled -= instance.OnE;
-            @R.started -= instance.OnR;
-            @R.performed -= instance.OnR;
-            @R.canceled -= instance.OnR;
+            @S01.started -= instance.OnS01;
+            @S01.performed -= instance.OnS01;
+            @S01.canceled -= instance.OnS01;
+            @S02.started -= instance.OnS02;
+            @S02.performed -= instance.OnS02;
+            @S02.canceled -= instance.OnS02;
+            @S03.started -= instance.OnS03;
+            @S03.performed -= instance.OnS03;
+            @S03.canceled -= instance.OnS03;
+            @S04.started -= instance.OnS04;
+            @S04.performed -= instance.OnS04;
+            @S04.canceled -= instance.OnS04;
             @HView.started -= instance.OnHView;
             @HView.performed -= instance.OnHView;
             @HView.canceled -= instance.OnHView;
@@ -1372,26 +1404,33 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTab(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Q" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "S01" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnQ(InputAction.CallbackContext context);
+        void OnS01(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "E" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "S02" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnE(InputAction.CallbackContext context);
+        void OnS02(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "R" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "S03" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnR(InputAction.CallbackContext context);
+        void OnS03(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "S04" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnS04(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "HView" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

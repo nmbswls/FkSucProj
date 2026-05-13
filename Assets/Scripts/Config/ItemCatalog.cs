@@ -69,7 +69,7 @@ namespace My.Config
 
         public static ItemUse GetPrimaryUse(string itemId)
         {
-            return GetUseSlot(itemId, 1);
+            return GetUseSlot(itemId, 0);
         }
 
         public static bool CanUse(string itemId)

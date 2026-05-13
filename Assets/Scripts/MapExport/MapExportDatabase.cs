@@ -62,6 +62,8 @@ namespace My.MapExport
         public List<NamedPoint> NamedPoints = new List<NamedPoint>();
         public List<NamedPath> NamedPaths = new List<NamedPath>();
 
+        public List<PortalNetworkExport> PortalNetworks = new List<PortalNetworkExport>();
+
         // 运行时便捷查询（可选）
         private Dictionary<(int x, int y), List<StaticPrefabItem>> _prefabMap;
 

@@ -13,8 +13,8 @@ namespace My.Player
         protected GameLogicManager LogicManager { get; private set; }
 
         public PlayerMain BaseStats { get; private set; }
-        public PlayerGearManager GearManager;
-        public PlayerTalentManager TalentManager;
+        public PlayerGearManager GearManager { get; private set; }
+        public PlayerTalentManager TalentManager { get; private set; }
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
 
@@ -26,7 +26,7 @@ namespace My.Player
             TalentManager.Initialize(ctx, savingData);
 
             GearManager = new PlayerGearManager();
-            GearManager.Initialize(savingData);
+            GearManager.InitializeAggregatorOnly();
 
             BaseStats = new PlayerMain();
             BaseStats.Initialize(savingData);
@@ -116,17 +116,69 @@ namespace My.Player
         {
             LevelProvider.SetLevel(newLevel);
         }
+
+        public void OnFallenAmountUpdate(long fallednAmount)
+        {
+            //
+            // ∏¯ Ù–‘
+        }
     }
 
     public class PlayerGearManager
     {
-        public ProgressionAggregator GearAggregator;
+        public ProgressionAggregator GearAggregator { get; private set; }
 
-        public Dictionary<int, PlayerGear> Slot2Gears = new();
+        PlayerEquipmentManager _equipment;
+        readonly List<GearEquipProgressionProvider> _equipProviders = new();
 
-        public void Initialize(SaveData savingData = null)
+        public void InitializeAggregatorOnly()
         {
             GearAggregator = new ProgressionAggregator("GearTotal");
+        }
+
+        public void BindEquipment(PlayerEquipmentManager equipmentManager)
+        {
+            _equipment = equipmentManager;
+        }
+
+        public void RebuildStatProvidersFromEquipment()
+        {
+            if (GearAggregator == null)
+            {
+                return;
+            }
+
+            foreach (var p in _equipProviders)
+            {
+                GearAggregator.RemoveChild(p);
+            }
+
+            _equipProviders.Clear();
+            if (_equipment == null)
+            {
+                GearAggregator.ForceDirty();
+                return;
+            }
+
+            foreach (var t in _equipment.EnumerateEquipped())
+            {
+                var pairs = ResolveGearStatPairs(t.itemId);
+                if (pairs == null || pairs.Count == 0)
+                {
+                    continue;
+                }
+
+                var prov = new GearEquipProgressionProvider(t.itemId, pairs);
+                GearAggregator.AddChild(prov);
+                _equipProviders.Add(prov);
+            }
+
+            GearAggregator.ForceDirty();
+        }
+
+        static List<StatPair> ResolveGearStatPairs(string itemId)
+        {
+            return null;
         }
     }
 

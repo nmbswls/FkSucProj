@@ -73,7 +73,8 @@ namespace My.Map
                     var unit = surround as NpcUnitLogicEntity;
                     if (unit != null)
                     {
-                        unit.ApplyAttracted(ENpcAttractSrcType.SrcEntity, 10, Pos, 3);
+                        unit.OnReceiveStimulus(new StimulusEvent(this.Pos, 20, 99, EStimulusType.Audio_Normal, this.Id));
+                        //unit.ApplyAttracted(ENpcAttractSrcType.SrcEntity, 10, Pos, 3);
                     }
                 }
 

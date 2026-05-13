@@ -17,6 +17,8 @@ namespace My.MapExport
         DigPoint,
         GuardSpawner,
         WalkerStart,
+
+        PatrolPoint, // 路点类型
     }
 
 
@@ -36,6 +38,62 @@ namespace My.MapExport
         public string Name;
         public List<string> Points;
         public string Tag;
+    }
+
+    [Serializable]
+    public class PortalNetworkNodeExport
+    {
+        public string NodeId;
+        public Vector3 Position;
+        public Quaternion Rotation;
+    }
+
+    [Serializable]
+    public class PortalNetworkEdgeExport
+    {
+        public string NodeA;
+        public string NodeB;
+        public float Weight;
+    }
+
+    [Serializable]
+    public class PortalNetworkExport
+    {
+        public string NetworkId;
+        public List<PortalNetworkNodeExport> Nodes = new();
+        public List<PortalNetworkEdgeExport> Edges = new();
+    }
+
+    // 供 JsonUtility 写盘（不支持顶层 List）
+    [Serializable]
+    public class PortalNetworksJsonRoot
+    {
+        public string area_id;
+        public PortalNetworkJsonEntry[] networks;
+    }
+
+    [Serializable]
+    public class PortalNetworkJsonEntry
+    {
+        public string network_id;
+        public PortalNetworkNodeJson[] nodes;
+        public PortalNetworkEdgeJson[] edges;
+    }
+
+    [Serializable]
+    public class PortalNetworkNodeJson
+    {
+        public string node_id;
+        public Vector3 position;
+        public Quaternion rotation;
+    }
+
+    [Serializable]
+    public class PortalNetworkEdgeJson
+    {
+        public string node_a;
+        public string node_b;
+        public float weight;
     }
 
 

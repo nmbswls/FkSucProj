@@ -199,6 +199,12 @@ namespace My
                             executor = new AbilityEffectExecutor4CauseNoise();
                         }
                         break;
+                    case MapFightEffectCreateAreaEffectCfg:
+                        {
+                            executor = new AbilityEffectExecutor4CreateAreaEffect();
+                        }
+                        break;
+                        
                     case MapFightEffectWantedIncidentBroadcastCfg:
                         {
                             executor = new AbilityEffectExecutor4WantedIncidentBroadcast();

@@ -12,6 +12,7 @@ using My.Map;
 using System;
 using My.Player;
 using static My.Input.QuickPlayerInputBinder;
+using My.Input;
 
 namespace My.UI.Bag
 {
@@ -244,7 +245,7 @@ namespace My.UI.Bag
                 return;
             }
 
-            if (useRow.UseType == EItemUseType.UseAbility)
+            if (useRow.UseType == EItemUseType.UseSkill)
             {
                 //
                 UIManager.Instance.HidePanel("PlayerBag");

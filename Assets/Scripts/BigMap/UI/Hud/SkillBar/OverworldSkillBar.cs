@@ -159,7 +159,7 @@ namespace My.UI
                 return;
             }
 
-            string key = ((QuickPlayerInputBinder.EInputKey)((int)QuickPlayerInputBinder.EInputKey.Num1 + slotIdx)).ToString();
+            string key = ((EInputKey)((int)EInputKey.Num1 + slotIdx)).ToString();
             HudPanel.PeeviewUseSkillByKey(key);
         }
     }

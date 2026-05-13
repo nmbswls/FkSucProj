@@ -24,6 +24,8 @@ namespace My.Player
         ExtraJingYuanSlot,
 
         FixDmgReduceFinal,
+
+        FixFallenAdd,
     }
 
     // 2. 极简存储结构（用于叶子节点存储数据，省内存）
@@ -166,6 +168,9 @@ namespace My.Player
             _isDirty = true;
             OnStatsChanged?.Invoke(this);
         }
+
+        // 外部子系统（如装备 Buff 无 StatMap 条目）仍需通知养成根节点刷新缓存
+        public void ForceDirty() => MarkDirty();
 
 
         public void EvaluateStats(StatMap targetMap)

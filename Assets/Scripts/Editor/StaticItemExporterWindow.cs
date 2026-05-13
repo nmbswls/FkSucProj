@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,6 +51,8 @@ public class StaticItemExporterWindow : EditorWindow
     private Dictionary<(int x, int y), List<Segment2D>> chunkSegments =
         new Dictionary<(int x, int y), List<Segment2D>>();
 
+    private readonly List<PortalNetworkExport> portalNetworkCache = new();
+
     [MenuItem("Window/Static Item Exporter")]
     public static void Open()
     {
@@ -101,6 +104,7 @@ public class StaticItemExporterWindow : EditorWindow
         EditorGUILayout.LabelField($"Buckets: {chunkBuckets.Count}");
 
         EditorGUILayout.LabelField($"Geenetor:{dynamicGenerator.Count} points:{namedPointCache.Count} path:{namedPathCache.Count}");
+        EditorGUILayout.LabelField($"Portal networks: {portalNetworkCache.Count}");
     }
 
     private void DrawRootsList()
@@ -117,6 +121,7 @@ public class StaticItemExporterWindow : EditorWindow
 
         namedPointCache.Clear();
         namedPathCache.Clear();
+        portalNetworkCache.Clear();
 
         if (sceneRoot == null)
         {
@@ -324,6 +329,158 @@ public class StaticItemExporterWindow : EditorWindow
         {
             Debug.Log($"Geenetor: segment:{chunk1.Key} count:{chunk1.Value.Count}");
         }
+
+        ScanPortalNetworks(sceneRoot.transform);
+    }
+
+    static PortalNetworkExport BuildPortalExport(PortalNetworkProvider prov)
+    {
+        var export = new PortalNetworkExport { NetworkId = prov.NetworkId };
+        var seenNames = new HashSet<string>();
+        foreach (var t in prov.Nodes)
+        {
+            if (t == null)
+            {
+                continue;
+            }
+
+            var id = t.gameObject.name;
+            if (!seenNames.Add(id))
+            {
+                Debug.LogError(
+                    $"[PortalNetwork] Duplicate node_id \"{id}\" in network \"{export.NetworkId}\" ({prov.gameObject.name})");
+                continue;
+            }
+
+            export.Nodes.Add(new PortalNetworkNodeExport
+            {
+                NodeId = id,
+                Position = t.position,
+                Rotation = t.rotation,
+            });
+        }
+
+        var edgeKeys = new HashSet<(string a, string b)>();
+        foreach (var eb in prov.Edges)
+        {
+            if (eb == null || eb.a == null || eb.b == null)
+            {
+                continue;
+            }
+
+            var na = eb.a.gameObject.name;
+            var nb = eb.b.gameObject.name;
+            if (string.Equals(na, nb, StringComparison.Ordinal))
+            {
+                Debug.LogWarning($"[PortalNetwork] Self-edge ignored: {na} in \"{export.NetworkId}\"");
+                continue;
+            }
+
+            if (!seenNames.Contains(na) || !seenNames.Contains(nb))
+            {
+                Debug.LogWarning(
+                    $"[PortalNetwork] Edge ({na},{nb}) references transform not listed in Nodes of \"{export.NetworkId}\". Still exported.");
+            }
+
+            var lo = string.CompareOrdinal(na, nb) < 0 ? na : nb;
+            var hi = string.CompareOrdinal(na, nb) < 0 ? nb : na;
+            var key = (lo, hi);
+            if (!edgeKeys.Add(key))
+            {
+                Debug.LogWarning($"[PortalNetwork] Duplicate undirected edge ({lo},{hi}) in \"{export.NetworkId}\"");
+                continue;
+            }
+
+            export.Edges.Add(new PortalNetworkEdgeExport
+            {
+                NodeA = lo,
+                NodeB = hi,
+                Weight = eb.weight,
+            });
+        }
+
+        return export;
+    }
+
+    void ScanPortalNetworks(Transform root)
+    {
+        if (root == null)
+        {
+            return;
+        }
+
+        var stack = new Stack<Transform>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            var t = stack.Pop();
+            if (!includeInactive && !t.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+
+            if (filterByTag && !t.CompareTag(tagFilter))
+            {
+                continue;
+            }
+
+            if (filterByLayer && t.gameObject.layer != layerFilter)
+            {
+                continue;
+            }
+
+            var prov = t.GetComponent<PortalNetworkProvider>();
+            if (prov != null)
+            {
+                portalNetworkCache.Add(BuildPortalExport(prov));
+            }
+
+            for (int i = 0; i < t.childCount; i++)
+            {
+                stack.Push(t.GetChild(i));
+            }
+        }
+    }
+
+    static PortalNetworksJsonRoot BuildPortalNetworksJsonRoot(string areaId, List<PortalNetworkExport> list)
+    {
+        var entries = new PortalNetworkJsonEntry[list.Count];
+        for (int i = 0; i < list.Count; i++)
+        {
+            var src = list[i];
+            var nodes = new PortalNetworkNodeJson[src.Nodes.Count];
+            for (int j = 0; j < src.Nodes.Count; j++)
+            {
+                var n = src.Nodes[j];
+                nodes[j] = new PortalNetworkNodeJson
+                {
+                    node_id = n.NodeId,
+                    position = n.Position,
+                    rotation = n.Rotation,
+                };
+            }
+
+            var edges = new PortalNetworkEdgeJson[src.Edges.Count];
+            for (int j = 0; j < src.Edges.Count; j++)
+            {
+                var e = src.Edges[j];
+                edges[j] = new PortalNetworkEdgeJson
+                {
+                    node_a = e.NodeA,
+                    node_b = e.NodeB,
+                    weight = e.Weight,
+                };
+            }
+
+            entries[i] = new PortalNetworkJsonEntry
+            {
+                network_id = src.NetworkId,
+                nodes = nodes,
+                edges = edges,
+            };
+        }
+
+        return new PortalNetworksJsonRoot { area_id = areaId ?? string.Empty, networks = entries };
     }
 
     private (string Key, Vector3 Position, Quaternion Rotation, Vector3 Scale)? MakeItemFromTransform(Transform t)
@@ -499,10 +656,20 @@ public class StaticItemExporterWindow : EditorWindow
             asset.NamedPaths.Add(p.Value);
         }
 
+        asset.PortalNetworks.Clear();
+        asset.PortalNetworks.AddRange(portalNetworkCache);
+
         AssetDatabase.CreateAsset(asset, path);
         AssetDatabase.SaveAssets();
         EditorGUIUtility.PingObject(asset);
-        Debug.Log($"Exported ChunkStaticDatabase: {asset.Buckets.Count} buckets -> {path}");
+
+        var jsonName = Path.GetFileNameWithoutExtension(path) + "_portal_networks.json";
+        var jsonPath = Path.Combine(Path.GetDirectoryName(path) ?? string.Empty, jsonName);
+        jsonPath = jsonPath.Replace("\\", "/");
+        var jsonText = JsonUtility.ToJson(BuildPortalNetworksJsonRoot(asset.AreaId, portalNetworkCache), true);
+        File.WriteAllText(jsonPath, jsonText);
+        AssetDatabase.Refresh();
+        Debug.Log($"Exported ChunkStaticDatabase: {asset.Buckets.Count} buckets -> {path}. Portal JSON: {jsonPath} ({portalNetworkCache.Count} networks)");
     }
 
     #region 线段提取

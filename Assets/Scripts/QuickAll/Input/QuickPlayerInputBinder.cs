@@ -35,6 +35,39 @@ namespace My.Input
         bool DispatchHoldingEnd(string holdingKey);
     }
 
+    public enum EInputKey
+    {
+        MouseLeft,
+        MouseRight,
+
+        Tab,
+        Space,
+
+        Skill_01,
+        Skill_02,
+        Skill_03,
+        Skill_04,
+
+        Num1,
+        Num2,
+        Num3,
+        Num4,
+        Num5,
+
+        Num6,
+        Num7,
+        Num8,
+        Num9,
+        Num10,
+
+        HView,
+        Crouch,
+
+        Bag,
+        Skill,
+    }
+
+
     //public interface ISceneRouter
     //{
     //    void OnMove(Vector2 dir);
@@ -68,36 +101,7 @@ namespace My.Input
 
         public Vector2 LastPos;
 
-        public enum EInputKey
-        {
-            MouseLeft,
-            MouseRight,
-
-            Tab,
-            Space,
-
-            Q,
-            E,
-            R,
-
-            Num1,
-            Num2,
-            Num3,
-            Num4,
-            Num5,
-
-            Num6,
-            Num7,
-            Num8,
-            Num9,
-            Num10,
-
-            HView,
-            Crouch,
-
-            Bag,
-            Skill,
-        }
+        
 
         //public static string MouseRight = "MouseRight";
         //public static string Tab = "Tab";
@@ -333,9 +337,10 @@ namespace My.Input
             actions.OverworldMap.Tab.performed += OnHotKeyTab;
             actions.OverworldMap.Tab.canceled += OnHotKeyTabEnd;
 
-            actions.OverworldMap.Q.performed += OnHotKeyQ;
-            actions.OverworldMap.E.performed += OnHotKeyE;
-            actions.OverworldMap.R.performed += OnHotKeyR;
+            actions.OverworldMap.S01.performed += OnHotKeySkill01;
+            actions.OverworldMap.S02.performed += OnHotKeySkill02;
+            actions.OverworldMap.S03.performed += OnHotKeySkill03;
+            actions.OverworldMap.S04.performed += OnHotKeySkill04;
 
             actions.OverworldMap.Skill.performed += OnHotKeySkill;
             actions.OverworldMap.Bag.performed += OnHotKeyBag;
@@ -378,9 +383,10 @@ namespace My.Input
             actions.OverworldMap.Tab.performed -= OnHotKeyTab;
             actions.OverworldMap.Tab.canceled -= OnHotKeyTabEnd;
 
-            actions.OverworldMap.Q.performed -= OnHotKeyQ;
-            actions.OverworldMap.E.performed -= OnHotKeyE;
-            actions.OverworldMap.R.performed -= OnHotKeyR;
+            actions.OverworldMap.S01.performed -= OnHotKeySkill01;
+            actions.OverworldMap.S02.performed -= OnHotKeySkill02;
+            actions.OverworldMap.S03.performed -= OnHotKeySkill03;
+            actions.OverworldMap.S04.performed -= OnHotKeySkill04;
 
             actions.OverworldMap.Skill.performed += OnHotKeySkill;
             actions.OverworldMap.Bag.performed += OnHotKeyBag;
@@ -495,9 +501,11 @@ namespace My.Input
         public void OnHotKey4(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Num4.ToString());
         public void OnHotKey5(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Num5.ToString());
 
-        public void OnHotKeyQ(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Q.ToString());
-        public void OnHotKeyE(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.E.ToString());
-        public void OnHotKeyR(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.R.ToString());
+        public void OnHotKeySkill01(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Skill_01.ToString());
+        public void OnHotKeySkill02(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Skill_02.ToString());
+        public void OnHotKeySkill03(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Skill_03.ToString());
+
+        public void OnHotKeySkill04(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Skill_04.ToString());
 
         public void OnHotKeySpace(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Space.ToString());
         public void OnHotKeyTab(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Tab.ToString());

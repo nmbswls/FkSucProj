@@ -149,6 +149,12 @@ namespace My.Map.Entity
                                                 ResourceId = AttrIdConsts.NPCHVal,
                                                 AddValue = 15_000,
                                             },
+
+                                            new MapFightEffectCreateAreaEffectCfg()
+                                            {
+                                                CfgId = "ground_milk_liquid",
+                                                LifeTime = 10,
+                                            },
                                         }
                                     }
                                 },

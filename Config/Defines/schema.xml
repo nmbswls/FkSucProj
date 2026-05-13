@@ -30,7 +30,7 @@
         <var name="None" value="0"/>
         <var name="AddHunger" value="1"/>
         <var name="GiveDrop" value="2"/>
-        <var name="UseAbility" value="3"/>
+        <var name="UseSkill" value="3"/>
     </enum>
 
     <enum name="ECommonCheckType">
