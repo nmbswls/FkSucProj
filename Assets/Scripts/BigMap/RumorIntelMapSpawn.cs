@@ -28,7 +28,7 @@ namespace My
             }
 
             var areaCfg = _glm.AreaManager.cacheMapCfg;
-            if (areaCfg == null || areaCfg.IsCivilArea)
+            if (areaCfg == null)
             {
                 return;
             }
