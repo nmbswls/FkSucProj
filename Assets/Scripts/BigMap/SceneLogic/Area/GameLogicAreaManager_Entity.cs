@@ -402,7 +402,7 @@ namespace My.Map.Logic
                                 continue;
                             }
                             patrolGroupRecord.PatrolUnitIds.Add(groupRecord.Id);
-                            Repo.RegisterRecord(groupRecord);
+                            RegisterEntityRecord(groupRecord);
                         }
                         record = patrolGroupRecord;
                         break;

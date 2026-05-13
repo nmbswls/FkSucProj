@@ -27,7 +27,8 @@ namespace My.UI
         [Header("狩猎：详情")]
         [SerializeField] private Image detailThumb;
         [SerializeField] private TextMeshProUGUI detailDesc;
-        [SerializeField] private Button btnTeleport;
+        [SerializeField] private Button btnTeleport; 
+        [SerializeField] private Button btnClose;
 
         [Header("入梦")]
         [SerializeField] private Button btnDream;
@@ -81,11 +82,11 @@ namespace My.UI
                 tabDream.onClick.AddListener(() => ShowPage(1));
             }
 
-            //if (btnClose != null)
-            //{
-            //    btnClose.onClick.RemoveAllListeners();
-            //    btnClose.onClick.AddListener(TryCloseSelf);
-            //}
+            if (btnClose != null)
+            {
+                btnClose.onClick.RemoveAllListeners();
+                btnClose.onClick.AddListener(TryCloseSelf);
+            }
 
             if (btnTeleport != null)
             {

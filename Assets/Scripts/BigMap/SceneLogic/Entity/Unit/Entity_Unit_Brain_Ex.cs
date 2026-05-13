@@ -5,6 +5,7 @@ using My.MapExport;
 using cfg.demo;
 using My.Map.Entity;
 using My.Map.Fight;
+using My.Map;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static My.Map.BaseUnitLogicEntity;
@@ -88,10 +89,12 @@ namespace My.Map.Unit
                     return new Policy_StandStill();
                 case UnitMoveBehaveInfo.EMoveBehaveType.MovePath:
                 case UnitMoveBehaveInfo.EMoveBehaveType.NoMove:
-                case UnitMoveBehaveInfo.EMoveBehaveType.Hunting:
-                case UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup:
                 default:
                     return new Policy_StandStill();
+                case UnitMoveBehaveInfo.EMoveBehaveType.Hunting:
+                    return new Policy_HuntPlayer();
+                case UnitMoveBehaveInfo.EMoveBehaveType.InPatrolGroup:
+                    return new Policy_FollowPatrolGroup();
             }
         }
     }
@@ -220,6 +223,82 @@ namespace My.Map.Unit
             }
 
             brain.NpcEntity.TryMoveTo(_worldPath[_idx]);
+        }
+    }
+
+    // Idle：持续追玩家（无仇恨时也在 Idle 内追踪；有仇恨则交由上层切 Combat/Flee）
+    public class Policy_HuntPlayer : IIdlePolicy
+    {
+        public void OnEnter(AIBrainV2 brain)
+        {
+        }
+
+        public void OnTick(AIBrainV2 brain, float dt)
+        {
+            var player = brain.LogicManager.playerLogicEntity;
+            if (player == null || player.MarkDestroyed)
+            {
+                brain.HomePos = brain.NpcEntity.Pos;
+                return;
+            }
+
+            brain.NpcEntity.TryMoveTo(player.Pos, stopDistance: 0.25f, moveSpeedRate: 1f);
+            brain.HomePos = brain.NpcEntity.Pos;
+        }
+
+        public void OnExit(AIBrainV2 brain)
+        {
+            brain.NpcEntity.StopMove();
+        }
+    }
+
+    // Idle：跟随母 PatrolGroup（与 MoveBehaveInfo.FollowPatrolId / PatrolGroupRelativePos 一致）
+    public sealed class Policy_FollowPatrolGroup : IIdlePolicy
+    {
+        public void OnEnter(AIBrainV2 brain)
+        {
+            TryFollow(brain);
+        }
+
+        public void OnTick(AIBrainV2 brain, float dt)
+        {
+            TryFollow(brain);
+            brain.HomePos = brain.NpcEntity.Pos;
+        }
+
+        public void OnExit(AIBrainV2 brain)
+        {
+            brain.NpcEntity.StopMove();
+        }
+
+        static void TryFollow(AIBrainV2 brain)
+        {
+            var group = ResolvePatrolGroup(brain);
+            if (group == null)
+            {
+                brain.NpcEntity.StopMove();
+                return;
+            }
+
+            var offset = brain.NpcEntity.MoveBehaveInfo.PatrolGroupRelativePos;
+            brain.NpcEntity.TryMoveFollow(group, 0f, offset, stopDistance: 0.2f, moveSpeedRate: 1f);
+        }
+
+        static PatrolGroupLogicEntity ResolvePatrolGroup(AIBrainV2 brain)
+        {
+            var id = brain.NpcEntity.MoveBehaveInfo.FollowPatrolId;
+            if (id == 0)
+            {
+                return null;
+            }
+
+            var e = brain.LogicManager.GetLogicEntity(id, false);
+            if (e == null || e.MarkDestroyed)
+            {
+                return null;
+            }
+
+            return e as PatrolGroupLogicEntity;
         }
     }
 

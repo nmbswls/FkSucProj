@@ -2624,7 +2624,9 @@ MonoBehaviour:
     Id: 
     Name: 
     Desc: 
+    DayPeriodLimit: 0
     SceneName: 
+    MapDataName: 
     IsHome: 0
     AlwaysAlert: 0
     IsCivilArea: 0

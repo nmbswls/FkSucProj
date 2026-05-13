@@ -2091,10 +2091,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 931000231}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 100, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &931000238
 CanvasRenderer:
@@ -2367,10 +2367,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 931000251}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 100, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &931000258
 CanvasRenderer:
@@ -3016,6 +3016,6 @@ MonoBehaviour:
   detailThumb: {fileID: 931000213}
   detailDesc: {fileID: 931000223}
   btnTeleport: {fileID: 931000234}
-  btnDream: {fileID: 931000524}
   btnClose: {fileID: 931000074}
+  btnDream: {fileID: 931000524}
   btnRumorIntel: {fileID: 931000254}

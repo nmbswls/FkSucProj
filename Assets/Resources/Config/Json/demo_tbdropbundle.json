@@ -98,5 +98,15 @@
     "drop_group_weights": [
       10000
     ]
+  },
+  {
+    "id": 999,
+    "name": "牛逼箱子",
+    "drop_group_ids": [
+      999
+    ],
+    "drop_group_weights": [
+      10000
+    ]
   }
 ]

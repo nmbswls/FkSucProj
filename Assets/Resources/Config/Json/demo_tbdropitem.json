@@ -271,5 +271,44 @@
       1,
       1
     ]
+  },
+  {
+    "id": 22,
+    "name": "牛逼箱子1",
+    "group_id": 999,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      40,
+      40
+    ]
+  },
+  {
+    "id": 23,
+    "name": "牛逼箱子2",
+    "group_id": 999,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "wood_board"
+    ],
+    "item_count_range_list": [
+      4,
+      4
+    ]
+  },
+  {
+    "id": 24,
+    "name": "牛逼箱子3",
+    "group_id": 999,
+    "weight_in_group": 60,
+    "item_id_list": [
+      "desire_shard"
+    ],
+    "item_count_range_list": [
+      40,
+      60
+    ]
   }
 ]

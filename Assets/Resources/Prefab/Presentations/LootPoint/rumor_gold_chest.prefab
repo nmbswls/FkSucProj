@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 7700100100000002}
   - component: {fileID: 7700100100000003}
   m_Layer: 20
-  m_Name: geo_chest_cube
+  m_Name: rumor_gold_chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
