@@ -210,6 +210,29 @@ namespace My.Map.Entity
             return efCtx;
         }
 
+        // 受害者挣脱：Src=受害者，TargetId=投技发起者；CastVec1 自受害者指向发起者
+        public GameLogicManager.LogicFightEffectContext BuildTargetBreakFreeFightEffectContext(int throwTimelineEventIndex = -1)
+        {
+            var srcInfo = new GameLogicManager.EffectSourceInfo
+            {
+                SrcType = GameLogicManager.ESourceType.Throw,
+                SrcEntityId = Target.Id,
+                SrcAbilityId = SrcAbilityId,
+            };
+            var efCtx = new GameLogicManager.LogicFightEffectContext(Env, GameLogicManager.EFightCtxType.Ability, srcInfo);
+            efCtx.TargetId = Launcher.Id;
+            efCtx.TriggerPos = Launcher.Pos;
+            var delta = Launcher.Pos - Target.Pos;
+            efCtx.CastVec1 = delta.sqrMagnitude > 1e-6f ? delta.normalized : Vector2.right;
+            efCtx.ThrowTimelineEventIndex = throwTimelineEventIndex;
+            foreach (var kv in RunningVars)
+            {
+                efCtx.RunningVariables[kv.Key] = kv.Value;
+            }
+
+            return efCtx;
+        }
+
         void RunEffectList(List<MapFightEffectCfg> effects, long primaryTargetEntityId, int timelineIndex)
         {
             if (effects == null || Env == null)
@@ -225,6 +248,25 @@ namespace My.Map.Entity
                 }
 
                 var ctx = BuildFightEffectContext(primaryTargetEntityId, timelineIndex);
+                Env.HandleLogicFightEffect(eff, ctx);
+            }
+        }
+
+        void RunTargetBreakFreeEffectList(List<MapFightEffectCfg> effects)
+        {
+            if (effects == null || Env == null)
+            {
+                return;
+            }
+
+            foreach (var eff in effects)
+            {
+                if (eff == null)
+                {
+                    continue;
+                }
+
+                var ctx = BuildTargetBreakFreeFightEffectContext(-1);
                 Env.HandleLogicFightEffect(eff, ctx);
             }
         }
@@ -251,8 +293,8 @@ namespace My.Map.Entity
                 case ThrowEndReason.Superseded:
                     RunEffectList(cfg.OnSupersededEffects, Target.Id, -1);
                     break;
-                case ThrowEndReason.PlayerBreakFree:
-                    RunEffectList(cfg.OnPlayerBreakFreeEffects, Target.Id, -1);
+                case ThrowEndReason.TargetBreakFree:
+                    RunTargetBreakFreeEffectList(cfg.OnTargetBreakFreeEffects);
                     break;
             }
         }

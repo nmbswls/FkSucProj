@@ -97,7 +97,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            CleanOneThrowContext(ctx, ThrowEndReason.PlayerBreakFree);
+            CleanOneThrowContext(ctx, ThrowEndReason.TargetBreakFree);
         }
 
         public bool TryLaunchThrow(IThrowLauncher launcher, IThrowTarget target, MapAbilityEffectThrowStartCfg cfg,

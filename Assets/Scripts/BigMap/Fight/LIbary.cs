@@ -254,7 +254,12 @@ namespace My.Map.Entity
                     var ab = CreateForceDashPushDown();
                     _abilityDict[ab.Id] = ab;
                 }
-                
+
+                {
+                    var ab = CreateNpcGrapplePushPlayer();
+                    _abilityDict[ab.Id] = ab;
+                }
+
                 {
                     var ab = CreateDefaultPushAbility();
                     _abilityDict[ab.Id] = ab;
@@ -2882,9 +2887,11 @@ namespace My.Map.Entity
                 AlignLauncherDuration = 0.12f,
                 FreezeThrowTimelineDuringLauncherAlign = true,
                 //ThrowMainBuffId = "force_zha_target_buff",
-                OnPlayerBreakFreeEffects = new List<MapFightEffectCfg>
+                OnTargetBreakFreeEffects = new List<MapFightEffectCfg>
                 {
                     new MapFightEffectEasyEffect() { EffectText = "失败了。" },
+
+                    new MapFightEffectEnqueueDetachedSkill(){ SkillId = "npc_grapple_push_player" }
                 },
                 OnThrowCompleteEffects = new List<MapFightEffectCfg>
                 {
@@ -3078,6 +3085,74 @@ namespace My.Map.Entity
             return spec;
         }
 
+        // 挣脱投技后由 NPC 对玩家施放的推开技（脱手入队，主目标为玩家）
+        private static MapAbilitySpecConfig CreateNpcGrapplePushPlayer()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "npc_grapple_push_player";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0.15f;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.12"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.22"
+                },
+            };
+
+            var hit = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = "Hit_01",
+                Duration = 0.2f,
+                OnHitEffects = new()
+                {
+                    new MapFightEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 12_000,
+                        KnockBackForce = 0.72f,
+                    },
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hit, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                InterruptMask = EAbilityInterruptMask.Cast | EAbilityInterruptMask.Move,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            });
+            return spec;
+        }
+
+        
         private static MapAbilitySpecConfig CreateDefaultPushAbility()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();

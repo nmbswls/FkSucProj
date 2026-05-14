@@ -1626,6 +1626,12 @@ namespace My.Map.Entity
                 return;
             }
 
+            if (ctx.TriggerPos.HasValue)
+            {
+                ctx.Env.viewer.ShowFakeFxEffect(realCfg.EffectText, ctx.TriggerPos.Value);
+                return;
+            }
+
             if (ctx.SourceInfo.SrcEntityId == 0)
             {
                 return;
@@ -2158,46 +2164,46 @@ namespace My.Map.Entity
         }
     }
 
-    public class AbilityEffectExecutor4EnqueueDetachedSkillFromVictim : AbilityEffectExecutor
+    public class AbilityEffectExecutor4EnqueueDetachedSkill : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
-            if (effectConf is not MapFightEffectEnqueueDetachedSkillFromVictimCfg cfg
+            if (effectConf is not MapFightEffectEnqueueDetachedSkill cfg
                 || string.IsNullOrEmpty(cfg.SkillId))
             {
                 return;
             }
 
-            if (ctx.Env.GetLogicEntity(ctx.TargetId, false) is not BaseUnitLogicEntity victim)
+            if (ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false) is not BaseUnitLogicEntity caster)
             {
                 return;
             }
 
-            if (ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false) is not BaseUnitLogicEntity launcher)
+            if (ctx.Env.GetLogicEntity(ctx.TargetId, false) is not BaseUnitLogicEntity skillTarget)
             {
                 return;
             }
 
-            if (victim.ablilityManager == null)
+            if (caster.ablilityManager == null)
             {
                 return;
             }
 
-            Vector2 castPoint = launcher.Pos;
-            var delta = castPoint - victim.Pos;
+            Vector2 castPoint = skillTarget.Pos;
+            var delta = castPoint - caster.Pos;
             if (delta.sqrMagnitude < 1e-6f)
             {
                 if (ctx.CastVec1 != null && ctx.CastVec1.Value.sqrMagnitude > 1e-6f)
                 {
-                    castPoint = victim.Pos + ctx.CastVec1.Value.normalized;
+                    castPoint = caster.Pos + ctx.CastVec1.Value.normalized;
                 }
-                else if (victim.FinalLook.sqrMagnitude > 1e-6f)
+                else if (caster.FinalLook.sqrMagnitude > 1e-6f)
                 {
-                    castPoint = victim.Pos + victim.FinalLook.normalized;
+                    castPoint = caster.Pos + caster.FinalLook.normalized;
                 }
             }
 
-            victim.ablilityManager.EnqueueDetachedSkill(cfg.SkillId, castVec: castPoint, target: launcher);
+            caster.ablilityManager.EnqueueDetachedSkill(cfg.SkillId, castVec: castPoint, target: skillTarget);
         }
     }
 }

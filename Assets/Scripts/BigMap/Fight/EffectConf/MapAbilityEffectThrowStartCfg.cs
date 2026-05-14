@@ -67,7 +67,7 @@ namespace My.Map.Entity
 
         [Tooltip("受害者挣脱等（ThrowBreakFree）：终止效果链")]
         [SerializeReference]
-        public List<MapFightEffectCfg> OnPlayerBreakFreeEffects = new();
+        public List<MapFightEffectCfg> OnTargetBreakFreeEffects = new();
 
         public MapFightEffectCfg ThrowFailEffect;
     }
