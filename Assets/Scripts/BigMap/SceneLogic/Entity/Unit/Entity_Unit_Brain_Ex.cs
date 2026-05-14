@@ -407,19 +407,32 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
-            if (_brain.NpcEntity.CurrentFocus == null || LogicTime.time - _brain.NpcEntity.CurrentFocus.Timestamp > 15.0f)
+            var f = _brain.NpcEntity.CurrentFocus;
+            if (f == null || LogicTime.time - f.Timestamp > AIBrainV2.AttractFocusMaxAgeSeconds)
             {
+                Vector2? sp = null;
+                if (f != null)
+                {
+                    sp = new Vector2(f.Position.x, f.Position.y);
+                }
+
+                _brain.RequestDeferredSearchFromAttractEnter(sp);
                 return;
             }
-            //_brain.NpcEntity.RegisterGaze("Attracted", _brain.NpcEntity.LatestAttrctInfo.AttractSrcId, _brain.NpcEntity.LatestAttrctInfo.HappenPos, EGazePriority.Interact, 0);
-            _brain.NpcEntity.RegisterGaze("Attracted", _brain.NpcEntity.CurrentFocus.SourceID, _brain.NpcEntity.CurrentFocus.Position, EGazePriority.Interact, 0);
+
+            _brain.NpcEntity.RegisterGaze("Attracted", f.SourceID, f.Position, EGazePriority.Interact, 0);
         }
 
-        private float _enterAttractedTimer = 0;
         public override void OnUpdate()
         {
-            if(_brain.NpcEntity.CurrentFocus == null || LogicTime.time - _brain.NpcEntity.CurrentFocus.Timestamp > 15.0f)
+            if (_brain.NpcEntity.CurrentFocus == null || LogicTime.time - _brain.NpcEntity.CurrentFocus.Timestamp > AIBrainV2.AttractFocusMaxAgeSeconds)
             {
+                var f = _brain.NpcEntity.CurrentFocus;
+                if (f != null)
+                {
+                    _brain.SuspiciousPos = new Vector2(f.Position.x, f.Position.y);
+                }
+
                 _brain.ChangeState(_brain.StateSearch);
                 return;
             }
@@ -520,8 +533,14 @@ namespace My.Map.Unit
                 }
             }
             
-            if(lastestOne == null)
+            if (lastestOne == null)
             {
+                var f = _brain.NpcEntity.CurrentFocus;
+                if (f != null)
+                {
+                    _brain.SuspiciousPos = new Vector2(f.Position.x, f.Position.y);
+                }
+
                 _brain.ChangeState(_brain.StateSearch);
             }
             else

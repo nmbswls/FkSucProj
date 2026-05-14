@@ -123,6 +123,10 @@ namespace My.Map.Unit
         public UnitAggroSystem Aggro => NpcEntity.AggroSystem;
 
         private bool _isChangingState;
+        private bool _deferSearchFromInvalidAttractEnter;
+        private Vector2? _deferSuspiciousPosForSearch;
+
+        public const float AttractFocusMaxAgeSeconds = 15f;
 
         public float ActionsFrequency = 0.2f;
         private float _lastBrainUpdate = 0;
@@ -217,6 +221,43 @@ namespace My.Map.Unit
             CurrentState?.OnEnter();
 
             _isChangingState = false;
+
+            if (_deferSearchFromInvalidAttractEnter)
+            {
+                _deferSearchFromInvalidAttractEnter = false;
+                if (_deferSuspiciousPosForSearch != null)
+                {
+                    SuspiciousPos = _deferSuspiciousPosForSearch;
+                }
+
+                _deferSuspiciousPosForSearch = null;
+                ChangeState(StateSearch);
+                return;
+            }
+
+            if (newState.CanBeAttract)
+            {
+                TryArmAttractTriggerForExistingFocus();
+            }
+        }
+
+        // 进入 Idle/Return 等可吸引状态时，焦点未变也应能再次进入 Attracted
+        void TryArmAttractTriggerForExistingFocus()
+        {
+            var f = NpcEntity.CurrentFocus;
+            if (f == null || LogicTime.time - f.Timestamp > AttractFocusMaxAgeSeconds)
+            {
+                return;
+            }
+
+            AttractTrigger = true;
+        }
+
+        // AIStateAttracted.OnEnter 发现焦点非法时不能嵌套 ChangeState，延迟到本次切换结束后再进 Search
+        public void RequestDeferredSearchFromAttractEnter(Vector2? suspiciousPos)
+        {
+            _deferSearchFromInvalidAttractEnter = true;
+            _deferSuspiciousPosForSearch = suspiciousPos;
         }
 
         public bool CharmedTrigger;
@@ -276,7 +317,20 @@ namespace My.Map.Unit
                 {
                     _brain.AttractTrigger = false;
 
-                    _brain.ChangeState(_brain.StateAttracted);
+                    var f = _brain.NpcEntity.CurrentFocus;
+                    if (f != null && LogicTime.time - f.Timestamp <= AIBrainV2.AttractFocusMaxAgeSeconds)
+                    {
+                        _brain.ChangeState(_brain.StateAttracted);
+                    }
+                    else
+                    {
+                        if (f != null)
+                        {
+                            _brain.SuspiciousPos = new Vector2(f.Position.x, f.Position.y);
+                        }
+
+                        _brain.ChangeState(_brain.StateSearch);
+                    }
                 }
             }
 
