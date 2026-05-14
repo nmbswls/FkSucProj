@@ -12,7 +12,8 @@ namespace My
     // 通缉星级或区域警戒档位驱动：动态维持临时守卫；高星级/高档位含搜查、退场或路网巡逻
     public sealed class WantedDynamicGuardController
     {
-        const float TickPeriod = 0.75f;
+        /// <summary>动态守卫补刷逻辑间隔（秒）；GM 说明与测试等待时间参照此值。</summary>
+        public const float TickPeriodSeconds = 0.75f;
 
         readonly GameLogicManager _logic;
         readonly List<long> _guardIds = new();
@@ -52,7 +53,7 @@ namespace My
                 return;
             }
 
-            _cooldown = TickPeriod;
+            _cooldown = TickPeriodSeconds;
 
             var tier = SelectPressureTier(out _);
             int target = tier?.GuardCount ?? 0;
@@ -117,6 +118,31 @@ namespace My
             }
 
             return best;
+        }
+
+        /// <summary>
+        /// GM / HUD：只读，与 Tick 内选档逻辑一致。pressure_behavior 配置值即写入记录的 PostInvestigationResolveKind。
+        /// </summary>
+        public string DebugFormatSelectedTier(out int alertPressureTier, out int wantedStarLevel)
+        {
+            alertPressureTier = 0;
+            wantedStarLevel = 0;
+            if (_logic?.WantedManager == null || _logic.AreaManager == null)
+            {
+                return "incomplete (WantedManager or AreaManager null)";
+            }
+
+            wantedStarLevel = _logic.WantedManager.GetWantedStarLevel();
+            var tier = SelectPressureTier(out alertPressureTier);
+            if (tier == null)
+            {
+                return "no tier row matched (wanted star + alert tier vs min_wanted_star_level / min_alert_tier; note min_alert_tier=999 skips alert branch)";
+            }
+
+            return
+                $"tier_id={tier.TierId} min_wanted_star={tier.MinWantedStarLevel} min_alert_tier={tier.MinAlertTier} "
+                + $"guard_count={tier.GuardCount} npc_cfg_id={tier.NpcCfgId} pressure_behavior={tier.PressureBehavior}(maps to PostInvestigationResolveKind) "
+                + $"patrol_pick_n={tier.PatrolPickN} spawn_radius=[{tier.SpawnRadiusMin},{tier.SpawnRadiusMax}] cull_distance={tier.CullDistance}";
         }
 
         void PruneDead()

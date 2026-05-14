@@ -64,6 +64,15 @@ namespace My.Map.Logic
             return 3;
         }
 
+        /// <summary>
+        /// GM：累加区域警戒值（驱动 GetAlertPressureTier）；与 GameLogicManager.AlertVal / add_alert 命令无关。
+        /// </summary>
+        public void DebugAddAreaAlert(long delta)
+        {
+            long next = AreaAlertValue + delta;
+            AreaAlertValue = next < 0 ? 0 : next;
+        }
+
         protected Dictionary<long, WeakReference<BaseUnitLogicEntity>> alertingLogicEntities = new();
         private Dictionary<long, List<(float, float)>> entityPendingAlerts = new();
 

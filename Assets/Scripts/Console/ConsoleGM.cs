@@ -117,11 +117,11 @@ public class ConsoleGM : MonoBehaviour
 
             });
 
-        Register("add_alert", "加alert",
+        Register("add_alert", "Adds GameLogicManager.AlertVal (NOT AreaAlertValue). For wanted_guard alert tier use: area_alert_add",
             new[] { new CmdParam("val", "int，值") },
             args =>
             {
-                if (args.Count < 1) { LogError("用法：set_variable <id>"); return; }
+                if (args.Count < 1) { LogError("usage: add_alert <int_delta> (GameLogicManager.AlertVal only)"); return; }
                 var val = int.Parse(args[0]);
 
                 Log($"add_alert val={val}");
@@ -369,6 +369,104 @@ public class ConsoleGM : MonoBehaviour
                 var wm = MainGameManager.Instance.gameLogicManager.WantedManager;
                 wm.AddWantedForBehavior(b);
                 Log($"wanted_behave {b} -> star {wm.GetWantedStarLevel()} val {wm.CurrentWantedVal}");
+            });
+
+        void LogWantedGuardStatus()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                LogError("gameLogicManager null");
+                return;
+            }
+
+            var wm = glm.WantedManager;
+            var am = glm.AreaManager;
+            var sp = glm.WantedGuardSpawner;
+            string tierLine = sp != null
+                ? sp.DebugFormatSelectedTier(out _, out _)
+                : "WantedGuardSpawner null";
+            Log("[wanted_guard] tick_period_s=" + WantedDynamicGuardController.TickPeriodSeconds
+                + " | spawns only in spots outside player FOV (visionSenser.SimpleCanSee)");
+            Log($"[wanted_guard] wanted_star={wm?.GetWantedStarLevel() ?? -1} wanted_scaled_max_channel={wm?.CurrentWantedVal ?? -1}");
+            Log($"[wanted_guard] area_alert_value={am?.AreaAlertValue ?? -1} alert_pressure_tier={am?.GetAlertPressureTier() ?? -1} (thresholds 2500/5000/8000 on AreaAlertValue+pending)");
+            Log($"[wanted_guard] game_alert_val={glm.AlertVal} (add_alert command only)");
+            Log($"[wanted_guard] selected_tier: {tierLine}");
+        }
+
+        Register("wanted_guard_status", "Print wanted star, area alert tier, and selected WantedGuardSpawnTier row (same logic as refresh)",
+            null,
+            _ => LogWantedGuardStatus());
+
+        Register("wg_status", "Alias of wanted_guard_status",
+            null,
+            _ => LogWantedGuardStatus());
+
+        Register("wanted_clear", "Clear all wanted channels",
+            null,
+            _ =>
+            {
+                MainGameManager.Instance.gameLogicManager.WantedManager.ClearAllWanted();
+                Log("WantedManager.ClearAllWanted done");
+            });
+
+        Register("wanted_guard_clear", "Destroy all dynamic wanted-pressure guards tracked by WantedGuardSpawner",
+            null,
+            _ =>
+            {
+                MainGameManager.Instance.gameLogicManager.WantedGuardSpawner?.ClearAll();
+                Log("WantedGuardSpawner.ClearAll done");
+            });
+
+        Register("area_alert_add", "Add to GameLogicAreaManager.AreaAlertValue (drives GetAlertPressureTier). NOT add_alert.",
+            new[] { new CmdParam("delta", "long, e.g. 3000") },
+            args =>
+            {
+                if (args.Count < 1 || !long.TryParse(args[0], out var delta))
+                {
+                    LogError("usage: area_alert_add <delta_long>");
+                    return;
+                }
+
+                var am = MainGameManager.Instance.gameLogicManager.AreaManager;
+                am.DebugAddAreaAlert(delta);
+                Log($"area_alert_add {delta} -> AreaAlertValue={am.AreaAlertValue} alert_pressure_tier={am.GetAlertPressureTier()}");
+            });
+
+        Register("spawn_investigation_npc", "Spawn default_guard_01 with PostInvestigationResolveKind; optional immediate 0|1 (default: 1 if kind>0 else 0)",
+            new[] { new CmdParam("kind", "0-3 PostInvestigationResolveKind"), new CmdParam("immediate", "optional 0|1") },
+            args =>
+            {
+                if (args.Count < 1 || !int.TryParse(args[0], out var kind) || kind < 0 || kind > 3)
+                {
+                    LogError("usage: spawn_investigation_npc <kind_0_3> [immediate_0_1]");
+                    return;
+                }
+
+                int immediate = (args.Count >= 2 && int.TryParse(args[1], out var im)) ? im : (kind > 0 ? 1 : 0);
+                if (immediate != 0 && immediate != 1)
+                {
+                    LogError("immediate must be 0 or 1");
+                    return;
+                }
+
+                var glm = MainGameManager.Instance.gameLogicManager;
+                var pos = MainGameManager.Instance.playerScenePresenter.transform.position + new Vector3(2, 2, 0);
+                glm.AddNewEntityRecord(new LogicEntityRecord4Npc
+                {
+                    Id = GameLogicManager.LogicEntityIdInst++,
+                    EntityType = EEntityType.Npc,
+                    CfgId = "default_guard_01",
+                    Position = pos,
+                    FactionId = EFactionId.Citizen,
+                    IsPeace = false,
+                    MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
+                    EnmityConfId = "default_guard",
+                    PostInvestigationResolveKind = kind,
+                    PostInvestigationPatrolPickN = 3,
+                    SpawnWithImmediateInvestigation = immediate == 1,
+                });
+                Log($"spawn_investigation_npc kind={kind} immediate={immediate} at player+2,2");
             });
 
         Register("add_quest_value", "开shop",
