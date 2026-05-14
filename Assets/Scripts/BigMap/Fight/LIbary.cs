@@ -135,7 +135,12 @@ namespace My.Map.Entity
                     var ab = CreateDefaultInteractProgress();
                     _abilityDict[ab.Id] = ab;
                 }
-                
+
+                {
+                    var ab = CreateShootKnifeAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
 
                 {
                     var ab = CreateDefaultDash();
@@ -554,6 +559,106 @@ namespace My.Map.Entity
                 DirMode = EDirMode.InputDir,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        
+        private static MapAbilitySpecConfig CreateShootKnifeAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "shoot_knife";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.NoTarget; // 向面前射出子弹
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+            spec.DesiredUseDistance = 5.0f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = "small_knife",
+                MotionData = new LinearMotionData()
+                {
+                    speed = 9f,
+                },
+
+                lockViewAngle = false,
+
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+
+                lifeTime = 0.6f,
+
+
+                TriggerOnCollide = true,
+                TriggerOnLifeEnd = true,
+
+                BulletHitResult = new()
+                {
+                    OnHitEffects = new()
+                    {
+                        new MapAbilityEffectHitBoxCfg()
+                        {
+                            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                            Radius = 1.0f,
+                            CampFilterType = ECampFilterType.NotSelf,
+                            MaxCatchCount = 1,
+                            HitResult = new()
+                            {
+                                OnHitEffects = new()
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId  = AttrIdConsts.NPCHVal,
+                                        AddValue = 50000,
+                                    }
+                                }
+                            },
+
+                        }
+                    },
+                },
+
+
+
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            //spec.Phases.Add(new MapAbilityPhase()
+            //{
+            //    PhaseName = "Post",
+            //    DurationValue = new()
+            //    {
+            //        ValType = EOneVariatyType.Float,
+            //        RawVal = "0.1"
+            //    },
+            //});
 
             spec.Phases.Add(mainPhase);
             return spec;
