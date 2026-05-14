@@ -3126,6 +3126,16 @@ namespace My.Map.Entity
             // 直接对主目标击退（不经武器判定）
             mainPhase.Events.Add(new PhaseEffectEvent()
             {
+                Effect = new MapFightEffectEasyEffect()
+                {
+                    EffectText = "走开",
+                },
+                Kind = PhaseEventKind.OnEnter,
+            });
+
+            // 直接对主目标击退（不经武器判定）
+            mainPhase.Events.Add(new PhaseEffectEvent()
+            {
                 Effect = new MapFightEffectKnockBackCfg()
                 {
                     ApplyTarget = true,
