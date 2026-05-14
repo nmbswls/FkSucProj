@@ -168,7 +168,16 @@ namespace My.Map.Entity
                 {
                     BuffId = "charm_fck_bonus",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerJingYuRate, ModifierValue = -2000 } },
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerJingYuRate, ModifierValue = -1500 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["force_fck_bonus"] = new BuffDefinition()
+                {
+                    BuffId = "force_fck_bonus",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerJingYuRate, ModifierValue = 4000 } },
                     DefaultDuration = -1,
                     IsHidden = true,
                 };

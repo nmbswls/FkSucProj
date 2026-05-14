@@ -2784,6 +2784,12 @@ namespace My.Map.Entity
                                 ResultVarKey = "ThrowTimedInput",
                                 SuccessBranchEffects = new List<MapFightEffectCfg>
                                 {
+                                    new MapAbilityEffectAddBuffCfg()
+                                    {
+                                        BuffId = "force_fck_bonus",
+                                        Layer = 1,
+                                        Duration = 0.5f,
+                                    },
                                     new MapAbilityEffectAddResourceCfg()
                                     {
                                         ResourceId = AttrIdConsts.NPCHVal,
@@ -2826,6 +2832,13 @@ namespace My.Map.Entity
                                 ResultVarKey = "ThrowTimedInput",
                                 SuccessBranchEffects = new List<MapFightEffectCfg>
                                 {
+                                    new MapAbilityEffectAddBuffCfg()
+                                    {
+                                        BuffId = "force_fck_bonus",
+                                        Layer = 1,
+                                        Duration = 0.5f,
+                                    },
+
                                     new MapAbilityEffectAddResourceCfg()
                                     {
                                         ResourceId = AttrIdConsts.NPCHVal,
@@ -2868,6 +2881,12 @@ namespace My.Map.Entity
                                 ResultVarKey = "ThrowTimedInput",
                                 SuccessBranchEffects = new List<MapFightEffectCfg>
                                 {
+                                    new MapAbilityEffectAddBuffCfg()
+                                    {
+                                        BuffId = "force_fck_bonus",
+                                        Layer = 1,
+                                        Duration = 0.5f,
+                                    },
                                     new MapAbilityEffectAddResourceCfg()
                                     {
                                         ResourceId = AttrIdConsts.NPCHVal,
