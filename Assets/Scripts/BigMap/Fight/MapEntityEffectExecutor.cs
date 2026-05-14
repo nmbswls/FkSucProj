@@ -2203,7 +2203,7 @@ namespace My.Map.Entity
                 }
             }
 
-            caster.ablilityManager.EnqueueDetachedSkill(cfg.SkillId, castVec: castPoint, target: skillTarget);
+             caster.ablilityManager.EnqueueDetachedSkill(cfg.SkillId, castVec: castPoint, target: skillTarget);
         }
     }
 }

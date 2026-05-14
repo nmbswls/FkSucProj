@@ -90,6 +90,8 @@ namespace My.Map
                 case AttrIdConsts.PlayerSJAmount_Fixed:
                 case AttrIdConsts.PlayerSJAmount_Precent:
 
+                case AttrIdConsts.PlayerJingYuRate:
+
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:

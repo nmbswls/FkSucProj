@@ -3106,7 +3106,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.12"
+                    RawVal = "0.1"
                 },
             });
 
@@ -3119,24 +3119,21 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.22"
+                    RawVal = "0.18"
                 },
             };
 
-            var hit = new MapAbilityEffectUseWeaponCfg()
+            // 直接对主目标击退（不经武器判定）
+            mainPhase.Events.Add(new PhaseEffectEvent()
             {
-                WeaponName = "Hit_01",
-                Duration = 0.2f,
-                OnHitEffects = new()
+                Effect = new MapFightEffectKnockBackCfg()
                 {
-                    new MapFightEffectApplyDamageCfg()
-                    {
-                        BaseDamage = 12_000,
-                        KnockBackForce = 0.72f,
-                    },
-                }
-            };
-            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hit, Kind = PhaseEventKind.OnEnter });
+                    ApplyTarget = true,
+                    DirType = MapFightEffectKnockBackCfg.EKnockBackType.AwayFromSrc,
+                    KnockBackForce = 0.72f,
+                },
+                Kind = PhaseEventKind.OnEnter,
+            });
             spec.Phases.Add(mainPhase);
 
             spec.Phases.Add(new MapAbilityPhase()
@@ -3146,7 +3143,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "0.15"
                 },
             });
             return spec;
