@@ -6,7 +6,7 @@
     "shape_width": 1.5,
     "shape_radius": 0,
     "shape_angle": 0,
-    "area_buff_id": "ground_gc_liquid",
+    "area_buff_id": "b_ground_gc_liquid",
     "camp_filter": 1,
     "default_lifetime": 15
   },
@@ -17,7 +17,7 @@
     "shape_width": 1.5,
     "shape_radius": 0,
     "shape_angle": 0,
-    "area_buff_id": "ground_milk_liquid",
+    "area_buff_id": "b_ground_milk_liquid",
     "camp_filter": 1,
     "default_lifetime": 15
   },

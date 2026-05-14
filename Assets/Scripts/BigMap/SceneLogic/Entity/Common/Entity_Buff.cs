@@ -1453,6 +1453,8 @@ namespace My.Map.Entity
                 case MapFightEffectCauseNoise:
                 case MapFightEffectWantedIncidentBroadcastCfg:
                 case MapFightEffectEasyEffect:
+                case MapFightEffectCreateAreaEffectCfg:
+                case MapAbilityEffectHitBoxCfg:
                     {
                         long srcEntity = CasterId;
 

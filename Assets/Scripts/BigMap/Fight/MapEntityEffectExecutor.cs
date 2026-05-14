@@ -1779,6 +1779,8 @@ namespace My.Map.Entity
 
             var gcLiquidEntity = ctx.Env.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
             gcLiquidEntity.LifeTime = realCfg.LifeTime;
+
+            ctx.Env.AddNewEntityRecord(gcLiquidEntity);
         }
     }
     

@@ -673,9 +673,39 @@ namespace My.Map.Entity
                     },
                 };
 
-                _library["ground_gc_liquid"] = new BuffDefinition()
+                _library["b_ground_gc_liquid"] = new BuffDefinition()
                 {
-                    BuffId = "ground_gc_liquid",
+                    BuffId = "b_ground_gc_liquid",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HValYiShang, ModifierValue = 1000 },
+                    },
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 500, // ?0.5?????
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddResourceCfg()
+                                {
+                                    ResourceId = AttrIdConsts.NPCHVal,
+                                    AddValue = 500,
+                                    IsEnmity = true,
+                                }
+                            }
+                        }
+                    },
+                };
+
+                _library["b_ground_milk_liquid"] = new BuffDefinition()
+                {
+                    BuffId = "b_ground_milk_liquid",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     DefaultDuration = -1,
 
