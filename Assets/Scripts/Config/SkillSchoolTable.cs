@@ -101,7 +101,7 @@ namespace My.Config
                         DisplayName = "Field",
                         SkillIds = new List<string>
                         {
-                            "fix_clothes", "spawn_attract", "player_mortar_acquire_01",
+                            "fix_clothes", "spawn_attract", "fight_effect_place_stun_trap", "player_mortar_acquire_01",
                             "player_normal_defend", "default_push", "player_small_staggering",
                             "crazy_fire", "player_dark_dance", "player_push_surround",
                             "player_trace_bullet_01",

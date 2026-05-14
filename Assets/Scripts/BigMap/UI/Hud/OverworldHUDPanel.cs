@@ -716,6 +716,37 @@ namespace My.UI
         }
 
 
+        static int KeyNameToQuickItemSlotIndex(string keyName)
+        {
+            if (keyName == EInputKey.Num1.ToString())
+            {
+                return 0;
+            }
+
+            if (keyName == EInputKey.Num2.ToString())
+            {
+                return 1;
+            }
+
+            if (keyName == EInputKey.Num3.ToString())
+            {
+                return 2;
+            }
+
+            if (keyName == EInputKey.Num4.ToString())
+            {
+                return 3;
+            }
+
+            if (keyName == EInputKey.Num5.ToString())
+            {
+                return 4;
+            }
+
+            return -1;
+        }
+
+
         public bool IsItemKeys(string keyName)
         {
             if (keyName == EInputKey.Num1.ToString())
@@ -808,7 +839,13 @@ namespace My.UI
 
             if(IsItemKeys(keyName))
             {
-                OnClickUseItem(0);
+                int idx = KeyNameToQuickItemSlotIndex(keyName);
+                if (idx >= 0)
+                {
+                    OnClickUseItem(idx);
+                }
+
+                return true;
             }
             else
             {
@@ -879,13 +916,28 @@ namespace My.UI
         public void OnClickUseItem(int itemIdx)
         {
             var slots = MainGameManager.Instance.gameLogicManager.playerDataManager.GetItemSlotsByState();
-            var itemId = slots[itemIdx];
-
-            var itemUseCfg = ItemCatalog.GetPrimaryUse(itemId);
-            if (itemUseCfg.UseType != cfg.demo.EItemUseType.UseSkill)
+            if (itemIdx < 0 || itemIdx >= slots.Length)
             {
                 return;
             }
+
+            var itemId = slots[itemIdx];
+            if (string.IsNullOrEmpty(itemId))
+            {
+                return;
+            }
+
+            if (!MainGameManager.Instance.gameLogicManager.playerDataManager.CheckHaveItem(itemId, 1))
+            {
+                return;
+            }
+
+            var itemUseCfg = ItemCatalog.GetPrimaryUse(itemId);
+            if (itemUseCfg == null || itemUseCfg.UseType != cfg.demo.EItemUseType.UseSkill)
+            {
+                return;
+            }
+
             var skillId = itemUseCfg.S1;
 
             OnClickUseSkill(skillId, (ret) =>

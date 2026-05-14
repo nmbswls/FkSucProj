@@ -304,6 +304,30 @@ namespace My.Player.Bag
             return false;
         }
 
+        public long GetCarriedItemTotal(string itemId)
+        {
+            long totalNum = 0;
+            void Acc(PlayerBag bag)
+            {
+                if (bag == null)
+                {
+                    return;
+                }
+                totalNum += bag.GetItemCount(itemId);
+            }
+
+            Acc(MainBag);
+            Acc(WarehouseBag);
+            foreach (var bag in SpeBags.Values)
+            {
+                Acc(bag);
+            }
+
+            CurrencyBag.TryGetValue(itemId, out var currencyVal);
+            totalNum += currencyVal;
+            return totalNum;
+        }
+
         public long CostItem(string itemId, long count)
         {
             if (count <= 0)

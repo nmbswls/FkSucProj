@@ -1482,6 +1482,11 @@ namespace My.Map.Entity
                         record = new LogicEntityRecord4Npc();
                     }
                     break;
+                case EEntityType.Trap:
+                    {
+                        record = new LogicEntityRecord4Trap();
+                    }
+                    break;
                 default:
                     {
                         record = new LogicEntityRecord();
@@ -1506,6 +1511,11 @@ namespace My.Map.Entity
             record.EntityType = realCfg.EntityType;
             record.LifeTime = realCfg.LifeTime;
             record.Position = ctx.CastVec1.Value;
+
+            if (ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false) is BaseUnitLogicEntity srcUnit)
+            {
+                record.FactionId = srcUnit.FactionId;
+            }
 
             ctx.Env.AddNewEntityRecord(record);
         }

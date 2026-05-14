@@ -1,0 +1,19 @@
+[
+  {
+    "id": "fight_effect_stun_trap",
+    "trigger_radius": 1.5,
+    "camp_filter": 1,
+    "only_player": false,
+    "post_trigger": 0,
+    "sleep_duration": 5,
+    "trigger_effects": [
+      {
+        "kind": 0,
+        "buff_id": "force_stun",
+        "layer": 1,
+        "duration": 2,
+        "target_type": 0
+      }
+    ]
+  }
+]

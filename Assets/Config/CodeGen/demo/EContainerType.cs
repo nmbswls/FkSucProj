@@ -18,6 +18,7 @@ namespace cfg.demo
         SpecialInventory = 2,
         Shop = 3,
         Warehouse = 4,
+        QuickBar = 5,
     }
 
 } 

@@ -144,12 +144,71 @@ namespace My.Player
             FuncOpenSystem.InitSystem(logicManager, savingData);
             InventorySystem.InitSystem(logicManager, savingData);
             SkillSystem.InitSystem(logicManager, savingData);
+            HydrateQuickSlotsFromSave(savingData);
             MagicClothes.LoadFromSave(savingData?.PlayerData);
 
             EquipmentManager = new PlayerEquipmentManager(this);
             EquipmentManager.InitializeFromSave(savingData);
             EquipmentManager.BindProgressionGear();
             RumorIntel.InitSystem(logicManager, savingData);
+        }
+
+        void HydrateQuickSlotsFromSave(SaveData savingData)
+        {
+            var list = savingData?.PlayerData?.ItemSlotOverrides;
+            if (list == null || list.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < QuickSlotItemSet.Length; i++)
+            {
+                QuickSlotItemSet[i] = i < list.Count ? (list[i] ?? string.Empty) : string.Empty;
+            }
+        }
+
+        public bool TryAssignQuickSlot(int slotIndex, string itemId, out string failReason)
+        {
+            failReason = null;
+            if (slotIndex < 0 || slotIndex >= QuickSlotItemSet.Length)
+            {
+                failReason = "slot_range";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(itemId))
+            {
+                failReason = "empty_item";
+                return false;
+            }
+
+            var use = ItemCatalog.GetPrimaryUse(itemId);
+            if (use == null || !use.Usable || use.UseType != EItemUseType.UseSkill)
+            {
+                failReason = "need_use_skill_item";
+                return false;
+            }
+
+            QuickSlotItemSet[slotIndex] = itemId;
+            return true;
+        }
+
+        public void ClearQuickSlot(int slotIndex)
+        {
+            if (slotIndex >= 0 && slotIndex < QuickSlotItemSet.Length)
+            {
+                QuickSlotItemSet[slotIndex] = string.Empty;
+            }
+        }
+
+        public void SwapQuickSlotIndices(int slotA, int slotB)
+        {
+            if (slotA < 0 || slotA >= QuickSlotItemSet.Length || slotB < 0 || slotB >= QuickSlotItemSet.Length)
+            {
+                return;
+            }
+
+            (QuickSlotItemSet[slotA], QuickSlotItemSet[slotB]) = (QuickSlotItemSet[slotB], QuickSlotItemSet[slotA]);
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -215,7 +274,8 @@ namespace My.Player
             mainBag.NormalSlots[6] = ItemCatalog.CreateItemStack("chanzi", 1);
 
             mainBag.NormalSlots[12] = ItemCatalog.CreateItemStack("evil_scroll_01", 5);
-            
+            mainBag.NormalSlots[8] = ItemCatalog.CreateItemStack(My.Map.Fight.FightEffectConstants.StunTrapItemId, 3);
+
             //inventoryModel.NormalSlots[1] = new ItemStack() { ItemID = "qiezi", Count = 3 };
             //inventoryModel.NormalSlots[2] = new ItemStack() { ItemID = "bangbangtang", Count = 3 };
 

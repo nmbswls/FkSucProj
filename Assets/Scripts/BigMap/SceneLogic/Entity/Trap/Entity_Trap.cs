@@ -26,10 +26,10 @@ namespace My.Map.Entity
 
         protected override void LoadCfg()
         {
-            _spec = TrapSpecLoader.Get(CfgId);
+            _spec = TrapSpecRuntimeMap.Get(CfgId);
             if (_spec == null)
             {
-                Debug.LogError($"TrapLogicEntity: TrapSpec not found for CfgId '{CfgId}'. Expected Resources path Config/TrapSpecs/{CfgId}.asset");
+                Debug.LogError($"TrapLogicEntity: TrapSpec not found in TbTrapSpec for CfgId '{CfgId}'.");
             }
         }
 

@@ -202,6 +202,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreateFightEffectPlaceStunTrapAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreatePlayerTraceBullet1Ability();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -1743,6 +1748,40 @@ namespace My.Map.Entity
                 EntityType = EEntityType.AttractPoint,
                 CfgId = "attract_01",
                 LifeTime = 10.0f,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateFightEffectPlaceStunTrapAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = FightEffectConstants.PlaceStunTrapAbilityId;
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 6.0f;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
+
+            var effect = new MapAbilityEffectSpawnEntityCfg()
+            {
+                EntityType = EEntityType.Trap,
+                CfgId = FightEffectConstants.StunTrapCfgId,
+                LifeTime = 90.0f,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
 

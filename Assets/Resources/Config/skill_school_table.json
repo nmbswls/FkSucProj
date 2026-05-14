@@ -14,7 +14,8 @@
         "player_enter_queen",
         "player_quit_queen",
         "h_mode_execute",
-        "spawn_attract"
+        "spawn_attract",
+        "fight_effect_place_stun_trap"
       ]
     },
     {
@@ -23,6 +24,7 @@
       "SkillIds": [
         "fix_clothes",
         "spawn_attract",
+        "fight_effect_place_stun_trap",
         "player_mortar_acquire_01",
         "player_normal_defend",
         "default_push",

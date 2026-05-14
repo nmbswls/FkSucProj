@@ -542,5 +542,25 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false
+  },
+  {
+    "item_id": "fight_effect_stun_trap_item",
+    "display_name": "眩晕陷阱卷轴",
+    "item_type": 0,
+    "stackable": true,
+    "stack_count": 20,
+    "stack_tags": [],
+    "sprite_name": "evil_scroll_01",
+    "can_drop": true,
+    "rare_tier": 0,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": false,
+    "is_auto_use": false
   }
 ]

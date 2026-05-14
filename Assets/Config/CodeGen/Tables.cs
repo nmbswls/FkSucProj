@@ -63,6 +63,7 @@ public partial class Tables
     public demo.TbRumorGlobal TbRumorGlobal {get; }
     public demo.TbCharacterInfo TbCharacterInfo {get; }
     public demo.TbCharacterFavorInfo TbCharacterFavorInfo {get; }
+    public demo.TbTrapSpec TbTrapSpec {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -115,6 +116,7 @@ public partial class Tables
         TbRumorGlobal = new demo.TbRumorGlobal(loader("demo_tbrumorglobal"));
         TbCharacterInfo = new demo.TbCharacterInfo(loader("demo_tbcharacterinfo"));
         TbCharacterFavorInfo = new demo.TbCharacterFavorInfo(loader("demo_tbcharacterfavorinfo"));
+        TbTrapSpec = new demo.TbTrapSpec(loader("demo_tbtrapspec"));
         ResolveRef();
     }
     
@@ -169,6 +171,7 @@ public partial class Tables
         TbRumorGlobal.ResolveRef(this);
         TbCharacterInfo.ResolveRef(this);
         TbCharacterFavorInfo.ResolveRef(this);
+        TbTrapSpec.ResolveRef(this);
     }
 }
 

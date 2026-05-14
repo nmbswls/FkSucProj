@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Config;
 using My.Map;
+using My.Player;
 using My.Player.Bag;
 using My.UI.Bag;
 using TMPro;
@@ -49,6 +50,8 @@ namespace My.UI
         public DragPayload Payload { get; private set; }
         public bool IsDragging { get; private set; }
 
+        bool _dropHandledThisDrag;
+
         void Awake()
         {
             if (DragGhostGo != null)
@@ -78,6 +81,7 @@ namespace My.UI
                 SourceContainerId = sourceContainerId,
             };
             IsDragging = true;
+            _dropHandledThisDrag = false;
 
             if (DragGhostGo)
             {
@@ -89,6 +93,82 @@ namespace My.UI
                 DragGhostCountText.gameObject.SetActive(stack.Count > 1);
             }
             return true;
+        }
+
+        public bool BeginDragFromQuickBar(string itemId, int slotIndex)
+        {
+            if (IsDragging)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(itemId))
+            {
+                return false;
+            }
+
+            Payload = new DragPayload
+            {
+                ItemId = itemId,
+                ItemCnt = 1,
+                SourceContainerType = EContainerType.QuickBar,
+                SourceContainerId = 0,
+                SourceIndex = slotIndex,
+            };
+            IsDragging = true;
+            _dropHandledThisDrag = false;
+
+            if (DragGhostGo)
+            {
+                DragGhostGo.SetActive(true);
+                DragGhostImage.gameObject.SetActive(true);
+                DragGhostCountText.text = "";
+                DragGhostCountText.gameObject.SetActive(false);
+            }
+
+            return true;
+        }
+
+        public void MarkDropHandled()
+        {
+            _dropHandledThisDrag = true;
+        }
+
+        public void OnDropToQuickBarSlot(int dstSlotIndex, DragPayload payload)
+        {
+            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (mdm == null || payload == null)
+            {
+                return;
+            }
+
+            if (payload.SourceContainerType == EContainerType.QuickBar)
+            {
+                if (payload.SourceIndex == dstSlotIndex)
+                {
+                    MarkDropHandled();
+                    return;
+                }
+
+                mdm.SwapQuickSlotIndices(payload.SourceIndex, dstSlotIndex);
+                MarkDropHandled();
+                PlayerBagUIPanel.Instance?.RefreshQuickBarSlots();
+                return;
+            }
+
+            if (payload.SourceContainerType == EContainerType.Inventory
+                || payload.SourceContainerType == EContainerType.SpecialInventory
+                || payload.SourceContainerType == EContainerType.Warehouse)
+            {
+                if (!mdm.TryAssignQuickSlot(dstSlotIndex, payload.ItemId, out var fail))
+                {
+                    Debug.Log("Quick bar drop rejected: " + fail);
+                    return;
+                }
+
+                MarkDropHandled();
+                PlayerBagUIPanel.Instance?.RefreshQuickBarSlots();
+            }
         }
 
         public void UpdateDrag(Vector2 screenPos)
@@ -116,9 +196,25 @@ namespace My.UI
 
         public void EndDrag()
         {
+            var dropHandled = _dropHandledThisDrag;
+            var p = Payload;
             IsDragging = false;
+            _dropHandledThisDrag = false;
             Payload = null;
-            if (DragGhostGo) DragGhostGo.gameObject.SetActive(false);
+            if (DragGhostGo)
+            {
+                DragGhostGo.SetActive(false);
+            }
+
+            if (p != null && p.SourceContainerType == EContainerType.QuickBar && !dropHandled)
+            {
+                var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+                if (mdm != null && p.SourceIndex >= 0 && p.SourceIndex < mdm.QuickSlotItemSet.Length)
+                {
+                    mdm.ClearQuickSlot(p.SourceIndex);
+                    PlayerBagUIPanel.Instance?.RefreshQuickBarSlots();
+                }
+            }
         }
 
 
@@ -149,6 +245,15 @@ namespace My.UI
         // 从拖拽落到背包格子
         public void OnDropToInventory(int bagId, DragPayload payload, int dstIndex)
         {
+            if (payload.SourceContainerType == EContainerType.QuickBar)
+            {
+                MainGameManager.Instance.gameLogicManager.playerDataManager.ClearQuickSlot(payload.SourceIndex);
+                MarkDropHandled();
+                PlayerBagUIPanel.Instance?.RefreshQuickBarSlots();
+                PlayerBagUIPanel.Instance?.RefreshContent();
+                return;
+            }
+
             // 从loot点到背包
             if (payload.SourceContainerType == EContainerType.LootPoint)
             {
