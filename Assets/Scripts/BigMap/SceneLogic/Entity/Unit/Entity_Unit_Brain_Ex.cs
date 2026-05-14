@@ -787,6 +787,7 @@ namespace My.Map.Unit
         public override void OnExit()
         {
             base.OnExit();
+            _brain.NpcEntity.UnregisterGazeBySourceTag("Combat");
             _brain.NpcEntity.StopMove(); // 退出战斗时刹车
         }
 

@@ -230,9 +230,8 @@ namespace My.Map
 
         protected virtual void TickActivateState(float dt)
         {
-            UpdateGazeModule();
-
             AggroSystem?.Tick(dt);
+            UpdateGazeModule();
             VisionSystem?.TryUpdateNoticeList();
             EnmitySystem?.Tick(dt);
         }

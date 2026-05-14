@@ -94,7 +94,7 @@ namespace My.Map
 
             if (immediately)
             {
-                ApplyGazeRotation(true);
+                ApplyGazeRotation(true, false);
             }
         }
 
@@ -122,9 +122,22 @@ namespace My.Map
                 _defaultFaceDir = MotorSystem.DesiredVelocity.normalized;
             }
 
+            var prevTopPriority = int.MinValue;
+            if (_requests.Count > 0)
+            {
+                foreach (var r in _requests)
+                {
+                    if (r.Priority > prevTopPriority)
+                    {
+                        prevTopPriority = r.Priority;
+                    }
+                }
+            }
+
             CleanUpExpiredRequests();
             EvaluateActiveRequest();
-            ApplyGazeRotation();
+            var snapToDefault = _activeRequest == null && prevTopPriority >= (int)EGazePriority.Combat;
+            ApplyGazeRotation(false, snapToDefault);
         }
 
 
@@ -137,31 +150,34 @@ namespace My.Map
         public void RegisterGaze(string sourceTag, long lockTargetId, Vector2 lockPosition, EGazePriority priority, float duration = 0f)
         {
             FaceRequest existing = null;
-            // 检查所有锁定目标的视线类型
             if (lockTargetId != 0)
             {
                 existing = _requests.FirstOrDefault(r => r.LockTargetId == lockTargetId && r.SourceTag == sourceTag);
             }
+            else if (sourceTag == "Combat")
+            {
+                // 施法对点注视：避免 lockTargetId==0 时每条都堆积
+                existing = _requests.FirstOrDefault(r => r.SourceTag == "Combat" && r.LockTargetId == 0);
+            }
+
+            var expireAt = duration > 0 ? LogicTime.time + duration : -1f;
 
             if (existing != null)
             {
-                // 更新现有请求
                 existing.Priority = (int)priority;
-                existing.ExpirationTime = duration > 0 ? Time.time + duration : -1;
-
+                existing.ExpirationTime = expireAt;
                 existing.TargetPos = lockPosition;
                 existing.LockTargetId = lockTargetId;
             }
             else
             {
-                // 新增请求
-                _requests.Add(new FaceRequest() 
+                _requests.Add(new FaceRequest()
                 {
                     SourceTag = sourceTag,
                     TargetPos = lockPosition,
                     LockTargetId = lockTargetId,
                     Priority = (int)priority,
-                    ExpirationTime = duration > 0 ? Time.time + duration : -1,
+                    ExpirationTime = expireAt,
                 });
             }
         }
@@ -237,7 +253,7 @@ namespace My.Map
         /// <summary>
         /// 执行旋转
         /// </summary>
-        private void ApplyGazeRotation(bool force = false)
+        private void ApplyGazeRotation(bool force = false, bool snapToDefault = false)
         {
             if (_activeRequest != null)
             {
@@ -245,18 +261,19 @@ namespace My.Map
             }
             else
             {
-                // 如果没有请求，默认看身体前方
                 _targetLookDir = _defaultFaceDir;
             }
 
-            if(force)
+            if (force)
             {
                 _currentLook = _targetLookDir;
             }
+            else if (snapToDefault && _activeRequest == null)
+            {
+                _currentLook = _targetLookDir.sqrMagnitude > 1e-8f ? _targetLookDir.normalized : _defaultFaceDir;
+            }
             else
             {
-
-                // 平滑插值计算当前看向的点
                 _currentLook = Vector2.Lerp(_currentLook, _targetLookDir, LogicTime.deltaTime * GetFaceTurnSpeed());
             }
         }
