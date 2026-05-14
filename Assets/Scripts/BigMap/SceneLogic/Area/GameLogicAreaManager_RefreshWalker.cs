@@ -85,6 +85,7 @@ namespace My.Map.Logic
 
             TickCleanWalker();
 
+            // 路人离场逻辑可走 NamedPath；后续若需与动态守卫一致，可改为 MoveToThenDespawn + Policy_MoveToPointThenDespawn
             TickRefreshWaler();
         }
 

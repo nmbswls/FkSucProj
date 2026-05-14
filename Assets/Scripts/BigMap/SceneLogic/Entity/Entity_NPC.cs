@@ -38,6 +38,13 @@ namespace My.Map
 
         public AIBrainV2? AIBrain;
 
+        /// <summary>
+        /// 动态压力守卫档案（来自 LogicEntityRecord4Npc）
+        /// </summary>
+        public int DynamicPressureGuardProfile { get; private set; }
+
+        public int DynamicPressurePatrolPickN { get; private set; }
+
         private bool hShieldBroken = false;
         private float _lastHModeTimer;
 
@@ -97,6 +104,9 @@ namespace My.Map
             {
                 this.MoveBehaveInfo.PatrolCycleNodeIds.AddRange(npcRecord.PatrolCycleNodeIds);
             }
+
+            DynamicPressureGuardProfile = npcRecord.DynamicPressureGuardProfile;
+            DynamicPressurePatrolPickN = npcRecord.DynamicPressurePatrolPickN > 0 ? npcRecord.DynamicPressurePatrolPickN : 3;
         }
 
         public override bool CheckLocalSwitch(string switchName)
@@ -226,6 +236,12 @@ namespace My.Map
 
             InitAiBrain();
 
+            if (DynamicPressureGuardProfile > 0 && AIBrain != null && LogicManager.playerLogicEntity != null)
+            {
+                AIBrain.SuspiciousPos = LogicManager.playerLogicEntity.Pos;
+                AIBrain.ChangeState(AIBrain.StateSearch);
+            }
+
             if (NpcRecord.Unsensored)
             {
                 LogicManager.globalBuffManager.RequestAddBuff(Id, "unsensored");
@@ -276,15 +292,34 @@ namespace My.Map
 
             attributeStore.RegisterNumeric(AttrIdConsts.Will, 10_000);
 
+            if (NpcConfig != null)
+            {
+                int vk = NpcConfig.VisionConeKind;
+                BaseVisionConeKind = (VisionConeKind)Mathf.Clamp(vk, 0, (int)VisionConeKind.Omniscient);
+                if (NpcConfig.VisionRange > 0f)
+                {
+                    viewRadius = NpcConfig.VisionRange;
+                }
+                if (NpcConfig.VisionFovDeg > 0f)
+                {
+                    fovDegrees = NpcConfig.VisionFovDeg;
+                }
+            }
+
         }
 
-        public override bool IsOmniVision()
+        public override VisionConeKind GetEffectiveVisionConeKind()
         {
-            if (AIBrain == null) return false;
-
-            if (AIBrain.CurrentState == AIBrain.StateCombat) return true;
-            if (AIBrain.CurrentState == AIBrain.StateFlee) return true;
-            return false;
+            var kind = BaseVisionConeKind;
+            if (kind == VisionConeKind.Normal && AIBrain != null)
+            {
+                var s = AIBrain.CurrentState;
+                if (s == AIBrain.StateCombat || s == AIBrain.StateFlee)
+                {
+                    return VisionConeKind.Alert;
+                }
+            }
+            return kind;
         }
 
         protected virtual void InitAiBrain()
@@ -802,6 +837,11 @@ namespace My.Map
             }
 
             return EnmitySystem.IsEnmityWith(otherUnit);
+        }
+
+        public override bool IsNoAggro()
+        {
+            return NpcConfig.NoAggro;
         }
     }
 }

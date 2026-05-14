@@ -71,10 +71,6 @@ namespace My.Map.Unit
 
             _lastUpdateTime = LogicTime.time;
 
-
-            var noticeParams = UnitEntity.GetViewRangeAndAngle();
-            float range = noticeParams.Item1;
-            float fov = noticeParams.Item2;
             //VisibilityList.Clear();
             /// 维护了NoticeRecords 
             UnitEntity.LogicManager.AreaManager.UnitGridIndex.Query(UnitEntity.Pos, 16, cacheListLong);
@@ -92,19 +88,9 @@ namespace My.Map.Unit
                     continue;
                 }
 
-                if(UnitEntity.IsOmniVision())
+                if (!UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, otherUnit.Id))
                 {
-                    if (!UnitEntity.LogicManager.visionSenser.SimpleCanSee(UnitEntity.Pos, UnitEntity.CurrentLook, otherUnit.Pos, range, 360f))
-                    {
-                        continue;
-                    }
-                }
-                else
-                {
-                    if (!UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, otherUnit.Id))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
 

@@ -126,4 +126,11 @@
         <var name="Chest" value="0"/>
         <var name="Npc" value="1"/>
     </enum>
+
+    <!-- TbUnitNpc 可选列 vision_cone_kind / vision_range / vision_fov_deg；与 My.Map.VisionConeKind 数值一致 -->
+    <enum name="EVisionConeKind">
+        <var name="Normal" value="0"/>
+        <var name="Alert" value="1"/>
+        <var name="Omniscient" value="2"/>
+    </enum>
 </module>

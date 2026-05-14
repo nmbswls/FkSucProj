@@ -16,12 +16,75 @@ namespace My
         public float DefaultRange = 6.0f;
         public float DefaultFovAngle = 90;
 
-        private const float HardBackLimitDeg = 150f;   // 背向硬限制
         private const float RadiusAngleMaxDeg = 20f;   // 半径角容忍上限
         private const float CloseDistance = 1.0f;      // 贴身距离阈值
         private const float ExtraAngleNearDeg = 20f;   // 近身策略性扩展最大值
-        private const float MaxExpandedHalfFovDeg = 120f;
         private const float RayLateralSpread = 0.2f;   // 近身多射线左右偏移（米）
+
+        private static float MaxExpandedHalfFovForCone(VisionConeKind coneKind) =>
+            coneKind == VisionConeKind.Alert ? 135f : 90f;
+
+        private static bool TryGetConeVisibility(
+            float dist,
+            float angle,
+            float baseHalfFov,
+            VisionConeKind coneKind)
+        {
+            if (coneKind == VisionConeKind.Omniscient)
+            {
+                return true;
+            }
+
+            float targetRadius = 0.25f;
+
+            float radiusAngleDeg = Mathf.Atan2(targetRadius, Mathf.Max(dist, 0.05f)) * Mathf.Rad2Deg;
+            radiusAngleDeg = Mathf.Min(radiusAngleDeg, RadiusAngleMaxDeg);
+
+            if (angle > 120f)
+            {
+                radiusAngleDeg = 0f;
+            }
+
+            bool nearMode = dist <= CloseDistance;
+            float frontWeight = Mathf.Max(0f, Mathf.Cos(angle * Mathf.Deg2Rad));
+            float extraNear = nearMode
+                ? (ExtraAngleNearDeg * frontWeight *
+                   Mathf.Clamp01((CloseDistance - dist) / Mathf.Max(CloseDistance, 0.0001f)))
+                : 0f;
+
+            float expanded = baseHalfFov + radiusAngleDeg + extraNear;
+            float capHalf = MaxExpandedHalfFovForCone(coneKind);
+            float effectiveHalfFov = Mathf.Min(expanded, capHalf);
+
+            return angle <= effectiveHalfFov;
+        }
+
+        public bool TryOcclusionClearForUnitSee(Vector2 eyePos, Vector2 dirToTarget, float dist, bool nearMode)
+        {
+            if (IsLineClear2D(eyePos, dirToTarget, dist))
+            {
+                return true;
+            }
+
+            if (nearMode)
+            {
+                Vector2 right = new Vector2(-dirToTarget.y, dirToTarget.x);
+                Vector2 leftOrigin = eyePos - right * RayLateralSpread;
+                Vector2 rightOrigin = eyePos + right * RayLateralSpread;
+
+                if (IsLineClear2D(leftOrigin, dirToTarget, dist))
+                {
+                    return true;
+                }
+
+                if (IsLineClear2D(rightOrigin, dirToTarget, dist))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// 针对单位间的可见性
@@ -37,6 +100,11 @@ namespace My
             {
                 return false;
             }
+            if (selfUnit.UnitEntity is not BaseUnitLogicEntity viewer)
+            {
+                return false;
+            }
+
             var targetPresenter = SceneAOIManager.Instance.GetActivePresentation(targetEntityId);
             if (targetPresenter == null)
             {
@@ -44,66 +112,31 @@ namespace My
             }
             Vector2 eyePos = selfUnit.GetWorldPosition();
             Vector2 p1 = targetPresenter.GetWorldPosition();
-            // 方向与距离
             Vector2 toTarget = p1 - eyePos;
             float dist = toTarget.magnitude;
-            // 贴身 必定看见
-            if (dist <= 0.05f) return true;
 
-            var seeParams = selfUnit.UnitEntity.GetViewRangeAndAngle();
+            var seeParams = viewer.GetViewRangeAndAngle();
             float range = seeParams.Item1;
             float fovAngle = seeParams.Item2;
+            VisionConeKind coneKind = viewer.GetEffectiveVisionConeKind();
+
             if (dist > range)
             {
                 return false;
             }
 
             Vector2 dirToTarget = toTarget.normalized;
-            float angle = Mathf.Abs(Vector2.SignedAngle(selfUnit.UnitEntity.CurrentLook, toTarget));
+            float angle = Mathf.Abs(Vector2.SignedAngle(viewer.CurrentLook, toTarget));
 
-            float baseHalfFov = Mathf.Abs(fovAngle) * 0.5f;
-
-            // 背向硬限制
-            if (angle >= HardBackLimitDeg)
-                return false;
-
-            // 目标半径（来自 CapsuleCollider2D）
-            float targetRadius = 0.25f;
-            // todo 实现不同半径
-
-            // 半径角容忍
-            float radiusAngleDeg = Mathf.Atan2(targetRadius, Mathf.Max(dist, 0.05f)) * Mathf.Rad2Deg;
-            radiusAngleDeg = Mathf.Min(radiusAngleDeg, RadiusAngleMaxDeg);
-
-            // 仅前半圆应用半径角容忍（避免影响背向）
-            if (angle > 120f)
-                radiusAngleDeg = 0f;
-
-            // 近身策略性扩展（仅前向权重）  
             bool nearMode = dist <= CloseDistance;
-            float frontWeight = Mathf.Max(0f, Mathf.Cos(angle * Mathf.Deg2Rad)); // 前方≈1，侧向≈0，后方≈0
-            float extraNear = nearMode ? (ExtraAngleNearDeg * frontWeight * Mathf.Clamp01((CloseDistance - dist) / Mathf.Max(CloseDistance, 0.0001f))) : 0f;
 
-            // 有效半角
-            float effectiveHalfFov = Mathf.Min(baseHalfFov + radiusAngleDeg + extraNear, MaxExpandedHalfFovDeg);
+            float contactR = viewer.GetVisionContactSenseRadius();
+            bool contactProximity = dist <= Mathf.Max(0.05f, contactR);
 
-            // 角度判定
-            if (angle > effectiveHalfFov)
-                return false;
-
-            // 遮挡检测：主射线 + 近身左右偏移两条（任意一条通则可见）
-            if (IsLineClear2D(eyePos, dirToTarget, dist))
-                return true;
-
-            if (nearMode)
+            if (contactProximity || coneKind == VisionConeKind.Omniscient ||
+                TryGetConeVisibility(dist, angle, Mathf.Abs(fovAngle) * 0.5f, coneKind))
             {
-                // 构造左右偏移起点（2D中与视线垂直的右向）
-                Vector2 right = new Vector2(-dirToTarget.y, dirToTarget.x); // 旋转90°
-                Vector2 leftOrigin = eyePos - right * RayLateralSpread;
-                Vector2 rightOrigin = eyePos + right * RayLateralSpread;
-
-                if (IsLineClear2D(leftOrigin, dirToTarget, dist)) return true;
-                if (IsLineClear2D(rightOrigin, dirToTarget, dist)) return true;
+                return TryOcclusionClearForUnitSee(eyePos, dirToTarget, dist, nearMode);
             }
 
             return false;

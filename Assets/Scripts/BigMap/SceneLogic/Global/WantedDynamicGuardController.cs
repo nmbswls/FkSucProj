@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace My
 {
-    // 通缉星级达到配置档位后，在玩家附近动态维持临时守卫；过远回收并从近处补刷
+    // 通缉星级或区域警戒档位驱动：动态维持临时守卫；高星级/高档位含搜查、退场或路网巡逻
     public sealed class WantedDynamicGuardController
     {
         const float TickPeriod = 0.75f;
@@ -54,7 +54,7 @@ namespace My
 
             _cooldown = TickPeriod;
 
-            var tier = SelectTier();
+            var tier = SelectPressureTier(out _);
             int target = tier?.GuardCount ?? 0;
             string npcId = string.IsNullOrEmpty(tier?.NpcCfgId) ? "default_guard_01" : tier.NpcCfgId;
             float rMin = tier?.SpawnRadiusMin ?? 6f;
@@ -65,6 +65,8 @@ namespace My
             }
 
             float cull = tier?.CullDistance ?? 36f;
+            int pressureBehavior = tier?.PressureBehavior ?? 0;
+            int patrolPickN = tier?.PatrolPickN > 0 ? tier.PatrolPickN : 3;
 
             PruneDead();
             CullFar(cull);
@@ -76,15 +78,16 @@ namespace My
 
             while (_guardIds.Count < target)
             {
-                if (!TrySpawnOne(npcId, rMin, rMax))
+                if (!TrySpawnOne(npcId, rMin, rMax, pressureBehavior, patrolPickN))
                 {
                     break;
                 }
             }
         }
 
-        WantedGuardSpawnTier SelectTier()
+        WantedGuardSpawnTier SelectPressureTier(out int alertTier)
         {
+            alertTier = _logic.AreaManager.GetAlertPressureTier();
             var table = CfgMgr.Cfgs?.TbWantedGuardSpawnTier;
             if (table?.DataList == null || table.DataList.Count == 0)
             {
@@ -100,12 +103,14 @@ namespace My
                     continue;
                 }
 
-                if (star < row.MinWantedStarLevel)
+                bool byWanted = star >= row.MinWantedStarLevel;
+                bool byAlert = alertTier >= row.MinAlertTier;
+                if (!byWanted && !byAlert)
                 {
                     continue;
                 }
 
-                if (best == null || row.MinWantedStarLevel > best.MinWantedStarLevel)
+                if (best == null || row.TierId > best.TierId)
                 {
                     best = row;
                 }
@@ -178,7 +183,20 @@ namespace My
             return best;
         }
 
-        bool TrySpawnOne(string cfgId, float rMin, float rMax)
+        bool IsSpotOutsidePlayerFov(Vector2 spot)
+        {
+            var senser = _logic.visionSenser;
+            var player = _logic.playerLogicEntity;
+            if (senser == null || player == null)
+            {
+                return true;
+            }
+
+            var prm = player.GetViewRangeAndAngle();
+            return !senser.SimpleCanSee(player.Pos, player.CurrentLook, spot, prm.Item1, prm.Item2);
+        }
+
+        bool TrySpawnOne(string cfgId, float rMin, float rMax, int pressureBehavior, int patrolPickN)
         {
             var player = _logic.playerLogicEntity;
             for (int attempt = 0; attempt < 14; attempt++)
@@ -187,6 +205,11 @@ namespace My
                 float r = Random.Range(rMin, rMax);
                 Vector2 cand = player.Pos + new Vector2(Mathf.Cos(ang) * r, Mathf.Sin(ang) * r);
                 if (!MapWorldEmptySpotUtil.TryFindEmptySpotNear(cand, 3f, 0.4f, player.Id, null, out var spot))
+                {
+                    continue;
+                }
+
+                if (!IsSpotOutsidePlayerFov(spot))
                 {
                     continue;
                 }
@@ -201,6 +224,8 @@ namespace My
                     IsPeace = false,
                     MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
                     EnmityConfId = "default_guard",
+                    DynamicPressureGuardProfile = pressureBehavior,
+                    DynamicPressurePatrolPickN = patrolPickN > 0 ? patrolPickN : 3,
                 };
                 _logic.AddNewEntityRecord(rec);
                 _guardIds.Add(rec.Id);

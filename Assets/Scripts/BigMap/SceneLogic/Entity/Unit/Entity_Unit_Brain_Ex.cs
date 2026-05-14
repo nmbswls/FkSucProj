@@ -1,6 +1,7 @@
 
 
 using System.Collections.Generic;
+using My;
 using My.MapExport;
 using cfg.demo;
 using My.Map.Entity;
@@ -87,6 +88,8 @@ namespace My.Map.Unit
 
                     Debug.LogWarning("[MovePolicyFactory] Patrol mode requires PatrolCycleNodeIds (>=2); falling back to StandStill.");
                     return new Policy_StandStill();
+                case UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn:
+                    return new Policy_MoveToPointThenDespawn();
                 case UnitMoveBehaveInfo.EMoveBehaveType.MovePath:
                 case UnitMoveBehaveInfo.EMoveBehaveType.NoMove:
                 default:
@@ -118,6 +121,38 @@ namespace My.Map.Unit
         }
 
         public void OnExit(AIBrainV2 brain) { }
+    }
+
+    /// <summary>
+    /// 前往 MoveToDespawnTarget 后销毁（动态守卫退场 / 路人离场）
+    /// </summary>
+    public sealed class Policy_MoveToPointThenDespawn : IIdlePolicy
+    {
+        const float ArriveDist = 0.4f;
+
+        public void OnEnter(AIBrainV2 brain)
+        {
+            var t = brain.NpcEntity.MoveBehaveInfo.MoveToDespawnTarget;
+            brain.NpcEntity.TryMoveTo(t);
+        }
+
+        public void OnTick(AIBrainV2 brain, float dt)
+        {
+            var t = brain.NpcEntity.MoveBehaveInfo.MoveToDespawnTarget;
+            if ((brain.NpcEntity.Pos - t).sqrMagnitude <= ArriveDist * ArriveDist)
+            {
+                brain.NpcEntity.StopMove();
+                brain.LogicManager.AreaManager.RequestEntityDestroy(brain.NpcEntity.Id, "move_to_despawn");
+                return;
+            }
+
+            brain.HomePos = brain.NpcEntity.Pos;
+        }
+
+        public void OnExit(AIBrainV2 brain)
+        {
+            brain.NpcEntity.StopMove();
+        }
     }
 
     // 1. 原地站立策略
@@ -312,12 +347,13 @@ namespace My.Map.Unit
 
         public AIStateIdle(AIBrainV2 brain) : base(brain)
         {
-            _idlePolicy = MovePolicyFactory.CreateFromMoveBehave(brain.NpcEntity.MoveBehaveInfo);
         }
 
         public override void OnEnter()
         {
             base.OnEnter();
+            _idlePolicy?.OnExit(_brain);
+            _idlePolicy = MovePolicyFactory.CreateFromMoveBehave(_brain.NpcEntity.MoveBehaveInfo);
             _idlePolicy.OnEnter(_brain);
         }
 
@@ -1214,8 +1250,47 @@ namespace My.Map.Unit
 
                     if (LogicTime.time > _lookAroundTimer)
                     {
-                        // 搜完了没结果，放弃，回家
-                        _brain.SuspiciousPos = null; // 清除信号
+                        _brain.SuspiciousPos = null;
+                        if (_brain.NpcEntity is NpcUnitLogicEntity npc && npc.DynamicPressureGuardProfile > 0)
+                        {
+                            var db = _brain.LogicManager.AreaManager.cacheDatabase;
+                            switch (npc.DynamicPressureGuardProfile)
+                            {
+                                case 1:
+                                    if (DynamicPressureGuardUtil.TryPickRandomGuardSpawnerLogicPos(db, out var exitPos))
+                                    {
+                                        npc.MoveBehaveInfo.MoveToDespawnTarget = exitPos;
+                                        npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
+                                        _brain.ChangeState(_brain.StateIdle);
+                                        return;
+                                    }
+
+                                    break;
+                                case 2:
+                                    npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
+                                    _brain.ChangeState(_brain.StateIdle);
+                                    return;
+                                case 3:
+                                    var ids = npc.MoveBehaveInfo.PatrolCycleNodeIds;
+                                    ids.Clear();
+                                    int nPick = Mathf.Max(2, npc.DynamicPressurePatrolPickN);
+                                    if (DynamicPressureGuardUtil.TrySamplePatrolCycleIds(
+                                            db,
+                                            npc.MoveBehaveInfo.PatrolPortalNetworkId,
+                                            nPick,
+                                            ids,
+                                            out var resolvedNet))
+                                    {
+                                        npc.MoveBehaveInfo.PatrolPortalNetworkId = resolvedNet;
+                                        npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.Patrol;
+                                        _brain.ChangeState(_brain.StateIdle);
+                                        return;
+                                    }
+
+                                    break;
+                            }
+                        }
+
                         _brain.ChangeState(_brain.StateReturn);
                     }
                     break;

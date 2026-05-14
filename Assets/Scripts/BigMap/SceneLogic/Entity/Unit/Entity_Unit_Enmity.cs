@@ -49,6 +49,7 @@ namespace My.Map.Unit
         public List<UnitEnmityBehave> Behaves = new();
         public bool AlwaysEnmity = false; // 永久敌对
         public bool WantedEnmity = false; // 针对通缉敌对
+        public bool HitNotBattle = false;
 
     }
 
@@ -114,7 +115,13 @@ namespace My.Map.Unit
 
                     _infos[conf.CfgId] = conf;
                 }
-                
+
+                {
+                    // 不会进战斗
+                    var conf = new UnitEnmity4PlayerCfg();
+                    conf.CfgId = "no_battle";
+                    _infos[conf.CfgId] = conf;
+                }
 
 
                 {
@@ -240,6 +247,12 @@ namespace My.Map.Unit
                 return false;
             }
 
+            // 特殊非敌对单位
+            if(enmityConf.HitNotBattle)
+            {
+                return false;
+            }
+
             // 自身h模式下 对主角特殊敌对
             if (UnitEntity is NpcUnitLogicEntity npcUnit && npcUnit.IsInHMode())
             {
@@ -251,6 +264,7 @@ namespace My.Map.Unit
             {
                 return true;
             }
+
 
             if(CurrEnmityVal > 0)
             {

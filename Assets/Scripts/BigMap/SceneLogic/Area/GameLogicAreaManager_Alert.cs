@@ -38,6 +38,31 @@ namespace My.Map.Logic
         public long MaxAlertValue = 10000;
         public long AreaAlertValue = 0;
 
+        // 区域警戒档位（0 无额外压力守卫行为；1–3 对齐通缉 2★/3★/4★ 的动态守卫_profile）
+        const long AlertTier1Threshold = 2500;
+        const long AlertTier2Threshold = 5000;
+        const long AlertTier3Threshold = 8000;
+
+        /// <summary>
+        /// 当前区域警戒压力档 0..3（基于 AreaAlertValue + 未结算 pending，阈值可先写死再拆 Luban）
+        /// </summary>
+        public int GetAlertPressureTier()
+        {
+            long v = AreaAlertValue + GetTempAlertValue();
+            if (v < AlertTier1Threshold)
+            {
+                return 0;
+            }
+            if (v < AlertTier2Threshold)
+            {
+                return 1;
+            }
+            if (v < AlertTier3Threshold)
+            {
+                return 2;
+            }
+            return 3;
+        }
 
         protected Dictionary<long, WeakReference<BaseUnitLogicEntity>> alertingLogicEntities = new();
         private Dictionary<long, List<(float, float)>> entityPendingAlerts = new();

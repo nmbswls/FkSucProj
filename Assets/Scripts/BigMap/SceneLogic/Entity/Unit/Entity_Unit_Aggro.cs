@@ -50,6 +50,7 @@ namespace My.Map.Unit
         {
             // 主动感知队友 (实现连锁仇恨的核心)
             //TickAllySense();
+            if (_unit.IsNoAggro()) return;
 
             OnVisionUpdate();
 
@@ -145,6 +146,7 @@ namespace My.Map.Unit
 
         public void OnTakeDamage(long attackerId, float amount)
         {
+            if (_unit.IsNoAggro()) return;
             var info = GetOrAddHostile(attackerId);
             info.TotalDamage += amount;
             info.LastInteractionTime = LogicTime.time;
@@ -284,6 +286,11 @@ namespace My.Map
         public virtual void InitAggroSystem()
         {
             AggroSystem = new(this);
+        }
+
+        public virtual bool IsNoAggro()
+        {
+            return false;
         }
     }
 }

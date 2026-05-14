@@ -13,6 +13,7 @@
       "default_normal_attack"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -21,7 +22,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "initial_orc_02",
@@ -37,6 +41,7 @@
       "default_normal_attack"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -45,7 +50,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "initial_orc_big",
@@ -61,6 +69,7 @@
       "default_normal_attack"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -69,7 +78,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "game_init_luca_injured",
@@ -83,6 +95,7 @@
     "ai_brain_id": "default",
     "skill_list": [],
     "is_peace": true,
+    "no_aggro": false,
     "peace_dialog_id": "game_init_luca_injured",
     "defeat_drop_id": 0,
     "not_target": true,
@@ -91,7 +104,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "qigai_default",
@@ -105,6 +121,7 @@
     "ai_brain_id": "",
     "skill_list": [],
     "is_peace": true,
+    "no_aggro": false,
     "peace_dialog_id": "qigai_01",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -113,7 +130,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": true,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "hunhun",
@@ -129,6 +149,7 @@
       "default_normal_attack"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "qigai_01",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -137,7 +158,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": true,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "slime_red",
@@ -153,6 +177,7 @@
       "chongzhuang_slime"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -161,7 +186,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": true,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "civil",
@@ -175,6 +203,7 @@
     "ai_brain_id": "default",
     "skill_list": [],
     "is_peace": true,
+    "no_aggro": false,
     "peace_dialog_id": "qigai_01",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -183,7 +212,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": true,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "civil_sleeping",
@@ -197,6 +229,7 @@
     "ai_brain_id": "default",
     "skill_list": [],
     "is_peace": true,
+    "no_aggro": false,
     "peace_dialog_id": "qigai_01",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -205,7 +238,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": true,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "default_guard_01",
@@ -219,6 +255,7 @@
     "ai_brain_id": "default",
     "skill_list": [],
     "is_peace": true,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
     "not_target": false,
@@ -227,7 +264,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": false,
     "desire_crystal_random_attachable": true,
-    "no_real_jing": false
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_small_01",
@@ -244,6 +284,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -252,7 +293,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_small_02",
@@ -269,6 +313,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -277,7 +322,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_small_03",
@@ -294,6 +342,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -302,7 +351,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_middle_01",
@@ -319,6 +371,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -327,7 +380,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_middle_02",
@@ -344,6 +400,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -352,7 +409,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_middle_03",
@@ -369,6 +429,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -377,7 +438,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_big_01",
@@ -394,6 +458,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -402,7 +467,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_big_02",
@@ -419,6 +487,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -427,7 +496,10 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   },
   {
     "id": "h_spirit_big_03",
@@ -444,6 +516,7 @@
       "h_spirit_immune"
     ],
     "is_peace": false,
+    "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
     "not_target": false,
@@ -452,6 +525,37 @@
     "unit_bottom_size": 0.5,
     "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": true
+    "no_real_jing": true,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
+  },
+  {
+    "id": "city_watcher_01",
+    "name": "监视器",
+    "desc": "",
+    "prefab_name": "city_watcher",
+    "attr_template_id": 10000,
+    "emnity_cfg_id": "no_battle",
+    "faction_id": 0,
+    "move_style": 0,
+    "ai_brain_id": "default",
+    "skill_list": [
+      "watcher_armor"
+    ],
+    "is_peace": true,
+    "no_aggro": true,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "not_target": false,
+    "always_h_mode": false,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0,
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1
   }
 ]

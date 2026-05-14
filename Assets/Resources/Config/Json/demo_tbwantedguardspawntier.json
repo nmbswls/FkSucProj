@@ -6,7 +6,10 @@
     "npc_cfg_id": "default_guard_01",
     "spawn_radius_min": 8,
     "spawn_radius_max": 14,
-    "cull_distance": 40
+    "cull_distance": 40,
+    "min_alert_tier": 999,
+    "pressure_behavior": 0,
+    "patrol_pick_n": 0
   },
   {
     "tier_id": 2,
@@ -15,7 +18,10 @@
     "npc_cfg_id": "default_guard_01",
     "spawn_radius_min": 6,
     "spawn_radius_max": 12,
-    "cull_distance": 36
+    "cull_distance": 36,
+    "min_alert_tier": 999,
+    "pressure_behavior": 0,
+    "patrol_pick_n": 0
   },
   {
     "tier_id": 3,
@@ -24,7 +30,10 @@
     "npc_cfg_id": "default_guard_01",
     "spawn_radius_min": 5,
     "spawn_radius_max": 11,
-    "cull_distance": 34
+    "cull_distance": 34,
+    "min_alert_tier": 999,
+    "pressure_behavior": 0,
+    "patrol_pick_n": 0
   },
   {
     "tier_id": 4,
@@ -33,7 +42,10 @@
     "npc_cfg_id": "default_guard_01",
     "spawn_radius_min": 4.5,
     "spawn_radius_max": 10,
-    "cull_distance": 32
+    "cull_distance": 32,
+    "min_alert_tier": 999,
+    "pressure_behavior": 0,
+    "patrol_pick_n": 0
   },
   {
     "tier_id": 5,
@@ -42,6 +54,9 @@
     "npc_cfg_id": "default_guard_01",
     "spawn_radius_min": 4,
     "spawn_radius_max": 9,
-    "cull_distance": 30
+    "cull_distance": 30,
+    "min_alert_tier": 999,
+    "pressure_behavior": 0,
+    "patrol_pick_n": 0
   }
 ]

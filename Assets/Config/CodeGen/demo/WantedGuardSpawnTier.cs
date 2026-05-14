@@ -25,6 +25,9 @@ public sealed partial class WantedGuardSpawnTier : Luban.BeanBase
         { if(!_buf["spawn_radius_min"].IsNumber) { throw new SerializationException(); }  SpawnRadiusMin = _buf["spawn_radius_min"]; }
         { if(!_buf["spawn_radius_max"].IsNumber) { throw new SerializationException(); }  SpawnRadiusMax = _buf["spawn_radius_max"]; }
         { if(!_buf["cull_distance"].IsNumber) { throw new SerializationException(); }  CullDistance = _buf["cull_distance"]; }
+        { if(!_buf["min_alert_tier"].IsNumber) { throw new SerializationException(); }  MinAlertTier = _buf["min_alert_tier"]; }
+        { if(!_buf["pressure_behavior"].IsNumber) { throw new SerializationException(); }  PressureBehavior = _buf["pressure_behavior"]; }
+        { if(!_buf["patrol_pick_n"].IsNumber) { throw new SerializationException(); }  PatrolPickN = _buf["patrol_pick_n"]; }
     }
 
     public static WantedGuardSpawnTier DeserializeWantedGuardSpawnTier(JSONNode _buf)
@@ -60,6 +63,18 @@ public sealed partial class WantedGuardSpawnTier : Luban.BeanBase
     /// 超出距离销毁
     /// </summary>
     public float CullDistance;
+    /// <summary>
+    /// 区域警戒档位下限，满足则本行可按警戒参与选用；999 表示仅靠通缉星
+    /// </summary>
+    public int MinAlertTier;
+    /// <summary>
+    /// 压力行为枚举占位，对应动态守卫 AI/移动策略
+    /// </summary>
+    public int PressureBehavior;
+    /// <summary>
+    /// 巡逻路网抽样数，&lt;=0 用控制器默认 3
+    /// </summary>
+    public int PatrolPickN;
    
     public const int __ID__ = -1409456462;
     public override int GetTypeId() => __ID__;
@@ -78,6 +93,9 @@ public sealed partial class WantedGuardSpawnTier : Luban.BeanBase
         + "spawnRadiusMin:" + SpawnRadiusMin + ","
         + "spawnRadiusMax:" + SpawnRadiusMax + ","
         + "cullDistance:" + CullDistance + ","
+        + "minAlertTier:" + MinAlertTier + ","
+        + "pressureBehavior:" + PressureBehavior + ","
+        + "patrolPickN:" + PatrolPickN + ","
         + "}";
     }
 }

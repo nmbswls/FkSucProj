@@ -109,6 +109,16 @@ namespace My.Map.Logic
 
         // 有序闭环节点 id（与路网节点 GameObject 名一致）；相邻及首尾段分别最短路拼接
         public List<string> PatrolCycleNodeIds = new();
+
+        /// <summary>
+        /// 动态压力守卫：0=非此类 NPC；1=搜查后去 GuardSpawner 点消失；2=搜查后驻留；3=搜查后路网巡逻
+        /// </summary>
+        public int DynamicPressureGuardProfile;
+
+        /// <summary>
+        /// profile=3 时从路网随机取的闭合巡逻点数（至少 2）
+        /// </summary>
+        public int DynamicPressurePatrolPickN = 3;
     }
 
 

@@ -29,6 +29,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["ai_brain_id"].IsString) { throw new SerializationException(); }  AiBrainId = _buf["ai_brain_id"]; }
         { var __json0 = _buf["skill_list"]; if(!__json0.IsArray) { throw new SerializationException(); } SkillList = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  SkillList.Add(__v0); }   }
         { if(!_buf["is_peace"].IsBoolean) { throw new SerializationException(); }  IsPeace = _buf["is_peace"]; }
+        { if(!_buf["no_aggro"].IsBoolean) { throw new SerializationException(); }  NoAggro = _buf["no_aggro"]; }
         { if(!_buf["peace_dialog_id"].IsString) { throw new SerializationException(); }  PeaceDialogId = _buf["peace_dialog_id"]; }
         { if(!_buf["defeat_drop_id"].IsNumber) { throw new SerializationException(); }  DefeatDropId = _buf["defeat_drop_id"]; }
         { if(!_buf["not_target"].IsBoolean) { throw new SerializationException(); }  NotTarget = _buf["not_target"]; }
@@ -38,6 +39,9 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["no_unsensored"].IsBoolean) { throw new SerializationException(); }  NoUnsensored = _buf["no_unsensored"]; }
         { if(!_buf["desire_crystal_random_attachable"].IsBoolean) { throw new SerializationException(); }  DesireCrystalRandomAttachable = _buf["desire_crystal_random_attachable"]; }
         { if(!_buf["no_real_jing"].IsBoolean) { throw new SerializationException(); }  NoRealJing = _buf["no_real_jing"]; }
+        { if(!_buf["vision_cone_kind"].IsNumber) { throw new SerializationException(); }  VisionConeKind = _buf["vision_cone_kind"]; }
+        { if(!_buf["vision_range"].IsNumber) { throw new SerializationException(); }  VisionRange = _buf["vision_range"]; }
+        { if(!_buf["vision_fov_deg"].IsNumber) { throw new SerializationException(); }  VisionFovDeg = _buf["vision_fov_deg"]; }
     }
 
     public static UnitNpc DeserializeUnitNpc(JSONNode _buf)
@@ -89,6 +93,10 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// 是否和平
     /// </summary>
     public bool IsPeace;
+    /// <summary>
+    /// 没有仇恨
+    /// </summary>
+    public bool NoAggro;
     public string PeaceDialogId;
     /// <summary>
     /// 击败掉落
@@ -122,6 +130,18 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// 永远h
     /// </summary>
     public bool NoRealJing;
+    /// <summary>
+    /// 视野锥：0普通 1警觉 2全知
+    /// </summary>
+    public int VisionConeKind;
+    /// <summary>
+    /// 覆盖视野距离，&lt;=0用实体默认
+    /// </summary>
+    public float VisionRange;
+    /// <summary>
+    /// 覆盖视野全角，&lt;=0用实体默认
+    /// </summary>
+    public float VisionFovDeg;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -144,6 +164,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "aiBrainId:" + AiBrainId + ","
         + "skillList:" + Luban.StringUtil.CollectionToString(SkillList) + ","
         + "isPeace:" + IsPeace + ","
+        + "noAggro:" + NoAggro + ","
         + "peaceDialogId:" + PeaceDialogId + ","
         + "defeatDropId:" + DefeatDropId + ","
         + "notTarget:" + NotTarget + ","
@@ -153,6 +174,9 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "noUnsensored:" + NoUnsensored + ","
         + "desireCrystalRandomAttachable:" + DesireCrystalRandomAttachable + ","
         + "noRealJing:" + NoRealJing + ","
+        + "visionConeKind:" + VisionConeKind + ","
+        + "visionRange:" + VisionRange + ","
+        + "visionFovDeg:" + VisionFovDeg + ","
         + "}";
     }
 }

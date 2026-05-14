@@ -27,6 +27,10 @@ namespace My.Map
             MovePath,
             Hunting,
             InPatrolGroup,
+            /// <summary>
+            /// 前往 MoveToDespawnTarget 逻辑坐标后销毁实体（动态压力守卫退场 / 路人离场可复用）
+            /// </summary>
+            MoveToThenDespawn,
         }
 
         public EMoveBehaveType MoveBehaveMode 
@@ -39,6 +43,11 @@ namespace My.Map
         public Vector2 PatrolGroupRelativePos;
         public bool DisappearOnArrive;
         public string MovePath = null;
+
+        /// <summary>
+        /// MoveToThenDespawn 目标点（逻辑坐标）
+        /// </summary>
+        public Vector2 MoveToDespawnTarget;
 
         // 路网巡逻实例数据（来自 LogicEntityRecord4Npc / 导出）
         public string PatrolPortalNetworkId = string.Empty;
@@ -53,6 +62,11 @@ namespace My.Map
         public MapEntityAbilityExecutor abilityController;
         public float viewRadius = 8f;
         public float fovDegrees = 90f;
+
+        /// <summary>
+        /// 配表或运行时设定的基底视野锥类型；有效类型见 GetEffectiveVisionConeKind。
+        /// </summary>
+        public VisionConeKind BaseVisionConeKind { get; set; } = VisionConeKind.Normal;
 
         public bool MarkNoLogic; // 
         public bool MarkUnsensored { get; set; }
@@ -242,9 +256,34 @@ namespace My.Map
         }
 
 
+        public virtual VisionConeKind GetEffectiveVisionConeKind() => BaseVisionConeKind;
+
+        /// <summary>
+        /// 全角上限（普通 180 / 警觉 270 / 全知 360）
+        /// </summary>
+        public static float MaxFullFovDegreesForKind(VisionConeKind kind) => kind switch
+        {
+            VisionConeKind.Normal => 180f,
+            VisionConeKind.Alert => 270f,
+            VisionConeKind.Omniscient => 360f,
+            _ => 180f,
+        };
+
+        public static float ClampFovDegreesForKind(float rawFov, VisionConeKind kind)
+        {
+            float cap = MaxFullFovDegreesForKind(kind);
+            return Mathf.Clamp(Mathf.Abs(rawFov), 1f, cap);
+        }
+
+        /// <summary>
+        /// 背身极近距离「接触感知」半径（仍可被射线遮挡）；与纯视觉锥分开。
+        /// </summary>
+        public virtual float GetVisionContactSenseRadius() => 0.35f;
+
+
         public virtual bool IsOmniVision()
         {
-            return false;
+            return GetEffectiveVisionConeKind() == VisionConeKind.Omniscient;
         }
 
 
@@ -1413,7 +1452,8 @@ namespace My.Map
         /// <returns></returns>
         public (float, float) GetViewRangeAndAngle()
         {
-            return (5.0f, 120f);
+            var k = GetEffectiveVisionConeKind();
+            return (viewRadius, ClampFovDegreesForKind(fovDegrees, k));
         }
 
         /// <summary>
