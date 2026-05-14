@@ -128,6 +128,10 @@ namespace My
                 {
                     _guardIds.RemoveAt(i);
                 }
+                else if(e is BaseUnitLogicEntity unit && unit.IsDead)
+                {
+                    _guardIds.RemoveAt(i);
+                }
             }
         }
 
@@ -224,8 +228,9 @@ namespace My
                     IsPeace = false,
                     MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
                     EnmityConfId = "default_guard",
-                    DynamicPressureGuardProfile = pressureBehavior,
-                    DynamicPressurePatrolPickN = patrolPickN > 0 ? patrolPickN : 3,
+                    PostInvestigationResolveKind = pressureBehavior,
+                    PostInvestigationPatrolPickN = patrolPickN > 0 ? patrolPickN : 3,
+                    SpawnWithImmediateInvestigation = pressureBehavior > 0,
                 };
                 _logic.AddNewEntityRecord(rec);
                 _guardIds.Add(rec.Id);

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace My
 {
     /// <summary>
-    /// 动态压力守卫：退场命名点、路网随机巡逻环采样
+    /// Search 阶段后的位置/路网工具（退场命名点、路网巡逻环采样）；供 PostInvestigationResolveKind 使用
     /// </summary>
     public static class DynamicPressureGuardUtil
     {

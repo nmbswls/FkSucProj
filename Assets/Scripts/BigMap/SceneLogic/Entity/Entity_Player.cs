@@ -304,7 +304,7 @@ namespace My.Map
 
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
-            attributeStore.RegisterNumeric(AttrIdConsts.Charmed, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm));
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm));
 
             attributeStore.RegisterNumeric(AttrIdConsts.Final_Fix_DR_All, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.FixDmgReduceFinal));
             

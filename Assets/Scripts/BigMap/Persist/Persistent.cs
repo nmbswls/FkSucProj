@@ -111,14 +111,19 @@ namespace My.Map.Logic
         public List<string> PatrolCycleNodeIds = new();
 
         /// <summary>
-        /// 动态压力守卫：0=非此类 NPC；1=搜查后去 GuardSpawner 点消失；2=搜查后驻留；3=搜查后路网巡逻
+        /// Search 张望阶段结束后的通用收尾策略（与通缉/守卫域无关）：0=与默认一致走 Return；1=MoveToDespawn；2=驻留 Idle；3=路网巡逻
         /// </summary>
-        public int DynamicPressureGuardProfile;
+        public int PostInvestigationResolveKind;
 
         /// <summary>
-        /// profile=3 时从路网随机取的闭合巡逻点数（至少 2）
+        /// ResolveKind=3 时路网随机巡逻采样规模（至少 2）
         /// </summary>
-        public int DynamicPressurePatrolPickN = 3;
+        public int PostInvestigationPatrolPickN = 3;
+
+        /// <summary>
+        /// 生成后是否立刻以疑点进入 Search（与收尾策略独立配置）
+        /// </summary>
+        public bool SpawnWithImmediateInvestigation;
     }
 
 

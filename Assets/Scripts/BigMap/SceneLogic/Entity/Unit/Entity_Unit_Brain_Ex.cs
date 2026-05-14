@@ -1245,46 +1245,41 @@ namespace My.Map.Unit
                     break;
 
                 case SearchPhase.LookingAround:
-                    // 倒计时
-
-                    // 这里可以加逻辑：每秒随机转个身
-                    // RotateToRandomDir();
-
                     if (LogicTime.time > _lookAroundTimer)
                     {
                         _brain.SuspiciousPos = null;
-                        if (_brain.NpcEntity is NpcUnitLogicEntity npc && npc.DynamicPressureGuardProfile > 0)
+                        if (_brain.PostInvestigationResolveKind > 0)
                         {
                             var db = _brain.LogicManager.AreaManager.cacheDatabase;
-                            switch (npc.DynamicPressureGuardProfile)
+                            switch (_brain.PostInvestigationResolveKind)
                             {
                                 case 1:
                                     if (DynamicPressureGuardUtil.TryPickRandomGuardSpawnerLogicPos(db, out var exitPos))
                                     {
-                                        npc.MoveBehaveInfo.MoveToDespawnTarget = exitPos;
-                                        npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
+                                        _brain.NpcEntity.MoveBehaveInfo.MoveToDespawnTarget = exitPos;
+                                        _brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
                                         _brain.ChangeState(_brain.StateIdle);
                                         return;
                                     }
 
                                     break;
                                 case 2:
-                                    npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
+                                    _brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
                                     _brain.ChangeState(_brain.StateIdle);
                                     return;
                                 case 3:
-                                    var ids = npc.MoveBehaveInfo.PatrolCycleNodeIds;
+                                    var ids = _brain.NpcEntity.MoveBehaveInfo.PatrolCycleNodeIds;
                                     ids.Clear();
-                                    int nPick = Mathf.Max(2, npc.DynamicPressurePatrolPickN);
+                                    int nPick = Mathf.Max(2, _brain.PostInvestigationPatrolPickN);
                                     if (DynamicPressureGuardUtil.TrySamplePatrolCycleIds(
                                             db,
-                                            npc.MoveBehaveInfo.PatrolPortalNetworkId,
+                                            _brain.NpcEntity.MoveBehaveInfo.PatrolPortalNetworkId,
                                             nPick,
                                             ids,
                                             out var resolvedNet))
                                     {
-                                        npc.MoveBehaveInfo.PatrolPortalNetworkId = resolvedNet;
-                                        npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.Patrol;
+                                        _brain.NpcEntity.MoveBehaveInfo.PatrolPortalNetworkId = resolvedNet;
+                                        _brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.Patrol;
                                         _brain.ChangeState(_brain.StateIdle);
                                         return;
                                     }

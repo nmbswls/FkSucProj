@@ -1,6 +1,7 @@
 
 using System;
 using My.Input;
+using My.Map.Entity;
 using My.UI;
 using TMPro;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace My.Map.View
                 return null;
             }
 
-            panel.RefreshData(duration);
+            panel.RefreshData(srcEntityId, duration);
             return panel;
         }
 
@@ -31,11 +32,14 @@ namespace My.Map.View
         public Image CounterPic;
         public GameObject CounterHint;
 
+        public long SrcEntityId;
         public float Duration;
         public float CounterExtraShow;
 
         private bool isCounterPeriod = false;
         private bool isCounterSuccess = false;
+
+        private bool canCounter = false;
 
         private float _timer;
 
@@ -59,7 +63,7 @@ namespace My.Map.View
                 isCounterPeriod = false;
             }
 
-            if(isCounterPeriod && !isCounterSuccess)
+            if(isCounterPeriod && canCounter && !isCounterSuccess)
             {
                 if (!CounterHint.activeSelf)
                 {
@@ -76,8 +80,9 @@ namespace My.Map.View
         }
 
 
-        public void RefreshData(float duration)
+        public void RefreshData(long srcEntityId, float duration)
         {
+            this.SrcEntityId = srcEntityId;
             this.Duration = duration;
             RefreshUI();
         }
@@ -100,6 +105,40 @@ namespace My.Map.View
             isCounterSuccess = false;
 
             CounterExtraShow = 0;
+
+            CheckPlayerCanCounter();
+        }
+
+        /// <summary>
+        /// 计算是否能反击咸猪手
+        /// </summary>
+        private void CheckPlayerCanCounter()
+        {
+            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            var srcEntity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId);
+
+
+            var hPowerPlayer = player.GetAttr(AttrIdConsts.HPower);
+            var hPowerSrc = srcEntity.GetAttr(AttrIdConsts.HPower);
+
+            if (hPowerPlayer < 5000) hPowerPlayer = 5000;
+            if (hPowerSrc < 5000) hPowerSrc = 5000;
+
+            var playerCharm = player.GetAttr(AttrIdConsts.PlayerCharm);
+            var enemyWill = srcEntity.GetAttr(AttrIdConsts.Will);
+
+            double charmModifier = Math.Max(0, (playerCharm - enemyWill) * 1.0 / (playerCharm + enemyWill) * 0.5);
+            double baseP = (hPowerPlayer * (1 + charmModifier)) / (hPowerPlayer * (1 + charmModifier) + hPowerSrc);
+
+            var randVal = UnityEngine.Random.Range(0, 10000);
+            if (randVal < (int)(baseP * 10000))
+            {
+                canCounter = true;
+            }
+            else
+            {
+                canCounter = false;
+            }
         }
 
         private void SwitchToCounterMode()
@@ -125,10 +164,15 @@ namespace My.Map.View
 
         private void HandleInteractFinish()
         {
-
+            var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
             if(isCounterSuccess)
             {
+                p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId : SrcEntityId);
 
+            }
+            else
+            {
+                p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -8_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
             }
 
             UIManager.Instance.HidePanel(ID);

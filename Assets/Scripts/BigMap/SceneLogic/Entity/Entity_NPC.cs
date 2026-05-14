@@ -38,19 +38,13 @@ namespace My.Map
 
         public AIBrainV2? AIBrain;
 
-        /// <summary>
-        /// 动态压力守卫档案（来自 LogicEntityRecord4Npc）
-        /// </summary>
-        public int DynamicPressureGuardProfile { get; private set; }
-
-        public int DynamicPressurePatrolPickN { get; private set; }
-
-        private bool hShieldBroken = false;
         private float _lastHModeTimer;
 
         public event Action EventOnHModeChange;
 
         public bool IsFaQing { get; private set; }
+
+        protected bool hShieldBroken;
 
 
         //public EntityInteractComp InteractComp;
@@ -104,9 +98,6 @@ namespace My.Map
             {
                 this.MoveBehaveInfo.PatrolCycleNodeIds.AddRange(npcRecord.PatrolCycleNodeIds);
             }
-
-            DynamicPressureGuardProfile = npcRecord.DynamicPressureGuardProfile;
-            DynamicPressurePatrolPickN = npcRecord.DynamicPressurePatrolPickN > 0 ? npcRecord.DynamicPressurePatrolPickN : 3;
         }
 
         public override bool CheckLocalSwitch(string switchName)
@@ -235,8 +226,9 @@ namespace My.Map
             base.Initialize();
 
             InitAiBrain();
+            ApplySpawnRecordInvestigationPolicyToBrain();
 
-            if (DynamicPressureGuardProfile > 0 && AIBrain != null && LogicManager.playerLogicEntity != null)
+            if (NpcRecord.SpawnWithImmediateInvestigation && AIBrain != null && LogicManager.playerLogicEntity != null)
             {
                 AIBrain.SuspiciousPos = LogicManager.playerLogicEntity.Pos;
                 AIBrain.ChangeState(AIBrain.StateSearch);
@@ -325,6 +317,19 @@ namespace My.Map
         protected virtual void InitAiBrain()
         {
             AIBrain = AIBrainFactory.CreateAIBrain(this);
+        }
+
+        // 将持久化记录中的调查收尾策略灌入 AI 黑板（与「守卫」域解耦）
+        void ApplySpawnRecordInvestigationPolicyToBrain()
+        {
+            if (AIBrain == null)
+            {
+                return;
+            }
+
+            var r = NpcRecord;
+            AIBrain.PostInvestigationResolveKind = r.PostInvestigationResolveKind;
+            AIBrain.PostInvestigationPatrolPickN = r.PostInvestigationPatrolPickN > 0 ? r.PostInvestigationPatrolPickN : 3;
         }
 
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
