@@ -244,6 +244,7 @@ namespace My.Map.Unit
         protected float Duration => LogicTime.time - startTime;
 
         public virtual bool CanBeAttract { get { return false; } }
+        public virtual bool CanEnterCombat { get { return false; } }
 
         public AIBaseState(AIBrainV2 brain) { _brain = brain; }
 
@@ -252,6 +253,22 @@ namespace My.Map.Unit
         public void Update()
         {
             OnUpdate();
+
+            if(CanEnterCombat)
+            {
+                if (_brain.Aggro.HasHostile)
+                {
+                    if (_brain.Config.IsPeace)
+                    {
+                        _brain.ChangeState(_brain.StateFlee);
+                    }
+                    else
+                    {
+                        _brain.ChangeState(_brain.StateCombat);
+                    }
+                    return;
+                }
+            }
 
             if(CanBeAttract)
             {

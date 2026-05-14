@@ -345,6 +345,8 @@ namespace My.Map.Unit
         public override string StateName => "Idle";
         public override bool CanBeAttract => true;
 
+        public override bool CanEnterCombat => true;
+
         public AIStateIdle(AIBrainV2 brain) : base(brain)
         {
         }
@@ -359,19 +361,6 @@ namespace My.Map.Unit
 
         public override void OnUpdate()
         {
-            if (_brain.Aggro.HasHostile)
-            {
-                if(_brain.Config.IsPeace)
-                {
-                    _brain.ChangeState(_brain.StateFlee);
-                }
-                else
-                {
-                    _brain.ChangeState(_brain.StateCombat);
-                }
-                return;
-            }
-
             if (_brain.SuspiciousPos != null)
             {
                 _brain.ChangeState(_brain.StateSearch);
@@ -409,6 +398,7 @@ namespace My.Map.Unit
     {
         public override string StateName => "Attracted";
 
+        public override bool CanEnterCombat => true;
         public AIStateAttracted(AIBrainV2 brain) : base(brain)
         {
         }
@@ -450,11 +440,7 @@ namespace My.Map.Unit
                         }
                     }
                     break;
-                case EStimulusType.Audio_Normal:
-                    {
-                        _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.CurrentFocus.Position, moveSpeedRate: 0.5f);
-                    }
-                    break;
+                
                 case EStimulusType.Player_Attract:
                     {
                         var playerEntity = _brain.NpcEntity.LogicManager.GetLogicEntity(_brain.NpcEntity.CurrentFocus.SourceID) as PlayerLogicEntity;
@@ -496,6 +482,12 @@ namespace My.Map.Unit
                         }
                     }
                     break;
+                default:
+                    {
+                        _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.CurrentFocus.Position, moveSpeedRate: 0.5f);
+                    }
+                    break;
+
             }
 
             
@@ -552,6 +544,8 @@ namespace My.Map.Unit
         public override string StateName => "CharmedFollow";
 
         private float _endCharmdTimer;
+
+        public override bool CanEnterCombat => true;
 
         public AIStateCharmedFollow(AIBrainV2 brain) : base(brain)
         {
@@ -1069,6 +1063,14 @@ namespace My.Map.Unit
         private float _homeLessMinStayTime = 5.0f;
         private float _startReturnTime = 0;
 
+        public override bool CanEnterCombat 
+        { 
+            get 
+            {
+                return LogicTime.time - _startReturnTime > 5.0f;
+            } 
+        }
+
         public override void OnEnter()
         {
             base.OnEnter();
@@ -1081,19 +1083,6 @@ namespace My.Map.Unit
 
         public override void OnUpdate()
         {
-            if (_brain.Aggro.HasHostile && LogicTime.time - _startReturnTime > 5.0f)
-            {
-                if (_brain.Config.IsPeace)
-                {
-                    _brain.ChangeState(_brain.StateFlee);
-                }
-                else
-                {
-                    _brain.ChangeState(_brain.StateCombat);
-                }
-                return;
-            }
-
 
             if (_brain.SuspiciousPos != null)
             {
@@ -1191,6 +1180,7 @@ namespace My.Map.Unit
         private float _lookAroundTimer;
         private Vector2 searchOrgPoint = Vector2.zero;
 
+        public override bool CanEnterCombat { get { return true; } }
         public AIStateSearch(AIBrainV2 brain) : base(brain)
         {
         }
@@ -1218,13 +1208,6 @@ namespace My.Map.Unit
 
         public override void OnUpdate()
         {
-            // --- 任何时候发现真敌人，切战斗 ---
-            if (_brain.Aggro.HasHostile)
-            {
-                _brain.ChangeState(_brain.StateCombat);
-                return;
-            }
-
             switch (_phase)
             {
                 case SearchPhase.MovingToPos:
@@ -1305,6 +1288,7 @@ namespace My.Map.Unit
         private float chaseChillTimer = 0;
         private long wantedUnitId;
 
+        public override bool CanEnterCombat => true;
         public AIStateChaseWanted(AIBrainV2 brain) : base(brain)
         {
         }

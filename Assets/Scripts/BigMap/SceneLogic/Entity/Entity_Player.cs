@@ -1282,7 +1282,7 @@ namespace My.Map
                 // 只要吸引力等级超过0 就执行attract
                 if(attractLevel > 0)
                 {
-                    if (unit is NpcUnitLogicEntity npcEntity)
+                    if (unit is NpcUnitLogicEntity npcEntity && npcEntity.NpcConfig.IgnoreAttractLevel < attractLevel)
                     {
                         npcEntity.OnReceiveStimulus(new StimulusEvent(this.Pos, 99, 100, EStimulusType.Player_Attract, this.Id));
                         //npcEntity.ApplyAttracted(ENpcAttractSrcType.Player, 99, this.Pos, this.Id);
