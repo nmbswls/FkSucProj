@@ -11,13 +11,11 @@
 
 namespace cfg.demo
 { 
-    public enum EContainerType
+    public enum EMicroPlotEventKind
     {
-        Inventory = 0,
-        LootPoint = 1,
-        SpecialInventory = 2,
-        Shop = 3,
-        Warehouse = 4,
+        None = 0,
+        Log = 1,
+        NpcSpeak = 2,
     }
 
 } 

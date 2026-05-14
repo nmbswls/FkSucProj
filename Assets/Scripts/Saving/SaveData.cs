@@ -78,6 +78,9 @@ namespace My.Saving
 
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
 
+        // 地图小剧情触发器消费态：键 mapId|triggerId
+        public Dictionary<string, bool> MicroPlotConsumedByKey = new();
+
         // 角色装备（与主背包互斥：穿上时从背包扣除；存档需与背包一致）
         public List<EquippedGearEntry> EquippedGear = new();
     }
@@ -295,6 +298,7 @@ namespace My.Saving
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.PlayerData.UnlockedTalentNodeIds ??= new List<int>();
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
+            data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.Inventory ??= new List<InventoryItemData>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

@@ -390,6 +390,26 @@ namespace My.Map.Unit
         }
     }
 
+    // 小剧情托管：不跑 IdlePolicy，且屏蔽共用的吸引/魅惑/参战自动跳转
+    public class AIStateScriptedMicroPlot : AIBaseState
+    {
+        public override string StateName => "ScriptedMicroPlot";
+
+        public override bool CanBeAttract => false;
+
+        public override bool CanEnterCombat => false;
+
+        public override bool SuppressSharedBrainTransitions => true;
+
+        public AIStateScriptedMicroPlot(AIBrainV2 brain) : base(brain)
+        {
+        }
+
+        public override void OnUpdate()
+        {
+        }
+    }
+
     // --- attracted 状态 ---
     /// <summary>
     /// 

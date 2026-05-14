@@ -657,6 +657,7 @@ namespace My.UI
                 UIManager.Instance.HidePanel("WarehousePanel");
                 return;
             }
+
             ShowInGroup("ItemDragDrop");
             ShowInGroup("WarehousePanel");
         }

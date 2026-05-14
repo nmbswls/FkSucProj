@@ -1,3 +1,4 @@
+using My;
 using My.Player;
 using My.Player.Bag;
 using TMPro;
@@ -40,6 +41,11 @@ namespace My.UI.Bag
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
+            {
+                return;
+            }
+
             var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             if (mdm == null || SlotIndex < 0 || SlotIndex >= mdm.QuickSlotItemSet.Length)
             {
@@ -73,6 +79,11 @@ namespace My.UI.Bag
 
         public void OnDrop(PointerEventData eventData)
         {
+            if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
+            {
+                return;
+            }
+
             var ctrl = ItemDragDropController.Instance;
             var payload = ctrl?.Payload;
             if (payload == null)

@@ -114,6 +114,7 @@ namespace My
 
         public GameLogicAreaManager AreaManager;
         public RumorIntelMapSpawn RumorIntelSpawn;
+        public MapMicroPlotManager MapMicroPlot;
         public AreaWantedManager WantedManager;
         public WantedDynamicGuardController WantedGuardSpawner;
 
@@ -160,6 +161,22 @@ namespace My
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
         }
 
+        // 背包内快捷道具栏是否允许拖动编辑：人类模式，或真身且未暴露且未发情。（不限制背包/商店等面板是否打开。）
+        public bool CanEditQuickSlotBar()
+        {
+            if (PlayerHumanMode)
+            {
+                return true;
+            }
+
+            if (playerLogicEntity == null)
+            {
+                return false;
+            }
+
+            return !playerLogicEntity.IsExposed && !playerLogicEntity.IsFaQing;
+        }
+
         public void OnGameLogicInit(SaveData saveData)
         {
             LogicEventBus = new();
@@ -168,6 +185,7 @@ namespace My
 
             });
             RumorIntelSpawn = new RumorIntelMapSpawn(this);
+            MapMicroPlot = new MapMicroPlotManager(this);
 
             worldPersistState = new GameWorldPersistStateManager();
             if (saveData != null)
@@ -338,6 +356,8 @@ namespace My
 
 
             AreaManager.Tick(dt);
+
+            MapMicroPlot?.Tick(dt);
 
             globalDropCollection?.Tick(dt);
 

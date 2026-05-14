@@ -11,13 +11,10 @@
 
 namespace cfg.demo
 { 
-    public enum EContainerType
+    public enum EMicroPlotConsumeOn
     {
-        Inventory = 0,
-        LootPoint = 1,
-        SpecialInventory = 2,
-        Shop = 3,
-        Warehouse = 4,
+        SuccessOrAbort = 0,
+        SuccessOnly = 1,
     }
 
 } 

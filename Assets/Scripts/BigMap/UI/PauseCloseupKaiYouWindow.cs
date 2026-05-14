@@ -165,14 +165,37 @@ namespace My.Map.View
         private void HandleInteractFinish()
         {
             var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-            if(isCounterSuccess)
+            var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId);
+            if (isCounterSuccess)
             {
                 p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId : SrcEntityId);
 
+                if(p.DesireLevel >= 2)
+                {
+                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 60_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+                }
+                else
+                {
+                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+                }
+                
             }
             else
             {
                 p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -8_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+
+                if (p.DesireLevel >= 2)
+                {
+                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+                }
+                else
+                {
+                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 20_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+                }
             }
 
             UIManager.Instance.HidePanel(ID);

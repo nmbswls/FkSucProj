@@ -133,4 +133,32 @@
         <var name="Alert" value="1"/>
         <var name="Omniscient" value="2"/>
     </enum>
+
+    <!-- 地图小剧情触发器与演出：Datas/micro_plot.xlsx，表见 __tables__ -->
+    <enum name="EMicroPlotConsumeOn">
+        <var name="SuccessOrAbort" value="0"/>
+        <var name="SuccessOnly" value="1"/>
+    </enum>
+
+    <enum name="EMicroPlotEventKind">
+        <var name="None" value="0"/>
+        <var name="Log" value="1"/>
+        <var name="NpcSpeak" value="2"/>
+    </enum>
+
+    <bean name="MicroPlotTimelineEvent" tags="sep=,">
+        <var name="t_sec" type="float"/>
+        <var name="kind" type="EMicroPlotEventKind"/>
+        <var name="actor_index" type="int" comment="managed_uniqnames 下标"/>
+        <var name="text" type="string" comment="对白或日志"/>
+    </bean>
+
+    <!-- 陷阱：Datas/trap_spec.xlsx，表见 __tables__ -->
+    <bean name="TrapTriggerEffect" tags="sep=,">
+        <var name="kind" type="int"/>
+        <var name="buff_id" type="string"/>
+        <var name="layer" type="int"/>
+        <var name="duration" type="float"/>
+        <var name="target_type" type="int"/>
+    </bean>
 </module>

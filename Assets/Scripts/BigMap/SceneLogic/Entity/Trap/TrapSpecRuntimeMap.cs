@@ -46,7 +46,7 @@ namespace My.Map.Entity
             Cache.Clear();
         }
 
-        static TrapSpecConfig MapRowToSpec(TrapSpecRow row)
+        static TrapSpecConfig MapRowToSpec(TrapSpec row)
         {
             var s = ScriptableObject.CreateInstance<TrapSpecConfig>();
             s.TriggerRadius = row.TriggerRadius;
@@ -64,7 +64,8 @@ namespace My.Map.Entity
                         continue;
                     }
 
-                    if (te.Kind == TrapTriggerEffect.KindAddBuff)
+                    // Luban trap_spec：kind 0 = AddBuff
+                    if (te.Kind == 0)
                     {
                         s.TriggerEffects.Add(new MapAbilityEffectAddBuffCfg
                         {

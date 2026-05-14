@@ -175,9 +175,9 @@ namespace My.Map
             var exposeRate10000 = PlayerGamePlayRule.CalculateBreakClothesInnerRate(glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerClothes), rawOverRate);
 
             float aMax = 100;
-            float w1 = 0.7f;
-            float w2 = 0.3f;
-            var aBase = aMax * (w1 * (1 - exposeRate10000 * 0.0001) * (1 - exposeRate10000 * 0.0001) + w2 * glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerEstrusProgrss) * 1.0 / 100_000);
+
+
+            var aBase = aMax * ((1 - exposeRate10000 * 0.0001) * (1 - exposeRate10000 * 0.0001) * (1 + glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerEstrusProgrss) * 1.0 / 100_000 * 0.4));
             var charm = glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerCharm);
             float weff = Math.Max(0, will - charm);
 

@@ -112,6 +112,7 @@ namespace My.Map.Unit
         public AIStateAttracted StateAttracted;
         public AIStateChaseWanted StateChaseWanted;
         public AIStateCharmedFollow StateCharmedFollow;
+        public AIStateScriptedMicroPlot StateScriptedMicroPlot;
 
 
         // 黑板 (Blackboard) - 状态间共享数据
@@ -172,6 +173,7 @@ namespace My.Map.Unit
             StateSearch = new AIStateSearch(this);
             StateAttracted = new AIStateAttracted(this);
             StateCharmedFollow = new AIStateCharmedFollow(this);
+            StateScriptedMicroPlot = new AIStateScriptedMicroPlot(this);
 
             if (Config.IsGuard)
             {
@@ -296,6 +298,9 @@ namespace My.Map.Unit
         public virtual bool CanBeAttract { get { return false; } }
         public virtual bool CanEnterCombat { get { return false; } }
 
+        // 为 true 时跳过 AIBaseState.Update 内共用的吸引/魅惑/参战等自动跳转（小剧情剧本态使用）。
+        public virtual bool SuppressSharedBrainTransitions => false;
+
         public AIBaseState(AIBrainV2 brain) { _brain = brain; }
 
         public virtual void OnEnter() { startTime = Time.time; }
@@ -303,6 +308,11 @@ namespace My.Map.Unit
         public void Update()
         {
             OnUpdate();
+
+            if (SuppressSharedBrainTransitions)
+            {
+                return;
+            }
 
             if(CanEnterCombat)
             {

@@ -16,13 +16,42 @@ namespace My
 
         public readonly WorldNpcCharacterPersistRegistry NpcCharacters = new();
 
+        // mapId|triggerId -> consumed
+        private readonly Dictionary<string, bool> _microPlotConsumed = new();
+
         public GameWorldPersistStateManager()
         {
         }
 
+        // 小剧情触发器是否已消耗（成功或按配置在中断后消耗）。
+        public bool IsMicroPlotTriggerConsumed(string mapId, string triggerId)
+        {
+            if (string.IsNullOrEmpty(mapId) || string.IsNullOrEmpty(triggerId))
+            {
+                return false;
+            }
+
+            var key = MicroPlotPersistKey(mapId, triggerId);
+            return _microPlotConsumed.TryGetValue(key, out var v) && v;
+        }
+
+        // 将小剧情触发器标记为已消耗（写入内存并在下次存档时进入 SaveData）。
+        public void MarkMicroPlotConsumed(string mapId, string triggerId)
+        {
+            if (string.IsNullOrEmpty(mapId) || string.IsNullOrEmpty(triggerId))
+            {
+                return;
+            }
+
+            _microPlotConsumed[MicroPlotPersistKey(mapId, triggerId)] = true;
+        }
+
+        public static string MicroPlotPersistKey(string mapId, string triggerId) => $"{mapId}|{triggerId}";
+
         public void InitFromSave(SaveData savingData)
         {
             _fishingRuntime.Clear();
+            _microPlotConsumed.Clear();
             if (savingData?.PlayerData?.FishingSpotByUniqName != null)
             {
                 foreach (var kv in savingData.PlayerData.FishingSpotByUniqName)
@@ -62,6 +91,17 @@ namespace My
             }
 
             NpcCharacters.LoadFromSave(savingData?.PlayerData?.NpcCharacterPersistByKey);
+
+            if (savingData?.PlayerData?.MicroPlotConsumedByKey != null)
+            {
+                foreach (var kv in savingData.PlayerData.MicroPlotConsumedByKey)
+                {
+                    if (kv.Value)
+                    {
+                        _microPlotConsumed[kv.Key] = true;
+                    }
+                }
+            }
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -105,6 +145,16 @@ namespace My
             }
 
             NpcCharacters.SaveTo(data.PlayerData);
+
+            data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
+            data.PlayerData.MicroPlotConsumedByKey.Clear();
+            foreach (var kv in _microPlotConsumed)
+            {
+                if (kv.Value)
+                {
+                    data.PlayerData.MicroPlotConsumedByKey[kv.Key] = true;
+                }
+            }
         }
 
         public FishingSpotRuntimeSave GetOrCreateFishingSpotState(string uniqName, string cfgId, int settlementDayIndex)

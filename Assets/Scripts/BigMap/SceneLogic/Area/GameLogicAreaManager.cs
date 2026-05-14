@@ -199,10 +199,14 @@ namespace My.Map.Logic
             logicManager.ApplyPendingMapRuntimeAfterMapInit(mapName);
 
             SetupDesireCrystalSession(mapName);
+
+            logicManager?.MapMicroPlot?.RebuildForCurrentMap();
         }
 
         public void CleanArea()
         {
+            logicManager?.MapMicroPlot?.AbortForMapChange();
+
             UnitGridIndex.Clear();
             RoomGridIndex.Clear();
 

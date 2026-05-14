@@ -63,6 +63,8 @@ public partial class Tables
     public demo.TbRumorGlobal TbRumorGlobal {get; }
     public demo.TbCharacterInfo TbCharacterInfo {get; }
     public demo.TbCharacterFavorInfo TbCharacterFavorInfo {get; }
+    public demo.TbMicroPlotDef TbMicroPlotDef {get; }
+    public demo.TbMapMicroPlotTrigger TbMapMicroPlotTrigger {get; }
     public demo.TbTrapSpec TbTrapSpec {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
@@ -116,6 +118,8 @@ public partial class Tables
         TbRumorGlobal = new demo.TbRumorGlobal(loader("demo_tbrumorglobal"));
         TbCharacterInfo = new demo.TbCharacterInfo(loader("demo_tbcharacterinfo"));
         TbCharacterFavorInfo = new demo.TbCharacterFavorInfo(loader("demo_tbcharacterfavorinfo"));
+        TbMicroPlotDef = new demo.TbMicroPlotDef(loader("demo_tbmicroplotdef"));
+        TbMapMicroPlotTrigger = new demo.TbMapMicroPlotTrigger(loader("demo_tbmapmicroplottrigger"));
         TbTrapSpec = new demo.TbTrapSpec(loader("demo_tbtrapspec"));
         ResolveRef();
     }
@@ -171,6 +175,8 @@ public partial class Tables
         TbRumorGlobal.ResolveRef(this);
         TbCharacterInfo.ResolveRef(this);
         TbCharacterFavorInfo.ResolveRef(this);
+        TbMicroPlotDef.ResolveRef(this);
+        TbMapMicroPlotTrigger.ResolveRef(this);
         TbTrapSpec.ResolveRef(this);
     }
 }

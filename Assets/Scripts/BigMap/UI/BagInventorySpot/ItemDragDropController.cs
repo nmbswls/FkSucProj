@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Config;
+using My;
 using My.Map;
 using My.Player;
 using My.Player.Bag;
@@ -97,6 +98,11 @@ namespace My.UI
 
         public bool BeginDragFromQuickBar(string itemId, int slotIndex)
         {
+            if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
+            {
+                return false;
+            }
+
             if (IsDragging)
             {
                 return false;
@@ -136,6 +142,11 @@ namespace My.UI
 
         public void OnDropToQuickBarSlot(int dstSlotIndex, DragPayload payload)
         {
+            if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
+            {
+                return;
+            }
+
             var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             if (mdm == null || payload == null)
             {
@@ -247,6 +258,12 @@ namespace My.UI
         {
             if (payload.SourceContainerType == EContainerType.QuickBar)
             {
+                if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
+                {
+                    MarkDropHandled();
+                    return;
+                }
+
                 MainGameManager.Instance.gameLogicManager.playerDataManager.ClearQuickSlot(payload.SourceIndex);
                 MarkDropHandled();
                 PlayerBagUIPanel.Instance?.RefreshQuickBarSlots();
