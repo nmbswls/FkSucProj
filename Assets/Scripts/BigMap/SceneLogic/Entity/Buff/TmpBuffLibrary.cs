@@ -164,6 +164,14 @@ namespace My.Map.Entity
                     },
                 };
 
+                _library["charm_fck_bonus"] = new BuffDefinition()
+                {
+                    BuffId = "charm_fck_bonus",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerJingYuRate, ModifierValue = -2000 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
 
                 _library["lock_move"] = new BuffDefinition()
                 {
@@ -446,6 +454,19 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                     IsHidden = true,
                 };
+
+                _library["fcked_marked"] = new BuffDefinition()
+                {
+                    BuffId = "fcked_marked",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NpcFcked, ModifierValue = 1 },
+
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
 
                 _library["be_fcked"] = new BuffDefinition()
                 {

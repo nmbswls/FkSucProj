@@ -1832,13 +1832,26 @@ namespace My.Map
             {
                 ApplyResourceChange(AttrIdConsts.PlayerHunger, +hungerVal, false, EDmgFlag.None, null);
                 ApplyResourceChange(AttrIdConsts.HP, +hungerVal, false, EDmgFlag.None, null);
+            }
 
-                int addJingYuan = (int)hungerVal / 1000;
+            float toJingYuanRate = 0.8f; // 默认情况下 直接榨取80%吸收为精元
+            toJingYuanRate -= GetAttr(AttrIdConsts.PlayerJingYuRate) * 0.0001f;
 
-                if(addJingYuan > 0)
-                {
-                    LogicManager.playerDataManager.InventorySystem.GiveItemToPlayer("jingyuan", addJingYuan);
-                }
+            if (toJingYuanRate < 0f) toJingYuanRate = 0f;
+            // 计算减成
+            if (toJingYuanRate > 1.0f) toJingYuanRate = 1.0f;
+
+            var toJingYuan = toJingYuanRate * absorbVal;
+            var toJingYu = absorbVal - toJingYuan;
+
+            if((int)(toJingYuan * 1000 / 1000) > 0)
+            {
+                LogicManager.playerDataManager.InventorySystem.GiveItemToPlayer("jingyuan", (int)(toJingYuan * 1000 / 1000));
+            }
+
+            if(toJingYu * 1000 > 0)
+            {
+                ApplyResourceChange(AttrIdConsts.PlayerJingYu, (long)(toJingYu * 1000), false, EDmgFlag.None, null);
             }
         }
 

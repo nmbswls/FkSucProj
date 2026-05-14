@@ -90,6 +90,7 @@ namespace My.Map.Entity
         public const string PlayerEstrusProgrss = "PlayerEstrusProgrss"; // 发情值
         public const string PlayerOriginPower = "PlayerOriginPower";
         public const string PlayerJingYu = "PlayerJingYu"; // 精浴用属性做 buff只负责显示
+        public const string PlayerJingYuRate = "PlayerJingYuRate"; // 额外精浴比例
 
         public const string PlayerKnockDown = "PlayerKnockDown";
 
