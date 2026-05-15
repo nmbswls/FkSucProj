@@ -70,8 +70,8 @@ namespace My
             SpriteRenderer sr = stamp.GetComponent<SpriteRenderer>();
             switch (type)
             {
-                case EGroundElementType.GcLiquid: sr.color = new Color(1, 0, 0, 0); break; // 写入 R 通道
-                case EGroundElementType.Milk: sr.color = new Color(0, 1, 0, 0); break; // 写入 G 通道
+                case EGroundElementType.GcLiquid: sr.color = new Color(1, 0, 0, 1); break; // 写入 R 通道
+                case EGroundElementType.Milk: sr.color = new Color(0, 1, 0, 1); break; // 写入 G 通道
             }
         }
     }
