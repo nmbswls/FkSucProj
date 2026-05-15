@@ -1,0 +1,209 @@
+using cfg.demo;
+using My;
+using My.Config;
+using My.Player.Bag;
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace My.UI
+{
+    // 背包格与快捷道具格共用的视图根：事件转发到可选 Behaviour。
+    public abstract class ItemCellBase : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+    {
+        public Image bg;
+        public Image icon;
+        public RectTransform countRect;
+        public TextMeshProUGUI countText;
+        public Image maskOverlay;
+        public Image lockOverlay;
+        public Image addOverlay;
+        public TextMeshProUGUI debugNameStr;
+
+        public int Index { get; protected set; }
+        public EContainerType ContainerType { get; protected set; }
+        public int ContainerId { get; protected set; }
+
+        protected ItemStack boundStack;
+        protected System.Action<int> onChangedCallback;
+        protected ItemData cacheItemDef;
+
+        public enum EStyleType
+        {
+            Normal,
+            Red,
+            AddIcon,
+            Locked,
+            Masked,
+        }
+
+        public EStyleType StyleType { get; protected set; }
+
+        IItemCellClickBehaviour _click;
+        IItemCellDragSourceBehaviour _dragSource;
+        IItemCellDropTargetBehaviour _dropTarget;
+
+        public ItemStack GetBoundStack() => boundStack;
+
+        protected void SetBoundStack(ItemStack stack)
+        {
+            boundStack = stack;
+        }
+
+        protected void SetIndexAndContainer(int index, EContainerType containerType, int containerId)
+        {
+            Index = index;
+            ContainerType = containerType;
+            ContainerId = containerId;
+        }
+
+        protected void SetOnChanged(System.Action<int> cb)
+        {
+            onChangedCallback = cb;
+        }
+
+        protected virtual void Awake()
+        {
+            CacheBehaviours();
+        }
+
+        public void RebuildBehaviourCache()
+        {
+            CacheBehaviours();
+        }
+
+        protected void CacheBehaviours()
+        {
+            _click = null;
+            _dragSource = null;
+            _dropTarget = null;
+            foreach (var mb in GetComponents<MonoBehaviour>())
+            {
+                if (mb == null || mb == this)
+                {
+                    continue;
+                }
+
+                if (_click == null && mb is IItemCellClickBehaviour c)
+                {
+                    _click = c;
+                }
+
+                if (_dragSource == null && mb is IItemCellDragSourceBehaviour d)
+                {
+                    _dragSource = d;
+                }
+
+                if (_dropTarget == null && mb is IItemCellDropTargetBehaviour t)
+                {
+                    _dropTarget = t;
+                }
+            }
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (_click != null)
+            {
+                _click.OnItemCellClick(this, eventData);
+            }
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            if (_dragSource != null)
+            {
+                _dragSource.TryBeginDrag(this, eventData);
+            }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            ItemDragDropController.Instance?.UpdateDrag(eventData.position);
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            ItemDragDropController.Instance?.EndDrag();
+            ItemPopupMenu.Close();
+        }
+
+        public void OnDrop(PointerEventData eventData)
+        {
+            var ctrl = ItemDragDropController.Instance;
+            var payload = ctrl?.Payload;
+            if (payload == null || ctrl == null)
+            {
+                return;
+            }
+
+            if (_dropTarget != null)
+            {
+                _dropTarget.HandleDrop(this, payload, Index, ctrl);
+                return;
+            }
+
+            Debug.LogWarning("ItemCellBase: missing drop behaviour on " + name);
+        }
+
+        public void RefreshCellStyle(EStyleType style)
+        {
+            StyleType = style;
+            if (maskOverlay != null)
+            {
+                maskOverlay.gameObject.SetActive(false);
+            }
+
+            if (lockOverlay != null)
+            {
+                lockOverlay.gameObject.SetActive(false);
+            }
+
+            if (addOverlay != null)
+            {
+                addOverlay.gameObject.SetActive(false);
+            }
+
+            if (bg != null)
+            {
+                bg.color = style == EStyleType.Red ? Color.red : Color.white;
+            }
+
+            if (style == EStyleType.Masked && maskOverlay != null)
+            {
+                maskOverlay.gameObject.SetActive(true);
+            }
+
+            if (style == EStyleType.Locked && lockOverlay != null)
+            {
+                lockOverlay.gameObject.SetActive(true);
+            }
+
+            if (style == EStyleType.AddIcon && addOverlay != null)
+            {
+                addOverlay.gameObject.SetActive(true);
+            }
+        }
+
+        protected void ApplyItemIconSprite(string itemId)
+        {
+            if (icon == null)
+            {
+                return;
+            }
+
+            var def = ItemCatalog.GetItemDef(itemId);
+            if (def == null || string.IsNullOrEmpty(def.SpriteName))
+            {
+                return;
+            }
+
+            var sp = SimpleResManager.Load<Sprite>("Sprites/" + def.SpriteName);
+            if (sp != null)
+            {
+                icon.sprite = sp;
+            }
+        }
+    }
+}

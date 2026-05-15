@@ -1957,6 +1957,7 @@ MonoBehaviour:
   RetreatHintText: {fileID: 3604753548776573985}
   botHintTextPrefab: {fileID: 0}
   SkilBar: {fileID: 8359797276795289790}
+  ItemQuickBarRoot: {fileID: 5267337810198593610}
   PlayerBuffBar: {fileID: 8820010010010010003}
   PleasureBar: {fileID: 710086651439770864}
   TextWantedLevel: {fileID: 1228824338159020622}

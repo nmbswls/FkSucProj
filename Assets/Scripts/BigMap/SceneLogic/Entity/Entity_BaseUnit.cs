@@ -13,6 +13,7 @@ using static My.Map.Fight.FightStruct;
 using My.Player;
 using Unity.VisualScripting;
 using static My.UI.FishingMiniGamePanel;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 
 namespace My.Map
@@ -235,6 +236,8 @@ namespace My.Map
             _lowFreqStateTimer += 1.0f;
 
             TickResourceChange(1.0f);
+
+            TickOnGroundOverlay();
         }
 
         protected virtual void TickResourceChange(float interval)
@@ -1488,6 +1491,45 @@ namespace My.Map
         public virtual bool IsInHMode()
         {
             return false;
+        }
+
+        private HashSet<EGroundElementType> currLiquids = new();
+
+        protected void TickOnGroundOverlay()
+        {
+            if (MarkNoLogic || IsDead || MarkUnsensored)
+            {
+                return;
+            }
+
+            // 假设单位碰撞半径是 0.5
+            var liquids = LogicManager.GroundOverManager.CheckAllLiquidsUnderUnit(this.Pos, 0.3f);
+
+            foreach(var liquid in currLiquids)
+            {
+                // 移除
+                if(!liquids.Contains(liquid))
+                {
+                    switch(liquid)
+                    {
+                        case EGroundElementType.GcLiquid:
+                            {
+                                LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_gc_liquid");
+                            }
+                            break;
+                    }
+                }
+            }
+
+            foreach(var liquid2 in liquids)
+            {
+                // 增加
+                if (!currLiquids.Contains(liquid2))
+                {
+
+                }
+            }
+            
         }
     }
 

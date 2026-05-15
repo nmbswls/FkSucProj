@@ -195,13 +195,16 @@ namespace My.UI
 
         public GameObject botHintTextPrefab;
         public OverworldSkillBar SkilBar;
+
+        // 道具快捷栏根节点（预制体 ItemBar）；为空时在 Awake 中尝试按名称 ItemBar 查找。
+        public RectTransform ItemQuickBarRoot;
+
         public OverworldPlayerBuffBar PlayerBuffBar;
 
         public Image PleasureBar;
 
         public TextMeshProUGUI TextWantedLevel;
 
-        //public OverworldSkillBar ItemBar;
 
         public bool IsHunterMode = false;
 
@@ -240,6 +243,25 @@ namespace My.UI
             //BottomProgressPanel.Setup();
 
             SkilBar.InitSkills(this);
+            EnsureQuickItemBarReady();
+        }
+
+        void EnsureQuickItemBarReady()
+        {
+            if (ItemQuickBarRoot == null)
+            {
+                return;
+            }
+
+            var mgr = ItemQuickBarRoot.GetComponent<OverworldQuickItemBarManager>();
+            if (mgr == null)
+            {
+                mgr = ItemQuickBarRoot.gameObject.AddComponent<OverworldQuickItemBarManager>();
+                mgr.AttachRoot(ItemQuickBarRoot);
+            }
+
+            mgr.EnsureSlots();
+            mgr.RefreshFromPlayerData();
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
@@ -303,6 +325,15 @@ namespace My.UI
             if (GetComponent<DesireCrystalHuntingHudMarkers>() == null)
             {
                 gameObject.AddComponent<DesireCrystalHuntingHudMarkers>();
+            }
+
+            if (ItemQuickBarRoot == null)
+            {
+                var itemBarTr = transform.Find("ItemBar");
+                if (itemBarTr != null)
+                {
+                    ItemQuickBarRoot = itemBarTr as RectTransform;
+                }
             }
         }
 
@@ -698,7 +729,7 @@ namespace My.UI
 
             TrySubscribePlayerBuffEvents();
 
-            
+            EnsureQuickItemBarReady();
         }
 
         public override int FocusPriority => 0;
@@ -947,8 +978,9 @@ namespace My.UI
                     MainGameManager.Instance.gameLogicManager.playerDataManager.CostItem(itemId, 1);
                 }
             });
-        }
 
+            OverworldQuickItemBarManager.Instance?.RefreshFromPlayerData();
+        }
 
         public bool OnNavigate(Vector2 dir) => false;
 

@@ -13,6 +13,7 @@ using System;
 using My.Player;
 using static My.Input.QuickPlayerInputBinder;
 using My.Input;
+using My.UI;
 
 namespace My.UI.Bag
 {
@@ -57,9 +58,6 @@ namespace My.UI.Bag
         }
 
         public List<InnerSpeBagItem> SpeBagItems = new();
-
-        readonly List<QuickBarItemSlotCell> _quickBarSlots = new();
-        Transform _quickBarRoot;
 
         public PlayerInventorySystem BindingInventory { get { return MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem; } }
 
@@ -127,109 +125,13 @@ namespace My.UI.Bag
             //gameObject.SetActive(false);
         }
 
-        void EnsureQuickBarBuilt()
-        {
-            if (_quickBarRoot != null)
-            {
-                return;
-            }
-
-            var row = new GameObject("QuickItemBar", typeof(RectTransform));
-            row.transform.SetParent(transform, false);
-            var rt = row.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0.5f, 0f);
-            rt.anchorMax = new Vector2(0.5f, 0f);
-            rt.pivot = new Vector2(0.5f, 0f);
-            rt.anchoredPosition = new Vector2(0, 20f);
-            rt.sizeDelta = new Vector2(430, 74);
-            var h = row.AddComponent<HorizontalLayoutGroup>();
-            h.spacing = 8;
-            h.padding = new RectOffset(6, 6, 6, 6);
-            h.childAlignment = TextAnchor.MiddleCenter;
-            h.childControlWidth = false;
-            h.childControlHeight = false;
-            h.childForceExpandWidth = false;
-            h.childForceExpandHeight = false;
-
-            for (int i = 0; i < 5; i++)
-            {
-                var slotGo = new GameObject($"QuickSlot{i}", typeof(RectTransform));
-                slotGo.transform.SetParent(row.transform, false);
-                slotGo.GetComponent<RectTransform>().sizeDelta = new Vector2(64, 64);
-                var bg = slotGo.AddComponent<Image>();
-                bg.color = new Color(0.18f, 0.16f, 0.22f, 0.95f);
-                var slot = slotGo.AddComponent<QuickBarItemSlotCell>();
-                slot.SlotIndex = i;
-                slot.Background = bg;
-
-                var iconGo = new GameObject("Icon", typeof(RectTransform));
-                iconGo.transform.SetParent(slotGo.transform, false);
-                var irt = iconGo.GetComponent<RectTransform>();
-                irt.anchorMin = Vector2.zero;
-                irt.anchorMax = Vector2.one;
-                irt.offsetMin = new Vector2(4, 4);
-                irt.offsetMax = new Vector2(-4, -4);
-                var iconImg = iconGo.AddComponent<Image>();
-                iconImg.raycastTarget = false;
-                slot.Icon = iconImg;
-
-                var cntGo = new GameObject("Cnt", typeof(RectTransform));
-                cntGo.transform.SetParent(slotGo.transform, false);
-                var crt = cntGo.GetComponent<RectTransform>();
-                crt.anchorMin = new Vector2(1f, 0f);
-                crt.anchorMax = new Vector2(1f, 0f);
-                crt.pivot = new Vector2(1f, 0f);
-                crt.anchoredPosition = new Vector2(-4, 4);
-                crt.sizeDelta = new Vector2(36, 22);
-                var cntTxt = cntGo.AddComponent<TextMeshProUGUI>();
-                cntTxt.fontSize = 14;
-                cntTxt.alignment = TextAlignmentOptions.BottomRight;
-                cntTxt.color = Color.white;
-                slot.CountText = cntTxt;
-
-                _quickBarSlots.Add(slot);
-            }
-
-            _quickBarRoot = row.transform;
-        }
-
-        public void RefreshQuickBarSlots()
-        {
-            if (_quickBarSlots.Count == 0)
-            {
-                return;
-            }
-
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < _quickBarSlots.Count && i < mdm.QuickSlotItemSet.Length; i++)
-            {
-                _quickBarSlots[i].BindDisplay(mdm.QuickSlotItemSet[i]);
-            }
-        }
-
-        private void Update()
-        {
-            if (markDirty)
-            {
-                OnInventoryAllChanged();
-
-                markDirty = false;
-            }
-        }
-
         public override void Show()
         {
             base.Show();
 
-            EnsureQuickBarBuilt();
             InitilaizeView();
             CloseSpeBag();
-            RefreshQuickBarSlots();
+            OverworldQuickItemBarManager.Instance?.RefreshFromPlayerData();
         }
 
         public void InitilaizeView()
@@ -270,7 +172,16 @@ namespace My.UI.Bag
                 SpeGridView.RefreshAllShownItem();
             }
 
-            RefreshQuickBarSlots();
+            OverworldQuickItemBarManager.Instance?.RefreshFromPlayerData();
+        }
+
+        private void Update()
+        {
+            if (markDirty)
+            {
+                OnInventoryAllChanged();
+                markDirty = false;
+            }
         }
 
         LoopGridViewItem OnMainGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
@@ -291,7 +202,7 @@ namespace My.UI.Bag
             {
                 var stack = mainBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, EContainerType.Inventory, 0, null, AnyContainerItemCell.EStyleType.Red);
+                cell.Bind(stack, itemIndex, EContainerType.Inventory, 0, null, ItemCellBase.EStyleType.Red);
             }
             else
             {
@@ -460,12 +371,12 @@ namespace My.UI.Bag
             {
                 var stack = specBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, speCt, (int)CurrExpandBagId, null, AnyContainerItemCell.EStyleType.Red);
+                cell.Bind(stack, itemIndex, speCt, (int)CurrExpandBagId, null, ItemCellBase.EStyleType.Red);
             }
             else if(itemIndex == specBag.BasicCapacity + specBag.ExtraSlots.Count)
             {
                 item.gameObject.SetActive(true);
-                cell.Bind(null, itemIndex, speCt, (int)CurrExpandBagId, null, AnyContainerItemCell.EStyleType.AddIcon);
+                cell.Bind(null, itemIndex, speCt, (int)CurrExpandBagId, null, ItemCellBase.EStyleType.AddIcon);
             }
             else
             {

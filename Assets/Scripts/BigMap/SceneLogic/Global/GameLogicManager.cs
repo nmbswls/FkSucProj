@@ -113,6 +113,8 @@ namespace My
         public MapExportDatabase cacheMapDb;
 
         public GameLogicAreaManager AreaManager;
+        public LogicGroundOverlayManager GroundOverManager;
+
         public RumorIntelMapSpawn RumorIntelSpawn;
         public MapMicroPlotManager MapMicroPlot;
         public AreaWantedManager WantedManager;
@@ -162,8 +164,11 @@ namespace My
         }
 
         // 背包内快捷道具栏是否允许拖动编辑：人类模式，或真身且未暴露且未发情。（不限制背包/商店等面板是否打开。）
+        // 首版 HUD 快捷栏调试：暂时恒为 true，恢复时请还原下方真身/暴露/发情判断。
         public bool CanEditQuickSlotBar()
         {
+            return true;
+            /*
             if (PlayerHumanMode)
             {
                 return true;
@@ -175,6 +180,7 @@ namespace My
             }
 
             return !playerLogicEntity.IsExposed && !playerLogicEntity.IsFaQing;
+            */
         }
 
         public void OnGameLogicInit(SaveData saveData)
@@ -184,6 +190,8 @@ namespace My
             {
 
             });
+
+            GroundOverManager = new(this);
             RumorIntelSpawn = new RumorIntelMapSpawn(this);
             MapMicroPlot = new MapMicroPlotManager(this);
 
@@ -354,6 +362,7 @@ namespace My
                 pendingNewEntities.Clear();
             }
 
+            GroundOverManager?.Tick();
 
             AreaManager.Tick(dt);
 
