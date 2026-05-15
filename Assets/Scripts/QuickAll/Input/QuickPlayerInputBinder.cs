@@ -162,7 +162,7 @@ namespace My.Input
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.F10))
             {
-                My.UI.Talent.TalentTreePanel.Toggle();
+                My.UI.Forge.ForgePanel.Toggle();
             }
 
             if (GlobalLock) return;

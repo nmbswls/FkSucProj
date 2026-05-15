@@ -67,6 +67,7 @@ public partial class Tables
     public demo.TbMapMicroPlotTrigger TbMapMicroPlotTrigger {get; }
     public demo.TbMicroPlotTimelineEvent TbMicroPlotTimelineEvent {get; }
     public demo.TbTrapSpec TbTrapSpec {get; }
+    public demo.TbForgeRecipe TbForgeRecipe {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -123,6 +124,7 @@ public partial class Tables
         TbMapMicroPlotTrigger = new demo.TbMapMicroPlotTrigger(loader("demo_tbmapmicroplottrigger"));
         TbMicroPlotTimelineEvent = new demo.TbMicroPlotTimelineEvent(loader("demo_tbmicroplottimelineevent"));
         TbTrapSpec = new demo.TbTrapSpec(loader("demo_tbtrapspec"));
+        TbForgeRecipe = new demo.TbForgeRecipe(loader("demo_tbforgerecipe"));
         ResolveRef();
     }
     
@@ -181,6 +183,7 @@ public partial class Tables
         TbMapMicroPlotTrigger.ResolveRef(this);
         TbMicroPlotTimelineEvent.ResolveRef(this);
         TbTrapSpec.ResolveRef(this);
+        TbForgeRecipe.ResolveRef(this);
     }
 }
 

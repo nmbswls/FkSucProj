@@ -325,6 +325,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = Forge.ForgePanel.Pid,
+                resourcePath = "UI/Prefabs/ForgePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = PlayerProgressionHubPanel.Pid,
                 resourcePath = "UI/Prefabs/PlayerProgressionHubPanel",
                 defaultLayer = UILayer.Popup,

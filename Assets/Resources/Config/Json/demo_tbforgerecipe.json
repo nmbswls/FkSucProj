@@ -1,0 +1,36 @@
+[
+  {
+    "id": 1,
+    "recipe_type": 0,
+    "sort": 10,
+    "result_item_id": "1",
+    "icon_sprite": "",
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "materials": [
+      { "item_id": "small_stone", "count": 2 }
+    ]
+  },
+  {
+    "id": 2,
+    "recipe_type": 1,
+    "sort": 10,
+    "result_item_id": "small_stone",
+    "icon_sprite": "",
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "materials": []
+  },
+  {
+    "id": 3,
+    "recipe_type": 2,
+    "sort": 5,
+    "result_item_id": "1",
+    "icon_sprite": "",
+    "unlock_mode": 2,
+    "unlock_param": "small_stone",
+    "materials": [
+      { "item_id": "1", "count": 1 }
+    ]
+  }
+]

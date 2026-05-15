@@ -10,7 +10,6 @@ using My.Map.Logic;
 using My.Map.Scene;
 using My.Map;
 using My.UI;
-using My.UI.Talent;
 using My.Map.Fight;
 using cfg.demo;
 
@@ -228,11 +227,11 @@ public class ConsoleGM : MonoBehaviour
                 UIOrchestrator.Instance.ShowShop(shopInfo);
             });
 
-        Register("talent_ui", "Toggle talent tree panel (same as F10)",
+        Register("talent_ui", "Toggle PlayerProgressionHub Talents tab",
             null,
             _ =>
             {
-                TalentTreePanel.Toggle();
+                PlayerProgressionHubPanel.ToggleTalents();
             });
 
         Register("gc", "加gc",
