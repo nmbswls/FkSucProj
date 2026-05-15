@@ -129,10 +129,11 @@ namespace My.Map.Entity
                                 {
                                     EffectText = "爆乳",
                                 },
-                                 new MapFightEffectCreateAreaEffectCfg()
+                                 new MapFightEffectAddLiquidCfg()
                                 {
-                                    CfgId = "ground_milk_liquid",
-                                    LifeTime = 10,
+                                    ElementType = EGroundElementType.Milk,
+                                    Range = 1.5f,
+                                    Duration = 10,
                                 },
                                 new MapAbilityEffectHitBoxCfg()
                                 {

@@ -18,6 +18,8 @@ public sealed partial class MicroPlotTimelineEvent : Luban.BeanBase
 {
     public MicroPlotTimelineEvent(JSONNode _buf) 
     {
+        { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
+        { if(!_buf["plot_id"].IsString) { throw new SerializationException(); }  PlotId = _buf["plot_id"]; }
         { if(!_buf["t_sec"].IsNumber) { throw new SerializationException(); }  TSec = _buf["t_sec"]; }
         { if(!_buf["kind"].IsNumber) { throw new SerializationException(); }  Kind = (demo.EMicroPlotEventKind)_buf["kind"].AsInt; }
         { if(!_buf["actor_index"].IsNumber) { throw new SerializationException(); }  ActorIndex = _buf["actor_index"]; }
@@ -29,15 +31,17 @@ public sealed partial class MicroPlotTimelineEvent : Luban.BeanBase
         return new demo.MicroPlotTimelineEvent(_buf);
     }
 
+    public int Id;
+    public string PlotId;
+    /// <summary>
+    /// kind
+    /// </summary>
     public float TSec;
     public demo.EMicroPlotEventKind Kind;
     /// <summary>
     /// managed_uniqnames 下标
     /// </summary>
     public int ActorIndex;
-    /// <summary>
-    /// 对白或日志
-    /// </summary>
     public string Text;
    
     public const int __ID__ = 2016850335;
@@ -50,6 +54,8 @@ public sealed partial class MicroPlotTimelineEvent : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
+        + "id:" + Id + ","
+        + "plotId:" + PlotId + ","
         + "tSec:" + TSec + ","
         + "kind:" + Kind + ","
         + "actorIndex:" + ActorIndex + ","

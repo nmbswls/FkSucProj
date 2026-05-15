@@ -122,6 +122,7 @@ namespace My
             var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(SwitchAreaIntent.AreaName);
 
             AreaManager.InitilizeMap(SwitchAreaIntent.AreaName);
+            MapMicroPlot?.RebuildForCurrentMap();
 
             if (mapCfg != null && mapCfg.IsHome)
             {

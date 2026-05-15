@@ -200,7 +200,6 @@ namespace My.Map.Logic
 
             SetupDesireCrystalSession(mapName);
 
-            logicManager?.MapMicroPlot?.RebuildForCurrentMap();
         }
 
         public void CleanArea()

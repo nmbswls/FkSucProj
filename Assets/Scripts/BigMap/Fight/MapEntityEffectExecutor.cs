@@ -1783,8 +1783,26 @@ namespace My.Map.Entity
             ctx.Env.AddNewEntityRecord(gcLiquidEntity);
         }
     }
-    
 
+    public class AbilityEffectExecutor4AddLiquid : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectAddLiquidCfg;
+
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4AddLiquid err");
+                return;
+            }
+
+            ctx.Env.GroundOverManager.AddElementCircle(ctx.TriggerPos.Value, realCfg.Range, realCfg.ElementType, realCfg.Duration);
+        }
+    }
+
+
+
+    
 
     public class AbilityEffectExecutor4WantedIncidentBroadcast : AbilityEffectExecutor
     {

@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace My.Map
 {
-    // 地图小剧情：触发器（Luban TbMapMicroPlotTrigger）+ 演出（TbMicroPlotDef）；NPC 使用 AIStateScriptedMicroPlot。
+    // 地图小剧情：触发器（Luban TbMapMicroPlotTrigger）+ 演出定义（TbMicroPlotDef）+ 时间轴行（TbMicroPlotTimelineEvent.plot_id）；NPC 使用 AIStateScriptedMicroPlot。
     public sealed class MapMicroPlotManager
     {
         // 与表内无关：玩家在收听点附近进入可触发（策划控制触发点数量即可）
-        public const float TriggerListenRadius = 8f;
+        public const float TriggerListenRadius = 3f;
 
         readonly My.GameLogicManager _glm;
 
@@ -137,6 +137,39 @@ namespace My.Map
             _runner = runner;
         }
 
+        // 时间轴已拆到 TbMicroPlotTimelineEvent；按 plot_id 对齐 MicroPlotDef.id，忽略 def 内嵌 timeline 字段。
+        static List<MicroPlotTimelineEvent> BuildTimelineForPlot(MicroPlotDef def)
+        {
+            var list = new List<MicroPlotTimelineEvent>();
+            if (def == null || string.IsNullOrEmpty(def.Id))
+            {
+                return list;
+            }
+
+            var table = CfgMgr.Cfgs?.TbMicroPlotTimelineEvent;
+            if (table?.DataList == null)
+            {
+                return list;
+            }
+
+            foreach (var row in table.DataList)
+            {
+                if (row == null || row.PlotId != def.Id)
+                {
+                    continue;
+                }
+
+                list.Add(row);
+            }
+
+            list.Sort(static (a, b) =>
+            {
+                int c = a.TSec.CompareTo(b.TSec);
+                return c != 0 ? c : a.Id.CompareTo(b.Id);
+            });
+            return list;
+        }
+
         internal static bool TryResolveNpc(
             GameLogicAreaManager area,
             My.GameLogicManager glm,
@@ -171,6 +204,7 @@ namespace My.Map
             readonly MapMicroPlotManager _owner;
             readonly MapMicroPlotTrigger _trigger;
             readonly MicroPlotDef _def;
+            readonly List<MicroPlotTimelineEvent> _timeline;
             readonly List<NpcUnitLogicEntity> _actors = new();
 
             float _elapsed;
@@ -187,6 +221,7 @@ namespace My.Map
                 _owner = owner;
                 _trigger = trigger;
                 _def = def;
+                _timeline = BuildTimelineForPlot(def);
             }
 
             public bool TryStart()
@@ -241,21 +276,14 @@ namespace My.Map
                     return;
                 }
 
-                var timeline = _def.Timeline;
-                if (timeline != null)
+                var timeline = _timeline;
+                while (_nextEventIdx < timeline.Count && timeline[_nextEventIdx].TSec <= _elapsed)
                 {
-                    while (_nextEventIdx < timeline.Count && timeline[_nextEventIdx].TSec <= _elapsed)
-                    {
-                        FireEvent(timeline[_nextEventIdx]);
-                        _nextEventIdx++;
-                    }
+                    FireEvent(timeline[_nextEventIdx]);
+                    _nextEventIdx++;
                 }
 
-                if (timeline != null && timeline.Count > 0 && _nextEventIdx >= timeline.Count)
-                {
-                    Finish(aborted: false);
-                }
-                else if (timeline == null || timeline.Count == 0)
+                if (timeline.Count == 0 || _nextEventIdx >= timeline.Count)
                 {
                     Finish(aborted: false);
                 }

@@ -20,7 +20,6 @@ public sealed partial class MicroPlotDef : Luban.BeanBase
     {
         { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
         { var __json0 = _buf["managed_uniqnames"]; if(!__json0.IsArray) { throw new SerializationException(); } ManagedUniqnames = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  ManagedUniqnames.Add(__v0); }   }
-        { var __json0 = _buf["timeline"]; if(!__json0.IsArray) { throw new SerializationException(); } Timeline = new System.Collections.Generic.List<demo.MicroPlotTimelineEvent>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.MicroPlotTimelineEvent __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.MicroPlotTimelineEvent.DeserializeMicroPlotTimelineEvent(__e0);  }  Timeline.Add(__v0); }   }
         { if(!_buf["max_duration_sec"].IsNumber) { throw new SerializationException(); }  MaxDurationSec = _buf["max_duration_sec"]; }
         { if(!_buf["consume_on"].IsNumber) { throw new SerializationException(); }  ConsumeOn = (demo.EMicroPlotConsumeOn)_buf["consume_on"].AsInt; }
     }
@@ -39,10 +38,6 @@ public sealed partial class MicroPlotDef : Luban.BeanBase
     /// </summary>
     public System.Collections.Generic.List<string> ManagedUniqnames;
     /// <summary>
-    /// 时间轴：每条 t_sec,kind,actor_index,text；多条用分号；kind 见 EMicroPlotEventKind
-    /// </summary>
-    public System.Collections.Generic.List<demo.MicroPlotTimelineEvent> Timeline;
-    /// <summary>
     /// 超时强制结束（秒）
     /// </summary>
     public float MaxDurationSec;
@@ -56,7 +51,6 @@ public sealed partial class MicroPlotDef : Luban.BeanBase
 
     public  void ResolveRef(Tables tables)
     {
-        foreach (var _e in Timeline) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -64,7 +58,6 @@ public sealed partial class MicroPlotDef : Luban.BeanBase
         return "{ "
         + "id:" + Id + ","
         + "managedUniqnames:" + Luban.StringUtil.CollectionToString(ManagedUniqnames) + ","
-        + "timeline:" + Luban.StringUtil.CollectionToString(Timeline) + ","
         + "maxDurationSec:" + MaxDurationSec + ","
         + "consumeOn:" + ConsumeOn + ","
         + "}";

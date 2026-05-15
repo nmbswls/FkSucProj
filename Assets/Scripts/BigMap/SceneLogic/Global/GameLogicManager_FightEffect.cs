@@ -204,7 +204,11 @@ namespace My
                             executor = new AbilityEffectExecutor4CreateAreaEffect();
                         }
                         break;
-                        
+                    case MapFightEffectAddLiquidCfg:
+                        {
+                            executor = new AbilityEffectExecutor4AddLiquid();
+                        }
+                        break;
                     case MapFightEffectWantedIncidentBroadcastCfg:
                         {
                             executor = new AbilityEffectExecutor4WantedIncidentBroadcast();
