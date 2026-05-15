@@ -11,7 +11,10 @@ namespace My.UI
     {
         public void Bind(ItemStack stack, int index, EContainerType containerType, int containerId, System.Action<int> onChangedCb, ItemCellBase.EStyleType style = ItemCellBase.EStyleType.Normal)
         {
-            EnsureInventoryCellBehaviours();
+            SetItemCellInteractions(
+                ItemCellInteractions.InventoryClickDrag,
+                ItemCellInteractions.InventoryClickDrag,
+                ItemCellInteractions.ContainerDrop);
 
             SetBoundStack(stack);
             SetIndexAndContainer(index, containerType, containerId);
@@ -58,21 +61,6 @@ namespace My.UI
             }
 
             RefreshCellStyle(style);
-        }
-
-        void EnsureInventoryCellBehaviours()
-        {
-            if (GetComponent<InventoryItemCellInteraction>() == null)
-            {
-                gameObject.AddComponent<InventoryItemCellInteraction>();
-            }
-
-            if (GetComponent<ContainerItemDropBehaviour>() == null)
-            {
-                gameObject.AddComponent<ContainerItemDropBehaviour>();
-            }
-
-            RebuildBehaviourCache();
         }
 
         public void ClearEmpty()

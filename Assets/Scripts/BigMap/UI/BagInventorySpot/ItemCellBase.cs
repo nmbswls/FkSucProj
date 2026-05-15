@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    // 背包格与快捷道具格共用的视图根：事件转发到可选 Behaviour。
+    // 背包格与快捷道具格共用的视图根：点击/拖拽/落点由外部 SetItemCellInteractions 注入。
     public abstract class ItemCellBase : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
     {
         public Image bg;
@@ -63,43 +63,14 @@ namespace My.UI
             onChangedCallback = cb;
         }
 
-        protected virtual void Awake()
+        public void SetItemCellInteractions(
+            IItemCellClickBehaviour click,
+            IItemCellDragSourceBehaviour drag,
+            IItemCellDropTargetBehaviour drop)
         {
-            CacheBehaviours();
-        }
-
-        public void RebuildBehaviourCache()
-        {
-            CacheBehaviours();
-        }
-
-        protected void CacheBehaviours()
-        {
-            _click = null;
-            _dragSource = null;
-            _dropTarget = null;
-            foreach (var mb in GetComponents<MonoBehaviour>())
-            {
-                if (mb == null || mb == this)
-                {
-                    continue;
-                }
-
-                if (_click == null && mb is IItemCellClickBehaviour c)
-                {
-                    _click = c;
-                }
-
-                if (_dragSource == null && mb is IItemCellDragSourceBehaviour d)
-                {
-                    _dragSource = d;
-                }
-
-                if (_dropTarget == null && mb is IItemCellDropTargetBehaviour t)
-                {
-                    _dropTarget = t;
-                }
-            }
+            _click = click;
+            _dragSource = drag;
+            _dropTarget = drop;
         }
 
         public void OnPointerClick(PointerEventData eventData)

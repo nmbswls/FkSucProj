@@ -56,8 +56,10 @@ namespace My.UI
             }
 
             _slotTemplate.gameObject.SetActive(false);
-            _slotTemplate.EnsureQuickBarComponents();
-            _slotTemplate.RebuildBehaviourCache();
+            _slotTemplate.SetItemCellInteractions(
+                ItemCellInteractions.QuickSlot,
+                ItemCellInteractions.QuickSlot,
+                ItemCellInteractions.QuickSlot);
             _initialized = true;
         }
 
@@ -136,8 +138,10 @@ namespace My.UI
                         btn.enabled = false;
                     }
 
-                    cell.EnsureQuickBarComponents();
-                    cell.RebuildBehaviourCache();
+                    cell.SetItemCellInteractions(
+                        ItemCellInteractions.QuickSlot,
+                        ItemCellInteractions.QuickSlot,
+                        ItemCellInteractions.QuickSlot);
                 }
             }
         }

@@ -16,7 +16,7 @@ namespace My.UI
         public int SourceIndex;
     }
 
-    // 控制道具拖拽的幽灵与 Payload；落点由各 Cell 上的 IItemCellDropTargetBehaviour 处理。
+    // 控制道具拖拽的幽灵与 Payload；落点由各 Cell 通过 SetItemCellInteractions 注入的 IItemCellDropTargetBehaviour 处理。
     public class ItemDragDropController : PanelBase
     {
         public static ItemDragDropController Instance
