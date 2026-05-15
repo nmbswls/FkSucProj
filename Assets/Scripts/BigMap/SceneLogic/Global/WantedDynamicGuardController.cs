@@ -5,6 +5,7 @@ using My.Map;
 using My.Map.Entity;
 using My.Map.Logic;
 using My.Map.Scene;
+using My.MapExport;
 using UnityEngine;
 
 namespace My
@@ -12,11 +13,13 @@ namespace My
     // 通缉星级或区域警戒档位驱动：动态维持临时守卫；高星级/高档位含搜查、退场或路网巡逻
     public sealed class WantedDynamicGuardController
     {
-        /// <summary>动态守卫补刷逻辑间隔（秒）；GM 说明与测试等待时间参照此值。</summary>
+        // 动态守卫补刷逻辑间隔（秒）；GM 说明与测试等待时间参照此值。
         public const float TickPeriodSeconds = 0.75f;
 
         readonly GameLogicManager _logic;
         readonly List<long> _guardIds = new();
+        readonly List<long> _postSearchPolicyPendingIds = new();
+        readonly HashSet<long> _postSearchPolicyPendingSet = new();
         float _cooldown;
 
         public WantedDynamicGuardController(GameLogicManager logic)
@@ -26,6 +29,8 @@ namespace My
 
         public void ClearAll()
         {
+            _postSearchPolicyPendingIds.Clear();
+            _postSearchPolicyPendingSet.Clear();
             if (_logic?.AreaManager == null)
             {
                 _guardIds.Clear();
@@ -46,6 +51,8 @@ namespace My
             {
                 return;
             }
+
+            ProcessPendingPostSearchPolicies();
 
             _cooldown -= dt;
             if (_cooldown > 0f)
@@ -86,6 +93,128 @@ namespace My
             }
         }
 
+        public void EnqueuePostSearchPolicyPending(long npcEntityId)
+        {
+            if (!_postSearchPolicyPendingSet.Add(npcEntityId))
+            {
+                return;
+            }
+
+            _postSearchPolicyPendingIds.Add(npcEntityId);
+        }
+
+        public void CancelPostSearchPolicyPending(long npcEntityId)
+        {
+            if (!_postSearchPolicyPendingSet.Remove(npcEntityId))
+            {
+                return;
+            }
+
+            _postSearchPolicyPendingIds.Remove(npcEntityId);
+        }
+
+        void ProcessPendingPostSearchPolicies()
+        {
+            if (_postSearchPolicyPendingIds.Count == 0)
+            {
+                return;
+            }
+
+            var batch = new long[_postSearchPolicyPendingIds.Count];
+            _postSearchPolicyPendingIds.CopyTo(batch);
+            _postSearchPolicyPendingIds.Clear();
+            _postSearchPolicyPendingSet.Clear();
+
+            foreach (var id in batch)
+            {
+                TryApplyPostSearchPolicyForEntity(id);
+            }
+        }
+
+        void TryApplyPostSearchPolicyForEntity(long id)
+        {
+            var e = _logic.AreaManager.GetLogicEntiy(id, false);
+            if (e is not NpcUnitLogicEntity npc)
+            {
+                return;
+            }
+
+            if (npc.MarkDestroyed || npc.IsDead || npc.AIBrain == null)
+            {
+                return;
+            }
+
+            if (!npc.AIBrain.PostSearchPolicyPending || npc.AIBrain.CurrentState != npc.AIBrain.StateSearch)
+            {
+                return;
+            }
+
+            var rec = npc.NpcRecord;
+            if (rec == null)
+            {
+                npc.AIBrain.PostSearchPolicyPending = false;
+                npc.AIBrain.ChangeState(npc.AIBrain.StateReturn);
+                return;
+            }
+
+            int kind = rec.PostInvestigationResolveKind;
+            if (kind <= 0)
+            {
+                npc.AIBrain.PostSearchPolicyPending = false;
+                npc.AIBrain.ChangeState(npc.AIBrain.StateReturn);
+                return;
+            }
+
+            var db = _logic.AreaManager.cacheDatabase;
+            int nPick = Mathf.Max(2, rec.PostInvestigationPatrolPickN > 0 ? rec.PostInvestigationPatrolPickN : 3);
+
+            bool applied = false;
+            switch (kind)
+            {
+                case 1:
+                    if (DynamicPressureGuardUtil.TryPickRandomNamedPointPosition(db, ENamedPointType.GuardSpawner, out var exitPos))
+                    {
+                        npc.MoveBehaveInfo.MoveToDespawnTarget = exitPos;
+                        npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
+                        applied = true;
+                    }
+
+                    break;
+                case 2:
+                    npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
+                    applied = true;
+                    break;
+                case 3:
+                {
+                    var ids = npc.MoveBehaveInfo.PatrolCycleNodeIds;
+                    ids.Clear();
+                    if (DynamicPressureGuardUtil.TrySamplePatrolCycleIds(
+                            db,
+                            npc.MoveBehaveInfo.PatrolPortalNetworkId,
+                            nPick,
+                            ids,
+                            out var resolvedNet))
+                    {
+                        npc.MoveBehaveInfo.PatrolPortalNetworkId = resolvedNet;
+                        npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.Patrol;
+                        applied = true;
+                    }
+
+                    break;
+                }
+            }
+
+            npc.AIBrain.PostSearchPolicyPending = false;
+            if (applied)
+            {
+                npc.AIBrain.ChangeState(npc.AIBrain.StateIdle);
+            }
+            else
+            {
+                npc.AIBrain.ChangeState(npc.AIBrain.StateReturn);
+            }
+        }
+
         WantedGuardSpawnTier SelectPressureTier(out int alertTier)
         {
             alertTier = _logic.AreaManager.GetAlertPressureTier();
@@ -120,9 +249,7 @@ namespace My
             return best;
         }
 
-        /// <summary>
-        /// GM / HUD：只读，与 Tick 内选档逻辑一致。pressure_behavior 配置值即写入记录的 PostInvestigationResolveKind。
-        /// </summary>
+        // GM / HUD：只读，与 Tick 内选档逻辑一致。pressure_behavior 写入 NpcRecord，Search 结束后由本控制器下发移动策略。
         public string DebugFormatSelectedTier(out int alertPressureTier, out int wantedStarLevel)
         {
             alertPressureTier = 0;
@@ -141,7 +268,7 @@ namespace My
 
             return
                 $"tier_id={tier.TierId} min_wanted_star={tier.MinWantedStarLevel} min_alert_tier={tier.MinAlertTier} "
-                + $"guard_count={tier.GuardCount} npc_cfg_id={tier.NpcCfgId} pressure_behavior={tier.PressureBehavior}(maps to PostInvestigationResolveKind) "
+                + $"guard_count={tier.GuardCount} npc_cfg_id={tier.NpcCfgId} pressure_behavior={tier.PressureBehavior}(NpcRecord.PostInvestigationResolveKind) "
                 + $"patrol_pick_n={tier.PatrolPickN} spawn_radius=[{tier.SpawnRadiusMin},{tier.SpawnRadiusMax}] cull_distance={tier.CullDistance}";
         }
 

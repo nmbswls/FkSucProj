@@ -226,7 +226,6 @@ namespace My.Map
             base.Initialize();
 
             InitAiBrain();
-            ApplySpawnRecordInvestigationPolicyToBrain();
 
             if (NpcRecord.SpawnWithImmediateInvestigation && AIBrain != null && LogicManager.playerLogicEntity != null)
             {
@@ -317,19 +316,6 @@ namespace My.Map
         protected virtual void InitAiBrain()
         {
             AIBrain = AIBrainFactory.CreateAIBrain(this);
-        }
-
-        // 将持久化记录中的调查收尾策略灌入 AI 黑板（与「守卫」域解耦）
-        void ApplySpawnRecordInvestigationPolicyToBrain()
-        {
-            if (AIBrain == null)
-            {
-                return;
-            }
-
-            var r = NpcRecord;
-            AIBrain.PostInvestigationResolveKind = r.PostInvestigationResolveKind;
-            AIBrain.PostInvestigationPatrolPickN = r.PostInvestigationPatrolPickN > 0 ? r.PostInvestigationPatrolPickN : 3;
         }
 
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)

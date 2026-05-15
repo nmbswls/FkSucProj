@@ -1213,8 +1213,13 @@ namespace My.Map.Unit
 
     public class AIStateSearch : AIBaseState
     {
-        // 搜索阶段
-        private enum SearchPhase { MovingToPos, LookingAround }
+        private enum SearchPhase
+        {
+            MovingToPos,
+            LookingAround,
+            AwaitingPostSearchPolicy,
+        }
+
         private SearchPhase _phase;
         private float _lookAroundTimer;
         private Vector2 searchOrgPoint = Vector2.zero;
@@ -1230,6 +1235,8 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
+            _brain.PostSearchPolicyPending = false;
+
             // 1. 开始阶段：前往可疑点
             _phase = SearchPhase.MovingToPos;
 
@@ -1241,8 +1248,15 @@ namespace My.Map.Unit
             {
                 searchOrgPoint = _brain.SuspiciousPos.Value;
             }
-            
+
             _brain.NpcEntity.TryMoveTo(searchOrgPoint);
+        }
+
+        public override void OnExit()
+        {
+            _brain.PostSearchPolicyPending = false;
+            _brain.NpcEntity.LogicManager?.WantedGuardSpawner?.CancelPostSearchPolicyPending(_brain.NpcEntity.Id);
+            base.OnExit();
         }
 
         public override void OnUpdate()
@@ -1261,55 +1275,32 @@ namespace My.Map.Unit
                     }
 
                     // 超时强制结束 (防止路不通一直走)
-                    if (Duration > 10.0f) _brain.ChangeState(_brain.StateReturn);
+                    if (Duration > 10.0f)
+                    {
+                        _brain.ChangeState(_brain.StateReturn);
+                    }
+
                     break;
 
                 case SearchPhase.LookingAround:
                     if (LogicTime.time > _lookAroundTimer)
                     {
                         _brain.SuspiciousPos = null;
-                        if (_brain.PostInvestigationResolveKind > 0)
+                        var rec = _brain.NpcEntity.NpcRecord;
+                        if (rec != null && rec.PostInvestigationResolveKind > 0)
                         {
-                            var db = _brain.LogicManager.AreaManager.cacheDatabase;
-                            switch (_brain.PostInvestigationResolveKind)
-                            {
-                                case 1:
-                                    if (DynamicPressureGuardUtil.TryPickRandomGuardSpawnerLogicPos(db, out var exitPos))
-                                    {
-                                        _brain.NpcEntity.MoveBehaveInfo.MoveToDespawnTarget = exitPos;
-                                        _brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
-                                        _brain.ChangeState(_brain.StateIdle);
-                                        return;
-                                    }
-
-                                    break;
-                                case 2:
-                                    _brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
-                                    _brain.ChangeState(_brain.StateIdle);
-                                    return;
-                                case 3:
-                                    var ids = _brain.NpcEntity.MoveBehaveInfo.PatrolCycleNodeIds;
-                                    ids.Clear();
-                                    int nPick = Mathf.Max(2, _brain.PostInvestigationPatrolPickN);
-                                    if (DynamicPressureGuardUtil.TrySamplePatrolCycleIds(
-                                            db,
-                                            _brain.NpcEntity.MoveBehaveInfo.PatrolPortalNetworkId,
-                                            nPick,
-                                            ids,
-                                            out var resolvedNet))
-                                    {
-                                        _brain.NpcEntity.MoveBehaveInfo.PatrolPortalNetworkId = resolvedNet;
-                                        _brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.Patrol;
-                                        _brain.ChangeState(_brain.StateIdle);
-                                        return;
-                                    }
-
-                                    break;
-                            }
+                            _phase = SearchPhase.AwaitingPostSearchPolicy;
+                            _brain.PostSearchPolicyPending = true;
+                            _brain.NpcEntity.LogicManager?.NotifyPostSearchInvestigationComplete(_brain.NpcEntity.Id);
+                            break;
                         }
 
                         _brain.ChangeState(_brain.StateReturn);
                     }
+
+                    break;
+
+                case SearchPhase.AwaitingPostSearchPolicy:
                     break;
             }
         }

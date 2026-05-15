@@ -119,15 +119,8 @@ namespace My.Map.Unit
         public Vector2? HomePos;
         public Vector2? SuspiciousPos; // <--- 搜索目标点 (最后目击位置/声音来源)
 
-        /// <summary>
-        /// Search 张望结束后的收尾策略（由生成记录/刷新方写入，纯 AI 语义）
-        /// </summary>
-        public int PostInvestigationResolveKind;
-
-        /// <summary>
-        /// 收尾为路网巡逻时的采样参数（至少 2）
-        /// </summary>
-        public int PostInvestigationPatrolPickN = 3;
+        // Search 本地张望结束后：等待上层（如 WantedGuardSpawner）下发移动策略；由刷新器清除并切状态。
+        public bool PostSearchPolicyPending;
 
         public UnitAggroSystem Aggro => NpcEntity.AggroSystem;
 
@@ -144,7 +137,6 @@ namespace My.Map.Unit
         {
             this.NpcEntity = npcOwner;
             this.HomePos = npcOwner.Pos; // 记录出生点
-            PostInvestigationPatrolPickN = 3;
 
             string cfgId = "default";
             if (npcOwner.NpcConfig.IsPeace)

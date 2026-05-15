@@ -183,6 +183,11 @@ namespace My
             */
         }
 
+        public void NotifyPostSearchInvestigationComplete(long npcEntityId)
+        {
+            WantedGuardSpawner?.EnqueuePostSearchPolicyPending(npcEntityId);
+        }
+
         public void OnGameLogicInit(SaveData saveData)
         {
             LogicEventBus = new();

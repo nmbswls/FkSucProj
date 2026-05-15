@@ -5,12 +5,10 @@ using UnityEngine;
 
 namespace My
 {
-    /// <summary>
-    /// Search 阶段后的位置/路网工具（退场命名点、路网巡逻环采样）；供 PostInvestigationResolveKind 使用
-    /// </summary>
+    // 地图导出：命名点采样、路网巡逻环采样（与具体玩法域解耦）。
     public static class DynamicPressureGuardUtil
     {
-        public static bool TryPickRandomGuardSpawnerLogicPos(MapExportDatabase db, out Vector2 pos)
+        public static bool TryPickRandomNamedPointPosition(MapExportDatabase db, ENamedPointType pointType, out Vector2 pos)
         {
             pos = default;
             if (db?.NamedPoints == null || db.NamedPoints.Count == 0)
@@ -21,7 +19,7 @@ namespace My
             List<NamedPoint> candidates = null;
             foreach (var p in db.NamedPoints)
             {
-                if (p.PointType != ENamedPointType.GuardSpawner)
+                if (p.PointType != pointType)
                 {
                     continue;
                 }
