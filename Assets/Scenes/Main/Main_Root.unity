@@ -1893,6 +1893,7 @@ MonoBehaviour:
   CineBrain: {fileID: 0}
   dialoguePlayer: {fileID: 771406920}
   AOIManager: {fileID: 1209709318}
+  StrampManager1: {fileID: 1885830509}
   DynamicRoot: {fileID: 63059760}
 --- !u!4 &885418544
 Transform:
@@ -8722,6 +8723,52 @@ MonoBehaviour:
   drift: {x: 0, y: 60}
   lifetime: 1.2
   fadeOutTime: 0.8
+--- !u!1 &1885830508
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1885830510}
+  - component: {fileID: 1885830509}
+  m_Layer: 0
+  m_Name: SceneGroundLiquidStrampManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1885830509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885830508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b68917920dcbe174a84fd07ae61596c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stampPrefab: {fileID: 0}
+  liquidLayerContainer: {fileID: 0}
+--- !u!4 &1885830510
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885830508}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1888856809
 GameObject:
   m_ObjectHideFlags: 0
@@ -14036,3 +14083,4 @@ SceneRoots:
   - {fileID: 1634786072}
   - {fileID: 1226254764}
   - {fileID: 2057501363}
+  - {fileID: 1885830510}

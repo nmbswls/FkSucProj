@@ -253,15 +253,26 @@ namespace My.UI
                 return;
             }
 
-            var mgr = ItemQuickBarRoot.GetComponent<OverworldQuickItemBarManager>();
-            if (mgr == null)
+            var ctrl = ItemQuickBarRoot.GetComponent<OverworldItemQuickBarController>();
+            if (ctrl == null)
             {
-                mgr = ItemQuickBarRoot.gameObject.AddComponent<OverworldQuickItemBarManager>();
-                mgr.AttachRoot(ItemQuickBarRoot);
+                ctrl = ItemQuickBarRoot.gameObject.AddComponent<OverworldItemQuickBarController>();
             }
 
-            mgr.EnsureSlots();
-            mgr.RefreshFromPlayerData();
+            ctrl.InitializeIfNeeded();
+            ctrl.EnsureSlots();
+            ctrl.RefreshFromPlayerData();
+        }
+
+        public void RefreshItemQuickBar()
+        {
+            if (ItemQuickBarRoot == null)
+            {
+                return;
+            }
+
+            var ctrl = ItemQuickBarRoot.GetComponent<OverworldItemQuickBarController>();
+            ctrl?.RefreshFromPlayerData();
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
@@ -979,7 +990,7 @@ namespace My.UI
                 }
             });
 
-            OverworldQuickItemBarManager.Instance?.RefreshFromPlayerData();
+            RefreshItemQuickBar();
         }
 
         public bool OnNavigate(Vector2 dir) => false;

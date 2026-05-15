@@ -174,7 +174,7 @@ namespace My.UI
                 if (mdm != null && p.SourceIndex >= 0 && p.SourceIndex < mdm.QuickSlotItemSet.Length)
                 {
                     mdm.ClearQuickSlot(p.SourceIndex);
-                    OverworldQuickItemBarManager.Instance?.RefreshFromPlayerData();
+                    OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                 }
             }
         }

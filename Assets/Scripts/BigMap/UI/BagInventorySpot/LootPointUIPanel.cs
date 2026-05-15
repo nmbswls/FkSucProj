@@ -124,7 +124,7 @@ namespace My.UI
                 }
                 else
                 {
-                    cell.Bind(stack, slotIndex, EContainerType.LootPoint, 0, null, AnyContainerItemCell.EStyleType.Masked);
+                    cell.Bind(stack, slotIndex, EContainerType.LootPoint, 0, null, ItemCellBase.EStyleType.Masked);
                 }
             }
             else

@@ -131,7 +131,7 @@ namespace My.UI.Bag
 
             InitilaizeView();
             CloseSpeBag();
-            OverworldQuickItemBarManager.Instance?.RefreshFromPlayerData();
+            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
         }
 
         public void InitilaizeView()
@@ -172,7 +172,7 @@ namespace My.UI.Bag
                 SpeGridView.RefreshAllShownItem();
             }
 
-            OverworldQuickItemBarManager.Instance?.RefreshFromPlayerData();
+            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
         }
 
         private void Update()

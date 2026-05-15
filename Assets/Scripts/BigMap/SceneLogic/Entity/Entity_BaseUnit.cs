@@ -1517,6 +1517,12 @@ namespace My.Map
                                 LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_gc_liquid");
                             }
                             break;
+                        case EGroundElementType.Milk:
+                            {
+                                LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_milk_liquid");
+                            }
+                            break;
+                            
                     }
                 }
             }
@@ -1526,10 +1532,24 @@ namespace My.Map
                 // 增加
                 if (!currLiquids.Contains(liquid2))
                 {
-
+                    switch (liquid2)
+                    {
+                        case EGroundElementType.GcLiquid:
+                            {
+                                LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_gc_liquid");
+                            }
+                            break;
+                        case EGroundElementType.Milk:
+                            {
+                                LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_milk_liquid");
+                            }
+                            break;
+                    }
                 }
             }
-            
+
+            currLiquids.Clear();
+            currLiquids.AddRange(liquids);
         }
     }
 

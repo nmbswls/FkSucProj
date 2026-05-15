@@ -999,15 +999,16 @@ namespace My.Map
             }
             IsPendingGc = false;
 
-            var gcLiquidEntity = new LogicEntityRecord();
-            gcLiquidEntity.Id = GameLogicManager.LogicEntityIdInst++;
-            gcLiquidEntity.EntityType = EEntityType.AreaEffect;
-            gcLiquidEntity.CfgId = "ground_gc_liquid";
-            gcLiquidEntity.LifeTime = 20.0f;
-            gcLiquidEntity.Position = this.Pos;
-            gcLiquidEntity.FactionId = this.FactionId;
+            //var gcLiquidEntity = new LogicEntityRecord();
+            //gcLiquidEntity.Id = GameLogicManager.LogicEntityIdInst++;
+            //gcLiquidEntity.EntityType = EEntityType.AreaEffect;
+            //gcLiquidEntity.CfgId = "ground_gc_liquid";
+            //gcLiquidEntity.LifeTime = 20.0f;
+            //gcLiquidEntity.Position = this.Pos;
+            //gcLiquidEntity.FactionId = this.FactionId;
+            LogicManager.GroundOverManager.AddElementCircle(this.Pos, 1.0f, EGroundElementType.GcLiquid, 20f);
 
-            LogicManager.AddNewEntityRecord(gcLiquidEntity);
+            //LogicManager.AddNewEntityRecord(gcLiquidEntity);
 
             // 添加自身debuff
             LogicManager.globalBuffManager.RequestAddBuff(this.Id, "gc_self_debuff");

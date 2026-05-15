@@ -101,6 +101,8 @@ namespace My
 
         public SceneAOIManager AOIManager;
 
+        public SceneGroundLiquidStrampManager StrampManager1;
+
 
         private void Awake()
         {
@@ -200,6 +202,10 @@ namespace My
 
             sceneDropManager.OnGameInit();
             UIOrchestrator.Instance.InitGameLogicEventListener();
+
+
+            StrampManager1.RegisterEvents();
+
 
             gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>
             {

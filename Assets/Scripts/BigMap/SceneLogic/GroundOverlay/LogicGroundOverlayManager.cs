@@ -130,7 +130,7 @@ namespace My
         /// <param name="radius">半径（世界坐标单位）</param>
         /// <param name="type">元素类型</param>
         /// <param name="duration">持续时间</param>
-        public void AddElementCircle(Vector3 worldCenter, float radius, EGroundElementType type, float duration)
+        public void AddElementCircle(Vector2 worldCenter, float radius, EGroundElementType type, float duration)
         {
             // 1. 性能优化：预先计算半径的平方，避免在循环内部使用消耗性能的 Mathf.Sqrt
             float sqrRadius = radius * radius;

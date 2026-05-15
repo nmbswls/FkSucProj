@@ -6,7 +6,6 @@ using SuperScrollView;
 using Unity.VisualScripting;
 using My.Player.Bag;
 using Config;
-using static My.UI.AnyContainerItemCell;
 
 
 namespace My.UI
@@ -18,7 +17,7 @@ namespace My.UI
 
         public AnyContainerItemCell InnerCell;
 
-        public void Bind(long leftCount, ItemStack stack, int index, EContainerType containerType, int containerId, System.Action<int> onChangedCb, EStyleType style = EStyleType.Normal)
+        public void Bind(long leftCount, ItemStack stack, int index, EContainerType containerType, int containerId, System.Action<int> onChangedCb, ItemCellBase.EStyleType style = ItemCellBase.EStyleType.Normal)
         {
             LeftCount.text = leftCount.ToString();
             TotalCount.text = leftCount.ToString();

@@ -15,7 +15,7 @@ namespace My.UI
 
     public class ItemPopupMenu : PanelBase
     {
-        public static void Show(AnyContainerItemCell cell, ItemStack stack, int index, Vector2 screenPos)
+        public static void Show(ItemCellBase cell, ItemStack stack, int index, Vector2 screenPos)
         {
 
             var panel = UIManager.Instance.ShowPanel("ItemPopup", null) as ItemPopupMenu;
@@ -57,7 +57,7 @@ namespace My.UI
 
         public TextMeshProUGUI UseBtnCdText;
 
-        private AnyContainerItemCell currentCell;
+        private ItemCellBase currentCell;
         private ItemStack currentStack;
         private cfg.demo.ItemData cacheItemDef;
         private ItemUse cachePrimaryUse;
@@ -80,7 +80,7 @@ namespace My.UI
             CloseBtn.onClick.AddListener(Close);
         }
 
-        private void RefreshView(AnyContainerItemCell cell, ItemStack stack, int index)
+        private void RefreshView(ItemCellBase cell, ItemStack stack, int index)
         {
             currentCell = cell;
             currentStack = stack;

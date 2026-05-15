@@ -92,8 +92,8 @@ namespace My.UI
                 var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
                 var st = ShopGoodsDisplay.GetDisplayState(glm, shopItem);
                 var style = st == EShopGoodsDisplayState.Locked
-                    ? AnyContainerItemCell.EStyleType.Locked
-                    : AnyContainerItemCell.EStyleType.Normal;
+                    ? ItemCellBase.EStyleType.Locked
+                    : ItemCellBase.EStyleType.Normal;
 
                 shopCell.Bind(shopItem.LeftCount, new ItemStack(shopItem.ItemId, shopItem.BuyCount), realIdx, EContainerType.Shop, 0, null, style);
             }

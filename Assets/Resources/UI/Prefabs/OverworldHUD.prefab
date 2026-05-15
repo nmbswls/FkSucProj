@@ -6391,7 +6391,7 @@ GameObject:
   - component: {fileID: 7085739316309964807}
   - component: {fileID: 6715682840468636180}
   m_Layer: 0
-  m_Name: SkillSlotTemplate
+  m_Name: ItemQuickSlotTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6429,18 +6429,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 5605549721963229332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da38fdec09128294ebb2410d83ab22e9, type: 3}
+  m_Script: {fileID: 11500000, guid: 992be3ac30da588408e523b29b80e0cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SlotIdx: -1
+  bg: {fileID: 4547241236990130776}
   icon: {fileID: 5694141148633943173}
-  cooldownMask: {fileID: 0}
-  button: {fileID: 8586245448952974060}
+  countRect: {fileID: 0}
+  countText: {fileID: 0}
+  maskOverlay: {fileID: 0}
   lockOverlay: {fileID: 0}
-  emptyIcon: {fileID: 4547241236990130776}
-  Outline: {fileID: 0}
-  KeyName: {fileID: 0}
-  shineRect: {fileID: 9116788735448378242}
+  addOverlay: {fileID: 0}
+  debugNameStr: {fileID: 0}
 --- !u!1 &5718934773034698844
 GameObject:
   m_ObjectHideFlags: 0
