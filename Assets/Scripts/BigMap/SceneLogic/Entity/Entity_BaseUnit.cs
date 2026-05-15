@@ -1522,7 +1522,7 @@ namespace My.Map
                                 LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_milk_liquid");
                             }
                             break;
-                            
+                             
                     }
                 }
             }
