@@ -30,7 +30,12 @@ Shader "Custom/SmokeThresholdMultiColor"
             #include "UnityCG.cginc"
 
             struct appdata_t { float4 vertex : POSITION; float2 uv : TEXCOORD0; };
-            struct v2f { float2 uv : TEXCOORD0; float4 vertex : SV_POSITION; };
+            struct v2f { 
+                float4 vertex : SV_POSITION; 
+                float2 uv : TEXCOORD0; 
+                // 【新增】：用于存储世界坐标
+                float2 worldPos : TEXCOORD1; 
+            };
 
             sampler2D _SmokeTex;
             sampler2D _NoiseTex;
@@ -48,33 +53,32 @@ Shader "Custom/SmokeThresholdMultiColor"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
+				// 【关键修改】：获取该顶点的真实世界坐标 (XY平面)
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xy;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // 1. 获取当前区域是否有雾气 (采样 Render Texture)
+                // 1. 区域遮罩 (如果你的 RenderTexture 也是跟随世界坐标生成的，这里用 i.uv 或者 i.worldPos 取决于你相机的投影设置。一般用 i.uv 没问题)
                 float maskVal = tex2D(_SmokeTex, i.uv).r;
 
-                // 2. 流动 UV
-                float2 uv1 = i.uv * _NoiseTex_ST.xy + _NoiseTex_ST.zw + _Speed1 * _Time.y;
-                float2 uv2 = i.uv * _NoiseTex_ST.xy + _NoiseTex_ST.zw + _Speed2 * _Time.y;
+                // 2. 【关键修改】：流动 UV 改为基于 世界坐标 (i.worldPos)
+                // 这样相机移动时，世界坐标不变，雾气的纹理就固定在原地了！
+                float2 uv1 = i.worldPos * _NoiseTex_ST.xy + _NoiseTex_ST.zw + _Speed1 * _Time.y;
+                float2 uv2 = i.worldPos * _NoiseTex_ST.xy + _NoiseTex_ST.zw + _Speed2 * _Time.y;
                 uv2 *= 1.5; 
 
                 // 3. 采样流动的噪波图
                 float noise1 = tex2D(_NoiseTex, uv1).r;
                 float noise2 = tex2D(_NoiseTex, uv2).r;
-                
-                // 【关键修改】：改为 (noise1 + noise2) * 0.5，这样数值不会急剧衰减变黑
                 float finalNoise = (noise1 + noise2) * 0.5;
 
-                // 4. 将区域遮罩和噪音结合，乘以 Density 放大亮度
+                // 4. 将区域遮罩和噪音结合
                 float combinedVal = maskVal * finalNoise * _Density;
 
                 // 5. 软阈值切分
                 float alpha = smoothstep(_Threshold - _Smoothness, _Threshold + _Smoothness, combinedVal);
-
-                // 确保有 mask 的地方才显示，防止全屏泛白
                 alpha *= maskVal;
 
                 return fixed4(_FogColor.rgb, clamp(alpha, 0.0, 1.0) * _FogColor.a);
