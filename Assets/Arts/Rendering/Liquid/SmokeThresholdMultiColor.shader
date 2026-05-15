@@ -2,14 +2,18 @@ Shader "Custom/SmokeThresholdMultiColor"
 {
     Properties
     {
-        _SmokeTex  ("Render Texture (Liquid)", 2D) = "black" {}
+        // 1. 程序的 Render Texture，决定雾气在哪几个格子（黑色代表无雾，白色/红色代表有雾）
+        _SmokeTex  ("Render Texture (Mask)", 2D) = "black" {}
+        
+        // 2. 噪波图，用来制造雾气的流动细节（需要自己找一张黑白云彩图，设为 Repeat）
+        _NoiseTex  ("Noise Texture (Detail)", 2D) = "white" {}
 		
-		_FogColor ("Fog Color", Color) = (0.8, 0.9, 1.0, 1.0)
-		_Speed1 ("Layer 1 Speed (X,Y)", Vector) = (0.1, 0.05, 0, 0)
-		_Speed2 ("Layer 2 Speed (X,Y)", Vector) = (-0.05, 0.08, 0, 0)
-		_Density ("Fog Density", Range(0, 2)) = 1.0
-		_Threshold ("Fog Threshold", Range(0, 1)) = 0.3
-		_Smoothness ("Edge Smoothness", Range(0.01, 0.5)) = 0.2
+        _FogColor ("Fog Color", Color) = (0.8, 0.9, 1.0, 1.0)
+        _Speed1 ("Layer 1 Speed (X,Y)", Vector) = (0.1, 0.05, 0, 0)
+        _Speed2 ("Layer 2 Speed (X,Y)", Vector) = (-0.05, 0.08, 0, 0)
+        _Density ("Fog Density", Range(0, 5)) = 2.0
+        _Threshold ("Fog Threshold", Range(0, 1)) = 0.2
+        _Smoothness ("Edge Smoothness", Range(0.01, 0.5)) = 0.2
     }
     SubShader
     {
@@ -29,13 +33,15 @@ Shader "Custom/SmokeThresholdMultiColor"
             struct v2f { float2 uv : TEXCOORD0; float4 vertex : SV_POSITION; };
 
             sampler2D _SmokeTex;
-			float4 _SmokeTex_ST;
-			fixed4 _FogColor;
-			float2 _Speed1;
-			float2 _Speed2;
-			float _Density;
-			float _Threshold;
-			float _Smoothness;
+            sampler2D _NoiseTex;
+            float4 _NoiseTex_ST;
+            
+            fixed4 _FogColor;
+            float2 _Speed1;
+            float2 _Speed2;
+            float _Density;
+            float _Threshold;
+            float _Smoothness;
 
             v2f vert (appdata_t v)
             {
@@ -47,26 +53,31 @@ Shader "Custom/SmokeThresholdMultiColor"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // 1. 让 UV 随时间流动
-				float2 uv1 = i.uv * _SmokeTex_ST.xy + _SmokeTex_ST.zw + _Speed1 * _Time.y;
-				float2 uv2 = i.uv * _SmokeTex_ST.xy + _SmokeTex_ST.zw + _Speed2 * _Time.y;
+                // 1. 获取当前区域是否有雾气 (采样 Render Texture)
+                float maskVal = tex2D(_SmokeTex, i.uv).r;
 
-				// 为了让雾气更有层次，第二层噪音可以稍微放大或者旋转一下
-				uv2 *= 1.5; 
+                // 2. 流动 UV
+                float2 uv1 = i.uv * _NoiseTex_ST.xy + _NoiseTex_ST.zw + _Speed1 * _Time.y;
+                float2 uv2 = i.uv * _NoiseTex_ST.xy + _NoiseTex_ST.zw + _Speed2 * _Time.y;
+                uv2 *= 1.5; 
 
-				// 2. 采样两层流动的噪音图 (只取 R 通道即可，因为是黑白图)
-				float noise1 = tex2D(_SmokeTex, uv1).r;
-				float noise2 = tex2D(_SmokeTex, uv2).r;
+                // 3. 采样流动的噪波图
+                float noise1 = tex2D(_NoiseTex, uv1).r;
+                float noise2 = tex2D(_NoiseTex, uv2).r;
+                
+                // 【关键修改】：改为 (noise1 + noise2) * 0.5，这样数值不会急剧衰减变黑
+                float finalNoise = (noise1 + noise2) * 0.5;
 
-				// 3. 混合两层噪音 (相乘可以让雾气产生很自然的丝缕状空洞)
-				// 加上 _Density 控制总体浓度
-				float finalNoise = (noise1 * noise2) * _Density;
+                // 4. 将区域遮罩和噪音结合，乘以 Density 放大亮度
+                float combinedVal = maskVal * finalNoise * _Density;
 
-				// 4. 类似融球的处理：用 smoothstep 切出一个软边缘的形状
-				float alpha = smoothstep(_Threshold - _Smoothness, _Threshold + _Smoothness, finalNoise);
+                // 5. 软阈值切分
+                float alpha = smoothstep(_Threshold - _Smoothness, _Threshold + _Smoothness, combinedVal);
 
-				// 5. 乘上颜色输出 (如果你希望雾气有渐隐效果，可以让 alpha 乘以一个大范围的遮罩)
-				return fixed4(_FogColor.rgb, alpha * _FogColor.a);
+                // 确保有 mask 的地方才显示，防止全屏泛白
+                alpha *= maskVal;
+
+                return fixed4(_FogColor.rgb, clamp(alpha, 0.0, 1.0) * _FogColor.a);
             }
             ENDCG
         }

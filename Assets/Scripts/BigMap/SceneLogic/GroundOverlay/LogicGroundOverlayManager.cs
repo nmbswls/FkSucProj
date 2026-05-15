@@ -7,7 +7,7 @@ using UnityEngine;
 namespace My
 {
 
-    // ÒºÌå/ÎíÆøÖÖÀà£¨×î´óÖ§³Ö4ÖÖÒÔÆ¥Åä RGBA Í¨µÀ£©
+    // æ¶²ä½“/é›¾æ°”ç§ç±»ï¼ˆæœ€å¤§æ”¯æŒ4ç§ä»¥åŒ¹é… RGBA é€šé“ï¼‰
     public enum EGroundElementType 
     { 
         None, 
@@ -15,12 +15,12 @@ namespace My
         Milk,
     }
 
-    // µ¥¸öÍø¸ñµÄÉúÃüÖÜÆÚÊı¾İ
+    // å•ä¸ªç½‘æ ¼çš„ç”Ÿå‘½å‘¨æœŸæ•°æ®
     public class EGroundElementData
     {
         public EGroundElementType CurrentType = EGroundElementType.None;
-        public int RefCount = 0;      // ÒıÓÃ¼ÆÊı£¨¶àÉÙ¸ö¼¼ÄÜ/ÊµÌåÔÚÕâ¸ö¸ñ×ÓÉÏ·ÅÖÃÁË¸ÃÔªËØ£©
-        public float ExpireTime = 0f; // µ¹¼ÆÊ±£º¼ÇÂ¼¸Ã¸ñ×ÓÔªËØ½«ÓÚºÎÊ±ÍêÈ«ÏûÉ¢
+        public int RefCount = 0;      // å¼•ç”¨è®¡æ•°ï¼ˆå¤šå°‘ä¸ªæŠ€èƒ½/å®ä½“åœ¨è¿™ä¸ªæ ¼å­ä¸Šæ”¾ç½®äº†è¯¥å…ƒç´ ï¼‰
+        public float ExpireTime = 0f; // å€’è®¡æ—¶ï¼šè®°å½•è¯¥æ ¼å­å…ƒç´ å°†äºä½•æ—¶å®Œå…¨æ¶ˆæ•£
 
         public void Clear()
         {
@@ -40,13 +40,13 @@ namespace My
             this.logicManager = logicManager;
         }
 
-        // Ï¡Êè¾ØÕó£ºÖ»¼ÇÂ¼ÓĞÊı¾İµÄ¸ñ×Ó£¨gridSize¾«¶È£¬ËùÒÔ×ø±ê¿ÉÒÔ°´ /gridSize ·Å´ó´æÎª int£©
+        // ç¨€ç–çŸ©é˜µï¼šåªè®°å½•æœ‰æ•°æ®çš„æ ¼å­ï¼ˆgridSizeç²¾åº¦ï¼Œæ‰€ä»¥åæ ‡å¯ä»¥æŒ‰ /gridSize æ”¾å¤§å­˜ä¸º intï¼‰
         private Dictionary<Vector2Int, EGroundElementData> _gridData = new Dictionary<Vector2Int, EGroundElementData>();
 
-        // ¾«¶È£º1µ¥Î»µÈÓÚ4¸ñ
+        // ç²¾åº¦ï¼š1å•ä½ç­‰äº4æ ¼
         private const float GridSize = 0.2f;
 
-        // äÖÈ¾²ãÊÂ¼ş»Øµ÷
+        // æ¸²æŸ“å±‚äº‹ä»¶å›è°ƒ
         public System.Action<Vector2Int, EGroundElementType> OnCellAdded;
         public System.Action<Vector2Int> OnCellRemoved;
 
@@ -55,7 +55,7 @@ namespace My
             ProcessExpirations();
         }
 
-        // Ã¿Ò»Ö¡¼ì²éÊÇ·ñÓĞ¸ñ×Ó¹ıÆÚ
+        // æ¯ä¸€å¸§æ£€æŸ¥æ˜¯å¦æœ‰æ ¼å­è¿‡æœŸ
         private void ProcessExpirations()
         {
             float currentTime = Time.time;
@@ -63,7 +63,7 @@ namespace My
 
             foreach (var kvp in _gridData)
             {
-                // Ö»ÓĞÒıÓÃ¼ÆÊıÎª0£¨¼´Ã»ÓĞ³ÖĞøÊ©·¨Ô´£©£¬ÇÒÊ±¼ä³¬¹ı¹ıÆÚÊ±¼äÊ±²ÅÏû³ı
+                // åªæœ‰å¼•ç”¨è®¡æ•°ä¸º0ï¼ˆå³æ²¡æœ‰æŒç»­æ–½æ³•æºï¼‰ï¼Œä¸”æ—¶é—´è¶…è¿‡è¿‡æœŸæ—¶é—´æ—¶æ‰æ¶ˆé™¤
                 if (kvp.Value.RefCount <= 0 && currentTime >= kvp.Value.ExpireTime)
                 {
                     toRemove.Add(kvp.Key);
@@ -76,12 +76,12 @@ namespace My
             }
         }
 
-        // ¸¨Öú·½·¨£º½«ÊÀ½ç×ø±ê×ª»»ÎªÍø¸ñ×ø±ê
+        // è¾…åŠ©æ–¹æ³•ï¼šå°†ä¸–ç•Œåæ ‡è½¬æ¢ä¸ºç½‘æ ¼åæ ‡
         public Vector2Int WorldToGrid(Vector2 worldPos)
         {
             return new Vector2Int(
                 Mathf.FloorToInt(worldPos.x / GridSize),
-                Mathf.FloorToInt(worldPos.y / GridSize) // Èç¹ûÊÇ3D¸©ÊÓ½Ç£¬ÕâÀï¿ÉÄÜÊÇ worldPos.z
+                Mathf.FloorToInt(worldPos.y / GridSize) // å¦‚æœæ˜¯3Dä¿¯è§†è§’ï¼Œè¿™é‡Œå¯èƒ½æ˜¯ worldPos.z
             );
         }
 
@@ -91,9 +91,9 @@ namespace My
         }
 
         /// <summary>
-        /// ÔÚÖ¸¶¨Î»ÖÃÌí¼ÓµØĞÎĞ§¹û
+        /// åœ¨æŒ‡å®šä½ç½®æ·»åŠ åœ°å½¢æ•ˆæœ
         /// </summary>
-        /// <param name="duration">Èç¹ûÊÇ³ÖĞø¼¼ÄÜÌî¸ºÊı(ĞèÊÖ¶¯µ÷Remove)£¬Èç¹ûÊÇÆÃË®Ìî³ÖĞøÊ±¼ä</param>
+        /// <param name="duration">å¦‚æœæ˜¯æŒç»­æŠ€èƒ½å¡«è´Ÿæ•°(éœ€æ‰‹åŠ¨è°ƒRemove)ï¼Œå¦‚æœæ˜¯æ³¼æ°´å¡«æŒç»­æ—¶é—´</param>
         public void AddElement(Vector2Int gridPos, EGroundElementType type, float duration)
         {
             if (!_gridData.TryGetValue(gridPos, out EGroundElementData cell))
@@ -102,62 +102,70 @@ namespace My
                 _gridData[gridPos] = cell;
             }
 
-            // Èç¹ûÊÇĞÂÀàĞÍ£¬Ö±½Ó¸²¸Ç£¨»¥³âÔ­Ôò£©
+            // å¦‚æœæ˜¯æ–°ç±»å‹ï¼Œç›´æ¥è¦†ç›–ï¼ˆäº’æ–¥åŸåˆ™ï¼‰
             if (cell.CurrentType != type)
             {
                 cell.CurrentType = type;
                 cell.RefCount = 0;
-                OnCellAdded?.Invoke(gridPos, type); // Í¨ÖªäÖÈ¾²ãÉú³ÉÓ¡»¨
+                OnCellAdded?.Invoke(gridPos, type); // é€šçŸ¥æ¸²æŸ“å±‚ç”Ÿæˆå°èŠ±
             }
 
-            // ´¦ÀíÉúÃüÖÜÆÚ
+            // å¤„ç†ç”Ÿå‘½å‘¨æœŸ
             if (duration < 0)
             {
-                // ³ÖĞøĞÔÔ´£¨±ÈÈçÕ¾ÔÚ¶¾È¦Àï£©£¬Ôö¼ÓÒıÓÃ¼ÆÊı
+                // æŒç»­æ€§æºï¼ˆæ¯”å¦‚ç«™åœ¨æ¯’åœˆé‡Œï¼‰ï¼Œå¢åŠ å¼•ç”¨è®¡æ•°
                 cell.RefCount++;
             }
             else
             {
-                // Ò»´ÎĞÔÆÃÈ÷£¬Ë¢ĞÂ¹ıÆÚÊ±¼ä
+                // ä¸€æ¬¡æ€§æ³¼æ´’ï¼Œåˆ·æ–°è¿‡æœŸæ—¶é—´
                 cell.ExpireTime = Mathf.Max(cell.ExpireTime, Time.time + duration);
             }
         }
 
         /// <summary>
-        /// ÔÚÖ¸¶¨Ô²ĞÎÇøÓòÄÚÉú³ÉµØĞÎĞ§¹û£¨ÀıÈç£º¶¾ÒºÕ¨µ¯¡¢Ë®ÆøÇò±¬Õ¨£©
+        /// åœ¨æŒ‡å®šåœ†å½¢åŒºåŸŸå†…ç”Ÿæˆåœ°å½¢æ•ˆæœï¼ˆä¾‹å¦‚ï¼šæ¯’æ¶²ç‚¸å¼¹ã€æ°´æ°”çƒçˆ†ç‚¸ï¼‰
         /// </summary>
-        /// <param name="worldCenter">Ô²ĞÄ£¨ÊÀ½ç×ø±ê£©</param>
-        /// <param name="radius">°ë¾¶£¨ÊÀ½ç×ø±êµ¥Î»£©</param>
-        /// <param name="type">ÔªËØÀàĞÍ</param>
-        /// <param name="duration">³ÖĞøÊ±¼ä</param>
+        /// <param name="worldCenter">åœ†å¿ƒï¼ˆä¸–ç•Œåæ ‡ï¼‰</param>
+        /// <param name="radius">åŠå¾„ï¼ˆä¸–ç•Œåæ ‡å•ä½ï¼‰</param>
+        /// <param name="type">å…ƒç´ ç±»å‹</param>
+        /// <param name="duration">æŒç»­æ—¶é—´</param>
         public void AddElementCircle(Vector2 worldCenter, float radius, EGroundElementType type, float duration)
         {
-            // 1. ĞÔÄÜÓÅ»¯£ºÔ¤ÏÈ¼ÆËã°ë¾¶µÄÆ½·½£¬±ÜÃâÔÚÑ­»·ÄÚ²¿Ê¹ÓÃÏûºÄĞÔÄÜµÄ Mathf.Sqrt
+            // 1. æ€§èƒ½ä¼˜åŒ–ï¼šé¢„å…ˆè®¡ç®—åŠå¾„çš„å¹³æ–¹ï¼Œé¿å…åœ¨å¾ªç¯å†…éƒ¨ä½¿ç”¨æ¶ˆè€—æ€§èƒ½çš„ Mathf.Sqrt
             float sqrRadius = radius * radius;
 
-            // 2. ¼ÆËãÔ²ĞÎµÄ AABB °üÎ§ºĞ£¨È·¶¨ĞèÒª±éÀúµÄÍø¸ñ×îĞ¡/×î´óË÷Òı£©
+            // 2. è®¡ç®—åœ†å½¢çš„ AABB åŒ…å›´ç›’ï¼ˆç¡®å®šéœ€è¦éå†çš„ç½‘æ ¼æœ€å°/æœ€å¤§ç´¢å¼•ï¼‰
             Vector2Int minGrid = WorldToGrid(new Vector3(worldCenter.x - radius, worldCenter.y - radius, 0));
             Vector2Int maxGrid = WorldToGrid(new Vector3(worldCenter.x + radius, worldCenter.y + radius, 0));
 
-            // 3. ±éÀú°üÎ§ºĞÄÚµÄÃ¿Ò»¸öÍø¸ñ
+            // ã€å…³é”®ä¿®å¤ã€‘ï¼šå‘å¤–æ‰©å±• 1 æ ¼åŒ…å›´ç›’ã€‚
+            // é˜²æ­¢æµ®ç‚¹è½¬æ•´æ•°ï¼ˆå°¤å…¶æ˜¯è´Ÿåæ ‡æ—¶ï¼‰å¯¼è‡´å·¦ä¾§/ä¸‹ä¾§è¾¹ç¼˜ç½‘æ ¼æ²¡æœ‰è¿›å…¥ for å¾ªç¯è€Œè¢«â€œåˆ‡å¹³â€ã€‚
+            minGrid.x -= 1;
+            minGrid.y -= 1;
+            maxGrid.x += 1;
+            maxGrid.y += 1;
+
+            // 3. éå†åŒ…å›´ç›’å†…çš„æ¯ä¸€ä¸ªç½‘æ ¼
             for (int x = minGrid.x; x <= maxGrid.x; x++)
             {
                 for (int y = minGrid.y; y <= maxGrid.y; y++)
                 {
                     Vector2Int currentGridPos = new Vector2Int(x, y);
 
-                    // »ñÈ¡µ±Ç°Íø¸ñµÄÕæÊµÊÀ½çÖĞĞÄµã
+                    // è·å–å½“å‰ç½‘æ ¼çš„çœŸå®ä¸–ç•Œä¸­å¿ƒç‚¹
+                    // (å‰æä¿éšœï¼šè¯·ç¡®ä¿ä½ çš„ GridToWorld æ–¹æ³•è¿”å›çš„æ˜¯ç½‘æ ¼æ­£ä¸­å¿ƒï¼Œè€Œä¸æ˜¯å·¦ä¸‹è§’ã€‚å¦‚æœæ˜¯å·¦ä¸‹è§’ï¼Œè¯·åœ¨æ­¤å¤„åŠ ä¸ŠåŠä¸ªæ ¼å­çš„åç§»)
                     Vector3 cellWorldPos = GridToWorld(currentGridPos);
 
-                    // 4. ¾àÀë¼ì²â£ºÅĞ¶ÏÍø¸ñÖĞĞÄµãÊÇ·ñÔÚÔ²ÄÚ
-                    // ×¢Òâ£ºÓÉÓÚÊÇ2DÆ½ÃæÂß¼­£¬ºöÂÔ Z Öá
+                    // 4. è·ç¦»æ£€æµ‹ï¼šåˆ¤æ–­ç½‘æ ¼ä¸­å¿ƒç‚¹æ˜¯å¦åœ¨åœ†å†…
+                    // æ³¨æ„ï¼šç”±äºæ˜¯2Då¹³é¢é€»è¾‘ï¼Œå¿½ç•¥ Z è½´
                     float dx = cellWorldPos.x - worldCenter.x;
                     float dy = cellWorldPos.y - worldCenter.y;
                     float sqrDistance = dx * dx + dy * dy;
 
                     if (sqrDistance <= sqrRadius)
                     {
-                        // ¸´ÓÃÖ®Ç°µÄµ¥¸ñÌí¼ÓÂß¼­£¬×Ô¶¯´¦ÀíÉúÃüÖÜÆÚºÍÍ¨ÖªäÖÈ¾²ã
+                        // å¤ç”¨ä¹‹å‰çš„å•æ ¼æ·»åŠ é€»è¾‘ï¼Œè‡ªåŠ¨å¤„ç†ç”Ÿå‘½å‘¨æœŸå’Œé€šçŸ¥æ¸²æŸ“å±‚
                         AddElement(currentGridPos, type, duration);
                     }
                 }
@@ -182,7 +190,7 @@ namespace My
 
                     if (_gridData.TryGetValue(currentPos, out EGroundElementData cell) && cell.CurrentType != EGroundElementType.None)
                     {
-                        // Èç¹ûÕâÖÖÒºÌåÒÑ¾­¼ÇÂ¼¹ıÁË£¬ÎªÁËÊ¡ĞÔÄÜ£¬Ö±½ÓÌø¹ı¾«È·¼ÆËã
+                        // å¦‚æœè¿™ç§æ¶²ä½“å·²ç»è®°å½•è¿‡äº†ï¼Œä¸ºäº†çœæ€§èƒ½ï¼Œç›´æ¥è·³è¿‡ç²¾ç¡®è®¡ç®—
                         if (touchedTypes.Contains(cell.CurrentType)) continue;
 
                         Vector3 cellCenter = GridToWorld(currentPos);
@@ -203,7 +211,7 @@ namespace My
         }
 
         /// <summary>
-        /// ÒÆ³ı³ÖĞøĞÔÊ©·¨Ô´
+        /// ç§»é™¤æŒç»­æ€§æ–½æ³•æº
         /// </summary>
         public void RemoveElementSource(Vector2Int gridPos)
         {
@@ -212,7 +220,7 @@ namespace My
                 cell.RefCount--;
                 if (cell.RefCount <= 0)
                 {
-                    // ³ÖĞøÔ´Àë¿ª£¬Éè¶¨¼¸Ãëºó×ÔÈ»ÏûÉ¢£¨ÀıÈç2ÃëºóÏûÉ¢£©
+                    // æŒç»­æºç¦»å¼€ï¼Œè®¾å®šå‡ ç§’åè‡ªç„¶æ¶ˆæ•£ï¼ˆä¾‹å¦‚2ç§’åæ¶ˆæ•£ï¼‰
                     cell.ExpireTime = Time.time + 2.0f;
                 }
             }
@@ -221,7 +229,7 @@ namespace My
         private void RemoveCellImmediate(Vector2Int gridPos)
         {
             _gridData.Remove(gridPos);
-            OnCellRemoved?.Invoke(gridPos); // Í¨ÖªäÖÈ¾²ãÏú»ÙÓ¡»¨
+            OnCellRemoved?.Invoke(gridPos); // é€šçŸ¥æ¸²æŸ“å±‚é”€æ¯å°èŠ±
         }
     }
 }
