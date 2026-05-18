@@ -1,8 +1,6 @@
 using cfg.demo;
 using My;
 using My.Config;
-using My.Player;
-using UnityEngine;
 
 namespace My.UI.Forge
 {
@@ -22,12 +20,33 @@ namespace My.UI.Forge
                 case EForgeUnlockMode.QuestFinished:
                     return CheckQuestFinished(recipe.UnlockParam);
                 case EForgeUnlockMode.HasItem:
-                    return CheckHasItem(recipe.UnlockParam, 1);
+                    return CheckHasItemUnlock(recipe);
                 case EForgeUnlockMode.GlobalSwitch:
                     return CheckGlobalSwitch(recipe.UnlockParam);
                 default:
                     return false;
             }
+        }
+
+        static bool CheckHasItemUnlock(ForgeRecipe recipe)
+        {
+            string itemId = recipe.UnlockParam;
+            long min = recipe.UnlockItemMinCount > 0 ? recipe.UnlockItemMinCount : 1L;
+            if (!string.IsNullOrEmpty(recipe.UnlockParam))
+            {
+                int bar = recipe.UnlockParam.IndexOf('|');
+                if (bar >= 0)
+                {
+                    itemId = recipe.UnlockParam.Substring(0, bar).Trim();
+                    var tail = recipe.UnlockParam.Substring(bar + 1).Trim();
+                    if (long.TryParse(tail, out var parsed))
+                    {
+                        min = parsed;
+                    }
+                }
+            }
+
+            return CheckHasItem(itemId, min);
         }
 
         static bool CheckQuestFinished(string param)

@@ -22,6 +22,7 @@ public sealed partial class MicroPlotDef : Luban.BeanBase
         { var __json0 = _buf["managed_uniqnames"]; if(!__json0.IsArray) { throw new SerializationException(); } ManagedUniqnames = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  ManagedUniqnames.Add(__v0); }   }
         { if(!_buf["max_duration_sec"].IsNumber) { throw new SerializationException(); }  MaxDurationSec = _buf["max_duration_sec"]; }
         { if(!_buf["consume_on"].IsNumber) { throw new SerializationException(); }  ConsumeOn = (demo.EMicroPlotConsumeOn)_buf["consume_on"].AsInt; }
+        { var __json0 = _buf["reward_items"]; if(!__json0.IsArray) { throw new SerializationException(); } RewardItems = new System.Collections.Generic.Dictionary<string, int>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string _k0;  { if(!__e0[0].IsString) { throw new SerializationException(); }  _k0 = __e0[0]; } int _v0;  { if(!__e0[1].IsNumber) { throw new SerializationException(); }  _v0 = __e0[1]; }  RewardItems.Add(_k0, _v0); }   }
     }
 
     public static MicroPlotDef DeserializeMicroPlotDef(JSONNode _buf)
@@ -45,6 +46,10 @@ public sealed partial class MicroPlotDef : Luban.BeanBase
     /// 完成后何时记为已消耗：SuccessOrAbort / SuccessOnly
     /// </summary>
     public demo.EMicroPlotConsumeOn ConsumeOn;
+    /// <summary>
+    /// 奖励
+    /// </summary>
+    public System.Collections.Generic.Dictionary<string, int> RewardItems;
    
     public const int __ID__ = -1067997621;
     public override int GetTypeId() => __ID__;
@@ -60,6 +65,7 @@ public sealed partial class MicroPlotDef : Luban.BeanBase
         + "managedUniqnames:" + Luban.StringUtil.CollectionToString(ManagedUniqnames) + ","
         + "maxDurationSec:" + MaxDurationSec + ","
         + "consumeOn:" + ConsumeOn + ","
+        + "rewardItems:" + Luban.StringUtil.CollectionToString(RewardItems) + ","
         + "}";
     }
 }

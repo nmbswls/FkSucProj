@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Config.Map.MapInteractPointConfig;
-using static UnityEditor.Rendering.CameraUI;
 
 namespace My.Map.Entity
 {
@@ -24,6 +23,9 @@ namespace My.Map.Entity
         private bool IsSwitching = false;
         public Dictionary<string, string> DynamicVariables = new();
 
+        float _poisonBaitEndTime;
+        float _poisonCdEndTime;
+
         public MapInteractPointConfig cacheCfg;
 
         public EntityInteractComp InteractComp;
@@ -36,6 +38,8 @@ namespace My.Map.Entity
             var realRecord = bindingRecord as LogicEntityRecord4InteractPoint;
             CurrStatusId = realRecord.Status;
             DynamicVariables.AddRange(realRecord.DynamicVariables);
+            _poisonBaitEndTime = realRecord.PoisonBaitEndTime;
+            _poisonCdEndTime = realRecord.PoisonCdEndTime;
         }
 
         protected virtual void LoadCfg()
@@ -177,6 +181,8 @@ namespace My.Map.Entity
             LowFreqCheckStatusChange();
 
             InteractComp?.TickInteract(dt);
+
+            TickPoisonBait(dt);
         }
 
         private float _lowFreqCheckStatusTimer = 0;
@@ -221,8 +227,96 @@ namespace My.Map.Entity
 
         }
 
+        public bool PoisonFeatureEnabled()
+        {
+            return cacheCfg != null && cacheCfg.PoisonSettings != null && cacheCfg.PoisonSettings.Enable;
+        }
+
+        public bool IsPoisonBaitWindowActive()
+        {
+            return PoisonFeatureEnabled() && LogicTime.time < _poisonBaitEndTime;
+        }
+
+        public bool CanPlayerOfferPoisonInteract()
+        {
+            if (!PoisonFeatureEnabled())
+            {
+                return false;
+            }
+
+            if (IsInteracting)
+            {
+                return false;
+            }
+
+            if (IsPoisonBaitWindowActive())
+            {
+                return false;
+            }
+
+            if (_poisonCdEndTime > LogicTime.time)
+            {
+                return false;
+            }
+
+            var ps = cacheCfg.PoisonSettings;
+            return LogicManager.CheckCommonCondsAll(ps.ApplyPoisonConds);
+        }
+
+        public bool TryPlayerApplyPoison()
+        {
+            if (!CanPlayerOfferPoisonInteract())
+            {
+                return false;
+            }
+
+            var ps = cacheCfg.PoisonSettings;
+            float dur = Mathf.Max(0.1f, ps.BaitDurationSeconds);
+            _poisonBaitEndTime = LogicTime.time + dur;
+            LogicManager.RegisterLatestPoisonLacedInteract(Id);
+            return true;
+        }
+
+        public bool TryNpcConsumePoisonBait(long _)
+        {
+            if (!IsPoisonBaitWindowActive())
+            {
+                return false;
+            }
+
+            var ps = cacheCfg.PoisonSettings;
+            _poisonBaitEndTime = 0f;
+            _poisonCdEndTime = LogicTime.time + Mathf.Max(0f, ps.ReapplyCooldownSeconds);
+            LogicManager.ClearLatestPoisonLacedIfMatch(Id);
+            return true;
+        }
+
+        void TickPoisonBait(float dt)
+        {
+            if (!PoisonFeatureEnabled())
+            {
+                return;
+            }
+
+            if (_poisonBaitEndTime <= 0f)
+            {
+                return;
+            }
+
+            if (LogicTime.time < _poisonBaitEndTime)
+            {
+                return;
+            }
+
+            var ps = cacheCfg.PoisonSettings;
+            _poisonBaitEndTime = 0f;
+            _poisonCdEndTime = LogicTime.time + Mathf.Max(0f, ps.ReapplyCooldownSeconds);
+            LogicManager.ClearLatestPoisonLacedIfMatch(Id);
+        }
+
         public override void OnDespawn(ref LogicEntityRecord snapshot)
         {
+            LogicManager.ClearLatestPoisonLacedIfMatch(Id);
             base.OnDespawn(ref snapshot);
         }
     
@@ -235,6 +329,8 @@ namespace My.Map.Entity
             realRecord.Status = CurrStatusId;
             realRecord.DynamicVariables.Clear();
             realRecord.DynamicVariables.AddRange(DynamicVariables);
+            realRecord.PoisonBaitEndTime = _poisonBaitEndTime;
+            realRecord.PoisonCdEndTime = _poisonCdEndTime;
         }
     }
 

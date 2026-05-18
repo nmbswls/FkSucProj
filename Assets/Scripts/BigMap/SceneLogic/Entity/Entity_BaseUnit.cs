@@ -61,8 +61,8 @@ namespace My.Map
     {
         public MapEntitySkillManager ablilityManager;
         public MapEntityAbilityExecutor abilityController;
-        public float viewRadius = 8f;
-        public float fovDegrees = 90f;
+        public float viewRadius = 5f;
+        public float fovDegrees = 150f;
 
         /// <summary>
         /// 配表或运行时设定的基底视野锥类型；有效类型见 GetEffectiveVisionConeKind。

@@ -373,6 +373,11 @@ namespace My.Map
                     }
                 }
 
+                if(!aborted)
+                {
+                    foreach(var kv in _def.RewardItems)
+                    _glm.playerDataManager.GiveItemToPlayer(kv.Key, kv.Value);
+                }
                 _owner.ClearRunnerIf(this);
             }
 

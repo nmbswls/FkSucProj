@@ -16,19 +16,6 @@ namespace My.UI.Forge
 
         ForgeRecipe _recipe;
 
-        public void WireRefs(Image i, TextMeshProUGUI title, TextMeshProUGUI materials, Button btn)
-        {
-            icon = i;
-            titleText = title;
-            materialHintText = materials;
-            clickButton = btn;
-            if (clickButton != null)
-            {
-                clickButton.onClick.RemoveAllListeners();
-                clickButton.onClick.AddListener(OnClicked);
-            }
-        }
-
         void Awake()
         {
             if (clickButton != null)
@@ -47,7 +34,9 @@ namespace My.UI.Forge
             }
 
             var def = ItemCatalog.GetItemDef(recipe.ResultItemId);
-            var display = def != null && !string.IsNullOrEmpty(def.DisplayName) ? def.DisplayName : recipe.ResultItemId;
+            string display = !string.IsNullOrEmpty(recipe.DisplayName)
+                ? recipe.DisplayName
+                : (def != null && !string.IsNullOrEmpty(def.DisplayName) ? def.DisplayName : recipe.ResultItemId);
             if (titleText != null)
             {
                 titleText.text = display;
@@ -82,7 +71,9 @@ namespace My.UI.Forge
                     parts += " ";
                 }
 
-                parts += m.ItemId + "x" + m.Count;
+                var md = ItemCatalog.GetItemDef(m.ItemId);
+                string name = md != null && !string.IsNullOrEmpty(md.DisplayName) ? md.DisplayName : m.ItemId;
+                parts += name + "x" + m.Count;
             }
 
             return parts;

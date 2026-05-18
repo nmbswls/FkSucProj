@@ -204,6 +204,8 @@ namespace My
             UIOrchestrator.Instance.InitGameLogicEventListener();
 
 
+            
+
             StrampManager1.RegisterEvents();
 
 

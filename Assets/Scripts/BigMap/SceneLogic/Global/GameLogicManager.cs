@@ -249,13 +249,6 @@ namespace My
 
             
 
-            playerDataManager.InventorySystem.EventOnGainItem += (bagId, itemId, count) =>
-            {
-                if(UIGainSideNotifyPanel.Instance != null)
-                {
-                    UIGainSideNotifyPanel.Instance.EnqueueLog("gain " + itemId, null);
-                }
-            };
 
             CapturePersistenceFromSaveData(saveData);
 

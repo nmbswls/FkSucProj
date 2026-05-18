@@ -389,6 +389,7 @@ namespace My.Player.Bag
                 {
                     CurrencyBag[itemId] = max;
                 }
+                EventOnGainItem?.Invoke(0, itemId, amount);
                 return amount;
             }
 

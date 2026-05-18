@@ -8,7 +8,7 @@
     "physical_power": 10,
     "h_power": 0,
     "base_blurt_amount": 5,
-    "base_blurt_dmg": 6,
+    "base_blurt_dmg": 60,
     "default_h_shield": 0
   },
   {
@@ -20,7 +20,7 @@
     "physical_power": 10,
     "h_power": 0,
     "base_blurt_amount": 5,
-    "base_blurt_dmg": 6,
+    "base_blurt_dmg": 60,
     "default_h_shield": 0
   },
   {
@@ -32,7 +32,7 @@
     "physical_power": 10,
     "h_power": 0,
     "base_blurt_amount": 5,
-    "base_blurt_dmg": 6,
+    "base_blurt_dmg": 60,
     "default_h_shield": 0
   },
   {
@@ -44,7 +44,7 @@
     "physical_power": 10,
     "h_power": 0,
     "base_blurt_amount": 5,
-    "base_blurt_dmg": 6,
+    "base_blurt_dmg": 60,
     "default_h_shield": 10
   },
   {
@@ -56,7 +56,7 @@
     "physical_power": 10,
     "h_power": 0,
     "base_blurt_amount": 5,
-    "base_blurt_dmg": 6,
+    "base_blurt_dmg": 60,
     "default_h_shield": 10
   },
   {

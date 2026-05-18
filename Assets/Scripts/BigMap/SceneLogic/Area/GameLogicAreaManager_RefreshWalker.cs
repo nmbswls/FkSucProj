@@ -1,25 +1,15 @@
 using Map.Entity;
 using Map.Logic.Events;
+using My.Map;
 using My.Map.Entity;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Tilemaps;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using static My.Map.UnitMoveBehaveInfo;
 using static My.MapExport.MapExportDatabase;
 
 namespace My.Map.Logic
 {
-
-    /// <summary>
-    /// 管理区域
-    /// </summary>
     public partial class GameLogicAreaManager
     {
 
@@ -85,8 +75,26 @@ namespace My.Map.Logic
 
             TickCleanWalker();
 
-            // 路人离场逻辑可走 NamedPath；后续若需与动态守卫一致，可改为 MoveToThenDespawn + Policy_MoveToPointThenDespawn
-            TickRefreshWaler();
+            TickRefreshWalkerSpawn();
+        }
+
+        // 仅记录、尚未 Spawn 的行人：用路径索引判断是否走完；与 TickLowFreqTickRecord 里推进 CurrPathIdx 配合
+        bool TryGetValidWalkerRuntimePath(string movePathKey, out RuntimePathInfo runtimePath)
+        {
+            if (string.IsNullOrEmpty(movePathKey))
+            {
+                runtimePath = null;
+                return false;
+            }
+
+            runtimePath = GetRuntimePath(movePathKey);
+            return runtimePath != null && runtimePath.PointList.Count > 0;
+        }
+
+        void RemoveSpawnedWalkerSlot(int listIndex, long recId, string reason)
+        {
+            SpawnedWalkerRecords.RemoveAt(listIndex);
+            RequestEntityDestroy(recId, reason);
         }
 
         private void TickCleanWalker()
@@ -101,67 +109,99 @@ namespace My.Map.Logic
             for (int i = SpawnedWalkerRecords.Count - 1; i >= 0; i--)
             {
                 long recId = SpawnedWalkerRecords[i];
-                // 先只处理loaded
+
                 if (!Repo.IsLoaded(recId))
                 {
                     Repo.Records.TryGetValue(recId, out var rec);
-                    if(rec == null || rec is not LogicEntityRecord4Npc unitNpcRec)
+                    if (rec == null || rec is not LogicEntityRecord4Npc unitNpcRec)
                     {
-                        SpawnedWalkerRecords.RemoveAt(i);
-                        RequestEntityDestroy(recId, "err");
+                        RemoveSpawnedWalkerSlot(i, recId, "walker_err");
                         continue;
                     }
 
-                    var path = GetRuntimePath(unitNpcRec.MovePath);
-                    if (unitNpcRec.CurrPathIdx >= path.PointList.Count - 1)
+                    if (unitNpcRec.MarkDestroyed)
                     {
-                        Debug.Log("TickCleanWalker unloaded rec destroyed");
                         SpawnedWalkerRecords.RemoveAt(i);
-                        RequestEntityDestroy(recId, "walker_reach");
                         continue;
                     }
+
+                    if (unitNpcRec.IsForeigner
+                        && unitNpcRec.MoveBehaveType == UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn)
+                    {
+                        continue;
+                    }
+
+                    if (unitNpcRec.MoveBehaveType != UnitMoveBehaveInfo.EMoveBehaveType.MovePath)
+                    {
+                        RemoveSpawnedWalkerSlot(i, recId, "walker_err_mode");
+                        continue;
+                    }
+
+                    if (!TryGetValidWalkerRuntimePath(unitNpcRec.MovePath, out var recordPath))
+                    {
+                        RemoveSpawnedWalkerSlot(i, recId, "walker_err_path");
+                        continue;
+                    }
+
+                    if (unitNpcRec.CurrPathIdx >= recordPath.PointList.Count - 1)
+                    {
+                        RemoveSpawnedWalkerSlot(i, recId, "walker_reach");
+                        continue;
+                    }
+
+                    continue;
                 }
-                else
+
+                Repo.Loaded.TryGetValue(recId, out var entity);
+
+                if (entity == null || entity is not NpcUnitLogicEntity unitNpc)
                 {
-                    Repo.Loaded.TryGetValue(recId, out var entity);
+                    RemoveSpawnedWalkerSlot(i, recId, "walker_err");
+                    continue;
+                }
 
-                    if (entity == null || entity is not NpcUnitLogicEntity unitNpc)
-                    {
-                        Debug.LogError($"TickRefreshWalker invalid {recId}");
-                        SpawnedWalkerRecords.RemoveAt(i);
-                        RequestEntityDestroy(recId, "err");
-                        continue;
-                    }
+                if (unitNpc.MarkDestroyed || unitNpc.IsDead)
+                {
+                    SpawnedWalkerRecords.RemoveAt(i);
+                    continue;
+                }
 
-                    if (unitNpc.IsInCombat)
-                    {
-                        continue;
-                    }
+                if (unitNpc.IsInCombat)
+                {
+                    continue;
+                }
 
-                    if (unitNpc.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.MovePath
-                        || string.IsNullOrEmpty(unitNpc.MoveBehaveInfo.MovePath))
-                    {
-                        SpawnedWalkerRecords.RemoveAt(i);
-                        RequestEntityDestroy(recId, "err");
-                        continue;
-                    }
+                if (unitNpc.NpcRecord.IsForeigner
+                    && unitNpc.MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn)
+                {
+                    continue;
+                }
 
-                    walkerPathDict.TryGetValue(unitNpc.MoveBehaveInfo.MovePath, out var path);
-                    var endP = path.PointList[path.PointList.Count - 1];
-                    var diff = endP - entity.Pos;
+                if (unitNpc.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.MovePath
+                    || string.IsNullOrEmpty(unitNpc.MoveBehaveInfo.MovePath))
+                {
+                    RemoveSpawnedWalkerSlot(i, recId, "walker_err_mode");
+                    continue;
+                }
 
-                    // 检查到达
-                    if (diff.magnitude < 0.3f)
-                    {
-                        SpawnedWalkerRecords.RemoveAt(i);
-                        RequestEntityDestroy(recId, "walker_reach");
-                        continue;
-                    }
+                if (!TryGetValidWalkerRuntimePath(unitNpc.MoveBehaveInfo.MovePath, out var livePath))
+                {
+                    RemoveSpawnedWalkerSlot(i, recId, "walker_err_path");
+                    continue;
+                }
+
+                var endP = livePath.PointList[livePath.PointList.Count - 1];
+                var diff = endP - entity.Pos;
+
+                if (diff.magnitude < 0.3f)
+                {
+                    RemoveSpawnedWalkerSlot(i, recId, "walker_reach");
+                    continue;
                 }
             }
         }
     
-        private void TickRefreshWaler()
+        private void TickRefreshWalkerSpawn()
         {
             if (LogicTime.time < _refreshWalkerTimer + 3f)
             {
@@ -182,7 +222,13 @@ namespace My.Map.Logic
                 var pathIdx = 0;
                 var path = pathList[pathIdx];
 
-                var firstPoint = path.PointList.First();
+                if (path.PointList.Count < 1)
+                {
+                    return;
+                }
+
+                var firstPoint = path.PointList[0];
+                var lastPoint = path.PointList[path.PointList.Count - 1];
 
                 var rec = new LogicEntityRecord4Npc()
                 {
@@ -193,8 +239,11 @@ namespace My.Map.Logic
                     FactionId = EFactionId.Citizen,
 
                     IsPeace = false,
-                    MoveBehaveType = EMoveBehaveType.MovePath,
-                    MovePath = path.Name,
+                    MoveBehaveType = EMoveBehaveType.MoveToThenDespawn,
+                    MovePath = null,
+                    MoveToDespawnTarget = lastPoint,
+                    CurrPathIdx = 0,
+                    CurrPathProgress = 0f,
 
                     EnmityConfId = "default_npc",
                     IsForeigner = true,

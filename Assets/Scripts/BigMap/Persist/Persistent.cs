@@ -42,6 +42,10 @@ namespace My.Map.Logic
         public int Status;
 
         public Dictionary<string, string> DynamicVariables = new();
+
+        // 交互点下毒诱饵：BaitEndTime > LogicTime.time 表示诱饵仍有效；为 0 表示无诱饵
+        public float PoisonBaitEndTime;
+        public float PoisonCdEndTime;
     }
 
 
@@ -98,6 +102,11 @@ namespace My.Map.Logic
         public string MovePath = null;
         public int CurrPathIdx = 0;
         public float CurrPathProgress = 0;
+
+        /// <summary>
+        /// MoveToThenDespawn 目标（逻辑坐标）；与 MovePath 线路推进互斥，用于路人离场 / 动态守卫退场等。
+        /// </summary>
+        public Vector2 MoveToDespawnTarget;
 
         public bool IsForeigner;
 

@@ -98,6 +98,18 @@ namespace My.Map
             {
                 this.MoveBehaveInfo.PatrolCycleNodeIds.AddRange(npcRecord.PatrolCycleNodeIds);
             }
+
+            this.MoveBehaveInfo.MoveToDespawnTarget = npcRecord.MoveToDespawnTarget;
+        }
+
+        protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
+        {
+            base.RefreshEntityRecordInfo(input);
+            if (input is LogicEntityRecord4Npc nr && MoveBehaveInfo != null
+                && MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn)
+            {
+                nr.MoveToDespawnTarget = MoveBehaveInfo.MoveToDespawnTarget;
+            }
         }
 
         public override bool CheckLocalSwitch(string switchName)

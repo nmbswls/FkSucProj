@@ -72,5 +72,36 @@ namespace Config.Map
         /// 状态切换规则
         /// </summary>
         public List<StateChangeRule> StateChangeRules = new();
+
+        [Header("Poison bait (optional)")]
+        public InteractPointPoisonSettings PoisonSettings = new();
+    }
+
+    [Serializable]
+    public class InteractPointPoisonSettings
+    {
+        [Tooltip("开启后玩家可对该点下毒；Idle NPC 可被吸引前来假交互并吃 buff")]
+        public bool Enable;
+
+        public List<CommonCheckCond> ApplyPoisonConds = new();
+
+        [Tooltip("NPC 假交互触发后对 NPC 施加的主 buff（buffId）")]
+        public string NpcTriggerBuffId = "";
+
+        [Tooltip("诱饵持续时间（秒）；过期后开始重下毒 CD")]
+        public float BaitDurationSeconds = 30f;
+
+        [Tooltip("诱饵被 NPC 触发或过期后，再次允许下毒的间隔（秒）")]
+        public float ReapplyCooldownSeconds = 20f;
+
+        public string ApplyPoisonLabel = "下毒";
+
+        [Tooltip("NPC 开始靠近前头顶飘字")]
+        public string NpcFloatText = "...";
+
+        [Tooltip("Idle NPC 会考虑前去嗅探的最大距离")]
+        public float NpcSeekRadius = 8f;
+
+        public float NpcApproachStopDistance = 0.4f;
     }
 }

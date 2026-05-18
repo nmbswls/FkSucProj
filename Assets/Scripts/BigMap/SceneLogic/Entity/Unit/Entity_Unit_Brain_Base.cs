@@ -113,11 +113,14 @@ namespace My.Map.Unit
         public AIStateChaseWanted StateChaseWanted;
         public AIStateCharmedFollow StateCharmedFollow;
         public AIStateScriptedMicroPlot StateScriptedMicroPlot;
+        public AIStatePoisonBait StatePoisonBait;
 
 
         // 黑板 (Blackboard) - 状态间共享数据
         public Vector2? HomePos;
         public Vector2? SuspiciousPos; // <--- 搜索目标点 (最后目击位置/声音来源)
+
+        public long PoisonBaitTargetInteractInstId;
 
         // Search 本地张望结束后：等待上层（如 WantedGuardSpawner）下发移动策略；由刷新器清除并切状态。
         public bool PostSearchPolicyPending;
@@ -166,6 +169,7 @@ namespace My.Map.Unit
             StateAttracted = new AIStateAttracted(this);
             StateCharmedFollow = new AIStateCharmedFollow(this);
             StateScriptedMicroPlot = new AIStateScriptedMicroPlot(this);
+            StatePoisonBait = new AIStatePoisonBait(this);
 
             if (Config.IsGuard)
             {

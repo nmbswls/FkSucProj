@@ -361,6 +361,13 @@ namespace My.Map.Unit
 
         public override void OnUpdate()
         {
+            if (_brain.LogicManager.TryGetPoisonBaitTargetForNpc(_brain.NpcEntity, out long baitInstId))
+            {
+                _brain.PoisonBaitTargetInteractInstId = baitInstId;
+                _brain.ChangeState(_brain.StatePoisonBait);
+                return;
+            }
+
             if (_brain.SuspiciousPos != null)
             {
                 _brain.ChangeState(_brain.StateSearch);
@@ -1402,6 +1409,84 @@ namespace My.Map.Unit
             base.OnExit();
 
             _brain.NpcEntity.UnregisterGazeBySourceTag("ChaseWanted");
+        }
+    }
+
+    public sealed class AIStatePoisonBait : AIBaseState
+    {
+        public override string StateName => "PoisonBait";
+
+        public override bool CanBeAttract => false;
+
+        public override bool CanEnterCombat => true;
+
+        public AIStatePoisonBait(AIBrainV2 brain) : base(brain)
+        {
+        }
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+            var ip = ResolveTarget();
+            if (ip == null)
+            {
+                _brain.ChangeState(_brain.StateIdle);
+                return;
+            }
+
+            var ps = ip.cacheCfg.PoisonSettings;
+            string msg = ps != null ? ps.NpcFloatText : "...";
+            var wpos = (Vector3)(Vector2)_brain.NpcEntity.Pos + Vector3.up * 1.2f;
+            FakeHintTextManager.ShowWorld(msg, wpos);
+
+            float stop = ps != null ? Mathf.Max(0.15f, ps.NpcApproachStopDistance) : 0.4f;
+            _brain.NpcEntity.TryMoveTo(ip.Pos, stopDistance: stop, moveSpeedRate: 0.45f);
+        }
+
+        public override void OnUpdate()
+        {
+            long tid = _brain.PoisonBaitTargetInteractInstId;
+            var ip = _brain.LogicManager.GetLogicEntity(tid, false) as LogicEntityInteractPoint;
+            if (ip == null || ip.MarkDestroyed || !ip.IsPoisonBaitWindowActive())
+            {
+                _brain.ChangeState(_brain.StateIdle);
+                return;
+            }
+
+            var ps = ip.cacheCfg.PoisonSettings;
+            float stop = ps != null ? Mathf.Max(0.15f, ps.NpcApproachStopDistance) : 0.4f;
+            _brain.NpcEntity.TryMoveTo(ip.Pos, stopDistance: stop, moveSpeedRate: 0.45f);
+
+            if (Vector2.Distance(_brain.NpcEntity.Pos, ip.Pos) <= stop + 0.08f)
+            {
+                if (ip.TryNpcConsumePoisonBait(_brain.NpcEntity.Id))
+                {
+                    string buffId = ps != null ? ps.NpcTriggerBuffId : null;
+                    if (!string.IsNullOrEmpty(buffId))
+                    {
+                        _brain.LogicManager.globalBuffManager.RequestAddBuff(_brain.NpcEntity.Id, buffId);
+                    }
+                }
+
+                _brain.ChangeState(_brain.StateIdle);
+            }
+        }
+
+        public override void OnExit()
+        {
+            base.OnExit();
+            _brain.PoisonBaitTargetInteractInstId = 0;
+        }
+
+        LogicEntityInteractPoint ResolveTarget()
+        {
+            long tid = _brain.PoisonBaitTargetInteractInstId;
+            if (tid == 0)
+            {
+                return null;
+            }
+
+            return _brain.LogicManager.GetLogicEntity(tid, false) as LogicEntityInteractPoint;
         }
     }
 }

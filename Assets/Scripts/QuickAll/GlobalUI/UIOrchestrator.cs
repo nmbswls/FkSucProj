@@ -1,4 +1,5 @@
 using Map.Logic.Events;
+using My.Config;
 using My.Map;
 using My.Map.View;
 using My.MiniGame;
@@ -732,6 +733,25 @@ namespace My.UI
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.CostPendingAlert, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.PlayerFaQingStatusChange, adapter));
             subs.Add(MainGameManager.Instance.gameLogicManager.LogicEventBus.Subscribe(EMapLogicEventType.PlayerExposeStatusChange, adapter));
+
+            MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.EventOnGainItem += (bagId, itemId, count) =>
+            {
+                HandleOnGainItem(itemId, (int)count);
+            };
+        }
+
+        private void HandleOnGainItem(string itemId, int count)
+        {
+            if (UIGainSideNotifyPanel.Instance != null)
+            {
+                var itemCfg = CfgMgr.Cfgs.TbItemData.GetOrDefault(itemId);
+                if(itemCfg != null)
+                {
+                    var sprite = SimpleResManager.Load<Sprite>("Sprites/" + itemCfg.SpriteName);
+                    UIGainSideNotifyPanel.Instance.EnqueueLog("+" + itemCfg.DisplayName + "*" + count, sprite);
+                }
+                
+            }
         }
 
         public void OnMapLogicEvent(IMapLogicEvent ev)

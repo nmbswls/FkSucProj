@@ -272,6 +272,50 @@ namespace My
                 + $"patrol_pick_n={tier.PatrolPickN} spawn_radius=[{tier.SpawnRadiusMin},{tier.SpawnRadiusMax}] cull_distance={tier.CullDistance}";
         }
 
+        void TrySendGuardWalkAwayOrDestroy(long id, string destroyReasonFallback)
+        {
+            var e = _logic.AreaManager.GetLogicEntiy(id, false);
+            if (e == null || e.MarkDestroyed)
+            {
+                _logic.AreaManager.RequestEntityDestroy(id, destroyReasonFallback);
+                return;
+            }
+
+            if (e is not NpcUnitLogicEntity npc)
+            {
+                _logic.AreaManager.RequestEntityDestroy(id, destroyReasonFallback);
+                return;
+            }
+
+            if (npc.IsDead)
+            {
+                _logic.AreaManager.RequestEntityDestroy(id, destroyReasonFallback);
+                return;
+            }
+
+            if (npc.IsInCombat)
+            {
+                _logic.AreaManager.RequestEntityDestroy(id, destroyReasonFallback + "_combat");
+                return;
+            }
+
+            var db = _logic.AreaManager.cacheDatabase;
+            if (DynamicPressureGuardUtil.TryPickRandomNamedPointPosition(db, ENamedPointType.GuardSpawner, out var exitPos))
+            {
+                npc.MoveBehaveInfo.MoveToDespawnTarget = exitPos;
+                npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
+                if (npc.AIBrain != null)
+                {
+                    npc.AIBrain.PostSearchPolicyPending = false;
+                    npc.AIBrain.ChangeState(npc.AIBrain.StateIdle);
+                }
+
+                return;
+            }
+
+            _logic.AreaManager.RequestEntityDestroy(id, destroyReasonFallback);
+        }
+
         void PruneDead()
         {
             for (int i = _guardIds.Count - 1; i >= 0; i--)
@@ -305,7 +349,7 @@ namespace My
                 {
                     long id = _guardIds[i];
                     _guardIds.RemoveAt(i);
-                    _logic.AreaManager.RequestEntityDestroy(id, "wanted_guard_cull_distance");
+                    TrySendGuardWalkAwayOrDestroy(id, "wanted_guard_cull_distance");
                 }
             }
         }
@@ -318,7 +362,7 @@ namespace My
                 int farIdx = FindFarthestIndex(p);
                 long id = _guardIds[farIdx];
                 _guardIds.RemoveAt(farIdx);
-                _logic.AreaManager.RequestEntityDestroy(id, "wanted_guard_trim");
+                TrySendGuardWalkAwayOrDestroy(id, "wanted_guard_trim");
             }
         }
 

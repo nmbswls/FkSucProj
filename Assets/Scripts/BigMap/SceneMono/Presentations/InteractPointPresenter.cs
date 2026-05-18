@@ -59,6 +59,11 @@ namespace My.Map.Scene
 
         public bool TriggerInteract(int selectionId)
         {
+            if (selectionId == InteractPointPoisonDefs.ApplyPoisonSelectId)
+            {
+                return RealLogic.TryPlayerApplyPoison();
+            }
+
             return RealLogic.TryTriggerInteract(selectionId);
         }
 
@@ -70,6 +75,18 @@ namespace My.Map.Scene
             if(RealLogic.IsInteracting)
             {
                 return ret;
+            }
+
+            if (RealLogic.CanPlayerOfferPoisonInteract())
+            {
+                var ps = RealLogic.cacheCfg.PoisonSettings;
+                string label = ps != null && !string.IsNullOrEmpty(ps.ApplyPoisonLabel) ? ps.ApplyPoisonLabel : "下毒";
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = InteractPointPoisonDefs.ApplyPoisonSelectId,
+                    SelectContent = label,
+                    Selectable = true,
+                });
             }
 
             var logicInts = RealLogic.InteractInfos;
@@ -106,6 +123,11 @@ namespace My.Map.Scene
             }
 
             int enableOne = 0;
+            if (RealLogic.CanPlayerOfferPoisonInteract())
+            {
+                enableOne += 1;
+            }
+
             var logicInts = RealLogic.InteractInfos;
 
             foreach (var i in logicInts)
