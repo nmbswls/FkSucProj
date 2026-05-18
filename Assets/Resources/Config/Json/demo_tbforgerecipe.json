@@ -7,7 +7,10 @@
     "result_item_id": "1",
     "icon_sprite": "",
     "materials": [
-      { "item_id": "small_stone", "count": 2 }
+      {
+        "item_id": "small_stone",
+        "count": 2
+      }
     ],
     "unlock_mode": 0,
     "unlock_param": "",
@@ -21,7 +24,10 @@
     "result_item_id": "small_stone",
     "icon_sprite": "",
     "materials": [
-      { "item_id": "1", "count": 1 }
+      {
+        "item_id": "1",
+        "count": 1
+      }
     ],
     "unlock_mode": 2,
     "unlock_param": "1|3",
