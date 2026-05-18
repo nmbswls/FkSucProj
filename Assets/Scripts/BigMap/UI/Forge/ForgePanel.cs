@@ -1,21 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
 using My.UI;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace My.UI.Forge
 {
-    [System.Serializable]
-    public sealed class ForgeCategorySection
-    {
-        public TextMeshProUGUI categoryTitle;
-        public TextMeshProUGUI emptyHint;
-        public RectTransform grid;
-    }
-
     public sealed class ForgePanel : PanelWithInput
     {
         public const string Pid = "ForgePanel";
@@ -27,15 +19,20 @@ namespace My.UI.Forge
             "杂项合成",
         };
 
+        static readonly EForgeRecipeType[] SectionTypes =
+        {
+            EForgeRecipeType.Weapon,
+            EForgeRecipeType.Armor,
+            EForgeRecipeType.Misc,
+        };
+
         [SerializeField] RectTransform contentRoot;
         [SerializeField] ScrollRect mainScroll;
         [SerializeField] Button closeButton;
-        [SerializeField] ForgeRecipeCell recipeCellTemplate;
-        [SerializeField] ForgeCategorySection weaponSection;
-        [SerializeField] ForgeCategorySection armorSection;
-        [SerializeField] ForgeCategorySection miscSection;
+        [SerializeField] RectTransform sectionsRoot;
+        [SerializeField] GameObject categorySectionTemplate;
 
-        ForgeCategorySection[] _sections;
+        Coroutine _layoutScrollCo;
 
         public static void Toggle()
         {
@@ -66,21 +63,6 @@ namespace My.UI.Forge
                 }
             }
 
-            _sections = new[] { weaponSection, armorSection, miscSection };
-            for (int i = 0; i < _sections.Length && i < CategoryTitles.Length; i++)
-            {
-                var s = _sections[i];
-                if (s != null && s.categoryTitle != null && string.IsNullOrEmpty(s.categoryTitle.text))
-                {
-                    s.categoryTitle.text = CategoryTitles[i];
-                }
-            }
-
-            if (recipeCellTemplate != null)
-            {
-                recipeCellTemplate.gameObject.SetActive(false);
-            }
-
             if (contentRoot == null && mainScroll != null)
             {
                 contentRoot = mainScroll.content;
@@ -97,6 +79,31 @@ namespace My.UI.Forge
         {
             base.Show();
             RefreshRecipes();
+            ScheduleLayoutAndScrollTop();
+        }
+
+        void ScheduleLayoutAndScrollTop()
+        {
+            if (_layoutScrollCo != null)
+            {
+                StopCoroutine(_layoutScrollCo);
+            }
+
+            _layoutScrollCo = StartCoroutine(CoDeferredLayoutAndScrollTop());
+        }
+
+        IEnumerator CoDeferredLayoutAndScrollTop()
+        {
+            yield return null;
+            RebuildForgeLayout();
+            yield return null;
+            RebuildForgeLayout();
+            if (mainScroll != null)
+            {
+                mainScroll.verticalNormalizedPosition = 1f;
+            }
+
+            _layoutScrollCo = null;
         }
 
         public override bool OnCancel()
@@ -105,17 +112,44 @@ namespace My.UI.Forge
             return true;
         }
 
-        void RefreshRecipes()
+        void ClearInstantiatedSections()
         {
-            if (_sections == null || _sections.Length != 3)
+            if (sectionsRoot == null)
             {
                 return;
             }
 
-            var table = CfgMgr.Cfgs?.TbForgeRecipe;
-            if (table?.DataList == null)
+            for (int i = sectionsRoot.childCount - 1; i >= 0; i--)
             {
+                Destroy(sectionsRoot.GetChild(i).gameObject);
+            }
+        }
+
+        void RefreshRecipes()
+        {
+            ClearInstantiatedSections();
+
+            if (sectionsRoot == null || categorySectionTemplate == null)
+            {
+                Debug.LogWarning("[ForgePanel] sectionsRoot or categorySectionTemplate missing; skip refresh.");
                 return;
+            }
+
+            IReadOnlyList<ForgeRecipe> sourceRows = null;
+            var cfgs = CfgMgr.Cfgs;
+            if (cfgs != null)
+            {
+                var table = cfgs.TbForgeRecipe;
+                if (table?.DataList != null)
+                {
+                    sourceRows = table.DataList;
+                }
+            }
+
+            if (sourceRows == null)
+            {
+                Debug.LogWarning("[ForgePanel] TbForgeRecipe unavailable; showing empty sections.");
+                sourceRows = new List<ForgeRecipe>();
             }
 
             var byType = new Dictionary<EForgeRecipeType, List<ForgeRecipe>>
@@ -125,7 +159,7 @@ namespace My.UI.Forge
                 [EForgeRecipeType.Misc] = new List<ForgeRecipe>(),
             };
 
-            foreach (var row in table.DataList)
+            foreach (var row in sourceRows)
             {
                 if (row == null || !ForgeRecipeUnlockUtil.IsUnlocked(row))
                 {
@@ -149,67 +183,53 @@ namespace My.UI.Forge
                 });
             }
 
-            int ti = 0;
-            foreach (EForgeRecipeType t in new[] { EForgeRecipeType.Weapon, EForgeRecipeType.Armor, EForgeRecipeType.Misc })
+            for (int i = 0; i < SectionTypes.Length; i++)
             {
-                var sec = _sections[ti];
-                if (sec != null && sec.grid != null && sec.emptyHint != null)
+                var t = SectionTypes[i];
+                byType.TryGetValue(t, out var list);
+                if (list == null)
                 {
-                    FillGrid(sec.grid, sec.emptyHint, byType[t]);
+                    list = new List<ForgeRecipe>();
                 }
 
-                ti++;
+                var go = Instantiate(categorySectionTemplate, sectionsRoot, false);
+                go.SetActive(true);
+                var sec = go.GetComponent<ForgeCategorySection>();
+                if (sec != null)
+                {
+                    sec.Init(t, CategoryTitles[i]);
+                    sec.RefreshRecipes(list);
+                }
+            }
+
+            RebuildForgeLayout();
+        }
+
+        void RebuildForgeLayout()
+        {
+            if (sectionsRoot != null)
+            {
+                for (int i = 0; i < sectionsRoot.childCount; i++)
+                {
+                    var sec = sectionsRoot.GetChild(i).GetComponent<ForgeCategorySection>();
+                    sec?.RebuildLayoutSelf();
+                }
             }
 
             if (contentRoot != null)
             {
+                for (int i = 0; i < contentRoot.childCount; i++)
+                {
+                    if (contentRoot.GetChild(i) is RectTransform childRt)
+                    {
+                        LayoutRebuilder.ForceRebuildLayoutImmediate(childRt);
+                    }
+                }
+
                 LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot);
             }
-        }
 
-        void FillGrid(RectTransform grid, TextMeshProUGUI emptyHint, List<ForgeRecipe> recipes)
-        {
-            if (grid == null || emptyHint == null || recipeCellTemplate == null)
-            {
-                return;
-            }
-
-            for (int i = grid.childCount - 1; i >= 0; i--)
-            {
-                Destroy(grid.GetChild(i).gameObject);
-            }
-
-            var glg = grid.GetComponent<GridLayoutGroup>();
-            float cellH = glg != null ? glg.cellSize.y : 124f;
-            float cellW = glg != null ? glg.cellSize.x : 108f;
-            float spacingY = glg != null ? glg.spacing.y : 8f;
-            float spacingX = glg != null ? glg.spacing.x : 8f;
-            int columns = glg != null && glg.constraint == GridLayoutGroup.Constraint.FixedColumnCount
-                ? Mathf.Max(1, glg.constraintCount)
-                : 3;
-
-            if (recipes == null || recipes.Count == 0)
-            {
-                emptyHint.gameObject.SetActive(true);
-                grid.sizeDelta = new Vector2(grid.sizeDelta.x, cellH + spacingY);
-                return;
-            }
-
-            emptyHint.gameObject.SetActive(false);
-            foreach (var r in recipes)
-            {
-                var go = Instantiate(recipeCellTemplate.gameObject, grid, false);
-                go.SetActive(true);
-                var cell = go.GetComponent<ForgeRecipeCell>();
-                if (cell != null)
-                {
-                    cell.Bind(r);
-                }
-            }
-
-            int rows = Mathf.CeilToInt(recipes.Count / (float)columns);
-            float h = rows * (cellH + spacingY) + spacingY;
-            grid.sizeDelta = new Vector2(grid.sizeDelta.x, Mathf.Max(cellH + spacingY, h));
+            Canvas.ForceUpdateCanvases();
         }
     }
 }
