@@ -227,7 +227,7 @@ namespace My
             await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld, null);
 
 
-            if (HomeSceneManager.Instance != null)
+            if (My.Home.LegacyHomeBuildFeature.Enabled && HomeSceneManager.Instance != null)
             {
                 HomeSceneManager.Instance.InitHomePlacements();
             }

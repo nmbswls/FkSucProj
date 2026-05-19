@@ -238,6 +238,12 @@ namespace My.Home
 
         public bool TrySetPlacementWorkforce(long placementInstId, int workers, out string failReason)
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                failReason = "legacy_home_disabled";
+                return false;
+            }
+
             failReason = null;
             var p = FindPlacementById(placementInstId);
             if (p == null || p.Removed || p.CfgRef == null)
@@ -288,12 +294,22 @@ namespace My.Home
 
         public void OnPlayerEnterHome()
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return;
+            }
+
             EnsureHomeFacilityRecordsRegistered();
         }
 
         // 内城 placement 与大地图动态刷新无关：进内城时直接建 Record 并注册（与 AddPlacement 同路径）。
         public void EnsureHomeFacilityRecordsRegistered()
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return;
+            }
+
             if (LogicManager?.AreaManager == null)
             {
                 return;
@@ -368,6 +384,11 @@ namespace My.Home
         /// <param name="repairPos"></param>
         public void DoRepairFacility(string facilityId, Vector2 repairPos)
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return;
+            }
+
             if(RepairedFacilityList.Contains(facilityId))
             {
                 return;
@@ -407,6 +428,11 @@ namespace My.Home
 
         public void AddPlacement(HomeFacilityCfg cfg, Vector3Int pivorPos, EPlacementRotation rot)
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return;
+            }
+
             var newInfo = new HomeFacilityInstance();
             newInfo.Id = cfg.CfgId;
             newInfo.PivotPos = pivorPos;
@@ -468,6 +494,11 @@ namespace My.Home
 
         public void MovePlacement(string id, Vector3Int pivorPos, EPlacementRotation rot)
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return;
+            }
+
             var findIt = PlacementInfos.Find(item => item.Id == id);
             if (findIt != null)
             {
@@ -501,6 +532,11 @@ namespace My.Home
 
         public List<HomeFacilityCfg> GetAllBuilableItems()
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return new List<HomeFacilityCfg>();
+            }
+
             List<string> names = new List<string>()
             {
                 "small_01",

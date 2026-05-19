@@ -26,6 +26,29 @@ namespace My.Map
         public const float FailTempEnmity = 42f;
 
 
+        /// <summary>
+        /// 通过hval计算当前等级
+        /// </summary>
+        /// <returns></returns>
+        public static int GetNpcHDesireLevel(long hVal, long maxHVal)
+        {
+            double rate = hVal * 1.0 / maxHVal;
+            if(rate < 0.3)
+            {
+                return 1;
+            }
+            else if(rate < 0.6)
+            {
+                return 2;
+            }
+            else if(rate < 0.9)
+            {
+                return 3;
+            }
+
+            return 4;
+        }
+
         //public static float GetBaseBackHitSuccessChange()
         //{
         //    return BaseSuccessChance;
@@ -47,6 +70,16 @@ namespace My.Map
             }
         }
 
+        /// <summary>
+        /// 解析h行动公式
+        /// </summary>
+        /// <param name="actId"></param>
+        /// <param name="hPowerPlayer"></param>
+        /// <param name="hPowerEnemy"></param>
+        /// <param name="enemyLevel"></param>
+        /// <param name="hImpulseEnemy"></param>
+        /// <param name="hImpulsePlayer"></param>
+        /// <returns></returns>
         public static bool ResolveHActParams(int actId, long hPowerPlayer, long hPowerEnemy, int enemyLevel, out long hImpulseEnemy, out long hImpulsePlayer)
         {
             hImpulseEnemy = 0;
@@ -57,19 +90,22 @@ namespace My.Map
 
             double totalHImpulse = hActInfo.HImpulseBase;
             double C = 100 + 5 * enemyLevel;
-            if(hActInfo.IsPlayerPassive)
-            {
-                double hVsRate = (hPowerEnemy * 0.001 + C) / (hPowerPlayer * 0.001 + C);
 
+            double hVsRate = 1.0f;
+            // 经由对等平滑公式增幅或减弱 改变原始h冲击
+            if (hActInfo.IsPlayerPassive)
+            {
+                //double hVsRate = (hPowerEnemy * 0.001 + C) / (hPowerPlayer * 0.001 + C);
+                
                 totalHImpulse = totalHImpulse * hVsRate; // 经由对等平滑公式增幅或减弱
             }
             else
             {
-                double hVsRate = (hPowerPlayer * 0.001 + C) / (hPowerEnemy * 0.001 + C);
-
+                //double hVsRate = (hPowerPlayer * 0.001 + C) / (hPowerEnemy * 0.001 + C);
                 totalHImpulse = totalHImpulse * hVsRate; // 经由对等平滑公式增幅或减弱
             }
 
+            // 根据动作的分流比例，分担总h冲击
             // 问题是主角屌了 反震也变弱了
             double hEnemy = totalHImpulse * hActInfo.CoefEnemy;
             double hPlayer = totalHImpulse * hActInfo.CoefPlayer;

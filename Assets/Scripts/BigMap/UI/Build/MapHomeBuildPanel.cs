@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using My.Home;
 
 namespace My.UI
 {
@@ -41,14 +42,25 @@ namespace My.UI
         public void Awake()
         {
             buildItemsList.InitListView(0, OnGetBuildItemByIndex);
-            if (btnOpenTownManagement != null)
+            if (LegacyHomeBuildFeature.Enabled && btnOpenTownManagement != null)
             {
                 btnOpenTownManagement.onClick.AddListener(MapTownManagementPanel.TryOpenFromHud);
+            }
+            else if (btnOpenTownManagement != null)
+            {
+                btnOpenTownManagement.gameObject.SetActive(false);
             }
         }
 
         public void InitShow()
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                buildingItemDatas.Clear();
+                buildItemsList.SetListItemCount(0, false);
+                return;
+            }
+
             buildingItemDatas = MainGameManager.Instance.gameLogicManager.homeDataManager.GetAllBuilableItems();
             
             currentIndex = Mathf.Clamp(0, 0, Mathf.Max(0, buildingItemDatas.Count - 1));
@@ -160,6 +172,11 @@ namespace My.UI
 
         void Update()
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return;
+            }
+
             if (currentPlacement == null) return;
 
             Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(UnityEngine.Input.mousePosition);

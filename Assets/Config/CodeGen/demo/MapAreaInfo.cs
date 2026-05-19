@@ -25,6 +25,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
         { if(!_buf["map_data_name"].IsString) { throw new SerializationException(); }  MapDataName = _buf["map_data_name"]; }
         { if(!_buf["is_home"].IsBoolean) { throw new SerializationException(); }  IsHome = _buf["is_home"]; }
+        { if(_buf["is_secret_base"].IsBoolean) { IsSecretBase = _buf["is_secret_base"]; } }
         { if(!_buf["always_alert"].IsBoolean) { throw new SerializationException(); }  AlwaysAlert = _buf["always_alert"]; }
         { if(!_buf["is_civil_area"].IsBoolean) { throw new SerializationException(); }  IsCivilArea = _buf["is_civil_area"]; }
         { if(!_buf["is_danger_area"].IsBoolean) { throw new SerializationException(); }  IsDangerArea = _buf["is_danger_area"]; }
@@ -65,6 +66,8 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// home标记
     /// </summary>
     public bool IsHome;
+    // 隐秘据点（横板据点，不走大地图实体与旧家园建造）
+    public bool IsSecretBase;
     /// <summary>
     /// 警戒标记
     /// </summary>
@@ -104,6 +107,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         + "sceneName:" + SceneName + ","
         + "mapDataName:" + MapDataName + ","
         + "isHome:" + IsHome + ","
+        + "isSecretBase:" + IsSecretBase + ","
         + "alwaysAlert:" + AlwaysAlert + ","
         + "isCivilArea:" + IsCivilArea + ","
         + "isDangerArea:" + IsDangerArea + ","

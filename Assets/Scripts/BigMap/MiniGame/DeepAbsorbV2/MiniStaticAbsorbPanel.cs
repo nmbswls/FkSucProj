@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
+using My.Config;
 using My.Map;
 using My.Map.Entity;
 using My.Map.View;
@@ -66,7 +68,10 @@ namespace My.MiniGame
         public int Difficulty = 3;
 
         private int chanceLeft = 0;
+        private int actId = 0;
 
+        private int failCnt = 0;
+        private int noOpCnt = 0;
         private int successCnt = 0;
         private int perfectCnt = 0;
 
@@ -84,9 +89,14 @@ namespace My.MiniGame
             this.chanceLeft = totalChance;
             this.successCnt = 0;
             this.perfectCnt = 0;
+            this.failCnt = 0;
+            this.noOpCnt = 0;
 
             SetPrompt("按 Space 进行判定");
             SetPromptColor(normalTextColor);
+
+            // 随机一个静态动作
+            actId = RandomGetStaticHAct();
 
             QteBar.InitCursorPos();
             QteBar.ResetGame(); 
@@ -119,6 +129,8 @@ namespace My.MiniGame
             {
                 SetPrompt("无");
                 SetPromptColor(failTextColor);
+
+                noOpCnt += 1;
             }
 
             chanceLeft -= 1;
@@ -159,6 +171,21 @@ namespace My.MiniGame
             return new();
         }
 
+        /// <summary>
+        /// 随机获取一个h动作
+        /// </summary>
+        /// <returns></returns>
+        private int RandomGetStaticHAct()
+        {
+            int playerDesire = MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel;
+            var ll = CfgMgr.Cfgs.TbHActInfo.DataList.Where(item => item.FilterType.Contains("Static") && item.PlayerMinDesire <= playerDesire).ToList();
+            if(ll.Count == 0)
+            {
+                return 0;
+            }
+            return ll[ll.Count - 1].Id;
+        }
+
         private void OnMiniGameFinish()
         {
             //MainGameManager.Instance.OnSmallGameFinish(ZhaQuTargetId, success, null);
@@ -166,18 +193,31 @@ namespace My.MiniGame
             var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
 
 
-            long costSan = TotalChance * 1000;
-
-            // 按照成功次数扣减理智
-            player.ApplyResourceChange(AttrIdConsts.PlayerSanity, -costSan, false, Map.Fight.FightStruct.EDmgFlag.None, null);
-            if(player.DesireLevel <= 2)
+            if(failCnt > 0)
             {
-                player.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, TotalChance * 1000, false, Map.Fight.FightStruct.EDmgFlag.None, null);
+                long costSan = TotalChance * 5000;
+
+                // 按照成功次数扣减理智
+                player.ApplyResourceChange(AttrIdConsts.PlayerSanity, -costSan, false, Map.Fight.FightStruct.EDmgFlag.None, null);
             }
             else
             {
-                player.ApplyResourceChange(AttrIdConsts.PlayerPleasure, TotalChance * 1000, false, Map.Fight.FightStruct.EDmgFlag.None, null);
+                double oneCost = 3000.0 / TotalChance;
+                long costSan = (long)((oneCost * noOpCnt * 1.0) + (oneCost * noOpCnt * 0.8) + (oneCost * noOpCnt * 0.5));
+
+                // 按照成功次数扣减理智
+                player.ApplyResourceChange(AttrIdConsts.PlayerSanity, -costSan, false, Map.Fight.FightStruct.EDmgFlag.None, null);
             }
+
+            // 对于静态敌人 玩家碾压 
+            if(!PlayerGamePlayRule.ResolveHActParams(actId, player.GetAttr(AttrIdConsts.HPower), 10, 1, out _, out var hImpulsePlayer))
+            {
+                Debug.LogError("err ResolveHActParams");
+            }
+
+            // 对玩家施加冲击力
+            player.ApplyHImpulseDirectly(hImpulsePlayer, null);
+
 
             var reward = CalcAbsorbGainResult(successCnt, perfectCnt);
 

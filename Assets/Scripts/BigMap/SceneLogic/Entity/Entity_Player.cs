@@ -1794,19 +1794,31 @@ namespace My.Map
             // 根据伤害计算h冲击力
             long hImpulse = DamagePipeline.CalculateDmgBonusedHImpulse(hParam, dmg, GetUnitLevel());
 
+            Debug.Log("OnDamageBeforeFinalReduce dmg impulse h " + hImpulse + " dmg " + dmg);
+
+            ApplyHImpulseDirectly(hImpulse, intent);
+        }
+
+        /// <summary>
+        /// 直接应用一个h冲击
+        /// </summary>
+        /// <param name="hImpulse"></param>
+        /// <param name="intent"></param>
+        public void ApplyHImpulseDirectly(long hImpulse, ResourceDeltaIntent intent = null)
+        {
             // 根据h冲击力分配高潮与发情
             (var climax, var estrus) = DamagePipeline.DistributeClimaxAndEstrusFromHImpulse(hImpulse, new LiveEntityFightAttrProvider(this));
-            Debug.Log("OnDamageBeforeFinalReduce dmg impulse h " + hImpulse + " dmg " + dmg + " " + climax + " " + estrus);
+            Debug.Log("OnDamageBeforeFinalReduce impulse h " + hImpulse + " " + climax + " " + estrus);
 
             // 叠加高潮条（快乐条
-            if(climax > 0)
+            if (climax > 0)
             {
-                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, climax, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, climax, intent?.isEnmity ?? false, EDmgFlag.None, intent.srcEntityId);
             }
 
-            if(estrus > 0)
+            if (estrus > 0)
             {
-                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, estrus, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, estrus, intent?.isEnmity ?? false, EDmgFlag.None, intent.srcEntityId);
             }
         }
 

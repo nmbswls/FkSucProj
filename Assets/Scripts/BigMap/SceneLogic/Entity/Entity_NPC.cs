@@ -43,6 +43,7 @@ namespace My.Map
         public event Action EventOnHModeChange;
 
         public bool IsFaQing { get; private set; }
+        public int NpcDesirePhase { get; private set; } // npc独特欲望阶段  
 
         protected bool hShieldBroken;
 
@@ -522,6 +523,16 @@ namespace My.Map
             }
         }
 
+
+        protected void TickNpcHDesirePhase()
+        {
+            var hVal = GetAttr(AttrIdConsts.NPCHVal);
+            var hMax = GetAttr(AttrIdConsts.NPCHVal_Max);
+
+            int disireLevel = PlayerGamePlayRule.GetNpcHDesireLevel(hVal, hMax);
+
+            double rate = hVal * 1.0 / hMax;
+        }
         public void CheckSeeEvil()
         {
             if (LogicTime.time - _checkAlertTimer < 0.5f)

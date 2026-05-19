@@ -271,6 +271,7 @@ namespace My.Saving
         public Vector2 CurrentPos;
 
         public OpenWorldReturnBookmark LastOpenWorldBeforeHome;
+        public OpenWorldReturnBookmark LastOpenWorldBeforeSecretBase;
         public List<BuffPersistData> PlayerBuffs;
 
         public GlobalRuntimePersistData GlobalRuntime;

@@ -482,7 +482,9 @@ namespace My.UI
                 overworldSkillPreviewUI.TickPreviewState();
             }
 
-            if (WorldAreaManager.Instance.cacheAreaInfo.IsHome && UnityEngine.Input.GetKeyDown(KeyCode.B))
+            if (My.Home.LegacyHomeBuildFeature.Enabled
+                && WorldAreaManager.Instance.cacheAreaInfo.IsHome
+                && UnityEngine.Input.GetKeyDown(KeyCode.B))
             {
                 if(HudMode == EHudMode.Normal)
                 {
@@ -1201,6 +1203,12 @@ namespace My.UI
 
         protected void EnterBuildMode()
         {
+            if (!My.Home.LegacyHomeBuildFeature.Enabled
+                || MainGameManager.Instance.gameLogicManager.IsInSecretBase)
+            {
+                return;
+            }
+
             UpdateHudMode(EHudMode.Build);
             
         }

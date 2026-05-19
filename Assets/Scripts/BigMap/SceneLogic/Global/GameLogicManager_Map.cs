@@ -102,6 +102,8 @@ namespace My
         /// </summary>
         public void ClearPreviousArea()
         {
+            SecretBase.Shutdown();
+
             EventOnHardAreaClearStarting?.Invoke();
 
             DelayedEffectQueue.Clear();
@@ -124,7 +126,7 @@ namespace My
             AreaManager.InitilizeMap(SwitchAreaIntent.AreaName);
             MapMicroPlot?.RebuildForCurrentMap();
 
-            if (mapCfg != null && mapCfg.IsHome)
+            if (mapCfg != null && mapCfg.IsHome && My.Home.LegacyHomeBuildFeature.Enabled)
             {
                 homeDataManager.OnPlayerEnterHome();
             }
@@ -215,6 +217,7 @@ namespace My
         {
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
             RumorIntelSpawn?.ApplyPurchasedRumorsOnMapLoaded();
+            OnSecretBasePostAreaLoaded();
         }
 
         // 按当前 PlayerHumanMode 与地图类型同步魔力衣装运行时与人类形态屏蔽（暴露/衣装上限等）

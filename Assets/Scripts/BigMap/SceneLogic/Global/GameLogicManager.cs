@@ -264,6 +264,8 @@ namespace My
 
             CapturePersistenceFromSaveData(saveData);
 
+            BindSecretBaseOnInit();
+
             MainStage = EMainGameStage.Initialized;
         }
 
@@ -286,6 +288,7 @@ namespace My
             }
 
             TrySnapshotOpenWorldBeforeEnteringHome(mapName);
+            TrySnapshotOpenWorldBeforeEnteringSecretBase(mapName);
 
             var intent = new SwitchAreaIntent();
             intent.AreaName = mapName;
@@ -349,6 +352,12 @@ namespace My
                 BigMapFinishPanel.Create();
 
                 MainStage = EMainGameStage.Balance;
+                return;
+            }
+
+            if (IsInSecretBase)
+            {
+                TickSecretBaseOnly(dt);
                 return;
             }
 
@@ -877,6 +886,8 @@ namespace My
                 LastOpenWorldBeforeHome = null;
             }
 
+            CaptureSecretBaseBookmarkFromSave(saveData);
+
             _pendingMapRuntimeByMapId = null;
             if (saveData.MapRuntimeByMapId != null && saveData.MapRuntimeByMapId.Count > 0)
             {
@@ -975,6 +986,8 @@ namespace My
                     MapId = LastOpenWorldBeforeHome.MapId,
                     Pos = LastOpenWorldBeforeHome.Pos,
                 };
+
+            AppendSecretBaseBookmarkToSave(data);
 
             data.GlobalRuntime ??= new GlobalRuntimePersistData();
             data.GlobalRuntime.AlertVal = AlertVal;

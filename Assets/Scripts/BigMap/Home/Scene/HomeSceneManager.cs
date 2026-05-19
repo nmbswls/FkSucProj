@@ -98,6 +98,11 @@ namespace My
 
         public void InitHomePlacements()
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return;
+            }
+
             foreach(var one in DataSource.PlacementInfos)
             {
                 

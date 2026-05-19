@@ -326,6 +326,22 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = My.UI.SecretBaseHudPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/SecretBaseHudPanel",
+                defaultLayer = UILayer.HUD,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.SecretBaseBuildPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/SecretBaseBuildPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = Forge.ForgePanel.Pid,
                 resourcePath = "UI/Prefabs/ForgePanel",
                 defaultLayer = UILayer.Popup,

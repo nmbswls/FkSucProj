@@ -71,6 +71,7 @@ namespace My.Map.Entity
         public const string HP_MAX = "HP.Max";
 
         public const string NPCHVal = "NPCHVal";
+        public const string NPCHVal_Max = "NPCHVal.Max";
         public const string NPCSJProgress = "NPCSJProgress";
 
         public const string NPCHVal_Basic_Up = "NPCHVal_Up"; // NPCHVal 自然上涨

@@ -268,6 +268,11 @@ namespace My.UI
 
         public static void TryOpenFromHud()
         {
+            if (!LegacyHomeBuildFeature.Enabled)
+            {
+                return;
+            }
+
             if (!IsHomeMap())
             {
                 Debug.LogWarning("MapTownManagementPanel: not on home map.");

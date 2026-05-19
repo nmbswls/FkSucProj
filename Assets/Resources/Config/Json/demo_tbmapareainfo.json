@@ -70,6 +70,21 @@
     "hunting_unlock_conds": []
   },
   {
+    "id": "secret_base_hub",
+    "name": "隐秘据点",
+    "desc": "隐秘据点横板场景",
+    "day_period_limit": 0,
+    "scene_name": "Main_Home",
+    "map_data_name": "secret_base_hub",
+    "is_home": false,
+    "is_secret_base": true,
+    "always_alert": false,
+    "is_civil_area": false,
+    "is_danger_area": false,
+    "hunting_target": false,
+    "hunting_unlock_conds": []
+  },
+  {
     "id": "base_fight",
     "name": "纷争据点",
     "desc": "纷争据点",
