@@ -91,7 +91,7 @@ namespace My.UI
             return true;
         }
 
-        public bool BeginDragFromQuickBar(string itemId, int slotIndex)
+        public bool BeginDragFromQuickBar(string itemId, int slotIndex, EContainerType quickBarType)
         {
             if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
             {
@@ -112,7 +112,7 @@ namespace My.UI
             {
                 ItemId = itemId,
                 ItemCnt = 1,
-                SourceContainerType = EContainerType.QuickBar,
+                SourceContainerType = quickBarType,
                 SourceContainerId = 0,
                 SourceIndex = slotIndex,
             };
@@ -168,13 +168,25 @@ namespace My.UI
                 DragGhostGo.SetActive(false);
             }
 
-            if (p != null && p.SourceContainerType == EContainerType.QuickBar && !dropHandled)
+            if (p != null && !dropHandled)
             {
                 var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-                if (mdm != null && p.SourceIndex >= 0 && p.SourceIndex < mdm.QuickSlotItemSet.Length)
+                if (mdm != null)
                 {
-                    mdm.ClearQuickSlot(p.SourceIndex);
-                    OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                    if (p.SourceContainerType == EContainerType.QuickBarWeapon
+                        && p.SourceIndex >= 0
+                        && p.SourceIndex < mdm.WeaponQuickSlotItemSet.Length)
+                    {
+                        mdm.ClearWeaponQuickSlot(p.SourceIndex);
+                        OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                    }
+                    else if (p.SourceContainerType == EContainerType.QuickBarConsumable
+                             && p.SourceIndex >= 0
+                             && p.SourceIndex < mdm.ConsumableQuickSlotItemSet.Length)
+                    {
+                        mdm.ClearConsumableQuickSlot(p.SourceIndex);
+                        OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                    }
                 }
             }
         }

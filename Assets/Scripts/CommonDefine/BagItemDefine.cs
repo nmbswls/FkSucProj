@@ -242,7 +242,7 @@ namespace My
         ItemStack GetItemByIdx(int idx);
     }
 
-    // 须与 cfg.demo.EContainerType 数值一致（Inventory=0 … QuickBar=5）
+    // 须与 cfg.demo.EContainerType 数值一致（Inventory=0 … Warehouse=4）
     public enum EContainerType
     {
         Inventory,
@@ -250,7 +250,8 @@ namespace My
         SpecialInventory,
         Shop,
         Warehouse,
-        QuickBar,
+        QuickBarWeapon,
+        QuickBarConsumable,
     }
 
 

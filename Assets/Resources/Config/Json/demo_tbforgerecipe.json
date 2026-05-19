@@ -8,8 +8,8 @@
     "icon_sprite": "",
     "materials": [
       {
-        "item_id": "small_stone",
-        "count": 2
+        "item_id": "gold",
+        "count": 5
       }
     ],
     "unlock_mode": 0,
@@ -25,8 +25,8 @@
     "icon_sprite": "",
     "materials": [
       {
-        "item_id": "1",
-        "count": 1
+        "item_id": "gold",
+        "count": 5
       }
     ],
     "unlock_mode": 2,

@@ -36,6 +36,7 @@ namespace My.UI
             AddIcon,
             Locked,
             Masked,
+            Selected,
         }
 
         public EStyleType StyleType { get; protected set; }
@@ -138,7 +139,18 @@ namespace My.UI
 
             if (bg != null)
             {
-                bg.color = style == EStyleType.Red ? Color.red : Color.white;
+                if (style == EStyleType.Red)
+                {
+                    bg.color = Color.red;
+                }
+                else if (style == EStyleType.Selected)
+                {
+                    bg.color = new Color(1f, 0.92f, 0.55f, 1f);
+                }
+                else
+                {
+                    bg.color = Color.white;
+                }
             }
 
             if (style == EStyleType.Masked && maskOverlay != null)

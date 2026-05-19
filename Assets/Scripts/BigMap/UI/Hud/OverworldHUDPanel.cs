@@ -8,7 +8,9 @@ using My.Input;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Scene;
+using My.Player;
 using My.Quest;
+using My.UI.Bag;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -271,7 +273,17 @@ namespace My.UI
                 return;
             }
 
+            var lgm = MainGameManager.Instance?.gameLogicManager;
+            bool available = lgm != null && lgm.IsHumanQuickBarAvailable();
+            ItemQuickBarRoot.gameObject.SetActive(available);
+
+            if (!available)
+            {
+                return;
+            }
+
             var ctrl = ItemQuickBarRoot.GetComponent<OverworldItemQuickBarController>();
+            ctrl?.EnsureSlots();
             ctrl?.RefreshFromPlayerData();
         }
 
@@ -758,7 +770,12 @@ namespace My.UI
         }
 
 
-        static int KeyNameToQuickItemSlotIndex(string keyName)
+        static bool IsWeaponHotkey(string keyName)
+        {
+            return keyName == EInputKey.Num1.ToString() || keyName == EInputKey.Num2.ToString();
+        }
+
+        static int KeyNameToWeaponSlotIndex(string keyName)
         {
             if (keyName == EInputKey.Num1.ToString())
             {
@@ -770,50 +787,38 @@ namespace My.UI
                 return 1;
             }
 
-            if (keyName == EInputKey.Num3.ToString())
-            {
-                return 2;
-            }
-
-            if (keyName == EInputKey.Num4.ToString())
-            {
-                return 3;
-            }
-
-            if (keyName == EInputKey.Num5.ToString())
-            {
-                return 4;
-            }
-
             return -1;
         }
 
-
-        public bool IsItemKeys(string keyName)
+        bool TryHandleHumanQuickBarHotkey(string keyName)
         {
-            if (keyName == EInputKey.Num1.ToString())
+            var lgm = MainGameManager.Instance?.gameLogicManager;
+            if (lgm == null || !lgm.IsHumanQuickBarAvailable())
             {
+                return false;
+            }
+
+            var mdm = lgm.playerDataManager;
+            if (keyName == EInputKey.UseQuickItem.ToString())
+            {
+                OnClickUseConsumable();
                 return true;
             }
-            else if (keyName == EInputKey.Num2.ToString())
+
+            if (IsWeaponHotkey(keyName))
             {
+                int wIdx = KeyNameToWeaponSlotIndex(keyName);
+                if (wIdx >= 0)
+                {
+                    mdm.SelectWeaponSlot(wIdx);
+                    RefreshItemQuickBar();
+                }
+
                 return true;
             }
-            else if (keyName == EInputKey.Num3.ToString())
-            {
-                return true;
-            }
-            else if (keyName == EInputKey.Num4.ToString())
-            {
-                return true;
-            }
-            else if (keyName == EInputKey.Num5.ToString())
-            {
-                return true;
-            }
+
             return false;
         }
-
 
         public string GetSkillIdByKey(string keyName)
         {
@@ -825,6 +830,16 @@ namespace My.UI
 
             if (keyName == EInputKey.MouseLeft.ToString())
             {
+                var lgm = MainGameManager.Instance.gameLogicManager;
+                if (lgm != null && lgm.IsHumanQuickBarAvailable())
+                {
+                    var weaponSkill = lgm.playerDataManager.GetActiveWeaponSkillId();
+                    if (!string.IsNullOrEmpty(weaponSkill))
+                    {
+                        return weaponSkill;
+                    }
+                }
+
                 skillSLotIdx = 0;
                 isSkillSlot = true;
             }
@@ -879,27 +894,18 @@ namespace My.UI
                 return false;
             }
 
-            if(IsItemKeys(keyName))
+            if (TryHandleHumanQuickBarHotkey(keyName))
             {
-                int idx = KeyNameToQuickItemSlotIndex(keyName);
-                if (idx >= 0)
-                {
-                    OnClickUseItem(idx);
-                }
-
                 return true;
             }
-            else
+
+            var skillId = GetSkillIdByKey(keyName);
+            if (string.IsNullOrEmpty(skillId))
             {
-                var skillId = GetSkillIdByKey(keyName);
-
-                if (string.IsNullOrEmpty(skillId))
-                {
-                    return false;
-                }
-
-                OnClickUseSkill(skillId);
+                return false;
             }
+
+            OnClickUseSkill(skillId);
             return true;
         }
 
@@ -950,47 +956,75 @@ namespace My.UI
             EnterSkillPreviewMode(skillId);
         }
 
-        /// <summary>
-        /// 点击使用道具
-        /// </summary>
-        /// <param name="skillId"></param>
-        /// <param name="onConfirm"></param>
-        public void OnClickUseItem(int itemIdx)
+        public void OnClickUseConsumable()
         {
-            var slots = MainGameManager.Instance.gameLogicManager.playerDataManager.GetItemSlotsByState();
-            if (itemIdx < 0 || itemIdx >= slots.Length)
+            var lgm = MainGameManager.Instance?.gameLogicManager;
+            if (lgm == null || !lgm.IsHumanQuickBarAvailable())
             {
                 return;
             }
 
-            var itemId = slots[itemIdx];
+            var itemId = lgm.playerDataManager.GetActiveConsumableItemId();
             if (string.IsNullOrEmpty(itemId))
             {
                 return;
             }
 
+            UseQuickBarItem(itemId);
+        }
+
+        void UseQuickBarItem(string itemId)
+        {
             if (!MainGameManager.Instance.gameLogicManager.playerDataManager.CheckHaveItem(itemId, 1))
             {
                 return;
             }
 
             var itemUseCfg = ItemCatalog.GetPrimaryUse(itemId);
-            if (itemUseCfg == null || itemUseCfg.UseType != cfg.demo.EItemUseType.UseSkill)
+            if (itemUseCfg == null || !itemUseCfg.Usable)
             {
                 return;
             }
 
-            var skillId = itemUseCfg.S1;
-
-            OnClickUseSkill(skillId, (ret) =>
+            if (itemUseCfg.UseType == cfg.demo.EItemUseType.UseSkill)
             {
-                if (itemUseCfg.CostOnUse)
+                var skillId = itemUseCfg.S1;
+                OnClickUseSkill(skillId, (ret) =>
                 {
-                    MainGameManager.Instance.gameLogicManager.playerDataManager.CostItem(itemId, 1);
-                }
-            });
+                    if (ret && itemUseCfg.CostOnUse)
+                    {
+                        MainGameManager.Instance.gameLogicManager.playerDataManager.CostItem(itemId, 1);
+                    }
+                });
+            }
+            else
+            {
+                TryUseConsumableFromInventoryBag(itemId);
+            }
 
             RefreshItemQuickBar();
+        }
+
+        static void TryUseConsumableFromInventoryBag(string itemId)
+        {
+            var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem;
+            int bagId = (int)EPlayerBagId.Default;
+            var bag = inv.GetBagById(bagId);
+            if (bag == null)
+            {
+                return;
+            }
+
+            int slotCount = bag.NormalSlots.Count + bag.ExtraSlots.Count;
+            for (int i = 0; i < slotCount; i++)
+            {
+                var stack = bag.GetItemByIdx(i);
+                if (stack != null && !stack.IsEmpty && stack.ItemID == itemId)
+                {
+                    PlayerBagUIPanel.Instance?.UseItem(bagId, i);
+                    return;
+                }
+            }
         }
 
         public bool OnNavigate(Vector2 dir) => false;
@@ -1013,7 +1047,20 @@ namespace My.UI
 
         public bool OnScroll(float deltaY)
         {
-            return false;
+            if (HudMode != EHudMode.Normal)
+            {
+                return false;
+            }
+
+            var lgm = MainGameManager.Instance?.gameLogicManager;
+            if (lgm == null || !lgm.IsHumanQuickBarAvailable() || Mathf.Abs(deltaY) < 0.01f)
+            {
+                return false;
+            }
+
+            lgm.playerDataManager.CycleConsumableSelection(deltaY > 0f ? 1 : -1);
+            RefreshItemQuickBar();
+            return true;
         }
 
         public bool OnHoldStart(string holdKey)

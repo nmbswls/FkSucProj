@@ -1298,7 +1298,7 @@ namespace My.Map
 
             if (delta < 0)
             {
-                var dmg = -DamagePipeline.ResolveHpDeltaCore(
+                var dmg = DamagePipeline.ResolveHpDeltaCore(
                     delta,
                     intent.DmgCategory,
                     intent,
@@ -1311,11 +1311,12 @@ namespace My.Map
                 OnDamageBeforeFinalReduce(dmg, intent);
 
                 var fix_dr = GetAttr(AttrIdConsts.Final_Fix_DR_All);
-                dmg -= fix_dr;
+                var fixDrVal = Math.Min(fix_dr, dmg);
+                dmg -= fixDrVal;
 
                 foreach (var b in BuffContainer.Values)
                 {
-                    b.DoBuffTrigger(ETriggerType.FinalDmgReduced, (int)fix_dr);
+                    b.DoBuffTrigger(ETriggerType.FinalDmgReduced, (int)fixDrVal);
                 }
 
                 if (dmg <= 0)

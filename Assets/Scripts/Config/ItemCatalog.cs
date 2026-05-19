@@ -206,5 +206,42 @@ namespace My.Config
                 RebuildItemCaches();
             }
         }
+
+        public static EQuickBarItemKind GetQuickBarKind(string itemId)
+        {
+            var def = GetItemDef(itemId);
+            if (def == null)
+            {
+                return EQuickBarItemKind.None;
+            }
+
+            if (def.QuickBarKind != EQuickBarItemKind.None)
+            {
+                return def.QuickBarKind;
+            }
+
+            // 表未填列时的临时兜底，导表后可删
+            if (itemId == "small_knife")
+            {
+                return EQuickBarItemKind.Weapon;
+            }
+
+            if (itemId == "evil_scroll_01")
+            {
+                return EQuickBarItemKind.Consumable;
+            }
+
+            return EQuickBarItemKind.None;
+        }
+
+        public static bool IsQuickBarWeapon(string itemId)
+        {
+            return GetQuickBarKind(itemId) == EQuickBarItemKind.Weapon;
+        }
+
+        public static bool IsQuickBarConsumable(string itemId)
+        {
+            return GetQuickBarKind(itemId) == EQuickBarItemKind.Consumable;
+        }
     }
 }

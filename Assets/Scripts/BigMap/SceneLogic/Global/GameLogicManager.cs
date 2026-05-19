@@ -161,14 +161,12 @@ namespace My
             }
 
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
+            NotifyHumanQuickBarStateChanged();
         }
 
-        // 背包内快捷道具栏是否允许拖动编辑：人类模式，或真身且未暴露且未发情。（不限制背包/商店等面板是否打开。）
-        // 首版 HUD 快捷栏调试：暂时恒为 true，恢复时请还原下方真身/暴露/发情判断。
-        public bool CanEditQuickSlotBar()
+        // 人类快捷道具栏：人类模式，或真身且未暴露且未发情
+        public bool IsHumanQuickBarAvailable()
         {
-            return true;
-            /*
             if (PlayerHumanMode)
             {
                 return true;
@@ -180,7 +178,21 @@ namespace My
             }
 
             return !playerLogicEntity.IsExposed && !playerLogicEntity.IsFaQing;
-            */
+        }
+
+        public bool CanEditQuickSlotBar()
+        {
+            return IsHumanQuickBarAvailable();
+        }
+
+        public void NotifyHumanQuickBarStateChanged()
+        {
+            if (!IsHumanQuickBarAvailable())
+            {
+                playerDataManager?.ClearActiveWeaponSelection();
+            }
+
+            My.UI.OverworldHUDPanel.Instance?.RefreshItemQuickBar();
         }
 
         public void NotifyPostSearchInvestigationComplete(long npcEntityId)
@@ -497,6 +509,7 @@ namespace My
                                 {
                                 },
                             });
+                            NotifyHumanQuickBarStateChanged();
                         };
 
                         playerLogicEntity.EventOnExposeStateChange += (isBroken) =>
@@ -507,6 +520,7 @@ namespace My
                                 {
                                 },
                             });
+                            NotifyHumanQuickBarStateChanged();
                         };
                         
                     }

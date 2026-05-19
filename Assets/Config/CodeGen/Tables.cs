@@ -68,6 +68,7 @@ public partial class Tables
     public demo.TbMicroPlotTimelineEvent TbMicroPlotTimelineEvent {get; }
     public demo.TbTrapSpec TbTrapSpec {get; }
     public demo.TbForgeRecipe TbForgeRecipe {get; }
+    public demo.TbHActInfo TbHActInfo {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -125,6 +126,7 @@ public partial class Tables
         TbMicroPlotTimelineEvent = new demo.TbMicroPlotTimelineEvent(loader("demo_tbmicroplottimelineevent"));
         TbTrapSpec = new demo.TbTrapSpec(loader("demo_tbtrapspec"));
         TbForgeRecipe = new demo.TbForgeRecipe(loader("demo_tbforgerecipe"));
+        TbHActInfo = new demo.TbHActInfo(loader("demo_tbhactinfo"));
         ResolveRef();
     }
     
@@ -184,6 +186,7 @@ public partial class Tables
         TbMicroPlotTimelineEvent.ResolveRef(this);
         TbTrapSpec.ResolveRef(this);
         TbForgeRecipe.ResolveRef(this);
+        TbHActInfo.ResolveRef(this);
     }
 }
 

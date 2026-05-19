@@ -15,7 +15,8 @@ namespace My.UI
     {
         public static readonly InventoryCellClickDragPolicy InventoryClickDrag = new InventoryCellClickDragPolicy();
         public static readonly ContainerCellDropPolicy ContainerDrop = new ContainerCellDropPolicy();
-        public static readonly QuickSlotCellInteractionPolicy QuickSlot = new QuickSlotCellInteractionPolicy();
+        public static readonly WeaponQuickSlotCellInteractionPolicy WeaponQuickSlot = new WeaponQuickSlotCellInteractionPolicy();
+        public static readonly ConsumableQuickSlotCellInteractionPolicy ConsumableQuickSlot = new ConsumableQuickSlotCellInteractionPolicy();
     }
 
     public sealed class InventoryCellClickDragPolicy : IItemCellClickBehaviour, IItemCellDragSourceBehaviour
@@ -86,7 +87,7 @@ namespace My.UI
 
         static void HandleInventoryFamilyDrop(int bagId, DragPayload payload, int dstIndex, ItemDragDropController controller)
         {
-            if (payload.SourceContainerType == EContainerType.QuickBar)
+            if (payload.SourceContainerType == EContainerType.QuickBarWeapon)
             {
                 if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
                 {
@@ -94,7 +95,22 @@ namespace My.UI
                     return;
                 }
 
-                MainGameManager.Instance.gameLogicManager.playerDataManager.ClearQuickSlot(payload.SourceIndex);
+                MainGameManager.Instance.gameLogicManager.playerDataManager.ClearWeaponQuickSlot(payload.SourceIndex);
+                controller.MarkDropHandled();
+                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                PlayerBagUIPanel.Instance?.RefreshContent();
+                return;
+            }
+
+            if (payload.SourceContainerType == EContainerType.QuickBarConsumable)
+            {
+                if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
+                {
+                    controller.MarkDropHandled();
+                    return;
+                }
+
+                MainGameManager.Instance.gameLogicManager.playerDataManager.ClearConsumableQuickSlot(payload.SourceIndex);
                 controller.MarkDropHandled();
                 OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                 PlayerBagUIPanel.Instance?.RefreshContent();
@@ -226,7 +242,7 @@ namespace My.UI
         }
     }
 
-    public sealed class QuickSlotCellInteractionPolicy : IItemCellClickBehaviour, IItemCellDragSourceBehaviour, IItemCellDropTargetBehaviour
+    public sealed class WeaponQuickSlotCellInteractionPolicy : IItemCellClickBehaviour, IItemCellDragSourceBehaviour, IItemCellDropTargetBehaviour
     {
         public void OnItemCellClick(ItemCellBase cell, PointerEventData eventData)
         {
@@ -235,7 +251,14 @@ namespace My.UI
                 return;
             }
 
-            OverworldHUDPanel.Instance?.OnClickUseItem(cell.Index);
+            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (mdm == null)
+            {
+                return;
+            }
+
+            mdm.SelectWeaponSlot(cell.Index);
+            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
         }
 
         public bool TryBeginDrag(ItemCellBase cell, PointerEventData eventData)
@@ -258,12 +281,17 @@ namespace My.UI
             }
 
             return ItemDragDropController.Instance != null
-                   && ItemDragDropController.Instance.BeginDragFromQuickBar(stack.ItemID, cell.Index);
+                   && ItemDragDropController.Instance.BeginDragFromQuickBar(
+                       stack.ItemID, cell.Index, EContainerType.QuickBarWeapon);
         }
 
         public void HandleDrop(ItemCellBase target, DragPayload payload, int dstIndex, ItemDragDropController controller)
         {
-            int dstSlotIndex = target.Index;
+            HandleWeaponDrop(target.Index, payload, controller);
+        }
+
+        internal static void HandleWeaponDrop(int dstSlotIndex, DragPayload payload, ItemDragDropController controller)
+        {
             if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
             {
                 return;
@@ -275,7 +303,7 @@ namespace My.UI
                 return;
             }
 
-            if (payload.SourceContainerType == EContainerType.QuickBar)
+            if (payload.SourceContainerType == EContainerType.QuickBarWeapon)
             {
                 if (payload.SourceIndex == dstSlotIndex)
                 {
@@ -283,7 +311,7 @@ namespace My.UI
                     return;
                 }
 
-                mdm.SwapQuickSlotIndices(payload.SourceIndex, dstSlotIndex);
+                mdm.SwapWeaponQuickSlotIndices(payload.SourceIndex, dstSlotIndex);
                 controller.MarkDropHandled();
                 OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                 return;
@@ -293,9 +321,100 @@ namespace My.UI
                 || payload.SourceContainerType == EContainerType.SpecialInventory
                 || payload.SourceContainerType == EContainerType.Warehouse)
             {
-                if (!mdm.TryAssignQuickSlot(dstSlotIndex, payload.ItemId, out var fail))
+                if (!mdm.TryAssignWeaponQuickSlot(dstSlotIndex, payload.ItemId, out var fail))
                 {
-                    Debug.Log("Quick bar drop rejected: " + fail);
+                    Debug.Log("Weapon quick bar drop rejected: " + fail);
+                    return;
+                }
+
+                controller.MarkDropHandled();
+                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+            }
+        }
+    }
+
+    public sealed class ConsumableQuickSlotCellInteractionPolicy : IItemCellClickBehaviour, IItemCellDragSourceBehaviour, IItemCellDropTargetBehaviour
+    {
+        public void OnItemCellClick(ItemCellBase cell, PointerEventData eventData)
+        {
+            if (eventData.button != PointerEventData.InputButton.Left || cell.Index < 0)
+            {
+                return;
+            }
+
+            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (mdm == null)
+            {
+                return;
+            }
+
+            mdm.ActiveConsumableIndex = cell.Index;
+            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+        }
+
+        public bool TryBeginDrag(ItemCellBase cell, PointerEventData eventData)
+        {
+            var stack = cell.GetBoundStack();
+            if (stack == null || string.IsNullOrEmpty(stack.ItemID))
+            {
+                return false;
+            }
+
+            if (cell.maskOverlay != null && cell.maskOverlay.gameObject.activeSelf)
+            {
+                return false;
+            }
+
+            ItemPopupMenu.Close();
+            if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
+            {
+                return false;
+            }
+
+            return ItemDragDropController.Instance != null
+                   && ItemDragDropController.Instance.BeginDragFromQuickBar(
+                       stack.ItemID, cell.Index, EContainerType.QuickBarConsumable);
+        }
+
+        public void HandleDrop(ItemCellBase target, DragPayload payload, int dstIndex, ItemDragDropController controller)
+        {
+            HandleConsumableDrop(target.Index, payload, controller);
+        }
+
+        internal static void HandleConsumableDrop(int dstSlotIndex, DragPayload payload, ItemDragDropController controller)
+        {
+            if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
+            {
+                return;
+            }
+
+            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (mdm == null || payload == null)
+            {
+                return;
+            }
+
+            if (payload.SourceContainerType == EContainerType.QuickBarConsumable)
+            {
+                if (payload.SourceIndex == dstSlotIndex)
+                {
+                    controller.MarkDropHandled();
+                    return;
+                }
+
+                mdm.SwapConsumableQuickSlotIndices(payload.SourceIndex, dstSlotIndex);
+                controller.MarkDropHandled();
+                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                return;
+            }
+
+            if (payload.SourceContainerType == EContainerType.Inventory
+                || payload.SourceContainerType == EContainerType.SpecialInventory
+                || payload.SourceContainerType == EContainerType.Warehouse)
+            {
+                if (!mdm.TryAssignConsumableQuickSlot(dstSlotIndex, payload.ItemId, out var fail))
+                {
+                    Debug.Log("Consumable quick bar drop rejected: " + fail);
                     return;
                 }
 

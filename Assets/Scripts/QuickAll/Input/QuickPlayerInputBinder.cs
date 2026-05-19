@@ -65,6 +65,8 @@ namespace My.Input
 
         Bag,
         Skill,
+
+        UseQuickItem,
     }
 
 
@@ -158,6 +160,13 @@ namespace My.Input
             if (UnityEngine.Input.GetKeyDown(KeyCode.F9))
             {
                 DreamInfiltrationBootstrap.OpenEntry();
+            }
+
+            if (mode == InputMode.Overworld && !GlobalLock && UnityEngine.Input.GetKeyDown(KeyCode.Q))
+            {
+                if (uiRouter == null || !uiRouter.DispatchHotkey(EInputKey.UseQuickItem.ToString()))
+                {
+                }
             }
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.F10))

@@ -1,20 +1,27 @@
 using My;
+using My.Player;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace My.UI
 {
-    // 挂在 ItemBar 根：用子级单个 Template（QuickSlotItemCell）克隆到 GridSlots，刷新 QuickSlot 数据。
+    // ItemBar：武器槽 2 + 消耗轮盘 N（人类/未暴露真身且未发情时由 HUD 控制显隐）
     public class OverworldItemQuickBarController : MonoBehaviour
     {
-        const int DefaultSlotCount = 5;
-        const string SlotInstancePrefix = "QuickItemSlot_";
+        const string WeaponSlotPrefix = "WeaponQuickSlot_";
+        const string ConsumableSlotPrefix = "ConsumableQuickSlot_";
 
         [SerializeField]
-        RectTransform _slotsParent;
+        RectTransform _weaponSlotsParent;
+
+        [SerializeField]
+        RectTransform _consumableSlotsParent;
 
         [SerializeField]
         QuickSlotItemCell _slotTemplate;
+
+        [SerializeField]
+        int _consumableSlotCount = PlayerQuickBarDefs.ConsumableSlotCount;
 
         bool _initialized;
 
@@ -25,13 +32,16 @@ namespace My.UI
                 return;
             }
 
-            if (_slotsParent == null)
+            if (_weaponSlotsParent == null)
             {
-                var t = transform.Find("GridSlots");
-                if (t != null)
-                {
-                    _slotsParent = t as RectTransform;
-                }
+                var t = transform.Find("WeaponSlots") ?? transform.Find("GridSlots");
+                _weaponSlotsParent = t as RectTransform;
+            }
+
+            if (_consumableSlotsParent == null)
+            {
+                var t = transform.Find("ConsumableSlots") ?? transform.Find("GridSlots");
+                _consumableSlotsParent = t as RectTransform;
             }
 
             if (_slotTemplate == null)
@@ -43,24 +53,90 @@ namespace My.UI
                 }
             }
 
-            if (_slotTemplate == null || _slotsParent == null)
+            if (_slotTemplate == null || _weaponSlotsParent == null || _consumableSlotsParent == null)
             {
-                Debug.LogError("OverworldItemQuickBarController: missing slot template or GridSlots. Assign on ItemBar.");
+                Debug.LogError("OverworldItemQuickBarController: missing template or slot parents.");
                 return;
             }
 
-            EnsureRootRaycastTarget(_slotTemplate.gameObject);
-            foreach (var btn in _slotTemplate.GetComponentsInChildren<Button>(true))
+            PrepareTemplate(_slotTemplate);
+            _initialized = true;
+        }
+
+        static void PrepareTemplate(QuickSlotItemCell template)
+        {
+            EnsureRootRaycastTarget(template.gameObject);
+            foreach (var btn in template.GetComponentsInChildren<Button>(true))
             {
                 btn.enabled = false;
             }
 
-            _slotTemplate.gameObject.SetActive(false);
-            _slotTemplate.SetItemCellInteractions(
-                ItemCellInteractions.QuickSlot,
-                ItemCellInteractions.QuickSlot,
-                ItemCellInteractions.QuickSlot);
-            _initialized = true;
+            template.gameObject.SetActive(false);
+        }
+
+        public void EnsureSlots()
+        {
+            InitializeIfNeeded();
+            if (!_initialized)
+            {
+                return;
+            }
+
+            int layer = gameObject.layer;
+            if (layer == 0)
+            {
+                layer = 5;
+            }
+
+            RebuildSlots(_weaponSlotsParent, WeaponSlotPrefix, PlayerQuickBarDefs.WeaponSlotCount, layer, true);
+            RebuildSlots(_consumableSlotsParent, ConsumableSlotPrefix, _consumableSlotCount, layer, false);
+        }
+
+        void RebuildSlots(RectTransform parent, string prefix, int count, int layer, bool isWeapon)
+        {
+            ClearSlotInstances(parent, prefix);
+
+            for (int i = 0; i < count; i++)
+            {
+                var go = Instantiate(_slotTemplate.gameObject, parent);
+                go.name = prefix + i;
+                go.SetActive(true);
+                SetLayerRecursively(go, layer);
+                EnsureRootRaycastTarget(go);
+
+                var cell = go.GetComponent<QuickSlotItemCell>();
+                if (cell == null)
+                {
+                    continue;
+                }
+
+                if (isWeapon)
+                {
+                    cell.SetItemCellInteractions(
+                        ItemCellInteractions.WeaponQuickSlot,
+                        ItemCellInteractions.WeaponQuickSlot,
+                        ItemCellInteractions.WeaponQuickSlot);
+                }
+                else
+                {
+                    cell.SetItemCellInteractions(
+                        ItemCellInteractions.ConsumableQuickSlot,
+                        ItemCellInteractions.ConsumableQuickSlot,
+                        ItemCellInteractions.ConsumableQuickSlot);
+                }
+            }
+        }
+
+        static void ClearSlotInstances(RectTransform parent, string prefix)
+        {
+            for (int i = parent.childCount - 1; i >= 0; i--)
+            {
+                var ch = parent.GetChild(i);
+                if (ch.name.StartsWith(prefix, System.StringComparison.Ordinal))
+                {
+                    Destroy(ch.gameObject);
+                }
+            }
         }
 
         static void EnsureRootRaycastTarget(GameObject root)
@@ -83,69 +159,6 @@ namespace My.UI
             }
         }
 
-        public void EnsureSlots()
-        {
-            InitializeIfNeeded();
-            if (!_initialized || _slotTemplate == null || _slotsParent == null)
-            {
-                return;
-            }
-
-            int existing = 0;
-            for (int i = 0; i < _slotsParent.childCount; i++)
-            {
-                var c = _slotsParent.GetChild(i);
-                if (c.GetComponent<QuickSlotItemCell>() != null && c.name.StartsWith(SlotInstancePrefix, System.StringComparison.Ordinal))
-                {
-                    existing++;
-                }
-            }
-
-            if (existing >= DefaultSlotCount)
-            {
-                return;
-            }
-
-            for (int i = _slotsParent.childCount - 1; i >= 0; i--)
-            {
-                var ch = _slotsParent.GetChild(i);
-                if (ch.name.StartsWith(SlotInstancePrefix, System.StringComparison.Ordinal))
-                {
-                    Destroy(ch.gameObject);
-                }
-            }
-
-            int layer = gameObject.layer;
-            if (layer == 0)
-            {
-                layer = 5;
-            }
-
-            for (int i = 0; i < DefaultSlotCount; i++)
-            {
-                var go = Instantiate(_slotTemplate.gameObject, _slotsParent);
-                go.name = SlotInstancePrefix + i;
-                go.SetActive(true);
-                SetLayerRecursively(go, layer);
-                EnsureRootRaycastTarget(go);
-
-                var cell = go.GetComponent<QuickSlotItemCell>();
-                if (cell != null)
-                {
-                    var btn = go.GetComponentInChildren<Button>(true);
-                    if (btn != null)
-                    {
-                        btn.enabled = false;
-                    }
-
-                    cell.SetItemCellInteractions(
-                        ItemCellInteractions.QuickSlot,
-                        ItemCellInteractions.QuickSlot,
-                        ItemCellInteractions.QuickSlot);
-                }
-            }
-        }
-
         static void SetLayerRecursively(GameObject go, int layer)
         {
             go.layer = layer;
@@ -159,25 +172,29 @@ namespace My.UI
         public void RefreshFromPlayerData()
         {
             InitializeIfNeeded();
-            if (!_initialized || _slotsParent == null)
+            if (!_initialized)
             {
                 return;
             }
 
-            if (MainGameManager.Instance?.gameLogicManager?.playerDataManager == null)
+            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (mdm == null)
             {
                 return;
             }
 
-            for (int s = 0; s < DefaultSlotCount; s++)
+            for (int w = 0; w < PlayerQuickBarDefs.WeaponSlotCount; w++)
             {
-                var tr = _slotsParent.Find(SlotInstancePrefix + s);
-                if (tr == null)
-                {
-                    continue;
-                }
+                var tr = _weaponSlotsParent.Find(WeaponSlotPrefix + w);
+                var cell = tr != null ? tr.GetComponent<QuickSlotItemCell>() : null;
+                cell?.BindWeaponSlot(w, mdm.ActiveWeaponSlotIndex == w);
+            }
 
-                tr.GetComponent<QuickSlotItemCell>()?.BindSlot(s);
+            for (int c = 0; c < _consumableSlotCount; c++)
+            {
+                var tr = _consumableSlotsParent.Find(ConsumableSlotPrefix + c);
+                var cell = tr != null ? tr.GetComponent<QuickSlotItemCell>() : null;
+                cell?.BindConsumableSlot(c, mdm.ActiveConsumableIndex == c);
             }
         }
     }

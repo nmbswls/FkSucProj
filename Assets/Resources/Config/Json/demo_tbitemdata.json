@@ -17,7 +17,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "small_stone",
@@ -37,7 +38,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "stick",
@@ -59,7 +61,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "wood",
@@ -81,7 +84,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "banana",
@@ -101,7 +105,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "qiezi",
@@ -121,7 +126,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "bangbangtang",
@@ -141,7 +147,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "flower_01",
@@ -161,7 +168,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "flower_02",
@@ -181,7 +189,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "flower_03",
@@ -201,7 +210,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "berry",
@@ -221,7 +231,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "gold",
@@ -241,7 +252,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "j",
@@ -261,7 +273,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "chanzi",
@@ -281,7 +294,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "key_a1_001",
@@ -301,7 +315,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "key_a1_002",
@@ -321,7 +336,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "insertion_maoqiu",
@@ -341,7 +357,8 @@
     "special_buff_id": "insertion_debuff_small",
     "special_buff_interval": 5,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "j_drop_small",
@@ -361,7 +378,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": true,
-    "is_auto_use": true
+    "is_auto_use": true,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "evil_scroll_01",
@@ -381,7 +399,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "small_knife",
@@ -401,7 +420,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "desire_shard",
@@ -421,7 +441,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "knowledge_shard",
@@ -441,7 +462,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "random_desire_crystal",
@@ -461,7 +483,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": true
+    "is_auto_use": true,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "desire_crystal_01",
@@ -481,7 +504,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "desire_crystal_02",
@@ -501,7 +525,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "desire_crystal_03",
@@ -521,7 +546,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "desire_crystal_04",
@@ -541,7 +567,8 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   },
   {
     "item_id": "rumor_points",
@@ -561,6 +588,7 @@
     "special_buff_id": "",
     "special_buff_interval": 0,
     "auto_pick": false,
-    "is_auto_use": false
+    "is_auto_use": false,
+    "quick_bar_kind": 0
   }
 ]

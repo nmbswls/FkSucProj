@@ -36,6 +36,7 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["special_buff_interval"].IsNumber) { throw new SerializationException(); }  SpecialBuffInterval = _buf["special_buff_interval"]; }
         { if(!_buf["auto_pick"].IsBoolean) { throw new SerializationException(); }  AutoPick = _buf["auto_pick"]; }
         { if(!_buf["is_auto_use"].IsBoolean) { throw new SerializationException(); }  IsAutoUse = _buf["is_auto_use"]; }
+        { if(!_buf["quick_bar_kind"].IsNumber) { throw new SerializationException(); }  QuickBarKind = (demo.EQuickBarItemKind)_buf["quick_bar_kind"].AsInt; }
     }
 
     public static ItemData DeserializeItemData(JSONNode _buf)
@@ -115,6 +116,10 @@ public sealed partial class ItemData : Luban.BeanBase
     /// is_auto_use
     /// </summary>
     public bool IsAutoUse;
+    /// <summary>
+    /// 快速使用类型
+    /// </summary>
+    public demo.EQuickBarItemKind QuickBarKind;
    
     public const int __ID__ = 1942709544;
     public override int GetTypeId() => __ID__;
@@ -144,6 +149,7 @@ public sealed partial class ItemData : Luban.BeanBase
         + "specialBuffInterval:" + SpecialBuffInterval + ","
         + "autoPick:" + AutoPick + ","
         + "isAutoUse:" + IsAutoUse + ","
+        + "quickBarKind:" + QuickBarKind + ","
         + "}";
     }
 }

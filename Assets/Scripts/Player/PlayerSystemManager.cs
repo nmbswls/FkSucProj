@@ -21,13 +21,11 @@ namespace My.Player
         void Tick(float dt);
     }
 
-    public class PlayerSystemManager
+    public partial class PlayerSystemManager
     {
         public GameLogicManager logicManager { get;private set; }
 
         public long ItemInstanceIdCounter = 100;
-
-        public string[] QuickSlotItemSet = new string[5];
 
         public string SavedBornPoint = "initial";
 
@@ -99,7 +97,7 @@ namespace My.Player
 
             MagicClothes = new PlayerMagicClothesManager(this);
 
-            QuickSlotItemSet[0] = "feidao";
+            InitQuickBarDefaults();
 
             HumanSkillSlots[0] = "default_push";
             HumanSkillSlots[1] = "force_dash_push_down";
@@ -153,64 +151,6 @@ namespace My.Player
             RumorIntel.InitSystem(logicManager, savingData);
         }
 
-        void HydrateQuickSlotsFromSave(SaveData savingData)
-        {
-            var list = savingData?.PlayerData?.ItemSlotOverrides;
-            if (list == null || list.Count == 0)
-            {
-                return;
-            }
-
-            for (int i = 0; i < QuickSlotItemSet.Length; i++)
-            {
-                QuickSlotItemSet[i] = i < list.Count ? (list[i] ?? string.Empty) : string.Empty;
-            }
-        }
-
-        public bool TryAssignQuickSlot(int slotIndex, string itemId, out string failReason)
-        {
-            failReason = null;
-            if (slotIndex < 0 || slotIndex >= QuickSlotItemSet.Length)
-            {
-                failReason = "slot_range";
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(itemId))
-            {
-                failReason = "empty_item";
-                return false;
-            }
-
-            var use = ItemCatalog.GetPrimaryUse(itemId);
-            if (use == null || !use.Usable || use.UseType != EItemUseType.UseSkill)
-            {
-                failReason = "need_use_skill_item";
-                return false;
-            }
-
-            QuickSlotItemSet[slotIndex] = itemId;
-            return true;
-        }
-
-        public void ClearQuickSlot(int slotIndex)
-        {
-            if (slotIndex >= 0 && slotIndex < QuickSlotItemSet.Length)
-            {
-                QuickSlotItemSet[slotIndex] = string.Empty;
-            }
-        }
-
-        public void SwapQuickSlotIndices(int slotA, int slotB)
-        {
-            if (slotA < 0 || slotA >= QuickSlotItemSet.Length || slotB < 0 || slotB >= QuickSlotItemSet.Length)
-            {
-                return;
-            }
-
-            (QuickSlotItemSet[slotA], QuickSlotItemSet[slotB]) = (QuickSlotItemSet[slotB], QuickSlotItemSet[slotA]);
-        }
-
         public void ApplyRuntimeToSaveData(SaveData data)
         {
             if (data.PlayerData == null)
@@ -233,13 +173,7 @@ namespace My.Player
             RumorIntel.SaveTo(data.PlayerData);
 
 
-            // 存道具
-            data.PlayerData.ItemSlotOverrides = new List<string>(5);
-            for (int i = 0; i < 5; i++)
-            {
-                int idx = i;
-                data.PlayerData.ItemSlotOverrides.Add(QuickSlotItemSet[idx] ?? string.Empty);
-            }
+            WriteQuickBarToSave(data.PlayerData);
         }
 
         public bool CheckHasParam(string id)
@@ -389,21 +323,6 @@ namespace My.Player
             }
             return showSkills;
         }
-
-        /// <summary>
-        /// 根据状态返回快捷道具栏槽位（当前实现与状态无关，预留扩展）
-        /// </summary>
-        /// <returns></returns>
-        public string[] GetItemSlotsByState()
-        {
-            var player = logicManager.playerLogicEntity;
-            if(player.IsExposed)
-            {
-                return QuickSlotItemSet;
-            }
-            return QuickSlotItemSet;
-        }
-
 
         /// <summary>
         /// 

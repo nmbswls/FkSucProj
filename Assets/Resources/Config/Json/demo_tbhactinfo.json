@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "desc": "",
+    "filter_type": "Static",
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 10,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 2,
+    "desc": "",
+    "filter_type": "Static",
+    "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 3,
+    "desc": "",
+    "filter_type": "Static",
+    "player_min_desire": 2,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 4,
+    "desc": "",
+    "filter_type": "Static",
+    "player_min_desire": 3,
+    "is_player_passive": false,
+    "h_impulse_base": 40,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 5,
+    "desc": "",
+    "filter_type": "Charmed",
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 10,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 6,
+    "desc": "",
+    "filter_type": "Charmed",
+    "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 7,
+    "desc": "",
+    "filter_type": "Charmed",
+    "player_min_desire": 2,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 8,
+    "desc": "",
+    "filter_type": "Charmed",
+    "player_min_desire": 3,
+    "is_player_passive": false,
+    "h_impulse_base": 40,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  }
+]

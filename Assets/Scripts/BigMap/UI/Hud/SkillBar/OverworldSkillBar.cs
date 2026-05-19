@@ -154,13 +154,18 @@ namespace My.UI
         {
             var showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.GetSkillSlotsByState();
 
-            if (showSkills == null)
+            if (showSkills == null || slotIdx < 0 || slotIdx >= showSkills.Length)
             {
                 return;
             }
 
-            string key = ((EInputKey)((int)EInputKey.Num1 + slotIdx)).ToString();
-            HudPanel.PeeviewUseSkillByKey(key);
+            var skillId = showSkills[slotIdx];
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return;
+            }
+
+            HudPanel.OnClickUseSkill(skillId);
         }
     }
 }

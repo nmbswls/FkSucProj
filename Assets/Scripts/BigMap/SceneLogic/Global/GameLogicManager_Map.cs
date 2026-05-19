@@ -229,6 +229,7 @@ namespace My
             if (PlayerHumanMode)
             {
                 player.ApplyHumanModeShieldingState();
+                NotifyHumanQuickBarStateChanged();
                 return;
             }
 
@@ -244,6 +245,8 @@ namespace My
             {
                 magic.ApplyToPlayer(player);
             }
+
+            NotifyHumanQuickBarStateChanged();
         }
 
         // 玩家同地图房间传送：仅发事件 + Commit 回调，不直接调 MainGameManager / UI

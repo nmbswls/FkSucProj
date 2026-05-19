@@ -1787,23 +1787,27 @@ namespace My.Map
         protected override void OnDamageBeforeFinalReduce(long dmg, ResourceDeltaIntent intent)
         {
             base.OnDamageBeforeFinalReduce(dmg, intent);
-            var impulseRate = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HImpulse_Pipeline) ?? 0;
 
-            var hVal = (long)((Math.Pow(dmg * 0.001, 0.5) * impulseRate * 0.0001) * 1000);
+            // 获取原始h系数
+            var hParam = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HImpulse_Pipeline) ?? 0;
 
-            var naishou = GetAttr(AttrIdConsts.PhysicalResist);
+            // 根据伤害计算h冲击力
+            long hImpulse = DamagePipeline.CalculateDmgBonusedHImpulse(hParam, dmg, GetUnitLevel());
 
-            double p_k = 2.0;
-            double p = (dmg * 0.001) / (dmg * 0.001 + naishou * 0.001 + p_k); // 计算p穿透率 一部分冲击力变为发情条 一部分施加给高潮条
+            // 根据h冲击力分配高潮与发情
+            (var climax, var estrus) = DamagePipeline.DistributeClimaxAndEstrusFromHImpulse(hImpulse, new LiveEntityFightAttrProvider(this));
+            Debug.Log("OnDamageBeforeFinalReduce dmg impulse h " + hImpulse + " dmg " + dmg + " " + climax + " " + estrus);
 
-            double kEstrus = 0.2;
-            long pleasureAdd = (long)Math.Ceiling(hVal * (p));
-            long faqingAdd = (long)Math.Round(hVal * (1 - p) * kEstrus);
+            // 叠加高潮条（快乐条
+            if(climax > 0)
+            {
+                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, climax, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+            }
 
-            Debug.Log("OnDamageBeforeFinalReduce dmg impulse h " + hVal + " dmg " + dmg + " " + faqingAdd + " " + pleasureAdd);
-            // 叠加高潮条（快乐条）
-            attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, pleasureAdd, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
-            attributeStore.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, faqingAdd, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+            if(estrus > 0)
+            {
+                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, estrus, intent.isEnmity, EDmgFlag.None, intent.srcEntityId);
+            }
         }
 
         protected override long CalculateUnitHpChange(string attrId, ResourceDeltaIntent intent)

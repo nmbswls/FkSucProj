@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Map.Entity;
 using My.Map.Entity;
@@ -151,6 +152,46 @@ namespace My.Map.Fight
             }
 
             return -dmg;
+        }
+
+        /// <summary>
+        /// 通过h冲击力计算分流后的数值
+        /// </summary>
+        /// <param name="hImpulse"></param>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public static (long, long) DistributeClimaxAndEstrusFromHImpulse(long hImpulse, IFightAttrProvider src)
+        {
+            src.TryGetAttr(AttrIdConsts.PhysicalResist, out var naishou); // 获取耐受
+
+            double p_k = 2.0;
+            double p = (hImpulse * 0.001) / (hImpulse * 0.001 + naishou * 0.001 * p_k + 10); // 计算p穿透率 一部分冲击力变为发情条 一部分施加给高潮条
+            double addClimax = hImpulse * p;
+            long maxEstrus = 3_000;
+
+            double addEstrus = 0;
+            // 防止超小伤害剐蹭
+            if (hImpulse > 3000)
+            {
+                double e = 1.5;
+                addEstrus = (maxEstrus * 0.001) * Math.Pow((1 - p), e); 
+            }
+
+            return ((long)(addClimax * 1000), (long)(addEstrus * 1000));
+        }
+
+        /// <summary>
+        /// 通过h冲击力计算分流后的数值
+        /// </summary>
+        /// <param name="hImpulse"></param>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public static long CalculateDmgBonusedHImpulse(long hParam, long rawDmg, int level)
+        {
+            double M = 3.0f;
+            double kScale = level * 10 + 10;
+            double bonus = 1 + M * (rawDmg * 0.001) / (rawDmg * 0.001 + kScale);
+            return (long)(hParam * bonus);
         }
     }
 }

@@ -47,6 +47,38 @@ namespace My.Map
             }
         }
 
+        public static bool ResolveHActParams(int actId, long hPowerPlayer, long hPowerEnemy, int enemyLevel, out long hImpulseEnemy, out long hImpulsePlayer)
+        {
+            hImpulseEnemy = 0;
+            hImpulsePlayer = 0;
+
+            var hActInfo = CfgMgr.Cfgs.TbHActInfo.GetOrDefault(actId);
+            if (hActInfo == null) return false;
+
+            double totalHImpulse = hActInfo.HImpulseBase;
+            double C = 100 + 5 * enemyLevel;
+            if(hActInfo.IsPlayerPassive)
+            {
+                double hVsRate = (hPowerEnemy * 0.001 + C) / (hPowerPlayer * 0.001 + C);
+
+                totalHImpulse = totalHImpulse * hVsRate; // 经由对等平滑公式增幅或减弱
+            }
+            else
+            {
+                double hVsRate = (hPowerPlayer * 0.001 + C) / (hPowerEnemy * 0.001 + C);
+
+                totalHImpulse = totalHImpulse * hVsRate; // 经由对等平滑公式增幅或减弱
+            }
+
+            // 问题是主角屌了 反震也变弱了
+            double hEnemy = totalHImpulse * hActInfo.CoefEnemy;
+            double hPlayer = totalHImpulse * hActInfo.CoefPlayer;
+
+            hImpulseEnemy = (long)(hEnemy * 1000);
+            hImpulsePlayer = (long)(hPlayer * 1000);
+            return true;
+        }
+
 
         /// <summary>
         /// 计算对抗成功几率

@@ -64,7 +64,10 @@ namespace My.Saving
         public List<LearnedSkillEntry> LearnedSkills = new();
 
         public List<string> NormalSkillSlotOverrides = new();
-        public List<string> ItemSlotOverrides = new();
+        public List<string> WeaponQuickSlotOverrides = new();
+        public List<string> ConsumableQuickSlotOverrides = new();
+        public int ActiveWeaponSlotIndex = -1;
+        public int ActiveConsumableIndex;
 
         // 重要具名 NPC：键为 CharacterKey；LocalSwitches 由 Registry 在运行时维护（随 SetLocalSwitch 更新），与单图 Record 存盘周期解耦
         public Dictionary<string, NpcCharacterPersistData> NpcCharacterPersistByKey = new();
