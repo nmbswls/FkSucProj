@@ -338,14 +338,17 @@ namespace My.Map
             dropBagContainer = new(this.LogicManager, NpcConfig.DefeatDropId, 12);
 
 
-            if (lastIntent != null && lastIntent.srcEntityId != null)
+            if (lastIntent != null && lastIntent.srcPos != null)
             {
-                var srcEntity = LogicManager.GetLogicEntity(lastIntent.srcEntityId.Value);
-
-                var diff = srcEntity.Pos - this.Pos;
-                var impluse = -(diff.normalized);
-
-                ApplyKnockBack(impluse, 0.5f);
+                var diff = lastIntent.srcPos.Value - Pos;
+                if (diff.sqrMagnitude > 1e-8f)
+                {
+                    ApplyKnockBack(-diff.normalized, 0.5f);
+                }
+            }
+            else if (lastIntent != null && lastIntent.HitDir != null)
+            {
+                ApplyKnockBack(-lastIntent.HitDir.Value, 0.5f);
             }
 
             // 当且仅当伤害非致命时 才执行欲望结晶掉落

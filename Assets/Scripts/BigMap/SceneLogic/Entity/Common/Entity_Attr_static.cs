@@ -15,10 +15,18 @@ namespace My.Map.Entity
         public const string HPower = "HPower"; // H能力
         public const string Will = "Will"; // 意志
 
-        public const string Arm_White = "Arm_White"; // 白字护甲
-        public const string ArmPercent_White = "ArmPercent_White"; // 白字护甲额外
+        public const string Arm_Final = "Arm_Final"; // 最终护甲 = （（白字护甲 * 白字护甲额外）+ 绿字护甲） * 绿字额外 
 
-        public const string Arm_Extra_1 = "Arm_Extra_1"; // 来自肉体耐受的护甲
+
+
+        public const string Arm_Base = "Arm_Base"; // 白字基础护甲（养成静态分量，不受衣装覆盖率缩放）
+        public const string Arm_Inner = "Arm_Inner"; // 内部护甲（养成内分量，经 Clothes_ExposeRate 折算进白字）
+
+        public const string Arm_White = "Arm_White"; // 白字护甲 = 基础护甲 + （内部护甲） * 转换比例
+        public const string Arm_Green = "Arm_Green"; // 绿字护甲
+        public const string Arm_White_Percent = "Arm_White_Percent"; // 白字护甲倍率
+
+        public const string Arm_Extra_1 = "Arm_Extra_1"; // 来自肉体耐受的护甲 绿字护甲的一部分
 
         public const string Final_Fix_DR_All = "Final_Fix_DR_All"; // 白字最终减伤
         public const string Final_HImpulse_Reduce_Fix = "Final_HImpulse_Reduce_Fix"; // h冲击力最终减少
@@ -27,7 +35,10 @@ namespace My.Map.Entity
         public const string PhysicalResistArmRate = "PhysicalResistArmRate"; // 肉体耐受 转化为护甲的效率 10000表示1
 
         public const string PlayerSensitivity = "PlayerSensitivity";
-        public const string PlayerCharm = "PlayerCharm"; // 白字魅力
+        public const string PlayerCharm = "PlayerCharm"; // 白字魅力（派生）
+        public const string PlayerCharm_Inner = "PlayerCharm_Inner"; // 养成内魅力
+        public const string PlayerCharm_Static = "PlayerCharm_Static"; // 养成静态魅力
+        public const string PlayerCharm_Scaled = "PlayerCharm_Scaled"; // 衣装覆盖后内魅力
 
         public const string Special_JianShang = "Special_JianShang";
         public const string Special_YiShang = "Special_YiShang";
@@ -99,6 +110,8 @@ namespace My.Map.Entity
         public const string PlayerJingYu = "PlayerJingYu"; // 精浴用属性做 buff只负责显示
         public const string PlayerJingYuRate = "PlayerJingYuRate"; // 额外精浴比例
 
+        public const string Clothes_ExposeRate = "Clothes_ExposeRate"; // 衣装暴露绿
+
         public const string PlayerKnockDown = "PlayerKnockDown";
 
         public const string PlayerSJAmount_Fixed = "PlayerSJAmount_Fixed";
@@ -150,16 +163,31 @@ namespace My.Map.Entity
 
         public static void InitGameAttrs()
         {
-            List<(string output, string[] inputs, Func<AttrCalcContext, long> eval)> attrDefs = new() {
-            ("Strength", null, null),
-            ("Attack", new []{"Strength"}, ctx => 50 + ctx.Get("Strength") * 5),
-        };
+            List<(string output, string[] inputs, Func<AttrCalcContext, long> eval)> attrDefs = new()
+            {
+                ("Strength", null, null),
+                ("Attack", new[] { "Strength" }, ctx => 50 + ctx.Get("Strength") * 5),
+
+                (AttrIdConsts.PlayerCharm_Scaled, new[] { AttrIdConsts.PlayerCharm_Inner, AttrIdConsts.Clothes_ExposeRate },
+                    ctx => (long)(ctx.Get(AttrIdConsts.PlayerCharm_Inner) * ctx.Get(AttrIdConsts.Clothes_ExposeRate) / 10000f)),
+                (AttrIdConsts.PlayerCharm, new[] { AttrIdConsts.PlayerCharm_Scaled, AttrIdConsts.PlayerCharm_Static },
+                    ctx => ctx.Get(AttrIdConsts.PlayerCharm_Scaled) + ctx.Get(AttrIdConsts.PlayerCharm_Static)),
+
+                (AttrIdConsts.Arm_White, new[] { AttrIdConsts.Arm_Base, AttrIdConsts.Arm_Inner, AttrIdConsts.Clothes_ExposeRate },
+                    ctx => ctx.Get(AttrIdConsts.Arm_Base) + (long)(ctx.Get(AttrIdConsts.Arm_Inner) * ctx.Get(AttrIdConsts.Clothes_ExposeRate) / 10000f)),
+                (AttrIdConsts.Arm_Extra_1, new[] { AttrIdConsts.PhysicalResist, AttrIdConsts.PhysicalResistArmRate, AttrIdConsts.Clothes_ExposeRate },
+                    ctx => (long)(ctx.Get(AttrIdConsts.PhysicalResist) * ctx.Get(AttrIdConsts.PhysicalResistArmRate) / 10000f * ctx.Get(AttrIdConsts.Clothes_ExposeRate) / 10000f)),
+                (AttrIdConsts.Arm_Green, new[] { AttrIdConsts.Arm_Extra_1 }, ctx => ctx.Get(AttrIdConsts.Arm_Extra_1)),
+                (AttrIdConsts.Arm_Final, new[] { AttrIdConsts.Arm_White, AttrIdConsts.Arm_White_Percent, AttrIdConsts.Arm_Green },
+                    ctx => (long)(ctx.Get(AttrIdConsts.Arm_White) * (10000 + ctx.Get(AttrIdConsts.Arm_White_Percent)) / 10000f) + ctx.Get(AttrIdConsts.Arm_Green)),
+            };
             CompileGraph(attrDefs);
         }
 
         public static void CompileGraph(IEnumerable<(string output, string[] inputs, Func<AttrCalcContext, long> eval)> defs)
         {
             AttrGraph.Clear();
+            topo.Clear();
             // 构建节点与边
             foreach (var (outId, ins, eval) in defs)
             {

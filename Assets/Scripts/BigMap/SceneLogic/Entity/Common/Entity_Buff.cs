@@ -1,6 +1,7 @@
 using Map.Entity;
 using Map.Logic;
 using Map.Logic.Events;
+using My;
 using My.Map;
 using My.Saving;
 using System;
@@ -508,6 +509,7 @@ namespace My.Map.Entity
 
         public long AddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
+            buffId = BuffCastRemap.ResolveBuffId(logicManager, casterId, buffId);
             var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId);
             if (targetEntity == null)
             {
@@ -557,6 +559,7 @@ namespace My.Map.Entity
         // 外部接口：请求添加 Buff（可在效果中调用）
         public void RequestAddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
+            buffId = BuffCastRemap.ResolveBuffId(logicManager, casterId, buffId);
             _addRequests.Add((entityId, buffId, layer, overrideDuration, casterId, srcBuffId));
         }
 

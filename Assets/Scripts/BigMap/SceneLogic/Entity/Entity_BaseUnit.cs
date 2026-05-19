@@ -4,6 +4,7 @@ using Config.Unit;
 using My.Config;
 using Map.Logic.Events;
 using My.Map.Entity;
+using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Unit;
 using My.Player.Bag;
@@ -954,23 +955,22 @@ namespace My.Map
                             if (intent.srcEntityId != null && intent.srcEntityId.Value != 0)
                             {
                                 var dmg = -intent.finalDelta;
-                                var entity = LogicManager.GetLogicEntity(intent.srcEntityId.Value);
-                                var xixue = entity.GetAttr(AttrIdConsts.DamageXiXue);
-
+                                var entity = LogicManager.GetLogicEntity(intent.srcEntityId.Value, false);
+                                long xixue = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.XiXue_Pipeline) ?? 0;
                                 if (intent.extraAttrs != null)
                                 {
                                     intent.extraAttrs.TryGetValue(AttrIdConsts.DamageXiXue, out var extraVal);
                                     xixue += extraVal;
                                 }
 
-                                if (xixue > 0)
+                                if (xixue > 0 && entity != null)
                                 {
                                     Debug.Log("吸血 回血 OnResourceAttriChanged");
                                     var xixueVal = (long)(dmg * (double)(xixue / 10000));
                                     entity.ApplyResourceChange(AttrIdConsts.HP, xixueVal, false, EDmgFlag.Xixue, srcEntityId: Id);
                                 }
 
-                                if(entity is BaseUnitLogicEntity srcUnit)
+                                if (entity is BaseUnitLogicEntity srcUnit)
                                 {
                                     srcUnit.UnitOnApplyHit();
                                 }
@@ -1298,62 +1298,15 @@ namespace My.Map
 
             if (delta < 0)
             {
-                var srcEntity = LogicManager.GetLogicEntity(intent?.srcEntityId ?? 0);
-
-                var rawDmg = Math.Abs(delta);
-                var dmg = rawDmg; // 1000倍
-                var extra1 = attributeStore.GetAttr(AttrIdConsts.Basic_ExtraDmg);
-                if(extra1 < -9500)
-                {
-                    extra1 = -9500;
-                }
-                dmg = (long)(dmg * (10000 + extra1) * 0.0001);
-
-                if(intent.DmgCategory == EDmgCategory.Physics)
-                {
-                    var srcLevel = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.SrcLevel_Pipeline) ?? 0;
-                    long selfArm = this.GetFinalArm();
-                    long armReduce10000 = PlayerGamePlayRule.CalcDmgReduceRate10000ByArm((int)srcLevel, selfArm);
-                    // 护甲减伤极限80%
-                    if (armReduce10000 > 8000)
-                    {
-                        armReduce10000 = 8000;
-                    }
-                    dmg = (long)(dmg * (10000 - armReduce10000) * 0.0001);
-                }
-                else if (intent.DmgCategory == EDmgCategory.H)
-                {
-                    var srcHpower = srcEntity?.GetAttr(AttrIdConsts.HPower) ?? 0;
-                    long selfHPower = this.GetFinalHPower();
-
-                    long hReduce10000 = PlayerGamePlayRule.CalcDmgReduceRate10000ByH(srcHpower, selfHPower);
-                    // 护甲减伤极限80%
-                    if (hReduce10000 > 8000)
-                    {
-                        hReduce10000 = 8000;
-                    }
-                    dmg = (long)(dmg * (10000 - hReduce10000) * 0.0001);
-                }
-
-                var basicJs = attributeStore.GetAttr(AttrIdConsts.Basic_JianShang);
-                if (basicJs > 9000)
-                {
-                    basicJs = 9000;
-                }
-                dmg = (long)(dmg * (10000 - basicJs) * 0.0001);
-
-                
-
-                if(intent.DmgCategory != EDmgCategory.H)
-                {
-                    var nonHJianShangRate = attributeStore.GetAttr(AttrIdConsts.NonH_JianShang_Rate);
-                    if (nonHJianShangRate > 9000)
-                    {
-                        nonHJianShangRate = 9000;
-                    }
-
-                    dmg = (long)(dmg * (10000 - nonHJianShangRate) * 0.0001);
-                }
+                var dmg = -DamagePipeline.ResolveHpDeltaCore(
+                    delta,
+                    intent.DmgCategory,
+                    intent,
+                    () => attributeStore.GetAttr(AttrIdConsts.Basic_ExtraDmg),
+                    GetFinalArm,
+                    GetFinalHPower,
+                    () => attributeStore.GetAttr(AttrIdConsts.Basic_JianShang),
+                    () => attributeStore.GetAttr(AttrIdConsts.NonH_JianShang_Rate));
 
                 OnDamageBeforeFinalReduce(dmg, intent);
 
@@ -1365,7 +1318,10 @@ namespace My.Map
                     b.DoBuffTrigger(ETriggerType.FinalDmgReduced, (int)fix_dr);
                 }
 
-                if (dmg <= 0) dmg = 0;
+                if (dmg <= 0)
+                {
+                    dmg = 0;
+                }
 
                 return -dmg;
             }
@@ -1373,8 +1329,22 @@ namespace My.Map
             return delta;
         }
 
-       
 
+        public long GetFinalArm()
+        {
+            return GetAttr(AttrIdConsts.Arm_Final);
+            //var armWhite = GetAttr(AttrIdConsts.Arm_White);
+            //var armPercent = GetAttr(AttrIdConsts.ArmPercent_White);
+
+            //var armExtra1 = GetAttr(AttrIdConsts.Arm_Extra_1);
+
+            //return (long)(armWhite * (10000 + armPercent) * 0.0001 + armExtra1);
+        }
+
+        public long GetFinalHPower()
+        {
+            return GetAttr(AttrIdConsts.HPower);
+        }
 
         #region alert
 

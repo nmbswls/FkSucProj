@@ -42,7 +42,7 @@ namespace My.Map
         public bool IsExposed { get; set; } = false; // 暴露状态 只有
         public float LastExposeTimer; // 进入暴露时间
 
-        public bool IsZhaZhiMode = false;
+        public bool IsZhaZhiMode => CheckHasState(AttrIdConsts.PlayerZhaZhiMode);
 
         // 沿路径投放 player_pink_mist_trail 的上一采样点
         Vector2 _pinkMistLastTrailPos;
@@ -284,6 +284,8 @@ namespace My.Map
             _hostileDamageBurstTracker?.Dispose();
             _hostileDamageBurstTracker = new PlayerHostileDamageBurstTracker(this, 5f, 5, 5_000);
 
+            RefreshProgressionYCAttrs();
+
             // 与地图加载后的 PostNewAreaLoaded 使用同一套同步逻辑，避免 Initialize 后短时间状态不一致
             LogicManager.RefreshPlayerMagicClothesAndExposeForCurrentMode();
 
@@ -304,13 +306,32 @@ namespace My.Map
 
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
-            attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm));
+
+            attributeStore.RegisterNumeric(AttrIdConsts.Clothes_ExposeRate, initialBase: 10000);
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm_Inner, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm_Static, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm_Scaled, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm, initialBase: 0);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_Inner, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_Base, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_White, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_White_Percent, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_Extra_1, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_Green, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_Final, initialBase: 0);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.PhysicalResist, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.PhysicalResistArmRate, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.Final_Fix_DR_All, LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.FixDmgReduceFinal));
             
 
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_HungerCost, initialBase: 10);
             attributeStore.RegisterNumeric(AttrIdConsts.Basic_PleasureAdd, initialBase: 0);
+
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerZhaZhiMode, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerUnlockYuhuo, initialBase: 0);
 
             attributeStore.RegisterResource(AttrIdConsts.PlayerClothes, null, 100_000, 100_000);
             attributeStore.RegisterResource(AttrIdConsts.PlayerSanity, null, 100_000, 100_000);
@@ -1551,17 +1572,13 @@ namespace My.Map
 
         public void SwitchZhaZHiMode()
         {
-            if(IsZhaZhiMode)
+            if (IsZhaZhiMode)
             {
-                IsZhaZhiMode = !IsZhaZhiMode;
-
-                LogicManager.globalBuffManager.AddBuff(this.Id, "player_zhazhi");
+                LogicManager.globalBuffManager.RemoveAllBuffById(Id, "player_zhazhi");
             }
             else
             {
-                IsZhaZhiMode = !IsZhaZhiMode;
-
-                LogicManager.globalBuffManager.AddBuff(this.Id, "player_zhazhi");
+                LogicManager.globalBuffManager.AddBuff(Id, "player_zhazhi");
             }
         }
 
@@ -1710,7 +1727,20 @@ namespace My.Map
         }
 
         /// <summary>
-        /// 根据当前衣装状态 刷新自身场景内属性
+        /// 从养成系统同步魅力/护甲叶子属性（与衣装覆盖率无关）
+        /// </summary>
+        public void RefreshProgressionYCAttrs()
+        {
+            var progression = LogicManager.playerDataManager.ProgressionSystem;
+            attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm_Inner, progression.GetFinalAttribute((int)EYCAttribute.InnerCharm));
+            attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm_Static, progression.GetFinalAttribute((int)EYCAttribute.StaticCharm));
+            attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_Inner, progression.GetFinalAttribute((int)EYCAttribute.InnerArm));
+            attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_Base, progression.GetFinalAttribute((int)EYCAttribute.StaticArm));
+            attributeStore.Commit();
+        }
+
+        /// <summary>
+        /// 根据当前衣装状态刷新衣装覆盖率及相关表现（属性图仅更新 Clothes_ExposeRate）
         /// </summary>
         public void RefreshClothesRelateYCAttrs()
         {
@@ -1723,12 +1753,6 @@ namespace My.Map
                 applyRate = PlayerGamePlayRule.CalculateBreakClothesInnerRate(clothes, rawOverRate);
             }
 
-            var innerCharm = LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.InnerCharm);
-            var innerArm = LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.InnerArm);
-
-            long finalBasicCharm = (long)(innerCharm * (applyRate * 0.0001f)) + LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticCharm);
-            long finalBasicArm = (long)(innerArm * (applyRate * 0.0001f)) + LogicManager.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.StaticArm);
-
             var clothesCharmBuff = FindBuffById("player_expose_charm");
             int buffLayer = (applyRate - 1) / 10_000 + 1;
             if (clothesCharmBuff == null)
@@ -1737,18 +1761,11 @@ namespace My.Map
             }
             else
             {
-                clothesCharmBuff.SetBuffLayerDirect(buffLayer); // set 0 也没事把
+                clothesCharmBuff.SetBuffLayerDirect(buffLayer);
             }
-            //finalBasicCharm += (20_000 * (applyRate) * 0.0001);
 
-            attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm, finalBasicCharm);
-            attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_White, finalBasicArm);
-
-            // 计算肉身抗性获得的护甲
-            var physicalResist = GetAttr(AttrIdConsts.PhysicalResist);
-            var physicalRssit2Arm = GetAttr(AttrIdConsts.PhysicalResistArmRate);
-            long armExtra1 = (long)(physicalResist * (physicalRssit2Arm * 0.0001) * (applyRate * 0.0001));
-            attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_Extra_1, armExtra1);
+            attributeStore.RefreshAttrBaseNum(AttrIdConsts.Clothes_ExposeRate, applyRate, forceDirty: true);
+            attributeStore.Commit();
         }
 
         private void EnterExposeState(bool isBroken)

@@ -258,8 +258,40 @@ namespace My.Map.Entity
                 {
                     BuffId = "player_zhazhi",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoKiller, ModifierValue = 1,},
-                    new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_ExtraDmg, ModifierValue = -9000,}},
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerZhaZhiMode, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NoKiller, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_ExtraDmg, ModifierValue = -9000 },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["status_burn"] = new BuffDefinition()
+                {
+                    BuffId = "status_burn",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = 5f,
+                    IsHidden = true,
+                };
+
+                _library["status_yuhuo"] = new BuffDefinition()
+                {
+                    BuffId = "status_yuhuo",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = 5f,
+                    IsHidden = true,
+                };
+
+                _library["player_unlock_yuhuo"] = new BuffDefinition()
+                {
+                    BuffId = "player_unlock_yuhuo",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerUnlockYuhuo, ModifierValue = 1 },
+                    },
                     DefaultDuration = -1,
                     IsHidden = true,
                 };

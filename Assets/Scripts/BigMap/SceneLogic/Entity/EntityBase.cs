@@ -69,7 +69,7 @@ namespace My.Map
         long GetAttr(string attrId);
         bool CheckHasState(string attrId);
 
-        void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCat = EDmgCategory.None);
+        void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCat = EDmgCategory.None, Vector2? srcPos = null, Vector2? hitDir = null);
 
         long CalculateResourceCostAmount(string attrId, ResourceDeltaIntent intent);
         /// <summary>
@@ -332,9 +332,9 @@ namespace My.Map
         {
             return attributeStore.CheckHasState(attrId);
         }
-        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCat = EDmgCategory.None)
+        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCat = EDmgCategory.None, Vector2? srcPos = null, Vector2? hitDir = null)
         {
-            attributeStore.ApplyResourceChange(resourceId, delta, isEnmity, flags, srcEntityId, extraAttrs, dmgCategory: dmgCat);
+            attributeStore.ApplyResourceChange(resourceId, delta, isEnmity, flags, srcEntityId, extraAttrs, dmgCategory: dmgCat, srcPos: srcPos, hitDir: hitDir);
         }
 
         /// <summary>

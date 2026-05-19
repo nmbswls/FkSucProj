@@ -5,6 +5,8 @@ using System.Linq;
 using cfg.demo;
 using My.Config;
 using My.Map;
+using My.Map.Entity;
+using My.Map.Fight;
 using My.Map.Logic;
 using My.MapExport;
 using My.Player.Bag;
@@ -1336,95 +1338,36 @@ namespace My.Map.Entity
                 return;
             }
 
-            ILogicEntity srcEntity = null;
-            if(ctx.SourceInfo.SrcEntityId != 0)
+            var srcProvider = new CtxFightAttrProvider(ctx);
+            var dmgVal = DamagePipeline.BuildRawDamage(realCfg, srcProvider);
+            var hImpulse = DamagePipeline.ResolveHImpulseRate10000(realCfg, ctx.SourceInfo);
+            var extraAttrs = DamagePipeline.BuildPipelineExtraAttrs(realCfg, srcProvider, hImpulse);
+
+            Vector2? srcPos = null;
+            if (srcProvider.TryGetWorldPos(out var sp))
             {
-                srcEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
-
-
-                
+                srcPos = sp;
+            }
+            else if (ctx.TriggerPos != null)
+            {
+                srcPos = ctx.TriggerPos;
             }
 
-            var dmgVal = realCfg.BaseDamage;
-            foreach(var onePair in realCfg.ExtraDamageRate)
+            Vector2? hitDir = null;
+            var diff = target.Pos - (srcPos ?? target.Pos);
+            if (diff.sqrMagnitude > 1e-8f)
             {
-                // todo 获取attr
-                //if(ctx.CacheAttrVal)
-                if(srcEntity != null)
+                hitDir = diff.normalized;
+            }
+
+            long? srcId = ctx.SourceInfo.SrcEntityId != 0 ? ctx.SourceInfo.SrcEntityId : null;
+            target.ApplyResourceChange(AttrIdConsts.HP, -dmgVal, true, EDmgFlag.None, srcId, extraAttrs, realCfg.DamageCategory, srcPos, hitDir);
+
+            if (realCfg.KnockBackForce > 0 && srcPos != null && realCfg.TargetType == 0)
+            {
+                if (target is BaseUnitLogicEntity unitEntity)
                 {
-                    var getVal =  srcEntity.GetAttr(onePair.AttrId);
-                    dmgVal += (long)(getVal * onePair.Val * 0.0001f);
-                }
-            }
-
-            Dictionary<string, long> extraAttrs = null;
-            if (realCfg.ExtraAttrs != null)
-            {
-                extraAttrs = new();
-                foreach (var pair in realCfg.ExtraAttrs)
-                {
-                    extraAttrs[pair.AttrId] = pair.Val;
-                }
-            }
-
-            {
-                if (srcEntity is BaseUnitLogicEntity unitEntity)
-                {
-                    extraAttrs[AttrIdConsts.SrcLevel_Pipeline] = unitEntity.GetUnitLevel();
-                }
-            }
-            
-
-            float hRate = 0;
-            if (realCfg.HRate == 0)
-            {
-                if (!string.IsNullOrEmpty(ctx.SourceInfo.SrcAbilityId))
-                {
-                    var abCfg = AbilityLibrary.GetAbilityConfig(ctx.SourceInfo.SrcAbilityId);
-                    if (abCfg != null)
-                    {
-                        switch (abCfg.HImpulseMode)
-                        {
-                            case EHImpluseMode.Light:
-                                {
-                                    hRate = 0.5f;
-                                }
-                                break;
-                            case EHImpluseMode.Middle:
-                                {
-                                    hRate = 1f;
-                                }
-                                break;
-                            case EHImpluseMode.Heavy:
-                                {
-                                    hRate = 1.5f;
-                                }
-                                break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                hRate = realCfg.HRate;
-            }
-
-            extraAttrs[AttrIdConsts.HImpulse_Pipeline] = (long)(hRate * 10000);
-
-            // 在这里传递原始数据吗
-            target.ApplyResourceChange(AttrIdConsts.HP, -dmgVal, true, EDmgFlag.None, ctx.SourceInfo.SrcEntityId, extraAttrs, realCfg.DamageCategory);
-
-            var actor = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
-            if (realCfg.KnockBackForce > 0 && actor != null)
-            {
-                // 对目标击打
-                if (realCfg.TargetType == 0)
-                {
-                    if (target is BaseUnitLogicEntity unitEntity)
-                    {
-                        var diff = target.Pos - actor.Pos;
-                        unitEntity.ApplyKnockBack(diff, realCfg.KnockBackForce);
-                    }
+                    unitEntity.ApplyKnockBack(diff, realCfg.KnockBackForce);
                 }
             }
         }

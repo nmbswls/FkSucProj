@@ -237,20 +237,7 @@ namespace My.Map
         }
 
 
-        public static long GetFinalArm(this ILogicEntity entity)
-        {
-            var armWhite = entity.GetAttr(AttrIdConsts.Arm_White);
-            var armPercent = entity.GetAttr(AttrIdConsts.ArmPercent_White);
-
-            var armExtra1 = entity.GetAttr(AttrIdConsts.Arm_Extra_1);
-
-            return (long)(armWhite * (10000 + armPercent) * 0.0001 + armExtra1);
-        }
-
-        public static long GetFinalHPower(this ILogicEntity entity)
-        {
-            return entity.GetAttr(AttrIdConsts.HPower);
-        }
+        
 
         public static long GetFinalCharm(this PlayerLogicEntity player)
         {

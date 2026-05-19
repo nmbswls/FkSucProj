@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using My;
 using My.Map.Entity;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
@@ -43,6 +44,8 @@ namespace My.Map
                 case AttrIdConsts.Invisible:
                 case AttrIdConsts.Sleep:
                 case AttrIdConsts.NoKiller:
+                case AttrIdConsts.PlayerZhaZhiMode:
+                case AttrIdConsts.PlayerUnlockYuhuo:
                 case AttrIdConsts.Charmed:
                 case AttrIdConsts.ImmuneJianSu:
                 case AttrIdConsts.NpcFcked:
@@ -55,15 +58,21 @@ namespace My.Map
                 case AttrIdConsts.PhysicalPower:
                 case AttrIdConsts.HPower:
                 case AttrIdConsts.Will:
+                case AttrIdConsts.Arm_Base:
+                case AttrIdConsts.Arm_Inner:
                 case AttrIdConsts.Arm_White:
-                case AttrIdConsts.ArmPercent_White:
+                case AttrIdConsts.Arm_White_Percent:
+                case AttrIdConsts.Arm_Green:
                 case AttrIdConsts.Arm_Extra_1:
+                case AttrIdConsts.Arm_Final:
+
                 case AttrIdConsts.PlayerCharm:
                 case AttrIdConsts.Final_Fix_DR_All:
                 case AttrIdConsts.Final_HImpulse_Reduce_Fix:
 
 
                 case AttrIdConsts.PlayerSensitivity:
+                case AttrIdConsts.Sensitivity_Percent:
 
                 case AttrIdConsts.PlayerGcThreshold:
                 case AttrIdConsts.Basic_PleasureAdd:
@@ -190,6 +199,8 @@ namespace My.Map
         public Dictionary<string, long> extraAttrs = null;
 
         public Vector2? HitDir;
+        // 伤害来源世界坐标快照（入 Intent 时写入，Commit 阶段勿再查活体 Pos）
+        public Vector2? srcPos;
         public long finalDelta;
 
         public EDmgCategory DmgCategory;
@@ -248,14 +259,21 @@ namespace My.Map
             return e;
         }
 
-        public void RefreshAttrBaseNum(string attrId, long initialBase)
+        public void RefreshAttrBaseNum(string attrId, long initialBase, bool forceDirty = false)
         {
-            numerics.TryGetValue(attrId, out var e);
-            if(e != null && e.baseValue != initialBase)
+            if (!numerics.TryGetValue(attrId, out var e))
+            {
+                return;
+            }
+
+            if (e.baseValue != initialBase)
             {
                 e.baseValue = initialBase;
-
-                // todo需要触发连锁更新
+                MarkDirty(attrId);
+            }
+            else if (forceDirty)
+            {
+                MarkDirty(attrId);
             }
         }
 
@@ -515,12 +533,17 @@ namespace My.Map
 
 
         // 3) 聚合资源变化
-        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCategory = EDmgCategory.None)
+        public void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCategory = EDmgCategory.None, Vector2? srcPos = null, Vector2? hitDir = null)
         {
             if (!resources.TryGetValue(resourceId, out var r)) 
             {
                 Debug.LogWarning("ApplyResourceChange not find " + resourceId);
                 return; 
+            }
+
+            if (Owner is LogicEntityBase logicOwner && srcEntityId != null)
+            {
+                flags = PlayerOutgoingFightRule.AugmentOutgoingDamageFlags(logicOwner.LogicManager, srcEntityId, flags);
             }
 
             r.pendingDelta.Add(new ResourceDeltaIntent()
@@ -531,6 +554,8 @@ namespace My.Map
                 deltaFlags = flags,
                 extraAttrs = extraAttrs,
                 DmgCategory = dmgCategory,
+                srcPos = srcPos,
+                HitDir = hitDir,
             });
         }
 
