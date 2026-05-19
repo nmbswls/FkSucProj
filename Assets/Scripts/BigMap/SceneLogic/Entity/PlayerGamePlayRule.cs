@@ -30,7 +30,7 @@ namespace My.Map
         /// 通过hval计算当前等级
         /// </summary>
         /// <returns></returns>
-        public static int GetNpcHDesireLevel(long hVal, long maxHVal)
+        public static int GetNpcHDesirePhase(long hVal, long maxHVal)
         {
             double rate = hVal * 1.0 / maxHVal;
             if(rate < 0.3)
@@ -47,6 +47,37 @@ namespace My.Map
             }
 
             return 4;
+        }
+
+        /// <summary>
+        /// item1 hval item2 sjVal
+        /// </summary>
+        /// <param name="hDesirePhase"></param>
+        /// <returns></returns>
+        public static (float, float) GetDesirePhaseSplitRate(int hDesirePhase)
+        {
+            // 非法
+            if(hDesirePhase == 0)
+            {
+                return (0, 0);
+            }
+
+            if(hDesirePhase == 1)
+            {
+                return (0.8f, 0.2f);
+            }
+            else if(hDesirePhase == 2)
+            {
+                return (0.5f, 0.5f);
+            }
+            else if (hDesirePhase == 3)
+            {
+                return (0.2f, 0.8f);
+            }
+            else
+            {
+                return (0.1f, 1.2f);
+            }
         }
 
         //public static float GetBaseBackHitSuccessChange()

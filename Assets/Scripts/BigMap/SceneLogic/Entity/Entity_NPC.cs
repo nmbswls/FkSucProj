@@ -42,7 +42,7 @@ namespace My.Map
 
         public event Action EventOnHModeChange;
 
-        public bool IsFaQing { get; private set; }
+        public bool IsFaQing { get { return NpcDesirePhase >= 2; } }
         public int NpcDesirePhase { get; private set; } // npc独特欲望阶段  
 
         protected bool hShieldBroken;
@@ -448,6 +448,7 @@ namespace My.Map
         protected void TickHRelateProperties()
         {
             //bool currHmode = IsInHMode();
+            TickNpcHDesirePhase();
 
             // 盾破后超过五分钟恢复部分护盾
             if (hShieldBroken && LogicTime.time - _lastHModeTimer > 5 * 60)
@@ -468,24 +469,24 @@ namespace My.Map
 
             // 
 
-            if(!IsFaQing)
-            {
-                var hValMax = GetHValMax();
-                var hVal = GetAttr(AttrIdConsts.NPCHVal);
-                if (hVal >= hValMax * 0.6f)
-                {
-                    IsFaQing = true;
-                }
-            }
-            else
-            {
-                var hValMax = GetHValMax();
-                var hVal = GetAttr(AttrIdConsts.NPCHVal);
-                if (hVal < hValMax * 0.3f)
-                {
-                    IsFaQing = false;
-                }
-            }
+            //if(!IsFaQing)
+            //{
+            //    var hValMax = GetHValMax();
+            //    var hVal = GetAttr(AttrIdConsts.NPCHVal);
+            //    if (hVal >= hValMax * 0.6f)
+            //    {
+            //        IsFaQing = true;
+            //    }
+            //}
+            //else
+            //{
+            //    var hValMax = GetHValMax();
+            //    var hVal = GetAttr(AttrIdConsts.NPCHVal);
+            //    if (hVal < hValMax * 0.3f)
+            //    {
+            //        IsFaQing = false;
+            //    }
+            //}
 
             var blurtValue = GetAttr(AttrIdConsts.NPCSJProgress);
             var blurMax = GetBlurtMax();
@@ -523,16 +524,24 @@ namespace My.Map
             }
         }
 
-
+        /// <summary>
+        /// 欲望phase
+        /// </summary>
         protected void TickNpcHDesirePhase()
         {
             var hVal = GetAttr(AttrIdConsts.NPCHVal);
             var hMax = GetAttr(AttrIdConsts.NPCHVal_Max);
 
-            int disireLevel = PlayerGamePlayRule.GetNpcHDesireLevel(hVal, hMax);
+            int desireLevel = PlayerGamePlayRule.GetNpcHDesirePhase(hVal, hMax);
+            if(desireLevel != NpcDesirePhase)
+            {
+                return;
+            }
 
-            double rate = hVal * 1.0 / hMax;
+            NpcDesirePhase = desireLevel;
         }
+
+
         public void CheckSeeEvil()
         {
             if (LogicTime.time - _checkAlertTimer < 0.5f)
