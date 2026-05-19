@@ -122,6 +122,9 @@ namespace My.Map.Unit
 
         public long PoisonBaitTargetInteractInstId;
 
+        /// <summary> Idle 中对诱饵嗅探下一次允许探测的逻辑时间（降频）。 </summary>
+        public float NextPoisonBaitProbeLogicTime;
+
         // Search 本地张望结束后：等待上层（如 WantedGuardSpawner）下发移动策略；由刷新器清除并切状态。
         public bool PostSearchPolicyPending;
 

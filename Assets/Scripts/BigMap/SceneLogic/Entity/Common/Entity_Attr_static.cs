@@ -42,6 +42,8 @@ namespace My.Map.Entity
 
         public const string HImpulse_Pipeline = "HImpulse_Pipeline";
         public const string SrcLevel_Pipeline = "SrcLevel_Pipeline";
+        public const string HPower_Pipeline = "HPower_Pipeline";
+        public const string XiXue_Pipeline = "XiXue_Pipeline";
 
         public const string PlayerGcThreshold = "PlayerGcThreshold";
 
@@ -51,6 +53,8 @@ namespace My.Map.Entity
 
         public const string Basic_PleasureAdd = "Basic_PleasureAdd";
         public const string Basic_HungerCost = "Basic_HungerCost";
+
+        public const string Sensitivity_Percent = "Sensitivity_Percent";
 
         public const string HP = "HP";
         public const string HP_MAX = "HP.Max";
@@ -82,6 +86,9 @@ namespace My.Map.Entity
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";
         public const string NoKiller = "NoKiller";
+
+        public const string PlayerZhaZhiMode = "PlayerZhaZhiMode";
+        public const string PlayerUnlockYuhuo = "PlayerUnlockYuhuo";
 
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes"; // 衣装

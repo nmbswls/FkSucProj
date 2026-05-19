@@ -273,7 +273,7 @@ namespace My.Map.Entity
             var ps = cacheCfg.PoisonSettings;
             float dur = Mathf.Max(0.1f, ps.BaitDurationSeconds);
             _poisonBaitEndTime = LogicTime.time + dur;
-            LogicManager.RegisterLatestPoisonLacedInteract(Id);
+            LogicManager.RegisterPoisonLacedInteract(Id);
             return true;
         }
 
@@ -287,7 +287,7 @@ namespace My.Map.Entity
             var ps = cacheCfg.PoisonSettings;
             _poisonBaitEndTime = 0f;
             _poisonCdEndTime = LogicTime.time + Mathf.Max(0f, ps.ReapplyCooldownSeconds);
-            LogicManager.ClearLatestPoisonLacedIfMatch(Id);
+            LogicManager.UnregisterPoisonLacedInteract(Id);
             return true;
         }
 
@@ -311,12 +311,12 @@ namespace My.Map.Entity
             var ps = cacheCfg.PoisonSettings;
             _poisonBaitEndTime = 0f;
             _poisonCdEndTime = LogicTime.time + Mathf.Max(0f, ps.ReapplyCooldownSeconds);
-            LogicManager.ClearLatestPoisonLacedIfMatch(Id);
+            LogicManager.UnregisterPoisonLacedInteract(Id);
         }
 
         public override void OnDespawn(ref LogicEntityRecord snapshot)
         {
-            LogicManager.ClearLatestPoisonLacedIfMatch(Id);
+            LogicManager.UnregisterPoisonLacedInteract(Id);
             base.OnDespawn(ref snapshot);
         }
     

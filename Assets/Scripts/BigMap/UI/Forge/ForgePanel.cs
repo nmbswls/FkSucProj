@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
+using My.Player;
+using My.Player.Bag;
 using My.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +35,7 @@ namespace My.UI.Forge
         [SerializeField] GameObject categorySectionTemplate;
 
         Coroutine _layoutScrollCo;
+        PlayerInventorySystem _invEventsBound;
 
         public static void Toggle()
         {
@@ -44,6 +47,11 @@ namespace My.UI.Forge
             {
                 UIManager.Instance.ShowPanel(Pid);
             }
+        }
+
+        void OnDestroy()
+        {
+            UnbindInventoryEvents();
         }
 
         void Awake()
@@ -78,8 +86,60 @@ namespace My.UI.Forge
         public override void Show()
         {
             base.Show();
+            BindInventoryEventsIfNeeded();
             RefreshRecipes();
             ScheduleLayoutAndScrollTop();
+        }
+
+        public override void Hide()
+        {
+            UnbindInventoryEvents();
+            base.Hide();
+        }
+
+        void BindInventoryEventsIfNeeded()
+        {
+            var inv = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.InventorySystem;
+            if (inv == _invEventsBound)
+            {
+                return;
+            }
+
+            UnbindInventoryEvents();
+            _invEventsBound = inv;
+            if (_invEventsBound != null)
+            {
+                _invEventsBound.EventOnGainItem += OnInventoryMutated;
+            }
+        }
+
+        void UnbindInventoryEvents()
+        {
+            if (_invEventsBound != null)
+            {
+                _invEventsBound.EventOnGainItem -= OnInventoryMutated;
+            }
+
+            _invEventsBound = null;
+        }
+
+        void OnInventoryMutated(EPlayerBagId _, string __, long ___)
+        {
+            RefreshCraftableOnVisibleCells();
+        }
+
+        void RefreshCraftableOnVisibleCells()
+        {
+            if (sectionsRoot == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < sectionsRoot.childCount; i++)
+            {
+                var sec = sectionsRoot.GetChild(i).GetComponent<ForgeCategorySection>();
+                sec?.RefreshAllCellsCraftable();
+            }
         }
 
         void ScheduleLayoutAndScrollTop()

@@ -65,7 +65,104 @@ namespace My.Player.Bag
 
             WarehouseBag.EvOnBagUpdate += delegate { MarkWarehouseCategoryDirty(); };
 
+            ApplyMainBagFromSave(savingData);
             ApplyWarehouseFromSave(savingData);
+        }
+
+        static ItemStack HydratePersistedStack(string itemId, long count, long itemInstanceId)
+        {
+            if (string.IsNullOrEmpty(itemId) || count <= 0)
+            {
+                return null;
+            }
+
+            var st = ItemCatalog.CreateItemStack(itemId, count);
+            if (st != null && itemInstanceId != 0)
+            {
+                st.ItemInstanceId = itemInstanceId;
+            }
+
+            return st;
+        }
+
+        void ApplyMainBagFromSave(SaveData save)
+        {
+            if (MainBag == null)
+            {
+                return;
+            }
+
+            MainBag.ExtraSlots.Clear();
+            int ncap = MainBag.NormalSlots.Count;
+            for (int si = 0; si < ncap; si++)
+            {
+                MainBag.NormalSlots[si] = null;
+            }
+
+            var entries = save?.MainInventorySlots;
+            if (entries == null || entries.Count == 0)
+            {
+                MainBag.FinishHydrateMutation();
+                return;
+            }
+
+            int bc = MainBag.BasicCapacity;
+
+            foreach (var row in entries)
+            {
+                if (row == null)
+                {
+                    continue;
+                }
+
+                if (row.SlotIndex < 0)
+                {
+                    Debug.LogWarning($"[ApplyMainBagFromSave] Invalid SlotIndex={row.SlotIndex}, skipping entry.");
+                    continue;
+                }
+
+                var stack = HydratePersistedStack(row.ItemId, row.Count, row.ItemInstanceId);
+                if (stack == null)
+                {
+                    Debug.LogWarning($"[ApplyMainBagFromSave] Invalid item at SlotIndex={row.SlotIndex} (missing id or zero count).");
+                    continue;
+                }
+
+                if (row.SlotIndex < ncap)
+                {
+                    // 重复 SlotIndex：后写覆盖
+                    MainBag.NormalSlots[row.SlotIndex] = stack;
+                    continue;
+                }
+
+                int extraIdx = row.SlotIndex - bc;
+                if (MainBag.MaxExtraCapacity <= 0)
+                {
+                    Debug.LogWarning($"[ApplyMainBagFromSave] SlotIndex={row.SlotIndex} targets extra slots but MaxExtraCapacity=0.");
+                    continue;
+                }
+
+                if (extraIdx < 0 || extraIdx >= MainBag.MaxExtraCapacity)
+                {
+                    Debug.LogWarning($"[ApplyMainBagFromSave] SlotIndex={row.SlotIndex} out of extra range [0,{MainBag.MaxExtraCapacity}).");
+                    continue;
+                }
+
+                while (MainBag.ExtraSlots.Count < extraIdx + 1 && MainBag.ExtraSlots.Count < MainBag.MaxExtraCapacity)
+                {
+                    MainBag.ExtraSlots.Add(null);
+                }
+
+                if (extraIdx >= MainBag.ExtraSlots.Count)
+                {
+                    Debug.LogWarning($"[ApplyMainBagFromSave] Could not allocate extra slot padding for SlotIndex={row.SlotIndex}.");
+                    continue;
+                }
+
+                MainBag.ExtraSlots[extraIdx] = stack;
+            }
+
+            MainBag.FinishHydrateMutation();
         }
 
         void MarkWarehouseCategoryDirty()
@@ -150,11 +247,7 @@ namespace My.Player.Bag
                     {
                         continue;
                     }
-                    var st = ItemCatalog.CreateItemStack(slot.ItemId, slot.Count);
-                    if (st != null && slot.ItemInstanceId != 0)
-                    {
-                        st.ItemInstanceId = slot.ItemInstanceId;
-                    }
+                    var st = HydratePersistedStack(slot.ItemId, slot.Count, slot.ItemInstanceId);
                     if (st != null)
                     {
                         flat.Add(st);
@@ -389,7 +482,7 @@ namespace My.Player.Bag
                 {
                     CurrencyBag[itemId] = max;
                 }
-                EventOnGainItem?.Invoke(0, itemId, amount);
+                EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, amount);
                 return amount;
             }
 
@@ -412,12 +505,64 @@ namespace My.Player.Bag
 
             var put = bag.TryGiveItem(itemId, amount);
 
-            EventOnGainItem?.Invoke(0, itemId, put);
+            EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, put);
 
             return put;
         }
 
-        
+        /// <summary>
+        /// 发放指定数量道具：实例型逐项 CreateItemStack 并各占独立格不并入已有堆；货币、自动消耗、其余可叠加入主背包走 GiveItemToPlayer。
+        /// </summary>
+        /// <returns>成功发放的物品单位数（实例型每件为 1；可堆叠为 TryGiveItem 实际放入的量）</returns>
+        public long GrantItemsRespectingInstances(string itemId, long amount)
+        {
+            if (amount <= 0 || string.IsNullOrEmpty(itemId))
+            {
+                return 0;
+            }
+
+            var itemConf = ItemCatalog.GetItemDef(itemId);
+            if (itemConf == null)
+            {
+                return 0;
+            }
+
+            if (itemConf.ItemType == EItemType.Currency || itemConf.IsAutoUse)
+            {
+                return GiveItemToPlayer(itemId, amount);
+            }
+
+            var bag = GetBagById(0);
+            if (bag == null)
+            {
+                return 0;
+            }
+
+            if (ItemCatalog.IsInstanceType(itemConf.ItemType))
+            {
+                long total = 0;
+                for (long i = 0; i < amount; i++)
+                {
+                    var stack = ItemCatalog.CreateItemStack(itemId, 1);
+                    if (stack == null)
+                    {
+                        break;
+                    }
+
+                    if (!bag.TryPlaceStackWithoutMerge(stack))
+                    {
+                        break;
+                    }
+
+                    total++;
+                    EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, 1);
+                }
+
+                return total;
+            }
+
+            return GiveItemToPlayer(itemId, amount);
+        }
 
         /// <summary>
         /// 跨背包移动、合并或交换（同包同槽无操作）
@@ -495,6 +640,52 @@ namespace My.Player.Bag
             }
             SpeBags.TryGetValue((EPlayerBagId)bagId, out var bag);
             return bag;
+        }
+
+        public void WriteMainBagToSave(My.Saving.SaveData save)
+        {
+            if (save == null || MainBag == null)
+            {
+                return;
+            }
+
+            save.MainInventorySlots ??= new List<My.Saving.MainBagSlotPersist>();
+            save.MainInventorySlots.Clear();
+            int bc = MainBag.BasicCapacity;
+
+            for (int i = 0; i < MainBag.NormalSlots.Count; i++)
+            {
+                var st = MainBag.NormalSlots[i];
+                if (st == null || st.IsEmpty)
+                {
+                    continue;
+                }
+
+                save.MainInventorySlots.Add(new My.Saving.MainBagSlotPersist
+                {
+                    SlotIndex = i,
+                    ItemId = st.ItemID,
+                    Count = st.Count,
+                    ItemInstanceId = st.ItemInstanceId,
+                });
+            }
+
+            for (int e = 0; e < MainBag.ExtraSlots.Count; e++)
+            {
+                var st = MainBag.ExtraSlots[e];
+                if (st == null || st.IsEmpty)
+                {
+                    continue;
+                }
+
+                save.MainInventorySlots.Add(new My.Saving.MainBagSlotPersist
+                {
+                    SlotIndex = bc + e,
+                    ItemId = st.ItemID,
+                    Count = st.Count,
+                    ItemInstanceId = st.ItemInstanceId,
+                });
+            }
         }
 
         public void WriteWarehouseToSave(My.Saving.SaveData save)

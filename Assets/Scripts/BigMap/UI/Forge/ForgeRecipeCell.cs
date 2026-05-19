@@ -1,6 +1,7 @@
 using cfg.demo;
 using My;
 using My.Config;
+using My.Player.Bag;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -48,6 +49,18 @@ namespace My.UI.Forge
             }
 
             ApplyIcon(recipe, def);
+            RefreshCraftableState();
+        }
+
+        /// <summary>背包变化后可由外部调用以更新按钮。</summary>
+        public void RefreshCraftableState()
+        {
+            var inv = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.InventorySystem;
+            bool can = _recipe != null && ForgeCraftService.CanCraft(inv, _recipe);
+            if (clickButton != null)
+            {
+                clickButton.interactable = can;
+            }
         }
 
         static string BuildMaterialSummary(ForgeRecipe recipe)
@@ -121,7 +134,22 @@ namespace My.UI.Forge
                 return;
             }
 
-            Debug.Log("[Forge] recipe click id=" + _recipe.Id + " result=" + _recipe.ResultItemId);
+            var inv = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.InventorySystem;
+            if (!ForgeCraftService.CanCraft(inv, _recipe))
+            {
+                Debug.LogWarning("[Forge] Cannot craft: materials or bag space insufficient.");
+                return;
+            }
+
+            if (!ForgeCraftService.TryCraft(_recipe, out var reasonEn))
+            {
+                Debug.LogWarning("[Forge] Craft failed: " + reasonEn);
+                GetComponentInParent<ForgeCategorySection>()?.RefreshAllCellsCraftable();
+                return;
+            }
+
+            Debug.Log("[Forge] Craft ok recipe id=" + _recipe.Id + " result=" + _recipe.ResultItemId);
+            GetComponentInParent<ForgeCategorySection>()?.RefreshAllCellsCraftable();
         }
     }
 }

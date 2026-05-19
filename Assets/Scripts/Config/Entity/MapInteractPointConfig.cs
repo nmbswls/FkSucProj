@@ -99,9 +99,6 @@ namespace Config.Map
         [Tooltip("NPC 开始靠近前头顶飘字")]
         public string NpcFloatText = "...";
 
-        [Tooltip("Idle NPC 会考虑前去嗅探的最大距离")]
-        public float NpcSeekRadius = 8f;
-
         public float NpcApproachStopDistance = 0.4f;
     }
 }

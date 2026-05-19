@@ -11,11 +11,9 @@
       "base_clear": true
     }
   },
-  "Inventory": [
-    {
-      "ItemID": "banana",
-      "Amount": 1
-    }
+  "MainInventorySlots": [
+    { "SlotIndex": 0, "ItemId": "banana", "Count": 1, "ItemInstanceId": 0 },
+    { "SlotIndex": 5, "ItemId": "gold", "Count": 10, "ItemInstanceId": 0 }
   ],
   "CurrentMapId": "base_01",
   "CurrentPos": {

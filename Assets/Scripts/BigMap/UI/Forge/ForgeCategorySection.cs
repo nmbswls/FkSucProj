@@ -65,6 +65,19 @@ namespace My.UI.Forge
             RebuildLayoutSelf();
         }
 
+        public void RefreshAllCellsCraftable()
+        {
+            if (grid == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < grid.childCount; i++)
+            {
+                grid.GetChild(i).GetComponent<ForgeRecipeCell>()?.RefreshCraftableState();
+            }
+        }
+
         // 子物体数量变化后让布局系统立即算一遍 preferred，避免 Scroll/ContentSizeFitter 延后一帧不齐。
         public void RebuildLayoutSelf()
         {

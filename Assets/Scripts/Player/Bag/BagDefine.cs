@@ -133,7 +133,7 @@ namespace My.Player
             return leftCount;
         }
 
-        public void ClearEmptyItems()
+        public void ClearEmptyItems(bool stripNullExtras = true)
         {
             for (int i = 0; i < NormalSlots.Count; i++)
             {
@@ -143,13 +143,38 @@ namespace My.Player
                 }
             }
 
-            for (int i = ExtraSlots.Count - 1; i >= 0; i--)
+            if (stripNullExtras)
             {
-                if (ExtraSlots[i] == null || ExtraSlots[i].Count <= 0)
+                for (int i = ExtraSlots.Count - 1; i >= 0; i--)
                 {
-                    ExtraSlots.RemoveAt(i);
+                    if (ExtraSlots[i] == null || ExtraSlots[i].Count <= 0)
+                    {
+                        ExtraSlots.RemoveAt(i);
+                    }
                 }
             }
+            else
+            {
+                for (int i = 0; i < ExtraSlots.Count; i++)
+                {
+                    if (ExtraSlots[i] != null && ExtraSlots[i].Count <= 0)
+                    {
+                        ExtraSlots[i] = null;
+                    }
+                }
+            }
+        }
+
+        // 存档读入后的收口：不剔除扩展栏中的 null 占位，且不 FlushExtraIntoPrimaryWherePossible（避免打散稀疏 SlotIndex 对齐）。
+        public void FinishHydrateMutation()
+        {
+            ClearEmptyItems(stripNullExtras: false);
+            if (StorageLayout == EBagStorageLayout.Compact)
+            {
+                CompactPackPrimary();
+            }
+
+            EvOnBagUpdate?.Invoke();
         }
 
         public ItemStack GetItemByIdx(int idx)
@@ -263,7 +288,7 @@ namespace My.Player
 
         public void AfterSlotMutation()
         {
-            ClearEmptyItems();
+            ClearEmptyItems(stripNullExtras: true);
             if (StorageLayout == EBagStorageLayout.Compact)
             {
                 CompactPackPrimary();
@@ -383,6 +408,59 @@ namespace My.Player
             EvOnBagUpdate?.Invoke();
             return count - remaining;
         }
+
+        /// <summary>
+        /// 将整张堆栈放入空格，不与现有同名堆叠合并（用于锻造等产物：实例型各占一格）。
+        /// </summary>
+        public bool TryPlaceStackWithoutMerge(ItemStack stack)
+        {
+            if (stack == null || stack.IsEmpty)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < NormalSlots.Count; i++)
+            {
+                if (NormalSlots[i] == null || NormalSlots[i].IsEmpty)
+                {
+                    NormalSlots[i] = stack;
+                    AfterSlotMutation();
+                    return true;
+                }
+            }
+
+            if (MaxExtraCapacity > 0 && ExtraSlots.Count < MaxExtraCapacity)
+            {
+                ExtraSlots.Add(stack);
+                AfterSlotMutation();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 可放入独立堆栈的空位数：主格子空位 + 扩展栏尚可追加条数。
+        /// </summary>
+        public int CountDiscreteEmptySlots()
+        {
+            int n = 0;
+            foreach (var s in NormalSlots)
+            {
+                if (s == null || s.IsEmpty)
+                {
+                    n++;
+                }
+            }
+
+            if (MaxExtraCapacity > 0)
+            {
+                n += Mathf.Max(0, MaxExtraCapacity - ExtraSlots.Count);
+            }
+
+            return n;
+        }
+
         public bool TrySplit(int srcIndex, long count)
         {
             // ?????????????????????????????

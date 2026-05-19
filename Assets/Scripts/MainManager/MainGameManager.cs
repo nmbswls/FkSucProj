@@ -627,7 +627,6 @@ namespace My
 
             // 占位：待与真实养成/战斗数值对接
             // data.PlayerData.Level = ...
-            data.Inventory.Add(new InventoryItemData { ItemID = "Sword_01", Amount = 1 });
 
             if (gameLogicManager?.AreaManager != null &&
                 !string.IsNullOrEmpty(gameLogicManager.AreaManager.MapName))

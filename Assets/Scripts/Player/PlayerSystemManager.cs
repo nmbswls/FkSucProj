@@ -224,6 +224,7 @@ namespace My.Player
                 data.PlayerData.GlobalSwitchMap[kv.Key] = kv.Value;
             }
 
+            InventorySystem?.WriteMainBagToSave(data);
             InventorySystem?.WriteWarehouseToSave(data);
             SkillSystem?.WriteToSave(data);
             MagicClothes.SaveTo(data.PlayerData);

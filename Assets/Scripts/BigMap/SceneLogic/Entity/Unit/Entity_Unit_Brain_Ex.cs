@@ -340,6 +340,12 @@ namespace My.Map.Unit
     // --- Idle 状态 ---
     public class AIStateIdle : AIBaseState
     {
+        /// <summary> Idle 嗅探诱饵间隔（秒），独立于 Brain ActionsFrequency。</summary>
+        const float PoisonBaitProbeCooldownBase = 1.35f;
+
+        /// <summary> 按 NPC id 打散探测时刻，避免同帧扎堆 </summary>
+        const float PoisonBaitProbeCooldownJitterMax = 0.65f;
+
         private IIdlePolicy _idlePolicy;
 
         public override string StateName => "Idle";
@@ -357,15 +363,31 @@ namespace My.Map.Unit
             _idlePolicy?.OnExit(_brain);
             _idlePolicy = MovePolicyFactory.CreateFromMoveBehave(_brain.NpcEntity.MoveBehaveInfo);
             _idlePolicy.OnEnter(_brain);
+            ScheduleNextPoisonBaitProbe();
+        }
+
+        /// <summary> 进入 Idle 后推迟首次嗅探，打散同一区域 NPC。 </summary>
+        void ScheduleNextPoisonBaitProbe()
+        {
+            long id = _brain.NpcEntity != null ? _brain.NpcEntity.Id : 0L;
+            float jitter = (Mathf.Abs(id * 0.618034f) % 1f) * PoisonBaitProbeCooldownJitterMax;
+            _brain.NextPoisonBaitProbeLogicTime = LogicTime.time + jitter;
         }
 
         public override void OnUpdate()
         {
-            if (_brain.LogicManager.TryGetPoisonBaitTargetForNpc(_brain.NpcEntity, out long baitInstId))
+            if (LogicTime.time >= _brain.NextPoisonBaitProbeLogicTime)
             {
-                _brain.PoisonBaitTargetInteractInstId = baitInstId;
-                _brain.ChangeState(_brain.StatePoisonBait);
-                return;
+                long nid = _brain.NpcEntity != null ? _brain.NpcEntity.Id : 0L;
+                ulong u = unchecked((ulong)nid);
+                _brain.NextPoisonBaitProbeLogicTime =
+                    LogicTime.time + PoisonBaitProbeCooldownBase + (float)(u % 31UL) * 0.02f;
+                if (_brain.LogicManager.TryGetPoisonBaitTargetForNpc(_brain.NpcEntity, out long baitInstId))
+                {
+                    _brain.PoisonBaitTargetInteractInstId = baitInstId;
+                    _brain.ChangeState(_brain.StatePoisonBait);
+                    return;
+                }
             }
 
             if (_brain.SuspiciousPos != null)

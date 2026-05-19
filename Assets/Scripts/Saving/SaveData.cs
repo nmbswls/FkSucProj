@@ -112,11 +112,14 @@ namespace My.Saving
         public List<string> FinishedUniqDreamingIds = new(); // 已完成的唯一入梦入口
     }
 
+    // 主背包单格稀疏持久化：仅存占格条目，使用 SlotIndex（与 PlayerBag.GetItemByIdx 平面下标一致）
     [Serializable]
-    public class InventoryItemData
+    public class MainBagSlotPersist
     {
-        public string ItemID;
-        public int Amount;
+        public int SlotIndex;
+        public string ItemId;
+        public long Count;
+        public long ItemInstanceId;
     }
 
     /// <summary>
@@ -253,7 +256,8 @@ namespace My.Saving
         [JsonProperty("Player")]
         public PlayerData PlayerData;
 
-        public List<InventoryItemData> Inventory;
+        // 稀疏列表：每项含 SlotIndex，仅序列化占格条目
+        public List<MainBagSlotPersist> MainInventorySlots;
 
         /// <summary>
         /// 仓库分页数据，顺序与运行时页索引一致。
@@ -278,7 +282,7 @@ namespace My.Saving
         {
             Meta = new MetaData();
             PlayerData = new PlayerData();
-            Inventory = new List<InventoryItemData>();
+            MainInventorySlots = new List<MainBagSlotPersist>();
             WarehousePages = new List<WarehousePagePersist>();
             PlayerBuffs = new List<BuffPersistData>();
         }
@@ -299,7 +303,7 @@ namespace My.Saving
             data.PlayerData.UnlockedTalentNodeIds ??= new List<int>();
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
-            data.Inventory ??= new List<InventoryItemData>();
+            data.MainInventorySlots ??= new List<MainBagSlotPersist>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.GlobalRuntime ??= new GlobalRuntimePersistData();

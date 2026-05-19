@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
+  m_Name: poison_p_clothes
+  m_EditorClassIdentifier: 
+  CfgId: poison_p_clothes
+  ShowName: "\u667E\u8863\u67B6"
+  PrefabName: poison_p_clothes
+  NameOffset: -1
+  IsAlwaysActive: 0
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel: 
+  MainStatusInfo:
+    StatusId: 0
+    Desp: 
+    InteractInfos: []
+    HasBlock: 1
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  ExtraStatusInfos:
+  - StatusId: 1
+    Desp: 
+    InteractInfos: []
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  InitState: 0
+  StateChangeRules: []
+  PoisonSettings:
+    Enable: 1
+    ApplyPoisonConds: []
+    NpcTriggerBuffId: default_poisoned
+    BaitDurationSeconds: 30
+    ReapplyCooldownSeconds: 20
+    ApplyPoisonLabel: "\u4E0B\u6BD2"
+    NpcFloatText: ...
+    NpcSeekRadius: 8
+    NpcApproachStopDistance: 0.4
