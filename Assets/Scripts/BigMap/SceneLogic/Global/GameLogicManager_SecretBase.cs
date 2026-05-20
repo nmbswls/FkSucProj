@@ -1,12 +1,16 @@
+using System.Collections;
 using My.Config;
 using My.SecretBase;
 using My.Saving;
+using My.UI;
 using UnityEngine;
 
 namespace My
 {
     public partial class GameLogicManager
     {
+        public const string SecretBaseMapId = "secret_base_hub";
+
         public enum EPlayerWorldLocation
         {
             OpenWorld,
@@ -29,8 +33,8 @@ namespace My
                 return;
             }
 
-            TrySnapshotOpenWorldBeforeEnteringSecretBase(SecretBaseDefs.MapId);
-            PreparePlayerSwitchArea(SecretBaseDefs.MapId, false, targetPoint);
+            TrySnapshotOpenWorldBeforeEnteringSecretBase(SecretBaseMapId);
+            PreparePlayerSwitchArea(SecretBaseMapId, false, targetPoint);
         }
 
         public void ExitSecretBase()
@@ -88,7 +92,6 @@ namespace My
             }
         }
 
-        // 表现场景 LoadWorld 完成后启动据点 Session（唯一入口）
         public void NotifySecretBasePresentationReady()
         {
             RefreshPlayerWorldLocationFromMapCfg();
@@ -166,6 +169,112 @@ namespace My
         {
             playerDataManager?.Tick(dt);
             SecretBase.Tick(dt);
+        }
+    }
+
+    // 据点运行时：切图后绑定场景根，驱动卷轴与点击。
+    public class SecretBaseSession
+    {
+        GameLogicManager _logic;
+        bool _active;
+        Coroutine _waitRootCo;
+
+        public void Bind(GameLogicManager logic)
+        {
+            _logic = logic;
+        }
+
+        public void OnWorldSceneLoaded()
+        {
+            if (_active)
+            {
+                return;
+            }
+
+            var host = MainGameManager.Instance;
+            if (host == null)
+            {
+                TryStart();
+                return;
+            }
+
+            if (_waitRootCo != null)
+            {
+                host.StopCoroutine(_waitRootCo);
+            }
+
+            _waitRootCo = host.StartCoroutine(CoWaitRoot());
+        }
+
+        IEnumerator CoWaitRoot()
+        {
+            SecretBaseSceneRoot root = null;
+            for (int i = 0; i < 30; i++)
+            {
+                root = SecretBaseSceneRoot.FindLoaded();
+                if (root != null)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            _waitRootCo = null;
+            TryStart(root);
+        }
+
+        void TryStart(SecretBaseSceneRoot root = null)
+        {
+            if (_active)
+            {
+                return;
+            }
+
+            root ??= SecretBaseSceneRoot.FindLoaded();
+            if (root == null)
+            {
+                Debug.LogError("SecretBaseSession: SecretBaseSceneRoot missing.");
+                return;
+            }
+
+            _active = true;
+            root.EnterMode();
+            SecretBaseHudPanel.TryShow();
+        }
+
+        public void Shutdown()
+        {
+            if (!_active)
+            {
+                return;
+            }
+
+            _active = false;
+
+            if (_waitRootCo != null && MainGameManager.Instance != null)
+            {
+                MainGameManager.Instance.StopCoroutine(_waitRootCo);
+                _waitRootCo = null;
+            }
+
+            SecretBaseSceneRoot.FindLoaded()?.ExitMode();
+            SecretBaseHudPanel.TryHide();
+        }
+
+        public void Tick(float dt)
+        {
+            if (!_active)
+            {
+                return;
+            }
+
+            SecretBaseSceneRoot.FindLoaded()?.Tick(dt);
+        }
+
+        public void OnScreenPointer(Vector2 screenPos, bool click)
+        {
+            SecretBaseSceneRoot.FindLoaded()?.HandleScreenPointer(screenPos, click);
         }
     }
 }

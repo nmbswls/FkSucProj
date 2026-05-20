@@ -8,33 +8,22 @@ namespace My.UI
     {
         public const string PanelIdConst = "SecretBaseHudPanel";
 
-        [SerializeField] private Button btnExit;
-        [SerializeField] private Button btnBuild;
-
-        public static SecretBaseHudPanel Instance { get; private set; }
+        [SerializeField] Button btnExit;
+        [SerializeField] Button btnBuild;
 
         void Awake()
         {
             panelId = PanelIdConst;
             layer = UILayer.HUD;
-            Instance = this;
 
             if (btnExit != null)
             {
-                btnExit.onClick.AddListener(OnExitClicked);
+                btnExit.onClick.AddListener(() => MainGameManager.Instance?.gameLogicManager?.ExitSecretBase());
             }
 
             if (btnBuild != null)
             {
-                btnBuild.onClick.AddListener(OnBuildClicked);
-            }
-        }
-
-        void OnDestroy()
-        {
-            if (Instance == this)
-            {
-                Instance = null;
+                btnBuild.onClick.AddListener(() => UIManager.Instance.ShowPanel(SecretBaseBuildPanel.PanelIdConst));
             }
         }
 
@@ -46,16 +35,6 @@ namespace My.UI
         public static void TryHide()
         {
             UIManager.Instance.HidePanel(PanelIdConst);
-        }
-
-        void OnExitClicked()
-        {
-            MainGameManager.Instance?.gameLogicManager?.ExitSecretBase();
-        }
-
-        void OnBuildClicked()
-        {
-            UIManager.Instance.ShowPanel(SecretBaseBuildPanel.PanelIdConst);
         }
     }
 }

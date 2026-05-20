@@ -1,146 +1,69 @@
 using My.UI;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace My.SecretBase
 {
+    // 场景交互点：挂 Collider2D + 填 panelId；无碰撞体时用 SpriteRenderer.bounds。
     public class SecretBaseInteractable : MonoBehaviour
     {
-        [SerializeField] private string panelId;
-        [SerializeField] private Rect worldBounds = new Rect(-1f, -1f, 2f, 2f);
+        [SerializeField] string panelId;
 
-        [Header("可选：Sprite 命中")]
-        [SerializeField] private bool useSpriteHit;
-        [SerializeField] private SpriteRenderer spriteRenderer;
-        [SerializeField] private Collider2D hitCollider;
-
-        [Header("可选：悬浮高亮")]
-        [SerializeField] private bool enableHoverHighlight;
-        [SerializeField] [Range(0f, 1f)] private float hoverBrighten = 0.25f;
-        [SerializeField] private GameObject highlightOutline;
-
+        Collider2D _collider;
+        SpriteRenderer _sprite;
         Color _normalColor;
-        bool _normalColorCached;
-        bool _highlighted;
+        bool _hasNormalColor;
 
-        public string PanelId => panelId;
-
-        public int HitSortOrder
-        {
-            get
-            {
-                if (spriteRenderer != null)
-                {
-                    return spriteRenderer.sortingOrder;
-                }
-
-                return 0;
-            }
-        }
+        public int SortOrder => _sprite != null ? _sprite.sortingOrder : 0;
 
         void Awake()
         {
-            ResolveSpriteRefs();
-            CacheNormalColor();
-        }
+            _collider = GetComponent<Collider2D>();
+            if (_collider == null)
+            {
+                _collider = GetComponentInChildren<Collider2D>();
+            }
 
-        void OnValidate()
-        {
-            ResolveSpriteRefs();
+            _sprite = GetComponent<SpriteRenderer>();
+            if (_sprite == null)
+            {
+                _sprite = GetComponentInChildren<SpriteRenderer>();
+            }
+
+            if (_sprite != null)
+            {
+                _normalColor = _sprite.color;
+                _hasNormalColor = true;
+            }
         }
 
         void OnDisable()
         {
-            SetHighlighted(false);
+            SetHighlight(false);
         }
 
-        void ResolveSpriteRefs()
+        public bool ContainsPoint(Vector2 worldPos)
         {
-            if (!useSpriteHit)
+            if (_collider != null)
+            {
+                return _collider.OverlapPoint(worldPos);
+            }
+
+            return _sprite != null && _sprite.sprite != null && _sprite.bounds.Contains(worldPos);
+        }
+
+        public void SetHighlight(bool on)
+        {
+            if (!_hasNormalColor || _sprite == null)
             {
                 return;
             }
 
-            if (spriteRenderer == null)
-            {
-                spriteRenderer = GetComponent<SpriteRenderer>();
-            }
-
-            if (hitCollider == null)
-            {
-                hitCollider = GetComponent<Collider2D>();
-            }
+            _sprite.color = on ? Color.Lerp(_normalColor, Color.white, 0.25f) : _normalColor;
         }
 
-        void CacheNormalColor()
-        {
-            if (spriteRenderer == null)
-            {
-                _normalColorCached = false;
-                return;
-            }
-
-            _normalColor = spriteRenderer.color;
-            _normalColorCached = true;
-        }
-
-        public bool HitTest(Vector2 worldPos)
-        {
-            if (useSpriteHit)
-            {
-                if (hitCollider != null)
-                {
-                    return hitCollider.OverlapPoint(worldPos);
-                }
-
-                if (spriteRenderer != null && spriteRenderer.sprite != null)
-                {
-                    return spriteRenderer.bounds.Contains(worldPos);
-                }
-            }
-
-            return ContainsWorldPoint(worldPos);
-        }
-
-        public bool ContainsWorldPoint(Vector2 worldPos)
-        {
-            var c = (Vector2)transform.position + worldBounds.position;
-            var r = new Rect(c, worldBounds.size);
-            return r.Contains(worldPos);
-        }
-
-        public void SetHighlighted(bool on)
-        {
-            if (_highlighted == on)
-            {
-                return;
-            }
-
-            _highlighted = on;
-
-            if (highlightOutline != null)
-            {
-                highlightOutline.SetActive(on);
-            }
-
-            if (!enableHoverHighlight || spriteRenderer == null || !_normalColorCached)
-            {
-                return;
-            }
-
-            spriteRenderer.color = on
-                ? Color.Lerp(_normalColor, Color.white, hoverBrighten)
-                : _normalColor;
-        }
-
-        public void TryOpenPanel()
+        public void OpenPanel()
         {
             if (string.IsNullOrEmpty(panelId))
-            {
-                return;
-            }
-
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }

@@ -1,15 +1,13 @@
-using My.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace My.UI
 {
-    // 据点装修 UI 占位：后续接家具目录与摆放预览。
     public class SecretBaseBuildPanel : PanelWithInput
     {
         public const string PanelIdConst = "SecretBaseBuildPanel";
 
-        [SerializeField] private Button btnClose;
+        [SerializeField] Button btnClose;
 
         void Awake()
         {

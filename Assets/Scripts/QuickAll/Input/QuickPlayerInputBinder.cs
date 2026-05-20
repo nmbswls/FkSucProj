@@ -433,15 +433,16 @@ namespace My.Input
                 return;
             }
 
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-
             var glm = MainGameManager.Instance?.gameLogicManager;
             if (glm != null && glm.IsInSecretBase)
             {
-                glm.SecretBase.OnScreenPointer(LastPos, true);
+                var screen = My.SecretBase.SecretBaseSceneRoot.GetPointerScreenPosition();
+                glm.SecretBase.OnScreenPointer(screen, true);
                 return;
             }
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
 
             if (uiRouter == null || !uiRouter.DispatchClick(0, LastPos))
             {
@@ -809,10 +810,6 @@ namespace My.Input
 
         public void OnSceneLeftClick()
         {
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-
-
             if (LogicTime.paused)
             {
                 return;
@@ -821,9 +818,14 @@ namespace My.Input
             var glm = MainGameManager.Instance?.gameLogicManager;
             if (glm != null && glm.IsInSecretBase)
             {
-                glm.SecretBase.OnScreenPointer(LastPos, true);
+                var screen = My.SecretBase.SecretBaseSceneRoot.GetPointerScreenPosition();
+                glm.SecretBase.OnScreenPointer(screen, true);
                 return;
             }
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
 
             var hunting = My.Map.Hunting.HuntingModeManager.Instance;
             if (hunting != null && hunting.Active && hunting.TryExecuteHoveredTarget())

@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using My.Config;
 using My.Input;
@@ -40,6 +41,7 @@ namespace My.Map.View
 
         public long SrcEntityId;
 
+        public List<GameObject> ProgressPointList = new(); // 存放各个节点 需要控制是否被点亮
 
         private float _timer;
         private float _lastBalanceTimer;
