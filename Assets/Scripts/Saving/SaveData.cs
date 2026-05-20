@@ -77,8 +77,8 @@ namespace My.Saving
         public string MagicClothesDefId;
         public bool MagicClothesLockedForStealth;
 
-        // 已解锁天赋节点（对应 Luban TbTalentNode / PlayerTalentManager）
-        public List<int> UnlockedTalentNodeIds = new();
+        // 天赋节点等级（Level==0 可省略；对应 TbTalentNode + TbTalentNodeLevel）
+        public List<TalentNodeLevelPersist> TalentNodeLevels = new();
 
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
 
@@ -87,6 +87,13 @@ namespace My.Saving
 
         // 角色装备（与主背包互斥：穿上时从背包扣除；存档需与背包一致）
         public List<EquippedGearEntry> EquippedGear = new();
+    }
+
+    [Serializable]
+    public class TalentNodeLevelPersist
+    {
+        public int NodeId;
+        public int Level;
     }
 
     [Serializable]
@@ -313,7 +320,7 @@ namespace My.Saving
             data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
             data.PlayerData.PassiveSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
-            data.PlayerData.UnlockedTalentNodeIds ??= new List<int>();
+            data.PlayerData.TalentNodeLevels ??= new List<TalentNodeLevelPersist>();
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.MainInventorySlots ??= new List<MainBagSlotPersist>();

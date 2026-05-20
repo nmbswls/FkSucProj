@@ -86,7 +86,7 @@ namespace My.UI.Talent
             if (debugTipText != null)
             {
                 debugTipText.text = progression != null
-                    ? "Click yellow nodes to unlock. First node has no cost."
+                    ? "Click yellow nodes to unlock or upgrade. First node has no cost."
                     : "No progression (not in game context).";
             }
         }

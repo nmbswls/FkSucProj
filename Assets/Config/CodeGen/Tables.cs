@@ -69,6 +69,7 @@ public partial class Tables
     public demo.TbTrapSpec TbTrapSpec {get; }
     public demo.TbForgeRecipe TbForgeRecipe {get; }
     public demo.TbHActInfo TbHActInfo {get; }
+    public demo.TbTalentNodeLevel TbTalentNodeLevel {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -127,6 +128,7 @@ public partial class Tables
         TbTrapSpec = new demo.TbTrapSpec(loader("demo_tbtrapspec"));
         TbForgeRecipe = new demo.TbForgeRecipe(loader("demo_tbforgerecipe"));
         TbHActInfo = new demo.TbHActInfo(loader("demo_tbhactinfo"));
+        TbTalentNodeLevel = new demo.TbTalentNodeLevel(loader("demo_tbtalentnodelevel"));
         ResolveRef();
     }
     
@@ -187,6 +189,7 @@ public partial class Tables
         TbTrapSpec.ResolveRef(this);
         TbForgeRecipe.ResolveRef(this);
         TbHActInfo.ResolveRef(this);
+        TbTalentNodeLevel.ResolveRef(this);
     }
 }
 

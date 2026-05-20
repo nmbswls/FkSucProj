@@ -78,9 +78,14 @@ namespace My.Player
         {
         }
 
-        public bool TryUnlockTalentNode(int nodeId, out string failReason)
+        public bool TryUpgradeTalentNode(int nodeId, out string failReason)
         {
-            return TalentManager.TryUnlockNode(nodeId, out failReason);
+            return TalentManager.TryUpgradeNode(nodeId, out failReason);
+        }
+
+        public int GetTalentNodeLevel(int nodeId)
+        {
+            return TalentManager.GetNodeLevel(nodeId);
         }
 
         public PlayerTalentManager.TalentNodeVisualState GetTalentNodeVisualState(int nodeId)
@@ -120,7 +125,7 @@ namespace My.Player
         public void OnFallenAmountUpdate(long fallednAmount)
         {
             //
-            // ∏¯ Ù–‘
+            // ùùùùùù
         }
     }
 
@@ -192,7 +197,7 @@ namespace My.Player
         }
 
         GameLogicManager _logic;
-        readonly HashSet<int> _unlocked = new();
+        readonly Dictionary<int, int> _nodeLevels = new();
         readonly List<TalentNodeProgressionProvider> _activeProviders = new();
 
         public ProgressionAggregator TalentAggregator { get; private set; }
@@ -203,19 +208,24 @@ namespace My.Player
         {
             _logic = logic;
             TalentAggregator = new ProgressionAggregator("TalentTotal");
-            _unlocked.Clear();
+            _nodeLevels.Clear();
             _activeProviders.Clear();
             TalentNodeDict.Clear();
 
-            if (savingData?.PlayerData?.UnlockedTalentNodeIds != null)
+            if (savingData?.PlayerData?.TalentNodeLevels != null)
             {
-                foreach (var id in savingData.PlayerData.UnlockedTalentNodeIds)
+                foreach (var e in savingData.PlayerData.TalentNodeLevels)
                 {
-                    _unlocked.Add(id);
+                    if (e == null || e.NodeId <= 0 || e.Level <= 0)
+                    {
+                        continue;
+                    }
+
+                    _nodeLevels[e.NodeId] = e.Level;
                 }
             }
 
-            RebuildProvidersFromUnlockState();
+            RebuildProvidersFromLevels();
         }
 
         public void SaveTo(PlayerData pd)
@@ -225,24 +235,45 @@ namespace My.Player
                 return;
             }
 
-            pd.UnlockedTalentNodeIds ??= new List<int>();
-            pd.UnlockedTalentNodeIds.Clear();
-            foreach (var id in _unlocked)
+            pd.TalentNodeLevels ??= new List<TalentNodeLevelPersist>();
+            pd.TalentNodeLevels.Clear();
+            foreach (var kv in _nodeLevels)
             {
-                pd.UnlockedTalentNodeIds.Add(id);
+                if (kv.Value <= 0)
+                {
+                    continue;
+                }
+
+                pd.TalentNodeLevels.Add(new TalentNodeLevelPersist
+                {
+                    NodeId = kv.Key,
+                    Level = kv.Value,
+                });
             }
         }
 
-        public bool IsUnlocked(int nodeId) => _unlocked.Contains(nodeId);
+        public int GetNodeLevel(int nodeId)
+        {
+            return _nodeLevels.TryGetValue(nodeId, out var lv) ? lv : 0;
+        }
+
+        public bool IsUnlocked(int nodeId) => GetNodeLevel(nodeId) >= 1;
 
         public TalentNodeVisualState GetNodeVisualState(int nodeId)
         {
-            if (_unlocked.Contains(nodeId))
+            var nodeCfg = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(nodeId);
+            if (nodeCfg == null)
+            {
+                return TalentNodeVisualState.Locked;
+            }
+
+            int current = GetNodeLevel(nodeId);
+            if (current >= nodeCfg.MaxLevel)
             {
                 return TalentNodeVisualState.Unlocked;
             }
 
-            if (ValidateUnlockRequirements(nodeId, out _))
+            if (ValidateUpgradeRequirements(nodeId, out _))
             {
                 return TalentNodeVisualState.Unlockable;
             }
@@ -250,24 +281,32 @@ namespace My.Player
             return TalentNodeVisualState.Locked;
         }
 
-        public bool TryUnlockNode(int nodeId, out string failReason)
+        public bool TryUpgradeNode(int nodeId, out string failReason)
         {
             failReason = null;
-            if (!ValidateUnlockRequirements(nodeId, out failReason))
+            if (!ValidateUpgradeRequirements(nodeId, out failReason))
             {
                 return false;
             }
 
-            var cfg = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(nodeId);
-            if (cfg == null)
+            int next = GetNodeLevel(nodeId) + 1;
+            var levelRow = CfgMgr.Cfgs?.TbTalentNodeLevel?.Get(nodeId, next);
+            if (levelRow == null)
+            {
+                failReason = "no_level_cfg";
+                return false;
+            }
+
+            var nodeCfg = CfgMgr.Cfgs.TbTalentNode.GetOrDefault(nodeId);
+            if (nodeCfg == null)
             {
                 failReason = "no_cfg";
                 return false;
             }
 
-            if (cfg.UnlockCosts != null)
+            if (levelRow.UnlockCosts != null)
             {
-                foreach (var c in cfg.UnlockCosts)
+                foreach (var c in levelRow.UnlockCosts)
                 {
                     if (c == null || string.IsNullOrEmpty(c.ItemId) || c.Count <= 0)
                     {
@@ -278,19 +317,19 @@ namespace My.Player
                 }
             }
 
-            _unlocked.Add(nodeId);
-            AddProviderForCfg(cfg);
+            _nodeLevels[nodeId] = next;
+            RebuildProvidersFromLevels();
 
-            if (!string.IsNullOrEmpty(cfg.PassiveSkillId))
+            if (next == 1 && !string.IsNullOrEmpty(nodeCfg.PassiveSkillId))
             {
-                _logic.playerDataManager.TryAddLearnedSkill(cfg.PassiveSkillId);
+                _logic.playerDataManager.TryAddLearnedSkill(nodeCfg.PassiveSkillId);
                 _logic.playerDataManager.SyncLearnedSkillsToPlayerEntity();
             }
 
             return true;
         }
 
-        bool ValidateUnlockRequirements(int nodeId, out string failReason)
+        bool ValidateUpgradeRequirements(int nodeId, out string failReason)
         {
             failReason = null;
             if (_logic?.playerDataManager == null)
@@ -299,24 +338,33 @@ namespace My.Player
                 return false;
             }
 
-            if (_unlocked.Contains(nodeId))
-            {
-                failReason = "already_unlocked";
-                return false;
-            }
-
-            var cfg = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(nodeId);
-            if (cfg == null)
+            var nodeCfg = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(nodeId);
+            if (nodeCfg == null)
             {
                 failReason = "no_cfg";
                 return false;
             }
 
-            if (cfg.PrereqNodeIds != null)
+            int current = GetNodeLevel(nodeId);
+            int next = current + 1;
+            if (next > nodeCfg.MaxLevel)
             {
-                foreach (var pre in cfg.PrereqNodeIds)
+                failReason = "max_level";
+                return false;
+            }
+
+            var levelRow = CfgMgr.Cfgs?.TbTalentNodeLevel?.Get(nodeId, next);
+            if (levelRow == null)
+            {
+                failReason = "no_level_cfg";
+                return false;
+            }
+
+            if (levelRow.PrereqNodeIds != null)
+            {
+                foreach (var pre in levelRow.PrereqNodeIds)
                 {
-                    if (!_unlocked.Contains(pre))
+                    if (GetNodeLevel(pre) < 1)
                     {
                         failReason = "prereq";
                         return false;
@@ -324,18 +372,18 @@ namespace My.Player
                 }
             }
 
-            if (cfg.UnlockConds != null && cfg.UnlockConds.Count > 0)
+            if (levelRow.UnlockConds != null && levelRow.UnlockConds.Count > 0)
             {
-                if (!_logic.CheckCommonCondsAll(cfg.UnlockConds))
+                if (!_logic.CheckCommonCondsAll(levelRow.UnlockConds))
                 {
                     failReason = "conds";
                     return false;
                 }
             }
 
-            if (cfg.UnlockCosts != null)
+            if (levelRow.UnlockCosts != null)
             {
-                foreach (var c in cfg.UnlockCosts)
+                foreach (var c in levelRow.UnlockCosts)
                 {
                     if (c == null || string.IsNullOrEmpty(c.ItemId) || c.Count <= 0)
                     {
@@ -353,7 +401,7 @@ namespace My.Player
             return true;
         }
 
-        void RebuildProvidersFromUnlockState()
+        void RebuildProvidersFromLevels()
         {
             foreach (var p in _activeProviders)
             {
@@ -363,48 +411,57 @@ namespace My.Player
             _activeProviders.Clear();
             TalentNodeDict.Clear();
 
-            var table = CfgMgr.Cfgs?.TbTalentNode;
-            if (table == null)
+            var levelTable = CfgMgr.Cfgs?.TbTalentNodeLevel;
+            if (levelTable == null)
             {
                 return;
             }
 
-            foreach (var id in _unlocked)
+            foreach (var kv in _nodeLevels)
             {
-                var cfg = table.GetOrDefault(id);
-                if (cfg == null)
+                int nodeId = kv.Key;
+                int current = kv.Value;
+                if (current <= 0)
                 {
                     continue;
                 }
 
-                AddProviderForCfg(cfg);
-            }
-        }
-
-        void AddProviderForCfg(TalentNode cfg)
-        {
-            var pairs = new List<StatPair>();
-            if (cfg.StatBonuses != null)
-            {
-                foreach (var b in cfg.StatBonuses)
+                var pairs = new List<StatPair>();
+                for (int lv = 1; lv <= current; lv++)
                 {
-                    if (b == null)
+                    var row = levelTable.Get(nodeId, lv);
+                    if (row?.StatBonuses == null)
                     {
                         continue;
                     }
 
-                    pairs.Add(new StatPair(b.AttrId, b.Val));
+                    foreach (var b in row.StatBonuses)
+                    {
+                        if (b == null)
+                        {
+                            continue;
+                        }
+
+                        pairs.Add(new StatPair(b.AttrId, b.Val));
+                    }
                 }
+
+                if (pairs.Count == 0)
+                {
+                    continue;
+                }
+
+                var provider = new TalentNodeProgressionProvider(pairs);
+                TalentAggregator.AddChild(provider);
+                _activeProviders.Add(provider);
+                TalentNodeDict[nodeId] = new PlayerTalentNode
+                {
+                    NodeId = nodeId,
+                    Provider = provider,
+                };
             }
 
-            var provider = new TalentNodeProgressionProvider(pairs);
-            TalentAggregator.AddChild(provider);
-            _activeProviders.Add(provider);
-            TalentNodeDict[cfg.NodeId] = new PlayerTalentNode
-            {
-                NodeId = cfg.NodeId,
-                Provider = provider,
-            };
+            TalentAggregator.ForceDirty();
         }
     }
 

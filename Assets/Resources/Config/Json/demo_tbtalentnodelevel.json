@@ -1,0 +1,158 @@
+[
+  {
+    "node_id": 1,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [],
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "val": 1200
+      }
+    ]
+  },
+  {
+    "node_id": 2,
+    "level": 1,
+    "prereq_node_ids": [
+      1
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 2
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 4,
+        "val": 800
+      }
+    ]
+  },
+  {
+    "node_id": 3,
+    "level": 1,
+    "prereq_node_ids": [
+      1
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "stick",
+        "count": 1
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 3,
+        "val": 600
+      }
+    ]
+  },
+  {
+    "node_id": 4,
+    "level": 1,
+    "prereq_node_ids": [
+      2
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 1
+      },
+      {
+        "item_id": "stick",
+        "count": 1
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 5,
+        "val": 700
+      },
+      {
+        "attr_id": 4,
+        "val": 400
+      }
+    ]
+  },
+  {
+    "node_id": 5,
+    "level": 1,
+    "prereq_node_ids": [
+      2,
+      3
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "gold",
+        "count": 5
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "val": 500
+      },
+      {
+        "attr_id": 5,
+        "val": 300
+      }
+    ]
+  }
+]

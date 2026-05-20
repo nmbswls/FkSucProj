@@ -11,6 +11,7 @@ namespace My.UI.Talent
     {
         [SerializeField] int talentNodeId;
         [SerializeField] Button unlockButton;
+        [SerializeField] TextMeshProUGUI buttonLabel;
         [SerializeField] Image nodeBackground;
         [SerializeField] Color lockedColor = new Color(0.35f, 0.35f, 0.4f, 1f);
         [SerializeField] Color unlockableColor = new Color(0.9f, 0.75f, 0.2f, 1f);
@@ -33,29 +34,31 @@ namespace My.UI.Talent
 
         public void Refresh(PlayerProgressionSystem progression)
         {
-            if (CfgMgr.Cfgs?.TbTalentNode != null)
+            var row = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(talentNodeId);
+            int cur = progression != null ? progression.GetTalentNodeLevel(talentNodeId) : 0;
+            int max = row != null ? row.MaxLevel : 1;
+
+            if (titleText != null)
             {
-                var row = CfgMgr.Cfgs.TbTalentNode.GetOrDefault(talentNodeId);
-                if (titleText != null)
-                {
-                    titleText.text = row != null && !string.IsNullOrEmpty(row.DisplayName)
-                        ? row.DisplayName
-                        : $"Node {talentNodeId}";
-                }
+                string name = row != null && !string.IsNullOrEmpty(row.DisplayName)
+                    ? row.DisplayName
+                    : $"Node {talentNodeId}";
+                titleText.text = $"{name} Lv{cur}/{max}";
             }
 
             if (progression == null)
             {
-                ApplyVisual(PlayerTalentManager.TalentNodeVisualState.Locked, false);
+                ApplyVisual(PlayerTalentManager.TalentNodeVisualState.Locked, false, "解锁");
                 return;
             }
 
             var st = progression.GetTalentNodeVisualState(talentNodeId);
             bool canClick = st == PlayerTalentManager.TalentNodeVisualState.Unlockable;
-            ApplyVisual(st, canClick);
+            string btnText = cur <= 0 ? "解锁" : (cur < max ? "升级" : "满级");
+            ApplyVisual(st, canClick, btnText);
         }
 
-        void ApplyVisual(PlayerTalentManager.TalentNodeVisualState st, bool canClick)
+        void ApplyVisual(PlayerTalentManager.TalentNodeVisualState st, bool canClick, string btnText)
         {
             if (nodeBackground != null)
             {
@@ -71,6 +74,11 @@ namespace My.UI.Talent
             {
                 unlockButton.interactable = canClick;
             }
+
+            if (buttonLabel != null)
+            {
+                buttonLabel.text = btnText;
+            }
         }
 
         void OnUnlockClicked()
@@ -83,9 +91,9 @@ namespace My.UI.Talent
                 return;
             }
 
-            if (!progression.TryUnlockTalentNode(talentNodeId, out var reason))
+            if (!progression.TryUpgradeTalentNode(talentNodeId, out var reason))
             {
-                Debug.LogWarning("Talent unlock failed: " + reason);
+                Debug.LogWarning("Talent upgrade failed: " + reason);
             }
 
             _host?.RefreshFromRuntime();

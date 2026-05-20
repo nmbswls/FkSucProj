@@ -20,10 +20,7 @@ public sealed partial class TalentNode : Luban.BeanBase
     {
         { if(!_buf["node_id"].IsNumber) { throw new SerializationException(); }  NodeId = _buf["node_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
-        { var __json0 = _buf["prereq_node_ids"]; if(!__json0.IsArray) { throw new SerializationException(); } PrereqNodeIds = new System.Collections.Generic.List<int>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  PrereqNodeIds.Add(__v0); }   }
-        { var __json0 = _buf["unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  UnlockConds.Add(__v0); }   }
-        { var __json0 = _buf["unlock_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  UnlockCosts.Add(__v0); }   }
-        { var __json0 = _buf["stat_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } StatBonuses = new System.Collections.Generic.List<demo.TalentStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentStatBonus.DeserializeTalentStatBonus(__e0);  }  StatBonuses.Add(__v0); }   }
+        { if(!_buf["max_level"].IsNumber) { throw new SerializationException(); }  MaxLevel = _buf["max_level"]; }
         { if(!_buf["passive_skill_id"].IsString) { throw new SerializationException(); }  PassiveSkillId = _buf["passive_skill_id"]; }
     }
 
@@ -41,21 +38,9 @@ public sealed partial class TalentNode : Luban.BeanBase
     /// </summary>
     public string DisplayName;
     /// <summary>
-    /// prereq_node_ids
+    /// max_level
     /// </summary>
-    public System.Collections.Generic.List<int> PrereqNodeIds;
-    /// <summary>
-    /// unlock_conds
-    /// </summary>
-    public System.Collections.Generic.List<demo.CommonCheckCond> UnlockConds;
-    /// <summary>
-    /// unlock_costs
-    /// </summary>
-    public System.Collections.Generic.List<demo.TalentUnlockCost> UnlockCosts;
-    /// <summary>
-    /// stat_bonuses
-    /// </summary>
-    public System.Collections.Generic.List<demo.TalentStatBonus> StatBonuses;
+    public int MaxLevel;
     /// <summary>
     /// passive_skill_id
     /// </summary>
@@ -66,9 +51,6 @@ public sealed partial class TalentNode : Luban.BeanBase
 
     public  void ResolveRef(Tables tables)
     {
-        foreach (var _e in UnlockConds) { _e?.ResolveRef(tables); }
-        foreach (var _e in UnlockCosts) { _e?.ResolveRef(tables); }
-        foreach (var _e in StatBonuses) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -76,10 +58,7 @@ public sealed partial class TalentNode : Luban.BeanBase
         return "{ "
         + "nodeId:" + NodeId + ","
         + "displayName:" + DisplayName + ","
-        + "prereqNodeIds:" + Luban.StringUtil.CollectionToString(PrereqNodeIds) + ","
-        + "unlockConds:" + Luban.StringUtil.CollectionToString(UnlockConds) + ","
-        + "unlockCosts:" + Luban.StringUtil.CollectionToString(UnlockCosts) + ","
-        + "statBonuses:" + Luban.StringUtil.CollectionToString(StatBonuses) + ","
+        + "maxLevel:" + MaxLevel + ","
         + "passiveSkillId:" + PassiveSkillId + ","
         + "}";
     }
