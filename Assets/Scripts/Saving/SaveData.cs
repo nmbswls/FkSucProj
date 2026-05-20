@@ -64,6 +64,7 @@ namespace My.Saving
         public List<LearnedSkillEntry> LearnedSkills = new();
 
         public List<string> NormalSkillSlotOverrides = new();
+        public List<string> PassiveSkillSlotOverrides = new();
         public List<string> WeaponQuickSlotOverrides = new();
         public List<string> ConsumableQuickSlotOverrides = new();
         public int ActiveWeaponSlotIndex = -1;
@@ -303,6 +304,7 @@ namespace My.Saving
             data.PlayerData.HomeCurrentPopulation = Math.Max(0, data.PlayerData.HomeCurrentPopulation);
             data.PlayerData.LearnedSkills ??= new List<LearnedSkillEntry>();
             data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
+            data.PlayerData.PassiveSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.PlayerData.UnlockedTalentNodeIds ??= new List<int>();
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();

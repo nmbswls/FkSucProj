@@ -542,6 +542,28 @@ namespace My.Map
         }
 
 
+        /// <summary>
+        /// 实施h impulse
+        /// </summary>
+        /// <param name="rawHPulse"></param>
+        public void ApplyNpcHImpulse(long rawHPulse)
+        {
+            (var hValRate, var sjRate) = PlayerGamePlayRule.GetDesirePhaseSplitRate(NpcDesirePhase);
+
+            var hVal = (long)(rawHPulse * hValRate);
+            var sjVal = (long)(rawHPulse * sjRate);
+
+            if(hVal > 0)
+            {
+                ApplyResourceChange(AttrIdConsts.NPCHVal, hVal, false, EDmgFlag.None, null);
+            }
+
+            if (sjVal > 0)
+            {
+                ApplyResourceChange(AttrIdConsts.NPCSJProgress, sjVal, false, EDmgFlag.None, null);
+            }
+        }
+
         public void CheckSeeEvil()
         {
             if (LogicTime.time - _checkAlertTimer < 0.5f)

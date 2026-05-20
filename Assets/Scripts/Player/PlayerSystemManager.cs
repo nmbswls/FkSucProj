@@ -57,6 +57,10 @@ namespace My.Player
 
         public string[] NormalSkillSlots => SkillSystem.NormalSkillSlots;
 
+        public string[] PassiveSkillSlots => SkillSystem.PassiveSkillSlots;
+
+        readonly List<string> _registeredSkillIdScratch = new();
+
         // RPG Maker 式全局开关（存 PlayerData.GlobalSwitchMap），与地图点位状态语义分离
         public Dictionary<string, bool> GlobalSwitchMap = new();
 
@@ -110,8 +114,12 @@ namespace My.Player
             HumanSkillSlots[5] = "player_push_surround";
             HumanSkillSlots[6] = "player_trace_bullet_01";
 
-            FaQingSkillSlots[0] = "player_ziwei";
+            FaQingSkillSlots[0] = "player_fq_normal_ziwei";
+            FaQingSkillSlots[2] = "player_fq_dash_assult";
 
+            FaQingSkillSlots[3] = "player_fq_crazy_ziwei";
+            FaQingSkillSlots[4] = "player_fq_hit_hop";
+            FaQingSkillSlots[5] = "player_fq_hit_breast";
 
             innerListener = new(this);
             logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, innerListener);
@@ -296,6 +304,11 @@ namespace My.Player
             return InventorySystem.GiveItemToPlayer(itemId, count);
         }
 
+        public bool IsUsingFaQingSkillBar()
+        {
+            return logicManager?.playerLogicEntity != null && logicManager.playerLogicEntity.IsFaQing;
+        }
+
         /// <summary>
         /// 根据玩家当前状态返回应显示的技能栏槽位列表
         /// </summary>
@@ -363,6 +376,55 @@ namespace My.Player
             }
         }
 
+        public void CollectRegisteredSkillIdsForEntity(List<string> outIds)
+        {
+            outIds.Clear();
+            foreach (var skillId in SkillSystem.LearnedSkillIdsView)
+            {
+                if (string.IsNullOrEmpty(skillId))
+                {
+                    continue;
+                }
+
+                var cfg = SkillLibrary.GetSkillConfig(skillId);
+                if (cfg != null && cfg.IsPassive)
+                {
+                    continue;
+                }
+
+                outIds.Add(skillId);
+            }
+
+            for (int i = 0; i < SkillSystem.PassiveSkillSlots.Length; i++)
+            {
+                var id = SkillSystem.PassiveSkillSlots[i];
+                if (!string.IsNullOrEmpty(id) && SkillSystem.IsLearned(id) && !outIds.Contains(id))
+                {
+                    outIds.Add(id);
+                }
+            }
+
+            if (logicManager != null && logicManager.IsHumanQuickBarAvailable())
+            {
+                var weaponSkill = GetActiveWeaponSkillId();
+                if (!string.IsNullOrEmpty(weaponSkill) && !outIds.Contains(weaponSkill))
+                {
+                    outIds.Add(weaponSkill);
+                }
+            }
+
+            if (IsUsingFaQingSkillBar())
+            {
+                foreach (var id in FaQingSkillSlots)
+                {
+                    if (!string.IsNullOrEmpty(id) && !outIds.Contains(id))
+                    {
+                        outIds.Add(id);
+                    }
+                }
+            }
+        }
+
         public void SyncLearnedSkillsToPlayerEntity()
         {
             var player = logicManager?.playerLogicEntity;
@@ -371,7 +433,8 @@ namespace My.Player
                 return;
             }
 
-            player.ReconcileSkillsWithLearnedList(PlayerSkillList);
+            CollectRegisteredSkillIdsForEntity(_registeredSkillIdScratch);
+            player.ReconcileSkillsWithLearnedList(_registeredSkillIdScratch);
             ApplyLearnedPassiveBuffLayersToPlayerEntity();
         }
 
@@ -383,9 +446,10 @@ namespace My.Player
                 return;
             }
 
-            foreach (var skillId in SkillSystem.LearnedSkillIdsView)
+            for (int i = 0; i < SkillSystem.PassiveSkillSlots.Length; i++)
             {
-                if (string.IsNullOrEmpty(skillId))
+                var skillId = SkillSystem.PassiveSkillSlots[i];
+                if (string.IsNullOrEmpty(skillId) || !SkillSystem.IsLearned(skillId))
                 {
                     continue;
                 }
@@ -494,7 +558,8 @@ namespace My.Player
                 return false;
             }
 
-            if (cfg != null && cfg.IsPassive && !string.IsNullOrEmpty(cfg.PassiveBuffId))
+            if (cfg != null && cfg.IsPassive && !string.IsNullOrEmpty(cfg.PassiveBuffId)
+                && SkillSystem.IsPassiveEquipped(skillId))
             {
                 var player = logicManager?.playerLogicEntity;
                 if (player != null)

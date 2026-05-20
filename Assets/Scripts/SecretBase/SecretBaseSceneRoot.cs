@@ -40,6 +40,16 @@ namespace My.SecretBase
             }
         }
 
+        public static SecretBaseSceneRoot FindInLoadedScenes()
+        {
+            if (Instance != null)
+            {
+                return Instance;
+            }
+
+            return Object.FindObjectOfType<SecretBaseSceneRoot>(true);
+        }
+
         public void Tick(float dt, float horizontalAxis)
         {
             if (cameraRig == null)

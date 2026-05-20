@@ -27,6 +27,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Main/Main_Home_Fight.unity
     guid: 9fa282f29c987ff47ac6c236202f0271
   - enabled: 1
+    path: Assets/Scenes/Main/Main_SecretBase.unity
+    guid: 7c4e8f1a2b3d4e5f6a708192a3b4c5d
+  - enabled: 1
     path: Assets/Scenes/Cutscene/scene_base_fight_end_show.unity
     guid: 2114abc2d7bb94645a1d398992881d75
   m_configObjects: {}

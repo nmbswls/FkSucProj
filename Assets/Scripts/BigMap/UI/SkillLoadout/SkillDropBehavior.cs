@@ -1,3 +1,4 @@
+using My.Map.Entity;
 using My.Player;
 using UnityEngine;
 
@@ -11,8 +12,8 @@ namespace My.UI.SkillLoadout
 
         void OnEndDragFromPool();
 
-        bool TryDropOnCustomNormalSlot(SkillLoadoutPanel panel, PlayerSkillSystem sys, int slotIndex, string skillId,
-            out string failReason);
+        bool TryDropOnSlot(SkillLoadoutPanel panel, PlayerSkillSystem sys, SkillLoadoutSlotKind slotKind,
+            int slotIndex, string skillId, out string failReason);
     }
 
     public sealed class SchoolFilteredNormalSlotDropBehavior : ISkillDropBehavior
@@ -26,8 +27,8 @@ namespace My.UI.SkillLoadout
         public void OnEndDragFromPool() =>
             SkillDragSession.End();
 
-        public bool TryDropOnCustomNormalSlot(SkillLoadoutPanel panel, PlayerSkillSystem sys, int slotIndex,
-            string skillId, out string failReason)
+        public bool TryDropOnSlot(SkillLoadoutPanel panel, PlayerSkillSystem sys, SkillLoadoutSlotKind slotKind,
+            int slotIndex, string skillId, out string failReason)
         {
             if (string.IsNullOrEmpty(panel.ActiveSchoolId) ||
                 !sys.BelongsToSchoolPool(panel.ActiveSchoolId, skillId))
@@ -36,7 +37,26 @@ namespace My.UI.SkillLoadout
                 return false;
             }
 
-            return sys.TryAssignNormalSlot(slotIndex, skillId, allowDuplicateSwap: true, out failReason);
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            var isPassive = cfg != null && cfg.IsPassive;
+            if (slotKind == SkillLoadoutSlotKind.Active)
+            {
+                if (isPassive)
+                {
+                    failReason = "wrong_skill_kind";
+                    return false;
+                }
+
+                return sys.TryAssignNormalSlot(slotIndex, skillId, allowDuplicateSwap: true, out failReason);
+            }
+
+            if (!isPassive)
+            {
+                failReason = "wrong_skill_kind";
+                return false;
+            }
+
+            return sys.TryAssignPassiveSlot(slotIndex, skillId, allowDuplicateSwap: true, out failReason);
         }
     }
 }

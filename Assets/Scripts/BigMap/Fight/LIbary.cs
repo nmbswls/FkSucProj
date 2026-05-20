@@ -264,6 +264,28 @@ namespace My.Map.Entity
                     var ab = CreateDefaultPushAbility();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                {
+                    var ab = CreatePlayerFQNormalZiwei();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreatePlayerFQCrazyZiwei();
+                    _abilityDict[ab.Id] = ab;
+                }
+                
+                {
+                    var ab = CreatePlayerFQHitPop();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreatePlayerFQHitBreast();
+                    _abilityDict[ab.Id] = ab;
+                }
+                
+
                 {
                     var ab = CreatePlayerSmallStarggering();
                     _abilityDict[ab.Id] = ab;
@@ -3233,7 +3255,213 @@ namespace My.Map.Entity
             return spec;
         }
 
+        private static MapAbilitySpecConfig CreatePlayerFQNormalZiwei()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
+            spec.Id = "player_fq_normal_ziwei";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.24"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectAddResourceCfg()
+            {
+                ResourceId = AttrIdConsts.NPCSJProgress,
+                AddValue  = 10_000,
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreatePlayerFQCrazyZiwei()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_fq_crazy_ziwei";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.2"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectAddResourceCfg()
+            {
+                ResourceId = AttrIdConsts.NPCSJProgress,
+                AddValue = 6_000,
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.0f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.2f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.4f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.6f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.8f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.Timed, TimeOffset = 1.0f });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreatePlayerFQHitPop()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_fq_hit_hop";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            });
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                PhaseBuff = new List<string> { "b_player_fq_hit_pop" },
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "5"
+                },
+            });
+
+            return spec;
+        }
+        
+        private static MapAbilitySpecConfig CreatePlayerFQHitBreast()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_fq_hit_breast";
+            spec.TypeTag = AbilityTypeTag.HMode;
+            spec.DefaultStepDistance = 0f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.2"
+                },
+            };
+
+            var hEffect = new MapAbilityEffectAddResourceCfg()
+            {
+                ResourceId = AttrIdConsts.NPCSJProgress,
+                AddValue = 4_000,
+            };
+
+
+            var liquidEffect1 = new MapFightEffectAddLiquidCfg()
+            {
+                ElementType = EGroundElementType.Milk,
+                Range = 1.5f,
+                Duration = 10,
+
+
+            };
+            
+
+            var liquidEffect2 = new MapFightEffectAddLiquidCfg()
+            {
+                ElementType = EGroundElementType.Milk,
+                Range = 1.5f,
+                Duration = 10,
+            };
+
+            var liquidEffect3 = new MapFightEffectAddLiquidCfg()
+            {
+                ElementType = EGroundElementType.Milk,
+                Range = 1.5f,
+                Duration = 10,
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = liquidEffect1, Kind = PhaseEventKind.Timed, TimeOffset = 0.0f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.0f });
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = liquidEffect2, Kind = PhaseEventKind.Timed, TimeOffset = 0.4f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.4f });
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = liquidEffect3, Kind = PhaseEventKind.Timed, TimeOffset = 0.8f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.8f });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
         private static MapAbilitySpecConfig CreatePlayerSmallStarggering()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();

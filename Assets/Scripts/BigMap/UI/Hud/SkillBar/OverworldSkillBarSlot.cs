@@ -52,6 +52,35 @@ namespace My.UI
                 });
             }
 
+            ApplyKeyHint(slotIdx, false);
+        }
+
+        public void ApplyKeyHint(int slotIdx, bool humanQuickBar)
+        {
+            if (KeyName == null)
+            {
+                return;
+            }
+
+            if (humanQuickBar)
+            {
+                switch (slotIdx)
+                {
+                    case 0:
+                        KeyName.text = "LMB";
+                        return;
+                    case 1:
+                        KeyName.text = "RMB";
+                        return;
+                    case 2:
+                        KeyName.text = "Sp";
+                        return;
+                    default:
+                        KeyName.text = (slotIdx - 2).ToString();
+                        return;
+                }
+            }
+
             KeyName.text = (slotIdx + 1).ToString();
         }
 
@@ -72,6 +101,64 @@ namespace My.UI
             }
 
             icon.sprite = iconSprite;
+
+            if (button)
+            {
+                button.interactable = true;
+            }
+
+            if (hint)
+            {
+                DoRefreshHint();
+            }
+        }
+
+        // 左键动态槽：优先运行时；无注册时仅按配置显示图标
+        public void BindingSkillId(string skillId, bool hint = false)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                Clear();
+                return;
+            }
+
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (player != null
+                && player.ablilityManager.SkillRuntimes.TryGetValue(skillId, out var skillRuntime)
+                && skillRuntime != null)
+            {
+                BindingSkill(skillRuntime, hint);
+                return;
+            }
+
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            if (cfg == null)
+            {
+                Clear();
+                return;
+            }
+
+            skillData = null;
+            emptyIcon.gameObject.SetActive(false);
+            icon.gameObject.SetActive(true);
+
+            Sprite iconSprite = null;
+            if (!string.IsNullOrEmpty(cfg.IconPath))
+            {
+                iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{cfg.IconPath}");
+            }
+
+            if (iconSprite == null)
+            {
+                iconSprite = SimpleResManager.Load<Sprite>("Sprites/Skill/fallback");
+            }
+
+            icon.sprite = iconSprite;
+
+            if (button)
+            {
+                button.interactable = true;
+            }
 
             if (hint)
             {

@@ -164,20 +164,25 @@ namespace My
             NotifyHumanQuickBarStateChanged();
         }
 
-        // 人类快捷道具栏：人类模式，或真身且未暴露且未发情
+        // 人类快捷道具栏：未发情且（伪装模式 或 真身未暴露）
         public bool IsHumanQuickBarAvailable()
         {
-            if (PlayerHumanMode)
-            {
-                return true;
-            }
-
             if (playerLogicEntity == null)
             {
                 return false;
             }
 
-            return !playerLogicEntity.IsExposed && !playerLogicEntity.IsFaQing;
+            if (playerLogicEntity.IsFaQing)
+            {
+                return false;
+            }
+
+            if (PlayerHumanMode)
+            {
+                return true;
+            }
+
+            return !playerLogicEntity.IsExposed;
         }
 
         public bool CanEditQuickSlotBar()
@@ -191,8 +196,13 @@ namespace My
             {
                 playerDataManager?.ClearActiveWeaponSelection();
             }
+            else
+            {
+                playerDataManager?.ApplyWeaponQuickBarRuntime();
+            }
 
-            My.UI.OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+            playerDataManager?.SyncLearnedSkillsToPlayerEntity();
+            My.UI.OverworldHUDPanel.Instance?.SkilBar?.Refresh(true);
         }
 
         public void NotifyPostSearchInvestigationComplete(long npcEntityId)

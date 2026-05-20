@@ -130,8 +130,14 @@ namespace My.Map.Scene
         {
             segmentProvider = WorldAreaManager.Instance.SegmentProvider;
 
-            fovDegrees = MainGameManager.Instance.gameLogicManager.playerLogicEntity.fovDegrees;
-            viewRadius = MainGameManager.Instance.gameLogicManager.playerLogicEntity.viewRadius;
+            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            if (player == null)
+            {
+                return;
+            }
+
+            fovDegrees = player.fovDegrees;
+            viewRadius = player.viewRadius;
         }
 
         void LateUpdate()

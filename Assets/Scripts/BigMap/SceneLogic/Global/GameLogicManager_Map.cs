@@ -122,9 +122,13 @@ namespace My
         private void PrepareNewArea()
         {
             var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(SwitchAreaIntent.AreaName);
+            bool isSecretBase = mapCfg != null && mapCfg.IsSecretBase;
 
             AreaManager.InitilizeMap(SwitchAreaIntent.AreaName);
-            MapMicroPlot?.RebuildForCurrentMap();
+            if (!isSecretBase)
+            {
+                MapMicroPlot?.RebuildForCurrentMap();
+            }
 
             if (mapCfg != null && mapCfg.IsHome && My.Home.LegacyHomeBuildFeature.Enabled)
             {
@@ -173,38 +177,40 @@ namespace My
                 pos = Vector2.zero;
             }
 
-
-            LogicEntityRecord4Player playerRecord;
-            if (SwitchAreaIntent.Reset)
+            // 隐秘据点：纯场景层玩法，不注册地图 Player 逻辑实体与 AOI 兴趣点
+            if (!isSecretBase)
             {
-                playerRecord = new LogicEntityRecord4Player()
+                LogicEntityRecord4Player playerRecord;
+                if (SwitchAreaIntent.Reset)
+                {
+                    playerRecord = new LogicEntityRecord4Player()
+                    {
+                        Id = 1,
+                        EntityType = EEntityType.Player,
+                        CfgId = "0",
+                        FactionId = EFactionId.Player,
+
+                        Position = pos.Value,
+                    };
+                }
+                else
+                {
+                    playerRecord = SwitchAreaIntent.SavedRecord;
+                    playerRecord.Position = pos.Value;
+                }
+
+                AreaManager.RegisterEntityRecord(playerRecord);
+
+                AreaManager.AddInterestPoint(new InterestPoint
                 {
                     Id = 1,
-                    EntityType = EEntityType.Player,
-                    CfgId = "0",
-                    FactionId = EFactionId.Player,
+                    Pos = () => playerLogicEntity.Pos,
+                    LogicRadius = 40f,
+                    WarmupRadius = 60f
+                });
 
-                    Position = pos.Value,
-                };
+                AreaManager.ForceCheckRefreshInfos();
             }
-            else
-            {
-                playerRecord = SwitchAreaIntent.SavedRecord;
-                playerRecord.Position = pos.Value;
-            }
-
-            AreaManager.RegisterEntityRecord(playerRecord);
-
-            AreaManager.AddInterestPoint(new InterestPoint
-            {
-                Id = 1,
-                Pos = () => playerLogicEntity.Pos,
-                LogicRadius = 40f,
-                WarmupRadius = 60f
-            });
-
-            // 强制执行一次刷新
-            AreaManager.ForceCheckRefreshInfos();
 
             shopDataManager.RefreshOnNightStart();
 
@@ -216,8 +222,11 @@ namespace My
         public void PostNewAreaLoaded()
         {
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
-            RumorIntelSpawn?.ApplyPurchasedRumorsOnMapLoaded();
             OnSecretBasePostAreaLoaded();
+            if (!IsInSecretBase)
+            {
+                RumorIntelSpawn?.ApplyPurchasedRumorsOnMapLoaded();
+            }
         }
 
         // 按当前 PlayerHumanMode 与地图类型同步魔力衣装运行时与人类形态屏蔽（暴露/衣装上限等）

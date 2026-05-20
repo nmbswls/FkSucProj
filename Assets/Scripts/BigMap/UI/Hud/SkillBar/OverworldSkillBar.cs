@@ -1,8 +1,9 @@
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine;
-using DG.Tweening;
 using My.Input;
+using My.Map;
+using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
+using System.Collections.Generic;
 
 namespace My.UI
 {
@@ -107,16 +108,21 @@ namespace My.UI
         /// <param name="flip"></param>
         public void Refresh(bool hint = false)
         {
-            int start = pageIndex * capacity;
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var player = glm?.playerLogicEntity;
+            var mdm = glm?.playerDataManager;
+            if (player == null || mdm == null)
+            {
+                return;
+            }
 
-            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-
-            var showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.GetSkillSlotsByState();
-
+            var showSkills = mdm.GetSkillSlotsByState();
             if (showSkills == null)
             {
                 return;
             }
+
+            bool humanQuickBar = glm.IsHumanQuickBarAvailable();
 
             for (int i = 0; i < showSkills.Length; i++)
             {
@@ -125,23 +131,28 @@ namespace My.UI
                     break;
                 }
 
+                slots[i].ApplyKeyHint(i, humanQuickBar);
 
-                if (showSkills[i] == null)
+                string skillName = showSkills[i];
+                if (humanQuickBar && i == 0 && !mdm.IsUsingFaQingSkillBar())
+                {
+                    skillName = mdm.ResolveHumanLeftClickSkillId();
+                }
+
+                if (string.IsNullOrEmpty(skillName))
                 {
                     slots[i].Clear();
+                    continue;
+                }
+
+                if (player.ablilityManager.SkillRuntimes.TryGetValue(skillName, out var skillRuntime)
+                    && skillRuntime != null)
+                {
+                    slots[i].BindingSkill(skillRuntime, hint);
                 }
                 else
                 {
-                    var skillName = showSkills[i];
-                    player.ablilityManager.SkillRuntimes.TryGetValue(skillName, out var skillRuntime);
-                    if (skillRuntime == null)
-                    {
-                        slots[i].Clear();
-                    }
-                    else
-                    {
-                        slots[i].BindingSkill(skillRuntime, hint);
-                    }
+                    slots[i].BindingSkillId(skillName, hint);
                 }
             }
         }
@@ -152,14 +163,25 @@ namespace My.UI
         /// <param name="slotIdx"></param>
         public void OnSkillSlotClicked(int slotIdx)
         {
-            var showSkills = MainGameManager.Instance.gameLogicManager.playerDataManager.GetSkillSlotsByState();
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var mdm = glm?.playerDataManager;
+            var showSkills = mdm?.GetSkillSlotsByState();
 
             if (showSkills == null || slotIdx < 0 || slotIdx >= showSkills.Length)
             {
                 return;
             }
 
-            var skillId = showSkills[slotIdx];
+            string skillId;
+            if (glm != null && glm.IsHumanQuickBarAvailable() && slotIdx == 0 && !mdm.IsUsingFaQingSkillBar())
+            {
+                skillId = mdm.ResolveHumanLeftClickSkillId();
+            }
+            else
+            {
+                skillId = showSkills[slotIdx];
+            }
+
             if (string.IsNullOrEmpty(skillId))
             {
                 return;

@@ -428,8 +428,7 @@ namespace My.Map
         {
             base.InitAbility();
 
-            ablilityManager.ReconcileRegisteredSkills(LogicManager.playerDataManager.PlayerSkillList);
-            LogicManager.playerDataManager.ApplyLearnedPassiveBuffLayersToPlayerEntity();
+            LogicManager.playerDataManager.SyncLearnedSkillsToPlayerEntity();
 
             abilityController.EventOnUseAbility += (abilityName) =>
             {

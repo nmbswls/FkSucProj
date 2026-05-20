@@ -89,7 +89,8 @@ namespace My.UI.SkillLoadout
         ISkillDropBehavior _poolSkillDropBehavior = new SchoolFilteredNormalSlotDropBehavior();
 
         Button[] _tabButtons;
-        SkillSlotView[] _slotViews;
+        SkillSlotView[] _activeSlotViews;
+        SkillSlotView[] _passiveSlotViews;
         int _tabCount;
 
         void Awake()
@@ -162,8 +163,16 @@ namespace My.UI.SkillLoadout
 
             var bar = root.Find("Window/BarRow");
             if (bar != null)
-                _slotViews = bar.GetComponentsInChildren<SkillSlotView>(true);
+            {
+                _activeSlotViews = bar.GetComponentsInChildren<SkillSlotView>(true);
+                foreach (var v in _activeSlotViews)
+                {
+                    v.slotKind = SkillLoadoutSlotKind.Active;
+                }
+            }
 
+            EnsurePassiveBarUi(root);
+            WireSkillSlotDropZones();
             WireDragLayerFromHierarchy();
 
             var closeBtn = root.Find("Window/Header/CloseBtn")?.GetComponent<Button>();
@@ -179,6 +188,164 @@ namespace My.UI.SkillLoadout
                 bl.onClick.RemoveAllListeners();
                 bl.onClick.AddListener(CloseSelfOrHub);
             }
+        }
+
+        void EnsurePassiveBarUi(Transform root)
+        {
+            var window = root.Find("Window");
+            if (window == null)
+            {
+                return;
+            }
+
+            var passiveRow = window.Find("PassiveBarRow");
+            if (passiveRow == null)
+            {
+                var barRow = window.Find("BarRow");
+                var template = barRow != null ? barRow.Find("Slot_3") : null;
+                if (template == null)
+                {
+                    return;
+                }
+
+                int insertAt = barRow.GetSiblingIndex() + 1;
+
+                var labelGo = new GameObject("PassiveBarLabel", typeof(RectTransform));
+                labelGo.transform.SetParent(window, false);
+                labelGo.transform.SetSiblingIndex(insertAt);
+                var labelLe = labelGo.AddComponent<LayoutElement>();
+                labelLe.preferredHeight = 24;
+                var labelTmp = labelGo.AddComponent<TextMeshProUGUI>();
+                labelTmp.text = "被动技能（右键槽位卸下）";
+                labelTmp.fontSize = 18;
+                labelTmp.alignment = TextAlignmentOptions.MidlineLeft;
+
+                var rowGo = new GameObject("PassiveBarRow", typeof(RectTransform));
+                rowGo.transform.SetParent(window, false);
+                rowGo.transform.SetSiblingIndex(insertAt + 1);
+                passiveRow = rowGo.transform;
+                var rowLe = rowGo.AddComponent<LayoutElement>();
+                rowLe.preferredHeight = 92;
+                var rowLayout = rowGo.AddComponent<HorizontalLayoutGroup>();
+                rowLayout.spacing = 8;
+                rowLayout.childAlignment = TextAnchor.MiddleCenter;
+                rowLayout.childControlWidth = false;
+                rowLayout.childControlHeight = false;
+
+                for (int i = 0; i < PlayerSkillSystem.PassiveSlotCount; i++)
+                {
+                    var clone = Instantiate(template.gameObject, passiveRow);
+                    clone.name = "PassiveSlot_" + i;
+                    var view = clone.GetComponent<SkillSlotView>();
+                    if (view != null)
+                    {
+                        view.slotKind = SkillLoadoutSlotKind.Passive;
+                        view.SlotIndex = i;
+                    }
+                }
+            }
+
+            if (passiveRow != null)
+            {
+                _passiveSlotViews = passiveRow.GetComponentsInChildren<SkillSlotView>(true);
+                foreach (var v in _passiveSlotViews)
+                {
+                    v.slotKind = SkillLoadoutSlotKind.Passive;
+                }
+            }
+        }
+
+        void WireSkillSlotDropZones()
+        {
+            if (_activeSlotViews != null)
+            {
+                foreach (var view in _activeSlotViews)
+                {
+                    if (view == null)
+                    {
+                        continue;
+                    }
+
+                    var drop = view.GetComponent<SkillSlotDropZone>();
+                    if (drop == null)
+                    {
+                        drop = view.gameObject.AddComponent<SkillSlotDropZone>();
+                    }
+
+                    drop.view = view;
+                    drop.mode = view.SlotIndex >= 3 && view.SlotIndex <= 7
+                        ? SkillSlotDropMode.CustomNormal
+                        : SkillSlotDropMode.Fixed;
+
+                    var img = view.GetComponent<Image>();
+                    if (img == null)
+                    {
+                        img = view.GetComponentInChildren<Image>(true);
+                    }
+
+                    if (img != null && drop.mode == SkillSlotDropMode.CustomNormal)
+                    {
+                        img.raycastTarget = true;
+                    }
+                }
+            }
+
+            if (_passiveSlotViews == null)
+            {
+                return;
+            }
+
+            foreach (var view in _passiveSlotViews)
+            {
+                if (view == null)
+                {
+                    continue;
+                }
+
+                var drop = view.GetComponent<SkillSlotDropZone>();
+                if (drop == null)
+                {
+                    drop = view.gameObject.AddComponent<SkillSlotDropZone>();
+                }
+
+                drop.view = view;
+                drop.mode = SkillSlotDropMode.CustomNormal;
+
+                var img = view.GetComponent<Image>();
+                if (img == null)
+                {
+                    img = view.GetComponentInChildren<Image>(true);
+                }
+
+                if (img != null)
+                {
+                    img.raycastTarget = true;
+                }
+            }
+        }
+
+        public void ApplyLoadoutToEntity()
+        {
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            mgr?.SyncLearnedSkillsToPlayerEntity();
+        }
+
+        public void TryClearPassiveSlotFromUi(int slotIndex)
+        {
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            var sys = mgr?.SkillSystem;
+            if (sys == null)
+            {
+                return;
+            }
+
+            if (!sys.TryClearPassiveSlot(slotIndex, out _))
+            {
+                return;
+            }
+
+            ApplyLoadoutToEntity();
+            RefreshAll();
         }
 
         void WireDragLayerFromHierarchy()
@@ -271,10 +438,30 @@ namespace My.UI.SkillLoadout
                 }
             }
 
-            if (sys != null && _slotViews != null)
+            RefreshSlotDisplays(sys);
+        }
+
+        void RefreshSlotDisplays(PlayerSkillSystem sys)
+        {
+            if (sys == null)
             {
-                foreach (var slot in _slotViews)
+                return;
+            }
+
+            if (_activeSlotViews != null)
+            {
+                foreach (var slot in _activeSlotViews)
+                {
                     slot.RefreshDisplay(sys);
+                }
+            }
+
+            if (_passiveSlotViews != null)
+            {
+                foreach (var slot in _passiveSlotViews)
+                {
+                    slot.RefreshDisplay(sys);
+                }
             }
         }
 
@@ -283,11 +470,7 @@ namespace My.UI.SkillLoadout
             BindBuiltReferencesIfNeeded();
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             var sys = mgr?.SkillSystem;
-            if (sys != null && _slotViews != null)
-            {
-                foreach (var slot in _slotViews)
-                    slot.RefreshDisplay(sys);
-            }
+            RefreshSlotDisplays(sys);
 
             if (!string.IsNullOrEmpty(ActiveSchoolId))
             {

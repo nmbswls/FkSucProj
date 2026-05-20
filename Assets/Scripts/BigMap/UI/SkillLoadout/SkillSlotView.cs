@@ -7,9 +7,9 @@ using UnityEngine.UI;
 
 namespace My.UI.SkillLoadout
 {
-
-    public class SkillSlotView : MonoBehaviour
+    public class SkillSlotView : MonoBehaviour, IPointerClickHandler
     {
+        public SkillLoadoutSlotKind slotKind = SkillLoadoutSlotKind.Active;
         public int SlotIndex;
         public TMP_Text label;
         public Image icon;
@@ -18,7 +18,11 @@ namespace My.UI.SkillLoadout
         {
             if (sys == null) return;
 
-            string id = sys.NormalSkillSlots[SlotIndex];
+            string id = slotKind == SkillLoadoutSlotKind.Passive
+                ? (SlotIndex >= 0 && SlotIndex < sys.PassiveSkillSlots.Length
+                    ? sys.PassiveSkillSlots[SlotIndex]
+                    : null)
+                : sys.NormalSkillSlots[SlotIndex];
             if (label != null)
                 label.text = string.IsNullOrEmpty(id) ? "-" : id;
 
@@ -37,6 +41,27 @@ namespace My.UI.SkillLoadout
                     icon.enabled = false;
                 }
             }
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.button != PointerEventData.InputButton.Right)
+            {
+                return;
+            }
+
+            if (slotKind != SkillLoadoutSlotKind.Passive)
+            {
+                return;
+            }
+
+            var panel = SkillLoadoutPanel.Current;
+            if (panel == null)
+            {
+                return;
+            }
+
+            panel.TryClearPassiveSlotFromUi(SlotIndex);
         }
     }
 }

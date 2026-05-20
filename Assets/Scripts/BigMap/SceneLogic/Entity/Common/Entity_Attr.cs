@@ -100,6 +100,7 @@ namespace My.Map
                 case AttrIdConsts.PlayerSJAmount_Precent:
 
                 case AttrIdConsts.PlayerJingYuRate:
+                case AttrIdConsts.NPCHVal_Max:
 
                     return EAttrType.Num;
 
@@ -116,6 +117,7 @@ namespace My.Map
                 case AttrIdConsts.NPCHVal:
                 case AttrIdConsts.NPCSJProgress:
                 case AttrIdConsts.UnitHShield:
+
                     return EAttrType.Resource;
 
                 default:

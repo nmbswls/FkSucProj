@@ -1739,13 +1739,42 @@ namespace My.Map.Entity
                 return;
             }
 
-            ctx.Env.GroundOverManager.AddElementCircle(ctx.TriggerPos.Value, realCfg.Range, realCfg.ElementType, realCfg.Duration);
+            var offsetOffset = Vector2.zero;
+            if(realCfg.OffsetRange > 0)
+            {
+                float offsetRange = realCfg.OffsetRange < 0.5f ? 0.5f : realCfg.OffsetRange;
+                offsetOffset = UnityEngine.Random.insideUnitCircle * offsetRange;
+            }
+
+            ctx.Env.GroundOverManager.AddElementCircle(ctx.TriggerPos.Value + offsetOffset, realCfg.Range, realCfg.ElementType, realCfg.Duration);
         }
     }
 
+    public class AbilityEffectExecutor4ApplyHImpulseCfg : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectApplyHImpulseCfg;
 
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ApplyHImpulseCfg err");
+                return;
+            }
+
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if (target is not NpcUnitLogicEntity npc)
+            {
+                Debug.LogError("AbilityEffectExecutor4ApplyHImpulseCfg err 222");
+                return;
+            }
+
+            npc.ApplyNpcHImpulse(realCfg.BaseVal);
+        }
+    }
 
     
+
 
     public class AbilityEffectExecutor4WantedIncidentBroadcast : AbilityEffectExecutor
     {

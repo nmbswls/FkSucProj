@@ -15,13 +15,13 @@
     { "SlotIndex": 0, "ItemId": "banana", "Count": 1, "ItemInstanceId": 0 },
     { "SlotIndex": 5, "ItemId": "gold", "Count": 10, "ItemInstanceId": 0 }
   ],
-  "CurrentMapId": "base_01",
+  "CurrentMapId": "secret_base_hub",
   "CurrentPos": {
     "x": -3.5,
     "y": -1.1
   },
   "LastOpenWorldBeforeHome": {
-    "MapId": "base_01",
+    "MapId": "secret_base_hub",
     "Pos": {
       "x": -4.92,
       "y": -1.1

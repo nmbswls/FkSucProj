@@ -82,13 +82,19 @@ namespace My
         void OnSecretBasePostAreaLoaded()
         {
             RefreshPlayerWorldLocationFromMapCfg();
+            if (!IsInSecretBase)
+            {
+                SecretBase.Shutdown();
+            }
+        }
+
+        // 表现场景 LoadWorld 完成后启动据点 Session（唯一入口）
+        public void NotifySecretBasePresentationReady()
+        {
+            RefreshPlayerWorldLocationFromMapCfg();
             if (IsInSecretBase)
             {
                 SecretBase.OnWorldSceneLoaded();
-            }
-            else
-            {
-                SecretBase.Shutdown();
             }
         }
 

@@ -285,6 +285,7 @@ namespace My.UI
             var ctrl = ItemQuickBarRoot.GetComponent<OverworldItemQuickBarController>();
             ctrl?.EnsureSlots();
             ctrl?.RefreshFromPlayerData();
+            SkilBar?.Refresh();
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
@@ -833,12 +834,13 @@ namespace My.UI
             if (keyName == EInputKey.MouseLeft.ToString())
             {
                 var lgm = MainGameManager.Instance.gameLogicManager;
+                var mdm = lgm?.playerDataManager;
                 if (lgm != null && lgm.IsHumanQuickBarAvailable())
                 {
-                    var weaponSkill = lgm.playerDataManager.GetActiveWeaponSkillId();
-                    if (!string.IsNullOrEmpty(weaponSkill))
+                    var leftClick = mdm?.ResolveHumanLeftClickSkillId();
+                    if (!string.IsNullOrEmpty(leftClick))
                     {
-                        return weaponSkill;
+                        return leftClick;
                     }
                 }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using My.Config;
+using My.Map.Entity;
 using My.Map.Logic;
 using My.Saving;
 using UnityEngine;
@@ -44,8 +45,13 @@ namespace My.Player
 
         readonly LearnedSkillIdView _learnedSkillIdsView;
 
+        public const int PassiveSlotCount = 3;
+
         // 暴露形态 / 特定 HUD 使用的 8 槽技能栏
         public readonly string[] NormalSkillSlots = new string[8];
+
+        // 成长面板被动搭配栏
+        public readonly string[] PassiveSkillSlots = new string[PassiveSlotCount];
 
         private static readonly string[] DefaultLearnedSeed =
         {
@@ -155,6 +161,7 @@ namespace My.Player
             }
 
             ApplyNormalSlotOverridesFromSave(pd.NormalSkillSlotOverrides);
+            ApplyPassiveSlotOverridesFromSave(pd.PassiveSkillSlotOverrides);
         }
 
         public void Tick(float dt)
@@ -190,6 +197,11 @@ namespace My.Player
                 data.PlayerData.NormalSkillSlotOverrides.Add(NormalSkillSlots[idx] ?? string.Empty);
             }
 
+            data.PlayerData.PassiveSkillSlotOverrides = new List<string>(PassiveSlotCount);
+            for (int i = 0; i < PassiveSlotCount; i++)
+            {
+                data.PlayerData.PassiveSkillSlotOverrides.Add(PassiveSkillSlots[i] ?? string.Empty);
+            }
         }
 
         private void ApplyNormalSlotOverridesFromSave(List<string> saved)
@@ -208,6 +220,41 @@ namespace My.Player
                     NormalSkillSlots[idx] = v;
                 }
             }
+        }
+
+        private void ApplyPassiveSlotOverridesFromSave(List<string> saved)
+        {
+            if (saved == null || saved.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < PassiveSlotCount && i < saved.Count; i++)
+            {
+                string v = saved[i];
+                if (!string.IsNullOrEmpty(v))
+                {
+                    PassiveSkillSlots[i] = v;
+                }
+            }
+        }
+
+        public bool IsPassiveEquipped(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < PassiveSkillSlots.Length; i++)
+            {
+                if (string.Equals(PassiveSkillSlots[i], skillId, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool IsLearned(string skillId)
@@ -285,6 +332,11 @@ namespace My.Player
 
             int removed = learnedSkills.RemoveAll(e =>
                 e != null && string.Equals(e.SkillId, skillId, StringComparison.Ordinal));
+            if (removed > 0)
+            {
+                ClearSkillIdFromPassiveSlots(skillId);
+            }
+
             return removed > 0;
         }
 
@@ -321,6 +373,7 @@ namespace My.Player
             }
 
             ReplaceSkillIdInNormalSlots(oldSkillId, newSkillId);
+            ReplaceSkillIdInPassiveSlots(oldSkillId, newSkillId);
             return true;
         }
 
@@ -342,6 +395,13 @@ namespace My.Player
             if (!IsLearned(skillId))
             {
                 failReason = "not_learned";
+                return false;
+            }
+
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            if (cfg != null && cfg.IsPassive)
+            {
+                failReason = "passive_not_allowed";
                 return false;
             }
 
@@ -372,6 +432,74 @@ namespace My.Player
             return true;
         }
 
+        public bool TryClearPassiveSlot(int slotIndex, out string failReason)
+        {
+            failReason = null;
+            if (slotIndex < 0 || slotIndex >= PassiveSkillSlots.Length)
+            {
+                failReason = "invalid_slot";
+                return false;
+            }
+
+            PassiveSkillSlots[slotIndex] = null;
+            return true;
+        }
+
+        public bool TryAssignPassiveSlot(int slotIndex, string skillId, bool allowDuplicateSwap, out string failReason)
+        {
+            failReason = null;
+            if (slotIndex < 0 || slotIndex >= PassiveSkillSlots.Length)
+            {
+                failReason = "invalid_slot";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(skillId))
+            {
+                failReason = "empty_skill";
+                return false;
+            }
+
+            if (!IsLearned(skillId))
+            {
+                failReason = "not_learned";
+                return false;
+            }
+
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            if (cfg == null || !cfg.IsPassive)
+            {
+                failReason = "not_passive";
+                return false;
+            }
+
+            if (!allowDuplicateSwap)
+            {
+                for (int i = 0; i < PassiveSkillSlots.Length; i++)
+                {
+                    if (i != slotIndex && PassiveSkillSlots[i] == skillId)
+                    {
+                        failReason = "duplicate";
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < PassiveSkillSlots.Length; i++)
+                {
+                    if (i != slotIndex && PassiveSkillSlots[i] == skillId)
+                    {
+                        PassiveSkillSlots[i] = PassiveSkillSlots[slotIndex];
+                        break;
+                    }
+                }
+            }
+
+            PassiveSkillSlots[slotIndex] = skillId;
+            return true;
+        }
+
         public bool BelongsToSchoolPool(string schoolId, string skillId) =>
             SkillSchoolTable.Instance.SkillDefinedInSchool(schoolId, skillId);
 
@@ -388,6 +516,39 @@ namespace My.Player
                 if (s != null && string.Equals(s, oldSkillId, StringComparison.Ordinal))
                 {
                     NormalSkillSlots[i] = newSkillId;
+                }
+            }
+        }
+
+        public void ReplaceSkillIdInPassiveSlots(string oldSkillId, string newSkillId)
+        {
+            if (string.IsNullOrEmpty(oldSkillId))
+            {
+                return;
+            }
+
+            for (int i = 0; i < PassiveSkillSlots.Length; i++)
+            {
+                var s = PassiveSkillSlots[i];
+                if (s != null && string.Equals(s, oldSkillId, StringComparison.Ordinal))
+                {
+                    PassiveSkillSlots[i] = newSkillId;
+                }
+            }
+        }
+
+        void ClearSkillIdFromPassiveSlots(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return;
+            }
+
+            for (int i = 0; i < PassiveSkillSlots.Length; i++)
+            {
+                if (string.Equals(PassiveSkillSlots[i], skillId, StringComparison.Ordinal))
+                {
+                    PassiveSkillSlots[i] = null;
                 }
             }
         }

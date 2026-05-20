@@ -41,7 +41,11 @@
       "SkillIds": [
         "player_ziwei",
         "player_mortar_acquire_01",
-        "fix_clothes"
+        "fix_clothes",
+        "player_naishou_to_jianshang",
+        "queen_desire_charm_01",
+        "player_burst_h_voice",
+        "player_burst_milk"
       ]
     }
   ]

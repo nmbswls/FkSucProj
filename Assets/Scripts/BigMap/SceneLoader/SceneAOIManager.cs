@@ -513,11 +513,12 @@ public class SceneAOIManager : MonoBehaviour
         if(entry.entity.Type == EEntityType.Player)
         {
             MainGameManager.Instance.playerScenePresenter = pres as PlayerScenePresenter;
-            // 绑定相机
-            //MainGameManager.Instance.CameraCtrl.Target = MainGameManager.Instance.playerScenePresenter.ViewPoint;
-            MainGameManager.Instance.MainMapVCam.Follow = MainGameManager.Instance.playerScenePresenter.ViewPoint;
-
-            MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
+            var glm = MainGameManager.Instance.gameLogicManager;
+            if (glm == null || !glm.IsInSecretBase)
+            {
+                MainGameManager.Instance.MainMapVCam.Follow = MainGameManager.Instance.playerScenePresenter.ViewPoint;
+                MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
+            }
         }
 
         if (entry.canceledDuringCreate || !entry.isShown)

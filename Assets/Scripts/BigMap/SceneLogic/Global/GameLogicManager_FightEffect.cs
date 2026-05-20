@@ -209,6 +209,13 @@ namespace My
                             executor = new AbilityEffectExecutor4AddLiquid();
                         }
                         break;
+
+                    case MapFightEffectApplyHImpulseCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ApplyHImpulseCfg();
+                        }
+                        break;
+                        
                     case MapFightEffectWantedIncidentBroadcastCfg:
                         {
                             executor = new AbilityEffectExecutor4WantedIncidentBroadcast();

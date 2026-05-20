@@ -1,3 +1,4 @@
+using System.Collections;
 using My;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ namespace My.SecretBase
     {
         GameLogicManager _logic;
         bool _running;
+        Coroutine _startCo;
 
         public bool IsRunning => _running;
 
@@ -17,22 +19,61 @@ namespace My.SecretBase
 
         public void OnWorldSceneLoaded()
         {
-            _running = true;
-            EnsureSceneRootExists();
-            My.UI.SecretBaseHudPanel.TryShow();
-        }
-
-        static void EnsureSceneRootExists()
-        {
-            if (SecretBaseSceneRoot.Instance != null)
+            if (_running)
             {
                 return;
             }
 
-            var go = new GameObject("SecretBaseSceneRoot");
-            go.AddComponent<SecretBaseSceneRoot>();
-            go.AddComponent<SecretBaseCameraRig>();
-            Debug.LogWarning("SecretBaseSession: auto-created SecretBaseSceneRoot (add one in scene for parallax/interactables).");
+            var host = MainGameManager.Instance;
+            if (host == null)
+            {
+                TryStartWithResolvedRoot();
+                return;
+            }
+
+            if (_startCo != null)
+            {
+                host.StopCoroutine(_startCo);
+            }
+
+            _startCo = host.StartCoroutine(CoStartWhenSceneReady());
+        }
+
+        IEnumerator CoStartWhenSceneReady()
+        {
+            SecretBaseSceneRoot root = null;
+            for (int i = 0; i < 30; i++)
+            {
+                root = SecretBaseSceneRoot.FindInLoadedScenes();
+                if (root != null)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            _startCo = null;
+            TryStartWithResolvedRoot(root);
+        }
+
+        void TryStartWithResolvedRoot(SecretBaseSceneRoot root = null)
+        {
+            if (_running)
+            {
+                return;
+            }
+
+            root ??= SecretBaseSceneRoot.FindInLoadedScenes();
+            if (root == null)
+            {
+                Debug.LogError("SecretBaseSession: SecretBaseSceneRoot missing in Main_SecretBase scene.");
+                return;
+            }
+
+            _running = true;
+            root.CameraRig?.BindForSecretBase();
+            My.UI.SecretBaseHudPanel.TryShow();
         }
 
         public void Shutdown()
@@ -43,6 +84,14 @@ namespace My.SecretBase
             }
 
             _running = false;
+
+            if (_startCo != null && MainGameManager.Instance != null)
+            {
+                MainGameManager.Instance.StopCoroutine(_startCo);
+                _startCo = null;
+            }
+
+            SecretBaseSceneRoot.FindInLoadedScenes()?.CameraRig?.UnbindFromSecretBase();
             My.UI.SecretBaseHudPanel.TryHide();
         }
 
@@ -64,7 +113,7 @@ namespace My.SecretBase
                 axis += 1f;
             }
 
-            SecretBaseSceneRoot.Instance?.Tick(dt, axis);
+            SecretBaseSceneRoot.FindInLoadedScenes()?.Tick(dt, axis);
 
             if (UnityEngine.Input.GetMouseButtonDown(0) && Camera.main != null)
             {
@@ -75,12 +124,6 @@ namespace My.SecretBase
 
         void TryClickInteractable(Vector3 worldPos)
         {
-            var root = SecretBaseSceneRoot.Instance;
-            if (root == null)
-            {
-                return;
-            }
-
             var hits = Object.FindObjectsOfType<SecretBaseInteractable>(false);
             foreach (var h in hits)
             {

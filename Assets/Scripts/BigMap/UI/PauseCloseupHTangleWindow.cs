@@ -1,9 +1,12 @@
 
 using System;
+using System.Linq;
+using My.Config;
 using My.Input;
 using My.Map.Entity;
 using My.UI;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,52 +36,24 @@ namespace My.Map.View
         public RectTransform Mask;
         public Image NormalPic;
         public Image CounterPic;
-        public GameObject CounterHint;
 
+        public int ActId = 0;
         public long SrcEntityId;
-        public float Duration;
-        public float CounterExtraShow;
-
-        private bool isCounterPeriod = false;
-        private bool isCounterSuccess = false;
 
         private bool canCounter = false;
 
         private float _timer;
 
-        private bool triggerCounter;
+        public long Socre;
 
         private void Update()
         {
             _timer += Time.deltaTime;
-            if(_timer > Duration + CounterExtraShow)
+         
+            
+            if(_timer > 5)
             {
                 HandleInteractFinish();
-                return;
-            }
-
-            if(_timer > Duration * 0.5f && _timer < Duration * 0.8f)
-            {
-                isCounterPeriod = true;
-            }
-            else
-            {
-                isCounterPeriod = false;
-            }
-
-            if(isCounterPeriod && canCounter && !isCounterSuccess)
-            {
-                if (!CounterHint.activeSelf)
-                {
-                    CounterHint.SetActive(true);
-                }
-            }
-            else
-            {
-                if (CounterHint.activeSelf)
-                {
-                    CounterHint.SetActive(false);
-                }
             }
         }
 
@@ -86,7 +61,10 @@ namespace My.Map.View
         public void RefreshData(long srcEntityId, float duration)
         {
             this.SrcEntityId = srcEntityId;
-            this.Duration = duration;
+
+            int orgActId = RandomGetTangleHAct();
+            ActId = orgActId;
+
             RefreshUI();
         }
 
@@ -99,50 +77,12 @@ namespace My.Map.View
             LogicTime.ReleasePause("PauseCloseupWindow");
             LogicTime.RequestPause("PauseCloseupWindow");
 
-            CounterHint.SetActive(false);
 
             NormalPic.gameObject.SetActive(true);
             CounterPic.gameObject.SetActive(false);
-
-            isCounterPeriod = false;
-            isCounterSuccess = false;
-
-            CounterExtraShow = 0;
-
-            CheckPlayerCanCounter();
         }
 
-        /// <summary>
-        /// 计算是否能反击咸猪手
-        /// </summary>
-        private void CheckPlayerCanCounter()
-        {
-            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-            var srcEntity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId);
-
-
-            var hPowerPlayer = player.GetAttr(AttrIdConsts.HPower);
-            var hPowerSrc = srcEntity.GetAttr(AttrIdConsts.HPower);
-
-            if (hPowerPlayer < 5000) hPowerPlayer = 5000;
-            if (hPowerSrc < 5000) hPowerSrc = 5000;
-
-            var playerCharm = player.GetAttr(AttrIdConsts.PlayerCharm);
-            var enemyWill = srcEntity.GetAttr(AttrIdConsts.Will);
-
-            double charmModifier = Math.Max(0, (playerCharm - enemyWill) * 1.0 / (playerCharm + enemyWill) * 0.5);
-            double baseP = (hPowerPlayer * (1 + charmModifier)) / (hPowerPlayer * (1 + charmModifier) + hPowerSrc);
-
-            var randVal = UnityEngine.Random.Range(0, 10000);
-            if (randVal < (int)(baseP * 10000))
-            {
-                canCounter = true;
-            }
-            else
-            {
-                canCounter = false;
-            }
-        }
+        
 
         private void SwitchToCounterMode()
         {
@@ -164,44 +104,83 @@ namespace My.Map.View
             
         }
 
+        /// <summary>
+        /// 随机获取一个h动作
+        /// </summary>
+        /// <returns></returns>
+        private int RandomGetTangleHAct()
+        {
+            int playerDesire = MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel;
+            var ll = CfgMgr.Cfgs.TbHActInfo.DataList.Where(item => item.FilterType.Contains("Charmed") && item.PlayerMinDesire <= playerDesire).ToList();
+            if (ll.Count == 0)
+            {
+                return 0;
+            }
+            return ll[ll.Count - 1].Id;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
 
         private void HandleInteractFinish()
         {
-            var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-            var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId);
-            if (isCounterSuccess)
+            //ApplyNpcHImpulse
+
+            //var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            //var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId);
+            //if (isCounterSuccess)
+            //{
+            //    p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId : SrcEntityId);
+
+            //    if(p.DesireLevel >= 2)
+            //    {
+            //        target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 60_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+            //        p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+            //    }
+            //    else
+            //    {
+            //        target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+            //        p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+            //    }
+
+            //}
+            //else
+            //{
+            //    p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -8_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+
+            //    if (p.DesireLevel >= 2)
+            //    {
+            //        target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+            //        p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+            //    }
+            //    else
+            //    {
+            //        target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 20_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+            //        p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
+            //    }
+            //}
+
+            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
+
+            if(npc == null)
             {
-                p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId : SrcEntityId);
-
-                if(p.DesireLevel >= 2)
-                {
-                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 60_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                }
-                else
-                {
-                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                }
-                
+                Debug.LogError("err ResolveHActParams");
+                Debug.LogError("err ResolveHActParams");
+                return;
             }
-            else
+            // 对于静态敌人 玩家碾压 
+            if (!PlayerGamePlayRule.ResolveHActParams(ActId, player.GetAttr(AttrIdConsts.HPower), 10, 1, out var hImpulseEnemy, out var hImpulsePlayer))
             {
-                p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -8_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-
-                if (p.DesireLevel >= 2)
-                {
-                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                }
-                else
-                {
-                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 20_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                }
+                Debug.LogError("err ResolveHActParams");
             }
 
-            UIManager.Instance.HidePanel(ID);
+            // 对玩家施加冲击力
+            player.ApplyHImpulseDirectly(hImpulsePlayer, null);
+
+            // 对npc冲击
+            npc.ApplyNpcHImpulse(hImpulseEnemy);
         }
         
         public override void Hide()
@@ -229,13 +208,7 @@ namespace My.Map.View
         {
             if(keyName == EInputKey.Space.ToString())
             {
-                if (isCounterPeriod)
-                {
-                    isCounterSuccess = true;
-                    NormalPic.gameObject.SetActive(false);
-                    CounterPic.gameObject.SetActive(true);
-                    CounterExtraShow = 3.0f;
-                }
+                
             }
             return true;
         }

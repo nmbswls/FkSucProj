@@ -166,6 +166,59 @@ namespace My.Map.Entity
                     },
                 };
 
+
+                _library["b_player_fq_hit_hop"] = new BuffDefinition()
+                {
+                    BuffId = "b_player_fq_hit_hop",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            ShowSpecific = true,
+
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 500,
+
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectEasyEffect()
+                                {
+                                    EffectText = "震",
+                                },
+                                 
+                                new MapAbilityEffectHitBoxCfg()
+                                {
+                                    Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                    Width = 2.5f,
+                                    CampFilterType = ECampFilterType.NotSelf,
+
+                                    HitResult = new()
+                                    {
+                                        OnHitEffects = new()
+                                        {
+                                            new MapAbilityEffectAddBuffCfg()
+                                            {
+                                                BuffId = "simple_one_jiansu",
+                                                Layer = 30,
+                                                Duration = 2.0f,
+                                            },
+                                            new MapFightEffectApplyHImpulseCfg()
+                                            {
+                                                BaseVal = 15_000,
+                                            },
+                                        }
+                                    }
+                                },
+
+                            }
+                        }
+                    },
+                };
+
                 _library["charm_fck_bonus"] = new BuffDefinition()
                 {
                     BuffId = "charm_fck_bonus",
@@ -296,6 +349,18 @@ namespace My.Map.Entity
                     IsHidden = true,
                 };
 
+                _library["simple_one_jiansu"] = new BuffDefinition()
+                {
+                    BuffId = "simple_one_jiansu",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -1000 },
+                    },
+                };
 
                 // ????buff?????? ?????????
                 // ??????? ????Χ???h?

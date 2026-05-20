@@ -51,13 +51,14 @@ namespace My.UI.SkillLoadout
                 return;
             }
 
-            if (!behavior.TryDropOnCustomNormalSlot(panel, sys, view.SlotIndex, skillId, out var fail))
+            if (!behavior.TryDropOnSlot(panel, sys, view.slotKind, view.SlotIndex, skillId, out var fail))
             {
                 if (!string.IsNullOrEmpty(fail))
                     Debug.Log("Skill drop rejected: " + fail);
             }
             else
             {
+                panel.ApplyLoadoutToEntity();
                 panel.RefreshAll();
             }
 

@@ -1,6 +1,7 @@
 using cfg.demo;
 using My.Config;
 using My.Saving;
+using My.UI;
 using UnityEngine;
 
 namespace My.Player
@@ -63,6 +64,11 @@ namespace My.Player
             }
 
             WeaponQuickSlotItemSet[slotIndex] = itemId;
+            if (ActiveWeaponSlotIndex == slotIndex)
+            {
+                ApplyWeaponQuickBarRuntime();
+            }
+
             return true;
         }
 
@@ -101,6 +107,8 @@ namespace My.Player
                     ActiveWeaponSlotIndex = -1;
                 }
             }
+
+            ApplyWeaponQuickBarRuntime();
         }
 
         public void ClearConsumableQuickSlot(int slotIndex)
@@ -128,6 +136,11 @@ namespace My.Player
             else if (ActiveWeaponSlotIndex == slotB)
             {
                 ActiveWeaponSlotIndex = slotA;
+            }
+
+            if (ActiveWeaponSlotIndex >= 0)
+            {
+                ApplyWeaponQuickBarRuntime();
             }
         }
 
@@ -161,6 +174,7 @@ namespace My.Player
             if (string.IsNullOrEmpty(WeaponQuickSlotItemSet[slotIndex]))
             {
                 ActiveWeaponSlotIndex = -1;
+                ApplyWeaponQuickBarRuntime();
                 return;
             }
 
@@ -172,11 +186,20 @@ namespace My.Player
             {
                 ActiveWeaponSlotIndex = slotIndex;
             }
+
+            ApplyWeaponQuickBarRuntime();
         }
 
         public void ClearActiveWeaponSelection()
         {
             ActiveWeaponSlotIndex = -1;
+            ApplyWeaponQuickBarRuntime();
+        }
+
+        public void ApplyWeaponQuickBarRuntime()
+        {
+            SyncLearnedSkillsToPlayerEntity();
+            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
         }
 
         public void CycleConsumableSelection(int delta)
@@ -237,6 +260,16 @@ namespace My.Player
                 return null;
             }
 
+            return ResolveWeaponSkillIdFromItem(itemId);
+        }
+
+        static string ResolveWeaponSkillIdFromItem(string itemId)
+        {
+            if (WeaponQuickBarSkillBinding.TryResolveSkillId(itemId, out var skillId))
+            {
+                return skillId;
+            }
+
             var use = ItemCatalog.GetPrimaryUse(itemId);
             if (use == null || !use.Usable || use.UseType != EItemUseType.UseSkill)
             {
@@ -244,6 +277,32 @@ namespace My.Player
             }
 
             return string.IsNullOrEmpty(use.S1) ? null : use.S1;
+        }
+
+        // 人类快捷栏：左键实际释放的技能（武器优先，否则 HumanSkillSlots[0]）
+        public string ResolveHumanLeftClickSkillId()
+        {
+            if (IsUsingFaQingSkillBar())
+            {
+                return null;
+            }
+
+            if (logicManager != null && logicManager.IsHumanQuickBarAvailable())
+            {
+                var weaponSkill = GetActiveWeaponSkillId();
+                if (!string.IsNullOrEmpty(weaponSkill))
+                {
+                    return weaponSkill;
+                }
+            }
+
+            var showSkills = GetSkillSlotsByState();
+            if (showSkills == null || showSkills.Length == 0)
+            {
+                return null;
+            }
+
+            return showSkills[0];
         }
 
         public string GetActiveConsumableItemId()

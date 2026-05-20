@@ -206,17 +206,30 @@ namespace My
                 await Task.Yield();
             }
 
+            if (WorldAreaManager.Instance.cacheAreaInfo != null
+                && WorldAreaManager.Instance.cacheAreaInfo.IsSecretBase
+                && gameLogicManager != null)
+            {
+                gameLogicManager.NotifySecretBasePresentationReady();
+            }
+
             if(Time.realtimeSinceStartup - loadStartTime < 0.5f)
             {
                 int waitMilli = (int)((0.5f - (Time.realtimeSinceStartup - loadStartTime)) * 1000);
                 await Task.Delay(waitMilli);
             }
 
-            // 处理特殊视角
-            FovGenerator.OnAreaEnter();
+            if (WorldAreaManager.Instance.cacheAreaInfo == null
+                || !WorldAreaManager.Instance.cacheAreaInfo.IsSecretBase)
+            {
+                FovGenerator.OnAreaEnter();
+            }
 
             SceneAOIManager.Instance.InitMapArea(intent.AreaName);
-            SceneFadeManager.OnEnterArea(WorldAreaManager.Instance.currentRoot.gameObject);
+            if(WorldAreaManager.Instance.currentRoot != null)
+            {
+                SceneFadeManager.OnEnterArea(WorldAreaManager.Instance.currentRoot.gameObject);
+            }
 
             // 更新ui注册
             //UIOrchestrator.Instance.InitGameLogicEventListener();

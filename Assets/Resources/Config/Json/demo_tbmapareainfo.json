@@ -64,7 +64,7 @@
     "name": "隐秘据点",
     "desc": "隐秘据点横板场景",
     "day_period_limit": 0,
-    "scene_name": "Main_Home",
+    "scene_name": "Main_SecretBase",
     "map_data_name": "secret_base_hub",
     "is_home": false,
     "is_secret_base": true,
