@@ -20,7 +20,7 @@ namespace My.Map.View
     public class PauseCloseupHTangleWindow : PanelBase, IInputConsumer
     {
         public const string ID = "PauseCloseupHTangleWindow";
-        public static PauseCloseupHTangleWindow Show(long srcEntityId, string showName, float duration)
+        public static PauseCloseupHTangleWindow Show(long srcEntityId)
         {
             var panel = UIManager.Instance.ShowPanel(ID) as PauseCloseupHTangleWindow;
             if (panel == null)
@@ -29,7 +29,7 @@ namespace My.Map.View
                 return null;
             }
 
-            panel.RefreshData(srcEntityId, duration);
+            panel.RefreshData(srcEntityId);
             return panel;
         }
 
@@ -138,7 +138,7 @@ namespace My.Map.View
         }
 
 
-        public void RefreshData(long srcEntityId, float duration)
+        public void RefreshData(long srcEntityId)
         {
             this.SrcEntityId = srcEntityId;
 
@@ -162,6 +162,9 @@ namespace My.Map.View
 
             LogicTime.ReleasePause("PauseCloseupWindow");
             LogicTime.RequestPause("PauseCloseupWindow");
+
+            MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(SrcEntityId, "fcked_marked", 1, overrideDuration: 0.5f);
+            MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Id, "charm_fck_bonus", 1, overrideDuration: 0.5f);
         }
 
 

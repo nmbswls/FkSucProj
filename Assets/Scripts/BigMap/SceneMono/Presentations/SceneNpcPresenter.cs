@@ -333,9 +333,8 @@ namespace My.Map.Scene
             }
             else if(selectionId == ID_OptCharmed)
             {
-                MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(this.UnitEntity.Id, "fcked_marked", 1, overrideDuration : 0.5f);
-                MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Id, "charm_fck_bonus", 1, overrideDuration : 0.5f);
-                MainGameManager.Instance.ShowKaiYouCloseupWindow(this.UnitEntity.Id, "", 3.0f);
+                
+                MainGameManager.Instance.ShowHTangleCloseupWindow(this.UnitEntity.Id);
             }
             return true;
         }

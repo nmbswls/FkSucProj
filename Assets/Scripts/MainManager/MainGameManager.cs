@@ -426,6 +426,10 @@ namespace My
             ShowClickkkUI.Instance.CloseClickkkWindow(windowType, isInterrupt);
         }
 
+        public void ShowHTangleCloseupWindow(long srcEntityId)
+        {
+            PauseCloseupHTangleWindow.Show(srcEntityId);
+        }
 
         public void ShowKaiYouCloseupWindow(long srcEntityId, string showName, float duration)
         {
