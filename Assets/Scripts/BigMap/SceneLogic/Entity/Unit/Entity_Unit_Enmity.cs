@@ -253,10 +253,14 @@ namespace My.Map.Unit
                 return false;
             }
 
-            // 自身h模式下 对主角特殊敌对
-            if (UnitEntity is NpcUnitLogicEntity npcUnit && npcUnit.IsInHMode())
+            // 自身h模式下 如果距离太近 对主角特殊敌对
+            if (UnitEntity is NpcUnitLogicEntity npcUnit && npcUnit.IsInHBehaveMode())
             {
-                return true;
+                var diff = npcUnit.Pos - otherUnit.Pos;
+                if (diff.sqrMagnitude < 3.0 * 3.0)
+                {
+                    return true;
+                }
             }
 
             // 面对女王模式下的主角 始终敌对

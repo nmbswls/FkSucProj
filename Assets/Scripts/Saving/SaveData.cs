@@ -60,8 +60,12 @@ namespace My.Saving
         public Dictionary<string, FishingSpotRuntimeSave> FishingSpotByUniqName = new();
         public Dictionary<string, RepairPointRuntimeSave> HomeRuinByUniqName = new();
 
-        // 已学技能（SkillId + Level；列表顺序即装配/展示顺序）
+        // 师门/技能学习系统获得的技能（不含自带、授予）
         public List<LearnedSkillEntry> LearnedSkills = new();
+
+        // 天赋/任务等授予的被动、主动（免装配，按条 Level）
+        public List<GrantedSkillEntry> GrantedPassives = new();
+        public List<GrantedSkillEntry> GrantedActives = new();
 
         public List<string> NormalSkillSlotOverrides = new();
         public List<string> PassiveSkillSlotOverrides = new();
@@ -115,6 +119,13 @@ namespace My.Saving
 
     [Serializable]
     public class LearnedSkillEntry
+    {
+        public string SkillId;
+        public int Level;
+    }
+
+    [Serializable]
+    public class GrantedSkillEntry
     {
         public string SkillId;
         public int Level;
@@ -317,6 +328,8 @@ namespace My.Saving
             data.PlayerData.HomeProsperity = Math.Max(0, data.PlayerData.HomeProsperity);
             data.PlayerData.HomeCurrentPopulation = Math.Max(0, data.PlayerData.HomeCurrentPopulation);
             data.PlayerData.LearnedSkills ??= new List<LearnedSkillEntry>();
+            data.PlayerData.GrantedPassives ??= new List<GrantedSkillEntry>();
+            data.PlayerData.GrantedActives ??= new List<GrantedSkillEntry>();
             data.PlayerData.NormalSkillSlotOverrides ??= new List<string>();
             data.PlayerData.PassiveSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();

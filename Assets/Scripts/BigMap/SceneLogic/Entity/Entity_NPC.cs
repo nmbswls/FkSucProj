@@ -623,7 +623,11 @@ namespace My.Map
             }
         }
 
-        public override bool IsInHMode()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsInHBehaveMode()
         {
             if(NpcConfig.AlwaysHMode)
             {

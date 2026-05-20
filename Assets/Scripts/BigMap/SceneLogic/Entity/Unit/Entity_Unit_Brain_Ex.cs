@@ -821,7 +821,12 @@ namespace My.Map.Unit
 
             float distToHome = Vector3.Distance(_brain.NpcEntity.Pos, _brain.HomePos.Value);
             //float distToTarget = Vector3.Distance(_brain.NpcEntity.Pos, _currentTarget.Pos);
-            if (distToHome > _brain.Config.ChaseRange)
+            float chaseRange = _brain.Config.ChaseRange;
+            if(_brain.NpcEntity.IsInHBehaveMode())
+            {
+                chaseRange *= 0.6f;
+            }
+            if (distToHome > chaseRange)
             {
                 // 放弃追击，清除仇恨，回家
                 _brain.Aggro.ClearTarget();

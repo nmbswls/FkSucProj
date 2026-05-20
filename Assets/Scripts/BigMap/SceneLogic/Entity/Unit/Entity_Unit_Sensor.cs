@@ -34,6 +34,7 @@ namespace My.Map.Unit
             public long TargetId;
             //public VisibilityStatus Status;
             public bool IsInView = false;
+            public float SeenTimer;      // 
             public float Confidence;     // 0..1，越高越确定
             public float LastSeenTime;   // 最后一次判定为 Visible 的时间
             public float LastUpdateTime; // 最近一次更新（任何状态）
@@ -107,7 +108,7 @@ namespace My.Map.Unit
                     VisibleMap[noticeRecord.TargetId] = noticeRecord;
                 }
 
-                EvaluateTarget(LogicTime.time, otherUnit, noticeRecord);
+                EvaluateTarget(LogicTime.time, otherUnit, noticeRecord, 0.5f);
             }
 
             ExpireEntries(LogicTime.time);
@@ -119,7 +120,7 @@ namespace My.Map.Unit
         /// <param name="now"></param>
         /// <param name="target"></param>
         /// <param name="entry"></param>
-        private void EvaluateTarget(float now, BaseUnitLogicEntity target, VisibilityEntry entry)
+        private void EvaluateTarget(float now, BaseUnitLogicEntity target, VisibilityEntry entry, float dt)
         {
             var targetPos = target.Pos;
             var dist = (targetPos - UnitEntity.Pos).magnitude;
@@ -153,7 +154,7 @@ namespace My.Map.Unit
 
             if (!stealthBlocks && cansee)
             {
-                MarkVisible(entry, now, targetPos);
+                MarkVisible(entry, now, targetPos, dt);
             }
             else
             {
@@ -170,12 +171,14 @@ namespace My.Map.Unit
         }
 
 
-        private void MarkVisible(VisibilityEntry e, float now, Vector2 pos)
+        private void MarkVisible(VisibilityEntry e, float now, Vector2 pos, float interval)
         {
             e.IsInView = true;
             e.LastSeenTime = now;
             e.LastKnownPos = pos;
             e.LastUpdateTime = now;
+
+            e.SeenTimer += interval;
 
             EventOnMarkVisible?.Invoke(e.TargetId);
         }

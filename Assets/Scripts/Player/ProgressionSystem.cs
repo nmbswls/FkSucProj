@@ -320,10 +320,9 @@ namespace My.Player
             _nodeLevels[nodeId] = next;
             RebuildProvidersFromLevels();
 
-            if (next == 1 && !string.IsNullOrEmpty(nodeCfg.PassiveSkillId))
+            if (!string.IsNullOrEmpty(nodeCfg.PassiveSkillId))
             {
-                _logic.playerDataManager.TryAddLearnedSkill(nodeCfg.PassiveSkillId);
-                _logic.playerDataManager.SyncLearnedSkillsToPlayerEntity();
+                _logic.playerDataManager.TryGrantPassiveSkill(nodeCfg.PassiveSkillId, next);
             }
 
             return true;

@@ -379,6 +379,35 @@ namespace My.Player
         public void CollectRegisteredSkillIdsForEntity(List<string> outIds)
         {
             outIds.Clear();
+
+            foreach (var skillId in SkillSystem.InnateSkillIdsView)
+            {
+                if (!string.IsNullOrEmpty(skillId) && !outIds.Contains(skillId))
+                {
+                    outIds.Add(skillId);
+                }
+            }
+
+            foreach (var e in SkillSystem.grantedActives)
+            {
+                if (e == null || string.IsNullOrEmpty(e.SkillId) || outIds.Contains(e.SkillId))
+                {
+                    continue;
+                }
+
+                outIds.Add(e.SkillId);
+            }
+
+            foreach (var e in SkillSystem.grantedPassives)
+            {
+                if (e == null || string.IsNullOrEmpty(e.SkillId) || outIds.Contains(e.SkillId))
+                {
+                    continue;
+                }
+
+                outIds.Add(e.SkillId);
+            }
+
             foreach (var skillId in SkillSystem.LearnedSkillIdsView)
             {
                 if (string.IsNullOrEmpty(skillId))
@@ -392,13 +421,16 @@ namespace My.Player
                     continue;
                 }
 
-                outIds.Add(skillId);
+                if (!outIds.Contains(skillId))
+                {
+                    outIds.Add(skillId);
+                }
             }
 
             for (int i = 0; i < SkillSystem.PassiveSkillSlots.Length; i++)
             {
                 var id = SkillSystem.PassiveSkillSlots[i];
-                if (!string.IsNullOrEmpty(id) && SkillSystem.IsLearned(id) && !outIds.Contains(id))
+                if (!string.IsNullOrEmpty(id) && SkillSystem.IsSkillLearned(id) && !outIds.Contains(id))
                 {
                     outIds.Add(id);
                 }
@@ -446,11 +478,38 @@ namespace My.Player
                 return;
             }
 
+            var applied = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (var e in SkillSystem.grantedPassives)
+            {
+                if (e == null || string.IsNullOrEmpty(e.SkillId))
+                {
+                    continue;
+                }
+
+                var skillId = e.SkillId;
+                var cfg = SkillLibrary.GetSkillConfig(skillId);
+                if (cfg == null || !cfg.IsPassive || string.IsNullOrEmpty(cfg.PassiveBuffId))
+                {
+                    continue;
+                }
+
+                int lvl = PlayerSkillSystem.ClampPassiveBuffLayer(skillId, e.Level);
+                player.TrySetPassiveSkillBuffLayer(skillId, lvl);
+                applied.Add(skillId);
+            }
+
             for (int i = 0; i < SkillSystem.PassiveSkillSlots.Length; i++)
             {
                 var skillId = SkillSystem.PassiveSkillSlots[i];
-                if (string.IsNullOrEmpty(skillId) || !SkillSystem.IsLearned(skillId))
+                if (string.IsNullOrEmpty(skillId) || !SkillSystem.IsSkillLearned(skillId))
                 {
+                    continue;
+                }
+
+                if (applied.Contains(skillId))
+                {
+                    Debug.LogWarning("Passive skill in both grant and slot: " + skillId + ", grant wins.");
                     continue;
                 }
 
@@ -460,19 +519,65 @@ namespace My.Player
                     continue;
                 }
 
-                int lvl = SkillSystem.GetSkillLevel(skillId);
+                int lvl = PlayerSkillSystem.ClampPassiveBuffLayer(skillId, SkillSystem.GetSkillLevel(skillId));
                 player.TrySetPassiveSkillBuffLayer(skillId, lvl);
             }
         }
 
-        public bool TryAddLearnedSkill(string skillId)
+        public bool TryAddSkillLearnedSkill(string skillId, int level = 1)
         {
-            if (string.IsNullOrEmpty(skillId) || SkillSystem.IsLearned(skillId))
+            if (string.IsNullOrEmpty(skillId) || SkillSystem.IsSkillLearned(skillId))
             {
                 return false;
             }
 
-            if (!SkillSystem.TryAddLearned(skillId))
+            if (!SkillSystem.TryAddSkillLearned(skillId, level))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryAddLearnedSkill(string skillId) => TryAddSkillLearnedSkill(skillId);
+
+        public bool TryGrantPassiveSkill(string skillId, int level)
+        {
+            if (!SkillSystem.TryGrantPassive(skillId, level))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryGrantActiveSkill(string skillId, int level)
+        {
+            if (!SkillSystem.TryGrantActive(skillId, level))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryRevokePassiveSkill(string skillId)
+        {
+            if (!SkillSystem.TryRevokePassive(skillId))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryRevokeActiveSkill(string skillId)
+        {
+            if (!SkillSystem.TryRevokeActive(skillId))
             {
                 return false;
             }
@@ -525,7 +630,7 @@ namespace My.Player
                 return false;
             }
 
-            if (!SkillSystem.IsLearned(skillId))
+            if (!SkillSystem.IsSkillLearned(skillId))
             {
                 return false;
             }
@@ -537,7 +642,7 @@ namespace My.Player
         // 入口：已学技能等级（存档 + 被动 Buff 层同步；主动技能仅存档）
         public bool TrySetLearnedSkillLevel(string skillId, int level)
         {
-            if (!SkillSystem.IsLearned(skillId) || level < 1)
+            if (!SkillSystem.IsSkillLearned(skillId) || level < 1)
             {
                 return false;
             }

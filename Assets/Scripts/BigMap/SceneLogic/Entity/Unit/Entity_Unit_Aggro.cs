@@ -163,9 +163,13 @@ namespace My.Map.Unit
                     continue;
                 }
 
+                if (pairInfo.Value.SeenTimer < 1.0f)
+                {
+                    continue;
+                }
+
                 var seeOneEntity = _unit.LogicManager.GetLogicEntity(pairInfo.Value.TargetId, false);
                 if (seeOneEntity == null || seeOneEntity is not BaseUnitLogicEntity otherUnit) continue;
-
 
                 if(!_unit.IsEnmityWith(otherUnit))
                 {

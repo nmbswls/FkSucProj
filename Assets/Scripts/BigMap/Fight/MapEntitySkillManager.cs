@@ -1225,14 +1225,14 @@ namespace My.Map.Entity
 
             if (!skillRuntime.cacheConfig.NeedHMode)
             {
-                if (OwnerEntity.IsInHMode())
+                if (OwnerEntity.IsInHBehaveMode())
                 {
                     return false;
                 }
             }
             else
             {
-                if (!OwnerEntity.IsInHMode())
+                if (!OwnerEntity.IsInHBehaveMode())
                 {
                     return false;
                 }

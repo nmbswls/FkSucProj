@@ -42,6 +42,9 @@ namespace My.Player
         public GameLogicManager LogicManager { get; private set; }
 
         public readonly List<LearnedSkillEntry> learnedSkills = new();
+        public readonly List<string> innateSkillIds = new();
+        public readonly List<GrantedSkillEntry> grantedPassives = new();
+        public readonly List<GrantedSkillEntry> grantedActives = new();
 
         readonly LearnedSkillIdView _learnedSkillIdsView;
 
@@ -53,7 +56,7 @@ namespace My.Player
         // 成长面板被动搭配栏
         public readonly string[] PassiveSkillSlots = new string[PassiveSlotCount];
 
-        private static readonly string[] DefaultLearnedSeed =
+        private static readonly string[] InnateSkillIds =
         {
             "queen_attack",
             "queen_attack_heavy",
@@ -97,16 +100,17 @@ namespace My.Player
             NormalSkillSlots[5] = "player_mortar_acquire_01";
 
             _learnedSkillIdsView = new LearnedSkillIdView(learnedSkills);
-            SeedDefaultLearnedList();
+            SeedInnateSkills();
         }
 
         public IReadOnlyList<string> LearnedSkillIdsView => _learnedSkillIdsView;
+        public IReadOnlyList<string> InnateSkillIdsView => innateSkillIds;
 
-        private void SeedDefaultLearnedList()
+        void SeedInnateSkills()
         {
-            learnedSkills.Clear();
+            innateSkillIds.Clear();
             var seen = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var id in DefaultLearnedSeed)
+            foreach (var id in InnateSkillIds)
             {
                 if (string.IsNullOrEmpty(id) || seen.Contains(id))
                 {
@@ -114,17 +118,103 @@ namespace My.Player
                 }
 
                 seen.Add(id);
-                learnedSkills.Add(new LearnedSkillEntry { SkillId = id, Level = 1 });
+                innateSkillIds.Add(id);
             }
+        }
+
+        static void LoadGrantedList(List<GrantedSkillEntry> target, List<GrantedSkillEntry> fromSave)
+        {
+            target.Clear();
+            if (fromSave == null)
+            {
+                return;
+            }
+
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in fromSave)
+            {
+                if (row == null || string.IsNullOrEmpty(row.SkillId) || seen.Contains(row.SkillId))
+                {
+                    continue;
+                }
+
+                seen.Add(row.SkillId);
+                target.Add(new GrantedSkillEntry
+                {
+                    SkillId = row.SkillId,
+                    Level = Math.Max(1, row.Level),
+                });
+            }
+        }
+
+        static void WriteGrantedList(List<GrantedSkillEntry> source, List<GrantedSkillEntry> dest)
+        {
+            dest.Clear();
+            foreach (var e in source)
+            {
+                if (e == null || string.IsNullOrEmpty(e.SkillId))
+                {
+                    continue;
+                }
+
+                dest.Add(new GrantedSkillEntry
+                {
+                    SkillId = e.SkillId,
+                    Level = Math.Max(1, e.Level),
+                });
+            }
+        }
+
+        static bool ValidateGrantSkill(string skillId, bool mustBePassive)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            return cfg != null && cfg.IsPassive == mustBePassive;
+        }
+
+        static bool TryUpsertGranted(List<GrantedSkillEntry> list, string skillId, int level)
+        {
+            level = Math.Max(1, level);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] != null && string.Equals(list[i].SkillId, skillId, StringComparison.Ordinal))
+                {
+                    list[i].Level = level;
+                    return true;
+                }
+            }
+
+            list.Add(new GrantedSkillEntry { SkillId = skillId, Level = level });
+            return true;
+        }
+
+        static int FindGrantedLevel(List<GrantedSkillEntry> list, string skillId)
+        {
+            foreach (var e in list)
+            {
+                if (e != null && string.Equals(e.SkillId, skillId, StringComparison.Ordinal))
+                {
+                    return Math.Max(1, e.Level);
+                }
+            }
+
+            return 0;
         }
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             LogicManager = ctx;
+            SeedInnateSkills();
+            learnedSkills.Clear();
+            grantedPassives.Clear();
+            grantedActives.Clear();
 
             if (savingData == null)
             {
-                SeedDefaultLearnedList();
                 return;
             }
 
@@ -133,7 +223,6 @@ namespace My.Player
 
             if (pd.LearnedSkills is { Count: > 0 })
             {
-                learnedSkills.Clear();
                 var seen = new HashSet<string>(StringComparer.Ordinal);
                 foreach (var row in pd.LearnedSkills)
                 {
@@ -149,16 +238,10 @@ namespace My.Player
                         Level = Math.Max(1, row.Level),
                     });
                 }
+            }
 
-                if (learnedSkills.Count == 0)
-                {
-                    SeedDefaultLearnedList();
-                }
-            }
-            else
-            {
-                SeedDefaultLearnedList();
-            }
+            LoadGrantedList(grantedPassives, pd.GrantedPassives);
+            LoadGrantedList(grantedActives, pd.GrantedActives);
 
             ApplyNormalSlotOverridesFromSave(pd.NormalSkillSlotOverrides);
             ApplyPassiveSlotOverridesFromSave(pd.PassiveSkillSlotOverrides);
@@ -202,6 +285,9 @@ namespace My.Player
             {
                 data.PlayerData.PassiveSkillSlotOverrides.Add(PassiveSkillSlots[i] ?? string.Empty);
             }
+
+            WriteGrantedList(grantedPassives, data.PlayerData.GrantedPassives);
+            WriteGrantedList(grantedActives, data.PlayerData.GrantedActives);
         }
 
         private void ApplyNormalSlotOverridesFromSave(List<string> saved)
@@ -257,7 +343,7 @@ namespace My.Player
             return false;
         }
 
-        public bool IsLearned(string skillId)
+        public bool IsSkillLearned(string skillId)
         {
             if (string.IsNullOrEmpty(skillId))
             {
@@ -275,9 +361,95 @@ namespace My.Player
             return false;
         }
 
+        public bool IsLearned(string skillId) => IsSkillLearned(skillId);
+
+        public bool IsGrantedPassive(string skillId) => FindGrantedLevel(grantedPassives, skillId) > 0;
+
+        public bool IsGrantedActive(string skillId) => FindGrantedLevel(grantedActives, skillId) > 0;
+
+        public int GetGrantedPassiveLevel(string skillId) => FindGrantedLevel(grantedPassives, skillId);
+
+        public int GetGrantedActiveLevel(string skillId) => FindGrantedLevel(grantedActives, skillId);
+
+        public bool TryGrantPassive(string skillId, int level)
+        {
+            if (!ValidateGrantSkill(skillId, mustBePassive: true))
+            {
+                return false;
+            }
+
+            return TryUpsertGranted(grantedPassives, skillId, level);
+        }
+
+        public bool TryGrantActive(string skillId, int level)
+        {
+            if (!ValidateGrantSkill(skillId, mustBePassive: false))
+            {
+                return false;
+            }
+
+            return TryUpsertGranted(grantedActives, skillId, level);
+        }
+
+        public bool TryRevokePassive(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            return grantedPassives.RemoveAll(e =>
+                e != null && string.Equals(e.SkillId, skillId, StringComparison.Ordinal)) > 0;
+        }
+
+        public bool TryRevokeActive(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            return grantedActives.RemoveAll(e =>
+                e != null && string.Equals(e.SkillId, skillId, StringComparison.Ordinal)) > 0;
+        }
+
+        public int ResolvePassiveBuffLayerLevel(string skillId)
+        {
+            int granted = FindGrantedLevel(grantedPassives, skillId);
+            if (granted > 0)
+            {
+                return ClampPassiveBuffLayer(skillId, granted);
+            }
+
+            if (!IsSkillLearned(skillId) || !IsPassiveEquipped(skillId))
+            {
+                return 0;
+            }
+
+            return ClampPassiveBuffLayer(skillId, GetSkillLevel(skillId));
+        }
+
+        public static int ClampPassiveBuffLayer(string skillId, int level)
+        {
+            level = Math.Max(1, level);
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            if (cfg == null || !cfg.IsPassive || string.IsNullOrEmpty(cfg.PassiveBuffId))
+            {
+                return level;
+            }
+
+            BuffDefinition def = BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId);
+            if (def != null && def.MaxStackLayer > 0)
+            {
+                return Math.Min(level, def.MaxStackLayer);
+            }
+
+            return level;
+        }
+
         public int GetSkillLevel(string skillId)
         {
-            if (string.IsNullOrEmpty(skillId) || !IsLearned(skillId))
+            if (string.IsNullOrEmpty(skillId) || !IsSkillLearned(skillId))
             {
                 return 1;
             }
@@ -295,7 +467,7 @@ namespace My.Player
 
         public bool TrySetSkillLevel(string skillId, int level)
         {
-            if (string.IsNullOrEmpty(skillId) || !IsLearned(skillId) || level < 1)
+            if (string.IsNullOrEmpty(skillId) || !IsSkillLearned(skillId) || level < 1)
             {
                 return false;
             }
@@ -312,16 +484,18 @@ namespace My.Player
             return false;
         }
 
-        public bool TryAddLearned(string skillId)
+        public bool TryAddSkillLearned(string skillId, int level = 1)
         {
-            if (string.IsNullOrEmpty(skillId) || IsLearned(skillId))
+            if (string.IsNullOrEmpty(skillId) || IsSkillLearned(skillId))
             {
                 return false;
             }
 
-            learnedSkills.Add(new LearnedSkillEntry { SkillId = skillId, Level = 1 });
+            learnedSkills.Add(new LearnedSkillEntry { SkillId = skillId, Level = Math.Max(1, level) });
             return true;
         }
+
+        public bool TryAddLearned(string skillId) => TryAddSkillLearned(skillId);
 
         public bool TryRemoveLearned(string skillId)
         {
@@ -347,6 +521,8 @@ namespace My.Player
                 return false;
             }
 
+
+
             int carry = 1;
             int removed = 0;
             for (int i = learnedSkills.Count - 1; i >= 0; i--)
@@ -367,7 +543,7 @@ namespace My.Player
                 return false;
             }
 
-            if (!IsLearned(newSkillId))
+            if (!IsSkillLearned(newSkillId))
             {
                 learnedSkills.Add(new LearnedSkillEntry { SkillId = newSkillId, Level = carry });
             }
@@ -392,9 +568,15 @@ namespace My.Player
                 return false;
             }
 
-            if (!IsLearned(skillId))
+            if (!IsSkillLearned(skillId))
             {
                 failReason = "not_learned";
+                return false;
+            }
+
+            if (IsGrantedPassive(skillId) || IsGrantedActive(skillId))
+            {
+                failReason = "granted_not_slotable";
                 return false;
             }
 
@@ -460,9 +642,15 @@ namespace My.Player
                 return false;
             }
 
-            if (!IsLearned(skillId))
+            if (!IsSkillLearned(skillId))
             {
                 failReason = "not_learned";
+                return false;
+            }
+
+            if (IsGrantedPassive(skillId))
+            {
+                failReason = "granted_not_slotable";
                 return false;
             }
 

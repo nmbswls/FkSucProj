@@ -418,7 +418,7 @@ namespace My.UI.SkillLoadout
             {
                 foreach (var id in sch.SkillIds)
                 {
-                    if (sys.IsLearned(id))
+                    if (sys.IsSkillLearned(id) && !sys.IsGrantedPassive(id) && !sys.IsGrantedActive(id))
                         list.Add(id);
                 }
             }
