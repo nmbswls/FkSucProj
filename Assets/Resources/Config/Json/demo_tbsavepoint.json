@@ -1,9 +1,11 @@
 [
   {
-    "save_point_id": "sp_demo_shrine",
+    "save_point_id": "v1_entry_01",
     "display_name": "演示存档点",
-    "map_id": "initial",
-    "anchor_named_point": "default",
+    "show_map_id": [
+      "village_01_d",
+      "village_01_n"
+    ],
     "show_unlock_conds": [
       {
         "type": 0,
@@ -29,10 +31,12 @@
     "sort_order": 0
   },
   {
-    "save_point_id": "sp_demo_inn",
+    "save_point_id": "v1_inn_01",
     "display_name": "演示旅店存档",
-    "map_id": "initial",
-    "anchor_named_point": "default",
+    "show_map_id": [
+      "village_01_d",
+      "village_01_n"
+    ],
     "show_unlock_conds": [
       {
         "type": 0,

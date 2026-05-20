@@ -20,8 +20,7 @@ public sealed partial class SavePoint : Luban.BeanBase
     {
         { if(!_buf["save_point_id"].IsString) { throw new SerializationException(); }  SavePointId = _buf["save_point_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
-        { if(!_buf["map_id"].IsString) { throw new SerializationException(); }  MapId = _buf["map_id"]; }
-        { if(!_buf["anchor_named_point"].IsString) { throw new SerializationException(); }  AnchorNamedPoint = _buf["anchor_named_point"]; }
+        { var __json0 = _buf["show_map_id"]; if(!__json0.IsArray) { throw new SerializationException(); } ShowMapId = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  ShowMapId.Add(__v0); }   }
         { var __json0 = _buf["show_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } ShowUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  ShowUnlockConds.Add(__v0); }   }
         { if(!_buf["require_tribute"].IsBoolean) { throw new SerializationException(); }  RequireTribute = _buf["require_tribute"]; }
         { var __json0 = _buf["tribute_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } TributeCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  TributeCosts.Add(__v0); }   }
@@ -44,11 +43,7 @@ public sealed partial class SavePoint : Luban.BeanBase
     /// <summary>
     /// map_id
     /// </summary>
-    public string MapId;
-    /// <summary>
-    /// anchor_named_point
-    /// </summary>
-    public string AnchorNamedPoint;
+    public System.Collections.Generic.List<string> ShowMapId;
     /// <summary>
     /// show_unlock_conds
     /// </summary>
@@ -80,8 +75,7 @@ public sealed partial class SavePoint : Luban.BeanBase
         return "{ "
         + "savePointId:" + SavePointId + ","
         + "displayName:" + DisplayName + ","
-        + "mapId:" + MapId + ","
-        + "anchorNamedPoint:" + AnchorNamedPoint + ","
+        + "showMapId:" + Luban.StringUtil.CollectionToString(ShowMapId) + ","
         + "showUnlockConds:" + Luban.StringUtil.CollectionToString(ShowUnlockConds) + ","
         + "requireTribute:" + RequireTribute + ","
         + "tributeCosts:" + Luban.StringUtil.CollectionToString(TributeCosts) + ","
