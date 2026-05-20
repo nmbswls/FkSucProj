@@ -577,9 +577,17 @@ namespace My.UI
 
         public async Task SetStateAsync(UIAppState next, object ctx = null)
         {
-            if (current == next) return;
-            previous = current;
-            current = next;
+            // 大地图切据点仍保持 Overworld，需刷新 HUD 显隐
+            if (current == next && next != UIAppState.Overworld)
+            {
+                return;
+            }
+
+            if (current != next)
+            {
+                previous = current;
+                current = next;
+            }
 
             switch (next)
             {
@@ -611,22 +619,51 @@ namespace My.UI
             UIManager.Instance.ShowPanel("UIGainRewardCoordinator");
         }
 
+        static bool IsInSecretBaseWorld()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBase)
+            {
+                return true;
+            }
+
+            var area = WorldAreaManager.Instance?.cacheAreaInfo;
+            return area != null && area.IsSecretBase;
+        }
+
+        static readonly string[] OverworldMapOnlyPanelIds =
+        {
+            "OverworldHUD",
+            "SceneMask",
+            "SmallIconLayer",
+            "InteractMenu",
+            "AmbientChatPanel",
+            "QuestFloatingPanel",
+        };
+
+        static void ApplyOverworldMapPanelsVisibility(bool showOpenWorldHud)
+        {
+            foreach (var panelId in OverworldMapOnlyPanelIds)
+            {
+                if (showOpenWorldHud)
+                {
+                    UIManager.Instance.ShowPanel(panelId);
+                }
+                else
+                {
+                    UIManager.Instance.HidePanel(panelId);
+                }
+            }
+        }
+
         private async Task EnterOverworldAsync(object ctx)
         {
-
             UIManager.Instance.HideAll("Loading");
 
-            // ?????????
-            UIManager.Instance.ShowPanel("OverworldHUD");
-            UIManager.Instance.ShowPanel("SceneMask");
-            UIManager.Instance.ShowPanel("SmallIconLayer");
-            UIManager.Instance.ShowPanel("InteractMenu");
-            UIManager.Instance.ShowPanel("AmbientChatPanel");
-            UIManager.Instance.ShowPanel("QuestFloatingPanel");
-            
+            ApplyOverworldMapPanelsVisibility(!IsInSecretBaseWorld());
 
             EnsureCommonUI();
-            
+
             MainGameManager.Instance.inputBinder.ApplyInputMode(InputMode.Overworld);
             await Task.CompletedTask;
         }

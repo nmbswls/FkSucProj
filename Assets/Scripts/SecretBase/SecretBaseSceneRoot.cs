@@ -1,3 +1,5 @@
+using Cinemachine;
+using My;
 using UnityEngine;
 
 namespace My.SecretBase
@@ -54,6 +56,44 @@ namespace My.SecretBase
             }
 
             return Object.FindObjectOfType<SecretBaseSceneRoot>(true);
+        }
+
+        // 优先 Cinemachine 输出相机，与大地图一致。
+        public static Camera ResolveViewCamera()
+        {
+            var mgr = MainGameManager.Instance;
+            if (mgr != null)
+            {
+                if (mgr.CineBrain != null && mgr.CineBrain.OutputCamera != null)
+                {
+                    return mgr.CineBrain.OutputCamera;
+                }
+
+                if (mgr.MainMapVCam != null)
+                {
+                    var brain = mgr.MainMapVCam.GetComponent<CinemachineBrain>();
+                    if (brain != null && brain.OutputCamera != null)
+                    {
+                        return brain.OutputCamera;
+                    }
+                }
+            }
+
+            return Camera.main;
+        }
+
+        public static bool ScreenToWorldPoint2D(Vector2 screenPos, out Vector2 world, float worldZ = 0f)
+        {
+            var cam = ResolveViewCamera();
+            if (cam == null)
+            {
+                world = default;
+                return false;
+            }
+
+            var p = new Vector3(screenPos.x, screenPos.y, Mathf.Abs(cam.transform.position.z - worldZ));
+            world = cam.ScreenToWorldPoint(p);
+            return true;
         }
 
         public void Tick(float dt, float horizontalAxis)

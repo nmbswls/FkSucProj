@@ -436,6 +436,12 @@ namespace My.Input
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBase)
+            {
+                glm.SecretBase.OnScreenPointer(LastPos, true);
+                return;
+            }
 
             if (uiRouter == null || !uiRouter.DispatchClick(0, LastPos))
             {
@@ -812,6 +818,13 @@ namespace My.Input
                 return;
             }
 
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBase)
+            {
+                glm.SecretBase.OnScreenPointer(LastPos, true);
+                return;
+            }
+
             var hunting = My.Map.Hunting.HuntingModeManager.Instance;
             if (hunting != null && hunting.Active && hunting.TryExecuteHoveredTarget())
             {
@@ -874,15 +887,29 @@ namespace My.Input
 
         public void OnSceneHoldEnd(string keyName)
         {
-            if(keyName == EInputKey.MouseRight.ToString())
+            if (keyName != EInputKey.MouseRight.ToString())
             {
-                if (!LogicTime.paused)
-                {
-                    var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-                    //player.abilityController.CheckSkillCanceled("queen_shoot", castDir.normalized + player.PlayerEntity.Pos);
-                    player.ablilityManager.CheckSkillCanceled("player_normal_defend");
-                }
+                return;
             }
+
+            if (LogicTime.paused)
+            {
+                return;
+            }
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null || glm.IsInSecretBase)
+            {
+                return;
+            }
+
+            var player = glm.playerLogicEntity;
+            if (player == null)
+            {
+                return;
+            }
+
+            player.ablilityManager.CheckSkillCanceled("player_normal_defend");
         }
 
 

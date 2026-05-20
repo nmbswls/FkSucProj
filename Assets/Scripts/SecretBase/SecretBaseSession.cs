@@ -118,13 +118,35 @@ namespace My.SecretBase
             var root = SecretBaseSceneRoot.FindInLoadedScenes();
             root?.Tick(dt, axis);
 
-            if (root == null || Camera.main == null)
+            if (root == null)
             {
                 return;
             }
 
-            var worldPos = (Vector2)Camera.main.ScreenToWorldPoint(UnityEngine.Input.mousePosition);
-            var clickDown = UnityEngine.Input.GetMouseButtonDown(0);
+            if (SecretBaseSceneRoot.ScreenToWorldPoint2D(UnityEngine.Input.mousePosition, out var worldPos))
+            {
+                root.TickInteraction(worldPos, false);
+            }
+        }
+
+        public void OnScreenPointer(Vector2 screenPos, bool clickDown)
+        {
+            if (!_running)
+            {
+                return;
+            }
+
+            var root = SecretBaseSceneRoot.FindInLoadedScenes();
+            if (root == null)
+            {
+                return;
+            }
+
+            if (!SecretBaseSceneRoot.ScreenToWorldPoint2D(screenPos, out var worldPos))
+            {
+                return;
+            }
+
             root.TickInteraction(worldPos, clickDown);
         }
 
