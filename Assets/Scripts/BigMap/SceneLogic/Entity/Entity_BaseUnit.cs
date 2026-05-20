@@ -1057,16 +1057,24 @@ namespace My.Map
             public GameLogicManager logicManager;
             private bool Inialized = false;
             private List<ItemStack> containItems = new List<ItemStack>();
-            public int DropId;
             public int MaxSlots;
 
             public Dictionary<int, float> ItemSearchProgress = new();
 
-            public UnitBagContainer(GameLogicManager logicManager, int dropId, int maxSlots)
+            public UnitBagContainer(GameLogicManager logicManager, int maxSlots, List<(string, int)> items)
             {
                 this.logicManager = logicManager;
-                this.DropId = dropId;
                 this.MaxSlots = maxSlots;
+
+                for (int i = 0; i < MaxSlots; i++)
+                {
+                    containItems.Add(null);
+                }
+
+                for (int i = 0; i < items.Count; i++)
+                {
+                    containItems[i] = ItemCatalog.CreateItemStack(items[i].Item1, items[i].Item2);
+                }
             }
 
             public List<ItemStack> InnerItems
@@ -1078,16 +1086,7 @@ namespace My.Map
                     {
                         Inialized = true;
 
-                        for (int i = 0; i < MaxSlots; i++)
-                        {
-                            containItems.Add(null);
-                        }
-
-                        var items = DropUtils.GetBundleDropItems(DropId);
-                        for (int i = 0; i < items.Count; i++)
-                        {
-                            containItems[i] = ItemCatalog.CreateItemStack(items[i].Item1, items[i].Item2);
-                        }
+                        
                     }
                     return containItems;
 

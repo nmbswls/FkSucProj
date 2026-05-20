@@ -1,3 +1,4 @@
+using cfg.demo;
 using My;
 using My.Config;
 using My.Map.Entity;
@@ -25,6 +26,9 @@ namespace My.Map
         public const float PhysicalFormPenalty = 0.00003f;
         public const float FailTempEnmity = 42f;
 
+
+        public static long RandomApplyDensityValue(EDesireDensityType densityType) =>
+            DesireDensityUtil.RollInitialDensity(densityType);
 
         /// <summary>
         /// 通过hval计算当前等级

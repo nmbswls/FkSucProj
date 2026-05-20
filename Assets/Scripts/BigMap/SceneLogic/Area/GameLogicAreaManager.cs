@@ -757,6 +757,7 @@ namespace My.Map.Logic
             if (rec is LogicEntityRecord4Npc npcRec)
             {
                 logicManager.worldPersistState?.NpcCharacters.TryApplyToRecordBeforeSpawn(npcRec);
+                DesireDensitySpawnLogic.ApplyOnNpcRecord(npcRec);
                 DesireCrystalSpawnLogic.ApplyOnNpcBeforeSpawn(logicManager, this, npcRec);
             }
 

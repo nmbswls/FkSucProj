@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace My.UI
 {
     // 资源路径：Resources/UI/Prefabs/RumorIntelShopPanel；根节点挂 RumorIntelShopListPopulation + 行模板 RowTemplates
-    // 打开入口：卧室床行动面板 UIBedroomBedActPanel 的 btnRumorIntel（须先在地图列表中选中一张图）→ RumorIntelShopPanel.OpenForMap(mapId)
+    // 打开入口：UIBedroomDeployPanel 的 btnRumorIntel（须先在地图列表中选中一张图）→ RumorIntelShopPanel.OpenForMap(mapId)
     public class RumorIntelShopPanel : PanelWithInput
     {
         public const string Pid = "RumorIntelShop";

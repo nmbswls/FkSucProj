@@ -570,6 +570,11 @@ namespace My.Map.Logic
         /// <returns></returns>
         public void RegisterEntityRecord(LogicEntityRecord rec, bool isCreate = false)
         {
+            if (rec is LogicEntityRecord4Npc npcRec)
+            {
+                DesireDensitySpawnLogic.ApplyOnNpcRecord(npcRec);
+            }
+
             // 交由仓库管理
             Repo.RegisterRecord(rec);
             // 注册到 AOI 网格

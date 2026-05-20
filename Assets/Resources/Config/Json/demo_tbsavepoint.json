@@ -28,6 +28,8 @@
         "count": 1
       }
     ],
+    "teleport_map_id": "village_01_d",
+    "teleport_named_point": "default",
     "sort_order": 0
   },
   {
@@ -50,6 +52,8 @@
     ],
     "require_tribute": false,
     "tribute_costs": [],
+    "teleport_map_id": "village_01_d",
+    "teleport_named_point": "inn_save",
     "sort_order": 1
   }
 ]

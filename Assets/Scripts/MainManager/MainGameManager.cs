@@ -16,6 +16,7 @@ using My.Map.Entity.AI;
 using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
+using My.Map.Hunting;
 using My.Map.View;
 using My.Map.SmallGame.Zha;
 using My.MiniGame;
@@ -63,6 +64,8 @@ namespace My
         public PlayerScenePresenter playerScenePresenter { get; set; }
 
         public SceneInteractSystem interactSystem;
+
+        public HuntingModeManager huntingModeManager;
 
         public DefaultSceneVisionSenser2D VisionSenser2D;
 
@@ -117,6 +120,12 @@ namespace My
             VisionSenser2D.ObstacleMask = 1 << LayerMask.NameToLayer("MapViewObc");
 
             interactSystem = new();
+
+            huntingModeManager = GetComponent<HuntingModeManager>();
+            if (huntingModeManager == null)
+            {
+                huntingModeManager = gameObject.AddComponent<HuntingModeManager>();
+            }
 
             NavProvider = new();
 

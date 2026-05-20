@@ -188,4 +188,11 @@
         <var name="item_id" type="string" comment="材料道具 id"/>
         <var name="count" type="long" comment="数量"/>
     </bean>
+	
+	<enum name="EDesireDensityType">
+        <var name="None" value="0"/>
+        <var name="Normal" value="1"/>
+        <var name="Elite" value="2"/>
+        <var name="Boss" value="3"/>
+    </enum>
 </module>

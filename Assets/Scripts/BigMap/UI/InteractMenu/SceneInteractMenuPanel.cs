@@ -66,15 +66,11 @@ namespace My.UI
         public bool WithHigherInteract;
 
 
-        public RectTransform HModeExecuteHint;
-
         /// <summary>
         /// 当前活跃可交互列表
         /// </summary>
         public List<IntResultItem> ActiveInteractableList = new();
         public ISceneInteractable? currFocusInteractable { get; set; } = null;
-
-        public SceneNpcPresenter? currExecuteTarget = null;
 
         public bool IsDetailMenuShown = false;
 
@@ -103,7 +99,6 @@ namespace My.UI
                 currFocusInteractable.IsInteractDetail = false;
             }
 
-            HModeExecuteHint.gameObject.SetActive(false);
         }
 
 
@@ -125,20 +120,6 @@ namespace My.UI
                     out Vector2 localPos
                 );
                 NormalInteractRoot.transform.localPosition = localPos;
-            }
-
-            if(currExecuteTarget != null)
-            {
-                // 更新详情条位置
-                var hintPos = currExecuteTarget.GetHintAnchorPosition();
-                Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    UIManager.Instance.RootCanvas.transform as RectTransform,
-                    screenPos,
-                    UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
-                    out Vector2 localPos
-                );
-                HModeExecuteHint.transform.localPosition = localPos;
             }
 
             TickRefreshNormalInteractBlock();
@@ -286,11 +267,6 @@ namespace My.UI
             }
 
             if(selfInteract)
-            {
-                blocked = true;
-            }
-
-            if (currExecuteTarget != null)
             {
                 blocked = true;
             }
@@ -478,49 +454,6 @@ namespace My.UI
 
 
         /// <summary>
-        /// 刷新处决列表
-        /// </summary>
-        public void RefreshExecuteTarget(SceneNpcPresenter npcPresenter)
-        {
-            if(npcPresenter == currExecuteTarget)
-            {
-                return;
-            }
-
-            currExecuteTarget = npcPresenter;
-
-            if(currExecuteTarget == null)
-            {
-                HModeExecuteHint.gameObject.SetActive(false);
-            }
-            else
-            {
-                HModeExecuteHint.gameObject.SetActive(true);
-
-                // 更新详情条位置
-                var hintPos = currExecuteTarget.GetHintAnchorPosition();
-                Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    UIManager.Instance.RootCanvas.transform as RectTransform,
-                    screenPos,
-                    UIManager.Instance.UICamera,   // Screen Space - Camera 用摄像机；Overlay 模式传 null
-                    out Vector2 localPos
-                );
-                HModeExecuteHint.transform.localPosition = localPos;
-            }
-            
-
-            if (currExecuteTarget != null)
-            {
-                UpdateNormalInteractBlock(true);
-            }
-            else
-            {
-                UpdateNormalInteractBlock(false);
-            }
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="block"></param>
@@ -579,14 +512,6 @@ namespace My.UI
         /// <returns></returns>
         public bool OnConfirm()
         {
-
-            if(currExecuteTarget != null)
-            {
-                MainGameManager.Instance.gameLogicManager.playerLogicEntity.ablilityManager.UseSkill("h_mode_execute", target:currExecuteTarget.NpcEntity);
-                return true;
-            }
-
-
             if (currFocusInteractable == null)
             {
                 return false;

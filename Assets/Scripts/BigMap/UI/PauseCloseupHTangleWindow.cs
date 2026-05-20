@@ -34,26 +34,106 @@ namespace My.Map.View
         }
 
         public RectTransform Mask;
-        public Image NormalPic;
-        public Image CounterPic;
+        public Image ShowPic;
 
-        public int ActId = 0;
+        public Image ProgressBar;
+
         public long SrcEntityId;
 
-        private bool canCounter = false;
 
         private float _timer;
+        private float _lastBalanceTimer;
 
+        public int ActId = 0;
         public long Socre;
+        public float CurrentVal;
+
+        // 当前进度
+        // 该小游戏
+        public int PgreossVal = 0; // 检查突破了几格
+
+        public int BreakTimes = 0;
+
+        const int MaxProgress = 4;
+        const int NeedBreakTimes = 5;
+        const float CheckInteval = 0.5f;
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private float GetProgressLockVal()
+        {
+            if(PgreossVal == 0)
+            {
+                return 0.2f;
+            }
+            else if(PgreossVal == 1)
+            {
+                return 0.4f;
+            }
+            else if (PgreossVal == 2)
+            {
+                return 0.6f;
+            }
+            else if (PgreossVal == 3)
+            {
+                return 0.8f;
+            }
+            else
+            {
+                return 1.0f;
+            }
+        }
 
         private void Update()
         {
             _timer += Time.deltaTime;
-         
-            
-            if(_timer > 5)
+
+            CurrentVal += Time.deltaTime * 1;
+            var lockVal = GetProgressLockVal();
+            if (CurrentVal >= lockVal)
+            {
+                CurrentVal = lockVal;
+            }
+
+            if(_timer - _lastBalanceTimer > CheckInteval)
+            {
+                _lastBalanceTimer += CheckInteval;
+
+                ApplyOneActEffect();
+            }
+
+            if (_timer > 5)
             {
                 HandleInteractFinish();
+            }
+
+            if(ProgressBar != null)
+            {
+                ProgressBar.fillAmount = CurrentVal;
+            }
+        }
+
+        /// <summary>
+        /// 执行一次结算
+        /// </summary>
+        private void ApplyOneActEffect()
+        {
+            // 
+            if (!PlayerGamePlayRule.ResolveHActParams(ActId, 10, 10, 1, out var hImpulseEnemy, out var hImpulsePlayer))
+            {
+                Debug.LogError("err ResolveHActParams");
+            }
+
+            MainGameManager.Instance.gameLogicManager.playerLogicEntity.ApplyHImpulseDirectly((long)(hImpulsePlayer * 0.2), null);
+
+            var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
+            if (npc != null)
+            {
+                // 对npc冲击
+                npc.ApplyNpcHImpulse((long)(hImpulsePlayer * 0.2));
             }
         }
 
@@ -64,6 +144,12 @@ namespace My.Map.View
 
             int orgActId = RandomGetTangleHAct();
             ActId = orgActId;
+
+            PgreossVal = 0;
+            BreakTimes = 0;
+
+            _timer = 0;
+            _lastBalanceTimer = 0;
 
             RefreshUI();
         }
@@ -76,18 +162,8 @@ namespace My.Map.View
 
             LogicTime.ReleasePause("PauseCloseupWindow");
             LogicTime.RequestPause("PauseCloseupWindow");
-
-
-            NormalPic.gameObject.SetActive(true);
-            CounterPic.gameObject.SetActive(false);
         }
 
-        
-
-        private void SwitchToCounterMode()
-        {
-
-        }
 
         protected void RefreshUI()
         {
@@ -110,8 +186,8 @@ namespace My.Map.View
         /// <returns></returns>
         private int RandomGetTangleHAct()
         {
-            int playerDesire = MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel;
-            var ll = CfgMgr.Cfgs.TbHActInfo.DataList.Where(item => item.FilterType.Contains("Charmed") && item.PlayerMinDesire <= playerDesire).ToList();
+            int checkDesire = PgreossVal;
+            var ll = CfgMgr.Cfgs.TbHActInfo.DataList.Where(item => item.FilterType.Contains("Charmed") && item.PlayerMinDesire <= PgreossVal).ToList();
             if (ll.Count == 0)
             {
                 return 0;
@@ -208,7 +284,21 @@ namespace My.Map.View
         {
             if(keyName == EInputKey.Space.ToString())
             {
-                
+                // 
+                if(PgreossVal < MaxProgress && CurrentVal >= GetProgressLockVal())
+                {
+                    BreakTimes += 1;
+                }
+
+                if(BreakTimes >= NeedBreakTimes)
+                {
+                    PgreossVal += 1;
+                    BreakTimes = 0;
+
+                    // show effect
+                    int orgActId = RandomGetTangleHAct();
+                    ActId = orgActId;
+                }
             }
             return true;
         }

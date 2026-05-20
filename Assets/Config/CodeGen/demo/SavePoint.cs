@@ -24,6 +24,8 @@ public sealed partial class SavePoint : Luban.BeanBase
         { var __json0 = _buf["show_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } ShowUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  ShowUnlockConds.Add(__v0); }   }
         { if(!_buf["require_tribute"].IsBoolean) { throw new SerializationException(); }  RequireTribute = _buf["require_tribute"]; }
         { var __json0 = _buf["tribute_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } TributeCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  TributeCosts.Add(__v0); }   }
+        { if(!_buf["teleport_map_id"].IsString) { throw new SerializationException(); }  TeleportMapId = _buf["teleport_map_id"]; }
+        { if(!_buf["teleport_named_point"].IsString) { throw new SerializationException(); }  TeleportNamedPoint = _buf["teleport_named_point"]; }
         { if(!_buf["sort_order"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["sort_order"]; }
     }
 
@@ -57,6 +59,14 @@ public sealed partial class SavePoint : Luban.BeanBase
     /// </summary>
     public System.Collections.Generic.List<demo.TalentUnlockCost> TributeCosts;
     /// <summary>
+    /// teleport_map_id
+    /// </summary>
+    public string TeleportMapId;
+    /// <summary>
+    /// teleport_named_point
+    /// </summary>
+    public string TeleportNamedPoint;
+    /// <summary>
     /// sort_order
     /// </summary>
     public int SortOrder;
@@ -79,6 +89,8 @@ public sealed partial class SavePoint : Luban.BeanBase
         + "showUnlockConds:" + Luban.StringUtil.CollectionToString(ShowUnlockConds) + ","
         + "requireTribute:" + RequireTribute + ","
         + "tributeCosts:" + Luban.StringUtil.CollectionToString(TributeCosts) + ","
+        + "teleportMapId:" + TeleportMapId + ","
+        + "teleportNamedPoint:" + TeleportNamedPoint + ","
         + "sortOrder:" + SortOrder + ","
         + "}";
     }

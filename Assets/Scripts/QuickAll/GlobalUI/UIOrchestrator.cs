@@ -253,8 +253,16 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
-                panelId = UIBedroomBedActPanel.PanelIdConst,
-                resourcePath = "UI/Prefabs/UIBedroomBedAct",
+                panelId = UIBedroomDreamPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/UIBedroomDream",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = UIBedroomDeployPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/UIBedroomDeploy",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

@@ -51,8 +51,6 @@ public class SceneInteractSystem
     private float _checkAngle = 90f;
 
     private float _interactTimer = 0f;
-    private float _executeCheckRadius = 3f;
-
     private float _maxCheckableRadius = 5.0f;
 
     public SceneInteractSystem()
@@ -75,13 +73,6 @@ public class SceneInteractSystem
     //public ISceneInteractable? currnteractObj;
 
     private float _pauseInteractTimer;
-
-
-    /// <summary>
-    /// 当前可处决对象
-    /// </summary>
-    private SceneNpcPresenter? currExecuteTarget = null;
-    private readonly List<SceneNpcPresenter> executeCandidates = new List<SceneNpcPresenter>(64);
 
 
     public void Tick(float dt)
@@ -155,11 +146,14 @@ public class SceneInteractSystem
         if(!IsInteractEnableState())
         {
             SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(new());
-            SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(null);
             currInteractPoints.Clear();
-            currExecuteTarget = null;
+            return;
+        }
 
-
+        if (OverworldHUDPanel.Instance != null && OverworldHUDPanel.Instance.IsHunterMode)
+        {
+            SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(new());
+            currInteractPoints.Clear();
             return;
         }
 
@@ -167,7 +161,6 @@ public class SceneInteractSystem
 
         normalCandidates.Clear();
         normalCandidatedSet.Clear();
-        executeCandidates.Clear();
 
         Vector2 center = presenter.transform.position;
         int count = Physics2D.OverlapCircleNonAlloc(center, _maxCheckableRadius, hits, 1 << LayerMask.NameToLayer("MapTarget"));
@@ -210,30 +203,6 @@ public class SceneInteractSystem
                 continue;
             }
 
-            // 优先判断处决
-            do
-            {
-                if (interactable is not SceneNpcPresenter npcPresenter)
-                {
-                    break;
-                }
-
-                if(dist > _executeCheckRadius)
-                {
-                    break;
-                }
-
-                if(!npcPresenter.NpcEntity.CheckCanExecute())
-                {
-                    break;
-                }
-
-                executeCandidates.Add(npcPresenter);
-
-                continue;
-            }
-            while (false);
-            
             if (!interactable.CanInteractEnable())
             {
                 continue;
@@ -268,23 +237,6 @@ public class SceneInteractSystem
         // 还要考虑角度权重？
         normalCandidates.Sort((a, b) => a.distance.CompareTo(b.distance));
 
-        //executeCandidates.Sort((a, b) => {
-        //    return 1;
-        //});
-
-        bool withExecute = false;
-        if (executeCandidates.Count > 0)
-        {
-            withExecute = true;
-            currExecuteTarget = executeCandidates.First();
-
-        }
-        else
-        {
-            currExecuteTarget = null;
-        }
-
-
         bool allSame = true;
 
         if (currInteractPoints.Count == normalCandidates.Count)
@@ -311,15 +263,6 @@ public class SceneInteractSystem
             }
 
             SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(currInteractPoints);
-        }
-
-        if(OverworldHUDPanel.Instance != null && OverworldHUDPanel.Instance.IsHunterMode)
-        {
-            SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(currExecuteTarget);
-        }
-        else
-        {
-            SceneInteractMenuPanel.Instance?.RefreshExecuteTarget(null);
         }
     }
     

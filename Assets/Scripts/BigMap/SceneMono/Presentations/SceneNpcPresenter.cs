@@ -91,12 +91,6 @@ namespace My.Map.Scene
         {
             get
             {
-                // 猎杀模式 不可展开
-                if (OverworldHUDPanel.Instance.IsHunterMode)
-                {
-                    return false;
-                }
-
                 if(MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsSpecialCrouchStance)
                 {
                     return false;
@@ -174,38 +168,31 @@ namespace My.Map.Scene
 
             if (OverworldHUDPanel.Instance.IsHunterMode)
             {
-                if (!UnitEntity.IsDead && !UnitEntity.MarkUnsensored)
+                return false;
+            }
+
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (player == null) return false;
+
+            if (UnitEntity.IsDead || UnitEntity.MarkUnsensored)
+            {
+                return true;
+            }
+
+            if (player.IsSpecialCrouchStance)
+            {
+                if (PlayerGamePlayRule.CanPlayerSneakThisNpc(player, NpcEntity))
                 {
                     return true;
                 }
             }
             else
             {
-                var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
-                if (player == null) return false;
-
-                if (UnitEntity.IsDead || UnitEntity.MarkUnsensored)
+                if (CheckNpcPeaceDialog())
                 {
-                    return true;
-                }
-                else
-                {
-                    if (player.IsSpecialCrouchStance)
+                    if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
                     {
-                        if (PlayerGamePlayRule.CanPlayerSneakThisNpc(player, NpcEntity))
-                        {
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        if (CheckNpcPeaceDialog())
-                        {
-                            if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
-                            {
-                                return true;
-                            }
-                        }
+                        return true;
                     }
                 }
             }
@@ -373,103 +360,86 @@ namespace My.Map.Scene
             var ret = new List<SceneInteractSelection>();
             if (NpcEntity.IsAttaching) return ret;
 
-            if(OverworldHUDPanel.Instance.IsHunterMode)
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (player == null) return ret;
+
+            if (UnitEntity.IsDead || UnitEntity.MarkUnsensored)
             {
-                //if (!UnitEntity.IsDead && !UnitEntity.MarkUnsensored)
-                //{
-                //    ret.Add(new SceneInteractSelection()
-                //    {
-                //        SelectId = ID_ForcePushDown,
-                //        SelectContent = "强推",
-                //        Selectable = true
-                //    });
-                //}
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = ID_PickDropInteractId,
+                    SelectContent = "搜刮",
+                    Selectable = true
+                });
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = ID_CarryBody,
+                    SelectContent = "搬运单位",
+                    Selectable = !PlayerNpcCarryService.IsCarrying,
+                });
+
+                if (UnitEntity.MarkUnsensored)
+                {
+                    if (UnitEntity.GetAttr(AttrIdConsts.DeepZhaChance) != 0)
+                    {
+                        ret.Add(new SceneInteractSelection()
+                        {
+                            SelectId = ID_DeepAbsorbEnable,
+                            SelectContent = "榨干",
+                            Selectable = true
+                        });
+                    }
+                    else
+                    {
+                        ret.Add(new SceneInteractSelection()
+                        {
+                            SelectId = ID_DeepAbsorbDisable,
+                            SelectContent = "榨干(无）",
+                            Selectable = false
+                        });
+                    }
+                }
             }
             else
             {
-                var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
-                if (player == null) return ret;
-                
-                if (UnitEntity.IsDead || UnitEntity.MarkUnsensored)
+                if (player.IsSpecialCrouchStance)
                 {
-                    ret.Add(new SceneInteractSelection()
+                    if (PlayerGamePlayRule.CanPlayerSneakThisNpc(player, NpcEntity))
                     {
-                        SelectId = ID_PickDropInteractId,
-                        SelectContent = "搜刮",
-                        Selectable = true
-                    });
-                    ret.Add(new SceneInteractSelection()
-                    {
-                        SelectId = ID_CarryBody,
-                        SelectContent = "搬运单位",
-                        Selectable = !PlayerNpcCarryService.IsCarrying,
-                    });
-
-                    if (UnitEntity.MarkUnsensored)
-                    {
-                        if (UnitEntity.GetAttr(AttrIdConsts.DeepZhaChance) != 0)
+                        ret.Add(new SceneInteractSelection()
                         {
-                            ret.Add(new SceneInteractSelection()
-                            {
-                                SelectId = ID_DeepAbsorbEnable,
-                                SelectContent = "榨干",
-                                Selectable = true
-                            });
-                        }
-                        else
-                        {
-                            ret.Add(new SceneInteractSelection()
-                            {
-                                SelectId = ID_DeepAbsorbDisable,
-                                SelectContent = "榨干(无）",
-                                Selectable = false
-                            });
-                        }
+                            SelectId = ID_SneakBackstab,
+                            SelectContent = "\u5077\u88ad",
+                            Selectable = true
+                        });
                     }
                 }
                 else
                 {
-                    if (player.IsSpecialCrouchStance)
+                    if(NpcEntity.CheckHasState(AttrIdConsts.Charmed))
                     {
-                        if (PlayerGamePlayRule.CanPlayerSneakThisNpc(player, NpcEntity))
+                        if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
                         {
                             ret.Add(new SceneInteractSelection()
                             {
-                                SelectId = ID_SneakBackstab,
-                                SelectContent = "\u5077\u88ad",
+                                SelectId = ID_OptCharmed,
+                                SelectContent = "缠绵",
                                 Selectable = true
                             });
                         }
                     }
                     else
                     {
-
-                        if(NpcEntity.CheckHasState(AttrIdConsts.Charmed))
+                        if (CheckNpcPeaceDialog())
                         {
                             if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
                             {
                                 ret.Add(new SceneInteractSelection()
                                 {
-                                    SelectId = ID_OptCharmed,
-                                    SelectContent = "缠绵",
+                                    SelectId = ID_NormalDialog,
+                                    SelectContent = "交谈",
                                     Selectable = true
                                 });
-                            }
-                        }
-                        else
-                        {
-
-                            if (CheckNpcPeaceDialog())
-                            {
-                                if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
-                                {
-                                    ret.Add(new SceneInteractSelection()
-                                    {
-                                        SelectId = ID_NormalDialog,
-                                        SelectContent = "交谈",
-                                        Selectable = true
-                                    });
-                                }
                             }
                         }
                     }

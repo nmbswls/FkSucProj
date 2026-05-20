@@ -237,5 +237,72 @@ namespace My.Map
             result.Sort((a, b) => a.SortOrder.CompareTo(b.SortOrder));
             return result;
         }
+
+        public static List<SavePoint> GetUnlockedForMap(GameLogicManager glm, string mapId)
+        {
+            var result = new List<SavePoint>();
+            if (string.IsNullOrEmpty(mapId) || glm == null)
+            {
+                return result;
+            }
+
+            foreach (var cfg in GetFormallyUnlockedConfigs(glm))
+            {
+                if (cfg?.ShowMapId == null)
+                {
+                    continue;
+                }
+
+                foreach (var mid in cfg.ShowMapId)
+                {
+                    if (mid == mapId)
+                    {
+                        result.Add(cfg);
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static bool TryTeleportToSavePoint(GameLogicManager glm, string savePointId, out string failReason)
+        {
+            failReason = null;
+            if (glm == null)
+            {
+                failReason = "no_glm";
+                return false;
+            }
+
+            var cfg = GetCfg(savePointId);
+            if (cfg == null)
+            {
+                failReason = "no_cfg";
+                return false;
+            }
+
+            if (!IsFormallyUnlocked(glm, savePointId))
+            {
+                failReason = "locked";
+                return false;
+            }
+
+            var mapId = cfg.TeleportMapId;
+            var named = cfg.TeleportNamedPoint;
+            if (string.IsNullOrEmpty(mapId))
+            {
+                failReason = "no_teleport_map";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(named))
+            {
+                named = "default";
+            }
+
+            glm.PreparePlayerSwitchArea(mapId, true, targetPoint: named);
+            return true;
+        }
     }
 }

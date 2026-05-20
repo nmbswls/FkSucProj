@@ -22,6 +22,7 @@ public partial class Tables
     public demo.TbBornPoint TbBornPoint {get; }
     public demo.TbUnitNpc TbUnitNpc {get; }
     public demo.TbUnitNpcAttr TbUnitNpcAttr {get; }
+    public demo.TbDesireDensityInfo TbDesireDensityInfo {get; }
     public demo.TbQuestData TbQuestData {get; }
     public demo.TbQuestStepData TbQuestStepData {get; }
     public demo.TbQuestStepOutcome TbQuestStepOutcome {get; }
@@ -71,6 +72,8 @@ public partial class Tables
     public demo.TbHActInfo TbHActInfo {get; }
     public demo.TbTalentNodeLevel TbTalentNodeLevel {get; }
     public demo.TbSavePoint TbSavePoint {get; }
+    public demo.TbDesireDensityTier TbDesireDensityTier {get; }
+    public demo.TbMindFragmentPoolEntry TbMindFragmentPoolEntry {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -82,6 +85,7 @@ public partial class Tables
         TbBornPoint = new demo.TbBornPoint(loader("demo_tbbornpoint"));
         TbUnitNpc = new demo.TbUnitNpc(loader("demo_tbunitnpc"));
         TbUnitNpcAttr = new demo.TbUnitNpcAttr(loader("demo_tbunitnpcattr"));
+        TbDesireDensityInfo = new demo.TbDesireDensityInfo(loader("demo_tbdesiredensityinfo"));
         TbQuestData = new demo.TbQuestData(loader("demo_tbquestdata"));
         TbQuestStepData = new demo.TbQuestStepData(loader("demo_tbqueststepdata"));
         TbQuestStepOutcome = new demo.TbQuestStepOutcome(loader("demo_tbqueststepoutcome"));
@@ -131,6 +135,8 @@ public partial class Tables
         TbHActInfo = new demo.TbHActInfo(loader("demo_tbhactinfo"));
         TbTalentNodeLevel = new demo.TbTalentNodeLevel(loader("demo_tbtalentnodelevel"));
         TbSavePoint = new demo.TbSavePoint(loader("demo_tbsavepoint"));
+        TbDesireDensityTier = new demo.TbDesireDensityTier(loader("demo_tbdesiredensitytier"));
+        TbMindFragmentPoolEntry = new demo.TbMindFragmentPoolEntry(loader("demo_tbmindfragmentpoolentry"));
         ResolveRef();
     }
     
@@ -144,6 +150,7 @@ public partial class Tables
         TbBornPoint.ResolveRef(this);
         TbUnitNpc.ResolveRef(this);
         TbUnitNpcAttr.ResolveRef(this);
+        TbDesireDensityInfo.ResolveRef(this);
         TbQuestData.ResolveRef(this);
         TbQuestStepData.ResolveRef(this);
         TbQuestStepOutcome.ResolveRef(this);
@@ -193,6 +200,8 @@ public partial class Tables
         TbHActInfo.ResolveRef(this);
         TbTalentNodeLevel.ResolveRef(this);
         TbSavePoint.ResolveRef(this);
+        TbDesireDensityTier.ResolveRef(this);
+        TbMindFragmentPoolEntry.ResolveRef(this);
     }
 }
 

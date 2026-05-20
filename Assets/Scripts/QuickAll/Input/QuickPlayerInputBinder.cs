@@ -250,6 +250,8 @@ namespace My.Input
                     OnKeyHoldEnd(keyTab);
                 }
             }
+
+            ReleaseHuntingModeIfNeeded();
         }
         private void OnApplicationFocus(bool hasFocus)
         {
@@ -258,6 +260,7 @@ namespace My.Input
                 // 强制告诉业务层停止一切长按行为
                 OnKeyHoldEnd(keyMouseRight);
                 OnKeyHoldEnd(keyTab);
+                ReleaseHuntingModeIfNeeded();
 
                 // 也可以顺便把移动方向清零
                 DoPlayerMove(Vector2.zero);
@@ -324,7 +327,8 @@ namespace My.Input
 
             actions.OverworldMap.Scroll.performed += OnMouseScroll;
 
-            actions.OverworldMap.HView.performed += OnHotKeyHView;
+            actions.OverworldMap.HView.started += OnHotKeyHViewStarted;
+            actions.OverworldMap.HView.canceled += OnHotKeyHViewCanceled;
 
             actions.OverworldMap.Crouch.performed += OnHotKeyCrouch;
             
@@ -371,7 +375,8 @@ namespace My.Input
 
             actions.OverworldMap.Scroll.performed -= OnMouseScroll;
 
-            actions.OverworldMap.HView.performed -= OnHotKeyHView;
+            actions.OverworldMap.HView.started -= OnHotKeyHViewStarted;
+            actions.OverworldMap.HView.canceled -= OnHotKeyHViewCanceled;
 
             actions.OverworldMap.HotKey1.performed -= OnHotKey1;
             actions.OverworldMap.HotKey2.performed -= OnHotKey2;
@@ -520,7 +525,39 @@ namespace My.Input
         public void OnHotKeyTab(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Tab.ToString());
         public void OnHotKeyTabEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.Tab.ToString());
 
-        public void OnHotKeyHView(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.HView.ToString());
+        public void OnHotKeyHViewStarted(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.started || GlobalLock)
+            {
+                return;
+            }
+
+            My.Map.Hunting.HuntingModeManager.Instance?.Enter();
+        }
+
+        public void OnHotKeyHViewCanceled(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.canceled)
+            {
+                return;
+            }
+
+            var hm = My.Map.Hunting.HuntingModeManager.Instance;
+            hm?.Exit();
+            hm?.NotifyHViewCanceledAfterExit();
+        }
+
+        private void ReleaseHuntingModeIfNeeded()
+        {
+            var hm = My.Map.Hunting.HuntingModeManager.Instance;
+            if (hm == null || !hm.Active)
+            {
+                return;
+            }
+
+            hm.Exit();
+            hm.NotifyHViewCanceledAfterExit();
+        }
 
         //public void OnMouseRightHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(EInputKey.MouseRight.ToString());
         public void OnMouseRightHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.MouseRight.ToString());
@@ -771,6 +808,12 @@ namespace My.Input
 
 
             if (LogicTime.paused)
+            {
+                return;
+            }
+
+            var hunting = My.Map.Hunting.HuntingModeManager.Instance;
+            if (hunting != null && hunting.Active && hunting.TryExecuteHoveredTarget())
             {
                 return;
             }

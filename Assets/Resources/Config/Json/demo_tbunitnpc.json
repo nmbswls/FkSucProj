@@ -16,6 +16,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
@@ -25,7 +26,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "orc_common",
+    "fallback_drop_id": 0
   },
   {
     "id": "initial_orc_02",
@@ -44,6 +47,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
@@ -53,7 +57,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "initial_orc_big",
@@ -72,6 +78,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
@@ -81,7 +88,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "game_init_luca_injured",
@@ -98,6 +107,7 @@
     "no_aggro": false,
     "peace_dialog_id": "game_init_luca_injured",
     "defeat_drop_id": 0,
+    "desire_density_type": 1,
     "not_target": true,
     "always_h_mode": false,
     "ignore_attract_level": 0,
@@ -107,7 +117,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "qigai_default",
@@ -124,6 +136,7 @@
     "no_aggro": false,
     "peace_dialog_id": "qigai_01",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 1,
@@ -133,7 +146,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "hunhun",
@@ -152,6 +167,7 @@
     "no_aggro": false,
     "peace_dialog_id": "qigai_01",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -161,7 +177,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "slime_red",
@@ -180,6 +198,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
@@ -189,7 +208,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "civil",
@@ -206,6 +227,7 @@
     "no_aggro": false,
     "peace_dialog_id": "qigai_01",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
@@ -215,7 +237,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "civil_sleeping",
@@ -232,6 +256,7 @@
     "no_aggro": false,
     "peace_dialog_id": "qigai_01",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
@@ -241,7 +266,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "default_guard_01",
@@ -258,6 +285,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 1,
+    "desire_density_type": 1,
     "not_target": false,
     "always_h_mode": false,
     "ignore_attract_level": 0,
@@ -267,7 +295,9 @@
     "no_real_jing": false,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_small_01",
@@ -287,6 +317,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -296,7 +327,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_small_02",
@@ -316,6 +349,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -325,7 +359,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_small_03",
@@ -345,6 +381,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -354,7 +391,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_middle_01",
@@ -374,6 +413,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -383,7 +423,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_middle_02",
@@ -403,6 +445,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -412,7 +455,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_middle_03",
@@ -432,6 +477,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -441,7 +487,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_big_01",
@@ -461,6 +509,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -470,7 +519,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_big_02",
@@ -490,6 +541,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -499,7 +551,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "h_spirit_big_03",
@@ -519,6 +573,7 @@
     "no_aggro": false,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
     "always_h_mode": true,
     "ignore_attract_level": 0,
@@ -528,7 +583,9 @@
     "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   },
   {
     "id": "city_watcher_01",
@@ -547,15 +604,18 @@
     "no_aggro": true,
     "peace_dialog_id": "",
     "defeat_drop_id": 0,
+    "desire_density_type": 0,
     "not_target": false,
-    "always_h_mode": false,
+    "always_h_mode": true,
     "ignore_attract_level": 0,
-    "unit_bottom_size": 0,
-    "no_unsensored": false,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": true,
     "desire_crystal_random_attachable": false,
-    "no_real_jing": false,
+    "no_real_jing": true,
     "vision_cone_kind": 0,
     "vision_range": -1,
-    "vision_fov_deg": -1
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   }
 ]

@@ -7,6 +7,7 @@ using My.Config;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Hunting;
 using My.Map.Scene;
 using My.Player;
 using My.Quest;
@@ -210,10 +211,26 @@ namespace My.UI
 
         public bool IsHunterMode = false;
 
+        public HuntingNpcDetailView HuntingNpcDetail;
+
         /// <summary>
         /// 猎杀模式切换时广播，供场景表现（如欲望结晶狩猎特效）订阅。
         /// </summary>
         public static event Action<bool> HunterModeChanged;
+
+        /// <summary>
+        /// 由 HuntingModeManager 设置狩猎状态并触发事件（event 仅能在本类内 Invoke）。
+        /// </summary>
+        public void SetHunterModeState(bool on)
+        {
+            if (IsHunterMode == on)
+            {
+                return;
+            }
+
+            IsHunterMode = on;
+            HunterModeChanged?.Invoke(on);
+        }
 
         private LogicEntityBase _buffEventsPlayer;
 
@@ -361,6 +378,8 @@ namespace My.UI
                     ItemQuickBarRoot = itemBarTr as RectTransform;
                 }
             }
+
+            EnsureHuntingNpcDetail();
         }
 
         private void InitializePropBalls()
@@ -623,6 +642,8 @@ namespace My.UI
 
         public override void Hide()
         {
+            HuntingModeManager.Instance?.Exit();
+
             base.Hide();
 
             UnsubscribePlayerBuffEvents();
@@ -1034,11 +1055,6 @@ namespace My.UI
         {
             if(HudMode == EHudMode.Normal)
             {
-                if(keyName == EInputKey.HView.ToString())
-                {
-                    SwitchHunterMode();
-                    return true;
-                }
                 return PeeviewUseSkillByKey(keyName);
             }
             
@@ -1248,24 +1264,20 @@ namespace My.UI
         }
 
 
-        public void SwitchHunterMode()
+        private void EnsureHuntingNpcDetail()
         {
-            if(IsHunterMode)
+            if (HuntingNpcDetail != null)
             {
-                SceneVolumnManager.Instance.EnterHuntingMode(false);
-                URPFeatureController.Instance?.SetHuntingDistortionEffect(false);
-
-                //SceneSmallIconLayerPanel.Instance?.Switch();
-                IsHunterMode = false;
-            }
-            else
-            {
-                SceneVolumnManager.Instance.EnterHuntingMode(true);
-                URPFeatureController.Instance?.SetHuntingDistortionEffect(true);
-                IsHunterMode = true;
+                return;
             }
 
-            HunterModeChanged?.Invoke(IsHunterMode);
+            HuntingNpcDetail = GetComponentInChildren<HuntingNpcDetailView>(true);
+            if (HuntingNpcDetail != null)
+            {
+                return;
+            }
+
+            HuntingNpcDetail = HuntingNpcDetailUiBuilder.BuildUnder(transform);
         }
 
         public void DoSwitchZhaZhiMode()

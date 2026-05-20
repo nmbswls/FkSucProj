@@ -32,6 +32,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["no_aggro"].IsBoolean) { throw new SerializationException(); }  NoAggro = _buf["no_aggro"]; }
         { if(!_buf["peace_dialog_id"].IsString) { throw new SerializationException(); }  PeaceDialogId = _buf["peace_dialog_id"]; }
         { if(!_buf["defeat_drop_id"].IsNumber) { throw new SerializationException(); }  DefeatDropId = _buf["defeat_drop_id"]; }
+        { if(!_buf["desire_density_type"].IsNumber) { throw new SerializationException(); }  DesireDensityType = (demo.EDesireDensityType)_buf["desire_density_type"].AsInt; }
         { if(!_buf["not_target"].IsBoolean) { throw new SerializationException(); }  NotTarget = _buf["not_target"]; }
         { if(!_buf["always_h_mode"].IsBoolean) { throw new SerializationException(); }  AlwaysHMode = _buf["always_h_mode"]; }
         { if(!_buf["ignore_attract_level"].IsNumber) { throw new SerializationException(); }  IgnoreAttractLevel = _buf["ignore_attract_level"]; }
@@ -42,6 +43,8 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["vision_cone_kind"].IsNumber) { throw new SerializationException(); }  VisionConeKind = _buf["vision_cone_kind"]; }
         { if(!_buf["vision_range"].IsNumber) { throw new SerializationException(); }  VisionRange = _buf["vision_range"]; }
         { if(!_buf["vision_fov_deg"].IsNumber) { throw new SerializationException(); }  VisionFovDeg = _buf["vision_fov_deg"]; }
+        { if(!_buf["mind_tag"].IsString) { throw new SerializationException(); }  MindTag = _buf["mind_tag"]; }
+        { if(!_buf["fallback_drop_id"].IsNumber) { throw new SerializationException(); }  FallbackDropId = _buf["fallback_drop_id"]; }
     }
 
     public static UnitNpc DeserializeUnitNpc(JSONNode _buf)
@@ -103,6 +106,10 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// </summary>
     public int DefeatDropId;
     /// <summary>
+    /// desire浓度类型
+    /// </summary>
+    public demo.EDesireDensityType DesireDensityType;
+    /// <summary>
     /// 非目标单位<br/>用于剧情npc等
     /// </summary>
     public bool NotTarget;
@@ -142,6 +149,14 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// 覆盖视野全角，&lt;=0用实体默认
     /// </summary>
     public float VisionFovDeg;
+    /// <summary>
+    /// mind_tag
+    /// </summary>
+    public string MindTag;
+    /// <summary>
+    /// fallback_drop_id
+    /// </summary>
+    public int FallbackDropId;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -167,6 +182,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "noAggro:" + NoAggro + ","
         + "peaceDialogId:" + PeaceDialogId + ","
         + "defeatDropId:" + DefeatDropId + ","
+        + "desireDensityType:" + DesireDensityType + ","
         + "notTarget:" + NotTarget + ","
         + "alwaysHMode:" + AlwaysHMode + ","
         + "ignoreAttractLevel:" + IgnoreAttractLevel + ","
@@ -177,6 +193,8 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "visionConeKind:" + VisionConeKind + ","
         + "visionRange:" + VisionRange + ","
         + "visionFovDeg:" + VisionFovDeg + ","
+        + "mindTag:" + MindTag + ","
+        + "fallbackDropId:" + FallbackDropId + ","
         + "}";
     }
 }

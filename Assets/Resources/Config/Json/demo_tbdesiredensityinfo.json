@@ -1,0 +1,34 @@
+[
+  {
+    "desire_type": 0,
+    "min_density": 0,
+    "max_density": 0,
+    "distribute_mean": 0,
+    "distribute_std_dev": 0,
+    "hard_cap": 0
+  },
+  {
+    "desire_type": 1,
+    "min_density": 5000,
+    "max_density": 35000,
+    "distribute_mean": 20000,
+    "distribute_std_dev": 6000,
+    "hard_cap": 100000
+  },
+  {
+    "desire_type": 2,
+    "min_density": 15000,
+    "max_density": 55000,
+    "distribute_mean": 35000,
+    "distribute_std_dev": 8000,
+    "hard_cap": 100000
+  },
+  {
+    "desire_type": 3,
+    "min_density": 25000,
+    "max_density": 80000,
+    "distribute_mean": 50000,
+    "distribute_std_dev": 12000,
+    "hard_cap": 100000
+  }
+]

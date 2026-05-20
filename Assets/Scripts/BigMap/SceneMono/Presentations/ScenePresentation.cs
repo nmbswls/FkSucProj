@@ -94,7 +94,18 @@ namespace My
         {
             if (_logic == null) return;
 
+            SyncAnimancerSpeed();
             Tick(LogicTime.deltaTime);
+        }
+
+        private void SyncAnimancerSpeed()
+        {
+            if (_Animancer == null || _Animancer.Animator == null)
+            {
+                return;
+            }
+
+            _Animancer.Animator.speed = LogicTime.paused ? 0f : LogicTime.timeScale;
         }
 
         public virtual void Bind(ILogicEntity logic)

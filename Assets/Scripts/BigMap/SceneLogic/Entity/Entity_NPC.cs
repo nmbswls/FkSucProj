@@ -295,6 +295,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.HPower, (long)(hPower * 1000));
 
             attributeStore.RegisterNumeric(AttrIdConsts.Will, 10_000);
+            attributeStore.RegisterNumeric(AttrIdConsts.DesireDensityAmplify, 0);
 
             if (NpcConfig != null)
             {
@@ -335,9 +336,28 @@ namespace My.Map
         {
             base.OnUnitDie(reason, lastIntent);
 
-            // 初始化掉落容器
-            dropBagContainer = new(this.LogicManager, NpcConfig.DefeatDropId, 12);
+            var items = new List<(string, int)>();
+            if (MarkUnsensored)
+            {
+                int baseDropId = NpcConfig.DefeatDropId;
+                if (baseDropId > 0)
+                {
+                    items.AddRange(DropUtils.GetBundleDropItems(baseDropId));
+                }
 
+                long finalDensity = DesireDensityUtil.GetFinalDensity(this);
+                items.AddRange(MindFragment.MindFragmentDropResolver.Roll(this, finalDensity));
+            }
+            else
+            {
+                int dropId = NpcConfig.FallbackDropId > 0 ? NpcConfig.FallbackDropId : NpcConfig.DefeatDropId;
+                if (dropId > 0)
+                {
+                    items.AddRange(DropUtils.GetBundleDropItems(dropId));
+                }
+            }
+
+            dropBagContainer = new(this.LogicManager, 12, items);
 
             if (lastIntent != null && lastIntent.srcPos != null)
             {

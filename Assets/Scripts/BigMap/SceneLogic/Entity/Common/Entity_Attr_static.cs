@@ -77,6 +77,9 @@ namespace My.Map.Entity
         public const string NPCHVal_Basic_Up = "NPCHVal_Up"; // NPCHVal 自然上涨
         public const string NPCSJProgress_Basic_Up = "NPCSJProgress_Basic_Up"; // NPCHVal 自然上涨
 
+        // 欲望浓度增幅（万分比，10000=抵达该类型硬上限）
+        public const string DesireDensityAmplify = "DesireDensityAmplify";
+
         public const string Unmovable = "Unmovable";
         public const string LockFace = "LockFace";
         public const string Stun = "Stun";
