@@ -84,6 +84,9 @@ namespace My.Saving
         // 天赋节点等级（Level==0 可省略；对应 TbTalentNode + TbTalentNodeLevel）
         public List<TalentNodeLevelPersist> TalentNodeLevels = new();
 
+        // 存档点正式解锁（全局；键 save_point_id，局外传送列表用）
+        public List<SavePointUnlockPersist> SavePointUnlocks = new();
+
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
 
         // 地图小剧情触发器消费态：键 mapId|triggerId
@@ -129,6 +132,14 @@ namespace My.Saving
     {
         public string SkillId;
         public int Level;
+    }
+
+    [Serializable]
+    public class SavePointUnlockPersist
+    {
+        public string SavePointId;
+        public bool Unlocked;
+        public Dictionary<string, long> TributePut = new();
     }
     [Serializable]
     public class NpcCharacterPersistData
@@ -334,6 +345,7 @@ namespace My.Saving
             data.PlayerData.PassiveSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.PlayerData.TalentNodeLevels ??= new List<TalentNodeLevelPersist>();
+            data.PlayerData.SavePointUnlocks ??= new List<SavePointUnlockPersist>();
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.MainInventorySlots ??= new List<MainBagSlotPersist>();

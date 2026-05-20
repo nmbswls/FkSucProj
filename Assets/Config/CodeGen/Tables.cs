@@ -70,6 +70,7 @@ public partial class Tables
     public demo.TbForgeRecipe TbForgeRecipe {get; }
     public demo.TbHActInfo TbHActInfo {get; }
     public demo.TbTalentNodeLevel TbTalentNodeLevel {get; }
+    public demo.TbSavePoint TbSavePoint {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -129,6 +130,7 @@ public partial class Tables
         TbForgeRecipe = new demo.TbForgeRecipe(loader("demo_tbforgerecipe"));
         TbHActInfo = new demo.TbHActInfo(loader("demo_tbhactinfo"));
         TbTalentNodeLevel = new demo.TbTalentNodeLevel(loader("demo_tbtalentnodelevel"));
+        TbSavePoint = new demo.TbSavePoint(loader("demo_tbsavepoint"));
         ResolveRef();
     }
     
@@ -190,6 +192,7 @@ public partial class Tables
         TbForgeRecipe.ResolveRef(this);
         TbHActInfo.ResolveRef(this);
         TbTalentNodeLevel.ResolveRef(this);
+        TbSavePoint.ResolveRef(this);
     }
 }
 

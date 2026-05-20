@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using My.Config;
 using My.Saving;
+using System;
 using UnityEngine;
 
 namespace My
@@ -13,6 +14,7 @@ namespace My
     {
         private readonly Dictionary<string, FishingSpotRuntimeSave> _fishingRuntime = new();
         private readonly Dictionary<string, RepairPointRuntimeSave> _ruinRuntime = new();
+        private readonly Dictionary<string, SavePointUnlockPersist> _savePointUnlockById = new(StringComparer.Ordinal);
 
         public readonly WorldNpcCharacterPersistRegistry NpcCharacters = new();
 
@@ -102,6 +104,34 @@ namespace My
                     }
                 }
             }
+
+            _savePointUnlockById.Clear();
+            if (savingData?.PlayerData?.SavePointUnlocks != null)
+            {
+                foreach (var row in savingData.PlayerData.SavePointUnlocks)
+                {
+                    if (row == null || string.IsNullOrEmpty(row.SavePointId))
+                    {
+                        continue;
+                    }
+
+                    var put = new Dictionary<string, long>(StringComparer.Ordinal);
+                    if (row.TributePut != null)
+                    {
+                        foreach (var p in row.TributePut)
+                        {
+                            put[p.Key] = p.Value;
+                        }
+                    }
+
+                    _savePointUnlockById[row.SavePointId] = new SavePointUnlockPersist
+                    {
+                        SavePointId = row.SavePointId,
+                        Unlocked = row.Unlocked,
+                        TributePut = put,
+                    };
+                }
+            }
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -155,7 +185,69 @@ namespace My
                     data.PlayerData.MicroPlotConsumedByKey[kv.Key] = true;
                 }
             }
+
+            data.PlayerData.SavePointUnlocks ??= new List<SavePointUnlockPersist>();
+            data.PlayerData.SavePointUnlocks.Clear();
+            foreach (var kv in _savePointUnlockById)
+            {
+                var v = kv.Value;
+                if (v == null || string.IsNullOrEmpty(v.SavePointId))
+                {
+                    continue;
+                }
+
+                var put = new Dictionary<string, long>();
+                if (v.TributePut != null)
+                {
+                    foreach (var p in v.TributePut)
+                    {
+                        put[p.Key] = p.Value;
+                    }
+                }
+
+                data.PlayerData.SavePointUnlocks.Add(new SavePointUnlockPersist
+                {
+                    SavePointId = v.SavePointId,
+                    Unlocked = v.Unlocked,
+                    TributePut = put,
+                });
+            }
         }
+
+        public SavePointUnlockPersist GetOrCreateSavePointUnlockState(string savePointId)
+        {
+            if (string.IsNullOrEmpty(savePointId))
+            {
+                return null;
+            }
+
+            if (_savePointUnlockById.TryGetValue(savePointId, out var existing))
+            {
+                return existing;
+            }
+
+            var created = new SavePointUnlockPersist
+            {
+                SavePointId = savePointId,
+                Unlocked = false,
+                TributePut = new Dictionary<string, long>(StringComparer.Ordinal),
+            };
+            _savePointUnlockById[savePointId] = created;
+            return created;
+        }
+
+        public SavePointUnlockPersist GetSavePointUnlockStateOrNull(string savePointId)
+        {
+            if (string.IsNullOrEmpty(savePointId))
+            {
+                return null;
+            }
+
+            _savePointUnlockById.TryGetValue(savePointId, out var s);
+            return s;
+        }
+
+        public IEnumerable<SavePointUnlockPersist> EnumerateSavePointUnlockStates() => _savePointUnlockById.Values;
 
         public FishingSpotRuntimeSave GetOrCreateFishingSpotState(string uniqName, string cfgId, int settlementDayIndex)
         {

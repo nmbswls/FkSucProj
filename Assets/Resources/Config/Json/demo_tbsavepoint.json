@@ -1,0 +1,51 @@
+[
+  {
+    "save_point_id": "sp_demo_shrine",
+    "display_name": "演示存档点",
+    "map_id": "initial",
+    "anchor_named_point": "default",
+    "show_unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "require_tribute": true,
+    "tribute_costs": [
+      {
+        "item_id": "wood",
+        "count": 2
+      },
+      {
+        "item_id": "stick",
+        "count": 1
+      }
+    ],
+    "sort_order": 0
+  },
+  {
+    "save_point_id": "sp_demo_inn",
+    "display_name": "演示旅店存档",
+    "map_id": "initial",
+    "anchor_named_point": "default",
+    "show_unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "require_tribute": false,
+    "tribute_costs": [],
+    "sort_order": 1
+  }
+]
