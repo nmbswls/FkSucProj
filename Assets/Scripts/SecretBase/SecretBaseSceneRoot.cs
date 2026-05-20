@@ -14,8 +14,11 @@ namespace My.SecretBase
         [SerializeField] private float scrollMaxX = 40f;
         [SerializeField] private SecretBaseInteractable[] interactables;
 
+        SecretBaseInteractionHandler _interactionHandler;
+
         public SecretBaseCameraRig CameraRig => cameraRig;
         public Transform FurnitureRoot => furnitureRoot != null ? furnitureRoot : transform;
+        public SecretBaseInteractionHandler InteractionHandler => _interactionHandler;
 
         void Awake()
         {
@@ -30,10 +33,13 @@ namespace My.SecretBase
             {
                 interactables = GetComponentsInChildren<SecretBaseInteractable>(true);
             }
+
+            _interactionHandler = new SecretBaseInteractionHandler(interactables);
         }
 
         void OnDestroy()
         {
+            _interactionHandler?.ClearHover();
             if (Instance == this)
             {
                 Instance = null;
@@ -59,6 +65,20 @@ namespace My.SecretBase
 
             cameraRig.Tick(dt, horizontalAxis);
             cameraRig.ApplyParallax(parallaxLayers);
+        }
+
+        public void TickInteraction(Vector2 worldPos, bool clickDown)
+        {
+            if (_interactionHandler == null)
+            {
+                return;
+            }
+
+            _interactionHandler.TickHover(worldPos);
+            if (clickDown)
+            {
+                _interactionHandler.TryClick(worldPos);
+            }
         }
     }
 }

@@ -91,7 +91,9 @@ namespace My.SecretBase
                 _startCo = null;
             }
 
-            SecretBaseSceneRoot.FindInLoadedScenes()?.CameraRig?.UnbindFromSecretBase();
+            var root = SecretBaseSceneRoot.FindInLoadedScenes();
+            root?.InteractionHandler?.ClearHover();
+            root?.CameraRig?.UnbindFromSecretBase();
             My.UI.SecretBaseHudPanel.TryHide();
         }
 
@@ -113,26 +115,17 @@ namespace My.SecretBase
                 axis += 1f;
             }
 
-            SecretBaseSceneRoot.FindInLoadedScenes()?.Tick(dt, axis);
+            var root = SecretBaseSceneRoot.FindInLoadedScenes();
+            root?.Tick(dt, axis);
 
-            if (UnityEngine.Input.GetMouseButtonDown(0) && Camera.main != null)
+            if (root == null || Camera.main == null)
             {
-                var w = Camera.main.ScreenToWorldPoint(UnityEngine.Input.mousePosition);
-                TryClickInteractable(w);
+                return;
             }
-        }
 
-        void TryClickInteractable(Vector3 worldPos)
-        {
-            var hits = Object.FindObjectsOfType<SecretBaseInteractable>(false);
-            foreach (var h in hits)
-            {
-                if (h.ContainsWorldPoint(worldPos))
-                {
-                    h.TryOpenPanel();
-                    return;
-                }
-            }
+            var worldPos = (Vector2)Camera.main.ScreenToWorldPoint(UnityEngine.Input.mousePosition);
+            var clickDown = UnityEngine.Input.GetMouseButtonDown(0);
+            root.TickInteraction(worldPos, clickDown);
         }
 
         public void RequestExit()

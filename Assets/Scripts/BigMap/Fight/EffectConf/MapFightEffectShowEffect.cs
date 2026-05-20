@@ -11,6 +11,7 @@ namespace My.Map.Entity
     {
         public enum EShowMode
         {
+            TriggerPos,
             Fixed,
             TargetAligned,
             CasterAligned,

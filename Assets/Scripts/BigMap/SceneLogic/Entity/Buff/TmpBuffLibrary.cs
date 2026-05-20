@@ -1,6 +1,5 @@
 
 using System.Collections.Generic;
-using static My.Map.Entity.MapFightEffectShowEffect;
 
 namespace My.Map.Entity
 {
@@ -129,6 +128,12 @@ namespace My.Map.Entity
                                 {
                                     EffectText = "爆乳",
                                 },
+                                new MapFightEffectShowEffect()
+                                {
+                                    ShowMode = MapFightEffectShowEffect.EShowMode.TriggerPos,
+                                    EffectName = "h_voice_vfx",
+                                },
+                                
                                  new MapFightEffectAddLiquidCfg()
                                 {
                                     ElementType = EGroundElementType.Milk,

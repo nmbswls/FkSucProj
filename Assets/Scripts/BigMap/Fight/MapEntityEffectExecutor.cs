@@ -478,7 +478,11 @@ namespace My.Map.Entity
             }
             Vector2 p = Vector2.zero;
             var target = ctx.Env.GetLogicEntity(ctx.TargetId);
-            if(realCfg.ShowMode == MapFightEffectShowEffect.EShowMode.TargetAligned)
+            if (realCfg.ShowMode == MapFightEffectShowEffect.EShowMode.TriggerPos)
+            {
+                p = ctx.TriggerPos == null ? Vector2.zero : ctx.TriggerPos.Value;
+            }
+            else if (realCfg.ShowMode == MapFightEffectShowEffect.EShowMode.TargetAligned)
             {
                 p = target.Pos;
             }

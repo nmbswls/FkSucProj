@@ -22,26 +22,7 @@ MonoBehaviour:
   MainStatusInfo:
     StatusId: 0
     Desp: 
-    InteractInfos:
-    - InteractId: 0
-      Label: "\u5165\u591C"
-      UnLabel: 
-      HideWhenFail: 0
-      NeedDist: 0
-      Passive: 0
-      CheckCommonCond: []
-      CheckInteractCond: []
-      Outputs:
-      - OutputType: 6
-        Param1: 0
-        Param2: 0
-        Param3: UIBedroomBedAct
-        Param4: 
-        DelayTime: 0
-        TargetType: 0
-        MemberId: 0
-        StaticName: 
-        DynamicEntityVariable: 
+    InteractInfos: []
     HasBlock: 0
     AutoTriggerCollide: 0
     AutoTrigger: 0

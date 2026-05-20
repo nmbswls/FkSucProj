@@ -3425,6 +3425,11 @@ namespace My.Map.Entity
                 AddValue = 4_000,
             };
 
+            var hVfxEffect = new MapFightEffectShowEffect()
+            {
+                ShowMode = MapFightEffectShowEffect.EShowMode.TriggerPos,
+                EffectName = "h_voice_vfx",
+            };
 
             var liquidEffect1 = new MapFightEffectAddLiquidCfg()
             {
@@ -3432,7 +3437,7 @@ namespace My.Map.Entity
                 Range = 1.5f,
                 Duration = 10,
 
-
+                OffsetRange = 1.0f,
             };
             
 
@@ -3441,6 +3446,8 @@ namespace My.Map.Entity
                 ElementType = EGroundElementType.Milk,
                 Range = 1.5f,
                 Duration = 10,
+
+                OffsetRange = 1.5f,
             };
 
             var liquidEffect3 = new MapFightEffectAddLiquidCfg()
@@ -3448,20 +3455,51 @@ namespace My.Map.Entity
                 ElementType = EGroundElementType.Milk,
                 Range = 1.5f,
                 Duration = 10,
+
+                OffsetRange = 2.0f,
             };
 
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = liquidEffect1, Kind = PhaseEventKind.Timed, TimeOffset = 0.0f });
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.0f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hVfxEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.0f });
 
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = liquidEffect2, Kind = PhaseEventKind.Timed, TimeOffset = 0.4f });
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.4f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hVfxEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.4f });
 
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = liquidEffect3, Kind = PhaseEventKind.Timed, TimeOffset = 0.8f });
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.8f });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hVfxEffect, Kind = PhaseEventKind.Timed, TimeOffset = 0.8f });
 
             spec.Phases.Add(mainPhase);
             return spec;
         }
+        
+
+
+        private static MapAbilitySpecConfig CreatePlayerFQDashAssult()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_fq_dash_assult";
+            spec.TypeTag = AbilityTypeTag.HMode;
+            spec.DefaultStepDistance = 0f;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5"
+                },
+            });
+
+            return spec;
+        }
+        
         private static MapAbilitySpecConfig CreatePlayerSmallStarggering()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
