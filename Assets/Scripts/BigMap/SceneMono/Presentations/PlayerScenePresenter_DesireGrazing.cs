@@ -1,3 +1,4 @@
+using My.Config;
 using My.Map.Entity;
 using My.Map.Fight;
 using UnityEngine;
@@ -10,13 +11,12 @@ namespace My.Map.Scene
     {
         const float DesireGrazeCooldownSec = 2.2f;
         // 持续贴靠时：仅限制「触发成功后的 CD」会在 CD 结束瞬间几乎必中；失败后拉长抽距，避免每帧连抽
-        const float DesireGrazeMinRollIntervalSec = 0.28f;
-        const float DesireGrazeTriggerChance = 0.32f;
+        const float DesireGrazeMinRollIntervalSec = 0.32f;
         const long DesireGrazePleasureAdd = 3200;
         // ApplyKnockBack 初速 = knockDist * decayRate；对齐原约 3.4 的瞬时冲量感
         const float DesireGrazeKnockDist = 0.425f;
         const float DesireGrazeKnockDecay = 8f;
-        const float DesireGrazeOverlapRadius = 0.72f;
+        const float DesireGrazeOverlapRadius = 0.5f;
 
         // Resources/SceneEffect/scene_h_graze_knock（剐蹭击退专用，与通用 H 碰撞特效分离）
         const string DesireGrazeKnockEffectName = "scene_h_graze_knock";
@@ -128,10 +128,13 @@ namespace My.Map.Scene
                 return;
             }
 
-            if (Random.value > DesireGrazeTriggerChance)
+            var desireLevel = PlayerEntity.DesireLevel;
+            var desireCfg = CfgMgr.Cfgs.TbPlayerDesireLevel.GetOrDefault(desireLevel);
+            var rate = (desireCfg?.HCollideRate ?? 0) * 0.001f;
+            if (Random.value > rate)
             {
                 _nextDesireGrazeRollAllowedTime = LogicTime.time + DesireGrazeMinRollIntervalSec;
-                //return;
+                return;
             }
 
             _nextDesireGrazeProcAllowedTime = LogicTime.time + DesireGrazeCooldownSec;
