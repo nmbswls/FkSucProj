@@ -20,6 +20,7 @@ public sealed partial class EntitySkillData : Luban.BeanBase
     {
         { if(!_buf["skill_id"].IsString) { throw new SerializationException(); }  SkillId = _buf["skill_id"]; }
         { if(!_buf["main_ability_id"].IsString) { throw new SerializationException(); }  MainAbilityId = _buf["main_ability_id"]; }
+        { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { if(!_buf["is_passive"].IsBoolean) { throw new SerializationException(); }  IsPassive = _buf["is_passive"]; }
         { if(!_buf["passive_buff_id"].IsString) { throw new SerializationException(); }  PassiveBuffId = _buf["passive_buff_id"]; }
         { if(!_buf["passive_buff_level_variable_key"].IsString) { throw new SerializationException(); }  PassiveBuffLevelVariableKey = _buf["passive_buff_level_variable_key"]; }
@@ -51,6 +52,10 @@ public sealed partial class EntitySkillData : Luban.BeanBase
     /// main_ability_id
     /// </summary>
     public string MainAbilityId;
+    /// <summary>
+    /// 描述
+    /// </summary>
+    public string Desc;
     /// <summary>
     /// is_passive
     /// </summary>
@@ -130,6 +135,7 @@ public sealed partial class EntitySkillData : Luban.BeanBase
         return "{ "
         + "skillId:" + SkillId + ","
         + "mainAbilityId:" + MainAbilityId + ","
+        + "desc:" + Desc + ","
         + "isPassive:" + IsPassive + ","
         + "passiveBuffId:" + PassiveBuffId + ","
         + "passiveBuffLevelVariableKey:" + PassiveBuffLevelVariableKey + ","

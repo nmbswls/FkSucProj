@@ -92,6 +92,11 @@ namespace My.Map.Entity
         public const string FastTurn = "FastTurn";
         public const string NoInteract = "NoInteract";
         public const string Charmed = "Charmed";
+        public const string Fear = "Fear";
+        public const string ImmuneFear = "ImmuneFear";
+        public const string Lured = "Lured";
+        public const string ImmuneLured = "ImmuneLured";
+        public const string ImmuneSteerInput = "ImmuneSteerInput";
         public const string ImmuneJianSu = "ImmuneJianSu";
         public const string NpcFcked = "NpcFcked"; // 特殊状态
         public const string DesireMistAffected = "DesireMistAffected";

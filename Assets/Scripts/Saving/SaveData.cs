@@ -65,8 +65,8 @@ namespace My.Saving
 
         public List<string> NormalSkillSlotOverrides = new();
         public List<string> PassiveSkillSlotOverrides = new();
-        public List<string> WeaponQuickSlotOverrides = new();
-        public List<string> ConsumableQuickSlotOverrides = new();
+        public List<QuickSlotBindingPersist> WeaponQuickSlotOverrides = new();
+        public List<QuickSlotBindingPersist> ConsumableQuickSlotOverrides = new();
         public int ActiveWeaponSlotIndex = -1;
         public int ActiveConsumableIndex;
 
@@ -87,6 +87,13 @@ namespace My.Saving
 
         // 角色装备（与主背包互斥：穿上时从背包扣除；存档需与背包一致）
         public List<EquippedGearEntry> EquippedGear = new();
+    }
+
+    [Serializable]
+    public class QuickSlotBindingPersist
+    {
+        public string ItemId;
+        public long ItemInstanceId;
     }
 
     [Serializable]

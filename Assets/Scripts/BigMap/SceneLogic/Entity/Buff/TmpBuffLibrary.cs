@@ -171,6 +171,14 @@ namespace My.Map.Entity
                     },
                 };
 
+                _library["b_player_fq_assult_speedup"] = new BuffDefinition()
+                {
+                    BuffId = "b_player_fq_assult_speedup",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = -1,
+
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = 3000 } },
+                };
 
                 _library["b_player_fq_hit_hop"] = new BuffDefinition()
                 {
@@ -264,6 +272,96 @@ namespace My.Map.Entity
                     BuffId = "fast_turn",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.FastTurn, ModifierValue = 1 } },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["fear"] = new BuffDefinition()
+                {
+                    BuffId = "fear",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Fear, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                    },
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.SteerInput,
+                        ParamStr1 = nameof(EBuffMoveSteerMode.AwayFromCaster),
+                        ParamFloat1 = 1f,
+                        ParamFloat2 = 0.2f,
+                    },
+                    DefaultDuration = 3f,
+                    Icon = "fallback",
+                };
+
+                _library["immune_fear"] = new BuffDefinition()
+                {
+                    BuffId = "immune_fear",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneFear, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneSteerInput, ModifierValue = 1 },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["b_player_fq_lured"] = new BuffDefinition()
+                {
+                    BuffId = "b_player_fq_lured",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Lured, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                    },
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.SteerInput,
+                        ParamStr1 = nameof(EBuffMoveSteerMode.TowardCaster),
+                        ParamFloat1 = 1f,
+                        ParamFloat2 = 0.2f,
+                    },
+                    DefaultDuration = 3f,
+                    Icon = "fallback",
+                };
+
+                _library["lured"] = new BuffDefinition()
+                {
+                    BuffId = "lured",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Lured, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                    },
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.SteerInput,
+                        ParamStr1 = nameof(EBuffMoveSteerMode.TowardCaster),
+                        ParamFloat1 = 1f,
+                        ParamFloat2 = 0.2f,
+                    },
+                    DefaultDuration = 3f,
+                    Icon = "fallback",
+                };
+
+                _library["immune_lured"] = new BuffDefinition()
+                {
+                    BuffId = "immune_lured",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneLured, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ImmuneSteerInput, ModifierValue = 1 },
+                    },
                     DefaultDuration = -1,
                     IsHidden = true,
                 };

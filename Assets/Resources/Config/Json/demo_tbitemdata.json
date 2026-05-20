@@ -1,12 +1,14 @@
 [
   {
-    "item_id": "1",
-    "display_name": "1",
-    "item_type": 0,
+    "item_id": "jingyuan",
+    "display_name": "精元",
+    "item_type": 1,
     "stackable": true,
-    "stack_count": 0,
-    "stack_tags": [],
-    "sprite_name": "1",
+    "stack_count": 500,
+    "stack_tags": [
+      "jingyuan"
+    ],
+    "sprite_name": "jingyuan",
     "can_drop": true,
     "rare_tier": 0,
     "reveal_effect_type": 0,

@@ -191,6 +191,12 @@ namespace My.Map.Entity
                     var ab = CreateDefaultEnemyQinfan();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                {
+                    var ab = CreateSupplyItemAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
                 {
                     var ab = CreateFixClothesAbility();
                     _abilityDict[ab.Id] = ab;
@@ -203,6 +209,16 @@ namespace My.Map.Entity
 
                 {
                     var ab = CreateFightEffectPlaceStunTrapAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateDebugApplyFearBuffAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateDebugApplyLuredBuffAbility();
                     _abilityDict[ab.Id] = ab;
                 }
 
@@ -284,7 +300,11 @@ namespace My.Map.Entity
                     var ab = CreatePlayerFQHitBreast();
                     _abilityDict[ab.Id] = ab;
                 }
-                
+
+                {
+                    var ab = CreatePlayerFQDashAssult();
+                    _abilityDict[ab.Id] = ab;
+                }
 
                 {
                     var ab = CreatePlayerSmallStarggering();
@@ -1714,6 +1734,34 @@ namespace My.Map.Entity
             return spec;
         }
 
+
+        private static MapAbilitySpecConfig CreateSupplyItemAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_supply_item";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "2"
+                },
+            };
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+
         private static MapAbilitySpecConfig CreateFixClothesAbility()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
@@ -1777,6 +1825,49 @@ namespace My.Map.Entity
                 LifeTime = 10.0f,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateDebugApplyFearBuffAbility()
+        {
+            return CreateDebugApplySteerBuffAbility("debug_apply_fear", "fear", 3f);
+        }
+
+        private static MapAbilitySpecConfig CreateDebugApplyLuredBuffAbility()
+        {
+            return CreateDebugApplySteerBuffAbility("debug_apply_lured", "lured", 3f);
+        }
+
+        private static MapAbilitySpecConfig CreateDebugApplySteerBuffAbility(string abilityId, string buffId, float buffDuration)
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = abilityId;
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CastType = ECastType.LockTarget;
+            spec.Range1 = 8f;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = false,
+                LockRotation = false,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.05"
+                },
+            };
+
+            var addBuff = new MapAbilityEffectAddBuffCfg()
+            {
+                BuffId = buffId,
+                Duration = buffDuration,
+                Layer = 1,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addBuff, Kind = PhaseEventKind.OnEnter });
 
             spec.Phases.Add(mainPhase);
             return spec;
@@ -3485,18 +3576,40 @@ namespace My.Map.Entity
             spec.TypeTag = AbilityTypeTag.HMode;
             spec.DefaultStepDistance = 0f;
 
-            spec.Phases.Add(new MapAbilityPhase()
+
+            var mainPhase = new MapAbilityPhase()
             {
-                PhaseName = "Pre",
+                PhaseName = "Executing",
                 LockMovement = true,
                 LockRotation = true,
+                ImmuneKnock = true,
+
+                PhaseBuff = new List<string>() { "supor_armor", "immune_fear", "b_player_fq_assult_speedup" },
+                
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.5"
+                    RawVal = "1.6"
                 },
-            });
+            };
 
+            // 随机选择范围内单位作为target
+            var randomSelectCfg = new MapFightEffectOverrideTargetCfg()
+            {
+                IsRandomPick = true
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = randomSelectCfg, Kind = PhaseEventKind.OnEnter});
+
+            // 自己被目标吸引
+            var addBuffCfg = new MapAbilityEffectAddBuffCfg()
+            {
+                RevertAdd = true,
+                BuffId = "lured",
+                Duration = 1.6f,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addBuffCfg, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
             return spec;
         }
         
@@ -3807,7 +3920,7 @@ namespace My.Map.Entity
             var effect = new MapAbilityEffectAddBuffCfg()
             {
                 BuffId = "queen_countering",
-                TargetType = 1,
+                SelfAdd = true,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnEnter });
             spec.Phases.Add(mainPhase);
@@ -4259,7 +4372,7 @@ namespace My.Map.Entity
             {
                 var effect = new MapAbilityEffectAddBuffCfg()
                 {
-                    TargetType = 1,
+                    SelfAdd = true,
                     BuffId = "queen_mode_on",
                     Layer = 1,
                 };
@@ -4362,7 +4475,6 @@ namespace My.Map.Entity
                     BuffId = "force_stun",
                     Duration = 1.5f,
                     Layer = 1,
-                    TargetType = 0,
                 };
 
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addStunEffect, Kind = PhaseEventKind.OnEnter });
@@ -4543,7 +4655,7 @@ namespace My.Map.Entity
 
             {
                 var buffEffect = new MapAbilityEffectAddBuffCfg();
-                buffEffect.TargetType = 1;
+                buffEffect.SelfAdd = true;
                 buffEffect.BuffId = "dark_dance";
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = buffEffect, Kind = PhaseEventKind.OnExit });
             }

@@ -716,13 +716,20 @@ namespace My.Input
             }
             while (false);
 
+            var playerEntity = MainGameManager.Instance.playerScenePresenter.PlayerEntity;
+            if (playerEntity.HasSimulatedMoveInput)
+            {
+                playerEntity.FreeMoveInput = Vector2.zero;
+                return;
+            }
+
             if(doMove)
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.FreeMoveInput = Vector2.ClampMagnitude(dir, 1f);
+                playerEntity.FreeMoveInput = Vector2.ClampMagnitude(dir, 1f);
             }
             else
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.FreeMoveInput = Vector2.zero;
+                playerEntity.FreeMoveInput = Vector2.zero;
             }
         }
 

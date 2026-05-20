@@ -397,6 +397,162 @@ namespace My.Player.Bag
             return false;
         }
 
+        public bool CheckQuickSlotBindingAvailable(QuickSlotBinding binding)
+        {
+            if (binding.IsEmpty)
+            {
+                return false;
+            }
+
+            if (binding.ItemInstanceId == 0)
+            {
+                return CheckHaveItem(binding.ItemId, 1);
+            }
+
+            return TryFindCarriedStack(binding, out _, out _);
+        }
+
+        public bool TryFindCarriedStack(QuickSlotBinding binding, out int bagFlatIndex, out ItemStack stack)
+        {
+            bagFlatIndex = -1;
+            stack = null;
+
+            if (binding.IsEmpty)
+            {
+                return false;
+            }
+
+            if (binding.ItemInstanceId == 0)
+            {
+                if (!TryFindFirstCarriedStackByItemId(binding.ItemId, out bagFlatIndex, out stack))
+                {
+                    return false;
+                }
+
+                return stack != null && !stack.IsEmpty;
+            }
+
+            if (TryFindStackInBag(MainBag, binding, out bagFlatIndex, out stack))
+            {
+                return true;
+            }
+
+            foreach (var bag in SpeBags.Values)
+            {
+                if (TryFindStackInBag(bag, binding, out bagFlatIndex, out stack))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool TryFindFirstCarriedStackByItemId(string itemId, out int bagFlatIndex, out ItemStack stack)
+        {
+            if (TryFindFirstStackInBagByItemId(MainBag, itemId, out bagFlatIndex, out stack))
+            {
+                return true;
+            }
+
+            foreach (var bag in SpeBags.Values)
+            {
+                if (TryFindFirstStackInBagByItemId(bag, itemId, out bagFlatIndex, out stack))
+                {
+                    return true;
+                }
+            }
+
+            bagFlatIndex = -1;
+            stack = null;
+            return false;
+        }
+
+        static bool TryFindFirstStackInBagByItemId(PlayerBag bag, string itemId, out int flatIndex, out ItemStack stack)
+        {
+            flatIndex = -1;
+            stack = null;
+            if (bag == null || string.IsNullOrEmpty(itemId))
+            {
+                return false;
+            }
+
+            int slotCount = bag.NormalSlots.Count + bag.ExtraSlots.Count;
+            for (int i = 0; i < slotCount; i++)
+            {
+                var st = bag.GetItemByIdx(i);
+                if (st != null && !st.IsEmpty && st.ItemID == itemId)
+                {
+                    flatIndex = i;
+                    stack = st;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        static bool TryFindStackInBag(PlayerBag bag, QuickSlotBinding binding, out int flatIndex, out ItemStack stack)
+        {
+            flatIndex = -1;
+            stack = null;
+            if (bag == null || binding.IsEmpty)
+            {
+                return false;
+            }
+
+            int slotCount = bag.NormalSlots.Count + bag.ExtraSlots.Count;
+            for (int i = 0; i < slotCount; i++)
+            {
+                var st = bag.GetItemByIdx(i);
+                if (st == null || st.IsEmpty || st.ItemID != binding.ItemId)
+                {
+                    continue;
+                }
+
+                if (binding.ItemInstanceId != 0 && st.ItemInstanceId != binding.ItemInstanceId)
+                {
+                    continue;
+                }
+
+                flatIndex = i;
+                stack = st;
+                return true;
+            }
+
+            return false;
+        }
+
+        public long CostQuickSlotBinding(QuickSlotBinding binding, long count = 1)
+        {
+            if (binding.IsEmpty || count <= 0)
+            {
+                return count;
+            }
+
+            if (binding.ItemInstanceId == 0)
+            {
+                return CostItem(binding.ItemId, count);
+            }
+
+            if (TryFindStackInBag(MainBag, binding, out var flatIndex, out _))
+            {
+                var removed = MainBag.RemoveAt(flatIndex, count);
+                return count - removed;
+            }
+
+            foreach (var bag in SpeBags.Values)
+            {
+                if (TryFindStackInBag(bag, binding, out flatIndex, out _))
+                {
+                    var removed = bag.RemoveAt(flatIndex, count);
+                    return count - removed;
+                }
+            }
+
+            return count;
+        }
+
         public long GetCarriedItemTotal(string itemId)
         {
             long totalNum = 0;

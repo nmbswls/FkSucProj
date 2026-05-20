@@ -10,6 +10,7 @@ using My.Map;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static My.Map.BaseUnitLogicEntity;
+using static My.Map.Fight.FightStruct;
 
 namespace My.Map.Unit
 {
@@ -891,35 +892,39 @@ namespace My.Map.Unit
 
         private void ChecStopCastSkill()
         {
-
-            if(intentSkillCfgOrigin == null)
+            if (intentSkillCfgOrigin == null)
             {
                 return;
             }
 
-            //bool stopSkill = false;
-            //do
-            //{
-            //    // 禁止操作时 跳出
-            //    if (_brain.NpcEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
-            //    {
-            //        stopSkill = true;
-            //        break;
-            //    }
+            bool stopSkill = false;
+            do
+            {
+                if (_brain.NpcEntity.CheckHasState(AttrIdConsts.ForbidSkillOp))
+                {
+                    stopSkill = true;
+                    break;
+                }
 
-            //    if (_brain.NpcEntity.IsTargetInvisibleFromSelf(_currentTarget.Id))
-            //    {
-            //        stopSkill = true;
-            //        break;
-            //    }
-            //}
-            //while (false);
-            
-            //if(stopSkill)
-            //{
-            //    currIntentSkillCfg = null;
-            //    _brain.NpcEntity.StopMove();
-            //}
+                if (_currentTarget != null && _brain.NpcEntity.IsTargetInvisibleFromSelf(_currentTarget.Id))
+                {
+                    stopSkill = true;
+                    break;
+                }
+            }
+            while (false);
+
+            if (!stopSkill)
+            {
+                return;
+            }
+
+            _brain.NpcEntity.TryInterrupt(new InterruptRequest()
+            {
+                source = EInterruptSource.Stun,
+                priority = 10,
+            });
+            ResetAttackState();
         }
 
 

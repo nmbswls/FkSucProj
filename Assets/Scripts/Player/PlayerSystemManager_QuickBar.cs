@@ -6,18 +6,26 @@ using UnityEngine;
 
 namespace My.Player
 {
-    // 人类/未暴露真身快捷栏：武器槽 + 消耗轮盘
+    // 人类/未暴露真身快捷栏：武器槽 + 消耗轮盘（混合绑定：可堆叠 itemId，实例型 itemId+instanceId）
     public partial class PlayerSystemManager
     {
-        public string[] WeaponQuickSlotItemSet = new string[PlayerQuickBarDefs.WeaponSlotCount];
-        public string[] ConsumableQuickSlotItemSet = new string[PlayerQuickBarDefs.ConsumableSlotCount];
+        public QuickSlotBinding[] WeaponQuickSlots = new QuickSlotBinding[PlayerQuickBarDefs.WeaponSlotCount];
+        public QuickSlotBinding[] ConsumableQuickSlots = new QuickSlotBinding[PlayerQuickBarDefs.ConsumableSlotCount];
 
         public int ActiveWeaponSlotIndex = -1;
         public int ActiveConsumableIndex;
 
         void InitQuickBarDefaults()
         {
-            WeaponQuickSlotItemSet[0] = "small_knife";
+            for (int i = 0; i < WeaponQuickSlots.Length; i++)
+            {
+                WeaponQuickSlots[i] = QuickSlotBinding.Empty;
+            }
+
+            for (int i = 0; i < ConsumableQuickSlots.Length; i++)
+            {
+                ConsumableQuickSlots[i] = QuickSlotBinding.Empty;
+            }
         }
 
         void HydrateQuickSlotsFromSave(SaveData savingData)
@@ -25,35 +33,72 @@ namespace My.Player
             var pd = savingData?.PlayerData;
             if (pd == null)
             {
+                InitQuickBarDefaults();
                 return;
             }
 
-            CopyListToArray(pd.WeaponQuickSlotOverrides, WeaponQuickSlotItemSet);
-            CopyListToArray(pd.ConsumableQuickSlotOverrides, ConsumableQuickSlotItemSet);
+            CopyBindingListToArray(pd.WeaponQuickSlotOverrides, WeaponQuickSlots);
+            CopyBindingListToArray(pd.ConsumableQuickSlotOverrides, ConsumableQuickSlots);
             ActiveWeaponSlotIndex = pd.ActiveWeaponSlotIndex;
             ActiveConsumableIndex = ClampConsumableIndex(pd.ActiveConsumableIndex);
+            PruneInvalidQuickSlots();
         }
 
-        static void CopyListToArray(System.Collections.Generic.List<string> list, string[] arr)
+        static void CopyBindingListToArray(System.Collections.Generic.List<QuickSlotBindingPersist> list, QuickSlotBinding[] arr)
         {
             for (int i = 0; i < arr.Length; i++)
             {
-                arr[i] = list != null && i < list.Count ? (list[i] ?? string.Empty) : string.Empty;
+                if (list != null && i < list.Count && !string.IsNullOrEmpty(list[i]?.ItemId))
+                {
+                    arr[i] = QuickSlotBinding.Pinned(list[i].ItemId, list[i].ItemInstanceId);
+                }
+                else
+                {
+                    arr[i] = QuickSlotBinding.Empty;
+                }
             }
         }
 
-        public bool TryAssignWeaponQuickSlot(int slotIndex, string itemId, out string failReason)
+        public void PruneInvalidQuickSlots()
+        {
+            var inv = InventorySystem;
+            if (inv == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < WeaponQuickSlots.Length; i++)
+            {
+                if (!WeaponQuickSlots[i].IsEmpty && !inv.CheckQuickSlotBindingAvailable(WeaponQuickSlots[i]))
+                {
+                    WeaponQuickSlots[i] = QuickSlotBinding.Empty;
+                    if (ActiveWeaponSlotIndex == i)
+                    {
+                        ActiveWeaponSlotIndex = -1;
+                    }
+                }
+            }
+
+            for (int i = 0; i < ConsumableQuickSlots.Length; i++)
+            {
+                if (!ConsumableQuickSlots[i].IsEmpty && !inv.CheckQuickSlotBindingAvailable(ConsumableQuickSlots[i]))
+                {
+                    ConsumableQuickSlots[i] = QuickSlotBinding.Empty;
+                }
+            }
+        }
+
+        public bool TryAssignWeaponQuickSlot(int slotIndex, string itemId, long itemInstanceId, out string failReason)
         {
             failReason = null;
-            if (slotIndex < 0 || slotIndex >= WeaponQuickSlotItemSet.Length)
+            if (slotIndex < 0 || slotIndex >= WeaponQuickSlots.Length)
             {
                 failReason = "slot_range";
                 return false;
             }
 
-            if (string.IsNullOrEmpty(itemId))
+            if (!QuickSlotAssignRules.TryNormalizeAssign(itemId, itemInstanceId, out var binding, out failReason))
             {
-                failReason = "empty_item";
                 return false;
             }
 
@@ -63,7 +108,13 @@ namespace My.Player
                 return false;
             }
 
-            WeaponQuickSlotItemSet[slotIndex] = itemId;
+            if (InventorySystem != null && !InventorySystem.CheckQuickSlotBindingAvailable(binding))
+            {
+                failReason = "not_in_bag";
+                return false;
+            }
+
+            WeaponQuickSlots[slotIndex] = binding;
             if (ActiveWeaponSlotIndex == slotIndex)
             {
                 ApplyWeaponQuickBarRuntime();
@@ -72,18 +123,17 @@ namespace My.Player
             return true;
         }
 
-        public bool TryAssignConsumableQuickSlot(int slotIndex, string itemId, out string failReason)
+        public bool TryAssignConsumableQuickSlot(int slotIndex, string itemId, long itemInstanceId, out string failReason)
         {
             failReason = null;
-            if (slotIndex < 0 || slotIndex >= ConsumableQuickSlotItemSet.Length)
+            if (slotIndex < 0 || slotIndex >= ConsumableQuickSlots.Length)
             {
                 failReason = "slot_range";
                 return false;
             }
 
-            if (string.IsNullOrEmpty(itemId))
+            if (!QuickSlotAssignRules.TryNormalizeAssign(itemId, itemInstanceId, out var binding, out failReason))
             {
-                failReason = "empty_item";
                 return false;
             }
 
@@ -93,15 +143,21 @@ namespace My.Player
                 return false;
             }
 
-            ConsumableQuickSlotItemSet[slotIndex] = itemId;
+            if (InventorySystem != null && !InventorySystem.CheckQuickSlotBindingAvailable(binding))
+            {
+                failReason = "not_in_bag";
+                return false;
+            }
+
+            ConsumableQuickSlots[slotIndex] = binding;
             return true;
         }
 
         public void ClearWeaponQuickSlot(int slotIndex)
         {
-            if (slotIndex >= 0 && slotIndex < WeaponQuickSlotItemSet.Length)
+            if (slotIndex >= 0 && slotIndex < WeaponQuickSlots.Length)
             {
-                WeaponQuickSlotItemSet[slotIndex] = string.Empty;
+                WeaponQuickSlots[slotIndex] = QuickSlotBinding.Empty;
                 if (ActiveWeaponSlotIndex == slotIndex)
                 {
                     ActiveWeaponSlotIndex = -1;
@@ -113,9 +169,9 @@ namespace My.Player
 
         public void ClearConsumableQuickSlot(int slotIndex)
         {
-            if (slotIndex >= 0 && slotIndex < ConsumableQuickSlotItemSet.Length)
+            if (slotIndex >= 0 && slotIndex < ConsumableQuickSlots.Length)
             {
-                ConsumableQuickSlotItemSet[slotIndex] = string.Empty;
+                ConsumableQuickSlots[slotIndex] = QuickSlotBinding.Empty;
             }
         }
 
@@ -126,8 +182,7 @@ namespace My.Player
                 return;
             }
 
-            (WeaponQuickSlotItemSet[slotA], WeaponQuickSlotItemSet[slotB]) =
-                (WeaponQuickSlotItemSet[slotB], WeaponQuickSlotItemSet[slotA]);
+            (WeaponQuickSlots[slotA], WeaponQuickSlots[slotB]) = (WeaponQuickSlots[slotB], WeaponQuickSlots[slotA]);
 
             if (ActiveWeaponSlotIndex == slotA)
             {
@@ -151,8 +206,8 @@ namespace My.Player
                 return;
             }
 
-            (ConsumableQuickSlotItemSet[slotA], ConsumableQuickSlotItemSet[slotB]) =
-                (ConsumableQuickSlotItemSet[slotB], ConsumableQuickSlotItemSet[slotA]);
+            (ConsumableQuickSlots[slotA], ConsumableQuickSlots[slotB]) =
+                (ConsumableQuickSlots[slotB], ConsumableQuickSlots[slotA]);
 
             if (ActiveConsumableIndex == slotA)
             {
@@ -171,7 +226,7 @@ namespace My.Player
                 return;
             }
 
-            if (string.IsNullOrEmpty(WeaponQuickSlotItemSet[slotIndex]))
+            if (WeaponQuickSlots[slotIndex].IsEmpty)
             {
                 ActiveWeaponSlotIndex = -1;
                 ApplyWeaponQuickBarRuntime();
@@ -204,41 +259,40 @@ namespace My.Player
 
         public void CycleConsumableSelection(int delta)
         {
-            if (ConsumableQuickSlotItemSet.Length == 0 || delta == 0)
+            if (ConsumableQuickSlots.Length == 0 || delta == 0)
             {
                 return;
             }
 
             int start = ActiveConsumableIndex;
-            for (int step = 0; step < ConsumableQuickSlotItemSet.Length; step++)
+            for (int step = 0; step < ConsumableQuickSlots.Length; step++)
             {
                 int next = ActiveConsumableIndex + (delta > 0 ? 1 : -1);
                 if (next < 0)
                 {
-                    next = ConsumableQuickSlotItemSet.Length - 1;
+                    next = ConsumableQuickSlots.Length - 1;
                 }
-                else if (next >= ConsumableQuickSlotItemSet.Length)
+                else if (next >= ConsumableQuickSlots.Length)
                 {
                     next = 0;
                 }
 
                 ActiveConsumableIndex = next;
-                if (!string.IsNullOrEmpty(ConsumableQuickSlotItemSet[ActiveConsumableIndex])
-                    || step == ConsumableQuickSlotItemSet.Length - 1)
+                if (!ConsumableQuickSlots[ActiveConsumableIndex].IsEmpty
+                    || step == ConsumableQuickSlots.Length - 1)
                 {
                     break;
                 }
             }
 
-            if (ActiveConsumableIndex == start && ConsumableQuickSlotItemSet.Length > 1)
+            if (ActiveConsumableIndex == start && ConsumableQuickSlots.Length > 1)
             {
-                // 全空时仍允许索引移动
                 int next = ActiveConsumableIndex + (delta > 0 ? 1 : -1);
                 if (next < 0)
                 {
-                    next = ConsumableQuickSlotItemSet.Length - 1;
+                    next = ConsumableQuickSlots.Length - 1;
                 }
-                else if (next >= ConsumableQuickSlotItemSet.Length)
+                else if (next >= ConsumableQuickSlots.Length)
                 {
                     next = 0;
                 }
@@ -254,13 +308,13 @@ namespace My.Player
                 return null;
             }
 
-            var itemId = WeaponQuickSlotItemSet[ActiveWeaponSlotIndex];
-            if (string.IsNullOrEmpty(itemId) || !CheckHaveItem(itemId, 1))
+            var binding = WeaponQuickSlots[ActiveWeaponSlotIndex];
+            if (binding.IsEmpty || InventorySystem == null || !InventorySystem.CheckQuickSlotBindingAvailable(binding))
             {
                 return null;
             }
 
-            return ResolveWeaponSkillIdFromItem(itemId);
+            return ResolveWeaponSkillIdFromItem(binding.ItemId);
         }
 
         static string ResolveWeaponSkillIdFromItem(string itemId)
@@ -279,7 +333,6 @@ namespace My.Player
             return string.IsNullOrEmpty(use.S1) ? null : use.S1;
         }
 
-        // 人类快捷栏：左键实际释放的技能（武器优先，否则 HumanSkillSlots[0]）
         public string ResolveHumanLeftClickSkillId()
         {
             if (IsUsingFaQingSkillBar())
@@ -305,33 +358,47 @@ namespace My.Player
             return showSkills[0];
         }
 
-        public string GetActiveConsumableItemId()
+        public QuickSlotBinding GetActiveConsumableBinding()
         {
             if (!InConsumableRange(ActiveConsumableIndex))
             {
-                return null;
+                return QuickSlotBinding.Empty;
             }
 
-            var id = ConsumableQuickSlotItemSet[ActiveConsumableIndex];
-            return string.IsNullOrEmpty(id) ? null : id;
+            return ConsumableQuickSlots[ActiveConsumableIndex];
+        }
+
+        public string GetActiveConsumableItemId()
+        {
+            var binding = GetActiveConsumableBinding();
+            return binding.IsEmpty ? null : binding.ItemId;
         }
 
         void WriteQuickBarToSave(PlayerData pd)
         {
-            pd.WeaponQuickSlotOverrides = new System.Collections.Generic.List<string>(WeaponQuickSlotItemSet.Length);
-            for (int i = 0; i < WeaponQuickSlotItemSet.Length; i++)
+            pd.WeaponQuickSlotOverrides = new System.Collections.Generic.List<QuickSlotBindingPersist>(WeaponQuickSlots.Length);
+            for (int i = 0; i < WeaponQuickSlots.Length; i++)
             {
-                pd.WeaponQuickSlotOverrides.Add(WeaponQuickSlotItemSet[i] ?? string.Empty);
+                pd.WeaponQuickSlotOverrides.Add(ToPersist(WeaponQuickSlots[i]));
             }
 
-            pd.ConsumableQuickSlotOverrides = new System.Collections.Generic.List<string>(ConsumableQuickSlotItemSet.Length);
-            for (int i = 0; i < ConsumableQuickSlotItemSet.Length; i++)
+            pd.ConsumableQuickSlotOverrides = new System.Collections.Generic.List<QuickSlotBindingPersist>(ConsumableQuickSlots.Length);
+            for (int i = 0; i < ConsumableQuickSlots.Length; i++)
             {
-                pd.ConsumableQuickSlotOverrides.Add(ConsumableQuickSlotItemSet[i] ?? string.Empty);
+                pd.ConsumableQuickSlotOverrides.Add(ToPersist(ConsumableQuickSlots[i]));
             }
 
             pd.ActiveWeaponSlotIndex = ActiveWeaponSlotIndex;
             pd.ActiveConsumableIndex = ActiveConsumableIndex;
+        }
+
+        static QuickSlotBindingPersist ToPersist(QuickSlotBinding b)
+        {
+            return new QuickSlotBindingPersist
+            {
+                ItemId = b.ItemId ?? string.Empty,
+                ItemInstanceId = b.ItemInstanceId,
+            };
         }
 
         static bool InWeaponRange(int idx) => idx >= 0 && idx < PlayerQuickBarDefs.WeaponSlotCount;
@@ -340,7 +407,7 @@ namespace My.Player
 
         int ClampConsumableIndex(int idx)
         {
-            if (ConsumableQuickSlotItemSet.Length == 0)
+            if (ConsumableQuickSlots.Length == 0)
             {
                 return 0;
             }
@@ -350,9 +417,9 @@ namespace My.Player
                 return 0;
             }
 
-            if (idx >= ConsumableQuickSlotItemSet.Length)
+            if (idx >= ConsumableQuickSlots.Length)
             {
-                return ConsumableQuickSlotItemSet.Length - 1;
+                return ConsumableQuickSlots.Length - 1;
             }
 
             return idx;

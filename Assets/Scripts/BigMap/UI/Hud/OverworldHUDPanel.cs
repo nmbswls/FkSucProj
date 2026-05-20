@@ -282,6 +282,8 @@ namespace My.UI
                 return;
             }
 
+            lgm.playerDataManager?.PruneInvalidQuickSlots();
+
             var ctrl = ItemQuickBarRoot.GetComponent<OverworldItemQuickBarController>();
             ctrl?.EnsureSlots();
             ctrl?.RefreshFromPlayerData();
@@ -968,22 +970,25 @@ namespace My.UI
                 return;
             }
 
-            var itemId = lgm.playerDataManager.GetActiveConsumableItemId();
-            if (string.IsNullOrEmpty(itemId))
+            var binding = lgm.playerDataManager.GetActiveConsumableBinding();
+            if (binding.IsEmpty)
             {
                 return;
             }
 
-            UseQuickBarItem(itemId);
+            UseQuickBarBinding(binding);
         }
 
-        void UseQuickBarItem(string itemId)
+        void UseQuickBarBinding(My.Player.QuickSlotBinding binding)
         {
-            if (!MainGameManager.Instance.gameLogicManager.playerDataManager.CheckHaveItem(itemId, 1))
+            var pdm = MainGameManager.Instance.gameLogicManager.playerDataManager;
+            var inv = pdm.InventorySystem;
+            if (inv == null || !inv.CheckQuickSlotBindingAvailable(binding))
             {
                 return;
             }
 
+            var itemId = binding.ItemId;
             var itemUseCfg = ItemCatalog.GetPrimaryUse(itemId);
             if (itemUseCfg == null || !itemUseCfg.Usable)
             {
@@ -997,37 +1002,28 @@ namespace My.UI
                 {
                     if (ret && itemUseCfg.CostOnUse)
                     {
-                        MainGameManager.Instance.gameLogicManager.playerDataManager.CostItem(itemId, 1);
+                        inv.CostQuickSlotBinding(binding, 1);
+                        pdm.PruneInvalidQuickSlots();
                     }
                 });
             }
             else
             {
-                TryUseConsumableFromInventoryBag(itemId);
+                TryUseConsumableFromInventoryBag(binding);
             }
 
+            pdm.PruneInvalidQuickSlots();
             RefreshItemQuickBar();
         }
 
-        static void TryUseConsumableFromInventoryBag(string itemId)
+        static void TryUseConsumableFromInventoryBag(My.Player.QuickSlotBinding binding)
         {
             var inv = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem;
             int bagId = (int)EPlayerBagId.Default;
-            var bag = inv.GetBagById(bagId);
-            if (bag == null)
-            {
-                return;
-            }
 
-            int slotCount = bag.NormalSlots.Count + bag.ExtraSlots.Count;
-            for (int i = 0; i < slotCount; i++)
+            if (inv.TryFindCarriedStack(binding, out var flatIndex, out _))
             {
-                var stack = bag.GetItemByIdx(i);
-                if (stack != null && !stack.IsEmpty && stack.ItemID == itemId)
-                {
-                    PlayerBagUIPanel.Instance?.UseItem(bagId, i);
-                    return;
-                }
+                PlayerBagUIPanel.Instance?.UseItem(bagId, flatIndex);
             }
         }
 

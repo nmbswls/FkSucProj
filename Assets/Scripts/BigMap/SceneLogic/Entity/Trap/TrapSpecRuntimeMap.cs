@@ -72,7 +72,7 @@ namespace My.Map.Entity
                             BuffId = te.BuffId,
                             Layer = te.Layer,
                             Duration = te.Duration,
-                            TargetType = te.TargetType,
+                            //TargetType = te.TargetType,
                         });
                     }
                 }

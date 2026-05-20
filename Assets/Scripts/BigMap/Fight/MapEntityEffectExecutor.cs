@@ -308,6 +308,69 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityFightExecutor4OverrideTarget : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectOverrideTargetCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityFightExecutor4OverrideTarget cfg error");
+                return;
+            }
+
+            var casterUnit = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
+            if(casterUnit.abilityController == null)
+            {
+                Debug.LogError("AbilityFightExecutor4OverrideTarget ctrl error");
+                return;
+            }
+            if(casterUnit.abilityController.CurrentCtx == null)
+            {
+                Debug.LogError("AbilityFightExecutor4OverrideTarget no ability error");
+                return;
+            }
+
+            if(casterUnit.abilityController.CurrentCtx.AbilityConfig.Id != ctx.SourceInfo.SrcAbilityId)
+            {
+                Debug.LogError("AbilityFightExecutor4OverrideTarget ability not match");
+                return;
+            }
+
+            if(realCfg.IsRandomPick)
+            {
+                var filterParam = new EntityFilterParam()
+                {
+                    FilterParamLists = new() { EEntityType.Npc },
+                };
+                var iterList = ctx.Env.visionSenser.OverlapCircleAllEntity(casterUnit.Pos, 3.5f, filterParam);
+                List<BaseUnitLogicEntity> units = new();
+                foreach (var it in iterList) 
+                {
+                    if(it is not BaseUnitLogicEntity unit)
+                    {
+                        continue;
+                    }
+
+                    if(unit.IsDead || unit.MarkDespawn || unit.MarkDestroyed || unit.MarkNoLogic)
+                    {
+                        continue;
+                    }
+
+                    units.Add(unit);
+                }
+
+                if (units.Count == 0) return;
+
+                var chosenOne = units[UnityEngine.Random.Range(0, units.Count)];
+
+                Debug.LogError($"AbilityFightExecutor4OverrideTarget change ability target to {chosenOne.Id}");
+                casterUnit.abilityController.CurrentCtx.Target = chosenOne;
+            }
+        }
+    }
+    
+
     public class AbilityFightExecutor4KnockBack : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
@@ -763,13 +826,18 @@ namespace My.Map.Entity
             int layer = realCfg.Layer;
             if (realCfg.Layer <= 0) layer = 1;
             // 当目标type为0时 在正常语境下 就是给目标使用
-            if (realCfg.TargetType == 0)
+            if (realCfg.SelfAdd)
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.TargetId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId : srcBuffId, overrideDuration:realCfg.Duration);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.SourceInfo.SrcEntityId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId: srcBuffId, overrideDuration: realCfg.Duration);
+            }
+            else if (realCfg.RevertAdd)
+            {
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.SourceInfo.SrcEntityId, realCfg.BuffId, layer, casterId: ctx.TargetId, srcBuffId: srcBuffId, overrideDuration: realCfg.Duration);
             }
             else
             {
-                ctx.Env.globalBuffManager.RequestAddBuff(ctx.SourceInfo.SrcEntityId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId: srcBuffId, overrideDuration: realCfg.Duration);
+                ctx.Env.globalBuffManager.RequestAddBuff(ctx.TargetId, realCfg.BuffId, layer, casterId: ctx.SourceInfo.SrcEntityId, srcBuffId: srcBuffId, overrideDuration: realCfg.Duration);
+
             }
         }
     }

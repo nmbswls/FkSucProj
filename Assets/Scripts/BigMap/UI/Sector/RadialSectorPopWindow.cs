@@ -20,6 +20,7 @@ namespace My.UI
         {
             UseSkill,
             ChangeHuman,
+            RepairItem,
         }
 
 
@@ -82,6 +83,8 @@ namespace My.UI
             }
             builds.Add(new RadialItem() { RadialFunc = ERadialFunc.UseSkill, SkillId = "player_ziwei", Interactable = true });
             builds.Add(new RadialItem() { RadialFunc = ERadialFunc.UseSkill, SkillId = "fix_clothes", Interactable = true });
+
+            builds.Add(new RadialItem() { RadialFunc = ERadialFunc.RepairItem, Interactable = true });
 
             builds.Add(new RadialItem() { RadialFunc = ERadialFunc.ChangeHuman, Interactable = true });
         }
@@ -260,6 +263,41 @@ namespace My.UI
                 case ERadialFunc.ChangeHuman:
                     {
                         MainGameManager.Instance.gameLogicManager.TrySetPlayerHumanMode(!MainGameManager.Instance.gameLogicManager.PlayerHumanMode);
+                    }
+                    break;
+                case ERadialFunc.RepairItem:
+                    {
+                        var itemId = MainGameManager.Instance.gameLogicManager.playerDataManager.GetActiveConsumableItemId();
+                        if(string.IsNullOrEmpty(itemId))
+                        {
+                            Debug.Log("当前无修复道具" + itemId);
+                            break;
+                        }
+
+                        int needJingYuan = 50;
+                        if(!MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.CheckHaveItem("jingyuan", needJingYuan))
+                        {
+                            Debug.Log("当前不够" + itemId);
+                            break;
+                        }
+                        Debug.Log("修复道具" + itemId);
+                        
+                        MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("player_supply_item", overrideParams: new Dictionary<string, string>()
+                        {
+                            ["InteractTime"] = "3.0",
+                        }, phaseOverrideAnims: new Dictionary<string, string>()
+                        {
+                            ["Interacting"] = "repair"
+                        },
+                        onAbilityEnd: (complete) =>
+                        {
+                            if (complete)
+                            {
+                                MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.CostItem("jingyuan", needJingYuan);
+                                MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.GiveItemToPlayer(itemId, 1);
+                            }
+                        });
+
                     }
                     break;
             }

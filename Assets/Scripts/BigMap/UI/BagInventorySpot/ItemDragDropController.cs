@@ -1,4 +1,5 @@
 using My;
+using My.Player;
 using My.Player.Bag;
 using TMPro;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace My.UI
     {
         public string ItemId;
         public long ItemCnt;
+        public long ItemInstanceId;
 
         public EContainerType SourceContainerType;
         public int SourceContainerId;
@@ -73,6 +75,7 @@ namespace My.UI
             {
                 ItemId = stack.ItemID,
                 ItemCnt = stack.Count,
+                ItemInstanceId = stack.ItemInstanceId,
                 SourceContainerType = sourceType,
                 SourceIndex = sourceIndex,
                 SourceContainerId = sourceContainerId,
@@ -91,7 +94,7 @@ namespace My.UI
             return true;
         }
 
-        public bool BeginDragFromQuickBar(string itemId, int slotIndex, EContainerType quickBarType)
+        public bool BeginDragFromQuickBar(QuickSlotBinding binding, int slotIndex, EContainerType quickBarType)
         {
             if (MainGameManager.Instance?.gameLogicManager?.CanEditQuickSlotBar() != true)
             {
@@ -103,15 +106,16 @@ namespace My.UI
                 return false;
             }
 
-            if (string.IsNullOrEmpty(itemId))
+            if (binding.IsEmpty)
             {
                 return false;
             }
 
             Payload = new DragPayload
             {
-                ItemId = itemId,
+                ItemId = binding.ItemId,
                 ItemCnt = 1,
+                ItemInstanceId = binding.ItemInstanceId,
                 SourceContainerType = quickBarType,
                 SourceContainerId = 0,
                 SourceIndex = slotIndex,
@@ -175,14 +179,14 @@ namespace My.UI
                 {
                     if (p.SourceContainerType == EContainerType.QuickBarWeapon
                         && p.SourceIndex >= 0
-                        && p.SourceIndex < mdm.WeaponQuickSlotItemSet.Length)
+                        && p.SourceIndex < mdm.WeaponQuickSlots.Length)
                     {
                         mdm.ClearWeaponQuickSlot(p.SourceIndex);
                         OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                     }
                     else if (p.SourceContainerType == EContainerType.QuickBarConsumable
                              && p.SourceIndex >= 0
-                             && p.SourceIndex < mdm.ConsumableQuickSlotItemSet.Length)
+                             && p.SourceIndex < mdm.ConsumableQuickSlots.Length)
                     {
                         mdm.ClearConsumableQuickSlot(p.SourceIndex);
                         OverworldHUDPanel.Instance?.RefreshItemQuickBar();

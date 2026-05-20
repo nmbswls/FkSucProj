@@ -764,6 +764,11 @@ namespace My.Map
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneKnock, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Stun, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Fear, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.ImmuneFear, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Lured, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.ImmuneLured, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.ImmuneSteerInput, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneEvilShock, initialBase: 0);
         }
@@ -1246,6 +1251,7 @@ namespace My.Map
             switch (attrId)
             {
                 case AttrIdConsts.Stun:
+                case AttrIdConsts.ForbidSkillOp:
                     {
                         if(isOn)
                         {
@@ -1453,6 +1459,14 @@ namespace My.Map
                 return false;
             }
             if (CheckHasState(AttrIdConsts.Stun))
+            {
+                return false;
+            }
+            if (CheckHasState(AttrIdConsts.Fear))
+            {
+                return false;
+            }
+            if (CheckHasState(AttrIdConsts.Lured))
             {
                 return false;
             }

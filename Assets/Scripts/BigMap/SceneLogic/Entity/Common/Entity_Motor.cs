@@ -105,8 +105,27 @@ namespace My.Map.Entity
         public float Acceleration = 99;
         public float Deceleration = 99;
 
-        public Vector2 FreeMoveInput { get; set; } = Vector2.zero;
+        public Vector2 FreeMoveInput
+        {
+            get => _freeMoveInput;
+            set
+            {
+                if (HasSimulatedMoveInput)
+                {
+                    _freeMoveInput = Vector2.zero;
+                    return;
+                }
 
+                _freeMoveInput = value;
+            }
+        }
+
+        Vector2 _freeMoveInput = Vector2.zero;
+
+        // Tier2：Buff 模拟摇杆输入，激活时拒收 TryMoveTo / TryMoveFollow
+        public Vector2 SimulatedMoveInput { get; private set; }
+        public float SimulatedMoveSpeedRate { get; private set; } = 1f;
+        public bool HasSimulatedMoveInput { get; private set; }
 
         public EntityMotorSystem(LogicEntityBase entity, INavProvider navProvider)
         {
@@ -130,6 +149,10 @@ namespace My.Map.Entity
 
         public void TryMoveTo(Vector2 destination, float stopDistance = 0.35f, float moveSpeedRate = 1.0f)
         {
+            if (HasSimulatedMoveInput)
+            {
+                return;
+            }
 
             if(MotorState == EMotorState.Pathing)
             {
@@ -189,6 +212,10 @@ namespace My.Map.Entity
         /// <param name="moveSpeedRate"></param>
         public void TryMoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
         {
+            if (HasSimulatedMoveInput)
+            {
+                return;
+            }
 
             if(MotorState == EMotorState.Following && target == _followTarget)
             {
@@ -232,6 +259,31 @@ namespace My.Map.Entity
             EnterFree();
         }
 
+        public void SetSimulatedMoveInput(Vector2 direction, float speedRate)
+        {
+            if (direction.sqrMagnitude < 0.0001f)
+            {
+                ClearSimulatedMoveInput();
+                return;
+            }
+
+            if (!HasSimulatedMoveInput)
+            {
+                EnterFree();
+            }
+
+            SimulatedMoveInput = direction.normalized;
+            SimulatedMoveSpeedRate = Mathf.Max(0.01f, speedRate);
+            HasSimulatedMoveInput = true;
+        }
+
+        public void ClearSimulatedMoveInput()
+        {
+            SimulatedMoveInput = Vector2.zero;
+            SimulatedMoveSpeedRate = 1f;
+            HasSimulatedMoveInput = false;
+        }
+
 
 
 
@@ -259,6 +311,11 @@ namespace My.Map.Entity
         /// <returns></returns>
         public Vector2 GetDesiredVelocity()
         {
+            if (HasSimulatedMoveInput)
+            {
+                return SimulatedMoveInput * Owner.GetCurrSpeed() * SimulatedMoveSpeedRate;
+            }
+
             switch (MotorState)
             {
                 case EMotorState.Free:
@@ -298,7 +355,7 @@ namespace My.Map.Entity
 
         private void TickFree()
         {
-            DesiredVelocity = FreeMoveInput * Owner.GetCurrSpeed();
+            DesiredVelocity = _freeMoveInput * Owner.GetCurrSpeed();
             // 可渐停：从当前速度到0
             Velocity = Vector3.zero;
         }
@@ -655,11 +712,21 @@ namespace My.Map
 
         public void TryMoveTo(Vector2 destination, float stopDistance = 0.35f, float moveSpeedRate = 1.0f)
         {
+            if (HasSimulatedMoveInput)
+            {
+                return;
+            }
+
             MotorSystem.TryMoveTo(destination, stopDistance, moveSpeedRate);
         }
 
         public void TryMoveFollow(ILogicEntity target, float followPrediction, Vector2 offset, float stopDistance = 0.1f, float moveSpeedRate = 1.0f)
         {
+            if (HasSimulatedMoveInput)
+            {
+                return;
+            }
+
             MotorSystem.TryMoveFollow(target, followPrediction, offset, stopDistance, moveSpeedRate);
         }
 
@@ -674,6 +741,8 @@ namespace My.Map
         }
 
         public Vector2 FreeMoveInput { get { return MotorSystem.FreeMoveInput; } set { MotorSystem.FreeMoveInput = value; } }
+
+        public bool HasSimulatedMoveInput => MotorSystem != null && MotorSystem.HasSimulatedMoveInput;
 
         public bool MotorIgnoreGround
         {

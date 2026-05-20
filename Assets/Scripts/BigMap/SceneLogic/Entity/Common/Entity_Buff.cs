@@ -101,6 +101,17 @@ namespace My.Map.Entity
 
         // RelativeAttr: ParamStr1=源属性A, ParamStr2=目标属性B上的独立加成, ParamFloat1=比例(结果=floor(A*比例*层数))
         RelativeAttr,
+
+        // SteerInput: ParamStr1=EBuffMoveSteerMode, ParamFloat1=speedRate, ParamFloat2=directionChangeInterval(Random 等)
+        SteerInput,
+    }
+
+    public enum EBuffMoveSteerMode
+    {
+        AwayFromCaster,
+        TowardCaster,
+        Random,
+        FixedDirection,
     }
 
     [Serializable]
@@ -125,6 +136,51 @@ namespace My.Map.Entity
         public abstract void OnTick(BuffInstance inst, float dt);
     }
 
+    // SteerInput 类 Buff 施加前免疫判定（拒绝整 buff，避免仅挡位移仍挂 Fear/Lured/ForbidSkillOp）
+    internal static class SteerBuffApplyGate
+    {
+        internal static bool IsRejected(IEntityBuffOwner target, BuffDefinition def)
+        {
+            if (def?.DurationEffect == null || def.DurationEffect.DurationType != EBuffDurationType.SteerInput)
+            {
+                return false;
+            }
+
+            if (target is not IEntityAttributeOwner attrOwner)
+            {
+                return false;
+            }
+
+            if (attrOwner.CheckHasState(AttrIdConsts.ImmuneSteerInput))
+            {
+                return true;
+            }
+
+            if (!TryParseSteerMode(def.DurationEffect.ParamStr1, out var mode))
+            {
+                return false;
+            }
+
+            return mode switch
+            {
+                EBuffMoveSteerMode.AwayFromCaster => attrOwner.CheckHasState(AttrIdConsts.ImmuneFear),
+                EBuffMoveSteerMode.TowardCaster => attrOwner.CheckHasState(AttrIdConsts.ImmuneLured),
+                _ => false,
+            };
+        }
+
+        static bool TryParseSteerMode(string raw, out EBuffMoveSteerMode mode)
+        {
+            mode = EBuffMoveSteerMode.AwayFromCaster;
+            if (string.IsNullOrEmpty(raw))
+            {
+                return false;
+            }
+
+            return System.Enum.TryParse(raw, true, out mode);
+        }
+    }
+
     internal static class BuffDurationInstanceFactory
     {
         internal const string RelativeAttrModAbilitySlot = "__BuffDuration_RelativeAttr";
@@ -140,6 +196,8 @@ namespace My.Map.Entity
             {
                 case EBuffDurationType.RelativeAttr:
                     return new BuffDurationRelativeAttrInstance(eff);
+                case EBuffDurationType.SteerInput:
+                    return new BuffDurationSteerInputInstance(eff);
                 default:
                     return null;
             }
@@ -517,7 +575,7 @@ namespace My.Map.Entity
                 return 0;
             }
             var instance = AddBuffInternal(targetEntity, buffId, layer, overrideDuration, casterId, srcBuffId);
-            return instance.InstanceId;
+            return instance != null ? instance.InstanceId : 0;
         }
 
         public void RehydrateBuffFromPersist(IEntityBuffOwner owner, My.Saving.BuffPersistData data)
@@ -707,6 +765,10 @@ namespace My.Map.Entity
         protected BuffInstance AddBuffInternal(ILogicEntity target, string buffId, int layer, float overrideDuration, long? casterId, long? srcBuffId)
         {
             var buffDef = BuffLibrary.GetBuffDefinition(buffId);
+            if (target is IEntityBuffOwner buffOwner && SteerBuffApplyGate.IsRejected(buffOwner, buffDef))
+            {
+                return null;
+            }
 
             float duration = buffDef.DefaultDuration;
             if (overrideDuration > 0)
@@ -1458,6 +1520,7 @@ namespace My.Map.Entity
                 case MapFightEffectEasyEffect:
                 case MapFightEffectCreateAreaEffectCfg:
                 case MapAbilityEffectHitBoxCfg:
+                case MapFightEffectShowEffect:
                     {
                         long srcEntity = CasterId;
 

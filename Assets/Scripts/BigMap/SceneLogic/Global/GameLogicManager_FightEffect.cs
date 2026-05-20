@@ -82,6 +82,11 @@ namespace My
                             executor = new AbilityFightExecutor4QueueMode();
                         }
                         break;
+                    case MapFightEffectOverrideTargetCfg:
+                        {
+                            executor = new AbilityFightExecutor4OverrideTarget();
+                        }
+                        break;
 
                     case MapAbilityEffectDashStartCfg:
                         {

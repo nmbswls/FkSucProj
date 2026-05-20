@@ -280,9 +280,14 @@ namespace My.UI
                 return false;
             }
 
+            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            var binding = mdm != null && cell.Index >= 0 && cell.Index < mdm.WeaponQuickSlots.Length
+                ? mdm.WeaponQuickSlots[cell.Index]
+                : QuickSlotBinding.Empty;
+
             return ItemDragDropController.Instance != null
                    && ItemDragDropController.Instance.BeginDragFromQuickBar(
-                       stack.ItemID, cell.Index, EContainerType.QuickBarWeapon);
+                       binding, cell.Index, EContainerType.QuickBarWeapon);
         }
 
         public void HandleDrop(ItemCellBase target, DragPayload payload, int dstIndex, ItemDragDropController controller)
@@ -321,7 +326,7 @@ namespace My.UI
                 || payload.SourceContainerType == EContainerType.SpecialInventory
                 || payload.SourceContainerType == EContainerType.Warehouse)
             {
-                if (!mdm.TryAssignWeaponQuickSlot(dstSlotIndex, payload.ItemId, out var fail))
+                if (!mdm.TryAssignWeaponQuickSlot(dstSlotIndex, payload.ItemId, payload.ItemInstanceId, out var fail))
                 {
                     Debug.Log("Weapon quick bar drop rejected: " + fail);
                     return;
@@ -371,9 +376,14 @@ namespace My.UI
                 return false;
             }
 
+            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            var binding = mdm != null && cell.Index >= 0 && cell.Index < mdm.ConsumableQuickSlots.Length
+                ? mdm.ConsumableQuickSlots[cell.Index]
+                : QuickSlotBinding.Empty;
+
             return ItemDragDropController.Instance != null
                    && ItemDragDropController.Instance.BeginDragFromQuickBar(
-                       stack.ItemID, cell.Index, EContainerType.QuickBarConsumable);
+                       binding, cell.Index, EContainerType.QuickBarConsumable);
         }
 
         public void HandleDrop(ItemCellBase target, DragPayload payload, int dstIndex, ItemDragDropController controller)
@@ -412,7 +422,7 @@ namespace My.UI
                 || payload.SourceContainerType == EContainerType.SpecialInventory
                 || payload.SourceContainerType == EContainerType.Warehouse)
             {
-                if (!mdm.TryAssignConsumableQuickSlot(dstSlotIndex, payload.ItemId, out var fail))
+                if (!mdm.TryAssignConsumableQuickSlot(dstSlotIndex, payload.ItemId, payload.ItemInstanceId, out var fail))
                 {
                     Debug.Log("Consumable quick bar drop rejected: " + fail);
                     return;

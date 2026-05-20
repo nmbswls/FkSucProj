@@ -20,7 +20,7 @@ namespace My.UI
 
             SetIndexAndContainer(slotIndex, EContainerType.QuickBarWeapon, 0);
             SetOnChanged(null);
-            BindItemId(GetWeaponItemId(slotIndex));
+            BindQuickSlot(GetWeaponBinding(slotIndex));
             RefreshCellStyle(selected ? ItemCellBase.EStyleType.Selected : ItemCellBase.EStyleType.Normal);
         }
 
@@ -33,37 +33,37 @@ namespace My.UI
 
             SetIndexAndContainer(slotIndex, EContainerType.QuickBarConsumable, 0);
             SetOnChanged(null);
-            BindItemId(GetConsumableItemId(slotIndex));
+            BindQuickSlot(GetConsumableBinding(slotIndex));
             RefreshCellStyle(selected ? ItemCellBase.EStyleType.Selected : ItemCellBase.EStyleType.Normal);
         }
 
-        string GetWeaponItemId(int slotIndex)
+        static QuickSlotBinding GetWeaponBinding(int slotIndex)
         {
             var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null || slotIndex < 0 || slotIndex >= mdm.WeaponQuickSlotItemSet.Length)
+            if (mdm == null || slotIndex < 0 || slotIndex >= mdm.WeaponQuickSlots.Length)
             {
-                return null;
+                return QuickSlotBinding.Empty;
             }
 
-            return mdm.WeaponQuickSlotItemSet[slotIndex];
+            return mdm.WeaponQuickSlots[slotIndex];
         }
 
-        string GetConsumableItemId(int slotIndex)
+        static QuickSlotBinding GetConsumableBinding(int slotIndex)
         {
             var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null || slotIndex < 0 || slotIndex >= mdm.ConsumableQuickSlotItemSet.Length)
+            if (mdm == null || slotIndex < 0 || slotIndex >= mdm.ConsumableQuickSlots.Length)
             {
-                return null;
+                return QuickSlotBinding.Empty;
             }
 
-            return mdm.ConsumableQuickSlotItemSet[slotIndex];
+            return mdm.ConsumableQuickSlots[slotIndex];
         }
 
-        void BindItemId(string id)
+        void BindQuickSlot(QuickSlotBinding binding)
         {
             var inv = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.InventorySystem;
 
-            if (string.IsNullOrEmpty(id))
+            if (binding.IsEmpty)
             {
                 SetBoundStack(null);
                 icon.enabled = false;
@@ -77,28 +77,61 @@ namespace My.UI
                     countRect.gameObject.SetActive(false);
                 }
 
+                if (maskOverlay != null)
+                {
+                    maskOverlay.gameObject.SetActive(false);
+                }
+
                 return;
             }
 
-            long total = inv != null ? inv.GetCarriedItemTotal(id) : 0;
-            SetBoundStack(new ItemStack(id, total > 0 ? total : 1));
-            cacheItemDef = ItemCatalog.GetItemDef(id);
+            bool available = inv != null && inv.CheckQuickSlotBindingAvailable(binding);
+            long displayCount = 1;
+            ItemStack displayStack = null;
+
+            if (binding.ItemInstanceId != 0)
+            {
+                if (inv != null && inv.TryFindCarriedStack(binding, out _, out var pinned))
+                {
+                    displayStack = pinned;
+                    displayCount = pinned.Count;
+                }
+                else
+                {
+                    displayStack = new ItemStack(binding.ItemId, 1) { ItemInstanceId = binding.ItemInstanceId };
+                    displayCount = 0;
+                }
+            }
+            else
+            {
+                long total = inv != null ? inv.GetCarriedItemTotal(binding.ItemId) : 0;
+                displayCount = total > 0 ? total : 1;
+                displayStack = new ItemStack(binding.ItemId, displayCount);
+            }
+
+            SetBoundStack(displayStack);
+            cacheItemDef = ItemCatalog.GetItemDef(binding.ItemId);
             if (debugNameStr != null)
             {
-                debugNameStr.text = cacheItemDef != null ? cacheItemDef.DisplayName : id;
+                debugNameStr.text = cacheItemDef != null ? cacheItemDef.DisplayName : binding.ItemId;
             }
 
             icon.enabled = true;
-            ApplyItemIconSprite(id);
+            ApplyItemIconSprite(binding.ItemId);
 
             if (countRect != null)
             {
-                bool showCnt = total > 1;
+                bool showCnt = binding.ItemInstanceId == 0 && displayCount > 1;
                 countRect.gameObject.SetActive(showCnt);
                 if (showCnt && countText != null)
                 {
-                    countText.text = total.ToString();
+                    countText.text = displayCount.ToString();
                 }
+            }
+
+            if (maskOverlay != null)
+            {
+                maskOverlay.gameObject.SetActive(!available);
             }
         }
     }

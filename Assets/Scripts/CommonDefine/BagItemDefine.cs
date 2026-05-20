@@ -43,8 +43,22 @@ namespace My
 
         public bool CanStackWith(ItemStack other)
         {
-            if (other == null) return false;
-            return other.ItemID == ItemID;
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ItemID != other.ItemID)
+            {
+                return false;
+            }
+
+            if (ItemInstanceId != 0 || other.ItemInstanceId != 0)
+            {
+                return ItemInstanceId != 0 && ItemInstanceId == other.ItemInstanceId;
+            }
+
+            return true;
         }
 
         public long AddToStack(long amount, long maxStack)

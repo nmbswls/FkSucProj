@@ -49,6 +49,10 @@ namespace My.UI
                 {
                     iconSprite = SimpleResManager.Load<Sprite>($"Sprites/change_human_mode");
                 }
+                else if (innerItem.RadialFunc == ERadialFunc.RepairItem)
+                {
+                    iconSprite = SimpleResManager.Load<Sprite>($"Sprites/change_human_mode");
+                }
 
                 if (icon != null)
                 {
