@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using My;
+using My.Map;
 using My.Map.Entity;
-using My.Map.SavePoint;
 using My.UI;
 using TMPro;
 using UnityEngine;

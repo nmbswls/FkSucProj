@@ -5,7 +5,7 @@ using My.Config;
 using My.Map.Logic;
 using My.Saving;
 
-namespace My.Map.SavePoint
+namespace My.Map
 {
     public static class SavePointUnlockHelper
     {

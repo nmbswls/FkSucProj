@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using cfg.demo;
+using My.Map;
 using My.Map.Logic;
-using My.Map.SavePoint;
 
 namespace My.Player
 {

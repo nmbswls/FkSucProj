@@ -1,7 +1,6 @@
 using cfg.demo;
 using My.Config;
 using My.Map.Logic;
-using My.Map.SavePoint;
 using UnityEngine;
 
 namespace My.Map.Entity

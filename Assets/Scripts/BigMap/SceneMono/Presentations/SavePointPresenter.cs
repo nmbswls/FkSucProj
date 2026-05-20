@@ -1,7 +1,6 @@
 using My;
 using My.Map;
 using My.Map.Entity;
-using My.Map.SavePoint;
 using My.UI;
 using System.Collections.Generic;
 using UnityEngine;
