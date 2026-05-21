@@ -208,6 +208,8 @@ namespace My
 
             shopDataManager.RefreshOnNightStart();
 
+            RefreshPlayerWorldLocationFromMapCfg();
+
             // 清空延迟信息
             DelayedEffectQueue.Clear();
         }

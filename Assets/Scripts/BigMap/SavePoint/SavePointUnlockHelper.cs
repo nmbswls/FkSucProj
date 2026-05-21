@@ -238,6 +238,28 @@ namespace My.Map
             return result;
         }
 
+        public static bool IsAvailableForTeleport(GameLogicManager glm, string savePointId)
+        {
+            if (!CanShowAndInteract(glm, savePointId))
+            {
+                return false;
+            }
+
+            var cfg = GetCfg(savePointId);
+            if (cfg == null)
+            {
+                return false;
+            }
+
+            // 无需贡品：显示条件满足即可，不要求持久化解锁记录
+            if (!cfg.RequireTribute)
+            {
+                return true;
+            }
+
+            return IsFormallyUnlocked(glm, savePointId);
+        }
+
         public static List<SavePoint> GetUnlockedForMap(GameLogicManager glm, string mapVarId)
         {
             var result = new List<SavePoint>();
@@ -246,19 +268,32 @@ namespace My.Map
                 return result;
             }
 
-            foreach (var cfg in GetFormallyUnlockedConfigs(glm))
+            var table = CfgMgr.Cfgs?.TbSavePoint;
+            if (table?.DataList == null)
             {
-                if (cfg?.AreaVarId == null)
+                return result;
+            }
+
+            foreach (var cfg in table.DataList)
+            {
+                if (cfg == null || cfg.AreaVarId != mapVarId)
                 {
                     continue;
                 }
 
-                if (cfg.AreaVarId == mapVarId)
+                if (IsAvailableForTeleport(glm, cfg.SavePointId))
                 {
                     result.Add(cfg);
                 }
             }
 
+            result.Sort((a, b) =>
+            {
+                var order = a.SortOrder.CompareTo(b.SortOrder);
+                return order != 0
+                    ? order
+                    : string.CompareOrdinal(a.SavePointId, b.SavePointId);
+            });
             return result;
         }
 

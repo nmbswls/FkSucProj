@@ -99,9 +99,22 @@ namespace My
         public CinemachineBrain CineBrain;
 
         // 大地图玩家表现就绪后绑定 vcam.Follow（据点内不绑定）
+        public void ClearMapVcamBinding()
+        {
+            if (MainMapVCam == null)
+            {
+                return;
+            }
+
+            MainMapVCam.Follow = null;
+            MainMapVCam.LookAt = null;
+            MainMapVCam.PreviousStateIsValid = false;
+        }
+
         public void EnsureOpenWorldVcamFollow()
         {
-            if (gameLogicManager != null && gameLogicManager.IsInSecretBase)
+            var overlay = gameLogicManager?.AreaManager?.cacheMapOverlayCfg;
+            if (overlay != null && overlay.IsSecretBase)
             {
                 return;
             }
@@ -111,8 +124,16 @@ namespace My
                 return;
             }
 
-            MainMapVCam.Follow = playerScenePresenter.ViewPoint;
-            MainMapVCam.PreviousStateIsValid = false;
+            var follow = playerScenePresenter.ViewPoint != null
+                ? playerScenePresenter.ViewPoint
+                : playerScenePresenter.transform;
+
+            if (MainMapVCam.Follow != follow)
+            {
+                MainMapVCam.Follow = follow;
+                MainMapVCam.LookAt = null;
+                MainMapVCam.PreviousStateIsValid = false;
+            }
         }
 
         public UnityNavProvider NavProvider;

@@ -19,6 +19,7 @@ namespace My
 
         private void OnHardAreaClearStarting()
         {
+            ClearMapVcamBinding();
             _ambientSpiritVisuals?.Shutdown();
 
             if (_localRoomTeleportFadeCo != null)
@@ -189,6 +190,7 @@ namespace My
 
             // 取消关联
             playerScenePresenter = null;
+            ClearMapVcamBinding();
 
             sceneDropManager.ClearAllDrop();
         }
@@ -261,6 +263,7 @@ namespace My
                 UIManager.Instance.FadeHideBlack(1.5f);
             }
 
+            EnsureOpenWorldVcamFollow();
             Initialized = true;
         }
 
