@@ -20,7 +20,8 @@
         "attr_id": 2,
         "val": 1200
       }
-    ]
+    ],
+    "passive_skill_id": ""
   },
   {
     "node_id": 2,
@@ -50,7 +51,8 @@
         "attr_id": 4,
         "val": 800
       }
-    ]
+    ],
+    "passive_skill_id": ""
   },
   {
     "node_id": 3,
@@ -80,7 +82,8 @@
         "attr_id": 3,
         "val": 600
       }
-    ]
+    ],
+    "passive_skill_id": ""
   },
   {
     "node_id": 4,
@@ -118,7 +121,8 @@
         "attr_id": 4,
         "val": 400
       }
-    ]
+    ],
+    "passive_skill_id": ""
   },
   {
     "node_id": 5,
@@ -153,6 +157,34 @@
         "attr_id": 5,
         "val": 300
       }
-    ]
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 11,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "stat_bonuses": [],
+    "passive_skill_id": "ex_zhazhi_01"
+  },
+  {
+    "node_id": 12,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "stat_bonuses": [],
+    "passive_skill_id": "ex_zhazhi_02"
+  },
+  {
+    "node_id": 13,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "stat_bonuses": [],
+    "passive_skill_id": "ex_zhazhi_03"
   }
 ]

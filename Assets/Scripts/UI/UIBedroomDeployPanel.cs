@@ -112,13 +112,6 @@ namespace My.UI
                 ApplySimpleRowButton(spTpl);
         }
 
-        private void Update()
-        {
-            if (!IsVisible) return;
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
-                TryCloseSelf();
-        }
-
         public override void Setup(object data = null)
         {
             BedroomDeployMapUtil.CollectHuntMaps(_huntMaps);

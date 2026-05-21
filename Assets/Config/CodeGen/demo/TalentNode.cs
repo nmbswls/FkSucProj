@@ -21,7 +21,7 @@ public sealed partial class TalentNode : Luban.BeanBase
         { if(!_buf["node_id"].IsNumber) { throw new SerializationException(); }  NodeId = _buf["node_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
         { if(!_buf["max_level"].IsNumber) { throw new SerializationException(); }  MaxLevel = _buf["max_level"]; }
-        { if(!_buf["passive_skill_id"].IsString) { throw new SerializationException(); }  PassiveSkillId = _buf["passive_skill_id"]; }
+        { if(!_buf["icon_path"].IsString) { throw new SerializationException(); }  IconPath = _buf["icon_path"]; }
     }
 
     public static TalentNode DeserializeTalentNode(JSONNode _buf)
@@ -42,9 +42,9 @@ public sealed partial class TalentNode : Luban.BeanBase
     /// </summary>
     public int MaxLevel;
     /// <summary>
-    /// passive_skill_id
+    /// 路径
     /// </summary>
-    public string PassiveSkillId;
+    public string IconPath;
    
     public const int __ID__ = -1523122663;
     public override int GetTypeId() => __ID__;
@@ -59,7 +59,7 @@ public sealed partial class TalentNode : Luban.BeanBase
         + "nodeId:" + NodeId + ","
         + "displayName:" + DisplayName + ","
         + "maxLevel:" + MaxLevel + ","
-        + "passiveSkillId:" + PassiveSkillId + ","
+        + "iconPath:" + IconPath + ","
         + "}";
     }
 }

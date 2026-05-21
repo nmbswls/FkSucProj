@@ -24,6 +24,7 @@ public sealed partial class TalentNodeLevel : Luban.BeanBase
         { var __json0 = _buf["unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  UnlockConds.Add(__v0); }   }
         { var __json0 = _buf["unlock_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  UnlockCosts.Add(__v0); }   }
         { var __json0 = _buf["stat_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } StatBonuses = new System.Collections.Generic.List<demo.TalentStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentStatBonus.DeserializeTalentStatBonus(__e0);  }  StatBonuses.Add(__v0); }   }
+        { if(!_buf["passive_skill_id"].IsString) { throw new SerializationException(); }  PassiveSkillId = _buf["passive_skill_id"]; }
     }
 
     public static TalentNodeLevel DeserializeTalentNodeLevel(JSONNode _buf)
@@ -31,12 +32,34 @@ public sealed partial class TalentNodeLevel : Luban.BeanBase
         return new demo.TalentNodeLevel(_buf);
     }
 
+    /// <summary>
+    /// node_id
+    /// </summary>
     public int NodeId;
+    /// <summary>
+    /// level
+    /// </summary>
     public int Level;
+    /// <summary>
+    /// prereq_node_ids
+    /// </summary>
     public System.Collections.Generic.List<int> PrereqNodeIds;
+    /// <summary>
+    /// unlock_conds
+    /// </summary>
     public System.Collections.Generic.List<demo.CommonCheckCond> UnlockConds;
+    /// <summary>
+    /// unlock_costs
+    /// </summary>
     public System.Collections.Generic.List<demo.TalentUnlockCost> UnlockCosts;
+    /// <summary>
+    /// stat_bonuses
+    /// </summary>
     public System.Collections.Generic.List<demo.TalentStatBonus> StatBonuses;
+    /// <summary>
+    /// passive_skill_id
+    /// </summary>
+    public string PassiveSkillId;
    
     public const int __ID__ = -897608469;
     public override int GetTypeId() => __ID__;
@@ -57,6 +80,7 @@ public sealed partial class TalentNodeLevel : Luban.BeanBase
         + "unlockConds:" + Luban.StringUtil.CollectionToString(UnlockConds) + ","
         + "unlockCosts:" + Luban.StringUtil.CollectionToString(UnlockCosts) + ","
         + "statBonuses:" + Luban.StringUtil.CollectionToString(StatBonuses) + ","
+        + "passiveSkillId:" + PassiveSkillId + ","
         + "}";
     }
 }

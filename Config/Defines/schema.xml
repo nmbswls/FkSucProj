@@ -82,14 +82,6 @@
         <var name="val" type="long" comment="固定加成"/>
     </bean>
 
-    <bean name="TalentNodeLevel" tags="sep=,">
-        <var name="node_id" type="int"/>
-        <var name="level" type="int"/>
-        <var name="prereq_node_ids" type="(list#sep=;),int"/>
-        <var name="unlock_conds" type="(list#sep=;),CommonCheckCond"/>
-        <var name="unlock_costs" type="(list#sep=|),TalentUnlockCost"/>
-        <var name="stat_bonuses" type="(list#sep=|),TalentStatBonus"/>
-    </bean>
 
     <!-- 战斗技能（原 SkillLibrary 硬编码，与 Config.Unit.EntitySkillCfg 字段对应） -->
     <enum name="ESkillCastConditionType">

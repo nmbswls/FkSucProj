@@ -31,6 +31,7 @@ namespace My.MiniGame.Dream
         private bool _frozen;
         private bool _ended;
         private bool _layoutBuilt;
+        private Vector2 _moveInput;
 
         public override int FocusPriority => 830;
 
@@ -139,15 +140,22 @@ namespace My.MiniGame.Dream
             base.Show();
             _frozen = false;
             _ended = false;
+            _moveInput = Vector2.zero;
         }
 
         private void Update()
         {
-            if (!IsVisible || _frozen || _ended) return;
+            if (!IsVisible)
+            {
+                _moveInput = Vector2.zero;
+                return;
+            }
+
+            if (_frozen || _ended) return;
 
             var half = GetPlayAreaHalfExtents();
             var p = _playerRt.anchoredPosition;
-            var move = new Vector2(UnityEngine.Input.GetAxisRaw("Horizontal"), UnityEngine.Input.GetAxisRaw("Vertical"));
+            var move = _moveInput;
             if (move.sqrMagnitude > 1f) move.Normalize();
             p += move * (_ctx.PlayerMoveSpeed * Time.deltaTime);
             p.x = Mathf.Clamp(p.x, -half.x + 20f, half.x - 20f);
@@ -406,6 +414,18 @@ namespace My.MiniGame.Dream
         public override bool CapturesNavigateAxisForWorld => true;
         public override bool OnNavigate(Vector2 dir)
         {
+            if (!IsVisible || _frozen || _ended)
+            {
+                _moveInput = Vector2.zero;
+                return true;
+            }
+
+            _moveInput = dir;
+            if (_moveInput.sqrMagnitude > 1f)
+            {
+                _moveInput.Normalize();
+            }
+
             return true;
         }
     }

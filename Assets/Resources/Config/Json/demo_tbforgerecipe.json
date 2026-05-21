@@ -4,7 +4,7 @@
     "recipe_type": 0,
     "sort": 10,
     "display_name": "",
-    "result_item_id": "1",
+    "result_item_id": "small_knife",
     "icon_sprite": "",
     "materials": [
       {
@@ -21,7 +21,7 @@
     "recipe_type": 2,
     "sort": 20,
     "display_name": "解锁示例（需持有钥匙）",
-    "result_item_id": "small_stone",
+    "result_item_id": "small_knife",
     "icon_sprite": "",
     "materials": [
       {
