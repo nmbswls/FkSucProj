@@ -236,7 +236,18 @@ namespace My.Map.Entity
                 {
                     BuffId = "charm_fck_bonus",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerJingYuRate, ModifierValue = -1500 } },
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerJingYuRate, ModifierValue = -1500}},
+
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["charm_fck_deeper"] = new BuffDefinition()
+                {
+                    BuffId = "charm_fck_deeper",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.DesireDensityAmplify, ModifierValue = 10000 } },
+
                     DefaultDuration = -1,
                     IsHidden = true,
                 };

@@ -479,6 +479,10 @@ namespace My.Map
             MotorSystem?.Tick(dt);
         }
 
+        public void ForceCommitAttribute()
+        {
+            attributeStore?.Commit();
+        }
 
         protected virtual void TickLifeTime(float dt)
         {

@@ -242,6 +242,22 @@ namespace My.Map.View
             
         }
 
+
+        private void HandleBreakOneNode()
+        {
+            int currProgress = PgreossVal;
+
+            PgreossVal += 1;
+            BreakTimes = 0;
+
+            // show effect
+            int orgActId = RandomGetTangleHAct();
+            ActId = orgActId;
+
+            RefreshUI();
+        }
+
+
         /// <summary>
         /// 随机获取一个h动作
         /// </summary>
@@ -266,23 +282,17 @@ namespace My.Map.View
             var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
             var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
 
-            if(npc == null)
-            {
-                Debug.LogError("err ResolveHActParams");
-                Debug.LogError("err ResolveHActParams");
-                return;
-            }
-            // 对于静态敌人 玩家碾压 
-            if (!PlayerGamePlayRule.ResolveHActParams(ActId, player.GetAttr(AttrIdConsts.HPower), 10, 1, out var hImpulseEnemy, out var hImpulsePlayer))
-            {
-                Debug.LogError("err ResolveHActParams");
-            }
 
-            // 对玩家施加冲击力
-            player.ApplyHImpulseDirectly(hImpulsePlayer, null);
+            MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(npc.Id, "");
+            
 
-            // 对npc冲击
-            npc.ApplyNpcHImpulse(hImpulseEnemy);
+            // 进行san结算
+            long sanCost =(long)( GetProgressUnlockSanCost() * 1000);
+            if(sanCost > 0)
+            {
+                player.ApplyResourceChange(AttrIdConsts.PlayerSanity, -sanCost, false, Fight.FightStruct.EDmgFlag.None, null);
+                player.ForceCommitAttribute();
+            }
         }
         
         public override void Hide()
@@ -318,14 +328,8 @@ namespace My.Map.View
 
                 if(BreakTimes >= NeedBreakTimes)
                 {
-                    PgreossVal += 1;
-                    BreakTimes = 0;
-
-                    // show effect
-                    int orgActId = RandomGetTangleHAct();
-                    ActId = orgActId;
-
-                    RefreshUI();
+                    HandleBreakOneNode();
+                    
                 }
             }
             return true;
