@@ -118,6 +118,11 @@ namespace My.Input
         private Vector2? _overworldNavLastDispatchedDir;
         private bool _overworldNavStickyBlockWorld;
 
+        const float SecretBasePanDragThresholdSq = 9f;
+        bool _secretBasePanActive;
+        bool _secretBasePanDragging;
+        Vector2 _secretBasePanLastScreen;
+
         private void ResetOverworldNavigateRoutingState()
         {
             _overworldNavLastDispatchedDir = null;
@@ -428,6 +433,20 @@ namespace My.Input
                 return;
             }
 
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBase)
+            {
+                var screen = My.SecretBase.SecretBaseSceneRoot.GetPointerScreenPosition();
+                if (My.SecretBase.SecretBaseSceneRoot.IsPointerOverHudButton(screen))
+                {
+                    return;
+                }
+
+                _secretBasePanActive = true;
+                _secretBasePanDragging = false;
+                _secretBasePanLastScreen = screen;
+                return;
+            }
 
             if (uiRouter == null || !uiRouter.DispatchClick(1, LastPos))
             {
@@ -445,10 +464,51 @@ namespace My.Input
 
             LastPos = ctx.ReadValue<Vector2>();
 
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBase)
+            {
+                TickSecretBasePan(LastPos);
+                return;
+            }
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
             OnScenePointMove();
+        }
+
+        void TickSecretBasePan(Vector2 screen)
+        {
+            if (!_secretBasePanActive)
+            {
+                return;
+            }
+
+            if (Mouse.current == null || !Mouse.current.rightButton.isPressed)
+            {
+                EndSecretBasePan();
+                return;
+            }
+
+            if (!_secretBasePanDragging)
+            {
+                if ((screen - _secretBasePanLastScreen).sqrMagnitude < SecretBasePanDragThresholdSq)
+                {
+                    return;
+                }
+
+                _secretBasePanDragging = true;
+            }
+
+            var delta = screen - _secretBasePanLastScreen;
+            _secretBasePanLastScreen = screen;
+            My.SecretBase.SecretBaseSceneRoot.FindLoaded()?.ApplyPanScreenDelta(delta);
+        }
+
+        void EndSecretBasePan()
+        {
+            _secretBasePanActive = false;
+            _secretBasePanDragging = false;
         }
 
         public void OnConfirm(InputAction.CallbackContext ctx)
@@ -538,7 +598,17 @@ namespace My.Input
         }
 
         //public void OnMouseRightHoldStart(InputAction.CallbackContext ctx) => OnKeyHoldStart(EInputKey.MouseRight.ToString());
-        public void OnMouseRightHoldEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.MouseRight.ToString());
+        public void OnMouseRightHoldEnd(InputAction.CallbackContext ctx)
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBase)
+            {
+                EndSecretBasePan();
+                return;
+            }
+
+            OnKeyHoldEnd(EInputKey.MouseRight.ToString());
+        }
 
         public void OnHotKeyCrouch(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Crouch.ToString());
 

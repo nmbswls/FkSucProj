@@ -7,13 +7,27 @@ using UnityEngine.InputSystem;
 
 namespace My.UI
 {
-    // 投技头顶时段输入提示：表现（跟随、圆环）与输入判定在此；结算调用 ThrowContext.CompleteActiveHold
-    [DefaultExecutionOrder(500)] // 晚于默认 LogicTimeManager(0)，保证本帧 LogicTime 已推进后再采样进度与输入
-    public sealed class PlayerHeadThrowQteHud : MonoBehaviour
+    public sealed class PlayerHeadThrowQteSessionData
     {
-        const string ResourcePath = "UI/Prefabs/PlayerHeadQteHint";
+        public ThrowContext ThrowCtx;
+        public string Prompt;
+        public Transform Follow;
+    }
 
-        static PlayerHeadThrowQteHud _instance;
+    // 投技头顶时段输入提示：表现（跟随、圆环）与输入判定；生命周期由 UIManager + PanelBase 管理
+    [DefaultExecutionOrder(500)]
+    public sealed class PlayerHeadThrowQteHud : PanelBase
+    {
+        public const string PanelIdConst = "PlayerHeadThrowQteHud";
+
+        public static PlayerHeadThrowQteHud Instance
+        {
+            get
+            {
+                var panel = UIManager.Instance?.GetShowingPanel(PanelIdConst);
+                return panel as PlayerHeadThrowQteHud;
+            }
+        }
 
         [Header("Layout")]
         [SerializeField] private RectTransform anchorRect;
@@ -35,17 +49,21 @@ namespace My.UI
 
         void Awake()
         {
+            if (string.IsNullOrEmpty(panelId))
+            {
+                panelId = PanelIdConst;
+            }
+
+            layer = UILayer.HUD;
+
+            if (canvasGroup == null)
+            {
+                canvasGroup = GetComponent<CanvasGroup>();
+            }
+
             if (anchorRect == null)
             {
                 anchorRect = transform as RectTransform;
-            }
-        }
-
-        void OnDestroy()
-        {
-            if (_instance == this)
-            {
-                _instance = null;
             }
         }
 
@@ -56,53 +74,57 @@ namespace My.UI
                 return;
             }
 
-            EnsureInstance();
-            if (_instance == null)
+            if (UIManager.Instance == null)
             {
+                Debug.LogError("[PlayerHeadThrowQteHud] UIManager not ready.");
                 return;
             }
 
-            _instance.ApplySession(throwCtx, prompt, follow);
+            UIManager.Instance.ShowPanel(
+                PanelIdConst,
+                new PlayerHeadThrowQteSessionData
+                {
+                    ThrowCtx = throwCtx,
+                    Prompt = prompt,
+                    Follow = follow,
+                });
         }
 
-        public static void Hide()
-        {
-            if (_instance == null)
-            {
-                return;
-            }
 
-            _instance.ClearSession();
-            _instance.gameObject.SetActive(false);
+        public override void Setup(object data = null)
+        {
+            if (data is PlayerHeadThrowQteSessionData session)
+            {
+                ApplySession(session.ThrowCtx, session.Prompt, session.Follow);
+            }
+            else
+            {
+                ClearSession();
+            }
         }
 
-        static void EnsureInstance()
+        public override void Show()
         {
-            if (_instance != null)
-            {
-                return;
-            }
+            base.Show();
 
-            var prefab = Resources.Load<GameObject>(ResourcePath);
-            if (prefab == null)
+            if (_throwCtx?.ActiveHold != null)
             {
-                Debug.LogError("[ThrowHoldHud] Missing prefab at Resources/" + ResourcePath);
-                return;
+                _throwCtx.ActiveHold.LastSampledNormalizedProgress = _throwCtx.ActiveHold.GetNormalizedProgress();
+                UpdateRingVisuals();
+                RefreshFollowPosition();
             }
+        }
 
-            Transform parent = null;
-            if (UIManager.Instance != null)
-            {
-                parent = UIManager.Instance.GetLayerRoot(UILayer.HUD);
-            }
+        public override void Hide()
+        {
+            ClearSession();
+            base.Hide();
+        }
 
-            var go = Instantiate(prefab, parent, false);
-            _instance = go.GetComponent<PlayerHeadThrowQteHud>();
-            if (_instance == null)
-            {
-                Debug.LogError("[ThrowHoldHud] Prefab root must have PlayerHeadThrowQteHud");
-                Destroy(go);
-            }
+        public override void Teardown()
+        {
+            ClearSession();
+            base.Teardown();
         }
 
         void ApplySession(ThrowContext throwCtx, string prompt, Transform follow)
@@ -121,12 +143,6 @@ namespace My.UI
                 float s0 = ringScaleStart;
                 shrinkingRing.localScale = new Vector3(s0, s0, 1f);
             }
-
-            gameObject.SetActive(true);
-            // 与首帧 TickHoldInput 读取的区间一致，避免上一 session 残留 0 导致 Segment 判定异常
-            throwCtx.ActiveHold.LastSampledNormalizedProgress = throwCtx.ActiveHold.GetNormalizedProgress();
-            UpdateRingVisuals();
-            RefreshFollowPosition();
         }
 
         void ClearSession()
@@ -138,15 +154,14 @@ namespace My.UI
 
         void Update()
         {
-            if (_session == null || _throwCtx == null)
+            if (!IsVisible || _session == null || _throwCtx == null)
             {
                 return;
             }
 
             if (_throwCtx.ActiveHold != _session || _session.Resolved)
             {
-                ClearSession();
-                gameObject.SetActive(false);
+                UIManager.Instance?.HidePanel(PanelIdConst);
                 return;
             }
 
@@ -155,15 +170,14 @@ namespace My.UI
 
         void LateUpdate()
         {
-            if (_session == null || _throwCtx == null)
+            if (!IsVisible || _session == null || _throwCtx == null)
             {
                 return;
             }
 
             if (_throwCtx.ActiveHold != _session || _session.Resolved)
             {
-                ClearSession();
-                gameObject.SetActive(false);
+                UIManager.Instance?.HidePanel(PanelIdConst);
                 return;
             }
 
@@ -182,14 +196,14 @@ namespace My.UI
                              || q.IsInHitWindow(q.LastSampledNormalizedProgress)
                              || q.SegmentIntersectsHitWindow(q.LastSampledNormalizedProgress, pNow);
                 _throwCtx.CompleteActiveHold(inWin);
-                Hide();
+                UIManager.Instance?.HidePanel(PanelIdConst);
                 return;
             }
 
             if (LogicTime.time >= q.TimeoutAtLogicTime)
             {
                 _throwCtx.CompleteActiveHold(false);
-                Hide();
+                UIManager.Instance?.HidePanel(PanelIdConst);
                 return;
             }
 
@@ -213,7 +227,6 @@ namespace My.UI
                 return;
             }
 
-            // p：整段 Timeout 上的 0~1。收缩环 s(p)=Lerp(start,end,p)。目标环固定在「命中窗时间中点」的 s，故仅当 p==HitWindowCenterNormalized 时两环半径一致。
             float p = _session.GetNormalizedProgress();
             float ringCenterN = TimelineHoldSession.HitWindowCenterNormalized;
             float sShrink = Mathf.Lerp(ringScaleStart, ringScaleEnd, p);
@@ -251,8 +264,7 @@ namespace My.UI
             Vector3 sp = mainCam.WorldToScreenPoint(world);
             if (sp.z < 0f)
             {
-                ClearSession();
-                gameObject.SetActive(false);
+                UIManager.Instance?.HidePanel(PanelIdConst);
                 return;
             }
 

@@ -1,6 +1,6 @@
 namespace My.Player
 {
-    public static class PlayerQuickBarDefs
+    public static class HumanQuickBarDefs
     {
         public const int WeaponSlotCount = 2;
         public const int ConsumableSlotCount = 6;

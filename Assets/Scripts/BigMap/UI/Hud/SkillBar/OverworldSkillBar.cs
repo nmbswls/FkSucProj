@@ -136,7 +136,7 @@ namespace My.UI
                 string skillName = showSkills[i];
                 if (humanQuickBar && i == 0 && !mdm.IsUsingFaQingSkillBar())
                 {
-                    skillName = mdm.ResolveHumanLeftClickSkillId();
+                    skillName = mdm.HumanQuickBar.ResolveLeftClickSkillId();
                 }
 
                 if (string.IsNullOrEmpty(skillName))
@@ -175,7 +175,7 @@ namespace My.UI
             string skillId;
             if (glm != null && glm.IsHumanQuickBarAvailable() && slotIdx == 0 && !mdm.IsUsingFaQingSkillBar())
             {
-                skillId = mdm.ResolveHumanLeftClickSkillId();
+                skillId = mdm.HumanQuickBar.ResolveLeftClickSkillId();
             }
             else
             {

@@ -16,6 +16,7 @@ namespace My
         private readonly Dictionary<string, RepairPointRuntimeSave> _ruinRuntime = new();
         private readonly Dictionary<string, SavePointUnlockPersist> _savePointUnlockById = new(StringComparer.Ordinal);
         private readonly HashSet<string> _secretBaseUnlockedFacilities = new(StringComparer.Ordinal);
+        private int _secretBaseBuildLevel = 1;
 
         public readonly WorldNpcCharacterPersistRegistry NpcCharacters = new();
 
@@ -145,6 +146,12 @@ namespace My
                     }
                 }
             }
+
+            _secretBaseBuildLevel = savingData?.PlayerData?.SecretBaseBuildLevel ?? 1;
+            if (_secretBaseBuildLevel < 1)
+            {
+                _secretBaseBuildLevel = 1;
+            }
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -232,6 +239,18 @@ namespace My
             {
                 data.PlayerData.SecretBaseUnlockedFacilityIds.Add(id);
             }
+
+            data.PlayerData.SecretBaseBuildLevel = _secretBaseBuildLevel < 1 ? 1 : _secretBaseBuildLevel;
+        }
+
+        public int GetSecretBaseBuildLevel()
+        {
+            return _secretBaseBuildLevel < 1 ? 1 : _secretBaseBuildLevel;
+        }
+
+        public void SetSecretBaseBuildLevel(int level)
+        {
+            _secretBaseBuildLevel = level < 1 ? 1 : level;
         }
 
         public bool IsSecretBaseFacilityUnlocked(string facilityId)

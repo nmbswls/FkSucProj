@@ -64,6 +64,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8d4e2c1b0a967853241506172839405, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  panelId: PlayerHeadThrowQteHud
+  layer: 1
+  canvasGroup: {fileID: 770011003}
   anchorRect: {fileID: 770011002}
   shrinkingRing: {fileID: 770011021}
   targetRing: {fileID: 770011011}

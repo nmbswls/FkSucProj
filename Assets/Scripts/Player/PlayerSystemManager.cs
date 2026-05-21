@@ -49,6 +49,8 @@ namespace My.Player
 
         public PlayerSkillSystem SkillSystem { get; private set; }
 
+        public PlayerHumanQuickBarSystem HumanQuickBar { get; private set; }
+
         public PlayerEquipmentManager EquipmentManager { get; private set; }
 
         public RumorIntelSystem RumorIntel { get; } = new();
@@ -98,10 +100,9 @@ namespace My.Player
             FuncOpenSystem = new();
             InventorySystem = new();
             SkillSystem = new PlayerSkillSystem();
+            HumanQuickBar = new PlayerHumanQuickBarSystem(this);
 
             MagicClothes = new PlayerMagicClothesManager(this);
-
-            InitQuickBarDefaults();
 
             HumanSkillSlots[0] = "default_push";
             HumanSkillSlots[1] = "force_dash_push_down";
@@ -150,7 +151,7 @@ namespace My.Player
             FuncOpenSystem.InitSystem(logicManager, savingData);
             InventorySystem.InitSystem(logicManager, savingData);
             SkillSystem.InitSystem(logicManager, savingData);
-            HydrateQuickSlotsFromSave(savingData);
+            HumanQuickBar.InitSystem(logicManager, savingData);
             MagicClothes.LoadFromSave(savingData?.PlayerData);
 
             EquipmentManager = new PlayerEquipmentManager(this);
@@ -181,7 +182,7 @@ namespace My.Player
             RumorIntel.SaveTo(data.PlayerData);
 
 
-            WriteQuickBarToSave(data.PlayerData);
+            HumanQuickBar.WriteToSave(data.PlayerData);
         }
 
         public bool CheckHasParam(string id)
@@ -438,7 +439,7 @@ namespace My.Player
 
             if (logicManager != null && logicManager.IsHumanQuickBarAvailable())
             {
-                var weaponSkill = GetActiveWeaponSkillId();
+                var weaponSkill = HumanQuickBar.GetActiveWeaponSkillId();
                 if (!string.IsNullOrEmpty(weaponSkill) && !outIds.Contains(weaponSkill))
                 {
                     outIds.Add(weaponSkill);

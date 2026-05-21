@@ -16,15 +16,13 @@ namespace My.SecretBase
         const float ScrollSpeed = 8f;
 
         [SerializeField] Transform scrollAnchor;
-        [SerializeField] float scrollMinX;
-        [SerializeField] float scrollMaxX = 32f;
         [SerializeField] SecretBaseParallaxLayer[] parallaxLayers;
         [SerializeField] Transform facilitySpawnRoot;
 
         float _scrollX;
-        Transform _savedFollow;
-        Transform _savedLookAt;
-        bool _cameraBound;
+        float _scrollMinX;
+        float _scrollMaxX = 32f;
+        bool _sessionActive;
 
         readonly SecretBaseFacilityRuntime _facilities = new();
         SecretBaseInteractable _hovered;
@@ -44,7 +42,8 @@ namespace My.SecretBase
         void Awake()
         {
             Instance = this;
-            _scrollX = scrollMinX;
+            RefreshScrollBounds();
+            _scrollX = Mathf.Clamp(_scrollX, _scrollMinX, _scrollMaxX);
         }
 
         void OnDestroy()
@@ -58,7 +57,8 @@ namespace My.SecretBase
 
         public void EnterMode()
         {
-            BindCamera();
+            EnterScrollCameraMode();
+            RefreshScrollBounds();
             var glm = MainGameManager.Instance?.gameLogicManager;
             var root = facilitySpawnRoot != null ? facilitySpawnRoot : transform;
             _facilities.Refresh(glm, root);
@@ -68,7 +68,21 @@ namespace My.SecretBase
         {
             ClearHover();
             _facilities.ClearSpawned();
-            UnbindCamera();
+            _sessionActive = false;
+        }
+
+        public void RefreshScrollBounds()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            int level = glm != null ? glm.GetSecretBaseBuildLevel() : 1;
+            var bounds = SecretBaseScrollBounds.Get(level);
+            _scrollMinX = bounds.minX;
+            _scrollMaxX = bounds.maxX;
+            _scrollX = Mathf.Clamp(_scrollX, _scrollMinX, _scrollMaxX);
+            if (_sessionActive)
+            {
+                ApplyCameraAndParallax();
+            }
         }
 
         public void Tick(float dt)
@@ -84,9 +98,9 @@ namespace My.SecretBase
                 axis += 1f;
             }
 
-            if (_cameraBound && Mathf.Abs(axis) > 0.01f)
+            if (_sessionActive && Mathf.Abs(axis) > 0.01f)
             {
-                _scrollX = Mathf.Clamp(_scrollX + axis * ScrollSpeed * dt, scrollMinX, scrollMaxX);
+                _scrollX = Mathf.Clamp(_scrollX + axis * ScrollSpeed * dt, _scrollMinX, _scrollMaxX);
                 ApplyCameraAndParallax();
             }
 
@@ -122,7 +136,29 @@ namespace My.SecretBase
             }
         }
 
-        void BindCamera()
+        public void ApplyPanScreenDelta(Vector2 screenDelta)
+        {
+            if (!_sessionActive || Mathf.Abs(screenDelta.x) < 0.01f)
+            {
+                return;
+            }
+
+            var cam = ResolveViewCamera();
+            if (cam == null)
+            {
+                return;
+            }
+
+            var anchor = scrollAnchor != null ? scrollAnchor : transform;
+            float z = Mathf.Abs(cam.transform.position.z - anchor.position.z);
+            var w0 = cam.ScreenToWorldPoint(new Vector3(0f, Screen.height * 0.5f, z));
+            var w1 = cam.ScreenToWorldPoint(new Vector3(screenDelta.x, Screen.height * 0.5f, z));
+            float worldDx = w1.x - w0.x;
+            _scrollX = Mathf.Clamp(_scrollX - worldDx, _scrollMinX, _scrollMaxX);
+            ApplyCameraAndParallax();
+        }
+
+        void EnterScrollCameraMode()
         {
             var vcam = MainGameManager.Instance?.MainMapVCam;
             if (vcam == null)
@@ -131,38 +167,16 @@ namespace My.SecretBase
                 return;
             }
 
-            if (_cameraBound)
+            if (_sessionActive)
             {
                 return;
             }
 
-            _savedFollow = vcam.Follow;
-            _savedLookAt = vcam.LookAt;
             vcam.Follow = null;
             vcam.LookAt = null;
             vcam.PreviousStateIsValid = false;
-            _cameraBound = true;
+            _sessionActive = true;
             ApplyCameraAndParallax();
-        }
-
-        void UnbindCamera()
-        {
-            if (!_cameraBound)
-            {
-                return;
-            }
-
-            var vcam = MainGameManager.Instance?.MainMapVCam;
-            if (vcam != null)
-            {
-                vcam.Follow = _savedFollow;
-                vcam.LookAt = _savedLookAt;
-                vcam.PreviousStateIsValid = false;
-            }
-
-            _savedFollow = null;
-            _savedLookAt = null;
-            _cameraBound = false;
         }
 
         void ApplyCameraAndParallax()
@@ -274,7 +288,7 @@ namespace My.SecretBase
             return Camera.main;
         }
 
-        static bool IsPointerOverHudButton(Vector2 screenPos)
+        public static bool IsPointerOverHudButton(Vector2 screenPos)
         {
             if (EventSystem.current == null)
             {

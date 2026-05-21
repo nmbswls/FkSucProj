@@ -513,12 +513,7 @@ public class SceneAOIManager : MonoBehaviour
         if(entry.entity.Type == EEntityType.Player)
         {
             MainGameManager.Instance.playerScenePresenter = pres as PlayerScenePresenter;
-            var glm = MainGameManager.Instance.gameLogicManager;
-            if (glm == null || !glm.IsInSecretBase)
-            {
-                MainGameManager.Instance.MainMapVCam.Follow = MainGameManager.Instance.playerScenePresenter.ViewPoint;
-                MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
-            }
+            MainGameManager.Instance.EnsureOpenWorldVcamFollow();
         }
 
         if (entry.canceledDuringCreate || !entry.isShown)

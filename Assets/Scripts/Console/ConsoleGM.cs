@@ -11,6 +11,8 @@ using My.Map.Scene;
 using My.Map;
 using My.UI;
 using My.Map.Fight;
+using My.Config;
+using My.SecretBase;
 using cfg.demo;
 
 public class ConsoleGM : MonoBehaviour
@@ -324,6 +326,8 @@ public class ConsoleGM : MonoBehaviour
 
             });
 
+        RegisterSecretBaseLevelCommands();
+
         Register("rr", "撤退",
             null,
             args =>
@@ -621,6 +625,61 @@ public class ConsoleGM : MonoBehaviour
         
 
         GUILayout.EndArea();
+    }
+
+    void RegisterSecretBaseLevelCommands()
+    {
+        void Handler(List<string> args)
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                LogError("gameLogicManager null");
+                return;
+            }
+
+            if (args.Count == 0)
+            {
+                int lv = glm.GetSecretBaseBuildLevel();
+                var bounds = SecretBaseScrollBounds.Get(lv);
+                Log($"SecretBaseBuildLevel={lv}, scroll X [{bounds.minX}, {bounds.maxX}]");
+                var table = CfgMgr.Cfgs?.TbSecretBaseBuildLevel;
+                if (table?.DataList != null)
+                {
+                    foreach (var row in table.DataList)
+                    {
+                        if (row != null)
+                        {
+                            Log($"  Lv{row.Level}: [{row.ScrollMinX}, {row.ScrollMaxX}]");
+                        }
+                    }
+                }
+
+                return;
+            }
+
+            if (!int.TryParse(args[0], out var target))
+            {
+                LogError("usage: secret_base_level [level]  (level must be int >= 1)");
+                return;
+            }
+
+            if (target < 1)
+            {
+                LogError("level must be >= 1");
+                return;
+            }
+
+            glm.SetSecretBaseBuildLevel(target);
+            int applied = glm.GetSecretBaseBuildLevel();
+            var appliedBounds = SecretBaseScrollBounds.Get(applied);
+            Log($"Set SecretBaseBuildLevel={applied}, scroll X [{appliedBounds.minX}, {appliedBounds.maxX}]");
+        }
+
+        var parameters = new[] { new CmdParam("level", "optional int，TbSecretBaseBuildLevel.level") };
+        Register("secret_base_level", "隐秘据点建设等级：无参查看配置与当前值，有参升级/降级并刷新卷轴边界",
+            parameters, Handler);
+        Register("sb_level", "alias of secret_base_level", parameters, Handler);
     }
 
     // =============== 命令系统 ===============

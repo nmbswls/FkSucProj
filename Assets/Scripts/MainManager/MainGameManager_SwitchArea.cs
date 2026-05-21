@@ -245,6 +245,12 @@ namespace My
             {
                 await Task.Delay(100);
             }
+
+            if (WorldAreaManager.Instance.cacheAreaInfo == null
+                || !WorldAreaManager.Instance.cacheAreaInfo.IsSecretBase)
+            {
+                EnsureOpenWorldVcamFollow();
+            }
         }
 
         private async Task AsyncHandleAfterSwitchArea(SwitchAreaIntent intent)

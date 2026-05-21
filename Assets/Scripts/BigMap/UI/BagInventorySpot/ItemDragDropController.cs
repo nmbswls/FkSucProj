@@ -174,21 +174,21 @@ namespace My.UI
 
             if (p != null && !dropHandled)
             {
-                var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-                if (mdm != null)
+                var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+                if (qb != null)
                 {
                     if (p.SourceContainerType == EContainerType.QuickBarWeapon
                         && p.SourceIndex >= 0
-                        && p.SourceIndex < mdm.WeaponQuickSlots.Length)
+                        && p.SourceIndex < qb.WeaponSlots.Length)
                     {
-                        mdm.ClearWeaponQuickSlot(p.SourceIndex);
+                        qb.ClearWeaponSlot(p.SourceIndex);
                         OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                     }
                     else if (p.SourceContainerType == EContainerType.QuickBarConsumable
                              && p.SourceIndex >= 0
-                             && p.SourceIndex < mdm.ConsumableQuickSlots.Length)
+                             && p.SourceIndex < qb.ConsumableSlots.Length)
                     {
-                        mdm.ClearConsumableQuickSlot(p.SourceIndex);
+                        qb.ClearConsumableSlot(p.SourceIndex);
                         OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                     }
                 }

@@ -299,7 +299,7 @@ namespace My.UI
                 return;
             }
 
-            lgm.playerDataManager?.PruneInvalidQuickSlots();
+            lgm.playerDataManager?.HumanQuickBar?.PruneInvalidSlots();
 
             var ctrl = ItemQuickBarRoot.GetComponent<OverworldItemQuickBarController>();
             ctrl?.EnsureSlots();
@@ -810,7 +810,12 @@ namespace My.UI
                 return false;
             }
 
-            var mdm = lgm.playerDataManager;
+            var qb = lgm.playerDataManager?.HumanQuickBar;
+            if (qb == null)
+            {
+                return false;
+            }
+
             if (keyName == EInputKey.UseQuickItem.ToString())
             {
                 OnClickUseConsumable();
@@ -822,7 +827,7 @@ namespace My.UI
                 int wIdx = KeyNameToWeaponSlotIndex(keyName);
                 if (wIdx >= 0)
                 {
-                    mdm.SelectWeaponSlot(wIdx);
+                    qb.SelectWeaponSlot(wIdx);
                     RefreshItemQuickBar();
                 }
 
@@ -843,10 +848,9 @@ namespace My.UI
             if (keyName == EInputKey.MouseLeft.ToString())
             {
                 var lgm = MainGameManager.Instance.gameLogicManager;
-                var mdm = lgm?.playerDataManager;
                 if (lgm != null && lgm.IsHumanQuickBarAvailable())
                 {
-                    var leftClick = mdm?.ResolveHumanLeftClickSkillId();
+                    var leftClick = lgm.playerDataManager?.HumanQuickBar?.ResolveLeftClickSkillId();
                     if (!string.IsNullOrEmpty(leftClick))
                     {
                         return leftClick;
@@ -977,7 +981,7 @@ namespace My.UI
                 return;
             }
 
-            var binding = lgm.playerDataManager.GetActiveConsumableBinding();
+            var binding = lgm.playerDataManager.HumanQuickBar.GetActiveConsumableBinding();
             if (binding.IsEmpty)
             {
                 return;
@@ -1010,7 +1014,7 @@ namespace My.UI
                     if (ret && itemUseCfg.CostOnUse)
                     {
                         inv.CostQuickSlotBinding(binding, 1);
-                        pdm.PruneInvalidQuickSlots();
+                        pdm.HumanQuickBar?.PruneInvalidSlots();
                     }
                 });
             }
@@ -1019,7 +1023,7 @@ namespace My.UI
                 TryUseConsumableFromInventoryBag(binding);
             }
 
-            pdm.PruneInvalidQuickSlots();
+            pdm.HumanQuickBar?.PruneInvalidSlots();
             RefreshItemQuickBar();
         }
 
@@ -1060,7 +1064,7 @@ namespace My.UI
                 return false;
             }
 
-            lgm.playerDataManager.CycleConsumableSelection(deltaY > 0f ? 1 : -1);
+            lgm.playerDataManager.HumanQuickBar.CycleConsumableSelection(deltaY > 0f ? 1 : -1);
             RefreshItemQuickBar();
             return true;
         }

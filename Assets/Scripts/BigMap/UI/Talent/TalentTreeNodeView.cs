@@ -9,14 +9,14 @@ namespace My.UI.Talent
     // 与 Luban TalentNode.node_id 对应；布局/连线由预制体内摆放
     public sealed class TalentTreeNodeView : MonoBehaviour
     {
-        [SerializeField] int talentNodeId;
+        public int talentNodeId { get; private set; }
         [SerializeField] Button unlockButton;
-        [SerializeField] TextMeshProUGUI buttonLabel;
         [SerializeField] Image nodeBackground;
         [SerializeField] Color lockedColor = new Color(0.35f, 0.35f, 0.4f, 1f);
         [SerializeField] Color unlockableColor = new Color(0.9f, 0.75f, 0.2f, 1f);
         [SerializeField] Color unlockedColor = new Color(0.35f, 0.85f, 0.45f, 1f);
         [SerializeField] TextMeshProUGUI titleText;
+        [SerializeField] TextMeshProUGUI levelText;
 
         TalentTreePanel _host;
 
@@ -32,7 +32,7 @@ namespace My.UI.Talent
             }
         }
 
-        public void Refresh(PlayerProgressionSystem progression)
+        public void Refresh(PlayerProgressionSystem progression, int nodeId)
         {
             var row = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(talentNodeId);
             int cur = progression != null ? progression.GetTalentNodeLevel(talentNodeId) : 0;
@@ -43,7 +43,12 @@ namespace My.UI.Talent
                 string name = row != null && !string.IsNullOrEmpty(row.DisplayName)
                     ? row.DisplayName
                     : $"Node {talentNodeId}";
-                titleText.text = $"{name} Lv{cur}/{max}";
+                titleText.text = $"{name} ";
+            }
+
+            if(levelText != null)
+            {
+                levelText.text = $"Lv{cur}/{max}";
             }
 
             if (progression == null)
@@ -73,11 +78,6 @@ namespace My.UI.Talent
             if (unlockButton != null)
             {
                 unlockButton.interactable = canClick;
-            }
-
-            if (buttonLabel != null)
-            {
-                buttonLabel.text = btnText;
             }
         }
 

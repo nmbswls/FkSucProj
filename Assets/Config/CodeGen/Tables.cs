@@ -79,6 +79,10 @@ public partial class Tables
     /// 据点固定设施
     /// </summary>
     public demo.TbSecretBaseFacility TbSecretBaseFacility {get; }
+    /// <summary>
+    /// 据点建设等级卷轴边界
+    /// </summary>
+    public demo.TbSecretBaseBuildLevel TbSecretBaseBuildLevel {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -144,6 +148,7 @@ public partial class Tables
         TbDesireDensityTier = new demo.TbDesireDensityTier(loader("demo_tbdesiredensitytier"));
         TbMindFragmentPoolEntry = new demo.TbMindFragmentPoolEntry(loader("demo_tbmindfragmentpoolentry"));
         TbSecretBaseFacility = new demo.TbSecretBaseFacility(loader("demo_tbsecretbasefacility"));
+        TbSecretBaseBuildLevel = new demo.TbSecretBaseBuildLevel(loader("demo_tbsecretbasebuildlevel"));
         ResolveRef();
     }
     
@@ -211,6 +216,7 @@ public partial class Tables
         TbDesireDensityTier.ResolveRef(this);
         TbMindFragmentPoolEntry.ResolveRef(this);
         TbSecretBaseFacility.ResolveRef(this);
+        TbSecretBaseBuildLevel.ResolveRef(this);
     }
 }
 

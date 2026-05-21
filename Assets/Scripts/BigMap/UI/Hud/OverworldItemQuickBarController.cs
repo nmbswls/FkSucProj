@@ -21,7 +21,7 @@ namespace My.UI
         QuickSlotItemCell _slotTemplate;
 
         [SerializeField]
-        int _consumableSlotCount = PlayerQuickBarDefs.ConsumableSlotCount;
+        int _consumableSlotCount = HumanQuickBarDefs.ConsumableSlotCount;
 
         bool _initialized;
 
@@ -88,7 +88,7 @@ namespace My.UI
                 layer = 5;
             }
 
-            RebuildSlots(_weaponSlotsParent, WeaponSlotPrefix, PlayerQuickBarDefs.WeaponSlotCount, layer, true);
+            RebuildSlots(_weaponSlotsParent, WeaponSlotPrefix, HumanQuickBarDefs.WeaponSlotCount, layer, true);
             RebuildSlots(_consumableSlotsParent, ConsumableSlotPrefix, _consumableSlotCount, layer, false);
         }
 
@@ -177,24 +177,24 @@ namespace My.UI
                 return;
             }
 
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null)
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            if (qb == null)
             {
                 return;
             }
 
-            for (int w = 0; w < PlayerQuickBarDefs.WeaponSlotCount; w++)
+            for (int w = 0; w < HumanQuickBarDefs.WeaponSlotCount; w++)
             {
                 var tr = _weaponSlotsParent.Find(WeaponSlotPrefix + w);
                 var cell = tr != null ? tr.GetComponent<QuickSlotItemCell>() : null;
-                cell?.BindWeaponSlot(w, mdm.ActiveWeaponSlotIndex == w);
+                cell?.BindWeaponSlot(w, qb.ActiveWeaponIndex == w);
             }
 
             for (int c = 0; c < _consumableSlotCount; c++)
             {
                 var tr = _consumableSlotsParent.Find(ConsumableSlotPrefix + c);
                 var cell = tr != null ? tr.GetComponent<QuickSlotItemCell>() : null;
-                cell?.BindConsumableSlot(c, mdm.ActiveConsumableIndex == c);
+                cell?.BindConsumableSlot(c, qb.ActiveConsumableIndex == c);
             }
         }
     }

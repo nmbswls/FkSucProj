@@ -92,6 +92,9 @@ namespace My.Saving
         // 隐秘据点已解锁设施 id（TbSecretBaseFacility.facility_id）
         public List<string> SecretBaseUnlockedFacilityIds = new();
 
+        // 隐秘据点建设等级（TbSecretBaseBuildLevel.level，卷轴右边界随等级扩大）
+        public int SecretBaseBuildLevel = 1;
+
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
 
         // 地图小剧情触发器消费态：键 mapId|triggerId
@@ -352,6 +355,10 @@ namespace My.Saving
             data.PlayerData.TalentNodeLevels ??= new List<TalentNodeLevelPersist>();
             data.PlayerData.SavePointUnlocks ??= new List<SavePointUnlockPersist>();
             data.PlayerData.SecretBaseUnlockedFacilityIds ??= new List<string>();
+            if (data.PlayerData.SecretBaseBuildLevel < 1)
+            {
+                data.PlayerData.SecretBaseBuildLevel = 1;
+            }
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.MainInventorySlots ??= new List<MainBagSlotPersist>();

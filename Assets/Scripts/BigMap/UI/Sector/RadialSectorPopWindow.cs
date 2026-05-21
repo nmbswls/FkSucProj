@@ -267,7 +267,7 @@ namespace My.UI
                     break;
                 case ERadialFunc.RepairItem:
                     {
-                        var itemId = MainGameManager.Instance.gameLogicManager.playerDataManager.GetActiveConsumableItemId();
+                        var itemId = MainGameManager.Instance.gameLogicManager.playerDataManager.HumanQuickBar.GetActiveConsumableItemId();
                         if(string.IsNullOrEmpty(itemId))
                         {
                             Debug.Log("当前无修复道具" + itemId);

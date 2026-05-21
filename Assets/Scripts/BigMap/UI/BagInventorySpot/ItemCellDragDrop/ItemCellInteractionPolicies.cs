@@ -95,7 +95,7 @@ namespace My.UI
                     return;
                 }
 
-                MainGameManager.Instance.gameLogicManager.playerDataManager.ClearWeaponQuickSlot(payload.SourceIndex);
+                MainGameManager.Instance.gameLogicManager.playerDataManager.HumanQuickBar.ClearWeaponSlot(payload.SourceIndex);
                 controller.MarkDropHandled();
                 OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                 PlayerBagUIPanel.Instance?.RefreshContent();
@@ -110,7 +110,7 @@ namespace My.UI
                     return;
                 }
 
-                MainGameManager.Instance.gameLogicManager.playerDataManager.ClearConsumableQuickSlot(payload.SourceIndex);
+                MainGameManager.Instance.gameLogicManager.playerDataManager.HumanQuickBar.ClearConsumableSlot(payload.SourceIndex);
                 controller.MarkDropHandled();
                 OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                 PlayerBagUIPanel.Instance?.RefreshContent();
@@ -251,13 +251,13 @@ namespace My.UI
                 return;
             }
 
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null)
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            if (qb == null)
             {
                 return;
             }
 
-            mdm.SelectWeaponSlot(cell.Index);
+            qb.SelectWeaponSlot(cell.Index);
             OverworldHUDPanel.Instance?.RefreshItemQuickBar();
         }
 
@@ -280,9 +280,9 @@ namespace My.UI
                 return false;
             }
 
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            var binding = mdm != null && cell.Index >= 0 && cell.Index < mdm.WeaponQuickSlots.Length
-                ? mdm.WeaponQuickSlots[cell.Index]
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            var binding = qb != null && cell.Index >= 0 && cell.Index < qb.WeaponSlots.Length
+                ? qb.WeaponSlots[cell.Index]
                 : QuickSlotBinding.Empty;
 
             return ItemDragDropController.Instance != null
@@ -302,8 +302,8 @@ namespace My.UI
                 return;
             }
 
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null || payload == null)
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            if (qb == null || payload == null)
             {
                 return;
             }
@@ -316,7 +316,7 @@ namespace My.UI
                     return;
                 }
 
-                mdm.SwapWeaponQuickSlotIndices(payload.SourceIndex, dstSlotIndex);
+                qb.SwapWeaponSlotIndices(payload.SourceIndex, dstSlotIndex);
                 controller.MarkDropHandled();
                 OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                 return;
@@ -326,7 +326,7 @@ namespace My.UI
                 || payload.SourceContainerType == EContainerType.SpecialInventory
                 || payload.SourceContainerType == EContainerType.Warehouse)
             {
-                if (!mdm.TryAssignWeaponQuickSlot(dstSlotIndex, payload.ItemId, payload.ItemInstanceId, out var fail))
+                if (!qb.TryAssignWeaponSlot(dstSlotIndex, payload.ItemId, payload.ItemInstanceId, out var fail))
                 {
                     Debug.Log("Weapon quick bar drop rejected: " + fail);
                     return;
@@ -347,13 +347,13 @@ namespace My.UI
                 return;
             }
 
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null)
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            if (qb == null)
             {
                 return;
             }
 
-            mdm.ActiveConsumableIndex = cell.Index;
+            qb.SelectConsumableSlot(cell.Index);
             OverworldHUDPanel.Instance?.RefreshItemQuickBar();
         }
 
@@ -376,9 +376,9 @@ namespace My.UI
                 return false;
             }
 
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            var binding = mdm != null && cell.Index >= 0 && cell.Index < mdm.ConsumableQuickSlots.Length
-                ? mdm.ConsumableQuickSlots[cell.Index]
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            var binding = qb != null && cell.Index >= 0 && cell.Index < qb.ConsumableSlots.Length
+                ? qb.ConsumableSlots[cell.Index]
                 : QuickSlotBinding.Empty;
 
             return ItemDragDropController.Instance != null
@@ -398,8 +398,8 @@ namespace My.UI
                 return;
             }
 
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null || payload == null)
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            if (qb == null || payload == null)
             {
                 return;
             }
@@ -412,7 +412,7 @@ namespace My.UI
                     return;
                 }
 
-                mdm.SwapConsumableQuickSlotIndices(payload.SourceIndex, dstSlotIndex);
+                qb.SwapConsumableSlotIndices(payload.SourceIndex, dstSlotIndex);
                 controller.MarkDropHandled();
                 OverworldHUDPanel.Instance?.RefreshItemQuickBar();
                 return;
@@ -422,7 +422,7 @@ namespace My.UI
                 || payload.SourceContainerType == EContainerType.SpecialInventory
                 || payload.SourceContainerType == EContainerType.Warehouse)
             {
-                if (!mdm.TryAssignConsumableQuickSlot(dstSlotIndex, payload.ItemId, payload.ItemInstanceId, out var fail))
+                if (!qb.TryAssignConsumableSlot(dstSlotIndex, payload.ItemId, payload.ItemInstanceId, out var fail))
                 {
                     Debug.Log("Consumable quick bar drop rejected: " + fail);
                     return;

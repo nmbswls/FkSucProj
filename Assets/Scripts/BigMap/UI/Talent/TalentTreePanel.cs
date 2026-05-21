@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using My.Player;
 using My.UI;
 using TMPro;
@@ -12,7 +13,9 @@ namespace My.UI.Talent
 
         IPlayerProgressionHubHost _progressionHubHost;
 
-        [SerializeField] TalentTreeNodeView[] nodeViews;
+        public Transform NodeViewContainer;
+
+        public Dictionary<int, TalentTreeNodeView> NodeViewMap { get; private set; } = new();
         [SerializeField] Button closeButton;
         [SerializeField] TextMeshProUGUI debugTipText;
 
@@ -72,14 +75,28 @@ namespace My.UI.Talent
             var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
             var progression = glm?.playerDataManager?.ProgressionSystem;
 
-            if (nodeViews != null)
+
+            if (NodeViewContainer != null)
             {
-                for (int i = 0; i < nodeViews.Length; i++)
+                for(int i=0;i< NodeViewContainer.childCount;i++)
                 {
-                    if (nodeViews[i] != null)
+                    var one = NodeViewContainer.GetChild(i);
+                    var binder = one.GetComponent<TalentTreeNodeBinder>();
+                    if(binder == null)
                     {
-                        nodeViews[i].Refresh(progression);
+                        Debug.LogError("?");
+                        continue;
                     }
+
+                    var view = one.GetComponentInChildren<TalentTreeNodeView>();
+                    if(view == null)
+                    {
+                        Debug.LogError("?");
+                        continue;
+                    }
+
+                    view.Refresh(progression, binder.TalentNodeId);
+                    NodeViewMap[binder.TalentNodeId] = view;
                 }
             }
 

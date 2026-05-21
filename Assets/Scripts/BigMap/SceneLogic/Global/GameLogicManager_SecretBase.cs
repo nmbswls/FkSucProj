@@ -170,6 +170,17 @@ namespace My
             playerDataManager?.Tick(dt);
             SecretBase.Tick(dt);
         }
+
+        public int GetSecretBaseBuildLevel()
+        {
+            return worldPersistState?.GetSecretBaseBuildLevel() ?? 1;
+        }
+
+        public void SetSecretBaseBuildLevel(int level)
+        {
+            worldPersistState?.SetSecretBaseBuildLevel(level);
+            SecretBaseSceneRoot.FindLoaded()?.RefreshScrollBounds();
+        }
     }
 
     // 据点运行时：切图后绑定场景根，驱动卷轴与点击。

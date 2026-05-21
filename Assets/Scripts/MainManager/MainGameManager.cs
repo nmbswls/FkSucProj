@@ -98,6 +98,23 @@ namespace My
         public CinemachineVirtualCamera MainMapVCam;
         public CinemachineBrain CineBrain;
 
+        // 大地图玩家表现就绪后绑定 vcam.Follow（据点内不绑定）
+        public void EnsureOpenWorldVcamFollow()
+        {
+            if (gameLogicManager != null && gameLogicManager.IsInSecretBase)
+            {
+                return;
+            }
+
+            if (playerScenePresenter == null || MainMapVCam == null)
+            {
+                return;
+            }
+
+            MainMapVCam.Follow = playerScenePresenter.ViewPoint;
+            MainMapVCam.PreviousStateIsValid = false;
+        }
+
         public UnityNavProvider NavProvider;
 
         public DialoguePlayer dialoguePlayer;

@@ -39,24 +39,24 @@ namespace My.UI
 
         static QuickSlotBinding GetWeaponBinding(int slotIndex)
         {
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null || slotIndex < 0 || slotIndex >= mdm.WeaponQuickSlots.Length)
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            if (qb == null || slotIndex < 0 || slotIndex >= qb.WeaponSlots.Length)
             {
                 return QuickSlotBinding.Empty;
             }
 
-            return mdm.WeaponQuickSlots[slotIndex];
+            return qb.WeaponSlots[slotIndex];
         }
 
         static QuickSlotBinding GetConsumableBinding(int slotIndex)
         {
-            var mdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (mdm == null || slotIndex < 0 || slotIndex >= mdm.ConsumableQuickSlots.Length)
+            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            if (qb == null || slotIndex < 0 || slotIndex >= qb.ConsumableSlots.Length)
             {
                 return QuickSlotBinding.Empty;
             }
 
-            return mdm.ConsumableQuickSlots[slotIndex];
+            return qb.ConsumableSlots[slotIndex];
         }
 
         void BindQuickSlot(QuickSlotBinding binding)

@@ -57,6 +57,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = PlayerHeadThrowQteHud.PanelIdConst,
+                resourcePath = "UI/Prefabs/PlayerHeadQteHint",
+                defaultLayer = UILayer.HUD,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "LoadingOverlay",
                 resourcePath = "UI/Prefabs/LoadingOverlay",
                 defaultLayer = UILayer.System,

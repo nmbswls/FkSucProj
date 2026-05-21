@@ -192,11 +192,11 @@ namespace My
         {
             if (!IsHumanQuickBarAvailable())
             {
-                playerDataManager?.ClearActiveWeaponSelection();
+                playerDataManager?.HumanQuickBar?.ClearActiveWeapon();
             }
             else
             {
-                playerDataManager?.ApplyWeaponQuickBarRuntime();
+                playerDataManager?.HumanQuickBar?.ApplyWeaponToRuntime();
             }
 
             playerDataManager?.SyncLearnedSkillsToPlayerEntity();
