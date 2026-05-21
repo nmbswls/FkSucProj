@@ -21,4 +21,3 @@ namespace My.Map.Entity
         public bool IsSelf;
     }
 }
-

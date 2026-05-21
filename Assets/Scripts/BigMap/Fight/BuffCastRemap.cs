@@ -22,6 +22,8 @@ namespace My
         public static readonly PlayerBuffCastRemapRule[] Rules =
         {
             new PlayerBuffCastRemapRule(AttrIdConsts.PlayerUnlockYuhuo, "status_burn", "status_yuhuo"),
+            new PlayerBuffCastRemapRule(AttrIdConsts.PlayerUnlockJiang, "status_freeze", "status_stiff"),
+            new PlayerBuffCastRemapRule(AttrIdConsts.PlayerUnlockYindu, "status_poison", "status_yindu"),
         };
 
         public static string ResolveBuffId(GameLogicManager mgr, long? casterId, string buffId)

@@ -312,6 +312,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm_Static, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm_Scaled, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerCharm, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.PlayerSpellPower, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.Arm_Inner, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Arm_Base, initialBase: 0);

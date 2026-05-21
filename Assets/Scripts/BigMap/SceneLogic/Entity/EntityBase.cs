@@ -67,6 +67,7 @@ namespace My.Map
     {
         long Id { get; }
         long GetAttr(string attrId);
+        long GetResourceMax(string resourceId);
         bool CheckHasState(string attrId);
 
         void ApplyResourceChange(string resourceId, long delta, bool isEnmity, EDmgFlag flags, long? srcEntityId, Dictionary<string, long> extraAttrs = null, EDmgCategory dmgCat = EDmgCategory.None, Vector2? srcPos = null, Vector2? hitDir = null);
@@ -321,6 +322,11 @@ namespace My.Map
         public long GetAttr(string attrId)
         {
             return attributeStore.GetAttr(attrId);
+        }
+
+        public long GetResourceMax(string resourceId)
+        {
+            return attributeStore.GetResourceMax(resourceId);
         }
 
         public void DebugGmEnumerateAllAttributes(System.Action<string, long> emit)

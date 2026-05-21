@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using My.Map;
+using My.Map.Entity;
 using My.Map.Logic;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -31,6 +32,7 @@ namespace My.Saving
         public float RemainingLifetime;
         public long CasterEntityId;
         public long SrcBuffId;
+        public List<AttrKvPair> CachedPotencyAttrs;
         // IndependentStack：逐层时长与可选来源；null 时用 Layer/RemainingLifetime 旧字段还原
         public List<BuffLayerPersistEntry> StackLayers;
     }

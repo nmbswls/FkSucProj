@@ -45,7 +45,11 @@ namespace My.Map
                 case AttrIdConsts.Sleep:
                 case AttrIdConsts.NoKiller:
                 case AttrIdConsts.PlayerZhaZhiMode:
+
                 case AttrIdConsts.PlayerUnlockYuhuo:
+                case AttrIdConsts.PlayerUnlockYindu:
+                case AttrIdConsts.PlayerUnlockJiang:
+
                 case AttrIdConsts.Charmed:
                 case AttrIdConsts.ImmuneJianSu:
                 case AttrIdConsts.NpcFcked:
@@ -66,6 +70,8 @@ namespace My.Map
                 case AttrIdConsts.Arm_Extra_1:
                 case AttrIdConsts.Arm_Final:
 
+                case AttrIdConsts.PlayerSpellPower:
+                case AttrIdConsts.NPCSJProgress_GainRate:
                 case AttrIdConsts.PlayerCharm:
                 case AttrIdConsts.Final_Fix_DR_All:
                 case AttrIdConsts.Final_HImpulse_Reduce_Fix:
@@ -695,6 +701,16 @@ namespace My.Map
             }
 
             return GetNumericAttr(attrId);
+        }
+
+        public long GetResourceMax(string resourceId)
+        {
+            if (resources.TryGetValue(resourceId, out var r))
+            {
+                return r.cacheMaxVal;
+            }
+
+            return 0;
         }
 
 

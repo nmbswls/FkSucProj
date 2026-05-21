@@ -56,6 +56,11 @@ namespace My
                             executor = new AbilityEffectExecutor4AddResource();
                         }
                         break;
+                    case MapFightEffectResourcePercentDamageCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ResourcePercentDamage();
+                        }
+                        break;
                     case MapAbilityEffectUseItemCfg:
                         {
                             executor = new AbilityEffectExecutor4UseItem();

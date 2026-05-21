@@ -36,6 +36,9 @@ namespace My.Map.Entity
 
         public const string PlayerSensitivity = "PlayerSensitivity";
         public const string PlayerCharm = "PlayerCharm"; // 白字魅力（派生）
+        public const string PlayerSpellPower = "PlayerSpellPower"; // 法术强度（由魅力派生，供异常状态等读取）
+
+        public const string NPCSJProgress_GainRate = "NPCSJProgress_GainRate"; // 射精条增速万分比修正（全来源）
         public const string PlayerCharm_Inner = "PlayerCharm_Inner"; // 养成内魅力
         public const string PlayerCharm_Static = "PlayerCharm_Static"; // 养成静态魅力
         public const string PlayerCharm_Scaled = "PlayerCharm_Scaled"; // 衣装覆盖后内魅力
@@ -109,6 +112,8 @@ namespace My.Map.Entity
 
         public const string PlayerZhaZhiMode = "PlayerZhaZhiMode";
         public const string PlayerUnlockYuhuo = "PlayerUnlockYuhuo";
+        public const string PlayerUnlockYindu = "PlayerUnlockYindu";
+        public const string PlayerUnlockJiang = "PlayerUnlockJiang";
 
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes"; // 衣装
@@ -181,6 +186,19 @@ namespace My.Map.Entity
                     ctx => (long)(ctx.Get(AttrIdConsts.PlayerCharm_Inner) * ctx.Get(AttrIdConsts.Clothes_ExposeRate) / 10000f)),
                 (AttrIdConsts.PlayerCharm, new[] { AttrIdConsts.PlayerCharm_Scaled, AttrIdConsts.PlayerCharm_Static },
                     ctx => ctx.Get(AttrIdConsts.PlayerCharm_Scaled) + ctx.Get(AttrIdConsts.PlayerCharm_Static)),
+
+                (AttrIdConsts.PlayerSpellPower, new[] { AttrIdConsts.PlayerCharm },
+                    ctx =>
+                    {
+                        long charm = ctx.Get(AttrIdConsts.PlayerCharm);
+                        if (charm <= 0)
+                        {
+                            return 0;
+                        }
+
+                        const long k = 500;
+                        return charm * charm / (charm + k);
+                    }),
 
                 (AttrIdConsts.Arm_White, new[] { AttrIdConsts.Arm_Base, AttrIdConsts.Arm_Inner, AttrIdConsts.Clothes_ExposeRate },
                     ctx => ctx.Get(AttrIdConsts.Arm_Base) + (long)(ctx.Get(AttrIdConsts.Arm_Inner) * ctx.Get(AttrIdConsts.Clothes_ExposeRate) / 10000f)),

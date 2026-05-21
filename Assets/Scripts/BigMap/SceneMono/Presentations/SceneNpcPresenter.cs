@@ -333,7 +333,6 @@ namespace My.Map.Scene
             }
             else if(selectionId == ID_OptCharmed)
             {
-                
                 MainGameManager.Instance.ShowHTangleCloseupWindow(this.UnitEntity.Id);
             }
             return true;

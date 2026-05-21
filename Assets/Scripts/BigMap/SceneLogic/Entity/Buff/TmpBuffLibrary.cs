@@ -438,17 +438,142 @@ namespace My.Map.Entity
                 _library["status_burn"] = new BuffDefinition()
                 {
                     BuffId = "status_burn",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    Desc = "烧伤",
+                    Icon = "status_burn",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
                     DefaultDuration = 5f,
-                    IsHidden = true,
+                    PotencyCopyAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.PlayerSpellPower,
+                        },
+                    },
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 800,
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectApplyDamageCfg()
+                                {
+                                    BaseDamage = 150,
+                                    ExtraDamageRate = new()
+                                    {
+                                        new AttrKvPair { AttrId = AttrIdConsts.PlayerSpellPower, Val = 10000 },
+                                    },
+                                    DamageCategory = EDmgCategory.Magic,
+                                },
+                            },
+                        },
+                    },
                 };
 
                 _library["status_yuhuo"] = new BuffDefinition()
                 {
                     BuffId = "status_yuhuo",
-                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    Desc = "浴火",
+                    Icon = "status_yuhuo",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
                     DefaultDuration = 5f,
-                    IsHidden = true,
+                    PotencyCopyAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.PlayerSpellPower,
+                        },
+                    },
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.HValYiShang, ModifierValue = 1000 },
+                    },
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 800,
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectApplyDamageCfg()
+                                {
+                                    ResourceId = AttrIdConsts.NPCHVal,
+                                    BaseDamage = 80,
+                                    ExtraDamageRate = new()
+                                    {
+                                        new AttrKvPair { AttrId = AttrIdConsts.PlayerSpellPower, Val = 8000 },
+                                    },
+                                    IsEnmity = true,
+                                },
+                            },
+                        },
+                    },
+                };
+
+                _library["status_freeze"] = new BuffDefinition()
+                {
+                    BuffId = "status_freeze",
+                    Desc = "严寒",
+                    Icon = "status_freeze",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = 6f,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -3500 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_JianShang, ModifierValue = 4000 },
+                    },
+                };
+
+                _library["status_poison"] = new BuffDefinition()
+                {
+                    BuffId = "status_poison",
+                    Desc = "中毒",
+                    Icon = "status_poison",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = 8f,
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 1000,
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectResourcePercentDamageCfg()
+                                {
+                                    ResourceId = AttrIdConsts.HP,
+                                    RateBp = 50,
+                                    IsEnmity = true,
+                                },
+                            },
+                        },
+                    },
+                };
+
+                _library["status_stiff"] = new BuffDefinition()
+                {
+                    BuffId = "status_stiff",
+                    Desc = "僵直",
+                    Icon = "status_stiff",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = 6f,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -3500 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_JianShang, ModifierValue = 4000 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NPCSJProgress_GainRate, ModifierValue = -5000 },
+                    },
+                };
+
+                _library["status_yindu"] = new BuffDefinition()
+                {
+                    BuffId = "status_yindu",
+                    Desc = "淫毒",
+                    Icon = "status_yindu",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = 8f,
                 };
 
                 _library["player_unlock_yuhuo"] = new BuffDefinition()
@@ -458,6 +583,30 @@ namespace My.Map.Entity
                     ModifierAttrs = new()
                     {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerUnlockYuhuo, ModifierValue = 1 },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["player_unlock_yindu"] = new BuffDefinition()
+                {
+                    BuffId = "player_unlock_yindu",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerUnlockYindu, ModifierValue = 1 },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["player_unlock_jiang"] = new BuffDefinition()
+                {
+                    BuffId = "player_unlock_jiang",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerUnlockJiang, ModifierValue = 1 },
                     },
                     DefaultDuration = -1,
                     IsHidden = true,

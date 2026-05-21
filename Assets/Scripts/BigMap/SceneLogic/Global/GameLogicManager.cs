@@ -1050,6 +1050,7 @@ namespace My
                     RemainingLifetime = b.Lifetime,
                     CasterEntityId = b.CasterId,
                     SrcBuffId = b.SrcBuffId,
+                    CachedPotencyAttrs = b.ExportCachedPotencyForPersist(),
                 };
                 if (b.UsesIndependentStack)
                 {

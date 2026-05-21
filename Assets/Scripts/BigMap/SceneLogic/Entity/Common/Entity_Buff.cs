@@ -3,6 +3,7 @@ using Map.Logic;
 using Map.Logic.Events;
 using My;
 using My.Map;
+using My.Map.Fight;
 using My.Saving;
 using System;
 using System.Collections;
@@ -358,6 +359,8 @@ namespace My.Map.Entity
 
         public List<OneModPair> ModifierAttrs = new();
 
+        public List<OneModPair> PotencyCopyAttrs = new();
+
         [SerializeReference]
         public List<MapFightEffectCfg> OnAttachEffects = null;
         [SerializeReference]
@@ -609,6 +612,7 @@ namespace My.Map.Entity
             }
 
             var classic = new BuffInstance(owner, ++BuffInstIdCounter, data.BuffId, data.Layer, data.RemainingLifetime, casterId: caster, srcBuffId: srcBuff);
+            classic.RestoreCachedPotencyFromPersist(data.CachedPotencyAttrs);
             classic.OnBuffAddOrUpdate(true);
             _buffs[classic.InstanceId] = classic;
             owner.RegisterBuffDirect(classic);
@@ -865,6 +869,13 @@ namespace My.Map.Entity
 
                 if (!needCreate)
                 {
+                    if (BuffPotencyUtil.UsesPotency(buffDef)
+                        && !BuffPotencyUtil.TryCommitPotency(existing, logicManager, casterId, out var rejectedWeak)
+                        && rejectedWeak)
+                    {
+                        return existing;
+                    }
+
                     var turnOverrideType = buffDef.TurnOverrideType;
                     switch (turnOverrideType)
                     {
@@ -906,6 +917,7 @@ namespace My.Map.Entity
             if (needCreate)
             {
                 existing = new BuffInstance(target, ++BuffInstIdCounter, buffId, layer, lifeTIme: duration, casterId:casterId, srcBuffId:srcBuffId);
+                BuffPotencyUtil.TryCommitPotency(existing, logicManager, casterId, out _);
                 existing.OnBuffAddOrUpdate(true);
 
                 _buffs.Add(existing.InstanceId, existing);
@@ -985,6 +997,11 @@ namespace My.Map.Entity
 
             return false;
         }
+
+        public bool TryGetBuffInstance(long instId, out BuffInstance inst)
+        {
+            return _buffs.TryGetValue(instId, out inst);
+        }
     }
 
     public class BuffInstance
@@ -1022,6 +1039,7 @@ namespace My.Map.Entity
 
         public long CasterId;
         public long SrcBuffId; // 如果是光环等才有绑定关系
+        public Dictionary<string, long> CachedPotencyAttrs;
         public IEntityBuffOwner BuffOwner;
 
 
@@ -1511,6 +1529,7 @@ namespace My.Map.Entity
                 case MapAbilityEffectAddResourceCfg:
                 case MapAbilityEffectCostResourceCfg:
                 case MapFightEffectApplyDamageCfg:
+                case MapFightEffectResourcePercentDamageCfg:
                 case MapAbilityEffectCastSkillCfg:
                 case MapFightEffectQueueModeCfg:
                 case MapFightEffectBroadcastAttractCfg:
@@ -1535,6 +1554,7 @@ namespace My.Map.Entity
                         ctx.TriggerPos = BuffOwner.Pos;
                         ctx.TargetId = BuffOwner.Id;
 
+                        FillTriggerCacheAttrVal(ctx);
 
                         Debug.Log($"HandleBuffTriggerEffect handle trigger effect {fightEffect.GetType()}");
                         BuffOwner.BuffManager.logicManager.HandleLogicFightEffect(fightEffect, ctx);
@@ -1628,8 +1648,194 @@ namespace My.Map.Entity
                 }
             }
         }
+        void FillTriggerCacheAttrVal(GameLogicManager.LogicFightEffectContext ctx)
+        {
+            if (CachedPotencyAttrs != null)
+            {
+                foreach (var kv in CachedPotencyAttrs)
+                {
+                    ctx.CacheAttrVal[kv.Key] = kv.Value;
+                }
+            }
+
+        }
+
+        public void RestoreCachedPotencyFromPersist(List<AttrKvPair> rows)
+        {
+            if (rows == null || rows.Count == 0)
+            {
+                CachedPotencyAttrs = null;
+                return;
+            }
+
+            CachedPotencyAttrs = new Dictionary<string, long>(rows.Count);
+            foreach (var pair in rows)
+            {
+                if (string.IsNullOrEmpty(pair.AttrId))
+                {
+                    continue;
+                }
+
+                CachedPotencyAttrs[pair.AttrId] = pair.Val;
+            }
+        }
+
+        public List<AttrKvPair> ExportCachedPotencyForPersist()
+        {
+            if (CachedPotencyAttrs == null || CachedPotencyAttrs.Count == 0)
+            {
+                return null;
+            }
+
+            var list = new List<AttrKvPair>(CachedPotencyAttrs.Count);
+            foreach (var kv in CachedPotencyAttrs)
+            {
+                list.Add(new AttrKvPair { AttrId = kv.Key, Val = kv.Value });
+            }
+
+            return list;
+        }
+
         public float LastTriggerTime;
         public bool CanTrigger(float now) => (now - LastTriggerTime) >= 0;
+    }
+
+    public static class BuffPotencyUtil
+    {
+        public static bool UsesPotency(BuffDefinition def)
+        {
+            return def?.PotencyCopyAttrs != null && def.PotencyCopyAttrs.Count > 0;
+        }
+
+        static MapFightEffectCfg FindTickFightEffect(BuffDefinition def)
+        {
+            if (def?.TriggerList == null)
+            {
+                return null;
+            }
+
+            foreach (var rule in def.TriggerList)
+            {
+                if (rule.TriggerType != ETriggerType.Tick || rule.OutputFightEffects == null)
+                {
+                    continue;
+                }
+
+                foreach (var eff in rule.OutputFightEffects)
+                {
+                    if (eff is MapFightEffectApplyDamageCfg)
+                    {
+                        return eff;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        static long EstimateTickBudget(BuffInstance inst, MapFightEffectCfg tickCfg)
+        {
+            if (tickCfg == null || inst?.BuffOwner == null)
+            {
+                return 0;
+            }
+
+            var budgetAttrs = new Dictionary<string, long>();
+            if (inst.CachedPotencyAttrs != null)
+            {
+                foreach (var kv in inst.CachedPotencyAttrs)
+                {
+                    budgetAttrs[kv.Key] = kv.Value;
+                }
+            }
+
+            var provider = new DictFightAttrProvider(budgetAttrs);
+
+            if (tickCfg is MapFightEffectApplyDamageCfg dmgCfg)
+            {
+                return BuildApplyDamageMagnitude(dmgCfg, provider);
+            }
+
+            return 0;
+        }
+
+        static long EstimateTickBudgetFromAttrs(MapFightEffectCfg tickCfg, Dictionary<string, long> attrs)
+        {
+            if (tickCfg == null || attrs == null)
+            {
+                return 0;
+            }
+
+            var provider = new DictFightAttrProvider(attrs);
+            if (tickCfg is MapFightEffectApplyDamageCfg dmgCfg)
+            {
+                return BuildApplyDamageMagnitude(dmgCfg, provider);
+            }
+
+            return 0;
+        }
+
+        static long BuildApplyDamageMagnitude(MapFightEffectApplyDamageCfg cfg, IFightAttrProvider provider)
+        {
+            if (cfg == null)
+            {
+                return 0;
+            }
+
+            long dmgVal = cfg.BaseDamage;
+            if (cfg.ExtraDamageRate != null && provider != null)
+            {
+                foreach (var onePair in cfg.ExtraDamageRate)
+                {
+                    if (provider.TryGetAttr(onePair.AttrId, out var getVal))
+                    {
+                        dmgVal += (long)(getVal * onePair.Val * 0.0001f);
+                    }
+                }
+            }
+
+            return dmgVal;
+        }
+
+        public static bool TryCommitPotency(BuffInstance inst, GameLogicManager mgr, long? casterId, out bool rejectedWeak)
+        {
+            rejectedWeak = false;
+            if (inst?.Def == null || !UsesPotency(inst.Def))
+            {
+                return true;
+            }
+
+            var tickCfg = FindTickFightEffect(inst.Def);
+            long oldBudget = EstimateTickBudget(inst, tickCfg);
+
+            var preview = new Dictionary<string, long>();
+            ILogicEntity caster = null;
+            if (casterId != null && mgr != null)
+            {
+                caster = mgr.GetLogicEntity(casterId.Value, false);
+            }
+
+            foreach (var pair in inst.Def.PotencyCopyAttrs)
+            {
+                if (string.IsNullOrEmpty(pair.ModifierAttrId))
+                {
+                    continue;
+                }
+
+                preview[pair.ModifierAttrId] = caster?.GetAttr(pair.ModifierAttrId) ?? 0;
+            }
+
+            long newBudget = EstimateTickBudgetFromAttrs(tickCfg, preview);
+
+            if (oldBudget > 0 && newBudget < oldBudget)
+            {
+                rejectedWeak = true;
+                return false;
+            }
+
+            inst.CachedPotencyAttrs = preview;
+            return true;
+        }
     }
 }
 

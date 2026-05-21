@@ -1265,7 +1265,44 @@ namespace My.Map.Entity
                     extraAttrs[pair.AttrId] = pair.Val;
                 }
             }
+
             target.ApplyResourceChange(realCfg.ResourceId, realCfg.AddValue, realCfg.IsEnmity, realCfg.Flags, ctx.SourceInfo.SrcEntityId, extraAttrs);
+        }
+    }
+
+    public class AbilityEffectExecutor4ResourcePercentDamage : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectResourcePercentDamageCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ResourcePercentDamage err");
+                return;
+            }
+
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId);
+            if (target == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ResourcePercentDamage target null");
+                return;
+            }
+
+            if (realCfg.RateBp <= 0)
+            {
+                return;
+            }
+
+            long maxVal = target.GetResourceMax(realCfg.ResourceId);
+            long delta = -(maxVal * realCfg.RateBp / 10000);
+            target.ApplyResourceChange(
+                realCfg.ResourceId,
+                delta,
+                realCfg.IsEnmity,
+                realCfg.Flags,
+                ctx.SourceInfo.SrcEntityId,
+                null,
+                realCfg.DamageCategory);
         }
     }
 
@@ -1411,7 +1448,18 @@ namespace My.Map.Entity
             }
 
             var srcProvider = new CtxFightAttrProvider(ctx);
-            var dmgVal = DamagePipeline.BuildRawDamage(realCfg, srcProvider);
+            long dmgVal = realCfg.BaseDamage;
+            if (realCfg.ExtraDamageRate != null)
+            {
+                foreach (var onePair in realCfg.ExtraDamageRate)
+                {
+                    if (srcProvider.TryGetAttr(onePair.AttrId, out var getVal))
+                    {
+                        dmgVal += (long)(getVal * onePair.Val * 0.0001f);
+                    }
+                }
+            }
+
             var hImpulse = DamagePipeline.ResolveHImpulseRate10000(realCfg, ctx.SourceInfo);
             var extraAttrs = DamagePipeline.BuildPipelineExtraAttrs(realCfg, srcProvider, hImpulse);
 
@@ -1433,7 +1481,8 @@ namespace My.Map.Entity
             }
 
             long? srcId = ctx.SourceInfo.SrcEntityId != 0 ? ctx.SourceInfo.SrcEntityId : null;
-            target.ApplyResourceChange(AttrIdConsts.HP, -dmgVal, true, EDmgFlag.None, srcId, extraAttrs, realCfg.DamageCategory, srcPos, hitDir);
+            string resourceId = string.IsNullOrEmpty(realCfg.ResourceId) ? AttrIdConsts.HP : realCfg.ResourceId;
+            target.ApplyResourceChange(resourceId, -dmgVal, realCfg.IsEnmity, EDmgFlag.None, srcId, extraAttrs, realCfg.DamageCategory, srcPos, hitDir);
 
             if (realCfg.KnockBackForce > 0 && srcPos != null && realCfg.TargetType == 0)
             {

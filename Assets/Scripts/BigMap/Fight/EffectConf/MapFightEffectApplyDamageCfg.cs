@@ -28,6 +28,9 @@ namespace My.Map.Entity
         //public EDamageFlag Flags;
         public EDmgCategory DamageCategory;
 
+        // 空则扣 HP；buff 等对 NPCHVal 等资源时指定
+        public string ResourceId;
+        public bool IsEnmity = true;
 
         public int TargetType; // 在不同触发语境下 该值的含义不同
         public float KnockBackForce;

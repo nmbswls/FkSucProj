@@ -296,6 +296,7 @@ namespace My.Map
 
             attributeStore.RegisterNumeric(AttrIdConsts.Will, 10_000);
             attributeStore.RegisterNumeric(AttrIdConsts.DesireDensityAmplify, 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.NPCSJProgress_GainRate, 0);
 
             if (NpcConfig != null)
             {
@@ -527,6 +528,13 @@ namespace My.Map
                     float sjAmount = attr?.BaseBlurtAmount ?? 1.0f;
                     float dmgPerAmount = attr?.BaseBlurtDmg ?? 1.0f;
 
+                    if (CheckHasBuff("status_stiff"))
+                    {
+                        sjAmount *= 2.5f;
+                    }
+
+                    sjAmount = sjAmount * (10000 + sjPlus2) / 10000f + sjPlus1 * 0.001f;
+
                     OnNpcBlurt(sjAmount, dmgPerAmount);
 
                     player.OnAbsorbBlurtDirectly(sjAmount);
@@ -701,7 +709,11 @@ namespace My.Map
 
                 case AttrIdConsts.NPCSJProgress:
                     {
-
+                        if (delta > 0)
+                        {
+                            long rate = GetAttr(AttrIdConsts.NPCSJProgress_GainRate);
+                            delta = (long)(delta * (10000 + rate) / 10000f);
+                        }
                     }
                     break;
                 default:
@@ -757,6 +769,13 @@ namespace My.Map
 
             float sjAmount = attr?.BaseBlurtAmount ?? 1.0f;
             float dmgPerAmount = attr?.BaseBlurtDmg ?? 1.0f;
+
+            if (CheckHasBuff("status_stiff"))
+            {
+                sjAmount *= 2.5f;
+            }
+
+            sjAmount = sjAmount * (10000 + sjPlus2) / 10000f + sjPlus1 * 0.001f;
 
             TryInterrupt(new InterruptRequest()
             {
