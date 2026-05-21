@@ -6,16 +6,33 @@ namespace My.SecretBase
     // 场景交互点：挂 Collider2D + 填 panelId；无碰撞体时用 SpriteRenderer.bounds。
     public class SecretBaseInteractable : MonoBehaviour
     {
-        [SerializeField] string panelId;
+        string _panelId;
 
         Collider2D _collider;
         SpriteRenderer _sprite;
         Color _normalColor;
         bool _hasNormalColor;
+        int _sortOrder;
 
-        public int SortOrder => _sprite != null ? _sprite.sortingOrder : 0;
+        public int SortOrder => _sortOrder;
+
+        public void Setup(string panelId, int sortOrder)
+        {
+            _panelId = panelId;
+            _sortOrder = sortOrder;
+            CacheRefs();
+            if (_sprite != null)
+            {
+                _sprite.sortingOrder = sortOrder;
+            }
+        }
 
         void Awake()
+        {
+            CacheRefs();
+        }
+
+        void CacheRefs()
         {
             _collider = GetComponent<Collider2D>();
             if (_collider == null)
@@ -33,6 +50,7 @@ namespace My.SecretBase
             {
                 _normalColor = _sprite.color;
                 _hasNormalColor = true;
+                _sortOrder = _sprite.sortingOrder;
             }
         }
 
@@ -63,12 +81,12 @@ namespace My.SecretBase
 
         public void OpenPanel()
         {
-            if (string.IsNullOrEmpty(panelId))
+            if (string.IsNullOrEmpty(_panelId))
             {
                 return;
             }
 
-            UIManager.Instance.ShowPanel(panelId);
+            UIManager.Instance.ShowPanel(_panelId);
         }
     }
 }

@@ -19,13 +19,14 @@ namespace My.SecretBase
         [SerializeField] float scrollMinX;
         [SerializeField] float scrollMaxX = 32f;
         [SerializeField] SecretBaseParallaxLayer[] parallaxLayers;
+        [SerializeField] Transform facilitySpawnRoot;
 
         float _scrollX;
         Transform _savedFollow;
         Transform _savedLookAt;
         bool _cameraBound;
 
-        SecretBaseInteractable[] _interactables;
+        readonly SecretBaseFacilityRuntime _facilities = new();
         SecretBaseInteractable _hovered;
 
         static readonly List<RaycastResult> UiRaycastBuffer = new(8);
@@ -44,7 +45,6 @@ namespace My.SecretBase
         {
             Instance = this;
             _scrollX = scrollMinX;
-            _interactables = GetComponentsInChildren<SecretBaseInteractable>(true);
         }
 
         void OnDestroy()
@@ -59,11 +59,15 @@ namespace My.SecretBase
         public void EnterMode()
         {
             BindCamera();
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var root = facilitySpawnRoot != null ? facilitySpawnRoot : transform;
+            _facilities.Refresh(glm, root);
         }
 
         public void ExitMode()
         {
             ClearHover();
+            _facilities.ClearSpawned();
             UnbindCamera();
         }
 
@@ -215,33 +219,11 @@ namespace My.SecretBase
         {
             SecretBaseInteractable best = null;
             var bestOrder = int.MinValue;
+            var list = _facilities.Spawned;
 
-            var cols = Physics2D.OverlapPointAll(worldPos);
-            for (int i = 0; i < cols.Length; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                var item = cols[i].GetComponent<SecretBaseInteractable>()
-                    ?? cols[i].GetComponentInParent<SecretBaseInteractable>();
-                if (item == null || !item.isActiveAndEnabled)
-                {
-                    continue;
-                }
-
-                var order = item.SortOrder;
-                if (best == null || order > bestOrder)
-                {
-                    best = item;
-                    bestOrder = order;
-                }
-            }
-
-            if (_interactables == null)
-            {
-                return best;
-            }
-
-            for (int i = 0; i < _interactables.Length; i++)
-            {
-                var item = _interactables[i];
+                var item = list[i];
                 if (item == null || !item.isActiveAndEnabled || !item.ContainsPoint(worldPos))
                 {
                     continue;

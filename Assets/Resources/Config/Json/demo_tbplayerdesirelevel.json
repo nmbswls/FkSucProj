@@ -4,7 +4,7 @@
     "desire_line": 15,
     "extra_charm": 10,
     "extra_damage_reduce": 2000,
-    "h_collide_rate": 5,
+    "h_collide_rate": 50,
     "aura_h_effect": 1,
     "aura_max_range": 1
   },
@@ -13,7 +13,7 @@
     "desire_line": 40,
     "extra_charm": 20,
     "extra_damage_reduce": 3500,
-    "h_collide_rate": 10,
+    "h_collide_rate": 100,
     "aura_h_effect": 1.5,
     "aura_max_range": 1.3
   },
@@ -22,7 +22,7 @@
     "desire_line": 70,
     "extra_charm": 50,
     "extra_damage_reduce": 5000,
-    "h_collide_rate": 20,
+    "h_collide_rate": 300,
     "aura_h_effect": 2,
     "aura_max_range": 1.6
   },
@@ -31,7 +31,7 @@
     "desire_line": 100,
     "extra_charm": 100,
     "extra_damage_reduce": 9000,
-    "h_collide_rate": 50,
+    "h_collide_rate": 1000,
     "aura_h_effect": 3,
     "aura_max_range": 2
   }

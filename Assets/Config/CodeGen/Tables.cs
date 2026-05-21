@@ -74,6 +74,10 @@ public partial class Tables
     public demo.TbSavePoint TbSavePoint {get; }
     public demo.TbDesireDensityTier TbDesireDensityTier {get; }
     public demo.TbMindFragmentPoolEntry TbMindFragmentPoolEntry {get; }
+    /// <summary>
+    /// 据点固定设施
+    /// </summary>
+    public demo.TbSecretBaseFacility TbSecretBaseFacility {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -137,6 +141,7 @@ public partial class Tables
         TbSavePoint = new demo.TbSavePoint(loader("demo_tbsavepoint"));
         TbDesireDensityTier = new demo.TbDesireDensityTier(loader("demo_tbdesiredensitytier"));
         TbMindFragmentPoolEntry = new demo.TbMindFragmentPoolEntry(loader("demo_tbmindfragmentpoolentry"));
+        TbSecretBaseFacility = new demo.TbSecretBaseFacility(loader("demo_tbsecretbasefacility"));
         ResolveRef();
     }
     
@@ -202,6 +207,7 @@ public partial class Tables
         TbSavePoint.ResolveRef(this);
         TbDesireDensityTier.ResolveRef(this);
         TbMindFragmentPoolEntry.ResolveRef(this);
+        TbSecretBaseFacility.ResolveRef(this);
     }
 }
 

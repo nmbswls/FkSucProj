@@ -87,6 +87,9 @@ namespace My.Saving
         // 存档点正式解锁（全局；键 save_point_id，局外传送列表用）
         public List<SavePointUnlockPersist> SavePointUnlocks = new();
 
+        // 隐秘据点已解锁设施 id（TbSecretBaseFacility.facility_id）
+        public List<string> SecretBaseUnlockedFacilityIds = new();
+
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
 
         // 地图小剧情触发器消费态：键 mapId|triggerId
@@ -346,6 +349,7 @@ namespace My.Saving
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.PlayerData.TalentNodeLevels ??= new List<TalentNodeLevelPersist>();
             data.PlayerData.SavePointUnlocks ??= new List<SavePointUnlockPersist>();
+            data.PlayerData.SecretBaseUnlockedFacilityIds ??= new List<string>();
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.MainInventorySlots ??= new List<MainBagSlotPersist>();

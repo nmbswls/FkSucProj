@@ -50,6 +50,8 @@ namespace My.Map.View
         public long Socre;
         public float CurrentVal;
 
+        public float LeftTime = 5.0f;
+
         // 当前进度
         // 该小游戏
         public int PgreossVal = 0; // 检查突破了几格
@@ -59,7 +61,6 @@ namespace My.Map.View
         const int MaxProgress = 4;
         const int NeedBreakTimes = 5;
         const float CheckInteval = 0.5f;
-
 
         /// <summary>
         /// 
@@ -86,6 +87,62 @@ namespace My.Map.View
             else
             {
                 return 1.0f;
+            }
+        }
+
+        /// <summary>
+        ///  获取进度带来的额外倍率
+        /// </summary>
+        /// <returns></returns>
+        private float GetProgressHImpulseBonus()
+        {
+            if (PgreossVal == 0)
+            {
+                return 0f;
+            }
+            else if (PgreossVal == 1)
+            {
+                return 0.4f;
+            }
+            else if (PgreossVal == 2)
+            {
+                return 0.6f;
+            }
+            else if (PgreossVal == 3)
+            {
+                return 0.8f;
+            }
+            else
+            {
+                return 1.0f;
+            }
+        }
+
+        /// <summary>
+        /// 根据解锁进度获取理智损失
+        /// </summary>
+        /// <returns></returns>
+        private float GetProgressUnlockSanCost()
+        {
+            if (PgreossVal == 0)
+            {
+                return 0f;
+            }
+            else if (PgreossVal == 1)
+            {
+                return 1f;
+            }
+            else if (PgreossVal == 2)
+            {
+                return 2f;
+            }
+            else if (PgreossVal == 3)
+            {
+                return 3f;
+            }
+            else
+            {
+                return 6f;
             }
         }
 
@@ -206,42 +263,6 @@ namespace My.Map.View
 
         private void HandleInteractFinish()
         {
-            //ApplyNpcHImpulse
-
-            //var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-            //var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId);
-            //if (isCounterSuccess)
-            //{
-            //    p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId : SrcEntityId);
-
-            //    if(p.DesireLevel >= 2)
-            //    {
-            //        target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 60_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-            //        p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-            //    }
-            //    else
-            //    {
-            //        target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-            //        p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-            //    }
-
-            //}
-            //else
-            //{
-            //    p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -8_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-
-            //    if (p.DesireLevel >= 2)
-            //    {
-            //        target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-            //        p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-            //    }
-            //    else
-            //    {
-            //        target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 20_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-            //        p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-            //    }
-            //}
-
             var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
             var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
 
@@ -303,6 +324,8 @@ namespace My.Map.View
                     // show effect
                     int orgActId = RandomGetTangleHAct();
                     ActId = orgActId;
+
+                    RefreshUI();
                 }
             }
             return true;

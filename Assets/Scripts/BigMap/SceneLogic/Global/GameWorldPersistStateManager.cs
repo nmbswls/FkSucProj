@@ -15,6 +15,7 @@ namespace My
         private readonly Dictionary<string, FishingSpotRuntimeSave> _fishingRuntime = new();
         private readonly Dictionary<string, RepairPointRuntimeSave> _ruinRuntime = new();
         private readonly Dictionary<string, SavePointUnlockPersist> _savePointUnlockById = new(StringComparer.Ordinal);
+        private readonly HashSet<string> _secretBaseUnlockedFacilities = new(StringComparer.Ordinal);
 
         public readonly WorldNpcCharacterPersistRegistry NpcCharacters = new();
 
@@ -132,6 +133,18 @@ namespace My
                     };
                 }
             }
+
+            _secretBaseUnlockedFacilities.Clear();
+            if (savingData?.PlayerData?.SecretBaseUnlockedFacilityIds != null)
+            {
+                foreach (var id in savingData.PlayerData.SecretBaseUnlockedFacilityIds)
+                {
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        _secretBaseUnlockedFacilities.Add(id);
+                    }
+                }
+            }
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -212,6 +225,28 @@ namespace My
                     TributePut = put,
                 });
             }
+
+            data.PlayerData.SecretBaseUnlockedFacilityIds ??= new List<string>();
+            data.PlayerData.SecretBaseUnlockedFacilityIds.Clear();
+            foreach (var id in _secretBaseUnlockedFacilities)
+            {
+                data.PlayerData.SecretBaseUnlockedFacilityIds.Add(id);
+            }
+        }
+
+        public bool IsSecretBaseFacilityUnlocked(string facilityId)
+        {
+            return !string.IsNullOrEmpty(facilityId) && _secretBaseUnlockedFacilities.Contains(facilityId);
+        }
+
+        public void MarkSecretBaseFacilityUnlocked(string facilityId)
+        {
+            if (string.IsNullOrEmpty(facilityId))
+            {
+                return;
+            }
+
+            _secretBaseUnlockedFacilities.Add(facilityId);
         }
 
         public SavePointUnlockPersist GetOrCreateSavePointUnlockState(string savePointId)
