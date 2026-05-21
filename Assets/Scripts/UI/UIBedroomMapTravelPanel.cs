@@ -34,7 +34,7 @@ namespace My.UI
         [SerializeField] Button btnPrimary;
         [SerializeField] Button btnClose;
 
-        readonly List<MapAreaInfo> _safeMaps = new();
+        readonly List<AreaOverlayStateInfo> _safeMaps = new();
 
         readonly List<BedroomDeployMapRowView> _spawnedMapRows = new();
         readonly List<SavePointMarkerVm> _markers = new();
@@ -42,7 +42,7 @@ namespace My.UI
         readonly List<BedroomDeploySavePointListRowView> _spawnedListRows = new();
 
         TextMeshProUGUI _btnPrimaryLabel;
-        MapAreaInfo _selectedMap;
+        AreaOverlayStateInfo _selectedMap;
         SavePoint _selectedSavePoint;
 
         public override int FocusPriority => 805;
@@ -84,6 +84,50 @@ namespace My.UI
                 savePointMarkerTemplate.gameObject.SetActive(false);
             if (savePointListRowTemplate != null)
                 savePointListRowTemplate.gameObject.SetActive(false);
+
+            ResolveMapThumbRefs();
+        }
+
+        void ResolveMapThumbRefs()
+        {
+            if (mapThumbRoot == null)
+            {
+                foreach (var rt in GetComponentsInChildren<RectTransform>(true))
+                {
+                    if (rt.name == "MapThumbRoot")
+                    {
+                        mapThumbRoot = rt;
+                        break;
+                    }
+                }
+            }
+
+            if (markerRoot == null && mapThumbRoot != null)
+            {
+                var found = mapThumbRoot.Find("MarkerRoot");
+                if (found != null)
+                    markerRoot = found as RectTransform;
+            }
+
+            if (savePointMarkerTemplate == null && markerRoot != null)
+                savePointMarkerTemplate = markerRoot.GetComponentInChildren<BedroomDeploySavePointMarkerView>(true);
+
+            if (savePointListOverlay == null && mapThumbRoot != null)
+            {
+                var found = mapThumbRoot.Find("SavePointListOverlay");
+                if (found != null)
+                    savePointListOverlay = found.gameObject;
+            }
+
+            if (savePointListContent == null && savePointListOverlay != null)
+            {
+                var found = savePointListOverlay.transform.Find("OverlayListContent");
+                if (found != null)
+                    savePointListContent = found as RectTransform;
+            }
+
+            if (savePointListRowTemplate == null && savePointListContent != null)
+                savePointListRowTemplate = savePointListContent.GetComponentInChildren<BedroomDeploySavePointListRowView>(true);
         }
 
         public override void Setup(object data = null)
@@ -93,10 +137,10 @@ namespace My.UI
             SelectMap(_safeMaps.Count > 0 ? _safeMaps[0] : null);
         }
 
-        private void CollectHumanTravelMap(List<MapAreaInfo> outMaps)
+        private void CollectHumanTravelMap(List<AreaOverlayStateInfo> outMaps)
         {
             outMaps.Clear();
-            var tb = CfgMgr.Cfgs?.TbMapAreaInfo;
+            var tb = CfgMgr.Cfgs?.TbAreaOverlayStateInfo;
             if (tb?.DataList == null)
             {
                 return;
@@ -196,12 +240,12 @@ namespace My.UI
             }
         }
 
-        void OnMapRowClicked(MapAreaInfo map)
+        void OnMapRowClicked(AreaOverlayStateInfo map)
         {
             SelectMap(map);
         }
 
-        void SelectMap(MapAreaInfo map)
+        void SelectMap(AreaOverlayStateInfo map)
         {
             _selectedMap = map;
             if (detailDesc != null)
@@ -209,7 +253,7 @@ namespace My.UI
 
             if (detailThumb != null)
             {
-                var thumbName = map?.ThumbMap ?? string.Empty;
+                var thumbName = map?.BelongVariantInfo?.ThumbMap ?? string.Empty;
                 Sprite sp = null;
                 if (!string.IsNullOrEmpty(thumbName))
                     sp = Resources.Load<Sprite>($"MiniMap/{thumbName}");
@@ -232,43 +276,58 @@ namespace My.UI
         }
 
         public void CollectSavePointMarkers(
-            string mapId,
+            string mapOverlayId,
             GameLogicManager glm,
             List<SavePointMarkerVm> outMarkers)
         {
             outMarkers.Clear();
-            if (string.IsNullOrEmpty(mapId) || glm == null)
+            if (string.IsNullOrEmpty(mapOverlayId) || glm == null)
             {
                 return;
             }
 
-            var mapCfg = CfgMgr.Cfgs?.TbMapAreaInfo?.GetOrDefault(mapId);
+            var mapCfg = CfgMgr.Cfgs?.TbAreaOverlayStateInfo?.GetOrDefault(mapOverlayId);
+            if (mapCfg == null || string.IsNullOrEmpty(mapCfg.VarId))
+            {
+                return;
+            }
 
-            var points = SavePointUnlockHelper.GetUnlockedForMap(glm, mapId);
+            var points = SavePointUnlockHelper.GetUnlockedForMap(glm, mapCfg.VarId);
             if (points == null || points.Count == 0)
             {
                 return;
             }
 
-            int minX = -10;
-            int minY = -10;
+            points.Sort((a, b) =>
+            {
+                var order = a.SortOrder.CompareTo(b.SortOrder);
+                return order != 0
+                    ? order
+                    : string.CompareOrdinal(a?.SavePointId, b?.SavePointId);
+            });
+
             foreach (var sp in points)
             {
-                var vm = new SavePointMarkerVm { Config = sp, HasMapPosition = false };
-                
+                if (sp == null)
+                {
+                    continue;
+                }
 
-                var pos = new Vector2(sp.ShowX, sp.ShowY);
-                vm.NormPos01 = new Vector2(
-                    Mathf.Clamp01((pos.x - minX) / 100),
-                    Mathf.Clamp01((pos.y - minY) / 100));
-                vm.HasMapPosition = true;
-                outMarkers.Add(vm);
+                outMarkers.Add(new SavePointMarkerVm
+                {
+                    Config = sp,
+                    NormPos01 = new Vector2(
+                        Mathf.Clamp01(sp.SnapShowX),
+                        Mathf.Clamp01(sp.SnapShowY)),
+                    HasMapPosition = true,
+                });
             }
         }
 
 
         void RebuildSavePointDisplay()
         {
+            ResolveMapThumbRefs();
             ClearSavePointSpawned();
             _selectedSavePoint = null;
 
@@ -285,8 +344,8 @@ namespace My.UI
             }
 
             var glm = MainGameManager.Instance?.gameLogicManager;
-            //BedroomDeploySavePointPreviewUtil.CollectTeleportMarkers(_selectedMap.Id, glm, _markers);
             CollectSavePointMarkers(_selectedMap.Id, glm, _markers);
+
             var parentMarkers = markerRoot != null ? markerRoot : mapThumbRoot;
             if (parentMarkers != null && savePointMarkerTemplate != null)
             {

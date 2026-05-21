@@ -64,7 +64,7 @@ namespace My.Player
                 return;
             }
 
-            string mapName = LogicManager.AreaManager.MapName;
+            string mapName = LogicManager.AreaManager.AreaOverlayId;
             if(string.IsNullOrEmpty(mapName))
             {
                 return;

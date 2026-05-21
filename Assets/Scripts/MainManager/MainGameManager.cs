@@ -287,7 +287,7 @@ namespace My
             if (playerScenePresenter != null)
             {
                 var glm = MainGameManager.Instance.gameLogicManager;
-                var mapCfg = glm?.AreaManager?.cacheMapCfg;
+                var mapCfg = glm?.AreaManager?.cacheMapOverlayCfg;
                 if (glm != null && mapCfg != null && mapCfg.IsCivilArea
                     && !glm.PlayerHumanMode
                     && playerScenePresenter.PlayerEntity.IsExposed)
@@ -637,9 +637,9 @@ namespace My
             // data.PlayerData.Level = ...
 
             if (gameLogicManager?.AreaManager != null &&
-                !string.IsNullOrEmpty(gameLogicManager.AreaManager.MapName))
+                !string.IsNullOrEmpty(gameLogicManager.AreaManager.AreaOverlayId))
             {
-                data.CurrentMapId = gameLogicManager.AreaManager.MapName;
+                data.CurrentMapId = gameLogicManager.AreaManager.AreaOverlayId;
             }
 
             if (gameLogicManager?.playerLogicEntity != null)

@@ -27,7 +27,7 @@ public class SceneAOIManager : MonoBehaviour
 
     public string MapName
     {
-        get { return MainGameManager.Instance.gameLogicManager.AreaManager.MapName; }
+        get { return MainGameManager.Instance.gameLogicManager.AreaManager.AreaOverlayId; }
     }
 
     [Header("Player & AOI")]
@@ -514,6 +514,7 @@ public class SceneAOIManager : MonoBehaviour
         {
             MainGameManager.Instance.playerScenePresenter = pres as PlayerScenePresenter;
             MainGameManager.Instance.EnsureOpenWorldVcamFollow();
+            MainGameManager.Instance.gameLogicManager?.playerDataManager?.HumanQuickBar?.ApplyWeaponToRuntime();
         }
 
         if (entry.canceledDuringCreate || !entry.isShown)

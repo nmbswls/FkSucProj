@@ -357,7 +357,7 @@ namespace My.Map
                             string namedP = output.Param4;
 
                             // 原地传送
-                            if (string.IsNullOrEmpty(mapName) || mapName == Owner.LogicManager.AreaManager.MapName)
+                            if (string.IsNullOrEmpty(mapName) || mapName == Owner.LogicManager.AreaManager.AreaOverlayId)
                             {
                                 if (!string.IsNullOrEmpty(namedP))
                                 {

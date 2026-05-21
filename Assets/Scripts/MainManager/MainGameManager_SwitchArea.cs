@@ -198,7 +198,7 @@ namespace My
 
             float loadStartTime = Time.realtimeSinceStartup;
             bool loaded = false;
-            WorldAreaManager.Instance.LoadWorld(intent.AreaName, onComplete: (w, suc) => { loaded = true; });
+            WorldAreaManager.Instance.LoadWorld(intent.AreaOverlayId, onComplete: (w, suc) => { loaded = true; });
 
             // 等待场景加载
             while (!loaded)
@@ -206,8 +206,8 @@ namespace My
                 await Task.Yield();
             }
 
-            if (WorldAreaManager.Instance.cacheAreaInfo != null
-                && WorldAreaManager.Instance.cacheAreaInfo.IsSecretBase
+            if (WorldAreaManager.Instance.cacheAreaOverlayInfo != null
+                && WorldAreaManager.Instance.cacheAreaOverlayInfo.IsSecretBase
                 && gameLogicManager != null)
             {
                 gameLogicManager.NotifySecretBasePresentationReady();
@@ -219,13 +219,13 @@ namespace My
                 await Task.Delay(waitMilli);
             }
 
-            if (WorldAreaManager.Instance.cacheAreaInfo == null
-                || !WorldAreaManager.Instance.cacheAreaInfo.IsSecretBase)
+            if (WorldAreaManager.Instance.cacheAreaOverlayInfo == null
+                || !WorldAreaManager.Instance.cacheAreaOverlayInfo.IsSecretBase)
             {
                 FovGenerator.OnAreaEnter();
             }
 
-            SceneAOIManager.Instance.InitMapArea(intent.AreaName);
+            SceneAOIManager.Instance.InitMapArea(intent.AreaOverlayId);
             if(WorldAreaManager.Instance.currentRoot != null)
             {
                 SceneFadeManager.OnEnterArea(WorldAreaManager.Instance.currentRoot.gameObject);
@@ -246,8 +246,8 @@ namespace My
                 await Task.Delay(100);
             }
 
-            if (WorldAreaManager.Instance.cacheAreaInfo == null
-                || !WorldAreaManager.Instance.cacheAreaInfo.IsSecretBase)
+            if (WorldAreaManager.Instance.cacheAreaOverlayInfo == null
+                || !WorldAreaManager.Instance.cacheAreaOverlayInfo.IsSecretBase)
             {
                 EnsureOpenWorldVcamFollow();
             }

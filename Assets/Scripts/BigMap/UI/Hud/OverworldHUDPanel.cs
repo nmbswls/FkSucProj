@@ -488,7 +488,7 @@ namespace My.UI
             }
 
 
-            if (!MainGameManager.Instance.gameLogicManager.PlayerHumanMode && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsDangerArea)
+            if (!MainGameManager.Instance.gameLogicManager.PlayerHumanMode && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapOverlayCfg.IsDangerArea)
             {
                 var wantedLevel = MainGameManager.Instance.gameLogicManager.WantedManager.GetWantedStarLevel();
                 TextWantedLevel.gameObject.SetActive(true);
@@ -544,8 +544,8 @@ namespace My.UI
             // 只有真身形态 才有伪装概念
             if (!lgm.PlayerHumanMode)
             {
-                if (lgm.AreaManager.cacheMapCfg != null
-                    && lgm.AreaManager.cacheMapCfg.IsCivilArea
+                if (lgm.AreaManager.cacheMapOverlayCfg != null
+                    && lgm.AreaManager.cacheMapOverlayCfg.IsCivilArea
                     && !lgm.playerLogicEntity.IsExposed)
                 {
                     disguising = true;
@@ -757,7 +757,8 @@ namespace My.UI
 
             CheckDisguiseState();
 
-            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsHome)
+            /*
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapOverlayCfg.IsHome)
             {
                 BtnHomeStorage.gameObject.SetActive(true);
                 BtnHomeNextPeriod.gameObject.SetActive(true);
@@ -767,6 +768,9 @@ namespace My.UI
                 BtnHomeStorage.gameObject.SetActive(false);
                 BtnHomeNextPeriod.gameObject.SetActive(false);
             }
+            */
+            BtnHomeStorage.gameObject.SetActive(false);
+            BtnHomeNextPeriod.gameObject.SetActive(false);
 
             TrySubscribePlayerBuffEvents();
 

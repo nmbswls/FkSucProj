@@ -62,7 +62,7 @@ namespace My.Map.Logic
         public LogicEntityRepository Repo;
         public LongLivedRegistry LongLived { get; } = new();
 
-        public string MapName = string.Empty;
+        public string AreaOverlayId = string.Empty;
         public AreaOverlayStateInfo cacheMapOverlayCfg { get; private set; }
 
         public MapExportDatabase cacheDatabase;
@@ -120,8 +120,8 @@ namespace My.Map.Logic
         /// </summary>
         public void InitilizeMap(string mapOVerlayId)
         {
-            this.MapName = mapName;
-            cacheMapOverlayCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(mapName);
+            this.AreaOverlayId = mapOVerlayId;
+            cacheMapOverlayCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(mapOVerlayId);
 
             UnitGridIndex.Clear();
             RoomGridIndex.Clear();
@@ -164,7 +164,7 @@ namespace My.Map.Logic
 
 
             // 加载地图导出数据库
-            cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapCfg.MapDataName}");
+            cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapOverlayCfg.MapDataName}");
 
             DialogForceStaticIds.Clear();
             EntityRefreshInfo.Clear();
@@ -196,9 +196,9 @@ namespace My.Map.Logic
 
             checkRefreshTimer = LogicTime.time;
 
-            logicManager.ApplyPendingMapRuntimeAfterMapInit(mapName);
+            logicManager.ApplyPendingMapRuntimeAfterMapInit(mapOVerlayId);
 
-            SetupDesireCrystalSession(mapName);
+            SetupDesireCrystalSession(mapOVerlayId);
 
         }
 

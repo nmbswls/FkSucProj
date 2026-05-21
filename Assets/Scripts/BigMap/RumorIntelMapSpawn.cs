@@ -27,13 +27,13 @@ namespace My
                 return;
             }
 
-            var areaCfg = _glm.AreaManager.cacheMapCfg;
+            var areaCfg = _glm.AreaManager.cacheMapOverlayCfg;
             if (areaCfg == null)
             {
                 return;
             }
 
-            var mapId = _glm.AreaManager.MapName;
+            var mapId = _glm.AreaManager.AreaOverlayId;
             if (string.IsNullOrEmpty(mapId) || CfgMgr.Cfgs == null)
             {
                 return;

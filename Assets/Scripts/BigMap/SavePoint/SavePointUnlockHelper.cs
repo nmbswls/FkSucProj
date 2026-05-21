@@ -238,28 +238,24 @@ namespace My.Map
             return result;
         }
 
-        public static List<SavePoint> GetUnlockedForMap(GameLogicManager glm, string mapId)
+        public static List<SavePoint> GetUnlockedForMap(GameLogicManager glm, string mapVarId)
         {
             var result = new List<SavePoint>();
-            if (string.IsNullOrEmpty(mapId) || glm == null)
+            if (string.IsNullOrEmpty(mapVarId) || glm == null)
             {
                 return result;
             }
 
             foreach (var cfg in GetFormallyUnlockedConfigs(glm))
             {
-                if (cfg?.ShowMapId == null)
+                if (cfg?.AreaVarId == null)
                 {
                     continue;
                 }
 
-                foreach (var mid in cfg.ShowMapId)
+                if (cfg.AreaVarId == mapVarId)
                 {
-                    if (mid == mapId)
-                    {
-                        result.Add(cfg);
-                        break;
-                    }
+                    result.Add(cfg);
                 }
             }
 

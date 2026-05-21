@@ -17,7 +17,7 @@ namespace My
     public class SwitchAreaIntent
     {
         public string? OldAreaName;
-        public string AreaName;
+        public string AreaOverlayId;
         public bool Reset;
         public LogicEntityRecord4Player SavedRecord;
         public bool Silent; // 是否静默
@@ -121,10 +121,10 @@ namespace My
         /// <param name="areaName"></param>
         private void PrepareNewArea()
         {
-            var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(SwitchAreaIntent.AreaName);
+            var mapCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(SwitchAreaIntent.AreaOverlayId);
             bool isSecretBase = mapCfg != null && mapCfg.IsSecretBase;
 
-            AreaManager.InitilizeMap(SwitchAreaIntent.AreaName);
+            AreaManager.InitilizeMap(SwitchAreaIntent.AreaOverlayId);
             if (!isSecretBase)
             {
                 MapMicroPlot?.RebuildForCurrentMap();
@@ -240,7 +240,7 @@ namespace My
             }
 
             var magic = playerDataManager.MagicClothes;
-            var cfg = AreaManager.cacheMapCfg;
+            var cfg = AreaManager.cacheMapOverlayCfg;
             if (cfg != null && cfg.IsCivilArea)
             {
                 magic.OnStealthMapPlayerInitialized(player);

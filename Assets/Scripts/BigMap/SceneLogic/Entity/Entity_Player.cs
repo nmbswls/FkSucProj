@@ -910,7 +910,7 @@ namespace My.Map
 
             do
             {
-                if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg != null && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapCfg.IsCivilArea)
+                if (MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapOverlayCfg != null && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapOverlayCfg.IsCivilArea)
                 {
                     DisguiseIfPossible = true;
                     break;

@@ -665,10 +665,10 @@ RectTransform:
   - {fileID: 931000151}
   m_Father: {fileID: 931000131}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 126, y: -26}
-  m_SizeDelta: {x: 240, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &931000142
 CanvasRenderer:
@@ -2372,14 +2372,13 @@ MonoBehaviour:
   canvasGroup: {fileID: 938470001}
   mapListContent: {fileID: 931000131}
   mapRowTemplate: {fileID: 931000146}
-  mapThumbRoot: {fileID: 0}
+  mapThumbRoot: {fileID: 932000011}
   detailThumb: {fileID: 931000213}
   detailDesc: {fileID: 931000223}
-  markerRoot: {fileID: 0}
-  savePointMarkerTemplate: {fileID: 0}
-  savePointListOverlay: {fileID: 0}
-  savePointListContent: {fileID: 0}
-  savePointListRowTemplate: {fileID: 0}
+  markerRoot: {fileID: 932000021}
+  savePointMarkerTemplate: {fileID: 932000076}
+  savePointListOverlay: {fileID: 932000030}
+  savePointListContent: {fileID: 932000041}
+  savePointListRowTemplate: {fileID: 932000056}
   btnPrimary: {fileID: 931000234}
   btnClose: {fileID: 931000074}
-  btnRumorIntel: {fileID: 0}

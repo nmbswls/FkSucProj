@@ -256,14 +256,17 @@ namespace My.UI
 
         private static bool IsHomeMap()
         {
-            var map = MainGameManager.Instance?.gameLogicManager?.AreaManager?.MapName;
+            /*
+            var map = MainGameManager.Instance?.gameLogicManager?.AreaManager?.AreaOverlayId;
             if (string.IsNullOrEmpty(map))
             {
                 return false;
             }
 
-            var cfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(map);
+            var cfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(map);
             return cfg != null && cfg.IsHome;
+            */
+            return false;
         }
 
         public static void TryOpenFromHud()

@@ -11,10 +11,10 @@ namespace My.UI
         [SerializeField] Image bg;
         [SerializeField] TextMeshProUGUI title;
 
-        MapAreaInfo _map;
+        AreaOverlayStateInfo _map;
         Button _button;
 
-        public event Action<MapAreaInfo> Clicked;
+        public event Action<AreaOverlayStateInfo> Clicked;
 
         void Awake()
         {
@@ -32,7 +32,7 @@ namespace My.UI
             }
         }
 
-        public void Bind(MapAreaInfo map, bool selected)
+        public void Bind(AreaOverlayStateInfo map, bool selected)
         {
             _map = map;
             if (title != null)

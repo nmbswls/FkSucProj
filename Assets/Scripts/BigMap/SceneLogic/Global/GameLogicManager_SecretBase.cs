@@ -33,7 +33,6 @@ namespace My
                 return;
             }
 
-            TrySnapshotOpenWorldBeforeEnteringSecretBase(SecretBaseMapId);
             PreparePlayerSwitchArea(SecretBaseMapId, false, targetPoint);
         }
 
@@ -62,7 +61,7 @@ namespace My
 
         void RefreshPlayerWorldLocationFromMapCfg()
         {
-            var cfg = AreaManager?.cacheMapCfg;
+            var cfg = AreaManager?.cacheMapOverlayCfg;
             if (cfg == null)
             {
                 PlayerWorldLocation = EPlayerWorldLocation.OpenWorld;
@@ -73,10 +72,10 @@ namespace My
             {
                 PlayerWorldLocation = EPlayerWorldLocation.SecretBase;
             }
-            else if (cfg.IsHome)
-            {
-                PlayerWorldLocation = EPlayerWorldLocation.LegacyHome;
-            }
+            // else if (cfg.IsHome)
+            // {
+            //     PlayerWorldLocation = EPlayerWorldLocation.LegacyHome;
+            // }
             else
             {
                 PlayerWorldLocation = EPlayerWorldLocation.OpenWorld;
@@ -103,20 +102,20 @@ namespace My
 
         void TrySnapshotOpenWorldBeforeEnteringSecretBase(string destinationMapName)
         {
-            var destCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(destinationMapName);
+            var destCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(destinationMapName);
             if (destCfg == null || !destCfg.IsSecretBase)
             {
                 return;
             }
 
-            string srcMap = AreaManager.MapName;
+            string srcMap = AreaManager.AreaOverlayId;
             if (string.IsNullOrEmpty(srcMap))
             {
                 return;
             }
 
-            var srcCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(srcMap);
-            if (srcCfg == null || srcCfg.IsSecretBase || srcCfg.IsHome)
+            var srcCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(srcMap);
+            if (srcCfg == null || srcCfg.IsSecretBase)
             {
                 return;
             }

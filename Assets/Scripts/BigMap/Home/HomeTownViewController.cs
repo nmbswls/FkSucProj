@@ -75,14 +75,17 @@ namespace My.Home
 
         private static bool IsHomeMap()
         {
-            var map = MainGameManager.Instance?.gameLogicManager?.AreaManager?.MapName;
-            if (string.IsNullOrEmpty(map))
+            /*
+            var areaOverlayId = MainGameManager.Instance?.gameLogicManager?.AreaManager?.AreaOverlayId;
+            if (string.IsNullOrEmpty(areaOverlayId))
             {
                 return false;
             }
 
-            var cfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(map);
+            var cfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(areaOverlayId);
             return cfg != null && cfg.IsHome;
+            */
+            return false;
         }
     }
 }

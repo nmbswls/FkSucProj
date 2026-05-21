@@ -31,7 +31,7 @@ namespace My.Map
         {
             AbortForMapChange();
             _entries.Clear();
-            var mapId = _glm.AreaManager?.MapName;
+            var mapId = _glm.AreaManager?.AreaOverlayId;
             if (string.IsNullOrEmpty(mapId) || CfgMgr.Cfgs == null)
             {
                 return;
@@ -81,7 +81,7 @@ namespace My.Map
                 return;
             }
 
-            var mapId = _glm.AreaManager.MapName;
+            var mapId = _glm.AreaManager.AreaOverlayId;
             var ws = _glm.worldPersistState;
             if (ws == null || string.IsNullOrEmpty(mapId))
             {
@@ -360,7 +360,7 @@ namespace My.Map
                 _ended = true;
                 ReleaseActorsToIdle();
 
-                var mapId = _glm.AreaManager.MapName;
+                var mapId = _glm.AreaManager.AreaOverlayId;
                 var ws = _glm.worldPersistState;
                 if (ws != null && !string.IsNullOrEmpty(mapId))
                 {

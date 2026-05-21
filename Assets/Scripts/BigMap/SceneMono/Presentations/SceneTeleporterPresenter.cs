@@ -40,7 +40,7 @@ namespace My.Map.Scene
             string namedP = TeleporterEntity.TargetNamedPoint;
 
             // 原地传送
-            if (string.IsNullOrEmpty(mapName) || mapName == TeleporterEntity.LogicManager.AreaManager.MapName)
+            if (string.IsNullOrEmpty(mapName) || mapName == TeleporterEntity.LogicManager.AreaManager.AreaOverlayId)
             {
                 if (!string.IsNullOrEmpty(namedP))
                 {

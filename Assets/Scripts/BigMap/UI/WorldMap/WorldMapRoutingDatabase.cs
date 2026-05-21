@@ -95,11 +95,11 @@ namespace My.Map
             return cfgRoomId == playerRoomId;
         }
 
-        private static WorldMapBigMapLayer PickBigMapLayer(IReadOnlyList<WorldMapBigMapLayer> list, string sceneName, string roomId)
+        private static WorldMapBigMapLayer PickBigMapLayer(IReadOnlyList<WorldMapBigMapLayer> list, string mapVadId, string roomId)
         {
-            if (list == null || string.IsNullOrEmpty(sceneName)) return null;
+            if (list == null || string.IsNullOrEmpty(mapVadId)) return null;
             return list
-                .Where(r => r.SceneName == sceneName)
+                .Where(r => r.AreaVarId == mapVadId)
                 .Where(r => RoomFilterMatches(r.RoomId, roomId))
                 .OrderByDescending(r => r.RulePriority)
                 .FirstOrDefault();
@@ -144,22 +144,22 @@ namespace My.Map
             }
 
             var cfgs = CfgMgr.Cfgs;
-            var mapId = glm.CurrentArea;
-            if (string.IsNullOrEmpty(mapId) && glm.AreaManager != null &&
-                !string.IsNullOrEmpty(glm.AreaManager.MapName))
+            var mapOverlayId = glm.AreaManager.AreaOverlayId;
+            if (string.IsNullOrEmpty(mapOverlayId) && glm.AreaManager != null &&
+                !string.IsNullOrEmpty(glm.AreaManager.AreaOverlayId))
             {
-                mapId = glm.AreaManager.MapName;
+                mapOverlayId = glm.AreaManager.AreaOverlayId;
             }
 
-            mapId ??= string.Empty;
+            mapOverlayId ??= string.Empty;
             var roomId = player.BelongRoomId ?? string.Empty;
 
             var global = cfgs?.TbWorldMapGlobal;
             var bigList = cfgs?.TbWorldMapBigMapLayer?.DataList;
 
-            var mapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(mapId);
+            var mapCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(mapOverlayId);
 
-            var bigWinner = PickBigMapLayer(bigList, mapCfg.SceneName, roomId);
+            var bigWinner = PickBigMapLayer(bigList, mapCfg.VarId, roomId);
 
             if (bigWinner == null)
             {
@@ -193,7 +193,7 @@ namespace My.Map
                 return false;
             }
 
-            var bigPath = bigWinner.BigMapTextureResourcePath;
+            var bigPath = bigWinner.BigMapTexturePath;
             if (string.IsNullOrEmpty(bigPath) && global != null)
                 bigPath = global.FallbackBigMapTextureResourcePath;
 

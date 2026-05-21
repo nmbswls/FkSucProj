@@ -643,7 +643,7 @@ namespace My.UI
                 return true;
             }
 
-            var area = WorldAreaManager.Instance?.cacheAreaInfo;
+            var area = WorldAreaManager.Instance?.cacheAreaOverlayInfo;
             return area != null && area.IsSecretBase;
         }
 

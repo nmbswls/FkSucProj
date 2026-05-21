@@ -34,7 +34,7 @@ namespace My.Map.Logic
         internal void SetupDesireCrystalSession(string mapName)
         {
             ClearDesireCrystalSession();
-            if (cacheMapCfg == null)
+            if (cacheMapOverlayCfg == null)
             {
                 return;
             }

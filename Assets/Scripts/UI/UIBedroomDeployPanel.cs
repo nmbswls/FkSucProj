@@ -26,11 +26,11 @@ namespace My.UI
         
         [SerializeField] Button btnClose;
 
-        readonly List<MapAreaInfo> _huntMaps = new();
+        readonly List<AreaOverlayStateInfo> _huntMaps = new();
         readonly List<BedroomDeployMapRowView> _spawnedMapRows = new();
 
         TextMeshProUGUI _btnPrimaryLabel;
-        MapAreaInfo _selectedMap;
+        AreaOverlayStateInfo _selectedMap;
 
         public override int FocusPriority => 805;
 
@@ -84,10 +84,10 @@ namespace My.UI
             SelectMap(_huntMaps.Count > 0 ? _huntMaps[0] : null);
         }
 
-        private void CollectHuntingTargetMap(List<MapAreaInfo> outMaps)
+        private void CollectHuntingTargetMap(List<AreaOverlayStateInfo> outMaps)
         {
             outMaps.Clear();
-            var tb = CfgMgr.Cfgs?.TbMapAreaInfo;
+            var tb = CfgMgr.Cfgs?.TbAreaOverlayStateInfo;
             if (tb?.DataList == null)
             {
                 return;
@@ -181,12 +181,12 @@ namespace My.UI
             }
         }
 
-        void OnMapRowClicked(MapAreaInfo map)
+        void OnMapRowClicked(AreaOverlayStateInfo map)
         {
             SelectMap(map);
         }
 
-        void SelectMap(MapAreaInfo map)
+        void SelectMap(AreaOverlayStateInfo map)
         {
             _selectedMap = map;
             if (detailDesc != null)
@@ -194,7 +194,7 @@ namespace My.UI
 
             if (detailThumb != null)
             {
-                var thumbName = map?.ThumbMap ?? string.Empty;
+                var thumbName = map?.BelongVariantInfo?.ThumbMap ?? string.Empty;
                 Sprite sp = null;
                 if (!string.IsNullOrEmpty(thumbName))
                     sp = Resources.Load<Sprite>($"MiniMap/{thumbName}");

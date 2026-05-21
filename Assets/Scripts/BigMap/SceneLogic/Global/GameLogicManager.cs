@@ -132,16 +132,19 @@ namespace My
         // true = 人类形态；false = 真身形态（仅真身下维持衣装/暴露等玩法）
         public bool PlayerHumanMode { get; private set; } = true;
 
-        // 玩家在家园地图内主动切换人类/真身形态（非家园返回 false）
+        // 玩家在家园地图内主动切换人类/真身形态（Home 暂不使用）
         public bool TrySetPlayerHumanMode(bool wantHuman)
         {
-            if (AreaManager?.cacheMapCfg == null || !AreaManager.cacheMapCfg.IsHome)
+            /*
+            if (AreaManager?.cacheMapOverlayCfg == null || !AreaManager.cacheMapOverlayCfg.IsHome)
             {
                 return false;
             }
 
             ForcePlayerHumanMode(wantHuman, refreshDespitePendingSwitch: true);
             return true;
+            */
+            return false;
         }
 
         // 系统或界面强制形态（床铺潜入、结算回城等）；地图切换进行中时默认推迟到 PostNewAreaLoaded 再刷新运行时
@@ -287,7 +290,7 @@ namespace My
         /// 玩家进入/切换场景
         /// </summary>
         /// <param name="areaName"></param>
-        public void PreparePlayerSwitchArea(string mapName, bool reset, string? targetPoint = null, Vector2? targetPos = null, bool silent = false)
+        public void PreparePlayerSwitchArea(string mapOverlayId, bool reset, string? targetPoint = null, Vector2? targetPos = null, bool silent = false)
         {
             if(SwitchAreaIntent != null)
             {
@@ -295,12 +298,12 @@ namespace My
                 return;
             }
 
-            TrySnapshotOpenWorldBeforeEnteringHome(mapName);
-            TrySnapshotOpenWorldBeforeEnteringSecretBase(mapName);
+            // TrySnapshotOpenWorldBeforeEnteringHome(mapOverlayId);
+            TrySnapshotOpenWorldBeforeEnteringSecretBase(mapOverlayId);
 
             var intent = new SwitchAreaIntent();
-            intent.AreaName = mapName;
-            intent.OldAreaName = AreaManager.MapName;
+            intent.AreaOverlayId = mapOverlayId;
+            intent.OldAreaName = AreaManager.AreaOverlayId;
             intent.Reset = reset;
             intent.Silent = silent;
             intent.TargetPos = targetPos;
@@ -881,6 +884,7 @@ namespace My
                 _pendingPlayerBuffRestore = null;
             }
 
+            /*
             if (saveData.LastOpenWorldBeforeHome != null)
             {
                 LastOpenWorldBeforeHome = new OpenWorldReturnBookmark
@@ -893,6 +897,8 @@ namespace My
             {
                 LastOpenWorldBeforeHome = null;
             }
+            */
+            LastOpenWorldBeforeHome = null;
 
             CaptureSecretBaseBookmarkFromSave(saveData);
 
@@ -920,32 +926,34 @@ namespace My
             }
         }
 
-        public void ApplyPendingMapRuntimeAfterMapInit(string mapName)
+        public void ApplyPendingMapRuntimeAfterMapInit(string mapOverlayId)
         {
-            if (string.IsNullOrEmpty(mapName) || AreaManager == null)
+            if (string.IsNullOrEmpty(mapOverlayId) || AreaManager == null)
             {
                 return;
             }
 
-            if (_pendingMapRuntimeByMapId == null || !_pendingMapRuntimeByMapId.TryGetValue(mapName, out var chunk))
+            if (_pendingMapRuntimeByMapId == null || !_pendingMapRuntimeByMapId.TryGetValue(mapOverlayId, out var chunk))
             {
                 return;
             }
 
             AreaManager.ApplyMapRuntimePersistData(chunk);
-            _pendingMapRuntimeByMapId.Remove(mapName);
+            _pendingMapRuntimeByMapId.Remove(mapOverlayId);
         }
 
+        // Home 书签暂不使用
         void TrySnapshotOpenWorldBeforeEnteringHome(string destinationMapName)
         {
-            var destCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(destinationMapName);
-            string srcMap = AreaManager.MapName;
+            /*
+            var destCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(destinationMapName);
+            string srcMap = AreaManager.AreaOverlayId;
             if (string.IsNullOrEmpty(srcMap))
             {
                 return;
             }
 
-            var srcCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(srcMap);
+            var srcCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(srcMap);
             if (destCfg == null || !destCfg.IsHome)
             {
                 return;
@@ -966,6 +974,7 @@ namespace My
                 MapId = srcMap,
                 Pos = playerLogicEntity.Pos,
             };
+            */
         }
 
         public void RestorePendingPlayerBuffsIfAny(IEntityBuffOwner owner)
@@ -987,6 +996,7 @@ namespace My
         {
             if (data == null) return;
 
+            /*
             data.LastOpenWorldBeforeHome = LastOpenWorldBeforeHome == null
                 ? null
                 : new OpenWorldReturnBookmark
@@ -994,6 +1004,8 @@ namespace My
                     MapId = LastOpenWorldBeforeHome.MapId,
                     Pos = LastOpenWorldBeforeHome.Pos,
                 };
+            */
+            data.LastOpenWorldBeforeHome = null;
 
             AppendSecretBaseBookmarkToSave(data);
 
@@ -1005,9 +1017,9 @@ namespace My
             data.GlobalRuntime.SettlementDayIndex = SettlementDayIndex;
 
             data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
-            if (AreaManager != null && !string.IsNullOrEmpty(AreaManager.MapName))
+            if (AreaManager != null && !string.IsNullOrEmpty(AreaManager.AreaOverlayId))
             {
-                data.MapRuntimeByMapId[AreaManager.MapName] = AreaManager.BuildMapRuntimePersistData();
+                data.MapRuntimeByMapId[AreaManager.AreaOverlayId] = AreaManager.BuildMapRuntimePersistData();
             }
 
             long maxEntityId = data.NextLogicEntityIdHint;

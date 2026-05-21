@@ -3771,7 +3771,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.2"
+                    RawVal = "0.5"
                 },
             });
 
@@ -3785,15 +3785,15 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.15"
+                    RawVal = "0.3"
                 },
             };
 
             var newEffect = new MapAbilityEffectUseWeaponCfg()
             {
                 WeaponName = My.Player.HumanWeaponCatalog.ViewKey,
-                AnimName = "player_weapon01_01",
-                Duration = 0.12f,
+                AnimName = "player_use_human_weapon_melee",
+                Duration = 0.3f,
                 OnHitEffects = new()
                 {
                     new MapAbilityEffectHumanWeaponHitCfg(),
