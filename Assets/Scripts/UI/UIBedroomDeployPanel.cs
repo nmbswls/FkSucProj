@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using cfg.demo;
+using My.Config;
 using My.Map;
 using My.MiniGame.Dream;
 using TMPro;
@@ -67,10 +68,70 @@ namespace My.UI
 
         public override void Setup(object data = null)
         {
-            BedroomDeployMapUtil.CollectHuntMaps(_huntMaps);
+            //BedroomDeployMapUtil.CollectHuntMaps(_huntMaps);
+            CollectHuntingTargetMap(_huntMaps);
             RebuildMapList();
             SelectMap(_huntMaps.Count > 0 ? _huntMaps[0] : null);
         }
+
+        private void CollectHuntingTargetMap(List<MapAreaInfo> outMaps)
+        {
+            outMaps.Clear();
+            var tb = CfgMgr.Cfgs?.TbMapAreaInfo;
+            if (tb?.DataList == null)
+            {
+                return;
+            }
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var dayPeriod = glm.DayPeriod;
+            foreach (var m in tb.DataList)
+            {
+                if (m == null || string.IsNullOrEmpty(m.Id))
+                {
+                    continue;
+                }
+
+                if (!m.HuntingTarget)
+                {
+                    continue;
+                }
+
+                if (m.DayPeriodLimit != 0)
+                {
+                    if (m.DayPeriodLimit == 1 && dayPeriod != GameLogicManager.EDayPeriod.Day)
+                    {
+                        continue;
+                    }
+                    if (m.DayPeriodLimit == 2 && dayPeriod != GameLogicManager.EDayPeriod.Night)
+                    {
+                        continue;
+                    }
+                }
+
+                var conds = m.HuntingUnlockConds;
+                bool passed = true;
+                if (conds != null && glm != null)
+                {
+                    foreach (var cond in conds)
+                    {
+                        if (!glm.CheckCommonCond(cond))
+                        {
+                            passed = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (passed)
+                {
+                    outMaps.Add(m);
+                }
+            }
+
+            outMaps.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));
+        }
+
 
         public override bool OnCancel()
         {
@@ -123,9 +184,10 @@ namespace My.UI
 
             if (detailThumb != null)
             {
+                var thumbName = map?.ThumbMap ?? string.Empty;
                 Sprite sp = null;
-                if (map != null)
-                    sp = Resources.Load<Sprite>($"UI/MapThumbs/{map.Id}");
+                if (!string.IsNullOrEmpty(thumbName))
+                    sp = Resources.Load<Sprite>($"MiniMap/{thumbName}");
                 detailThumb.sprite = sp;
                 detailThumb.color = sp != null ? Color.white : new Color(0.15f, 0.16f, 0.2f, 1f);
                 DreamUISpriteUtil.EnsureWhiteSprite(detailThumb);

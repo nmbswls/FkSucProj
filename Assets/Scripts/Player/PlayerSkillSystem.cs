@@ -431,20 +431,7 @@ namespace My.Player
 
         public static int ClampPassiveBuffLayer(string skillId, int level)
         {
-            level = Math.Max(1, level);
-            var cfg = SkillLibrary.GetSkillConfig(skillId);
-            if (cfg == null || !cfg.IsPassive || string.IsNullOrEmpty(cfg.PassiveBuffId))
-            {
-                return level;
-            }
-
-            BuffDefinition def = BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId);
-            if (def != null && def.MaxStackLayer > 0)
-            {
-                return Math.Min(level, def.MaxStackLayer);
-            }
-
-            return level;
+            return SkillPassiveBuffUtil.ClampLayerForPassiveSkill(skillId, level);
         }
 
         public int GetSkillLevel(string skillId)

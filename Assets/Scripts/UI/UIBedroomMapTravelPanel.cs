@@ -35,7 +35,8 @@ namespace My.UI
         [SerializeField] Button btnClose;
         [SerializeField] Button btnRumorIntel;
 
-        readonly List<MapAreaInfo> _huntMaps = new();
+        readonly List<MapAreaInfo> _safeMaps = new();
+
         readonly List<BedroomDeployMapRowView> _spawnedMapRows = new();
         readonly List<SavePointMarkerVm> _markers = new();
         readonly List<BedroomDeploySavePointMarkerView> _spawnedMarkers = new();
@@ -93,10 +94,75 @@ namespace My.UI
 
         public override void Setup(object data = null)
         {
-            BedroomDeployMapUtil.CollectHuntMaps(_huntMaps);
+            CollectHumanTravelMap(_safeMaps);
             RebuildMapList();
-            SelectMap(_huntMaps.Count > 0 ? _huntMaps[0] : null);
+            SelectMap(_safeMaps.Count > 0 ? _safeMaps[0] : null);
         }
+
+        private void CollectHumanTravelMap(List<MapAreaInfo> outMaps)
+        {
+            outMaps.Clear();
+            var tb = CfgMgr.Cfgs?.TbMapAreaInfo;
+            if (tb?.DataList == null)
+            {
+                return;
+            }
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var dayPeriod = glm.DayPeriod;
+            foreach (var m in tb.DataList)
+            {
+                if (m == null || string.IsNullOrEmpty(m.Id))
+                {
+                    continue;
+                }
+
+                if (!m.CanTeleport)
+                {
+                    continue;
+                }
+
+                if (m.DayPeriodLimit != 0)
+                {
+                    if(m.DayPeriodLimit == 1 && dayPeriod != GameLogicManager.EDayPeriod.Day)
+                    {
+                        continue;
+                    }
+                    if (m.DayPeriodLimit == 2 && dayPeriod != GameLogicManager.EDayPeriod.Night)
+                    {
+                        continue;
+                    }
+                }
+
+                // 危险区域不可传送
+                if(m.IsDangerArea)
+                {
+                    continue;
+                }
+
+                var conds = m.HuntingUnlockConds;
+                bool passed = true;
+                if (conds != null && glm != null)
+                {
+                    foreach (var cond in conds)
+                    {
+                        if (!glm.CheckCommonCond(cond))
+                        {
+                            passed = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (passed)
+                {
+                    outMaps.Add(m);
+                }
+            }
+
+            outMaps.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));
+        }
+
 
         public override bool OnCancel()
         {
@@ -124,7 +190,7 @@ namespace My.UI
                 return;
             }
 
-            foreach (var map in _huntMaps)
+            foreach (var map in _safeMaps)
             {
                 var row = Instantiate(mapRowTemplate, mapListContent);
                 row.gameObject.SetActive(true);
@@ -150,8 +216,6 @@ namespace My.UI
             if (detailThumb != null)
             {
                 var thumbName = map?.ThumbMap ?? string.Empty;
-                //var mapCfg = CfgMgr.Cfgs.TbWorldMapBigMapLayer.DataList;
-
                 Sprite sp = null;
                 if (!string.IsNullOrEmpty(thumbName))
                     sp = Resources.Load<Sprite>($"MiniMap/{thumbName}");
@@ -166,9 +230,9 @@ namespace My.UI
 
         void RefreshMapRowSelection()
         {
-            for (var i = 0; i < _spawnedMapRows.Count && i < _huntMaps.Count; i++)
+            for (var i = 0; i < _spawnedMapRows.Count && i < _safeMaps.Count; i++)
             {
-                var on = _selectedMap != null && ReferenceEquals(_selectedMap, _huntMaps[i]);
+                var on = _selectedMap != null && ReferenceEquals(_selectedMap, _safeMaps[i]);
                 _spawnedMapRows[i].SetSelected(on);
             }
         }

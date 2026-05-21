@@ -25,6 +25,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
         { if(!_buf["map_data_name"].IsString) { throw new SerializationException(); }  MapDataName = _buf["map_data_name"]; }
         { if(!_buf["thumb_map"].IsString) { throw new SerializationException(); }  ThumbMap = _buf["thumb_map"]; }
+        { if(!_buf["can_teleport"].IsBoolean) { throw new SerializationException(); }  CanTeleport = _buf["can_teleport"]; }
         { if(!_buf["is_home"].IsBoolean) { throw new SerializationException(); }  IsHome = _buf["is_home"]; }
         { if(!_buf["is_secret_base"].IsBoolean) { throw new SerializationException(); }  IsSecretBase = _buf["is_secret_base"]; }
         { if(!_buf["always_alert"].IsBoolean) { throw new SerializationException(); }  AlwaysAlert = _buf["always_alert"]; }
@@ -67,6 +68,10 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// 场景名
     /// </summary>
     public string ThumbMap;
+    /// <summary>
+    /// 传送标记
+    /// </summary>
+    public bool CanTeleport;
     /// <summary>
     /// home标记
     /// </summary>
@@ -114,6 +119,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         + "sceneName:" + SceneName + ","
         + "mapDataName:" + MapDataName + ","
         + "thumbMap:" + ThumbMap + ","
+        + "canTeleport:" + CanTeleport + ","
         + "isHome:" + IsHome + ","
         + "isSecretBase:" + IsSecretBase + ","
         + "alwaysAlert:" + AlwaysAlert + ","

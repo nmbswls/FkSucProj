@@ -10,6 +10,14 @@ namespace My
 
     public partial class GameLogicManager
     {
+        public enum EDayPeriod
+        {
+            Day,
+            Night,
+        }
+
+        public EDayPeriod DayPeriod;
+        
         public int DayPeriodLeft = 2;
 
         public event Action EventOnNextDayPeriod;
@@ -40,6 +48,22 @@ namespace My
                 DayPeriodLeft = 0;
             }
 
+            //EventOnNextDayPeriod?.Invoke();
+        }
+
+        public void NextDayPeriod()
+        {
+            if(DayPeriod == EDayPeriod.Day)
+            {
+                DayPeriod = EDayPeriod.Night;
+            }
+            else
+            {
+                DayPeriod = EDayPeriod.Day;
+
+                FinishOneDay();
+            }
+
             EventOnNextDayPeriod?.Invoke();
         }
 
@@ -47,7 +71,6 @@ namespace My
         {
             AdvanceSettlementDayAndApplyFishingRules();
             HandleOneDayBalance();
-            DayPeriodLeft = 2;
         }
 
         /// <summary>

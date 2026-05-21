@@ -81,15 +81,20 @@ namespace My.Map.Entity
                     continue;
                 }
 
-                if (string.IsNullOrEmpty(cfg.PassiveBuffId))
+                var buffIds = SkillPassiveBuffUtil.GetPassiveBuffIds(cfg);
+                if (buffIds.Count == 0)
                 {
-                    Debug.LogWarning($"[SkillLibrary] Passive skill '{cfg.SkillId}' has empty PassiveBuffId.");
+                    Debug.LogWarning($"[SkillLibrary] Passive skill '{cfg.SkillId}' has no passive_buff_ids.");
                     continue;
                 }
 
-                if (BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId) == null)
+                foreach (var buffId in buffIds)
                 {
-                    Debug.LogWarning($"[SkillLibrary] Passive skill '{cfg.SkillId}' PassiveBuffId '{cfg.PassiveBuffId}' missing in BuffLibrary.");
+                    if (BuffLibrary.GetBuffDefinition(buffId) == null)
+                    {
+                        Debug.LogWarning(
+                            $"[SkillLibrary] Passive skill '{cfg.SkillId}' buff '{buffId}' missing in BuffLibrary.");
+                    }
                 }
             }
         }

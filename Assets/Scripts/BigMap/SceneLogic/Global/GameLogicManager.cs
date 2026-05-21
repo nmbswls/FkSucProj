@@ -82,8 +82,6 @@ namespace My
         public INavProvider? navProvider;
 
 
-        public int TimePeriod;
-
         /// <summary>
         /// 世界结算日；推进时触发垂钓点按配置补满等。
         /// </summary>

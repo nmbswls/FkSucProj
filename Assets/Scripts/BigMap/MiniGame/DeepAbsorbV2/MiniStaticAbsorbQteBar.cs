@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static My.MiniGame.DeepAbsorbQteBar;
 
 
 namespace My.MiniGame
 {
-    public class DeepAbsorbQteBar : MonoBehaviour
+    public class MiniStaticAbsorbQteBar : MonoBehaviour
     {
         [Header("UI References")]
         [SerializeField] private RectTransform barRect;

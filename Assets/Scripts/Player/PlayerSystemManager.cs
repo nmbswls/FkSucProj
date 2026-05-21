@@ -489,7 +489,7 @@ namespace My.Player
 
                 var skillId = e.SkillId;
                 var cfg = SkillLibrary.GetSkillConfig(skillId);
-                if (cfg == null || !cfg.IsPassive || string.IsNullOrEmpty(cfg.PassiveBuffId))
+                if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
                 {
                     continue;
                 }
@@ -514,7 +514,7 @@ namespace My.Player
                 }
 
                 var cfg = SkillLibrary.GetSkillConfig(skillId);
-                if (cfg == null || !cfg.IsPassive || string.IsNullOrEmpty(cfg.PassiveBuffId))
+                if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
                 {
                     continue;
                 }
@@ -649,13 +649,9 @@ namespace My.Player
 
             int effective = level;
             var cfg = SkillLibrary.GetSkillConfig(skillId);
-            if (cfg != null && cfg.IsPassive && !string.IsNullOrEmpty(cfg.PassiveBuffId))
+            if (cfg != null && SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
             {
-                BuffDefinition def = BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId);
-                if (def != null && def.MaxStackLayer > 0)
-                {
-                    effective = Math.Min(effective, def.MaxStackLayer);
-                }
+                effective = SkillPassiveBuffUtil.ClampLayerForAllPassiveBuffs(cfg, effective);
             }
 
             if (!SkillSystem.TrySetSkillLevel(skillId, effective))
@@ -663,7 +659,7 @@ namespace My.Player
                 return false;
             }
 
-            if (cfg != null && cfg.IsPassive && !string.IsNullOrEmpty(cfg.PassiveBuffId)
+            if (cfg != null && SkillPassiveBuffUtil.HasPassiveBuffs(cfg)
                 && SkillSystem.IsPassiveEquipped(skillId))
             {
                 var player = logicManager?.playerLogicEntity;

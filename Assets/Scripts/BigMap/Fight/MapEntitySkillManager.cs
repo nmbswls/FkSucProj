@@ -458,8 +458,8 @@ namespace My.Map.Entity
         // 被动 Buff 层：当变量字典无合法整数时使用；合法值 >=1，并受 Buff MaxStackLayer 限制
         public int PassiveBuffLayer = 1;
 
-        // 被动技能绑定 Buff：RegisterSkill 时附加，UnregisterSkill 时按实例移除
-        public long PassiveBuffBoundInstanceId;
+        // 被动技能绑定 Buff：buffId -> BuffInstanceId；RegisterSkill 时附加，UnregisterSkill 时按实例移除
+        public Dictionary<string, long> PassiveBuffInstanceByBuffId = new(StringComparer.Ordinal);
     }
 
     public class MapEntitySkillManager
@@ -563,7 +563,7 @@ namespace My.Map.Entity
                 rt.RuntimeAbilityExtraVariables[kv.Key] = kv.Value;
             }
 
-            if (rt.cacheConfig is { IsPassive: true } && !string.IsNullOrEmpty(rt.cacheConfig.PassiveBuffId))
+            if (rt.cacheConfig is { IsPassive: true } && SkillPassiveBuffUtil.HasPassiveBuffs(rt.cacheConfig))
             {
                 TryAttachPassiveBuffForRuntime(rt);
             }
@@ -669,7 +669,7 @@ namespace My.Map.Entity
         int GetResolvedPassiveBuffLayer(SkillRuntime rt)
         {
             var cfg = rt.cacheConfig;
-            if (cfg == null || string.IsNullOrEmpty(cfg.PassiveBuffId))
+            if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
             {
                 return 1;
             }
@@ -683,8 +683,13 @@ namespace My.Map.Entity
                 layer = parsed;
             }
 
+            return Math.Max(1, layer);
+        }
+
+        static int ClampLayerForBuff(string buffId, int layer)
+        {
             layer = Math.Max(1, layer);
-            BuffDefinition def = BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId);
+            BuffDefinition def = BuffLibrary.GetBuffDefinition(buffId);
             if (def != null && def.MaxStackLayer > 0)
             {
                 layer = Math.Min(layer, def.MaxStackLayer);
@@ -702,18 +707,12 @@ namespace My.Map.Entity
             }
 
             var cfg = rt.cacheConfig;
-            if (cfg == null || !cfg.IsPassive || string.IsNullOrEmpty(cfg.PassiveBuffId))
+            if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
             {
                 return false;
             }
 
-            int clamped = Math.Max(1, layer);
-            BuffDefinition def = BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId);
-            if (def != null && def.MaxStackLayer > 0)
-            {
-                clamped = Math.Min(clamped, def.MaxStackLayer);
-            }
-
+            int clamped = SkillPassiveBuffUtil.ClampLayerForAllPassiveBuffs(cfg, layer);
             rt.PassiveBuffLayer = clamped;
             if (rt.RuntimeAbilityExtraVariables == null)
             {
@@ -734,15 +733,10 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (string.IsNullOrEmpty(cfg.PassiveBuffId))
+            var buffIds = SkillPassiveBuffUtil.GetPassiveBuffIds(cfg);
+            if (buffIds.Count == 0)
             {
-                Debug.LogWarning($"[Skill] Passive skill '{cfg.SkillId}' has empty PassiveBuffId.");
-                return;
-            }
-
-            if (BuffLibrary.GetBuffDefinition(cfg.PassiveBuffId) == null)
-            {
-                Debug.LogWarning($"[Skill] Passive skill '{cfg.SkillId}' PassiveBuffId '{cfg.PassiveBuffId}' not found in BuffLibrary.");
+                Debug.LogWarning($"[Skill] Passive skill '{cfg.SkillId}' has no passive_buff_ids.");
                 return;
             }
 
@@ -751,12 +745,52 @@ namespace My.Map.Entity
                 return;
             }
 
-            int wantLayer = GetResolvedPassiveBuffLayer(rt);
+            int baseLayer = GetResolvedPassiveBuffLayer(rt);
+            var desired = new HashSet<string>(buffIds, StringComparer.Ordinal);
 
-            if (rt.PassiveBuffBoundInstanceId != 0
-                && OwnerEntity.BuffContainer.TryGetValue(rt.PassiveBuffBoundInstanceId, out var boundInst)
+            if (rt.PassiveBuffInstanceByBuffId.Count > 0)
+            {
+                var toRemove = new List<string>();
+                foreach (var kv in rt.PassiveBuffInstanceByBuffId)
+                {
+                    if (!desired.Contains(kv.Key))
+                    {
+                        toRemove.Add(kv.Key);
+                    }
+                }
+
+                foreach (var buffId in toRemove)
+                {
+                    if (rt.PassiveBuffInstanceByBuffId.TryGetValue(buffId, out var instId) && instId != 0)
+                    {
+                        OwnerEntity.BuffManager.RequestRemoveBuff(OwnerEntity, instId);
+                    }
+
+                    rt.PassiveBuffInstanceByBuffId.Remove(buffId);
+                }
+            }
+
+            foreach (var buffId in buffIds)
+            {
+                TryAttachOnePassiveBuff(rt, cfg.SkillId, buffId, baseLayer);
+            }
+        }
+
+        void TryAttachOnePassiveBuff(SkillRuntime rt, string skillId, string buffId, int baseLayer)
+        {
+            if (BuffLibrary.GetBuffDefinition(buffId) == null)
+            {
+                Debug.LogWarning($"[Skill] Passive skill '{skillId}' buff '{buffId}' not found in BuffLibrary.");
+                return;
+            }
+
+            int wantLayer = ClampLayerForBuff(buffId, baseLayer);
+
+            if (rt.PassiveBuffInstanceByBuffId.TryGetValue(buffId, out var boundId)
+                && boundId != 0
+                && OwnerEntity.BuffContainer.TryGetValue(boundId, out var boundInst)
                 && boundInst != null
-                && boundInst.BuffId == cfg.PassiveBuffId)
+                && boundInst.BuffId == buffId)
             {
                 if (boundInst.Layer != wantLayer)
                 {
@@ -766,12 +800,12 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (OwnerEntity.BuffManager.CheckHasBuff(OwnerEntity.Id, cfg.PassiveBuffId))
+            if (OwnerEntity.BuffManager.CheckHasBuff(OwnerEntity.Id, buffId))
             {
                 BuffInstance chosen = null;
                 foreach (var kv in OwnerEntity.BuffContainer)
                 {
-                    if (kv.Value == null || kv.Value.BuffId != cfg.PassiveBuffId)
+                    if (kv.Value == null || kv.Value.BuffId != buffId)
                     {
                         continue;
                     }
@@ -787,7 +821,7 @@ namespace My.Map.Entity
 
                 if (chosen != null)
                 {
-                    rt.PassiveBuffBoundInstanceId = chosen.InstanceId;
+                    rt.PassiveBuffInstanceByBuffId[buffId] = chosen.InstanceId;
                     if (chosen.Layer != wantLayer)
                     {
                         chosen.SetBuffLayerDirect(wantLayer);
@@ -797,9 +831,9 @@ namespace My.Map.Entity
                 }
             }
 
-            rt.PassiveBuffBoundInstanceId = OwnerEntity.BuffManager.AddBuff(
+            rt.PassiveBuffInstanceByBuffId[buffId] = OwnerEntity.BuffManager.AddBuff(
                 OwnerEntity.Id,
-                cfg.PassiveBuffId,
+                buffId,
                 layer: wantLayer,
                 overrideDuration: -1,
                 casterId: OwnerEntity.Id);
@@ -807,14 +841,21 @@ namespace My.Map.Entity
 
         void DetachPassiveBuffBinding(SkillRuntime rt)
         {
-            if (OwnerEntity == null || rt.PassiveBuffBoundInstanceId == 0)
+            if (OwnerEntity == null)
             {
-                rt.PassiveBuffBoundInstanceId = 0;
+                rt.PassiveBuffInstanceByBuffId.Clear();
                 return;
             }
 
-            OwnerEntity.BuffManager.RequestRemoveBuff(OwnerEntity, rt.PassiveBuffBoundInstanceId);
-            rt.PassiveBuffBoundInstanceId = 0;
+            foreach (var kv in rt.PassiveBuffInstanceByBuffId)
+            {
+                if (kv.Value != 0)
+                {
+                    OwnerEntity.BuffManager.RequestRemoveBuff(OwnerEntity, kv.Value);
+                }
+            }
+
+            rt.PassiveBuffInstanceByBuffId.Clear();
         }
 
         // 入队脱手施法（单槽覆盖）；正在执行脱手技时拒绝嵌套入队

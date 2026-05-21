@@ -9,7 +9,6 @@ using My.Map.View;
 using My.UI;
 using TMPro;
 using UnityEngine;
-using static My.MiniGame.DeepAbsorbQteBar;
 
 
 namespace My.MiniGame
@@ -46,7 +45,7 @@ namespace My.MiniGame
         }
 
 
-        [SerializeField] private DeepAbsorbQteBar QteBar;
+        [SerializeField] private MiniStaticAbsorbQteBar QteBar;
         [SerializeField] private TMP_Text promptText; // 可用 Text 替代
 
         [Header("Feedback Colors")]
@@ -102,23 +101,23 @@ namespace My.MiniGame
             QteBar.ResetGame(); 
         }
 
-        private void OnQueBarResult(ZoneType result)
+        private void OnQueBarResult(MiniStaticAbsorbQteBar.ZoneType result)
         {
-            if(result == ZoneType.Perfect)
+            if(result == MiniStaticAbsorbQteBar.ZoneType.Perfect)
             {
                 SetPrompt("大成功!");
                 SetPromptColor(perfectTextColor);
 
                 perfectCnt += 1;
             }
-            else if (result == ZoneType.Success)
+            else if (result == MiniStaticAbsorbQteBar.ZoneType.Success)
             {
                 SetPrompt("成功!");
                 SetPromptColor(successTextColor);
 
                 successCnt += 1;
             }
-            else if (result == ZoneType.Fail)
+            else if (result == MiniStaticAbsorbQteBar.ZoneType.Fail)
             {
                 SetPrompt("失败!");
                 SetPromptColor(successTextColor);
