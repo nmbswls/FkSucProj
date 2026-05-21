@@ -1,22 +1,27 @@
 using Animancer;
 using cfg.demo;
 using My.Config;
-using My.Map.Scene;
 using My.Player;
 using UnityEngine;
 
-namespace My.Player
+namespace My.Map.Scene
 {
-    // 人类武器视觉：BindPoint1 下动态挂载通用 View，切换时换 Sprite
-    public sealed class HumanWeaponVisualRuntime
+    // 人类武器表现：挂载在 PlayerScenePresenter，BindPoint1 下动态挂载通用 View
+    public sealed class PlayerHumanWeaponView : MonoBehaviour
     {
         Transform _bindPoint;
         MapUnitWeaponCtrl _weaponCtrl;
         MapUnitWeaponOne _equippedView;
         string _equippedItemId;
 
-        public void Bind(SceneUnitPresenter presenter)
+        void Awake()
         {
+            ResolveRefs();
+        }
+
+        void ResolveRefs()
+        {
+            var presenter = GetComponent<SceneUnitPresenter>();
             if (presenter == null)
             {
                 return;
@@ -26,12 +31,17 @@ namespace My.Player
             _bindPoint = presenter.transform.Find("WeaponRoot/BindPoint1");
             if (_bindPoint == null)
             {
-                Debug.LogWarning("HumanWeaponVisualRuntime: BindPoint1 not found under WeaponRoot.");
+                Debug.LogWarning("PlayerHumanWeaponView: BindPoint1 not found under WeaponRoot.");
             }
         }
 
         public void Equip(string itemId)
         {
+            if (_bindPoint == null || _weaponCtrl == null)
+            {
+                ResolveRefs();
+            }
+
             if (_bindPoint == null || _weaponCtrl == null)
             {
                 return;

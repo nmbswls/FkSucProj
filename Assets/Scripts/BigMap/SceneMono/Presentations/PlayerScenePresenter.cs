@@ -119,11 +119,34 @@ namespace My.Map.Scene
 
         public PlayerAimHelper AimHelper;
 
+        PlayerHumanWeaponView _humanWeaponView;
+
+        public PlayerHumanWeaponView HumanWeaponView
+        {
+            get
+            {
+                if (_humanWeaponView == null)
+                {
+                    _humanWeaponView = GetComponent<PlayerHumanWeaponView>();
+                }
+
+                return _humanWeaponView;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
 
             AimHelper = new();
+            if (_humanWeaponView == null)
+            {
+                _humanWeaponView = GetComponent<PlayerHumanWeaponView>();
+                if (_humanWeaponView == null)
+                {
+                    _humanWeaponView = gameObject.AddComponent<PlayerHumanWeaponView>();
+                }
+            }
         }
 
         public PlayerLogicEntity PlayerEntity

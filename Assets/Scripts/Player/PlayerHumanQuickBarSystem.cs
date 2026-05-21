@@ -12,8 +12,6 @@ namespace My.Player
     public sealed class PlayerHumanQuickBarSystem : IPlayerSystem
     {
         readonly PlayerSystemManager _player;
-        readonly HumanWeaponVisualRuntime _weaponVisual = new();
-        bool _weaponVisualBound;
 
         public QuickSlotBinding[] WeaponSlots { get; } = new QuickSlotBinding[HumanQuickBarDefs.WeaponSlotCount];
         public QuickSlotBinding[] ConsumableSlots { get; } = new QuickSlotBinding[HumanQuickBarDefs.ConsumableSlotCount];
@@ -262,14 +260,21 @@ namespace My.Player
 
         public void ApplyWeaponToRuntime()
         {
-            EnsureWeaponVisualBound();
-            if (_player.logicManager != null && _player.logicManager.IsHumanQuickBarAvailable())
+            var itemId = _player.logicManager != null && _player.logicManager.IsHumanQuickBarAvailable()
+                ? GetActiveWeaponItemId()
+                : null;
+
+            var weaponView = MainGameManager.Instance?.playerScenePresenter?.HumanWeaponView;
+            if (weaponView != null)
             {
-                _weaponVisual.Equip(GetActiveWeaponItemId());
-            }
-            else
-            {
-                _weaponVisual.Unequip();
+                if (string.IsNullOrEmpty(itemId))
+                {
+                    weaponView.Unequip();
+                }
+                else
+                {
+                    weaponView.Equip(itemId);
+                }
             }
 
             _player.SyncLearnedSkillsToPlayerEntity();
@@ -297,23 +302,6 @@ namespace My.Player
         public Dictionary<string, string> BuildCastParamsForActiveWeapon()
         {
             return HumanWeaponCatalog.BuildCastParams(GetActiveWeaponItemId());
-        }
-
-        void EnsureWeaponVisualBound()
-        {
-            if (_weaponVisualBound)
-            {
-                return;
-            }
-
-            var presenter = MainGameManager.Instance?.playerScenePresenter;
-            if (presenter == null)
-            {
-                return;
-            }
-
-            _weaponVisual.Bind(presenter);
-            _weaponVisualBound = true;
         }
 
         public void CycleConsumableSelection(int delta)
