@@ -66,11 +66,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 741f8144a7da4224e973549b8a31fb42, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
+  m_FillMethod: 0
+  m_FillAmount: 0.2
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -1094,6 +1094,7 @@ MonoBehaviour:
   ShowPic: {fileID: 3232704773979016587}
   ProgressBar: {fileID: 3148813798504439912}
   SrcEntityId: 0
+  LockPointContainer: {fileID: 0}
   ProgressPointList:
   - {fileID: 7822397211501250167}
   - {fileID: 1176722519975188134}
@@ -1102,6 +1103,7 @@ MonoBehaviour:
   ActId: 0
   Socre: 0
   CurrentVal: 0
+  TotalDuration: 5
   PgreossVal: 0
   BreakTimes: 0
 --- !u!1 &7822397211501250167

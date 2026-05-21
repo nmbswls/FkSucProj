@@ -449,6 +449,15 @@ namespace My.Map.Entity
                             ModifierAttrId = AttrIdConsts.PlayerSpellPower,
                         },
                     },
+                    PotencyBase = 150,
+                    PotencyCalcRates = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.PlayerSpellPower,
+                            ModifierValue = 10000,
+                        },
+                    },
                     TriggerList = new()
                     {
                         new BuffTriggerRuleConfig()
@@ -483,6 +492,15 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair()
                         {
                             ModifierAttrId = AttrIdConsts.PlayerSpellPower,
+                        },
+                    },
+                    PotencyBase = 80,
+                    PotencyCalcRates = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.PlayerSpellPower,
+                            ModifierValue = 8000,
                         },
                     },
                     ModifierAttrs = new()

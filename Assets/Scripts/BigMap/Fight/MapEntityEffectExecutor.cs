@@ -1448,18 +1448,7 @@ namespace My.Map.Entity
             }
 
             var srcProvider = new CtxFightAttrProvider(ctx);
-            long dmgVal = realCfg.BaseDamage;
-            if (realCfg.ExtraDamageRate != null)
-            {
-                foreach (var onePair in realCfg.ExtraDamageRate)
-                {
-                    if (srcProvider.TryGetAttr(onePair.AttrId, out var getVal))
-                    {
-                        dmgVal += (long)(getVal * onePair.Val * 0.0001f);
-                    }
-                }
-            }
-
+            var dmgVal = DamagePipeline.BuildRawDamage(realCfg, srcProvider);
             var hImpulse = DamagePipeline.ResolveHImpulseRate10000(realCfg, ctx.SourceInfo);
             var extraAttrs = DamagePipeline.BuildPipelineExtraAttrs(realCfg, srcProvider, hImpulse);
 

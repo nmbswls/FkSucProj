@@ -123,41 +123,6 @@ namespace My.Map.Fight
         }
     }
 
-    public sealed class DictFightAttrProvider : IFightAttrProvider
-    {
-        readonly Dictionary<string, long> _attrs;
-
-        public DictFightAttrProvider(Dictionary<string, long> attrs)
-        {
-            _attrs = attrs;
-        }
-
-        public long SourceEntityId => 0;
-
-        public bool TryGetAttr(string attrId, out long value)
-        {
-            value = 0;
-            if (_attrs == null)
-            {
-                return false;
-            }
-
-            return _attrs.TryGetValue(attrId, out value);
-        }
-
-        public bool TryGetUnitLevel(out int level)
-        {
-            level = 0;
-            return false;
-        }
-
-        public bool TryGetWorldPos(out UnityEngine.Vector2 pos)
-        {
-            pos = default;
-            return false;
-        }
-    }
-
     public sealed class IntentExtraAttrsFightAttrProvider : IFightAttrProvider
     {
         readonly ResourceDeltaIntent _intent;

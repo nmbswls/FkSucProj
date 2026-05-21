@@ -3,7 +3,6 @@ using Map.Logic;
 using Map.Logic.Events;
 using My;
 using My.Map;
-using My.Map.Fight;
 using My.Saving;
 using System;
 using System.Collections;
@@ -360,6 +359,8 @@ namespace My.Map.Entity
         public List<OneModPair> ModifierAttrs = new();
 
         public List<OneModPair> PotencyCopyAttrs = new();
+        public List<OneModPair> PotencyCalcRates = new();
+        public long PotencyBase;
 
         [SerializeReference]
         public List<MapFightEffectCfg> OnAttachEffects = null;
@@ -1704,97 +1705,43 @@ namespace My.Map.Entity
     {
         public static bool UsesPotency(BuffDefinition def)
         {
-            return def?.PotencyCopyAttrs != null && def.PotencyCopyAttrs.Count > 0;
-        }
-
-        static MapFightEffectCfg FindTickFightEffect(BuffDefinition def)
-        {
-            if (def?.TriggerList == null)
+            if (def == null)
             {
-                return null;
+                return false;
             }
 
-            foreach (var rule in def.TriggerList)
+            return (def.PotencyCopyAttrs != null && def.PotencyCopyAttrs.Count > 0)
+                || (def.PotencyCalcRates != null && def.PotencyCalcRates.Count > 0)
+                || def.PotencyBase != 0;
+        }
+
+        public static long ComputePotencyScore(BuffDefinition def, Dictionary<string, long> attrs)
+        {
+            if (def == null)
             {
-                if (rule.TriggerType != ETriggerType.Tick || rule.OutputFightEffects == null)
+                return 0;
+            }
+
+            long score = def.PotencyBase;
+            if (def.PotencyCalcRates == null || attrs == null)
+            {
+                return score;
+            }
+
+            foreach (var pair in def.PotencyCalcRates)
+            {
+                if (string.IsNullOrEmpty(pair.ModifierAttrId))
                 {
                     continue;
                 }
 
-                foreach (var eff in rule.OutputFightEffects)
+                if (attrs.TryGetValue(pair.ModifierAttrId, out var val))
                 {
-                    if (eff is MapFightEffectApplyDamageCfg)
-                    {
-                        return eff;
-                    }
+                    score += val * pair.ModifierValue / 10000;
                 }
             }
 
-            return null;
-        }
-
-        static long EstimateTickBudget(BuffInstance inst, MapFightEffectCfg tickCfg)
-        {
-            if (tickCfg == null || inst?.BuffOwner == null)
-            {
-                return 0;
-            }
-
-            var budgetAttrs = new Dictionary<string, long>();
-            if (inst.CachedPotencyAttrs != null)
-            {
-                foreach (var kv in inst.CachedPotencyAttrs)
-                {
-                    budgetAttrs[kv.Key] = kv.Value;
-                }
-            }
-
-            var provider = new DictFightAttrProvider(budgetAttrs);
-
-            if (tickCfg is MapFightEffectApplyDamageCfg dmgCfg)
-            {
-                return BuildApplyDamageMagnitude(dmgCfg, provider);
-            }
-
-            return 0;
-        }
-
-        static long EstimateTickBudgetFromAttrs(MapFightEffectCfg tickCfg, Dictionary<string, long> attrs)
-        {
-            if (tickCfg == null || attrs == null)
-            {
-                return 0;
-            }
-
-            var provider = new DictFightAttrProvider(attrs);
-            if (tickCfg is MapFightEffectApplyDamageCfg dmgCfg)
-            {
-                return BuildApplyDamageMagnitude(dmgCfg, provider);
-            }
-
-            return 0;
-        }
-
-        static long BuildApplyDamageMagnitude(MapFightEffectApplyDamageCfg cfg, IFightAttrProvider provider)
-        {
-            if (cfg == null)
-            {
-                return 0;
-            }
-
-            long dmgVal = cfg.BaseDamage;
-            if (cfg.ExtraDamageRate != null && provider != null)
-            {
-                foreach (var onePair in cfg.ExtraDamageRate)
-                {
-                    if (provider.TryGetAttr(onePair.AttrId, out var getVal))
-                    {
-                        dmgVal += (long)(getVal * onePair.Val * 0.0001f);
-                    }
-                }
-            }
-
-            return dmgVal;
+            return score;
         }
 
         public static bool TryCommitPotency(BuffInstance inst, GameLogicManager mgr, long? casterId, out bool rejectedWeak)
@@ -1805,8 +1752,7 @@ namespace My.Map.Entity
                 return true;
             }
 
-            var tickCfg = FindTickFightEffect(inst.Def);
-            long oldBudget = EstimateTickBudget(inst, tickCfg);
+            long oldScore = ComputePotencyScore(inst.Def, inst.CachedPotencyAttrs);
 
             var preview = new Dictionary<string, long>();
             ILogicEntity caster = null;
@@ -1815,25 +1761,28 @@ namespace My.Map.Entity
                 caster = mgr.GetLogicEntity(casterId.Value, false);
             }
 
-            foreach (var pair in inst.Def.PotencyCopyAttrs)
+            if (inst.Def.PotencyCopyAttrs != null)
             {
-                if (string.IsNullOrEmpty(pair.ModifierAttrId))
+                foreach (var pair in inst.Def.PotencyCopyAttrs)
                 {
-                    continue;
-                }
+                    if (string.IsNullOrEmpty(pair.ModifierAttrId))
+                    {
+                        continue;
+                    }
 
-                preview[pair.ModifierAttrId] = caster?.GetAttr(pair.ModifierAttrId) ?? 0;
+                    preview[pair.ModifierAttrId] = caster?.GetAttr(pair.ModifierAttrId) ?? 0;
+                }
             }
 
-            long newBudget = EstimateTickBudgetFromAttrs(tickCfg, preview);
+            long newScore = ComputePotencyScore(inst.Def, preview);
 
-            if (oldBudget > 0 && newBudget < oldBudget)
+            if (oldScore > 0 && newScore < oldScore)
             {
                 rejectedWeak = true;
                 return false;
             }
 
-            inst.CachedPotencyAttrs = preview;
+            inst.CachedPotencyAttrs = preview.Count > 0 ? preview : null;
             return true;
         }
     }
