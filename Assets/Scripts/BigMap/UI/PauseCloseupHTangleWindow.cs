@@ -41,7 +41,8 @@ namespace My.Map.View
 
         public long SrcEntityId;
 
-        public List<GameObject> ProgressPointList = new(); // 存放各个节点 需要控制是否被点亮
+        public Transform LockPointContainer;
+        public List<PauseCloseupHTangleWindow_LockPoint> ProgressPointList = new(); // 存放各个节点 需要控制是否被点亮
 
         private float _timer;
         private float _lastBalanceTimer;
@@ -50,7 +51,7 @@ namespace My.Map.View
         public long Socre;
         public float CurrentVal;
 
-        public float LeftTime = 5.0f;
+        public float TotalDuration = 5.0f;
 
         // 当前进度
         // 该小游戏
@@ -62,6 +63,17 @@ namespace My.Map.View
         const int NeedBreakTimes = 5;
         const float CheckInteval = 0.5f;
 
+        private void Awake()
+        {
+            for(int i=0; i < LockPointContainer.childCount; i++)
+            {
+                var child = LockPointContainer.GetChild(i);
+                var comp = child.gameObject.AddComponent<PauseCloseupHTangleWindow_LockPoint>();
+                comp.Bind();
+                ProgressPointList.Add(comp);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -70,28 +82,24 @@ namespace My.Map.View
         {
             if(PgreossVal == 0)
             {
-                return 0.2f;
+                return 0.25f;
             }
             else if(PgreossVal == 1)
             {
-                return 0.4f;
+                return 0.5f;
             }
             else if (PgreossVal == 2)
             {
-                return 0.6f;
+                return 0.75f;
             }
-            else if (PgreossVal == 3)
-            {
-                return 0.8f;
-            }
-            else
+            else 
             {
                 return 1.0f;
             }
         }
 
         /// <summary>
-        ///  获取进度带来的额外倍率
+        ///  获取进度带来的对敌人额外倍率
         /// </summary>
         /// <returns></returns>
         private float GetProgressHImpulseBonus()
@@ -150,13 +158,14 @@ namespace My.Map.View
         {
             _timer += Time.deltaTime;
 
-            CurrentVal += Time.deltaTime * 1;
+            CurrentVal += Time.deltaTime * 0.2f;
             var lockVal = GetProgressLockVal();
             if (CurrentVal >= lockVal)
             {
                 CurrentVal = lockVal;
             }
 
+            // 高频进行动作结算
             if(_timer - _lastBalanceTimer > CheckInteval)
             {
                 _lastBalanceTimer += CheckInteval;
@@ -164,7 +173,7 @@ namespace My.Map.View
                 ApplyOneActEffect();
             }
 
-            if (_timer > 5)
+            if (_timer > TotalDuration)
             {
                 HandleInteractFinish();
             }
@@ -191,8 +200,9 @@ namespace My.Map.View
             var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
             if (npc != null)
             {
+                float bonus = GetProgressHImpulseBonus();
                 // 对npc冲击
-                npc.ApplyNpcHImpulse((long)(hImpulsePlayer * 0.2));
+                npc.ApplyNpcHImpulse((long)(hImpulsePlayer * 0.2 * (1 + bonus)));
             }
         }
 
@@ -206,6 +216,8 @@ namespace My.Map.View
 
             PgreossVal = 0;
             BreakTimes = 0;
+
+            TotalDuration = 5.0f;
 
             _timer = 0;
             _lastBalanceTimer = 0;
@@ -229,7 +241,17 @@ namespace My.Map.View
 
         protected void RefreshUI()
         {
-
+            for(int i=0;i< ProgressPointList.Count;i++)
+            {
+                if(CurrentVal > i)
+                {
+                    ProgressPointList[i].SetLocked(false);
+                }
+                else
+                {
+                    ProgressPointList[i].SetLocked(true);
+                }
+            }
         }
 
         private void OnEnable()
@@ -250,6 +272,10 @@ namespace My.Map.View
             PgreossVal += 1;
             BreakTimes = 0;
 
+            // 每突破一次加10%
+            MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(SrcEntityId, "charm_fck_deeper", 10);
+
+            TotalDuration += 1.0f; // 增加时间
             // show effect
             int orgActId = RandomGetTangleHAct();
             ActId = orgActId;
@@ -282,9 +308,6 @@ namespace My.Map.View
             var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
             var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
 
-
-            MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(npc.Id, "");
-            
 
             // 进行san结算
             long sanCost =(long)( GetProgressUnlockSanCost() * 1000);
@@ -358,6 +381,20 @@ namespace My.Map.View
         public bool OnHoldingEnd(string holdKey)
         {
             return true;
+        }
+    }
+
+    public class PauseCloseupHTangleWindow_LockPoint : MonoBehaviour
+    {
+        public GameObject LockP;
+        public GameObject UnlockP;
+        public void Bind()
+        {
+
+        }
+        public void SetLocked(bool locked)
+        {
+
         }
     }
 }

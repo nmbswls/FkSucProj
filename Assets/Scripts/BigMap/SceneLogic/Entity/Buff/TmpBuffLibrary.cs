@@ -246,7 +246,7 @@ namespace My.Map.Entity
                 {
                     BuffId = "charm_fck_deeper",
                     LayerOverrideType = EBuffLayerOverrideType.AddLayer,
-                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.DesireDensityAmplify, ModifierValue = 10000 } },
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.DesireDensityAmplify, ModifierValue = 100 } },
 
                     DefaultDuration = -1,
                     IsHidden = true,
