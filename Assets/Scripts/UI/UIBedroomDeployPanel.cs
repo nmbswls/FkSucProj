@@ -22,6 +22,8 @@ namespace My.UI
         [SerializeField] Image detailThumb;
         [SerializeField] TextMeshProUGUI detailDesc;
         [SerializeField] Button btnPrimary;
+        [SerializeField] Button btnRumor;
+        
         [SerializeField] Button btnClose;
 
         readonly List<MapAreaInfo> _huntMaps = new();
@@ -56,10 +58,18 @@ namespace My.UI
                 btnClose.onClick.AddListener(TryCloseSelf);
             }
 
+
             if (btnPrimary != null)
             {
                 btnPrimary.onClick.RemoveAllListeners();
-                btnPrimary.onClick.AddListener(OnClickInfiltrate);
+                btnPrimary.onClick.AddListener(OnClickOpenRumorIntel);
+            }
+            
+
+            if (btnPrimary != null)
+            {
+                btnPrimary.onClick.RemoveAllListeners();
+                btnPrimary.onClick.AddListener(OnClickStartHunting);
             }
 
             if (mapRowTemplate != null)
@@ -213,7 +223,7 @@ namespace My.UI
                 _btnPrimaryLabel.text = "潜入";
         }
 
-        void OnClickInfiltrate()
+        void OnClickStartHunting()
         {
             var glm = MainGameManager.Instance?.gameLogicManager;
             if (glm == null)
@@ -229,6 +239,18 @@ namespace My.UI
             var spawn = MapSpawnPointUtil.ResolveMapInitialSpawnPoint(_selectedMap.Id);
             glm.PreparePlayerSwitchArea(_selectedMap.Id, true, targetPoint: spawn);
             glm.ForcePlayerHumanMode(false);
+        }
+
+
+        void OnClickOpenRumorIntel()
+        {
+            if (_selectedMap == null)
+            {
+                Debug.LogWarning("[UIBedroomMapTravel] Select a map before opening intel shop.");
+                return;
+            }
+
+            RumorIntelShopPanel.OpenForMap(_selectedMap.Id);
         }
     }
 }

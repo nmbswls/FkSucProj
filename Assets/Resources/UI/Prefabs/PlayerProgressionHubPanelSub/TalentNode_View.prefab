@@ -427,12 +427,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unlockButton: {fileID: 7320458400637931861}
-  buttonLabel: {fileID: 0}
   nodeBackground: {fileID: 8342751892171388005}
   lockedColor: {r: 0.35, g: 0.35, b: 0.4, a: 1}
   unlockableColor: {r: 0.9, g: 0.75, b: 0.2, a: 1}
   unlockedColor: {r: 0.35, g: 0.85, b: 0.45, a: 1}
   titleText: {fileID: 7225915096223150712}
+  levelText: {fileID: 0}
 --- !u!1 &7225915096223150719
 GameObject:
   m_ObjectHideFlags: 0
@@ -525,8 +525,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

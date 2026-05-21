@@ -33,7 +33,6 @@ namespace My.UI
         [Header("操作")]
         [SerializeField] Button btnPrimary;
         [SerializeField] Button btnClose;
-        [SerializeField] Button btnRumorIntel;
 
         readonly List<MapAreaInfo> _safeMaps = new();
 
@@ -78,11 +77,6 @@ namespace My.UI
                 btnPrimary.onClick.AddListener(OnClickTeleport);
             }
 
-            if (btnRumorIntel != null)
-            {
-                btnRumorIntel.onClick.RemoveAllListeners();
-                btnRumorIntel.onClick.AddListener(OnClickOpenRumorIntel);
-            }
 
             if (mapRowTemplate != null)
                 mapRowTemplate.gameObject.SetActive(false);
@@ -373,15 +367,5 @@ namespace My.UI
                 Debug.LogWarning("[UIBedroomMapTravel] Teleport failed: " + reason);
         }
 
-        void OnClickOpenRumorIntel()
-        {
-            if (_selectedMap == null)
-            {
-                Debug.LogWarning("[UIBedroomMapTravel] Select a map before opening intel shop.");
-                return;
-            }
-
-            RumorIntelShopPanel.OpenForMap(_selectedMap.Id);
-        }
     }
 }

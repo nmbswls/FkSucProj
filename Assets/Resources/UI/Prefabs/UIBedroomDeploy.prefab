@@ -1878,4 +1878,5 @@ MonoBehaviour:
   detailThumb: {fileID: 931000213}
   detailDesc: {fileID: 931000223}
   btnPrimary: {fileID: 931000234}
+  btnRumor: {fileID: 931000254}
   btnClose: {fileID: 931000074}
