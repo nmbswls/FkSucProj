@@ -2014,6 +2014,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SceneEffectLayer: {fileID: 876629122}
   AmbientSpiritLayer: {fileID: 2057501363}
+  huntingModeManager: {fileID: 0}
   WorldAreaManager: {fileID: 1193154577}
   SceneFadeManager: {fileID: 885418545}
   SceneRangeWarnManager: {fileID: 885418548}
@@ -2926,15 +2927,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2c86c1621dc49f4da16a9dc7505a104, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentMapName: 
-  cacheAreaInfo:
+  currentOverlayMapId: 
+  cacheAreaOverlayInfo:
     Id: 
     Name: 
     Desc: 
+    VarId: 
     DayPeriodLimit: 0
-    SceneName: 
     MapDataName: 
+    CanTeleport: 0
     IsHome: 0
+    IsSecretBase: 0
     AlwaysAlert: 0
     IsCivilArea: 0
     IsDangerArea: 0

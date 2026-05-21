@@ -16,6 +16,7 @@
     ],
     "require_tribute": false,
     "tribute_costs": [],
+    "target_named_point": "t_sp_base_entry",
     "snap_show_x": 0.3,
     "snap_show_y": 0.3,
     "sort_order": 0
@@ -46,6 +47,7 @@
         "count": 1
       }
     ],
+    "target_named_point": "t_sp_v1_entry_01",
     "snap_show_x": 0.3,
     "snap_show_y": 0.3,
     "sort_order": 0
@@ -67,6 +69,7 @@
     ],
     "require_tribute": false,
     "tribute_costs": [],
+    "target_named_point": "t_sp_v1_inn_01",
     "snap_show_x": 0.5,
     "snap_show_y": 0.5,
     "sort_order": 1

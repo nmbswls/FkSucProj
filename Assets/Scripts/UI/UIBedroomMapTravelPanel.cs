@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml.Linq;
 using cfg.demo;
 using My.Config;
 using My.Map;
@@ -458,6 +459,9 @@ namespace My.UI
                 return;
 
             UIManager.Instance?.HidePanel(panelId);
+
+            glm.PreparePlayerSwitchArea(_selectedMap.Id, true, targetPoint: _selectedSavePoint.TargetNamedPoint);
+
             //if (!SavePointUnlockHelper.TryTeleportToSavePoint(glm, _selectedSavePoint.SavePointId, out var reason))
             //    Debug.LogWarning("[UIBedroomMapTravel] Teleport failed: " + reason);
         }
