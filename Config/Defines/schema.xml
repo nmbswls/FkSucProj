@@ -8,6 +8,16 @@
         <var name="Equip" value="2"/>
         <var name="Pocket" value="3"/>
         <var name="Insertion" value="4"/>
+        <var name="Gift" value="5"/>
+    </enum>
+
+    <!-- 礼物 tag：item_gift.gift_tags 多选；好感/赠礼匹配用 -->
+    <enum name="EGiftTag">
+        <var name="None" value="0"/>
+        <var name="Food" value="1"/>
+        <var name="Luxury" value="2"/>
+        <var name="Quest" value="3"/>
+        <var name="Daily" value="4"/>
     </enum>
 
     <!-- 与 My.EContainerType 数值必须一致 -->

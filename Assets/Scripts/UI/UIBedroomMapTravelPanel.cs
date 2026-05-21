@@ -1,0 +1,323 @@
+using System.Collections.Generic;
+using cfg.demo;
+using My.Config;
+using My.Map;
+using My.MiniGame.Dream;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace My.UI
+{
+    // 基地地图传送：选地图 + 缩略图标点 + 右下存档点列表
+    public class UIBedroomMapTravelPanel : PanelWithInput
+    {
+        public const string PanelIdConst = "UIBedroomMapTravel";
+
+        [Header("地图列表")]
+        [SerializeField] RectTransform mapListContent;
+        [SerializeField] BedroomDeployMapRowView mapRowTemplate;
+
+        [Header("右侧地图预览")]
+        [SerializeField] RectTransform mapThumbRoot;
+        [SerializeField] Image detailThumb;
+        [SerializeField] TextMeshProUGUI detailDesc;
+        [SerializeField] RectTransform markerRoot;
+        [SerializeField] BedroomDeploySavePointMarkerView savePointMarkerTemplate;
+
+        [Header("右下角存档点列表")]
+        [SerializeField] GameObject savePointListOverlay;
+        [SerializeField] RectTransform savePointListContent;
+        [SerializeField] BedroomDeploySavePointListRowView savePointListRowTemplate;
+
+        [Header("操作")]
+        [SerializeField] Button btnPrimary;
+        [SerializeField] Button btnClose;
+        [SerializeField] Button btnRumorIntel;
+
+        readonly List<MapAreaInfo> _huntMaps = new();
+        readonly List<BedroomDeployMapRowView> _spawnedMapRows = new();
+        readonly List<SavePointMarkerVm> _markers = new();
+        readonly List<BedroomDeploySavePointMarkerView> _spawnedMarkers = new();
+        readonly List<BedroomDeploySavePointListRowView> _spawnedListRows = new();
+
+        TextMeshProUGUI _btnPrimaryLabel;
+        MapAreaInfo _selectedMap;
+        SavePoint _selectedSavePoint;
+
+        public override int FocusPriority => 805;
+
+        void Awake()
+        {
+            if (string.IsNullOrEmpty(panelId))
+                panelId = PanelIdConst;
+
+            if (canvasGroup == null)
+                canvasGroup = GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+            layer = UILayer.Popup;
+
+            if (detailThumb != null)
+                detailThumb.preserveAspect = true;
+
+            if (btnPrimary != null)
+                _btnPrimaryLabel = btnPrimary.GetComponentInChildren<TextMeshProUGUI>(true);
+
+            if (btnClose != null)
+            {
+                btnClose.onClick.RemoveAllListeners();
+                btnClose.onClick.AddListener(TryCloseSelf);
+            }
+
+            if (btnPrimary != null)
+            {
+                btnPrimary.onClick.RemoveAllListeners();
+                btnPrimary.onClick.AddListener(OnClickTeleport);
+            }
+
+            if (btnRumorIntel != null)
+            {
+                btnRumorIntel.onClick.RemoveAllListeners();
+                btnRumorIntel.onClick.AddListener(OnClickOpenRumorIntel);
+            }
+
+            if (mapRowTemplate != null)
+                mapRowTemplate.gameObject.SetActive(false);
+            if (savePointMarkerTemplate != null)
+                savePointMarkerTemplate.gameObject.SetActive(false);
+            if (savePointListRowTemplate != null)
+                savePointListRowTemplate.gameObject.SetActive(false);
+        }
+
+        public override void Setup(object data = null)
+        {
+            BedroomDeployMapUtil.CollectHuntMaps(_huntMaps);
+            RebuildMapList();
+            SelectMap(_huntMaps.Count > 0 ? _huntMaps[0] : null);
+        }
+
+        public override bool OnCancel()
+        {
+            TryCloseSelf();
+            return true;
+        }
+
+        void TryCloseSelf()
+        {
+            UIManager.Instance?.HidePanel(panelId);
+        }
+
+        void RebuildMapList()
+        {
+            foreach (var row in _spawnedMapRows)
+            {
+                if (row != null)
+                    Destroy(row.gameObject);
+            }
+
+            _spawnedMapRows.Clear();
+            if (mapListContent == null || mapRowTemplate == null)
+            {
+                Debug.LogError("[UIBedroomMapTravel] mapListContent or mapRowTemplate not assigned.");
+                return;
+            }
+
+            foreach (var map in _huntMaps)
+            {
+                var row = Instantiate(mapRowTemplate, mapListContent);
+                row.gameObject.SetActive(true);
+                var captured = map;
+                row.Clicked -= OnMapRowClicked;
+                row.Clicked += OnMapRowClicked;
+                row.Bind(captured, _selectedMap != null && ReferenceEquals(_selectedMap, captured));
+                _spawnedMapRows.Add(row);
+            }
+        }
+
+        void OnMapRowClicked(MapAreaInfo map)
+        {
+            SelectMap(map);
+        }
+
+        void SelectMap(MapAreaInfo map)
+        {
+            _selectedMap = map;
+            if (detailDesc != null)
+                detailDesc.text = map != null ? map.Desc : "暂无地图配置。";
+
+            if (detailThumb != null)
+            {
+                var thumbName = map?.ThumbMap ?? string.Empty;
+                //var mapCfg = CfgMgr.Cfgs.TbWorldMapBigMapLayer.DataList;
+
+                Sprite sp = null;
+                if (!string.IsNullOrEmpty(thumbName))
+                    sp = Resources.Load<Sprite>($"MiniMap/{thumbName}");
+                detailThumb.sprite = sp;
+                detailThumb.color = sp != null ? Color.white : new Color(0.15f, 0.16f, 0.2f, 1f);
+                DreamUISpriteUtil.EnsureWhiteSprite(detailThumb);
+            }
+
+            RefreshMapRowSelection();
+            RebuildSavePointDisplay();
+        }
+
+        void RefreshMapRowSelection()
+        {
+            for (var i = 0; i < _spawnedMapRows.Count && i < _huntMaps.Count; i++)
+            {
+                var on = _selectedMap != null && ReferenceEquals(_selectedMap, _huntMaps[i]);
+                _spawnedMapRows[i].SetSelected(on);
+            }
+        }
+
+        void RebuildSavePointDisplay()
+        {
+            ClearSavePointSpawned();
+            _selectedSavePoint = null;
+
+            var hasMap = _selectedMap != null;
+            if (savePointListOverlay != null)
+                savePointListOverlay.SetActive(hasMap);
+            if (markerRoot != null)
+                markerRoot.gameObject.SetActive(hasMap);
+
+            if (!hasMap)
+            {
+                RefreshPrimaryButton();
+                return;
+            }
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            BedroomDeploySavePointPreviewUtil.CollectTeleportMarkers(_selectedMap.Id, glm, _markers);
+
+            var parentMarkers = markerRoot != null ? markerRoot : mapThumbRoot;
+            if (parentMarkers != null && savePointMarkerTemplate != null)
+            {
+                foreach (var vm in _markers)
+                {
+                    if (!vm.HasMapPosition || vm.Config == null)
+                        continue;
+
+                    var marker = Instantiate(savePointMarkerTemplate, parentMarkers);
+                    marker.gameObject.SetActive(true);
+                    var captured = vm.Config;
+                    marker.Clicked -= OnSavePointClicked;
+                    marker.Clicked += OnSavePointClicked;
+                    marker.Bind(captured, vm.NormPos01, false);
+                    _spawnedMarkers.Add(marker);
+                }
+            }
+
+            if (savePointListContent != null && savePointListRowTemplate != null)
+            {
+                foreach (var vm in _markers)
+                {
+                    if (vm.Config == null)
+                        continue;
+
+                    var row = Instantiate(savePointListRowTemplate, savePointListContent);
+                    row.gameObject.SetActive(true);
+                    var captured = vm.Config;
+                    row.Clicked -= OnSavePointClicked;
+                    row.Clicked += OnSavePointClicked;
+                    row.Bind(captured, false);
+                    _spawnedListRows.Add(row);
+                }
+            }
+
+            if (_markers.Count > 0 && _markers[0].Config != null)
+                SelectSavePoint(_markers[0].Config);
+            else
+                RefreshPrimaryButton();
+        }
+
+        void ClearSavePointSpawned()
+        {
+            foreach (var m in _spawnedMarkers)
+            {
+                if (m != null)
+                    Destroy(m.gameObject);
+            }
+
+            _spawnedMarkers.Clear();
+
+            foreach (var r in _spawnedListRows)
+            {
+                if (r != null)
+                    Destroy(r.gameObject);
+            }
+
+            _spawnedListRows.Clear();
+            _markers.Clear();
+        }
+
+        void OnSavePointClicked(SavePoint sp)
+        {
+            SelectSavePoint(sp);
+        }
+
+        void SelectSavePoint(SavePoint sp)
+        {
+            _selectedSavePoint = sp;
+            var id = sp?.SavePointId;
+
+            foreach (var m in _spawnedMarkers)
+            {
+                if (m == null) continue;
+                var bound = m.BoundSavePoint;
+                m.SetSelected(bound != null && bound.SavePointId == id);
+            }
+
+            foreach (var row in _spawnedListRows)
+            {
+                if (row == null) continue;
+                var bound = row.BoundSavePoint;
+                row.SetSelected(bound != null && bound.SavePointId == id);
+            }
+
+            RefreshPrimaryButton();
+        }
+
+        void RefreshPrimaryButton()
+        {
+            if (btnPrimary == null)
+                return;
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            btnPrimary.interactable = glm != null && _selectedSavePoint != null;
+            if (_btnPrimaryLabel != null)
+                _btnPrimaryLabel.text = "传送";
+        }
+
+        void OnClickTeleport()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                Debug.LogWarning("[UIBedroomMapTravel] GameLogicManager missing.");
+                return;
+            }
+
+            if (_selectedSavePoint == null)
+                return;
+
+            UIManager.Instance?.HidePanel(panelId);
+            if (!SavePointUnlockHelper.TryTeleportToSavePoint(glm, _selectedSavePoint.SavePointId, out var reason))
+                Debug.LogWarning("[UIBedroomMapTravel] Teleport failed: " + reason);
+        }
+
+        void OnClickOpenRumorIntel()
+        {
+            if (_selectedMap == null)
+            {
+                Debug.LogWarning("[UIBedroomMapTravel] Select a map before opening intel shop.");
+                return;
+            }
+
+            RumorIntelShopPanel.OpenForMap(_selectedMap.Id);
+        }
+    }
+}

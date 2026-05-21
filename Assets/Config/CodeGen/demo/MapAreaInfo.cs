@@ -24,6 +24,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         { if(!_buf["day_period_limit"].IsNumber) { throw new SerializationException(); }  DayPeriodLimit = _buf["day_period_limit"]; }
         { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
         { if(!_buf["map_data_name"].IsString) { throw new SerializationException(); }  MapDataName = _buf["map_data_name"]; }
+        { if(!_buf["thumb_map"].IsString) { throw new SerializationException(); }  ThumbMap = _buf["thumb_map"]; }
         { if(!_buf["is_home"].IsBoolean) { throw new SerializationException(); }  IsHome = _buf["is_home"]; }
         { if(!_buf["is_secret_base"].IsBoolean) { throw new SerializationException(); }  IsSecretBase = _buf["is_secret_base"]; }
         { if(!_buf["always_alert"].IsBoolean) { throw new SerializationException(); }  AlwaysAlert = _buf["always_alert"]; }
@@ -62,6 +63,10 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// 数据文件名
     /// </summary>
     public string MapDataName;
+    /// <summary>
+    /// 场景名
+    /// </summary>
+    public string ThumbMap;
     /// <summary>
     /// home标记
     /// </summary>
@@ -108,6 +113,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         + "dayPeriodLimit:" + DayPeriodLimit + ","
         + "sceneName:" + SceneName + ","
         + "mapDataName:" + MapDataName + ","
+        + "thumbMap:" + ThumbMap + ","
         + "isHome:" + IsHome + ","
         + "isSecretBase:" + IsSecretBase + ","
         + "alwaysAlert:" + AlwaysAlert + ","

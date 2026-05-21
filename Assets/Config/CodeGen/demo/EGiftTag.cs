@@ -11,14 +11,13 @@
 
 namespace cfg.demo
 { 
-    public enum EItemType
+    public enum EGiftTag
     {
-        Normal = 0,
-        Currency = 1,
-        Equip = 2,
-        Pocket = 3,
-        Insertion = 4,
-        Gift = 5,
+        None = 0,
+        Food = 1,
+        Luxury = 2,
+        Quest = 3,
+        Daily = 4,
     }
 
 } 

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace My.Config
 {
-    // 道具：直接读 CfgMgr.TbItemData / TbItemUse，不经过中间镜像表
+    // 道具：直接读 CfgMgr.TbItemData / TbItemUse / TbItemGift，不经过中间镜像表
     public static class ItemCatalog
     {
         private static Dictionary<string, List<ItemUse>> _usesByItemId;
@@ -35,6 +35,61 @@ namespace My.Config
             foreach (var key in _usesByItemId.Keys.ToList())
             {
                 _usesByItemId[key] = _usesByItemId[key].OrderBy(x => x.Slot).ToList();
+            }
+
+            ValidateGiftItemRows();
+        }
+
+        public static ItemGift GetGiftDef(string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId) || CfgMgr.Cfgs == null)
+            {
+                return null;
+            }
+
+            return CfgMgr.Cfgs.TbItemGift.GetOrDefault(itemId);
+        }
+
+        public static bool HasGiftTag(string itemId, EGiftTag tag)
+        {
+            var g = GetGiftDef(itemId);
+            return g != null && g.GiftTags != null && g.GiftTags.Contains(tag);
+        }
+
+        static void ValidateGiftItemRows()
+        {
+            if (CfgMgr.Cfgs == null)
+            {
+                return;
+            }
+
+            foreach (var def in CfgMgr.Cfgs.TbItemData.DataList)
+            {
+                if (def.ItemType != EItemType.Gift)
+                {
+                    continue;
+                }
+
+                if (GetGiftDef(def.ItemId) == null)
+                {
+                    Debug.LogWarning(
+                        $"ItemCatalog: Gift item '{def.ItemId}' has no row in TbItemGift (item_gift sheet).");
+                }
+            }
+
+            foreach (var gift in CfgMgr.Cfgs.TbItemGift.DataList)
+            {
+                var def = GetItemDef(gift.ItemId);
+                if (def == null)
+                {
+                    Debug.LogWarning(
+                        $"ItemCatalog: TbItemGift row '{gift.ItemId}' has no matching TbItemData row.");
+                }
+                else if (def.ItemType != EItemType.Gift)
+                {
+                    Debug.LogWarning(
+                        $"ItemCatalog: TbItemGift row '{gift.ItemId}' but item_type is {def.ItemType}, expected Gift.");
+                }
             }
         }
 

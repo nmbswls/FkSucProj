@@ -32,6 +32,7 @@ public partial class Tables
     public demo.TbShop TbShop {get; }
     public demo.TbShopGoods TbShopGoods {get; }
     public demo.TbItemUse TbItemUse {get; }
+    public demo.TbItemGift TbItemGift {get; }
     public demo.TbNpcDialogInfo TbNpcDialogInfo {get; }
     public demo.TbWorldMapGlobal TbWorldMapGlobal {get; }
     public demo.TbWorldMapBigMapLayer TbWorldMapBigMapLayer {get; }
@@ -99,6 +100,7 @@ public partial class Tables
         TbShop = new demo.TbShop(loader("demo_tbshop"));
         TbShopGoods = new demo.TbShopGoods(loader("demo_tbshopgoods"));
         TbItemUse = new demo.TbItemUse(loader("demo_tbitemuse"));
+        TbItemGift = new demo.TbItemGift(loader("demo_tbitemgift"));
         TbNpcDialogInfo = new demo.TbNpcDialogInfo(loader("demo_tbnpcdialoginfo"));
         TbWorldMapGlobal = new demo.TbWorldMapGlobal(loader("demo_tbworldmapglobal"));
         TbWorldMapBigMapLayer = new demo.TbWorldMapBigMapLayer(loader("demo_tbworldmapbigmaplayer"));
@@ -165,6 +167,7 @@ public partial class Tables
         TbShop.ResolveRef(this);
         TbShopGoods.ResolveRef(this);
         TbItemUse.ResolveRef(this);
+        TbItemGift.ResolveRef(this);
         TbNpcDialogInfo.ResolveRef(this);
         TbWorldMapGlobal.ResolveRef(this);
         TbWorldMapBigMapLayer.ResolveRef(this);

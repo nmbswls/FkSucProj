@@ -23,6 +23,27 @@
     "quick_bar_kind": 0
   },
   {
+    "item_id": "gift_rose_01",
+    "display_name": "gift_rose_01",
+    "item_type": 5,
+    "stackable": true,
+    "stack_count": 5,
+    "stack_tags": [],
+    "sprite_name": "flower_01",
+    "can_drop": true,
+    "rare_tier": 1,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": false,
+    "is_auto_use": false,
+    "quick_bar_kind": 0
+  },
+  {
     "item_id": "small_stone",
     "display_name": "small_stone",
     "item_type": 0,
