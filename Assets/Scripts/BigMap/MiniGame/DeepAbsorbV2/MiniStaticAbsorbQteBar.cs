@@ -68,10 +68,7 @@ namespace My.MiniGame
 
             MoveCursor();
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-            {
-                CheckHit();
-            }
+            
         }
 
         public void InitCursorPos()
@@ -180,7 +177,7 @@ namespace My.MiniGame
             }
         }
 
-        private void CheckHit()
+        public void CheckHit()
         {
             isRunning = false; // 停止移动
 

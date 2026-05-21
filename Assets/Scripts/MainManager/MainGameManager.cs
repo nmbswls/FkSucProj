@@ -254,28 +254,6 @@ namespace My
             }
 
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.V))
-            {
-                //_ = OnSaveClicked().ContinueWith(t =>
-                //{
-                //    if (t.IsFaulted)
-                //    {
-                //        Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
-                //    }
-
-                //}, TaskScheduler.FromCurrentSynchronizationContext());
-
-
-
-                //if (UIGainRewardCoordinator.Instance != null)
-                //{
-                //    UIGainRewardCoordinator.Instance.CreateScreenItem("1", 1, null);
-                //}
-
-                ShowDamageNumber(playerScenePresenter.PivotHeader.position, "?", playerScenePresenter.PivotHeader);
-
-                //MapSpeechBubbleManager.Instance.Say(playerScenePresenter, "怎么会？");
-            }
 
             //if (playerScenePresenter == null || !playerScenePresenter.IsInBusyZone)
             //{

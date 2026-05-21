@@ -298,6 +298,24 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Map"",
+                    ""type"": ""Button"",
+                    ""id"": ""b6427995-961f-4c9e-8f8e-0ee9d38c48e4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""QuickItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""bdf888c9-6683-4569-9e2a-ead99cdf0a39"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -597,6 +615,28 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""action"": ""Bag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ec2061d9-d876-48a7-846a-7c425ac6f279"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4cafd84c-f9db-49fe-99c9-725ccb8845b4"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -684,6 +724,8 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_SceneCancel = m_OverworldMap.FindAction("SceneCancel", throwIfNotFound: true);
         m_OverworldMap_Skill = m_OverworldMap.FindAction("Skill", throwIfNotFound: true);
         m_OverworldMap_Bag = m_OverworldMap.FindAction("Bag", throwIfNotFound: true);
+        m_OverworldMap_Map = m_OverworldMap.FindAction("Map", throwIfNotFound: true);
+        m_OverworldMap_QuickItem = m_OverworldMap.FindAction("QuickItem", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -795,6 +837,8 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_SceneCancel;
     private readonly InputAction m_OverworldMap_Skill;
     private readonly InputAction m_OverworldMap_Bag;
+    private readonly InputAction m_OverworldMap_Map;
+    private readonly InputAction m_OverworldMap_QuickItem;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -899,6 +943,14 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Bag => m_Wrapper.m_OverworldMap_Bag;
         /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/Map".
+        /// </summary>
+        public InputAction @Map => m_Wrapper.m_OverworldMap_Map;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/QuickItem".
+        /// </summary>
+        public InputAction @QuickItem => m_Wrapper.m_OverworldMap_QuickItem;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_OverworldMap; }
@@ -993,6 +1045,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Bag.started += instance.OnBag;
             @Bag.performed += instance.OnBag;
             @Bag.canceled += instance.OnBag;
+            @Map.started += instance.OnMap;
+            @Map.performed += instance.OnMap;
+            @Map.canceled += instance.OnMap;
+            @QuickItem.started += instance.OnQuickItem;
+            @QuickItem.performed += instance.OnQuickItem;
+            @QuickItem.canceled += instance.OnQuickItem;
         }
 
         /// <summary>
@@ -1073,6 +1131,12 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Bag.started -= instance.OnBag;
             @Bag.performed -= instance.OnBag;
             @Bag.canceled -= instance.OnBag;
+            @Map.started -= instance.OnMap;
+            @Map.performed -= instance.OnMap;
+            @Map.canceled -= instance.OnMap;
+            @QuickItem.started -= instance.OnQuickItem;
+            @QuickItem.performed -= instance.OnQuickItem;
+            @QuickItem.canceled -= instance.OnQuickItem;
         }
 
         /// <summary>
@@ -1466,6 +1530,20 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnBag(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Map" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMap(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "QuickItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQuickItem(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

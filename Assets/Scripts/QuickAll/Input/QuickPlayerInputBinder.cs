@@ -65,6 +65,7 @@ namespace My.Input
 
         Bag,
         Skill,
+        Map,
 
         UseQuickItem,
     }
@@ -152,27 +153,7 @@ namespace My.Input
         private readonly string keyTab = EInputKey.Tab.ToString();
         private void Update()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.M))
-            {
-                WorldMapRuntime.TryToggle();
-            }
-
-            if (UnityEngine.Input.GetKeyDown(KeyCode.F9))
-            {
-                DreamInfiltrationBootstrap.OpenEntry();
-            }
-
-            if (mode == InputMode.Overworld && !GlobalLock && UnityEngine.Input.GetKeyDown(KeyCode.Q))
-            {
-                if (uiRouter == null || !uiRouter.DispatchHotkey(EInputKey.UseQuickItem.ToString()))
-                {
-                }
-            }
-
-            if (UnityEngine.Input.GetKeyDown(KeyCode.F10))
-            {
-                My.UI.Forge.ForgePanel.Toggle();
-            }
+            
 
             if (GlobalLock) return;
 
@@ -268,22 +249,6 @@ namespace My.Input
             }
         }
 
-        //private void Update()
-        //{
-        //    if(UnityEngine.Input.GetKeyDown(KeyCode.I))
-        //    {
-        //        UIOrchestrator.Instance.EnsurePlayerBag();
-        //    }
-
-        //    foreach(var kv in keyHoldingStatus)
-        //    {
-        //        if(kv.Value)
-        //        {
-        //            OnKeyHoldingUpdate(kv.Key);
-        //        }
-        //    }
-        //}
-
 
         // 底层执行输入模式切换（由组织层调用）
         public void ApplyInputMode(InputMode mode)
@@ -357,6 +322,9 @@ namespace My.Input
 
             actions.OverworldMap.Skill.performed += OnHotKeySkill;
             actions.OverworldMap.Bag.performed += OnHotKeyBag;
+            actions.OverworldMap.Map.performed += OnHotKeyMap;
+
+            actions.OverworldMap.QuickItem.performed += OnHotKeyQuickItem;
 
             actions.OverworldMap.PointerPos.performed += OnPointerMove;
         }
@@ -402,8 +370,11 @@ namespace My.Input
             actions.OverworldMap.S03.performed -= OnHotKeySkill03;
             actions.OverworldMap.S04.performed -= OnHotKeySkill04;
 
-            actions.OverworldMap.Skill.performed += OnHotKeySkill;
-            actions.OverworldMap.Bag.performed += OnHotKeyBag;
+            actions.OverworldMap.Skill.performed -= OnHotKeySkill;
+            actions.OverworldMap.Bag.performed -= OnHotKeyBag;
+            actions.OverworldMap.Map.performed -= OnHotKeyMap;
+
+            actions.OverworldMap.QuickItem.performed -= OnHotKeyQuickItem;
 
             actions.OverworldMap.Disable();
             actions.BattleMap.Disable();
@@ -572,7 +543,12 @@ namespace My.Input
         public void OnHotKeyCrouch(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Crouch.ToString());
 
         public void OnHotKeyBag(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Bag.ToString());
+
         public void OnHotKeySkill(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Skill.ToString());
+
+        public void OnHotKeyMap(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Map.ToString());
+        public void OnHotKeyQuickItem(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.UseQuickItem.ToString());
+
 
         public void OnKeyPress(InputAction.CallbackContext ctx, string keyName)
         {
@@ -694,6 +670,10 @@ namespace My.Input
             else if(keyName == EInputKey.Bag.ToString())
             {
                 UIOrchestrator.Instance.EnsurePlayerBag();
+            }
+            else if(keyName == EInputKey.Map.ToString())
+            {
+                WorldMapRuntime.TryToggle();
             }
         }
 

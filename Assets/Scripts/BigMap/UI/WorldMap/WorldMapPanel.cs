@@ -25,9 +25,6 @@ namespace My.UI
         private void Update()
         {
             if (!IsVisible) return;
-            // M 由 QuickPlayerInputBinder 的 TryToggle 关闭，避免与打开同一帧重复触发
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
-                UIManager.Instance?.HidePanel(WorldMapRuntime.PanelId);
         }
 
         private void Awake()

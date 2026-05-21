@@ -238,42 +238,8 @@ namespace My.Home
 
         public bool TrySetPlacementWorkforce(long placementInstId, int workers, out string failReason)
         {
-            if (!LegacyHomeBuildFeature.Enabled)
-            {
-                failReason = "legacy_home_disabled";
-                return false;
-            }
-
-            failReason = null;
-            var p = FindPlacementById(placementInstId);
-            if (p == null || p.Removed || p.CfgRef == null)
-            {
-                failReason = "Invalid placement";
-                return false;
-            }
-
-            if (!p.CfgRef.SupportsWorkforceAssignment)
-            {
-                failReason = "Not a workplace facility";
-                return false;
-            }
-
-            int max = Mathf.Max(0, p.CfgRef.MaxWorkforce);
-            workers = Mathf.Clamp(workers, 0, max);
-            p.ArrangePeopleNum = workers;
-
-            if (p.HomeFacilityLogicRecordId != 0 &&
-                LogicManager?.AreaManager?.Repo?.Records.TryGetValue(p.HomeFacilityLogicRecordId, out var rec) == true &&
-                rec is LogicEntityRecord4HomeFacility hf)
-            {
-                hf.ArrangePeopleNum = workers;
-            }
-
-            EvOnPlacementUpdate?.Invoke(p);
-            EvOnTownEcoChanged?.Invoke();
-
-            TryRefreshFacilityPresenterWorkforce(p.HomeFacilityLogicRecordId);
-            return true;
+            failReason = "home_build_disabled";
+            return false;
         }
 
         private static void TryRefreshFacilityPresenterWorkforce(long logicEntityId)
@@ -294,74 +260,11 @@ namespace My.Home
 
         public void OnPlayerEnterHome()
         {
-            if (!LegacyHomeBuildFeature.Enabled)
-            {
-                return;
-            }
-
-            EnsureHomeFacilityRecordsRegistered();
         }
 
         // 内城 placement 与大地图动态刷新无关：进内城时直接建 Record 并注册（与 AddPlacement 同路径）。
         public void EnsureHomeFacilityRecordsRegistered()
         {
-            if (!LegacyHomeBuildFeature.Enabled)
-            {
-                return;
-            }
-
-            if (LogicManager?.AreaManager == null)
-            {
-                return;
-            }
-
-            var area = LogicManager.AreaManager;
-
-            foreach (var p in PlacementInfos)
-            {
-                if (p.Removed || p.CfgRef == null)
-                {
-                    continue;
-                }
-
-                long existingId = 0;
-                foreach (var kv in area.Repo.Records)
-                {
-                    if (kv.Value is LogicEntityRecord4HomeFacility hf && hf.BindingFacilityId == p.InstId)
-                    {
-                        existingId = kv.Key;
-                        break;
-                    }
-                }
-
-                if (existingId != 0)
-                {
-                    p.HomeFacilityLogicRecordId = existingId;
-                    if (area.Repo.Records.TryGetValue(existingId, out var existRec) &&
-                        existRec is LogicEntityRecord4HomeFacility hfExist)
-                    {
-                        p.ArrangePeopleNum = hfExist.ArrangePeopleNum;
-                    }
-
-                    continue;
-                }
-
-                var initInfo = new EntityInitInfo4HomePlacement
-                {
-                    CfgId = p.Id,
-                    Position = (Vector2)CellToWorld(p.PivotPos),
-                    BindingFacilityId = p.InstId,
-                };
-
-                var record = area.CreateEntityRecordFromInitInfo(initInfo);
-                if (record == null)
-                {
-                    continue;
-                }
-
-                p.HomeFacilityLogicRecordId = record.Id;
-                area.RegisterEntityRecord(record, isCreate: false);
-            }
         }
 
         public Vector3Int WorldToCell(Vector3 worldPos)
@@ -384,38 +287,6 @@ namespace My.Home
         /// <param name="repairPos"></param>
         public void DoRepairFacility(string facilityId, Vector2 repairPos)
         {
-            if (!LegacyHomeBuildFeature.Enabled)
-            {
-                return;
-            }
-
-            if(RepairedFacilityList.Contains(facilityId))
-            {
-                return;
-            }
-
-            RepairedFacilityList.Add(facilityId);
-
-            var facilityCfg = MapFixFacilityCfgLoader.Get(facilityId);
-            if(facilityCfg == null)
-            {
-                return;
-            }
-
-            var placement = facilityCfg.PlacementId;
-
-            //var placementCfg = MapHomePlacementEntityCfgtLoader.Get(placement);
-            //if (placementCfg == null)
-            //{
-            //    Debug.LogError($"DoRepairFacility PlacementEntity cfg not found {placement}" );
-            //    return;
-            //}
-
-            var pCfg = HomeFacilityCfgtLoader.Get(placement);
-
-            var buildPos = repairPos;
-            var cellPos = WorldToCell(buildPos);
-            AddPlacement(pCfg, cellPos, EPlacementRotation.R0);
         }
 
 
@@ -428,136 +299,15 @@ namespace My.Home
 
         public void AddPlacement(HomeFacilityCfg cfg, Vector3Int pivorPos, EPlacementRotation rot)
         {
-            if (!LegacyHomeBuildFeature.Enabled)
-            {
-                return;
-            }
-
-            var newInfo = new HomeFacilityInstance();
-            newInfo.Id = cfg.CfgId;
-            newInfo.PivotPos = pivorPos;
-            newInfo.Rot = rot;
-            newInfo.InstId = HomePlacementIdCounter++;
-            newInfo.CfgRef = cfg;
-            PlacementInfos.Add(newInfo);
-
-            homePlacementMap[newInfo.InstId] = newInfo;
-
-            Vector2 recordPos = CellToWorld(pivorPos);
-
-            var initInfo = new EntityInitInfo4HomePlacement();
-            initInfo.CfgId = cfg.CfgId;
-            initInfo.Position = recordPos;
-            initInfo.BindingFacilityId = newInfo.InstId;
-
-            var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
-            newInfo.HomeFacilityLogicRecordId = record.Id;
-
-            if (record is LogicEntityRecord4HomeFacility hfNew)
-            {
-                hfNew.ArrangePeopleNum = newInfo.ArrangePeopleNum;
-            }
-
-            //if(placementCfg.BindingEntityInfoList.Count > 0)
-            //{
-            //    foreach(var oneEntity in placementCfg.BindingEntityInfoList)
-            //    {
-            //        int memberId = oneEntity.MemberId;
-
-            //        var record = LogicManager.AreaManager.CreateEntityRecordFromInitInfo(oneEntity.InitInfo);
-            //        if(record == null)
-            //        {
-            //            Debug.LogError("AddPlacement create entity fail.");
-            //            continue;
-            //        }
-
-            //        newInfo.BindingRecordMap[memberId] = record.Id;
-
-            //        LogicManager.AddNewEntityRecord(record);
-            //    }
-            //}
-
-            //var record = new LogicEntityRecord()
-            //{
-            //    Id = GameLogicManager.LogicEntityIdInst++,
-            //    EntityType = EEntityType.HomePlacement,
-            //    CfgId = id,
-            //    Position = new Vector2(pivorPos.x * 1f, pivorPos.y * 1.0f),
-            //};
-
-            LogicManager.AddNewEntityRecord(record, isCreate: true);
-
-            //Placement2EntityMap[newInfo.InstId] = record.Id;
-
-            EvOnPlacementUpdate?.Invoke(newInfo);
         }
 
         public void MovePlacement(string id, Vector3Int pivorPos, EPlacementRotation rot)
         {
-            if (!LegacyHomeBuildFeature.Enabled)
-            {
-                return;
-            }
-
-            var findIt = PlacementInfos.Find(item => item.Id == id);
-            if (findIt != null)
-            {
-                findIt.PivotPos = pivorPos; 
-                findIt.Rot = rot;
-
-                var worldPos = (Vector2)CellToWorld(pivorPos);
-                if (findIt.HomeFacilityLogicRecordId == 0)
-                {
-                    SyncPlacementLogicRecordIdsFromRepo();
-                }
-
-                if (findIt.HomeFacilityLogicRecordId == 0 && LogicManager?.AreaManager?.Repo?.Records != null)
-                {
-                    foreach (var kv in LogicManager.AreaManager.Repo.Records)
-                    {
-                        if (kv.Value is LogicEntityRecord4HomeFacility hf && hf.BindingFacilityId == findIt.InstId)
-                        {
-                            findIt.HomeFacilityLogicRecordId = kv.Key;
-                            break;
-                        }
-                    }
-                }
-
-                ApplyPlacementWorldPosToLogicRecord(findIt, worldPos);
-
-                EvOnPlacementUpdate?.Invoke(findIt);
-            }
         }
-
 
         public List<HomeFacilityCfg> GetAllBuilableItems()
         {
-            if (!LegacyHomeBuildFeature.Enabled)
-            {
-                return new List<HomeFacilityCfg>();
-            }
-
-            List<string> names = new List<string>()
-            {
-                "small_01",
-                "small_02",
-                "small_03",
-                "middle_01",
-                "middle_02",
-                "big_01",
-                "big_02",
-                "big_03",
-            };
-
-            List<HomeFacilityCfg> ret = new();
-
-            foreach (var name in names)
-            {
-                var conf = HomeFacilityCfgtLoader.Get(name);
-                ret.Add(conf);
-            }
-
-            return ret;
+            return new List<HomeFacilityCfg>();
         }
 
         public void RefreshProduceValue()

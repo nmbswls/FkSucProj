@@ -109,8 +109,63 @@ public class StaticItemExporterWindow : EditorWindow
 
     private void DrawRootsList()
     {
-        sceneRoot =(GameObject) EditorGUILayout.ObjectField(sceneRoot, typeof(GameObject), true); 
+        sceneRoot = (GameObject)EditorGUILayout.ObjectField("Scene Root", sceneRoot, typeof(GameObject), true);
+        namedPointRoot = (Transform)EditorGUILayout.ObjectField("NamedPoint Root (optional)", namedPointRoot, typeof(Transform), true);
         if (GUILayout.Button("Clear")) sceneRoot = null;
+    }
+
+    void CollectNamedPointLeaves(Transform root)
+    {
+        if (root == null)
+        {
+            return;
+        }
+
+        var stack = new Stack<Transform>();
+        for (int i = 0; i < root.childCount; i++)
+        {
+            stack.Push(root.GetChild(i));
+        }
+
+        while (stack.Count > 0)
+        {
+            var t = stack.Pop();
+            if (!includeInactive && !t.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+
+            if (t.childCount > 0)
+            {
+                for (int i = 0; i < t.childCount; i++)
+                {
+                    stack.Push(t.GetChild(i));
+                }
+
+                continue;
+            }
+
+            var comp = t.GetComponent<NamePointGenerator>();
+            var pInfo = new NamedPoint
+            {
+                Name = t.gameObject.name,
+                Position = t.position,
+                Rotation = t.rotation,
+                PointType = ENamedPointType.Normal,
+            };
+
+            if (comp != null)
+            {
+                pInfo.PointType = comp.Info.PointType;
+            }
+
+            if (namedPointCache.ContainsKey(pInfo.Name))
+            {
+                Debug.LogWarning($"[Static Export] Duplicate named point '{pInfo.Name}', overwritten.");
+            }
+
+            namedPointCache[pInfo.Name] = pInfo;
+        }
     }
 
     private void ScanScene()
@@ -215,26 +270,16 @@ public class StaticItemExporterWindow : EditorWindow
             }
         }
 
-        var namedPoint = sceneRoot.transform.Find("NamedPoint");
-        for (int i = 0; i < namedPoint.childCount; i++)
+        Transform namedPointRootTransform = namedPointRoot != null
+            ? namedPointRoot
+            : sceneRoot.transform.Find("NamedPoint");
+        if (namedPointRootTransform == null)
         {
-            var t = namedPoint.GetChild(i);
-            var comp = t.GetComponent<NamePointGenerator>();
-
-            var pInfo = new NamedPoint()
-            {
-                Name = t.gameObject.name,
-                Position = t.gameObject.transform.position,
-                Rotation = t.gameObject.transform.rotation,
-                PointType = ENamedPointType.Normal,
-            };
-
-            if (comp != null)
-            {
-                pInfo.PointType = comp.Info.PointType;
-            }
-
-            namedPointCache[pInfo.Name] = pInfo;
+            Debug.LogWarning("[Static Export] NamedPoint root not found, skip named points.");
+        }
+        else
+        {
+            CollectNamedPointLeaves(namedPointRootTransform);
         }
 
         var namedPathRoot = sceneRoot.transform.Find("NamedPath");

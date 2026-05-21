@@ -96,37 +96,9 @@ namespace My
             }
         }
 
+        // 旧内城建造已废弃（由 SecretBase 替代）
         public void InitHomePlacements()
         {
-            if (!LegacyHomeBuildFeature.Enabled)
-            {
-                return;
-            }
-
-            foreach(var one in DataSource.PlacementInfos)
-            {
-                
-            }
-
-            InitBuildMask();
-
-            //InitFacilities();
-            //InitGlobalActionSpots();
-
-            var prefab = Resources.Load<GameObject>("Home/SimpleNpc/1");
-
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    var go = GameObject.Instantiate(prefab, this.transform);
-            //    go.SetActive(true);
-
-            //    var simpleNpc = go.GetComponent<HomeSimpleNpc>();
-            //    homeSimpleNpc.Add(simpleNpc);
-
-            //    simpleNpc.transform.position = new Vector3(-2, -2, 0);
-
-            //    simpleNpc.CurrentState = HomeSimpleNpc.MobState.Idle;
-            //}
         }
 
         protected void InitBuildMask()
@@ -149,15 +121,7 @@ namespace My
 
         public bool CanPlace(HomeFacilityCfg obj, EPlacementRotation rot, Vector3Int pivotCell)
         {
-            foreach (var offset in obj.GetFootprint(rot))
-            {
-                var cell = pivotCell + new Vector3Int(offset.x, offset.y, 0);
-                int lx = cell.x - runtime.originX;
-                int ly = cell.y - runtime.originY;
-                if (!runtime.IsBuildableCell(lx, ly)) return false;
-                if (IsOccupied(cell)) return false;
-            }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -169,23 +133,6 @@ namespace My
         /// <param name="isMove"></param>
         public void TryPlace(HomeFacilityCfg obj, EPlacementRotation rot, Vector3Int pivotCell, bool isMove)
         {
-            // 实例化实际对象
-            //var go = Instantiate(GetPrefabFor(obj, rot));
-            //go.transform.position = CellToWorld(pivotCell);
-            if(isMove)
-            {
-                DataSource.MovePlacement(obj.CfgId, pivotCell, rot);
-            }
-            else
-            {
-                DataSource.AddPlacement(obj, pivotCell, rot);
-            }
-
-            // var chunkPos = SceneAOIManager.Instance.WorldToChunk(CellToWorld(pivotCell));
-            //SceneAOIManager.Instance.ForceUpdateOneChunk(chunkPos);
-            // 占用格子
-            var cells = obj.GetFootprint(rot).Select(off => pivotCell + new Vector3Int(off.x, off.y, 0));
-            Occupy(cells);
         }
 
         public bool CanBuildAtWorld(Vector3 worldPos)

@@ -108,6 +108,10 @@ namespace My.Map
                 case AttrIdConsts.PlayerJingYuRate:
                 case AttrIdConsts.NPCHVal_Max:
 
+                case AttrIdConsts.PlayerCharm_Inner:
+                case AttrIdConsts.PlayerCharm_Static:
+                case AttrIdConsts.PlayerCharm_Scaled:
+
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:

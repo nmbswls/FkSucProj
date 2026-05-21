@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using My.Config;
+using My.Input;
 using My.Map;
 using My.Map.Entity;
 using My.Map.View;
@@ -164,12 +165,6 @@ namespace My.MiniGame
             });
         }
 
-
-        private Dictionary<string, long> CalcAbsorbGainResult(int successCnt, int perfectCnt)
-        {
-            return new();
-        }
-
         /// <summary>
         /// 随机获取一个h动作
         /// </summary>
@@ -217,9 +212,6 @@ namespace My.MiniGame
             // 对玩家施加冲击力
             player.ApplyHImpulseDirectly(hImpulsePlayer, null);
 
-
-            var reward = CalcAbsorbGainResult(successCnt, perfectCnt);
-
             int score = successCnt * 1 + perfectCnt * 2;
             int bundleId = PlayerGamePlayRule.GetDropBundleFromStaticZha(score);
 
@@ -241,6 +233,16 @@ namespace My.MiniGame
                     UIManager.Instance.HidePanel(Id);
                 });
             });
+        }
+
+        public override bool OnHotkey(string keyName)
+        {
+            if (keyName == EInputKey.Space.ToString())
+            {
+                QteBar.CheckHit();
+                return true;
+            }
+            return false;
         }
     }
 

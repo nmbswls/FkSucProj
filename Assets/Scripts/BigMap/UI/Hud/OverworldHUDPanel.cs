@@ -504,16 +504,6 @@ namespace My.UI
                 overworldSkillPreviewUI.TickPreviewState();
             }
 
-            if (My.Home.LegacyHomeBuildFeature.Enabled
-                && WorldAreaManager.Instance.cacheAreaInfo.IsHome
-                && UnityEngine.Input.GetKeyDown(KeyCode.B))
-            {
-                if(HudMode == EHudMode.Normal)
-                {
-                    EnterBuildMode();
-                }
-            }
-
             if (My.Map.Scene.PlayerNpcCarryService.IsCarrying && UnityEngine.Input.GetKeyDown(KeyCode.X))
             {
                 My.Map.Scene.PlayerNpcCarryService.TryPutDownCarriedBody();
@@ -727,7 +717,10 @@ namespace My.UI
             overworldSkillPreviewUI.Clear();
             overworldSkillPreviewUI.gameObject.SetActive(false);
 
-            homeBuildPanel.gameObject.SetActive(false);
+            if (homeBuildPanel != null)
+            {
+                homeBuildPanel.gameObject.SetActive(false);
+            }
 
             if (mode == EHudMode.PreviewSkill)
             {
@@ -735,8 +728,7 @@ namespace My.UI
             }
             else if (mode == EHudMode.Build)
             {
-                homeBuildPanel.gameObject.SetActive(true);
-                homeBuildPanel.InitShow();
+                mode = EHudMode.Normal;
             }
 
             RefreshUILayout();
@@ -785,12 +777,6 @@ namespace My.UI
         public bool OnConfirm() => false;
         public bool OnCancel()
         {
-
-            if(HudMode == EHudMode.Build)
-            {
-                QuitBuildMode();
-                return true;
-            }
 
             return false;
         }
@@ -1150,21 +1136,6 @@ namespace My.UI
                     CancelSkillCast();
                 }
             }
-            else if (HudMode == EHudMode.Build)
-            {
-                if(button == 1)
-                {
-                    QuitBuildMode();
-                    return true;
-                }
-                else if(button == 0)
-                {
-                    Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(mousePos);
-                    homeBuildPanel.TryConfirmPlace(mouseWorld);
-                    QuitBuildMode();
-                }
-            }
-
             return false;
         }
 
@@ -1213,32 +1184,14 @@ namespace My.UI
 
         #endregion
 
-        #region 建造
-
-        protected void EnterBuildMode()
-        {
-            if (!My.Home.LegacyHomeBuildFeature.Enabled
-                || MainGameManager.Instance.gameLogicManager.IsInSecretBase)
-            {
-                return;
-            }
-
-            UpdateHudMode(EHudMode.Build);
-            
-        }
-
         public void QuitBuildMode()
         {
-            if (HudMode != EHudMode.Build)
+            if (HudMode == EHudMode.Build)
             {
-                return;
+                homeBuildPanel?.CancelBuildMode();
+                UpdateHudMode(EHudMode.Normal);
             }
-            homeBuildPanel.CancelBuildMode();
-            UpdateHudMode(EHudMode.Normal);
         }
-
-
-        #endregion
 
         public GameObject simpleFloatTextPrefab;
         public void DoPendingAlertReduce(long val)

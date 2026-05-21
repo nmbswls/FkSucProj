@@ -240,11 +240,6 @@ namespace My
             await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld, null);
 
 
-            if (My.Home.LegacyHomeBuildFeature.Enabled && HomeSceneManager.Instance != null)
-            {
-                HomeSceneManager.Instance.InitHomePlacements();
-            }
-
             // 等待初始所有物体加载完成
             while (!AOIManager.CheckNoLoading())
             {

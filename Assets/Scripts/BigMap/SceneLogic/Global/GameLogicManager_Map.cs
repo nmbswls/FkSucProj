@@ -130,12 +130,6 @@ namespace My
                 MapMicroPlot?.RebuildForCurrentMap();
             }
 
-            if (mapCfg != null && mapCfg.IsHome && My.Home.LegacyHomeBuildFeature.Enabled)
-            {
-                homeDataManager.OnPlayerEnterHome();
-            }
-
-
             var bornPos = new List<NamedPoint>();
             var ps = AreaManager.cacheDatabase.NamedPoints;
             foreach (var p in ps)
