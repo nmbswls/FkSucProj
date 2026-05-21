@@ -470,6 +470,7 @@ namespace My.Map.Entity
             public string skillId;
             public Vector2? castVec = null;
             public ILogicEntity target = null;
+            public Dictionary<string, string> castOverrides;
 
             public float happenTime;
         }
@@ -959,7 +960,11 @@ namespace My.Map.Entity
                             break;
                         }
 
-                        UseSkill(lastInput.skillId, castVec:lastInput.castVec, target:lastInput.target);
+                        UseSkill(
+                            lastInput.skillId,
+                            castVec: lastInput.castVec,
+                            target: lastInput.target,
+                            castOverrides: lastInput.castOverrides);
                         break;
                     }
                     while (false);
@@ -976,7 +981,12 @@ namespace My.Map.Entity
         /// <param name="castVec1"></param>
         /// <param name="castVec2"></param>
         /// <param name="targetId"></param>
-        public bool UseSkill(string skillId, Vector2? inputVec = null, Vector2 ? castVec = null, ILogicEntity target = null)
+        public bool UseSkill(
+            string skillId,
+            Vector2? inputVec = null,
+            Vector2? castVec = null,
+            ILogicEntity target = null,
+            Dictionary<string, string> castOverrides = null)
         {
             SkillRuntimes.TryGetValue(skillId, out SkillRuntime skillRuntime);
             if(skillRuntime == null)
@@ -1002,6 +1012,7 @@ namespace My.Map.Entity
                     skillId = skillId,
                     castVec = castVec,
                     target = target,
+                    castOverrides = castOverrides,
                     happenTime = LogicTime.time,
                 });
 
@@ -1037,7 +1048,11 @@ namespace My.Map.Entity
                 }
             }
 
-            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams: skillRuntime.RuntimeAbilityExtraVariables ?? SkillLibrary.CloneAbilityExtraMap(skillRuntime.cacheConfig)))
+            var overrideParams = MergeCastOverrides(
+                skillRuntime.RuntimeAbilityExtraVariables ?? SkillLibrary.CloneAbilityExtraMap(skillRuntime.cacheConfig),
+                castOverrides);
+
+            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams: overrideParams))
             {
                 Debug.Log("UseSkill fail");
                 comboOrchestrator.TransitCombo(0);
@@ -1071,6 +1086,29 @@ namespace My.Map.Entity
             skillRuntime.lastUseTime = LogicTime.time;
 
             return true;
+        }
+
+        static Dictionary<string, string> MergeCastOverrides(
+            Dictionary<string, string> baseParams,
+            Dictionary<string, string> castOverrides)
+        {
+            if (castOverrides == null || castOverrides.Count == 0)
+            {
+                return baseParams;
+            }
+
+            if (baseParams == null || baseParams.Count == 0)
+            {
+                return new Dictionary<string, string>(castOverrides);
+            }
+
+            var merged = new Dictionary<string, string>(baseParams);
+            foreach (var kv in castOverrides)
+            {
+                merged[kv.Key] = kv.Value;
+            }
+
+            return merged;
         }
 
         // 脱手施法：不打连招，只用 MainAbilityId；不查 CD/CanActiveUseSkill/是否注册；仅应在 IsActionable 时由 Tick 调用

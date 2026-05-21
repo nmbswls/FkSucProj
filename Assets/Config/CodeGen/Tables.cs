@@ -15,7 +15,9 @@ namespace cfg
 public partial class Tables
 {
     public demo.TbReward TbReward {get; }
-    public demo.TbMapAreaInfo TbMapAreaInfo {get; }
+    public demo.TbLogicAreaInfo TbLogicAreaInfo {get; }
+    public demo.TbAreaVariantInfo TbAreaVariantInfo {get; }
+    public demo.TbAreaOverlayStateInfo TbAreaOverlayStateInfo {get; }
     public demo.TbDropBundle TbDropBundle {get; }
     public demo.TbDropItem TbDropItem {get; }
     public demo.TbFixedFacility TbFixedFacility {get; }
@@ -83,11 +85,21 @@ public partial class Tables
     /// 据点建设等级卷轴边界
     /// </summary>
     public demo.TbSecretBaseBuildLevel TbSecretBaseBuildLevel {get; }
+    /// <summary>
+    /// 秘密据点角色
+    /// </summary>
+    public demo.TbSecretBaseCharacter TbSecretBaseCharacter {get; }
+    /// <summary>
+    /// human_weapon
+    /// </summary>
+    public demo.TbHumanWeapon TbHumanWeapon {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
         TbReward = new demo.TbReward(loader("demo_tbreward"));
-        TbMapAreaInfo = new demo.TbMapAreaInfo(loader("demo_tbmapareainfo"));
+        TbLogicAreaInfo = new demo.TbLogicAreaInfo(loader("demo_tblogicareainfo"));
+        TbAreaVariantInfo = new demo.TbAreaVariantInfo(loader("demo_tbareavariantinfo"));
+        TbAreaOverlayStateInfo = new demo.TbAreaOverlayStateInfo(loader("demo_tbareaoverlaystateinfo"));
         TbDropBundle = new demo.TbDropBundle(loader("demo_tbdropbundle"));
         TbDropItem = new demo.TbDropItem(loader("demo_tbdropitem"));
         TbFixedFacility = new demo.TbFixedFacility(loader("demo_tbfixedfacility"));
@@ -149,13 +161,17 @@ public partial class Tables
         TbMindFragmentPoolEntry = new demo.TbMindFragmentPoolEntry(loader("demo_tbmindfragmentpoolentry"));
         TbSecretBaseFacility = new demo.TbSecretBaseFacility(loader("demo_tbsecretbasefacility"));
         TbSecretBaseBuildLevel = new demo.TbSecretBaseBuildLevel(loader("demo_tbsecretbasebuildlevel"));
+        TbSecretBaseCharacter = new demo.TbSecretBaseCharacter(loader("demo_tbsecretbasecharacter"));
+        TbHumanWeapon = new demo.TbHumanWeapon(loader("demo_tbhumanweapon"));
         ResolveRef();
     }
     
     private void ResolveRef()
     {
         TbReward.ResolveRef(this);
-        TbMapAreaInfo.ResolveRef(this);
+        TbLogicAreaInfo.ResolveRef(this);
+        TbAreaVariantInfo.ResolveRef(this);
+        TbAreaOverlayStateInfo.ResolveRef(this);
         TbDropBundle.ResolveRef(this);
         TbDropItem.ResolveRef(this);
         TbFixedFacility.ResolveRef(this);
@@ -217,6 +233,8 @@ public partial class Tables
         TbMindFragmentPoolEntry.ResolveRef(this);
         TbSecretBaseFacility.ResolveRef(this);
         TbSecretBaseBuildLevel.ResolveRef(this);
+        TbSecretBaseCharacter.ResolveRef(this);
+        TbHumanWeapon.ResolveRef(this);
     }
 }
 

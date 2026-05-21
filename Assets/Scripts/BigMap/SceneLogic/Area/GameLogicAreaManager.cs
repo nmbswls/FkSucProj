@@ -63,7 +63,7 @@ namespace My.Map.Logic
         public LongLivedRegistry LongLived { get; } = new();
 
         public string MapName = string.Empty;
-        public MapAreaInfo cacheMapCfg { get; private set; }
+        public AreaOverlayStateInfo cacheMapOverlayCfg { get; private set; }
 
         public MapExportDatabase cacheDatabase;
 
@@ -118,10 +118,10 @@ namespace My.Map.Logic
         /// <summary>
         /// 初始化地图：加载导出数据、刷新列表、仓库与兴趣点等。
         /// </summary>
-        public void InitilizeMap(string mapName)
+        public void InitilizeMap(string mapOVerlayId)
         {
             this.MapName = mapName;
-            cacheMapCfg = CfgMgr.Cfgs.TbMapAreaInfo.GetOrDefault(mapName);
+            cacheMapOverlayCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(mapName);
 
             UnitGridIndex.Clear();
             RoomGridIndex.Clear();

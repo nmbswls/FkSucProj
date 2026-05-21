@@ -21,7 +21,7 @@ public class WorldAreaManager : MonoBehaviour
     }
 
     public string currentMapName;
-    public MapAreaInfo? cacheAreaInfo;
+    public AreaOverlayStateInfo? cacheAreaOverlayInfo;
     public WorldAreaRoot currentRoot;
 
 

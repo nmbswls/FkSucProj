@@ -1076,5 +1076,27 @@
     "buffer_cache_time": 0,
     "ability_extra": [],
     "cast_conditions": []
+  },
+  {
+    "skill_id": "use_human_weapon",
+    "main_ability_id": "use_human_weapon",
+    "desc": "",
+    "is_passive": false,
+    "passive_buff_id": "",
+    "passive_buff_ids": [],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": true,
+    "is_derived": false,
+    "cool_down": 0,
+    "stack_count": 0,
+    "icon_path": "",
+    "priority": 0,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0,
+    "buffer_cache_time": 0,
+    "ability_extra": [],
+    "cast_conditions": []
   }
 ]

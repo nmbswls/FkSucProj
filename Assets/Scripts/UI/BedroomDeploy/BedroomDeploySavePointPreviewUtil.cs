@@ -68,26 +68,26 @@ namespace My.UI
             foreach (var sp in points)
             {
                 var vm = new SavePointMarkerVm { Config = sp, HasMapPosition = false };
-                if (sp == null || string.IsNullOrEmpty(sp.TeleportNamedPoint))
-                {
-                    outMarkers.Add(vm);
-                    continue;
-                }
+                //if (sp == null || string.IsNullOrEmpty(sp.TeleportNamedPoint))
+                //{
+                //    outMarkers.Add(vm);
+                //    continue;
+                //}
 
-                var np = db.FindNamedPointByName(sp.TeleportNamedPoint);
-                if (!np.HasValue)
-                {
-                    Debug.LogWarning(
-                        $"[BedroomDeploy] Named point '{sp.TeleportNamedPoint}' not in MapExport/{mapCfg.MapDataName} for save point '{sp.SavePointId}'.");
-                    outMarkers.Add(vm);
-                    continue;
-                }
+                //var np = db.FindNamedPointByName(sp.TeleportNamedPoint);
+                //if (!np.HasValue)
+                //{
+                //    Debug.LogWarning(
+                //        $"[BedroomDeploy] Named point '{sp.TeleportNamedPoint}' not in MapExport/{mapCfg.MapDataName} for save point '{sp.SavePointId}'.");
+                //    outMarkers.Add(vm);
+                //    continue;
+                //}
 
-                var pos = np.Value.Position;
-                vm.NormPos01 = new Vector2(
-                    Mathf.Clamp01((pos.x - minX) / spanX),
-                    Mathf.Clamp01((pos.y - minY) / spanY));
-                vm.HasMapPosition = true;
+                //var pos = np.Value.Position;
+                //vm.NormPos01 = new Vector2(
+                //    Mathf.Clamp01((pos.x - minX) / spanX),
+                //    Mathf.Clamp01((pos.y - minY) / spanY));
+                //vm.HasMapPosition = true;
                 outMarkers.Add(vm);
             }
         }

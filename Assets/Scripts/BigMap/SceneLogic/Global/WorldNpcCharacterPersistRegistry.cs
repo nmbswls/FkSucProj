@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using My.Config;
 using My.Map.Logic;
 using My.Saving;
+using cfg.demo;
 
 namespace My
 {
@@ -62,7 +64,124 @@ namespace My
             {
                 LocalSwitches = CloneList(s.LocalSwitches),
                 DesireCrystalTaken = s.DesireCrystalTaken,
+                DesireCrystalTakenDay = s.DesireCrystalTakenDay,
+                FinishedUniqDreamingIds = s.FinishedUniqDreamingIds != null
+                    ? new List<string>(s.FinishedUniqDreamingIds)
+                    : new List<string>(),
+                FavorValue = s.FavorValue,
+                GiftsGivenToday = s.GiftsGivenToday,
+                LastGiftSettlementDay = s.LastGiftSettlementDay,
             };
+        }
+
+        NpcCharacterPersistData GetOrCreate(string characterKey)
+        {
+            if (!_byKey.TryGetValue(characterKey, out var st) || st == null)
+            {
+                st = new NpcCharacterPersistData();
+                _byKey[characterKey] = st;
+            }
+
+            return st;
+        }
+
+        static void NormalizeGiftDayCounter(NpcCharacterPersistData st, int settlementDay)
+        {
+            if (st == null)
+            {
+                return;
+            }
+
+            if (st.LastGiftSettlementDay != settlementDay)
+            {
+                st.GiftsGivenToday = 0;
+                st.LastGiftSettlementDay = settlementDay;
+            }
+        }
+
+        public int GetFavorValue(string characterKey)
+        {
+            if (string.IsNullOrEmpty(characterKey))
+            {
+                return 0;
+            }
+
+            return _byKey.TryGetValue(characterKey, out var st) && st != null ? st.FavorValue : 0;
+        }
+
+        public void AddFavorValue(string characterKey, int delta)
+        {
+            if (string.IsNullOrEmpty(characterKey) || delta == 0)
+            {
+                return;
+            }
+
+            var st = GetOrCreate(characterKey);
+            st.FavorValue = Math.Max(0, st.FavorValue + delta);
+        }
+
+        public int GetFavorLevel(string characterKey)
+        {
+            int favor = GetFavorValue(characterKey);
+            if (string.IsNullOrEmpty(characterKey) || CfgMgr.Cfgs?.TbCharacterFavorInfo?.DataList == null)
+            {
+                return 0;
+            }
+
+            int level = 0;
+            foreach (var row in CfgMgr.Cfgs.TbCharacterFavorInfo.DataList)
+            {
+                if (row == null || row.Key != characterKey)
+                {
+                    continue;
+                }
+
+                if (favor >= row.NeedValue && row.FavorLevel > level)
+                {
+                    level = row.FavorLevel;
+                }
+            }
+
+            return level;
+        }
+
+        public bool CanGiveGiftToday(string characterKey, int giftsPerDay, int settlementDay)
+        {
+            if (string.IsNullOrEmpty(characterKey) || giftsPerDay <= 0)
+            {
+                return false;
+            }
+
+            if (!_byKey.TryGetValue(characterKey, out var st) || st == null)
+            {
+                return true;
+            }
+
+            NormalizeGiftDayCounter(st, settlementDay);
+            return st.GiftsGivenToday < giftsPerDay;
+        }
+
+        public void RecordGiftGiven(string characterKey, int settlementDay)
+        {
+            if (string.IsNullOrEmpty(characterKey))
+            {
+                return;
+            }
+
+            var st = GetOrCreate(characterKey);
+            NormalizeGiftDayCounter(st, settlementDay);
+            st.GiftsGivenToday++;
+        }
+
+        public int GetGiftsGivenToday(string characterKey, int settlementDay)
+        {
+            if (string.IsNullOrEmpty(characterKey) || !_byKey.TryGetValue(characterKey, out var st) || st == null)
+            {
+                return 0;
+            }
+
+            NormalizeGiftDayCounter(st, settlementDay);
+            return st.GiftsGivenToday;
         }
 
         static List<string> CloneList(List<string> src)

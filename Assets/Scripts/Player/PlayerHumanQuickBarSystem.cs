@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using cfg.demo;
+using My;
 using My.Config;
 using My.Saving;
 using My.UI;
@@ -11,6 +12,8 @@ namespace My.Player
     public sealed class PlayerHumanQuickBarSystem : IPlayerSystem
     {
         readonly PlayerSystemManager _player;
+        readonly HumanWeaponVisualRuntime _weaponVisual = new();
+        bool _weaponVisualBound;
 
         public QuickSlotBinding[] WeaponSlots { get; } = new QuickSlotBinding[HumanQuickBarDefs.WeaponSlotCount];
         public QuickSlotBinding[] ConsumableSlots { get; } = new QuickSlotBinding[HumanQuickBarDefs.ConsumableSlotCount];
@@ -259,8 +262,58 @@ namespace My.Player
 
         public void ApplyWeaponToRuntime()
         {
+            EnsureWeaponVisualBound();
+            if (_player.logicManager != null && _player.logicManager.IsHumanQuickBarAvailable())
+            {
+                _weaponVisual.Equip(GetActiveWeaponItemId());
+            }
+            else
+            {
+                _weaponVisual.Unequip();
+            }
+
             _player.SyncLearnedSkillsToPlayerEntity();
             OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+        }
+
+        public string GetActiveWeaponItemId()
+        {
+            if (ActiveWeaponIndex < 0 || !InWeaponRange(ActiveWeaponIndex))
+            {
+                return null;
+            }
+
+            var binding = WeaponSlots[ActiveWeaponIndex];
+            if (binding.IsEmpty
+                || _player.InventorySystem == null
+                || !_player.InventorySystem.CheckQuickSlotBindingAvailable(binding))
+            {
+                return null;
+            }
+
+            return binding.ItemId;
+        }
+
+        public Dictionary<string, string> BuildCastParamsForActiveWeapon()
+        {
+            return HumanWeaponCatalog.BuildCastParams(GetActiveWeaponItemId());
+        }
+
+        void EnsureWeaponVisualBound()
+        {
+            if (_weaponVisualBound)
+            {
+                return;
+            }
+
+            var presenter = MainGameManager.Instance?.playerScenePresenter;
+            if (presenter == null)
+            {
+                return;
+            }
+
+            _weaponVisual.Bind(presenter);
+            _weaponVisualBound = true;
         }
 
         public void CycleConsumableSelection(int delta)
@@ -368,12 +421,7 @@ namespace My.Player
 
         static string ResolveWeaponSkillId(string itemId)
         {
-            if (WeaponQuickBarSkillBinding.TryResolveSkillId(itemId, out var skillId))
-            {
-                return skillId;
-            }
-
-            return "use_human_weapon";
+            return HumanWeaponCatalog.GetSkillId(itemId);
         }
 
         void ClearAllSlots()

@@ -29,4 +29,15 @@ namespace cfg.demo
         }
     }
 
+
+
+    public partial class AreaOverlayStateInfo
+    {
+        public AreaVariantInfo BelongVariantInfo { get; set; }
+    }
+
+    public partial class AreaVariantInfo
+    {
+        public List<WorldMapBigMapLayer> MapLayers { get; set; } = new();
+    }
 }

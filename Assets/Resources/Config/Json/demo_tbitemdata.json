@@ -318,7 +318,7 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 1
   },
   {
     "item_id": "key_a1_001",
@@ -444,7 +444,7 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 1
   },
   {
     "item_id": "desire_shard",

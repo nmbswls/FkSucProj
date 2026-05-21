@@ -231,6 +231,42 @@ namespace My.UI
             }
         }
 
+        public void CollectSavePointMarkers(
+            string mapId,
+            GameLogicManager glm,
+            List<SavePointMarkerVm> outMarkers)
+        {
+            outMarkers.Clear();
+            if (string.IsNullOrEmpty(mapId) || glm == null)
+            {
+                return;
+            }
+
+            var mapCfg = CfgMgr.Cfgs?.TbMapAreaInfo?.GetOrDefault(mapId);
+
+            var points = SavePointUnlockHelper.GetUnlockedForMap(glm, mapId);
+            if (points == null || points.Count == 0)
+            {
+                return;
+            }
+
+            int minX = -10;
+            int minY = -10;
+            foreach (var sp in points)
+            {
+                var vm = new SavePointMarkerVm { Config = sp, HasMapPosition = false };
+                
+
+                var pos = new Vector2(sp.ShowX, sp.ShowY);
+                vm.NormPos01 = new Vector2(
+                    Mathf.Clamp01((pos.x - minX) / 100),
+                    Mathf.Clamp01((pos.y - minY) / 100));
+                vm.HasMapPosition = true;
+                outMarkers.Add(vm);
+            }
+        }
+
+
         void RebuildSavePointDisplay()
         {
             ClearSavePointSpawned();
@@ -249,8 +285,8 @@ namespace My.UI
             }
 
             var glm = MainGameManager.Instance?.gameLogicManager;
-            BedroomDeploySavePointPreviewUtil.CollectTeleportMarkers(_selectedMap.Id, glm, _markers);
-
+            //BedroomDeploySavePointPreviewUtil.CollectTeleportMarkers(_selectedMap.Id, glm, _markers);
+            CollectSavePointMarkers(_selectedMap.Id, glm, _markers);
             var parentMarkers = markerRoot != null ? markerRoot : mapThumbRoot;
             if (parentMarkers != null && savePointMarkerTemplate != null)
             {
@@ -363,8 +399,8 @@ namespace My.UI
                 return;
 
             UIManager.Instance?.HidePanel(panelId);
-            if (!SavePointUnlockHelper.TryTeleportToSavePoint(glm, _selectedSavePoint.SavePointId, out var reason))
-                Debug.LogWarning("[UIBedroomMapTravel] Teleport failed: " + reason);
+            //if (!SavePointUnlockHelper.TryTeleportToSavePoint(glm, _selectedSavePoint.SavePointId, out var reason))
+            //    Debug.LogWarning("[UIBedroomMapTravel] Teleport failed: " + reason);
         }
 
     }

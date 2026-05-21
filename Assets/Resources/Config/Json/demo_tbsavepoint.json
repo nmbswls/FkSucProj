@@ -1,11 +1,29 @@
 [
   {
+    "save_point_id": "base_entry",
+    "display_name": "入口",
+    "area_var_id": "base_01",
+    "show_unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "require_tribute": false,
+    "tribute_costs": [],
+    "snap_show_x": 0.3,
+    "snap_show_y": 0.3,
+    "sort_order": 0
+  },
+  {
     "save_point_id": "v1_entry_01",
     "display_name": "演示存档点",
-    "show_map_id": [
-      "village_01_d",
-      "village_01_n"
-    ],
+    "area_var_id": "village_01",
     "show_unlock_conds": [
       {
         "type": 0,
@@ -28,17 +46,14 @@
         "count": 1
       }
     ],
-    "teleport_map_id": "village_01_d",
-    "teleport_named_point": "default",
+    "snap_show_x": 0.3,
+    "snap_show_y": 0.3,
     "sort_order": 0
   },
   {
     "save_point_id": "v1_inn_01",
     "display_name": "演示旅店存档",
-    "show_map_id": [
-      "village_01_d",
-      "village_01_n"
-    ],
+    "area_var_id": "village_01",
     "show_unlock_conds": [
       {
         "type": 0,
@@ -52,8 +67,8 @@
     ],
     "require_tribute": false,
     "tribute_costs": [],
-    "teleport_map_id": "village_01_d",
-    "teleport_named_point": "inn_save",
+    "snap_show_x": 0.5,
+    "snap_show_y": 0.5,
     "sort_order": 1
   }
 ]

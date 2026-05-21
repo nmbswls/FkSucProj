@@ -930,9 +930,11 @@ namespace My.UI
         public void OnClickUseSkill(string skillId, Action<bool> onConfirm = null, bool isExtend = false)
         {
             var skillConf = SkillLibrary.GetSkillConfig(skillId);
+            var castOverrides = ResolveHumanWeaponCastOverrides(skillId);
             if(skillConf.IsCombo)
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec:null, target:null);
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(
+                    skillId, castVec: null, target: null, castOverrides: castOverrides);
                 onConfirm?.Invoke(true);
                 return;
             }
@@ -958,19 +960,48 @@ namespace My.UI
 
             if (mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.NoTarget)
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillId, castVec: null, target: null, inputVec: dir);
+                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(
+                    skillId, castVec: null, target: null, inputVec: dir, castOverrides: castOverrides);
                 onConfirm?.Invoke(true);
                 return;
             }
             else if(mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.ToFace)
             {
                 var player = MainGameManager.Instance.playerScenePresenter.PlayerEntity;
-                player.ablilityManager.UseSkill(skillId, castVec: player.Pos + player.CurrentLook * 1.0f, target: null, inputVec: dir);
+                player.ablilityManager.UseSkill(
+                    skillId,
+                    castVec: player.Pos + player.CurrentLook * 1.0f,
+                    target: null,
+                    inputVec: dir,
+                    castOverrides: castOverrides);
                 onConfirm?.Invoke(true);
                 return;
             }
 
             EnterSkillPreviewMode(skillId);
+        }
+
+        static Dictionary<string, string> ResolveHumanWeaponCastOverrides(string skillId)
+        {
+            var lgm = MainGameManager.Instance?.gameLogicManager;
+            if (lgm == null || !lgm.IsHumanQuickBarAvailable())
+            {
+                return null;
+            }
+
+            var qb = lgm.playerDataManager?.HumanQuickBar;
+            if (qb == null)
+            {
+                return null;
+            }
+
+            var activeWeaponSkill = qb.GetActiveWeaponSkillId();
+            if (string.IsNullOrEmpty(activeWeaponSkill) || activeWeaponSkill != skillId)
+            {
+                return null;
+            }
+
+            return qb.BuildCastParamsForActiveWeapon();
         }
 
         public void OnClickUseConsumable()

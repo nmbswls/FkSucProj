@@ -1,3 +1,4 @@
+using cfg.demo;
 using SimpleJSON;
 using UnityEngine;
 
@@ -62,6 +63,20 @@ namespace My.Config
                     step.CfgObjectives.Add(oneObj);
                 }
             }
+
+
+            foreach(var mapOverlay in Cfgs.TbAreaOverlayStateInfo.DataList)
+            {
+                var pCfg = Cfgs.TbAreaVariantInfo.GetOrDefault(mapOverlay.VarId);
+                mapOverlay.BelongVariantInfo = pCfg;
+            }
+
+            foreach (var mapLayer in Cfgs.TbWorldMapBigMapLayer.DataList)
+            {
+                var pCfg = Cfgs.TbAreaVariantInfo.GetOrDefault(mapLayer.AreaVarId);
+                pCfg.MapLayers.Add(mapLayer);
+            }
+            
 
             ItemCatalog.RebuildItemCaches();
             ItemStackPolicy.RebuildCaches();

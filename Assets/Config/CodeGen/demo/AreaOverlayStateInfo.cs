@@ -14,17 +14,16 @@ using SimpleJSON;
 namespace cfg.demo
 {
 [System.Serializable]
-public sealed partial class MapAreaInfo : Luban.BeanBase
+public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
 {
-    public MapAreaInfo(JSONNode _buf) 
+    public AreaOverlayStateInfo(JSONNode _buf) 
     {
         { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
+        { if(!_buf["var_id"].IsString) { throw new SerializationException(); }  VarId = _buf["var_id"]; }
         { if(!_buf["day_period_limit"].IsNumber) { throw new SerializationException(); }  DayPeriodLimit = _buf["day_period_limit"]; }
-        { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
         { if(!_buf["map_data_name"].IsString) { throw new SerializationException(); }  MapDataName = _buf["map_data_name"]; }
-        { if(!_buf["thumb_map"].IsString) { throw new SerializationException(); }  ThumbMap = _buf["thumb_map"]; }
         { if(!_buf["can_teleport"].IsBoolean) { throw new SerializationException(); }  CanTeleport = _buf["can_teleport"]; }
         { if(!_buf["is_home"].IsBoolean) { throw new SerializationException(); }  IsHome = _buf["is_home"]; }
         { if(!_buf["is_secret_base"].IsBoolean) { throw new SerializationException(); }  IsSecretBase = _buf["is_secret_base"]; }
@@ -35,9 +34,9 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         { var __json0 = _buf["hunting_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } HuntingUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  HuntingUnlockConds.Add(__v0); }   }
     }
 
-    public static MapAreaInfo DeserializeMapAreaInfo(JSONNode _buf)
+    public static AreaOverlayStateInfo DeserializeAreaOverlayStateInfo(JSONNode _buf)
     {
-        return new demo.MapAreaInfo(_buf);
+        return new demo.AreaOverlayStateInfo(_buf);
     }
 
     /// <summary>
@@ -53,21 +52,17 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// </summary>
     public string Desc;
     /// <summary>
+    /// id
+    /// </summary>
+    public string VarId;
+    /// <summary>
     /// 时间要求
     /// </summary>
     public int DayPeriodLimit;
     /// <summary>
-    /// 场景名
-    /// </summary>
-    public string SceneName;
-    /// <summary>
     /// 数据文件名
     /// </summary>
     public string MapDataName;
-    /// <summary>
-    /// 场景名
-    /// </summary>
-    public string ThumbMap;
     /// <summary>
     /// 传送标记
     /// </summary>
@@ -101,7 +96,7 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
     /// </summary>
     public System.Collections.Generic.List<demo.CommonCheckCond> HuntingUnlockConds;
    
-    public const int __ID__ = 1607084204;
+    public const int __ID__ = 928836711;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -115,10 +110,9 @@ public sealed partial class MapAreaInfo : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "desc:" + Desc + ","
+        + "varId:" + VarId + ","
         + "dayPeriodLimit:" + DayPeriodLimit + ","
-        + "sceneName:" + SceneName + ","
         + "mapDataName:" + MapDataName + ","
-        + "thumbMap:" + ThumbMap + ","
         + "canTeleport:" + CanTeleport + ","
         + "isHome:" + IsHome + ","
         + "isSecretBase:" + IsSecretBase + ","

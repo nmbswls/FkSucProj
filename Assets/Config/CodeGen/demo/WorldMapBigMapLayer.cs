@@ -19,12 +19,13 @@ public sealed partial class WorldMapBigMapLayer : Luban.BeanBase
     public WorldMapBigMapLayer(JSONNode _buf) 
     {
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
-        { if(!_buf["scene_name"].IsString) { throw new SerializationException(); }  SceneName = _buf["scene_name"]; }
+        { if(!_buf["area_var_id"].IsString) { throw new SerializationException(); }  AreaVarId = _buf["area_var_id"]; }
+        { if(!_buf["is_main"].IsBoolean) { throw new SerializationException(); }  IsMain = _buf["is_main"]; }
         { if(!_buf["region_key"].IsString) { throw new SerializationException(); }  RegionKey = _buf["region_key"]; }
         { if(!_buf["room_id"].IsString) { throw new SerializationException(); }  RoomId = _buf["room_id"]; }
         { if(!_buf["rule_priority"].IsNumber) { throw new SerializationException(); }  RulePriority = _buf["rule_priority"]; }
         { if(!_buf["forbid_open_world_map"].IsBoolean) { throw new SerializationException(); }  ForbidOpenWorldMap = _buf["forbid_open_world_map"]; }
-        { if(!_buf["big_map_texture_resource_path"].IsString) { throw new SerializationException(); }  BigMapTextureResourcePath = _buf["big_map_texture_resource_path"]; }
+        { if(!_buf["big_map_texture_path"].IsString) { throw new SerializationException(); }  BigMapTexturePath = _buf["big_map_texture_path"]; }
         { if(!_buf["world_min_x"].IsNumber) { throw new SerializationException(); }  WorldMinX = _buf["world_min_x"]; }
         { if(!_buf["world_min_y"].IsNumber) { throw new SerializationException(); }  WorldMinY = _buf["world_min_y"]; }
         { if(!_buf["world_max_x"].IsNumber) { throw new SerializationException(); }  WorldMaxX = _buf["world_max_x"]; }
@@ -41,9 +42,13 @@ public sealed partial class WorldMapBigMapLayer : Luban.BeanBase
     /// </summary>
     public int Id;
     /// <summary>
-    /// SceneName
+    /// 所属map变体
     /// </summary>
-    public string SceneName;
+    public string AreaVarId;
+    /// <summary>
+    /// 是否为主要
+    /// </summary>
+    public bool IsMain;
     /// <summary>
     /// 策划分区名
     /// </summary>
@@ -63,7 +68,7 @@ public sealed partial class WorldMapBigMapLayer : Luban.BeanBase
     /// <summary>
     /// 底图路径
     /// </summary>
-    public string BigMapTextureResourcePath;
+    public string BigMapTexturePath;
     /// <summary>
     /// 边界
     /// </summary>
@@ -83,12 +88,13 @@ public sealed partial class WorldMapBigMapLayer : Luban.BeanBase
     {
         return "{ "
         + "id:" + Id + ","
-        + "sceneName:" + SceneName + ","
+        + "areaVarId:" + AreaVarId + ","
+        + "isMain:" + IsMain + ","
         + "regionKey:" + RegionKey + ","
         + "roomId:" + RoomId + ","
         + "rulePriority:" + RulePriority + ","
         + "forbidOpenWorldMap:" + ForbidOpenWorldMap + ","
-        + "bigMapTextureResourcePath:" + BigMapTextureResourcePath + ","
+        + "bigMapTexturePath:" + BigMapTexturePath + ","
         + "worldMinX:" + WorldMinX + ","
         + "worldMinY:" + WorldMinY + ","
         + "worldMaxX:" + WorldMaxX + ","

@@ -327,6 +327,7 @@ public class ConsoleGM : MonoBehaviour
             });
 
         RegisterSecretBaseLevelCommands();
+        RegisterSecretBaseNpcFavorCommands();
 
         Register("rr", "撤退",
             null,
@@ -680,6 +681,57 @@ public class ConsoleGM : MonoBehaviour
         Register("secret_base_level", "隐秘据点建设等级：无参查看配置与当前值，有参升级/降级并刷新卷轴边界",
             parameters, Handler);
         Register("sb_level", "alias of secret_base_level", parameters, Handler);
+    }
+
+    void RegisterSecretBaseNpcFavorCommands()
+    {
+        var parameters = new[]
+        {
+            new CmdParam("character_key", "TbCharacterInfo.key"),
+            new CmdParam("delta", "optional int favor delta"),
+        };
+
+        void Handler(List<string> args)
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                LogError("gameLogicManager null");
+                return;
+            }
+
+            if (args.Count == 0)
+            {
+                Log("usage: secret_base_npc_favor <character_key> [delta]");
+                return;
+            }
+
+            string key = args[0];
+            var registry = glm.worldPersistState?.NpcCharacters;
+            if (registry == null)
+            {
+                LogError("NpcCharacters registry null");
+                return;
+            }
+
+            if (args.Count >= 2)
+            {
+                if (!int.TryParse(args[1], out var delta))
+                {
+                    LogError("delta must be int");
+                    return;
+                }
+
+                registry.AddFavorValue(key, delta);
+            }
+
+            int favor = registry.GetFavorValue(key);
+            int level = registry.GetFavorLevel(key);
+            int given = registry.GetGiftsGivenToday(key, glm.SettlementDayIndex);
+            Log($"secret_base_npc_favor key={key} favor={favor} level={level} giftsToday={given}");
+        }
+
+        Register("secret_base_npc_favor", "查看/调整据点 NPC 好感（CharacterKey）", parameters, Handler);
     }
 
     // =============== 命令系统 ===============

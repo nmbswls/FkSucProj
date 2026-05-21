@@ -1,0 +1,24 @@
+[
+  {
+    "item_id": "small_knife",
+    "func_type": 1,
+    "skill_id": "shoot_knife",
+    "view_prefab": "Prefab/Presentations/HumanWeaponView",
+    "view_sprite": "small_knife",
+    "anim_name": "player_weapon01_01",
+    "weapon_level": 25000,
+    "stun_value": 50000,
+    "bullet_id": "small_knife"
+  },
+  {
+    "item_id": "chanzi",
+    "func_type": 0,
+    "skill_id": "use_human_weapon",
+    "view_prefab": "Prefab/Presentations/HumanWeaponView",
+    "view_sprite": "chanzi",
+    "anim_name": "player_weapon01_01",
+    "weapon_level": 25000,
+    "stun_value": 5000,
+    "bullet_id": ""
+  }
+]

@@ -60,9 +60,19 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         }
     }
 
+    public void RegisterDynamicWeapon(MapUnitWeaponOne weaponOne)
+    {
+        if (weaponOne == null || WeaponOnes.Contains(weaponOne))
+        {
+            return;
+        }
+
+        WeaponOnes.Add(weaponOne);
+        weaponOne.WeaponCtrl = this;
+        weaponOne.gameObject.SetActive(false);
+    }
+
     /// <summary>
-    /// 设置常驻武器显示
-    /// </summary>
     /// <param name="weaponName"></param>
     public void SetAlwaysShowWeapon(string weaponName)
     {

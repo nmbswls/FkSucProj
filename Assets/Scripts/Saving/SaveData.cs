@@ -158,6 +158,10 @@ namespace My.Saving
         public int DesireCrystalTakenDay; // 获取天数
 
         public List<string> FinishedUniqDreamingIds = new(); // 已完成的唯一入梦入口
+
+        public int FavorValue;
+        public int GiftsGivenToday;
+        public int LastGiftSettlementDay = -1;
     }
 
     // 主背包单格稀疏持久化：仅存占格条目，使用 SlotIndex（与 PlayerBag.GetItemByIdx 平面下标一致）

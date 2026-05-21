@@ -20,12 +20,12 @@ public sealed partial class SavePoint : Luban.BeanBase
     {
         { if(!_buf["save_point_id"].IsString) { throw new SerializationException(); }  SavePointId = _buf["save_point_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
-        { var __json0 = _buf["show_map_id"]; if(!__json0.IsArray) { throw new SerializationException(); } ShowMapId = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  ShowMapId.Add(__v0); }   }
+        { if(!_buf["area_var_id"].IsString) { throw new SerializationException(); }  AreaVarId = _buf["area_var_id"]; }
         { var __json0 = _buf["show_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } ShowUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  ShowUnlockConds.Add(__v0); }   }
         { if(!_buf["require_tribute"].IsBoolean) { throw new SerializationException(); }  RequireTribute = _buf["require_tribute"]; }
         { var __json0 = _buf["tribute_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } TributeCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  TributeCosts.Add(__v0); }   }
-        { if(!_buf["teleport_map_id"].IsString) { throw new SerializationException(); }  TeleportMapId = _buf["teleport_map_id"]; }
-        { if(!_buf["teleport_named_point"].IsString) { throw new SerializationException(); }  TeleportNamedPoint = _buf["teleport_named_point"]; }
+        { if(!_buf["snap_show_x"].IsNumber) { throw new SerializationException(); }  SnapShowX = _buf["snap_show_x"]; }
+        { if(!_buf["snap_show_y"].IsNumber) { throw new SerializationException(); }  SnapShowY = _buf["snap_show_y"]; }
         { if(!_buf["sort_order"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["sort_order"]; }
     }
 
@@ -43,9 +43,9 @@ public sealed partial class SavePoint : Luban.BeanBase
     /// </summary>
     public string DisplayName;
     /// <summary>
-    /// map_id
+    /// 归属地图归属id
     /// </summary>
-    public System.Collections.Generic.List<string> ShowMapId;
+    public string AreaVarId;
     /// <summary>
     /// show_unlock_conds
     /// </summary>
@@ -59,13 +59,13 @@ public sealed partial class SavePoint : Luban.BeanBase
     /// </summary>
     public System.Collections.Generic.List<demo.TalentUnlockCost> TributeCosts;
     /// <summary>
-    /// teleport_map_id
+    /// x
     /// </summary>
-    public string TeleportMapId;
+    public float SnapShowX;
     /// <summary>
-    /// teleport_named_point
+    /// y
     /// </summary>
-    public string TeleportNamedPoint;
+    public float SnapShowY;
     /// <summary>
     /// sort_order
     /// </summary>
@@ -85,12 +85,12 @@ public sealed partial class SavePoint : Luban.BeanBase
         return "{ "
         + "savePointId:" + SavePointId + ","
         + "displayName:" + DisplayName + ","
-        + "showMapId:" + Luban.StringUtil.CollectionToString(ShowMapId) + ","
+        + "areaVarId:" + AreaVarId + ","
         + "showUnlockConds:" + Luban.StringUtil.CollectionToString(ShowUnlockConds) + ","
         + "requireTribute:" + RequireTribute + ","
         + "tributeCosts:" + Luban.StringUtil.CollectionToString(TributeCosts) + ","
-        + "teleportMapId:" + TeleportMapId + ","
-        + "teleportNamedPoint:" + TeleportNamedPoint + ","
+        + "snapShowX:" + SnapShowX + ","
+        + "snapShowY:" + SnapShowY + ","
         + "sortOrder:" + SortOrder + ","
         + "}";
     }

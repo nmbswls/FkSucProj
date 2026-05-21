@@ -275,8 +275,7 @@ namespace My.Config
                 return def.QuickBarKind;
             }
 
-            // 表未填列时的临时兜底，导表后可删
-            if (itemId == "small_knife")
+            if (HumanWeaponCatalog.IsHumanWeapon(itemId))
             {
                 return EQuickBarItemKind.Weapon;
             }

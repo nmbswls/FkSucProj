@@ -24,8 +24,8 @@ namespace My.SecretBase
         float _scrollMaxX = 32f;
         bool _sessionActive;
 
-        readonly SecretBaseFacilityRuntime _facilities = new();
-        SecretBaseInteractable _hovered;
+        readonly SecretBaseWorldSpawnRuntime _worldSpawn = new();
+        ISecretBaseClickTarget _hovered;
 
         static readonly List<RaycastResult> UiRaycastBuffer = new(8);
 
@@ -61,13 +61,13 @@ namespace My.SecretBase
             RefreshScrollBounds();
             var glm = MainGameManager.Instance?.gameLogicManager;
             var root = facilitySpawnRoot != null ? facilitySpawnRoot : transform;
-            _facilities.Refresh(glm, root);
+            _worldSpawn.Refresh(glm, root);
         }
 
         public void ExitMode()
         {
             ClearHover();
-            _facilities.ClearSpawned();
+            _worldSpawn.ClearSpawned();
             _sessionActive = false;
         }
 
@@ -220,7 +220,7 @@ namespace My.SecretBase
 
         void TryClick(Vector2 worldPos)
         {
-            FindTopHit(worldPos)?.OpenPanel();
+            FindTopHit(worldPos)?.OnClick();
         }
 
         void ClearHover()
@@ -229,16 +229,17 @@ namespace My.SecretBase
             _hovered = null;
         }
 
-        SecretBaseInteractable FindTopHit(Vector2 worldPos)
+        ISecretBaseClickTarget FindTopHit(Vector2 worldPos)
         {
-            SecretBaseInteractable best = null;
+            ISecretBaseClickTarget best = null;
             var bestOrder = int.MinValue;
-            var list = _facilities.Spawned;
+            var list = _worldSpawn.Spawned;
 
             for (int i = 0; i < list.Count; i++)
             {
                 var item = list[i];
-                if (item == null || !item.isActiveAndEnabled || !item.ContainsPoint(worldPos))
+                var mb = item as MonoBehaviour;
+                if (item == null || mb == null || !mb.isActiveAndEnabled || !item.ContainsPoint(worldPos))
                 {
                     continue;
                 }

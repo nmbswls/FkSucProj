@@ -145,6 +145,10 @@ namespace My.Map.Entity
                     var ab = CreateShootKnifeAbility();
                     _abilityDict[ab.Id] = ab;
                 }
+                {
+                    var ab = CreateUseHumanWeapon();
+                    _abilityDict[ab.Id] = ab;
+                }
 
 
                 {
@@ -3748,6 +3752,58 @@ namespace My.Map.Entity
             return spec;
 
         }
+
+        private static MapAbilitySpecConfig CreateUseHumanWeapon()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "use_human_weapon";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.DefaultStepDistance = 0.4f;
+            spec.CastType = ECastType.NoTarget;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                AffectByAtkSpeed = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                AnimTag = "attack_01",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.15"
+                },
+            };
+
+            var newEffect = new MapAbilityEffectUseWeaponCfg()
+            {
+                WeaponName = My.Player.HumanWeaponCatalog.ViewKey,
+                AnimName = "player_weapon01_01",
+                Duration = 0.12f,
+                OnHitEffects = new()
+                {
+                    new MapAbilityEffectHumanWeaponHitCfg(),
+                }
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
 
         private static MapAbilitySpecConfig CreateDefaultGuardAttack1()
         {

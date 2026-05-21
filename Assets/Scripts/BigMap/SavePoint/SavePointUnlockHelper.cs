@@ -266,43 +266,43 @@ namespace My.Map
             return result;
         }
 
-        public static bool TryTeleportToSavePoint(GameLogicManager glm, string savePointId, out string failReason)
-        {
-            failReason = null;
-            if (glm == null)
-            {
-                failReason = "no_glm";
-                return false;
-            }
+        //public static bool TryTeleportToSavePoint(GameLogicManager glm, string savePointId, out string failReason)
+        //{
+        //    failReason = null;
+        //    if (glm == null)
+        //    {
+        //        failReason = "no_glm";
+        //        return false;
+        //    }
 
-            var cfg = GetCfg(savePointId);
-            if (cfg == null)
-            {
-                failReason = "no_cfg";
-                return false;
-            }
+        //    var cfg = GetCfg(savePointId);
+        //    if (cfg == null)
+        //    {
+        //        failReason = "no_cfg";
+        //        return false;
+        //    }
 
-            if (!IsFormallyUnlocked(glm, savePointId))
-            {
-                failReason = "locked";
-                return false;
-            }
+        //    if (!IsFormallyUnlocked(glm, savePointId))
+        //    {
+        //        failReason = "locked";
+        //        return false;
+        //    }
 
-            var mapId = cfg.TeleportMapId;
-            var named = cfg.TeleportNamedPoint;
-            if (string.IsNullOrEmpty(mapId))
-            {
-                failReason = "no_teleport_map";
-                return false;
-            }
+        //    var mapId = cfg.TeleportMapId;
+        //    var named = cfg.TeleportNamedPoint;
+        //    if (string.IsNullOrEmpty(mapId))
+        //    {
+        //        failReason = "no_teleport_map";
+        //        return false;
+        //    }
 
-            if (string.IsNullOrEmpty(named))
-            {
-                named = "default";
-            }
+        //    if (string.IsNullOrEmpty(named))
+        //    {
+        //        named = "default";
+        //    }
 
-            glm.PreparePlayerSwitchArea(mapId, true, targetPoint: named);
-            return true;
-        }
+        //    glm.PreparePlayerSwitchArea(mapId, true, targetPoint: named);
+        //    return true;
+        //}
     }
 }

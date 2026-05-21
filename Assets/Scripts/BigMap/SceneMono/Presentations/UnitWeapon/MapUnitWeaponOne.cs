@@ -200,20 +200,27 @@ namespace My.Map.Scene
 
             this._durationTimer = LogicTime.time + duration;
 
-            // 先尝试获取 clip 长度（简单版：按 clip 名匹配）
-            if(weaponAnimancer != null)
+            if (weaponAnimancer == null || string.IsNullOrEmpty(weaponAnimName))
             {
-                var clipRes = SimpleResManager.Load<AnimationClip>($"Anim/player/{weaponAnimName}");
-
-                var clipLenSec = clipRes.length;
-                var speed = 1.0f;
-                if (clipLenSec != -1)
-                {
-                    speed = clipLenSec / duration;
-                }
-                var state = weaponAnimancer.Play(clipRes);
-                state.Speed = speed;
+                return;
             }
+
+            var clipRes = SimpleResManager.Load<AnimationClip>($"Anim/player/{weaponAnimName}");
+            if (clipRes == null)
+            {
+                Debug.LogWarning($"MapUnitWeaponOne ShowWeapon clip not found: {weaponAnimName}");
+                return;
+            }
+
+            var clipLenSec = clipRes.length;
+            var speed = 1.0f;
+            if (clipLenSec > 0f)
+            {
+                speed = clipLenSec / duration;
+            }
+
+            var state = weaponAnimancer.Play(clipRes);
+            state.Speed = speed;
         }
 
         public void ClearWeapon()

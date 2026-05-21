@@ -100,6 +100,7 @@ namespace My.Map.Entity
     {
         public string PhaseName;
 
+        public bool AffectByAtkSpeed;
         public OneVariaty DurationValue;
         public bool HoldingPhase; // 持续施法的phase不会自然结束
         

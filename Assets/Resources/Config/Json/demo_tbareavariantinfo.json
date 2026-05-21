@@ -1,0 +1,56 @@
+[
+  {
+    "var_id": "secret_base_hub",
+    "name": "隐秘据点",
+    "desc": "隐秘据点横板场景",
+    "logic_area_id": "secret_base_hub",
+    "scene_name": "",
+    "thumb_map": "",
+    "is_secret_base": true
+  },
+  {
+    "var_id": "base_01",
+    "name": "据点",
+    "desc": "据点",
+    "logic_area_id": "base_01",
+    "scene_name": "Main_Home",
+    "thumb_map": "base_01",
+    "is_secret_base": false
+  },
+  {
+    "var_id": "village_01",
+    "name": "村子1",
+    "desc": "村子1",
+    "logic_area_id": "village_01",
+    "scene_name": "Main_Area_01",
+    "thumb_map": "village_01",
+    "is_secret_base": false
+  },
+  {
+    "var_id": "village_02",
+    "name": "村子2",
+    "desc": "村子2",
+    "logic_area_id": "village_02",
+    "scene_name": "Main_Area_02",
+    "thumb_map": "village_02",
+    "is_secret_base": false
+  },
+  {
+    "var_id": "game_init",
+    "name": "出生点",
+    "desc": "出生点",
+    "logic_area_id": "game_init",
+    "scene_name": "Main_Init",
+    "thumb_map": "game_init",
+    "is_secret_base": false
+  },
+  {
+    "var_id": "base_01_fight",
+    "name": "纷争据点",
+    "desc": "纷争据点",
+    "logic_area_id": "base_01",
+    "scene_name": "Main_Home_Fight",
+    "thumb_map": "base_01",
+    "is_secret_base": false
+  }
+]
