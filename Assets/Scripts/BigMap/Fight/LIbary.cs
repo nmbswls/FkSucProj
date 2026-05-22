@@ -3830,7 +3830,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.5"
+                    RawVal = "0.05"
                 },
             });
 

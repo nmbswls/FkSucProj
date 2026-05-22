@@ -222,7 +222,7 @@ namespace My.Map.Scene
                 speed = clipLenSec / duration;
             }
 
-            var state = weaponAnimancer.Play(clipRes);
+            var state = weaponAnimancer.Play(clipRes, 0.1f, FadeMode.FromStart);
             state.Speed = speed;
         }
 
@@ -233,6 +233,31 @@ namespace My.Map.Scene
             if (!KeepVisibleWhenIdle)
             {
                 gameObject.SetActive(false);
+                return;
+            }
+
+            ResetEquipIdlePose();
+        }
+
+        // 常驻装备：攻击结束后清掉 Animancer 结束态，交回瞄准驱动
+        void ResetEquipIdlePose()
+        {
+            if (weaponAnimancer != null)
+            {
+                weaponAnimancer.Stop();
+            }
+
+            if (weaponParts == null)
+            {
+                return;
+            }
+
+            foreach (var part in weaponParts)
+            {
+                if (part?.rotator != null)
+                {
+                    part.rotator.localRotation = Quaternion.identity;
+                }
             }
         }
     }
