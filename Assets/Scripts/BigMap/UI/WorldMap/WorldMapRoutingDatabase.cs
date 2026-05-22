@@ -208,6 +208,11 @@ namespace My.Map
                     continue;
                 }
 
+                if (m.BelongVariantInfo.ShowInMap)
+                {
+                    continue;
+                }
+
                 if (m.DayPeriodLimit != 0)
                 {
                     if (m.DayPeriodLimit == 1 && dayPeriod != GameLogicManager.EDayPeriod.Day)
@@ -219,6 +224,11 @@ namespace My.Map
                     {
                         continue;
                     }
+                }
+
+                if(!glm.CheckCommonCondsAll(m.BelongVariantInfo.ShowConds))
+                {
+                    continue;
                 }
 
                 var conds = m.HuntingUnlockConds;

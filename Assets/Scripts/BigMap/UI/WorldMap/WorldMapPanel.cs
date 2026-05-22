@@ -44,6 +44,8 @@ namespace My.UI
         [SerializeField] Button btnClose;
         [SerializeField] TextMeshProUGUI mapDescText;
 
+        [SerializeField] Button btnBackSecret;
+
         readonly List<AreaOverlayStateInfo> _browsableMaps = new();
         readonly List<BedroomDeployMapRowView> _spawnedMapRows = new();
         readonly List<SavePointMarkerVm> _savePointMarkers = new();
@@ -129,6 +131,12 @@ namespace My.UI
                 btnClose.onClick.AddListener(CloseSelf);
             }
 
+            if(btnBackSecret != null)
+            {
+                btnBackSecret.onClick.RemoveAllListeners();
+                btnBackSecret.onClick.AddListener(BackToSecret);
+            }
+
             if (mapRowTemplate != null)
             {
                 mapRowTemplate.gameObject.SetActive(false);
@@ -184,6 +192,15 @@ namespace My.UI
             if (dimBackground != null)
             {
                 dimBackground.color = new Color(0f, 0f, 0f, 0.55f);
+            }
+
+            if (MainGameManager.Instance.gameLogicManager.AreaManager.AreaOverlayId == "secret_base_hub")
+            {
+                btnBackSecret.gameObject.SetActive(false);
+            }
+            else
+            {
+                btnBackSecret.gameObject.SetActive(true);
             }
         }
 
@@ -622,6 +639,19 @@ namespace My.UI
         void CloseSelf()
         {
             UIManager.Instance?.HidePanel(WorldMapRuntime.PanelId);
+        }
+
+        /// <summary>
+        /// 回家
+        /// </summary>
+        void BackToSecret()
+        {
+            if(MainGameManager.Instance.gameLogicManager.AreaManager.AreaOverlayId == "secret_base_hub")
+            {
+                return;
+            }
+            MainGameManager.Instance.gameLogicManager.BeginFreeBigMapSession();
+            MainGameManager.Instance.gameLogicManager.PreparePlayerSwitchArea("secret_base_hub", true);
         }
 
         public override void Teardown()
