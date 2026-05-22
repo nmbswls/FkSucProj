@@ -97,7 +97,7 @@ namespace My.Map
                 return path;
             }
 
-            return $"WorldMap/fake_map_{path}";
+            return $"MiniMap/{path}";
         }
     }
 
@@ -141,18 +141,61 @@ namespace My.Map
             return cfgRoomId == playerRoomId;
         }
 
-        static WorldMapBigMapLayer PickBigMapLayer(IReadOnlyList<WorldMapBigMapLayer> list, string mapVarId, string roomId)
+        static WorldMapBigMapLayer PickBigMapLayer(IReadOnlyList<WorldMapBigMapLayer> list, string roomId)
         {
-            if (list == null || string.IsNullOrEmpty(mapVarId))
+            if (list == null || list.Count == 0)
             {
                 return null;
             }
 
-            return list
-                .Where(r => r.AreaVarId == mapVarId)
+            var winner = list
                 .Where(r => RoomFilterMatches(r.RoomId, roomId))
                 .OrderByDescending(r => r.RulePriority)
                 .FirstOrDefault();
+            if (winner != null)
+            {
+                return winner;
+            }
+
+            return list.OrderByDescending(r => r.RulePriority).FirstOrDefault();
+        }
+
+        static string ResolveRoomIdForMapView(GameLogicManager glm, PlayerLogicEntity player, string mapOverlayId)
+        {
+            if (player == null || glm?.AreaManager == null)
+            {
+                return string.Empty;
+            }
+
+            var currentMapId = glm.AreaManager.AreaOverlayId;
+            if (string.IsNullOrEmpty(currentMapId) || currentMapId != mapOverlayId)
+            {
+                return string.Empty;
+            }
+
+            return player.BelongRoomId ?? string.Empty;
+        }
+
+        public static bool HasBigMapLayer(string mapOverlayId)
+        {
+            var mapCfg = CfgMgr.Cfgs?.TbAreaOverlayStateInfo?.GetOrDefault(mapOverlayId);
+            var layers = mapCfg?.BelongVariantInfo?.MapLayers;
+            return layers != null && layers.Count > 0;
+        }
+
+        static Sprite ResolveBigMapSprite(string bigPath, WorldMapGlobal global)
+        {
+            var sprite = WorldMapTextureResolver.Resolve(
+                null,
+                WorldMapTextureResolver.NormalizeBigMapPath(bigPath));
+            if (sprite != null || global == null)
+            {
+                return sprite;
+            }
+
+            return WorldMapTextureResolver.Resolve(
+                null,
+                WorldMapTextureResolver.NormalizeBigMapPath(global.FallbackBigMapTextureResourcePath));
         }
 
         public static bool CanOpenMap(GameLogicManager glm, out string denyHint)
@@ -182,7 +225,7 @@ namespace My.Map
                 return false;
             }
 
-            if (glm.playerLogicEntity == null)
+            if (glm.playerLogicEntity == null && !glm.IsInSecretBase)
             {
                 denyHint = "Player not ready";
                 return false;
@@ -208,7 +251,8 @@ namespace My.Map
                     continue;
                 }
 
-                if (!m.BelongVariantInfo.ShowInMap)
+                var variant = m.BelongVariantInfo;
+                if (variant == null || !variant.ShowInMap)
                 {
                     continue;
                 }
@@ -226,7 +270,7 @@ namespace My.Map
                     }
                 }
 
-                if(!glm.CheckCommonCondsAll(m.BelongVariantInfo.ShowConds))
+                if (glm != null && !glm.CheckCommonCondsAll(variant.ShowConds))
                 {
                     continue;
                 }
@@ -317,8 +361,7 @@ namespace My.Map
             out WorldMapViewContext ctx)
         {
             ctx = null;
-            var player = glm?.playerLogicEntity;
-            if (player == null || string.IsNullOrEmpty(mapOverlayId))
+            if (string.IsNullOrEmpty(mapOverlayId))
             {
                 return false;
             }
@@ -330,10 +373,10 @@ namespace My.Map
                 return false;
             }
 
-            var roomId = player.BelongRoomId ?? string.Empty;
-            var global = cfgs?.TbWorldMapGlobal;
-            var bigList = cfgs?.TbWorldMapBigMapLayer?.DataList;
-            var bigWinner = PickBigMapLayer(bigList, mapCfg.VarId, roomId);
+            var player = glm?.playerLogicEntity;
+            var roomId = ResolveRoomIdForMapView(glm, player, mapOverlayId);
+            var global = cfgs?.TbWorldMapGlobal.Data;
+            var bigWinner = PickBigMapLayer(mapCfg.BelongVariantInfo?.MapLayers, roomId);
 
             if (bigWinner == null)
             {
@@ -354,14 +397,14 @@ namespace My.Map
             ctx = new WorldMapViewContext
             {
                 MapOverlayId = mapOverlayId,
-                MapSprite = WorldMapTextureResolver.Resolve(null, WorldMapTextureResolver.NormalizeBigMapPath(bigPath)),
+                MapSprite = ResolveBigMapSprite(bigPath, global),
                 WorldMin = new Vector2(bigWinner.WorldMinX, bigWinner.WorldMinY),
                 WorldMax = new Vector2(bigWinner.WorldMaxX, bigWinner.WorldMaxY),
                 UsesWorldCoords = true,
                 HasMapLayer = true,
             };
 
-            if (liveMarkers)
+            if (liveMarkers && player != null && glm != null)
             {
                 FillMarkers(glm, player, ctx);
             }

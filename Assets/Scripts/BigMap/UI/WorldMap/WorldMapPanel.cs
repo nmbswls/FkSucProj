@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using cfg.demo;
 using My;
 using My.Map;
-using My.MiniGame.Dream;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -106,6 +105,7 @@ namespace My.UI
             if (mapImage != null)
             {
                 mapImage.preserveAspect = true;
+                mapImage.type = Image.Type.Simple;
             }
 
             if (liveMarkerTemplate != null)
@@ -164,25 +164,7 @@ namespace My.UI
             WorldMapRuntime.CollectBrowsableMaps(glm, _browsableMaps);
             RebuildMapList();
 
-            AreaOverlayStateInfo initial = null;
-            if (!string.IsNullOrEmpty(preferMapId))
-            {
-                foreach (var m in _browsableMaps)
-                {
-                    if (m.Id == preferMapId)
-                    {
-                        initial = m;
-                        break;
-                    }
-                }
-            }
-
-            if (initial == null && _browsableMaps.Count > 0)
-            {
-                initial = _browsableMaps[0];
-            }
-
-            SelectMap(initial);
+            SelectMap(ResolveInitialMap(glm, preferMapId));
 
             if (closeHintText != null)
             {
@@ -246,6 +228,58 @@ namespace My.UI
             }
         }
 
+        AreaOverlayStateInfo ResolveInitialMap(GameLogicManager glm, string preferMapId)
+        {
+            AreaOverlayStateInfo FindById(string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return null;
+                }
+
+                foreach (var m in _browsableMaps)
+                {
+                    if (m.Id == id)
+                    {
+                        return m;
+                    }
+                }
+
+                return null;
+            }
+
+            AreaOverlayStateInfo PickFirstWithLayer()
+            {
+                foreach (var m in _browsableMaps)
+                {
+                    if (WorldMapRuntime.HasBigMapLayer(m.Id))
+                    {
+                        return m;
+                    }
+                }
+
+                return _browsableMaps.Count > 0 ? _browsableMaps[0] : null;
+            }
+
+            if (glm != null && glm.IsInSecretBase)
+            {
+                var bookmarkId = glm.LastOpenWorldBeforeSecretBase?.MapId;
+                var fromBookmark = FindById(bookmarkId);
+                if (fromBookmark != null)
+                {
+                    return fromBookmark;
+                }
+            }
+
+            var prefer = FindById(preferMapId);
+            if (prefer != null)
+            {
+                return WorldMapRuntime.HasBigMapLayer(prefer.Id) ? prefer : PickFirstWithLayer();
+            }
+
+            return PickFirstWithLayer();
+        }
+
         void OnMapRowClicked(AreaOverlayStateInfo map)
         {
             SelectMap(map);
@@ -282,13 +316,15 @@ namespace My.UI
             _trackLiveMarkers = false;
 
             var glm = MainGameManager.Instance?.gameLogicManager;
-            if (_selectedMap == null || glm == null)
+            if (_selectedMap == null)
             {
                 ApplyMapViewportEmpty(null);
                 return;
             }
 
-            var isCurrentMap = !string.IsNullOrEmpty(_currentMapId) && _selectedMap.Id == _currentMapId;
+            var isCurrentMap = glm != null
+                && !string.IsNullOrEmpty(_currentMapId)
+                && _selectedMap.Id == _currentMapId;
             if (!WorldMapRuntime.TryBuildViewContext(glm, _selectedMap.Id, isCurrentMap, out _boundContext))
             {
                 ApplyMapViewportEmpty(null);
@@ -302,14 +338,14 @@ namespace My.UI
             }
 
             SetMapEmptyHintVisible(false);
-            _trackLiveMarkers = isCurrentMap;
+            _trackLiveMarkers = isCurrentMap && glm?.playerLogicEntity != null;
 
             if (mapImage != null)
             {
+                mapImage.type = Image.Type.Simple;
                 mapImage.gameObject.SetActive(true);
                 mapImage.sprite = _boundContext.MapSprite;
                 mapImage.color = _boundContext.MapSprite != null ? Color.white : new Color(0.2f, 0.22f, 0.28f, 1f);
-                DreamUISpriteUtil.EnsureWhiteSprite(mapImage);
             }
 
             if (markersRoot != null)

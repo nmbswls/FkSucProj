@@ -55,11 +55,11 @@ namespace My.UI
 
             if (canSelect)
             {
-                icon.sprite = SimpleResManager.Load<Sprite>("Sprite/Map/sp_mini");
+                icon.sprite = SimpleResManager.Load<Sprite>("Sprites/Map/sp_mini");
             }
             else
             {
-                icon.sprite = SimpleResManager.Load<Sprite>("Sprite/Map/sp_mini_gray");
+                icon.sprite = SimpleResManager.Load<Sprite>("Sprites/Map/sp_mini_gray");
             }
 
             SetSelected(selected);
