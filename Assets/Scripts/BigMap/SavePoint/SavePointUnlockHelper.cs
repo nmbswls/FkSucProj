@@ -28,6 +28,11 @@ namespace My.Map
 
         public static bool IsActivated(GameLogicManager glm, string savePointId)
         {
+            var cfg = CfgMgr.Cfgs.TbSavePoint.GetOrDefault(savePointId);
+            if(cfg != null && cfg.DefaultActivated)
+            {
+                return true;
+            }
             var st = glm?.worldPersistState?.GetSavePointUnlockStateOrNull(savePointId);
             return st != null && st.Unlocked;
         }

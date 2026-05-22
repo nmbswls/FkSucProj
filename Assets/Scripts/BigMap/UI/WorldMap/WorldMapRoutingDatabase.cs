@@ -208,7 +208,7 @@ namespace My.Map
                     continue;
                 }
 
-                if (m.BelongVariantInfo.ShowInMap)
+                if (!m.BelongVariantInfo.ShowInMap)
                 {
                     continue;
                 }
@@ -231,24 +231,7 @@ namespace My.Map
                     continue;
                 }
 
-                var conds = m.HuntingUnlockConds;
-                var passed = true;
-                if (conds != null && glm != null)
-                {
-                    foreach (var cond in conds)
-                    {
-                        if (!glm.CheckCommonCond(cond))
-                        {
-                            passed = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (passed)
-                {
-                    outMaps.Add(m);
-                }
+                outMaps.Add(m);
             }
 
             outMaps.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));

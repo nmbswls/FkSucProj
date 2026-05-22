@@ -21,6 +21,7 @@ public sealed partial class SavePoint : Luban.BeanBase
         { if(!_buf["save_point_id"].IsString) { throw new SerializationException(); }  SavePointId = _buf["save_point_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
         { if(!_buf["area_var_id"].IsString) { throw new SerializationException(); }  AreaVarId = _buf["area_var_id"]; }
+        { if(!_buf["default_activated"].IsBoolean) { throw new SerializationException(); }  DefaultActivated = _buf["default_activated"]; }
         { var __json0 = _buf["show_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } ShowUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  ShowUnlockConds.Add(__v0); }   }
         { if(!_buf["require_tribute"].IsBoolean) { throw new SerializationException(); }  RequireTribute = _buf["require_tribute"]; }
         { var __json0 = _buf["tribute_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } TributeCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  TributeCosts.Add(__v0); }   }
@@ -47,6 +48,10 @@ public sealed partial class SavePoint : Luban.BeanBase
     /// 归属地图归属id
     /// </summary>
     public string AreaVarId;
+    /// <summary>
+    /// 默认激活
+    /// </summary>
+    public bool DefaultActivated;
     /// <summary>
     /// show_unlock_conds
     /// </summary>
@@ -91,6 +96,7 @@ public sealed partial class SavePoint : Luban.BeanBase
         + "savePointId:" + SavePointId + ","
         + "displayName:" + DisplayName + ","
         + "areaVarId:" + AreaVarId + ","
+        + "defaultActivated:" + DefaultActivated + ","
         + "showUnlockConds:" + Luban.StringUtil.CollectionToString(ShowUnlockConds) + ","
         + "requireTribute:" + RequireTribute + ","
         + "tributeCosts:" + Luban.StringUtil.CollectionToString(TributeCosts) + ","

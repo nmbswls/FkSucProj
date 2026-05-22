@@ -3,6 +3,7 @@
     "save_point_id": "base_entry",
     "display_name": "入口",
     "area_var_id": "base_01",
+    "default_activated": true,
     "show_unlock_conds": [
       {
         "type": 0,
@@ -25,6 +26,7 @@
     "save_point_id": "v1_entry_01",
     "display_name": "演示存档点",
     "area_var_id": "village_01",
+    "default_activated": true,
     "show_unlock_conds": [
       {
         "type": 0,
@@ -56,6 +58,7 @@
     "save_point_id": "v1_inn_01",
     "display_name": "演示旅店存档",
     "area_var_id": "village_01",
+    "default_activated": false,
     "show_unlock_conds": [
       {
         "type": 0,
