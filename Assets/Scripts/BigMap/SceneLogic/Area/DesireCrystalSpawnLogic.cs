@@ -13,7 +13,7 @@ namespace My.Map.Logic
                 return;
             }
 
-            if (area.cacheMapOverlayCfg == null || gm.PlayerHumanMode)
+            if (area.cacheMapOverlayCfg == null || gm.GameSession.PlayerHumanMode)
             {
                 return;
             }

@@ -16,6 +16,10 @@ namespace My
             Night,
         }
 
+        /// <summary>
+        /// 世界结算日；推进时触发垂钓点按配置补满等。
+        /// </summary>
+        public int SettlementDayIndex { get; private set; }
         public EDayPeriod DayPeriod;
         
         public int DayPeriodLeft = 2;
@@ -28,7 +32,6 @@ namespace My
             public long FromFallenAmount = 0;
         }
         public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
-
 
 
         public bool CheckPeriodEnough(int period)
@@ -69,7 +72,6 @@ namespace My
 
         public void FinishOneDay()
         {
-            AdvanceSettlementDayAndApplyFishingRules();
             HandleOneDayBalance();
         }
 
@@ -107,6 +109,9 @@ namespace My
             //  
             playerDataManager.ProgressionSystem.BaseStats.OnFallenAmountUpdate(playerDataManager.TotalFallPeopleAmount);
 
+            SettlementDayIndex++;
+            worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);
+            playerDataManager?.RumorIntel?.PruneExpiredRumors(SettlementDayIndex);
 
             EventOnOneDayBalance?.Invoke(balanceInfo);
         }

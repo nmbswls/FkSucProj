@@ -100,10 +100,10 @@ namespace My.UI
                 return;
             }
 
-            var carried = SavePointVaultHelper.GetCarriedDesireShard(glm);
-            var deposited = SavePointVaultHelper.GetDepositedThisRun(glm);
-            var quota = SavePointVaultHelper.GetRemainingQuota(glm);
-            var depositable = SavePointVaultHelper.GetDepositableAmount(glm);
+            var carried = glm.GetSavePointVaultCarriedDesireShard();
+            var deposited = glm.SavePointVaultDepositedThisRun;
+            var quota = glm.GetSavePointVaultRemainingQuota();
+            var depositable = glm.GetSavePointVaultDepositableAmount();
 
             if (carriedCountText != null)
             {
@@ -112,7 +112,7 @@ namespace My.UI
 
             if (quotaText != null)
             {
-                quotaText.text = $"本次额度：{deposited} / {SavePointVaultHelper.DesireShardRunCap}（剩余 {quota}）";
+                quotaText.text = $"本次额度：{deposited} / {GameLogicManager.SavePointDesireShardRunCap}（剩余 {quota}）";
             }
 
             if (depositButton != null)
@@ -129,7 +129,7 @@ namespace My.UI
                 return;
             }
 
-            if (!SavePointVaultHelper.TryDepositAllAvailable(glm, out var deposited, out var failReason))
+            if (!glm.TryDepositSavePointVaultAllAvailable(out var deposited, out var failReason))
             {
                 if (depositFeedbackText != null)
                 {

@@ -45,7 +45,7 @@ namespace My.Map.Logic
     }
 
     /// <summary>
-    /// ���ŵ�ͼ���߼�����AOI��ʵ���������ڡ���̬ˢ�µȡ�
+    /// 
     /// </summary>
     public partial class GameLogicAreaManager
     {

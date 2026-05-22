@@ -277,7 +277,6 @@ public class ConsoleGM : MonoBehaviour
             null,
             args =>
             {
-                MainGameManager.Instance.gameLogicManager.AdvanceSettlementDayAndApplyFishingRules();
                 Log("fish_settlement: day=" + MainGameManager.Instance.gameLogicManager.SettlementDayIndex);
             });
 

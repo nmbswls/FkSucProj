@@ -134,7 +134,7 @@ namespace My.Map.View
 
         public void Tick(float dt)
         {
-            if (_glm.PlayerHumanMode)
+            if (_glm.GameSession.PlayerHumanMode)
             {
                 if (_entries.Count != 0)
                 {

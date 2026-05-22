@@ -49,9 +49,6 @@ namespace My.Map.View
 
         private bool triggerCounter;
 
-        
-
-
         private void Update()
         {
             _timer += Time.deltaTime;

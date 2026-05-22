@@ -96,7 +96,7 @@ namespace My.MiniGame
             SetPromptColor(normalTextColor);
 
             // 随机一个静态动作
-            actId = RandomGetStaticHAct();
+            actId = PlayerGamePlayRule.RandomGetOneHAct("Static", MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel);
 
             QteBar.InitCursorPos();
             QteBar.ResetGame(); 
@@ -163,21 +163,6 @@ namespace My.MiniGame
                 SetPrompt("按 Space 进行判定");
                 SetPromptColor(normalTextColor);
             });
-        }
-
-        /// <summary>
-        /// 随机获取一个h动作
-        /// </summary>
-        /// <returns></returns>
-        private int RandomGetStaticHAct()
-        {
-            int playerDesire = MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel;
-            var ll = CfgMgr.Cfgs.TbHActInfo.DataList.Where(item => item.FilterType.Contains("Static") && item.PlayerMinDesire <= playerDesire).ToList();
-            if(ll.Count == 0)
-            {
-                return 0;
-            }
-            return ll[ll.Count - 1].Id;
         }
 
         private void OnMiniGameFinish()

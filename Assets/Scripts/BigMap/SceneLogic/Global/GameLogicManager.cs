@@ -38,15 +38,13 @@ namespace My
         void RecycleEntity(ILogicEntity entity);
     }
 
-    
-
-
 
     public partial class GameLogicManager : ILogicEntityFactory
     {
         public static long LogicEntityIdInst = 100;
         public static long ItemInstanceIdCounter = 100;
 
+        const float SavePointPeaceScanRadius = 30f;
 
         public enum EMainGameStage
         {
@@ -63,6 +61,10 @@ namespace My
         public bool IsBalancing { get; set; }
         public bool IsDialogPlayering { get; set; }
 
+        /// <summary>
+        /// game session
+        /// </summary>
+        public PlayerGameSession GameSession { get; set; } = new();
 
 
         public PlayerLogicEntity playerLogicEntity { get; set; }
@@ -75,27 +77,9 @@ namespace My
         // 即将丢弃当前区域/切图前触发：供表现层中断本地传送渐隐协程并释放传送锁，避免协程被 Stop 后锁泄漏
         public event Action EventOnHardAreaClearStarting;
 
-        
-
         public ISceneAbilityViewer? viewer; // 表现层接口
         public IVisionSenser2D? visionSenser;
         public INavProvider? navProvider;
-
-
-        /// <summary>
-        /// 世界结算日；推进时触发垂钓点按配置补满等。
-        /// </summary>
-        public int SettlementDayIndex { get; private set; }
-
-        /// <summary>
-        /// 结算日 +1，并按 Luban 垂钓配置为各点补鱼次数。
-        /// </summary>
-        public void AdvanceSettlementDayAndApplyFishingRules()
-        {
-            SettlementDayIndex++;
-            worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);
-            playerDataManager?.RumorIntel?.PruneExpiredRumors(SettlementDayIndex);
-        }
 
 
         /// <summary>
@@ -106,9 +90,6 @@ namespace My
         public GlobalMapDropCollection globalDropCollection;
 
         public MapLogicEventBus LogicEventBus;
-
-        public string CurrentArea = string.Empty;
-        public MapExportDatabase cacheMapDb;
 
         public GameLogicAreaManager AreaManager;
         public LogicGroundOverlayManager GroundOverManager;
@@ -127,106 +108,8 @@ namespace My
         public MapControlEventManager controlEventManager;
         public FactionRelationManager factionRelationManager;
 
-        public bool PlayerPeaceMode { get; private set; } = true;
+        
 
-        const float SavePointPeaceScanRadius = 30f;
-
-        // true = 人类形态；false = 真身形态（仅真身下维持衣装/暴露等玩法）
-        public bool PlayerHumanMode { get; private set; } = true;
-
-        public long SavePointVaultDesireShardDepositedThisRun { get; private set; }
-
-        public bool CanInteractSavePoint => PlayerHumanMode || PlayerPeaceMode;
-
-        // 玩家在家园地图内主动切换人类/真身形态（Home 暂不使用）
-        public bool TrySetPlayerHumanMode(bool wantHuman)
-        {
-            /*
-            if (AreaManager?.cacheMapOverlayCfg == null || !AreaManager.cacheMapOverlayCfg.IsHome)
-            {
-                return false;
-            }
-
-            ForcePlayerHumanMode(wantHuman, refreshDespitePendingSwitch: true);
-            return true;
-            */
-            return false;
-        }
-
-        // 系统或界面强制形态（床铺潜入、结算回城等）；地图切换进行中时默认推迟到 PostNewAreaLoaded 再刷新运行时
-        public void ForcePlayerHumanMode(bool human, bool refreshDespitePendingSwitch = false)
-        {
-            if (PlayerHumanMode == human)
-            {
-                return;
-            }
-
-            PlayerHumanMode = human;
-            ResetSavePointVaultDepositedThisRun();
-            if (SwitchAreaIntent != null && !refreshDespitePendingSwitch)
-            {
-                return;
-            }
-
-            RefreshPlayerMagicClothesAndExposeForCurrentMode();
-            NotifyHumanQuickBarStateChanged();
-        }
-
-        public void ResetSavePointVaultDepositedThisRun()
-        {
-            SavePointVaultDesireShardDepositedThisRun = 0;
-        }
-
-        public void AddSavePointVaultDesireShardDeposited(long amount)
-        {
-            if (amount <= 0)
-            {
-                return;
-            }
-
-            SavePointVaultDesireShardDepositedThisRun += amount;
-        }
-
-        // 人类快捷道具栏：未发情且（伪装模式 或 真身未暴露）
-        public bool IsHumanQuickBarAvailable()
-        {
-            if (playerLogicEntity == null)
-            {
-                return false;
-            }
-
-            if (playerLogicEntity.IsFaQing)
-            {
-                return false;
-            }
-
-            if (PlayerHumanMode)
-            {
-                return true;
-            }
-
-            return !playerLogicEntity.IsExposed;
-        }
-
-        public bool CanEditQuickSlotBar()
-        {
-            return IsHumanQuickBarAvailable();
-        }
-
-        public void NotifyHumanQuickBarStateChanged()
-        {
-            if (!IsHumanQuickBarAvailable())
-            {
-                playerDataManager?.HumanQuickBar?.ClearActiveWeapon();
-            }
-            else
-            {
-                playerDataManager?.HumanQuickBar?.ApplyWeaponToRuntime();
-            }
-
-            playerDataManager?.SyncLearnedSkillsToPlayerEntity();
-            My.UI.OverworldHUDPanel.Instance?.SkilBar?.Refresh(true);
-        }
 
         public void NotifyPostSearchInvestigationComplete(long npcEntityId)
         {
@@ -450,41 +333,6 @@ namespace My
         public void AddNewEntityRecord(LogicEntityRecord record, bool isCreate = false)
         {
             pendingNewEntities.Add((record, isCreate));
-        }
-
-        
-
-        private float _peaceModeTimer = 0;
-
-        public void RefreshPlayerPeaceMode()
-        {
-            if (playerLogicEntity == null || AreaManager == null)
-            {
-                PlayerPeaceMode = true;
-                return;
-            }
-
-            foreach (var one in AreaManager.FindEntityInRange(playerLogicEntity.Pos, SavePointPeaceScanRadius))
-            {
-                if (one is NpcUnitLogicEntity npcUnit && npcUnit.IsInCombat)
-                {
-                    PlayerPeaceMode = false;
-                    return;
-                }
-            }
-
-            PlayerPeaceMode = true;
-        }
-
-        private void TickPeaceMode()
-        {
-            if (LogicTime.time - _peaceModeTimer < 3.0f)
-            {
-                return;
-            }
-
-            _peaceModeTimer = LogicTime.time;
-            RefreshPlayerPeaceMode();
         }
 
         public ProjectileHolder projectileHolder;
@@ -897,7 +745,7 @@ namespace My
             {
                 AlertVal = saveData.GlobalRuntime.AlertVal;
                 SettlementDayIndex = saveData.GlobalRuntime.SettlementDayIndex;
-                SavePointVaultDesireShardDepositedThisRun = saveData.GlobalRuntime.SavePointVaultDesireShardDepositedThisRun;
+                GameSession.SPDesireShardDeposited = saveData.GlobalRuntime.SavePointVaultDesireShardDepositedThisRun;
                 WantedManager.LastWantedTime = saveData.GlobalRuntime.WantedLastTime;
                 if (saveData.GlobalRuntime.WantedChannels != null && saveData.GlobalRuntime.WantedChannels.Count > 0)
                 {
@@ -907,7 +755,7 @@ namespace My
             else
             {
                 SettlementDayIndex = 0;
-                SavePointVaultDesireShardDepositedThisRun = 0;
+                GameSession.SPDesireShardDeposited = 0;
             }
         }
 
@@ -1000,7 +848,7 @@ namespace My
             data.GlobalRuntime.WantedLastTime = WantedManager != null ? WantedManager.LastWantedTime : 0f;
             data.GlobalRuntime.WantedChannels = WantedManager != null ? WantedManager.ExportToPersist() : null;
             data.GlobalRuntime.SettlementDayIndex = SettlementDayIndex;
-            data.GlobalRuntime.SavePointVaultDesireShardDepositedThisRun = SavePointVaultDesireShardDepositedThisRun;
+            data.GlobalRuntime.SavePointVaultDesireShardDepositedThisRun = GameSession.SPDesireShardDeposited;
 
             data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
             if (AreaManager != null && !string.IsNullOrEmpty(AreaManager.AreaOverlayId))

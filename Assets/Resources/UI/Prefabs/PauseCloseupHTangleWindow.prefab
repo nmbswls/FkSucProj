@@ -1362,24 +1362,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 478de71ffc6d6aa4c99b0ef9e111c679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelId: 
+  panelId: PauseCloseupHTangleWindow
   canvasGroup: {fileID: 0}
-  Mask: {fileID: 0}
-  ShowPic: {fileID: 3232704773979016587}
-  ProgressBar: {fileID: 3148813798504439912}
-  SrcEntityId: 0
-  LockPointContainer: {fileID: 0}
-  ProgressPointList:
-  - {fileID: 7822397211501250167}
-  - {fileID: 1176722519975188134}
-  - {fileID: 4246022567741022476}
-  - {fileID: 5591321952090993348}
-  ActId: 0
-  Socre: 0
-  CurrentVal: 0
-  TotalDuration: 5
-  PgreossVal: 0
-  BreakTimes: 0
+  showPic: {fileID: 3232704773979016587}
+  progressBar: {fileID: 3148813798504439912}
+  mainBtnSoloAnimation: {fileID: 8079816142651296061}
+  scoreText: {fileID: 6900927787466125129}
+  lockPointsRoot: {fileID: 1865331218764164462}
+  durationMin: 5
+  durationMax: 8
+  actPulseInterval: 1
+  heatNaturalRate: 0.13
+  heatHoldRate: 0.45
+  heatMax: 1
+  holdAnimSpeedBase: 1
+  holdAnimSpeedBoost: 1.5
+  sanBase: 3000
+  sanPerHoldSecond: 2000
+  playerSettleWeight: 1
+  scorePerDeeperLayer: 500
+  deeperLayerCap: 40
 --- !u!1 &7822397211501250167
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,26 +1,28 @@
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using My.Config;
+using Animancer;
 using My.Input;
+using My.Map;
 using My.Map.Entity;
 using My.UI;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace My.Map.View
 {
-
-    /// <summary>
-    /// 跳脸暂停的H缠绵窗口
-    /// 目前仅在主动与发情/魅惑敌人交互时触发
-    /// </summary>
+    // 跳脸暂停的 H 缠绵窗口（5–8s，时停；热度 + 分数双轴）
     public class PauseCloseupHTangleWindow : PanelBase, IInputConsumer
     {
         public const string ID = "PauseCloseupHTangleWindow";
+
+        struct SettlementSnapshot
+        {
+            public long SanCost;
+            public long PlayerImpulseApply;
+            public long EnemyImpulseApply;
+            public long Score;
+            public int DeeperLayers;
+        }
+
         public static PauseCloseupHTangleWindow Show(long srcEntityId)
         {
             var panel = UIManager.Instance.ShowPanel(ID) as PauseCloseupHTangleWindow;
@@ -34,194 +36,238 @@ namespace My.Map.View
             return panel;
         }
 
-        public RectTransform Mask;
-        public Image ShowPic;
+        [Header("UI")]
+        [SerializeField] Image showPic;
+        [SerializeField] Image progressBar;
+        [SerializeField] SoloAnimation mainBtnSoloAnimation;
+        [SerializeField] TMP_Text scoreText;
+        [SerializeField] GameObject lockPointsRoot;
 
-        public Image ProgressBar;
+        [Header("HTangle Timing")]
+        const float CfgDuration = 5f;
+        const float CfgActPulseInterval = 1f; // 单局脉冲
 
-        public long SrcEntityId;
+        [Header("HTangle Heat")]
+        const float heatNaturalRate = 0.13f;
+        const float heatHoldRate = 0.45f;
+        const float heatMax = 1f;
 
-        public Transform LockPointContainer;
-        public List<PauseCloseupHTangleWindow_LockPoint> ProgressPointList = new(); // 存放各个节点 需要控制是否被点亮
+        const float holdAnimSpeedBase = 1f;
+        const float holdAnimSpeedBoost = 1.5f;
 
-        private float _timer;
-        private float _lastBalanceTimer;
+        const float playerSettleWeight = 0.15f;
 
-        public int ActId = 0;
-        public long Socre;
-        public float CurrentVal;
+        const long sanBase = 3000;
+        const long sanPerHoldSecond = 1600;
 
-        public float TotalDuration = 5.0f;
+        [Header("HTangle Settlement")]
+        [SerializeField] long scorePerDeeperLayer = 500;
+        [SerializeField] int deeperLayerCap = 40;
 
-        // 当前进度
-        // 该小游戏
-        public int PgreossVal = 0; // 检查突破了几格
+        public long SrcEntityId { get; private set; }
 
-        public int BreakTimes = 0;
+        float _heat;
+        float _holdDuration;
+        float _elapsed;
+        float _duration;
+        float _pulseTimer;
+        long _accEnemyImpulse;
+        long _accPlayerImpulse;
+        int _currentActId;
+        bool _gameFinished;
+        bool _isHoldingSpace;
+        bool _settled;
 
-        const int MaxProgress = 4;
-        const int NeedBreakTimes = 5;
-        const float CheckInteval = 0.5f;
+        long Score => _accEnemyImpulse;
 
-        private void Awake()
+        public Image ShowPic
         {
-            for(int i=0; i < LockPointContainer.childCount; i++)
+            get => showPic;
+        }
+
+        public Image ProgressBar
+        {
+            get => progressBar;
+        }
+
+        void Awake()
+        {
+            if (lockPointsRoot != null)
             {
-                var child = LockPointContainer.GetChild(i);
-                var comp = child.gameObject.AddComponent<PauseCloseupHTangleWindow_LockPoint>();
-                comp.Bind();
-                ProgressPointList.Add(comp);
+                lockPointsRoot.SetActive(false);
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private float GetProgressLockVal()
+        void ResetGameState()
         {
-            if(PgreossVal == 0)
-            {
-                return 0.25f;
-            }
-            else if(PgreossVal == 1)
-            {
-                return 0.5f;
-            }
-            else if (PgreossVal == 2)
-            {
-                return 0.75f;
-            }
-            else 
-            {
-                return 1.0f;
-            }
+            _gameFinished = false;
+            _pulseTimer = 0f;
+            _heat = 0f;
+            _holdDuration = 0f;
+            _elapsed = 0f;
+            _accEnemyImpulse = 0;
+            _accPlayerImpulse = 0;
+            _duration = CfgDuration;
+            _currentActId = PickActIdForHeat(_heat);
         }
 
-        /// <summary>
-        ///  获取进度带来的对敌人额外倍率
-        /// </summary>
-        /// <returns></returns>
-        private float GetProgressHImpulseBonus()
+        bool TickGame(float dt, GameLogicManager glm)
         {
-            if (PgreossVal == 0)
+            if (_gameFinished)
             {
-                return 0f;
+                return true;
             }
-            else if (PgreossVal == 1)
+
+            _elapsed += dt;
+
+            var heatDelta = heatNaturalRate * dt;
+            if (_isHoldingSpace)
             {
-                return 0.4f;
+                heatDelta += heatHoldRate * dt;
+                _holdDuration += dt;
             }
-            else if (PgreossVal == 2)
+
+            _heat = Mathf.Min(heatMax, _heat + heatDelta);
+
+            _pulseTimer += dt;
+            while (_pulseTimer >= CfgActPulseInterval)
             {
-                return 0.6f;
+                _pulseTimer -= CfgActPulseInterval;
+                TryActPulse(glm);
             }
-            else if (PgreossVal == 3)
+
+            if (_elapsed >= _duration)
             {
-                return 0.8f;
+                _gameFinished = true;
+                return true;
             }
-            else
-            {
-                return 1.0f;
-            }
+
+            return false;
         }
 
-        /// <summary>
-        /// 根据解锁进度获取理智损失
-        /// </summary>
-        /// <returns></returns>
-        private float GetProgressUnlockSanCost()
+        SettlementSnapshot BuildSettlement()
         {
-            if (PgreossVal == 0)
+            var deeper = scorePerDeeperLayer > 0
+                ? (int)Mathf.Min(Score / scorePerDeeperLayer, deeperLayerCap)
+                : 0;
+
+            return new SettlementSnapshot
             {
-                return 0f;
-            }
-            else if (PgreossVal == 1)
-            {
-                return 1f;
-            }
-            else if (PgreossVal == 2)
-            {
-                return 2f;
-            }
-            else if (PgreossVal == 3)
-            {
-                return 3f;
-            }
-            else
-            {
-                return 6f;
-            }
+                SanCost = sanBase + (long)(_holdDuration * sanPerHoldSecond),
+                PlayerImpulseApply = (long)(_accPlayerImpulse * playerSettleWeight),
+                EnemyImpulseApply = _accEnemyImpulse,
+                Score = Score,
+                DeeperLayers = deeper,
+            };
         }
 
-        private void Update()
+        static int HeatToDesireTier(float heat)
         {
-            _timer += Time.deltaTime;
-
-            CurrentVal += Time.deltaTime * 0.2f;
-            var lockVal = GetProgressLockVal();
-            if (CurrentVal >= lockVal)
+            if (heat < 0.25f)
             {
-                CurrentVal = lockVal;
+                return 0;
             }
 
-            // 高频进行动作结算
-            if(_timer - _lastBalanceTimer > CheckInteval)
+            if (heat < 0.5f)
             {
-                _lastBalanceTimer += CheckInteval;
-
-                ApplyOneActEffect();
+                return 1;
             }
 
-            if (_timer > TotalDuration)
+            if (heat < 0.75f)
+            {
+                return 2;
+            }
+
+            return 3;
+        }
+
+        int PickActIdForHeat(float heat)
+        {
+            return PlayerGamePlayRule.RandomGetOneHAct("Charmed", HeatToDesireTier(heat));
+        }
+
+        void TryActPulse(GameLogicManager glm)
+        {
+            if (glm?.playerLogicEntity == null)
+            {
+                return;
+            }
+
+            _currentActId = PickActIdForHeat(_heat);
+
+            var player = glm.playerLogicEntity;
+            var npc = glm.GetLogicEntity(SrcEntityId, false) as NpcUnitLogicEntity;
+            long hPowerPlayer = player.GetAttr(AttrIdConsts.HPower);
+            long hPowerEnemy = npc != null ? npc.GetAttr(AttrIdConsts.HPower) : 5000;
+            int enemyLevel = npc != null ? npc.GetUnitLevel() : 1;
+
+            if (!PlayerGamePlayRule.ResolveHActParams(
+                    _currentActId, hPowerPlayer, hPowerEnemy, enemyLevel,
+                    out var hImpulseEnemy, out var hImpulsePlayer))
+            {
+                Debug.LogWarning("[PauseCloseupHTangleWindow] ResolveHActParams failed for act " + _currentActId);
+                return;
+            }
+
+            var mult = 1f + _heat;
+            _accEnemyImpulse += (long)(hImpulseEnemy * mult);
+            _accPlayerImpulse += (long)(hImpulsePlayer * mult);
+        }
+
+        void Update()
+        {
+            if (_settled)
+            {
+                return;
+            }
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                return;
+            }
+
+            if (TickGame(Time.deltaTime, glm))
             {
                 HandleInteractFinish();
             }
 
-            if(ProgressBar != null)
-            {
-                ProgressBar.fillAmount = CurrentVal;
-            }
+            RefreshUI();
         }
 
-        /// <summary>
-        /// 执行一次结算
-        /// </summary>
-        private void ApplyOneActEffect()
+        void RefreshUI()
         {
-            // 
-            if (!PlayerGamePlayRule.ResolveHActParams(ActId, 10, 10, 1, out var hImpulseEnemy, out var hImpulsePlayer))
+            if (progressBar != null)
             {
-                Debug.LogError("err ResolveHActParams");
+                progressBar.fillAmount = _heat;
             }
 
-            MainGameManager.Instance.gameLogicManager.playerLogicEntity.ApplyHImpulseDirectly((long)(hImpulsePlayer * 0.2), null);
-
-            var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
-            if (npc != null)
+            if (scoreText != null)
             {
-                float bonus = GetProgressHImpulseBonus();
-                // 对npc冲击
-                npc.ApplyNpcHImpulse((long)(hImpulsePlayer * 0.2 * (1 + bonus)));
+                scoreText.text = $"Score {Score}";
             }
+
+            UpdateMainBtnAnimSpeed();
         }
 
+        void UpdateMainBtnAnimSpeed()
+        {
+            if (mainBtnSoloAnimation == null)
+            {
+                return;
+            }
+
+            mainBtnSoloAnimation.Speed = _isHoldingSpace
+                ? holdAnimSpeedBase + holdAnimSpeedBoost * _heat
+                : holdAnimSpeedBase;
+        }
 
         public void RefreshData(long srcEntityId)
         {
-            this.SrcEntityId = srcEntityId;
-
-            int orgActId = RandomGetTangleHAct();
-            ActId = orgActId;
-
-            PgreossVal = 0;
-            BreakTimes = 0;
-
-            TotalDuration = 5.0f;
-
-            _timer = 0;
-            _lastBalanceTimer = 0;
-
+            SrcEntityId = srcEntityId;
+            _settled = false;
+            _isHoldingSpace = false;
+            ResetGameState();
             RefreshUI();
         }
 
@@ -229,172 +275,124 @@ namespace My.Map.View
         {
             base.Show();
 
-            _timer = 0;
-
             LogicTime.ReleasePause("PauseCloseupWindow");
             LogicTime.RequestPause("PauseCloseupWindow");
 
-            MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(SrcEntityId, "fcked_marked", 1, overrideDuration: 0.5f);
-            MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Id, "charm_fck_bonus", 1, overrideDuration: 0.5f);
-        }
-
-
-        protected void RefreshUI()
-        {
-            for(int i=0;i< ProgressPointList.Count;i++)
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
             {
-                if(CurrentVal > i)
-                {
-                    ProgressPointList[i].SetLocked(false);
-                }
-                else
-                {
-                    ProgressPointList[i].SetLocked(true);
-                }
+                return;
             }
+
+            glm.globalBuffManager.AddBuff(SrcEntityId, "fcked_marked", 1, overrideDuration: 0.5f);
+            glm.globalBuffManager.AddBuff(glm.playerLogicEntity.Id, "charm_fck_bonus", 1, overrideDuration: 0.5f);
         }
 
-        private void OnEnable()
+        void HandleInteractFinish()
         {
-            
-        }
-
-        private void OnDisable()
-        {
-            
-        }
-
-
-        private void HandleBreakOneNode()
-        {
-            int currProgress = PgreossVal;
-
-            PgreossVal += 1;
-            BreakTimes = 0;
-
-            // 每突破一次加10%
-            MainGameManager.Instance.gameLogicManager.globalBuffManager.AddBuff(SrcEntityId, "charm_fck_deeper", 10);
-
-            TotalDuration += 1.0f; // 增加时间
-            // show effect
-            int orgActId = RandomGetTangleHAct();
-            ActId = orgActId;
-
-            RefreshUI();
-        }
-
-
-        /// <summary>
-        /// 随机获取一个h动作
-        /// </summary>
-        /// <returns></returns>
-        private int RandomGetTangleHAct()
-        {
-            int checkDesire = PgreossVal;
-            var ll = CfgMgr.Cfgs.TbHActInfo.DataList.Where(item => item.FilterType.Contains("Charmed") && item.PlayerMinDesire <= PgreossVal).ToList();
-            if (ll.Count == 0)
+            if (_settled)
             {
-                return 0;
+                return;
             }
-            return ll[ll.Count - 1].Id;
+
+            _settled = true;
+            ApplySettlement(BuildSettlement());
+            UIManager.Instance.HidePanel(ID);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-
-        private void HandleInteractFinish()
+        void ApplySettlement(SettlementSnapshot settlement)
         {
-            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-            var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
-
-
-            // 进行san结算
-            long sanCost =(long)( GetProgressUnlockSanCost() * 1000);
-            if(sanCost > 0)
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var player = glm?.playerLogicEntity;
+            var npc = glm?.GetLogicEntity(SrcEntityId, false) as NpcUnitLogicEntity;
+            if (player == null)
             {
-                player.ApplyResourceChange(AttrIdConsts.PlayerSanity, -sanCost, false, Fight.FightStruct.EDmgFlag.None, null);
+                return;
+            }
+
+            if (settlement.SanCost > 0)
+            {
+                player.ApplyResourceChange(
+                    AttrIdConsts.PlayerSanity, -settlement.SanCost, false,
+                    Fight.FightStruct.EDmgFlag.None, null);
                 player.ForceCommitAttribute();
             }
+
+            if (settlement.PlayerImpulseApply > 0)
+            {
+                player.ApplyHImpulseDirectly(settlement.PlayerImpulseApply, null);
+            }
+
+            if (npc != null && settlement.EnemyImpulseApply > 0)
+            {
+                npc.ApplyNpcHImpulse(settlement.EnemyImpulseApply);
+            }
+
+            if (npc != null && settlement.DeeperLayers > 0)
+            {
+                glm.globalBuffManager.AddBuff(SrcEntityId, "charm_fck_deeper", settlement.DeeperLayers);
+            }
+
+            Debug.Log(
+                $"[PauseCloseupHTangleWindow] Settled score={settlement.Score} san={settlement.SanCost} " +
+                $"playerH={settlement.PlayerImpulseApply} enemyH={settlement.EnemyImpulseApply} " +
+                $"deeper={settlement.DeeperLayers} hold={_holdDuration:F2}s");
         }
-        
+
         public override void Hide()
         {
             base.Hide();
             LogicTime.ReleasePause("PauseCloseupWindow");
-        }
-
-        public bool OnConfirm()
-        {
-            return true;
-        }
-
-        public bool OnCancel()
-        {
-            return true;
-        }
-
-        public bool OnNavigate(Vector2 dir)
-        {
-            return true;
-        }
-
-        public bool OnHotkey(string keyName)
-        {
-            if(keyName == EInputKey.Space.ToString())
+            _isHoldingSpace = false;
+            if (mainBtnSoloAnimation != null)
             {
-                // 
-                if(PgreossVal < MaxProgress && CurrentVal >= GetProgressLockVal())
-                {
-                    BreakTimes += 1;
-                }
-
-                if(BreakTimes >= NeedBreakTimes)
-                {
-                    HandleBreakOneNode();
-                    
-                }
+                mainBtnSoloAnimation.Speed = holdAnimSpeedBase;
             }
-            return true;
         }
 
+        bool IsSpaceHoldKey(string keyName) =>
+            keyName == EInputKey.Space.ToString();
 
-        public bool OnScroll(float deltaY)
-        {
-            return true;
-        }
+        public bool OnConfirm() => true;
 
-        public bool OnClick(int button, Vector2 mousePos)
-        {
-            return true;
-        }
+        public bool OnCancel() => true;
+
+        public bool OnNavigate(Vector2 dir) => true;
+
+        public bool OnHotkey(string keyName) => true;
+
+        public bool OnScroll(float deltaY) => true;
+
+        public bool OnClick(int button, Vector2 mousePos) => true;
 
         public bool OnHoldStart(string holdKey)
         {
+            if (IsSpaceHoldKey(holdKey))
+            {
+                _isHoldingSpace = true;
+            }
+
             return true;
         }
+
         public bool OnHoldUpdate(string holdKey)
         {
+            if (IsSpaceHoldKey(holdKey))
+            {
+                _isHoldingSpace = true;
+            }
+
             return true;
         }
 
         public bool OnHoldingEnd(string holdKey)
         {
+            if (IsSpaceHoldKey(holdKey))
+            {
+                _isHoldingSpace = false;
+            }
+
             return true;
-        }
-    }
-
-    public class PauseCloseupHTangleWindow_LockPoint : MonoBehaviour
-    {
-        public GameObject LockP;
-        public GameObject UnlockP;
-        public void Bind()
-        {
-
-        }
-        public void SetLocked(bool locked)
-        {
-
         }
     }
 }
