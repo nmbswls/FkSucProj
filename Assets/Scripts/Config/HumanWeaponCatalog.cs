@@ -45,7 +45,7 @@ namespace My.Player
 
             return new Dictionary<string, string>
             {
-                [CastKeyWeaponAnimName] = def.AnimName ?? string.Empty,
+                //[CastKeyWeaponAnimName] = def.AnimName ?? string.Empty,
                 [CastKeyWeaponLevel] = def.WeaponLevel.ToString(),
                 [CastKeyStunValue] = def.StunValue.ToString(),
             };

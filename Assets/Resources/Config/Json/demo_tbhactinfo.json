@@ -206,5 +206,31 @@
     "coef_player": 0,
     "coef_enemy": 1,
     "player_climax_weight": 0
+  },
+  {
+    "id": 17,
+    "desc": "",
+    "filter_types": [
+      "Simple"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": true,
+    "h_impulse_base": 20,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 18,
+    "desc": "",
+    "filter_types": [
+      "Simple"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": true,
+    "h_impulse_base": 20,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 0
   }
 ]

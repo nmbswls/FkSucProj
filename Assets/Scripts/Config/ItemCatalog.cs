@@ -140,6 +140,7 @@ namespace My.Config
                 case EItemType.Equip:
                 case EItemType.Pocket:
                 case EItemType.Insertion:
+                case EItemType.HumanWeapon:
                     return true;
                 default:
                     return false;
@@ -270,19 +271,9 @@ namespace My.Config
                 return EQuickBarItemKind.None;
             }
 
-            if (def.QuickBarKind != EQuickBarItemKind.None)
-            {
-                return def.QuickBarKind;
-            }
-
             if (HumanWeaponCatalog.IsHumanWeapon(itemId))
             {
                 return EQuickBarItemKind.Weapon;
-            }
-
-            if (itemId == "evil_scroll_01")
-            {
-                return EQuickBarItemKind.Consumable;
             }
 
             return EQuickBarItemKind.None;

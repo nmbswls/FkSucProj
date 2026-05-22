@@ -11,13 +11,24 @@
     "bullet_id": "small_knife"
   },
   {
-    "item_id": "chanzi",
+    "item_id": "human_sword_lv1",
     "func_type": 0,
     "skill_id": "use_human_weapon",
     "view_prefab": "Prefab/HumanWeaponView",
-    "view_sprite": "chanzi",
+    "view_sprite": "human_sword_lv1",
     "anim_name": "player_weapon01_01",
     "weapon_level": 25000,
+    "stun_value": 5000,
+    "bullet_id": ""
+  },
+  {
+    "item_id": "human_lancer_lv1",
+    "func_type": 0,
+    "skill_id": "use_human_weapon",
+    "view_prefab": "Prefab/HumanWeaponView",
+    "view_sprite": "human_lancer_lv1",
+    "anim_name": "player_weapon01_01",
+    "weapon_level": 5000,
     "stun_value": 5000,
     "bullet_id": ""
   }

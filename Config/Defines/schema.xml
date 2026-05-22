@@ -9,6 +9,7 @@
         <var name="Pocket" value="3"/>
         <var name="Insertion" value="4"/>
         <var name="Gift" value="5"/>
+		<var name="HumanWeapon" value="6"/>
     </enum>
 
     <!-- 礼物 tag：item_gift.gift_tags 多选；好感/赠礼匹配用 -->

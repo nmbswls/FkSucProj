@@ -621,7 +621,8 @@ namespace My.Map.Entity
 
             if(actor != null && actor is BaseUnitLogicEntity unitEntity)
             {
-                var animName = ResolveAnimName(realCfg.AnimName, ctx.RunningVariables);
+                //var animName = ResolveAnimName(realCfg.AnimName, ctx.RunningVariables);
+                var animName = realCfg.AnimName;
                 var hitEffects = ResolveUseWeaponHitEffects(realCfg.OnHitEffects, ctx.RunningVariables);
                 var windowId = unitEntity.ApplyUseWeapon(
                     realCfg.WeaponName,

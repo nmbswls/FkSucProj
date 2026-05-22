@@ -247,7 +247,7 @@ namespace My.UI
         {
             if (_selectedMap == null)
             {
-                Debug.LogWarning("[UIBedroomMapTravel] Select a map before opening intel shop.");
+                Debug.LogWarning("[WorldMapPanel] Select a map before opening intel shop.");
                 return;
             }
 

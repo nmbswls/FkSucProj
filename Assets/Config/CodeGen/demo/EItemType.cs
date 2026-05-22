@@ -19,6 +19,7 @@ namespace cfg.demo
         Pocket = 3,
         Insertion = 4,
         Gift = 5,
+        HumanWeapon = 6,
     }
 
 } 

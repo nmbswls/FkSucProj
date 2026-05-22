@@ -269,14 +269,6 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
-                panelId = UIBedroomMapTravelPanel.PanelIdConst,
-                resourcePath = "UI/Prefabs/UIBedroomMapTravel",
-                defaultLayer = UILayer.Popup,
-                pooled = false,
-            });
-
-            UIManager.Instance.RegisterPanel(new PanelResource()
-            {
                 panelId = RumorIntelShopPanel.Pid,
                 resourcePath = "UI/Prefabs/RumorIntelShopPanel",
                 defaultLayer = UILayer.Popup,
