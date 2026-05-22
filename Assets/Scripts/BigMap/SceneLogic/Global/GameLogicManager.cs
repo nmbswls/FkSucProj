@@ -182,6 +182,8 @@ namespace My
 
             BindSecretBaseOnInit();
 
+            BeginFreeBigMapSession();
+
             MainStage = EMainGameStage.Initialized;
         }
 

@@ -539,7 +539,7 @@ namespace My.Map
 
                     player.OnAbsorbBlurtDirectly(sjAmount);
 
-                    LogicManager.viewer.ShowFakeFxEffect("直接榨取", this.Pos);
+                    LogicManager.viewer.ShowFakeFxEffect("内射", this.Pos);
 
                 }
                 else

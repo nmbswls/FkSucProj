@@ -8,12 +8,12 @@ namespace My
     /// </summary>
     public class PlayerGameSession
     {
-        public bool IsFreeBigMap = false; // ??????
-        public bool IsIN; // ????????
+        public bool IsFreeBigMap = true;
+        public bool IsInfiltrationRun;
 
-        public bool IsPeaceful = true; //  
+        public bool IsPeaceful = true;
 
-        // true = ?????????false = ???????????????????????/??????æ·¨??
+        // true = ÈËÀàÐÎÌ¬£»false = ÕæÉíÐÎÌ¬£¨½öÕæÉíÏÂÎ¬³ÖÒÂ×°/±©Â¶µÈÍæ·¨£©
         public bool PlayerHumanMode = true;
 
         public long SPDesireShardDeposited;
@@ -24,6 +24,22 @@ namespace My
         public bool PlayerHumanMode => GameSession.PlayerHumanMode;
 
         public bool PlayerPeaceMode => GameSession.IsPeaceful;
+
+        public bool IsInfiltrationRun => GameSession.IsInfiltrationRun;
+
+        public bool IsFreeBigMap => GameSession.IsFreeBigMap;
+
+        public void BeginInfiltrationRunSession()
+        {
+            GameSession.IsInfiltrationRun = true;
+            GameSession.IsFreeBigMap = false;
+        }
+
+        public void BeginFreeBigMapSession()
+        {
+            GameSession.IsInfiltrationRun = false;
+            GameSession.IsFreeBigMap = true;
+        }
 
         public bool CanInteractSavePoint => GameSession.PlayerHumanMode || GameSession.IsPeaceful;
 

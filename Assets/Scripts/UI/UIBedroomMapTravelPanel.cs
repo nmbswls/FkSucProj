@@ -478,6 +478,7 @@ namespace My.UI
 
             UIManager.Instance?.HidePanel(panelId);
 
+            glm.BeginFreeBigMapSession();
             glm.PreparePlayerSwitchArea(_selectedMap.Id, true, targetPoint: _selectedSavePoint.TargetNamedPoint);
 
             //if (!SavePointUnlockHelper.TryTeleportToSavePoint(glm, _selectedSavePoint.SavePointId, out var reason))

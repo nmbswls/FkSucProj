@@ -121,81 +121,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!1 &741272228938885793
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 727809410900428503}
-  - component: {fileID: 6800068438497332735}
-  - component: {fileID: 3148813798504439912}
-  m_Layer: 5
-  m_Name: bar
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &727809410900428503
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741272228938885793}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2987719498107875037}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.45837402, y: 107.7516}
-  m_SizeDelta: {x: 350.8859, y: 15.8335}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &6800068438497332735
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741272228938885793}
-  m_CullTransparentMesh: 1
---- !u!114 &3148813798504439912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741272228938885793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.21698111, g: 0.21698111, b: 0.21698111, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 741f8144a7da4224e973549b8a31fb42, type: 3}
-  m_Type: 3
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 0
-  m_FillAmount: 0.2
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1055939156920690094
 GameObject:
   m_ObjectHideFlags: 0
@@ -1339,7 +1264,6 @@ RectTransform:
   - {fileID: 6470367102851063491}
   - {fileID: 8683690020918641023}
   - {fileID: 8998518644258826500}
-  - {fileID: 727809410900428503}
   - {fileID: 2515687127758846297}
   - {fileID: 4452177776486738121}
   - {fileID: 3101160469904974453}
@@ -1365,21 +1289,9 @@ MonoBehaviour:
   panelId: PauseCloseupHTangleWindow
   canvasGroup: {fileID: 0}
   showPic: {fileID: 3232704773979016587}
-  progressBar: {fileID: 3148813798504439912}
+  progressBar: {fileID: 4543738701522412258}
   mainBtnSoloAnimation: {fileID: 8079816142651296061}
   scoreText: {fileID: 6900927787466125129}
-  lockPointsRoot: {fileID: 1865331218764164462}
-  durationMin: 5
-  durationMax: 8
-  actPulseInterval: 1
-  heatNaturalRate: 0.13
-  heatHoldRate: 0.45
-  heatMax: 1
-  holdAnimSpeedBase: 1
-  holdAnimSpeedBoost: 1.5
-  sanBase: 3000
-  sanPerHoldSecond: 2000
-  playerSettleWeight: 1
   scorePerDeeperLayer: 500
   deeperLayerCap: 40
 --- !u!1 &7822397211501250167
@@ -1431,6 +1343,7 @@ GameObject:
   - component: {fileID: 8079816142651296061}
   - component: {fileID: 8041930131188866477}
   - component: {fileID: 1994896190606027519}
+  - component: {fileID: 406439524729415516}
   m_Layer: 5
   m_Name: Jumping
   m_TagString: Untagged
@@ -1470,7 +1383,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Animator: {fileID: 0}
-  _Clip: {fileID: 0}
+  _Clip: {fileID: 7400000, guid: 8ba088d27c671c741aa2c7c83e57d0e4, type: 2}
   _Speed: 1
   _FootIK: 0
   _ApplyInEditMode: 1
@@ -1512,6 +1425,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!95 &406439524729415516
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8045072041817645684}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7ef2425dbfe02c647bf07b147b992a47, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8086883605807896623
 GameObject:
   m_ObjectHideFlags: 0

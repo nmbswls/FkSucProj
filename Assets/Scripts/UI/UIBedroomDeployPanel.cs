@@ -237,6 +237,7 @@ namespace My.UI
 
             UIManager.Instance?.HidePanel(panelId);
             var spawn = MapSpawnPointUtil.ResolveMapInitialSpawnPoint(_selectedMap.Id);
+            glm.BeginInfiltrationRunSession();
             glm.PreparePlayerSwitchArea(_selectedMap.Id, true, targetPoint: spawn);
             glm.ForcePlayerHumanMode(false);
         }

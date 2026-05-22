@@ -41,7 +41,6 @@ namespace My.Map.View
         [SerializeField] Image progressBar;
         [SerializeField] SoloAnimation mainBtnSoloAnimation;
         [SerializeField] TMP_Text scoreText;
-        [SerializeField] GameObject lockPointsRoot;
 
         [Header("HTangle Timing")]
         const float CfgDuration = 5f;
@@ -92,10 +91,7 @@ namespace My.Map.View
 
         void Awake()
         {
-            if (lockPointsRoot != null)
-            {
-                lockPointsRoot.SetActive(false);
-            }
+            
         }
 
         void ResetGameState()

@@ -538,6 +538,27 @@ namespace My
             }, TaskScheduler.FromCurrentSynchronizationContext()); ;
         }
 
+        /// <summary>
+        /// 尝试返回秘密据点
+        /// </summary>
+        public void QuitToSecretBase()
+        {
+            if (isSwitchingEncounter)
+            {
+                return;
+            }
+
+            isSwitchingEncounter = true;
+            _ = InnerQuitEncounterAfterAbandon().ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+                }
+                isSwitchingEncounter = false;
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
 
         protected async Task InnerEnterEncounter(int battleId, string battleReason, bool isDefeatMode = false)
         {
@@ -574,6 +595,21 @@ namespace My
             UIManager.Instance.HideLoading();
 
             gameLogicManager.OnBattleEnd(EncounterBattleService.Instance.LastResult);
+        }
+
+        protected async Task InnerQuitEncounterAfterAbandon()
+        {
+            UIManager.Instance.ShowLoading("good");
+
+            await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
+
+            await EncounterBattleLoader.UnloadBattleAsync();
+
+            LogicTime.ReleasePause("encounter");
+
+            UIManager.Instance.HideLoading();
+
+            gameLogicManager.AbandonToSecretBase();
         }
 
         public int ShowRangeWarnEffect(FightStruct.Shape shape, Vector2 centerPos, Vector2 dir, float duration, Vector2 offset)

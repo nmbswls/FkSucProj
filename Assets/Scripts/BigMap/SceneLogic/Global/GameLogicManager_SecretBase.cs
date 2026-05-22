@@ -33,7 +33,14 @@ namespace My
                 return;
             }
 
+            BeginFreeBigMapSession();
             PreparePlayerSwitchArea(SecretBaseMapId, false, targetPoint);
+        }
+
+        public void AbandonToSecretBase(string targetPoint = null)
+        {
+            ForcePlayerHumanMode(true);
+            EnterSecretBase(targetPoint);
         }
 
         public void ExitSecretBase()

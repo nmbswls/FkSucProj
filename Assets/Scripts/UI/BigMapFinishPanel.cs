@@ -31,11 +31,13 @@ namespace My.UI
 
         private void DoConfirm()
         {
+            var glm = MainGameManager.Instance.gameLogicManager;
             string tpMapName = "base_01";
-            tpMapName = MainGameManager.Instance.gameLogicManager.GetCurrentReviveMap();
-            MainGameManager.Instance.gameLogicManager.PreparePlayerSwitchArea(tpMapName, true);
+            tpMapName = glm.GetCurrentReviveMap();
+            glm.BeginFreeBigMapSession();
+            glm.PreparePlayerSwitchArea(tpMapName, true);
 
-            MainGameManager.Instance.gameLogicManager.ForcePlayerHumanMode(true);
+            glm.ForcePlayerHumanMode(true);
         }
     }
 }

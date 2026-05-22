@@ -42,6 +42,12 @@ namespace My.Encounter
             EncounterBattleService.Instance.LastResult.IsWin = false;
             EncounterBattleService.Instance.LastResult.InvolvedEntites.AddRange(CurContext.InvolvedEntites);
 
+            if (CurContext != null && CurContext.IsDefeatMode)
+            {
+                MainGameManager.Instance.QuitToSecretBase();
+                return;
+            }
+
             MainGameManager.Instance.QuitEncounter();
         }
     }
