@@ -779,6 +779,8 @@ namespace My.Map
             attributeStore.RegisterNumeric("Strength", initialBase: 10);
             //attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, initialBase: 100_000);
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
+            attributeStore.RegisterNumeric(AttrIdConsts.UnitWitnessSpotRate, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.UnitWitnessEscapeRate, initialBase: 0);
         }
         
 

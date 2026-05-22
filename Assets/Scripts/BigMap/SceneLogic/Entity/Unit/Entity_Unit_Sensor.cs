@@ -14,6 +14,7 @@ namespace My.Map.Unit
     public interface IUnitWithVision
     {
         bool IsTargetVisible(long targetId);
+        bool IsTargetWitnessed(long targetId);
     }
 
     /// <summary>
@@ -21,10 +22,12 @@ namespace My.Map.Unit
     /// </summary>
     public class UnitVisionSystem : IUnitWithVision
     {
+        public const float WitnessNeedSec = 1f;
+        public const float WitnessForgetSec = 2f;
+        const float UpdateInterval = 0.5f;
+        const float EntryExpireAfter = 4f;
+
         protected BaseUnitLogicEntity UnitEntity { get; set; }
-
-
-        private float EntryExpireAfter = 2.0f;
 
         public event Action<long> EventOnMarkVisible;
         public event Action<long> EventOnMarkHidden;
@@ -32,48 +35,44 @@ namespace My.Map.Unit
         public class VisibilityEntry
         {
             public long TargetId;
-            //public VisibilityStatus Status;
-            public bool IsInView = false;
-            public float SeenTimer;      // 
-            public float Confidence;     // 0..1，越高越确定
-            public float LastSeenTime;   // 最后一次判定为 Visible 的时间
-            public float LastUpdateTime; // 最近一次更新（任何状态）
-            public Vector2 LastKnownPos; // 最近可见时记录的位置
+            public bool IsInView;
+            // 目击累计量（非 Timer）；默认 spotRate=1 时数值等价于秒
+            public float WitnessAccum;
+            public float LastSeenTime;
+            public float LastUpdateTime;
+            public Vector2 LastKnownPos;
+
+            public bool IsWitnessed => WitnessAccum >= WitnessNeedSec;
         }
-        public Dictionary<long, VisibilityEntry> VisibleMap = new(); // TargetId => Entry
 
-       
+        public Dictionary<long, VisibilityEntry> VisibleMap = new();
+
         private float _lastUpdateTime;
-
-
-        private float _clearInvalidTimer = 0;
-        private List<long> cacheListLong = new();
+        private readonly List<long> cacheListLong = new();
+        private readonly HashSet<long> evaluatedIds = new();
 
         public UnitVisionSystem(BaseUnitLogicEntity unit)
         {
-            this.UnitEntity = unit;
+            UnitEntity = unit;
         }
 
-        /// <summary>
-        /// 更新注意力列表
-        /// </summary>
         public void TryUpdateNoticeList()
         {
-            // 分针轮询
             if (UnitEntity.Id % 10 != Time.frameCount % 10)
             {
                 return;
             }
 
-            if (_lastUpdateTime + 0.5f > LogicTime.time)
+            if (_lastUpdateTime + UpdateInterval > LogicTime.time)
             {
                 return;
             }
 
-            _lastUpdateTime = LogicTime.time;
+            float now = LogicTime.time;
+            float dt = _lastUpdateTime <= 0f ? UpdateInterval : now - _lastUpdateTime;
+            _lastUpdateTime = now;
 
-            //VisibilityList.Clear();
-            /// 维护了NoticeRecords 
+            evaluatedIds.Clear();
             UnitEntity.LogicManager.AreaManager.UnitGridIndex.Query(UnitEntity.Pos, 16, cacheListLong);
             foreach (var id in cacheListLong)
             {
@@ -83,7 +82,6 @@ namespace My.Map.Unit
                     continue;
                 }
 
-                // 只关注不同阵营的
                 if (UnitEntity.FactionId != EFactionId.None && UnitEntity.FactionId == otherUnit.FactionId)
                 {
                     continue;
@@ -94,57 +92,50 @@ namespace My.Map.Unit
                     continue;
                 }
 
-
-                // 有记录 更新
                 if (!VisibleMap.TryGetValue(id, out var noticeRecord))
                 {
-                    noticeRecord = new()
+                    noticeRecord = new VisibilityEntry
                     {
                         TargetId = id,
                         LastSeenTime = -999f,
                         LastUpdateTime = -999f,
-                        LastKnownPos = Vector2.zero
+                        LastKnownPos = Vector2.zero,
                     };
                     VisibleMap[noticeRecord.TargetId] = noticeRecord;
                 }
 
-                EvaluateTarget(LogicTime.time, otherUnit, noticeRecord, 0.5f);
+                EvaluateTarget(now, otherUnit, noticeRecord, dt);
+                evaluatedIds.Add(id);
             }
 
-            ExpireEntries(LogicTime.time);
+            foreach (var kv in VisibleMap)
+            {
+                if (evaluatedIds.Contains(kv.Key))
+                {
+                    continue;
+                }
+
+                ApplyOutOfView(kv.Value, now, dt);
+            }
+
+            ExpireEntries(now);
         }
 
-        /// <summary>
-        /// 目标检查
-        /// </summary>
-        /// <param name="now"></param>
-        /// <param name="target"></param>
-        /// <param name="entry"></param>
-        private void EvaluateTarget(float now, BaseUnitLogicEntity target, VisibilityEntry entry, float dt)
+        void EvaluateTarget(float now, BaseUnitLogicEntity target, VisibilityEntry entry, float dt)
         {
             var targetPos = target.Pos;
             var dist = (targetPos - UnitEntity.Pos).magnitude;
 
-            bool cansee = true;
-            //var cansee = UnitEntity.LogicManager.visionSenser.CanUnitSee(UnitEntity.Id, target.Id);
-            //if(!cansee)
-            //{
-            //    MarkHidden(entry, LogicTime.time);
-            //}
-
-
-            // 隐身覆盖（机制级躲藏）
             var stealth = target.stealthInfo;
             bool stealthBlocks = false;
             if (stealth != null && stealth.stealthId != 0)
             {
-                // 该观察者在隐身获取时的无视窗口
                 bool ignoreStealth =
                     stealth.SeeUnits != null &&
                     stealth.SeeUnits.TryGetValue(UnitEntity.Id, out var untilTs) &&
                     now < untilTs + 60.0f;
 
-                ignoreStealth |= (dist <= 1e-1);
+                ignoreStealth |= dist <= 1e-1f;
 
                 if (!ignoreStealth)
                 {
@@ -152,60 +143,95 @@ namespace My.Map.Unit
                 }
             }
 
-            if (!stealthBlocks && cansee)
+            if (!stealthBlocks)
             {
-                MarkVisible(entry, now, targetPos, dt);
+                ApplyInView(entry, now, targetPos, dt, target);
             }
             else
             {
-                MarkHidden(entry, now);
+                ApplyOutOfView(entry, now, dt);
             }
         }
 
-        // 查询接口
+        // 观察者目击加成 vs 目标逃脱加成，万分比对冲
+        static float ResolveWitnessSpotRate(BaseUnitLogicEntity observer, BaseUnitLogicEntity target)
+        {
+            long spotBonus = observer.GetAttr(AttrIdConsts.UnitWitnessSpotRate);
+            long escapeBonus = target.GetAttr(AttrIdConsts.UnitWitnessEscapeRate);
+            long net = spotBonus - escapeBonus;
+            float mul = (10000 + net) / 10000f;
+            if (mul < 0.01f)
+            {
+                mul = 0.01f;
+            }
+
+            return mul;
+        }
+
+        void ApplyInView(VisibilityEntry entry, float now, Vector2 pos, float dt, BaseUnitLogicEntity target)
+        {
+            float spotRate = ResolveWitnessSpotRate(UnitEntity, target);
+            bool wasInView = entry.IsInView;
+
+            entry.IsInView = true;
+            entry.LastSeenTime = now;
+            entry.LastKnownPos = pos;
+            entry.LastUpdateTime = now;
+            entry.WitnessAccum += spotRate * dt;
+
+            if (!wasInView)
+            {
+                EventOnMarkVisible?.Invoke(entry.TargetId);
+            }
+        }
+
+        void ApplyOutOfView(VisibilityEntry entry, float now, float dt)
+        {
+            float hideRate = WitnessNeedSec / WitnessForgetSec;
+            bool wasInView = entry.IsInView;
+
+            entry.IsInView = false;
+            entry.LastUpdateTime = now;
+            entry.WitnessAccum -= hideRate * dt;
+            if (entry.WitnessAccum < 0f)
+            {
+                entry.WitnessAccum = 0f;
+            }
+
+            if (wasInView)
+            {
+                EventOnMarkHidden?.Invoke(entry.TargetId);
+            }
+        }
+
         public bool IsTargetVisible(long targetId)
         {
-            bool basicView =  VisibleMap.TryGetValue(targetId, out var e) && e.IsInView;
-
-            return basicView;
+            return VisibleMap.TryGetValue(targetId, out var e) && e.IsInView;
         }
 
-
-        private void MarkVisible(VisibilityEntry e, float now, Vector2 pos, float interval)
+        public bool IsTargetWitnessed(long targetId)
         {
-            e.IsInView = true;
-            e.LastSeenTime = now;
-            e.LastKnownPos = pos;
-            e.LastUpdateTime = now;
-
-            e.SeenTimer += interval;
-
-            EventOnMarkVisible?.Invoke(e.TargetId);
+            return VisibleMap.TryGetValue(targetId, out var e) && e.IsWitnessed;
         }
 
-        private void MarkHidden(VisibilityEntry e, float now)
-        {
-            e.IsInView = false;
-            e.LastUpdateTime = now;
-
-            EventOnMarkHidden?.Invoke(e.TargetId);
-        }
-
-        private void ExpireEntries(float now)
+        void ExpireEntries(float now)
         {
             var toRemove = new List<long>();
             foreach (var kv in VisibleMap)
             {
                 var e = kv.Value;
-                if (now - e.LastUpdateTime > EntryExpireAfter)
+                if (!e.IsInView && e.WitnessAccum <= 0f && now - e.LastUpdateTime > EntryExpireAfter)
+                {
                     toRemove.Add(kv.Key);
+                }
             }
+
             for (int i = 0; i < toRemove.Count; i++)
+            {
                 VisibleMap.Remove(toRemove[i]);
+            }
         }
     }
-
-
 }
 
 namespace My.Map
@@ -217,12 +243,16 @@ namespace My.Map
 
         public virtual void InitVisionSystem()
         {
-            
         }
 
         public bool IsTargetVisible(long targetId)
         {
-            return VisionSystem.IsTargetVisible(targetId);
+            return VisionSystem != null && VisionSystem.IsTargetVisible(targetId);
+        }
+
+        public bool IsTargetWitnessed(long targetId)
+        {
+            return VisionSystem != null && VisionSystem.IsTargetWitnessed(targetId);
         }
 
         public virtual void OnGazeEnter(long srcId)
@@ -231,7 +261,6 @@ namespace My.Map
 
         public virtual void OnGazeLeave(long srcId)
         {
-            
         }
     }
 }

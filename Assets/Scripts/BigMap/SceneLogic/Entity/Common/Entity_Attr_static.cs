@@ -148,6 +148,11 @@ namespace My.Map.Entity
 
         public const string UnitDizzy = "UnitDizzy";
 
+        // 目击累计速率加成（万分比，10000=+100%）；观察者侧
+        public const string UnitWitnessSpotRate = "UnitWitnessSpotRate";
+        // 逃脱累计速率加成（万分比）；目标侧，与 UnitWitnessSpotRate 对冲
+        public const string UnitWitnessEscapeRate = "UnitWitnessEscapeRate";
+
         #endregion
 
         public const string DeepZhaChance = "DeepZhaChance";

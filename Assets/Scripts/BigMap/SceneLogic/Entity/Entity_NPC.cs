@@ -604,7 +604,7 @@ namespace My.Map
             if (isEvilAlerting) return;
 
             bool seeEvil = false;
-            if (VisionSystem.IsTargetVisible(LogicManager.playerLogicEntity.Id))
+            if (VisionSystem.IsTargetWitnessed(LogicManager.playerLogicEntity.Id))
             {
                 if (LogicManager.playerLogicEntity.IsExposed && !LogicManager.PlayerHumanMode)
                 {

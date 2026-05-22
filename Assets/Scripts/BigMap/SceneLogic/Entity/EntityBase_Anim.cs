@@ -37,18 +37,17 @@ namespace My.Map
             var buffs = BuffContainer.Values;
             foreach (var b in buffs)
             {
-                if(b.Def.DurationEffect == null)
+                foreach (var eff in b.Def.ResolveDurationEffects())
                 {
-                    continue;
-                }
-                if(b.Def.DurationEffect.DurationType != Entity.EBuffDurationType.AnimOverride)
-                {
-                    continue;
-                }
+                    if (eff == null || eff.DurationType != Entity.EBuffDurationType.AnimOverride)
+                    {
+                        continue;
+                    }
 
-                if(b.Def.DurationEffect.ParamStr1 == rawAnimName)
-                {
-                    return b.Def.DurationEffect.ParamStr2;
+                    if (eff.ParamStr1 == rawAnimName)
+                    {
+                        return eff.ParamStr2;
+                    }
                 }
             }
 
@@ -242,7 +241,7 @@ namespace My.Map
         // RegisterBuff / UnregisterBuff 用：仅 AnimOverride 类 Buff 会影响层 0 的 locomotion 解析
         private void RequestAnimLayerRefreshIfAnimOverrideBuff(BuffDefinition def)
         {
-            if (def?.DurationEffect == null || def.DurationEffect.DurationType != EBuffDurationType.AnimOverride)
+            if (def == null || !def.HasAnimOverrideDuration())
             {
                 return;
             }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Xml.Linq;
 using cfg.demo;
 using My.Config;
 using My.Map;
@@ -293,34 +292,53 @@ namespace My.UI
                 return;
             }
 
-            var points = SavePointUnlockHelper.GetUnlockedForMap(glm, mapCfg.VarId);
-            if (points == null || points.Count == 0)
+            var pointStateList = new List<(SavePoint, bool)>();
+
+            foreach (var cfg in CfgMgr.Cfgs?.TbSavePoint.DataList)
             {
-                return;
+                if (cfg == null || cfg.AreaVarId != mapCfg.VarId)
+                {
+                    continue;
+                }
+
+                if (SavePointUnlockHelper.IsFormallyUnlocked(glm, cfg.SavePointId))
+                {
+                    pointStateList.Add((cfg, true));
+                    continue;
+                }
+
+                if(!glm.CheckCommonCondsAll(cfg.ShowUnlockConds))
+                {
+                    continue;
+                }
+
+                pointStateList.Add((cfg, false));
+
             }
 
-            points.Sort((a, b) =>
+            pointStateList.Sort((a, b) =>
             {
-                var order = a.SortOrder.CompareTo(b.SortOrder);
+                var order = a.Item1.SortOrder.CompareTo(b.Item1.SortOrder);
                 return order != 0
                     ? order
-                    : string.CompareOrdinal(a?.SavePointId, b?.SavePointId);
+                    : string.CompareOrdinal(a.Item1?.SavePointId, b.Item1?.SavePointId);
             });
 
-            foreach (var sp in points)
+            foreach (var sp in pointStateList)
             {
-                if (sp == null)
+                if (sp.Item1 == null)
                 {
                     continue;
                 }
 
                 outMarkers.Add(new SavePointMarkerVm
                 {
-                    Config = sp,
+                    Config = sp.Item1,
                     NormPos01 = new Vector2(
-                        Mathf.Clamp01(sp.SnapShowX),
-                        Mathf.Clamp01(sp.SnapShowY)),
+                        Mathf.Clamp01(sp.Item1.SnapShowX),
+                        Mathf.Clamp01(sp.Item1.SnapShowY)),
                     HasMapPosition = true,
+                    CanSelect = sp.Item2,
                 });
             }
         }
@@ -360,7 +378,7 @@ namespace My.UI
                     var captured = vm.Config;
                     marker.Clicked -= OnSavePointClicked;
                     marker.Clicked += OnSavePointClicked;
-                    marker.Bind(captured, vm.NormPos01, false);
+                    marker.Bind(captured, vm.NormPos01, false, vm.CanSelect);
                     _spawnedMarkers.Add(marker);
                 }
             }

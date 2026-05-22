@@ -179,6 +179,8 @@ public interface ISceneAbilityViewer
 
     void ShowKaiYouCloseupWindow(long srcEntityId, string showName, float duration);
 
+    void ShowHTangleCloseupWindow(long srcEntityId);
+
     void ShowGcCloseupWindow(string showName, float duration);
 
     bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, Action onDialogEnd = null);

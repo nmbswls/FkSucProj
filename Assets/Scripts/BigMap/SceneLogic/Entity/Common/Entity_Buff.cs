@@ -25,6 +25,7 @@ namespace My.Map.Entity
         OnHit,
         OnDie,
         FinalDmgReduced, // 累计最终减伤
+        NearCaster, // 接近施法者（由 NearCasterWatch Duration 主动触发）
 
         PlayerHVoice = 100,
     }
@@ -104,6 +105,9 @@ namespace My.Map.Entity
 
         // SteerInput: ParamStr1=EBuffMoveSteerMode, ParamFloat1=speedRate, ParamFloat2=directionChangeInterval(Random 等)
         SteerInput,
+
+        // NearCasterWatch: ParamFloat1=触发半径, ParamFloat2=检测间隔(0=每Tick)
+        NearCasterWatch,
     }
 
     public enum EBuffMoveSteerMode
@@ -141,32 +145,45 @@ namespace My.Map.Entity
     {
         internal static bool IsRejected(IEntityBuffOwner target, BuffDefinition def)
         {
-            if (def?.DurationEffect == null || def.DurationEffect.DurationType != EBuffDurationType.SteerInput)
+            if (def == null)
             {
                 return false;
             }
 
-            if (target is not IEntityAttributeOwner attrOwner)
+            foreach (var eff in def.ResolveDurationEffects())
             {
-                return false;
+                if (eff == null || eff.DurationType != EBuffDurationType.SteerInput)
+                {
+                    continue;
+                }
+
+                if (target is not IEntityAttributeOwner attrOwner)
+                {
+                    continue;
+                }
+
+                if (attrOwner.CheckHasState(AttrIdConsts.ImmuneSteerInput))
+                {
+                    return true;
+                }
+
+                if (!TryParseSteerMode(eff.ParamStr1, out var mode))
+                {
+                    continue;
+                }
+
+                if (mode switch
+                {
+                    EBuffMoveSteerMode.AwayFromCaster => attrOwner.CheckHasState(AttrIdConsts.ImmuneFear),
+                    EBuffMoveSteerMode.TowardCaster => attrOwner.CheckHasState(AttrIdConsts.ImmuneLured),
+                    _ => false,
+                })
+                {
+                    return true;
+                }
             }
 
-            if (attrOwner.CheckHasState(AttrIdConsts.ImmuneSteerInput))
-            {
-                return true;
-            }
-
-            if (!TryParseSteerMode(def.DurationEffect.ParamStr1, out var mode))
-            {
-                return false;
-            }
-
-            return mode switch
-            {
-                EBuffMoveSteerMode.AwayFromCaster => attrOwner.CheckHasState(AttrIdConsts.ImmuneFear),
-                EBuffMoveSteerMode.TowardCaster => attrOwner.CheckHasState(AttrIdConsts.ImmuneLured),
-                _ => false,
-            };
+            return false;
         }
 
         static bool TryParseSteerMode(string raw, out EBuffMoveSteerMode mode)
@@ -198,6 +215,8 @@ namespace My.Map.Entity
                     return new BuffDurationRelativeAttrInstance(eff);
                 case EBuffDurationType.SteerInput:
                     return new BuffDurationSteerInputInstance(eff);
+                case EBuffDurationType.NearCasterWatch:
+                    return new BuffDurationNearCasterWatchInstance(eff);
                 default:
                     return null;
             }
@@ -369,7 +388,38 @@ namespace My.Map.Entity
 
         public BuffDurationEffet DurationEffect;
 
+        public List<BuffDurationEffet> DurationEffects = new();
+
         public List<BuffTriggerRuleConfig> TriggerList = new();
+
+        // 兼容旧单 DurationEffect 字段
+        public IReadOnlyList<BuffDurationEffet> ResolveDurationEffects()
+        {
+            if (DurationEffects != null && DurationEffects.Count > 0)
+            {
+                return DurationEffects;
+            }
+
+            if (DurationEffect != null)
+            {
+                return new[] { DurationEffect };
+            }
+
+            return Array.Empty<BuffDurationEffet>();
+        }
+
+        public bool HasAnimOverrideDuration()
+        {
+            foreach (var eff in ResolveDurationEffects())
+            {
+                if (eff != null && eff.DurationType == EBuffDurationType.AnimOverride)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     // IndependentStack：每层独立剩余时间，可选记录 Caster/SrcBuff
@@ -1081,7 +1131,7 @@ namespace My.Map.Entity
 
         public AuraRuntimeInfo? auraRuntimeInfo = null;
 
-        private readonly BuffDurationInstanceBase _durationLogic;
+        private readonly List<BuffDurationInstanceBase> _durationLogics = new();
 
         public BuffInstance(IEntityBuffOwner owner, long instId, string buffId, int layer, float lifeTIme = -1, long? casterId = null, long? srcBuffId = null)
         {
@@ -1093,7 +1143,14 @@ namespace My.Map.Entity
             CasterId = casterId ?? 0;
             SrcBuffId = srcBuffId ?? 0;
 
-            _durationLogic = BuffDurationInstanceFactory.Create(Def.DurationEffect);
+            foreach (var eff in Def.ResolveDurationEffects())
+            {
+                var logic = BuffDurationInstanceFactory.Create(eff);
+                if (logic != null)
+                {
+                    _durationLogics.Add(logic);
+                }
+            }
 
             if (Def.LayerStackMode == EBuffLayerStackMode.IndependentStack)
             {
@@ -1379,7 +1436,10 @@ namespace My.Map.Entity
                 leOwner.NotifyAnimLayerRefreshIfAnimOverrideBuff(Def);
             }
 
-            _durationLogic?.OnBuffConfigureChanged(this);
+            foreach (var logic in _durationLogics)
+            {
+                logic?.OnBuffConfigureChanged(this);
+            }
         }
 
 
@@ -1459,7 +1519,10 @@ namespace My.Map.Entity
                 TickAuraEffect();
             }
 
-            _durationLogic?.OnTick(this, dt);
+            foreach (var logic in _durationLogics)
+            {
+                logic?.OnTick(this, dt);
+            }
         }
 
         public void DoBuffTrigger(ETriggerType triggerType, int val = 1)
@@ -1541,6 +1604,7 @@ namespace My.Map.Entity
                 case MapFightEffectCreateAreaEffectCfg:
                 case MapAbilityEffectHitBoxCfg:
                 case MapFightEffectShowEffect:
+                case MapFightEffectShowCloseupWindowCfg:
                     {
                         long srcEntity = CasterId;
 
@@ -1622,7 +1686,10 @@ namespace My.Map.Entity
                 }
             }
 
-            _durationLogic?.OnDetached(this);
+            foreach (var logic in _durationLogics)
+            {
+                logic?.OnDetached(this);
+            }
 
             if (registeredModifiers != null)
             {
@@ -1640,13 +1707,6 @@ namespace My.Map.Entity
             if (BuffOwner != null)
             {
                 BuffOwner.BuffContainer.Remove(InstanceId);
-            }
-
-            if (Def.DurationEffect != null)
-            {
-                if (Def.DurationEffect.DurationType == EBuffDurationType.AnimOverride)
-                {
-                }
             }
         }
         void FillTriggerCacheAttrVal(GameLogicManager.LogicFightEffectContext ctx)

@@ -401,7 +401,7 @@ namespace My.Map.Unit
             if(_brain.Config.IsGuard)
             {
                 if (_brain.LogicManager.WantedManager.GetWantedStarLevel() >= 1
-                    && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
+                    && _brain.NpcEntity.IsTargetWitnessed(_brain.LogicManager.playerLogicEntity.Id))
                 {
                     _brain.ChangeState(_brain.StateChaseWanted);
                     return;
@@ -1172,7 +1172,7 @@ namespace My.Map.Unit
             if (_brain.Config.IsGuard)
             {
                 if (_brain.LogicManager.WantedManager.GetWantedStarLevel() >= 1
-                    && _brain.NpcEntity.IsTargetVisible(_brain.LogicManager.playerLogicEntity.Id))
+                    && _brain.NpcEntity.IsTargetWitnessed(_brain.LogicManager.playerLogicEntity.Id))
                 {
                     _brain.ChangeState(_brain.StateChaseWanted);
                     return;

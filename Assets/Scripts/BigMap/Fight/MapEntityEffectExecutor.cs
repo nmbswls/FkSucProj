@@ -1323,7 +1323,18 @@ namespace My.Map.Entity
                 Debug.LogError("AbilityEffectExecutor4ShowCloseupWindow cfg error");
                 return;
             }
-            //unitEntity.
+
+            if (ctx.Env.viewer == null)
+            {
+                return;
+            }
+
+            if (realCfg.WindowType == "htangle")
+            {
+                ctx.Env.viewer.ShowHTangleCloseupWindow(ctx.SourceInfo.SrcEntityId);
+                return;
+            }
+
             ctx.Env.viewer.ShowKaiYouCloseupWindow(ctx.SourceInfo.SrcEntityId, realCfg.WindowType, realCfg.Duration);
         }
     }

@@ -249,14 +249,18 @@ namespace My.Map.Scene
             bool overrideHit = false;
             foreach(var buff in UnitEntity.BuffContainer.Values)
             {
-                if (buff.Def.DurationEffect == null) continue;
-                if(buff.Def.DurationEffect.DurationType == Entity.EBuffDurationType.HitEffect)
+                foreach (var eff in buff.Def.ResolveDurationEffects())
                 {
+                    if (eff == null || eff.DurationType != Entity.EBuffDurationType.HitEffect)
+                    {
+                        continue;
+                    }
+
                     var existCtx = MapSceneEffectManager.Instance.FindSceneEffect(lastHitOverrideCtxId);
 
                     if(existCtx == null)
                     {
-                        existCtx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, buff.Def.DurationEffect.ParamFloat1, buff.Def.DurationEffect.ParamStr1, this.Id);
+                        existCtx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, eff.ParamFloat1, eff.ParamStr1, this.Id);
                         if (existCtx != null)
                         {
                             existCtx.BindingUnitVec = new Vector2(0, 0.555f);

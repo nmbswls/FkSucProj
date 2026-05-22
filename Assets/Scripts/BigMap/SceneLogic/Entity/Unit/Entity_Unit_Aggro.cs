@@ -163,7 +163,7 @@ namespace My.Map.Unit
                     continue;
                 }
 
-                if (pairInfo.Value.SeenTimer < 1.0f)
+                if (!pairInfo.Value.IsWitnessed)
                 {
                     continue;
                 }

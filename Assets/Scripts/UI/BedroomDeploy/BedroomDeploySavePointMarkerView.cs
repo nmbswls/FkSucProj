@@ -37,7 +37,7 @@ namespace My.UI
             }
         }
 
-        public void Bind(SavePoint sp, Vector2 anchoredNorm01, bool selected)
+        public void Bind(SavePoint sp, Vector2 anchoredNorm01, bool selected, bool canSelect)
         {
             _savePoint = sp;
             if (_rt != null)
@@ -52,6 +52,15 @@ namespace My.UI
 
             if (label != null)
                 label.text = sp != null ? sp.DisplayName : string.Empty;
+
+            if (canSelect)
+            {
+                icon.sprite = SimpleResManager.Load<Sprite>("Sprite/Map/sp_mini");
+            }
+            else
+            {
+                icon.sprite = SimpleResManager.Load<Sprite>("Sprite/Map/sp_mini_gray");
+            }
 
             SetSelected(selected);
         }

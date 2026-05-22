@@ -332,12 +332,36 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
                     },
-                    DurationEffect = new BuffDurationEffet()
+                    DurationEffects = new()
                     {
-                        DurationType = EBuffDurationType.SteerInput,
-                        ParamStr1 = nameof(EBuffMoveSteerMode.TowardCaster),
-                        ParamFloat1 = 1f,
-                        ParamFloat2 = 0.2f,
+                        new BuffDurationEffet()
+                        {
+                            DurationType = EBuffDurationType.SteerInput,
+                            ParamStr1 = nameof(EBuffMoveSteerMode.TowardCaster),
+                            ParamFloat1 = 1f,
+                            ParamFloat2 = 0.2f,
+                        },
+                        new BuffDurationEffet()
+                        {
+                            DurationType = EBuffDurationType.NearCasterWatch,
+                            ParamFloat1 = 0.35f,
+                        },
+                    },
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.NearCaster,
+                            RemoveOnTrigger = true,
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectShowCloseupWindowCfg()
+                                {
+                                    WindowType = "htangle",
+                                    Duration = 5f,
+                                },
+                            },
+                        },
                     },
                     DefaultDuration = 3f,
                     Icon = "fallback",

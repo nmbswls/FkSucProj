@@ -20,7 +20,7 @@ namespace My.Map.Scene
 
         public bool InteractFocused { get; set; }
         public bool IsInteractDetail { get; set; }
-        public bool WithInteractDetail => true;
+        public bool WithInteractDetail => false;
 
         public override void Bind(ILogicEntity logic)
         {
