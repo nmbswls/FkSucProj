@@ -2,7 +2,9 @@
   {
     "id": 1,
     "desc": "",
-    "filter_type": "Static",
+    "filter_types": [
+      "Static"
+    ],
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
@@ -13,7 +15,9 @@
   {
     "id": 2,
     "desc": "",
-    "filter_type": "Static",
+    "filter_types": [
+      "Static"
+    ],
     "player_min_desire": 1,
     "is_player_passive": false,
     "h_impulse_base": 20,
@@ -24,7 +28,9 @@
   {
     "id": 3,
     "desc": "",
-    "filter_type": "Static",
+    "filter_types": [
+      "Static"
+    ],
     "player_min_desire": 2,
     "is_player_passive": false,
     "h_impulse_base": 20,
@@ -35,7 +41,9 @@
   {
     "id": 4,
     "desc": "",
-    "filter_type": "Static",
+    "filter_types": [
+      "Static"
+    ],
     "player_min_desire": 3,
     "is_player_passive": false,
     "h_impulse_base": 40,
@@ -46,7 +54,9 @@
   {
     "id": 5,
     "desc": "",
-    "filter_type": "Charmed",
+    "filter_types": [
+      "Charmed"
+    ],
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
@@ -57,7 +67,9 @@
   {
     "id": 6,
     "desc": "",
-    "filter_type": "Charmed",
+    "filter_types": [
+      "Charmed"
+    ],
     "player_min_desire": 1,
     "is_player_passive": false,
     "h_impulse_base": 20,
@@ -68,7 +80,9 @@
   {
     "id": 7,
     "desc": "",
-    "filter_type": "Charmed",
+    "filter_types": [
+      "Charmed"
+    ],
     "player_min_desire": 2,
     "is_player_passive": false,
     "h_impulse_base": 20,
@@ -79,12 +93,118 @@
   {
     "id": 8,
     "desc": "",
-    "filter_type": "Charmed",
+    "filter_types": [
+      "Charmed"
+    ],
     "player_min_desire": 3,
     "is_player_passive": false,
     "h_impulse_base": 40,
     "coef_player": 0,
     "coef_enemy": 1,
     "player_climax_weight": 1
+  },
+  {
+    "id": 9,
+    "desc": "",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 10,
+    "coef_player": 1,
+    "coef_enemy": 0,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 10,
+    "desc": "",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 11,
+    "coef_player": 1,
+    "coef_enemy": 0,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 11,
+    "desc": "",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 12,
+    "coef_player": 1,
+    "coef_enemy": 0,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 12,
+    "desc": "",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 13,
+    "coef_player": 1,
+    "coef_enemy": 0,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 13,
+    "desc": "",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": true,
+    "h_impulse_base": 14,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 14,
+    "desc": "",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": true,
+    "h_impulse_base": 15,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 15,
+    "desc": "",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": true,
+    "h_impulse_base": 16,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 16,
+    "desc": "",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": true,
+    "h_impulse_base": 17,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 0
   }
 ]

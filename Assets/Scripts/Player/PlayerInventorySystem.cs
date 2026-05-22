@@ -562,6 +562,7 @@ namespace My.Player.Bag
                 {
                     return;
                 }
+
                 totalNum += bag.GetItemCount(itemId);
             }
 
@@ -575,6 +576,72 @@ namespace My.Player.Bag
             CurrencyBag.TryGetValue(itemId, out var currencyVal);
             totalNum += currencyVal;
             return totalNum;
+        }
+
+        // 身上携带（主包+特殊包+货币），不含仓库
+        public long GetCarriedItemTotalExcludingWarehouse(string itemId)
+        {
+            long totalNum = 0;
+            void Acc(PlayerBag bag)
+            {
+                if (bag == null)
+                {
+                    return;
+                }
+
+                totalNum += bag.GetItemCount(itemId);
+            }
+
+            Acc(MainBag);
+            foreach (var bag in SpeBags.Values)
+            {
+                Acc(bag);
+            }
+
+            CurrencyBag.TryGetValue(itemId, out var currencyVal);
+            totalNum += currencyVal;
+            return totalNum;
+        }
+
+        // 仅从身上扣减，不碰仓库
+        public long CostCarriedItem(string itemId, long count)
+        {
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            long leftCount = count;
+            var itemConf = ItemCatalog.GetItemDef(itemId);
+            if (itemConf != null && itemConf.ItemType == EItemType.Currency)
+            {
+                CurrencyBag.TryGetValue(itemId, out var itemVal);
+                if (itemVal > leftCount)
+                {
+                    CurrencyBag[itemId] = itemVal - leftCount;
+                    leftCount = 0;
+                }
+                else
+                {
+                    CurrencyBag[itemId] = 0;
+                    leftCount -= itemVal;
+                }
+            }
+
+            leftCount = MainBag.TryCostItem(itemId, leftCount);
+            if (leftCount > 0)
+            {
+                foreach (var bag in SpeBags.Values)
+                {
+                    leftCount = bag.TryCostItem(itemId, leftCount);
+                    if (leftCount <= 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return leftCount;
         }
 
         public long CostItem(string itemId, long count)

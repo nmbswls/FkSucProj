@@ -1259,8 +1259,9 @@ namespace My.Map
                 return;
             }
 
-            long rawOverRate = PlayerGamePlayRule.GetClothesRawOverRate10000ForGameplay(LogicManager);
-            var exposeRate10000 = PlayerGamePlayRule.CalculateBreakClothesInnerRate(GetAttr(AttrIdConsts.PlayerClothes), rawOverRate);
+            
+            //int exposeLevel = PlayerGamePlayRule.GetClothesRawOverRate10000ForGameplay(LogicManager);
+            int exposeLevel = PlayerGamePlayRule.CalculateClothesExposeLevel(LogicManager);
 
             foreach (var key in BeingGazedTrack.Keys.ToList())
             {
@@ -1327,6 +1328,8 @@ namespace My.Map
             {
                 long addRate = PlayerGamePlayRule.GetPleasuAddByGazePower(this.GetUnitLevel(), totalGazePower);
 
+                var exposeCfg = CfgMgr.Cfgs.TbPlayerClothesExposeInfo.GetOrDefault(exposeLevel);
+                addRate = (long)(addRate * (1 - exposeCfg.GazeResist));
                 if (addRate > 0)
                 {
                     Debug.Log($"remove sanity by gaze {addRate}");
@@ -1744,12 +1747,12 @@ namespace My.Map
         /// </summary>
         public void RefreshClothesRelateYCAttrs()
         {
-            int applyRate = 10000;
             long clothes = GetAttr(AttrIdConsts.PlayerClothes);
-
+            int applyRate = 10000;
             if (!LogicManager.PlayerHumanMode && !IsExposed)
             {
                 long rawOverRate = PlayerGamePlayRule.GetClothesRawOverRate10000ForGameplay(LogicManager);
+                //int exposeLevel = PlayerGamePlayRule.CalculateClothesExposeLevel(LogicManager);
                 applyRate = PlayerGamePlayRule.CalculateBreakClothesInnerRate(clothes, rawOverRate);
             }
 

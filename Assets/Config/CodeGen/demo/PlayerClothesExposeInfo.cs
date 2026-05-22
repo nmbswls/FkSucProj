@@ -22,6 +22,8 @@ public sealed partial class PlayerClothesExposeInfo : Luban.BeanBase
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["line_min"].IsNumber) { throw new SerializationException(); }  LineMin = _buf["line_min"]; }
         { if(!_buf["line_max"].IsNumber) { throw new SerializationException(); }  LineMax = _buf["line_max"]; }
+        { if(!_buf["h_impluse_resist"].IsNumber) { throw new SerializationException(); }  HImpluseResist = _buf["h_impluse_resist"]; }
+        { if(!_buf["gaze_resist"].IsNumber) { throw new SerializationException(); }  GazeResist = _buf["gaze_resist"]; }
     }
 
     public static PlayerClothesExposeInfo DeserializePlayerClothesExposeInfo(JSONNode _buf)
@@ -45,6 +47,14 @@ public sealed partial class PlayerClothesExposeInfo : Luban.BeanBase
     /// 衣装线max
     /// </summary>
     public int LineMax;
+    /// <summary>
+    /// h冲击减伤率
+    /// </summary>
+    public float HImpluseResist;
+    /// <summary>
+    /// 视线减伤率
+    /// </summary>
+    public float GazeResist;
    
     public const int __ID__ = -641350418;
     public override int GetTypeId() => __ID__;
@@ -60,6 +70,8 @@ public sealed partial class PlayerClothesExposeInfo : Luban.BeanBase
         + "name:" + Name + ","
         + "lineMin:" + LineMin + ","
         + "lineMax:" + LineMax + ","
+        + "hImpluseResist:" + HImpluseResist + ","
+        + "gazeResist:" + GazeResist + ","
         + "}";
     }
 }

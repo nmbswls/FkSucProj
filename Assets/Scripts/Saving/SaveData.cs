@@ -147,6 +147,7 @@ namespace My.Saving
     {
         public string SavePointId;
         public bool Unlocked;
+        public bool TributeSubmitted;
         public Dictionary<string, long> TributePut = new();
     }
     [Serializable]
@@ -216,6 +217,9 @@ namespace My.Saving
         /// 世界结算日计数；每推进一次触发垂钓点按 N 日补满等逻辑。
         /// </summary>
         public int SettlementDayIndex;
+
+        /// <summary>本次冒险经 SavePoint 保险箱已存入的欲望碎片数量。</summary>
+        public long SavePointVaultDesireShardDepositedThisRun;
     }
 
     /// <summary>

@@ -19,12 +19,17 @@ namespace My.Map.Entity
 
         public string SavePointId => CfgId;
 
-        public bool IsFormallyUnlocked => SavePointUnlockHelper.IsFormallyUnlocked(LogicManager, SavePointId);
+        public bool IsActivated => SavePointUnlockHelper.IsActivated(LogicManager, SavePointId);
 
-        public bool CanShowAndInteract => SavePointUnlockHelper.CanShowAndInteract(LogicManager, SavePointId);
+        public bool ShouldShowOnMap => SavePointUnlockHelper.ShouldShowOnMap(LogicManager, SavePointId);
+
+        public bool IsTributeSubmitted => SavePointUnlockHelper.IsTributeSubmitted(LogicManager, SavePointId);
 
         public bool NeedsTribute =>
-            Cfg != null && Cfg.RequireTribute && !IsFormallyUnlocked;
+            Cfg != null && Cfg.RequireTribute && !IsTributeSubmitted && !IsActivated;
+
+        public bool NeedsActivate =>
+            !IsActivated && (Cfg == null || !Cfg.RequireTribute || IsTributeSubmitted);
 
         protected override void LoadCfg()
         {

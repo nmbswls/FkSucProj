@@ -218,6 +218,7 @@ namespace My
         public void PostNewAreaLoaded()
         {
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
+            RefreshPlayerPeaceMode();
             OnSecretBasePostAreaLoaded();
             if (!IsInSecretBase)
             {

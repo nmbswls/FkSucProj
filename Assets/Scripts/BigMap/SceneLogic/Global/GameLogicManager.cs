@@ -127,10 +127,16 @@ namespace My
         public MapControlEventManager controlEventManager;
         public FactionRelationManager factionRelationManager;
 
-        public bool PlayerPeaceMode { get; set; } = false;
+        public bool PlayerPeaceMode { get; private set; } = true;
+
+        const float SavePointPeaceScanRadius = 30f;
 
         // true = 人类形态；false = 真身形态（仅真身下维持衣装/暴露等玩法）
         public bool PlayerHumanMode { get; private set; } = true;
+
+        public long SavePointVaultDesireShardDepositedThisRun { get; private set; }
+
+        public bool CanInteractSavePoint => PlayerHumanMode || PlayerPeaceMode;
 
         // 玩家在家园地图内主动切换人类/真身形态（Home 暂不使用）
         public bool TrySetPlayerHumanMode(bool wantHuman)
@@ -156,6 +162,7 @@ namespace My
             }
 
             PlayerHumanMode = human;
+            ResetSavePointVaultDepositedThisRun();
             if (SwitchAreaIntent != null && !refreshDespitePendingSwitch)
             {
                 return;
@@ -163,6 +170,21 @@ namespace My
 
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
             NotifyHumanQuickBarStateChanged();
+        }
+
+        public void ResetSavePointVaultDepositedThisRun()
+        {
+            SavePointVaultDesireShardDepositedThisRun = 0;
+        }
+
+        public void AddSavePointVaultDesireShardDeposited(long amount)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            SavePointVaultDesireShardDepositedThisRun += amount;
         }
 
         // 人类快捷道具栏：未发情且（伪装模式 或 真身未暴露）
@@ -432,76 +454,37 @@ namespace My
 
         
 
-        private HashSet<long> InBattleUnitDict = new();
-        public void OnUnitCombatStateUpdate(BaseUnitLogicEntity unit)
-        {
-            if(unit.IsInCombat)
-            {
-                InBattleUnitDict.Add(unit.Id);
-            }
-            else
-            {
-                InBattleUnitDict.Remove(unit.Id);
-            }
+        private float _peaceModeTimer = 0;
 
-            if (InBattleUnitDict.Count == 0)
+        public void RefreshPlayerPeaceMode()
+        {
+            if (playerLogicEntity == null || AreaManager == null)
             {
                 PlayerPeaceMode = true;
-            }
-            else
-            {
-                PlayerPeaceMode = false;
-            }
-        }
-
-        private float _peaceModeTimer = 0;
-        private List<long> inbattleCache = new();
-        private void TickPeaceMode()
-        {
-            if(LogicTime.time - _peaceModeTimer < 3.0f)
-            {
                 return;
             }
-            _peaceModeTimer = LogicTime.time;
 
-            foreach(var id in InBattleUnitDict)
+            foreach (var one in AreaManager.FindEntityInRange(playerLogicEntity.Pos, SavePointPeaceScanRadius))
             {
-                var logicEntity = AreaManager.GetLogicEntiy(id, false);
-                if (logicEntity == null || logicEntity is not BaseUnitLogicEntity unitEntity || !unitEntity.IsInCombat)
+                if (one is NpcUnitLogicEntity npcUnit && npcUnit.IsInCombat)
                 {
-                    inbattleCache.Add(id);
+                    PlayerPeaceMode = false;
+                    return;
                 }
             }
 
-            foreach(var id in inbattleCache)
+            PlayerPeaceMode = true;
+        }
+
+        private void TickPeaceMode()
+        {
+            if (LogicTime.time - _peaceModeTimer < 3.0f)
             {
-                InBattleUnitDict.Remove(id);
+                return;
             }
 
-            //bool allPeace = true;
-            //var rett = AreaManager.FindEntityInRange(playerLogicEntity.Pos, 30.0f);
-            //foreach(var one in rett)
-            //{
-            //    if(one is not NpcUnitLogicEntity npcUnit)
-            //    {
-            //        continue;
-            //    }
-
-            //    if(npcUnit.CombatState == NpcCombatStateComp.ECombatState.InCombat)
-            //    {
-            //        allPeace = false;
-            //        break;
-            //    }
-            //}
-
-            if(InBattleUnitDict.Count == 0)
-            {
-                PlayerPeaceMode = true;
-            }
-            else
-            {
-                PlayerPeaceMode = false;
-            }
+            _peaceModeTimer = LogicTime.time;
+            RefreshPlayerPeaceMode();
         }
 
         public ProjectileHolder projectileHolder;
@@ -914,6 +897,7 @@ namespace My
             {
                 AlertVal = saveData.GlobalRuntime.AlertVal;
                 SettlementDayIndex = saveData.GlobalRuntime.SettlementDayIndex;
+                SavePointVaultDesireShardDepositedThisRun = saveData.GlobalRuntime.SavePointVaultDesireShardDepositedThisRun;
                 WantedManager.LastWantedTime = saveData.GlobalRuntime.WantedLastTime;
                 if (saveData.GlobalRuntime.WantedChannels != null && saveData.GlobalRuntime.WantedChannels.Count > 0)
                 {
@@ -923,6 +907,7 @@ namespace My
             else
             {
                 SettlementDayIndex = 0;
+                SavePointVaultDesireShardDepositedThisRun = 0;
             }
         }
 
@@ -1015,6 +1000,7 @@ namespace My
             data.GlobalRuntime.WantedLastTime = WantedManager != null ? WantedManager.LastWantedTime : 0f;
             data.GlobalRuntime.WantedChannels = WantedManager != null ? WantedManager.ExportToPersist() : null;
             data.GlobalRuntime.SettlementDayIndex = SettlementDayIndex;
+            data.GlobalRuntime.SavePointVaultDesireShardDepositedThisRun = SavePointVaultDesireShardDepositedThisRun;
 
             data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
             if (AreaManager != null && !string.IsNullOrEmpty(AreaManager.AreaOverlayId))

@@ -12,150 +12,39 @@ namespace My.UI
     public class SavePointPanel : PanelBase
     {
         [SerializeField] Button closeButton;
-        [SerializeField] Button primaryButton;
         [SerializeField] TMP_Text statusText;
 
+        [Header("Vault")]
+        [SerializeField] GameObject vaultSectionRoot;
+        [SerializeField] TMP_Text carriedCountText;
+        [SerializeField] TMP_Text quotaText;
+        [SerializeField] Button depositButton;
+        [SerializeField] TMP_Text depositFeedbackText;
+
         LogicEntitySavePoint _bound;
+        bool _listenersBound;
 
         public void BeginFlow(LogicEntitySavePoint entity)
         {
             _bound = entity;
-            RefreshUi();
+            if (_bound == null || !_bound.IsActivated)
+            {
+                Debug.LogWarning("[SavePointPanel] Save point is not activated.");
+                ClosePanel();
+                return;
+            }
 
-            if (statusText != null && _bound != null && _bound.IsFormallyUnlocked)
+            BindListeners();
+            RefreshVaultUi();
+            if (statusText != null)
             {
                 statusText.text = "Saving...";
-                _ = RunSaveThenCloseAsync();
             }
+
+            _ = RunAutoSaveAsync();
         }
 
-        void RefreshUi()
-        {
-            if (_bound == null)
-            {
-                if (statusText != null)
-                {
-                    statusText.text = "No save point.";
-                }
-
-                return;
-            }
-
-            var cfg = _bound.Cfg;
-            var glm = _bound.LogicManager;
-            var persist = SavePointUnlockHelper.GetPersist(glm, _bound.SavePointId);
-
-            if (_bound.IsFormallyUnlocked)
-            {
-                if (statusText != null)
-                {
-                    statusText.text = "Saving...";
-                }
-
-                if (primaryButton != null)
-                {
-                    primaryButton.gameObject.SetActive(false);
-                }
-
-                return;
-            }
-
-            if (primaryButton != null)
-            {
-                primaryButton.gameObject.SetActive(true);
-                primaryButton.onClick.RemoveAllListeners();
-            }
-
-            if (_bound.NeedsTribute)
-            {
-                if (statusText != null)
-                {
-                    statusText.text = "Tribute: " + SavePointUnlockHelper.BuildTributeProgressText(cfg, persist);
-                }
-
-                if (primaryButton != null)
-                {
-                    var label = primaryButton.GetComponentInChildren<TMP_Text>();
-                    if (label != null)
-                    {
-                        label.text = "Submit tribute";
-                    }
-
-                    primaryButton.onClick.AddListener(OnSubmitTributeClicked);
-                }
-            }
-            else
-            {
-                if (statusText != null)
-                {
-                    statusText.text = "Activate this save point?";
-                }
-
-                if (primaryButton != null)
-                {
-                    var label = primaryButton.GetComponentInChildren<TMP_Text>();
-                    if (label != null)
-                    {
-                        label.text = "Activate";
-                    }
-
-                    primaryButton.onClick.AddListener(OnActivateClicked);
-                }
-            }
-        }
-
-        void OnActivateClicked()
-        {
-            if (_bound == null)
-            {
-                return;
-            }
-
-            if (!SavePointUnlockHelper.TryUnlockOnInteract(_bound.LogicManager, _bound.SavePointId, out var reason))
-            {
-                if (statusText != null)
-                {
-                    statusText.text = "Activate failed: " + reason;
-                }
-
-                return;
-            }
-
-            BeginFlow(_bound);
-        }
-
-        void OnSubmitTributeClicked()
-        {
-            if (_bound == null)
-            {
-                return;
-            }
-
-            if (!SavePointUnlockHelper.TrySubmitTribute(_bound.LogicManager, _bound.SavePointId, out var reason))
-            {
-                if (statusText != null)
-                {
-                    statusText.text = "Submit failed: " + reason;
-                }
-
-                return;
-            }
-
-            if (_bound.IsFormallyUnlocked)
-            {
-                if (statusText != null)
-                {
-                    statusText.text = "Unlocked. Saving...";
-                }
-
-                _ = RunSaveThenCloseAsync();
-                return;
-            }
-
-            RefreshUi();
-        }
-
-        async Task RunSaveThenCloseAsync()
+        async Task RunAutoSaveAsync()
         {
             try
             {
@@ -166,14 +55,103 @@ namespace My.UI
 
                 if (statusText != null)
                 {
-                    statusText.text = "Saved.";
+                    statusText.text = "已存档。";
                 }
             }
-            finally
+            catch (System.Exception ex)
             {
-                await Task.Delay(400);
-                ClosePanel();
+                Debug.LogError("[SavePointPanel] Auto save failed: " + ex.Message);
+                if (statusText != null)
+                {
+                    statusText.text = "存档失败。";
+                }
             }
+        }
+
+        void BindListeners()
+        {
+            if (_listenersBound)
+            {
+                return;
+            }
+
+            _listenersBound = true;
+            if (closeButton != null)
+            {
+                closeButton.onClick.AddListener(ClosePanel);
+            }
+
+            if (depositButton != null)
+            {
+                depositButton.onClick.AddListener(OnDepositClick);
+            }
+        }
+
+        void RefreshVaultUi()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                if (depositButton != null)
+                {
+                    depositButton.interactable = false;
+                }
+
+                return;
+            }
+
+            var carried = SavePointVaultHelper.GetCarriedDesireShard(glm);
+            var deposited = SavePointVaultHelper.GetDepositedThisRun(glm);
+            var quota = SavePointVaultHelper.GetRemainingQuota(glm);
+            var depositable = SavePointVaultHelper.GetDepositableAmount(glm);
+
+            if (carriedCountText != null)
+            {
+                carriedCountText.text = $"携带：{carried}";
+            }
+
+            if (quotaText != null)
+            {
+                quotaText.text = $"本次额度：{deposited} / {SavePointVaultHelper.DesireShardRunCap}（剩余 {quota}）";
+            }
+
+            if (depositButton != null)
+            {
+                depositButton.interactable = depositable > 0;
+            }
+        }
+
+        void OnDepositClick()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                return;
+            }
+
+            if (!SavePointVaultHelper.TryDepositAllAvailable(glm, out var deposited, out var failReason))
+            {
+                if (depositFeedbackText != null)
+                {
+                    depositFeedbackText.text = failReason switch
+                    {
+                        "nothing_to_deposit" => "没有可存入的数量。",
+                        "warehouse_full" => "仓库空间不足。",
+                        _ => "存入失败。",
+                    };
+                }
+
+                Debug.LogWarning("[SavePointPanel] Vault deposit failed: " + failReason);
+                RefreshVaultUi();
+                return;
+            }
+
+            if (depositFeedbackText != null)
+            {
+                depositFeedbackText.text = $"已存入 {deposited} 个欲望碎片。";
+            }
+
+            RefreshVaultUi();
         }
 
         void ClosePanel()
@@ -185,10 +163,7 @@ namespace My.UI
 
         void Awake()
         {
-            if (closeButton != null)
-            {
-                closeButton.onClick.AddListener(ClosePanel);
-            }
+            BindListeners();
         }
     }
 }

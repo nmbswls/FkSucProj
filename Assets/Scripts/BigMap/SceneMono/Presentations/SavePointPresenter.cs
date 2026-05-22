@@ -42,15 +42,21 @@ namespace My.Map.Scene
                 return;
             }
 
-            bool visible = SavePointUnlockHelper.ShouldBeVisible(SaveEntity.LogicManager, SaveEntity.SavePointId);
-            SetVisible(visible);
+            SetVisible(SavePointUnlockHelper.ShouldShowOnMap(SaveEntity.LogicManager, SaveEntity.SavePointId));
         }
 
         public bool CanInteractEnable()
         {
             return SaveEntity != null
                    && !SaveEntity.MarkDestroyed
-                   && SaveEntity.CanShowAndInteract;
+                   && SaveEntity.ShouldShowOnMap
+                   && CanInteractSavePointNow();
+        }
+
+        bool CanInteractSavePointNow()
+        {
+            var glm = SaveEntity?.LogicManager;
+            return glm != null && glm.CanInteractSavePoint;
         }
 
         public bool TriggerInteract(int selectionId)
@@ -60,6 +66,46 @@ namespace My.Map.Scene
                 return false;
             }
 
+            if (!CanInteractSavePointNow())
+            {
+                Debug.LogWarning("[SavePointPresenter] Save point interaction blocked: not in peace mode.");
+                return false;
+            }
+
+            if (SaveEntity.IsActivated)
+            {
+                return OpenSavePanel();
+            }
+
+            if (SaveEntity.NeedsTribute)
+            {
+                if (!SavePointUnlockHelper.TrySubmitTribute(
+                        SaveEntity.LogicManager, SaveEntity.SavePointId, out var tributeReason))
+                {
+                    Debug.LogWarning("[SavePointPresenter] Submit tribute failed: " + tributeReason);
+                    return false;
+                }
+
+                return true;
+            }
+
+            if (SaveEntity.NeedsActivate)
+            {
+                if (!SavePointUnlockHelper.TryActivate(
+                        SaveEntity.LogicManager, SaveEntity.SavePointId, out var activateReason))
+                {
+                    Debug.LogWarning("[SavePointPresenter] Activate failed: " + activateReason);
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        bool OpenSavePanel()
+        {
             LogicTime.RequestPause("SavePoint");
             var panel = UIManager.Instance.ShowPanel("SavePointPanel") as SavePointPanel;
             if (panel == null)
@@ -86,7 +132,7 @@ namespace My.Map.Scene
             }
 
             string label;
-            if (SaveEntity.IsFormallyUnlocked)
+            if (SaveEntity.IsActivated)
             {
                 label = "Save";
             }
@@ -105,7 +151,7 @@ namespace My.Map.Scene
                 {
                     SelectId = 1,
                     SelectContent = label,
-                    Selectable = true,
+                    Selectable = CanInteractSavePointNow(),
                 },
             };
         }

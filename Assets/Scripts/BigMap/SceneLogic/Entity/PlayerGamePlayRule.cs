@@ -4,8 +4,11 @@ using My.Config;
 using My.Map.Entity;
 using My.Player;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 namespace My.Map
 {
@@ -25,6 +28,64 @@ namespace My.Map
         public const float BaseSuccessChance = 0.62f;
         public const float PhysicalFormPenalty = 0.00003f;
         public const float FailTempEnmity = 42f;
+
+        //sui'ji hou'qu
+        public static int RandomGetOneHAct(string filterType, int desireLevel)
+        {
+            var dList = CfgMgr.Cfgs.TbHActInfo.DataList;
+            List<int> candidates = new();
+            for(int i=0;i< dList.Count;i++)
+            {
+                bool matched = false;
+                foreach(var filter in dList[i].FilterTypes)
+                {
+                    if(filter.Contains(filterType))
+                    {
+                        matched = true;
+                        break;
+                    }
+                }
+
+                if(!matched)
+                {
+                    continue;
+                }
+
+                if(dList[i].PlayerMinDesire > desireLevel)
+                {
+                    continue;
+                }
+
+                candidates.Add(dList[i].Id);
+            }
+
+            if (candidates.Count == 0)
+            {
+                return 0;
+            }
+
+            var randIdx = UnityEngine.Random.Range(0, candidates.Count);
+            return candidates[randIdx];
+        }
+
+        /// <summary>
+        /// 计算当前暴露等级
+        /// </summary>
+        /// <param name="glm"></param>
+        /// <returns></returns>
+        public static int CalculateClothesExposeLevel(GameLogicManager glm)
+        {
+            var rawRate = GetClothesRawOverRate10000ForGameplay(glm);
+            var cfgList = CfgMgr.Cfgs.TbPlayerClothesExposeInfo.DataList;
+            for (int i = 0; i < CfgMgr.Cfgs.TbPlayerClothesExposeInfo.DataList.Count; i++)
+            {
+                if(rawRate >= cfgList[i].LineMin && rawRate <= cfgList[i].LineMax)
+                {
+                    return cfgList[i].Level;
+                }
+            }
+            return 0;
+        }
 
 
         public static long RandomApplyDensityValue(EDesireDensityType densityType) =>
@@ -272,6 +333,12 @@ namespace My.Map
             return 10000L;
         }
 
+        /// <summary>
+        /// 计算吸引力等级
+        /// </summary>
+        /// <param name="glm"></param>
+        /// <param name="will"></param>
+        /// <returns></returns>
         public static int CalculateUnitAttractedLevel(GameLogicManager glm,  long will)
         {
             long rawOverRate = GetClothesRawOverRate10000ForGameplay(glm);
@@ -279,7 +346,7 @@ namespace My.Map
 
             float aMax = 100;
 
-
+            // 基础吸引力主要受衣物覆盖率影响 并受发情进度增幅
             var aBase = aMax * ((1 - exposeRate10000 * 0.0001) * (1 - exposeRate10000 * 0.0001) * (1 + glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerEstrusProgrss) * 1.0 / 100_000 * 0.4));
             var charm = glm.playerLogicEntity.GetAttr(AttrIdConsts.PlayerCharm);
             float weff = Math.Max(0, will - charm);

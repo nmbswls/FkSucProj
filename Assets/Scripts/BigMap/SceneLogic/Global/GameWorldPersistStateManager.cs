@@ -7,6 +7,7 @@ using My.Config;
 using My.Saving;
 using System;
 using UnityEngine;
+using My.Map;
 
 namespace My
 {
@@ -126,12 +127,15 @@ namespace My
                         }
                     }
 
-                    _savePointUnlockById[row.SavePointId] = new SavePointUnlockPersist
+                    var loaded = new SavePointUnlockPersist
                     {
                         SavePointId = row.SavePointId,
                         Unlocked = row.Unlocked,
+                        TributeSubmitted = row.TributeSubmitted,
                         TributePut = put,
                     };
+                    SavePointUnlockHelper.NormalizePersistAfterLoad(loaded);
+                    _savePointUnlockById[row.SavePointId] = loaded;
                 }
             }
 
@@ -229,6 +233,7 @@ namespace My
                 {
                     SavePointId = v.SavePointId,
                     Unlocked = v.Unlocked,
+                    TributeSubmitted = v.TributeSubmitted,
                     TributePut = put,
                 });
             }

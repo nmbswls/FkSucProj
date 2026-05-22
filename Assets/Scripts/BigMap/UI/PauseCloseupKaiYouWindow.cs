@@ -1,9 +1,12 @@
 
 using System;
+using DG.Tweening;
+using My.Config;
 using My.Input;
 using My.Map.Entity;
 using My.UI;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,6 +36,7 @@ namespace My.Map.View
         public GameObject CounterHint;
 
         public long SrcEntityId;
+        public int HActId = 0;
         public float Duration;
         public float CounterExtraShow;
 
@@ -44,6 +48,9 @@ namespace My.Map.View
         private float _timer;
 
         private bool triggerCounter;
+
+        
+
 
         private void Update()
         {
@@ -84,6 +91,14 @@ namespace My.Map.View
         {
             this.SrcEntityId = srcEntityId;
             this.Duration = duration;
+
+            HActId = PlayerGamePlayRule.RandomGetOneHAct("KaiYou", MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel);
+
+            if (HActId == 0)
+            {
+                Debug.LogError("RefreshData");
+            }
+
             RefreshUI();
         }
 
@@ -106,6 +121,7 @@ namespace My.Map.View
 
             CounterExtraShow = 0;
 
+            
             CheckPlayerCanCounter();
         }
 
@@ -164,38 +180,35 @@ namespace My.Map.View
 
         private void HandleInteractFinish()
         {
+
+            
+
             var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
-            var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId);
+            var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId) as NpcUnitLogicEntity;
+
+            if(p == null || target == null)
+            {
+                Debug.LogError("err ResolveHActParams 11");
+                return;
+            }
+            // 对于静态敌人 玩家碾压 
+            if (!PlayerGamePlayRule.ResolveHActParams(HActId, p.GetAttr(AttrIdConsts.HPower), target.GetAttr(AttrIdConsts.HPower), target.GetUnitLevel(), out var hImpulseEnemy, out var hImpulsePlayer))
+            {
+                Debug.LogError("err ResolveHActParams");
+            }
+
+            // 对玩家施加冲击力
+            p.ApplyHImpulseDirectly(hImpulsePlayer, null);
+            target.ApplyNpcHImpulse(hImpulseEnemy);
+
+
             if (isCounterSuccess)
             {
-                p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId : SrcEntityId);
-
-                if(p.DesireLevel >= 2)
-                {
-                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 60_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                }
-                else
-                {
-                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                }
-                
+                p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -3_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
             }
             else
             {
-                p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -8_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-
-                if (p.DesireLevel >= 2)
-                {
-                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 40_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                }
-                else
-                {
-                    target?.ApplyResourceChange(AttrIdConsts.NPCHVal, 20_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                    p.ApplyResourceChange(AttrIdConsts.PlayerPleasure, 5_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
-                }
+                p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -6_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
             }
 
             UIManager.Instance.HidePanel(ID);
@@ -231,7 +244,9 @@ namespace My.Map.View
                     isCounterSuccess = true;
                     NormalPic.gameObject.SetActive(false);
                     CounterPic.gameObject.SetActive(true);
-                    CounterExtraShow = 3.0f;
+                    CounterExtraShow = 2.0f;
+
+                    HActId = PlayerGamePlayRule.RandomGetOneHAct("KaiYou", MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel);
                 }
             }
             return true;

@@ -301,7 +301,7 @@ namespace My.UI
                     continue;
                 }
 
-                if (SavePointUnlockHelper.IsFormallyUnlocked(glm, cfg.SavePointId))
+                if (SavePointUnlockHelper.IsActivated(glm, cfg.SavePointId))
                 {
                     pointStateList.Add((cfg, true));
                     continue;
