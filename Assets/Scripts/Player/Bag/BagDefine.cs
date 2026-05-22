@@ -308,6 +308,30 @@ namespace My.Player
             var itemConf = ItemCatalog.GetItemDef(itemId);
             if (itemConf == null) return 0;
 
+            // 实例型须逐件独立格；批量发放请走 PlayerInventorySystem.GiveItemToPlayer
+            if (ItemCatalog.IsInstanceType(itemConf.ItemType))
+            {
+                if (count != 1)
+                {
+                    Debug.LogWarning(
+                        $"TryGiveItem: instance type requires count=1, use GiveItemToPlayer for batch. itemId={itemId} count={count}");
+                    return 0;
+                }
+
+                var stack = ItemCatalog.CreateItemStack(itemId, 1);
+                if (stack == null)
+                {
+                    return 0;
+                }
+
+                if (!TryPlaceStackWithoutMerge(stack))
+                {
+                    return 0;
+                }
+
+                return 1;
+            }
+
             long remaining = count;
 
 

@@ -24,6 +24,9 @@ namespace My.Player.Bag
     
     public class PlayerInventorySystem : IPlayerSystem
     {
+        // 单次发放实例型道具上限，避免 CreateItemStack 循环过多导致卡顿
+        public const int MaxInstanceGrantBatch = 32;
+
         protected GameLogicManager LogicManager { get; private set; }
 
         public PlayerBag MainBag;
@@ -726,43 +729,15 @@ namespace My.Player.Bag
                 return 0;
             }
 
-            var put = bag.TryGiveItem(itemId, amount);
-
-            EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, put);
-
-            return put;
-        }
-
-        /// <summary>
-        /// 发放指定数量道具：实例型逐项 CreateItemStack 并各占独立格不并入已有堆；货币、自动消耗、其余可叠加入主背包走 GiveItemToPlayer。
-        /// </summary>
-        /// <returns>成功发放的物品单位数（实例型每件为 1；可堆叠为 TryGiveItem 实际放入的量）</returns>
-        public long GrantItemsRespectingInstances(string itemId, long amount)
-        {
-            if (amount <= 0 || string.IsNullOrEmpty(itemId))
-            {
-                return 0;
-            }
-
-            var itemConf = ItemCatalog.GetItemDef(itemId);
-            if (itemConf == null)
-            {
-                return 0;
-            }
-
-            if (itemConf.ItemType == EItemType.Currency || itemConf.IsAutoUse)
-            {
-                return GiveItemToPlayer(itemId, amount);
-            }
-
-            var bag = GetBagById(0);
-            if (bag == null)
-            {
-                return 0;
-            }
-
             if (ItemCatalog.IsInstanceType(itemConf.ItemType))
             {
+                if (amount > MaxInstanceGrantBatch)
+                {
+                    Debug.LogWarning(
+                        $"GiveItemToPlayer: instance batch {amount} exceeds limit {MaxInstanceGrantBatch}, itemId={itemId}");
+                    return 0;
+                }
+
                 long total = 0;
                 for (long i = 0; i < amount; i++)
                 {
@@ -778,13 +753,21 @@ namespace My.Player.Bag
                     }
 
                     total++;
-                    EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, 1);
+                }
+
+                if (total > 0)
+                {
+                    EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, total);
                 }
 
                 return total;
             }
 
-            return GiveItemToPlayer(itemId, amount);
+            var put = bag.TryGiveItem(itemId, amount);
+
+            EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, put);
+
+            return put;
         }
 
         /// <summary>
@@ -943,17 +926,39 @@ namespace My.Player.Bag
         public bool CanGainItems(string itemId, long count)
         {
             if (count == 0)
+            {
                 return true;
-            var baseBag = MainBag;
-            var maxStack = baseBag.GetMaxStack(itemId);
+            }
+
+            if (MainBag == null)
+            {
+                return false;
+            }
+
+            var itemConf = ItemCatalog.GetItemDef(itemId);
+            if (itemConf != null && ItemCatalog.IsInstanceType(itemConf.ItemType))
+            {
+                if (count > MaxInstanceGrantBatch)
+                {
+                    return false;
+                }
+
+                return MainBag.CountDiscreteEmptySlots() >= count;
+            }
+
+            var maxStack = MainBag.GetMaxStack(itemId);
             int needSlot = (int)(((count - 1) / maxStack + 1));
 
             int empty = 0;
-            foreach(var slot in baseBag.NormalSlots)
+            foreach (var slot in MainBag.NormalSlots)
             {
-                if (slot != null) continue;
+                if (slot != null)
+                {
+                    continue;
+                }
+
                 empty += 1;
-                if(empty >= needSlot)
+                if (empty >= needSlot)
                 {
                     return true;
                 }

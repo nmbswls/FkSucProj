@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace My.UI.Forge
 {
-    // 锻造：材料校验、扣除；产物对 instance 型道具逐项 CreateItemStack（独立 InstanceInfo），经 TryPlaceStackWithoutMerge 入账，不与已有堆合并。
+    // 锻造：材料校验、扣除；产物经 GiveItemToPlayer 入账（实例型在背包层逐件独立格）。
     public static class ForgeCraftService
     {
         const long DefaultResultCount = 1;
@@ -52,6 +52,12 @@ namespace My.UI.Forge
 
             if (ItemCatalog.IsInstanceType(def.ItemType))
             {
+                if (rc.Count > PlayerInventorySystem.MaxInstanceGrantBatch)
+                {
+                    failReasonEn = "Result count exceeds instance grant limit.";
+                    return false;
+                }
+
                 var bag = inv.GetBagById(0);
                 return bag != null && bag.CountDiscreteEmptySlots() >= rc.Count;
             }
@@ -120,7 +126,7 @@ namespace My.UI.Forge
                 return true;
             }
 
-            long gained = inv.GrantItemsRespectingInstances(rc.ItemIdOrEmpty, rc.Count);
+            long gained = inv.GiveItemToPlayer(rc.ItemIdOrEmpty, rc.Count);
             if (gained < rc.Count)
             {
                 failReasonEn = "Failed to grant full result.";
