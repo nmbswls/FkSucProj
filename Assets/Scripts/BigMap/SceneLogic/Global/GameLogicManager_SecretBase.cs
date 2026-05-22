@@ -26,6 +26,18 @@ namespace My
 
         public bool IsInSecretBase => PlayerWorldLocation == EPlayerWorldLocation.SecretBase;
 
+        // 与 UIOrchestrator 一致：PlayerWorldLocation 或当前区域配置任一为基地即视为基地上下文
+        public bool IsInSecretBaseContext()
+        {
+            if (IsInSecretBase)
+            {
+                return true;
+            }
+
+            var area = WorldAreaManager.Instance?.cacheAreaOverlayInfo;
+            return area != null && area.IsSecretBase;
+        }
+
         public void EnterSecretBase(string targetPoint = null)
         {
             if (IsInSecretBase || SwitchAreaIntent != null)

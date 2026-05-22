@@ -132,22 +132,13 @@ namespace My.UI.Bag
             InitilaizeView();
             CloseSpeBag();
 
-            var glm = MainGameManager.Instance?.gameLogicManager;
-            if (glm != null && glm.IsInSecretBase)
-            {
-                PlayerHumanItemBarPanel.TryShow();
-            }
-
+            PlayerHumanItemBarPanel.ShowCompanionForBagIfNeeded();
             PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         public override void Hide()
         {
-            var glm = MainGameManager.Instance?.gameLogicManager;
-            if (glm != null && glm.IsInSecretBase)
-            {
-                PlayerHumanItemBarPanel.TryHide();
-            }
+            PlayerHumanItemBarPanel.HideCompanionForBagIfNeeded();
 
             base.Hide();
         }

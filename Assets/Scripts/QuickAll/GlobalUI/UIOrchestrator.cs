@@ -638,13 +638,7 @@ namespace My.UI
         static bool IsInSecretBaseWorld()
         {
             var glm = MainGameManager.Instance?.gameLogicManager;
-            if (glm != null && glm.IsInSecretBase)
-            {
-                return true;
-            }
-
-            var area = WorldAreaManager.Instance?.cacheAreaOverlayInfo;
-            return area != null && area.IsSecretBase;
+            return glm != null && glm.IsInSecretBaseContext();
         }
 
         static readonly string[] OverworldMapOnlyPanelIds =
