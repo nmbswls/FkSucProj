@@ -15,7 +15,7 @@ namespace My
 
         public event Action<LogicProjectileInfo> EventOnLogicProjectileSpawn;
 
-        public LogicProjectileInfo CreateLogicProjectile(ProjectileData pData, ILogicEntity caster, Vector2 bornPos, Vector2 dir, long? homingTarget = null)
+        public LogicProjectileInfo CreateLogicProjectile(ProjectileData pData, ILogicEntity caster, Vector2 bornPos, Vector2 dir, long? homingTarget = null, Vector2? homingTargetPos = null)
         {
             var projectilInfo = new LogicProjectileInfo
             {
@@ -27,6 +27,7 @@ namespace My
             };
 
             projectilInfo.homingTargetId = homingTarget;
+            projectilInfo.homingTargetPos = homingTargetPos;
             ProjectileInfos.Add(projectilInfo.instId, projectilInfo);
             EventOnLogicProjectileSpawn?.Invoke(projectilInfo);
             return projectilInfo;

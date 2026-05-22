@@ -90,6 +90,8 @@ namespace My.Map
                 case AttrIdConsts.NPCSJProgress_Basic_Up:
                 case AttrIdConsts.UnitWitnessSpotRate:
                 case AttrIdConsts.UnitWitnessEscapeRate:
+                case AttrIdConsts.UnitVisionRangeMul:
+                case AttrIdConsts.UnitVisionFovMul:
 
                 case AttrIdConsts.Special_JianShang:
                 case AttrIdConsts.Basic_KnockResistent:

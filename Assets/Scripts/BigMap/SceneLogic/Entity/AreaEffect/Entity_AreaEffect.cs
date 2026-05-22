@@ -51,10 +51,17 @@ namespace My.Map
                 return;
             }
 
+            bool refreshDuration = CfgRow.RefreshBuffDuration;
+
             newEntities.Clear();
             foreach (var inEntity in inEnties)
             {
-                if (!currAffectedEntites.Contains(inEntity.Id))
+                if (refreshDuration)
+                {
+                    // linger：每 tick 刷新 Buff 自带 DefaultDuration（需 TurnOverrideType.Replace）
+                    LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, CfgRow.AreaBuffId);
+                }
+                else if (!currAffectedEntites.Contains(inEntity.Id))
                 {
                     LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, CfgRow.AreaBuffId, casterId: Id);
                 }
@@ -62,11 +69,14 @@ namespace My.Map
                 newEntities.Add(inEntity.Id);
             }
 
-            foreach (var curEntity in currAffectedEntites)
+            if (!refreshDuration)
             {
-                if (!newEntities.Contains(curEntity))
+                foreach (var curEntity in currAffectedEntites)
                 {
-                    LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, CfgRow.AreaBuffId, casterId: Id);
+                    if (!newEntities.Contains(curEntity))
+                    {
+                        LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, CfgRow.AreaBuffId, casterId: Id);
+                    }
                 }
             }
 
@@ -79,12 +89,15 @@ namespace My.Map
         {
             base.DoEntityDestroyed(reason);
 
-            if (CfgRow != null && !string.IsNullOrEmpty(CfgRow.AreaBuffId))
+            if (CfgRow == null || string.IsNullOrEmpty(CfgRow.AreaBuffId) || CfgRow.RefreshBuffDuration)
             {
-                foreach (var curEntity in currAffectedEntites)
-                {
-                    LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, CfgRow.AreaBuffId, casterId: Id);
-                }
+                currAffectedEntites.Clear();
+                return;
+            }
+
+            foreach (var curEntity in currAffectedEntites)
+            {
+                LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, CfgRow.AreaBuffId, casterId: Id);
             }
 
             currAffectedEntites.Clear();

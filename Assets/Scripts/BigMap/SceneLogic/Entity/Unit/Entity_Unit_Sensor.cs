@@ -214,6 +214,23 @@ namespace My.Map.Unit
             return VisibleMap.TryGetValue(targetId, out var e) && e.IsWitnessed;
         }
 
+        // 立刻清空目击累积（烟雾等 debuff 首次施加时）
+        public void FlushWitnessState()
+        {
+            foreach (var kv in VisibleMap)
+            {
+                var entry = kv.Value;
+                bool wasInView = entry.IsInView;
+                entry.WitnessAccum = 0f;
+                entry.IsInView = false;
+                entry.LastUpdateTime = LogicTime.time;
+                if (wasInView)
+                {
+                    EventOnMarkHidden?.Invoke(entry.TargetId);
+                }
+            }
+        }
+
         void ExpireEntries(float now)
         {
             var toRemove = new List<long>();

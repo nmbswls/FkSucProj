@@ -489,6 +489,27 @@
     "quick_bar_kind": 1
   },
   {
+    "item_id": "smoke_grenade",
+    "display_name": "烟雾弹",
+    "item_type": 0,
+    "stackable": true,
+    "stack_count": 20,
+    "stack_tags": [],
+    "sprite_name": "smoke_grenade",
+    "can_drop": true,
+    "rare_tier": 0,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": false,
+    "is_auto_use": false,
+    "quick_bar_kind": 0
+  },
+  {
     "item_id": "desire_shard",
     "display_name": "欲望碎片",
     "item_type": 1,

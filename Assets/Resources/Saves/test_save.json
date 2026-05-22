@@ -15,6 +15,7 @@
     { "SlotIndex": 0, "ItemId": "banana", "Count": 1, "ItemInstanceId": 0 },
     { "SlotIndex": 1, "ItemId": "human_sword_lv1", "Count": 1, "ItemInstanceId": 100 },
     { "SlotIndex": 2, "ItemId": "human_lancer_lv1", "Count": 1, "ItemInstanceId": 101 },
+    { "SlotIndex": 3, "ItemId": "smoke_grenade", "Count": 5, "ItemInstanceId": 0 },
     { "SlotIndex": 5, "ItemId": "gold", "Count": 10, "ItemInstanceId": 0 }
   ],
   "CurrentMapId": "secret_base_hub",

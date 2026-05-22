@@ -78,5 +78,21 @@
     "p4": 0,
     "s1": "shoot_knife",
     "s2": ""
+  },
+  {
+    "id": 6,
+    "item_id": "smoke_grenade",
+    "slot": 0,
+    "usable": true,
+    "cost_on_use": true,
+    "use_cd": 3,
+    "use_time": 0,
+    "use_type": 3,
+    "p1": 0,
+    "p2": 0,
+    "p3": 0,
+    "p4": 0,
+    "s1": "item_throw_smoke_grenade",
+    "s2": ""
   }
 ]

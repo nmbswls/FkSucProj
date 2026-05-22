@@ -268,6 +268,28 @@
     "cast_conditions": []
   },
   {
+    "skill_id": "item_throw_smoke_grenade",
+    "main_ability_id": "item_throw_smoke_grenade",
+    "desc": "",
+    "is_passive": false,
+    "passive_buff_id": "",
+    "passive_buff_ids": [],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": true,
+    "is_derived": false,
+    "cool_down": 3,
+    "stack_count": 0,
+    "icon_path": "icon_01",
+    "priority": 10,
+    "desired_use_angle": 0,
+    "desired_use_distance": 8,
+    "buffer_cache_time": 0.1,
+    "ability_extra": [],
+    "cast_conditions": []
+  },
+  {
     "skill_id": "player_small_staggering",
     "main_ability_id": "player_small_staggering",
     "desc": "",

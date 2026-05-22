@@ -39,6 +39,8 @@ namespace My.Map.Fight
             Random,
             /// <summary>施法者周围半径内最近敌对单位（用于抛物弹等索敌）</summary>
             NearestEnemyInRadius,
+            /// <summary>抛物弹制导到 castVec 落点（Point 施法）</summary>
+            CastPoint,
         }
 
         /// <summary>

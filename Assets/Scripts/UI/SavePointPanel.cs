@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    public class SavePointPanel : PanelBase
+    public class SavePointPanel : PanelWithInput
     {
         [SerializeField] Button closeButton;
         [SerializeField] TMP_Text statusText;
@@ -159,6 +159,12 @@ namespace My.UI
             UIManager.Instance.HidePanel("SavePointPanel");
             LogicTime.ReleasePause("SavePoint");
             _bound = null;
+        }
+
+        public override bool OnCancel()
+        {
+            ClosePanel();
+            return true;
         }
 
         void Awake()

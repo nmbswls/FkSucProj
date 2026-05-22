@@ -368,6 +368,9 @@ namespace My.Map.Entity
 
         public bool IsHidden;
 
+        // 首次施加时立刻清空 VisionSystem 目击累积
+        public bool FlushWitnessOnApply;
+
         [Serializable]
         public class OneModPair
         {
@@ -1439,6 +1442,12 @@ namespace My.Map.Entity
             foreach (var logic in _durationLogics)
             {
                 logic?.OnBuffConfigureChanged(this);
+            }
+
+            if (isAdd && Def.FlushWitnessOnApply && BuffOwner is BaseUnitLogicEntity unit)
+            {
+                unit.VisionSystem?.FlushWitnessState();
+                unit.AggroSystem?.OnVisionUpdate();
             }
         }
 

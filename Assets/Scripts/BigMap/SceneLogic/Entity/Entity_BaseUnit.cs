@@ -781,6 +781,8 @@ namespace My.Map
             attributeStore.RegisterNumeric("RegenRate.HP", initialBase: 5);
             attributeStore.RegisterNumeric(AttrIdConsts.UnitWitnessSpotRate, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.UnitWitnessEscapeRate, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.UnitVisionRangeMul, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.UnitVisionFovMul, initialBase: 0);
         }
         
 
@@ -1434,7 +1436,9 @@ namespace My.Map
         public (float, float) GetViewRangeAndAngle()
         {
             var k = GetEffectiveVisionConeKind();
-            return (viewRadius, ClampFovDegreesForKind(fovDegrees, k));
+            float rangeMul = Mathf.Max(0.05f, (10000f + GetAttr(AttrIdConsts.UnitVisionRangeMul)) / 10000f);
+            float fovMul = Mathf.Max(0.05f, (10000f + GetAttr(AttrIdConsts.UnitVisionFovMul)) / 10000f);
+            return (viewRadius * rangeMul, ClampFovDegreesForKind(fovDegrees * fovMul, k));
         }
 
         /// <summary>

@@ -379,20 +379,25 @@ namespace My
             _pos = owner.bindingProjInfo.spawnPos;
 
             Vector2 dir;
-            ILogicEntity homingTgt = null;
+            Vector2? homingWorldPos = null;
             if (PD.isHoming)
             {
                 long homingId = owner.bindingProjInfo.homingTargetId ?? 0;
-                homingTgt = MainGameManager.Instance.gameLogicManager.GetLogicEntity(homingId, false);
+                var homingTgt = MainGameManager.Instance.gameLogicManager.GetLogicEntity(homingId, false);
                 if (homingTgt != null)
                 {
-                    Vector2 toT = (Vector2)homingTgt.Pos - _pos;
-                    dir = toT.sqrMagnitude > 1e-8f ? toT.normalized : Vector2.right;
+                    homingWorldPos = homingTgt.Pos;
                 }
-                else
+                else if (owner.bindingProjInfo.homingTargetPos.HasValue)
                 {
-                    dir = InitialDirNormalized();
+                    homingWorldPos = owner.bindingProjInfo.homingTargetPos.Value;
                 }
+            }
+
+            if (homingWorldPos.HasValue)
+            {
+                Vector2 toT = homingWorldPos.Value - _pos;
+                dir = toT.sqrMagnitude > 1e-8f ? toT.normalized : Vector2.right;
             }
             else
             {
@@ -406,9 +411,9 @@ namespace My
             _peakZ = _z;
 
             float horizScalar;
-            if (PD.isHoming && homingTgt != null)
+            if (PD.isHoming && homingWorldPos.HasValue)
             {
-                float dist = Vector2.Distance(_pos, (Vector2)homingTgt.Pos);
+                float dist = Vector2.Distance(_pos, homingWorldPos.Value);
                 dist = Mathf.Max(0.02f, dist);
                 _vz = vzFromArc;
                 float tNat = EstimateTimeToPseudoGround(_z, _vz, g);
@@ -420,7 +425,6 @@ namespace My
 
                 if (tUse > tNat + 1e-4f)
                 {
-                    // z0 + vz*T - g*T^2/2 = 0 => vz = g*T/2 - z0/T，与水平 dist/T 共用同一 T
                     _vz = g * 0.5f * tUse - _z / tUse;
                     _vz = Mathf.Max(0.08f, _vz);
                 }
@@ -606,7 +610,8 @@ namespace My
 
         public Vector2 spawnPos;
         public Vector2 initialDir;
-        public long? homingTargetId;     // 追踪
+        public long? homingTargetId;
+        public Vector2? homingTargetPos;
 
     }
 }

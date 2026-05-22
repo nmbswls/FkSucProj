@@ -153,6 +153,10 @@ namespace My.Map.Entity
         // 逃脱累计速率加成（万分比）；目标侧，与 UnitWitnessSpotRate 对冲
         public const string UnitWitnessEscapeRate = "UnitWitnessEscapeRate";
 
+        // 视野距离/FOV 万分比修正（10000=100%）
+        public const string UnitVisionRangeMul = "UnitVisionRangeMul";
+        public const string UnitVisionFovMul = "UnitVisionFovMul";
+
         #endregion
 
         public const string DeepZhaChance = "DeepZhaChance";

@@ -178,10 +178,23 @@ namespace My.Map.Entity
             }
 
             long? homingTarget = null;
+            Vector2? homingTargetPos = null;
             if(realCfg.isHoming)
             {
                 var casterUnit = caster as BaseUnitLogicEntity;
-                if (casterUnit != null)
+                if (realCfg.homingSelectPolicy == ETargetSelectPolicy.CastPoint)
+                {
+                    if (ctx.CastVec1.HasValue)
+                    {
+                        homingTargetPos = ctx.CastVec1.Value;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("AbilityEffectExecutor4SpawnBullet: CastPoint homing requires CastVec1.");
+                        return;
+                    }
+                }
+                else if (casterUnit != null)
                 {
                     switch(realCfg.homingSelectPolicy)
                     {
@@ -208,7 +221,7 @@ namespace My.Map.Entity
                     return;
                 }
             }
-            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir.Value, homingTarget: homingTarget);
+            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir.Value, homingTarget: homingTarget, homingTargetPos: homingTargetPos);
         }
     }
     

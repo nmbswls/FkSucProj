@@ -1160,6 +1160,23 @@ namespace My.Map.Entity
                     },
                 };
 
+                // 烟雾弹区效 smoke_grenade_area（RefreshDuration 每 tick 刷新时长）
+                _library["smoke_vision_debuff"] = new BuffDefinition()
+                {
+                    BuffId = "smoke_vision_debuff",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    LayerStackMode = EBuffLayerStackMode.Classic,
+                    TurnOverrideType = EBuffTurnOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    DefaultDuration = 3f,
+                    FlushWitnessOnApply = true,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.UnitVisionRangeMul, ModifierValue = -5000 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.UnitVisionFovMul, ModifierValue = -3000 },
+                    },
+                };
+
                 // 移动粉雾区效（TbMapAreaEffect player_pink_mist_trail）；数值可再调
                 _library["player_pink_mist"] = new BuffDefinition()
                 {
