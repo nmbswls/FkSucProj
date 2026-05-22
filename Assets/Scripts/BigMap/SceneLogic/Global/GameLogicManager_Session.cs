@@ -1,5 +1,6 @@
 
 using My.Map;
+using My.UI;
 
 namespace My
 {
@@ -230,7 +231,20 @@ namespace My
 
         public bool CanEditQuickSlotBar()
         {
-            return IsHumanQuickBarAvailable();
+            if (IsHumanQuickBarAvailable())
+            {
+                return true;
+            }
+
+            // 基地开背包编辑快捷栏：显示不受 IsHumanQuickBarAvailable 约束，拖拽也应可用
+            if (IsInSecretBaseContext()
+                && UIManager.Instance != null
+                && UIManager.Instance.IsPanelVisible("PlayerBag"))
+            {
+                return true;
+            }
+
+            return My.UI.PlayerHumanItemBarPanel.IsBagCompanionEditing();
         }
 
         public void NotifyHumanQuickBarStateChanged()

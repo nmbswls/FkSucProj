@@ -261,11 +261,6 @@ namespace My.UI
             SkilBar.InitSkills(this);
         }
 
-        public void RefreshItemQuickBar()
-        {
-            PlayerHumanItemBarPanel.RefreshFromGame();
-        }
-
         public void Refresh() { /* 更新任务/提示等 */ }
 
         public void SetCarryBodyHintVisible(bool visible)
@@ -782,7 +777,7 @@ namespace My.UI
                 if (wIdx >= 0)
                 {
                     qb.SelectWeaponSlot(wIdx);
-                    RefreshItemQuickBar();
+                    PlayerHumanItemBarPanel.RefreshFromGame();
                 }
 
                 return true;
@@ -1009,7 +1004,7 @@ namespace My.UI
             }
 
             pdm.HumanQuickBar?.PruneInvalidSlots();
-            RefreshItemQuickBar();
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         static void TryUseConsumableFromInventoryBag(My.Player.QuickSlotBinding binding)
@@ -1050,7 +1045,7 @@ namespace My.UI
             }
 
             lgm.playerDataManager.HumanQuickBar.CycleConsumableSelection(deltaY > 0f ? 1 : -1);
-            RefreshItemQuickBar();
+            PlayerHumanItemBarPanel.RefreshFromGame();
             return true;
         }
 

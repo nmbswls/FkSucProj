@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using My.Map.Entity;
+using My.Map.Fight;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using static My.GameLogicManager;
@@ -18,10 +19,20 @@ namespace My.Map
         public event Action<long, string, float, string?> EventOnUseWeapon; // 使用武器回调 由
         public event Action<string, long> EventOnHideWeapon;
 
-        public long ApplyUseWeapon(string weaponName, string animName, float duration, List<MapFightEffectCfg> hitCfgs, int maxHit = 0)
+        public long ApplyUseWeapon(
+            string weaponName,
+            string animName,
+            float duration,
+            List<MapFightEffectCfg> hitCfgs,
+            int maxHit = 0,
+            Dictionary<string, long> castAttrSnapshot = null)
         {
-            // 统一为hitwindow处理
-            var hitWindow = HitWindowRegistry.OpenHitWindow(duration, false, hitEffects: hitCfgs, srcWeaponName: weaponName);
+            var hitWindow = HitWindowRegistry.OpenHitWindow(
+                duration,
+                false,
+                hitEffects: hitCfgs,
+                srcWeaponName: weaponName,
+                castAttrSnapshot: castAttrSnapshot);
             hitWindow.MaxHitCount = maxHit;
             EventOnUseWeapon?.Invoke(hitWindow.HitId, weaponName, duration, animName);
             return hitWindow.HitId;
@@ -51,6 +62,8 @@ namespace My.Map
         public bool IsSilentHit; // 是否是静默hit（不产生碰撞特效等）
 
         public int MaxHitCount;
+
+        public Dictionary<string, long> CastAttrSnapshot;
     }
 
     public class UnitHitWindowRegistry
@@ -65,7 +78,12 @@ namespace My.Map
             this.Owner = owner;
         }
 
-        public ActiveHitWindow OpenHitWindow(float duration, bool isSilentHit, List<MapFightEffectCfg> hitEffects = null, string? srcWeaponName = null)
+        public ActiveHitWindow OpenHitWindow(
+            float duration,
+            bool isSilentHit,
+            List<MapFightEffectCfg> hitEffects = null,
+            string? srcWeaponName = null,
+            Dictionary<string, long> castAttrSnapshot = null)
         {
             long hitId = ++HitWiindowIdCounter;
 
@@ -76,6 +94,7 @@ namespace My.Map
                 durationTime = duration,
                 IsSilentHit = isSilentHit,
                 OnHitEffects = hitEffects,
+                CastAttrSnapshot = FightCastAttrUtil.CopyCacheAttrs(castAttrSnapshot),
             };
 
             activeHitWindows[hitId] = hitWin;
@@ -144,6 +163,11 @@ namespace My.Map
                     newCtx.TriggerPos = Owner.Pos;
                     //newCtx.CastVec1 = hitEntity.Pos - EntityOwner.Pos;
                     newCtx.CastVec1 = Owner.FinalLook;
+
+                    if (window.CastAttrSnapshot != null)
+                    {
+                        FightCastAttrUtil.CopyInto(window.CastAttrSnapshot, newCtx.CacheAttrVal);
+                    }
 
                     Owner.LogicManager.HandleLogicFightEffect(hitEffect, newCtx);
                 }

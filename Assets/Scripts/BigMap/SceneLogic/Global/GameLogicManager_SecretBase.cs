@@ -26,10 +26,26 @@ namespace My
 
         public bool IsInSecretBase => PlayerWorldLocation == EPlayerWorldLocation.SecretBase;
 
-        // 与 UIOrchestrator 一致：PlayerWorldLocation 或当前区域配置任一为基地即视为基地上下文
+        // 与 UIOrchestrator 一致：PlayerWorldLocation、逻辑层/表现层区域配置任一为基地即视为基地上下文
         public bool IsInSecretBaseContext()
         {
             if (IsInSecretBase)
+            {
+                return true;
+            }
+
+            if (SecretBase != null && SecretBase.IsActive)
+            {
+                return true;
+            }
+
+            var logicCfg = AreaManager?.cacheMapOverlayCfg;
+            if (logicCfg != null && logicCfg.IsSecretBase)
+            {
+                return true;
+            }
+
+            if (AreaManager != null && AreaManager.AreaOverlayId == SecretBaseMapId)
             {
                 return true;
             }
@@ -207,6 +223,8 @@ namespace My
         GameLogicManager _logic;
         bool _active;
         Coroutine _waitRootCo;
+
+        public bool IsActive => _active;
 
         public void Bind(GameLogicManager logic)
         {

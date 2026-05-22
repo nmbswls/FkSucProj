@@ -634,124 +634,16 @@ namespace My.Map.Entity
 
             if(actor != null && actor is BaseUnitLogicEntity unitEntity)
             {
-                //var animName = ResolveAnimName(realCfg.AnimName, ctx.RunningVariables);
                 var animName = realCfg.AnimName;
-                var hitEffects = ResolveUseWeaponHitEffects(realCfg.OnHitEffects, ctx.RunningVariables);
+                var castSnapshot = FightCastAttrUtil.CopyCacheAttrs(ctx.CacheAttrVal);
                 var windowId = unitEntity.ApplyUseWeapon(
                     realCfg.WeaponName,
                     animName,
                     realCfg.Duration,
-                    hitEffects,
-                    realCfg.MaxHit);
+                    realCfg.OnHitEffects,
+                    realCfg.MaxHit,
+                    castSnapshot);
                 ctx.OutHitWindowIds.Add(windowId);
-            }
-        }
-
-        static string ResolveAnimName(string cfgAnim, Dictionary<string, string> runningVariables)
-        {
-            if (runningVariables != null
-                && runningVariables.TryGetValue(My.Player.HumanWeaponCatalog.CastKeyWeaponAnimName, out var animOverride)
-                && !string.IsNullOrEmpty(animOverride))
-            {
-                return animOverride;
-            }
-
-            return cfgAnim ?? string.Empty;
-        }
-
-        static List<MapFightEffectCfg> ResolveUseWeaponHitEffects(
-            List<MapFightEffectCfg> source,
-            Dictionary<string, string> runningVariables)
-        {
-            if (source == null || source.Count == 0)
-            {
-                return source;
-            }
-
-            var list = new List<MapFightEffectCfg>(source.Count);
-            foreach (var effect in source)
-            {
-                if (effect is MapAbilityEffectHumanWeaponHitCfg humanHit)
-                {
-                    list.Add(ResolveHumanWeaponHit(humanHit, runningVariables));
-                }
-                else
-                {
-                    list.Add(effect);
-                }
-            }
-
-            return list;
-        }
-
-        static MapAbilityEffectHumanWeaponHitCfg ResolveHumanWeaponHit(
-            MapAbilityEffectHumanWeaponHitCfg template,
-            Dictionary<string, string> runningVariables)
-        {
-            var resolved = new MapAbilityEffectHumanWeaponHitCfg
-            {
-                WeaponLevel = template.WeaponLevel,
-                StunValue = template.StunValue,
-            };
-
-            if (runningVariables == null)
-            {
-                return resolved;
-            }
-
-            if (runningVariables.TryGetValue(My.Player.HumanWeaponCatalog.CastKeyWeaponLevel, out var levelRaw)
-                && int.TryParse(levelRaw, out var level))
-            {
-                resolved.WeaponLevel = level;
-            }
-
-            if (runningVariables.TryGetValue(My.Player.HumanWeaponCatalog.CastKeyStunValue, out var stunRaw)
-                && long.TryParse(stunRaw, out var stun))
-            {
-                resolved.StunValue = stun;
-            }
-
-            return resolved;
-        }
-    }
-
-    public class AbilityEffectExecutor4HumanWeaponHit : AbilityEffectExecutor
-    {
-        static readonly AbilityEffectExecutor4ApplyDamage DamageExecutor = new();
-        static readonly AbilityEffectExecutor4AddResource ResourceExecutor = new();
-
-        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
-        {
-            var realCfg = effectConf as MapAbilityEffectHumanWeaponHitCfg;
-            if (realCfg == null)
-            {
-                Debug.LogError("AbilityEffectExecutor4HumanWeaponHit cfg error");
-                return;
-            }
-
-            if (ctx.TargetId == 0)
-            {
-                return;
-            }
-
-            if (realCfg.WeaponLevel > 0)
-            {
-                var dmgCfg = new MapFightEffectApplyDamageCfg
-                {
-                    BaseDamage = realCfg.WeaponLevel,
-                    KnockBackForce = 0.1f,
-                };
-                DamageExecutor.Apply(dmgCfg, ctx);
-            }
-
-            if (realCfg.StunValue > 0)
-            {
-                var stunCfg = new MapAbilityEffectAddResourceCfg
-                {
-                    ResourceId = AttrIdConsts.NPCHVal,
-                    AddValue = realCfg.StunValue,
-                };
-                ResourceExecutor.Apply(stunCfg, ctx);
             }
         }
     }
@@ -1406,7 +1298,17 @@ namespace My.Map.Entity
                 }
             }
 
-            target.ApplyResourceChange(realCfg.ResourceId, realCfg.AddValue, realCfg.IsEnmity, realCfg.Flags, ctx.SourceInfo.SrcEntityId, extraAttrs);
+            long addValue = realCfg.AddValue;
+            if (!string.IsNullOrEmpty(realCfg.AddValueFromAttrId))
+            {
+                var srcProvider = new CtxFightAttrProvider(ctx);
+                if (!srcProvider.TryGetAttr(realCfg.AddValueFromAttrId, out addValue) || addValue <= 0)
+                {
+                    return;
+                }
+            }
+
+            target.ApplyResourceChange(realCfg.ResourceId, addValue, realCfg.IsEnmity, realCfg.Flags, ctx.SourceInfo.SrcEntityId, extraAttrs);
         }
     }
 

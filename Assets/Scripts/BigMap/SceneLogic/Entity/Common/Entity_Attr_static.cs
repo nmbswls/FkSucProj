@@ -59,6 +59,10 @@ namespace My.Map.Entity
         public const string HPower_Pipeline = "HPower_Pipeline";
         public const string XiXue_Pipeline = "XiXue_Pipeline";
 
+        // 施放时由武器栏写入 ctx.CacheAttrVal，供 UseWeapon OnHitEffects 引用
+        public const string CastWeaponLevel = "CastWeaponLevel";
+        public const string CastStunValue = "CastStunValue";
+
         public const string PlayerGcThreshold = "PlayerGcThreshold";
 
         public const string Player_AttrctPower = "Player_AttrctPower";

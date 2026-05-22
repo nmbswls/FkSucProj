@@ -676,7 +676,7 @@ namespace My.UI
             if (IsInSecretBaseWorld())
             {
                 SecretBaseHudPanel.TryShow();
-                PlayerHumanItemBarPanel.TryHide();
+                //PlayerHumanItemBarPanel.TryHide();
             }
             else
             {

@@ -13,6 +13,7 @@ namespace My.Map.Entity
     {
         public string ResourceId;
         public long AddValue;
+        public string AddValueFromAttrId;
         public bool IsEnmity;
         public EDmgFlag Flags;
 

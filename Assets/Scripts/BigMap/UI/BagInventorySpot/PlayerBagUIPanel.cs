@@ -181,7 +181,7 @@ namespace My.UI.Bag
                 SpeGridView.RefreshAllShownItem();
             }
 
-            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         private void Update()

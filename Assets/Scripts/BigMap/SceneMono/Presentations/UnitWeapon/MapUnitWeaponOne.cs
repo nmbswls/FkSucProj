@@ -26,6 +26,9 @@ namespace My.Map.Scene
         /// </summary>
         public bool IsShown;
 
+        // 攻击结束后仍保持可见（人类武器快捷栏常驻装备）
+        public bool KeepVisibleWhenIdle;
+
         public string WeaponName;
         public Animator weaponAnim;
         public AnimancerComponent weaponAnimancer;
@@ -205,7 +208,7 @@ namespace My.Map.Scene
                 return;
             }
 
-            var clipRes = SimpleResManager.Load<AnimationClip>($"Anim/player/{weaponAnimName}");
+            var clipRes = SimpleResManager.Load<AnimationClip>($"Anim/weapon/{weaponAnimName}");
             if (clipRes == null)
             {
                 Debug.LogWarning($"MapUnitWeaponOne ShowWeapon clip not found: {weaponAnimName}");
@@ -225,9 +228,12 @@ namespace My.Map.Scene
 
         public void ClearWeapon()
         {
-            gameObject.SetActive(false);
             HitId = 0;
             _durationTimer = 0;
+            if (!KeepVisibleWhenIdle)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }

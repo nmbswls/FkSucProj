@@ -73,6 +73,7 @@ namespace My.Map.Scene
 
             if (_equippedView != null)
             {
+                _equippedView.KeepVisibleWhenIdle = true;
                 _equippedView.gameObject.SetActive(true);
             }
         }
@@ -82,6 +83,7 @@ namespace My.Map.Scene
             _equippedItemId = null;
             if (_equippedView != null)
             {
+                _equippedView.KeepVisibleWhenIdle = false;
                 _equippedView.gameObject.SetActive(false);
             }
         }
@@ -147,13 +149,13 @@ namespace My.Map.Scene
                 return null;
             }
 
-            var sprite = SimpleResManager.Load<Sprite>("Sprites/" + spriteName);
+            var sprite = SimpleResManager.Load<Sprite>("Sprites/Item/" + spriteName);
             if (sprite != null)
             {
                 return sprite;
             }
 
-            return SimpleResManager.Load<Sprite>("Sprites/Item/" + spriteName);
+            return SimpleResManager.Load<Sprite>("Sprites/" + spriteName);
         }
 
         static GameObject CreateFallbackView()

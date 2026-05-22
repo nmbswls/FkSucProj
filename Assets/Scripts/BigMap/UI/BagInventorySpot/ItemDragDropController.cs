@@ -182,14 +182,14 @@ namespace My.UI
                         && p.SourceIndex < qb.WeaponSlots.Length)
                     {
                         qb.ClearWeaponSlot(p.SourceIndex);
-                        OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                        PlayerHumanItemBarPanel.RefreshFromGame();
                     }
                     else if (p.SourceContainerType == EContainerType.QuickBarConsumable
                              && p.SourceIndex >= 0
                              && p.SourceIndex < qb.ConsumableSlots.Length)
                     {
                         qb.ClearConsumableSlot(p.SourceIndex);
-                        OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                        PlayerHumanItemBarPanel.RefreshFromGame();
                     }
                 }
             }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
+using My.Map.Entity;
 
 namespace My.Player
 {
@@ -37,17 +38,31 @@ namespace My.Player
 
         public static Dictionary<string, string> BuildCastParams(string itemId)
         {
-            var def = GetOrDefault(itemId);
-            if (def == null)
+            var cache = BuildCastCacheAttrs(itemId);
+            if (cache == null)
             {
                 return null;
             }
 
             return new Dictionary<string, string>
             {
-                //[CastKeyWeaponAnimName] = def.AnimName ?? string.Empty,
-                [CastKeyWeaponLevel] = def.WeaponLevel.ToString(),
-                [CastKeyStunValue] = def.StunValue.ToString(),
+                [CastKeyWeaponLevel] = cache[AttrIdConsts.CastWeaponLevel].ToString(),
+                [CastKeyStunValue] = cache[AttrIdConsts.CastStunValue].ToString(),
+            };
+        }
+
+        public static Dictionary<string, long> BuildCastCacheAttrs(string itemId)
+        {
+            var def = GetOrDefault(itemId);
+            if (def == null)
+            {
+                return null;
+            }
+
+            return new Dictionary<string, long>
+            {
+                [AttrIdConsts.CastWeaponLevel] = def.WeaponLevel,
+                [AttrIdConsts.CastStunValue] = def.StunValue,
             };
         }
     }

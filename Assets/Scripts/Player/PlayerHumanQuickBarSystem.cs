@@ -278,7 +278,7 @@ namespace My.Player
             }
 
             _player.SyncLearnedSkillsToPlayerEntity();
-            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         public string GetActiveWeaponItemId()

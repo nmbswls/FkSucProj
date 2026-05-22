@@ -3855,7 +3855,20 @@ namespace My.Map.Entity
                 Duration = 0.3f,
                 OnHitEffects = new()
                 {
-                    new MapAbilityEffectHumanWeaponHitCfg(),
+                    new MapFightEffectApplyDamageCfg()
+                    {
+                        BaseDamage = 0,
+                        ExtraDamageRate = new()
+                        {
+                            new AttrKvPair { AttrId = AttrIdConsts.CastWeaponLevel, Val = 10000 },
+                        },
+                        KnockBackForce = 0.1f,
+                    },
+                    new MapAbilityEffectAddResourceCfg()
+                    {
+                        ResourceId = AttrIdConsts.NPCHVal,
+                        AddValueFromAttrId = AttrIdConsts.CastStunValue,
+                    },
                 }
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });

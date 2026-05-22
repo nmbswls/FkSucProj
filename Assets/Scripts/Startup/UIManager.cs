@@ -205,10 +205,10 @@ namespace My.UI
             var panel = GetOrCreatePanel(res, layer);
             if (panel == null) return null;
             panel.Layer = layer;
-            panel.Setup(data);
-            panel.Show();
             activePanels[panelId] = panel;
             RegisterPanel(panel);
+            panel.Setup(data);
+            panel.Show();
             return panel;
         }
 

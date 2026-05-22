@@ -61,6 +61,10 @@ namespace My.UI
 
         bool _barInitialized;
         bool _slotsBuilt;
+        bool _bagCompanionMode;
+
+        // ShowPanel 内部 Setup/Show 会 Refresh，需在 ShowPanel 调用前置位
+        static bool s_bagCompanionShowPending;
 
         void Awake()
         {
@@ -110,10 +114,14 @@ namespace My.UI
             Instance?.Refresh();
         }
 
+        public static bool IsBagCompanionEditing()
+        {
+            return Instance != null && Instance._bagCompanionMode;
+        }
+
         public static void ShowCompanionForBagIfNeeded()
         {
-            var glm = MainGameManager.Instance?.gameLogicManager;
-            if (glm == null || !glm.IsInSecretBaseContext())
+            if (!ShouldUseBagCompanionMode())
             {
                 return;
             }
@@ -123,19 +131,47 @@ namespace My.UI
                 return;
             }
 
-            var panel = UIManager.Instance.ShowPanel(PanelIdConst) as PlayerHumanItemBarPanel;
-            panel?.Refresh();
+            s_bagCompanionShowPending = true;
+            try
+            {
+                var panel = UIManager.Instance.ShowPanel(PanelIdConst, null, UILayer.Popup) as PlayerHumanItemBarPanel;
+                if (panel != null)
+                {
+                    panel._bagCompanionMode = true;
+                    panel.Refresh();
+                }
+            }
+            finally
+            {
+                s_bagCompanionShowPending = false;
+            }
         }
 
         public static void HideCompanionForBagIfNeeded()
         {
-            var glm = MainGameManager.Instance?.gameLogicManager;
-            if (glm == null || !glm.IsInSecretBaseContext())
+            if (!ShouldUseBagCompanionMode())
             {
                 return;
             }
 
+            if (Instance != null)
+            {
+                Instance._bagCompanionMode = false;
+            }
+
             TryHide();
+        }
+
+        static bool ShouldUseBagCompanionMode()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBaseContext())
+            {
+                return true;
+            }
+
+            var ui = UIManager.Instance;
+            return ui != null && ui.IsPanelVisible(SecretBaseHudPanel.PanelIdConst);
         }
 
         public void EnsureQuickItemBarReady()
@@ -181,12 +217,9 @@ namespace My.UI
             OverworldHUDPanel.Instance?.SkilBar?.Refresh();
         }
 
-        // 开放世界：随 HUD 受 IsHumanQuickBarAvailable 约束；基地内打开背包时始终显示以便编辑快捷栏
-        static bool ShouldShowBarContent(GameLogicManager lgm)
+        bool ShouldShowBarContent(GameLogicManager lgm)
         {
-            if (lgm.IsInSecretBaseContext()
-                && UIManager.Instance != null
-                && UIManager.Instance.IsPanelVisible("PlayerBag"))
+            if (_bagCompanionMode || s_bagCompanionShowPending)
             {
                 return true;
             }
@@ -396,8 +429,23 @@ namespace My.UI
             go.name = slotName;
             go.SetActive(true);
             SetLayerRecursively(go, layer);
-            EnsureRootRaycastTarget(go);
-            return go.GetComponent<QuickSlotItemCell>();
+            var cell = go.GetComponent<QuickSlotItemCell>();
+            EnsureCellDropRaycast(cell);
+            return cell;
+        }
+
+        static void EnsureCellDropRaycast(QuickSlotItemCell cell)
+        {
+            if (cell == null)
+            {
+                return;
+            }
+
+            EnsureRootRaycastTarget(cell.gameObject);
+            if (cell.bg != null)
+            {
+                cell.bg.raycastTarget = true;
+            }
         }
 
         static void ClearSlotInstances(RectTransform parent, string prefix)
@@ -465,7 +513,16 @@ namespace My.UI
                 _consumableSlots[c]?.BindConsumableSlot(c, qb.ActiveConsumableIndex == c);
             }
 
-            _centerSkillView?.Refresh(qb.ResolveLeftClickSkillId());
+            if (glm != null && glm.IsInSecretBaseContext())
+            {
+                _centerSkillView.gameObject.SetActive(false);
+            }
+            else
+            {
+                _centerSkillView.gameObject.SetActive(true);
+                _centerSkillView?.Refresh(qb.ResolveLeftClickSkillId());
+            }
+            
         }
     }
 }

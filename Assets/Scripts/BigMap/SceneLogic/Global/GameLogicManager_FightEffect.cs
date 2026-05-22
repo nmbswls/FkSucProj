@@ -76,11 +76,6 @@ namespace My
                             executor = new AbilityFightExecutor4UseWeapon();
                         }
                         break;
-                    case MapAbilityEffectHumanWeaponHitCfg:
-                        {
-                            executor = new AbilityEffectExecutor4HumanWeaponHit();
-                        }
-                        break;
 
                     case MapAbilityEffectDefaultInteractCfg:
                         {

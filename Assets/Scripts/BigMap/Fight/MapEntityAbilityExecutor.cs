@@ -815,6 +815,8 @@ namespace My.Map.Entity
                 ctx.RunningStorage[key] = (long)(xuliInfo.Value * 1000);
             }
 
+            FightCastAttrUtil.MergeCastRunningVars(ctx.RunningVariables, ctx.CacheAttrVal);
+
             return ctx;
         }
 

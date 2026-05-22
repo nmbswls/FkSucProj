@@ -97,7 +97,7 @@ namespace My.UI
 
                 MainGameManager.Instance.gameLogicManager.playerDataManager.HumanQuickBar.ClearWeaponSlot(payload.SourceIndex);
                 controller.MarkDropHandled();
-                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                PlayerHumanItemBarPanel.RefreshFromGame();
                 PlayerBagUIPanel.Instance?.RefreshContent();
                 return;
             }
@@ -112,7 +112,7 @@ namespace My.UI
 
                 MainGameManager.Instance.gameLogicManager.playerDataManager.HumanQuickBar.ClearConsumableSlot(payload.SourceIndex);
                 controller.MarkDropHandled();
-                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                PlayerHumanItemBarPanel.RefreshFromGame();
                 PlayerBagUIPanel.Instance?.RefreshContent();
                 return;
             }
@@ -258,7 +258,7 @@ namespace My.UI
             }
 
             qb.SelectWeaponSlot(cell.Index);
-            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         public bool TryBeginDrag(ItemCellBase cell, PointerEventData eventData)
@@ -318,7 +318,7 @@ namespace My.UI
 
                 qb.SwapWeaponSlotIndices(payload.SourceIndex, dstSlotIndex);
                 controller.MarkDropHandled();
-                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                PlayerHumanItemBarPanel.RefreshFromGame();
                 return;
             }
 
@@ -333,7 +333,9 @@ namespace My.UI
                 }
 
                 controller.MarkDropHandled();
-                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                PlayerHumanItemBarPanel.RefreshFromGame();
+                PlayerBagUIPanel.Instance?.RefreshContent();
+                return;
             }
         }
     }
@@ -354,7 +356,7 @@ namespace My.UI
             }
 
             qb.SelectConsumableSlot(cell.Index);
-            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         public bool TryBeginDrag(ItemCellBase cell, PointerEventData eventData)
@@ -414,7 +416,7 @@ namespace My.UI
 
                 qb.SwapConsumableSlotIndices(payload.SourceIndex, dstSlotIndex);
                 controller.MarkDropHandled();
-                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                PlayerHumanItemBarPanel.RefreshFromGame();
                 return;
             }
 
@@ -429,7 +431,7 @@ namespace My.UI
                 }
 
                 controller.MarkDropHandled();
-                OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+                PlayerHumanItemBarPanel.RefreshFromGame();
             }
         }
     }
