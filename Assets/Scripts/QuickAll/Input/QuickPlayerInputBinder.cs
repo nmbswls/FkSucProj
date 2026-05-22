@@ -68,6 +68,8 @@ namespace My.Input
         Map,
 
         UseQuickItem,
+
+        P,
     }
 
 
@@ -325,7 +327,9 @@ namespace My.Input
             actions.OverworldMap.S03.performed += OnHotKeySkill03;
             actions.OverworldMap.S04.performed += OnHotKeySkill04;
 
-            actions.OverworldMap.Skill.performed += OnHotKeySkill;
+            actions.OverworldMap.P.performed += OnHotKeyProgression;
+
+
             actions.OverworldMap.Bag.performed += OnHotKeyBag;
             actions.OverworldMap.Map.performed += OnHotKeyMap;
 
@@ -375,7 +379,8 @@ namespace My.Input
             actions.OverworldMap.S03.performed -= OnHotKeySkill03;
             actions.OverworldMap.S04.performed -= OnHotKeySkill04;
 
-            actions.OverworldMap.Skill.performed -= OnHotKeySkill;
+            //actions.OverworldMap.Skill.performed -= OnHotKeySkill;
+            actions.OverworldMap.P.performed -= OnHotKeyProgression;
             actions.OverworldMap.Bag.performed -= OnHotKeyBag;
             actions.OverworldMap.Map.performed -= OnHotKeyMap;
 
@@ -614,7 +619,7 @@ namespace My.Input
 
         public void OnHotKeyBag(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Bag.ToString());
 
-        public void OnHotKeySkill(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Skill.ToString());
+        public void OnHotKeyProgression(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.P.ToString());
 
         public void OnHotKeyMap(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Map.ToString());
         public void OnHotKeyQuickItem(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.UseQuickItem.ToString());
@@ -744,6 +749,10 @@ namespace My.Input
             else if(keyName == EInputKey.Map.ToString())
             {
                 WorldMapRuntime.TryToggle();
+            }
+            else if (keyName == EInputKey.P.ToString())
+            {
+                PlayerProgressionHubPanel.ToggleTab(ProgressionHubTab.Skills);
             }
         }
 

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    public class PlayerGearEquipPanel : PanelBase, IInputConsumer
+    public class PlayerGearEquipPanel : PanelBase, IInputConsumer, IPlayerProgressionHubPage
     {
         public const string Pid = "PlayerGearEquip";
 
@@ -22,21 +22,14 @@ namespace My.UI
         int _pendingSlot;
         IPlayerProgressionHubHost _progressionHubHost;
 
+        public bool IsHostedByHub => _progressionHubHost != null;
+
         void Awake()
         {
             if (string.IsNullOrEmpty(panelId))
             {
                 panelId = Pid;
             }
-
-            layer = UILayer.Popup;
-        }
-
-        public static PlayerGearEquipPanel Open()
-        {
-            PlayerProgressionHubPanel.OpenGear();
-            var hubMono = UIManager.Instance.GetShowingPanel(PlayerProgressionHubPanel.Pid) as MonoBehaviour;
-            return hubMono != null ? hubMono.GetComponentInChildren<PlayerGearEquipPanel>(true) : null;
         }
 
         public void SetProgressionHubHost(IPlayerProgressionHubHost host)
@@ -72,16 +65,21 @@ namespace My.UI
             if (_progressionHubHost != null)
             {
                 _progressionHubHost.CloseHub();
+                return;
             }
-            else
-            {
-                UIManager.Instance.HidePanel(Pid);
-            }
+
+            Debug.LogError("[PlayerGearEquipPanel] Not hosted by PlayerProgressionHubPanel.");
         }
 
         public override void Setup(object data = null)
         {
             base.Setup(data);
+            if (!IsHostedByHub)
+            {
+                Debug.LogError("[PlayerGearEquipPanel] Setup without hub host.");
+                return;
+            }
+
             if (transform.Find("BuiltRoot") == null)
             {
                 Debug.LogError("[PlayerGearEquipPanel] Prefab 缺少 BuiltRoot。请检查 Resources/UI/Prefabs/PlayerGearEquipPanel.prefab 层级或从版本库恢复。");
@@ -94,6 +92,12 @@ namespace My.UI
 
         public override void Show()
         {
+            if (!IsHostedByHub)
+            {
+                Debug.LogError("[PlayerGearEquipPanel] Show without hub host.");
+                return;
+            }
+
             base.Show();
             _eq = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.EquipmentManager;
             RefreshAll();

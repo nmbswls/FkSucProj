@@ -72,6 +72,8 @@ namespace My.UI
             return UIManager.Instance.ShowPanel(Pid, new ProgressionHubOpenArgs { InitialTab = tab }) as PlayerProgressionHubPanel;
         }
 
+        public static void OpenTab(ProgressionHubTab tab) => Open(tab);
+
         public static void OpenSkills() => Open(ProgressionHubTab.Skills);
 
         public static void OpenTalents() => Open(ProgressionHubTab.Talents);
@@ -80,55 +82,35 @@ namespace My.UI
 
         public static void OpenWorld() => Open(ProgressionHubTab.World);
 
-        // 旧 panelId 仍可能被外部 ShowPanel 调用时转发到统一 Hub
-        public static string RemapLegacyCatalogId(string panelId, ref object data)
-        {
-            if (panelId == SkillLoadoutPanel.Pid)
-            {
-                data = new ProgressionHubOpenArgs { InitialTab = ProgressionHubTab.Skills };
-                return Pid;
-            }
+        public SkillLoadoutPanel SkillPage => _skill;
 
-            if (panelId == TalentTreePanel.Pid)
-            {
-                data = new ProgressionHubOpenArgs { InitialTab = ProgressionHubTab.Talents };
-                return Pid;
-            }
+        public TalentTreePanel TalentPage => _talent;
 
-            if (panelId == PlayerGearEquipPanel.Pid)
-            {
-                data = new ProgressionHubOpenArgs { InitialTab = ProgressionHubTab.Gear };
-                return Pid;
-            }
+        public PlayerGearEquipPanel GearPage => _gear;
 
-            if (panelId == GlobalWorldPanel.Pid)
-            {
-                data = new ProgressionHubOpenArgs { InitialTab = ProgressionHubTab.World };
-                return Pid;
-            }
+        public GlobalWorldPanel WorldPage => _world;
 
-            return panelId;
-        }
-
-        public static void ToggleTalents()
+        public static void ToggleTab(ProgressionHubTab tab)
         {
             if (UIManager.Instance.IsPanelVisible(Pid))
             {
                 var hub = UIManager.Instance.GetShowingPanel(Pid) as PlayerProgressionHubPanel;
-                if (hub != null && hub.CurrentTab == ProgressionHubTab.Talents)
+                if (hub != null && hub.CurrentTab == tab)
                 {
                     UIManager.Instance.HidePanel(Pid);
                 }
                 else
                 {
-                    hub?.SelectTab(ProgressionHubTab.Talents);
+                    hub?.SelectTab(tab);
                 }
 
                 return;
             }
 
-            Open(ProgressionHubTab.Talents);
+            Open(tab);
         }
+
+        public static void ToggleTalents() => ToggleTab(ProgressionHubTab.Talents);
 
         public void CloseHub() => UIManager.Instance.HidePanel(Pid);
 
@@ -246,7 +228,7 @@ namespace My.UI
             string resourcePath,
             RectTransform host,
             System.Action<T, IPlayerProgressionHubHost> bindHost)
-            where T : PanelBase
+            where T : PanelBase, IPlayerProgressionHubPage
         {
             if (cache != null || host == null)
             {

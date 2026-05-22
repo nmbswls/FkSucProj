@@ -8,17 +8,13 @@ using UnityEngine.UI;
 
 namespace My.UI.SkillLoadout
 {
-    public class SkillLoadoutPanel : PanelBase, IInputConsumer
+    public class SkillLoadoutPanel : PanelBase, IInputConsumer, IPlayerProgressionHubPage
     {
         public const string Pid = "SkillLoadoutPanel";
 
         public static SkillLoadoutPanel Current { get; private set; }
 
-        public static SkillLoadoutPanel Open()
-        {
-            PlayerProgressionHubPanel.OpenSkills();
-            return SkillLoadoutPanel.Current;
-        }
+        public bool IsHostedByHub => _progressionHubHost != null;
 
         public void SetProgressionHubHost(IPlayerProgressionHubHost host)
         {
@@ -59,11 +55,10 @@ namespace My.UI.SkillLoadout
             if (_progressionHubHost != null)
             {
                 _progressionHubHost.CloseHub();
+                return;
             }
-            else
-            {
-                UIManager.Instance.HidePanel(Pid);
-            }
+
+            Debug.LogError("[SkillLoadoutPanel] Not hosted by PlayerProgressionHubPanel.");
         }
 
         Canvas ResolveSkillDragCanvas()
@@ -104,6 +99,12 @@ namespace My.UI.SkillLoadout
         public override void Setup(object data = null)
         {
             base.Setup(data);
+            if (!IsHostedByHub)
+            {
+                Debug.LogError("[SkillLoadoutPanel] Setup without hub host.");
+                return;
+            }
+
             if (transform.Find("BuiltRoot") == null)
             {
                 Debug.LogError("[SkillLoadoutPanel] Prefab 缺少 BuiltRoot。请检查 Resources/UI/Prefabs/SkillLoadoutPanel.prefab 层级或从版本库恢复。");
@@ -121,6 +122,12 @@ namespace My.UI.SkillLoadout
 
         public override void Show()
         {
+            if (!IsHostedByHub)
+            {
+                Debug.LogError("[SkillLoadoutPanel] Show without hub host.");
+                return;
+            }
+
             base.Show();
             Current = this;
             SkillDragSession.SetCanvas(ResolveSkillDragCanvas());

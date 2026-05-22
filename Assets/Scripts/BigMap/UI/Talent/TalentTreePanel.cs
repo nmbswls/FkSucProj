@@ -7,29 +7,19 @@ using UnityEngine.UI;
 
 namespace My.UI.Talent
 {
-    public sealed class TalentTreePanel : PanelBase
+    public sealed class TalentTreePanel : PanelBase, IPlayerProgressionHubPage
     {
         public const string Pid = "TalentTreePanel";
 
         IPlayerProgressionHubHost _progressionHubHost;
+
+        public bool IsHostedByHub => _progressionHubHost != null;
 
         public Transform NodeViewContainer;
 
         public Dictionary<int, TalentTreeNodeView> NodeViewMap { get; private set; } = new();
         [SerializeField] Button closeButton;
         [SerializeField] TextMeshProUGUI debugTipText;
-
-        public static TalentTreePanel Open()
-        {
-            PlayerProgressionHubPanel.OpenTalents();
-            var hubMono = UIManager.Instance.GetShowingPanel(PlayerProgressionHubPanel.Pid) as MonoBehaviour;
-            return hubMono != null ? hubMono.GetComponentInChildren<TalentTreePanel>(true) : null;
-        }
-
-        public static void Toggle()
-        {
-            PlayerProgressionHubPanel.ToggleTalents();
-        }
 
         public void SetProgressionHubHost(IPlayerProgressionHubHost host)
         {
@@ -61,11 +51,23 @@ namespace My.UI.Talent
         public override void Setup(object data = null)
         {
             base.Setup(data);
+            if (!IsHostedByHub)
+            {
+                Debug.LogError("[TalentTreePanel] Setup without hub host.");
+                return;
+            }
+
             RefreshFromRuntime();
         }
 
         public override void Show()
         {
+            if (!IsHostedByHub)
+            {
+                Debug.LogError("[TalentTreePanel] Show without hub host.");
+                return;
+            }
+
             base.Show();
             RefreshFromRuntime();
         }
@@ -113,11 +115,10 @@ namespace My.UI.Talent
             if (_progressionHubHost != null)
             {
                 _progressionHubHost.CloseHub();
+                return;
             }
-            else
-            {
-                UIManager.Instance.HidePanel(Pid);
-            }
+
+            Debug.LogError("[TalentTreePanel] Not hosted by PlayerProgressionHubPanel.");
         }
     }
 }

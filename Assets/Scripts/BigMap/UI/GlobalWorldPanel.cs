@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-    public class GlobalWorldPanel : PanelBase, IInputConsumer
+    public class GlobalWorldPanel : PanelBase, IInputConsumer, IPlayerProgressionHubPage
     {
         public const string Pid = "GlobalWorldPanel";
 
@@ -22,21 +22,14 @@ namespace My.UI
         Transform _root;
         IPlayerProgressionHubHost _progressionHubHost;
 
+        public bool IsHostedByHub => _progressionHubHost != null;
+
         void Awake()
         {
             if (string.IsNullOrEmpty(panelId))
             {
                 panelId = Pid;
             }
-
-            layer = UILayer.Popup;
-        }
-
-        public static GlobalWorldPanel Open()
-        {
-            PlayerProgressionHubPanel.OpenWorld();
-            var hubMono = UIManager.Instance.GetShowingPanel(PlayerProgressionHubPanel.Pid) as MonoBehaviour;
-            return hubMono != null ? hubMono.GetComponentInChildren<GlobalWorldPanel>(true) : null;
         }
 
         public void SetProgressionHubHost(IPlayerProgressionHubHost host)
@@ -71,6 +64,12 @@ namespace My.UI
         public override void Setup(object data = null)
         {
             base.Setup(data);
+            if (!IsHostedByHub)
+            {
+                Debug.LogError("[GlobalWorldPanel] Setup without hub host.");
+                return;
+            }
+
             BindRefs();
             ApplyHostedChromeIfNeeded();
             RefreshSummary();
@@ -78,6 +77,12 @@ namespace My.UI
 
         public override void Show()
         {
+            if (!IsHostedByHub)
+            {
+                Debug.LogError("[GlobalWorldPanel] Show without hub host.");
+                return;
+            }
+
             base.Show();
             RefreshSummary();
         }
@@ -172,7 +177,16 @@ namespace My.UI
 
         public bool OnConfirm() => false;
 
-        public bool OnCancel() => true;
+        public bool OnCancel()
+        {
+            if (_progressionHubHost != null)
+            {
+                _progressionHubHost.CloseHub();
+                return true;
+            }
+
+            return false;
+        }
 
         public bool OnNavigate(Vector2 dir) => false;
 

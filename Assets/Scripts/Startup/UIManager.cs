@@ -189,8 +189,6 @@ namespace My.UI
         // 面板管理
         public IPanel ShowPanel(string panelId, object data = null, UILayer? layerOverride = null)
         {
-            panelId = PlayerProgressionHubPanel.RemapLegacyCatalogId(panelId, ref data);
-
             if (activePanels.TryGetValue(panelId, out var existing))
             {
                 existing.Setup(data);

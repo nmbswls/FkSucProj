@@ -316,6 +316,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""P"",
+                    ""type"": ""Button"",
+                    ""id"": ""f289105a-d3fb-47cd-8be6-fb74e96dfbcc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -637,6 +646,17 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""action"": ""QuickItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fa2104ac-2aec-4237-83ce-09ee0024bf2a"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""P"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -726,6 +746,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_Bag = m_OverworldMap.FindAction("Bag", throwIfNotFound: true);
         m_OverworldMap_Map = m_OverworldMap.FindAction("Map", throwIfNotFound: true);
         m_OverworldMap_QuickItem = m_OverworldMap.FindAction("QuickItem", throwIfNotFound: true);
+        m_OverworldMap_P = m_OverworldMap.FindAction("P", throwIfNotFound: true);
         // BattleMap
         m_BattleMap = asset.FindActionMap("BattleMap", throwIfNotFound: true);
         m_BattleMap_Newaction = m_BattleMap.FindAction("New action", throwIfNotFound: true);
@@ -839,6 +860,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_Bag;
     private readonly InputAction m_OverworldMap_Map;
     private readonly InputAction m_OverworldMap_QuickItem;
+    private readonly InputAction m_OverworldMap_P;
     /// <summary>
     /// Provides access to input actions defined in input action map "OverworldMap".
     /// </summary>
@@ -951,6 +973,10 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @QuickItem => m_Wrapper.m_OverworldMap_QuickItem;
         /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/P".
+        /// </summary>
+        public InputAction @P => m_Wrapper.m_OverworldMap_P;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_OverworldMap; }
@@ -1051,6 +1077,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @QuickItem.started += instance.OnQuickItem;
             @QuickItem.performed += instance.OnQuickItem;
             @QuickItem.canceled += instance.OnQuickItem;
+            @P.started += instance.OnP;
+            @P.performed += instance.OnP;
+            @P.canceled += instance.OnP;
         }
 
         /// <summary>
@@ -1137,6 +1166,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @QuickItem.started -= instance.OnQuickItem;
             @QuickItem.performed -= instance.OnQuickItem;
             @QuickItem.canceled -= instance.OnQuickItem;
+            @P.started -= instance.OnP;
+            @P.performed -= instance.OnP;
+            @P.canceled -= instance.OnP;
         }
 
         /// <summary>
@@ -1544,6 +1576,13 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnQuickItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "P" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnP(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BattleMap" which allows adding and removing callbacks.

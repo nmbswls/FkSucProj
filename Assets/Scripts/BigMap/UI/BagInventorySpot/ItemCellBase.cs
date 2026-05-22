@@ -182,7 +182,7 @@ namespace My.UI
                 return;
             }
 
-            var sp = SimpleResManager.Load<Sprite>("Sprites/" + def.SpriteName);
+            var sp = SimpleResManager.Load<Sprite>("Sprites/Item" + def.SpriteName);
             if (sp != null)
             {
                 icon.sprite = sp;
