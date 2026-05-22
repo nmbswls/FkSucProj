@@ -666,9 +666,18 @@ namespace My.UI
 
         private async Task EnterOverworldAsync(object ctx)
         {
-            UIManager.Instance.HideAll("Loading");
+            UIManager.Instance.HideAll("LoadingOverlay");
 
             ApplyOverworldMapPanelsVisibility(!IsInSecretBaseWorld());
+
+            if (IsInSecretBaseWorld())
+            {
+                SecretBaseHudPanel.TryShow();
+            }
+            else
+            {
+                SecretBaseHudPanel.TryHide();
+            }
 
             EnsureCommonUI();
 

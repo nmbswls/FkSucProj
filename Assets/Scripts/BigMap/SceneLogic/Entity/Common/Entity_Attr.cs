@@ -114,6 +114,8 @@ namespace My.Map
                 case AttrIdConsts.PlayerCharm_Static:
                 case AttrIdConsts.PlayerCharm_Scaled:
 
+                case AttrIdConsts.Clothes_ExposeRate:
+
                     return EAttrType.Num;
 
                 case AttrIdConsts.HP:
