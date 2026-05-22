@@ -13,6 +13,8 @@
   },
   "MainInventorySlots": [
     { "SlotIndex": 0, "ItemId": "banana", "Count": 1, "ItemInstanceId": 0 },
+    { "SlotIndex": 1, "ItemId": "human_sword_lv1", "Count": 1, "ItemInstanceId": 100 },
+    { "SlotIndex": 2, "ItemId": "human_lancer_lv1", "Count": 1, "ItemInstanceId": 101 },
     { "SlotIndex": 5, "ItemId": "gold", "Count": 10, "ItemInstanceId": 0 }
   ],
   "CurrentMapId": "secret_base_hub",
@@ -35,6 +37,6 @@
   },
   "MapRuntimeByMapId": {},
   "NextLogicEntityIdHint": 0,
-  
-  "FuncOpenList":[1,2,3,4,10]
+  "NextItemInstanceIdHint": 101,
+  "FuncOpenList": [1, 2, 3, 4, 10]
 }

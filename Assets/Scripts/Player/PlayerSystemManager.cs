@@ -132,6 +132,7 @@ namespace My.Player
             if (savingData != null)
             {
                 SaveData.EnsureHydrated(savingData);
+                SaveData.SyncItemInstanceIdCounterFromSave(savingData);
             }
 
             GlobalSwitchMap.Clear();

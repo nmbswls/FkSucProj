@@ -335,6 +335,9 @@ namespace My.Saving
 
         public long NextLogicEntityIdHint;
 
+        // 已分配的最大 ItemInstanceId（与 NextLogicEntityIdHint 语义一致）
+        public long NextItemInstanceIdHint;
+
         public SaveData()
         {
             Meta = new MetaData();
@@ -397,6 +400,117 @@ namespace My.Saving
             {
                 My.GameLogicManager.LogicEntityIdInst = Math.Max(My.GameLogicManager.LogicEntityIdInst, maxId + 1);
             }
+        }
+
+        public static long CollectMaxItemInstanceId(SaveData data)
+        {
+            if (data == null)
+            {
+                return 0;
+            }
+
+            long maxId = data.NextItemInstanceIdHint;
+
+            if (data.MainInventorySlots != null)
+            {
+                foreach (var row in data.MainInventorySlots)
+                {
+                    if (row != null && row.ItemInstanceId > 0)
+                    {
+                        maxId = Math.Max(maxId, row.ItemInstanceId);
+                    }
+                }
+            }
+
+            if (data.WarehousePages != null)
+            {
+                foreach (var page in data.WarehousePages)
+                {
+                    if (page?.Slots == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var slot in page.Slots)
+                    {
+                        if (slot != null && slot.ItemInstanceId > 0)
+                        {
+                            maxId = Math.Max(maxId, slot.ItemInstanceId);
+                        }
+                    }
+                }
+            }
+
+            var pd = data.PlayerData;
+            if (pd != null)
+            {
+                if (pd.EquippedGear != null)
+                {
+                    foreach (var e in pd.EquippedGear)
+                    {
+                        if (e != null && e.ItemInstanceId > 0)
+                        {
+                            maxId = Math.Max(maxId, e.ItemInstanceId);
+                        }
+                    }
+                }
+
+                maxId = Math.Max(maxId, CollectMaxItemInstanceIdFromQuickSlots(pd.WeaponQuickSlotOverrides));
+                maxId = Math.Max(maxId, CollectMaxItemInstanceIdFromQuickSlots(pd.ConsumableQuickSlotOverrides));
+            }
+
+            return maxId;
+        }
+
+        static long CollectMaxItemInstanceIdFromQuickSlots(List<QuickSlotBindingPersist> bindings)
+        {
+            long maxId = 0;
+            if (bindings == null)
+            {
+                return maxId;
+            }
+
+            foreach (var b in bindings)
+            {
+                if (b != null && b.ItemInstanceId > 0)
+                {
+                    maxId = Math.Max(maxId, b.ItemInstanceId);
+                }
+            }
+
+            return maxId;
+        }
+
+        public static void SyncItemInstanceIdCounterFromSave(SaveData data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            long maxId = CollectMaxItemInstanceId(data);
+            if (maxId > 0)
+            {
+                My.GameLogicManager.ItemInstanceIdCounter =
+                    Math.Max(My.GameLogicManager.ItemInstanceIdCounter, maxId + 1);
+            }
+        }
+
+        public static void WriteItemInstanceIdHintToSave(SaveData data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            long maxId = CollectMaxItemInstanceId(data);
+            long runtimeMax = My.GameLogicManager.ItemInstanceIdCounter - 1;
+            if (runtimeMax > 0)
+            {
+                maxId = Math.Max(maxId, runtimeMax);
+            }
+
+            data.NextItemInstanceIdHint = maxId;
         }
     }
 }

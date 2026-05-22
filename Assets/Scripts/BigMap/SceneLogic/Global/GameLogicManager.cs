@@ -742,6 +742,7 @@ namespace My
             }
 
             SaveData.SyncLogicEntityIdCounterFromSave(saveData);
+            SaveData.SyncItemInstanceIdCounterFromSave(saveData);
 
             if (saveData.GlobalRuntime != null)
             {
@@ -879,6 +880,7 @@ namespace My
             worldPersistState?.ApplyRuntimeToSaveData(data);
             playerDataManager?.ApplyRuntimeToSaveData(data);
             homeDataManager?.ApplyToSaveData(data);
+            SaveData.WriteItemInstanceIdHintToSave(data);
 
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.PlayerBuffs.Clear();

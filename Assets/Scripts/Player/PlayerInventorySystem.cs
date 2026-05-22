@@ -74,18 +74,7 @@ namespace My.Player.Bag
 
         static ItemStack HydratePersistedStack(string itemId, long count, long itemInstanceId)
         {
-            if (string.IsNullOrEmpty(itemId) || count <= 0)
-            {
-                return null;
-            }
-
-            var st = ItemCatalog.CreateItemStack(itemId, count);
-            if (st != null && itemInstanceId != 0)
-            {
-                st.ItemInstanceId = itemInstanceId;
-            }
-
-            return st;
+            return ItemCatalog.HydrateItemStackFromPersist(itemId, count, itemInstanceId);
         }
 
         void ApplyMainBagFromSave(SaveData save)

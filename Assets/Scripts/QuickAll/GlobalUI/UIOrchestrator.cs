@@ -833,7 +833,7 @@ namespace My.UI
                 var itemCfg = CfgMgr.Cfgs.TbItemData.GetOrDefault(itemId);
                 if(itemCfg != null)
                 {
-                    var sprite = SimpleResManager.Load<Sprite>("Sprites/" + itemCfg.SpriteName);
+                    var sprite = SimpleResManager.Load<Sprite>("Sprites/Item/" + itemCfg.SpriteName);
                     UIGainSideNotifyPanel.Instance.EnqueueLog("+" + itemCfg.DisplayName + "*" + count, sprite);
                 }
                 

@@ -173,25 +173,70 @@ namespace My.Config
             if (IsInstanceType(def.ItemType))
             {
                 item.ItemInstanceId = My.GameLogicManager.ItemInstanceIdCounter++;
-                switch (def.ItemType)
-                {
-                    case EItemType.Equip:
-                        item.InstanceInfo = new ItemInstance4Equip();
-                        break;
-                    case EItemType.Insertion:
-                    {
-                        var instInfo = new ItemInstance4Insertion
-                        {
-                            BuffTickTimer = LogicTime.time,
-                            Lifetime = def.AutoDestroyTime,
-                        };
-                        item.InstanceInfo = instInfo;
-                    }
-                        break;
-                }
+                ApplyFreshInstanceInfo(item, def);
             }
 
             return item;
+        }
+
+        // 从存档还原堆栈：已有 ItemInstanceId 时不占用新 id
+        public static ItemStack HydrateItemStackFromPersist(string itemId, long count, long itemInstanceId)
+        {
+            if (string.IsNullOrEmpty(itemId) || count <= 0)
+            {
+                return null;
+            }
+
+            if (CfgMgr.Cfgs == null)
+            {
+                Debug.LogWarning($"ItemCatalog.HydrateItemStackFromPersist: CfgMgr.Cfgs is null, cannot hydrate '{itemId}'.");
+                return null;
+            }
+
+            var def = GetItemDef(itemId);
+            if (def == null)
+            {
+                Debug.LogWarning($"ItemCatalog.HydrateItemStackFromPersist: no TbItemData row for '{itemId}'.");
+                return null;
+            }
+
+            var item = new ItemStack(itemId, count);
+            if (!IsInstanceType(def.ItemType))
+            {
+                return item;
+            }
+
+            if (itemInstanceId != 0)
+            {
+                item.ItemInstanceId = itemInstanceId;
+            }
+            else
+            {
+                item.ItemInstanceId = My.GameLogicManager.ItemInstanceIdCounter++;
+            }
+
+            ApplyFreshInstanceInfo(item, def);
+            return item;
+        }
+
+        static void ApplyFreshInstanceInfo(ItemStack item, ItemData def)
+        {
+            switch (def.ItemType)
+            {
+                case EItemType.Equip:
+                    item.InstanceInfo = new ItemInstance4Equip();
+                    break;
+                case EItemType.Insertion:
+                {
+                    var instInfo = new ItemInstance4Insertion
+                    {
+                        BuffTickTimer = LogicTime.time,
+                        Lifetime = def.AutoDestroyTime,
+                    };
+                    item.InstanceInfo = instInfo;
+                }
+                    break;
+            }
         }
 
         public static int GetMaxStackByType(string itemId, EContainerType containerMode)
