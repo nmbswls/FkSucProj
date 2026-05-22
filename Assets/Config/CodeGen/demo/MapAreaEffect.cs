@@ -27,7 +27,7 @@ public sealed partial class MapAreaEffect : Luban.BeanBase
         { if(!_buf["area_buff_id"].IsString) { throw new SerializationException(); }  AreaBuffId = _buf["area_buff_id"]; }
         { if(!_buf["camp_filter"].IsNumber) { throw new SerializationException(); }  CampFilter = (demo.EAreaCampFilter)_buf["camp_filter"].AsInt; }
         { if(!_buf["default_lifetime"].IsNumber) { throw new SerializationException(); }  DefaultLifetime = _buf["default_lifetime"]; }
-        RefreshBuffDuration = _buf["refresh_buff_duration"].IsBoolean && _buf["refresh_buff_duration"].AsBool;
+        { if(!_buf["refresh_buff_duration"].IsBoolean) { throw new SerializationException(); }  RefreshBuffDuration = _buf["refresh_buff_duration"]; }
     }
 
     public static MapAreaEffect DeserializeMapAreaEffect(JSONNode _buf)
@@ -72,7 +72,7 @@ public sealed partial class MapAreaEffect : Luban.BeanBase
     /// </summary>
     public float DefaultLifetime;
     /// <summary>
-    /// true：区内每 tick 刷新 Buff 时长，离区不 Remove（Buff 需自带 DefaultDuration）
+    /// 区内刷新Buff时长
     /// </summary>
     public bool RefreshBuffDuration;
    

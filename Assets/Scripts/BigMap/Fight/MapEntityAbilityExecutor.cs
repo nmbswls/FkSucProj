@@ -350,7 +350,7 @@ namespace My.Map.Entity
             };
             foreach (var e in abilityConf.OnStartEffects)
             {
-                var effectCtx = GenerateEfffectContextByAbility();
+                var effectCtx = GenerateEfffectContextByAbility(CurrentCtx);
                 EntityOwner.LogicManager.HandleLogicFightEffect(e, effectCtx);
             }
             EnterPhase(0);
@@ -549,12 +549,12 @@ namespace My.Map.Entity
             ApplyPhaseStepSnap(phase, CurrentCtx.AbilityConfig);
 
             // 安排该阶段的事件
-            CurrentCtx._scheduled.Clear();
+            ctx._scheduled.Clear();
             foreach (var ev in phase.Events)
             {
                 if (ev.Kind == PhaseEventKind.OnEnter)
                 {
-                    var effectCtx = GenerateEfffectContextByAbility();
+                    var effectCtx = GenerateEfffectContextByAbility(ctx);
                     EntityOwner.LogicManager.HandleLogicFightEffect(ev.Effect, effectCtx);
 
                     //if(effectCtx.BindSceneFxIds.Count > 0)
@@ -640,7 +640,7 @@ namespace My.Map.Entity
             {
                 if (ev.Kind == PhaseEventKind.OnExit)
                 {
-                    var effectCtx = GenerateEfffectContextByAbility();
+                    var effectCtx = GenerateEfffectContextByAbility(ctx);
                     EntityOwner.LogicManager.HandleLogicFightEffect(ev.Effect, effectCtx);
                 }
             }
@@ -779,7 +779,7 @@ namespace My.Map.Entity
             }
         }
 
-        public GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility()
+        public GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility(AbilityRunningContext abilityCtx)
         {
             var sourceInfo = new EffectSourceInfo()
             {
@@ -787,29 +787,29 @@ namespace My.Map.Entity
                 SrcEntityId = this.EntityOwner.Id,
                 SrcFactionId = this.EntityOwner.FactionId,
 
-                SrcAbilityId = CurrentCtx.AbilityConfig.Id,
-                SrcAbilityPhaseId = CurrentCtx.PhaseIndex,
+                SrcAbilityId = abilityCtx.AbilityConfig.Id,
+                SrcAbilityPhaseId = abilityCtx.PhaseIndex,
             };
             var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, EFightCtxType.Ability, sourceInfo);
-            ctx.TargetId = this.CurrentCtx.Target ?.Id ?? 0;
+            ctx.TargetId = abilityCtx.Target ?.Id ?? 0;
             ctx.TriggerPos = EntityOwner.Pos;
 
-            if(this.CurrentCtx.CastVec1 != null)
+            if(abilityCtx.CastVec1 != null)
             {
-                ctx.CastVec1 = this.CurrentCtx.CastVec1;
+                ctx.CastVec1 = abilityCtx.CastVec1;
             }
             else
             {
-                ctx.CastVec1 = this.EntityOwner.Pos + this.CurrentCtx.FaceDir;
+                ctx.CastVec1 = this.EntityOwner.Pos + abilityCtx.FaceDir;
             }
 
-            ctx.InputVec = this.CurrentCtx.InputVec;
+            ctx.InputVec = abilityCtx.InputVec;
 
-            ctx.TriggerPos = this.CurrentCtx.Position;
+            ctx.TriggerPos = abilityCtx.Position;
 
-            ctx.RunningVariables = this.CurrentCtx.RunningVariables;
+            ctx.RunningVariables = abilityCtx.RunningVariables;
 
-            foreach(var xuliInfo in CurrentCtx.PhaseXuLiInfos)
+            foreach(var xuliInfo in abilityCtx.PhaseXuLiInfos)
             {
                 string key = $"{xuliInfo.Key}.Timed";
                 ctx.RunningStorage[key] = (long)(xuliInfo.Value * 1000);
@@ -865,7 +865,7 @@ namespace My.Map.Entity
                         }
                     }
 
-                    var effectCtx = GenerateEfffectContextByAbility();
+                    var effectCtx = GenerateEfffectContextByAbility(ctx);
                     EntityOwner.LogicManager.HandleLogicFightEffect(s.Source.Effect, effectCtx);
                     s.Left--;
                     s.FireTime += s.NextInterval > 0 ? s.NextInterval : float.MaxValue;
@@ -956,7 +956,7 @@ namespace My.Map.Entity
 
             foreach (var e in CurrentCtx.AbilityConfig.OnCompleteEffects)
             {
-                var effectCtx = GenerateEfffectContextByAbility();
+                var effectCtx = GenerateEfffectContextByAbility(CurrentCtx);
                 EntityOwner.LogicManager.HandleLogicFightEffect(e, effectCtx);
             }
 
@@ -981,7 +981,7 @@ namespace My.Map.Entity
             var abName = CurrentCtx.AbilityConfig.Id;
             foreach (var e in CurrentCtx.AbilityConfig.OnCancelEffects)
             {
-                var effectCtx = GenerateEfffectContextByAbility();
+                var effectCtx = GenerateEfffectContextByAbility(CurrentCtx);
                 EntityOwner.LogicManager.HandleLogicFightEffect(e, effectCtx);
             }
 

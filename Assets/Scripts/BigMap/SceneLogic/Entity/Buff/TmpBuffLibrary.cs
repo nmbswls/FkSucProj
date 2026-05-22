@@ -287,6 +287,24 @@ namespace My.Map.Entity
                     IsHidden = true,
                 };
 
+                _library["simple_knock_down"] = new BuffDefinition()
+                {
+                    BuffId = "simple_knock_down",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    Icon = "simple_knock_down",
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                    },
+                    
+                    DefaultDuration = 2f,
+                    HeadHintPriority = 100,
+                };
+
                 _library["fear"] = new BuffDefinition()
                 {
                     BuffId = "fear",
@@ -306,6 +324,7 @@ namespace My.Map.Entity
                     },
                     DefaultDuration = 3f,
                     Icon = "fallback",
+                    HeadHintPriority = 80,
                 };
 
                 _library["immune_fear"] = new BuffDefinition()
@@ -715,6 +734,7 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
 
                     Icon = "force_stun",
+                    HeadHintPriority = 100,
                 };
 
                 _library["not_fight_target"] = new BuffDefinition()
@@ -1344,6 +1364,8 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
                     },
                     DefaultDuration = 0.5f,
+                    Icon = "fallback",
+                    HeadHintPriority = 100,
 
                     OnAttachEffects = new()
                     {

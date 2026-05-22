@@ -8,7 +8,8 @@
     "shape_angle": 0,
     "area_buff_id": "b_ground_gc_liquid",
     "camp_filter": 1,
-    "default_lifetime": 15
+    "default_lifetime": 15,
+    "refresh_buff_duration": false
   },
   {
     "id": "ground_milk_liquid",
@@ -19,7 +20,8 @@
     "shape_angle": 0,
     "area_buff_id": "b_ground_milk_liquid",
     "camp_filter": 1,
-    "default_lifetime": 15
+    "default_lifetime": 15,
+    "refresh_buff_duration": false
   },
   {
     "id": "ground_fire",
@@ -30,7 +32,8 @@
     "shape_angle": 0,
     "area_buff_id": "ground_fire_1",
     "camp_filter": 1,
-    "default_lifetime": 12
+    "default_lifetime": 12,
+    "refresh_buff_duration": false
   },
   {
     "id": "player_pink_mist_trail",
@@ -42,18 +45,6 @@
     "area_buff_id": "player_pink_mist",
     "camp_filter": 1,
     "default_lifetime": 3,
-    "refresh_buff_duration": false
-  },
-  {
-    "id": "smoke_grenade_area",
-    "shape_type": 2,
-    "shape_length": 0,
-    "shape_width": 0,
-    "shape_radius": 2.5,
-    "shape_angle": 0,
-    "area_buff_id": "smoke_vision_debuff",
-    "camp_filter": 1,
-    "default_lifetime": 8,
     "refresh_buff_duration": true
   }
 ]

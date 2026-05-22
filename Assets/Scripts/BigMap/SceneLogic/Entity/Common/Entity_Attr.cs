@@ -133,6 +133,7 @@ namespace My.Map
                 case AttrIdConsts.NPCHVal:
                 case AttrIdConsts.NPCSJProgress:
                 case AttrIdConsts.UnitHShield:
+                case AttrIdConsts.UnitKnockDown:
 
                     return EAttrType.Resource;
 

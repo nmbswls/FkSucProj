@@ -3866,7 +3866,7 @@ namespace My.Map.Entity
                     },
                     new MapAbilityEffectAddResourceCfg()
                     {
-                        ResourceId = AttrIdConsts.NPCHVal,
+                        ResourceId = AttrIdConsts.UnitKnockDown,
                         AddValueFromAttrId = AttrIdConsts.CastStunValue,
                     },
                 }

@@ -957,6 +957,17 @@ namespace My.Map
             // 4.3 死亡判断窗口：仅在含伤害时检查
             switch (attrId)
             {
+                case AttrIdConsts.UnitKnockDown:
+                    {
+                        // 
+                        if(after >= 100_000)
+                        {
+                            attributeStore.SetResource(AttrIdConsts.UnitKnockDown, 0);
+                            Debug.Log("UnitKnockDown max cause stun");
+                            LogicManager.globalBuffManager.RequestAddBuff(this.Id, "simple_knock_down");
+                        }
+                    }
+                    break;
                 case AttrIdConsts.HP:
                     {
                         if (intent.isEnmity)

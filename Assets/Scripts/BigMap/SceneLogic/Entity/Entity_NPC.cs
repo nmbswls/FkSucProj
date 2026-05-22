@@ -284,6 +284,8 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, initHp);
 
             // H 模式相关资源注册
+            attributeStore.RegisterResource(AttrIdConsts.UnitKnockDown, null, 100_000, 0); 
+
             attributeStore.RegisterResource(AttrIdConsts.NPCHVal, null, 100_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.UnitHShield, null, 120_000, 120_000);
             attributeStore.RegisterResource(AttrIdConsts.DeepZhaChance, null, 999, 1);

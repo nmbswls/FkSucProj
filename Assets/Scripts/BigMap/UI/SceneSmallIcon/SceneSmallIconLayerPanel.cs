@@ -52,6 +52,9 @@ namespace My.UI
         public SceneInteractUIHinter InteractHintPrefab;
         public SceneEvilAlertUIItem EvilAlertPrefab;
         public SceneNPCHStatUIStruct NPCHStatPrefab; // 需要在 Inspector 中拖拽 Prefab
+        public SceneUnitBuffHeadHintItem BuffHeadHintPrefab;
+
+        const float BuffHeadHintScreenOffsetY = 28f;
 
 
         private Dictionary<ISceneInteractable, SceneInteractUIHinter> sceneInteractHintDicts = new();
@@ -65,11 +68,16 @@ namespace My.UI
         private Dictionary<long, SceneNPCHStatUIStruct> _activeNpcHStat = new Dictionary<long, SceneNPCHStatUIStruct>();
         private Queue<SceneNPCHStatUIStruct> _npcHStatPool = new Queue<SceneNPCHStatUIStruct>();
 
+        private Dictionary<long, SceneUnitBuffHeadHintItem> _activeBuffHeadHints = new Dictionary<long, SceneUnitBuffHeadHintItem>();
+        private Queue<SceneUnitBuffHeadHintItem> _buffHeadHintPool = new Queue<SceneUnitBuffHeadHintItem>();
+        private HashSet<long> _buffHeadHintSeenThisFrame = new HashSet<long>();
+
         public void Awake()
         {
             InteractHintPrefab.gameObject.SetActive(false);
             EvilAlertPrefab.gameObject.SetActive(false);
             if (NPCHStatPrefab != null) NPCHStatPrefab.gameObject.SetActive(false);
+            if (BuffHeadHintPrefab != null) BuffHeadHintPrefab.gameObject.SetActive(false);
 
             TopCanvas = GetComponentInParent<Canvas>();
             _mainCam = Camera.main;
@@ -116,7 +124,20 @@ namespace My.UI
                     RecycleEvilAlertUI(oneId);
                 }
             }
-            
+
+            _lowFreqCleanCaches.Clear();
+            foreach (var kv in _activeBuffHeadHints)
+            {
+                if (_activeBuffHeadHints[kv.Key].BindingUnit == null)
+                {
+                    _lowFreqCleanCaches.Add(kv.Key);
+                }
+            }
+
+            foreach (var oneId in _lowFreqCleanCaches)
+            {
+                RecycleBuffHeadHintUI(oneId);
+            }
         }
 
         private float _screenWidth;
@@ -132,6 +153,8 @@ namespace My.UI
             _screenHeight = Screen.height;
             _bufferX = _screenWidth * 0.1f;
             _bufferY = _screenHeight * 0.1f;
+
+            _buffHeadHintSeenThisFrame.Clear();
 
             var activePresenters = SceneAOIManager.Instance.GetAllActivePresentation();
             foreach(var p in activePresenters)
@@ -152,7 +175,11 @@ namespace My.UI
                 CheckUpdateSceneInteracbleHint(p);
 
                 CheckUpdateSceneNpcHStat(p);
+
+                CheckUpdateSceneUnitBuffHeadHint(p);
             }
+
+            RecycleStaleBuffHeadHints();
         }
 
         #region Alert UI 更新与按需分配
@@ -461,6 +488,155 @@ namespace My.UI
 
         #endregion
 
+        #region Buff 头顶图标
+
+        protected void CheckUpdateSceneUnitBuffHeadHint(IScenePresentation presenter)
+        {
+            if (BuffHeadHintPrefab == null)
+            {
+                return;
+            }
+
+            if (presenter is not SceneUnitPresenter unitPresenter)
+            {
+                return;
+            }
+
+            if (presenter.GetLogicEntity() is not IEntityBuffOwner buffOwner)
+            {
+                return;
+            }
+
+            _buffHeadHintSeenThisFrame.Add(unitPresenter.Id);
+
+            var headBuff = BuffHeadHintUtil.ResolveTopHeadHintBuff(buffOwner);
+            var hasActiveUI = _activeBuffHeadHints.ContainsKey(unitPresenter.Id);
+
+            if (headBuff == null)
+            {
+                if (hasActiveUI)
+                {
+                    RecycleBuffHeadHintUI(unitPresenter.Id);
+                }
+
+                return;
+            }
+
+            var anchor = unitPresenter.PivotHeader != null
+                ? unitPresenter.PivotHeader.position
+                : unitPresenter.GetWorldPosition();
+            var screenPos = _mainCam.WorldToScreenPoint(anchor);
+            var isVisible = screenPos.z > 0 &&
+                            screenPos.x >= -_bufferX && screenPos.x <= _screenWidth + _bufferX &&
+                            screenPos.y >= -_bufferY && screenPos.y <= _screenHeight + _bufferY;
+
+            if (!isVisible)
+            {
+                if (hasActiveUI)
+                {
+                    RecycleBuffHeadHintUI(unitPresenter.Id);
+                }
+
+                return;
+            }
+
+            var icon = BuffHeadHintUtil.ResolveBuffIcon(headBuff);
+            SceneUnitBuffHeadHintItem uiItem;
+            if (!hasActiveUI)
+            {
+                uiItem = AllocateBuffHeadHintUI(unitPresenter, icon, headBuff.InstanceId);
+                if (uiItem == null)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                uiItem = _activeBuffHeadHints[unitPresenter.Id];
+                if (uiItem.BoundBuffInstanceId != headBuff.InstanceId)
+                {
+                    uiItem.Bind(unitPresenter, icon, headBuff.InstanceId);
+                }
+                else
+                {
+                    uiItem.SetIcon(icon);
+                }
+            }
+
+            UpdateBuffHeadHintUIPosition(uiItem, screenPos);
+        }
+
+        SceneUnitBuffHeadHintItem AllocateBuffHeadHintUI(
+            SceneUnitPresenter unitPresenter,
+            Sprite icon,
+            long buffInstanceId)
+        {
+            if (BuffHeadHintPrefab == null)
+            {
+                return null;
+            }
+
+            SceneUnitBuffHeadHintItem uiItem;
+            if (_buffHeadHintPool.Count > 0)
+            {
+                uiItem = _buffHeadHintPool.Dequeue();
+            }
+            else
+            {
+                uiItem = Instantiate(BuffHeadHintPrefab, transform);
+            }
+
+            uiItem.Bind(unitPresenter, icon, buffInstanceId);
+            _activeBuffHeadHints[unitPresenter.Id] = uiItem;
+            return uiItem;
+        }
+
+        void RecycleBuffHeadHintUI(long entityId)
+        {
+            if (_activeBuffHeadHints.TryGetValue(entityId, out var uiItem))
+            {
+                uiItem.Unbind();
+                _buffHeadHintPool.Enqueue(uiItem);
+                _activeBuffHeadHints.Remove(entityId);
+            }
+        }
+
+        void RecycleStaleBuffHeadHints()
+        {
+            if (_activeBuffHeadHints.Count == 0)
+            {
+                return;
+            }
+
+            _lowFreqCleanCaches.Clear();
+            foreach (var kv in _activeBuffHeadHints)
+            {
+                if (!_buffHeadHintSeenThisFrame.Contains(kv.Key))
+                {
+                    _lowFreqCleanCaches.Add(kv.Key);
+                }
+            }
+
+            foreach (var entityId in _lowFreqCleanCaches)
+            {
+                RecycleBuffHeadHintUI(entityId);
+            }
+        }
+
+        void UpdateBuffHeadHintUIPosition(SceneUnitBuffHeadHintItem uiItem, Vector3 screenPos)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                transform.parent as RectTransform,
+                screenPos,
+                TopCanvas != null ? TopCanvas.worldCamera : null,
+                out Vector2 uiLocalPos
+            );
+            uiLocalPos += Vector2.up * BuffHeadHintScreenOffsetY;
+            uiItem.transform.localPosition = uiLocalPos;
+        }
+
+        #endregion
+
         /// <summary>
         /// 强制解绑
         /// </summary>
@@ -476,6 +652,7 @@ namespace My.UI
 
             // 补充 HStat 的解绑回收
             RecycleNpcHStatUI(scenePresentation.Id);
+            RecycleBuffHeadHintUI(scenePresentation.Id);
         }
 
         public override void Hide()
@@ -493,6 +670,10 @@ namespace My.UI
             foreach (var key in _activeNpcHStat.Keys.ToList())
             {
                 RecycleNpcHStatUI(key);
+            }
+            foreach (var key in _activeBuffHeadHints.Keys.ToList())
+            {
+                RecycleBuffHeadHintUI(key);
             }
 
             DebugIconsShower.Clear();
