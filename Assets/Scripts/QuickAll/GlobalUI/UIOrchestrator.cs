@@ -65,6 +65,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = PlayerHumanItemBarPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/PlayerHumanItemBarPanel",
+                defaultLayer = UILayer.HUD,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "LoadingOverlay",
                 resourcePath = "UI/Prefabs/LoadingOverlay",
                 defaultLayer = UILayer.System,
@@ -642,6 +650,7 @@ namespace My.UI
         static readonly string[] OverworldMapOnlyPanelIds =
         {
             "OverworldHUD",
+            PlayerHumanItemBarPanel.PanelIdConst,
             "SceneMask",
             "SmallIconLayer",
             "InteractMenu",
@@ -673,6 +682,7 @@ namespace My.UI
             if (IsInSecretBaseWorld())
             {
                 SecretBaseHudPanel.TryShow();
+                PlayerHumanItemBarPanel.TryHide();
             }
             else
             {

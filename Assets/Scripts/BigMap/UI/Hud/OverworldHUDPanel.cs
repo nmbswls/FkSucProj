@@ -199,9 +199,6 @@ namespace My.UI
         public GameObject botHintTextPrefab;
         public OverworldSkillBar SkilBar;
 
-        // 道具快捷栏根节点（预制体 ItemBar）；为空时在 Awake 中尝试按名称 ItemBar 查找。
-        public RectTransform ItemQuickBarRoot;
-
         public OverworldPlayerBuffBar PlayerBuffBar;
 
         public Image PleasureBar;
@@ -262,49 +259,11 @@ namespace My.UI
             //BottomProgressPanel.Setup();
 
             SkilBar.InitSkills(this);
-            EnsureQuickItemBarReady();
-        }
-
-        void EnsureQuickItemBarReady()
-        {
-            if (ItemQuickBarRoot == null)
-            {
-                return;
-            }
-
-            var ctrl = ItemQuickBarRoot.GetComponent<OverworldItemQuickBarController>();
-            if (ctrl == null)
-            {
-                ctrl = ItemQuickBarRoot.gameObject.AddComponent<OverworldItemQuickBarController>();
-            }
-
-            ctrl.InitializeIfNeeded();
-            ctrl.EnsureSlots();
-            ctrl.RefreshFromPlayerData();
         }
 
         public void RefreshItemQuickBar()
         {
-            if (ItemQuickBarRoot == null)
-            {
-                return;
-            }
-
-            var lgm = MainGameManager.Instance?.gameLogicManager;
-            bool available = lgm != null && lgm.IsHumanQuickBarAvailable();
-            ItemQuickBarRoot.gameObject.SetActive(available);
-
-            if (!available)
-            {
-                return;
-            }
-
-            lgm.playerDataManager?.HumanQuickBar?.PruneInvalidSlots();
-
-            var ctrl = ItemQuickBarRoot.GetComponent<OverworldItemQuickBarController>();
-            ctrl?.EnsureSlots();
-            ctrl?.RefreshFromPlayerData();
-            SkilBar?.Refresh();
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         public void Refresh() { /* 更新任务/提示等 */ }
@@ -368,15 +327,6 @@ namespace My.UI
             if (GetComponent<DesireCrystalHuntingHudMarkers>() == null)
             {
                 gameObject.AddComponent<DesireCrystalHuntingHudMarkers>();
-            }
-
-            if (ItemQuickBarRoot == null)
-            {
-                var itemBarTr = transform.Find("ItemBar");
-                if (itemBarTr != null)
-                {
-                    ItemQuickBarRoot = itemBarTr as RectTransform;
-                }
             }
 
             EnsureHuntingNpcDetail();
@@ -774,7 +724,7 @@ namespace My.UI
 
             TrySubscribePlayerBuffEvents();
 
-            EnsureQuickItemBarReady();
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         public override int FocusPriority => 0;

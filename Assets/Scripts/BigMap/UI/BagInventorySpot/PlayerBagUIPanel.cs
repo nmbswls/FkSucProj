@@ -131,7 +131,25 @@ namespace My.UI.Bag
 
             InitilaizeView();
             CloseSpeBag();
-            OverworldHUDPanel.Instance?.RefreshItemQuickBar();
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBase)
+            {
+                PlayerHumanItemBarPanel.TryShow();
+            }
+
+            PlayerHumanItemBarPanel.RefreshFromGame();
+        }
+
+        public override void Hide()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBase)
+            {
+                PlayerHumanItemBarPanel.TryHide();
+            }
+
+            base.Hide();
         }
 
         public void InitilaizeView()
