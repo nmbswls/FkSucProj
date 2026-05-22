@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using My.Map;
 using My.Map.Entity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,6 +70,13 @@ namespace My.Map.Scene
             {
                 return;
             }
+
+            float dt = LogicTime.paused ? 0f : Time.fixedDeltaTime * LogicTime.timeScale;
+            if (dt <= 0f)
+            {
+                return;
+            }
+
             var finalDesiredVel = GetDisiredVelFunc();
             bool ghost = false;
             if(IsGhoseMove != null)
@@ -86,20 +94,20 @@ namespace My.Map.Scene
             }
 
             // 3) 加速度限制与阻尼
-            Vector2 accel = (finalDesiredVel - velocity) / Time.fixedDeltaTime;
+            Vector2 accel = (finalDesiredVel - velocity) / dt;
             float maxA = Mathf.Max(1e-4f, maxAccel);
             if (accel.magnitude > maxA) accel = accel.normalized * maxA;
-            velocity += accel * Time.fixedDeltaTime;
-            if (damping > 0f) velocity *= Mathf.Clamp01(1f - damping * Time.fixedDeltaTime);
+            velocity += accel * dt;
+            if (damping > 0f) velocity *= Mathf.Clamp01(1f - damping * dt);
 
             // 4) 预估目标位置
-            Vector2 targetPos = rb.position + velocity * Time.fixedDeltaTime;
+            Vector2 targetPos = rb.position + velocity * dt;
 
             // 5) 对动态单位做“无推挤”的非穿透位置约束
             // 玩家约束敌人；敌人约束玩家（你也可以双向都约束，效果更饱满）
             if(!ghost)
             {
-                targetPos = ProjectAgainstDynamics(targetPos, radius, dynamicBlockQueryMask);
+                targetPos = ProjectAgainstDynamics(targetPos, radius, dynamicBlockQueryMask, dt);
 
                 //var aviodVec = CalculateAvoidanceForce();
                 //targetPos += aviodVec * Time.fixedDeltaTime;
@@ -185,7 +193,7 @@ namespace My.Map.Scene
         //    return tgt;
         //}
 
-        Vector2 ProjectAgainstDynamics(Vector2 tgt, float selfR, LayerMask mask)
+        Vector2 ProjectAgainstDynamics(Vector2 tgt, float selfR, LayerMask mask, float dt)
         {
             float queryR = selfR + dynamicQueryExtra;
             int count = Physics2D.OverlapCircleNonAlloc(tgt, queryR, overlapBuf, mask);
@@ -199,7 +207,7 @@ namespace My.Map.Scene
             Vector2 totalCorrection = Vector2.zero;
 
             // 限制每帧最大修正（可调参数，建议公开为 maxCorrectionPerStep）
-            float maxCorrection = Mathf.Max(0.05f, 0.5f * maxMoveSpeed * Time.fixedDeltaTime);
+            float maxCorrection = Mathf.Max(0.05f, 0.5f * maxMoveSpeed * dt);
 
             // 迭代次数（1~2次即可）
             const int iters = 1;
