@@ -126,12 +126,12 @@ MonoBehaviour:
     NeedFlipObjs: []
     angleOffset: 0
   UseCodeSwing: 1
-  SwingStartAngle: 50
-  SwingEndAngle: -45
+  SwingStartAngle: 60
+  SwingEndAngle: -55
   SwingTopToBottom: 1
   HitCollider: {fileID: 5684215347978441290}
   posLerpSpeed: 15
-  radiusX: 0.4
+  radiusX: 0.3
   radiusY: 0.2
   maxAngle: 60
   minAngle: -60
