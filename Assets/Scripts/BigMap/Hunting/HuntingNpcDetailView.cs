@@ -15,6 +15,8 @@ namespace My.Map.Hunting
         public RectTransform DetailRoot;
         public TextMeshProUGUI NameText;
         public Image SJProgressBar;
+
+        public TextMeshProUGUI NpcHpText;
         public TextMeshProUGUI NpcWillText;
         public RectTransform ExecuteHintRoot;
         public TextMeshProUGUI ExecuteHintText;
@@ -126,6 +128,13 @@ namespace My.Map.Hunting
             {
                 var sjProgress = npc.NpcEntity.GetAttr(AttrIdConsts.NPCSJProgress);
                 SJProgressBar.fillAmount = sjProgress * 1.0f / 100_000f;
+            }
+
+            if(NpcHpText != null)
+            {
+                var hpVal = (long)(npc.NpcEntity.GetAttr(AttrIdConsts.HP) * 0.001);
+                var hpMaxVal = (long)(npc.NpcEntity.GetResourceMax(AttrIdConsts.HP) * 0.001);
+                NpcHpText.text = $"{hpVal}/{hpMaxVal}";
             }
 
             if (NpcWillText != null)
