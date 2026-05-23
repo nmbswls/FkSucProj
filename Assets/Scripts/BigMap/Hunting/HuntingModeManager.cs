@@ -131,7 +131,6 @@ namespace My.Map.Hunting
             ApplyHunterVisuals(false);
             _hoverNpc = null;
             GetDetailView()?.Clear();
-            GetDetailView()?.SetActiveRoot(false);
         }
 
         private void ApplyHunterVisuals(bool on)
@@ -223,19 +222,28 @@ namespace My.Map.Hunting
             var next = RaycastNpcUnderMouse();
             if (next == _hoverNpc)
             {
-                GetDetailView()?.RefreshLayout();
+                var view = GetDetailView();
+                if (_hoverNpc != null)
+                {
+                    view?.RefreshLayout();
+                }
+                else
+                {
+                    view?.Clear();
+                }
+
                 return;
             }
 
             _hoverNpc = next;
-            var view = GetDetailView();
+            var detailView = GetDetailView();
             if (_hoverNpc == null)
             {
-                view?.Clear();
+                detailView?.Clear();
             }
             else
             {
-                view?.SetTarget(_hoverNpc, CanExecuteTarget(_hoverNpc));
+                detailView?.SetTarget(_hoverNpc, CanExecuteTarget(_hoverNpc));
             }
         }
 

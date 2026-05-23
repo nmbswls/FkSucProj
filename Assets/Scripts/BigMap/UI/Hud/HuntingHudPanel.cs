@@ -42,6 +42,11 @@ namespace My.UI
             }
 
             IsHunterMode = on;
+            if (on)
+            {
+                npcDetail?.Clear();
+            }
+
             HunterModeChanged?.Invoke(on);
         }
 
