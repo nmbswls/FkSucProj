@@ -131,8 +131,8 @@ MonoBehaviour:
   SwingTopToBottom: 1
   HitCollider: {fileID: 5684215347978441290}
   posLerpSpeed: 15
-  radiusX: 0.2
-  radiusY: 0.4
+  radiusX: 0.4
+  radiusY: 0.2
   maxAngle: 60
   minAngle: -60
   centerOffset: {x: -0.15, y: 0}
