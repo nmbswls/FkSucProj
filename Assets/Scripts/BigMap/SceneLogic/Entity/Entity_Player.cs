@@ -142,7 +142,7 @@ namespace My.Map
             }
 
             if (!MapWorldEmptySpotUtil.TryFindEmptySpotNear(
-                    Pos,
+                    Pos + UnityEngine.Random.insideUnitCircle.normalized * 0.3f,
                     CarryPutDownSearchRadius,
                     CarryPutDownClearanceRadius,
                     CarriedNpcEntityId,
@@ -154,7 +154,7 @@ namespace My.Map
             }
 
             LogicManager.globalBuffManager.RemoveAllBuffById(npc.Id, "give_hide");
-            npc.SetPosition(spot);
+            npc.TeleportTo(spot);
             CarriedNpcEntityId = 0;
             RemovePlayerCarryBodyBuffs();
             return true;

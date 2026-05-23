@@ -21,7 +21,7 @@ namespace My.Map.Fight
                 {
                     if (src.TryGetAttr(onePair.AttrId, out var getVal))
                     {
-                        dmgVal += (long)(getVal * onePair.Val * 0.0001f);
+                        dmgVal += (long)(getVal * onePair.Val / 10000);
                     }
                 }
             }
