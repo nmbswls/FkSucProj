@@ -51,6 +51,8 @@ namespace My.Player
 
         public PlayerHumanQuickBarSystem HumanQuickBar { get; private set; }
 
+        public PlayerRuneSystem RuneSystem { get; private set; }
+
         public PlayerEquipmentManager EquipmentManager { get; private set; }
 
         public RumorIntelSystem RumorIntel { get; } = new();
@@ -101,6 +103,7 @@ namespace My.Player
             InventorySystem = new();
             SkillSystem = new PlayerSkillSystem();
             HumanQuickBar = new PlayerHumanQuickBarSystem(this);
+            RuneSystem = new PlayerRuneSystem(this);
 
             MagicClothes = new PlayerMagicClothesManager(this);
 
@@ -153,6 +156,7 @@ namespace My.Player
             InventorySystem.InitSystem(logicManager, savingData);
             SkillSystem.InitSystem(logicManager, savingData);
             HumanQuickBar.InitSystem(logicManager, savingData);
+            RuneSystem.InitSystem(logicManager, savingData);
             MagicClothes.LoadFromSave(savingData?.PlayerData);
 
             EquipmentManager = new PlayerEquipmentManager(this);
@@ -184,6 +188,7 @@ namespace My.Player
 
 
             HumanQuickBar.WriteToSave(data.PlayerData);
+            RuneSystem?.WriteToSave(data.PlayerData);
         }
 
         public bool CheckHasParam(string id)
@@ -523,7 +528,63 @@ namespace My.Player
 
                 int lvl = PlayerSkillSystem.ClampPassiveBuffLayer(skillId, SkillSystem.GetSkillLevel(skillId));
                 player.TrySetPassiveSkillBuffLayer(skillId, lvl);
+                applied.Add(skillId);
             }
+
+            if (RuneSystem != null)
+            {
+                var runePassiveScratch = new List<string>();
+                RuneSystem.CollectEquippedPassiveSkillIds(applied, runePassiveScratch);
+                foreach (var skillId in runePassiveScratch)
+                {
+                    if (applied.Contains(skillId))
+                    {
+                        continue;
+                    }
+
+                    var cfg = SkillLibrary.GetSkillConfig(skillId);
+                    if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
+                    {
+                        continue;
+                    }
+
+                    player.TrySetPassiveSkillBuffLayer(skillId, 1);
+                    applied.Add(skillId);
+                }
+            }
+        }
+
+        public bool TryGrantRune(string runeId)
+        {
+            if (RuneSystem == null || !RuneSystem.TryGrantRune(runeId, out _))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryEquipRune(cfg.demo.ERuneEquipSlot slot, string runeId)
+        {
+            if (RuneSystem == null || !RuneSystem.TryEquip(slot, runeId, out _))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryUnequipRune(cfg.demo.ERuneEquipSlot slot)
+        {
+            if (RuneSystem == null || !RuneSystem.TryUnequip(slot, out _))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
         }
 
         public bool TryAddSkillLearnedSkill(string skillId, int level = 1)

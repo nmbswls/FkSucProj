@@ -236,6 +236,40 @@ public class ConsoleGM : MonoBehaviour
                 PlayerProgressionHubPanel.ToggleTalents();
             });
 
+        Register("rune_ui", "Toggle PlayerProgressionHub Runes tab",
+            null,
+            _ =>
+            {
+                PlayerProgressionHubPanel.ToggleRunes();
+            });
+
+        Register("grant_rune", "获得符文",
+            new[] { new CmdParam("runeId", "string，rune_id") },
+            args =>
+            {
+                if (args.Count < 1)
+                {
+                    LogError("用法：grant_rune <rune_id>");
+                    return;
+                }
+
+                var pdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+                if (pdm == null)
+                {
+                    LogError("playerDataManager null");
+                    return;
+                }
+
+                if (pdm.TryGrantRune(args[0]))
+                {
+                    Log($"Granted rune: {args[0]}");
+                }
+                else
+                {
+                    LogError($"Failed to grant rune: {args[0]}");
+                }
+            });
+
         Register("gc", "加gc",
             new[] { new CmdParam("val", "int，值") },
             args =>

@@ -85,18 +85,18 @@ namespace My.UI
 
         void OnEnable()
         {
-            OverworldHUDPanel.HunterModeChanged += OnHunterModeChanged;
+            HuntingHudPanel.HunterModeChanged += OnHunterModeChanged;
         }
 
         void OnDisable()
         {
-            OverworldHUDPanel.HunterModeChanged -= OnHunterModeChanged;
+            HuntingHudPanel.HunterModeChanged -= OnHunterModeChanged;
             HideAllVisuals();
         }
 
         void OnHunterModeChanged(bool _)
         {
-            if (OverworldHUDPanel.Instance == null || !OverworldHUDPanel.Instance.IsHunterMode)
+            if (HuntingHudPanel.Instance == null || !HuntingHudPanel.Instance.IsHunterMode)
             {
                 HideAllVisuals();
             }
@@ -104,7 +104,7 @@ namespace My.UI
 
         void LateUpdate()
         {
-            if (OverworldHUDPanel.Instance == null || !OverworldHUDPanel.Instance.IsHunterMode)
+            if (HuntingHudPanel.Instance == null || !HuntingHudPanel.Instance.IsHunterMode)
             {
                 HideAllVisuals();
                 return;

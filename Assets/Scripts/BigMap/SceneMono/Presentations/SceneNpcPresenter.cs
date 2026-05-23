@@ -166,7 +166,7 @@ namespace My.Map.Scene
 
             if (NpcEntity.IsAttaching) return false;
 
-            if (OverworldHUDPanel.Instance.IsHunterMode)
+            if (HuntingHudPanel.Instance != null && HuntingHudPanel.Instance.IsHunterMode)
             {
                 return false;
             }
@@ -208,8 +208,8 @@ namespace My.Map.Scene
 
         private bool CheckCanBackHit()
         {
-            if (OverworldHUDPanel.Instance == null) return false;
-            if (!OverworldHUDPanel.Instance.IsHunterMode) return false;
+            if (HuntingHudPanel.Instance == null) return false;
+            if (!HuntingHudPanel.Instance.IsHunterMode) return false;
 
             if (NpcEntity.CheckHasState(AttrIdConsts.NoInteract)) return false;
 

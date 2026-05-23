@@ -93,6 +93,7 @@ public partial class Tables
     /// human_weapon
     /// </summary>
     public demo.TbHumanWeapon TbHumanWeapon {get; }
+    public demo.TbRuneData TbRuneData {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -163,6 +164,7 @@ public partial class Tables
         TbSecretBaseBuildLevel = new demo.TbSecretBaseBuildLevel(loader("demo_tbsecretbasebuildlevel"));
         TbSecretBaseCharacter = new demo.TbSecretBaseCharacter(loader("demo_tbsecretbasecharacter"));
         TbHumanWeapon = new demo.TbHumanWeapon(loader("demo_tbhumanweapon"));
+        TbRuneData = new demo.TbRuneData(loader("demo_tbrunedata"));
         ResolveRef();
     }
     
@@ -235,6 +237,7 @@ public partial class Tables
         TbSecretBaseBuildLevel.ResolveRef(this);
         TbSecretBaseCharacter.ResolveRef(this);
         TbHumanWeapon.ResolveRef(this);
+        TbRuneData.ResolveRef(this);
     }
 }
 

@@ -205,30 +205,6 @@ namespace My.UI
 
         public TextMeshProUGUI TextWantedLevel;
 
-
-        public bool IsHunterMode = false;
-
-        public HuntingNpcDetailView HuntingNpcDetail;
-
-        /// <summary>
-        /// 猎杀模式切换时广播，供场景表现（如欲望结晶狩猎特效）订阅。
-        /// </summary>
-        public static event Action<bool> HunterModeChanged;
-
-        /// <summary>
-        /// 由 HuntingModeManager 设置狩猎状态并触发事件（event 仅能在本类内 Invoke）。
-        /// </summary>
-        public void SetHunterModeState(bool on)
-        {
-            if (IsHunterMode == on)
-            {
-                return;
-            }
-
-            IsHunterMode = on;
-            HunterModeChanged?.Invoke(on);
-        }
-
         private LogicEntityBase _buffEventsPlayer;
 
         public Image zhaZhiSwitchOne;
@@ -319,12 +295,6 @@ namespace My.UI
                 }
             }
 
-            if (GetComponent<DesireCrystalHuntingHudMarkers>() == null)
-            {
-                gameObject.AddComponent<DesireCrystalHuntingHudMarkers>();
-            }
-
-            EnsureHuntingNpcDetail();
         }
 
         private void InitializePropBalls()
@@ -571,8 +541,6 @@ namespace My.UI
             MainGameManager.Instance.gameLogicManager.EventOnSwitchStageUpdate += HandleSwitchStageUpdate;
 
             RefreshUILayout();
-
-            HunterModeChanged?.Invoke(IsHunterMode);
         }
 
         public override void Hide()
@@ -1200,22 +1168,6 @@ namespace My.UI
             //popup.Setup("-" + val, AlertHint.transform.position, UnityEngine.Color.black);
         }
 
-
-        private void EnsureHuntingNpcDetail()
-        {
-            if (HuntingNpcDetail != null)
-            {
-                return;
-            }
-
-            HuntingNpcDetail = GetComponentInChildren<HuntingNpcDetailView>(true);
-            if (HuntingNpcDetail != null)
-            {
-                return;
-            }
-
-            HuntingNpcDetail = HuntingNpcDetailUiBuilder.BuildUnder(transform);
-        }
 
         public void DoSwitchZhaZhiMode()
         {

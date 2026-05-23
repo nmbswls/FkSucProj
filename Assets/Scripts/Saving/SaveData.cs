@@ -102,6 +102,16 @@ namespace My.Saving
 
         // 角色装备（与主背包互斥：穿上时从背包扣除；存档需与背包一致）
         public List<EquippedGearEntry> EquippedGear = new();
+
+        public List<string> OwnedRuneIds = new();
+        public List<RuneEquipPersist> EquippedRunes = new();
+    }
+
+    [Serializable]
+    public class RuneEquipPersist
+    {
+        public int Slot;
+        public string RuneId;
     }
 
     [Serializable]
@@ -372,6 +382,8 @@ namespace My.Saving
             }
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
+            data.PlayerData.OwnedRuneIds ??= new List<string>();
+            data.PlayerData.EquippedRunes ??= new List<RuneEquipPersist>();
             data.MainInventorySlots ??= new List<MainBagSlotPersist>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

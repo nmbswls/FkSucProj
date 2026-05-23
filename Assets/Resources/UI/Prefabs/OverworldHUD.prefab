@@ -495,7 +495,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -243.9, y: -305}
+  m_AnchoredPosition: {x: -65.2, y: -305}
   m_SizeDelta: {x: 280, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8359797276795289790
@@ -930,7 +930,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -447, y: -308.8}
+  m_AnchoredPosition: {x: -268.30002, y: -308.8}
   m_SizeDelta: {x: 28, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4254576993159182322
@@ -1791,7 +1791,6 @@ MonoBehaviour:
   RetreatHintText: {fileID: 3604753548776573985}
   botHintTextPrefab: {fileID: 0}
   SkilBar: {fileID: 8359797276795289790}
-  ItemQuickBarRoot: {fileID: 0}
   PlayerBuffBar: {fileID: 8820010010010010003}
   PleasureBar: {fileID: 710086651439770864}
   TextWantedLevel: {fileID: 1228824338159020622}
@@ -9332,7 +9331,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 230, y: -248}
+  m_AnchoredPosition: {x: 328.8, y: -248}
   m_SizeDelta: {x: 280, y: 44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8820010010010010005
@@ -9965,7 +9964,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 10}
+  m_AnchoredPosition: {x: 105.6, y: 10}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &9155280209905401978

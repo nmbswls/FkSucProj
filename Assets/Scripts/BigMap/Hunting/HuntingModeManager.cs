@@ -135,7 +135,7 @@ namespace My.Map.Hunting
 
         private void ApplyHunterVisuals(bool on)
         {
-            OverworldHUDPanel.Instance?.SetHunterModeState(on);
+            HuntingHudPanel.Instance?.SetHunterModeState(on);
 
             if (SceneVolumnManager.Instance != null)
             {
@@ -284,8 +284,8 @@ namespace My.Map.Hunting
 
         private HuntingNpcDetailView GetDetailView()
         {
-            return OverworldHUDPanel.Instance != null
-                ? OverworldHUDPanel.Instance.HuntingNpcDetail
+            return HuntingHudPanel.Instance != null
+                ? HuntingHudPanel.Instance.NpcDetail
                 : null;
         }
     }

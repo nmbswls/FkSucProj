@@ -50,6 +50,13 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = HuntingHudPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/HuntingHudPanel",
+                defaultLayer = UILayer.HUD,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "OverworldHUD",
                 resourcePath = "UI/Prefabs/OverworldHUD",
                 defaultLayer = UILayer.HUD,
@@ -644,6 +651,7 @@ namespace My.UI
         static readonly string[] OverworldMapOnlyPanelIds =
         {
             "OverworldHUD",
+            HuntingHudPanel.PanelIdConst,
             PlayerHumanItemBarPanel.PanelIdConst,
             "SceneMask",
             "SmallIconLayer",

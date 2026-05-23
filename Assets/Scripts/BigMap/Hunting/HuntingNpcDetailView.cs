@@ -82,25 +82,37 @@ namespace My.Map.Hunting
 
         public void RefreshLayout()
         {
-            if (_target == null || DetailRoot == null)
+            if (_target == null || DetailRoot == null || UIManager.Instance == null)
             {
                 return;
             }
 
             var hintPos = _target.GetHintAnchorPosition();
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(hintPos);
-            var canvasRt = UIManager.Instance.RootCanvas.transform as RectTransform;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvasRt,
-                screenPos,
-                UIManager.Instance.UICamera,
-                out Vector2 localPos);
-            DetailRoot.localPosition = localPos;
-
-            if (ExecuteHintRoot != null && ExecuteHintRoot.gameObject.activeSelf)
+            var gameplayCam = Camera.main;
+            if (gameplayCam == null)
             {
-                ExecuteHintRoot.localPosition = localPos + new Vector2(0f, 48f);
+                return;
             }
+
+            Vector3 screenPos = gameplayCam.WorldToScreenPoint(hintPos);
+            var rootRt = UIManager.Instance.RootCanvas.transform as RectTransform;
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    rootRt,
+                    screenPos,
+                    UIManager.Instance.UICamera,
+                    out Vector2 localInRoot))
+            {
+                return;
+            }
+
+            var positionParent = DetailRoot.parent as RectTransform;
+            if (positionParent == null)
+            {
+                return;
+            }
+
+            Vector3 worldOnCanvas = rootRt.TransformPoint(new Vector3(localInRoot.x, localInRoot.y, 0f));
+            DetailRoot.localPosition = positionParent.InverseTransformPoint(worldOnCanvas);
         }
 
         private void RefreshStats(SceneNpcPresenter npc)

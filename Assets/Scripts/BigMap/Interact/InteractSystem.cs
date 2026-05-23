@@ -150,7 +150,7 @@ public class SceneInteractSystem
             return;
         }
 
-        if (OverworldHUDPanel.Instance != null && OverworldHUDPanel.Instance.IsHunterMode)
+        if (HuntingHudPanel.Instance != null && HuntingHudPanel.Instance.IsHunterMode)
         {
             SceneInteractMenuPanel.Instance?.RefreshActiveInteractableObjs(new());
             currInteractPoints.Clear();

@@ -1,0 +1,50 @@
+[
+  {
+    "rune_id": "rune_perm_map",
+    "rune_type": 1,
+    "equip_slot": 0,
+    "passive_skill_id": "",
+    "func_unlock_key": "unlock_world_map",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "地图符文",
+    "desc": "获得后解锁世界地图相关功能",
+    "sort_order": 10
+  },
+  {
+    "rune_id": "rune_core_naishou",
+    "rune_type": 2,
+    "equip_slot": 1,
+    "passive_skill_id": "player_naishou_to_jianshang",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "耐受核心",
+    "desc": "装配后获得耐受减伤被动",
+    "sort_order": 20
+  },
+  {
+    "rune_id": "rune_hand_charm",
+    "rune_type": 2,
+    "equip_slot": 2,
+    "passive_skill_id": "queen_desire_charm_01",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "魅惑之手",
+    "desc": "装配后获得魅惑相关被动",
+    "sort_order": 21
+  },
+  {
+    "rune_id": "rune_foot_spirit",
+    "rune_type": 2,
+    "equip_slot": 3,
+    "passive_skill_id": "h_spirit_immune",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "灵体之足",
+    "desc": "装配后获得灵体免疫被动",
+    "sort_order": 22
+  }
+]

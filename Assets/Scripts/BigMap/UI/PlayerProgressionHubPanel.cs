@@ -1,3 +1,4 @@
+using My.UI.Rune;
 using My.UI.SkillLoadout;
 using My.UI.Talent;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace My.UI
         Talents = 1,
         Gear = 2,
         World = 3,
+        Runes = 4,
     }
 
     public sealed class ProgressionHubOpenArgs
@@ -35,6 +37,7 @@ namespace My.UI
         const string PathTalent = "UI/Prefabs/PlayerProgressionHubPanelSub/TalentTreePanel";
         const string PathGear = "UI/Prefabs/PlayerProgressionHubPanelSub/PlayerGearEquipPanel";
         const string PathWorld = "UI/Prefabs/PlayerProgressionHubPanelSub/GlobalWorldPanel";
+        const string PathRune = "UI/Prefabs/PlayerProgressionHubPanelSub/RuneLoadoutPanel";
 
         public ProgressionHubTab CurrentTab { get; private set; }
 
@@ -45,14 +48,17 @@ namespace My.UI
         RectTransform _talentHost;
         RectTransform _gearHost;
         RectTransform _worldHost;
+        RectTransform _runeHost;
         Button _tabSkill;
         Button _tabTalent;
         Button _tabGear;
         Button _tabWorld;
+        Button _tabRune;
         SkillLoadoutPanel _skill;
         TalentTreePanel _talent;
         PlayerGearEquipPanel _gear;
         GlobalWorldPanel _world;
+        RuneLoadoutPanel _rune;
 
         // 与 UIManager 路径对齐：Hub 重复 ShowPanel 时传入的 data；子页按需 Setup
         object _lastHubSetupData;
@@ -82,6 +88,8 @@ namespace My.UI
 
         public static void OpenWorld() => Open(ProgressionHubTab.World);
 
+        public static void OpenRunes() => Open(ProgressionHubTab.Runes);
+
         public SkillLoadoutPanel SkillPage => _skill;
 
         public TalentTreePanel TalentPage => _talent;
@@ -89,6 +97,8 @@ namespace My.UI
         public PlayerGearEquipPanel GearPage => _gear;
 
         public GlobalWorldPanel WorldPage => _world;
+
+        public RuneLoadoutPanel RunePage => _rune;
 
         public static void ToggleTab(ProgressionHubTab tab)
         {
@@ -111,6 +121,8 @@ namespace My.UI
         }
 
         public static void ToggleTalents() => ToggleTab(ProgressionHubTab.Talents);
+
+        public static void ToggleRunes() => ToggleTab(ProgressionHubTab.Runes);
 
         public void CloseHub() => UIManager.Instance.HidePanel(Pid);
 
@@ -144,6 +156,7 @@ namespace My.UI
             _talent?.Hide();
             _gear?.Hide();
             _world?.Hide();
+            _rune?.Hide();
             base.Hide();
         }
 
@@ -153,10 +166,12 @@ namespace My.UI
             _talent?.Teardown();
             _gear?.Teardown();
             _world?.Teardown();
+            _rune?.Teardown();
             _skill = null;
             _talent = null;
             _gear = null;
             _world = null;
+            _rune = null;
             base.Teardown();
         }
 
@@ -173,10 +188,12 @@ namespace My.UI
             _talentHost = root.Find("Window/ContentHost/TalentHost") as RectTransform;
             _gearHost = root.Find("Window/ContentHost/GearHost") as RectTransform;
             _worldHost = root.Find("Window/ContentHost/WorldHost") as RectTransform;
+            _runeHost = root.Find("Window/ContentHost/RuneHost") as RectTransform;
             _tabSkill = root.Find("Window/HubTabs/TabSkill")?.GetComponent<Button>();
             _tabTalent = root.Find("Window/HubTabs/TabTalent")?.GetComponent<Button>();
             _tabGear = root.Find("Window/HubTabs/TabGear")?.GetComponent<Button>();
             _tabWorld = root.Find("Window/HubTabs/TabWorld")?.GetComponent<Button>();
+            _tabRune = root.Find("Window/HubTabs/TabRune")?.GetComponent<Button>();
             if (_tabSkill != null)
             {
                 _tabSkill.onClick.RemoveAllListeners();
@@ -199,6 +216,12 @@ namespace My.UI
             {
                 _tabWorld.onClick.RemoveAllListeners();
                 _tabWorld.onClick.AddListener(() => SelectTab(ProgressionHubTab.World));
+            }
+
+            if (_tabRune != null)
+            {
+                _tabRune.onClick.RemoveAllListeners();
+                _tabRune.onClick.AddListener(() => SelectTab(ProgressionHubTab.Runes));
             }
 
             WireShellChrome(root);
@@ -268,6 +291,11 @@ namespace My.UI
             {
                 EnsureEmbeddedPage(ref _world, PathWorld, _worldHost, (p, h) => p.SetProgressionHubHost(h));
             }
+
+            if (_runeHost != null)
+            {
+                EnsureEmbeddedPage(ref _rune, PathRune, _runeHost, (p, h) => p.SetProgressionHubHost(h));
+            }
         }
 
         void ApplySetupForTab(ProgressionHubTab tab, object data)
@@ -285,6 +313,9 @@ namespace My.UI
                     break;
                 case ProgressionHubTab.World:
                     _world?.Setup(data);
+                    break;
+                case ProgressionHubTab.Runes:
+                    _rune?.Setup(data);
                     break;
             }
         }
@@ -312,6 +343,7 @@ namespace My.UI
             _talent?.Hide();
             _gear?.Hide();
             _world?.Hide();
+            _rune?.Hide();
 
             if (_skillHost != null)
             {
@@ -331,6 +363,11 @@ namespace My.UI
             if (_worldHost != null)
             {
                 _worldHost.gameObject.SetActive(tab == ProgressionHubTab.World);
+            }
+
+            if (_runeHost != null)
+            {
+                _runeHost.gameObject.SetActive(tab == ProgressionHubTab.Runes);
             }
 
             ApplySetupForTab(CurrentTab, _lastHubSetupData);
@@ -357,6 +394,9 @@ namespace My.UI
                     break;
                 case ProgressionHubTab.World:
                     _world?.Show();
+                    break;
+                case ProgressionHubTab.Runes:
+                    _rune?.Show();
                     break;
             }
         }

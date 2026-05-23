@@ -296,7 +296,7 @@ namespace My.UI
                     break;
                 }
 
-                if(OverworldHUDPanel.Instance != null && OverworldHUDPanel.Instance.IsHunterMode)
+                if(HuntingHudPanel.Instance != null && HuntingHudPanel.Instance.IsHunterMode)
                 {
                     break;
                 }
@@ -399,7 +399,7 @@ namespace My.UI
 
             bool isVisible;
             Vector3 screenPos = Vector3.zero;
-            if (OverworldHUDPanel.Instance == null || !OverworldHUDPanel.Instance.IsHunterMode)
+            if (HuntingHudPanel.Instance == null || !HuntingHudPanel.Instance.IsHunterMode)
             {
                 isVisible = false;
             }
