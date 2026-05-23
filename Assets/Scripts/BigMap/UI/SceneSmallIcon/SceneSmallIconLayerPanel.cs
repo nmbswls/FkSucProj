@@ -54,6 +54,13 @@ namespace My.UI
         public SceneNPCHStatUIStruct NPCHStatPrefab; // 需要在 Inspector 中拖拽 Prefab
         public SceneUnitBuffHeadHintItem BuffHeadHintPrefab;
 
+        [SerializeField]
+        SceneUnitHpBarItem HpBarPrefab;
+        [SerializeField]
+        float hpBarShowDuration = 3f;
+        [SerializeField]
+        float hpBarScreenOffsetY = 12f;
+
         const float BuffHeadHintScreenOffsetY = 28f;
 
 
@@ -72,12 +79,24 @@ namespace My.UI
         private Queue<SceneUnitBuffHeadHintItem> _buffHeadHintPool = new Queue<SceneUnitBuffHeadHintItem>();
         private HashSet<long> _buffHeadHintSeenThisFrame = new HashSet<long>();
 
+        struct UnitHpBarTrackState
+        {
+            public long LastHp;
+            public bool Initialized;
+            public float ShowUntil;
+        }
+
+        readonly Dictionary<long, UnitHpBarTrackState> _hpBarTracks = new Dictionary<long, UnitHpBarTrackState>();
+        readonly Dictionary<long, SceneUnitHpBarItem> _activeHpBars = new Dictionary<long, SceneUnitHpBarItem>();
+        readonly Queue<SceneUnitHpBarItem> _hpBarPool = new Queue<SceneUnitHpBarItem>();
+
         public void Awake()
         {
             InteractHintPrefab.gameObject.SetActive(false);
             EvilAlertPrefab.gameObject.SetActive(false);
             if (NPCHStatPrefab != null) NPCHStatPrefab.gameObject.SetActive(false);
             if (BuffHeadHintPrefab != null) BuffHeadHintPrefab.gameObject.SetActive(false);
+            if (HpBarPrefab != null) HpBarPrefab.gameObject.SetActive(false);
 
             TopCanvas = GetComponentInParent<Canvas>();
             _mainCam = Camera.main;
@@ -138,6 +157,21 @@ namespace My.UI
             {
                 RecycleBuffHeadHintUI(oneId);
             }
+
+            _lowFreqCleanCaches.Clear();
+            foreach (var kv in _activeHpBars)
+            {
+                if (kv.Value.Binding == null || !kv.Value.Binding.CheckValid())
+                {
+                    _lowFreqCleanCaches.Add(kv.Key);
+                }
+            }
+
+            foreach (var oneId in _lowFreqCleanCaches)
+            {
+                RecycleHpBarUI(oneId);
+                _hpBarTracks.Remove(oneId);
+            }
         }
 
         private float _screenWidth;
@@ -177,6 +211,8 @@ namespace My.UI
                 CheckUpdateSceneNpcHStat(p);
 
                 CheckUpdateSceneUnitBuffHeadHint(p);
+
+                CheckUpdateSceneUnitHpBar(p);
             }
 
             RecycleStaleBuffHeadHints();
@@ -637,6 +673,133 @@ namespace My.UI
 
         #endregion
 
+        #region Unit HP Bar
+
+        static bool TryReadHp(IScenePresentation presenter, out long hp, out long maxHp)
+        {
+            hp = 0;
+            maxHp = 0;
+            var entity = presenter?.GetLogicEntity();
+            if (entity == null)
+            {
+                return false;
+            }
+
+            maxHp = entity.GetResourceMax(AttrIdConsts.HP);
+            if (maxHp <= 0)
+            {
+                return false;
+            }
+
+            hp = entity.GetAttr(AttrIdConsts.HP);
+            return true;
+        }
+
+        static Vector3 GetHpBarAnchor(IScenePresentation presenter)
+        {
+            if (presenter.PivotHeader != null)
+            {
+                return presenter.PivotHeader.position;
+            }
+
+            return presenter.GetWorldPosition();
+        }
+
+        static bool IsOnScreen(Vector3 screenPos, float screenWidth, float screenHeight, float bufferX, float bufferY)
+        {
+            return screenPos.z > 0
+                   && screenPos.x >= -bufferX && screenPos.x <= screenWidth + bufferX
+                   && screenPos.y >= -bufferY && screenPos.y <= screenHeight + bufferY;
+        }
+
+        void CheckUpdateSceneUnitHpBar(IScenePresentation presenter)
+        {
+            if (HpBarPrefab == null || !TryReadHp(presenter, out var hp, out var maxHp))
+            {
+                return;
+            }
+
+            long entityId = presenter.Id;
+            if (!_hpBarTracks.TryGetValue(entityId, out var track))
+            {
+                track = new UnitHpBarTrackState();
+            }
+
+            if (track.Initialized && hp < track.LastHp)
+            {
+                track.ShowUntil = LogicTime.time + hpBarShowDuration;
+            }
+
+            track.LastHp = hp;
+            track.Initialized = true;
+            _hpBarTracks[entityId] = track;
+
+            bool shouldShow = LogicTime.time < track.ShowUntil;
+            var anchor = GetHpBarAnchor(presenter);
+            var screenPos = _mainCam.WorldToScreenPoint(anchor);
+            bool onScreen = IsOnScreen(screenPos, _screenWidth, _screenHeight, _bufferX, _bufferY);
+
+            if (!shouldShow || !onScreen)
+            {
+                if (_activeHpBars.ContainsKey(entityId))
+                {
+                    RecycleHpBarUI(entityId);
+                }
+
+                return;
+            }
+
+            if (!_activeHpBars.TryGetValue(entityId, out var uiItem))
+            {
+                uiItem = AllocateHpBarUI(presenter);
+            }
+
+            uiItem.SetFill(hp, maxHp);
+            UpdateHpBarUIPosition(uiItem, screenPos);
+        }
+
+        SceneUnitHpBarItem AllocateHpBarUI(IScenePresentation presenter)
+        {
+            SceneUnitHpBarItem uiItem;
+            if (_hpBarPool.Count > 0)
+            {
+                uiItem = _hpBarPool.Dequeue();
+            }
+            else
+            {
+                uiItem = Instantiate(HpBarPrefab, transform);
+            }
+
+            uiItem.Bind(presenter);
+            _activeHpBars[presenter.Id] = uiItem;
+            return uiItem;
+        }
+
+        void RecycleHpBarUI(long entityId)
+        {
+            if (!_activeHpBars.TryGetValue(entityId, out var uiItem))
+            {
+                return;
+            }
+
+            uiItem.Unbind();
+            _hpBarPool.Enqueue(uiItem);
+            _activeHpBars.Remove(entityId);
+        }
+
+        void UpdateHpBarUIPosition(SceneUnitHpBarItem uiItem, Vector3 screenPos)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                transform.parent as RectTransform,
+                screenPos,
+                TopCanvas != null ? TopCanvas.worldCamera : null,
+                out Vector2 uiLocalPos);
+            uiLocalPos += Vector2.up * hpBarScreenOffsetY;
+            uiItem.transform.localPosition = uiLocalPos;
+        }
+
+        #endregion
+
         /// <summary>
         /// 强制解绑
         /// </summary>
@@ -653,6 +816,8 @@ namespace My.UI
             // 补充 HStat 的解绑回收
             RecycleNpcHStatUI(scenePresentation.Id);
             RecycleBuffHeadHintUI(scenePresentation.Id);
+            RecycleHpBarUI(scenePresentation.Id);
+            _hpBarTracks.Remove(scenePresentation.Id);
         }
 
         public override void Hide()
@@ -675,6 +840,11 @@ namespace My.UI
             {
                 RecycleBuffHeadHintUI(key);
             }
+            foreach (var key in _activeHpBars.Keys.ToList())
+            {
+                RecycleHpBarUI(key);
+            }
+            _hpBarTracks.Clear();
 
             DebugIconsShower.Clear();
         }

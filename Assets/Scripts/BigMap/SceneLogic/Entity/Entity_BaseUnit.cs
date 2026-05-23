@@ -1328,7 +1328,10 @@ namespace My.Map
                     () => attributeStore.GetAttr(AttrIdConsts.Basic_JianShang),
                     () => attributeStore.GetAttr(AttrIdConsts.NonH_JianShang_Rate));
 
+                dmg = Math.Abs(dmg);
+
                 OnDamageBeforeFinalReduce(dmg, intent);
+
 
                 var fix_dr = GetAttr(AttrIdConsts.Final_Fix_DR_All);
                 var fixDrVal = Math.Min(fix_dr, dmg);
