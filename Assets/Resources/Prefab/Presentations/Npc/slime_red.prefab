@@ -172,7 +172,7 @@ Transform:
   m_GameObject: {fileID: 2673205430825297615}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.258, z: 0}
+  m_LocalPosition: {x: 0, y: 0.708, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -309,6 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsShown: 0
+  KeepVisibleWhenIdle: 0
   WeaponName: 
   weaponAnim: {fileID: 0}
   weaponAnimancer: {fileID: 0}
@@ -318,6 +319,11 @@ MonoBehaviour:
   slashEffects: []
   WeaponViewLength: 0
   weaponParts: []
+  UseCodeSwing: 0
+  SwingStartAngle: 0
+  SwingEndAngle: 0
+  SwingTopToBottom: 1
+  HitCollider: {fileID: 0}
   posLerpSpeed: 15
   radiusX: 0.2
   radiusY: 0.4

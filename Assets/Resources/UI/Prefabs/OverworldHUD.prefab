@@ -495,7 +495,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -65.2, y: -305}
+  m_AnchoredPosition: {x: 126, y: -305}
   m_SizeDelta: {x: 280, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8359797276795289790
@@ -930,7 +930,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -268.30002, y: -308.8}
+  m_AnchoredPosition: {x: -31, y: -308.8}
   m_SizeDelta: {x: 28, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4254576993159182322
@@ -1474,7 +1474,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -255.15002, y: -228.05333}
+  m_AnchoredPosition: {x: 148, y: -228.05333}
   m_SizeDelta: {x: 335.7, y: 51.8933}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2202024297544506114
@@ -1519,7 +1519,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3737491329642128553
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1794,8 +1794,6 @@ MonoBehaviour:
   PlayerBuffBar: {fileID: 8820010010010010003}
   PleasureBar: {fileID: 710086651439770864}
   TextWantedLevel: {fileID: 1228824338159020622}
-  IsHunterMode: 0
-  HuntingNpcDetail: {fileID: 0}
   zhaZhiSwitchOne: {fileID: 6940235030208467277}
   BtnZhaZhiSwitch: {fileID: 2573997372402075803}
   BtnHomeStorage: {fileID: 555597856233392341}
@@ -9964,7 +9962,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 105.6, y: 10}
+  m_AnchoredPosition: {x: -508, y: 10}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &9155280209905401978

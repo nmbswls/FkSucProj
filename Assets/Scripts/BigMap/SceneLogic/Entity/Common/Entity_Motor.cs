@@ -242,9 +242,15 @@ namespace My.Map.Entity
                     _pathIndex = -1;
                     EnterFollowing();
                 }
+                else if (navProvider.TryBuildPath(Owner.Pos, goal, out var newPath) && newPath.Length > 0)
+                {
+                    TruncateNewPath(newPath);
+                    EnterFollowing();
+                }
                 else
                 {
-                    navProvider.TryBuildPath(Owner.Pos, goal, out _path);
+                    _path = default;
+                    _pathIndex = -1;
                     EnterFollowing();
                 }
             }
@@ -376,6 +382,15 @@ namespace My.Map.Entity
                 return;
             }
 
+            if (_pathIndex < 0 || _pathIndex >= _path.Length)
+            {
+                if (Vector2.Distance(Owner.Pos, _currentGoal) <= ArriveTolerance)
+                {
+                    EnterFree();
+                }
+                return;
+            }
+
             // 2. 路径点切换判定 (Switch Logic)
             // 获取当前要去的路点
             Vector2 currentWaypoint = _path.Waypoints[_pathIndex];
@@ -421,9 +436,15 @@ namespace My.Map.Entity
                     else if (navProvider.Linecast(Owner.Pos, goal, out var hit))
                     {
                         // 有阻挡：重新规划
-                        navProvider.TryReplan(Owner.Pos, goal, out var newPath);
-
-                        TruncateNewPath(newPath);
+                        if (navProvider.TryReplan(Owner.Pos, goal, out var newPath))
+                        {
+                            TruncateNewPath(newPath);
+                        }
+                        else
+                        {
+                            _path = default;
+                            _pathIndex = -1;
+                        }
                     }
                     else
                     {
@@ -440,7 +461,7 @@ namespace My.Map.Entity
                 }
             }
 
-            if (_path.Length > 0 && _pathIndex >= 0)
+            if (_path.Length > 0 && _pathIndex >= 0 && _pathIndex < _path.Length)
             {
                 var wp = _path.Waypoints[_pathIndex];
                 if (Arrived(Owner.Pos, wp, ArriveTolerance))
@@ -459,10 +480,14 @@ namespace My.Map.Entity
                 return;
             }
 
-            // 有路径
-            // 确定当前子路点
+            // 有路径；索引越界时改追最终目标
+            if (_pathIndex < 0 || _pathIndex >= _path.Length)
+            {
+                MoveToward(_currentGoal);
+                return;
+            }
+
             var waypoint = _path.Waypoints[_pathIndex];
-            // 朝子路点移动
             MoveToward(waypoint);
 
             //DesiredVelocity = ApplyAvoidanceToVelocity(DesiredVelocity);
@@ -602,11 +627,15 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (navProvider.TryReplan(Owner.Pos, goal, out var newPath))
+            if (navProvider.TryReplan(Owner.Pos, goal, out var newPath) && newPath.Length > 0)
             {
-                _path = newPath;
-                _pathIndex = 0;
-                //OnReplanned?.Invoke();
+                TruncateNewPath(newPath);
+            }
+            else
+            {
+                _path = default;
+                _pathIndex = -1;
+                _currentGoal = goal;
             }
         }
 
@@ -617,6 +646,13 @@ namespace My.Map.Entity
         /// <param name="startIndex"></param>
         private void TruncateNewPath(NavPath newPath)
         {
+            if (newPath.Waypoints == null || newPath.Length <= 0)
+            {
+                _path = newPath;
+                _pathIndex = -1;
+                return;
+            }
+
             int startIndex = 0;
 
             // 遍历新路径的前几个点

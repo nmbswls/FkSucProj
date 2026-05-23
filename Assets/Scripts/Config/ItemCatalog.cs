@@ -321,7 +321,7 @@ namespace My.Config
                 return EQuickBarItemKind.Weapon;
             }
 
-            return EQuickBarItemKind.None;
+            return def.QuickBarKind;
         }
 
         public static bool IsQuickBarWeapon(string itemId)

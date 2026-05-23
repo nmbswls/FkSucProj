@@ -97,13 +97,17 @@ namespace My.UI
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            ItemDragDropController.Instance?.EndDrag();
+            ItemDragDropController.Instance?.EndDrag(eventData.position);
             ItemPopupMenu.Close();
         }
 
         public void OnDrop(PointerEventData eventData)
         {
-            var ctrl = ItemDragDropController.Instance;
+            TryHandleExternalDrop(ItemDragDropController.Instance);
+        }
+
+        public void TryHandleExternalDrop(ItemDragDropController ctrl)
+        {
             var payload = ctrl?.Payload;
             if (payload == null || ctrl == null)
             {

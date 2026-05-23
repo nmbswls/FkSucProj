@@ -188,6 +188,12 @@ namespace My.Map.Scene
                     spriteVisual = sr,
                 },
             };
+            weaponOne.UseCodeSwing = true;
+            weaponOne.SwingStartAngle = 50f;
+            weaponOne.SwingEndAngle = -45f;
+            weaponOne.SwingTopToBottom = true;
+            weaponOne.HitCollider = col;
+            col.enabled = false;
             return root;
         }
     }

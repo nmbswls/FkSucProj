@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Animancer;
 using UnityEngine;
 
@@ -40,14 +38,19 @@ namespace My.Map.Scene
         private float _durationTimer = 0;
 
         public ParticleSystem[] slashEffects;
-        //public GameObject[] ColliderArray;
 
         public float WeaponViewLength; // 武器视觉长度
-
 
         [Header("武器部件列表")]
         public WeaponPart[] weaponParts;
 
+        [Header("代码挥舞（攻击时）")]
+        public bool UseCodeSwing;
+        public float SwingStartAngle;
+        public float SwingEndAngle;
+        [Tooltip("朝右语义：true=从高角挥向低角；false=从低角挥向高角。朝左由 facingSign 镜像，与顺时针无关。")]
+        public bool SwingTopToBottom = true;
+        public Collider2D HitCollider;
 
         [Header("轨道位移与裁剪配置")]
         public float posLerpSpeed = 15f;
@@ -62,81 +65,68 @@ namespace My.Map.Scene
         [Tooltip("轨道的中心偏移量 (x>0代表往脸前推)")]
         public Vector2 centerOffset = new Vector2(-0.15f, -0f);
 
-        public void PlaySlash(int idx) 
+        bool _isSwinging;
+        float _swingStartTime;
+        float _swingDuration;
+        float _aimBaseDeg;
+        bool _aimFacingRight;
+
+        public bool IsSwinging => _isSwinging;
+
+        void Awake()
+        {
+            if (UseCodeSwing && HitCollider != null)
+            {
+                HitCollider.enabled = false;
+            }
+        }
+
+        public void PlaySlash(int idx)
         {
             if (idx < 0 || idx >= slashEffects.Length) return;
-            slashEffects[idx].Play(); 
+            slashEffects[idx].Play();
         }
 
         public void OnTriggerEnter2D(Collider2D other)
         {
             var scenePresenter = other.GetComponentInParent<IScenePresentation>();
             if (scenePresenter == null) return;
-            if(scenePresenter.GetLogicEntity() == null)
+            if (scenePresenter.GetLogicEntity() == null)
             {
                 Debug.LogError("MapUnitWeaponOne OnTriggerEnter2D triiger no binding logic");
                 return;
             }
 
-            if(scenePresenter is not SceneUnitPresenter
+            if (scenePresenter is not SceneUnitPresenter
                 && scenePresenter is not SceneDestroyObjPresenter)
             {
                 return;
             }
+
             WeaponCtrl.OnWeaponTriggerHit(HitId, scenePresenter.GetLogicEntity());
         }
 
         private void Update()
         {
-            if(HitId != 0 && LogicTime.time >= this._durationTimer)
+            if (_isSwinging)
+            {
+                UpdateCodeSwingRotation();
+            }
+
+            if (HitId != 0 && LogicTime.time >= _durationTimer)
             {
                 ClearWeapon();
             }
 
-            if(HitId != 0)
+            if (HitId != 0)
             {
                 WeaponCtrl.UnitPresenter.UnitEntity.HitWindowRegistry.activeHitWindows.TryGetValue(HitId, out var window);
-                if(window == null)
+                if (window == null)
                 {
-                    //Debug.LogError("trigger baodi clear");
                     ClearWeapon();
                 }
             }
         }
-
-        //public void OnWeaponAimDirUpdate(Vector2 aimDir)
-        //{
-        //    if (aimDir == Vector2.zero) return;
-
-        //    // 1. 处理所有部件的旋转和翻转
-        //    float baseAngle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
-        //    bool isLookingLeft = aimDir.x < 0;
-
-        //    foreach (var part in weaponParts)
-        //    {
-        //        // 每个部件加上自己的固定偏移角（如果有的话）
-        //        part.rotator.rotation = Quaternion.AngleAxis(baseAngle + part.angleOffset, Vector3.forward);
-        //        if(part.spriteVisual != null)
-        //        {
-        //            part.spriteVisual.flipY = isLookingLeft;
-        //        }
-
-        //        if(part.NeedFlipObjs != null)
-        //        {
-        //            foreach(var oneObj in part.NeedFlipObjs)
-        //            {
-        //                oneObj.localScale = new Vector3(1, isLookingLeft ? 1 : -1, 1);
-        //            }
-        //        }
-        //    }
-
-        //    // 2. 整体椭圆轨道位移 (和之前一样)
-        //    float targetX = aimDir.x * maxPositionOffset.x;
-        //    float targetY = aimDir.y * maxPositionOffset.y;
-        //    Vector3 targetPos = new Vector3(targetX, targetY, 0);
-
-        //    transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, Time.deltaTime * posLerpSpeed);
-        //}
 
         /// <summary>
         /// 外部每帧调用，更新武器的瞄准位姿
@@ -150,7 +140,12 @@ namespace My.Map.Scene
 
             foreach (var part in weaponParts)
             {
-                part.rotator.rotation = Quaternion.AngleAxis(realAimAngle + (isFacingRight ? part.angleOffset : -part.angleOffset), Vector3.forward);
+                if (!_isSwinging)
+                {
+                    part.rotator.rotation = Quaternion.AngleAxis(
+                        realAimAngle + (isFacingRight ? part.angleOffset : -part.angleOffset),
+                        Vector3.forward);
+                }
 
                 if (part.spriteVisual != null)
                 {
@@ -166,6 +161,11 @@ namespace My.Map.Scene
                 }
             }
 
+            UpdateOrbitPosition(aimDir, isFacingRight);
+        }
+
+        void UpdateOrbitPosition(Vector2 aimDir, bool isFacingRight)
+        {
             Vector2 localDir = aimDir;
             if (!isFacingRight)
             {
@@ -173,35 +173,34 @@ namespace My.Map.Scene
             }
 
             float orbitAngle = Mathf.Atan2(localDir.y, localDir.x) * Mathf.Rad2Deg;
-
             orbitAngle = Mathf.Clamp(orbitAngle, minAngle, maxAngle);
-            // 用受限的角度计算椭圆上的点
+
             float rad = orbitAngle * Mathf.Deg2Rad;
             Vector2 targetPos = new Vector2(
                 Mathf.Cos(rad) * radiusX,
                 Mathf.Sin(rad) * radiusY
             );
 
-            // 需求 2：加上轨迹中点偏移
             targetPos += centerOffset;
 
-            // 【核心技巧：镜像输出】如果角色实际上是朝左的，把X坐标再翻转回去
             if (!isFacingRight)
             {
                 targetPos.x *= -1f;
             }
 
-            // 最后应用平滑移动 (保留了你原有的 Lerp 设计，使动作更顺滑)
-            Vector3 finalPos = new Vector3(targetPos.x, targetPos.y, 0);
-            transform.localPosition = Vector3.Lerp(transform.localPosition, finalPos, Time.deltaTime * posLerpSpeed);
+            transform.localPosition = Vector3.Lerp(
+                transform.localPosition,
+                new Vector3(targetPos.x, targetPos.y, 0),
+                Time.deltaTime * posLerpSpeed);
         }
 
         public void ShowWeapon(long hitId, float duration, string weaponAnimName)
         {
-            this.HitId = hitId;
+            HitId = hitId;
             gameObject.SetActive(true);
+            _durationTimer = LogicTime.time + duration;
 
-            this._durationTimer = LogicTime.time + duration;
+            BeginCodeSwingIfNeeded(duration);
 
             if (weaponAnimancer == null || string.IsNullOrEmpty(weaponAnimName))
             {
@@ -226,10 +225,96 @@ namespace My.Map.Scene
             state.Speed = speed;
         }
 
+        void BeginCodeSwingIfNeeded(float duration)
+        {
+            if (!UseCodeSwing)
+            {
+                return;
+            }
+
+            var look = WeaponCtrl != null && WeaponCtrl.UnitPresenter != null
+                ? WeaponCtrl.UnitPresenter.UnitEntity.CurrentLook
+                : Vector2.right;
+
+            if (look == Vector2.zero)
+            {
+                look = Vector2.right;
+            }
+
+            _aimFacingRight = look.x >= 0;
+            _aimBaseDeg = Mathf.Atan2(look.y, look.x) * Mathf.Rad2Deg;
+            _swingStartTime = LogicTime.time;
+            _swingDuration = Mathf.Max(duration, 0.0001f);
+            _isSwinging = true;
+
+            if (HitCollider != null)
+            {
+                HitCollider.enabled = true;
+            }
+
+            ResetSpriteLocalRotation();
+            UpdateCodeSwingRotation();
+        }
+
+        void UpdateCodeSwingRotation()
+        {
+            if (!_isSwinging || weaponParts == null)
+            {
+                return;
+            }
+
+            float t = Mathf.Clamp01((LogicTime.time - _swingStartTime) / _swingDuration);
+            float swingDelta = InterpolateSwingAngle(SwingStartAngle, SwingEndAngle, SwingTopToBottom, t);
+            float facingSign = _aimFacingRight ? 1f : -1f;
+
+            foreach (var part in weaponParts)
+            {
+                if (part?.rotator == null)
+                {
+                    continue;
+                }
+
+                float signedOffset = _aimFacingRight ? part.angleOffset : -part.angleOffset;
+                part.rotator.rotation = Quaternion.AngleAxis(
+                    _aimBaseDeg + swingDelta * facingSign + signedOffset,
+                    Vector3.forward);
+            }
+        }
+
+        static float InterpolateSwingAngle(float start, float end, bool topToBottom, float t)
+        {
+            t = Mathf.Clamp01(t);
+            float shortest = Mathf.DeltaAngle(start, end);
+            // 最短路径角度减小 = 朝右语义下的「从上到下」
+            bool shortestGoesDown = shortest < 0f;
+            float delta = topToBottom == shortestGoesDown
+                ? shortest
+                : shortest > 0f ? shortest - 360f : shortest + 360f;
+            return start + delta * t;
+        }
+
+        void EndCodeSwing()
+        {
+            if (!_isSwinging)
+            {
+                return;
+            }
+
+            _isSwinging = false;
+            _swingDuration = 0f;
+
+            if (HitCollider != null)
+            {
+                HitCollider.enabled = false;
+            }
+        }
+
         public void ClearWeapon()
         {
+            EndCodeSwing();
             HitId = 0;
             _durationTimer = 0;
+
             if (!KeepVisibleWhenIdle)
             {
                 gameObject.SetActive(false);
@@ -247,6 +332,8 @@ namespace My.Map.Scene
                 weaponAnimancer.Stop();
             }
 
+            ResetSpriteLocalRotation();
+
             if (weaponParts == null)
             {
                 return;
@@ -260,8 +347,22 @@ namespace My.Map.Scene
                 }
             }
         }
+
+        void ResetSpriteLocalRotation()
+        {
+            if (weaponParts == null)
+            {
+                return;
+            }
+
+            foreach (var part in weaponParts)
+            {
+                if (part?.spriteVisual != null)
+                {
+                    part.spriteVisual.transform.localRotation = Quaternion.identity;
+                }
+            }
+        }
     }
 }
-
-
 

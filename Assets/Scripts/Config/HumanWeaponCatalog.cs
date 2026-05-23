@@ -9,7 +9,7 @@ namespace My.Player
     public static class HumanWeaponCatalog
     {
         public const string ViewKey = "HumanWeaponView";
-        public const string DefaultViewPrefab = "Prefab/Presentations/HumanWeaponView";
+        public const string DefaultViewPrefab = "Prefab/HumanWeapon/HumanWeaponView";
 
         public const string CastKeyWeaponAnimName = "WeaponAnimName";
         public const string CastKeyWeaponLevel = "WeaponLevel";

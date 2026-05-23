@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using My;
 using My.Player;
 using My.Player.Bag;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace My.UI
@@ -45,17 +47,36 @@ namespace My.UI
         public bool IsDragging { get; private set; }
 
         bool _dropHandledThisDrag;
+        Vector2 _lastDragScreenPos;
 
         void Awake()
         {
             if (DragGhostGo != null)
             {
                 DragGhostGo.gameObject.SetActive(false);
+                ConfigureGhostRaycast(DragGhostGo);
             }
 
             if (TopCanvas == null)
             {
                 TopCanvas = GetComponentInParent<Canvas>();
+            }
+        }
+
+        static void ConfigureGhostRaycast(GameObject ghostRoot)
+        {
+            var cg = ghostRoot.GetComponent<CanvasGroup>();
+            if (cg == null)
+            {
+                cg = ghostRoot.AddComponent<CanvasGroup>();
+            }
+
+            cg.blocksRaycasts = false;
+            cg.interactable = false;
+
+            foreach (var graphic in ghostRoot.GetComponentsInChildren<Graphic>(true))
+            {
+                graphic.raycastTarget = false;
             }
         }
 
@@ -82,6 +103,7 @@ namespace My.UI
             };
             IsDragging = true;
             _dropHandledThisDrag = false;
+            _lastDragScreenPos = UnityEngine.Input.mousePosition;
 
             if (DragGhostGo)
             {
@@ -122,6 +144,7 @@ namespace My.UI
             };
             IsDragging = true;
             _dropHandledThisDrag = false;
+            _lastDragScreenPos = UnityEngine.Input.mousePosition;
 
             if (DragGhostGo)
             {
@@ -146,6 +169,8 @@ namespace My.UI
                 return;
             }
 
+            _lastDragScreenPos = screenPos;
+
             RectTransform canvasRect = TopCanvas.GetComponent<RectTransform>();
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvasRect,
@@ -160,8 +185,13 @@ namespace My.UI
             }
         }
 
-        public void EndDrag()
+        public void EndDrag(Vector2? screenPos = null)
         {
+            if (IsDragging && Payload != null && !_dropHandledThisDrag)
+            {
+                TryHandleDropAtScreen(screenPos ?? _lastDragScreenPos);
+            }
+
             var dropHandled = _dropHandledThisDrag;
             var p = Payload;
             IsDragging = false;
@@ -191,6 +221,43 @@ namespace My.UI
                         qb.ClearConsumableSlot(p.SourceIndex);
                         PlayerHumanItemBarPanel.RefreshFromGame();
                     }
+                }
+            }
+        }
+
+        void TryHandleDropAtScreen(Vector2 screenPos)
+        {
+            var eventSystem = EventSystem.current;
+            if (eventSystem == null)
+            {
+                return;
+            }
+
+            var pointerData = new PointerEventData(eventSystem)
+            {
+                position = screenPos,
+            };
+            var results = new List<RaycastResult>();
+            eventSystem.RaycastAll(pointerData, results);
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                var hit = results[i];
+                if (hit.gameObject == null || hit.gameObject.transform.IsChildOf(transform))
+                {
+                    continue;
+                }
+
+                var cell = hit.gameObject.GetComponentInParent<ItemCellBase>();
+                if (cell == null)
+                {
+                    continue;
+                }
+
+                cell.TryHandleExternalDrop(this);
+                if (_dropHandledThisDrag)
+                {
+                    return;
                 }
             }
         }
