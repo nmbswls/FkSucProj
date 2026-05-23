@@ -82,6 +82,7 @@ namespace My.UI
         struct UnitHpBarTrackState
         {
             public long LastHp;
+            public long LastShield;
             public bool Initialized;
             public float ShowUntil;
         }
@@ -675,24 +676,69 @@ namespace My.UI
 
         #region Unit HP Bar
 
-        static bool TryReadHp(IScenePresentation presenter, out long hp, out long maxHp)
+        static bool TryReadHpBarStats(ILogicEntity entity, out long current, out long max)
         {
-            hp = 0;
-            maxHp = 0;
-            var entity = presenter?.GetLogicEntity();
+            current = 0;
+            max = 0;
             if (entity == null)
             {
                 return false;
             }
 
-            maxHp = entity.GetResourceMax(AttrIdConsts.HP);
-            if (maxHp <= 0)
+            long shieldMax = entity.GetResourceMax(AttrIdConsts.UnitHShield);
+            if (shieldMax > 0)
+            {
+                current = entity.GetAttr(AttrIdConsts.UnitHShield);
+                max = shieldMax;
+                return true;
+            }
+
+            max = entity.GetResourceMax(AttrIdConsts.HP);
+            if (max <= 0)
+            {
+                max = entity.GetAttr(AttrIdConsts.HP_MAX);
+            }
+
+            if (max <= 0)
             {
                 return false;
             }
 
-            hp = entity.GetAttr(AttrIdConsts.HP);
+            current = entity.GetAttr(AttrIdConsts.HP);
             return true;
+        }
+
+        static void ReadRawHpAndShield(ILogicEntity entity, out long hp, out long hpMax, out long shield, out long shieldMax)
+        {
+            hp = entity != null ? entity.GetAttr(AttrIdConsts.HP) : 0;
+            shield = entity != null ? entity.GetAttr(AttrIdConsts.UnitHShield) : 0;
+            hpMax = entity != null ? entity.GetResourceMax(AttrIdConsts.HP) : 0;
+            if (hpMax <= 0 && entity != null)
+            {
+                hpMax = entity.GetAttr(AttrIdConsts.HP_MAX);
+            }
+
+            shieldMax = entity != null ? entity.GetResourceMax(AttrIdConsts.UnitHShield) : 0;
+        }
+
+        static bool DidLoseHealth(long hp, long hpMax, long shield, long shieldMax, ref UnitHpBarTrackState track)
+        {
+            if (!track.Initialized)
+            {
+                return false;
+            }
+
+            if (hpMax > 0 && hp < track.LastHp)
+            {
+                return true;
+            }
+
+            if (shieldMax > 0 && shield < track.LastShield)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         static Vector3 GetHpBarAnchor(IScenePresentation presenter)
@@ -714,10 +760,13 @@ namespace My.UI
 
         void CheckUpdateSceneUnitHpBar(IScenePresentation presenter)
         {
-            if (HpBarPrefab == null || !TryReadHp(presenter, out var hp, out var maxHp))
+            var entity = presenter?.GetLogicEntity();
+            if (HpBarPrefab == null || entity == null || !TryReadHpBarStats(entity, out var current, out var max))
             {
                 return;
             }
+
+            ReadRawHpAndShield(entity, out var hp, out var hpMax, out var shield, out var shieldMax);
 
             long entityId = presenter.Id;
             if (!_hpBarTracks.TryGetValue(entityId, out var track))
@@ -725,12 +774,13 @@ namespace My.UI
                 track = new UnitHpBarTrackState();
             }
 
-            if (track.Initialized && hp < track.LastHp)
+            if (DidLoseHealth(hp, hpMax, shield, shieldMax, ref track))
             {
                 track.ShowUntil = LogicTime.time + hpBarShowDuration;
             }
 
             track.LastHp = hp;
+            track.LastShield = shield;
             track.Initialized = true;
             _hpBarTracks[entityId] = track;
 
@@ -754,7 +804,7 @@ namespace My.UI
                 uiItem = AllocateHpBarUI(presenter);
             }
 
-            uiItem.SetFill(hp, maxHp);
+            uiItem.SetFill(current, max);
             UpdateHpBarUIPosition(uiItem, screenPos);
         }
 
