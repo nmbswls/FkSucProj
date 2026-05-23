@@ -104,7 +104,8 @@ namespace My.Map.Hunting
             LogicTime.timeScale = HuntTimeScale;
 
             ApplyHunterVisuals(true);
-            GetDetailView()?.SetActiveRoot(true);
+            _hoverNpc = null;
+            GetDetailView()?.Clear();
         }
 
         public void Exit()

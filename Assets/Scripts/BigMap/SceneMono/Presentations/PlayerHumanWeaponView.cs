@@ -1,6 +1,4 @@
-using Animancer;
-using cfg.demo;
-using My.Config;
+using cfg.demo;using My.Config;
 using My.Player;
 using UnityEngine;
 
@@ -95,29 +93,44 @@ namespace My.Map.Scene
                 return;
             }
 
-            var prefabPath = string.IsNullOrEmpty(def.ViewPrefab)
-                ? HumanWeaponCatalog.DefaultViewPrefab
-                : def.ViewPrefab;
-            var prefab = Resources.Load<GameObject>(prefabPath);
-            GameObject instance;
-            if (prefab != null)
+            var prefab = LoadViewPrefab(def);
+            if (prefab == null)
             {
-                instance = Object.Instantiate(prefab, _bindPoint);
-            }
-            else
-            {
-                instance = CreateFallbackView();
-                instance.transform.SetParent(_bindPoint, false);
+                Debug.LogError(
+                    $"PlayerHumanWeaponView: view prefab not found for '{def.ItemId}'. "
+                    + $"Set humanweapon.view_prefab or use {HumanWeaponCatalog.DefaultViewPrefab}.");
+                return;
             }
 
+            var instance = Object.Instantiate(prefab, _bindPoint);
             instance.name = HumanWeaponCatalog.ViewKey;
             _equippedView = instance.GetComponent<MapUnitWeaponOne>();
             if (_equippedView == null)
             {
-                _equippedView = instance.AddComponent<MapUnitWeaponOne>();
+                Debug.LogError(
+                    $"PlayerHumanWeaponView: prefab '{prefab.name}' has no MapUnitWeaponOne; fix the prefab instead of runtime fallback.");
+                Object.Destroy(instance);
+                return;
             }
 
             _weaponCtrl.RegisterDynamicWeapon(_equippedView);
+        }
+
+        static GameObject LoadViewPrefab(HumanWeapon def)
+        {
+            if (!string.IsNullOrEmpty(def.ViewPrefab))
+            {
+                var custom = Resources.Load<GameObject>(def.ViewPrefab);
+                if (custom != null)
+                {
+                    return custom;
+                }
+
+                Debug.LogWarning(
+                    $"PlayerHumanWeaponView: view_prefab '{def.ViewPrefab}' not found, trying default.");
+            }
+
+            return Resources.Load<GameObject>(HumanWeaponCatalog.DefaultViewPrefab);
         }
 
         void ApplySprite(HumanWeapon def)
@@ -158,43 +171,5 @@ namespace My.Map.Scene
             return SimpleResManager.Load<Sprite>("Sprites/" + spriteName);
         }
 
-        static GameObject CreateFallbackView()
-        {
-            var root = new GameObject(HumanWeaponCatalog.ViewKey);
-            var rotator = new GameObject("Rotator").transform;
-            rotator.SetParent(root.transform, false);
-            var spriteGo = new GameObject("Sprite");
-            spriteGo.transform.SetParent(rotator, false);
-            var sr = spriteGo.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 10;
-
-            var col = root.AddComponent<BoxCollider2D>();
-            col.isTrigger = true;
-            col.size = new Vector2(0.8f, 0.2f);
-            col.offset = new Vector2(0.35f, 0f);
-
-            var animator = root.AddComponent<Animator>();
-            var animancer = root.AddComponent<AnimancerComponent>();
-            animancer.Animator = animator;
-
-            var weaponOne = root.AddComponent<MapUnitWeaponOne>();
-            weaponOne.weaponAnimancer = animancer;
-            weaponOne.weaponAnim = animator;
-            weaponOne.weaponParts = new[]
-            {
-                new WeaponPart
-                {
-                    rotator = rotator,
-                    spriteVisual = sr,
-                },
-            };
-            weaponOne.UseCodeSwing = true;
-            weaponOne.SwingStartAngle = 50f;
-            weaponOne.SwingEndAngle = -45f;
-            weaponOne.SwingTopToBottom = true;
-            weaponOne.HitCollider = col;
-            col.enabled = false;
-            return root;
-        }
     }
 }

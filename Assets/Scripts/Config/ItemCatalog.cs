@@ -316,11 +316,6 @@ namespace My.Config
                 return EQuickBarItemKind.None;
             }
 
-            if (HumanWeaponCatalog.IsHumanWeapon(itemId))
-            {
-                return EQuickBarItemKind.Weapon;
-            }
-
             return def.QuickBarKind;
         }
 
