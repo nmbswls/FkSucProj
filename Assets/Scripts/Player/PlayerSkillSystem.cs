@@ -679,8 +679,8 @@ namespace My.Player
             return true;
         }
 
-        public bool BelongsToSchoolPool(string schoolId, string skillId) =>
-            SkillSchoolTable.Instance.SkillDefinedInSchool(schoolId, skillId);
+        public bool BelongsToSchoolPool(int schoolId, string skillId) =>
+            SkillLearnCatalog.SkillDefinedInSchool(schoolId, skillId);
 
         public void ReplaceSkillIdInNormalSlots(string oldSkillId, string newSkillId)
         {

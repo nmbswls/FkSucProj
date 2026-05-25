@@ -49,5 +49,16 @@ namespace My.UI
 
             return stack.ItemID;
         }
+
+        public string GetDetailText()
+        {
+            ItemStack stack = _cell?.GetBoundStack();
+            if (stack == null || stack.IsEmpty)
+            {
+                return string.Empty;
+            }
+
+            return ItemHoverDetailUtil.BuildDetailText(stack.ItemID, stack.Count);
+        }
     }
 }

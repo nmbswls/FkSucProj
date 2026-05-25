@@ -1,9 +1,9 @@
 using TMPro;
 using UnityEngine;
 
-namespace My.UI
+namespace My.UI.Talent
 {
-    public class ItemHoverTipPanel : MonoBehaviour, IHoverTipPanel
+    public sealed class TalentHoverTipPanel : MonoBehaviour, IHoverTipPanel
     {
         public TextMeshProUGUI TitleText;
         public RectTransform Root;
@@ -28,24 +28,18 @@ namespace My.UI
             Root.position = anchorPos;
             Root.localPosition = new Vector3(Root.localPosition.x, Root.localPosition.y, 0);
 
-            if (TitleText == null)
+            if (TitleText == null || provider is not TalentNodeHoverProvider talentHover)
             {
+                if (TitleText != null)
+                {
+                    TitleText.text = string.Empty;
+                }
+
                 return;
             }
 
-            string title = string.Empty;
-            string detail = string.Empty;
-            if (provider is ItemCellHoverProvider itemHover)
-            {
-                title = itemHover.GetDisplayName();
-                detail = itemHover.GetDetailText();
-            }
-            else if (provider is ItemIdHoverProvider itemIdHover)
-            {
-                title = itemIdHover.GetDisplayName();
-                detail = itemIdHover.GetDetailText();
-            }
-
+            string title = talentHover.GetDisplayName();
+            string detail = talentHover.GetDetailText();
             TitleText.text = string.IsNullOrEmpty(detail) ? title : $"{title}\n{detail}";
         }
     }

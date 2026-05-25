@@ -3118,6 +3118,8 @@ MonoBehaviour:
     TipPanelName: PlayerBuffTip
   - TipType: 3
     TipPanelName: ItemTip
+  - TipType: 4
+    TipPanelName: TalentTip
 --- !u!1 &1248278157
 GameObject:
   m_ObjectHideFlags: 0

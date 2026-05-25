@@ -40,6 +40,24 @@ namespace My.Config
             return r;
         }
 
+        public static bool SkillDefinedInSchool(int schoolId, string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            foreach (var e in GetLearnEntriesBySchool(schoolId))
+            {
+                if (e.SkillId == skillId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static SkillLearnEntry TryGetLearnEntry(int entryId) =>
             CfgMgr.Cfgs?.TbSkillLearnEntry.GetOrDefault(entryId);
 

@@ -60,6 +60,9 @@ namespace My.UI
         GlobalWorldPanel _world;
         RuneLoadoutPanel _rune;
 
+        static readonly Color TabSelectedColor = new Color(0.38f, 0.55f, 0.72f, 1f);
+        static readonly Color TabNormalColor = new Color(0.22f, 0.24f, 0.3f, 1f);
+
         // 与 UIManager 路径对齐：Hub 重复 ShowPanel 时传入的 data；子页按需 Setup
         object _lastHubSetupData;
 
@@ -371,7 +374,31 @@ namespace My.UI
             }
 
             ApplySetupForTab(CurrentTab, _lastHubSetupData);
+            RefreshHubTabVisuals();
             RefreshActivePage();
+        }
+
+        void RefreshHubTabVisuals()
+        {
+            ApplyTabVisual(_tabSkill, CurrentTab == ProgressionHubTab.Skills);
+            ApplyTabVisual(_tabTalent, CurrentTab == ProgressionHubTab.Talents);
+            ApplyTabVisual(_tabGear, CurrentTab == ProgressionHubTab.BodyPart);
+            ApplyTabVisual(_tabWorld, CurrentTab == ProgressionHubTab.World);
+            ApplyTabVisual(_tabRune, CurrentTab == ProgressionHubTab.Runes);
+        }
+
+        static void ApplyTabVisual(Button tab, bool selected)
+        {
+            if (tab == null)
+            {
+                return;
+            }
+
+            var img = tab.GetComponent<Image>();
+            if (img != null)
+            {
+                img.color = selected ? TabSelectedColor : TabNormalColor;
+            }
         }
 
         void RefreshActivePage()

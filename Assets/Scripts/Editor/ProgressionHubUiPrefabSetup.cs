@@ -27,6 +27,7 @@ public static class ProgressionHubUiPrefabSetup
         SetupSkillLoadoutPanel();
         SetupPlayerGearEquipPanel();
         SetupTalentNodeView();
+        SetupTalentTipPrefab();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log("[ProgressionHubUiPrefabSetup] Hub UI prefabs updated.");
@@ -35,6 +36,36 @@ public static class ProgressionHubUiPrefabSetup
     public static void SetupBatch()
     {
         SetupFromMenu();
+    }
+
+    static void SetupTalentTipPrefab()
+    {
+        const string talentTipPath = "Assets/Resources/UI/Prefabs/Tips/TalentTip.prefab";
+        const string itemTipPath = "Assets/Resources/UI/Prefabs/Tips/ItemTip.prefab";
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(talentTipPath) != null)
+        {
+            return;
+        }
+
+        var itemTip = AssetDatabase.LoadAssetAtPath<GameObject>(itemTipPath);
+        if (itemTip == null)
+        {
+            return;
+        }
+
+        var clone = Object.Instantiate(itemTip);
+        clone.name = "TalentTip";
+        var itemPanel = clone.GetComponent<ItemHoverTipPanel>();
+        if (itemPanel != null)
+        {
+            var title = itemPanel.TitleText;
+            Object.DestroyImmediate(itemPanel);
+            var talentPanel = clone.AddComponent<TalentHoverTipPanel>();
+            talentPanel.TitleText = title;
+        }
+
+        PrefabUtility.SaveAsPrefabAsset(clone, talentTipPath);
+        Object.DestroyImmediate(clone);
     }
 
     static void SetupSkillLoadoutPanel()
@@ -252,11 +283,23 @@ public static class ProgressionHubUiPrefabSetup
 
         EnsureChild(bodyRowGo.transform, "LeftPanel", out var leftGo);
         var leftLe = leftGo.GetComponent<LayoutElement>() ?? leftGo.AddComponent<LayoutElement>();
-        leftLe.flexibleWidth = 0.42f;
-        leftLe.minWidth = 260f;
-        StretchFull(leftGo.GetComponent<RectTransform>());
+        leftLe.flexibleWidth = 0.58f;
+        leftLe.minWidth = 340f;
+        var leftVlg = leftGo.GetComponent<VerticalLayoutGroup>() ?? leftGo.AddComponent<VerticalLayoutGroup>();
+        leftVlg.spacing = 10f;
+        leftVlg.childControlHeight = true;
+        leftVlg.childForceExpandHeight = false;
+        leftVlg.childControlWidth = true;
+        leftVlg.childForceExpandWidth = true;
+        leftVlg.padding = new RectOffset(4, 4, 4, 4);
 
-        EnsureChild(leftGo.transform, "Portrait", out var portraitGo);
+        EnsureChild(leftGo.transform, "PortraitBlock", out var portraitBlockGo);
+        var portraitBlockLe = portraitBlockGo.GetComponent<LayoutElement>() ?? portraitBlockGo.AddComponent<LayoutElement>();
+        portraitBlockLe.flexibleHeight = 1f;
+        portraitBlockLe.minHeight = 320f;
+        StretchFull(portraitBlockGo.GetComponent<RectTransform>());
+
+        EnsureChild(portraitBlockGo.transform, "Portrait", out var portraitGo);
         StretchFull(portraitGo.GetComponent<RectTransform>());
         var portraitImg = portraitGo.GetComponent<Image>() ?? AddImage(portraitGo, new Color(0.18f, 0.16f, 0.24f, 1f));
         portraitImg.preserveAspect = true;
@@ -266,7 +309,7 @@ public static class ProgressionHubUiPrefabSetup
             portraitImg.sprite = sprite;
         }
 
-        EnsureChild(leftGo.transform, "HotspotRoot", out var hotspotRootGo);
+        EnsureChild(portraitBlockGo.transform, "HotspotRoot", out var hotspotRootGo);
         StretchFull(hotspotRootGo.GetComponent<RectTransform>());
         var hotspotViews = new BodyPartHotspotView[4];
         var hotspotLayout = new (cfg.demo.EBodyPart part, Vector2 min, Vector2 max)[]
@@ -284,9 +327,47 @@ public static class ProgressionHubUiPrefabSetup
             hotspotViews[i] = BuildHotspot(hotspotGo, layout.part);
         }
 
+        EnsureChild(leftGo.transform, "GearPointBar", out var gearPointBarGo);
+        var gearPointBarLe = gearPointBarGo.GetComponent<LayoutElement>() ?? gearPointBarGo.AddComponent<LayoutElement>();
+        gearPointBarLe.preferredHeight = 36f;
+        var gearPointBarView = BuildGearPointBar(gearPointBarGo);
+
+        EnsureChild(leftGo.transform, "CharmBoard", out var charmBoardGo);
+        var charmBoardLe = charmBoardGo.GetComponent<LayoutElement>() ?? charmBoardGo.AddComponent<LayoutElement>();
+        charmBoardLe.flexibleHeight = 0.55f;
+        charmBoardLe.minHeight = 150f;
+        var charmBoardVlg = charmBoardGo.GetComponent<VerticalLayoutGroup>() ?? charmBoardGo.AddComponent<VerticalLayoutGroup>();
+        charmBoardVlg.spacing = 6f;
+        charmBoardVlg.childControlHeight = true;
+        charmBoardVlg.childForceExpandHeight = false;
+        charmBoardVlg.childControlWidth = true;
+        charmBoardVlg.childForceExpandWidth = true;
+
+        EnsureChild(charmBoardGo.transform, "CharmTitle", out var charmTitleGo);
+        var charmTitleLe = charmTitleGo.GetComponent<LayoutElement>() ?? charmTitleGo.AddComponent<LayoutElement>();
+        charmTitleLe.preferredHeight = 22f;
+        var charmTitleTmp = charmTitleGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(charmTitleGo, "已装备（点击卸下）", 15);
+        charmTitleTmp.text = "已装备（点击卸下）";
+
+        EnsureChild(charmBoardGo.transform, "CharmGrid", out var charmGridGo);
+        var charmGridLe = charmGridGo.GetComponent<LayoutElement>() ?? charmGridGo.AddComponent<LayoutElement>();
+        charmGridLe.flexibleHeight = 1f;
+        charmGridLe.minHeight = 120f;
+        var charmGrid = charmGridGo.GetComponent<GridLayoutGroup>() ?? charmGridGo.AddComponent<GridLayoutGroup>();
+        charmGrid.cellSize = new Vector2(76f, 92f);
+        charmGrid.spacing = new Vector2(8f, 8f);
+        charmGrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        charmGrid.constraintCount = 4;
+        charmGrid.childAlignment = TextAnchor.UpperLeft;
+
+        EnsureChild(charmGridGo.transform, "CharmSlot_Template", out var charmSlotGo);
+        charmSlotGo.SetActive(false);
+        var charmSlotView = BuildCharmSlot(charmSlotGo);
+
         EnsureChild(bodyRowGo.transform, "RightPanel", out var rightGo);
         var rightLe = rightGo.GetComponent<LayoutElement>() ?? rightGo.AddComponent<LayoutElement>();
-        rightLe.flexibleWidth = 0.58f;
+        rightLe.flexibleWidth = 0.42f;
+        rightLe.minWidth = 240f;
         var rightVlg = rightGo.GetComponent<VerticalLayoutGroup>() ?? rightGo.AddComponent<VerticalLayoutGroup>();
         rightVlg.spacing = 8f;
         rightVlg.childControlHeight = true;
@@ -301,9 +382,8 @@ public static class ProgressionHubUiPrefabSetup
         var detailLevel = CreateLabel(headerGo.transform, "Level", 15);
         var detailGearPoint = CreateLabel(headerGo.transform, "GearPoint", 15);
 
-        var localStatsContent = CreateScrollSection(rightGo.transform, "LocalStats", "部位属性", 110f, out _);
-        var equippedContent = CreateScrollSection(rightGo.transform, "Equipped", "已装备", 130f, out _);
-        var candidateContent = CreateScrollSection(rightGo.transform, "Candidates", "可装备", 160f, out _);
+        var localStatsContent = CreateScrollSection(rightGo.transform, "LocalStats", "部位属性", 90f, out _);
+        var candidateContent = CreateScrollSection(rightGo.transform, "Candidates", "背包可装备", 220f, out _);
 
         EnsureChild(localStatsContent, "InfoRow_Template", out var infoTemplateGo);
         infoTemplateGo.SetActive(false);
@@ -328,15 +408,96 @@ public static class ProgressionHubUiPrefabSetup
             so.FindProperty("detailLevel").objectReferenceValue = detailLevel;
             so.FindProperty("detailGearPoint").objectReferenceValue = detailGearPoint;
             so.FindProperty("localStatsContent").objectReferenceValue = localStatsContent;
-            so.FindProperty("equippedContent").objectReferenceValue = equippedContent;
             so.FindProperty("candidateContent").objectReferenceValue = candidateContent;
             so.FindProperty("infoRowTemplate").objectReferenceValue = infoTemplateGo.GetComponent<GearEquipRowView>();
             so.FindProperty("actionRowTemplate").objectReferenceValue = actionTemplateGo.GetComponent<GearEquipRowView>();
+            so.FindProperty("gearPointBar").objectReferenceValue = gearPointBarView;
+            so.FindProperty("charmGrid").objectReferenceValue = charmGridGo.transform;
+            so.FindProperty("charmSlotTemplate").objectReferenceValue = charmSlotView;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         PrefabUtility.SaveAsPrefabAsset(root, GearPanelPath);
         PrefabUtility.UnloadPrefabContents(root);
+    }
+
+    static GearPointNotchBarView BuildGearPointBar(GameObject rootGo)
+    {
+        var hlg = rootGo.GetComponent<HorizontalLayoutGroup>() ?? rootGo.AddComponent<HorizontalLayoutGroup>();
+        hlg.spacing = 10f;
+        hlg.childAlignment = TextAnchor.MiddleLeft;
+        hlg.childControlWidth = true;
+        hlg.childControlHeight = true;
+        hlg.childForceExpandWidth = false;
+        hlg.childForceExpandHeight = false;
+        hlg.padding = new RectOffset(4, 4, 2, 2);
+
+        EnsureChild(rootGo.transform, "Summary", out var summaryGo);
+        var summaryLe = summaryGo.GetComponent<LayoutElement>() ?? summaryGo.AddComponent<LayoutElement>();
+        summaryLe.preferredWidth = 120f;
+        var summaryTmp = summaryGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(summaryGo, "装备点数 0/0", 14);
+        summaryTmp.alignment = TextAlignmentOptions.MidlineLeft;
+
+        EnsureChild(rootGo.transform, "NotchRoot", out var notchRootGo);
+        var notchRootLe = notchRootGo.GetComponent<LayoutElement>() ?? notchRootGo.AddComponent<LayoutElement>();
+        notchRootLe.flexibleWidth = 1f;
+        var notchHlg = notchRootGo.GetComponent<HorizontalLayoutGroup>() ?? notchRootGo.AddComponent<HorizontalLayoutGroup>();
+        notchHlg.spacing = 4f;
+        notchHlg.childAlignment = TextAnchor.MiddleLeft;
+        notchHlg.childControlWidth = false;
+        notchHlg.childControlHeight = false;
+
+        EnsureChild(notchRootGo.transform, "Notch_Template", out var notchGo);
+        notchGo.SetActive(false);
+        var notchLe = notchGo.GetComponent<LayoutElement>() ?? notchGo.AddComponent<LayoutElement>();
+        notchLe.preferredWidth = 14f;
+        notchLe.preferredHeight = 14f;
+        var notchImg = notchGo.GetComponent<Image>() ?? AddImage(notchGo, new Color(0.32f, 0.3f, 0.4f, 0.75f));
+
+        var view = rootGo.GetComponent<GearPointNotchBarView>() ?? rootGo.AddComponent<GearPointNotchBarView>();
+        var vso = new SerializedObject(view);
+        vso.FindProperty("notchRoot").objectReferenceValue = notchRootGo.transform;
+        vso.FindProperty("notchTemplate").objectReferenceValue = notchImg;
+        vso.FindProperty("summaryText").objectReferenceValue = summaryTmp;
+        vso.ApplyModifiedPropertiesWithoutUndo();
+        return view;
+    }
+
+    static GearCharmSlotView BuildCharmSlot(GameObject slotGo)
+    {
+        var le = slotGo.GetComponent<LayoutElement>() ?? slotGo.AddComponent<LayoutElement>();
+        le.preferredWidth = 76f;
+        le.preferredHeight = 92f;
+
+        var frameImg = slotGo.GetComponent<Image>() ?? AddImage(slotGo, new Color(0.42f, 0.36f, 0.58f, 1f));
+        var btn = slotGo.GetComponent<Button>() ?? slotGo.AddComponent<Button>();
+        btn.targetGraphic = frameImg;
+
+        EnsureChild(slotGo.transform, "Icon", out var iconGo);
+        SetRectAnchor(iconGo, new Vector2(0.15f, 0.28f), new Vector2(0.85f, 0.88f), Vector2.zero, Vector2.zero);
+        var iconImg = iconGo.GetComponent<Image>() ?? AddImage(iconGo, Color.white);
+        iconImg.preserveAspect = true;
+
+        EnsureChild(slotGo.transform, "Cost", out var costGo);
+        SetRectAnchor(costGo, new Vector2(0.62f, 0.68f), new Vector2(0.98f, 0.96f), Vector2.zero, Vector2.zero);
+        var costTmp = costGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(costGo, "1", 12);
+        costTmp.alignment = TextAlignmentOptions.TopRight;
+
+        EnsureChild(slotGo.transform, "Name", out var nameGo);
+        SetRectAnchor(nameGo, new Vector2(0.05f, 0.02f), new Vector2(0.95f, 0.26f), Vector2.zero, Vector2.zero);
+        var nameTmp = nameGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(nameGo, string.Empty, 11);
+        nameTmp.alignment = TextAlignmentOptions.Center;
+        nameTmp.enableWordWrapping = true;
+
+        var view = slotGo.GetComponent<GearCharmSlotView>() ?? slotGo.AddComponent<GearCharmSlotView>();
+        var vso = new SerializedObject(view);
+        vso.FindProperty("frameImage").objectReferenceValue = frameImg;
+        vso.FindProperty("iconImage").objectReferenceValue = iconImg;
+        vso.FindProperty("costText").objectReferenceValue = costTmp;
+        vso.FindProperty("nameText").objectReferenceValue = nameTmp;
+        vso.FindProperty("clickButton").objectReferenceValue = btn;
+        vso.ApplyModifiedPropertiesWithoutUndo();
+        return view;
     }
 
     static BodyPartHotspotView BuildHotspot(GameObject go, cfg.demo.EBodyPart part)

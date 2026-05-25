@@ -1,5 +1,6 @@
-using TMPro;
-using UnityEngine;
+using My.Config;
+using My.UI;
+using TMPro;using UnityEngine;
 using UnityEngine.UI;
 
 namespace My.UI.BodyPart
@@ -11,8 +12,43 @@ namespace My.UI.BodyPart
         public Button ActionButton;
         public TextMeshProUGUI ActionButtonText;
 
+        ItemIdHoverProvider _itemHover;
+
+        void Awake()
+        {
+            _itemHover = GetComponent<ItemIdHoverProvider>();
+            if (_itemHover == null)
+            {
+                _itemHover = gameObject.AddComponent<ItemIdHoverProvider>();
+            }
+        }
+
         public void Bind(string title, string hint, string actionLabel, bool canAct, UnityEngine.Events.UnityAction onClick)
         {
+            Bind(null, 1, title, hint, actionLabel, canAct, onClick);
+        }
+
+        public void Bind(
+            string itemId,
+            long stackCount,
+            string title,
+            string hint,
+            string actionLabel,
+            bool canAct,
+            UnityEngine.Events.UnityAction onClick)
+        {
+            if (_itemHover != null)
+            {
+                if (string.IsNullOrEmpty(itemId))
+                {
+                    _itemHover.ClearItem();
+                }
+                else
+                {
+                    _itemHover.SetItem(itemId, stackCount);
+                }
+            }
+
             if (TitleText != null)
             {
                 TitleText.text = title ?? string.Empty;

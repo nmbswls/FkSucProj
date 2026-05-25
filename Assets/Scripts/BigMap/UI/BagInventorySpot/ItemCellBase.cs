@@ -29,6 +29,8 @@ namespace My.UI
         protected System.Action<int> onChangedCallback;
         protected ItemData cacheItemDef;
 
+        ItemCellHoverProvider _hoverProvider;
+
         public enum EStyleType
         {
             Normal,
@@ -51,6 +53,15 @@ namespace My.UI
         IItemCellDropTargetBehaviour _dropTarget;
 
         public ItemStack GetBoundStack() => boundStack;
+
+        protected virtual void Awake()
+        {
+            _hoverProvider = GetComponent<ItemCellHoverProvider>();
+            if (_hoverProvider == null)
+            {
+                _hoverProvider = gameObject.AddComponent<ItemCellHoverProvider>();
+            }
+        }
 
         protected void SetBoundStack(ItemStack stack)
         {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using cfg.demo;
 using My;
 using My.Config;
 using My.Player;
@@ -78,7 +79,7 @@ namespace My.UI.SkillLoadout
 
         IPlayerProgressionHubHost _progressionHubHost;
 
-        public string ActiveSchoolId { get; private set; }
+        public int ActiveSchoolId { get; private set; }
 
         Transform _builtRoot;
         SkillPoolEntryView[] _poolCells;
@@ -253,14 +254,7 @@ namespace My.UI.SkillLoadout
             }
 
             ClearLearnRows();
-            var schools = SkillSchoolTable.Instance.AllSchools;
-            if (tabIndex < 0 || tabIndex >= schools.Count)
-            {
-                return;
-            }
-
-            var school = schools[tabIndex];
-            if (school?.SkillIds == null || CfgMgr.Cfgs == null)
+            if (ActiveSchoolId <= 0 || CfgMgr.Cfgs == null)
             {
                 return;
             }
@@ -272,7 +266,7 @@ namespace My.UI.SkillLoadout
                     continue;
                 }
 
-                if (!SkillSchoolTable.Instance.SkillDefinedInSchool(school.Id, entry.SkillId))
+                if (entry.SchoolId != ActiveSchoolId)
                 {
                     continue;
                 }
@@ -426,7 +420,7 @@ namespace My.UI.SkillLoadout
         {
             BindBuiltReferencesIfNeeded();
 
-            var schools = SkillSchoolTable.Instance.AllSchools;
+            var schools = SkillLearnCatalog.GetSchoolsSorted();
             _tabCount = 0;
             if (_tabButtons == null) return;
 
@@ -453,10 +447,10 @@ namespace My.UI.SkillLoadout
 
         void SelectSchool(int tabIndex)
         {
-            var schools = SkillSchoolTable.Instance.AllSchools;
+            var schools = SkillLearnCatalog.GetSchoolsSorted();
             if (tabIndex < 0 || tabIndex >= schools.Count) return;
             _activeTabIndex = tabIndex;
-            ActiveSchoolId = schools[tabIndex].Id;
+            ActiveSchoolId = schools[tabIndex].SchoolId;
 
             if (_tabButtons != null)
             {
@@ -474,23 +468,21 @@ namespace My.UI.SkillLoadout
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             var sys = mgr?.SkillSystem;
 
-            SkillSchoolTable.Instance.TryGetSchool(ActiveSchoolId, out var sch);
-            var list = new List<string>();
-            if (sch != null && sch.SkillIds != null && sys != null)
-            {
-                foreach (var id in sch.SkillIds)
-                {
-                    if (sys.IsSkillLearned(id) && !sys.IsGrantedPassive(id) && !sys.IsGrantedActive(id))
-                        list.Add(id);
-                }
-            }
+            var entries = SkillLearnCatalog.GetLearnEntriesBySchool(ActiveSchoolId);
 
             if (_poolCells != null)
             {
                 int visibleCount = 0;
                 for (var i = 0; i < _poolCells.Length; i++)
                 {
-                    if (i >= list.Count)
+                    if (i >= entries.Count)
+                    {
+                        _poolCells[i].SetVisible(false);
+                        continue;
+                    }
+
+                    var entry = entries[i];
+                    if (sys != null && (sys.IsGrantedPassive(entry.SkillId) || sys.IsGrantedActive(entry.SkillId)))
                     {
                         _poolCells[i].SetVisible(false);
                         continue;
@@ -498,7 +490,8 @@ namespace My.UI.SkillLoadout
 
                     visibleCount++;
                     _poolCells[i].SetVisible(true);
-                    _poolCells[i].Bind(list[i], _poolSkillDropBehavior);
+                    bool learned = sys != null && sys.IsSkillLearned(entry.SkillId);
+                    _poolCells[i].Bind(entry, learned, _poolSkillDropBehavior);
                 }
 
                 if (_poolEmptyHint != null)
@@ -542,7 +535,7 @@ namespace My.UI.SkillLoadout
             var sys = mgr?.SkillSystem;
             RefreshSlotDisplays(sys);
 
-            if (!string.IsNullOrEmpty(ActiveSchoolId))
+            if (ActiveSchoolId > 0)
             {
                 var idx = FindTabIndexForSchool(ActiveSchoolId);
                 if (idx >= 0)
@@ -554,12 +547,12 @@ namespace My.UI.SkillLoadout
             TryRefreshHudBar();
         }
 
-        int FindTabIndexForSchool(string id)
+        int FindTabIndexForSchool(int schoolId)
         {
-            var schools = SkillSchoolTable.Instance.AllSchools;
+            var schools = SkillLearnCatalog.GetSchoolsSorted();
             for (var i = 0; i < schools.Count; i++)
             {
-                if (schools[i].Id == id)
+                if (schools[i].SchoolId == schoolId)
                     return i;
             }
             return -1;

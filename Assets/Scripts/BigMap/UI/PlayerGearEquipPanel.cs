@@ -29,15 +29,17 @@ namespace My.UI
         [SerializeField] TextMeshProUGUI detailLevel;
         [SerializeField] TextMeshProUGUI detailGearPoint;
         [SerializeField] Transform localStatsContent;
-        [SerializeField] Transform equippedContent;
         [SerializeField] Transform candidateContent;
         [SerializeField] GearEquipRowView infoRowTemplate;
         [SerializeField] GearEquipRowView actionRowTemplate;
+        [SerializeField] GearPointNotchBarView gearPointBar;
+        [SerializeField] Transform charmGrid;
+        [SerializeField] GearCharmSlotView charmSlotTemplate;
 
         Transform _root;
         readonly List<GearEquipRowView> _localRows = new();
-        readonly List<GearEquipRowView> _equippedRows = new();
         readonly List<GearEquipRowView> _candRows = new();
+        readonly List<GearCharmSlotView> _charmSlots = new();
 
         PlayerEquipmentManager _eq;
         PlayerBodyPartSystem _bodyPart;
@@ -133,6 +135,25 @@ namespace My.UI
         void BindRefs()
         {
             _root = transform.Find("BuiltRoot");
+            if (_root == null)
+            {
+                return;
+            }
+
+            if (gearPointBar == null)
+            {
+                gearPointBar = _root.Find("Window/BodyRow/LeftPanel/GearPointBar")?.GetComponent<GearPointNotchBarView>();
+            }
+
+            if (charmGrid == null)
+            {
+                charmGrid = _root.Find("Window/BodyRow/LeftPanel/CharmBoard/CharmGrid");
+            }
+
+            if (charmSlotTemplate == null && charmGrid != null)
+            {
+                charmSlotTemplate = charmGrid.Find("CharmSlot_Template")?.GetComponent<GearCharmSlotView>();
+            }
         }
 
         void WireHotspots()
@@ -239,11 +260,12 @@ namespace My.UI
 
             if (detailGearPoint != null)
             {
-                detailGearPoint.text = $"装备点数 {used}/{cap}";
+                detailGearPoint.text = $"剩余点数 {Mathf.Max(0, cap - used)}";
             }
 
+            gearPointBar?.Refresh(used, cap);
             BuildLocalStats(state);
-            BuildEquippedList();
+            BuildCharmGrid();
             BuildCandidates();
         }
 
@@ -269,10 +291,10 @@ namespace My.UI
             }
         }
 
-        void BuildEquippedList()
+        void BuildCharmGrid()
         {
-            ClearRowViews(_equippedRows, equippedContent);
-            if (equippedContent == null || _eq == null || actionRowTemplate == null)
+            ClearCharmSlots();
+            if (_eq == null || charmGrid == null || charmSlotTemplate == null)
             {
                 return;
             }
@@ -292,7 +314,8 @@ namespace My.UI
                 int cost = ItemGearRules.GetSlotCost(itemDef);
                 string name = itemDef != null ? itemDef.DisplayName : slot.ItemId;
                 int idx = i;
-                SpawnActionRow(equippedContent, _equippedRows, $"[{cost}] {name}", string.Empty, "卸下", true, () =>
+                var view = SpawnCharmSlot();
+                view.BindEquipped(slot.ItemId, cost, name, () =>
                 {
                     _eq.TryUnequip(_selectedPart, idx, out _);
                     RefreshAll();
@@ -301,7 +324,43 @@ namespace My.UI
 
             if (!any)
             {
-                SpawnInfoRow(equippedContent, _equippedRows, "(未装备)");
+                SpawnCharmSlot().BindEmpty();
+            }
+        }
+
+        GearCharmSlotView SpawnCharmSlot()
+        {
+            var view = Instantiate(charmSlotTemplate, charmGrid);
+            view.gameObject.SetActive(true);
+            _charmSlots.Add(view);
+            return view;
+        }
+
+        void ClearCharmSlots()
+        {
+            for (int i = 0; i < _charmSlots.Count; i++)
+            {
+                if (_charmSlots[i] != null)
+                {
+                    Destroy(_charmSlots[i].gameObject);
+                }
+            }
+
+            _charmSlots.Clear();
+            if (charmGrid == null || charmSlotTemplate == null)
+            {
+                return;
+            }
+
+            for (int i = charmGrid.childCount - 1; i >= 0; i--)
+            {
+                var child = charmGrid.GetChild(i);
+                if (child == charmSlotTemplate.transform)
+                {
+                    continue;
+                }
+
+                Destroy(child.gameObject);
             }
         }
 
@@ -325,7 +384,7 @@ namespace My.UI
                 string name = itemDef != null ? itemDef.DisplayName : st.ItemID;
                 bool canEquip = _eq.CanEquipFromMainBag(_selectedPart, flatIdx, out var reason);
                 string hint = canEquip ? string.Empty : TranslateEquipReason(reason);
-                SpawnActionRow(candidateContent, _candRows, $"[{cost}] {name} x{st.Count}", hint, "装备", canEquip, () =>
+                SpawnActionRow(candidateContent, _candRows, st.ItemID, st.Count, $"[{cost}] {name} x{st.Count}", hint, "装备", canEquip, () =>
                 {
                     _eq.TryEquipFromMainBag(_selectedPart, flatIdx, out _);
                     RefreshAll();
@@ -399,6 +458,8 @@ namespace My.UI
         void SpawnActionRow(
             Transform parent,
             List<GearEquipRowView> rows,
+            string itemId,
+            long stackCount,
             string title,
             string hint,
             string actionLabel,
@@ -412,7 +473,7 @@ namespace My.UI
 
             var row = Instantiate(actionRowTemplate, parent);
             row.gameObject.SetActive(true);
-            row.Bind(title, hint, actionLabel, canAct, onClick);
+            row.Bind(itemId, stackCount, title, hint, actionLabel, canAct, onClick);
             rows.Add(row);
         }
 

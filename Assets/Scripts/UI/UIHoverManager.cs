@@ -46,6 +46,7 @@ namespace My.UI
         Main3Ball,
         PlayerBuff,
         Item,
+        Talent,
     }
 
 
@@ -171,7 +172,15 @@ namespace My.UI
             foreach (var r in results)
             {
                 var tip = r.gameObject.GetComponentInParent<IHoverInfoProvider>();
-                if (tip == null) continue;
+                if (tip == null)
+                {
+                    continue;
+                }
+
+                if (tip.GetSimpleTipInfo() == null)
+                {
+                    continue;
+                }
 
                 tipProvider = tip;
 

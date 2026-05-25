@@ -30,7 +30,7 @@ namespace My.UI.SkillLoadout
         public bool TryDropOnSlot(SkillLoadoutPanel panel, PlayerSkillSystem sys, SkillLoadoutSlotKind slotKind,
             int slotIndex, string skillId, out string failReason)
         {
-            if (string.IsNullOrEmpty(panel.ActiveSchoolId) ||
+            if (panel.ActiveSchoolId <= 0 ||
                 !sys.BelongsToSchoolPool(panel.ActiveSchoolId, skillId))
             {
                 failReason = "not_in_school_pool";

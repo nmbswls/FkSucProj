@@ -21,12 +21,19 @@ namespace My.UI.Talent
         [SerializeField] TextMeshProUGUI descText;
 
         TalentTreePanel _host;
+        TalentNodeHoverProvider _hoverProvider;
 
         public int TalentNodeId => talentNodeId;
 
         void Awake()
         {
             _host = GetComponentInParent<TalentTreePanel>();
+            _hoverProvider = GetComponent<TalentNodeHoverProvider>();
+            if (_hoverProvider == null)
+            {
+                _hoverProvider = gameObject.AddComponent<TalentNodeHoverProvider>();
+            }
+
             if (unlockButton != null)
             {
                 unlockButton.onClick.RemoveListener(OnUnlockClicked);
@@ -37,6 +44,7 @@ namespace My.UI.Talent
         public void Refresh(PlayerProgressionSystem progression, int nodeId)
         {
             talentNodeId = nodeId;
+            _hoverProvider?.SetNodeId(nodeId);
             var row = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(talentNodeId);
             int cur = progression != null ? progression.GetTalentNodeLevel(talentNodeId) : 0;
             int max = row != null ? row.MaxLevel : 1;
