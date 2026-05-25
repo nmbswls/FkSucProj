@@ -15,148 +15,23 @@ MonoBehaviour:
   AreaId: 
   Buckets:
   - Chunk:
-      X: 0
+      X: -1
       Y: 0
     StaticItems:
     - ItemId: 101
-      Key: 1/P1
-      Position: {x: 4, y: 0.5, z: 0}
+      Key: 1/vine_001
+      Position: {x: -9.52, y: -16.31, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
-        Type: 0
+        Type: 2
         Param1: 0
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: 
+        Param5: vine_area01_grown
         Param6: 
-    FovStaticSegments:
-    - segmentId: 1
-      a: {x: 3, y: -1.5}
-      b: {x: 5, y: -1.5}
-      bounds:
-        m_Center: {x: 4, y: -1.5, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 2
-      a: {x: 5, y: -1.5}
-      b: {x: 5, y: 2.5}
-      bounds:
-        m_Center: {x: 5, y: 0.5, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 3
-      a: {x: 5, y: 2.5}
-      b: {x: 3, y: 2.5}
-      bounds:
-        m_Center: {x: 4, y: 2.5, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 4
-      a: {x: 3, y: 2.5}
-      b: {x: 3, y: -1.5}
-      bounds:
-        m_Center: {x: 3, y: 0.5, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 5
-      a: {x: 3, y: -1.5}
-      b: {x: 5, y: -1.5}
-      bounds:
-        m_Center: {x: 4, y: -1.5, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 6
-      a: {x: 5, y: -1.5}
-      b: {x: 5, y: 2.5}
-      bounds:
-        m_Center: {x: 5, y: 0.5, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 7
-      a: {x: 5, y: 2.5}
-      b: {x: 3, y: 2.5}
-      bounds:
-        m_Center: {x: 4, y: 2.5, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 8
-      a: {x: 3, y: 2.5}
-      b: {x: 3, y: -1.5}
-      bounds:
-        m_Center: {x: 3, y: 0.5, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 29
-      a: {x: 5.62, y: 5.7999997}
-      b: {x: 5.4860253, y: 6.2999997}
-      bounds:
-        m_Center: {x: 5.553013, y: 6.0499997, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 30
-      a: {x: 5.4860253, y: 6.2999997}
-      b: {x: 5.12, y: 6.666025}
-      bounds:
-        m_Center: {x: 5.303013, y: 6.483012, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 31
-      a: {x: 5.12, y: 6.666025}
-      b: {x: 4.62, y: 6.7999997}
-      bounds:
-        m_Center: {x: 4.87, y: 6.733012, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 32
-      a: {x: 4.62, y: 6.7999997}
-      b: {x: 4.12, y: 6.666025}
-      bounds:
-        m_Center: {x: 4.37, y: 6.733012, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 33
-      a: {x: 4.12, y: 6.666025}
-      b: {x: 3.7539744, y: 6.2999997}
-      bounds:
-        m_Center: {x: 3.9369872, y: 6.483012, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 34
-      a: {x: 3.7539744, y: 6.2999997}
-      b: {x: 3.62, y: 5.7999997}
-      bounds:
-        m_Center: {x: 3.6869872, y: 6.0499997, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 35
-      a: {x: 3.62, y: 5.7999997}
-      b: {x: 3.7539747, y: 5.2999997}
-      bounds:
-        m_Center: {x: 3.6869874, y: 5.5499997, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
-    - segmentId: 36
-      a: {x: 3.7539747, y: 5.2999997}
-      b: {x: 4.12, y: 4.9339743}
-      bounds:
-        m_Center: {x: 3.9369874, y: 5.116987, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
-    - segmentId: 37
-      a: {x: 4.12, y: 4.9339743}
-      b: {x: 4.62, y: 4.7999997}
-      bounds:
-        m_Center: {x: 4.37, y: 4.866987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 38
-      a: {x: 4.62, y: 4.7999997}
-      b: {x: 5.12, y: 4.9339743}
-      bounds:
-        m_Center: {x: 4.87, y: 4.866987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 39
-      a: {x: 5.12, y: 4.9339743}
-      b: {x: 5.4860253, y: 5.3}
-      bounds:
-        m_Center: {x: 5.303013, y: 5.116987, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301296, z: 0}
-    - segmentId: 40
-      a: {x: 5.4860253, y: 5.3}
-      b: {x: 5.62, y: 5.7999997}
-      bounds:
-        m_Center: {x: 5.553013, y: 5.55, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.24999976, z: 0}
-  - Chunk:
-      X: -1
-      Y: 0
-    StaticItems:
-    - ItemId: 102
+    - ItemId: 103
       Key: 1/P1
       Position: {x: -4.28, y: -0.09, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -292,9 +167,147 @@ MonoBehaviour:
         m_Extent: {x: 0.06698716, y: 0.25, z: 0}
   - Chunk:
       X: 0
+      Y: 0
+    StaticItems:
+    - ItemId: 102
+      Key: 1/P1
+      Position: {x: 4, y: 0.5, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    FovStaticSegments:
+    - segmentId: 1
+      a: {x: 3, y: -1.5}
+      b: {x: 5, y: -1.5}
+      bounds:
+        m_Center: {x: 4, y: -1.5, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 2
+      a: {x: 5, y: -1.5}
+      b: {x: 5, y: 2.5}
+      bounds:
+        m_Center: {x: 5, y: 0.5, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 3
+      a: {x: 5, y: 2.5}
+      b: {x: 3, y: 2.5}
+      bounds:
+        m_Center: {x: 4, y: 2.5, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 4
+      a: {x: 3, y: 2.5}
+      b: {x: 3, y: -1.5}
+      bounds:
+        m_Center: {x: 3, y: 0.5, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 5
+      a: {x: 3, y: -1.5}
+      b: {x: 5, y: -1.5}
+      bounds:
+        m_Center: {x: 4, y: -1.5, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 6
+      a: {x: 5, y: -1.5}
+      b: {x: 5, y: 2.5}
+      bounds:
+        m_Center: {x: 5, y: 0.5, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 7
+      a: {x: 5, y: 2.5}
+      b: {x: 3, y: 2.5}
+      bounds:
+        m_Center: {x: 4, y: 2.5, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 8
+      a: {x: 3, y: 2.5}
+      b: {x: 3, y: -1.5}
+      bounds:
+        m_Center: {x: 3, y: 0.5, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 29
+      a: {x: 5.62, y: 5.7999997}
+      b: {x: 5.4860253, y: 6.2999997}
+      bounds:
+        m_Center: {x: 5.553013, y: 6.0499997, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 30
+      a: {x: 5.4860253, y: 6.2999997}
+      b: {x: 5.12, y: 6.666025}
+      bounds:
+        m_Center: {x: 5.303013, y: 6.483012, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 31
+      a: {x: 5.12, y: 6.666025}
+      b: {x: 4.62, y: 6.7999997}
+      bounds:
+        m_Center: {x: 4.87, y: 6.733012, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 32
+      a: {x: 4.62, y: 6.7999997}
+      b: {x: 4.12, y: 6.666025}
+      bounds:
+        m_Center: {x: 4.37, y: 6.733012, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 33
+      a: {x: 4.12, y: 6.666025}
+      b: {x: 3.7539744, y: 6.2999997}
+      bounds:
+        m_Center: {x: 3.9369872, y: 6.483012, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+    - segmentId: 34
+      a: {x: 3.7539744, y: 6.2999997}
+      b: {x: 3.62, y: 5.7999997}
+      bounds:
+        m_Center: {x: 3.6869872, y: 6.0499997, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+    - segmentId: 35
+      a: {x: 3.62, y: 5.7999997}
+      b: {x: 3.7539747, y: 5.2999997}
+      bounds:
+        m_Center: {x: 3.6869874, y: 5.5499997, z: 0}
+        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
+    - segmentId: 36
+      a: {x: 3.7539747, y: 5.2999997}
+      b: {x: 4.12, y: 4.9339743}
+      bounds:
+        m_Center: {x: 3.9369874, y: 5.116987, z: 0}
+        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
+    - segmentId: 37
+      a: {x: 4.12, y: 4.9339743}
+      b: {x: 4.62, y: 4.7999997}
+      bounds:
+        m_Center: {x: 4.37, y: 4.866987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 38
+      a: {x: 4.62, y: 4.7999997}
+      b: {x: 5.12, y: 4.9339743}
+      bounds:
+        m_Center: {x: 4.87, y: 4.866987, z: 0}
+        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+    - segmentId: 39
+      a: {x: 5.12, y: 4.9339743}
+      b: {x: 5.4860253, y: 5.3}
+      bounds:
+        m_Center: {x: 5.303013, y: 5.116987, z: 0}
+        m_Extent: {x: 0.18301272, y: 0.18301296, z: 0}
+    - segmentId: 40
+      a: {x: 5.4860253, y: 5.3}
+      b: {x: 5.62, y: 5.7999997}
+      bounds:
+        m_Center: {x: 5.553013, y: 5.55, z: 0}
+        m_Extent: {x: 0.066987276, y: 0.24999976, z: 0}
+  - Chunk:
+      X: 0
       Y: -1
     StaticItems:
-    - ItemId: 103
+    - ItemId: 104
       Key: 1/Room01
       Position: {x: 4.11, y: 6.31, z: -0.5}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -384,7 +397,7 @@ MonoBehaviour:
       X: -1
       Y: -1
     StaticItems:
-    - ItemId: 104
+    - ItemId: 105
       Key: 1/Room01
       Position: {x: -3.44, y: 6.46, z: -0.5}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -472,6 +485,50 @@ MonoBehaviour:
         m_Extent: {x: 0.06698716, y: 0.25, z: 0}
   EntityRefreshInfo:
   - StaticId: 100
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977857281726611486
+  - StaticId: 101
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977857281726611487
+  - StaticId: 102
     UniqName: gp_01
     AppearCond:
       Type: 0
@@ -492,8 +549,8 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593426
-  - StaticId: 101
+      rid: 5977857281726611488
+  - StaticId: 103
     UniqName: gp_03
     AppearCond:
       Type: 0
@@ -514,8 +571,8 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593427
-  - StaticId: 102
+      rid: 5977857281726611489
+  - StaticId: 104
     UniqName: gp_02
     AppearCond:
       Type: 0
@@ -536,55 +593,11 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593428
-  - StaticId: 103
-    UniqName: 
-    AppearCond:
-      Type: 1
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 5977857120449593429
-  - StaticId: 104
-    UniqName: 
-    AppearCond:
-      Type: 1
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 5977857120449593430
+      rid: 5977857281726611490
   - StaticId: 105
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 1
       Param1: 0
       Param2: 0
       Param3: 0
@@ -602,11 +615,11 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593431
+      rid: 5977857281726611491
   - StaticId: 106
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 1
       Param1: 0
       Param2: 0
       Param3: 0
@@ -624,7 +637,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593432
+      rid: 5977857281726611492
   - StaticId: 107
     UniqName: 
     AppearCond:
@@ -646,7 +659,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593433
+      rid: 5977857281726611493
   - StaticId: 108
     UniqName: 
     AppearCond:
@@ -668,7 +681,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593434
+      rid: 5977857281726611494
   - StaticId: 109
     UniqName: 
     AppearCond:
@@ -690,7 +703,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593435
+      rid: 5977857281726611495
   - StaticId: 110
     UniqName: 
     AppearCond:
@@ -712,7 +725,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593436
+      rid: 5977857281726611496
   - StaticId: 111
     UniqName: 
     AppearCond:
@@ -734,7 +747,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593437
+      rid: 5977857281726611497
   - StaticId: 112
     UniqName: 
     AppearCond:
@@ -756,7 +769,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593438
+      rid: 5977857281726611498
   - StaticId: 113
     UniqName: 
     AppearCond:
@@ -778,7 +791,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593439
+      rid: 5977857281726611499
   - StaticId: 114
     UniqName: 
     AppearCond:
@@ -800,7 +813,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593440
+      rid: 5977857281726611500
   - StaticId: 115
     UniqName: 
     AppearCond:
@@ -822,7 +835,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593441
+      rid: 5977857281726611501
   - StaticId: 116
     UniqName: 
     AppearCond:
@@ -844,8 +857,52 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593442
+      rid: 5977857281726611502
   - StaticId: 117
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977857281726611503
+  - StaticId: 118
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977857281726611504
+  - StaticId: 119
     UniqName: cornor_01_b
     AppearCond:
       Type: 0
@@ -866,8 +923,8 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593443
-  - StaticId: 118
+      rid: 5977857281726611505
+  - StaticId: 120
     UniqName: cornor_01_a
     AppearCond:
       Type: 0
@@ -888,51 +945,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593444
-  - StaticId: 119
-    UniqName: 
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 5977857120449593445
-  - StaticId: 120
-    UniqName: 
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    InitInfo:
-      rid: 5977857120449593446
+      rid: 5977857281726611506
   - StaticId: 121
     UniqName: 
     AppearCond:
@@ -954,7 +967,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593447
+      rid: 5977857281726611507
   - StaticId: 122
     UniqName: 
     AppearCond:
@@ -976,7 +989,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593448
+      rid: 5977857281726611508
   - StaticId: 123
     UniqName: 
     AppearCond:
@@ -998,7 +1011,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593449
+      rid: 5977857281726611509
   - StaticId: 124
     UniqName: 
     AppearCond:
@@ -1020,7 +1033,7 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593450
+      rid: 5977857281726611510
   - StaticId: 125
     UniqName: 
     AppearCond:
@@ -1042,141 +1055,65 @@ MonoBehaviour:
     WillRespawn: 0
     RespawnInterval: 0
     InitInfo:
-      rid: 5977857120449593451
+      rid: 5977857281726611511
+  - StaticId: 126
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977857281726611512
+  - StaticId: 127
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    InitInfo:
+      rid: 5977857281726611513
   NamedPoints:
-  - Name: default
-    PointType: 1
-    Position: {x: -10.88, y: -27.09, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: building_01_out
+  - Name: vine_area01_bottom
     PointType: 0
-    Position: {x: -10.41, y: 1.31, z: 0}
+    Position: {x: -9.56, y: -13.61, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
-  - Name: building_01_in
+  - Name: vine_area01_top
     PointType: 0
-    Position: {x: -42.53, y: 46.48, z: 0}
+    Position: {x: -9.59, y: -16.9, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
-  - Name: 1
-    PointType: 0
-    Position: {x: 2.42, y: 6.73, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_point_01
-    PointType: 0
-    Position: {x: -5, y: 7.45, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_point_02
-    PointType: 0
-    Position: {x: -1.49, y: 7.37, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_point_03
-    PointType: 0
-    Position: {x: -1.54, y: 4.58, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_point_04
-    PointType: 0
-    Position: {x: -4.69, y: 4.42, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: walker_born_01
-    PointType: 4
-    Position: {x: -9.3, y: 0.15, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: walker_born_02
-    PointType: 4
-    Position: {x: 22.46, y: -17.11, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: walker_born_03
-    PointType: 4
-    Position: {x: 24.4, y: 12.99, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_001
-    PointType: 0
-    Position: {x: 23.17, y: 3.45, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_002
-    PointType: 0
-    Position: {x: 23, y: -3.33, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_003
-    PointType: 0
-    Position: {x: -0.14, y: -0.18, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_004
-    PointType: 0
-    Position: {x: 6.41, y: -9.78, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_005
-    PointType: 0
-    Position: {x: 7.31, y: 9.94, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: p_006
-    PointType: 0
-    Position: {x: 14.67, y: 9.94, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: entry_bottom
-    PointType: 0
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_001
-    PointType: 0
-    Position: {x: -16.72, y: 2.76, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_002
-    PointType: 0
-    Position: {x: -11.35, y: -3.6, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_003
-    PointType: 0
-    Position: {x: 2.43, y: -7.57, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_004
-    PointType: 0
-    Position: {x: 6.55, y: -9.96, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_005
-    PointType: 0
-    Position: {x: 12.53, y: -12.39, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_006
-    PointType: 0
-    Position: {x: 23.27, y: -9.26, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_007
-    PointType: 0
-    Position: {x: 23.27, y: 10.08, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_008
-    PointType: 0
-    Position: {x: 5.56, y: 10.08, z: 0}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    Scale: {x: 0, y: 0, z: 0}
-  - Name: patrol_009
-    PointType: 0
-    Position: {x: -13.97, y: 10.08, z: 0}
+  - Name: guard_entry_01
+    PointType: 3
+    Position: {x: -1.05, y: 7.4, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: rumor_p_01
@@ -1184,9 +1121,139 @@ MonoBehaviour:
     Position: {x: -1.63, y: -21.72, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
-  - Name: guard_entry_01
-    PointType: 3
-    Position: {x: -1.05, y: 7.4, z: 0}
+  - Name: patrol_009
+    PointType: 0
+    Position: {x: -13.97, y: 10.08, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_008
+    PointType: 0
+    Position: {x: 5.56, y: 10.08, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_007
+    PointType: 0
+    Position: {x: 23.27, y: 10.08, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_006
+    PointType: 0
+    Position: {x: 23.27, y: -9.26, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_005
+    PointType: 0
+    Position: {x: 12.53, y: -12.39, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_004
+    PointType: 0
+    Position: {x: 6.55, y: -9.96, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_003
+    PointType: 0
+    Position: {x: 2.43, y: -7.57, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_002
+    PointType: 0
+    Position: {x: -11.35, y: -3.6, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_001
+    PointType: 0
+    Position: {x: -16.72, y: 2.76, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: entry_bottom
+    PointType: 0
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_006
+    PointType: 0
+    Position: {x: 14.67, y: 9.94, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_005
+    PointType: 0
+    Position: {x: 7.31, y: 9.94, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_004
+    PointType: 0
+    Position: {x: 6.41, y: -9.78, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_003
+    PointType: 0
+    Position: {x: -0.14, y: -0.18, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_002
+    PointType: 0
+    Position: {x: 23, y: -3.33, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: p_001
+    PointType: 0
+    Position: {x: 23.17, y: 3.45, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_03
+    PointType: 4
+    Position: {x: 24.4, y: 12.99, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_02
+    PointType: 4
+    Position: {x: 22.46, y: -17.11, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: walker_born_01
+    PointType: 4
+    Position: {x: -9.3, y: 0.15, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_point_04
+    PointType: 0
+    Position: {x: -4.69, y: 4.42, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_point_03
+    PointType: 0
+    Position: {x: -1.54, y: 4.58, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_point_02
+    PointType: 0
+    Position: {x: -1.49, y: 7.37, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: patrol_point_01
+    PointType: 0
+    Position: {x: -5, y: 7.45, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: 1
+    PointType: 0
+    Position: {x: 2.42, y: 6.73, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: building_01_in
+    PointType: 0
+    Position: {x: -42.53, y: 46.48, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: building_01_out
+    PointType: 0
+    Position: {x: -10.41, y: 1.31, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: default
+    PointType: 1
+    Position: {x: -10.88, y: -27.09, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   NamedPaths:
@@ -1271,7 +1338,29 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 5977857120449593426
+    - rid: 5977857281726611486
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: vine_growth_01_top
+        Position: {x: -9.55, y: -14.26}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 5977857281726611487
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: vine_growth_01
+        Position: {x: -9.55, y: -16.17}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 5977857281726611488
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_inn_01
@@ -1279,7 +1368,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593427
+    - rid: 5977857281726611489
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -1287,7 +1376,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593428
+    - rid: 5977857281726611490
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -1295,7 +1384,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593429
+    - rid: 5977857281726611491
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
@@ -1305,7 +1394,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_out
-    - rid: 5977857120449593430
+    - rid: 5977857281726611492
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
@@ -1315,7 +1404,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_in
-    - rid: 5977857120449593431
+    - rid: 5977857281726611493
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
@@ -1326,7 +1415,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 5977857120449593432
+    - rid: 5977857281726611494
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
@@ -1337,7 +1426,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 5977857120449593433
+    - rid: 5977857281726611495
       type: {class: EntityInitInfo4EventGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_insult_girl
@@ -1348,7 +1437,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 5977857120449593434
+    - rid: 5977857281726611496
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: poison_p_clothes
@@ -1359,7 +1448,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 5977857120449593435
+    - rid: 5977857281726611497
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
@@ -1370,7 +1459,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 5977857120449593436
+    - rid: 5977857281726611498
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
@@ -1381,7 +1470,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 5977857120449593437
+    - rid: 5977857281726611499
       type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -1403,11 +1492,11 @@ MonoBehaviour:
         GroupUnits:
         - GroupIdx: 0
           InitInfo:
-            rid: 5977857120449593452
+            rid: 5977857281726611514
         - GroupIdx: 1
           InitInfo:
-            rid: 5977857120449593453
-    - rid: 5977857120449593438
+            rid: 5977857281726611515
+    - rid: 5977857281726611500
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: good_obj_01
@@ -1415,7 +1504,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593439
+    - rid: 5977857281726611501
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -1423,7 +1512,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593440
+    - rid: 5977857281726611502
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -1431,7 +1520,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593441
+    - rid: 5977857281726611503
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -1439,7 +1528,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593442
+    - rid: 5977857281726611504
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_watcher_01
@@ -1455,7 +1544,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857120449593443
+    - rid: 5977857281726611505
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
@@ -1471,7 +1560,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857120449593444
+    - rid: 5977857281726611506
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
@@ -1487,7 +1576,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857120449593445
+    - rid: 5977857281726611507
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
@@ -1503,7 +1592,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857120449593446
+    - rid: 5977857281726611508
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
@@ -1519,7 +1608,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857120449593447
+    - rid: 5977857281726611509
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hunhun
@@ -1535,7 +1624,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857120449593448
+    - rid: 5977857281726611510
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: qigai_default
@@ -1551,7 +1640,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857120449593449
+    - rid: 5977857281726611511
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: dig_01
@@ -1559,7 +1648,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593450
+    - rid: 5977857281726611512
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -1567,7 +1656,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593451
+    - rid: 5977857281726611513
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -1575,7 +1664,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857120449593452
+    - rid: 5977857281726611514
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01
@@ -1591,7 +1680,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857120449593453
+    - rid: 5977857281726611515
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01
