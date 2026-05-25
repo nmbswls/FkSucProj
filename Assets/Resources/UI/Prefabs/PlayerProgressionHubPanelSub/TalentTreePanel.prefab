@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &990000001
 GameObject:
@@ -65,12 +65,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panelId: TalentTreePanel
   canvasGroup: {fileID: 990000003}
-  nodeViews:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  NodeViewContainer: {fileID: 5158286456039403220}
   closeButton: {fileID: 990000114}
   debugTipText: {fileID: 990000123}
 --- !u!1 &990000100
@@ -178,8 +173,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Talent Tree
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
+  m_sharedMaterial: {fileID: 2549557310159315146, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -433,8 +428,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Close
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
+  m_sharedMaterial: {fileID: 2549557310159315146, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -567,8 +562,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
+  m_sharedMaterial: {fileID: 2549557310159315146, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1237,7 +1232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f4d69f087a70ac4490b985cd17d5e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  talentNodeId: 2
+  talentNodeId: 3
 --- !u!1 &1667715073332065056
 GameObject:
   m_ObjectHideFlags: 0
@@ -1283,7 +1278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f4d69f087a70ac4490b985cd17d5e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  talentNodeId: 2
+  talentNodeId: 13
 --- !u!1 &4062825888507360177
 GameObject:
   m_ObjectHideFlags: 0
@@ -1329,7 +1324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f4d69f087a70ac4490b985cd17d5e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  talentNodeId: 2
+  talentNodeId: 12
 --- !u!1 &4594226031478575781
 GameObject:
   m_ObjectHideFlags: 0
@@ -1375,7 +1370,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f4d69f087a70ac4490b985cd17d5e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  talentNodeId: 2
+  talentNodeId: 11
 --- !u!1 &4762624773807630209
 GameObject:
   m_ObjectHideFlags: 0

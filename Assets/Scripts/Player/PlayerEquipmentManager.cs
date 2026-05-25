@@ -460,6 +460,51 @@ namespace My.Player
             return true;
         }
 
+        public bool CanEquipFromMainBag(EBodyPart part, int mainBagFlatIndex, out string failReason)
+        {
+            failReason = null;
+            if (part == EBodyPart.None)
+            {
+                failReason = "bad_part";
+                return false;
+            }
+
+            if (Inv?.MainBag == null)
+            {
+                failReason = "no_bag";
+                return false;
+            }
+
+            var stack = Inv.MainBag.GetItemByIdx(mainBagFlatIndex);
+            if (stack == null || stack.IsEmpty)
+            {
+                failReason = "no_item";
+                return false;
+            }
+
+            var def = ItemCatalog.GetItemDef(stack.ItemID);
+            if (!ItemGearRules.MatchesPart(def, part))
+            {
+                failReason = "wrong_part";
+                return false;
+            }
+
+            int cost = ItemGearRules.GetSlotCost(def);
+            if (GetUsedGearPoint(part) + cost > GetPartGearPointCap(part))
+            {
+                failReason = "no_gear_point";
+                return false;
+            }
+
+            if (ItemCatalog.IsInstanceType(def.ItemType) && stack.ItemInstanceId == 0)
+            {
+                failReason = "need_instance";
+                return false;
+            }
+
+            return true;
+        }
+
         public bool TryEquipFromMainBag(EBodyPart part, int mainBagFlatIndex, out string failReason)
         {
             failReason = null;

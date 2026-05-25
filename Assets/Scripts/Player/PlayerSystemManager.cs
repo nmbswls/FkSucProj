@@ -645,6 +645,62 @@ namespace My.Player
             return true;
         }
 
+        public bool CanLearnSkillFromEntry(int entryId, out string reason)
+        {
+            reason = null;
+            var entry = SkillLearnCatalog.TryGetLearnEntry(entryId);
+            if (entry == null)
+            {
+                reason = "no_entry";
+                return false;
+            }
+
+            if (SkillSystem.IsSkillLearned(entry.SkillId))
+            {
+                reason = "already_learned";
+                return false;
+            }
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                reason = "no_player";
+                return false;
+            }
+
+            if (!glm.CheckCommonCondsAll(entry.LearnConds))
+            {
+                reason = "cond_fail";
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool TryLearnSkillFromEntry(int entryId, out string reason)
+        {
+            if (!CanLearnSkillFromEntry(entryId, out reason))
+            {
+                return false;
+            }
+
+            var entry = SkillLearnCatalog.TryGetLearnEntry(entryId);
+            if (entry == null)
+            {
+                reason = "no_entry";
+                return false;
+            }
+
+            if (!TryAddSkillLearnedSkill(entry.SkillId, entry.SkillLevel > 0 ? entry.SkillLevel : 1))
+            {
+                reason = "add_failed";
+                return false;
+            }
+
+            reason = null;
+            return true;
+        }
+
         public bool TryAddLearnedSkill(string skillId) => TryAddSkillLearnedSkill(skillId);
 
         public bool TryGrantPassiveSkill(string skillId, int level)

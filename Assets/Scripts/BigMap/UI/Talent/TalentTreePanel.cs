@@ -34,7 +34,27 @@ namespace My.UI.Talent
                 panelId = Pid;
             }
 
+            EnsureNodeViewContainer();
             WireCloseButton();
+        }
+
+        void EnsureNodeViewContainer()
+        {
+            if (NodeViewContainer != null)
+            {
+                return;
+            }
+
+            var treeRoot = transform.Find("TreeRoot");
+            if (treeRoot == null)
+            {
+                return;
+            }
+
+            NodeViewContainer = treeRoot.Find("Scroll View/Viewport/Content")
+                               ?? treeRoot.Find("Scroll/Viewport/Content")
+                               ?? treeRoot.Find("Viewport/Content")
+                               ?? treeRoot;
         }
 
         void WireCloseButton()
@@ -57,6 +77,7 @@ namespace My.UI.Talent
                 return;
             }
 
+            EnsureNodeViewContainer();
             RefreshFromRuntime();
         }
 
@@ -69,6 +90,7 @@ namespace My.UI.Talent
             }
 
             base.Show();
+            EnsureNodeViewContainer();
             RefreshFromRuntime();
         }
 
@@ -77,23 +99,22 @@ namespace My.UI.Talent
             var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
             var progression = glm?.playerDataManager?.ProgressionSystem;
 
-
+            EnsureNodeViewContainer();
             if (NodeViewContainer != null)
             {
-                for(int i=0;i< NodeViewContainer.childCount;i++)
+                for (int i = 0; i < NodeViewContainer.childCount; i++)
                 {
                     var one = NodeViewContainer.GetChild(i);
                     var binder = one.GetComponent<TalentTreeNodeBinder>();
-                    if(binder == null)
+                    if (binder == null)
                     {
-                        Debug.LogError("?");
                         continue;
                     }
 
-                    var view = one.GetComponentInChildren<TalentTreeNodeView>();
-                    if(view == null)
+                    var view = one.GetComponentInChildren<TalentTreeNodeView>(true);
+                    if (view == null)
                     {
-                        Debug.LogError("?");
+                        Debug.LogWarning($"[TalentTreePanel] Missing view for node binder on {one.name}");
                         continue;
                     }
 
@@ -105,8 +126,8 @@ namespace My.UI.Talent
             if (debugTipText != null)
             {
                 debugTipText.text = progression != null
-                    ? "Click yellow nodes to unlock or upgrade. First node has no cost."
-                    : "No progression (not in game context).";
+                    ? "黄色节点可解锁或升级；灰色按钮表示条件未满足或已满级。"
+                    : "未进入游戏上下文，无法读取养成数据。";
             }
         }
 

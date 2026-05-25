@@ -17,6 +17,8 @@ namespace My.UI.Talent
         [SerializeField] Color unlockedColor = new Color(0.35f, 0.85f, 0.45f, 1f);
         [SerializeField] TextMeshProUGUI titleText;
         [SerializeField] TextMeshProUGUI levelText;
+        [SerializeField] TextMeshProUGUI unlockButtonText;
+        [SerializeField] TextMeshProUGUI descText;
 
         TalentTreePanel _host;
 
@@ -34,6 +36,7 @@ namespace My.UI.Talent
 
         public void Refresh(PlayerProgressionSystem progression, int nodeId)
         {
+            talentNodeId = nodeId;
             var row = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(talentNodeId);
             int cur = progression != null ? progression.GetTalentNodeLevel(talentNodeId) : 0;
             int max = row != null ? row.MaxLevel : 1;
@@ -43,12 +46,17 @@ namespace My.UI.Talent
                 string name = row != null && !string.IsNullOrEmpty(row.DisplayName)
                     ? row.DisplayName
                     : $"Node {talentNodeId}";
-                titleText.text = $"{name} ";
+                titleText.text = name;
             }
 
-            if(levelText != null)
+            if (levelText != null)
             {
                 levelText.text = $"Lv{cur}/{max}";
+            }
+
+            if (descText != null)
+            {
+                descText.text = string.Empty;
             }
 
             if (progression == null)
@@ -73,6 +81,11 @@ namespace My.UI.Talent
                     PlayerTalentManager.TalentNodeVisualState.Unlockable => unlockableColor,
                     _ => lockedColor,
                 };
+            }
+
+            if (unlockButtonText != null)
+            {
+                unlockButtonText.text = btnText;
             }
 
             if (unlockButton != null)

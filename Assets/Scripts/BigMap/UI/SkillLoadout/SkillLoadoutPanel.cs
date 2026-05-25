@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using My;
 using My.Config;
 using My.Player;
 using My.UI;
@@ -87,6 +88,13 @@ namespace My.UI.SkillLoadout
         SkillSlotView[] _activeSlotViews;
         SkillSlotView[] _passiveSlotViews;
         int _tabCount;
+        int _activeTabIndex;
+
+        Transform _learnContent;
+        SkillLearnEntryView _learnRowTemplate;
+        TextMeshProUGUI _poolEmptyHint;
+        readonly List<SkillLearnEntryView> _learnRows = new();
+        readonly List<GameObject> _learnRowObjects = new();
 
         void Awake()
         {
@@ -178,7 +186,8 @@ namespace My.UI.SkillLoadout
                 }
             }
 
-            EnsurePassiveBarUi(root);
+            BindPassiveBar(root);
+            BindLearnUi(root);
             WireSkillSlotDropZones();
             WireDragLayerFromHierarchy();
 
@@ -197,7 +206,7 @@ namespace My.UI.SkillLoadout
             }
         }
 
-        void EnsurePassiveBarUi(Transform root)
+        void BindPassiveBar(Transform root)
         {
             var window = root.Find("Window");
             if (window == null)
@@ -206,52 +215,6 @@ namespace My.UI.SkillLoadout
             }
 
             var passiveRow = window.Find("PassiveBarRow");
-            if (passiveRow == null)
-            {
-                var barRow = window.Find("BarRow");
-                var template = barRow != null ? barRow.Find("Slot_3") : null;
-                if (template == null)
-                {
-                    return;
-                }
-
-                int insertAt = barRow.GetSiblingIndex() + 1;
-
-                var labelGo = new GameObject("PassiveBarLabel", typeof(RectTransform));
-                labelGo.transform.SetParent(window, false);
-                labelGo.transform.SetSiblingIndex(insertAt);
-                var labelLe = labelGo.AddComponent<LayoutElement>();
-                labelLe.preferredHeight = 24;
-                var labelTmp = labelGo.AddComponent<TextMeshProUGUI>();
-                labelTmp.text = "被动技能（右键槽位卸下）";
-                labelTmp.fontSize = 18;
-                labelTmp.alignment = TextAlignmentOptions.MidlineLeft;
-
-                var rowGo = new GameObject("PassiveBarRow", typeof(RectTransform));
-                rowGo.transform.SetParent(window, false);
-                rowGo.transform.SetSiblingIndex(insertAt + 1);
-                passiveRow = rowGo.transform;
-                var rowLe = rowGo.AddComponent<LayoutElement>();
-                rowLe.preferredHeight = 92;
-                var rowLayout = rowGo.AddComponent<HorizontalLayoutGroup>();
-                rowLayout.spacing = 8;
-                rowLayout.childAlignment = TextAnchor.MiddleCenter;
-                rowLayout.childControlWidth = false;
-                rowLayout.childControlHeight = false;
-
-                for (int i = 0; i < PlayerSkillSystem.PassiveSlotCount; i++)
-                {
-                    var clone = Instantiate(template.gameObject, passiveRow);
-                    clone.name = "PassiveSlot_" + i;
-                    var view = clone.GetComponent<SkillSlotView>();
-                    if (view != null)
-                    {
-                        view.slotKind = SkillLoadoutSlotKind.Passive;
-                        view.SlotIndex = i;
-                    }
-                }
-            }
-
             if (passiveRow != null)
             {
                 _passiveSlotViews = passiveRow.GetComponentsInChildren<SkillSlotView>(true);
@@ -260,6 +223,97 @@ namespace My.UI.SkillLoadout
                     v.slotKind = SkillLoadoutSlotKind.Passive;
                 }
             }
+        }
+
+        void BindLearnUi(Transform root)
+        {
+            var window = root.Find("Window");
+            if (window == null)
+            {
+                return;
+            }
+
+            _learnContent = window.Find("LearnSection/Viewport/Content");
+            _learnRowTemplate = _learnContent != null
+                ? _learnContent.Find("LearnRow_Template")?.GetComponent<SkillLearnEntryView>()
+                : null;
+            if (_learnRowTemplate != null)
+            {
+                _learnRowTemplate.gameObject.SetActive(false);
+            }
+
+            _poolEmptyHint = window.Find("PoolScroll/PoolEmptyHint")?.GetComponent<TextMeshProUGUI>();
+        }
+
+        void RefreshLearnList(int tabIndex)
+        {
+            if (_learnContent == null || _learnRowTemplate == null)
+            {
+                return;
+            }
+
+            ClearLearnRows();
+            var schools = SkillSchoolTable.Instance.AllSchools;
+            if (tabIndex < 0 || tabIndex >= schools.Count)
+            {
+                return;
+            }
+
+            var school = schools[tabIndex];
+            if (school?.SkillIds == null || CfgMgr.Cfgs == null)
+            {
+                return;
+            }
+
+            foreach (var entry in CfgMgr.Cfgs.TbSkillLearnEntry.DataList)
+            {
+                if (entry == null || string.IsNullOrEmpty(entry.SkillId))
+                {
+                    continue;
+                }
+
+                if (!SkillSchoolTable.Instance.SkillDefinedInSchool(school.Id, entry.SkillId))
+                {
+                    continue;
+                }
+
+                var rowGo = Instantiate(_learnRowTemplate.gameObject, _learnContent);
+                rowGo.SetActive(true);
+                var view = rowGo.GetComponent<SkillLearnEntryView>();
+                view.Bind(entry, OnLearnEntryClicked);
+                _learnRowObjects.Add(rowGo);
+                _learnRows.Add(view);
+            }
+        }
+
+        void ClearLearnRows()
+        {
+            for (int i = 0; i < _learnRowObjects.Count; i++)
+            {
+                if (_learnRowObjects[i] != null)
+                {
+                    Destroy(_learnRowObjects[i]);
+                }
+            }
+
+            _learnRowObjects.Clear();
+            _learnRows.Clear();
+        }
+
+        void OnLearnEntryClicked(int entryId)
+        {
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (mgr == null)
+            {
+                return;
+            }
+
+            if (!mgr.TryLearnSkillFromEntry(entryId, out var reason))
+            {
+                Debug.LogWarning("Learn skill failed: " + reason);
+            }
+
+            RefreshAll();
         }
 
         void WireSkillSlotDropZones()
@@ -401,6 +455,7 @@ namespace My.UI.SkillLoadout
         {
             var schools = SkillSchoolTable.Instance.AllSchools;
             if (tabIndex < 0 || tabIndex >= schools.Count) return;
+            _activeTabIndex = tabIndex;
             ActiveSchoolId = schools[tabIndex].Id;
 
             if (_tabButtons != null)
@@ -432,6 +487,7 @@ namespace My.UI.SkillLoadout
 
             if (_poolCells != null)
             {
+                int visibleCount = 0;
                 for (var i = 0; i < _poolCells.Length; i++)
                 {
                     if (i >= list.Count)
@@ -440,11 +496,18 @@ namespace My.UI.SkillLoadout
                         continue;
                     }
 
+                    visibleCount++;
                     _poolCells[i].SetVisible(true);
                     _poolCells[i].Bind(list[i], _poolSkillDropBehavior);
                 }
+
+                if (_poolEmptyHint != null)
+                {
+                    _poolEmptyHint.gameObject.SetActive(visibleCount <= 0);
+                }
             }
 
+            RefreshLearnList(tabIndex);
             RefreshSlotDisplays(sys);
         }
 

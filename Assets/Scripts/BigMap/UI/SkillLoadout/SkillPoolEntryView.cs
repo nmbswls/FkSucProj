@@ -21,7 +21,19 @@ namespace My.UI.SkillLoadout
             _skillDropBehavior = skillDropBehavior;
 
             if (label != null)
-                label.text = string.IsNullOrEmpty(skillId) ? string.Empty : skillId;
+            {
+                string display = skillId;
+                if (!string.IsNullOrEmpty(skillId))
+                {
+                    var cfg = SkillLibrary.GetSkillConfig(skillId);
+                    if (cfg != null && !string.IsNullOrEmpty(cfg.Desc))
+                    {
+                        display = cfg.Desc;
+                    }
+                }
+
+                label.text = display;
+            }
 
             if (icon != null)
             {
