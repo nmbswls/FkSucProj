@@ -26,6 +26,13 @@ namespace My.Player
         FixDmgReduceFinal,
 
         FixFallenAdd,
+
+        PartGearPoint_Mouth = 10,
+        PartGearPoint_Breast = 11,
+        PartGearPoint_Womb = 12,
+        PartGearPoint_Tail = 13,
+        PartGearPoint_Wing = 14,
+        PartGearPoint_Skin = 15,
     }
 
     // 2. 极简存储结构（用于叶子节点存储数据，省内存）
@@ -119,6 +126,7 @@ namespace My.Player
         Level,
         Gear,
         Talent,
+        BodyPart,
 
         Aggregator
     }

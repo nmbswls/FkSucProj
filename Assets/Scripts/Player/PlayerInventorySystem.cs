@@ -72,6 +72,10 @@ namespace My.Player.Bag
             ApplyWarehouseFromSave(savingData);
         }
 
+        public void PostInit(PlayerSystemManager owner)
+        {
+        }
+
         static ItemStack HydratePersistedStack(string itemId, long count, long itemInstanceId)
         {
             return ItemCatalog.HydrateItemStackFromPersist(itemId, count, itemInstanceId);

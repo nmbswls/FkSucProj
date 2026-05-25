@@ -18,6 +18,8 @@ namespace My.Player
     {
         void InitSystem(GameLogicManager ctx, SaveData savingData);
 
+        void PostInit(PlayerSystemManager owner);
+
         void Tick(float dt);
     }
 
@@ -52,6 +54,8 @@ namespace My.Player
         public PlayerHumanQuickBarSystem HumanQuickBar { get; private set; }
 
         public PlayerRuneSystem RuneSystem { get; private set; }
+
+        public PlayerBodyPartSystem BodyPartSystem { get; private set; }
 
         public PlayerEquipmentManager EquipmentManager { get; private set; }
 
@@ -104,6 +108,7 @@ namespace My.Player
             SkillSystem = new PlayerSkillSystem();
             HumanQuickBar = new PlayerHumanQuickBarSystem(this);
             RuneSystem = new PlayerRuneSystem(this);
+            BodyPartSystem = new PlayerBodyPartSystem(this);
 
             MagicClothes = new PlayerMagicClothesManager(this);
 
@@ -132,6 +137,13 @@ namespace My.Player
 
         public void InitPlayerData(SaveData savingData)
         {
+            PreparePlayerSaveContext(savingData);
+            InitPlayerSystems(savingData);
+            AssemblePlayerSystems();
+        }
+
+        void PreparePlayerSaveContext(SaveData savingData)
+        {
             if (savingData != null)
             {
                 SaveData.EnsureHydrated(savingData);
@@ -148,8 +160,12 @@ namespace My.Player
             }
 
             Level = savingData.PlayerData.Level;
+        }
 
+        void InitPlayerSystems(SaveData savingData)
+        {
             ProgressionSystem.InitSystem(logicManager, savingData);
+            BodyPartSystem.InitSystem(logicManager, savingData);
             QuestSystem.InitSystem(logicManager, savingData);
             DialogTriggerSystem.InitSystem(logicManager, savingData);
             FuncOpenSystem.InitSystem(logicManager, savingData);
@@ -161,8 +177,31 @@ namespace My.Player
 
             EquipmentManager = new PlayerEquipmentManager(this);
             EquipmentManager.InitializeFromSave(savingData);
-            EquipmentManager.BindProgressionGear();
             RumorIntel.InitSystem(logicManager, savingData);
+        }
+
+        void AssemblePlayerSystems()
+        {
+            foreach (var system in EnumeratePlayerSystems())
+            {
+                system.PostInit(this);
+            }
+
+            EquipmentManager.PostInit();
+        }
+
+        IEnumerable<IPlayerSystem> EnumeratePlayerSystems()
+        {
+            yield return ProgressionSystem;
+            yield return BodyPartSystem;
+            yield return QuestSystem;
+            yield return DialogTriggerSystem;
+            yield return FuncOpenSystem;
+            yield return InventorySystem;
+            yield return SkillSystem;
+            yield return HumanQuickBar;
+            yield return RuneSystem;
+            yield return RumorIntel;
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -184,6 +223,7 @@ namespace My.Player
             MagicClothes.SaveTo(data.PlayerData);
             ProgressionSystem?.TalentManager?.SaveTo(data.PlayerData);
             EquipmentManager?.SaveTo(data.PlayerData);
+            BodyPartSystem?.WriteToSave(data.PlayerData);
             RumorIntel.SaveTo(data.PlayerData);
 
 

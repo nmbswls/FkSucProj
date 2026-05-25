@@ -10,7 +10,7 @@ namespace My.UI
     {
         Skills = 0,
         Talents = 1,
-        Gear = 2,
+        BodyPart = 2,
         World = 3,
         Runes = 4,
     }
@@ -84,7 +84,7 @@ namespace My.UI
 
         public static void OpenTalents() => Open(ProgressionHubTab.Talents);
 
-        public static void OpenGear() => Open(ProgressionHubTab.Gear);
+        public static void OpenBodyPart() => Open(ProgressionHubTab.BodyPart);
 
         public static void OpenWorld() => Open(ProgressionHubTab.World);
 
@@ -209,7 +209,7 @@ namespace My.UI
             if (_tabGear != null)
             {
                 _tabGear.onClick.RemoveAllListeners();
-                _tabGear.onClick.AddListener(() => SelectTab(ProgressionHubTab.Gear));
+                _tabGear.onClick.AddListener(() => SelectTab(ProgressionHubTab.BodyPart));
             }
 
             if (_tabWorld != null)
@@ -308,7 +308,7 @@ namespace My.UI
                 case ProgressionHubTab.Talents:
                     _talent?.Setup(data);
                     break;
-                case ProgressionHubTab.Gear:
+                case ProgressionHubTab.BodyPart:
                     _gear?.Setup(data);
                     break;
                 case ProgressionHubTab.World:
@@ -357,7 +357,7 @@ namespace My.UI
 
             if (_gearHost != null)
             {
-                _gearHost.gameObject.SetActive(tab == ProgressionHubTab.Gear);
+                _gearHost.gameObject.SetActive(tab == ProgressionHubTab.BodyPart);
             }
 
             if (_worldHost != null)
@@ -389,7 +389,7 @@ namespace My.UI
                 case ProgressionHubTab.Talents:
                     _talent?.Show();
                     break;
-                case ProgressionHubTab.Gear:
+                case ProgressionHubTab.BodyPart:
                     _gear?.Show();
                     break;
                 case ProgressionHubTab.World:
@@ -409,7 +409,7 @@ namespace My.UI
                 {
                     case ProgressionHubTab.Skills:
                         return _skill;
-                    case ProgressionHubTab.Gear:
+                    case ProgressionHubTab.BodyPart:
                         return _gear;
                     default:
                         return null;

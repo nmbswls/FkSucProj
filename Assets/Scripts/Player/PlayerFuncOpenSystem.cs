@@ -38,6 +38,10 @@ namespace My
             }
         }
 
+        public void PostInit(PlayerSystemManager owner)
+        {
+        }
+
         public void Tick(float dt)
         {
 

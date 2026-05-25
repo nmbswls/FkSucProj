@@ -103,6 +103,8 @@ namespace My.Saving
         // 角色装备（与主背包互斥：穿上时从背包扣除；存档需与背包一致）
         public List<EquippedGearEntry> EquippedGear = new();
 
+        public List<BodyPartPersist> BodyParts = new();
+
         public List<string> OwnedRuneIds = new();
         public List<RuneEquipPersist> EquippedRunes = new();
     }
@@ -131,11 +133,23 @@ namespace My.Saving
     [Serializable]
     public class EquippedGearEntry
     {
-        public int Category;
-        public int SlotIndex;
+        public int PartId;
+        public int EquippedIndex;
         public string ItemId;
         public long ItemInstanceId;
         public long EquipAuxData;
+
+        // 旧档字段，读档时忽略
+        public int Category;
+        public int SlotIndex;
+    }
+
+    [Serializable]
+    public class BodyPartPersist
+    {
+        public int PartId;
+        public int Level;
+        public long Exp;
     }
 
     [Serializable]

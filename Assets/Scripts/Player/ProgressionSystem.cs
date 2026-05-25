@@ -17,10 +17,16 @@ namespace My.Player
         public PlayerTalentManager TalentManager { get; private set; }
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
+        public ProgressionAggregator BodyPartAggregator { get; private set; }
+        public bool IsBodyPartBound { get; private set; }
+
+        BodyPartProgressionProvider _boundBodyPartProvider;
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             LogicManager = ctx;
+            IsBodyPartBound = false;
+            _boundBodyPartProvider = null;
 
             TalentManager = new PlayerTalentManager();
             TalentManager.Initialize(ctx, savingData);
@@ -31,15 +37,42 @@ namespace My.Player
             BaseStats = new PlayerMain();
             BaseStats.Initialize(savingData);
 
+            BodyPartAggregator = new ProgressionAggregator("BodyPart");
+
             ProgressionRoot = new ProgressionAggregator("Root");
             ProgressionRoot.AddChild(BaseStats.MainAggregator);
             ProgressionRoot.AddChild(GearManager.GearAggregator);
             ProgressionRoot.AddChild(TalentManager.TalentAggregator);
+            ProgressionRoot.AddChild(BodyPartAggregator);
 
             ProgressionRoot.OnStatsChanged += (src) =>
             {
                 RefreshPlayerBigMapAttr();
+                var player = LogicManager?.playerLogicEntity;
+                player?.RefreshProgressionYCAttrs();
             };
+        }
+
+        public void PostInit(PlayerSystemManager owner)
+        {
+            BindBodyPartSystem(owner?.BodyPartSystem);
+        }
+
+        void BindBodyPartSystem(PlayerBodyPartSystem bodyPartSystem)
+        {
+            if (BodyPartAggregator == null || bodyPartSystem == null)
+            {
+                return;
+            }
+
+            if (_boundBodyPartProvider != null)
+            {
+                BodyPartAggregator.RemoveChild(_boundBodyPartProvider);
+            }
+
+            _boundBodyPartProvider = bodyPartSystem.ProgressionProvider;
+            BodyPartAggregator.AddChild(_boundBodyPartProvider);
+            IsBodyPartBound = true;
         }
 
         public void Tick(float dt)
@@ -125,7 +158,7 @@ namespace My.Player
         public void OnFallenAmountUpdate(long fallednAmount)
         {
             //
-            // ùùùùùù
+            // ??????
         }
     }
 

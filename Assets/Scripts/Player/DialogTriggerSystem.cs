@@ -20,6 +20,10 @@ namespace My.Player
             InitAutoTriggerDialogs();
         }
 
+        public void PostInit(PlayerSystemManager owner)
+        {
+        }
+
         private Dictionary<string, DialogMetaInfo> _autoDialogs = new();
 
         private void InitAutoTriggerDialogs()

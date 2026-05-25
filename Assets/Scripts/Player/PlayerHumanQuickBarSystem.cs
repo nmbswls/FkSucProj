@@ -43,6 +43,10 @@ namespace My.Player
             PruneInvalidSlots();
         }
 
+        public void PostInit(PlayerSystemManager owner)
+        {
+        }
+
         public void WriteToSave(PlayerData pd)
         {
             pd.WeaponQuickSlotOverrides = new List<QuickSlotBindingPersist>(WeaponSlots.Length);

@@ -9,39 +9,24 @@ using UnityEngine;
 
 namespace My.Player
 {
-    public enum EGearCategory
-    {
-        Equip = 0,
-        Pocket = 1,
-        Insertion = 2,
-        Misc = 3,
-    }
-
-    public static class GearCategoryRules
+    public static class ItemGearRules
     {
         public const string MiscGearStackTag = "gear_misc";
 
-        public static bool ItemMatchesCategory(ItemData def, EGearCategory cat)
+        public static bool IsGearItem(ItemData def)
         {
-            if (def == null)
+            if (def == null || def.GearBodyPart == EBodyPart.None)
             {
                 return false;
             }
 
-            switch (cat)
+            switch (def.ItemType)
             {
-                case EGearCategory.Equip:
-                    return def.ItemType == EItemType.Equip;
-                case EGearCategory.Pocket:
-                    return def.ItemType == EItemType.Pocket;
-                case EGearCategory.Insertion:
-                    return def.ItemType == EItemType.Insertion;
-                case EGearCategory.Misc:
-                    if (def.ItemType != EItemType.Normal)
-                    {
-                        return false;
-                    }
-
+                case EItemType.Equip:
+                case EItemType.Pocket:
+                case EItemType.Insertion:
+                    return true;
+                case EItemType.Normal:
                     if (def.StackTags == null)
                     {
                         return false;
@@ -60,6 +45,21 @@ namespace My.Player
                     return false;
             }
         }
+
+        public static bool MatchesPart(ItemData def, EBodyPart part)
+        {
+            return def != null && part != EBodyPart.None && def.GearBodyPart == part && IsGearItem(def);
+        }
+
+        public static int GetSlotCost(ItemData def)
+        {
+            if (def == null)
+            {
+                return 1;
+            }
+
+            return def.GearSlotCost > 0 ? def.GearSlotCost : 1;
+        }
     }
 
     public sealed class EquippedGearRuntimeSlot
@@ -71,18 +71,16 @@ namespace My.Player
 
     public sealed class PlayerEquipmentManager
     {
-        public const int CategoryCount = 4;
-
         readonly PlayerSystemManager _playerMgr;
-        readonly List<EquippedGearRuntimeSlot>[] _slots;
+        readonly List<EquippedGearRuntimeSlot>[] _partSlots;
 
         public PlayerEquipmentManager(PlayerSystemManager playerMgr)
         {
             _playerMgr = playerMgr;
-            _slots = new List<EquippedGearRuntimeSlot>[CategoryCount];
-            for (int i = 0; i < CategoryCount; i++)
+            _partSlots = new List<EquippedGearRuntimeSlot>[BodyPartUtil.PartSlotCount];
+            for (int i = 0; i < _partSlots.Length; i++)
             {
-                _slots[i] = new List<EquippedGearRuntimeSlot>();
+                _partSlots[i] = new List<EquippedGearRuntimeSlot>();
             }
         }
 
@@ -90,115 +88,168 @@ namespace My.Player
         PlayerInventorySystem Inv => _playerMgr?.InventorySystem;
         PlayerProgressionSystem Prog => _playerMgr?.ProgressionSystem;
 
-        public int GetSlotCap(EGearCategory cat)
+        public int GetPartGearPointCap(EBodyPart part)
         {
-            int bas = 1;
-            if (cat == EGearCategory.Misc && Prog != null)
+            if (part == EBodyPart.None)
             {
-                int bonus = (int)Prog.GetFinalAttribute((int)EYCAttribute.ExtraJingYuanSlot);
-                bas += Mathf.Max(0, bonus);
+                return 0;
             }
 
-            return bas;
+            var def = BodyPartCatalog.GetPartDef(part);
+            int cap = def?.BaseGearPoint ?? 1;
+            var ycAttr = BodyPartCatalog.MapPartToGearPointYc(part);
+            if (Prog != null && ycAttr != EYCAttribute.None)
+            {
+                cap += (int)Prog.GetFinalAttribute((int)ycAttr);
+            }
+
+            return Mathf.Max(0, cap);
         }
 
-        void EnsureCategoryStructure(EGearCategory cat)
+        public int GetUsedGearPoint(EBodyPart part)
         {
-            int cap = GetSlotCap(cat);
-            var list = _slots[(int)cat];
-            while (list.Count < cap)
+            var list = GetPartList(part);
+            if (list == null)
             {
-                list.Add(null);
+                return 0;
             }
 
-            while (list.Count > cap)
+            int used = 0;
+            for (int i = 0; i < list.Count; i++)
             {
-                int last = list.Count - 1;
-                if (list[last] != null)
+                var slot = list[i];
+                if (slot == null || string.IsNullOrEmpty(slot.ItemId))
                 {
-                    if (!TryUnequip(cat, last, out _))
-                    {
-                        break;
-                    }
+                    continue;
                 }
 
-                list.RemoveAt(last);
+                var def = ItemCatalog.GetItemDef(slot.ItemId);
+                used += ItemGearRules.GetSlotCost(def);
             }
+
+            return used;
         }
 
-        public void EnsureAllCategoriesSized()
+        List<EquippedGearRuntimeSlot> GetPartList(EBodyPart part)
         {
-            for (int i = 0; i < CategoryCount; i++)
-            {
-                EnsureCategoryStructure((EGearCategory)i);
-            }
-        }
-
-        public EquippedGearRuntimeSlot GetSlot(EGearCategory cat, int index)
-        {
-            var list = _slots[(int)cat];
-            if (index < 0 || index >= list.Count)
+            int idx = BodyPartUtil.ToSlotIndex(part);
+            if (idx < 0 || idx >= _partSlots.Length)
             {
                 return null;
             }
 
-            return list[index];
+            return _partSlots[idx];
+        }
+
+        public void EnsureAllPartsBudget()
+        {
+            foreach (var def in BodyPartCatalog.GetAllPartsSorted())
+            {
+                EnsurePartBudget(def.PartId);
+            }
+        }
+
+        void EnsurePartBudget(EBodyPart part)
+        {
+            var list = GetPartList(part);
+            if (list == null)
+            {
+                return;
+            }
+
+            while (GetUsedGearPoint(part) > GetPartGearPointCap(part) && list.Count > 0)
+            {
+                int last = list.Count - 1;
+                if (!TryUnequip(part, last, out _))
+                {
+                    list.RemoveAt(last);
+                    break;
+                }
+            }
+        }
+
+        public IReadOnlyList<EquippedGearRuntimeSlot> GetEquippedOnPart(EBodyPart part)
+        {
+            return GetPartList(part) ?? (IReadOnlyList<EquippedGearRuntimeSlot>)Array.Empty<EquippedGearRuntimeSlot>();
+        }
+
+        public EquippedGearRuntimeSlot GetEquippedSlot(EBodyPart part, int equippedIndex)
+        {
+            var list = GetPartList(part);
+            if (list == null || equippedIndex < 0 || equippedIndex >= list.Count)
+            {
+                return null;
+            }
+
+            return list[equippedIndex];
         }
 
         public void InitializeFromSave(SaveData save)
         {
-            for (int c = 0; c < CategoryCount; c++)
+            for (int i = 0; i < _partSlots.Length; i++)
             {
-                _slots[c].Clear();
+                _partSlots[i].Clear();
             }
 
-            if (save?.PlayerData?.EquippedGear == null || save.PlayerData.EquippedGear.Count == 0)
+            if (save?.PlayerData?.EquippedGear != null)
             {
-                EnsureAllCategoriesSized();
-                return;
+                var grouped = new Dictionary<EBodyPart, List<EquippedGearEntry>>();
+                foreach (var e in save.PlayerData.EquippedGear)
+                {
+                    if (e == null || string.IsNullOrEmpty(e.ItemId))
+                    {
+                        continue;
+                    }
+
+                    if (!Enum.IsDefined(typeof(EBodyPart), e.PartId))
+                    {
+                        continue;
+                    }
+
+                    var part = (EBodyPart)e.PartId;
+                    if (!grouped.TryGetValue(part, out var bucket))
+                    {
+                        bucket = new List<EquippedGearEntry>();
+                        grouped[part] = bucket;
+                    }
+
+                    bucket.Add(e);
+                }
+
+                foreach (var kv in grouped)
+                {
+                    var list = GetPartList(kv.Key);
+                    if (list == null)
+                    {
+                        continue;
+                    }
+
+                    kv.Value.Sort((a, b) => a.EquippedIndex.CompareTo(b.EquippedIndex));
+                    for (int i = 0; i < kv.Value.Count; i++)
+                    {
+                        var e = kv.Value[i];
+                        var def = ItemCatalog.GetItemDef(e.ItemId);
+                        ItemInstanceInfo instCopy = null;
+                        if (def != null && def.ItemType == EItemType.Equip)
+                        {
+                            instCopy = new ItemInstance4Equip { RandVal = e.EquipAuxData };
+                        }
+                        else if (def != null && def.ItemType == EItemType.Insertion)
+                        {
+                            instCopy = new ItemInstance4Insertion();
+                        }
+
+                        list.Add(new EquippedGearRuntimeSlot
+                        {
+                            ItemId = e.ItemId,
+                            ItemInstanceId = e.ItemInstanceId,
+                            InstanceInfoCopy = instCopy,
+                        });
+                    }
+                }
             }
 
-            foreach (var e in save.PlayerData.EquippedGear)
-            {
-                if (e == null || string.IsNullOrEmpty(e.ItemId))
-                {
-                    continue;
-                }
-
-                if (e.Category < 0 || e.Category >= CategoryCount)
-                {
-                    continue;
-                }
-
-                var cat = (EGearCategory)e.Category;
-                EnsureCategoryStructure(cat);
-                var list = _slots[(int)cat];
-                while (list.Count <= e.SlotIndex)
-                {
-                    list.Add(null);
-                }
-
-                if (e.SlotIndex < 0 || e.SlotIndex >= list.Count)
-                {
-                    continue;
-                }
-
-                var def = ItemCatalog.GetItemDef(e.ItemId);
-                ItemInstanceInfo instCopy = null;
-                if (def != null && def.ItemType == EItemType.Equip)
-                {
-                    instCopy = new ItemInstance4Equip { RandVal = e.EquipAuxData };
-                }
-
-                list[e.SlotIndex] = new EquippedGearRuntimeSlot
-                {
-                    ItemId = e.ItemId,
-                    ItemInstanceId = e.ItemInstanceId,
-                    InstanceInfoCopy = instCopy,
-                };
-            }
-
-            EnsureAllCategoriesSized();
+            EnsureAllPartsBudget();
             TryReconcileMainBagAgainstEquipped();
         }
 
@@ -211,11 +262,15 @@ namespace My.Player
 
             pd.EquippedGear ??= new List<EquippedGearEntry>();
             pd.EquippedGear.Clear();
-            for (int ci = 0; ci < CategoryCount; ci++)
+            foreach (var def in BodyPartCatalog.GetAllPartsSorted())
             {
-                var cat = (EGearCategory)ci;
-                EnsureCategoryStructure(cat);
-                var list = _slots[ci];
+                var part = def.PartId;
+                var list = GetPartList(part);
+                if (list == null)
+                {
+                    continue;
+                }
+
                 for (int i = 0; i < list.Count; i++)
                 {
                     var s = list[i];
@@ -232,14 +287,20 @@ namespace My.Player
 
                     pd.EquippedGear.Add(new EquippedGearEntry
                     {
-                        Category = ci,
-                        SlotIndex = i,
+                        PartId = (int)part,
+                        EquippedIndex = i,
                         ItemId = s.ItemId,
                         ItemInstanceId = s.ItemInstanceId,
                         EquipAuxData = aux,
                     });
                 }
             }
+        }
+
+        public void PostInit()
+        {
+            BindProgressionGear();
+            Prog?.ProgressionRoot?.ForceDirty();
         }
 
         public void BindProgressionGear()
@@ -266,10 +327,15 @@ namespace My.Player
                 return;
             }
 
-            for (int ci = 0; ci < CategoryCount; ci++)
+            foreach (var def in BodyPartCatalog.GetAllPartsSorted())
             {
-                var cat = (EGearCategory)ci;
-                var list = _slots[ci];
+                var part = def.PartId;
+                var list = GetPartList(part);
+                if (list == null)
+                {
+                    continue;
+                }
+
                 for (int i = 0; i < list.Count; i++)
                 {
                     var s = list[i];
@@ -278,14 +344,19 @@ namespace My.Player
                         continue;
                     }
 
-                    RemoveGearBuffForSlot(logic, cat, i, s.ItemId);
+                    RemoveGearBuffForSlot(logic, part, i, s.ItemId);
                 }
             }
 
-            for (int ci = 0; ci < CategoryCount; ci++)
+            foreach (var def in BodyPartCatalog.GetAllPartsSorted())
             {
-                var cat = (EGearCategory)ci;
-                var list = _slots[ci];
+                var part = def.PartId;
+                var list = GetPartList(part);
+                if (list == null)
+                {
+                    continue;
+                }
+
                 for (int i = 0; i < list.Count; i++)
                 {
                     var s = list[i];
@@ -294,14 +365,14 @@ namespace My.Player
                         continue;
                     }
 
-                    ApplyGearBuffForSlot(logic, cat, i, s.ItemId);
+                    ApplyGearBuffForSlot(logic, part, i, s.ItemId);
                 }
             }
         }
 
-        static long MakeGearBuffSrcKey(EGearCategory cat, int slotIndex) => (long)cat * 4096L + slotIndex + 1L;
+        static long MakeGearBuffSrcKey(EBodyPart part, int equippedIndex) => (long)part * 4096L + equippedIndex + 1L;
 
-        void ApplyGearBuffForSlot(GameLogicManager logic, EGearCategory cat, int slotIndex, string itemId)
+        void ApplyGearBuffForSlot(GameLogicManager logic, EBodyPart part, int equippedIndex, string itemId)
         {
             var def = ItemCatalog.GetItemDef(itemId);
             if (def == null || string.IsNullOrEmpty(def.SpecialBuffId))
@@ -315,11 +386,11 @@ namespace My.Player
                 return;
             }
 
-            long src = MakeGearBuffSrcKey(cat, slotIndex);
+            long src = MakeGearBuffSrcKey(part, equippedIndex);
             logic.globalBuffManager.RequestAddBuff(player.Id, def.SpecialBuffId, 1, -1f, null, src);
         }
 
-        void RemoveGearBuffForSlot(GameLogicManager logic, EGearCategory cat, int slotIndex, string itemId)
+        void RemoveGearBuffForSlot(GameLogicManager logic, EBodyPart part, int equippedIndex, string itemId)
         {
             var def = ItemCatalog.GetItemDef(itemId);
             if (def == null || string.IsNullOrEmpty(def.SpecialBuffId))
@@ -333,22 +404,21 @@ namespace My.Player
                 return;
             }
 
-            long src = MakeGearBuffSrcKey(cat, slotIndex);
+            long src = MakeGearBuffSrcKey(part, equippedIndex);
             logic.globalBuffManager.RemoveAllBuffById(player.Id, def.SpecialBuffId, 0, null, src);
         }
 
-        public bool TryUnequip(EGearCategory cat, int slotIndex, out string failReason)
+        public bool TryUnequip(EBodyPart part, int equippedIndex, out string failReason)
         {
             failReason = null;
-            EnsureCategoryStructure(cat);
-            var list = _slots[(int)cat];
-            if (slotIndex < 0 || slotIndex >= list.Count)
+            var list = GetPartList(part);
+            if (list == null || equippedIndex < 0 || equippedIndex >= list.Count)
             {
                 failReason = "bad_slot";
                 return false;
             }
 
-            var slot = list[slotIndex];
+            var slot = list[equippedIndex];
             if (slot == null || string.IsNullOrEmpty(slot.ItemId))
             {
                 failReason = "empty";
@@ -357,7 +427,7 @@ namespace My.Player
 
             if (Logic != null)
             {
-                RemoveGearBuffForSlot(Logic, cat, slotIndex, slot.ItemId);
+                RemoveGearBuffForSlot(Logic, part, equippedIndex, slot.ItemId);
             }
 
             var back = ItemCatalog.CreateItemStack(slot.ItemId, 1);
@@ -367,7 +437,7 @@ namespace My.Player
                 back.InstanceInfo = CloneInstanceInfo(slot.InstanceInfoCopy);
             }
 
-            list[slotIndex] = null;
+            list.RemoveAt(equippedIndex);
 
             if (back != null && Inv != null)
             {
@@ -375,10 +445,10 @@ namespace My.Player
                 if (put < 1)
                 {
                     failReason = "bag_full";
-                    list[slotIndex] = slot;
+                    list.Insert(equippedIndex, slot);
                     if (Logic != null)
                     {
-                        ApplyGearBuffForSlot(Logic, cat, slotIndex, slot.ItemId);
+                        ApplyGearBuffForSlot(Logic, part, equippedIndex, slot.ItemId);
                     }
 
                     return false;
@@ -390,14 +460,12 @@ namespace My.Player
             return true;
         }
 
-        public bool TryEquipFromMainBagSlot(EGearCategory cat, int gearSlotIndex, int mainBagFlatIndex, out string failReason)
+        public bool TryEquipFromMainBag(EBodyPart part, int mainBagFlatIndex, out string failReason)
         {
             failReason = null;
-            EnsureCategoryStructure(cat);
-            var list = _slots[(int)cat];
-            if (gearSlotIndex < 0 || gearSlotIndex >= list.Count)
+            if (part == EBodyPart.None)
             {
-                failReason = "bad_gear_slot";
+                failReason = "bad_part";
                 return false;
             }
 
@@ -415,9 +483,16 @@ namespace My.Player
             }
 
             var def = ItemCatalog.GetItemDef(stack.ItemID);
-            if (!GearCategoryRules.ItemMatchesCategory(def, cat))
+            if (!ItemGearRules.MatchesPart(def, part))
             {
-                failReason = "wrong_category";
+                failReason = "wrong_part";
+                return false;
+            }
+
+            int cost = ItemGearRules.GetSlotCost(def);
+            if (GetUsedGearPoint(part) + cost > GetPartGearPointCap(part))
+            {
+                failReason = "no_gear_point";
                 return false;
             }
 
@@ -430,14 +505,6 @@ namespace My.Player
                 }
             }
 
-            if (list[gearSlotIndex] != null)
-            {
-                if (!TryUnequip(cat, gearSlotIndex, out failReason))
-                {
-                    return false;
-                }
-            }
-
             long removed = Inv.MainBag.RemoveAt(mainBagFlatIndex, 1);
             if (removed < 1)
             {
@@ -446,17 +513,18 @@ namespace My.Player
             }
 
             var instCopy = CloneInstanceInfo(stack.InstanceInfo);
-
-            list[gearSlotIndex] = new EquippedGearRuntimeSlot
+            var list = GetPartList(part);
+            int equippedIndex = list.Count;
+            list.Add(new EquippedGearRuntimeSlot
             {
                 ItemId = stack.ItemID,
                 ItemInstanceId = stack.ItemInstanceId,
                 InstanceInfoCopy = instCopy,
-            };
+            });
 
             if (Logic != null && Logic.playerLogicEntity != null)
             {
-                ApplyGearBuffForSlot(Logic, cat, gearSlotIndex, stack.ItemID);
+                ApplyGearBuffForSlot(Logic, part, equippedIndex, stack.ItemID);
             }
 
             Prog?.GearManager?.RebuildStatProvidersFromEquipment();
@@ -491,10 +559,14 @@ namespace My.Player
                 return;
             }
 
-            for (int ci = 0; ci < CategoryCount; ci++)
+            foreach (var def in BodyPartCatalog.GetAllPartsSorted())
             {
-                var cat = (EGearCategory)ci;
-                var list = _slots[ci];
+                var list = GetPartList(def.PartId);
+                if (list == null)
+                {
+                    continue;
+                }
+
                 for (int i = 0; i < list.Count; i++)
                 {
                     var s = list[i];
@@ -547,27 +619,32 @@ namespace My.Player
             }
         }
 
-        public IEnumerable<(EGearCategory cat, int index, string itemId)> EnumerateEquipped()
+        public IEnumerable<(EBodyPart part, int index, string itemId)> EnumerateEquipped()
         {
-            for (int ci = 0; ci < CategoryCount; ci++)
+            foreach (var def in BodyPartCatalog.GetAllPartsSorted())
             {
-                var cat = (EGearCategory)ci;
-                var list = _slots[ci];
+                var part = def.PartId;
+                var list = GetPartList(part);
+                if (list == null)
+                {
+                    continue;
+                }
+
                 for (int i = 0; i < list.Count; i++)
                 {
                     var s = list[i];
                     if (s != null && !string.IsNullOrEmpty(s.ItemId))
                     {
-                        yield return (cat, i, s.ItemId);
+                        yield return (part, i, s.ItemId);
                     }
                 }
             }
         }
 
-        public List<(int bagFlatIndex, ItemStack stack)> ListMainBagCandidates(EGearCategory cat)
+        public List<(int bagFlatIndex, ItemStack stack)> ListMainBagCandidates(EBodyPart part)
         {
             var r = new List<(int, ItemStack)>();
-            if (Inv?.MainBag == null)
+            if (Inv?.MainBag == null || part == EBodyPart.None)
             {
                 return r;
             }
@@ -582,7 +659,7 @@ namespace My.Player
                 }
 
                 var def = ItemCatalog.GetItemDef(st.ItemID);
-                if (GearCategoryRules.ItemMatchesCategory(def, cat))
+                if (ItemGearRules.MatchesPart(def, part))
                 {
                     r.Add((i, st));
                 }
@@ -597,13 +674,32 @@ namespace My.Player
                 }
 
                 var def = ItemCatalog.GetItemDef(st.ItemID);
-                if (GearCategoryRules.ItemMatchesCategory(def, cat))
+                if (ItemGearRules.MatchesPart(def, part))
                 {
                     r.Add((bag.BasicCapacity + j, st));
                 }
             }
 
             return r;
+        }
+    }
+
+    static class BodyPartUtil
+    {
+        public const int PartSlotCount = 7;
+
+        public static int ToSlotIndex(EBodyPart part)
+        {
+            return part switch
+            {
+                EBodyPart.Mouth => 1,
+                EBodyPart.Breast => 2,
+                EBodyPart.Womb => 3,
+                EBodyPart.Tail => 4,
+                EBodyPart.Wing => 5,
+                EBodyPart.Skin => 6,
+                _ => -1,
+            };
         }
     }
 }

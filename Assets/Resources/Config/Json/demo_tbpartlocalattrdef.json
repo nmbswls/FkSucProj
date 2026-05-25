@@ -1,0 +1,27 @@
+[
+  {
+    "attr_id": 1,
+    "display_name": "敏感度",
+    "value_scale": 10000
+  },
+  {
+    "attr_id": 2,
+    "display_name": "耐受",
+    "value_scale": 10000
+  },
+  {
+    "attr_id": 3,
+    "display_name": "体液增益",
+    "value_scale": 10000
+  },
+  {
+    "attr_id": 4,
+    "display_name": "自控抵抗",
+    "value_scale": 10000
+  },
+  {
+    "attr_id": 5,
+    "display_name": "外泄",
+    "value_scale": 10000
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "part_id": 1,
+    "display_name": "口",
+    "max_level": 5,
+    "base_gear_point": 1,
+    "icon": "",
+    "sort_order": 1,
+    "unlock_conds": []
+  },
+  {
+    "part_id": 2,
+    "display_name": "胸",
+    "max_level": 5,
+    "base_gear_point": 1,
+    "icon": "",
+    "sort_order": 2,
+    "unlock_conds": []
+  },
+  {
+    "part_id": 3,
+    "display_name": "腹",
+    "max_level": 5,
+    "base_gear_point": 1,
+    "icon": "",
+    "sort_order": 3,
+    "unlock_conds": []
+  },
+  {
+    "part_id": 4,
+    "display_name": "尾",
+    "max_level": 5,
+    "base_gear_point": 1,
+    "icon": "",
+    "sort_order": 4,
+    "unlock_conds": []
+  },
+  {
+    "part_id": 5,
+    "display_name": "翼",
+    "max_level": 5,
+    "base_gear_point": 1,
+    "icon": "",
+    "sort_order": 5,
+    "unlock_conds": []
+  },
+  {
+    "part_id": 6,
+    "display_name": "肤",
+    "max_level": 5,
+    "base_gear_point": 2,
+    "icon": "",
+    "sort_order": 6,
+    "unlock_conds": []
+  }
+]

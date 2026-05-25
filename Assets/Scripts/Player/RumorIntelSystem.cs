@@ -31,6 +31,10 @@ namespace My.Player
             }
         }
 
+        public void PostInit(PlayerSystemManager owner)
+        {
+        }
+
         public void Tick(float dt)
         {
         }

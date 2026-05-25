@@ -578,6 +578,10 @@ namespace My.Player
             }
         }
 
+        public void PostInit(PlayerSystemManager owner)
+        {
+        }
+
         /// <summary>
         /// 注册player事件
         /// </summary>

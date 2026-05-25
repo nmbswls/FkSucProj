@@ -94,6 +94,9 @@ public partial class Tables
     /// </summary>
     public demo.TbHumanWeapon TbHumanWeapon {get; }
     public demo.TbRuneData TbRuneData {get; }
+    public demo.TbBodyPartDef TbBodyPartDef {get; }
+    public demo.TbBodyPartLevel TbBodyPartLevel {get; }
+    public demo.TbPartLocalAttrDef TbPartLocalAttrDef {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -165,6 +168,9 @@ public partial class Tables
         TbSecretBaseCharacter = new demo.TbSecretBaseCharacter(loader("demo_tbsecretbasecharacter"));
         TbHumanWeapon = new demo.TbHumanWeapon(loader("demo_tbhumanweapon"));
         TbRuneData = new demo.TbRuneData(loader("demo_tbrunedata"));
+        TbBodyPartDef = new demo.TbBodyPartDef(loader("demo_tbbodypartdef"));
+        TbBodyPartLevel = new demo.TbBodyPartLevel(loader("demo_tbbodypartlevel"));
+        TbPartLocalAttrDef = new demo.TbPartLocalAttrDef(loader("demo_tbpartlocalattrdef"));
         ResolveRef();
     }
     
@@ -238,6 +244,9 @@ public partial class Tables
         TbSecretBaseCharacter.ResolveRef(this);
         TbHumanWeapon.ResolveRef(this);
         TbRuneData.ResolveRef(this);
+        TbBodyPartDef.ResolveRef(this);
+        TbBodyPartLevel.ResolveRef(this);
+        TbPartLocalAttrDef.ResolveRef(this);
     }
 }
 

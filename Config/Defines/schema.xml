@@ -98,6 +98,30 @@
         <var name="val" type="long" comment="固定加成"/>
     </bean>
 
+    <!-- 魅魔身体部位：Datas/body_part.xlsx -->
+    <enum name="EBodyPart">
+        <var name="None" value="0"/>
+        <var name="Mouth" value="1"/>
+        <var name="Breast" value="2"/>
+        <var name="Womb" value="3"/>
+        <var name="Tail" value="4"/>
+        <var name="Wing" value="5"/>
+        <var name="Skin" value="6"/>
+    </enum>
+
+    <enum name="EPartLocalAttribute">
+        <var name="None" value="0"/>
+        <var name="Sensitivity" value="1"/>
+        <var name="Endurance" value="2"/>
+        <var name="FluidGain" value="3"/>
+        <var name="ControlResist" value="4"/>
+        <var name="AuraLeak" value="5"/>
+    </enum>
+
+    <bean name="PartLocalStatBonus" tags="sep=,">
+        <var name="attr_id" type="int" comment="EPartLocalAttribute 整型"/>
+        <var name="val" type="long" comment="固定加成"/>
+    </bean>
 
     <!-- 战斗技能（原 SkillLibrary 硬编码，与 Config.Unit.EntitySkillCfg 字段对应） -->
     <enum name="ESkillCastConditionType">
