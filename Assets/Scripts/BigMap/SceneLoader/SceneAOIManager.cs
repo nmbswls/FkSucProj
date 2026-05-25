@@ -678,6 +678,25 @@ public class SceneAOIManager : MonoBehaviour
         }
     }
 
+    public void RefreshVisibleLoadedChunks()
+    {
+        var keys = new List<ChunkCoord>(_chunks.Keys);
+        foreach (var coord in keys)
+        {
+            if (!_chunks.TryGetValue(coord, out var rec))
+            {
+                continue;
+            }
+
+            if (!rec.desiredVisible || rec.loadState != LoadState.Loaded)
+            {
+                continue;
+            }
+
+            ForceUpdateOneChunk(coord);
+        }
+    }
+
     public void ForceUpdateOneChunk(ChunkCoord coord)
     {
         if(!_chunks.TryGetValue(coord, out var record))

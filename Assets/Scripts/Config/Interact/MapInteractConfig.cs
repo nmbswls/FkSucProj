@@ -27,11 +27,13 @@ namespace My.Config
 
             ActivateEventGroup,
             SpecialMoveTo,
+            PresentationMoveTo,
 
             StartStealth,
 
             SetLocalSwitch,
             UnsetLocalSwitch,
+            SetGlobalSwitch,
 
             OpenDialog,
 

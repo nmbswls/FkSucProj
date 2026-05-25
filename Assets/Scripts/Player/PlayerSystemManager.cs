@@ -246,6 +246,8 @@ namespace My.Player
                 Name = id,
                 AfterVal = 1,
             });
+
+            SceneAOIManager.Instance?.RefreshVisibleLoadedChunks();
         }
 
         public void InitBagInfo()

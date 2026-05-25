@@ -280,6 +280,42 @@ namespace My.Map
             }
             return 0;
         }
+
+        bool TryResolveNamedPoint(string paramName, out Vector2 logicPos)
+        {
+            logicPos = default;
+            var pName = Owner.GetRuntimeVariable(paramName);
+            if (string.IsNullOrEmpty(pName))
+            {
+                pName = paramName;
+            }
+
+            if (string.IsNullOrEmpty(pName))
+            {
+                return false;
+            }
+
+            var p = Owner.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(pName);
+            if (p == null)
+            {
+                return false;
+            }
+
+            logicPos = p.Value.Position;
+            return true;
+        }
+
+        void ApplyPendingTeleportTo(long playerId, Vector2 targetPos, float delaySec)
+        {
+            LogicFightEffectContext ctx = new LogicFightEffectContext(Owner.LogicManager, EFightCtxType.None, new EffectSourceInfo()
+            {
+                SrcType = ESourceType.Mechanism
+            });
+            ctx.TargetId = playerId;
+            ctx.CastVec1 = targetPos;
+            Owner.LogicManager.HandleLogicFightEffect(new MapAbilityEffectTeleportToCfg() { PendingTime = delaySec }, ctx);
+        }
+
         public bool TryTriggerInteract(int interactId)
         {
             if(!CheckTriggerInteract(interactId))
@@ -391,15 +427,7 @@ namespace My.Map
                         {
                             var player = Owner.LogicManager.playerLogicEntity;
 
-                            // 尝试获取覆盖的值
-                            var pName = Owner.GetRuntimeVariable(output.Param3);
-                            if (string.IsNullOrEmpty(pName))
-                            {
-                                pName = output.Param3;
-                            }
-
-                            var p = Owner.LogicManager.AreaManager.cacheDatabase.FindNamedPointByName(pName);
-                            if (p == null)
+                            if (!TryResolveNamedPoint(output.Param3, out var targetPos))
                             {
                                 Debug.Log("special move no point found");
                                 errOccur = true;
@@ -407,22 +435,52 @@ namespace My.Map
                             }
 
                             float delay = output.Param1 * 0.001f;
-                            LogicFightEffectContext ctx = new LogicFightEffectContext(Owner.LogicManager, EFightCtxType.None, new EffectSourceInfo()
-                            {
-                                SrcType = ESourceType.Mechanism
-                            });
-                            ctx.TargetId = player.Id;
-                            ctx.CastVec1 = p.Value.Position;
-
-
-                            //Debug.Log("special move yo");
                             Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: delay);
-                            Owner.LogicManager.viewer.DoPlayerSpecialMove(p.Value.Position, player.Pos, delay, () =>
+                            Owner.LogicManager.viewer.DoPlayerSpecialMove(targetPos, player.Pos, delay, () => { });
+                            ApplyPendingTeleportTo(player.Id, targetPos, delay);
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.PresentationMoveTo:
+                        {
+                            var player = Owner.LogicManager.playerLogicEntity;
+                            if (player == null)
                             {
+                                errOccur = true;
+                                break;
+                            }
 
-                            });
-                            Owner.LogicManager.HandleLogicFightEffect(new MapAbilityEffectTeleportToCfg() { PendingTime = delay }, ctx);
+                            if (!TryResolveNamedPoint(output.Param3, out var targetPos))
+                            {
+                                Debug.Log("presentation move no point found");
+                                errOccur = true;
+                                break;
+                            }
 
+                            float delay = output.Param1 * 0.001f;
+                            if (delay <= 0f)
+                            {
+                                delay = 0.5f;
+                            }
+
+                            MainGameManager.Instance?.interactSystem?.SetInteractPause(delay);
+                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: delay);
+                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: delay);
+                            Owner.LogicManager.viewer.DoPlayerPresentationMove(targetPos, player.Pos, delay, () => { });
+                            ApplyPendingTeleportTo(player.Id, targetPos, delay);
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.SetGlobalSwitch:
+                        {
+                            string switchName = output.Param3;
+                            if (string.IsNullOrEmpty(switchName))
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            Owner.LogicManager.playerDataManager?.SetVariable(switchName);
                         }
                         break;
 

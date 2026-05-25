@@ -177,6 +177,8 @@ public interface ISceneAbilityViewer
 
     void DoPlayerSpecialMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onCompelete = null);
 
+    void DoPlayerPresentationMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onReach = null);
+
     void ShowKaiYouCloseupWindow(long srcEntityId, string showName, float duration);
 
     void ShowHTangleCloseupWindow(long srcEntityId);

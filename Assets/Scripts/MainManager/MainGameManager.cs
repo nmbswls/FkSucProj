@@ -661,6 +661,18 @@ namespace My
             }
         }
 
+        public void DoPlayerPresentationMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onReach = null)
+        {
+            if (playerScenePresenter == null)
+            {
+                onReach?.Invoke();
+                return;
+            }
+
+            var targetWorld = GetWorldPosFromLogicPos(targetPos);
+            playerScenePresenter.PlayPresentationMove(targetWorld, duration, onReach);
+        }
+
         /// <summary>
         /// 等待击败战斗
         /// </summary>
