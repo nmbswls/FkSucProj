@@ -34,7 +34,7 @@ MonoBehaviour:
         Param3: 
         Param4: 
       Outputs:
-      - OutputType: 9
+      - OutputType: 10
         Param1: 0
         Param2: 0
         Param3: 

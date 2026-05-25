@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
+  m_Name: vine_growth_01
+  m_EditorClassIdentifier: 
+  CfgId: vine_growth_01
+  ShowName: "\u8513\u8514"
+  PrefabName: vine_growth_seed
+  NameOffset: 0.8
+  IsAlwaysActive: 0
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel: 
+  MainStatusInfo:
+    StatusId: 0
+    Desp: "\u672a\u751f\u957f"
+    InteractInfos:
+    - InteractId: 1
+      Label: "\u50ac\u52a8\u8513\u8514\u751f\u957f"
+      UnLabel: "\u50ac\u52a8\u8513\u8514\u751f\u957f"
+      HideWhenFail: 0
+      NeedDist: 0.5
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 13
+        Param1: 0
+        Param2: 0
+        Param3: vine_area01_grown
+        Param4: 
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+      - OutputType: 16
+        Param1: 2000
+        Param2: 0
+        Param3: 
+        Param4: 
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+      - OutputType: 1
+        Param1: 1
+        Param2: 0
+        Param3: 
+        Param4: 
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  ExtraStatusInfos:
+  - StatusId: 1
+    Desp: "\u5df2\u751f\u957f"
+    InteractInfos:
+    - InteractId: 2
+      Label: "\u6cbf\u8513\u8514\u6500\u722c"
+      UnLabel: "\u6cbf\u8513\u8514\u6500\u722c"
+      HideWhenFail: 1
+      NeedDist: 0.5
+      Passive: 0
+      CheckCommonCond:
+      - Type: 2
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: vine_area01_grown
+        Param6: 
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 9
+        Param1: 1200
+        Param2: 0
+        Param3: vine_area01_top
+        Param4: 
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  InitState: 0
+  StateChangeRules:
+  - FromStatus: 0
+    CommonConds:
+    - Type: 2
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: vine_area01_grown
+      Param6: 
+    NeedSelfFlag: []
+    ToStatus: 1
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName: 
+      ChangingEffect: 
+  PoisonSettings:
+    Enable: 0
+    NpcTriggerBuffId: 
+    BaitDurationSeconds: 30
+    ReapplyCooldownSeconds: 20
+    ApplyPoisonLabel: "\u4e0b\u6bd2"
+    NpcFloatText: ...
+    NpcApproachStopDistance: 0.4
