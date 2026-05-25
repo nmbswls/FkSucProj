@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using My;
+using My.Config;
 using My.Player;
 using My.Player.Bag;
 using TMPro;
@@ -108,11 +109,12 @@ namespace My.UI
             if (DragGhostGo)
             {
                 DragGhostGo.SetActive(true);
-                DragGhostImage.gameObject.SetActive(true);
+                ApplyDragGhostIcon(stack.ItemID);
                 DragGhostCountText.text = stack.Count > 1 ? stack.Count.ToString() : "";
                 DragGhostCountText.gameObject.SetActive(stack.Count > 1);
             }
 
+            UpdateDrag(_lastDragScreenPos);
             return true;
         }
 
@@ -149,12 +151,32 @@ namespace My.UI
             if (DragGhostGo)
             {
                 DragGhostGo.SetActive(true);
-                DragGhostImage.gameObject.SetActive(true);
+                ApplyDragGhostIcon(binding.ItemId);
                 DragGhostCountText.text = "";
                 DragGhostCountText.gameObject.SetActive(false);
             }
 
+            UpdateDrag(_lastDragScreenPos);
             return true;
+        }
+
+        void ApplyDragGhostIcon(string itemId)
+        {
+            if (DragGhostImage == null)
+            {
+                return;
+            }
+
+            var def = ItemCatalog.GetItemDef(itemId);
+            Sprite sprite = null;
+            if (def != null && !string.IsNullOrEmpty(def.SpriteName))
+            {
+                sprite = SimpleResManager.Load<Sprite>("Sprites/Item/" + def.SpriteName);
+            }
+
+            DragGhostImage.sprite = sprite;
+            DragGhostImage.enabled = sprite != null;
+            DragGhostImage.gameObject.SetActive(sprite != null);
         }
 
         public void MarkDropHandled()

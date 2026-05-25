@@ -1065,9 +1065,9 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  mItemPadding: {x: 3, y: 3}
-  mItemSize: {x: 50, y: 50}
-  mItemRecycleDistance: {x: 50, y: 50}
+  mItemPadding: {x: 4, y: 4}
+  mItemSize: {x: 58, y: 58}
+  mItemRecycleDistance: {x: 58, y: 58}
   mItemSnapEnable: 0
   mGridFixedType: 0
   mViewPortSnapPivot: {x: 0, y: 0}
@@ -1642,9 +1642,9 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  mItemPadding: {x: 3, y: 3}
-  mItemSize: {x: 50, y: 50}
-  mItemRecycleDistance: {x: 50, y: 50}
+  mItemPadding: {x: 4, y: 4}
+  mItemSize: {x: 58, y: 58}
+  mItemRecycleDistance: {x: 58, y: 58}
   mItemSnapEnable: 0
   mGridFixedType: 0
   mViewPortSnapPivot: {x: 0, y: 0}

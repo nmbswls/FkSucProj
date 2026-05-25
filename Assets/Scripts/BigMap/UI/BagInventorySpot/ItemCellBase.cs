@@ -39,6 +39,11 @@ namespace My.UI
             Selected,
         }
 
+        static readonly Color NormalBgColor = new Color(0.14f, 0.12f, 0.20f, 1f);
+        static readonly Color SelectedBgColor = new Color(0.42f, 0.34f, 0.14f, 1f);
+        static readonly Color RedBgColor = new Color(0.38f, 0.14f, 0.14f, 1f);
+        static readonly Color EmptyBgColor = new Color(0.10f, 0.09f, 0.15f, 1f);
+
         public EStyleType StyleType { get; protected set; }
 
         IItemCellClickBehaviour _click;
@@ -145,15 +150,19 @@ namespace My.UI
             {
                 if (style == EStyleType.Red)
                 {
-                    bg.color = Color.red;
+                    bg.color = RedBgColor;
                 }
                 else if (style == EStyleType.Selected)
                 {
-                    bg.color = new Color(1f, 0.92f, 0.55f, 1f);
+                    bg.color = SelectedBgColor;
+                }
+                else if (style == EStyleType.AddIcon || style == EStyleType.Locked)
+                {
+                    bg.color = EmptyBgColor;
                 }
                 else
                 {
-                    bg.color = Color.white;
+                    bg.color = NormalBgColor;
                 }
             }
 

@@ -10,7 +10,7 @@ alwaysApply: true
 对于大地图开发，项目使用逻辑与表现分离架构，逻辑层由GameLogicManager控制，对于一个地图物体，逻辑层通常继承于ILogicEntity，表现层继承自ScenePresentationBase。
 
 对于UI部分，基于项目的PanelBase进行开发，ui预制体存放于项目Assets\Resources\UI\Prefabs目录下，尽量减少代码中动态生成ui元素，而是在prefab中完成拼装。
-对于仅限于本ui中使用的ui元素，例如列表中的某一项，不在文件夹中创建单独的prefab，而是直接在ui预制体中以template形式创建并以脚本关联，减少目录复杂程度。
+对于仅限于本ui中使用的ui元素，例如列表中的某一项，不在文件夹中创建单独的prefab，而是直接在ui预制体中以template形式创建并以脚本关联，减少目录复杂程度。涉及textpro时，需要调整字体兼容中文。
 
 对于普通的配置，使用luban进行维护，目录位于./Config目录下，使用excel表头来定义数据结构。
 

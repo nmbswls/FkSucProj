@@ -3116,6 +3116,8 @@ MonoBehaviour:
     TipPanelName: OneTip1
   - TipType: 2
     TipPanelName: PlayerBuffTip
+  - TipType: 3
+    TipPanelName: ItemTip
 --- !u!1 &1248278157
 GameObject:
   m_ObjectHideFlags: 0
