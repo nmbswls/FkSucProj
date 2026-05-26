@@ -68,7 +68,16 @@ public static class ProgressionHubUiPrefabSetup
         Object.DestroyImmediate(clone);
     }
 
-    static void SetupSkillLoadoutPanel()
+    [MenuItem("Tools/ProgressionHub/Setup Skill Loadout Panel")]
+    public static void SetupSkillLoadoutPanelFromMenu()
+    {
+        SetupSkillLoadoutPanel();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("[ProgressionHubUiPrefabSetup] SkillLoadoutPanel prefab updated.");
+    }
+
+    public static void SetupSkillLoadoutPanel()
     {
         var root = PrefabUtility.LoadPrefabContents(SkillPanelPath);
         if (root == null)
@@ -76,71 +85,225 @@ public static class ProgressionHubUiPrefabSetup
             return;
         }
 
-        var window = root.transform.Find("BuiltRoot/Window");
+        var builtRoot = root.transform.Find("BuiltRoot");
+        var window = builtRoot != null ? builtRoot.Find("Window") : null;
         if (window == null)
         {
             PrefabUtility.UnloadPrefabContents(root);
             return;
         }
 
-        EnsureChild(window, "LearnTitle", out var learnTitleGo);
-        var learnTitleLe = learnTitleGo.GetComponent<LayoutElement>() ?? learnTitleGo.AddComponent<LayoutElement>();
-        learnTitleLe.preferredHeight = 24f;
-        var learnTitleTmp = learnTitleGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(learnTitleGo, "技能学习", 18);
-        learnTitleTmp.text = "技能学习";
-
-        EnsureChild(window, "LearnSection", out var learnSectionGo);
-        var learnSectionLe = learnSectionGo.GetComponent<LayoutElement>() ?? learnSectionGo.AddComponent<LayoutElement>();
-        learnSectionLe.preferredHeight = 120f;
-        var learnSectionImg = learnSectionGo.GetComponent<Image>() ?? learnSectionGo.AddComponent<Image>();
-        learnSectionImg.color = new Color(0.1f, 0.09f, 0.14f, 0.55f);
-        var learnScroll = learnSectionGo.GetComponent<ScrollRect>() ?? learnSectionGo.AddComponent<ScrollRect>();
-        learnScroll.horizontal = false;
-        learnScroll.vertical = true;
-
-        EnsureChild(learnSectionGo.transform, "Viewport", out var learnViewportGo);
-        AddImage(learnViewportGo, Color.white);
-        if (learnViewportGo.GetComponent<Mask>() == null)
+        var windowRt = window.GetComponent<RectTransform>();
+        if (windowRt != null)
         {
-            learnViewportGo.AddComponent<Mask>();
-        }
-        StretchFull(learnViewportGo.GetComponent<RectTransform>());
-
-        EnsureChild(learnViewportGo.transform, "Content", out var learnContentGo);
-        var learnContentVlg = learnContentGo.GetComponent<VerticalLayoutGroup>() ?? learnContentGo.AddComponent<VerticalLayoutGroup>();
-        learnContentVlg.spacing = 4f;
-        learnContentVlg.childControlHeight = true;
-        learnContentVlg.childForceExpandHeight = false;
-        learnContentVlg.padding = new RectOffset(6, 6, 6, 6);
-        learnScroll.viewport = learnViewportGo.GetComponent<RectTransform>();
-        learnScroll.content = learnContentGo.GetComponent<RectTransform>();
-
-        EnsureChild(learnContentGo.transform, "LearnRow_Template", out var learnRowGo);
-        learnRowGo.SetActive(false);
-        BuildSkillLearnRow(learnRowGo);
-
-        var poolScroll = window.Find("PoolScroll");
-        if (poolScroll != null)
-        {
-            EnsureChild(poolScroll, "PoolEmptyHint", out var poolHintGo);
-            StretchFull(poolHintGo.GetComponent<RectTransform>());
-            var poolHintTmp = poolHintGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(poolHintGo, "暂无已学技能，请先在上方学习。", 16);
-            poolHintTmp.text = "暂无已学技能，请先在上方学习。";
-            poolHintTmp.alignment = TextAlignmentOptions.Center;
-            poolHintTmp.color = new Color(0.75f, 0.72f, 0.82f, 0.9f);
-            poolHintGo.SetActive(false);
+            windowRt.sizeDelta = new Vector2(980f, 760f);
         }
 
-        var tabs = window.Find("Tabs");
-        if (tabs != null)
+        DestroyChildIfExists(window, "LearnTitle");
+        DestroyChildIfExists(window, "LearnSection");
+        DestroyChildIfExists(window, "PoolHint");
+
+        var skillScroll = window.Find("SkillScroll") ?? window.Find("PoolScroll");
+        if (skillScroll != null)
         {
-            learnTitleGo.transform.SetSiblingIndex(tabs.GetSiblingIndex() + 1);
-            learnSectionGo.transform.SetSiblingIndex(tabs.GetSiblingIndex() + 2);
+            skillScroll.name = "SkillScroll";
+            RebuildSkillGridScroll(skillScroll);
         }
 
+        ShrinkLoadoutBar(window.Find("BarRow"), SkillLoadoutSlotKind.Active);
         EnsurePassiveBar(window);
+        ShrinkLoadoutBar(window.Find("PassiveBarRow"), SkillLoadoutSlotKind.Passive);
+
+        WireSkillLoadoutPanelRefs(root, builtRoot, window, skillScroll);
         PrefabUtility.SaveAsPrefabAsset(root, SkillPanelPath);
         PrefabUtility.UnloadPrefabContents(root);
+    }
+
+    static void DestroyChildIfExists(Transform parent, string childName)
+    {
+        var child = parent.Find(childName);
+        if (child != null)
+        {
+            Object.DestroyImmediate(child.gameObject);
+        }
+    }
+
+    static void RebuildSkillGridScroll(Transform scrollTf)
+    {
+        var scrollLe = scrollTf.GetComponent<LayoutElement>() ?? scrollTf.gameObject.AddComponent<LayoutElement>();
+        scrollLe.minHeight = 420f;
+        scrollLe.preferredHeight = 480f;
+        scrollLe.flexibleHeight = 1f;
+
+        var viewport = scrollTf.Find("Viewport");
+        if (viewport == null)
+        {
+            EnsureChild(scrollTf, "Viewport", out var viewportGo);
+            viewport = viewportGo.transform;
+            AddImage(viewportGo, Color.white);
+            if (viewportGo.GetComponent<Mask>() == null)
+            {
+                viewportGo.AddComponent<Mask>();
+            }
+
+            StretchFull(viewportGo.GetComponent<RectTransform>());
+        }
+
+        var content = viewport.Find("SkillGridContent") ??
+                      viewport.Find("PoolContent");
+        if (content == null)
+        {
+            EnsureChild(viewport, "SkillGridContent", out var contentGo);
+            content = contentGo.transform;
+        }
+        else
+        {
+            content.name = "SkillGridContent";
+        }
+
+        for (int i = content.childCount - 1; i >= 0; i--)
+        {
+            Object.DestroyImmediate(content.GetChild(i).gameObject);
+        }
+
+        var oldVlg = content.GetComponent<VerticalLayoutGroup>();
+        if (oldVlg != null)
+        {
+            Object.DestroyImmediate(oldVlg);
+        }
+
+        var grid = content.GetComponent<GridLayoutGroup>() ?? content.gameObject.AddComponent<GridLayoutGroup>();
+        grid.cellSize = new Vector2(96f, 96f);
+        grid.spacing = new Vector2(8f, 8f);
+        grid.padding = new RectOffset(8, 8, 8, 8);
+        grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        grid.constraintCount = 8;
+        grid.childAlignment = TextAnchor.UpperLeft;
+
+        if (content.GetComponent<ContentSizeFitter>() == null)
+        {
+            var fitter = content.gameObject.AddComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        var scroll = scrollTf.GetComponent<ScrollRect>() ?? scrollTf.gameObject.AddComponent<ScrollRect>();
+        scroll.horizontal = false;
+        scroll.vertical = true;
+        scroll.viewport = viewport.GetComponent<RectTransform>();
+        scroll.content = content.GetComponent<RectTransform>();
+
+        EnsureChild(scrollTf, "SkillGridEmptyHint", out var hintGo);
+        if (scrollTf.Find("PoolEmptyHint") != null && scrollTf.Find("PoolEmptyHint") != hintGo.transform)
+        {
+            Object.DestroyImmediate(scrollTf.Find("PoolEmptyHint").gameObject);
+        }
+
+        hintGo.name = "SkillGridEmptyHint";
+        StretchFull(hintGo.GetComponent<RectTransform>());
+        var hintTmp = hintGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(hintGo, "当前流派暂无技能。", 16);
+        hintTmp.text = "当前流派暂无技能。";
+        hintTmp.alignment = TextAlignmentOptions.Center;
+        hintTmp.color = new Color(0.75f, 0.72f, 0.82f, 0.9f);
+        hintGo.SetActive(false);
+
+        EnsureChild(content, "SkillCell_Template", out var cellGo);
+        cellGo.SetActive(false);
+        BuildSkillGridCell(cellGo);
+    }
+
+    static SkillPoolEntryView BuildSkillGridCell(GameObject cellGo)
+    {
+        var le = cellGo.GetComponent<LayoutElement>() ?? cellGo.AddComponent<LayoutElement>();
+        le.preferredWidth = 96f;
+        le.preferredHeight = 96f;
+
+        var bg = cellGo.GetComponent<Image>() ?? AddImage(cellGo, new Color(0.2f, 0.22f, 0.26f, 0.7f));
+        bg.raycastTarget = true;
+
+        var vlg = cellGo.GetComponent<VerticalLayoutGroup>() ?? cellGo.AddComponent<VerticalLayoutGroup>();
+        vlg.spacing = 2f;
+        vlg.childAlignment = TextAnchor.UpperCenter;
+        vlg.childControlWidth = true;
+        vlg.childControlHeight = true;
+        vlg.childForceExpandWidth = true;
+        vlg.childForceExpandHeight = false;
+        vlg.padding = new RectOffset(4, 4, 4, 4);
+
+        EnsureChild(cellGo.transform, "Icon", out var iconGo);
+        var iconLe = iconGo.GetComponent<LayoutElement>() ?? iconGo.AddComponent<LayoutElement>();
+        iconLe.flexibleHeight = 1f;
+        iconLe.minHeight = 48f;
+        var iconImg = iconGo.GetComponent<Image>() ?? AddImage(iconGo, Color.white);
+        iconImg.preserveAspect = true;
+        iconImg.raycastTarget = false;
+
+        EnsureChild(cellGo.transform, "Name", out var nameGo);
+        var nameLe = nameGo.GetComponent<LayoutElement>() ?? nameGo.AddComponent<LayoutElement>();
+        nameLe.preferredHeight = 28f;
+        var nameTmp = nameGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(nameGo, "技能", 11);
+        nameTmp.alignment = TextAlignmentOptions.Center;
+        nameTmp.enableWordWrapping = true;
+
+        var view = cellGo.GetComponent<SkillPoolEntryView>() ?? cellGo.AddComponent<SkillPoolEntryView>();
+        var vso = new SerializedObject(view);
+        vso.FindProperty("label").objectReferenceValue = nameTmp;
+        vso.FindProperty("icon").objectReferenceValue = iconImg;
+        vso.FindProperty("background").objectReferenceValue = bg;
+        vso.ApplyModifiedPropertiesWithoutUndo();
+        return view;
+    }
+
+    static void ShrinkLoadoutBar(Transform barRow, SkillLoadoutSlotKind slotKind)
+    {
+        if (barRow == null)
+        {
+            return;
+        }
+
+        var rowLe = barRow.GetComponent<LayoutElement>() ?? barRow.gameObject.AddComponent<LayoutElement>();
+        rowLe.preferredHeight = 64f;
+        rowLe.minHeight = 64f;
+
+        var slots = barRow.GetComponentsInChildren<SkillSlotView>(true);
+        for (int i = 0; i < slots.Length; i++)
+        {
+            var slot = slots[i];
+            slot.slotKind = slotKind;
+            var slotLe = slot.GetComponent<LayoutElement>() ?? slot.gameObject.AddComponent<LayoutElement>();
+            slotLe.preferredWidth = 64f;
+            slotLe.preferredHeight = 64f;
+
+            var dropMode = slotKind == SkillLoadoutSlotKind.Passive
+                ? SkillSlotDropMode.CustomNormal
+                : slot.SlotIndex >= 3 && slot.SlotIndex <= 7
+                    ? SkillSlotDropMode.CustomNormal
+                    : SkillSlotDropMode.Fixed;
+            EnsureSlotDropZone(slot, dropMode);
+        }
+    }
+
+    static void EnsureSlotDropZone(SkillSlotView view, SkillSlotDropMode mode)
+    {
+        if (view == null)
+        {
+            return;
+        }
+
+        var drop = view.GetComponent<SkillSlotDropZone>() ?? view.gameObject.AddComponent<SkillSlotDropZone>();
+        drop.view = view;
+        drop.mode = mode;
+
+        var img = view.GetComponent<Image>();
+        if (img == null)
+        {
+            img = view.GetComponentInChildren<Image>(true);
+        }
+
+        if (img != null && mode == SkillSlotDropMode.CustomNormal)
+        {
+            img.raycastTarget = true;
+        }
     }
 
     static void EnsurePassiveBar(Transform window)
@@ -160,15 +323,15 @@ public static class ProgressionHubUiPrefabSetup
 
         EnsureChild(window, "PassiveBarLabel", out var labelGo);
         var labelLe = labelGo.GetComponent<LayoutElement>() ?? labelGo.AddComponent<LayoutElement>();
-        labelLe.preferredHeight = 24f;
-        var labelTmp = labelGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(labelGo, "被动技能（右键槽位卸下）", 18);
+        labelLe.preferredHeight = 20f;
+        var labelTmp = labelGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(labelGo, "被动技能（右键槽位卸下）", 15);
         labelTmp.text = "被动技能（右键槽位卸下）";
 
         EnsureChild(window, "PassiveBarRow", out var rowGo);
         var rowLe = rowGo.GetComponent<LayoutElement>() ?? rowGo.AddComponent<LayoutElement>();
-        rowLe.preferredHeight = 92f;
+        rowLe.preferredHeight = 64f;
         var rowLayout = rowGo.GetComponent<HorizontalLayoutGroup>() ?? rowGo.AddComponent<HorizontalLayoutGroup>();
-        rowLayout.spacing = 8f;
+        rowLayout.spacing = 6f;
         rowLayout.childAlignment = TextAnchor.MiddleCenter;
         rowLayout.childControlWidth = false;
         rowLayout.childControlHeight = false;
@@ -192,55 +355,77 @@ public static class ProgressionHubUiPrefabSetup
         }
     }
 
-    static void BuildSkillLearnRow(GameObject rowGo)
+    static void WireSkillLoadoutPanelRefs(
+        GameObject root,
+        Transform builtRoot,
+        Transform window,
+        Transform skillScroll)
     {
-        var rt = rowGo.GetComponent<RectTransform>() ?? rowGo.AddComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(0f, 36f);
-        var le = rowGo.GetComponent<LayoutElement>() ?? rowGo.AddComponent<LayoutElement>();
-        le.preferredHeight = 36f;
-        var hlg = rowGo.GetComponent<HorizontalLayoutGroup>() ?? rowGo.AddComponent<HorizontalLayoutGroup>();
-        hlg.spacing = 8f;
-        hlg.childAlignment = TextAnchor.MiddleLeft;
-        hlg.childControlWidth = true;
-        hlg.childForceExpandWidth = true;
-        hlg.childControlHeight = true;
-        hlg.childForceExpandHeight = false;
-        hlg.padding = new RectOffset(4, 4, 2, 2);
+        var panel = root.GetComponent<SkillLoadoutPanel>();
+        if (panel == null)
+        {
+            return;
+        }
 
-        EnsureChild(rowGo.transform, "Title", out var titleGo);
-        var titleLe = titleGo.GetComponent<LayoutElement>() ?? titleGo.AddComponent<LayoutElement>();
-        titleLe.flexibleWidth = 1f;
-        var titleTmp = titleGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(titleGo, "技能名", 15);
+        var tabs = window.Find("Tabs");
+        var tabButtons = tabs != null ? tabs.GetComponentsInChildren<Button>(true) : null;
+        var barRow = window.Find("BarRow");
+        var passiveRow = window.Find("PassiveBarRow");
+        var content = skillScroll != null
+            ? skillScroll.Find("Viewport/SkillGridContent")
+            : null;
+        var cellTemplate = content != null
+            ? content.Find("SkillCell_Template")?.GetComponent<SkillPoolEntryView>()
+            : null;
+        var emptyHint = skillScroll != null
+            ? skillScroll.Find("SkillGridEmptyHint")?.GetComponent<TextMeshProUGUI>()
+            : null;
+        var dragLayer = root.transform.Find("DragLayer");
+        var ghost = dragLayer != null ? dragLayer.Find("Ghost") : null;
 
-        EnsureChild(rowGo.transform, "Reason", out var reasonGo);
-        var reasonLe = reasonGo.GetComponent<LayoutElement>() ?? reasonGo.AddComponent<LayoutElement>();
-        reasonLe.preferredWidth = 120f;
-        var reasonTmp = reasonGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(reasonGo, string.Empty, 12);
-        reasonTmp.alignment = TextAlignmentOptions.MidlineRight;
-        reasonTmp.color = new Color(0.75f, 0.7f, 0.78f, 1f);
+        var so = new SerializedObject(panel);
+        so.FindProperty("builtRoot").objectReferenceValue = builtRoot;
+        so.FindProperty("tabButtons").arraySize = tabButtons != null ? tabButtons.Length : 0;
+        if (tabButtons != null)
+        {
+            for (int i = 0; i < tabButtons.Length; i++)
+            {
+                so.FindProperty("tabButtons").GetArrayElementAtIndex(i).objectReferenceValue = tabButtons[i];
+            }
+        }
 
-        EnsureChild(rowGo.transform, "LearnBtn", out var btnGo);
-        var btnLe = btnGo.GetComponent<LayoutElement>() ?? btnGo.AddComponent<LayoutElement>();
-        btnLe.preferredWidth = 72f;
-        btnLe.preferredHeight = 28f;
-        AddImage(btnGo, new Color(0.28f, 0.45f, 0.62f, 1f));
-        var btn = btnGo.GetComponent<Button>() ?? btnGo.AddComponent<Button>();
-        var colors = btn.colors;
-        colors.disabledColor = new Color(0.4f, 0.4f, 0.4f, 0.75f);
-        btn.colors = colors;
+        var activeSlots = barRow != null ? barRow.GetComponentsInChildren<SkillSlotView>(true) : null;
+        so.FindProperty("activeSlotViews").arraySize = activeSlots != null ? activeSlots.Length : 0;
+        if (activeSlots != null)
+        {
+            for (int i = 0; i < activeSlots.Length; i++)
+            {
+                so.FindProperty("activeSlotViews").GetArrayElementAtIndex(i).objectReferenceValue = activeSlots[i];
+            }
+        }
 
-        EnsureChild(btnGo.transform, "Text", out var btnTextGo);
-        StretchFull(btnTextGo.GetComponent<RectTransform>());
-        var btnTmp = btnTextGo.GetComponent<TextMeshProUGUI>() ?? AddTmp(btnTextGo, "学习", 14);
-        btnTmp.alignment = TextAlignmentOptions.Center;
+        var passiveSlots = passiveRow != null ? passiveRow.GetComponentsInChildren<SkillSlotView>(true) : null;
+        so.FindProperty("passiveSlotViews").arraySize = passiveSlots != null ? passiveSlots.Length : 0;
+        if (passiveSlots != null)
+        {
+            for (int i = 0; i < passiveSlots.Length; i++)
+            {
+                so.FindProperty("passiveSlotViews").GetArrayElementAtIndex(i).objectReferenceValue = passiveSlots[i];
+            }
+        }
 
-        var view = rowGo.GetComponent<SkillLearnEntryView>() ?? rowGo.AddComponent<SkillLearnEntryView>();
-        var vso = new SerializedObject(view);
-        vso.FindProperty("TitleText").objectReferenceValue = titleTmp;
-        vso.FindProperty("ReasonText").objectReferenceValue = reasonTmp;
-        vso.FindProperty("LearnButton").objectReferenceValue = btn;
-        vso.FindProperty("LearnButtonText").objectReferenceValue = btnTmp;
-        vso.ApplyModifiedPropertiesWithoutUndo();
+        so.FindProperty("skillGridContent").objectReferenceValue = content;
+        so.FindProperty("skillCellTemplate").objectReferenceValue = cellTemplate;
+        so.FindProperty("skillGridEmptyHint").objectReferenceValue = emptyHint;
+        so.FindProperty("closeButton").objectReferenceValue =
+            window.Find("Header/CloseBtn")?.GetComponent<Button>();
+        so.FindProperty("blockerButton").objectReferenceValue =
+            builtRoot.Find("BlockerButton")?.GetComponent<Button>();
+        so.FindProperty("dragGhostRoot").objectReferenceValue = ghost != null ? ghost.gameObject : null;
+        so.FindProperty("dragGhostIcon").objectReferenceValue = ghost != null ? ghost.GetComponent<Image>() : null;
+        so.FindProperty("dragGhostLabel").objectReferenceValue =
+            ghost != null ? ghost.GetComponentInChildren<TextMeshProUGUI>(true) : null;
+        so.ApplyModifiedPropertiesWithoutUndo();
     }
 
     static void SetupPlayerGearEquipPanel()

@@ -247,7 +247,7 @@ namespace My.Player
                 AfterVal = 1,
             });
 
-            SceneAOIManager.Instance?.RefreshVisibleLoadedChunks();
+            SceneAOIManager.Instance?.RequestVisibleChunkRefresh();
         }
 
         public void InitBagInfo()

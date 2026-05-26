@@ -179,6 +179,7 @@ public class SceneAOIManager : MonoBehaviour
 
             _chunks.Clear();
             _concurrentLoading = 0;
+            _pendingVisibleChunkRefresh = false;
         }
         catch (System.Exception ex)
         {
@@ -217,6 +218,11 @@ public class SceneAOIManager : MonoBehaviour
 
     private void Update()
     {
+        if (MainGameManager.Instance == null || !MainGameManager.Instance.Initialized)
+        {
+            return;
+        }
+
         if(!WorldAreaManager.Instance.IsWorldLoaded)
         {
             return;
@@ -235,6 +241,19 @@ public class SceneAOIManager : MonoBehaviour
 
         // 2) 静态 Chunk AOI 刷新（九宫格/环）
         RefreshStaticChunks(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
+
+        ProcessPendingVisibleChunkRefresh();
+    }
+
+    void ProcessPendingVisibleChunkRefresh()
+    {
+        if (!_pendingVisibleChunkRefresh)
+        {
+            return;
+        }
+
+        _pendingVisibleChunkRefresh = false;
+        RefreshVisibleLoadedChunks();
     }
 
     // ===== 动态实体接口 =====
@@ -627,6 +646,7 @@ public class SceneAOIManager : MonoBehaviour
     }
 
     private float _lastRefreshChunkTime;
+    bool _pendingVisibleChunkRefresh;
 
     private void RefreshStaticChunks(Vector3 playerPos)
     {
@@ -678,8 +698,19 @@ public class SceneAOIManager : MonoBehaviour
         }
     }
 
+    // 变量变化等场景下只标记脏，下一帧 Update 内与 AOI 同批刷新
+    public void RequestVisibleChunkRefresh()
+    {
+        _pendingVisibleChunkRefresh = true;
+    }
+
     public void RefreshVisibleLoadedChunks()
     {
+        if (!CanRefreshStaticChunksNow())
+        {
+            return;
+        }
+
         var keys = new List<ChunkCoord>(_chunks.Keys);
         foreach (var coord in keys)
         {
@@ -699,6 +730,11 @@ public class SceneAOIManager : MonoBehaviour
 
     public void ForceUpdateOneChunk(ChunkCoord coord)
     {
+        if (!CanRefreshStaticChunksNow())
+        {
+            return;
+        }
+
         if(!_chunks.TryGetValue(coord, out var record))
         {
             Debug.LogError("ForceUpdateOneChunk chunk not loaded");
@@ -716,12 +752,12 @@ public class SceneAOIManager : MonoBehaviour
         }
 
         var instances = new List<(GameObject, int)>();
-        int objCountSinceYield = 0;
+        var currentInstances = record.instances ?? new List<(GameObject, int)>();
 
         // 批次枚举（根据你的配置实现 GetPrefabs）
         foreach (var item in GetChunkPrefabs(coord))
         {
-            var existObjInfo = record.instances.Find((a) => a.Item2 == item.ItemId);
+            var existObjInfo = currentInstances.Find((a) => a.Item2 == item.ItemId);
 
             // 不满足出现条件
             if (item.AppearCond != null && !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
@@ -749,18 +785,12 @@ public class SceneAOIManager : MonoBehaviour
                     }
                     if (go != null)
                     {
-                        var root = MainGameManager.Instance.GetWorldStaticPrefabRoot("1");
-                        if (root != null)
+                        if (!TryAttachStaticPrefab(go, item.Position, item.Rotation, item.Scale))
                         {
-                            go.transform.SetParent(root);
+                            _asset.Release(go);
+                            continue;
                         }
-                        go.transform.SetPositionAndRotation(item.Position, item.Rotation);
-                        go.transform.localScale = item.Scale;
 
-                        var staticOne = WorldAreaManager.Instance.currentRoot.StaticPrefabRoot;
-                        go.transform.SetParent(staticOne);
-
-                        go.gameObject.SetActive(true);
                         instances.Add((go.gameObject, item.ItemId));
                     }
                 }
@@ -776,7 +806,53 @@ public class SceneAOIManager : MonoBehaviour
         //var segments = ExportDb.GetChunkSegments(record.coord.X, record.coord.Y);
         //WorldAreaManager.Instance.SegmentProvider.AddSegments(record.coord.ToString(), segments);
 
+        record.instances = instances;
     }
+
+    bool CanRefreshStaticChunksNow()
+    {
+        if (MainGameManager.Instance == null || !MainGameManager.Instance.Initialized)
+        {
+            return false;
+        }
+
+        if (!WorldAreaManager.Instance.IsWorldLoaded)
+        {
+            return false;
+        }
+
+        var logic = MainGameManager.Instance.gameLogicManager;
+        if (logic == null ||
+            logic.MainStage == GameLogicManager.EMainGameStage.UnInitialized ||
+            logic.playerLogicEntity == null ||
+            string.IsNullOrEmpty(MapName))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool TryAttachStaticPrefab(GameObject go, Vector3 position, Quaternion rotation, Vector3 scale)
+    {
+        if (go == null)
+        {
+            return false;
+        }
+
+        var staticRoot = MainGameManager.Instance.GetWorldStaticPrefabRoot("1");
+        if (staticRoot == null)
+        {
+            return false;
+        }
+
+        go.transform.SetParent(staticRoot, false);
+        go.transform.SetPositionAndRotation(position, rotation);
+        go.transform.localScale = scale;
+        go.SetActive(true);
+        return true;
+    }
+
     private void TickChunkLoad(ChunkRecord rec, float now, ref int startedLoadsThisFrame)
     {
         switch (rec.loadState)
@@ -876,6 +952,10 @@ public class SceneAOIManager : MonoBehaviour
     private async void StartChunkLoad(ChunkRecord rec)
     {
         if (rec.loadState != LoadState.Unloaded) return;
+        if (!CanRefreshStaticChunksNow())
+        {
+            return;
+        }
 
         rec.loadState = LoadState.Loading;
         rec.cancelAfterLoad = false;
@@ -911,6 +991,23 @@ public class SceneAOIManager : MonoBehaviour
         }
 
         // 加载完成，回主线程后核验
+        if (!CanRefreshStaticChunksNow())
+        {
+            foreach (var prefabInfo in instances)
+            {
+                _ = _assetAsync.ReleaseAsync(prefabInfo.Item1);
+            }
+
+            if (_chunks.TryGetValue(rec.coord, out var stale) && stale == rec)
+            {
+                rec.instances = null;
+                rec.loadState = LoadState.Unloaded;
+            }
+
+            _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
+            return;
+        }
+
         if (!_chunks.TryGetValue(rec.coord, out var cur) || cur != rec)
         {
             // 记录已被替换，安全释放
@@ -965,18 +1062,12 @@ public class SceneAOIManager : MonoBehaviour
             }
             if (go != null)
             {
-                var root = MainGameManager.Instance.GetWorldStaticPrefabRoot("1");
-                if(root != null)
+                if (!TryAttachStaticPrefab(go, it.Position, it.Rotation, it.Scale))
                 {
-                    go.transform.SetParent(root);
+                    _ = _assetAsync.ReleaseAsync(go);
+                    continue;
                 }
-                go.transform.SetPositionAndRotation(it.Position, it.Rotation);
-                go.transform.localScale = it.Scale;
 
-                var staticOne = WorldAreaManager.Instance.currentRoot.StaticPrefabRoot;
-                go.transform.SetParent(staticOne);
-
-                go.gameObject.SetActive(true);
                 instances.Add((go.gameObject, it.ItemId));
             }
 
@@ -1083,15 +1174,12 @@ public class SceneAOIManager : MonoBehaviour
     /// </summary>
     public void PrewarmTickAtPlayerOnce(float dt)
     {
-        if (!WorldAreaManager.Instance.IsWorldLoaded)
-            return;
-        if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null)
-            return;
-        if (string.IsNullOrEmpty(MapName))
+        if (!CanRefreshStaticChunksNow())
             return;
         var pos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
         RefreshDynamicAOI(pos, dt, noEnterGrace : true);
         RefreshStaticChunks(pos);
+        ProcessPendingVisibleChunkRefresh();
     }
 
 }

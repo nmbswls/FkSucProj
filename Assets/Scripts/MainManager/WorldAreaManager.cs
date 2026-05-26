@@ -38,7 +38,7 @@ public class WorldAreaManager : MonoBehaviour
         SegmentProvider = GetComponent<ObstacleSegmentProvider>();
     }
 
-    public bool IsWorldLoaded => currentOverlayMapId != string.Empty;
+    public bool IsWorldLoaded => !string.IsNullOrEmpty(currentOverlayMapId) && currentRoot != null;
 
     public void LoadWorld(string mapOverlayId, bool setActive = true, Action<int, bool>? onComplete = null)
     {

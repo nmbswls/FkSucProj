@@ -766,9 +766,13 @@ namespace My.Map.Logic
             ent.Initialize();
             ent.OnSpawn(rec);
 
-            if (rec.EntityType == EEntityType.Player && ent is IEntityBuffOwner buffOwner)
+            if (rec.EntityType == EEntityType.Player)
             {
-                logicManager.RestorePendingPlayerBuffsIfAny(buffOwner);
+                logicManager.playerDataManager?.EquipmentManager?.NotifyPlayerReady(logicManager);
+                if (ent is IEntityBuffOwner buffOwner)
+                {
+                    logicManager.RestorePendingPlayerBuffsIfAny(buffOwner);
+                }
             }
 
             return ent;

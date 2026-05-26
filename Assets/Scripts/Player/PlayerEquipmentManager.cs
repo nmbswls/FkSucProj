@@ -316,6 +316,7 @@ namespace My.Player
                 return;
             }
 
+            // 需在 SpawnEntity 完成 Initialize/OnSpawn 后调用，确保技能/属性/Buff 容器已就绪
             ResyncAllGearBuffs(logic);
             Prog?.GearManager?.RebuildStatProvidersFromEquipment();
         }

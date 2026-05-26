@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using cfg.demo;
-using My;
 using My.Config;
 using My.Player;
 using My.UI;
@@ -16,86 +15,31 @@ namespace My.UI.SkillLoadout
 
         public static SkillLoadoutPanel Current { get; private set; }
 
+        [SerializeField] Transform builtRoot;
+        [SerializeField] Button[] tabButtons;
+        [SerializeField] SkillSlotView[] activeSlotViews;
+        [SerializeField] SkillSlotView[] passiveSlotViews;
+        [SerializeField] Transform skillGridContent;
+        [SerializeField] SkillPoolEntryView skillCellTemplate;
+        [SerializeField] TextMeshProUGUI skillGridEmptyHint;
+        [SerializeField] Button closeButton;
+        [SerializeField] Button blockerButton;
+        [SerializeField] GameObject dragGhostRoot;
+        [SerializeField] Image dragGhostIcon;
+        [SerializeField] TextMeshProUGUI dragGhostLabel;
+
         public bool IsHostedByHub => _progressionHubHost != null;
 
-        public void SetProgressionHubHost(IPlayerProgressionHubHost host)
-        {
-            _progressionHubHost = host;
-            ApplyHostedChromeIfNeeded();
-        }
-
-        void ApplyHostedChromeIfNeeded()
-        {
-            if (_progressionHubHost == null || _builtRoot == null)
-            {
-                return;
-            }
-
-            var blocker = _builtRoot.Find("BlockerButton");
-            if (blocker != null)
-            {
-                blocker.gameObject.SetActive(false);
-            }
-
-            var closeBtn = _builtRoot.Find("Window/Header/CloseBtn")?.GetComponent<Button>();
-            if (closeBtn != null)
-            {
-                closeBtn.onClick.RemoveAllListeners();
-                closeBtn.onClick.AddListener(CloseSelfOrHub);
-            }
-
-            var bl = _builtRoot.Find("BlockerButton")?.GetComponent<Button>();
-            if (bl != null)
-            {
-                bl.onClick.RemoveAllListeners();
-                bl.onClick.AddListener(CloseSelfOrHub);
-            }
-        }
-
-        public void CloseSelfOrHub()
-        {
-            if (_progressionHubHost != null)
-            {
-                _progressionHubHost.CloseHub();
-                return;
-            }
-
-            Debug.LogError("[SkillLoadoutPanel] Not hosted by PlayerProgressionHubPanel.");
-        }
-
-        Canvas ResolveSkillDragCanvas()
-        {
-            if (_progressionHubHost != null)
-            {
-                var c = _progressionHubHost.ResolveHubCanvas();
-                if (c != null)
-                {
-                    return c;
-                }
-            }
-
-            return GetComponentInParent<Canvas>();
-        }
-
         IPlayerProgressionHubHost _progressionHubHost;
+        ISkillDropBehavior _skillDropBehavior = new SchoolFilteredNormalSlotDropBehavior();
 
-        public int ActiveSchoolId { get; private set; }
+        readonly List<SkillPoolEntryView> _skillGridCells = new();
+        readonly List<GameObject> _skillGridObjects = new();
 
-        Transform _builtRoot;
-        SkillPoolEntryView[] _poolCells;
-        ISkillDropBehavior _poolSkillDropBehavior = new SchoolFilteredNormalSlotDropBehavior();
-
-        Button[] _tabButtons;
-        SkillSlotView[] _activeSlotViews;
-        SkillSlotView[] _passiveSlotViews;
         int _tabCount;
         int _activeTabIndex;
 
-        Transform _learnContent;
-        SkillLearnEntryView _learnRowTemplate;
-        TextMeshProUGUI _poolEmptyHint;
-        readonly List<SkillLearnEntryView> _learnRows = new();
-        readonly List<GameObject> _learnRowObjects = new();
+        public int ActiveSchoolId { get; private set; }
 
         void Awake()
         {
@@ -103,6 +47,12 @@ namespace My.UI.SkillLoadout
             {
                 panelId = Pid;
             }
+        }
+
+        public void SetProgressionHubHost(IPlayerProgressionHubHost host)
+        {
+            _progressionHubHost = host;
+            ApplyHostedChromeIfNeeded();
         }
 
         public override void Setup(object data = null)
@@ -114,19 +64,24 @@ namespace My.UI.SkillLoadout
                 return;
             }
 
-            if (transform.Find("BuiltRoot") == null)
+            if (builtRoot == null && transform.Find("BuiltRoot") == null)
             {
-                Debug.LogError("[SkillLoadoutPanel] Prefab 缺少 BuiltRoot。请检查 Resources/UI/Prefabs/SkillLoadoutPanel.prefab 层级或从版本库恢复。");
+                Debug.LogError("[SkillLoadoutPanel] Prefab missing BuiltRoot. Run Tools/ProgressionHub/Setup Hub UI Prefabs.");
                 return;
             }
 
-            BindBuiltReferencesIfNeeded();
+            WireUiEvents();
             ApplyHostedChromeIfNeeded();
+            WireDragSession();
             InitTabsFromTable();
             if (_tabCount > 0)
+            {
                 SelectSchool(0);
+            }
             else
+            {
                 RefreshAll();
+            }
         }
 
         public override void Show()
@@ -140,6 +95,7 @@ namespace My.UI.SkillLoadout
             base.Show();
             Current = this;
             SkillDragSession.SetCanvas(ResolveSkillDragCanvas());
+            WireDragSession();
             RefreshAll();
         }
 
@@ -157,141 +113,218 @@ namespace My.UI.SkillLoadout
             base.Teardown();
         }
 
-        void BindBuiltReferencesIfNeeded()
+        void WireUiEvents()
         {
-            if (_builtRoot != null) return;
-
-            var root = transform.Find("BuiltRoot");
-            if (root == null) return;
-
-            _builtRoot = root;
-
-            var poolRt = root.Find("Window/PoolScroll/Viewport/PoolContent");
-            if (poolRt != null)
+            if (closeButton != null)
             {
-                var cells = poolRt.GetComponentsInChildren<SkillPoolEntryView>(true);
-                _poolCells = cells;
+                closeButton.onClick.RemoveAllListeners();
+                closeButton.onClick.AddListener(CloseSelfOrHub);
             }
 
-            var tabRow = root.Find("Window/Tabs");
-            if (tabRow != null)
-                _tabButtons = tabRow.GetComponentsInChildren<Button>(true);
-
-            var bar = root.Find("Window/BarRow");
-            if (bar != null)
+            if (blockerButton != null)
             {
-                _activeSlotViews = bar.GetComponentsInChildren<SkillSlotView>(true);
-                foreach (var v in _activeSlotViews)
-                {
-                    v.slotKind = SkillLoadoutSlotKind.Active;
-                }
-            }
-
-            BindPassiveBar(root);
-            BindLearnUi(root);
-            WireSkillSlotDropZones();
-            WireDragLayerFromHierarchy();
-
-            var closeBtn = root.Find("Window/Header/CloseBtn")?.GetComponent<Button>();
-            if (closeBtn != null)
-            {
-                closeBtn.onClick.RemoveAllListeners();
-                closeBtn.onClick.AddListener(CloseSelfOrHub);
-            }
-
-            var bl = root.Find("BlockerButton")?.GetComponent<Button>();
-            if (bl != null)
-            {
-                bl.onClick.RemoveAllListeners();
-                bl.onClick.AddListener(CloseSelfOrHub);
+                blockerButton.onClick.RemoveAllListeners();
+                blockerButton.onClick.AddListener(CloseSelfOrHub);
             }
         }
 
-        void BindPassiveBar(Transform root)
+        void ApplyHostedChromeIfNeeded()
         {
-            var window = root.Find("Window");
-            if (window == null)
+            if (_progressionHubHost == null || builtRoot == null)
             {
                 return;
             }
 
-            var passiveRow = window.Find("PassiveBarRow");
-            if (passiveRow != null)
+            if (blockerButton != null)
             {
-                _passiveSlotViews = passiveRow.GetComponentsInChildren<SkillSlotView>(true);
-                foreach (var v in _passiveSlotViews)
+                blockerButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                var blocker = builtRoot.Find("BlockerButton");
+                if (blocker != null)
                 {
-                    v.slotKind = SkillLoadoutSlotKind.Passive;
+                    blocker.gameObject.SetActive(false);
                 }
             }
         }
 
-        void BindLearnUi(Transform root)
+        void WireDragSession()
         {
-            var window = root.Find("Window");
-            if (window == null)
+            if (dragGhostRoot == null)
             {
                 return;
             }
 
-            _learnContent = window.Find("LearnSection/Viewport/Content");
-            _learnRowTemplate = _learnContent != null
-                ? _learnContent.Find("LearnRow_Template")?.GetComponent<SkillLearnEntryView>()
-                : null;
-            if (_learnRowTemplate != null)
-            {
-                _learnRowTemplate.gameObject.SetActive(false);
-            }
-
-            _poolEmptyHint = window.Find("PoolScroll/PoolEmptyHint")?.GetComponent<TextMeshProUGUI>();
+            SkillDragSession.Configure(
+                dragGhostRoot,
+                dragGhostIcon,
+                dragGhostLabel,
+                ResolveSkillDragCanvas());
         }
 
-        void RefreshLearnList(int tabIndex)
+        Canvas ResolveSkillDragCanvas()
         {
-            if (_learnContent == null || _learnRowTemplate == null)
+            if (_progressionHubHost != null)
+            {
+                var c = _progressionHubHost.ResolveHubCanvas();
+                if (c != null)
+                {
+                    return c;
+                }
+            }
+
+            return GetComponentInParent<Canvas>();
+        }
+
+        public void CloseSelfOrHub()
+        {
+            if (_progressionHubHost != null)
+            {
+                _progressionHubHost.CloseHub();
+                return;
+            }
+
+            Debug.LogError("[SkillLoadoutPanel] Not hosted by PlayerProgressionHubPanel.");
+        }
+
+        void InitTabsFromTable()
+        {
+            var schools = SkillLearnCatalog.GetSchoolsSorted();
+            _tabCount = 0;
+            if (tabButtons == null)
             {
                 return;
             }
 
-            ClearLearnRows();
-            if (ActiveSchoolId <= 0 || CfgMgr.Cfgs == null)
+            for (var i = 0; i < tabButtons.Length; i++)
             {
-                return;
-            }
-
-            foreach (var entry in CfgMgr.Cfgs.TbSkillLearnEntry.DataList)
-            {
-                if (entry == null || string.IsNullOrEmpty(entry.SkillId))
+                var b = tabButtons[i];
+                if (b == null)
                 {
                     continue;
                 }
 
-                if (entry.SchoolId != ActiveSchoolId)
+                if (i >= schools.Count)
+                {
+                    b.gameObject.SetActive(false);
+                    continue;
+                }
+
+                b.gameObject.SetActive(true);
+                _tabCount++;
+                var nm = schools[i].DisplayName;
+                var lbl = b.GetComponentInChildren<TextMeshProUGUI>();
+                if (lbl != null)
+                {
+                    lbl.text = nm;
+                }
+
+                var captured = i;
+                b.onClick.RemoveAllListeners();
+                b.onClick.AddListener(() => SelectSchool(captured));
+            }
+        }
+
+        void SelectSchool(int tabIndex)
+        {
+            var schools = SkillLearnCatalog.GetSchoolsSorted();
+            if (tabIndex < 0 || tabIndex >= schools.Count)
+            {
+                return;
+            }
+
+            _activeTabIndex = tabIndex;
+            ActiveSchoolId = schools[tabIndex].SchoolId;
+            UpdateTabVisuals(tabIndex);
+
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            var sys = mgr?.SkillSystem;
+            var entries = SkillLearnCatalog.GetLearnEntriesBySchool(ActiveSchoolId);
+            RefreshSkillGrid(entries, sys);
+            RefreshSlotDisplays(sys);
+        }
+
+        void UpdateTabVisuals(int tabIndex)
+        {
+            if (tabButtons == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < tabButtons.Length; i++)
+            {
+                if (tabButtons[i] == null || !tabButtons[i].gameObject.activeSelf)
                 {
                     continue;
                 }
 
-                var rowGo = Instantiate(_learnRowTemplate.gameObject, _learnContent);
-                rowGo.SetActive(true);
-                var view = rowGo.GetComponent<SkillLearnEntryView>();
-                view.Bind(entry, OnLearnEntryClicked);
-                _learnRowObjects.Add(rowGo);
-                _learnRows.Add(view);
+                var img = tabButtons[i].GetComponent<Image>();
+                if (img == null)
+                {
+                    continue;
+                }
+
+                img.color = i == tabIndex
+                    ? new Color(0.38f, 0.55f, 0.72f, 1f)
+                    : new Color(0.28f, 0.3f, 0.35f, 1f);
             }
         }
 
-        void ClearLearnRows()
+        void RefreshSkillGrid(IReadOnlyList<SkillLearnEntry> entries, PlayerSkillSystem sys)
         {
-            for (int i = 0; i < _learnRowObjects.Count; i++)
+            ClearSkillGrid();
+            if (skillGridContent == null || skillCellTemplate == null)
             {
-                if (_learnRowObjects[i] != null)
+                return;
+            }
+
+            int visibleCount = 0;
+            if (entries != null)
+            {
+                for (var i = 0; i < entries.Count; i++)
                 {
-                    Destroy(_learnRowObjects[i]);
+                    var entry = entries[i];
+                    if (entry == null || string.IsNullOrEmpty(entry.SkillId))
+                    {
+                        continue;
+                    }
+
+                    if (sys != null &&
+                        (sys.IsGrantedPassive(entry.SkillId) || sys.IsGrantedActive(entry.SkillId)))
+                    {
+                        continue;
+                    }
+
+                    visibleCount++;
+                    var cellGo = Instantiate(skillCellTemplate.gameObject, skillGridContent);
+                    cellGo.SetActive(true);
+                    var cell = cellGo.GetComponent<SkillPoolEntryView>();
+                    bool learned = sys != null && sys.IsSkillLearned(entry.SkillId);
+                    cell.Bind(entry, learned, _skillDropBehavior, OnLearnEntryClicked);
+                    _skillGridObjects.Add(cellGo);
+                    _skillGridCells.Add(cell);
                 }
             }
 
-            _learnRowObjects.Clear();
-            _learnRows.Clear();
+            if (skillGridEmptyHint != null)
+            {
+                skillGridEmptyHint.gameObject.SetActive(visibleCount <= 0);
+            }
+        }
+
+        void ClearSkillGrid()
+        {
+            for (int i = 0; i < _skillGridObjects.Count; i++)
+            {
+                if (_skillGridObjects[i] != null)
+                {
+                    Destroy(_skillGridObjects[i]);
+                }
+            }
+
+            _skillGridObjects.Clear();
+            _skillGridCells.Clear();
         }
 
         void OnLearnEntryClicked(int entryId)
@@ -310,73 +343,64 @@ namespace My.UI.SkillLoadout
             RefreshAll();
         }
 
-        void WireSkillSlotDropZones()
+        void RefreshSlotDisplays(PlayerSkillSystem sys)
         {
-            if (_activeSlotViews != null)
-            {
-                foreach (var view in _activeSlotViews)
-                {
-                    if (view == null)
-                    {
-                        continue;
-                    }
-
-                    var drop = view.GetComponent<SkillSlotDropZone>();
-                    if (drop == null)
-                    {
-                        drop = view.gameObject.AddComponent<SkillSlotDropZone>();
-                    }
-
-                    drop.view = view;
-                    drop.mode = view.SlotIndex >= 3 && view.SlotIndex <= 7
-                        ? SkillSlotDropMode.CustomNormal
-                        : SkillSlotDropMode.Fixed;
-
-                    var img = view.GetComponent<Image>();
-                    if (img == null)
-                    {
-                        img = view.GetComponentInChildren<Image>(true);
-                    }
-
-                    if (img != null && drop.mode == SkillSlotDropMode.CustomNormal)
-                    {
-                        img.raycastTarget = true;
-                    }
-                }
-            }
-
-            if (_passiveSlotViews == null)
+            if (sys == null)
             {
                 return;
             }
 
-            foreach (var view in _passiveSlotViews)
+            if (activeSlotViews != null)
             {
-                if (view == null)
+                foreach (var slot in activeSlotViews)
                 {
-                    continue;
-                }
-
-                var drop = view.GetComponent<SkillSlotDropZone>();
-                if (drop == null)
-                {
-                    drop = view.gameObject.AddComponent<SkillSlotDropZone>();
-                }
-
-                drop.view = view;
-                drop.mode = SkillSlotDropMode.CustomNormal;
-
-                var img = view.GetComponent<Image>();
-                if (img == null)
-                {
-                    img = view.GetComponentInChildren<Image>(true);
-                }
-
-                if (img != null)
-                {
-                    img.raycastTarget = true;
+                    slot?.RefreshDisplay(sys);
                 }
             }
+
+            if (passiveSlotViews != null)
+            {
+                foreach (var slot in passiveSlotViews)
+                {
+                    slot?.RefreshDisplay(sys);
+                }
+            }
+        }
+
+        public void RefreshAll()
+        {
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            var sys = mgr?.SkillSystem;
+            RefreshSlotDisplays(sys);
+
+            if (ActiveSchoolId > 0)
+            {
+                var idx = FindTabIndexForSchool(ActiveSchoolId);
+                if (idx >= 0)
+                {
+                    SelectSchool(idx);
+                }
+            }
+            else if (_tabCount > 0)
+            {
+                SelectSchool(0);
+            }
+
+            TryRefreshHudBar();
+        }
+
+        int FindTabIndexForSchool(int schoolId)
+        {
+            var schools = SkillLearnCatalog.GetSchoolsSorted();
+            for (var i = 0; i < schools.Count; i++)
+            {
+                if (schools[i].SchoolId == schoolId)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         public void ApplyLoadoutToEntity()
@@ -403,166 +427,13 @@ namespace My.UI.SkillLoadout
             RefreshAll();
         }
 
-        void WireDragLayerFromHierarchy()
-        {
-            var dragLayer = transform.Find("DragLayer");
-            if (dragLayer == null) return;
-
-            var ghostTf = dragLayer.Find("Ghost");
-            if (ghostTf == null) return;
-
-            var ghostImg = ghostTf.GetComponent<Image>();
-            var ghostLbl = ghostTf.GetComponentInChildren<TextMeshProUGUI>();
-            SkillDragSession.Configure(ghostTf.gameObject, ghostImg, ghostLbl, GetComponentInParent<Canvas>());
-        }
-
-        void InitTabsFromTable()
-        {
-            BindBuiltReferencesIfNeeded();
-
-            var schools = SkillLearnCatalog.GetSchoolsSorted();
-            _tabCount = 0;
-            if (_tabButtons == null) return;
-
-            for (var i = 0; i < _tabButtons.Length; i++)
-            {
-                var b = _tabButtons[i];
-                if (i >= schools.Count)
-                {
-                    b.gameObject.SetActive(false);
-                    continue;
-                }
-
-                b.gameObject.SetActive(true);
-                _tabCount++;
-                var nm = schools[i].DisplayName;
-                var lbl = b.GetComponentInChildren<TextMeshProUGUI>();
-                if (lbl != null)
-                    lbl.text = nm;
-                var captured = i;
-                b.onClick.RemoveAllListeners();
-                b.onClick.AddListener(() => SelectSchool(captured));
-            }
-        }
-
-        void SelectSchool(int tabIndex)
-        {
-            var schools = SkillLearnCatalog.GetSchoolsSorted();
-            if (tabIndex < 0 || tabIndex >= schools.Count) return;
-            _activeTabIndex = tabIndex;
-            ActiveSchoolId = schools[tabIndex].SchoolId;
-
-            if (_tabButtons != null)
-            {
-                for (var i = 0; i < _tabButtons.Length; i++)
-                {
-                    if (!_tabButtons[i].gameObject.activeSelf) continue;
-                    var img = _tabButtons[i].GetComponent<Image>();
-                    if (img == null) continue;
-                    img.color = i == tabIndex
-                        ? new Color(0.38f, 0.55f, 0.72f, 1f)
-                        : new Color(0.28f, 0.3f, 0.35f, 1f);
-                }
-            }
-
-            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            var sys = mgr?.SkillSystem;
-
-            var entries = SkillLearnCatalog.GetLearnEntriesBySchool(ActiveSchoolId);
-
-            if (_poolCells != null)
-            {
-                int visibleCount = 0;
-                for (var i = 0; i < _poolCells.Length; i++)
-                {
-                    if (i >= entries.Count)
-                    {
-                        _poolCells[i].SetVisible(false);
-                        continue;
-                    }
-
-                    var entry = entries[i];
-                    if (sys != null && (sys.IsGrantedPassive(entry.SkillId) || sys.IsGrantedActive(entry.SkillId)))
-                    {
-                        _poolCells[i].SetVisible(false);
-                        continue;
-                    }
-
-                    visibleCount++;
-                    _poolCells[i].SetVisible(true);
-                    bool learned = sys != null && sys.IsSkillLearned(entry.SkillId);
-                    _poolCells[i].Bind(entry, learned, _poolSkillDropBehavior);
-                }
-
-                if (_poolEmptyHint != null)
-                {
-                    _poolEmptyHint.gameObject.SetActive(visibleCount <= 0);
-                }
-            }
-
-            RefreshLearnList(tabIndex);
-            RefreshSlotDisplays(sys);
-        }
-
-        void RefreshSlotDisplays(PlayerSkillSystem sys)
-        {
-            if (sys == null)
-            {
-                return;
-            }
-
-            if (_activeSlotViews != null)
-            {
-                foreach (var slot in _activeSlotViews)
-                {
-                    slot.RefreshDisplay(sys);
-                }
-            }
-
-            if (_passiveSlotViews != null)
-            {
-                foreach (var slot in _passiveSlotViews)
-                {
-                    slot.RefreshDisplay(sys);
-                }
-            }
-        }
-
-        public void RefreshAll()
-        {
-            BindBuiltReferencesIfNeeded();
-            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            var sys = mgr?.SkillSystem;
-            RefreshSlotDisplays(sys);
-
-            if (ActiveSchoolId > 0)
-            {
-                var idx = FindTabIndexForSchool(ActiveSchoolId);
-                if (idx >= 0)
-                    SelectSchool(idx);
-            }
-            else if (_tabCount > 0)
-                SelectSchool(0);
-
-            TryRefreshHudBar();
-        }
-
-        int FindTabIndexForSchool(int schoolId)
-        {
-            var schools = SkillLearnCatalog.GetSchoolsSorted();
-            for (var i = 0; i < schools.Count; i++)
-            {
-                if (schools[i].SchoolId == schoolId)
-                    return i;
-            }
-            return -1;
-        }
-
         static void TryRefreshHudBar()
         {
             var hud = OverworldHUDPanel.Instance;
             if (hud != null && hud.SkilBar != null)
+            {
                 hud.SkilBar.Refresh();
+            }
         }
 
         public bool OnConfirm() => false;

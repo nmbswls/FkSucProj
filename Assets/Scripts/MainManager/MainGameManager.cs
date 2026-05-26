@@ -378,7 +378,8 @@ namespace My
 
         public Transform GetWorldStaticPrefabRoot(string worldName)
         {
-            return WorldAreaManager.Instance.currentRoot.StaticPrefabRoot;
+            var areaRoot = WorldAreaManager?.currentRoot;
+            return areaRoot != null ? areaRoot.StaticPrefabRoot : null;
         }
 
         /// <summary>
