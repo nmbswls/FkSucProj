@@ -768,7 +768,15 @@ namespace My.Map.Logic
 
             if (rec.EntityType == EEntityType.Player)
             {
-                logicManager.playerDataManager?.EquipmentManager?.NotifyPlayerReady(logicManager);
+                if (logicManager.playerDataManager?.EquipmentManager == null)
+                {
+                    Debug.LogError("[GameLogicAreaManager] SpawnEntity player failed: EquipmentManager is null");
+                }
+                else
+                {
+                    logicManager.playerDataManager.EquipmentManager.NotifyPlayerReady(logicManager);
+                }
+
                 if (ent is IEntityBuffOwner buffOwner)
                 {
                     logicManager.RestorePendingPlayerBuffsIfAny(buffOwner);

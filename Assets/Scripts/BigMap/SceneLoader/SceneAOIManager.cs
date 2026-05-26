@@ -706,7 +706,7 @@ public class SceneAOIManager : MonoBehaviour
 
     public void RefreshVisibleLoadedChunks()
     {
-        if (!CanRefreshStaticChunksNow())
+        if (!CanRefreshStaticChunksNow(true, "RefreshVisibleLoadedChunks"))
         {
             return;
         }
@@ -730,7 +730,7 @@ public class SceneAOIManager : MonoBehaviour
 
     public void ForceUpdateOneChunk(ChunkCoord coord)
     {
-        if (!CanRefreshStaticChunksNow())
+        if (!CanRefreshStaticChunksNow(true, $"ForceUpdateOneChunk({coord})"))
         {
             return;
         }
@@ -783,14 +783,17 @@ public class SceneAOIManager : MonoBehaviour
                     {
                         Debug.LogException(ex);
                     }
-                    if (go != null)
+                    if (go == null)
                     {
-                        if (!TryAttachStaticPrefab(go, item.Position, item.Rotation, item.Scale))
-                        {
-                            _asset.Release(go);
-                            continue;
-                        }
-
+                        Debug.LogError($"[SceneAOIManager] ForceUpdateOneChunk({coord}) instantiate failed: Prefab/{item.Key}");
+                    }
+                    else if (!TryAttachStaticPrefab(go, item.Position, item.Rotation, item.Scale, $"ForceUpdateOneChunk({coord}) item={item.Key}"))
+                    {
+                        _asset.Release(go);
+                        continue;
+                    }
+                    else
+                    {
                         instances.Add((go.gameObject, item.ItemId));
                     }
                 }
@@ -809,40 +812,81 @@ public class SceneAOIManager : MonoBehaviour
         record.instances = instances;
     }
 
-    bool CanRefreshStaticChunksNow()
+    static string GetStaticChunkRefreshBlockReason()
     {
-        if (MainGameManager.Instance == null || !MainGameManager.Instance.Initialized)
+        if (MainGameManager.Instance == null)
         {
-            return false;
+            return "MainGameManager.Instance is null";
+        }
+
+        if (!MainGameManager.Instance.Initialized)
+        {
+            return "MainGameManager not initialized";
+        }
+
+        if (WorldAreaManager.Instance == null)
+        {
+            return "WorldAreaManager.Instance is null";
         }
 
         if (!WorldAreaManager.Instance.IsWorldLoaded)
         {
-            return false;
+            return "World not loaded or WorldAreaRoot missing";
         }
 
         var logic = MainGameManager.Instance.gameLogicManager;
-        if (logic == null ||
-            logic.MainStage == GameLogicManager.EMainGameStage.UnInitialized ||
-            logic.playerLogicEntity == null ||
-            string.IsNullOrEmpty(MapName))
+        if (logic == null)
         {
-            return false;
+            return "GameLogicManager is null";
         }
 
-        return true;
+        if (logic.MainStage == GameLogicManager.EMainGameStage.UnInitialized)
+        {
+            return "GameLogicManager not initialized";
+        }
+
+        if (logic.playerLogicEntity == null)
+        {
+            return "Player entity not ready";
+        }
+
+        if (string.IsNullOrEmpty(MainGameManager.Instance.gameLogicManager.AreaManager.AreaOverlayId))
+        {
+            return "MapName is empty";
+        }
+
+        return null;
     }
 
-    bool TryAttachStaticPrefab(GameObject go, Vector3 position, Quaternion rotation, Vector3 scale)
+    bool CanRefreshStaticChunksNow(bool logFailure = false, string context = null)
+    {
+        var reason = GetStaticChunkRefreshBlockReason();
+        if (reason == null)
+        {
+            return true;
+        }
+
+        if (logFailure)
+        {
+            var prefix = string.IsNullOrEmpty(context) ? "[SceneAOIManager]" : $"[SceneAOIManager] {context}";
+            Debug.LogError($"{prefix} static chunk refresh blocked: {reason}");
+        }
+
+        return false;
+    }
+
+    bool TryAttachStaticPrefab(GameObject go, Vector3 position, Quaternion rotation, Vector3 scale, string context)
     {
         if (go == null)
         {
+            Debug.LogError($"[SceneAOIManager] {context} attach static prefab failed: GameObject is null");
             return false;
         }
 
-        var staticRoot = MainGameManager.Instance.GetWorldStaticPrefabRoot("1");
+        var staticRoot = MainGameManager.Instance?.GetWorldStaticPrefabRoot("1");
         if (staticRoot == null)
         {
+            Debug.LogError($"[SceneAOIManager] {context} attach static prefab failed: StaticPrefabRoot is null");
             return false;
         }
 
@@ -952,7 +996,7 @@ public class SceneAOIManager : MonoBehaviour
     private async void StartChunkLoad(ChunkRecord rec)
     {
         if (rec.loadState != LoadState.Unloaded) return;
-        if (!CanRefreshStaticChunksNow())
+        if (!CanRefreshStaticChunksNow(true, $"StartChunkLoad({rec.coord})"))
         {
             return;
         }
@@ -991,7 +1035,7 @@ public class SceneAOIManager : MonoBehaviour
         }
 
         // 加载完成，回主线程后核验
-        if (!CanRefreshStaticChunksNow())
+        if (!CanRefreshStaticChunksNow(true, $"StartChunkLoad complete({rec.coord})"))
         {
             foreach (var prefabInfo in instances)
             {
@@ -1060,14 +1104,17 @@ public class SceneAOIManager : MonoBehaviour
             {
                 Debug.LogException(ex);
             }
-            if (go != null)
+            if (go == null)
             {
-                if (!TryAttachStaticPrefab(go, it.Position, it.Rotation, it.Scale))
-                {
-                    _ = _assetAsync.ReleaseAsync(go);
-                    continue;
-                }
-
+                Debug.LogError($"[SceneAOIManager] InstantiateBatch failed: Prefab/{it.Key}");
+            }
+            else if (!TryAttachStaticPrefab(go, it.Position, it.Rotation, it.Scale, $"InstantiateBatch item={it.Key}"))
+            {
+                _ = _assetAsync.ReleaseAsync(go);
+                continue;
+            }
+            else
+            {
                 instances.Add((go.gameObject, it.ItemId));
             }
 

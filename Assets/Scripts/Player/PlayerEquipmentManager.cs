@@ -311,8 +311,21 @@ namespace My.Player
 
         public void NotifyPlayerReady(GameLogicManager logic)
         {
-            if (logic?.playerLogicEntity == null || logic.globalBuffManager == null)
+            if (logic == null)
             {
+                Debug.LogError("[PlayerEquipmentManager] NotifyPlayerReady failed: GameLogicManager is null");
+                return;
+            }
+
+            if (logic.playerLogicEntity == null)
+            {
+                Debug.LogError("[PlayerEquipmentManager] NotifyPlayerReady failed: playerLogicEntity is null");
+                return;
+            }
+
+            if (logic.globalBuffManager == null)
+            {
+                Debug.LogError("[PlayerEquipmentManager] NotifyPlayerReady failed: globalBuffManager is null");
                 return;
             }
 
