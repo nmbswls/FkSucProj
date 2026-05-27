@@ -1,3 +1,6 @@
+using My;
+using My.Map.Logic;
+using My.UI.BodyPart;
 using My.UI.Rune;
 using My.UI.SkillLoadout;
 using My.UI.Talent;
@@ -89,7 +92,17 @@ namespace My.UI
 
         public static void OpenTalents() => Open(ProgressionHubTab.Talents);
 
-        public static void OpenBodyPart() => Open(ProgressionHubTab.BodyPart);
+        public static void OpenBodyPart()
+        {
+            if (!BodyPartUiRules.HasAnySelectablePart(ResolveGameLogic()))
+            {
+                Debug.LogWarning("[PlayerProgressionHubPanel] BodyPart page unavailable: no selectable part.");
+                Open(ProgressionHubTab.Skills);
+                return;
+            }
+
+            Open(ProgressionHubTab.BodyPart);
+        }
 
         public static void OpenWorld() => Open(ProgressionHubTab.World);
 
@@ -152,6 +165,7 @@ namespace My.UI
         {
             base.Show();
             EnsurePages();
+            RefreshHubTabVisuals();
             RefreshActivePage();
         }
 
@@ -341,6 +355,12 @@ namespace My.UI
 
         public void SelectTab(ProgressionHubTab tab)
         {
+            if (tab == ProgressionHubTab.BodyPart && !BodyPartUiRules.HasAnySelectablePart(ResolveGameLogic()))
+            {
+                Debug.LogWarning("[PlayerProgressionHubPanel] BodyPart tab unavailable: no selectable part.");
+                tab = ProgressionHubTab.Skills;
+            }
+
             CurrentTab = tab;
             EnsurePages();
             _skill?.Hide();
@@ -381,9 +401,14 @@ namespace My.UI
 
         void RefreshHubTabVisuals()
         {
+            bool bodyPartAvailable = BodyPartUiRules.HasAnySelectablePart(ResolveGameLogic());
             ApplyTabVisual(_tabSkill, CurrentTab == ProgressionHubTab.Skills);
             ApplyTabVisual(_tabTalent, CurrentTab == ProgressionHubTab.Talents);
             ApplyTabVisual(_tabGear, CurrentTab == ProgressionHubTab.BodyPart);
+            if (_tabGear != null)
+            {
+                _tabGear.interactable = bodyPartAvailable;
+            }
             ApplyTabVisual(_tabWorld, CurrentTab == ProgressionHubTab.World);
             ApplyTabVisual(_tabRune, CurrentTab == ProgressionHubTab.Runes);
         }
@@ -492,6 +517,11 @@ namespace My.UI
             }
 
             return fn(c);
+        }
+
+        static GameLogicManager ResolveGameLogic()
+        {
+            return MainGameManager.Instance?.gameLogicManager;
         }
     }
 }

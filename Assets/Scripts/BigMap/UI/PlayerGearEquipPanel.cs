@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using cfg.demo;
 using My;
 using My.Config;
+using My.Map.Logic;
 using My.Player;
 using My.UI.BodyPart;
 using TMPro;
@@ -15,18 +16,10 @@ namespace My.UI
     {
         public const string Pid = "PlayerGearEquip";
 
-        static readonly EBodyPart[] VisibleParts =
-        {
-            EBodyPart.Mouth,
-            EBodyPart.Breast,
-            EBodyPart.Womb,
-            EBodyPart.Tail,
-        };
-
         [SerializeField] Image portraitImage;
         [SerializeField] BodyPartHotspotView[] hotspots;
         [SerializeField] TextMeshProUGUI detailTitle;
-        [SerializeField] TextMeshProUGUI detailLevel;
+        [SerializeField] BodyPartExpBarView partExpBar;
         [SerializeField] TextMeshProUGUI detailGearPoint;
         [SerializeField] GearEquipNotchBarView equipNotchBar;
         [SerializeField] GearEquipEquippedBarView equippedBar;
@@ -34,12 +27,15 @@ namespace My.UI
         [SerializeField] PartPropInfoRowView infoRowTemplate;
         [SerializeField] GearEquipBagGridView bagGrid;
 
+        [SerializeField] BodyPartFocusMarkView focusPartMark;
+
         Transform _root;
         readonly List<PartPropInfoRowView> _localRows = new();
 
         PlayerEquipmentManager _eq;
         PlayerBodyPartSystem _bodyPart;
-        EBodyPart _selectedPart = EBodyPart.Mouth;
+        GameLogicManager _glm;
+        EBodyPart _selectedPart = EBodyPart.None;
         IPlayerProgressionHubHost _progressionHubHost;
 
         void Awake()
@@ -97,8 +93,10 @@ namespace My.UI
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             _eq = mgr?.EquipmentManager;
             _bodyPart = mgr?.BodyPartSystem;
+            _glm = MainGameManager.Instance?.gameLogicManager;
             BindRefs();
             WireHotspots();
+            EnsureSelectedPart();
             RefreshAll();
         }
 
@@ -128,7 +126,7 @@ namespace My.UI
 
         void OnHotspotClicked(EBodyPart part)
         {
-            if (!IsVisiblePart(part))
+            if (!BodyPartUiRules.IsSelectablePart(part, _glm))
             {
                 return;
             }
@@ -137,17 +135,21 @@ namespace My.UI
             RefreshAll();
         }
 
-        static bool IsVisiblePart(EBodyPart part)
+        void EnsureSelectedPart()
         {
-            for (int i = 0; i < VisibleParts.Length; i++)
+            if (BodyPartUiRules.IsSelectablePart(_selectedPart, _glm))
             {
-                if (VisibleParts[i] == part)
-                {
-                    return true;
-                }
+                return;
             }
 
-            return false;
+            if (BodyPartUiRules.TryGetFirstSelectablePart(_glm, out var first))
+            {
+                _selectedPart = first;
+                return;
+            }
+
+            _selectedPart = EBodyPart.None;
+            Debug.LogWarning("[PlayerGearEquipPanel] No selectable body part.");
         }
 
         void RefreshAll()
@@ -157,6 +159,7 @@ namespace My.UI
                 return;
             }
 
+            EnsureSelectedPart();
             _eq.EnsureAllPartsBudget();
             RefreshHotspots();
             RefreshDetail();
@@ -177,12 +180,53 @@ namespace My.UI
                     continue;
                 }
 
-                hotspot.SetSelected(hotspot.PartId == _selectedPart);
+                bool selectable = BodyPartUiRules.IsSelectablePart(hotspot.PartId, _glm);
+                hotspot.SetLocked(!selectable);
+                hotspot.SetSelected(selectable && hotspot.PartId == _selectedPart);
             }
+
+            RefreshFocusMark();
+        }
+
+        void RefreshFocusMark()
+        {
+            if (focusPartMark == null)
+            {
+                return;
+            }
+
+            RectTransform target = null;
+            if (_selectedPart != EBodyPart.None && hotspots != null)
+            {
+                for (int i = 0; i < hotspots.Length; i++)
+                {
+                    var hotspot = hotspots[i];
+                    if (hotspot == null || hotspot.PartId != _selectedPart)
+                    {
+                        continue;
+                    }
+
+                    if (!BodyPartUiRules.IsSelectablePart(hotspot.PartId, _glm))
+                    {
+                        continue;
+                    }
+
+                    target = hotspot.FocusRect;
+                    break;
+                }
+            }
+
+            focusPartMark.FocusTo(target, target != null);
         }
 
         void RefreshDetail()
         {
+            if (_selectedPart == EBodyPart.None)
+            {
+                partExpBar?.Refresh(_bodyPart, EBodyPart.None);
+                return;
+            }
+
             var def = BodyPartCatalog.GetPartDef(_selectedPart);
             var state = _bodyPart?.GetPartState(_selectedPart);
             if (def == null)
@@ -190,9 +234,6 @@ namespace My.UI
                 return;
             }
 
-            int lv = state?.Level ?? 1;
-            long exp = state?.Exp ?? 0;
-            long expNext = _bodyPart?.GetExpToNextLevel(_selectedPart) ?? 0;
             int used = _eq.GetUsedGearPoint(_selectedPart);
             int cap = _eq.GetPartGearPointCap(_selectedPart);
 
@@ -201,12 +242,7 @@ namespace My.UI
                 detailTitle.text = def.DisplayName;
             }
 
-            if (detailLevel != null)
-            {
-                detailLevel.text = expNext > 0
-                    ? $"等级 {lv}  经验 {exp}  距下级 {expNext}"
-                    : $"等级 {lv}  经验 {exp}  (已满级)";
-            }
+            partExpBar?.Refresh(_bodyPart, _selectedPart);
 
             if (detailGearPoint != null)
             {

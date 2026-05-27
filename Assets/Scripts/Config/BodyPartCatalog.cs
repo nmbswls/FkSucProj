@@ -1,9 +1,27 @@
 using System.Collections.Generic;
 using cfg.demo;
+using My.Map.Logic;
 using My.Player;
+using UnityEngine;
 
 namespace My.Config
 {
+    public readonly struct BodyPartLevelProgress
+    {
+        public readonly bool IsMaxLevel;
+        public readonly float Fill01;
+        public readonly long ExpInLevel;
+        public readonly long ExpSpan;
+
+        public BodyPartLevelProgress(bool isMaxLevel, float fill01, long expInLevel, long expSpan)
+        {
+            IsMaxLevel = isMaxLevel;
+            Fill01 = fill01;
+            ExpInLevel = expInLevel;
+            ExpSpan = expSpan;
+        }
+    }
+
     public static class BodyPartCatalog
     {
         public static BodyPartDef GetPartDef(EBodyPart partId)
@@ -72,6 +90,56 @@ namespace My.Config
         {
             var row = GetLevelRow(partId, level);
             return row?.NeedExp ?? 0;
+        }
+
+        public static bool IsPartUnlocked(EBodyPart partId, GameLogicManager glm)
+        {
+            var def = GetPartDef(partId);
+            if (def == null)
+            {
+                return false;
+            }
+
+            if (def.UnlockConds == null || def.UnlockConds.Count == 0)
+            {
+                return true;
+            }
+
+            return glm != null && glm.CheckCommonCondsAll(def.UnlockConds);
+        }
+
+        public static bool TryGetLevelProgress(
+            EBodyPart partId,
+            int level,
+            long exp,
+            out BodyPartLevelProgress progress)
+        {
+            progress = default;
+            var def = GetPartDef(partId);
+            if (def == null || level <= 0)
+            {
+                return false;
+            }
+
+            if (level >= def.MaxLevel)
+            {
+                progress = new BodyPartLevelProgress(true, 1f, 0, 0);
+                return true;
+            }
+
+            long curNeed = GetNeedExpForLevel(partId, level);
+            long nextNeed = GetNeedExpForLevel(partId, level + 1);
+            long span = nextNeed - curNeed;
+            if (span <= 0)
+            {
+                progress = new BodyPartLevelProgress(false, 0f, 0, 0);
+                return true;
+            }
+
+            long expInLevel = System.Math.Max(0, exp - curNeed);
+            float fill = Mathf.Clamp01(expInLevel / (float)span);
+            progress = new BodyPartLevelProgress(false, fill, expInLevel, span);
+            return true;
         }
 
         public static void AccumulateGlobalBonuses(EBodyPart partId, int level, StatMap targetMap)
