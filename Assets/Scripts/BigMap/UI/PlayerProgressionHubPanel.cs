@@ -66,6 +66,8 @@ namespace My.UI
         // 与 UIManager 路径对齐：Hub 重复 ShowPanel 时传入的 data；子页按需 Setup
         object _lastHubSetupData;
 
+        public Button BtnClose;
+        public Button BtnBlocker;
         void Awake()
         {
             if (string.IsNullOrEmpty(panelId))
@@ -197,6 +199,7 @@ namespace My.UI
             _tabGear = root.Find("Window/HubTabs/TabGear")?.GetComponent<Button>();
             _tabWorld = root.Find("Window/HubTabs/TabWorld")?.GetComponent<Button>();
             _tabRune = root.Find("Window/HubTabs/TabRune")?.GetComponent<Button>();
+
             if (_tabSkill != null)
             {
                 _tabSkill.onClick.RemoveAllListeners();
@@ -232,18 +235,16 @@ namespace My.UI
 
         void WireShellChrome(Transform root)
         {
-            var blockerBtn = root.Find("BlockerButton")?.GetComponent<Button>();
-            if (blockerBtn != null)
+            if (BtnBlocker != null)
             {
-                blockerBtn.onClick.RemoveAllListeners();
-                blockerBtn.onClick.AddListener(CloseHub);
+                BtnBlocker.onClick.RemoveAllListeners();
+                BtnBlocker.onClick.AddListener(CloseHub);
             }
 
-            var closeBtn = root.Find("Window/HubHeader/HubClose")?.GetComponent<Button>();
-            if (closeBtn != null)
+            if (BtnClose != null)
             {
-                closeBtn.onClick.RemoveAllListeners();
-                closeBtn.onClick.AddListener(CloseHub);
+                BtnClose.onClick.RemoveAllListeners();
+                BtnClose.onClick.AddListener(CloseHub);
             }
         }
 

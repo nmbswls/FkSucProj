@@ -64,6 +64,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panelId: 
   canvasGroup: {fileID: 0}
+  BtnClose: {fileID: 940010214}
+  BtnBlocker: {fileID: 940000114}
 --- !u!1 &940000000
 GameObject:
   m_ObjectHideFlags: 0
