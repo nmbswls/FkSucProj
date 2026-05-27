@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7dac876547b98f4f9389af351dfb105, type: 3}
+  m_Name: test_cave
+  m_EditorClassIdentifier: 
+  DungeonId: test_cave
+  MinRooms: 5
+  MaxRooms: 7
+  SlotStrideCells: 24
+  GraphRandomness: 0.35
+  Branchiness: 0.5
+  CorridorWidthCells: 2
+  DestroyObjCfgId: obj_01
+  FloorTileset: {fileID: 11400000, guid: 81ca25fccbcb93d4fa72243fea968828, type: 2}
+  RoomTemplates:
+  - {fileID: 11400000, guid: 7aa029749012c294aa6c33e61303b09d, type: 2}
+  - {fileID: 11400000, guid: f0556d5a33030b441a14f6fa8118731f, type: 2}
+  - {fileID: 11400000, guid: 4d15df84b1624194f9a1460fc66722e2, type: 2}
+  - {fileID: 11400000, guid: 2b53bdb6c72974840ab8900f01d80dab, type: 2}

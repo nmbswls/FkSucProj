@@ -39,11 +39,6 @@ namespace My.Map.Entity
                 }
             }
 
-            if (list.Count == 0 && !string.IsNullOrEmpty(cfg.PassiveBuffId))
-            {
-                list.Add(cfg.PassiveBuffId);
-            }
-
             CacheBySkillId[cfg.SkillId] = list;
             return list;
         }

@@ -175,7 +175,7 @@ namespace My
             if (!isSecretBase)
             {
                 LogicEntityRecord4Player playerRecord;
-                if (SwitchAreaIntent.Reset)
+                if (SwitchAreaIntent.Reset || SwitchAreaIntent.SavedRecord == null)
                 {
                     playerRecord = new LogicEntityRecord4Player()
                     {

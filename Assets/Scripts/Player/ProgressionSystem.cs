@@ -350,6 +350,8 @@ namespace My.Player
                 }
             }
 
+            Debug.Log($"TryUpgradeNode {nodeId} to {next} ");
+
             _nodeLevels[nodeId] = next;
             RebuildProvidersFromLevels();
 

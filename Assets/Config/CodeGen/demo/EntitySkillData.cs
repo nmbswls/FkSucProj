@@ -22,7 +22,6 @@ public sealed partial class EntitySkillData : Luban.BeanBase
         { if(!_buf["main_ability_id"].IsString) { throw new SerializationException(); }  MainAbilityId = _buf["main_ability_id"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { if(!_buf["is_passive"].IsBoolean) { throw new SerializationException(); }  IsPassive = _buf["is_passive"]; }
-        { if(!_buf["passive_buff_id"].IsString) { throw new SerializationException(); }  PassiveBuffId = _buf["passive_buff_id"]; }
         { var __json0 = _buf["passive_buff_ids"]; if(!__json0.IsArray) { throw new SerializationException(); } PassiveBuffIds = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  PassiveBuffIds.Add(__v0); }   }
         { if(!_buf["passive_buff_level_variable_key"].IsString) { throw new SerializationException(); }  PassiveBuffLevelVariableKey = _buf["passive_buff_level_variable_key"]; }
         { if(!_buf["is_combo"].IsBoolean) { throw new SerializationException(); }  IsCombo = _buf["is_combo"]; }
@@ -61,10 +60,6 @@ public sealed partial class EntitySkillData : Luban.BeanBase
     /// is_passive
     /// </summary>
     public bool IsPassive;
-    /// <summary>
-    /// passive_buff_id
-    /// </summary>
-    public string PassiveBuffId;
     /// <summary>
     /// c
     /// </summary>
@@ -142,7 +137,6 @@ public sealed partial class EntitySkillData : Luban.BeanBase
         + "mainAbilityId:" + MainAbilityId + ","
         + "desc:" + Desc + ","
         + "isPassive:" + IsPassive + ","
-        + "passiveBuffId:" + PassiveBuffId + ","
         + "passiveBuffIds:" + Luban.StringUtil.CollectionToString(PassiveBuffIds) + ","
         + "passiveBuffLevelVariableKey:" + PassiveBuffLevelVariableKey + ","
         + "isCombo:" + IsCombo + ","

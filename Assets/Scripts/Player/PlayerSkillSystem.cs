@@ -189,6 +189,9 @@ namespace My.Player
             }
 
             list.Add(new GrantedSkillEntry { SkillId = skillId, Level = level });
+
+            Debug.Log("TryUpsertGranted ???" + skillId);
+
             return true;
         }
 

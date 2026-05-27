@@ -6,8 +6,8 @@
     "view_prefab": "Prefab/HumanWeaponView",
     "view_sprite": "small_knife",
     "anim_name": "player_weapon01_01",
-    "weapon_level": 25000,
-    "stun_value": 50000,
+    "weapon_level": 5000,
+    "stun_value": 12000,
     "bullet_id": "small_knife"
   },
   {
@@ -17,8 +17,8 @@
     "view_prefab": "Prefab/HumanWeaponView",
     "view_sprite": "human_sword_lv1",
     "anim_name": "player_weapon01_01",
-    "weapon_level": 25000,
-    "stun_value": 25000,
+    "weapon_level": 5000,
+    "stun_value": 12000,
     "bullet_id": ""
   },
   {
@@ -29,7 +29,7 @@
     "view_sprite": "human_lancer_lv1",
     "anim_name": "player_weapon01_01",
     "weapon_level": 5000,
-    "stun_value": 25000,
+    "stun_value": 12000,
     "bullet_id": ""
   }
 ]

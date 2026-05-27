@@ -111,4 +111,21 @@
     "hunting_target": false,
     "hunting_unlock_conds": []
   }
+,
+  {
+    "id": "dungeon_test_cave",
+    "name": "测试洞穴",
+    "desc": "程序化地牢 P1",
+    "var_id": "dungeon_test_cave",
+    "day_period_limit": 0,
+    "map_data_name": "dungeon_test_cave",
+    "can_teleport": false,
+    "is_home": false,
+    "is_secret_base": false,
+    "always_alert": true,
+    "is_civil_area": false,
+    "is_danger_area": true,
+    "hunting_target": false,
+    "hunting_unlock_conds": []
+  }
 ]

@@ -2,6 +2,7 @@ using cfg.demo;
 using Map.Entity;
 using Map.Logic.Events;
 using My.Config;
+using My.Dungeon;
 using My.Map;
 using My.Map.Entity;
 using My.MapExport;
@@ -163,8 +164,37 @@ namespace My.Map.Logic
             Repo = null;
 
 
-            // 加载地图导出数据库
-            cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapOverlayCfg.MapDataName}");
+            if (cacheMapOverlayCfg == null)
+            {
+                Debug.LogError($"InitilizeMap overlay cfg null: {mapOVerlayId}");
+                return;
+            }
+
+            cacheDatabase = null;
+            if (DungeonOverlayRegistry.TryGetDungeonId(mapOVerlayId, out var dungeonId))
+            {
+                int fallbackSeed = DungeonRng.DeriveSeed(mapOVerlayId.GetHashCode(), 1);
+                int seed = DungeonSession.ConsumeSeed(mapOVerlayId, fallbackSeed);
+                var genResult = DungeonGenerator.Generate(dungeonId, seed);
+                if (genResult == null)
+                {
+                    Debug.LogError($"InitilizeMap procedural dungeon generate failed: {dungeonId}");
+                    return;
+                }
+
+                DungeonSession.SetLastResult(genResult);
+                cacheDatabase = genResult.RuntimeMapData;
+            }
+            else if (cacheMapOverlayCfg != null && !string.IsNullOrEmpty(cacheMapOverlayCfg.MapDataName))
+            {
+                cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapOverlayCfg.MapDataName}");
+            }
+
+            if (cacheDatabase == null)
+            {
+                Debug.LogError($"InitilizeMap cacheDatabase null for overlay {mapOVerlayId}");
+                return;
+            }
 
             DialogForceStaticIds.Clear();
             EntityRefreshInfo.Clear();
@@ -242,6 +272,8 @@ namespace My.Map.Logic
             NewCreateEntityMark.Clear();
             Record2RefreshInfo.Clear();
             _refreshInfoByStaticId?.Clear();
+
+            DungeonSession.ClearLastResult();
         }
 
 

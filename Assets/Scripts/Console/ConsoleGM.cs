@@ -13,6 +13,7 @@ using My.UI;
 using My.Map.Fight;
 using My.Config;
 using My.SecretBase;
+using My.Dungeon;
 using cfg.demo;
 
 public class ConsoleGM : MonoBehaviour
@@ -468,6 +469,32 @@ public class ConsoleGM : MonoBehaviour
                 var am = MainGameManager.Instance.gameLogicManager.AreaManager;
                 am.DebugAddAreaAlert(delta);
                 Log($"area_alert_add {delta} -> AreaAlertValue={am.AreaAlertValue} alert_pressure_tier={am.GetAlertPressureTier()}");
+            });
+
+        Register("dungeon_test", "Enter procedural test cave overlay. Usage: dungeon_test [seed]",
+            new[] { new CmdParam("seed", "optional int seed") },
+            args =>
+            {
+                int seed;
+                if (args.Count >= 1 && int.TryParse(args[0], out var parsed))
+                {
+                    seed = parsed;
+                }
+                else
+                {
+                    seed = (int)(DateTime.UtcNow.Ticks & 0x7FFFFFFF);
+                }
+
+                DungeonSession.SetPendingSeed(seed);
+                var glm = MainGameManager.Instance.gameLogicManager;
+                if (glm == null)
+                {
+                    LogError("gameLogicManager null");
+                    return;
+                }
+
+                glm.PreparePlayerSwitchArea(DungeonOverlayRegistry.TestCaveOverlayId, true);
+                Log($"dungeon_test switching to {DungeonOverlayRegistry.TestCaveOverlayId} seed={seed}");
             });
 
         Register("spawn_investigation_npc", "Spawn default_guard_01; kind=pressure_behavior 0-3 on NpcRecord (post-Search policy applied by WantedGuardSpawner); optional immediate 0|1 (default: 1 if kind>0 else 0)",

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Threading.Tasks;
+using My.Dungeon;
 using My.Input;
 using My.Map.View;
 using My.UI;
@@ -206,6 +207,24 @@ namespace My
             while (!loaded)
             {
                 await Task.Yield();
+            }
+
+            if (DungeonOverlayRegistry.TryGetDungeonId(intent.AreaOverlayId, out _))
+            {
+                var dungeonResult = DungeonSession.GetLastResult();
+                var areaRoot = WorldAreaManager.Instance.currentRoot;
+                if (dungeonResult == null)
+                {
+                    Debug.LogError($"AsyncHandleStepLoading: dungeon result missing for {intent.AreaOverlayId}");
+                }
+                else if (areaRoot == null)
+                {
+                    Debug.LogError("AsyncHandleStepLoading: WorldAreaRoot null after LoadWorld");
+                }
+                else if (!DungeonTilemapStamper.Apply(dungeonResult, areaRoot))
+                {
+                    Debug.LogError("AsyncHandleStepLoading: DungeonTilemapStamper.Apply failed");
+                }
             }
 
             if (WorldAreaManager.Instance.cacheAreaOverlayInfo != null
