@@ -34,8 +34,6 @@ namespace My.UI.Rune
 
         public RuneLoadoutTab CurrentTab { get; private set; } = RuneLoadoutTab.Permanent;
 
-        public bool IsHostedByHub => _progressionHubHost != null;
-
         void Awake()
         {
             if (string.IsNullOrEmpty(panelId))
@@ -86,11 +84,6 @@ namespace My.UI.Rune
         public override void Setup(object data = null)
         {
             base.Setup(data);
-            if (!IsHostedByHub)
-            {
-                Debug.LogError("[RuneLoadoutPanel] Setup without hub host.");
-                return;
-            }
 
             if (transform.Find("BuiltRoot") == null)
             {
@@ -105,12 +98,6 @@ namespace My.UI.Rune
 
         public override void Show()
         {
-            if (!IsHostedByHub)
-            {
-                Debug.LogError("[RuneLoadoutPanel] Show without hub host.");
-                return;
-            }
-
             base.Show();
             RefreshAll();
         }

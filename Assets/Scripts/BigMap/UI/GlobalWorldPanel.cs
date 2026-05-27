@@ -22,8 +22,6 @@ namespace My.UI
         Transform _root;
         IPlayerProgressionHubHost _progressionHubHost;
 
-        public bool IsHostedByHub => _progressionHubHost != null;
-
         void Awake()
         {
             if (string.IsNullOrEmpty(panelId))
@@ -64,11 +62,6 @@ namespace My.UI
         public override void Setup(object data = null)
         {
             base.Setup(data);
-            if (!IsHostedByHub)
-            {
-                Debug.LogError("[GlobalWorldPanel] Setup without hub host.");
-                return;
-            }
 
             BindRefs();
             ApplyHostedChromeIfNeeded();
@@ -77,12 +70,6 @@ namespace My.UI
 
         public override void Show()
         {
-            if (!IsHostedByHub)
-            {
-                Debug.LogError("[GlobalWorldPanel] Show without hub host.");
-                return;
-            }
-
             base.Show();
             RefreshSummary();
         }

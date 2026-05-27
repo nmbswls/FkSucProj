@@ -28,8 +28,6 @@ namespace My.UI.SkillLoadout
         [SerializeField] Image dragGhostIcon;
         [SerializeField] TextMeshProUGUI dragGhostLabel;
 
-        public bool IsHostedByHub => _progressionHubHost != null;
-
         IPlayerProgressionHubHost _progressionHubHost;
         ISkillDropBehavior _skillDropBehavior = new SchoolFilteredNormalSlotDropBehavior();
 
@@ -58,11 +56,6 @@ namespace My.UI.SkillLoadout
         public override void Setup(object data = null)
         {
             base.Setup(data);
-            if (!IsHostedByHub)
-            {
-                Debug.LogError("[SkillLoadoutPanel] Setup without hub host.");
-                return;
-            }
 
             if (builtRoot == null && transform.Find("BuiltRoot") == null)
             {
@@ -86,12 +79,6 @@ namespace My.UI.SkillLoadout
 
         public override void Show()
         {
-            if (!IsHostedByHub)
-            {
-                Debug.LogError("[SkillLoadoutPanel] Show without hub host.");
-                return;
-            }
-
             base.Show();
             Current = this;
             SkillDragSession.SetCanvas(ResolveSkillDragCanvas());

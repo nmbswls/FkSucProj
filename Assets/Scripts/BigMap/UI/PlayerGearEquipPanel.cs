@@ -46,8 +46,6 @@ namespace My.UI
         EBodyPart _selectedPart = EBodyPart.Mouth;
         IPlayerProgressionHubHost _progressionHubHost;
 
-        public bool IsHostedByHub => _progressionHubHost != null;
-
         void Awake()
         {
             if (string.IsNullOrEmpty(panelId))
@@ -67,12 +65,6 @@ namespace My.UI
             if (_progressionHubHost == null || _root == null)
             {
                 return;
-            }
-
-            var blocker = _root.Find("BlockerButton");
-            if (blocker != null)
-            {
-                blocker.gameObject.SetActive(false);
             }
 
             var closeTr = _root.Find("Window/Header/CloseBtn");
@@ -98,17 +90,6 @@ namespace My.UI
         public override void Setup(object data = null)
         {
             base.Setup(data);
-            if (!IsHostedByHub)
-            {
-                Debug.LogError("[PlayerGearEquipPanel] Setup without hub host.");
-                return;
-            }
-
-            if (transform.Find("BuiltRoot") == null)
-            {
-                Debug.LogError("[PlayerGearEquipPanel] Prefab missing BuiltRoot.");
-                return;
-            }
 
             BindRefs();
             WireHotspots();
@@ -117,12 +98,6 @@ namespace My.UI
 
         public override void Show()
         {
-            if (!IsHostedByHub)
-            {
-                Debug.LogError("[PlayerGearEquipPanel] Show without hub host.");
-                return;
-            }
-
             base.Show();
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             _eq = mgr?.EquipmentManager;
