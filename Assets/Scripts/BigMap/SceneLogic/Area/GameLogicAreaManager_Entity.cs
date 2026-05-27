@@ -527,6 +527,11 @@ namespace My.Map.Logic
                         record = new LogicEntityRecord4Trap();
                         break;
                     }
+                case EEntityType.SavePoint:
+                    {
+                        record = new LogicEntityRecord();
+                        break;
+                    }
                 default:
                     {
                         record = new LogicEntityRecord();

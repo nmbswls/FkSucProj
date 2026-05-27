@@ -299,7 +299,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 110
+    StaticId: 115
     UniqName: 
     AppearCond:
       Type: 0
@@ -319,6 +319,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918738
   references:
@@ -553,7 +555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 108
+    StaticId: 113
     UniqName: 
     AppearCond:
       Type: 0
@@ -573,6 +575,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055726059099521339
   references:
@@ -687,7 +691,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 119
+    StaticId: 127
     UniqName: 
     AppearCond:
       Type: 0
@@ -707,6 +711,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918734
   references:
@@ -818,7 +824,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 103
+    StaticId: 107
     UniqName: 
     AppearCond:
       Type: 1
@@ -838,6 +844,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 3582754457494224896
   references:
@@ -1175,7 +1183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 107
+    StaticId: 111
     UniqName: 
     AppearCond:
       Type: 0
@@ -1195,6 +1203,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055726077229662310
   references:
@@ -1393,7 +1403,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 121
     UniqName: cornor_01_b
     AppearCond:
       Type: 0
@@ -1413,6 +1423,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055725832105623552
   references:
@@ -1422,7 +1434,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
-        Position: {x: 0.76, y: -2.34}
+        Position: {x: 1.951, y: -22.66}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 3
@@ -1813,7 +1825,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 101
+    StaticId: 105
     UniqName: gp_02
     AppearCond:
       Type: 0
@@ -1833,6 +1845,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 3582754776386633728
   references:
@@ -2050,7 +2064,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 117
+    StaticId: 125
     UniqName: 
     AppearCond:
       Type: 0
@@ -2070,6 +2084,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055726025270625172
   references:
@@ -2202,8 +2218,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 102
-    UniqName: gp_01
+    StaticId: 103
+    UniqName: 
     AppearCond:
       Type: 0
       Param1: 0
@@ -2222,6 +2238,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 5977857120449593398
   references:
@@ -2231,7 +2249,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_entry_01
-        Position: {x: 0, y: 0}
+        Position: {x: -3.98, y: -26.33}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -2364,7 +2382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 102
+    StaticId: 106
     UniqName: gp_01
     AppearCond:
       Type: 0
@@ -2384,6 +2402,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 3582754776386633728
   references:
@@ -2866,7 +2886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 113
+    StaticId: 118
     UniqName: 
     AppearCond:
       Type: 0
@@ -2886,6 +2906,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918736
   references:
@@ -3100,7 +3122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 112
+    StaticId: 117
     UniqName: 
     AppearCond:
       Type: 0
@@ -3120,6 +3142,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918736
   references:
@@ -3758,7 +3782,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 118
+    StaticId: 126
     UniqName: 
     AppearCond:
       Type: 0
@@ -3778,6 +3802,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055725832105623552
   references:
@@ -3956,7 +3982,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 100
     UniqName: 
     AppearCond:
       Type: 0
@@ -3976,6 +4002,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 5977857281726611456
   references:
@@ -3985,7 +4013,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_growth_01_top
-        Position: {x: 0, y: 0}
+        Position: {x: -9.55, y: -14.26}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -4088,7 +4116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 100
+    StaticId: 104
     UniqName: gp_03
     AppearCond:
       Type: 0
@@ -4108,6 +4136,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 3582754776386633728
   references:
@@ -4292,7 +4322,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 115
+    StaticId: 123
     UniqName: 
     AppearCond:
       Type: 0
@@ -4312,6 +4342,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055726025270625172
   references:
@@ -4411,7 +4443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 104
+    StaticId: 108
     UniqName: 
     AppearCond:
       Type: 1
@@ -4431,6 +4463,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 3582754457494224896
   references:
@@ -4492,7 +4526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 105
+    StaticId: 109
     UniqName: 
     AppearCond:
       Type: 0
@@ -4512,6 +4546,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 8510164242736611670
   references:
@@ -4698,7 +4734,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 122
     UniqName: cornor_01_a
     AppearCond:
       Type: 0
@@ -4718,6 +4754,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055725832105623552
   references:
@@ -4727,7 +4765,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
-        Position: {x: 0.76, y: -2.34}
+        Position: {x: 1.02, y: -22.66}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 3
@@ -5042,7 +5080,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 121
+    StaticId: 129
     UniqName: 
     AppearCond:
       Type: 0
@@ -5062,6 +5100,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918732
   references:
@@ -5468,7 +5508,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 120
+    StaticId: 128
     UniqName: 
     AppearCond:
       Type: 0
@@ -5488,6 +5528,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918733
   references:
@@ -5873,7 +5915,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 108
+    StaticId: 112
     UniqName: 
     AppearCond:
       Type: 0
@@ -5893,6 +5935,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055726059099521339
   references:
@@ -5902,7 +5946,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: poison_p_clothes
-        Position: {x: 0, y: 0}
+        Position: {x: -4.16, y: -18.82}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -6090,7 +6134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RefreshInfo:
     StaticId: 102
-    UniqName: gp_01
+    UniqName: 
     AppearCond:
       Type: 0
       Param1: 0
@@ -6109,6 +6153,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 5977857120449593398
   references:
@@ -6118,7 +6164,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_inn_01
-        Position: {x: 0, y: 0}
+        Position: {x: -3.98, y: -3.19}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -6169,7 +6215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 109
+    StaticId: 114
     UniqName: 
     AppearCond:
       Type: 0
@@ -6189,6 +6235,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055726059099521339
   references:
@@ -6578,7 +6626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 101
     UniqName: 
     AppearCond:
       Type: 0
@@ -6598,6 +6646,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 5977857281726611456
   references:
@@ -6607,7 +6657,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_growth_01
-        Position: {x: 0, y: 0}
+        Position: {x: -9.55, y: -16.17}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -6955,7 +7005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 106
+    StaticId: 110
     UniqName: 
     AppearCond:
       Type: 0
@@ -6975,6 +7025,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 8510164242736611670
   references:
@@ -7375,7 +7427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 111
+    StaticId: 116
     UniqName: 
     AppearCond:
       Type: 0
@@ -7395,6 +7447,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918736
   references:
@@ -7554,7 +7608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 116
+    StaticId: 124
     UniqName: 
     AppearCond:
       Type: 0
@@ -7574,6 +7628,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055726025270625172
   references:
@@ -7641,7 +7697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 0
+    StaticId: 120
     UniqName: 
     AppearCond:
       Type: 0
@@ -7661,6 +7717,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 4055725832105623552
   references:
@@ -7670,7 +7728,7 @@ MonoBehaviour:
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_watcher_01
-        Position: {x: 0.76, y: -2.34}
+        Position: {x: -1.68, y: -20.16}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 3
@@ -7930,6 +7988,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918735
   references:
@@ -8044,7 +8104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefreshInfo:
-    StaticId: 114
+    StaticId: 119
     UniqName: 
     AppearCond:
       Type: 0
@@ -8064,6 +8124,8 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
     InitInfo:
       rid: 1384458314864918736
   references:
