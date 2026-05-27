@@ -18,12 +18,26 @@ namespace My.UI.BodyPart
 
         readonly List<GearEquipEquippedCellView> _cells = new();
 
+        void Awake()
+        {
+            EnsureTemplateHidden();
+        }
+
+        void EnsureTemplateHidden()
+        {
+            if (cellTemplate != null)
+            {
+                cellTemplate.gameObject.SetActive(false);
+            }
+        }
+
         public void Refresh(
             PlayerEquipmentManager equipment,
             EBodyPart part,
             Action onEquipChanged)
         {
             ClearCells();
+            EnsureTemplateHidden();
             if (equipment == null || gridContent == null || cellTemplate == null)
             {
                 SetEmptyHintVisible(true);
@@ -68,8 +82,9 @@ namespace My.UI.BodyPart
 
         GearEquipEquippedCellView SpawnCell()
         {
-            var cell = Instantiate(cellTemplate, gridContent);
-            cell.gameObject.SetActive(true);
+            var go = Instantiate(cellTemplate.gameObject, gridContent, false);
+            var cell = go.GetComponent<GearEquipEquippedCellView>();
+            go.SetActive(true);
             _cells.Add(cell);
             return cell;
         }
@@ -102,13 +117,15 @@ namespace My.UI.BodyPart
             for (int i = gridContent.childCount - 1; i >= 0; i--)
             {
                 var child = gridContent.GetChild(i);
-                if (child == cellTemplate.transform)
+                if (cellTemplate != null && child == cellTemplate.transform)
                 {
                     continue;
                 }
 
                 Destroy(child.gameObject);
             }
+
+            EnsureTemplateHidden();
         }
     }
 }
