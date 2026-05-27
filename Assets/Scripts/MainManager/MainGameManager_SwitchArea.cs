@@ -225,6 +225,10 @@ namespace My
                 {
                     Debug.LogError("AsyncHandleStepLoading: DungeonTilemapStamper.Apply failed");
                 }
+                else
+                {
+                    await DungeonNavMeshBaker.BakeAsync(dungeonResult, areaRoot).ConfigureAwait(true);
+                }
             }
 
             if (WorldAreaManager.Instance.cacheAreaOverlayInfo != null

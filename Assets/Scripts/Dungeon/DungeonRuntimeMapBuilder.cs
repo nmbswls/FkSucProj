@@ -6,11 +6,8 @@ namespace My.Dungeon
 {
     public static class DungeonRuntimeMapBuilder
     {
-        private static int _nextStaticId = 1000;
-
         public static MapExportDatabase Build(DungeonGenerationResult result, DungeonDef def)
         {
-            _nextStaticId = 1000;
             var db = ScriptableObject.CreateInstance<MapExportDatabase>();
             db.AreaId = result.DungeonId;
             db.NamedPoints = new List<NamedPoint>();
@@ -21,6 +18,7 @@ namespace My.Dungeon
 
             AddBornPoint(result, def, db);
             AddDestroyObjSlots(result, def, db);
+            AddMonsterSpawns(result, def, db);
             db.BuildRuntimeMap();
             return db;
         }
@@ -72,6 +70,9 @@ namespace My.Dungeon
 
                 var sortedSlots = new List<DungeonEntitySlotExport>(room.Meta.EntitySlots);
                 sortedSlots.Sort((a, b) => string.CompareOrdinal(a.SlotId, b.SlotId));
+                var spawnPolicy = room.GraphNodeId == 0
+                    ? EDungeonSpawnPolicy.Immediate
+                    : EDungeonSpawnPolicy.OnRoomEnter;
 
                 foreach (var slot in sortedSlots)
                 {
@@ -85,7 +86,6 @@ namespace My.Dungeon
                         CfgId = def.DestroyObjCfgId,
                         Position = pos,
                         FaceDir = slot.FaceDir.sqrMagnitude > 0.01f ? slot.FaceDir.normalized : Vector2.down,
-                        BindRoomId = room.GraphNodeId.ToString(),
                     };
 
                     db.EntityRefreshInfo.Add(new DynamicEntityRefreshInfo
@@ -93,6 +93,55 @@ namespace My.Dungeon
                         StaticId = staticId,
                         UniqName = $"dungeon_{result.DungeonId}_{room.GraphNodeId}_{slot.SlotId}",
                         WillRespawn = false,
+                        DungeonNodeId = room.GraphNodeId,
+                        SpawnPolicy = spawnPolicy,
+                        InitInfo = initInfo,
+                    });
+                }
+            }
+        }
+
+        private static void AddMonsterSpawns(DungeonGenerationResult result, DungeonDef def, MapExportDatabase db)
+        {
+            if (string.IsNullOrEmpty(def.DefaultMonsterCfgId))
+            {
+                return;
+            }
+
+            var sortedRooms = new List<PlacedRoom>(result.Rooms);
+            sortedRooms.Sort((a, b) => a.GraphNodeId.CompareTo(b.GraphNodeId));
+
+            foreach (var room in sortedRooms)
+            {
+                if (room.ContentType != EDungeonRoomContentType.Monster || room.MonsterCount <= 0)
+                {
+                    continue;
+                }
+
+                var rng = new DungeonRng(DungeonRng.DeriveSeed(result.Seed, room.GraphNodeId, 9001));
+                var pool = DungeonRoomSpawnUtil.CollectInteriorSpawnCells(room);
+                var picked = DungeonRoomSpawnUtil.PickRandomCells(pool, room.MonsterCount, rng);
+                for (int i = 0; i < picked.Count; i++)
+                {
+                    string slotId = $"mob_{i}";
+                    int staticId = MakeStaticId(result.Seed, room.GraphNodeId, slotId);
+                    var pos = new Vector2(picked[i].x + 0.5f, picked[i].y + 0.5f);
+                    var initInfo = new EntityInitInfo4Npc
+                    {
+                        CfgId = def.DefaultMonsterCfgId,
+                        Position = pos,
+                        FaceDir = Vector2.down,
+                        IsPeace = false,
+                        EnmityConfId = "default_monster",
+                    };
+
+                    db.EntityRefreshInfo.Add(new DynamicEntityRefreshInfo
+                    {
+                        StaticId = staticId,
+                        UniqName = $"dungeon_{result.DungeonId}_{room.GraphNodeId}_{slotId}",
+                        WillRespawn = false,
+                        DungeonNodeId = room.GraphNodeId,
+                        SpawnPolicy = EDungeonSpawnPolicy.OnRoomEnter,
                         InitInfo = initInfo,
                     });
                 }

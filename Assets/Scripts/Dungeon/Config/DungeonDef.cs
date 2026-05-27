@@ -20,6 +20,13 @@ namespace My.Dungeon
         public int CorridorWidthCells = 2;
         public string DestroyObjCfgId = "obj_01";
 
+        [Range(0f, 1f)]
+        public float MonsterRoomRatio = 0.7f;
+
+        public int MonsterCountMin = 2;
+        public int MonsterCountMax = 4;
+        public string DefaultMonsterCfgId = "slime_red";
+
         public DungeonFloorTileset FloorTileset;
         public List<DungeonRoomExportMeta> RoomTemplates = new();
     }

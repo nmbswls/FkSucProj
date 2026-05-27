@@ -14,6 +14,8 @@ namespace My.Dungeon
             public int ParentId;
             public Vector2Int SlotCoord;
             public EDungeonRoomRole Role;
+            public EDungeonRoomContentType ContentType;
+            public int MonsterCount;
             public DungeonRoomExportMeta Template;
         }
 
@@ -45,6 +47,7 @@ namespace My.Dungeon
 
             var nodes = BuildGraph(roomCount, def, rng);
             AssignRoles(nodes, rng);
+            AssignContentTypes(nodes, def, rng);
             AssignTemplates(nodes, def, rng);
             EmbedOnGrid(nodes, def, rng);
 
@@ -62,6 +65,8 @@ namespace My.Dungeon
                     GraphNodeId = node.Id,
                     TemplateId = node.Template != null ? node.Template.TemplateId : string.Empty,
                     Role = node.Role,
+                    ContentType = node.ContentType,
+                    MonsterCount = node.MonsterCount,
                     GridOriginCells = new Vector2Int(node.SlotCoord.x * slotStride, node.SlotCoord.y * slotStride),
                     SlotCoord = node.SlotCoord,
                     Meta = node.Template,
@@ -234,6 +239,35 @@ namespace My.Dungeon
             {
                 var n = nodes[i];
                 n.Role = i == 0 ? EDungeonRoomRole.Start : EDungeonRoomRole.Combat;
+                nodes[i] = n;
+            }
+        }
+
+        private static void AssignContentTypes(List<GraphNode> nodes, DungeonDef def, DungeonRng rng)
+        {
+            int minCount = Mathf.Max(0, def.MonsterCountMin);
+            int maxCount = Mathf.Max(minCount, def.MonsterCountMax);
+            float ratio = Mathf.Clamp01(def.MonsterRoomRatio);
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                var n = nodes[i];
+                if (n.Id == 0 || n.Role == EDungeonRoomRole.Start)
+                {
+                    n.ContentType = EDungeonRoomContentType.Empty;
+                    n.MonsterCount = 0;
+                }
+                else if (rng.NextFloat() < ratio)
+                {
+                    n.ContentType = EDungeonRoomContentType.Monster;
+                    n.MonsterCount = rng.NextInt(minCount, maxCount + 1);
+                }
+                else
+                {
+                    n.ContentType = EDungeonRoomContentType.Empty;
+                    n.MonsterCount = 0;
+                }
+
                 nodes[i] = n;
             }
         }

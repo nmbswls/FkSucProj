@@ -178,16 +178,19 @@ namespace My.Map.Logic
                 var genResult = DungeonGenerator.Generate(dungeonId, seed);
                 if (genResult == null)
                 {
+                    ClearDungeonRuntime();
                     Debug.LogError($"InitilizeMap procedural dungeon generate failed: {dungeonId}");
                     return;
                 }
 
                 DungeonSession.SetLastResult(genResult);
                 cacheDatabase = genResult.RuntimeMapData;
+                InitDungeonRuntime(genResult);
             }
             else if (cacheMapOverlayCfg != null && !string.IsNullOrEmpty(cacheMapOverlayCfg.MapDataName))
             {
                 cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapOverlayCfg.MapDataName}");
+                ClearDungeonRuntime();
             }
 
             if (cacheDatabase == null)
@@ -235,6 +238,8 @@ namespace My.Map.Logic
         public void CleanArea()
         {
             logicManager?.MapMicroPlot?.AbortForMapChange();
+
+            ClearDungeonRuntime();
 
             UnitGridIndex.Clear();
             RoomGridIndex.Clear();
@@ -371,7 +376,19 @@ namespace My.Map.Logic
 
         public LogicRoomInfo GetRoomByPos(Vector2 logicPos)
         {
-            return null;
+            if (_dungeonRoomSpatialIndex == null ||
+                !_dungeonRoomSpatialIndex.TryGetRoomNodeId(logicPos, out var nodeId))
+            {
+                return null;
+            }
+
+            var roomId = nodeId.ToString();
+            if (RuntimeRoomInfos.TryGetValue(roomId, out var info))
+            {
+                return info;
+            }
+
+            return new LogicRoomInfo { RoomId = roomId };
         }
 
         #region AOI 与兴趣相关
@@ -418,6 +435,8 @@ namespace My.Map.Logic
         {
             // 动态刷新出现/消失
             CheckRefreshAppearAndDisappear(dt);
+
+            TickDungeonRoom(dt);
 
             TickEntityLifeCycle(dt);
 

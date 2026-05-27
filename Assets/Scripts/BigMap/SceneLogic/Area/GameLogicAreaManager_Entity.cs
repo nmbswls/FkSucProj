@@ -192,6 +192,11 @@ namespace My.Map.Logic
 
             // 非对话强制刷新时，再校验出现条件（强制项在 DialogForceStaticIds 分支中单独处理）
             // todo: 抽象统一条件入口
+            if (!ShouldSpawnByDungeonPolicy(refreshInfo))
+            {
+                return;
+            }
+
             if(!DialogForceStaticIds.Contains(refreshInfo.StaticId))
             {
                 // 检查出现条件
@@ -222,6 +227,10 @@ namespace My.Map.Logic
                 return;
             }
 
+            if (refreshInfo.DungeonNodeId >= 0)
+            {
+                record.BelongRoomId = refreshInfo.DungeonNodeId.ToString();
+            }
 
             record.IsFixed = true;
             if(!string.IsNullOrEmpty(refreshInfo.UniqName))

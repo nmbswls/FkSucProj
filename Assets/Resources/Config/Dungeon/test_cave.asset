@@ -20,6 +20,10 @@ MonoBehaviour:
   Branchiness: 0.5
   CorridorWidthCells: 2
   DestroyObjCfgId: obj_01
+  MonsterRoomRatio: 0.7
+  MonsterCountMin: 2
+  MonsterCountMax: 4
+  DefaultMonsterCfgId: slime_red
   FloorTileset: {fileID: 11400000, guid: 81ca25fccbcb93d4fa72243fea968828, type: 2}
   RoomTemplates:
   - {fileID: 11400000, guid: 7aa029749012c294aa6c33e61303b09d, type: 2}

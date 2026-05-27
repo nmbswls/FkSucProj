@@ -44,7 +44,7 @@ namespace My.Map.Entity
         {
             base.OnTick(dt);
 
-            if(_brackTimer != 0 && LogicTime.time > _brackTimer)
+            if(_brackTimer != 0 && LogicTime.time > _brackTimer && !MarkDestroyed)
             {
                 DoEntityDestroyed("brack_recycle");
             }
@@ -85,7 +85,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            _brackTimer = LogicTime.time;
+            _brackTimer = LogicTime.time + 3.0f;
 
             //DoEntityDestroyed("destroyobj");
             CreateDrop();

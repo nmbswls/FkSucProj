@@ -30,6 +30,22 @@ namespace My.Dungeon.Editor
             SceneView.duringSceneGui += OnSceneGui;
         }
 
+        [MenuItem("Tools/Dungeon/Preview Generation (seed=12345)")]
+        public static void PreviewGenerationMenu()
+        {
+            if (TryShow("test_cave", 12345, out var summary))
+            {
+                EditorUtility.DisplayDialog(
+                    "Dungeon Preview",
+                    summary + "\n\n已打开测试场景并在 Scene 视图显示布局。",
+                    "OK");
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("Dungeon Preview Failed", summary, "OK");
+            }
+        }
+
         public static bool TryShow(string dungeonId, int seed, out string summary)
         {
             summary = string.Empty;
@@ -44,7 +60,7 @@ namespace My.Dungeon.Editor
             var root = Object.FindObjectOfType<WorldAreaRoot>();
             if (root == null)
             {
-                summary = "WorldAreaRoot not found. Run Setup Test Cave P1 first.";
+                summary = "WorldAreaRoot not found in Main_Dungeon_TestCave scene.";
                 Debug.LogError(summary);
                 return false;
             }
@@ -55,7 +71,7 @@ namespace My.Dungeon.Editor
             var b = DungeonGenerator.Generate(dungeonId, seed);
             if (a == null)
             {
-                summary = "Generation failed. Run Setup Test Cave P1 first.";
+                summary = "Generation failed. Check dungeon config assets.";
                 Debug.LogError(summary);
                 return false;
             }
@@ -102,7 +118,7 @@ namespace My.Dungeon.Editor
 
             if (!System.IO.File.Exists(ScenePath))
             {
-                Debug.LogError($"Preview scene missing: {ScenePath}. Run Setup Test Cave P1.");
+                Debug.LogError($"Preview scene missing: {ScenePath}.");
                 return false;
             }
 

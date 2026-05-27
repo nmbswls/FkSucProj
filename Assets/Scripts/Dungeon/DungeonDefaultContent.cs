@@ -24,6 +24,10 @@ namespace My.Dungeon
             _cached.Branchiness = 0.5f;
             _cached.CorridorWidthCells = 2;
             _cached.DestroyObjCfgId = "obj_01";
+            _cached.MonsterRoomRatio = 0.7f;
+            _cached.MonsterCountMin = 2;
+            _cached.MonsterCountMax = 4;
+            _cached.DefaultMonsterCfgId = "slime_red";
             _cached.FloorTileset = CreateDefaultTileset();
             _cached.RoomTemplates = new List<DungeonRoomExportMeta>
             {

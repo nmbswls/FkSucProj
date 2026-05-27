@@ -11,6 +11,12 @@ namespace My.Dungeon
         Generic,
     }
 
+    public enum EDungeonRoomContentType
+    {
+        Empty,
+        Monster,
+    }
+
     public enum EDungeonCardinalDir
     {
         South,
@@ -41,6 +47,8 @@ namespace My.Dungeon
         public int GraphNodeId;
         public string TemplateId;
         public EDungeonRoomRole Role;
+        public EDungeonRoomContentType ContentType;
+        public int MonsterCount;
         public Vector2Int GridOriginCells;
         public Vector2Int SlotCoord;
         public DungeonRoomExportMeta Meta;

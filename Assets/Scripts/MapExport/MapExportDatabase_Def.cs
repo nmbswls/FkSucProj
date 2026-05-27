@@ -10,6 +10,13 @@ using cfg.demo;
 
 namespace My.MapExport
 {
+    public enum EDungeonSpawnPolicy
+    {
+        Immediate = 0,
+        OnRoomEnter = 1,
+        OnRoomClear = 2,
+    }
+
     public enum ENamedPointType
     {
         Normal,
@@ -142,6 +149,11 @@ namespace My.MapExport
         // 重生相关信息
         public bool WillRespawn = false;
         public float RespawnInterval = 0;
+
+        // 地牢专用：>=0 表示 GraphNodeId；静态地图保持 -1
+        public int DungeonNodeId = -1;
+
+        public EDungeonSpawnPolicy SpawnPolicy = EDungeonSpawnPolicy.Immediate;
 
         [SerializeReference]
         public EntityInitInfo InitInfo;
