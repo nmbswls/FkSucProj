@@ -79,6 +79,8 @@ namespace My.Map.Logic
         // StaticId -> 地图导出刷新项；用于 SavePoint 判定与 LinkedRefreshInfo 补链
         private Dictionary<int, DynamicEntityRefreshInfo> _refreshInfoByStaticId;
 
+        private DungeonAreaRuntime _dungeonRuntime;
+
         public List<int> DialogForceStaticIds = new();
 
         public Dictionary<string, int> StaticName2RefreshIdMap = new();
@@ -171,26 +173,26 @@ namespace My.Map.Logic
             }
 
             cacheDatabase = null;
-            if (DungeonOverlayRegistry.TryGetDungeonId(mapOVerlayId, out var dungeonId))
+            if (!string.IsNullOrEmpty(cacheMapOverlayCfg.ProceduralDefId))
             {
-                int fallbackSeed = DungeonRng.DeriveSeed(mapOVerlayId.GetHashCode(), 1);
-                int seed = DungeonSession.ConsumeSeed(mapOVerlayId, fallbackSeed);
-                var genResult = DungeonGenerator.Generate(dungeonId, seed);
-                if (genResult == null)
+                if (!DungeonMapLoader.TryLoad(cacheMapOverlayCfg, mapOVerlayId, out var procDb, out var genResult))
                 {
-                    ClearDungeonRuntime();
-                    Debug.LogError($"InitilizeMap procedural dungeon generate failed: {dungeonId}");
+                    _dungeonRuntime?.Dispose();
+                    _dungeonRuntime = null;
+                    Debug.LogError(
+                        $"InitilizeMap procedural map generate failed: {cacheMapOverlayCfg.ProceduralDefId}");
                     return;
                 }
 
-                DungeonSession.SetLastResult(genResult);
-                cacheDatabase = genResult.RuntimeMapData;
-                InitDungeonRuntime(genResult);
+                cacheDatabase = procDb;
+                _dungeonRuntime?.Dispose();
+                _dungeonRuntime = DungeonAreaRuntime.Create(this, logicManager, genResult);
             }
-            else if (cacheMapOverlayCfg != null && !string.IsNullOrEmpty(cacheMapOverlayCfg.MapDataName))
+            else if (!string.IsNullOrEmpty(cacheMapOverlayCfg.MapDataName))
             {
                 cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapOverlayCfg.MapDataName}");
-                ClearDungeonRuntime();
+                _dungeonRuntime?.Dispose();
+                _dungeonRuntime = null;
             }
 
             if (cacheDatabase == null)
@@ -239,7 +241,8 @@ namespace My.Map.Logic
         {
             logicManager?.MapMicroPlot?.AbortForMapChange();
 
-            ClearDungeonRuntime();
+            _dungeonRuntime?.Dispose();
+            _dungeonRuntime = null;
 
             UnitGridIndex.Clear();
             RoomGridIndex.Clear();
@@ -376,19 +379,7 @@ namespace My.Map.Logic
 
         public LogicRoomInfo GetRoomByPos(Vector2 logicPos)
         {
-            if (_dungeonRoomSpatialIndex == null ||
-                !_dungeonRoomSpatialIndex.TryGetRoomNodeId(logicPos, out var nodeId))
-            {
-                return null;
-            }
-
-            var roomId = nodeId.ToString();
-            if (RuntimeRoomInfos.TryGetValue(roomId, out var info))
-            {
-                return info;
-            }
-
-            return new LogicRoomInfo { RoomId = roomId };
+            return _dungeonRuntime?.TryGetRoomByPos(logicPos);
         }
 
         #region AOI 与兴趣相关
@@ -436,7 +427,7 @@ namespace My.Map.Logic
             // 动态刷新出现/消失
             CheckRefreshAppearAndDisappear(dt);
 
-            TickDungeonRoom(dt);
+            _dungeonRuntime?.Tick(dt);
 
             TickEntityLifeCycle(dt);
 

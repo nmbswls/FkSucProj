@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace My.Dungeon
@@ -64,26 +63,5 @@ namespace My.Dungeon
         public List<Vector3Int> CorridorCells = new();
         public HashSet<Vector3Int> WalkableCells = new();
         public My.MapExport.MapExportDatabase RuntimeMapData;
-    }
-
-    public static class DungeonOverlayRegistry
-    {
-        public const string TestCaveOverlayId = "dungeon_test_cave";
-
-        private static readonly Dictionary<string, string> OverlayToDungeon = new(StringComparer.OrdinalIgnoreCase)
-        {
-            { TestCaveOverlayId, "test_cave" },
-        };
-
-        public static bool TryGetDungeonId(string overlayId, out string dungeonId)
-        {
-            if (string.IsNullOrEmpty(overlayId))
-            {
-                dungeonId = string.Empty;
-                return false;
-            }
-
-            return OverlayToDungeon.TryGetValue(overlayId, out dungeonId);
-        }
     }
 }

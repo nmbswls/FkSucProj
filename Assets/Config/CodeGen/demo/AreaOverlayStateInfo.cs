@@ -32,6 +32,9 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
         { if(!_buf["is_danger_area"].IsBoolean) { throw new SerializationException(); }  IsDangerArea = _buf["is_danger_area"]; }
         { if(!_buf["hunting_target"].IsBoolean) { throw new SerializationException(); }  HuntingTarget = _buf["hunting_target"]; }
         { var __json0 = _buf["hunting_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } HuntingUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  HuntingUnlockConds.Add(__v0); }   }
+        ProceduralDefId = _buf.HasKey("procedural_def_id") && _buf["procedural_def_id"].IsString
+            ? _buf["procedural_def_id"]
+            : string.Empty;
     }
 
     public static AreaOverlayStateInfo DeserializeAreaOverlayStateInfo(JSONNode _buf)
@@ -95,6 +98,10 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
     /// 解锁条件
     /// </summary>
     public System.Collections.Generic.List<demo.CommonCheckCond> HuntingUnlockConds;
+    /// <summary>
+    /// 程序化地图定义 id（如地牢 DungeonDef）；非空时优先于 MapDataName
+    /// </summary>
+    public string ProceduralDefId;
    
     public const int __ID__ = 928836711;
     public override int GetTypeId() => __ID__;
@@ -121,6 +128,7 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
         + "isDangerArea:" + IsDangerArea + ","
         + "huntingTarget:" + HuntingTarget + ","
         + "huntingUnlockConds:" + Luban.StringUtil.CollectionToString(HuntingUnlockConds) + ","
+        + "proceduralDefId:" + ProceduralDefId + ","
         + "}";
     }
 }

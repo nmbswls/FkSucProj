@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using My.Map.Logic;
 using UnityEngine;
 
 namespace My.Dungeon
 {
     public class DungeonRoomController
     {
-        private readonly GameLogicAreaManager _area;
+        private readonly DungeonAreaRuntime _runtime;
         private readonly GameLogicManager _logicManager;
         private readonly DungeonRoomSpatialIndex _spatialIndex;
         private readonly HashSet<int> _activatedRooms = new();
@@ -15,11 +14,11 @@ namespace My.Dungeon
         private float _checkTimer;
 
         public DungeonRoomController(
-            GameLogicAreaManager area,
+            DungeonAreaRuntime runtime,
             GameLogicManager logicManager,
             DungeonRoomSpatialIndex spatialIndex)
         {
-            _area = area;
+            _runtime = runtime;
             _logicManager = logicManager;
             _spatialIndex = spatialIndex;
             ActivateRoom(0);
@@ -73,7 +72,7 @@ namespace My.Dungeon
                 return;
             }
 
-            _area.ForceCheckDungeonRoomRefresh(nodeId);
+            _runtime.NotifyRoomRefresh(nodeId);
         }
 
         private void OnRoomEntered(int nodeId)

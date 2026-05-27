@@ -209,26 +209,11 @@ namespace My
                 await Task.Yield();
             }
 
-            if (DungeonOverlayRegistry.TryGetDungeonId(intent.AreaOverlayId, out _))
+            var cfg = WorldAreaManager.Instance.cacheAreaOverlayInfo;
+            if (DungeonPresentation.IsProceduralOverlay(cfg))
             {
-                var dungeonResult = DungeonSession.GetLastResult();
-                var areaRoot = WorldAreaManager.Instance.currentRoot;
-                if (dungeonResult == null)
-                {
-                    Debug.LogError($"AsyncHandleStepLoading: dungeon result missing for {intent.AreaOverlayId}");
-                }
-                else if (areaRoot == null)
-                {
-                    Debug.LogError("AsyncHandleStepLoading: WorldAreaRoot null after LoadWorld");
-                }
-                else if (!DungeonTilemapStamper.Apply(dungeonResult, areaRoot))
-                {
-                    Debug.LogError("AsyncHandleStepLoading: DungeonTilemapStamper.Apply failed");
-                }
-                else
-                {
-                    await DungeonNavMeshBaker.BakeAsync(dungeonResult, areaRoot).ConfigureAwait(true);
-                }
+                await DungeonPresentation.ApplyAsync(intent.AreaOverlayId, WorldAreaManager.Instance.currentRoot)
+                    .ConfigureAwait(true);
             }
 
             if (WorldAreaManager.Instance.cacheAreaOverlayInfo != null

@@ -119,6 +119,7 @@
     "var_id": "dungeon_test_cave",
     "day_period_limit": 0,
     "map_data_name": "dungeon_test_cave",
+    "procedural_def_id": "test_cave",
     "can_teleport": false,
     "is_home": false,
     "is_secret_base": false,

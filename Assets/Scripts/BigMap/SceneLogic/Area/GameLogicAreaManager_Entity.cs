@@ -192,7 +192,7 @@ namespace My.Map.Logic
 
             // 非对话强制刷新时，再校验出现条件（强制项在 DialogForceStaticIds 分支中单独处理）
             // todo: 抽象统一条件入口
-            if (!ShouldSpawnByDungeonPolicy(refreshInfo))
+            if (_dungeonRuntime != null && !_dungeonRuntime.ShouldAllowSpawn(refreshInfo))
             {
                 return;
             }

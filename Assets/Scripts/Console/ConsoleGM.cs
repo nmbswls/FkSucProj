@@ -493,8 +493,8 @@ public class ConsoleGM : MonoBehaviour
                     return;
                 }
 
-                glm.PreparePlayerSwitchArea(DungeonOverlayRegistry.TestCaveOverlayId, true);
-                Log($"dungeon_test switching to {DungeonOverlayRegistry.TestCaveOverlayId} seed={seed}");
+                glm.PreparePlayerSwitchArea(DungeonPresentation.TestCaveOverlayId, true);
+                Log($"dungeon_test switching to {DungeonPresentation.TestCaveOverlayId} seed={seed}");
             });
 
         Register("spawn_investigation_npc", "Spawn default_guard_01; kind=pressure_behavior 0-3 on NpcRecord (post-Search policy applied by WantedGuardSpawner); optional immediate 0|1 (default: 1 if kind>0 else 0)",
