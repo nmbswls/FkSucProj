@@ -18,6 +18,17 @@ namespace My.Player
 
         public static bool HasDetail(string itemId) => GetOrDefault(itemId) != null;
 
+        public static EBodyPart GetBodyPart(string itemId)
+        {
+            return GetOrDefault(itemId)?.BodyPart ?? EBodyPart.None;
+        }
+
+        public static int GetSlotCost(string itemId)
+        {
+            var def = GetOrDefault(itemId);
+            return def != null && def.GearSlotCost > 0 ? def.GearSlotCost : 1;
+        }
+
         public static bool MeetsPartLevel(PartGear def, BodyPartRuntimeState state)
         {
             if (def == null || def.MinPartLevel <= 0)

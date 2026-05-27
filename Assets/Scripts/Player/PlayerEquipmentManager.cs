@@ -11,65 +11,29 @@ namespace My.Player
 {
     public static class ItemGearRules
     {
-        public const string MiscGearStackTag = "gear_misc";
-
         public static bool IsGearItem(ItemData def)
         {
-            if (def == null || def.GearBodyPart == EBodyPart.None)
-            {
-                return false;
-            }
-
-            switch (def.ItemType)
-            {
-                case EItemType.Equip:
-                case EItemType.Pocket:
-                case EItemType.Insertion:
-                    return true;
-                case EItemType.Normal:
-                    if (def.StackTags == null)
-                    {
-                        return false;
-                    }
-
-                    for (int i = 0; i < def.StackTags.Count; i++)
-                    {
-                        if (def.StackTags[i] == MiscGearStackTag)
-                        {
-                            return true;
-                        }
-                    }
-
-                    return false;
-                default:
-                    return false;
-            }
+            return def != null && PartGearCatalog.HasDetail(def.ItemId);
         }
 
         public static bool MatchesPart(ItemData def, EBodyPart part)
         {
-            if (def == null || part == EBodyPart.None || def.GearBodyPart != part || !IsGearItem(def))
+            if (def == null || part == EBodyPart.None || !IsGearItem(def))
             {
                 return false;
             }
 
-            var detail = PartGearCatalog.GetOrDefault(def.ItemId);
-            if (detail != null && detail.BodyPart != EBodyPart.None && detail.BodyPart != part)
-            {
-                return false;
-            }
-
-            return true;
+            return PartGearCatalog.GetBodyPart(def.ItemId) == part;
         }
 
         public static int GetSlotCost(ItemData def)
         {
-            if (def == null)
-            {
-                return 1;
-            }
+            return def != null ? PartGearCatalog.GetSlotCost(def.ItemId) : 1;
+        }
 
-            return def.GearSlotCost > 0 ? def.GearSlotCost : 1;
+        public static int GetSlotCost(string itemId)
+        {
+            return PartGearCatalog.GetSlotCost(itemId);
         }
     }
 

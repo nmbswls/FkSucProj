@@ -1,45 +1,10 @@
 [
   {
-    "item_id": "chanzi",
+    "item_id": "part_mouth_lollipop",
     "body_part": 1,
+    "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "基础口部装备，训练用铲形道具。",
-    "local_bonuses": [
-      {
-        "attr_id": 1,
-        "val": 20
-      }
-    ]
-  },
-  {
-    "item_id": "insertion_maoqiu",
-    "body_part": 3,
-    "min_part_level": 2,
-    "desc": "腹部位插入型装备，持续施加弱化效果。",
-    "local_bonuses": [
-      {
-        "attr_id": 2,
-        "val": 30
-      }
-    ]
-  },
-  {
-    "item_id": "partgear_mouth_lollipop",
-    "body_part": 1,
-    "min_part_level": 2,
-    "desc": "口部糖果环，提升敏感度。",
-    "local_bonuses": [
-      {
-        "attr_id": 1,
-        "val": 35
-      }
-    ]
-  },
-  {
-    "item_id": "partgear_breast_brooch",
-    "body_part": 2,
-    "min_part_level": 1,
-    "desc": "胸部胸针，稳固局部感知。",
+    "desc": "",
     "local_bonuses": [
       {
         "attr_id": 1,
@@ -48,10 +13,11 @@
     ]
   },
   {
-    "item_id": "partgear_womb_bead",
-    "body_part": 3,
+    "item_id": "part_breast_brooch",
+    "body_part": 2,
+    "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "腹部位念珠，温和提升耐力。",
+    "desc": "胸部胸针，稳固局部感知。",
     "local_bonuses": [
       {
         "attr_id": 2,
@@ -60,15 +26,24 @@
     ]
   },
   {
-    "item_id": "partgear_tail_bell",
-    "body_part": 4,
+    "item_id": "part_womb_bead",
+    "body_part": 3,
+    "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "尾部铃铛，增加流体获取。",
+    "desc": "腹部位念珠，温和提升耐力。",
     "local_bonuses": [
       {
         "attr_id": 3,
         "val": 10
       }
     ]
+  },
+  {
+    "item_id": "part_tail_bell",
+    "body_part": 4,
+    "gear_slot_cost": 1,
+    "min_part_level": 1,
+    "desc": "尾部铃铛，增加流体获取。",
+    "local_bonuses": []
   }
 ]

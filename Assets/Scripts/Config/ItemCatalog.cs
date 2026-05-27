@@ -141,6 +141,7 @@ namespace My.Config
                 case EItemType.Pocket:
                 case EItemType.Insertion:
                 case EItemType.HumanWeapon:
+                case EItemType.PartGear:
                     return true;
                 default:
                     return false;

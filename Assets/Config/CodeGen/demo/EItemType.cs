@@ -20,6 +20,7 @@ namespace cfg.demo
         Insertion = 4,
         Gift = 5,
         HumanWeapon = 6,
+        PartGear = 7,
     }
 
 } 

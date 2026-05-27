@@ -26,23 +26,23 @@ namespace My.UI
                 lines.AppendLine($"数量: {stackCount}");
             }
 
-            if (def.GearSlotCost > 0)
-            {
-                lines.AppendLine($"装备点数: {def.GearSlotCost}");
-            }
-
-            if (def.GearBodyPart != EBodyPart.None)
-            {
-                var partDef = BodyPartCatalog.GetPartDef(def.GearBodyPart);
-                string partName = partDef != null && !string.IsNullOrEmpty(partDef.DisplayName)
-                    ? partDef.DisplayName
-                    : def.GearBodyPart.ToString();
-                lines.AppendLine($"部位: {partName}");
-            }
-
             var partGear = PartGearCatalog.GetOrDefault(itemId);
             if (partGear != null)
             {
+                if (partGear.GearSlotCost > 0)
+                {
+                    lines.AppendLine($"装备点数: {partGear.GearSlotCost}");
+                }
+
+                if (partGear.BodyPart != EBodyPart.None)
+                {
+                    var partDef = BodyPartCatalog.GetPartDef(partGear.BodyPart);
+                    string partName = partDef != null && !string.IsNullOrEmpty(partDef.DisplayName)
+                        ? partDef.DisplayName
+                        : partGear.BodyPart.ToString();
+                    lines.AppendLine($"部位: {partName}");
+                }
+
                 if (!string.IsNullOrEmpty(partGear.Desc))
                 {
                     lines.AppendLine(partGear.Desc);

@@ -17,9 +17,9 @@
       { "PartId": 4, "Level": 1, "Exp": 0 }
     ],
     "EquippedGear": [
-      { "PartId": 1, "EquippedIndex": 0, "ItemId": "chanzi", "ItemInstanceId": 201, "EquipAuxData": 0 },
-      { "PartId": 2, "EquippedIndex": 0, "ItemId": "partgear_breast_brooch", "ItemInstanceId": 202, "EquipAuxData": 0 },
-      { "PartId": 3, "EquippedIndex": 0, "ItemId": "insertion_maoqiu", "ItemInstanceId": 203, "EquipAuxData": 0 }
+      { "PartId": 1, "EquippedIndex": 0, "ItemId": "part_mouth_lollipop", "ItemInstanceId": 201, "EquipAuxData": 0 },
+      { "PartId": 2, "EquippedIndex": 0, "ItemId": "part_breast_brooch", "ItemInstanceId": 202, "EquipAuxData": 0 },
+      { "PartId": 3, "EquippedIndex": 0, "ItemId": "part_womb_bead", "ItemInstanceId": 203, "EquipAuxData": 0 }
     ]
   },
   "MainInventorySlots": [
@@ -27,9 +27,7 @@
     { "SlotIndex": 1, "ItemId": "human_sword_lv1", "Count": 1, "ItemInstanceId": 100 },
     { "SlotIndex": 2, "ItemId": "human_lancer_lv1", "Count": 1, "ItemInstanceId": 101 },
     { "SlotIndex": 3, "ItemId": "smoke_grenade", "Count": 5, "ItemInstanceId": 0 },
-    { "SlotIndex": 4, "ItemId": "partgear_mouth_lollipop", "Count": 1, "ItemInstanceId": 204 },
-    { "SlotIndex": 5, "ItemId": "partgear_womb_bead", "Count": 1, "ItemInstanceId": 205 },
-    { "SlotIndex": 6, "ItemId": "partgear_tail_bell", "Count": 1, "ItemInstanceId": 206 },
+    { "SlotIndex": 4, "ItemId": "part_tail_bell", "Count": 1, "ItemInstanceId": 204 },
     { "SlotIndex": 7, "ItemId": "gold", "Count": 10, "ItemInstanceId": 0 }
   ],
   "CurrentMapId": "secret_base_hub",
@@ -52,6 +50,6 @@
   },
   "MapRuntimeByMapId": {},
   "NextLogicEntityIdHint": 0,
-  "NextItemInstanceIdHint": 207,
+  "NextItemInstanceIdHint": 205,
   "FuncOpenList": [1, 2, 3, 4, 10]
 }

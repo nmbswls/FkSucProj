@@ -20,6 +20,7 @@ public sealed partial class PartGear : Luban.BeanBase
     {
         { if(!_buf["item_id"].IsString) { throw new SerializationException(); }  ItemId = _buf["item_id"]; }
         { if(!_buf["body_part"].IsNumber) { throw new SerializationException(); }  BodyPart = (demo.EBodyPart)_buf["body_part"].AsInt; }
+        { if(!_buf["gear_slot_cost"].IsNumber) { throw new SerializationException(); }  GearSlotCost = _buf["gear_slot_cost"]; }
         { if(!_buf["min_part_level"].IsNumber) { throw new SerializationException(); }  MinPartLevel = _buf["min_part_level"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { var __json0 = _buf["local_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } LocalBonuses = new System.Collections.Generic.List<demo.PartLocalStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.PartLocalStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.PartLocalStatBonus.DeserializePartLocalStatBonus(__e0);  }  LocalBonuses.Add(__v0); }   }
@@ -38,6 +39,10 @@ public sealed partial class PartGear : Luban.BeanBase
     /// body_part
     /// </summary>
     public demo.EBodyPart BodyPart;
+    /// <summary>
+    /// gear_slot_cost
+    /// </summary>
+    public int GearSlotCost;
     /// <summary>
     /// min_part_level
     /// </summary>
@@ -64,6 +69,7 @@ public sealed partial class PartGear : Luban.BeanBase
         return "{ "
         + "itemId:" + ItemId + ","
         + "bodyPart:" + BodyPart + ","
+        + "gearSlotCost:" + GearSlotCost + ","
         + "minPartLevel:" + MinPartLevel + ","
         + "desc:" + Desc + ","
         + "localBonuses:" + Luban.StringUtil.CollectionToString(LocalBonuses) + ","

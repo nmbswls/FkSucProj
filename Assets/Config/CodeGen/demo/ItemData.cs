@@ -37,8 +37,6 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["auto_pick"].IsBoolean) { throw new SerializationException(); }  AutoPick = _buf["auto_pick"]; }
         { if(!_buf["is_auto_use"].IsBoolean) { throw new SerializationException(); }  IsAutoUse = _buf["is_auto_use"]; }
         { if(!_buf["quick_bar_kind"].IsNumber) { throw new SerializationException(); }  QuickBarKind = (demo.EQuickBarItemKind)_buf["quick_bar_kind"].AsInt; }
-        { if(!_buf["gear_body_part"].IsNumber) { throw new SerializationException(); }  GearBodyPart = (demo.EBodyPart)_buf["gear_body_part"].AsInt; }
-        { if(!_buf["gear_slot_cost"].IsNumber) { throw new SerializationException(); }  GearSlotCost = _buf["gear_slot_cost"]; }
     }
 
     public static ItemData DeserializeItemData(JSONNode _buf)
@@ -122,14 +120,6 @@ public sealed partial class ItemData : Luban.BeanBase
     /// 快速使用类型
     /// </summary>
     public demo.EQuickBarItemKind QuickBarKind;
-    /// <summary>
-    /// gear_body_part
-    /// </summary>
-    public demo.EBodyPart GearBodyPart;
-    /// <summary>
-    /// gear_slot_cost
-    /// </summary>
-    public int GearSlotCost;
    
     public const int __ID__ = 1942709544;
     public override int GetTypeId() => __ID__;
@@ -160,8 +150,6 @@ public sealed partial class ItemData : Luban.BeanBase
         + "autoPick:" + AutoPick + ","
         + "isAutoUse:" + IsAutoUse + ","
         + "quickBarKind:" + QuickBarKind + ","
-        + "gearBodyPart:" + GearBodyPart + ","
-        + "gearSlotCost:" + GearSlotCost + ","
         + "}";
     }
 }
