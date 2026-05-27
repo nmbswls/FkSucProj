@@ -65,16 +65,4 @@
     "thumb_map": "base_01",
     "is_secret_base": false
   }
-,
-  {
-    "var_id": "dungeon_test_cave",
-    "name": "测试洞穴",
-    "desc": "程序化地牢 P1",
-    "logic_area_id": "dungeon_test_cave",
-    "show_in_map": false,
-    "show_conds": [],
-    "scene_name": "Main_Dungeon_TestCave",
-    "thumb_map": "",
-    "is_secret_base": false
-  }
 ]

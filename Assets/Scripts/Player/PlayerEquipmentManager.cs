@@ -48,7 +48,18 @@ namespace My.Player
 
         public static bool MatchesPart(ItemData def, EBodyPart part)
         {
-            return def != null && part != EBodyPart.None && def.GearBodyPart == part && IsGearItem(def);
+            if (def == null || part == EBodyPart.None || def.GearBodyPart != part || !IsGearItem(def))
+            {
+                return false;
+            }
+
+            var detail = PartGearCatalog.GetOrDefault(def.ItemId);
+            if (detail != null && detail.BodyPart != EBodyPart.None && detail.BodyPart != part)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public static int GetSlotCost(ItemData def)
@@ -503,6 +514,12 @@ namespace My.Player
                 return false;
             }
 
+            if (!PartGearCatalog.MeetsPartLevel(stack.ItemID, _playerMgr?.BodyPartSystem?.GetPartState(part)))
+            {
+                failReason = "part_level_low";
+                return false;
+            }
+
             int cost = ItemGearRules.GetSlotCost(def);
             if (GetUsedGearPoint(part) + cost > GetPartGearPointCap(part))
             {
@@ -545,6 +562,12 @@ namespace My.Player
             if (!ItemGearRules.MatchesPart(def, part))
             {
                 failReason = "wrong_part";
+                return false;
+            }
+
+            if (!PartGearCatalog.MeetsPartLevel(stack.ItemID, _playerMgr?.BodyPartSystem?.GetPartState(part)))
+            {
+                failReason = "part_level_low";
                 return false;
             }
 

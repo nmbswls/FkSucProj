@@ -97,6 +97,7 @@ public partial class Tables
     public demo.TbBodyPartDef TbBodyPartDef {get; }
     public demo.TbBodyPartLevel TbBodyPartLevel {get; }
     public demo.TbPartLocalAttrDef TbPartLocalAttrDef {get; }
+    public demo.TbPartGear TbPartGear {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -171,6 +172,7 @@ public partial class Tables
         TbBodyPartDef = new demo.TbBodyPartDef(loader("demo_tbbodypartdef"));
         TbBodyPartLevel = new demo.TbBodyPartLevel(loader("demo_tbbodypartlevel"));
         TbPartLocalAttrDef = new demo.TbPartLocalAttrDef(loader("demo_tbpartlocalattrdef"));
+        TbPartGear = new demo.TbPartGear(loader("demo_tbpartgear"));
         ResolveRef();
     }
     
@@ -247,6 +249,7 @@ public partial class Tables
         TbBodyPartDef.ResolveRef(this);
         TbBodyPartLevel.ResolveRef(this);
         TbPartLocalAttrDef.ResolveRef(this);
+        TbPartGear.ResolveRef(this);
     }
 }
 

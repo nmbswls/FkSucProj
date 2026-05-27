@@ -99,6 +99,7 @@
     </bean>
 
     <!-- 魅魔身体部位：Datas/body_part.xlsx -->
+    <!-- 部位装备细节：Datas/partgear.xlsx → TbPartGear，item_id 关联 ItemData -->
     <enum name="EBodyPart">
         <var name="None" value="0"/>
         <var name="Mouth" value="1"/>

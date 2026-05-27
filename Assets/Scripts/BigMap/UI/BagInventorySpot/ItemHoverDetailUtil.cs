@@ -1,5 +1,6 @@
 using cfg.demo;
 using My.Config;
+using My.Player;
 
 namespace My.UI
 {
@@ -37,6 +38,35 @@ namespace My.UI
                     ? partDef.DisplayName
                     : def.GearBodyPart.ToString();
                 lines.AppendLine($"部位: {partName}");
+            }
+
+            var partGear = PartGearCatalog.GetOrDefault(itemId);
+            if (partGear != null)
+            {
+                if (!string.IsNullOrEmpty(partGear.Desc))
+                {
+                    lines.AppendLine(partGear.Desc);
+                }
+
+                if (partGear.MinPartLevel > 0)
+                {
+                    lines.AppendLine($"需要部位等级: {partGear.MinPartLevel}");
+                }
+
+                if (partGear.LocalBonuses != null)
+                {
+                    for (int i = 0; i < partGear.LocalBonuses.Count; i++)
+                    {
+                        var bonus = partGear.LocalBonuses[i];
+                        if (bonus == null)
+                        {
+                            continue;
+                        }
+
+                        string name = BodyPartCatalog.GetLocalAttrDisplayName(bonus.AttrId);
+                        lines.AppendLine($"加成: {name} +{bonus.Val}");
+                    }
+                }
             }
 
             return lines.ToString().TrimEnd();
