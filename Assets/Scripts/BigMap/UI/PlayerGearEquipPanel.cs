@@ -28,18 +28,14 @@ namespace My.UI
         [SerializeField] TextMeshProUGUI detailTitle;
         [SerializeField] TextMeshProUGUI detailLevel;
         [SerializeField] TextMeshProUGUI detailGearPoint;
+        [SerializeField] GearEquipNotchBarView equipNotchBar;
+        [SerializeField] GearEquipEquippedBarView equippedBar;
         [SerializeField] Transform localStatsContent;
-        [SerializeField] Transform candidateContent;
-        [SerializeField] GearEquipRowView infoRowTemplate;
-        [SerializeField] GearEquipRowView actionRowTemplate;
-        [SerializeField] GearPointNotchBarView gearPointBar;
-        [SerializeField] Transform charmGrid;
-        [SerializeField] GearCharmSlotView charmSlotTemplate;
+        [SerializeField] PartPropInfoRowView infoRowTemplate;
+        [SerializeField] GearEquipBagGridView bagGrid;
 
         Transform _root;
-        readonly List<GearEquipRowView> _localRows = new();
-        readonly List<GearEquipRowView> _candRows = new();
-        readonly List<GearCharmSlotView> _charmSlots = new();
+        readonly List<PartPropInfoRowView> _localRows = new();
 
         PlayerEquipmentManager _eq;
         PlayerBodyPartSystem _bodyPart;
@@ -90,7 +86,6 @@ namespace My.UI
         public override void Setup(object data = null)
         {
             base.Setup(data);
-
             BindRefs();
             WireHotspots();
             ApplyHostedChromeIfNeeded();
@@ -110,25 +105,6 @@ namespace My.UI
         void BindRefs()
         {
             _root = transform.Find("BuiltRoot");
-            if (_root == null)
-            {
-                return;
-            }
-
-            if (gearPointBar == null)
-            {
-                gearPointBar = _root.Find("Window/BodyRow/LeftPanel/GearPointBar")?.GetComponent<GearPointNotchBarView>();
-            }
-
-            if (charmGrid == null)
-            {
-                charmGrid = _root.Find("Window/BodyRow/LeftPanel/CharmBoard/CharmGrid");
-            }
-
-            if (charmSlotTemplate == null && charmGrid != null)
-            {
-                charmSlotTemplate = charmGrid.Find("CharmSlot_Template")?.GetComponent<GearCharmSlotView>();
-            }
         }
 
         void WireHotspots()
@@ -146,8 +122,7 @@ namespace My.UI
                     continue;
                 }
 
-                var part = hotspot.PartId;
-                hotspot.Bind(part, OnHotspotClicked);
+                hotspot.Bind(hotspot.PartId, OnHotspotClicked);
             }
         }
 
@@ -177,7 +152,7 @@ namespace My.UI
 
         void RefreshAll()
         {
-            if (_eq == null || localStatsContent == null)
+            if (_eq == null)
             {
                 return;
             }
@@ -218,8 +193,8 @@ namespace My.UI
             int lv = state?.Level ?? 1;
             long exp = state?.Exp ?? 0;
             long expNext = _bodyPart?.GetExpToNextLevel(_selectedPart) ?? 0;
-            int used = _eq?.GetUsedGearPoint(_selectedPart) ?? 0;
-            int cap = _eq?.GetPartGearPointCap(_selectedPart) ?? 0;
+            int used = _eq.GetUsedGearPoint(_selectedPart);
+            int cap = _eq.GetPartGearPointCap(_selectedPart);
 
             if (detailTitle != null)
             {
@@ -238,17 +213,23 @@ namespace My.UI
                 detailGearPoint.text = $"剩余点数 {Mathf.Max(0, cap - used)}";
             }
 
-            gearPointBar?.Refresh(used, cap);
+            equipNotchBar?.Refresh(used, cap);
+            equippedBar?.Refresh(_eq, _selectedPart, RefreshAll);
             BuildLocalStats(state);
-            BuildCharmGrid();
-            BuildCandidates();
+            bagGrid?.Refresh(_eq, _selectedPart, RefreshAll);
         }
 
         void BuildLocalStats(BodyPartRuntimeState state)
         {
-            ClearRowViews(_localRows, localStatsContent);
+            ClearInfoRows();
+            if (localStatsContent == null || infoRowTemplate == null)
+            {
+                return;
+            }
+
             if (state?.LocalStats == null)
             {
+                SpawnInfoRow("(无 Local 属性)");
                 return;
             }
 
@@ -257,171 +238,55 @@ namespace My.UI
             {
                 any = true;
                 string name = BodyPartCatalog.GetLocalAttrDisplayName(kv.Key);
-                SpawnInfoRow(localStatsContent, _localRows, $"{name}: {kv.Value}");
+                SpawnInfoRow($"{name}: {kv.Value}");
             }
 
             if (!any)
             {
-                SpawnInfoRow(localStatsContent, _localRows, "(无 Local 属性)");
+                SpawnInfoRow("(无 Local 属性)");
             }
         }
 
-        void BuildCharmGrid()
+        void SpawnInfoRow(string text)
         {
-            ClearCharmSlots();
-            if (_eq == null || charmGrid == null || charmSlotTemplate == null)
+            if (infoRowTemplate == null || localStatsContent == null)
             {
                 return;
             }
 
-            var list = _eq.GetEquippedOnPart(_selectedPart);
-            bool any = false;
-            for (int i = 0; i < list.Count; i++)
-            {
-                var slot = list[i];
-                if (slot == null || string.IsNullOrEmpty(slot.ItemId))
-                {
-                    continue;
-                }
-
-                any = true;
-                var itemDef = ItemCatalog.GetItemDef(slot.ItemId);
-                int cost = ItemGearRules.GetSlotCost(itemDef);
-                string name = itemDef != null ? itemDef.DisplayName : slot.ItemId;
-                int idx = i;
-                var view = SpawnCharmSlot();
-                view.BindEquipped(slot.ItemId, cost, name, () =>
-                {
-                    _eq.TryUnequip(_selectedPart, idx, out _);
-                    RefreshAll();
-                });
-            }
-
-            if (!any)
-            {
-                SpawnCharmSlot().BindEmpty();
-            }
+            var row = Instantiate(infoRowTemplate, localStatsContent);
+            row.gameObject.SetActive(true);
+            row.Bind(text);
+            _localRows.Add(row);
         }
 
-        GearCharmSlotView SpawnCharmSlot()
+        void ClearInfoRows()
         {
-            var view = Instantiate(charmSlotTemplate, charmGrid);
-            view.gameObject.SetActive(true);
-            _charmSlots.Add(view);
-            return view;
-        }
-
-        void ClearCharmSlots()
-        {
-            for (int i = 0; i < _charmSlots.Count; i++)
+            for (int i = 0; i < _localRows.Count; i++)
             {
-                if (_charmSlots[i] != null)
+                if (_localRows[i] != null)
                 {
-                    Destroy(_charmSlots[i].gameObject);
+                    Destroy(_localRows[i].gameObject);
                 }
             }
 
-            _charmSlots.Clear();
-            if (charmGrid == null || charmSlotTemplate == null)
+            _localRows.Clear();
+
+            if (localStatsContent == null || infoRowTemplate == null)
             {
                 return;
             }
 
-            for (int i = charmGrid.childCount - 1; i >= 0; i--)
+            for (int i = localStatsContent.childCount - 1; i >= 0; i--)
             {
-                var child = charmGrid.GetChild(i);
-                if (child == charmSlotTemplate.transform)
+                var child = localStatsContent.GetChild(i);
+                if (child == infoRowTemplate.transform)
                 {
                     continue;
                 }
 
                 Destroy(child.gameObject);
             }
-        }
-
-        void BuildCandidates()
-        {
-            ClearRowViews(_candRows, candidateContent);
-            if (candidateContent == null || _eq == null || actionRowTemplate == null)
-            {
-                return;
-            }
-
-            var list = _eq.ListMainBagCandidates(_selectedPart);
-            bool any = false;
-            foreach (var pair in list)
-            {
-                any = true;
-                int flatIdx = pair.bagFlatIndex;
-                var st = pair.stack;
-                var itemDef = ItemCatalog.GetItemDef(st.ItemID);
-                int cost = ItemGearRules.GetSlotCost(itemDef);
-                string name = itemDef != null ? itemDef.DisplayName : st.ItemID;
-                bool canEquip = _eq.CanEquipFromMainBag(_selectedPart, flatIdx, out var reason);
-                string hint = canEquip ? string.Empty : TranslateEquipReason(reason);
-                SpawnActionRow(candidateContent, _candRows, st.ItemID, st.Count, $"[{cost}] {name} x{st.Count}", hint, "装备", canEquip, () =>
-                {
-                    _eq.TryEquipFromMainBag(_selectedPart, flatIdx, out _);
-                    RefreshAll();
-                });
-            }
-
-            if (!any)
-            {
-                SpawnInfoRow(candidateContent, _candRows, "(背包无可用装备)");
-            }
-        }
-
-        static string TranslateEquipReason(string reason)
-        {
-            if (string.IsNullOrEmpty(reason))
-            {
-                return "无法装备";
-            }
-
-            return reason switch
-            {
-                "no_budget" => "点数不足",
-                "no_gear_point" => "点数不足",
-                "no_item" => "物品不存在",
-                "wrong_part" => "部位不匹配",
-                _ => reason,
-            };
-        }
-
-        void SpawnInfoRow(Transform parent, List<GearEquipRowView> rows, string text)
-        {
-            if (infoRowTemplate == null || parent == null)
-            {
-                return;
-            }
-
-            var row = Instantiate(infoRowTemplate, parent);
-            row.gameObject.SetActive(true);
-            row.Bind(text, string.Empty, string.Empty, false, null);
-            rows.Add(row);
-        }
-
-        void SpawnActionRow(
-            Transform parent,
-            List<GearEquipRowView> rows,
-            string itemId,
-            long stackCount,
-            string title,
-            string hint,
-            string actionLabel,
-            bool canAct,
-            UnityEngine.Events.UnityAction onClick)
-        {
-            if (actionRowTemplate == null || parent == null)
-            {
-                return;
-            }
-
-            var row = Instantiate(actionRowTemplate, parent);
-            row.gameObject.SetActive(true);
-            row.Bind(itemId, stackCount, title, hint, actionLabel, canAct, onClick);
-            rows.Add(row);
         }
 
         public bool OnConfirm() => false;

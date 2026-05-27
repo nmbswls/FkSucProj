@@ -1,13 +1,14 @@
 using My.Config;
 using My.UI;
-using TMPro;using UnityEngine;
+using TMPro;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace My.UI.BodyPart
 {
-    // 空洞骑士护符格：展示已装备物品与消耗点数
-    public sealed class GearCharmSlotView : MonoBehaviour
+    // EquippedBar 下单格：一件已装备物品
+    public sealed class GearEquipEquippedCellView : MonoBehaviour
     {
         static readonly Color FilledFrameColor = new Color(0.42f, 0.36f, 0.58f, 1f);
         static readonly Color EmptyFrameColor = new Color(0.2f, 0.18f, 0.26f, 0.65f);
@@ -32,9 +33,10 @@ namespace My.UI.BodyPart
         public void BindEquipped(string itemId, int cost, string displayName, UnityAction onUnequip)
         {
             _itemHover?.SetItem(itemId, 1);
+
             if (nameText != null)
             {
-                nameText.text = displayName;
+                nameText.text = displayName ?? string.Empty;
             }
 
             if (costText != null)
@@ -66,6 +68,7 @@ namespace My.UI.BodyPart
         public void BindEmpty()
         {
             _itemHover?.ClearItem();
+
             if (nameText != null)
             {
                 nameText.text = "空";

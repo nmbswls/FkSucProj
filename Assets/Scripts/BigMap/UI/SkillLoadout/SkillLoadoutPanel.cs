@@ -59,7 +59,7 @@ namespace My.UI.SkillLoadout
 
             if (builtRoot == null && transform.Find("BuiltRoot") == null)
             {
-                Debug.LogError("[SkillLoadoutPanel] Prefab missing BuiltRoot. Run Tools/ProgressionHub/Setup Hub UI Prefabs.");
+                Debug.LogError("[SkillLoadoutPanel] Prefab missing BuiltRoot.");
                 return;
             }
 
