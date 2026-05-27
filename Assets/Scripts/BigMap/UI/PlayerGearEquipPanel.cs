@@ -389,34 +389,6 @@ namespace My.UI
             };
         }
 
-        static void ClearRowViews(List<GearEquipRowView> rows, Transform content)
-        {
-            for (int i = 0; i < rows.Count; i++)
-            {
-                if (rows[i] != null)
-                {
-                    Destroy(rows[i].gameObject);
-                }
-            }
-
-            rows.Clear();
-            if (content == null)
-            {
-                return;
-            }
-
-            for (int i = content.childCount - 1; i >= 0; i--)
-            {
-                var child = content.GetChild(i);
-                if (child.name.EndsWith("_Template"))
-                {
-                    continue;
-                }
-
-                Destroy(child.gameObject);
-            }
-        }
-
         void SpawnInfoRow(Transform parent, List<GearEquipRowView> rows, string text)
         {
             if (infoRowTemplate == null || parent == null)
