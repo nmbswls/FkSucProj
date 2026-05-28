@@ -18,9 +18,13 @@ MonoBehaviour:
   TexturePPU: 24
   ChunkOrigin: {x: 0, y: 0}
   SourceTextureWidth: 2560
-  SourceTextureHeight: 3584
+  SourceTextureHeight: 3328
   WalkGridKey: MapChunk/Main_Area_01/Prefabs/GridRoot
   Chunks:
+  - X: 1
+    Y: -1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_-1
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_1_-1
   - X: 0
     Y: 0
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_0

@@ -445,13 +445,14 @@ GameObject:
   m_Component:
   - component: {fileID: 91672428463077194}
   - component: {fileID: 1153150566689905787}
+  - component: {fileID: -6291006992677653775}
   m_Layer: 5
   m_Name: OneItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &91672428463077194
 RectTransform:
   m_ObjectHideFlags: 0
@@ -470,11 +471,11 @@ RectTransform:
   - {fileID: 3625040464328098989}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: -351.4, y: 51.77768}
   m_SizeDelta: {x: 50, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1153150566689905787
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -487,9 +488,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43055af680275c34e8638bec9ce9f973, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bg: {fileID: 0}
   icon: {fileID: 5142102901499199644}
+  countRect: {fileID: 0}
   countText: {fileID: 6539662390018272911}
-  emptyOverlay: {fileID: 0}
-  Index: 0
-  ContainerType: 0
-  ValTr: {fileID: 3625040464328098989}
+  maskOverlay: {fileID: 0}
+  lockOverlay: {fileID: 0}
+  addOverlay: {fileID: 0}
+  debugNameStr: {fileID: 0}
+--- !u!114 &-6291006992677653775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5299597689665725786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0432517adfcb84bb6163d7a44ab8c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

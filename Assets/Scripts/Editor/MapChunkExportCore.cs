@@ -362,11 +362,17 @@ public static class MapChunkExportCore
         if (importer != null)
         {
             importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
             importer.spritePixelsPerUnit = ppu;
             importer.filterMode = FilterMode.Bilinear;
             importer.mipmapEnabled = false;
             importer.alphaIsTransparency = true;
-            importer.spritePivot = Vector2.zero;
+
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+            settings.spriteAlignment = (int)SpriteAlignment.BottomLeft;
+            settings.spritePivot = Vector2.zero;
+            importer.SetTextureSettings(settings);
             importer.SaveAndReimport();
         }
 
@@ -418,6 +424,9 @@ public static class MapChunkExportCore
         var sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = sprite;
         sr.sortingOrder = sortingOrder;
+        // prefab 原点 = chunk 左下角；补偿 pivot 不在左下角时的偏移
+        var boundsMin = sprite.bounds.min;
+        go.transform.localPosition = new Vector3(-boundsMin.x, -boundsMin.y, 0f);
 
         string prefabPath = $"{rootFolder}/Prefabs/bg_{coord.X}_{coord.Y}.prefab";
         PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
