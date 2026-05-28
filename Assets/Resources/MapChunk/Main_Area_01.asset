@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aea09dc5b6900da49832c49dc3c76635, type: 3}
+  m_Name: Main_Area_01
+  m_EditorClassIdentifier: 
+  AreaId: Main_Area_01
+  SceneName: Main_Area_01
+  ChunkWorldSize: 32
+  TexturePPU: 24
+  ChunkOrigin: {x: 0, y: 0}
+  SourceTextureWidth: 2560
+  SourceTextureHeight: 3584
+  WalkGridKey: MapChunk/Main_Area_01/Prefabs/GridRoot
+  Chunks:
+  - X: 0
+    Y: 0
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_0
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_0_0
+  - X: 1
+    Y: 0
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_0
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_1_0
+  - X: 2
+    Y: 0
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_0
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_2_0
+  - X: 3
+    Y: 0
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_0
+    TilemapKey: 
+  - X: 0
+    Y: 1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_1
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_0_1
+  - X: 1
+    Y: 1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_1
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_1_1
+  - X: 2
+    Y: 1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_1
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_2_1
+  - X: 3
+    Y: 1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_1
+    TilemapKey: 
+  - X: 0
+    Y: 2
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_2
+    TilemapKey: 
+  - X: 1
+    Y: 2
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_2
+    TilemapKey: 
+  - X: 2
+    Y: 2
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_2
+    TilemapKey: 
+  - X: 3
+    Y: 2
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_2
+    TilemapKey: 
+  - X: 0
+    Y: 3
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_3
+    TilemapKey: 
+  - X: 1
+    Y: 3
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_3
+    TilemapKey: 
+  - X: 2
+    Y: 3
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_3
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_2_3
+  - X: 3
+    Y: 3
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_3
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_3_3
+  - X: 0
+    Y: 4
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_4
+    TilemapKey: 
+  - X: 1
+    Y: 4
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_4
+    TilemapKey: 
+  - X: 2
+    Y: 4
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_4
+    TilemapKey: 
+  - X: 3
+    Y: 4
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_4
+    TilemapKey: 

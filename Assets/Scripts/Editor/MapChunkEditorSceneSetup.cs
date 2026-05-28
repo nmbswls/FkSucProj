@@ -91,7 +91,7 @@ public static class MapChunkEditorSceneSetup
 public class MapChunkExporterWindow : EditorWindow
 {
     [SerializeField] private GameObject areaRoot;
-    [SerializeField] private string mapName = "village_01_n";
+    [SerializeField] private string mapName = "Main_Area_01";
     [SerializeField] private float chunkCellSize = 32f;
     [SerializeField] private Vector2 chunkOrigin;
     [SerializeField] private int backgroundSortingOrder;
@@ -126,6 +126,8 @@ public class MapChunkExporterWindow : EditorWindow
         {
             EditorGUILayout.LabelField("Source Texture",
                 chunkEditor.SourceTexture != null ? chunkEditor.SourceTexture.name : "(none)");
+            EditorGUILayout.LabelField("Source Pixel Size", chunkEditor.SourceTextureSize.ToString());
+            EditorGUILayout.LabelField("Imported Asset Size", chunkEditor.ImportedTextureSize.ToString());
             EditorGUILayout.LabelField("Texture PPU", chunkEditor.TexturePPU.ToString());
             EditorGUILayout.LabelField("Slice Pixel Size", chunkEditor.SlicePixelSize.ToString());
             EditorGUILayout.LabelField("Grid Status",
@@ -134,7 +136,8 @@ public class MapChunkExporterWindow : EditorWindow
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Export Settings", EditorStyles.boldLabel);
-        mapName = EditorGUILayout.TextField("Map Name", mapName);
+        EditorGUILayout.LabelField("Map Chunk Key", "Resources/MapChunk/{scene_name}");
+        mapName = EditorGUILayout.TextField("Scene Name (Variant)", mapName);
         chunkCellSize = EditorGUILayout.FloatField("Chunk Cell Size", chunkCellSize);
         chunkOrigin = EditorGUILayout.Vector2Field("Chunk Origin", chunkOrigin);
         backgroundSortingOrder = EditorGUILayout.IntField("Background Sorting Order", backgroundSortingOrder);
@@ -151,11 +154,7 @@ public class MapChunkExporterWindow : EditorWindow
 
         if (chunkEditor != null && !MapChunkEditorTilemapResolver.HasTilemapSource(chunkEditor))
         {
-            EditorGUILayout.HelpBox("StaticPrefabRoot/GridRoot 下没有 Tilemap。", MessageType.Warning);
-            if (GUILayout.Button("Import Grid From Main_Area_01"))
-            {
-                MapChunkEditorSceneSetup.CopyGridFromRuntimeScene(chunkEditor);
-            }
+            EditorGUILayout.HelpBox("未找到可走 Tilemap：请在 WorldAreaRoot.TileGrounds 或 StaticRoot/GridRoot 下配置。", MessageType.Warning);
         }
 
         EditorGUILayout.Space();
@@ -169,6 +168,11 @@ public class MapChunkExporterWindow : EditorWindow
     {
         var chunkEditor = MapChunkEditorUtility.Resolve(areaRoot);
         MapChunkEditorUtility.SyncChunkSettings(chunkEditor, ref chunkCellSize, ref chunkOrigin);
+        var key = MapChunkEditorUtility.ResolveMapChunkKey(chunkEditor);
+        if (!string.IsNullOrEmpty(key))
+        {
+            mapName = key;
+        }
     }
 
     void Export()
@@ -187,6 +191,8 @@ public class MapChunkExporterWindow : EditorWindow
         }
 
         MapChunkEditorUtility.PushChunkSettings(chunkEditor, chunkCellSize, chunkOrigin);
+        chunkEditor.SceneName = mapName;
+        EditorUtility.SetDirty(chunkEditor);
 
         var result = MapChunkExportCore.Export(
             chunkEditor,

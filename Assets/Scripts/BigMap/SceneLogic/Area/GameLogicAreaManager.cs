@@ -69,6 +69,9 @@ namespace My.Map.Logic
         public MapExportDatabase cacheDatabase;
         public MapChunkDatabase cacheChunkDatabase;
 
+        // 当前 Variant 场景名，与 MapChunk 资源 key 一致（AreaVariantInfo.scene_name）
+        public string MapChunkSceneKey { get; private set; } = string.Empty;
+
         public Dictionary<string, LogicRoomInfo> RuntimeRoomInfos = new();
         
 
@@ -175,6 +178,7 @@ namespace My.Map.Logic
 
             cacheDatabase = null;
             cacheChunkDatabase = null;
+            MapChunkSceneKey = string.Empty;
             if (!string.IsNullOrEmpty(cacheMapOverlayCfg.ProceduralDefId))
             {
                 if (!DungeonMapLoader.TryLoad(cacheMapOverlayCfg, mapOVerlayId, out var procDb, out var genResult))
@@ -193,8 +197,10 @@ namespace My.Map.Logic
             }
             else if (!string.IsNullOrEmpty(cacheMapOverlayCfg.MapDataName))
             {
-                cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapOverlayCfg.MapDataName}");
-                cacheChunkDatabase = Resources.Load<MapChunkDatabase>($"MapChunk/{cacheMapOverlayCfg.MapDataName}");
+                cacheDatabase = Resources.Load<MapExportDatabase>(
+                    $"{MapVariantMapResources.MapExportFolder}/{cacheMapOverlayCfg.MapDataName}");
+                MapChunkSceneKey = MapVariantMapResources.ResolveMapChunkKey(cacheMapOverlayCfg) ?? string.Empty;
+                cacheChunkDatabase = MapVariantMapResources.LoadMapChunkDatabase(cacheMapOverlayCfg);
                 _dungeonRuntime?.Dispose();
                 _dungeonRuntime = null;
             }
@@ -1021,6 +1027,16 @@ namespace My.Map.Logic
                 }
             }
             
+        }
+
+        public void ApplyMapVariantPresentation(WorldAreaRoot root)
+        {
+            if (root == null || cacheChunkDatabase == null)
+            {
+                return;
+            }
+
+            WorldAreaRoot.TryBindWalkGridFromDatabase(root, cacheChunkDatabase);
         }
 
     }

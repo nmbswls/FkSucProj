@@ -1,5 +1,7 @@
 using System.Linq;
+using My.MapExport;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -48,6 +50,27 @@ public static class MapChunkEditorUtility
         editor.ChunkOrigin = chunkOrigin;
         EditorUtility.SetDirty(editor);
     }
+
+    public static string ResolveMapChunkKey(MapChunkEditorRoot editor)
+    {
+        if (editor == null)
+        {
+            return null;
+        }
+
+        if (!string.IsNullOrWhiteSpace(editor.SceneName))
+        {
+            return editor.SceneName.Trim();
+        }
+
+        return MapVariantMapResources.ResolveMapChunkKey(editor.gameObject.scene.name);
+    }
+
+    public static string ResolveMapChunkKeyFromActiveScene()
+    {
+        return MapVariantMapResources.ResolveMapChunkKey(
+            EditorSceneManager.GetActiveScene().name);
+    }
 }
 
 // 导出时从 Editor 场景层级解析 Tilemap，不写入 MapChunkEditorRoot
@@ -55,7 +78,19 @@ public static class MapChunkEditorTilemapResolver{
     public static bool TryResolveTileGrounds(MapChunkEditorRoot editorRoot, out Tilemap[] tileGrounds)
     {
         tileGrounds = null;
-        if (editorRoot == null || editorRoot.StaticPrefabRoot == null)
+        if (editorRoot == null)
+        {
+            return false;
+        }
+
+        var worldArea = editorRoot.GetComponent<WorldAreaRoot>();
+        if (worldArea != null && worldArea.TileGrounds != null && worldArea.TileGrounds.Length > 0)
+        {
+            tileGrounds = worldArea.TileGrounds;
+            return true;
+        }
+
+        if (editorRoot.StaticPrefabRoot == null)
         {
             return false;
         }
@@ -84,7 +119,18 @@ public static class MapChunkEditorTilemapResolver{
 
     public static Transform TryGetGridRoot(MapChunkEditorRoot editorRoot)
     {
-        if (editorRoot == null || editorRoot.StaticPrefabRoot == null)
+        if (editorRoot == null)
+        {
+            return null;
+        }
+
+        var worldArea = editorRoot.GetComponent<WorldAreaRoot>();
+        if (worldArea != null && worldArea.Grid != null)
+        {
+            return worldArea.Grid.transform;
+        }
+
+        if (editorRoot.StaticPrefabRoot == null)
         {
             return null;
         }

@@ -138,8 +138,7 @@ public class WorldAreaManager : MonoBehaviour
                     }
                 }
 
-                var chunkDb = MainGameManager.Instance?.gameLogicManager?.AreaManager?.cacheChunkDatabase;
-                WorldAreaRoot.TryBindWalkGridFromDatabase(currentRoot, chunkDb);
+                MainGameManager.Instance?.gameLogicManager?.AreaManager?.ApplyMapVariantPresentation(currentRoot);
             }
             else
             {

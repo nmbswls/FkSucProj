@@ -60,7 +60,27 @@ public static class MapChunkExportCore
         float ppu = editorRoot.TexturePPU;
         var origin = editorRoot.ChunkOrigin;
 
-        string rootFolder = $"Assets/Resources/MapChunk/{mapName}";
+        Texture2D fullSourceTexture = null;
+        try
+        {
+            fullSourceTexture = LoadFullSourceTexture(editorRoot.SourceTexture);
+            if (fullSourceTexture != null && exportBackground)
+            {
+                texSize = new Vector2Int(fullSourceTexture.width, fullSourceTexture.height);
+                var imported = editorRoot.ImportedTextureSize;
+                if (imported.x != texSize.x || imported.y != texSize.y)
+                {
+                    Debug.LogWarning(
+                        $"[MapChunkExport] Source texture {texSize.x}x{texSize.y}px, " +
+                        $"imported asset {imported.x}x{imported.y}px (maxTextureSize). Export uses source file size.");
+                }
+            }
+            else if (exportBackground && fullSourceTexture == null)
+            {
+                Debug.LogWarning("[MapChunkExport] Failed to load source file; fallback to imported texture size.");
+            }
+
+            string rootFolder = $"Assets/Resources/MapChunk/{mapName}";
         EnsureFolder("Assets/Resources");
         EnsureFolder("Assets/Resources/MapChunk");
         EnsureFolder(rootFolder);
@@ -69,6 +89,7 @@ public static class MapChunkExportCore
 
         var database = ScriptableObject.CreateInstance<MapChunkDatabase>();
         database.AreaId = mapName;
+        database.SceneName = mapName;
         database.ChunkWorldSize = chunkSize;
         database.TexturePPU = ppu;
         database.ChunkOrigin = origin;
@@ -93,7 +114,8 @@ public static class MapChunkExportCore
                 var crop = MapChunkUtility.TextureCropRect(coord, slicePx, texSize);
                 if (crop.width > 0f && crop.height > 0f)
                 {
-                    string bgSpritePath = ExportBackgroundSprite(editorRoot.SourceTexture, coord, crop, slicePx, ppu, rootFolder);
+                    var sourceForCrop = fullSourceTexture != null ? fullSourceTexture : editorRoot.SourceTexture;
+                    string bgSpritePath = ExportBackgroundSprite(sourceForCrop, coord, crop, slicePx, ppu, rootFolder);
                     if (!string.IsNullOrEmpty(bgSpritePath))
                     {
                         string bgPrefabPath = CreateBackgroundPrefab(coord, bgSpritePath, rootFolder, backgroundSortingOrder);
@@ -136,6 +158,7 @@ public static class MapChunkExportCore
         if (existing != null)
         {
             existing.AreaId = database.AreaId;
+            existing.SceneName = database.SceneName;
             existing.ChunkWorldSize = database.ChunkWorldSize;
             existing.TexturePPU = database.TexturePPU;
             existing.ChunkOrigin = database.ChunkOrigin;
@@ -167,6 +190,14 @@ public static class MapChunkExportCore
             TilemapChunkCount = tmCount,
             GridRootPrefabExported = gridRootExported
         };
+        }
+        finally
+        {
+            if (fullSourceTexture != null)
+            {
+                Object.DestroyImmediate(fullSourceTexture);
+            }
+        }
     }
 
     static string BuildSuccessMessage(
@@ -244,6 +275,15 @@ public static class MapChunkExportCore
         var gridRoot = MapChunkEditorTilemapResolver.TryGetGridRoot(editorRoot);
         if (gridRoot == null)
         {
+            var worldArea = editorRoot.GetComponent<WorldAreaRoot>();
+            if (worldArea != null && worldArea.Grid != null)
+            {
+                gridRoot = worldArea.Grid.transform;
+            }
+        }
+
+        if (gridRoot == null)
+        {
             return false;
         }
 
@@ -256,6 +296,30 @@ public static class MapChunkExportCore
     static ExportResult Fail(string message)
     {
         return new ExportResult { Success = false, Message = message };
+    }
+
+    static Texture2D LoadFullSourceTexture(Texture2D asset)
+    {
+        if (asset == null)
+        {
+            return null;
+        }
+
+        var path = AssetDatabase.GetAssetPath(asset);
+        if (string.IsNullOrEmpty(path) || !File.Exists(path))
+        {
+            return null;
+        }
+
+        var bytes = File.ReadAllBytes(path);
+        var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        if (!tex.LoadImage(bytes))
+        {
+            Object.DestroyImmediate(tex);
+            return null;
+        }
+
+        return tex;
     }
 
     static void EnsureFolder(string path)

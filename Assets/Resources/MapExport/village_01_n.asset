@@ -15,12 +15,12 @@ MonoBehaviour:
   AreaId: 
   Buckets:
   - Chunk:
-      X: -1
+      X: 0
       Y: 0
     StaticItems:
     - ItemId: 101
       Key: 1/vine_001
-      Position: {x: -9.52, y: -16.31, z: 0}
+      Position: {x: 30.269997, y: 21.910002, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
@@ -31,9 +31,14 @@ MonoBehaviour:
         Param4: 0
         Param5: vine_area01_grown
         Param6: 
-    - ItemId: 103
+    FovStaticSegments: []
+  - Chunk:
+      X: 1
+      Y: 1
+    StaticItems:
+    - ItemId: 102
       Key: 1/P1
-      Position: {x: -4.28, y: -0.09, z: 0}
+      Position: {x: 43.789997, y: 38.72, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
@@ -44,134 +49,35 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    FovStaticSegments:
-    - segmentId: 9
-      a: {x: -5.28, y: -2.09}
-      b: {x: -3.2800002, y: -2.09}
-      bounds:
-        m_Center: {x: -4.28, y: -2.09, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 10
-      a: {x: -3.2800002, y: -2.09}
-      b: {x: -3.2800002, y: 1.91}
-      bounds:
-        m_Center: {x: -3.2800002, y: -0.089999974, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 11
-      a: {x: -3.2800002, y: 1.91}
-      b: {x: -5.28, y: 1.91}
-      bounds:
-        m_Center: {x: -4.28, y: 1.91, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 12
-      a: {x: -5.28, y: 1.91}
-      b: {x: -5.28, y: -2.09}
-      bounds:
-        m_Center: {x: -5.28, y: -0.089999974, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 13
-      a: {x: -5.28, y: -2.09}
-      b: {x: -3.2800002, y: -2.09}
-      bounds:
-        m_Center: {x: -4.28, y: -2.09, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 14
-      a: {x: -3.2800002, y: -2.09}
-      b: {x: -3.2800002, y: 1.91}
-      bounds:
-        m_Center: {x: -3.2800002, y: -0.089999974, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 15
-      a: {x: -3.2800002, y: 1.91}
-      b: {x: -5.28, y: 1.91}
-      bounds:
-        m_Center: {x: -4.28, y: 1.91, z: 0}
-        m_Extent: {x: 1, y: 0, z: 0}
-    - segmentId: 16
-      a: {x: -5.28, y: 1.91}
-      b: {x: -5.28, y: -2.09}
-      bounds:
-        m_Center: {x: -5.28, y: -0.089999974, z: 0}
-        m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 53
-      a: {x: -1.9300001, y: 5.95}
-      b: {x: -2.0639746, y: 6.45}
-      bounds:
-        m_Center: {x: -1.9969873, y: 6.2, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 54
-      a: {x: -2.0639746, y: 6.45}
-      b: {x: -2.43, y: 6.8160253}
-      bounds:
-        m_Center: {x: -2.2469873, y: 6.633013, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 55
-      a: {x: -2.43, y: 6.8160253}
-      b: {x: -2.93, y: 6.95}
-      bounds:
-        m_Center: {x: -2.68, y: 6.883013, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 56
-      a: {x: -2.93, y: 6.95}
-      b: {x: -3.43, y: 6.8160253}
-      bounds:
-        m_Center: {x: -3.18, y: 6.883013, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 57
-      a: {x: -3.43, y: 6.8160253}
-      b: {x: -3.7960255, y: 6.45}
-      bounds:
-        m_Center: {x: -3.6130128, y: 6.633013, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 58
-      a: {x: -3.7960255, y: 6.45}
-      b: {x: -3.93, y: 5.95}
-      bounds:
-        m_Center: {x: -3.8630128, y: 6.2, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 59
-      a: {x: -3.93, y: 5.95}
-      b: {x: -3.7960253, y: 5.45}
-      bounds:
-        m_Center: {x: -3.8630128, y: 5.7, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
-    - segmentId: 60
-      a: {x: -3.7960253, y: 5.45}
-      b: {x: -3.43, y: 5.0839744}
-      bounds:
-        m_Center: {x: -3.6130128, y: 5.266987, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
-    - segmentId: 61
-      a: {x: -3.43, y: 5.0839744}
-      b: {x: -2.93, y: 4.95}
-      bounds:
-        m_Center: {x: -3.18, y: 5.016987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 62
-      a: {x: -2.93, y: 4.95}
-      b: {x: -2.43, y: 5.0839744}
-      bounds:
-        m_Center: {x: -2.68, y: 5.016987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 63
-      a: {x: -2.43, y: 5.0839744}
-      b: {x: -2.0639744, y: 5.45}
-      bounds:
-        m_Center: {x: -2.2469873, y: 5.266987, z: 0}
-        m_Extent: {x: 0.18301284, y: 0.18301272, z: 0}
-    - segmentId: 64
-      a: {x: -2.0639744, y: 5.45}
-      b: {x: -1.9300001, y: 5.95}
-      bounds:
-        m_Center: {x: -1.9969872, y: 5.7, z: 0}
-        m_Extent: {x: 0.06698716, y: 0.25, z: 0}
-  - Chunk:
-      X: 0
-      Y: 0
-    StaticItems:
-    - ItemId: 102
+    - ItemId: 103
       Key: 1/P1
-      Position: {x: 4, y: 0.5, z: 0}
+      Position: {x: 35.51, y: 38.13, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    - ItemId: 104
+      Key: 1/Room01
+      Position: {x: 43.899998, y: 44.530003, z: -0.5}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    - ItemId: 105
+      Key: 1/Room01
+      Position: {x: 36.35, y: 44.68, z: -0.5}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
@@ -184,305 +90,389 @@ MonoBehaviour:
         Param6: 
     FovStaticSegments:
     - segmentId: 1
-      a: {x: 3, y: -1.5}
-      b: {x: 5, y: -1.5}
+      a: {x: 42.789997, y: 36.72}
+      b: {x: 44.789997, y: 36.72}
       bounds:
-        m_Center: {x: 4, y: -1.5, z: 0}
+        m_Center: {x: 43.789997, y: 36.72, z: 0}
         m_Extent: {x: 1, y: 0, z: 0}
     - segmentId: 2
-      a: {x: 5, y: -1.5}
-      b: {x: 5, y: 2.5}
+      a: {x: 44.789997, y: 36.72}
+      b: {x: 44.789997, y: 40.72}
       bounds:
-        m_Center: {x: 5, y: 0.5, z: 0}
+        m_Center: {x: 44.789997, y: 38.72, z: 0}
         m_Extent: {x: 0, y: 2, z: 0}
     - segmentId: 3
-      a: {x: 5, y: 2.5}
-      b: {x: 3, y: 2.5}
+      a: {x: 44.789997, y: 40.72}
+      b: {x: 42.789997, y: 40.72}
       bounds:
-        m_Center: {x: 4, y: 2.5, z: 0}
+        m_Center: {x: 43.789997, y: 40.72, z: 0}
         m_Extent: {x: 1, y: 0, z: 0}
     - segmentId: 4
-      a: {x: 3, y: 2.5}
-      b: {x: 3, y: -1.5}
+      a: {x: 42.789997, y: 40.72}
+      b: {x: 42.789997, y: 36.72}
       bounds:
-        m_Center: {x: 3, y: 0.5, z: 0}
+        m_Center: {x: 42.789997, y: 38.72, z: 0}
         m_Extent: {x: 0, y: 2, z: 0}
     - segmentId: 5
-      a: {x: 3, y: -1.5}
-      b: {x: 5, y: -1.5}
+      a: {x: 42.789997, y: 36.72}
+      b: {x: 44.789997, y: 36.72}
       bounds:
-        m_Center: {x: 4, y: -1.5, z: 0}
+        m_Center: {x: 43.789997, y: 36.72, z: 0}
         m_Extent: {x: 1, y: 0, z: 0}
     - segmentId: 6
-      a: {x: 5, y: -1.5}
-      b: {x: 5, y: 2.5}
+      a: {x: 44.789997, y: 36.72}
+      b: {x: 44.789997, y: 40.72}
       bounds:
-        m_Center: {x: 5, y: 0.5, z: 0}
+        m_Center: {x: 44.789997, y: 38.72, z: 0}
         m_Extent: {x: 0, y: 2, z: 0}
     - segmentId: 7
-      a: {x: 5, y: 2.5}
-      b: {x: 3, y: 2.5}
+      a: {x: 44.789997, y: 40.72}
+      b: {x: 42.789997, y: 40.72}
       bounds:
-        m_Center: {x: 4, y: 2.5, z: 0}
+        m_Center: {x: 43.789997, y: 40.72, z: 0}
         m_Extent: {x: 1, y: 0, z: 0}
     - segmentId: 8
-      a: {x: 3, y: 2.5}
-      b: {x: 3, y: -1.5}
+      a: {x: 42.789997, y: 40.72}
+      b: {x: 42.789997, y: 36.72}
       bounds:
-        m_Center: {x: 3, y: 0.5, z: 0}
+        m_Center: {x: 42.789997, y: 38.72, z: 0}
         m_Extent: {x: 0, y: 2, z: 0}
-    - segmentId: 29
-      a: {x: 5.62, y: 5.7999997}
-      b: {x: 5.4860253, y: 6.2999997}
+    - segmentId: 9
+      a: {x: 34.51, y: 36.13}
+      b: {x: 36.51, y: 36.13}
       bounds:
-        m_Center: {x: 5.553013, y: 6.0499997, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 30
-      a: {x: 5.4860253, y: 6.2999997}
-      b: {x: 5.12, y: 6.666025}
+        m_Center: {x: 35.51, y: 36.13, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 10
+      a: {x: 36.51, y: 36.13}
+      b: {x: 36.51, y: 40.13}
       bounds:
-        m_Center: {x: 5.303013, y: 6.483012, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 31
-      a: {x: 5.12, y: 6.666025}
-      b: {x: 4.62, y: 6.7999997}
+        m_Center: {x: 36.51, y: 38.13, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 11
+      a: {x: 36.51, y: 40.13}
+      b: {x: 34.51, y: 40.13}
       bounds:
-        m_Center: {x: 4.87, y: 6.733012, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 32
-      a: {x: 4.62, y: 6.7999997}
-      b: {x: 4.12, y: 6.666025}
+        m_Center: {x: 35.51, y: 40.13, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 12
+      a: {x: 34.51, y: 40.13}
+      b: {x: 34.51, y: 36.13}
       bounds:
-        m_Center: {x: 4.37, y: 6.733012, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 33
-      a: {x: 4.12, y: 6.666025}
-      b: {x: 3.7539744, y: 6.2999997}
+        m_Center: {x: 34.51, y: 38.13, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 13
+      a: {x: 34.51, y: 36.13}
+      b: {x: 36.51, y: 36.13}
       bounds:
-        m_Center: {x: 3.9369872, y: 6.483012, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
-    - segmentId: 34
-      a: {x: 3.7539744, y: 6.2999997}
-      b: {x: 3.62, y: 5.7999997}
+        m_Center: {x: 35.51, y: 36.13, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 14
+      a: {x: 36.51, y: 36.13}
+      b: {x: 36.51, y: 40.13}
       bounds:
-        m_Center: {x: 3.6869872, y: 6.0499997, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
-    - segmentId: 35
-      a: {x: 3.62, y: 5.7999997}
-      b: {x: 3.7539747, y: 5.2999997}
+        m_Center: {x: 36.51, y: 38.13, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
+    - segmentId: 15
+      a: {x: 36.51, y: 40.13}
+      b: {x: 34.51, y: 40.13}
       bounds:
-        m_Center: {x: 3.6869874, y: 5.5499997, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
-    - segmentId: 36
-      a: {x: 3.7539747, y: 5.2999997}
-      b: {x: 4.12, y: 4.9339743}
+        m_Center: {x: 35.51, y: 40.13, z: 0}
+        m_Extent: {x: 1, y: 0, z: 0}
+    - segmentId: 16
+      a: {x: 34.51, y: 40.13}
+      b: {x: 34.51, y: 36.13}
       bounds:
-        m_Center: {x: 3.9369874, y: 5.116987, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
-    - segmentId: 37
-      a: {x: 4.12, y: 4.9339743}
-      b: {x: 4.62, y: 4.7999997}
-      bounds:
-        m_Center: {x: 4.37, y: 4.866987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 38
-      a: {x: 4.62, y: 4.7999997}
-      b: {x: 5.12, y: 4.9339743}
-      bounds:
-        m_Center: {x: 4.87, y: 4.866987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
-    - segmentId: 39
-      a: {x: 5.12, y: 4.9339743}
-      b: {x: 5.4860253, y: 5.3}
-      bounds:
-        m_Center: {x: 5.303013, y: 5.116987, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301296, z: 0}
-    - segmentId: 40
-      a: {x: 5.4860253, y: 5.3}
-      b: {x: 5.62, y: 5.7999997}
-      bounds:
-        m_Center: {x: 5.553013, y: 5.55, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.24999976, z: 0}
-  - Chunk:
-      X: 0
-      Y: -1
-    StaticItems:
-    - ItemId: 104
-      Key: 1/Room01
-      Position: {x: 4.11, y: 6.31, z: -0.5}
-      Rotation: {x: -0, y: -0, z: -0, w: 1}
-      Scale: {x: 1, y: 1, z: 1}
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: 
-        Param6: 
-    FovStaticSegments:
+        m_Center: {x: 34.51, y: 38.13, z: 0}
+        m_Extent: {x: 0, y: 2, z: 0}
     - segmentId: 17
-      a: {x: 5.65, y: 5.81}
-      b: {x: 5.5160255, y: 6.31}
+      a: {x: 45.44, y: 44.030003}
+      b: {x: 45.306023, y: 44.530003}
       bounds:
-        m_Center: {x: 5.5830126, y: 6.06, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+        m_Center: {x: 45.37301, y: 44.280003, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
     - segmentId: 18
-      a: {x: 5.5160255, y: 6.31}
-      b: {x: 5.15, y: 6.6760254}
+      a: {x: 45.306023, y: 44.530003}
+      b: {x: 44.94, y: 44.896027}
       bounds:
-        m_Center: {x: 5.3330126, y: 6.4930124, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+        m_Center: {x: 45.12301, y: 44.713013, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
     - segmentId: 19
-      a: {x: 5.15, y: 6.6760254}
-      b: {x: 4.65, y: 6.81}
+      a: {x: 44.94, y: 44.896027}
+      b: {x: 44.44, y: 45.030003}
       bounds:
-        m_Center: {x: 4.9, y: 6.7430124, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+        m_Center: {x: 44.69, y: 44.963013, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
     - segmentId: 20
-      a: {x: 4.65, y: 6.81}
-      b: {x: 4.15, y: 6.6760254}
+      a: {x: 44.44, y: 45.030003}
+      b: {x: 43.94, y: 44.896027}
       bounds:
-        m_Center: {x: 4.4, y: 6.7430124, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+        m_Center: {x: 44.19, y: 44.963013, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
     - segmentId: 21
-      a: {x: 4.15, y: 6.6760254}
-      b: {x: 3.7839746, y: 6.31}
+      a: {x: 43.94, y: 44.896027}
+      b: {x: 43.573975, y: 44.530003}
       bounds:
-        m_Center: {x: 3.9669874, y: 6.4930124, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+        m_Center: {x: 43.75699, y: 44.713013, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
     - segmentId: 22
-      a: {x: 3.7839746, y: 6.31}
-      b: {x: 3.65, y: 5.81}
+      a: {x: 43.573975, y: 44.530003}
+      b: {x: 43.44, y: 44.030003}
       bounds:
-        m_Center: {x: 3.7169874, y: 6.06, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+        m_Center: {x: 43.50699, y: 44.280003, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
     - segmentId: 23
-      a: {x: 3.65, y: 5.81}
-      b: {x: 3.783975, y: 5.31}
+      a: {x: 43.44, y: 44.030003}
+      b: {x: 43.573975, y: 43.530003}
       bounds:
-        m_Center: {x: 3.7169876, y: 5.56, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
+        m_Center: {x: 43.50699, y: 43.780003, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
     - segmentId: 24
-      a: {x: 3.783975, y: 5.31}
-      b: {x: 4.15, y: 4.9439745}
+      a: {x: 43.573975, y: 43.530003}
+      b: {x: 43.94, y: 43.16398}
       bounds:
-        m_Center: {x: 3.9669876, y: 5.1269875, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
+        m_Center: {x: 43.75699, y: 43.346992, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
     - segmentId: 25
-      a: {x: 4.15, y: 4.9439745}
-      b: {x: 4.65, y: 4.81}
+      a: {x: 43.94, y: 43.16398}
+      b: {x: 44.44, y: 43.030003}
       bounds:
-        m_Center: {x: 4.4, y: 4.8769875, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+        m_Center: {x: 44.19, y: 43.096992, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
     - segmentId: 26
-      a: {x: 4.65, y: 4.81}
-      b: {x: 5.15, y: 4.9439745}
+      a: {x: 44.44, y: 43.030003}
+      b: {x: 44.94, y: 43.16398}
       bounds:
-        m_Center: {x: 4.9, y: 4.8769875, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+        m_Center: {x: 44.69, y: 43.096992, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
     - segmentId: 27
-      a: {x: 5.15, y: 4.9439745}
-      b: {x: 5.5160255, y: 5.3100004}
+      a: {x: 44.94, y: 43.16398}
+      b: {x: 45.306023, y: 43.530003}
       bounds:
-        m_Center: {x: 5.3330126, y: 5.1269875, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301296, z: 0}
+        m_Center: {x: 45.12301, y: 43.346992, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
     - segmentId: 28
-      a: {x: 5.5160255, y: 5.3100004}
-      b: {x: 5.65, y: 5.81}
+      a: {x: 45.306023, y: 43.530003}
+      b: {x: 45.44, y: 44.030003}
       bounds:
-        m_Center: {x: 5.5830126, y: 5.5600004, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.24999976, z: 0}
-  - Chunk:
-      X: -1
-      Y: -1
-    StaticItems:
-    - ItemId: 105
-      Key: 1/Room01
-      Position: {x: -3.44, y: 6.46, z: -0.5}
-      Rotation: {x: -0, y: -0, z: -0, w: 1}
-      Scale: {x: 1, y: 1, z: 1}
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: 
-        Param6: 
-    FovStaticSegments:
+        m_Center: {x: 45.37301, y: 43.780003, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+    - segmentId: 29
+      a: {x: 45.409996, y: 44.020004}
+      b: {x: 45.27602, y: 44.520004}
+      bounds:
+        m_Center: {x: 45.34301, y: 44.270004, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+    - segmentId: 30
+      a: {x: 45.27602, y: 44.520004}
+      b: {x: 44.909996, y: 44.88603}
+      bounds:
+        m_Center: {x: 45.09301, y: 44.70302, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
+    - segmentId: 31
+      a: {x: 44.909996, y: 44.88603}
+      b: {x: 44.409996, y: 45.020004}
+      bounds:
+        m_Center: {x: 44.659996, y: 44.95302, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 32
+      a: {x: 44.409996, y: 45.020004}
+      b: {x: 43.909996, y: 44.88603}
+      bounds:
+        m_Center: {x: 44.159996, y: 44.95302, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 33
+      a: {x: 43.909996, y: 44.88603}
+      b: {x: 43.543972, y: 44.520004}
+      bounds:
+        m_Center: {x: 43.726982, y: 44.70302, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
+    - segmentId: 34
+      a: {x: 43.543972, y: 44.520004}
+      b: {x: 43.409996, y: 44.020004}
+      bounds:
+        m_Center: {x: 43.476982, y: 44.270004, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+    - segmentId: 35
+      a: {x: 43.409996, y: 44.020004}
+      b: {x: 43.543972, y: 43.520004}
+      bounds:
+        m_Center: {x: 43.476982, y: 43.770004, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+    - segmentId: 36
+      a: {x: 43.543972, y: 43.520004}
+      b: {x: 43.909996, y: 43.15398}
+      bounds:
+        m_Center: {x: 43.726982, y: 43.33699, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
+    - segmentId: 37
+      a: {x: 43.909996, y: 43.15398}
+      b: {x: 44.409996, y: 43.020004}
+      bounds:
+        m_Center: {x: 44.159996, y: 43.08699, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 38
+      a: {x: 44.409996, y: 43.020004}
+      b: {x: 44.909996, y: 43.15398}
+      bounds:
+        m_Center: {x: 44.659996, y: 43.08699, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 39
+      a: {x: 44.909996, y: 43.15398}
+      b: {x: 45.27602, y: 43.520004}
+      bounds:
+        m_Center: {x: 45.09301, y: 43.33699, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
+    - segmentId: 40
+      a: {x: 45.27602, y: 43.520004}
+      b: {x: 45.409996, y: 44.020004}
+      bounds:
+        m_Center: {x: 45.34301, y: 43.770004, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
     - segmentId: 41
-      a: {x: -1.9300001, y: 5.95}
-      b: {x: -2.0639746, y: 6.45}
+      a: {x: 37.859997, y: 44.170002}
+      b: {x: 37.72602, y: 44.670002}
       bounds:
-        m_Center: {x: -1.9969873, y: 6.2, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+        m_Center: {x: 37.793007, y: 44.420002, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
     - segmentId: 42
-      a: {x: -2.0639746, y: 6.45}
-      b: {x: -2.43, y: 6.8160253}
+      a: {x: 37.72602, y: 44.670002}
+      b: {x: 37.359997, y: 45.036026}
       bounds:
-        m_Center: {x: -2.2469873, y: 6.633013, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+        m_Center: {x: 37.543007, y: 44.853012, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
     - segmentId: 43
-      a: {x: -2.43, y: 6.8160253}
-      b: {x: -2.93, y: 6.95}
+      a: {x: 37.359997, y: 45.036026}
+      b: {x: 36.859997, y: 45.170002}
       bounds:
-        m_Center: {x: -2.68, y: 6.883013, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+        m_Center: {x: 37.109997, y: 45.103012, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
     - segmentId: 44
-      a: {x: -2.93, y: 6.95}
-      b: {x: -3.43, y: 6.8160253}
+      a: {x: 36.859997, y: 45.170002}
+      b: {x: 36.359997, y: 45.036026}
       bounds:
-        m_Center: {x: -3.18, y: 6.883013, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+        m_Center: {x: 36.609997, y: 45.103012, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
     - segmentId: 45
-      a: {x: -3.43, y: 6.8160253}
-      b: {x: -3.7960255, y: 6.45}
+      a: {x: 36.359997, y: 45.036026}
+      b: {x: 35.993973, y: 44.670002}
       bounds:
-        m_Center: {x: -3.6130128, y: 6.633013, z: 0}
-        m_Extent: {x: 0.18301272, y: 0.18301272, z: 0}
+        m_Center: {x: 36.176987, y: 44.853012, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
     - segmentId: 46
-      a: {x: -3.7960255, y: 6.45}
-      b: {x: -3.93, y: 5.95}
+      a: {x: 35.993973, y: 44.670002}
+      b: {x: 35.859997, y: 44.170002}
       bounds:
-        m_Center: {x: -3.8630128, y: 6.2, z: 0}
-        m_Extent: {x: 0.066987276, y: 0.25, z: 0}
+        m_Center: {x: 35.926987, y: 44.420002, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
     - segmentId: 47
-      a: {x: -3.93, y: 5.95}
-      b: {x: -3.7960253, y: 5.45}
+      a: {x: 35.859997, y: 44.170002}
+      b: {x: 35.993973, y: 43.670002}
       bounds:
-        m_Center: {x: -3.8630128, y: 5.7, z: 0}
-        m_Extent: {x: 0.066987395, y: 0.25, z: 0}
+        m_Center: {x: 35.926987, y: 43.920002, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
     - segmentId: 48
-      a: {x: -3.7960253, y: 5.45}
-      b: {x: -3.43, y: 5.0839744}
+      a: {x: 35.993973, y: 43.670002}
+      b: {x: 36.359997, y: 43.303978}
       bounds:
-        m_Center: {x: -3.6130128, y: 5.266987, z: 0}
-        m_Extent: {x: 0.1830126, y: 0.18301272, z: 0}
+        m_Center: {x: 36.176987, y: 43.48699, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
     - segmentId: 49
-      a: {x: -3.43, y: 5.0839744}
-      b: {x: -2.93, y: 4.95}
+      a: {x: 36.359997, y: 43.303978}
+      b: {x: 36.859997, y: 43.170002}
       bounds:
-        m_Center: {x: -3.18, y: 5.016987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+        m_Center: {x: 36.609997, y: 43.23699, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
     - segmentId: 50
-      a: {x: -2.93, y: 4.95}
-      b: {x: -2.43, y: 5.0839744}
+      a: {x: 36.859997, y: 43.170002}
+      b: {x: 37.359997, y: 43.303978}
       bounds:
-        m_Center: {x: -2.68, y: 5.016987, z: 0}
-        m_Extent: {x: 0.25, y: 0.066987276, z: 0}
+        m_Center: {x: 37.109997, y: 43.23699, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
     - segmentId: 51
-      a: {x: -2.43, y: 5.0839744}
-      b: {x: -2.0639744, y: 5.45}
+      a: {x: 37.359997, y: 43.303978}
+      b: {x: 37.72602, y: 43.670002}
       bounds:
-        m_Center: {x: -2.2469873, y: 5.266987, z: 0}
-        m_Extent: {x: 0.18301284, y: 0.18301272, z: 0}
+        m_Center: {x: 37.543007, y: 43.48699, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
     - segmentId: 52
-      a: {x: -2.0639744, y: 5.45}
-      b: {x: -1.9300001, y: 5.95}
+      a: {x: 37.72602, y: 43.670002}
+      b: {x: 37.859997, y: 44.170002}
       bounds:
-        m_Center: {x: -1.9969872, y: 5.7, z: 0}
-        m_Extent: {x: 0.06698716, y: 0.25, z: 0}
+        m_Center: {x: 37.793007, y: 43.920002, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+    - segmentId: 53
+      a: {x: 37.859997, y: 44.17}
+      b: {x: 37.72602, y: 44.67}
+      bounds:
+        m_Center: {x: 37.793007, y: 44.42, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+    - segmentId: 54
+      a: {x: 37.72602, y: 44.67}
+      b: {x: 37.359997, y: 45.036022}
+      bounds:
+        m_Center: {x: 37.543007, y: 44.853012, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
+    - segmentId: 55
+      a: {x: 37.359997, y: 45.036022}
+      b: {x: 36.859997, y: 45.17}
+      bounds:
+        m_Center: {x: 37.109997, y: 45.103012, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 56
+      a: {x: 36.859997, y: 45.17}
+      b: {x: 36.359997, y: 45.036022}
+      bounds:
+        m_Center: {x: 36.609997, y: 45.103012, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 57
+      a: {x: 36.359997, y: 45.036022}
+      b: {x: 35.993973, y: 44.67}
+      bounds:
+        m_Center: {x: 36.176987, y: 44.853012, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
+    - segmentId: 58
+      a: {x: 35.993973, y: 44.67}
+      b: {x: 35.859997, y: 44.17}
+      bounds:
+        m_Center: {x: 35.926987, y: 44.42, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+    - segmentId: 59
+      a: {x: 35.859997, y: 44.17}
+      b: {x: 35.993973, y: 43.67}
+      bounds:
+        m_Center: {x: 35.926987, y: 43.92, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+    - segmentId: 60
+      a: {x: 35.993973, y: 43.67}
+      b: {x: 36.359997, y: 43.303974}
+      bounds:
+        m_Center: {x: 36.176987, y: 43.486984, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
+    - segmentId: 61
+      a: {x: 36.359997, y: 43.303974}
+      b: {x: 36.859997, y: 43.17}
+      bounds:
+        m_Center: {x: 36.609997, y: 43.236984, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 62
+      a: {x: 36.859997, y: 43.17}
+      b: {x: 37.359997, y: 43.303974}
+      bounds:
+        m_Center: {x: 37.109997, y: 43.236984, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 63
+      a: {x: 37.359997, y: 43.303974}
+      b: {x: 37.72602, y: 43.67}
+      bounds:
+        m_Center: {x: 37.543007, y: 43.486984, z: 0}
+        m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
+    - segmentId: 64
+      a: {x: 37.72602, y: 43.67}
+      b: {x: 37.859997, y: 44.17}
+      bounds:
+        m_Center: {x: 37.793007, y: 43.92, z: 0}
+        m_Extent: {x: 0.06698799, y: 0.25, z: 0}
   EntityRefreshInfo:
   - StaticId: 100
     UniqName: 
@@ -507,7 +497,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525471
+      rid: 5977857346605678624
   - StaticId: 101
     UniqName: 
     AppearCond:
@@ -531,7 +521,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525472
+      rid: 5977857346605678625
   - StaticId: 102
     UniqName: 
     AppearCond:
@@ -555,7 +545,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525473
+      rid: 5977857346605678626
   - StaticId: 103
     UniqName: 
     AppearCond:
@@ -579,7 +569,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525474
+      rid: 5977857346605678627
   - StaticId: 104
     UniqName: gp_03
     AppearCond:
@@ -603,7 +593,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525475
+      rid: 5977857346605678628
   - StaticId: 105
     UniqName: gp_02
     AppearCond:
@@ -627,7 +617,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525476
+      rid: 5977857346605678629
   - StaticId: 106
     UniqName: gp_01
     AppearCond:
@@ -651,7 +641,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525477
+      rid: 5977857346605678630
   - StaticId: 107
     UniqName: 
     AppearCond:
@@ -675,7 +665,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525478
+      rid: 5977857346605678631
   - StaticId: 108
     UniqName: 
     AppearCond:
@@ -699,7 +689,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525479
+      rid: 5977857346605678632
   - StaticId: 109
     UniqName: 
     AppearCond:
@@ -723,7 +713,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525480
+      rid: 5977857346605678633
   - StaticId: 110
     UniqName: 
     AppearCond:
@@ -747,7 +737,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525481
+      rid: 5977857346605678634
   - StaticId: 111
     UniqName: 
     AppearCond:
@@ -771,7 +761,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525482
+      rid: 5977857346605678635
   - StaticId: 112
     UniqName: 
     AppearCond:
@@ -795,7 +785,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525483
+      rid: 5977857346605678636
   - StaticId: 113
     UniqName: 
     AppearCond:
@@ -819,7 +809,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525484
+      rid: 5977857346605678637
   - StaticId: 114
     UniqName: 
     AppearCond:
@@ -843,7 +833,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525485
+      rid: 5977857346605678638
   - StaticId: 115
     UniqName: 
     AppearCond:
@@ -867,7 +857,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525486
+      rid: 5977857346605678639
   - StaticId: 116
     UniqName: 
     AppearCond:
@@ -891,7 +881,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525487
+      rid: 5977857346605678640
   - StaticId: 117
     UniqName: 
     AppearCond:
@@ -915,7 +905,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525488
+      rid: 5977857346605678641
   - StaticId: 118
     UniqName: 
     AppearCond:
@@ -939,7 +929,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525489
+      rid: 5977857346605678642
   - StaticId: 119
     UniqName: 
     AppearCond:
@@ -963,7 +953,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525490
+      rid: 5977857346605678643
   - StaticId: 120
     UniqName: 
     AppearCond:
@@ -987,7 +977,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525491
+      rid: 5977857346605678644
   - StaticId: 121
     UniqName: cornor_01_b
     AppearCond:
@@ -1011,7 +1001,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525492
+      rid: 5977857346605678645
   - StaticId: 122
     UniqName: cornor_01_a
     AppearCond:
@@ -1035,7 +1025,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525493
+      rid: 5977857346605678646
   - StaticId: 123
     UniqName: 
     AppearCond:
@@ -1059,7 +1049,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525494
+      rid: 5977857346605678647
   - StaticId: 124
     UniqName: 
     AppearCond:
@@ -1083,7 +1073,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525495
+      rid: 5977857346605678648
   - StaticId: 125
     UniqName: 
     AppearCond:
@@ -1107,7 +1097,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525496
+      rid: 5977857346605678649
   - StaticId: 126
     UniqName: 
     AppearCond:
@@ -1131,7 +1121,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525497
+      rid: 5977857346605678650
   - StaticId: 127
     UniqName: 
     AppearCond:
@@ -1155,7 +1145,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525498
+      rid: 5977857346605678651
   - StaticId: 128
     UniqName: 
     AppearCond:
@@ -1179,7 +1169,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525499
+      rid: 5977857346605678652
   - StaticId: 129
     UniqName: 
     AppearCond:
@@ -1203,161 +1193,161 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 5977857321470525500
+      rid: 5977857346605678653
   NamedPoints:
   - Name: vine_area01_bottom
     PointType: 0
-    Position: {x: -9.56, y: -13.61, z: 0}
+    Position: {x: 36.89, y: 25.619999, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: vine_area01_top
     PointType: 0
-    Position: {x: -9.59, y: -16.9, z: 0}
+    Position: {x: 36.86, y: 22.33, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: guard_entry_01
     PointType: 3
-    Position: {x: -1.05, y: 7.4, z: 0}
+    Position: {x: 45.4, y: 46.63, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: rumor_p_01
     PointType: 6
-    Position: {x: -1.63, y: -21.72, z: 0}
+    Position: {x: 44.82, y: 17.510002, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_009
     PointType: 0
-    Position: {x: -13.97, y: 10.08, z: 0}
+    Position: {x: 32.48, y: 49.31, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_008
     PointType: 0
-    Position: {x: 5.56, y: 10.08, z: 0}
+    Position: {x: 52.010002, y: 49.31, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_007
     PointType: 0
-    Position: {x: 23.27, y: 10.08, z: 0}
+    Position: {x: 69.72, y: 49.31, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_006
     PointType: 0
-    Position: {x: 23.27, y: -9.26, z: 0}
+    Position: {x: 69.72, y: 29.970001, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_005
     PointType: 0
-    Position: {x: 12.53, y: -12.39, z: 0}
+    Position: {x: 58.98, y: 26.84, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_004
     PointType: 0
-    Position: {x: 6.55, y: -9.96, z: 0}
+    Position: {x: 53, y: 29.27, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_003
     PointType: 0
-    Position: {x: 2.43, y: -7.57, z: 0}
+    Position: {x: 48.88, y: 31.66, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_002
     PointType: 0
-    Position: {x: -11.35, y: -3.6, z: 0}
+    Position: {x: 35.1, y: 35.63, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_001
     PointType: 0
-    Position: {x: -16.72, y: 2.76, z: 0}
+    Position: {x: 29.730003, y: 41.99, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: entry_bottom
     PointType: 0
-    Position: {x: 0, y: 0, z: 0}
+    Position: {x: 46.45, y: 39.23, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: p_006
     PointType: 0
-    Position: {x: 14.67, y: 9.94, z: 0}
+    Position: {x: 61.120003, y: 49.170002, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: p_005
     PointType: 0
-    Position: {x: 7.31, y: 9.94, z: 0}
+    Position: {x: 53.760002, y: 49.170002, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: p_004
     PointType: 0
-    Position: {x: 6.41, y: -9.78, z: 0}
+    Position: {x: 52.86, y: 29.45, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: p_003
     PointType: 0
-    Position: {x: -0.14, y: -0.18, z: 0}
+    Position: {x: 46.31, y: 39.05, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: p_002
     PointType: 0
-    Position: {x: 23, y: -3.33, z: 0}
+    Position: {x: 69.45, y: 35.9, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: p_001
     PointType: 0
-    Position: {x: 23.17, y: 3.45, z: 0}
+    Position: {x: 69.62001, y: 42.680004, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: walker_born_03
     PointType: 4
-    Position: {x: 24.4, y: 12.99, z: 0}
+    Position: {x: 70.850006, y: 52.22, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: walker_born_02
     PointType: 4
-    Position: {x: 22.46, y: -17.11, z: 0}
+    Position: {x: 68.91, y: 22.119999, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: walker_born_01
     PointType: 4
-    Position: {x: -9.3, y: 0.15, z: 0}
+    Position: {x: 37.15, y: 39.38, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_point_04
     PointType: 0
-    Position: {x: -4.69, y: 4.42, z: 0}
+    Position: {x: 41.760002, y: 43.65, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_point_03
     PointType: 0
-    Position: {x: -1.54, y: 4.58, z: 0}
+    Position: {x: 44.91, y: 43.81, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_point_02
     PointType: 0
-    Position: {x: -1.49, y: 7.37, z: 0}
+    Position: {x: 44.96, y: 46.600002, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: patrol_point_01
     PointType: 0
-    Position: {x: -5, y: 7.45, z: 0}
+    Position: {x: 41.45, y: 46.680004, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: 1
     PointType: 0
-    Position: {x: 2.42, y: 6.73, z: 0}
+    Position: {x: 48.870003, y: 45.960003, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: building_01_in
     PointType: 0
-    Position: {x: -42.53, y: 46.48, z: 0}
+    Position: {x: 3.920002, y: 85.71, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: building_01_out
     PointType: 0
-    Position: {x: -10.41, y: 1.31, z: 0}
+    Position: {x: 36.04, y: 40.54, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: default
     PointType: 1
-    Position: {x: -10.88, y: -27.09, z: 0}
+    Position: {x: 35.57, y: 12.14, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   NamedPaths:
@@ -1385,216 +1375,216 @@ MonoBehaviour:
   - NetworkId: PortalNetworks
     Nodes:
     - NodeId: patrol_001
-      Position: {x: -16.72, y: 2.76, z: 0}
+      Position: {x: 29.730003, y: 41.99, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     - NodeId: patrol_002
-      Position: {x: -11.35, y: -3.6, z: 0}
+      Position: {x: 35.1, y: 35.63, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     - NodeId: patrol_003
-      Position: {x: 2.43, y: -7.57, z: 0}
+      Position: {x: 48.88, y: 31.66, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     - NodeId: patrol_004
-      Position: {x: 6.55, y: -9.96, z: 0}
+      Position: {x: 53, y: 29.27, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     - NodeId: patrol_005
-      Position: {x: 12.53, y: -12.39, z: 0}
+      Position: {x: 58.98, y: 26.84, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     - NodeId: patrol_006
-      Position: {x: 23.27, y: -9.26, z: 0}
+      Position: {x: 69.72, y: 29.970001, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     - NodeId: patrol_007
-      Position: {x: 23.27, y: 10.08, z: 0}
+      Position: {x: 69.72, y: 49.31, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     - NodeId: patrol_008
-      Position: {x: 5.56, y: 10.08, z: 0}
+      Position: {x: 52.010002, y: 49.31, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     - NodeId: patrol_009
-      Position: {x: -13.97, y: 10.08, z: 0}
+      Position: {x: 32.48, y: 49.31, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
     Edges:
     - NodeA: patrol_001
       NodeB: patrol_002
-      Weight: 8.323851
+      Weight: 8.323849
     - NodeA: patrol_002
       NodeB: patrol_003
-      Weight: 14.340478
+      Weight: 14.340481
     - NodeA: patrol_003
       NodeB: patrol_004
-      Weight: 4.7630343
+      Weight: 4.7630334
     - NodeA: patrol_004
       NodeB: patrol_005
       Weight: 6.454866
     - NodeA: patrol_005
       NodeB: patrol_006
-      Weight: 11.186801
+      Weight: 11.186802
     - NodeA: patrol_006
       NodeB: patrol_007
       Weight: 19.34
     - NodeA: patrol_007
       NodeB: patrol_008
-      Weight: 17.710001
+      Weight: 17.71
     - NodeA: patrol_008
       NodeB: patrol_009
-      Weight: 19.53
+      Weight: 19.530003
     - NodeA: patrol_001
       NodeB: patrol_009
-      Weight: 7.81952
+      Weight: 7.819519
   references:
     version: 2
     RefIds:
-    - rid: 5977857321470525471
+    - rid: 5977857346605678624
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_growth_01_top
-        Position: {x: -9.55, y: -14.26}
+        Position: {x: 30.31, y: 24.35}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 5977857321470525472
+    - rid: 5977857346605678625
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_growth_01
-        Position: {x: -9.55, y: -16.17}
+        Position: {x: 30.31, y: 22.44}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 5977857321470525473
+    - rid: 5977857346605678626
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_inn_01
-        Position: {x: -3.98, y: -3.19}
+        Position: {x: 39.5, y: 40.640003}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525474
+    - rid: 5977857346605678627
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_entry_01
-        Position: {x: -3.98, y: -26.33}
+        Position: {x: 39.5, y: 17.5}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525475
+    - rid: 5977857346605678628
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
-        Position: {x: -9.71, y: -19.47}
+        Position: {x: 36.950005, y: 47.21}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525476
+    - rid: 5977857346605678629
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
-        Position: {x: -7.47, y: -19.47}
+        Position: {x: 39.190002, y: 47.21}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525477
+    - rid: 5977857346605678630
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
-        Position: {x: -8.26, y: -18.08}
+        Position: {x: 38.4, y: 48.6}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525478
+    - rid: 5977857346605678631
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
-        Position: {x: 99.52, y: 100.73}
+        Position: {x: 151.69998, y: 152.509}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_out
-    - rid: 5977857321470525479
+    - rid: 5977857346605678632
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
-        Position: {x: -10.48, y: 2.121}
+        Position: {x: 41.7, y: 53.9}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_in
-    - rid: 5977857321470525480
+    - rid: 5977857346605678633
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
-        Position: {x: -2.28, y: -0.19}
+        Position: {x: 40.36, y: 43.460003}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 5977857321470525481
+    - rid: 5977857346605678634
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
-        Position: {x: -7.14, y: 4.28}
+        Position: {x: 35.5, y: 47.93}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 5977857321470525482
+    - rid: 5977857346605678635
       type: {class: EntityInitInfo4EventGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_insult_girl
-        Position: {x: 0.4, y: 6.77}
+        Position: {x: 56.36, y: 26.99}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 5977857321470525483
+    - rid: 5977857346605678636
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: poison_p_clothes
-        Position: {x: -4.16, y: -18.82}
+        Position: {x: 31.77, y: 30.71}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 5977857321470525484
+    - rid: 5977857346605678637
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
-        Position: {x: -7.02, y: -10.79}
+        Position: {x: 28.91, y: 38.739998}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 5977857321470525485
+    - rid: 5977857346605678638
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
-        Position: {x: -7.02, y: 5.93}
+        Position: {x: 28.91, y: 55.46}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
         Variables:
           keys: []
           values: []
-    - rid: 5977857321470525486
+    - rid: 5977857346605678639
       type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
-        Position: {x: -6.09, y: 5.01}
+        Position: {x: 34.25, y: 33.68}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 3
@@ -1612,47 +1602,47 @@ MonoBehaviour:
         GroupUnits:
         - GroupIdx: 0
           InitInfo:
-            rid: 5977857321470525501
+            rid: 5977857346605678654
         - GroupIdx: 1
           InitInfo:
-            rid: 5977857321470525502
-    - rid: 5977857321470525487
+            rid: 5977857346605678655
+    - rid: 5977857346605678640
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: good_obj_01
-        Position: {x: 2, y: 3.33}
+        Position: {x: 41.88, y: 32.09}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525488
+    - rid: 5977857346605678641
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
-        Position: {x: -0.686, y: 4.108}
+        Position: {x: 39.194, y: 32.868}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525489
+    - rid: 5977857346605678642
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
-        Position: {x: -1.58, y: 4.078}
+        Position: {x: 38.3, y: 32.838}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525490
+    - rid: 5977857346605678643
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
-        Position: {x: -1.58, y: 3.33}
+        Position: {x: 38.3, y: 32.09}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525491
+    - rid: 5977857346605678644
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_watcher_01
-        Position: {x: -1.68, y: -20.16}
+        Position: {x: 35.72, y: 19.720001}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 3
@@ -1664,11 +1654,11 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857321470525492
+    - rid: 5977857346605678645
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
-        Position: {x: 1.951, y: -22.66}
+        Position: {x: 39.351, y: 17.220001}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 3
@@ -1680,11 +1670,11 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857321470525493
+    - rid: 5977857346605678646
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
-        Position: {x: 1.02, y: -22.66}
+        Position: {x: 38.420002, y: 17.220001}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 3
@@ -1696,11 +1686,11 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857321470525494
+    - rid: 5977857346605678647
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
-        Position: {x: -8.91, y: -18.32}
+        Position: {x: 28.490002, y: 21.560001}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 4
@@ -1712,11 +1702,11 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857321470525495
+    - rid: 5977857346605678648
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
-        Position: {x: 0.335, y: -7.79}
+        Position: {x: 37.735, y: 32.09}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 4
@@ -1728,11 +1718,11 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857321470525496
+    - rid: 5977857346605678649
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hunhun
-        Position: {x: 0.335, y: 1.706}
+        Position: {x: 37.735, y: 41.586002}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
@@ -1744,11 +1734,11 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857321470525497
+    - rid: 5977857346605678650
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: qigai_default
-        Position: {x: 0.76, y: -2.34}
+        Position: {x: 38.16, y: 37.54}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 3
@@ -1760,31 +1750,31 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857321470525498
+    - rid: 5977857346605678651
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: dig_01
-        Position: {x: 5.07, y: -3.09}
+        Position: {x: 39.35, y: 31.190002}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525499
+    - rid: 5977857346605678652
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
-        Position: {x: 4.99, y: 5.56}
+        Position: {x: 39.269997, y: 39.840004}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525500
+    - rid: 5977857346605678653
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
-        Position: {x: -2.42, y: 2.51}
+        Position: {x: 31.86, y: 36.79}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 5977857321470525501
+    - rid: 5977857346605678654
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01
@@ -1800,7 +1790,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 5977857321470525502
+    - rid: 5977857346605678655
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01

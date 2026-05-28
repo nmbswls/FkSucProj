@@ -1,10 +1,14 @@
 using My;
 using My.MapExport;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-// Editor 场景根配置：chunk 参数与静态物根节点（Tilemap 在导出时从场景解析）
+// Editor 场景根配置：挂于 Variant 场景 AreaRoot（如 Main_Area_01），与 WorldAreaRoot 同级
 public class MapChunkEditorRoot : MonoBehaviour
 {
+    public string SceneName;
     public Texture2D SourceTexture;
     public float ChunkWorldSize = 32f;
     public float TexturePPU = 32f;
@@ -23,6 +27,28 @@ public class MapChunkEditorRoot : MonoBehaviour
                 return Vector2Int.zero;
             }
 
+#if UNITY_EDITOR
+            var path = AssetDatabase.GetAssetPath(SourceTexture);
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer != null)
+            {
+                importer.GetSourceTextureWidthAndHeight(out int w, out int h);
+                return new Vector2Int(w, h);
+            }
+#endif
+            return new Vector2Int(SourceTexture.width, SourceTexture.height);
+        }
+    }
+
+    public Vector2Int ImportedTextureSize
+    {
+        get
+        {
+            if (SourceTexture == null)
+            {
+                return Vector2Int.zero;
+            }
+
             return new Vector2Int(SourceTexture.width, SourceTexture.height);
         }
     }
@@ -32,6 +58,7 @@ public class MapChunkEditorRoot : MonoBehaviour
         ChunkWorldSize = GameConsts.ChunkCellSize;
         TexturePPU = 32f;
         ChunkOrigin = Vector2.zero;
+        SceneName = gameObject.scene.name;
 
         var staticRoot = transform.Find("StaticRoot");
         if (staticRoot != null)

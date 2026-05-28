@@ -9,6 +9,7 @@ namespace My.MapExport
     public class MapChunkDatabase : ScriptableObject
     {
         public string AreaId;
+        public string SceneName;
         public float ChunkWorldSize = 32f;
         public float TexturePPU = 32f;
         public Vector2 ChunkOrigin;
@@ -82,5 +83,60 @@ namespace My.MapExport
         public int Y;
         public string BackgroundKey;
         public string TilemapKey;
+    }
+
+    // MapVariant 级地图资源：按 Unity 场景名（AreaVariantInfo.scene_name）索引
+    public static class MapVariantMapResources
+    {
+        public const string MapChunkFolder = "MapChunk";
+        public const string MapExportFolder = "MapExport";
+
+        public static string ResolveMapChunkKey(cfg.demo.AreaOverlayStateInfo overlay)
+        {
+            if (overlay?.BelongVariantInfo == null)
+            {
+                return null;
+            }
+
+            return ResolveMapChunkKey(overlay.BelongVariantInfo.SceneName);
+        }
+
+        public static string ResolveMapChunkKey(string unitySceneName)
+        {
+            if (string.IsNullOrWhiteSpace(unitySceneName))
+            {
+                return null;
+            }
+
+            return unitySceneName.Trim();
+        }
+
+        public static string BuildMapChunkDatabasePath(string sceneName)
+        {
+            var key = ResolveMapChunkKey(sceneName);
+            return string.IsNullOrEmpty(key) ? null : $"{MapChunkFolder}/{key}";
+        }
+
+        public static MapChunkDatabase LoadMapChunkDatabase(cfg.demo.AreaOverlayStateInfo overlay)
+        {
+            var path = BuildMapChunkDatabasePath(ResolveMapChunkKey(overlay));
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
+            return Resources.Load<MapChunkDatabase>(path);
+        }
+
+        public static MapChunkDatabase LoadMapChunkDatabaseBySceneName(string unitySceneName)
+        {
+            var path = BuildMapChunkDatabasePath(unitySceneName);
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
+            return Resources.Load<MapChunkDatabase>(path);
+        }
     }
 }
