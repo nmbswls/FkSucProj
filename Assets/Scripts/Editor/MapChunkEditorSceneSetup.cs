@@ -1,0 +1,225 @@
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
+
+// 从运行时场景复制 GridRoot 到 Editor 场景，供 Tilemap chunk 导出
+public static class MapChunkEditorSceneSetup
+{
+    const string RuntimeScenePath = "Assets/Scenes/Main/Main_Area_01.unity";
+
+    public static bool CopyGridFromRuntimeScene(MapChunkEditorRoot editorRoot)
+    {
+        if (editorRoot == null)
+        {
+            EditorUtility.DisplayDialog("Map Chunk Setup", "MapChunkEditorRoot is missing.", "OK");
+            return false;
+        }
+
+        if (editorRoot.StaticPrefabRoot == null)
+        {
+            EditorUtility.DisplayDialog("Map Chunk Setup", "StaticPrefabRoot is not assigned on MapChunkEditorRoot.", "OK");
+            return false;
+        }
+
+        var staticRoot = editorRoot.StaticPrefabRoot;
+        if (staticRoot.Find("GridRoot") != null)
+        {
+            EditorUtility.DisplayDialog("Map Chunk Setup", "GridRoot already exists under StaticRoot.", "OK");
+            return false;
+        }
+
+        var editorScene = editorRoot.gameObject.scene;
+        Scene runtimeScene = default;
+        bool openedAdditive = false;
+
+        try
+        {
+            runtimeScene = SceneManager.GetSceneByPath(RuntimeScenePath);
+            if (!runtimeScene.isLoaded)
+            {
+                runtimeScene = EditorSceneManager.OpenScene(RuntimeScenePath, OpenSceneMode.Additive);
+                openedAdditive = true;
+            }
+
+            WorldAreaRoot runtimeArea = null;
+            foreach (var root in runtimeScene.GetRootGameObjects())
+            {
+                runtimeArea = root.GetComponentInChildren<WorldAreaRoot>(true);
+                if (runtimeArea != null)
+                {
+                    break;
+                }
+            }
+
+            if (runtimeArea == null || runtimeArea.Grid == null)
+            {
+                EditorUtility.DisplayDialog("Map Chunk Setup", "Grid not found in runtime scene.", "OK");
+                return false;
+            }
+
+            var clone = Object.Instantiate(runtimeArea.Grid.gameObject);
+            clone.name = "GridRoot";
+            clone.transform.SetParent(staticRoot, false);
+
+            var layerNames = runtimeArea.TileGrounds
+                .Where(t => t != null)
+                .Select(t => t.name)
+                .ToHashSet();
+            var tilemaps = clone.GetComponentsInChildren<Tilemap>(true)
+                .Where(t => layerNames.Count == 0 || layerNames.Contains(t.name))
+                .ToArray();
+
+            Undo.RegisterCreatedObjectUndo(clone, "Copy GridRoot");
+            EditorSceneManager.MarkSceneDirty(editorScene);
+
+            Debug.Log($"[MapChunkSetup] Copied GridRoot with {tilemaps.Length} tilemap layer(s) to {editorScene.name}.");
+            return true;
+        }
+        finally
+        {
+            if (openedAdditive && runtimeScene.isLoaded)
+            {
+                EditorSceneManager.CloseScene(runtimeScene, true);
+            }
+        }
+    }
+}
+
+public class MapChunkExporterWindow : EditorWindow
+{
+    [SerializeField] private GameObject areaRoot;
+    [SerializeField] private string mapName = "village_01_n";
+    [SerializeField] private float chunkCellSize = 32f;
+    [SerializeField] private Vector2 chunkOrigin;
+    [SerializeField] private int backgroundSortingOrder;
+    [SerializeField] private bool exportBackgroundChunks = true;
+    [SerializeField] private bool exportTilemapChunks = true;
+    [SerializeField] private bool exportWalkGridPrefab = true;
+
+    [MenuItem("Window/Map Chunk Exporter")]
+    public static void Open()
+    {
+        GetWindow<MapChunkExporterWindow>("Map Chunk Exporter");
+    }
+
+    void OnGUI()
+    {
+        EditorGUILayout.LabelField("Map Source", EditorStyles.boldLabel);
+        areaRoot = (GameObject)EditorGUILayout.ObjectField("Area Root", areaRoot, typeof(GameObject), true);
+        if (GUILayout.Button("Use Selected AreaRoot"))
+        {
+            if (Selection.activeGameObject != null)
+            {
+                areaRoot = Selection.activeGameObject;
+            }
+        }
+
+        var chunkEditor = MapChunkEditorUtility.Resolve(areaRoot);
+        if (chunkEditor == null)
+        {
+            EditorGUILayout.HelpBox("AreaRoot 上需要 MapChunkEditorRoot 组件。", MessageType.Warning);
+        }
+        else
+        {
+            EditorGUILayout.LabelField("Source Texture",
+                chunkEditor.SourceTexture != null ? chunkEditor.SourceTexture.name : "(none)");
+            EditorGUILayout.LabelField("Texture PPU", chunkEditor.TexturePPU.ToString());
+            EditorGUILayout.LabelField("Slice Pixel Size", chunkEditor.SlicePixelSize.ToString());
+            EditorGUILayout.LabelField("Grid Status",
+                MapChunkEditorTilemapResolver.HasTilemapSource(chunkEditor) ? "Ready" : "Missing");
+        }
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Export Settings", EditorStyles.boldLabel);
+        mapName = EditorGUILayout.TextField("Map Name", mapName);
+        chunkCellSize = EditorGUILayout.FloatField("Chunk Cell Size", chunkCellSize);
+        chunkOrigin = EditorGUILayout.Vector2Field("Chunk Origin", chunkOrigin);
+        backgroundSortingOrder = EditorGUILayout.IntField("Background Sorting Order", backgroundSortingOrder);
+
+        exportBackgroundChunks = EditorGUILayout.Toggle("Background (bg_*)", exportBackgroundChunks);
+        exportTilemapChunks = EditorGUILayout.Toggle("Walk Grid Chunks (tm_*)", exportTilemapChunks);
+        exportWalkGridPrefab = EditorGUILayout.Toggle("Walk Grid Prefab (GridRoot)", exportWalkGridPrefab);
+
+        EditorGUILayout.Space();
+        if (GUILayout.Button("Sync From MapChunkEditorRoot"))
+        {
+            SyncFromScene();
+        }
+
+        if (chunkEditor != null && !MapChunkEditorTilemapResolver.HasTilemapSource(chunkEditor))
+        {
+            EditorGUILayout.HelpBox("StaticPrefabRoot/GridRoot 下没有 Tilemap。", MessageType.Warning);
+            if (GUILayout.Button("Import Grid From Main_Area_01"))
+            {
+                MapChunkEditorSceneSetup.CopyGridFromRuntimeScene(chunkEditor);
+            }
+        }
+
+        EditorGUILayout.Space();
+        if (GUILayout.Button("Export Map"))
+        {
+            Export();
+        }
+    }
+
+    void SyncFromScene()
+    {
+        var chunkEditor = MapChunkEditorUtility.Resolve(areaRoot);
+        MapChunkEditorUtility.SyncChunkSettings(chunkEditor, ref chunkCellSize, ref chunkOrigin);
+    }
+
+    void Export()
+    {
+        var chunkEditor = MapChunkEditorUtility.Resolve(areaRoot);
+        if (chunkEditor == null)
+        {
+            EditorUtility.DisplayDialog("Map Chunk Export", "MapChunkEditorRoot not found on Area Root.", "OK");
+            return;
+        }
+
+        if (!exportBackgroundChunks && !exportTilemapChunks && !exportWalkGridPrefab)
+        {
+            EditorUtility.DisplayDialog("Map Chunk Export", "Select at least one export target.", "OK");
+            return;
+        }
+
+        MapChunkEditorUtility.PushChunkSettings(chunkEditor, chunkCellSize, chunkOrigin);
+
+        var result = MapChunkExportCore.Export(
+            chunkEditor,
+            mapName,
+            backgroundSortingOrder,
+            chunkCellSize,
+            chunkOrigin,
+            exportBackgroundChunks,
+            exportTilemapChunks,
+            exportWalkGridPrefab);
+
+        if (!result.Success)
+        {
+            EditorUtility.DisplayDialog("Map Chunk Export", result.Message, "OK");
+            Debug.LogWarning("[MapChunkExport] " + result.Message);
+            return;
+        }
+
+        Debug.Log("[MapChunkExport] " + result.Message);
+        EditorUtility.DisplayDialog("Map Chunk Export", result.Message, "OK");
+        if (result.Database != null)
+        {
+            EditorGUIUtility.PingObject(result.Database);
+        }
+    }
+
+    void OnEnable()
+    {
+        if (areaRoot == null)
+        {
+            areaRoot = MapChunkEditorUtility.FindInActiveScene()?.gameObject;
+        }
+
+        SyncFromScene();
+    }
+}

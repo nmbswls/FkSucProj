@@ -5207,7 +5207,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1520095625}
-  - component: {fileID: 1520095626}
+  - component: {fileID: 1520095627}
   m_Layer: 0
   m_Name: AreaRoot
   m_TagString: Untagged
@@ -5236,7 +5236,7 @@ Transform:
   - {fileID: 574113937}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1520095626
+--- !u!114 &1520095627
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5245,13 +5245,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1520095624}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1d609f8caf6d254cb4efc7783791cad, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a2407c241e06864b9e51dc24bb0a0de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Grid: {fileID: 0}
-  TileGrounds: []
-  TileHole: {fileID: 0}
-  PlayerBornPos: {fileID: 422780440}
+  SourceTexture: {fileID: 2800000, guid: b715701cf9b0f4641a37e4b1e8eb9d37, type: 3}
+  ChunkWorldSize: 32
+  TexturePPU: 24
+  ChunkOrigin: {x: 0, y: 0}
   StaticPrefabRoot: {fileID: 857680099}
 --- !u!1 &1520403493
 GameObject:

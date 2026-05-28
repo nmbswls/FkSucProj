@@ -67,6 +67,7 @@ namespace My.Map.Logic
         public AreaOverlayStateInfo cacheMapOverlayCfg { get; private set; }
 
         public MapExportDatabase cacheDatabase;
+        public MapChunkDatabase cacheChunkDatabase;
 
         public Dictionary<string, LogicRoomInfo> RuntimeRoomInfos = new();
         
@@ -173,6 +174,7 @@ namespace My.Map.Logic
             }
 
             cacheDatabase = null;
+            cacheChunkDatabase = null;
             if (!string.IsNullOrEmpty(cacheMapOverlayCfg.ProceduralDefId))
             {
                 if (!DungeonMapLoader.TryLoad(cacheMapOverlayCfg, mapOVerlayId, out var procDb, out var genResult))
@@ -185,12 +187,14 @@ namespace My.Map.Logic
                 }
 
                 cacheDatabase = procDb;
+                cacheChunkDatabase = null;
                 _dungeonRuntime?.Dispose();
                 _dungeonRuntime = DungeonAreaRuntime.Create(this, logicManager, genResult);
             }
             else if (!string.IsNullOrEmpty(cacheMapOverlayCfg.MapDataName))
             {
                 cacheDatabase = Resources.Load<MapExportDatabase>($"MapExport/{cacheMapOverlayCfg.MapDataName}");
+                cacheChunkDatabase = Resources.Load<MapChunkDatabase>($"MapChunk/{cacheMapOverlayCfg.MapDataName}");
                 _dungeonRuntime?.Dispose();
                 _dungeonRuntime = null;
             }

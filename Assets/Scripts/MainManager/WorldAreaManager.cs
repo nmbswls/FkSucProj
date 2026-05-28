@@ -54,6 +54,7 @@ public class WorldAreaManager : MonoBehaviour
         }
         StartCoroutine(CoUnloadWorld(onUnload));
         MainGameManager.Instance.SceneFadeManager.OnLeaveArea();
+        currentRoot?.ClearWalkGrid();
         currentRoot = null;
     }
 
@@ -136,6 +137,9 @@ public class WorldAreaManager : MonoBehaviour
                         break;
                     }
                 }
+
+                var chunkDb = MainGameManager.Instance?.gameLogicManager?.AreaManager?.cacheChunkDatabase;
+                WorldAreaRoot.TryBindWalkGridFromDatabase(currentRoot, chunkDb);
             }
             else
             {
@@ -241,26 +245,22 @@ public class WorldAreaManager : MonoBehaviour
     public bool IsWorldPosWalkable(Vector3 worldPos)
     {
         if (currentRoot == null) return false;
-        if (currentRoot.TileGrounds == null || currentRoot.TileGrounds.Length == 0) return false;
 
-        var hole = currentRoot.TileHole;
-        if (hole != null)
+        if (currentRoot.HasWalkTileGrounds)
         {
-            var holeCell = hole.WorldToCell(worldPos);
-            if (hole.cellBounds.Contains(holeCell) && hole.GetTile(holeCell) != null)
-                return false;
+            return currentRoot.IsWorldPosWalkableOnTileGrounds(worldPos);
         }
 
-        foreach (var ground in currentRoot.TileGrounds)
+        var chunkManager = SceneAOIManager.Instance != null
+            ? SceneAOIManager.Instance.MapChunkManager
+            : null;
+        var chunkDb = MainGameManager.Instance?.gameLogicManager?.AreaManager?.cacheChunkDatabase;
+        if (chunkManager != null && chunkDb != null && chunkDb.HasChunkContent && !chunkDb.HasWalkGrid)
         {
-            if (ground == null) continue;
-            var cell = ground.WorldToCell(worldPos);
-            if (!ground.cellBounds.Contains(cell)) continue;
-            if (ground.GetTile(cell) != null)
-                return true;
+            return chunkManager.IsWorldPosWalkable(worldPos);
         }
 
-        return false;
+        return WorldAreaRoot.IsWorldPosWalkable(worldPos, currentRoot.TileGrounds, currentRoot.TileHole);
     }
 
 

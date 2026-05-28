@@ -33,9 +33,9 @@ public class StaticItemExporterWindow : EditorWindow
     [SerializeField] private bool roundToGrid = false;
     [SerializeField] private float gridUnit = 0.1f;
 
-    // 分桶（Chunk）设置
-    [SerializeField] private float chunkCellSize = 16f;
-    [SerializeField] private Vector2 chunkOrigin = Vector2.zero; // 坐标原点偏移
+    // 分桶（Chunk）设置，与 MapChunkEditorRoot 对齐
+    [SerializeField] private float chunkCellSize = 32f;
+    [SerializeField] private Vector2 chunkOrigin = Vector2.zero;
 
     // 扫描结果缓存
     private Dictionary<(int x, int y), List<StaticPrefabItem>> chunkBuckets =
@@ -83,10 +83,19 @@ public class StaticItemExporterWindow : EditorWindow
         if (roundToGrid) gridUnit = EditorGUILayout.FloatField("Grid Unit", gridUnit);
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Chunking", EditorStyles.boldLabel);
-
+        EditorGUILayout.LabelField("Chunking (sync with Map Chunk Exporter)", EditorStyles.boldLabel);
         chunkCellSize = EditorGUILayout.FloatField("Chunk Cell Size", chunkCellSize);
         chunkOrigin = EditorGUILayout.Vector2Field("Chunk Origin", chunkOrigin);
+        if (GUILayout.Button("Sync From MapChunkEditorRoot"))
+        {
+            SyncChunkSettingsFromScene();
+        }
+
+        var chunkEditor = MapChunkEditorUtility.Resolve(sceneRoot);
+        if (chunkEditor == null)
+        {
+            EditorGUILayout.HelpBox("未找到 MapChunkEditorRoot，chunk 参数需与 Map Chunk Exporter 手动保持一致。", MessageType.Info);
+        }
 
         EditorGUILayout.Space();
         if (GUILayout.Button("Scan"))
@@ -168,6 +177,14 @@ public class StaticItemExporterWindow : EditorWindow
         }
     }
 
+    void SyncChunkSettingsFromScene()
+    {
+        MapChunkEditorUtility.SyncChunkSettings(
+            MapChunkEditorUtility.Resolve(sceneRoot),
+            ref chunkCellSize,
+            ref chunkOrigin);
+    }
+
     private void ScanScene()
     {
         chunkBuckets.Clear();
@@ -177,6 +194,8 @@ public class StaticItemExporterWindow : EditorWindow
         namedPointCache.Clear();
         namedPathCache.Clear();
         portalNetworkCache.Clear();
+
+        SyncChunkSettingsFromScene();
 
         if (sceneRoot == null)
         {
@@ -605,7 +624,7 @@ public class StaticItemExporterWindow : EditorWindow
     private (int x, int y) WorldToChunk(Vector3 pos)
     {
         float px = pos.x - chunkOrigin.x;
-        float py = pos.z - chunkOrigin.y; // 常见做法：用 x-z 平面分块
+        float py = pos.y - chunkOrigin.y;
         int cx = Mathf.FloorToInt(px / chunkCellSize);
         int cy = Mathf.FloorToInt(py / chunkCellSize);
         return (cx, cy);

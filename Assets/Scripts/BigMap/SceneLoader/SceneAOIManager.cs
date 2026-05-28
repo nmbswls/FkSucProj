@@ -44,6 +44,9 @@ public class SceneAOIManager : MonoBehaviour
     [Header("Factories & Assets")]
     [SerializeField] private MonoBehaviour presentationFactorySource; // 赋值为实现 IPresentationFactory 的组件
     [SerializeField] private MonoBehaviour assetProviderSource;       // 赋值为实现 IAssetProvider 的组件
+    [SerializeField] private MapChunkManager mapChunkManager;
+
+    public MapChunkManager MapChunkManager => mapChunkManager;
 
     // 动态实体：网格桶（cellSize 用 chunkCellSize 或更细粒度）
     public int dynamicCellSize = 1;
@@ -82,17 +85,8 @@ public class SceneAOIManager : MonoBehaviour
 
     private readonly Dictionary<long, AOIEntry> _aoiStates = new(); // id -> entry
 
-    protected MapExportDatabase ExportDb { get { return MainGameManager.Instance.gameLogicManager.AreaManager.cacheDatabase; } }
-    public IEnumerable<StaticPrefabItem> GetChunkPrefabs(ChunkCoord c)
-    {
-        var it = ExportDb.GetChunkStaticItems(c.X, c.Y);
-        return it;
-    }
-
-
     public void InitMapArea(string mapName)
     {
-        //ExportDb = Resources.Load<MapExportDatabase>($"MapExport/{areaId}");
     }
 
     public async Task CleanupAllAsync()
@@ -145,41 +139,10 @@ public class SceneAOIManager : MonoBehaviour
         // 3) 静态 Chunk：释放所有实例并清空记录
         try
         {
-            var chunkList = new List<ChunkRecord>(_chunks.Values);
-
-            foreach (var rec in chunkList)
+            if (mapChunkManager != null)
             {
-                // 如果正在加载，标记取消
-                rec.cancelAfterLoad = true;
-
-                // 释放已有实例
-                if (rec.instances != null && rec.instances.Count > 0)
-                {
-                    // 分片释放，沿用现有释放逻辑
-                    await ReleaseSlice(rec.instances);
-                    rec.instances = null;
-                }
-
-                // 移除该 chunk 的分段数据
-                try
-                {
-                    WorldAreaManager.Instance.SegmentProvider.RemoveSource(rec.coord.ToString());
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogException(ex);
-                }
-
-                rec.loadState = LoadState.Unloaded;
-                rec.desiredVisible = false;
-                rec.lastBecameDesired = 0f;
-                rec.lastBecameUndesired = 0f;
-                rec.lastBecameLoaded = 0f;
+                await mapChunkManager.CleanupAllAsync();
             }
-
-            _chunks.Clear();
-            _concurrentLoading = 0;
-            _pendingVisibleChunkRefresh = false;
         }
         catch (System.Exception ex)
         {
@@ -214,6 +177,17 @@ public class SceneAOIManager : MonoBehaviour
         if (_asset == null)
             Debug.LogError("AOIManager: assetProviderSource must implement IAssetProvider.");
 
+        if (mapChunkManager == null)
+        {
+            mapChunkManager = GetComponent<MapChunkManager>();
+        }
+
+        if (mapChunkManager == null)
+        {
+            mapChunkManager = gameObject.AddComponent<MapChunkManager>();
+        }
+
+        mapChunkManager.Initialize(_asset, _assetAsync, () => CanRefreshStaticChunksNow());
     }
 
     private void Update()
@@ -240,20 +214,8 @@ public class SceneAOIManager : MonoBehaviour
         RefreshDynamicAOI(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, LogicTime.deltaTime);
 
         // 2) 静态 Chunk AOI 刷新（九宫格/环）
-        RefreshStaticChunks(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
-
-        ProcessPendingVisibleChunkRefresh();
-    }
-
-    void ProcessPendingVisibleChunkRefresh()
-    {
-        if (!_pendingVisibleChunkRefresh)
-        {
-            return;
-        }
-
-        _pendingVisibleChunkRefresh = false;
-        RefreshVisibleLoadedChunks();
+        mapChunkManager?.RefreshChunks(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, chunkRing);
+        mapChunkManager?.ProcessPendingVisibleChunkRefresh();
     }
 
     // ===== 动态实体接口 =====
@@ -587,229 +549,9 @@ public class SceneAOIManager : MonoBehaviour
         return e.Pos;
     }
 
-    // ===== 静态 Chunk 管理 =====
-
-    [Header("Debounce / Hysteresis")]
-    [SerializeField] private float chunkEnterDelay = 0.05f;  // 进入窗口，秒
-    [SerializeField] private float chunkExitDelay = 0.15f;   // 退出窗口，秒
-    [SerializeField] private float chunkMinStay = 0.30f;     // 最短驻留，秒（Loaded 后至少保持这么久）
-
-    private readonly Dictionary<ChunkCoord, ChunkRecord> _chunks = new Dictionary<ChunkCoord, ChunkRecord>();
-    private int maxConcurrentLoads = 2;     // 同时 Loading 的 chunk 上限
-    private int _concurrentLoading = 0;
-
-    private int batchObjectsPerSlice = 8;
-    private int yieldEveryNObjects = 4;
-
-    // 每个 chunk 的本地状态
-    public sealed class ChunkRecord
-    {
-        public readonly ChunkCoord coord;
-
-        // 目标意图
-        public bool desiredVisible;
-
-        // 进度状态
-        public LoadState loadState;
-
-        // 抖动控制的时间戳
-        public float lastBecameDesired;    // 最近一次变为 desiredVisible=true 的时间（在外部更新）
-        public float lastBecameUndesired;  // 最近一次变为 desiredVisible=false 的时间
-        public float lastBecameLoaded;     // 最近一次进入 Loaded 的时间
-
-        // 加载中取消标志
-        public bool cancelAfterLoad;
-        public bool refreshAfterLoad;
-        // 实例
-        public List<(GameObject, int)> instances = new();
-
-        public ChunkRecord(ChunkCoord c)
-        {
-            coord = c;
-            desiredVisible = false;
-            loadState = LoadState.Unloaded;
-            cancelAfterLoad = false;
-            refreshAfterLoad = false;
-            instances = null;
-            lastBecameDesired = 0f;
-            lastBecameUndesired = 0f;
-            lastBecameLoaded = 0f;
-        }
-    }
-
-    public enum LoadState
-    {
-        Unloaded,
-        Loading,
-        Loaded,
-        Unloading
-    }
-
-    private float _lastRefreshChunkTime;
-    bool _pendingVisibleChunkRefresh;
-
-    private void RefreshStaticChunks(Vector3 playerPos)
-    {
-        var center = WorldToChunk(playerPos);
-        var target = CollectChunkRing(center, chunkRing);
-
-        // 标记 desiredVisible，并维护记录集
-        foreach (var c in target)
-        {
-            if (!_chunks.TryGetValue(c, out var rec))
-            {
-                rec = new ChunkRecord(c);
-                _chunks.Add(c, rec);
-            }
-            rec.desiredVisible = true;
-        }
-        var keys = new List<ChunkCoord>(_chunks.Keys);
-        foreach (var c in keys)
-        {
-            if (!target.Contains(c))
-            {
-                var rec = _chunks[c];
-                rec.desiredVisible = false;
-            }
-        }
-
-        // 2) 推进状态机（带限流与抖动窗口）
-        int startedLoadsThisFrame = 0;
-        int startedUnloadsThisFrame = 0;
-
-        // 优先卸载（控制内存峰值），再加载
-        // 2.1 卸载推进
-        foreach (var c in keys)
-        {
-            var rec = _chunks[c];
-            TickChunkUnload(rec, LogicTime.time, ref startedUnloadsThisFrame);
-        }
-
-        // 2.2 加载推进
-        foreach (var c in keys)
-        {
-            var rec = _chunks[c];
-            TickChunkLoad(rec, LogicTime.time, ref startedLoadsThisFrame);
-        }
-
-        if (LogicTime.time > _lastRefreshChunkTime + 2.0f)
-        {
-            _lastRefreshChunkTime = LogicTime.time;
-        }
-    }
-
-    // 变量变化等场景下只标记脏，下一帧 Update 内与 AOI 同批刷新
     public void RequestVisibleChunkRefresh()
     {
-        _pendingVisibleChunkRefresh = true;
-    }
-
-    public void RefreshVisibleLoadedChunks()
-    {
-        if (!CanRefreshStaticChunksNow(true, "RefreshVisibleLoadedChunks"))
-        {
-            return;
-        }
-
-        var keys = new List<ChunkCoord>(_chunks.Keys);
-        foreach (var coord in keys)
-        {
-            if (!_chunks.TryGetValue(coord, out var rec))
-            {
-                continue;
-            }
-
-            if (!rec.desiredVisible || rec.loadState != LoadState.Loaded)
-            {
-                continue;
-            }
-
-            ForceUpdateOneChunk(coord);
-        }
-    }
-
-    public void ForceUpdateOneChunk(ChunkCoord coord)
-    {
-        if (!CanRefreshStaticChunksNow(true, $"ForceUpdateOneChunk({coord})"))
-        {
-            return;
-        }
-
-        if(!_chunks.TryGetValue(coord, out var record))
-        {
-            Debug.LogError("ForceUpdateOneChunk chunk not loaded");
-            return;
-        }
-
-        if(record.loadState != LoadState.Loaded)
-        {
-            // 中途有刷新 需要记录
-            if(record.loadState == LoadState.Loading)
-            {
-                record.refreshAfterLoad = true;
-            }
-            return;
-        }
-
-        var instances = new List<(GameObject, int)>();
-        var currentInstances = record.instances ?? new List<(GameObject, int)>();
-
-        // 批次枚举（根据你的配置实现 GetPrefabs）
-        foreach (var item in GetChunkPrefabs(coord))
-        {
-            var existObjInfo = currentInstances.Find((a) => a.Item2 == item.ItemId);
-
-            // 不满足出现条件
-            if (item.AppearCond != null && !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
-            {
-                // 已加载 需要卸载
-                if(existObjInfo.Item1 != null)
-                {
-                    _asset.Release(existObjInfo.Item1);
-                }
-                continue;
-            }
-            // 满足出现条件
-            else
-            {
-                if(existObjInfo.Item1 == null)
-                {
-                    GameObject go = null;
-                    try
-                    {
-                        go = _asset.Instantiate("Prefab/" + item.Key);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Debug.LogException(ex);
-                    }
-                    if (go == null)
-                    {
-                        Debug.LogError($"[SceneAOIManager] ForceUpdateOneChunk({coord}) instantiate failed: Prefab/{item.Key}");
-                    }
-                    else if (!TryAttachStaticPrefab(go, item.Position, item.Rotation, item.Scale, $"ForceUpdateOneChunk({coord}) item={item.Key}"))
-                    {
-                        _asset.Release(go);
-                        continue;
-                    }
-                    else
-                    {
-                        instances.Add((go.gameObject, item.ItemId));
-                    }
-                }
-                else
-                {
-                    instances.Add(existObjInfo);
-                }
-            }
-
-        }
-
-
-        //var segments = ExportDb.GetChunkSegments(record.coord.X, record.coord.Y);
-        //WorldAreaManager.Instance.SegmentProvider.AddSegments(record.coord.ToString(), segments);
-
-        record.instances = instances;
+        mapChunkManager?.RequestVisibleChunkRefresh();
     }
 
     static string GetStaticChunkRefreshBlockReason()
@@ -875,358 +617,33 @@ public class SceneAOIManager : MonoBehaviour
         return false;
     }
 
-    bool TryAttachStaticPrefab(GameObject go, Vector3 position, Quaternion rotation, Vector3 scale, string context)
-    {
-        if (go == null)
-        {
-            Debug.LogError($"[SceneAOIManager] {context} attach static prefab failed: GameObject is null");
-            return false;
-        }
-
-        var staticRoot = MainGameManager.Instance?.GetWorldStaticPrefabRoot("1");
-        if (staticRoot == null)
-        {
-            Debug.LogError($"[SceneAOIManager] {context} attach static prefab failed: StaticPrefabRoot is null");
-            return false;
-        }
-
-        go.transform.SetParent(staticRoot, false);
-        go.transform.SetPositionAndRotation(position, rotation);
-        go.transform.localScale = scale;
-        go.SetActive(true);
-        return true;
-    }
-
-    private void TickChunkLoad(ChunkRecord rec, float now, ref int startedLoadsThisFrame)
-    {
-        switch (rec.loadState)
-        {
-            case LoadState.Unloaded:
-                if (!rec.desiredVisible) return;
-
-                // 进入窗口判定：需要显示且满足 enterDelay
-                if (now - rec.lastBecameDesired < chunkEnterDelay) return;
-
-                // 限流：并发与每帧新开上限
-                if (_concurrentLoading >= maxConcurrentLoads) return;
-
-                startedLoadsThisFrame++;
-                StartChunkLoad(rec);
-                break;
-
-            case LoadState.Loading:
-                // 如果中途不再需要显示，标记取消
-                if (!rec.desiredVisible)
-                {
-                    // 但若已加载完成会在回调时处理
-                    rec.cancelAfterLoad = true;
-                    rec.lastBecameUndesired = (rec.lastBecameUndesired == 0f) ? now : rec.lastBecameUndesired;
-                }
-                break;
-
-            case LoadState.Loaded:
-                // 最短驻留保护：即使不再需要，也要保持 minStay
-                if (!rec.desiredVisible)
-                {
-                    // 退出窗口计时点
-                    if (rec.lastBecameUndesired == 0f)
-                        rec.lastBecameUndesired = now;
-
-                    // 如果没达到 minStay，不卸
-                    if (now - rec.lastBecameLoaded < chunkMinStay) return;
-
-                    // 退出窗口：达到 exitDelay 才卸
-                    if (now - rec.lastBecameUndesired < chunkExitDelay) return;
-
-                    // 由卸载推进流程处理
-                }
-                else
-                {
-                    if(LogicTime.time > _lastRefreshChunkTime + 2.0f)
-                    {
-                        ForceUpdateOneChunk(rec.coord);
-                    }
-                }
-                break;
-
-            case LoadState.Unloading:
-                // 若又需要显示，等卸载结束后再加载（避免拉锯）
-                break;
-        }
-    }
-
-    private void TickChunkUnload(ChunkRecord rec, float now, ref int startedUnloadsThisFrame)
-    {
-        switch (rec.loadState)
-        {
-            case LoadState.Loaded:
-                if (!rec.desiredVisible)
-                {
-                    // 最短驻留 + 退出窗口判定
-                    if (now - rec.lastBecameLoaded < chunkMinStay) return;
-
-                    if (rec.lastBecameUndesired == 0f)
-                        rec.lastBecameUndesired = now;
-
-                    if (now - rec.lastBecameUndesired < chunkExitDelay) return;
-
-                    startedUnloadsThisFrame++;
-                    StartChunkUnload(rec);
-                }
-                break;
-
-            case LoadState.Loading:
-                // 若不再需要显示，标记取消并准备在 load 完成后直接释放
-                if (!rec.desiredVisible)
-                {
-                    rec.cancelAfterLoad = true;
-                    if (rec.lastBecameUndesired == 0f)
-                        rec.lastBecameUndesired = now;
-                }
-                break;
-
-            case LoadState.Unloading:
-            case LoadState.Unloaded:
-                // 无需处理
-                break;
-        }
-    }
-
-    // 异步加载：分批实例化 + 并发计数
-    private async void StartChunkLoad(ChunkRecord rec)
-    {
-        if (rec.loadState != LoadState.Unloaded) return;
-        if (!CanRefreshStaticChunksNow(true, $"StartChunkLoad({rec.coord})"))
-        {
-            return;
-        }
-
-        rec.loadState = LoadState.Loading;
-        rec.cancelAfterLoad = false;
-        rec.refreshAfterLoad = false;
-        rec.lastBecameUndesired = 0f; // 清理不需要计时
-        _concurrentLoading++;
-
-        var instances = new List<(GameObject, int)>();
-        var batchBuffer = new List<StaticPrefabItem>(batchObjectsPerSlice);
-        int objCountSinceYield = 0;
-
-        // 批次枚举（根据你的配置实现 GetPrefabs）
-        foreach (var item in GetChunkPrefabs(rec.coord))
-        {
-            if(item.AppearCond != null && item.AppearCond.Type != ECommonCheckType.None && !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
-            {
-                continue;
-            }
-
-            batchBuffer.Add(item);
-            if (batchBuffer.Count >= batchObjectsPerSlice)
-            {
-                objCountSinceYield = await InstantiateBatch(batchBuffer, instances, objCountSinceYield);
-                batchBuffer.Clear();
-
-                // 加载过程中若被标记取消，可继续把已加载的回收处理延后到完成阶段
-            }
-        }
-        // 处理剩余的半批
-        if (batchBuffer.Count > 0)
-        {
-            objCountSinceYield = await InstantiateBatch(batchBuffer, instances, objCountSinceYield);
-        }
-
-        // 加载完成，回主线程后核验
-        if (!CanRefreshStaticChunksNow(true, $"StartChunkLoad complete({rec.coord})"))
-        {
-            foreach (var prefabInfo in instances)
-            {
-                _ = _assetAsync.ReleaseAsync(prefabInfo.Item1);
-            }
-
-            if (_chunks.TryGetValue(rec.coord, out var stale) && stale == rec)
-            {
-                rec.instances = null;
-                rec.loadState = LoadState.Unloaded;
-            }
-
-            _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
-            return;
-        }
-
-        if (!_chunks.TryGetValue(rec.coord, out var cur) || cur != rec)
-        {
-            // 记录已被替换，安全释放
-            foreach (var prefabInfo in instances) _ = _assetAsync.ReleaseAsync(prefabInfo.Item1);
-            _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
-            return;
-        }
-
-        // 若不再需要显示或被标记取消，则直接释放
-        if (rec.cancelAfterLoad || !rec.desiredVisible)
-        {
-            foreach (var prefabInfo in instances)
-                _ = _assetAsync.ReleaseAsync(prefabInfo.Item1);
-
-            rec.instances = null;
-            rec.loadState = LoadState.Unloaded;
-            _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
-            return;
-        }
-
-        
-
-        rec.instances = instances;
-        rec.loadState = LoadState.Loaded;
-        rec.lastBecameLoaded = LogicTime.time;
-        _concurrentLoading = Mathf.Max(0, _concurrentLoading - 1);
-
-        // 需要刷新
-        if (rec.refreshAfterLoad)
-        {
-            ForceUpdateOneChunk(rec.coord);
-            return;
-        }
-
-        var segments = ExportDb.GetChunkSegments(rec.coord.X, rec.coord.Y);
-        WorldAreaManager.Instance.SegmentProvider.AddSegments(rec.coord.ToString(), segments);
-    }
-
-    private async Task<int> InstantiateBatch(List<StaticPrefabItem> items, List<(GameObject, int)> instances, int objCountSinceYield)
-    {
-        for (int i = 0; i < items.Count; i++)
-        {
-            var it = items[i];
-            GameObject go = null;
-            try
-            {
-                go = await _assetAsync.InstantiateAsync("Prefab/"  +  it.Key);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogException(ex);
-            }
-            if (go == null)
-            {
-                Debug.LogError($"[SceneAOIManager] InstantiateBatch failed: Prefab/{it.Key}");
-            }
-            else if (!TryAttachStaticPrefab(go, it.Position, it.Rotation, it.Scale, $"InstantiateBatch item={it.Key}"))
-            {
-                _ = _assetAsync.ReleaseAsync(go);
-                continue;
-            }
-            else
-            {
-                instances.Add((go.gameObject, it.ItemId));
-            }
-
-            objCountSinceYield++;
-            if (objCountSinceYield >= yieldEveryNObjects)
-            {
-                objCountSinceYield = 0;
-                await Task.Yield(); // 切片，避免卡顿
-            }
-        }
-
-        return objCountSinceYield;
-    }
-
-    /// <summary>
-    /// 卸载资源
-    /// </summary>
     public void UnloadAllResource()
     {
     }
 
-    // 异步卸载：分批释放
-    private async void StartChunkUnload(ChunkRecord rec)
-    {
-        if (rec.loadState == LoadState.Unloaded) return;
-        if (rec.loadState == LoadState.Unloading) return;
-
-        rec.loadState = LoadState.Unloading;
-
-        // 取出现有实例并立即清空，防止重复操作
-        var list = rec.instances ?? new List<(GameObject, int)>();
-        rec.instances = null;
-
-        int count = 0;
-        List<(GameObject, int)> slice = new List<(GameObject, int)>(batchObjectsPerSlice);
-
-        // 切片释放
-        for (int i = 0; i < list.Count; i++)
-        {
-            slice.Add(list[i]);
-            if (slice.Count >= batchObjectsPerSlice)
-            {
-                await ReleaseSlice(slice);
-                slice.Clear();
-            }
-            count++;
-        }
-        if (slice.Count > 0)
-        {
-            await ReleaseSlice(slice);
-            slice.Clear();
-        }
-
-        // 卸载完成，若此时又需要显示，交由下一帧的 Tick 决定是否重新加载
-        if (_chunks.TryGetValue(rec.coord, out var cur) && cur == rec)
-        {
-            rec.loadState = LoadState.Unloaded;
-            rec.lastBecameUndesired = 0f; // 退出窗口计时完成，重置
-        }
-
-        WorldAreaManager.Instance.SegmentProvider.RemoveSource(rec.coord.ToString());
-    }
-
-    private async Task ReleaseSlice(List<(GameObject, int)> slice)
-    {
-        for (int i = 0; i < slice.Count; i++)
-        {
-            var prefabInfo = slice[i];
-            try { await _assetAsync.ReleaseAsync(prefabInfo.Item1); }
-            catch (System.Exception ex) { Debug.LogException(ex); }
-            if ((i + 1) % yieldEveryNObjects == 0)
-                await Task.Yield();
-        }
-        await Task.Yield();
-    }
-
-    /// <summary>
-    /// 世界坐标转chunk
-    /// 检查玩家是否处于sub空间
-    /// </summary>
-    /// <param name="pos"></param>
-    /// <returns></returns>
     public ChunkCoord WorldToChunk(Vector3 pos)
     {
+        if (mapChunkManager != null)
+        {
+            return mapChunkManager.WorldToChunk(pos);
+        }
+
         var logicPos = MainGameManager.Instance.GetLogicPosFromWorldPos(pos);
-        int x = Mathf.FloorToInt(logicPos.x / GameConsts.ChunkCellSize);
-        int y = Mathf.FloorToInt(logicPos.y / GameConsts.ChunkCellSize);
-        return new ChunkCoord(x, y);
+        return MapChunkUtility.WorldToChunk(logicPos, Vector2.zero, GameConsts.ChunkCellSize);
     }
 
-
-
-    private HashSet<ChunkCoord> CollectChunkRing(ChunkCoord center, int r)
-    {
-        var set = new HashSet<ChunkCoord>();
-        for (int dx = -r; dx <= r; dx++)
-            for (int dy = -r; dy <= r; dy++)
-                set.Add(new ChunkCoord(center.X + dx, center.Y + dy));
-        return set;
-    }
-
-    /// <summary>
-    /// 本地传送黑屏期间：立即按当前玩家位置跑一轮动态/静态 AOI，不等待下一帧 Update。
-    /// </summary>
+    // 本地传送黑屏期间：立即按当前玩家位置跑一轮动态/静态 AOI，不等待下一帧 Update。
     public void PrewarmTickAtPlayerOnce(float dt)
     {
         if (!CanRefreshStaticChunksNow())
+        {
             return;
+        }
+
         var pos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
-        RefreshDynamicAOI(pos, dt, noEnterGrace : true);
-        RefreshStaticChunks(pos);
-        ProcessPendingVisibleChunkRefresh();
+        RefreshDynamicAOI(pos, dt, noEnterGrace: true);
+        mapChunkManager?.RefreshChunks(pos, chunkRing);
+        mapChunkManager?.ProcessPendingVisibleChunkRefresh();
     }
 
 }

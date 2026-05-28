@@ -1,0 +1,437 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using My.Map.Logic;
+using My.MapExport;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+public static class MapChunkExportCore
+{
+    public struct ExportResult
+    {
+        public bool Success;
+        public string Message;
+        public MapChunkDatabase Database;
+        public int BackgroundChunkCount;
+        public int TilemapChunkCount;
+        public bool GridRootPrefabExported;
+    }
+
+    public static ExportResult Export(
+        MapChunkEditorRoot editorRoot,
+        string mapName,
+        int backgroundSortingOrder,
+        float chunkWorldSize,
+        Vector2 chunkOrigin,
+        bool exportBackground,
+        bool exportTilemap,
+        bool exportGridRootPrefab)
+    {
+        if (editorRoot == null)
+        {
+            return Fail("MapChunkEditorRoot is missing on AreaRoot.");
+        }
+
+        if (string.IsNullOrWhiteSpace(mapName))
+        {
+            return Fail("Map name is empty.");
+        }
+
+        if (exportBackground && editorRoot.SourceTexture == null)
+        {
+            return Fail("Assign SourceTexture on MapChunkEditorRoot for background export.");
+        }
+
+        MapChunkEditorTilemapResolver.TryResolveTileGrounds(editorRoot, out var tileGrounds);
+        if (exportTilemap && (tileGrounds == null || tileGrounds.Length == 0))
+        {
+            return Fail("GridRoot/Tilemap not found under StaticPrefabRoot. Create or import Grid before tilemap export.");
+        }
+
+        editorRoot.ChunkWorldSize = chunkWorldSize;
+        editorRoot.ChunkOrigin = chunkOrigin;
+        EditorUtility.SetDirty(editorRoot);
+
+        var texSize = editorRoot.SourceTextureSize;
+        int slicePx = editorRoot.SlicePixelSize;
+        float chunkSize = editorRoot.ChunkWorldSize;
+        float ppu = editorRoot.TexturePPU;
+        var origin = editorRoot.ChunkOrigin;
+
+        string rootFolder = $"Assets/Resources/MapChunk/{mapName}";
+        EnsureFolder("Assets/Resources");
+        EnsureFolder("Assets/Resources/MapChunk");
+        EnsureFolder(rootFolder);
+        EnsureFolder($"{rootFolder}/Sprites");
+        EnsureFolder($"{rootFolder}/Prefabs");
+
+        var database = ScriptableObject.CreateInstance<MapChunkDatabase>();
+        database.AreaId = mapName;
+        database.ChunkWorldSize = chunkSize;
+        database.TexturePPU = ppu;
+        database.ChunkOrigin = origin;
+        database.SourceTextureWidth = texSize.x;
+        database.SourceTextureHeight = texSize.y;
+        database.Chunks = new List<MapChunkExportItem>();
+
+        var chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap);
+        int bgCount = 0;
+        int tmCount = 0;
+
+        foreach (var coord in chunkCoords.OrderBy(c => c.Y).ThenBy(c => c.X))
+        {
+            var item = new MapChunkExportItem
+            {
+                X = coord.X,
+                Y = coord.Y
+            };
+
+            if (exportBackground && editorRoot.SourceTexture != null)
+            {
+                var crop = MapChunkUtility.TextureCropRect(coord, slicePx, texSize);
+                if (crop.width > 0f && crop.height > 0f)
+                {
+                    string bgSpritePath = ExportBackgroundSprite(editorRoot.SourceTexture, coord, crop, slicePx, ppu, rootFolder);
+                    if (!string.IsNullOrEmpty(bgSpritePath))
+                    {
+                        string bgPrefabPath = CreateBackgroundPrefab(coord, bgSpritePath, rootFolder, backgroundSortingOrder);
+                        item.BackgroundKey = $"MapChunk/{mapName}/Prefabs/bg_{coord.X}_{coord.Y}";
+                        AssetDatabase.ImportAsset(bgPrefabPath);
+                        bgCount++;
+                    }
+                }
+            }
+
+            if (exportTilemap)
+            {
+                string tmPrefabPath = ExportTilemapChunk(coord, chunkSize, origin, tileGrounds, rootFolder);
+                if (!string.IsNullOrEmpty(tmPrefabPath))
+                {
+                    item.TilemapKey = $"MapChunk/{mapName}/Prefabs/tm_{coord.X}_{coord.Y}";
+                    AssetDatabase.ImportAsset(tmPrefabPath);
+                    tmCount++;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(item.BackgroundKey) || !string.IsNullOrEmpty(item.TilemapKey))
+            {
+                database.Chunks.Add(item);
+            }
+        }
+
+        bool gridRootExported = false;
+        if (exportGridRootPrefab)
+        {
+            gridRootExported = ExportGridRootPrefab(editorRoot, rootFolder);
+            if (gridRootExported)
+            {
+                database.WalkGridKey = $"MapChunk/{mapName}/Prefabs/GridRoot";
+            }
+        }
+
+        string dbPath = $"Assets/Resources/MapChunk/{mapName}.asset";
+        var existing = AssetDatabase.LoadAssetAtPath<MapChunkDatabase>(dbPath);
+        if (existing != null)
+        {
+            existing.AreaId = database.AreaId;
+            existing.ChunkWorldSize = database.ChunkWorldSize;
+            existing.TexturePPU = database.TexturePPU;
+            existing.ChunkOrigin = database.ChunkOrigin;
+            existing.SourceTextureWidth = database.SourceTextureWidth;
+            existing.SourceTextureHeight = database.SourceTextureHeight;
+            if (exportGridRootPrefab && gridRootExported)
+            {
+                existing.WalkGridKey = database.WalkGridKey;
+            }
+            existing.Chunks = database.Chunks;
+            existing.InvalidateLookup();
+            EditorUtility.SetDirty(existing);
+            database = existing;
+        }
+        else
+        {
+            AssetDatabase.CreateAsset(database, dbPath);
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        return new ExportResult
+        {
+            Success = true,
+            Message = BuildSuccessMessage(dbPath, bgCount, tmCount, gridRootExported, exportBackground, exportTilemap, exportGridRootPrefab),
+            Database = database,
+            BackgroundChunkCount = bgCount,
+            TilemapChunkCount = tmCount,
+            GridRootPrefabExported = gridRootExported
+        };
+    }
+
+    static string BuildSuccessMessage(
+        string dbPath,
+        int bgCount,
+        int tmCount,
+        bool gridRootExported,
+        bool exportBackground,
+        bool exportTilemap,
+        bool exportGridRootPrefab)
+    {
+        var parts = new List<string> { $"database -> {dbPath}" };
+        if (exportBackground)
+        {
+            parts.Add($"background chunks: {bgCount}");
+        }
+
+        if (exportTilemap)
+        {
+            parts.Add($"tilemap(grid) chunks: {tmCount}");
+        }
+
+        if (exportGridRootPrefab)
+        {
+            parts.Add(gridRootExported ? "GridRoot prefab: yes" : "GridRoot prefab: skipped (not found)");
+        }
+
+        return string.Join(", ", parts);
+    }
+
+    static HashSet<ChunkCoord> CollectAllChunkCoords(
+        Vector2Int texSize,
+        int slicePx,
+        Tilemap[] tileGrounds,
+        float chunkSize,
+        Vector2 origin,
+        bool includeTexture,
+        bool includeTilemap)
+    {
+        var coords = new HashSet<ChunkCoord>();
+
+        if (includeTexture && texSize.x > 0 && texSize.y > 0 && slicePx > 0)
+        {
+            MapChunkUtility.IterateChunkCoordsForTexture(texSize, slicePx, c => coords.Add(c));
+        }
+
+        if (includeTilemap && tileGrounds != null)
+        {
+            foreach (var source in tileGrounds)
+            {
+                if (source == null)
+                {
+                    continue;
+                }
+
+                source.CompressBounds();
+                foreach (var pos in source.cellBounds.allPositionsWithin)
+                {
+                    if (source.GetTile(pos) == null)
+                    {
+                        continue;
+                    }
+
+                    var world = source.GetCellCenterWorld(pos);
+                    coords.Add(MapChunkUtility.WorldToChunk(world, origin, chunkSize));
+                }
+            }
+        }
+
+        return coords;
+    }
+
+    static bool ExportGridRootPrefab(MapChunkEditorRoot editorRoot, string rootFolder)
+    {
+        var gridRoot = MapChunkEditorTilemapResolver.TryGetGridRoot(editorRoot);
+        if (gridRoot == null)
+        {
+            return false;
+        }
+
+        string prefabPath = $"{rootFolder}/Prefabs/GridRoot.prefab";
+        PrefabUtility.SaveAsPrefabAsset(gridRoot.gameObject, prefabPath);
+        AssetDatabase.ImportAsset(prefabPath);
+        return true;
+    }
+
+    static ExportResult Fail(string message)
+    {
+        return new ExportResult { Success = false, Message = message };
+    }
+
+    static void EnsureFolder(string path)
+    {
+        if (AssetDatabase.IsValidFolder(path))
+        {
+            return;
+        }
+
+        var parent = Path.GetDirectoryName(path)?.Replace('\\', '/');
+        var name = Path.GetFileName(path);
+        if (!string.IsNullOrEmpty(parent) && !AssetDatabase.IsValidFolder(parent))
+        {
+            EnsureFolder(parent);
+        }
+
+        AssetDatabase.CreateFolder(parent, name);
+    }
+
+    static string ExportBackgroundSprite(
+        Texture2D src,
+        ChunkCoord coord,
+        Rect crop,
+        int slicePx,
+        float ppu,
+        string rootFolder)
+    {
+        var padded = ExtractPaddedRegion(src, crop, slicePx);
+        if (padded == null)
+        {
+            return null;
+        }
+
+        string spritePath = $"{rootFolder}/Sprites/bg_{coord.X}_{coord.Y}.png";
+        File.WriteAllBytes(spritePath, padded.EncodeToPNG());
+        Object.DestroyImmediate(padded);
+        AssetDatabase.ImportAsset(spritePath);
+
+        var importer = AssetImporter.GetAtPath(spritePath) as TextureImporter;
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spritePixelsPerUnit = ppu;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.mipmapEnabled = false;
+            importer.alphaIsTransparency = true;
+            importer.spritePivot = Vector2.zero;
+            importer.SaveAndReimport();
+        }
+
+        return spritePath;
+    }
+
+    static Texture2D ExtractPaddedRegion(Texture2D src, Rect crop, int slicePx)
+    {
+        var full = RenderTexture.GetTemporary(src.width, src.height, 0, RenderTextureFormat.ARGB32);
+        Graphics.Blit(src, full);
+        var prev = RenderTexture.active;
+        RenderTexture.active = full;
+
+        var padded = new Texture2D(slicePx, slicePx, TextureFormat.RGBA32, false);
+        var clear = new Color[slicePx * slicePx];
+        for (int i = 0; i < clear.Length; i++)
+        {
+            clear[i] = Color.clear;
+        }
+
+        padded.SetPixels(clear);
+
+        int w = Mathf.RoundToInt(crop.width);
+        int h = Mathf.RoundToInt(crop.height);
+        if (w > 0 && h > 0)
+        {
+            var piece = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            piece.ReadPixels(new Rect(crop.x, crop.y, w, h), 0, 0);
+            piece.Apply();
+            padded.SetPixels(0, 0, w, h, piece.GetPixels());
+            Object.DestroyImmediate(piece);
+        }
+
+        padded.Apply();
+        RenderTexture.active = prev;
+        RenderTexture.ReleaseTemporary(full);
+        return padded;
+    }
+
+    static string CreateBackgroundPrefab(ChunkCoord coord, string spriteAssetPath, string rootFolder, int sortingOrder)
+    {
+        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spriteAssetPath);
+        if (sprite == null)
+        {
+            return null;
+        }
+
+        var go = new GameObject($"bg_{coord.X}_{coord.Y}");
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = sprite;
+        sr.sortingOrder = sortingOrder;
+
+        string prefabPath = $"{rootFolder}/Prefabs/bg_{coord.X}_{coord.Y}.prefab";
+        PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
+        Object.DestroyImmediate(go);
+        return prefabPath;
+    }
+
+    static string ExportTilemapChunk(ChunkCoord coord, float chunkSize, Vector2 origin, Tilemap[] tileGrounds, string rootFolder)
+    {
+        var chunkMin = MapChunkUtility.ChunkWorldMin(coord, origin, chunkSize);
+        var chunkMax = chunkMin + new Vector3(chunkSize, chunkSize, 0f);
+
+        var go = new GameObject($"tm_{coord.X}_{coord.Y}");
+        bool hasTile = false;
+
+        foreach (var source in tileGrounds)
+        {
+            if (source == null)
+            {
+                continue;
+            }
+
+            var layerGo = new GameObject(source.name);
+            layerGo.transform.SetParent(go.transform, false);
+            var tilemap = layerGo.AddComponent<Tilemap>();
+            var renderer = layerGo.AddComponent<TilemapRenderer>();
+            renderer.sortingOrder = source.GetComponent<TilemapRenderer>()?.sortingOrder ?? 0;
+
+            foreach (var pos in source.cellBounds.allPositionsWithin)
+            {
+                var tile = source.GetTile(pos);
+                if (tile == null)
+                {
+                    continue;
+                }
+
+                var world = source.GetCellCenterWorld(pos);
+                if (world.x < chunkMin.x || world.x >= chunkMax.x || world.y < chunkMin.y || world.y >= chunkMax.y)
+                {
+                    continue;
+                }
+
+                var localCell = new Vector3Int(
+                    Mathf.FloorToInt(world.x - chunkMin.x),
+                    Mathf.FloorToInt(world.y - chunkMin.y),
+                    0);
+                tilemap.SetTile(localCell, tile);
+                hasTile = true;
+            }
+
+            if (!HasAnyTile(tilemap))
+            {
+                Object.DestroyImmediate(layerGo);
+            }
+        }
+
+        if (!hasTile)
+        {
+            Object.DestroyImmediate(go);
+            return null;
+        }
+
+        string prefabPath = $"{rootFolder}/Prefabs/tm_{coord.X}_{coord.Y}.prefab";
+        PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
+        Object.DestroyImmediate(go);
+        return prefabPath;
+    }
+
+    static bool HasAnyTile(Tilemap tilemap)
+    {
+        foreach (var pos in tilemap.cellBounds.allPositionsWithin)
+        {
+            if (tilemap.GetTile(pos) != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
