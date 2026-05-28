@@ -11,6 +11,9 @@ namespace My.UI.BodyPart
 
         RectTransform _rect;
         Coroutine _moveRoutine;
+        RectTransform _lastTarget;
+        Vector3 _lastWorldPos;
+        bool _hasPlaced;
 
         void Awake()
         {
@@ -33,7 +36,17 @@ namespace My.UI.BodyPart
 
             gameObject.SetActive(true);
 
-            if (moveDuration <= 0f || !isActiveAndEnabled)
+            if (_lastTarget == target && _hasPlaced)
+            {
+                StopMove();
+                SnapTo(target);
+                return;
+            }
+
+            bool animate = _hasPlaced && moveDuration > 0f && isActiveAndEnabled;
+            _lastTarget = target;
+
+            if (!animate)
             {
                 StopMove();
                 SnapTo(target);
@@ -46,28 +59,23 @@ namespace My.UI.BodyPart
 
         void SnapTo(RectTransform target)
         {
-            if (_rect.parent == target.parent)
-            {
-                _rect.anchoredPosition = target.anchoredPosition;
-                return;
-            }
-
             _rect.position = target.position;
+            _lastWorldPos = _rect.position;
+            _hasPlaced = true;
         }
 
         IEnumerator CoMoveTo(RectTransform target)
         {
-            Vector2 start = _rect.anchoredPosition;
-            Vector2 end = _rect.parent == target.parent
-                ? target.anchoredPosition
-                : (Vector2)_rect.parent.InverseTransformPoint(target.position);
+            Vector3 startWorld = _hasPlaced ? _lastWorldPos : _rect.position;
+            Vector3 endWorld = target.position;
+            _rect.position = startWorld;
 
             float elapsed = 0f;
             while (elapsed < moveDuration)
             {
                 elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.SmoothStep(0f, 1f, elapsed / moveDuration);
-                _rect.anchoredPosition = Vector2.Lerp(start, end, t);
+                _rect.position = Vector3.Lerp(startWorld, endWorld, t);
                 yield return null;
             }
 

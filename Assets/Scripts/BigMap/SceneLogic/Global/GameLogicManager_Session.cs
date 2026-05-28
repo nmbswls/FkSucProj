@@ -44,6 +44,80 @@ namespace My
 
         public bool CanInteractSavePoint => GameSession.PlayerHumanMode || GameSession.IsPeaceful;
 
+        public bool IsSavePointVaultAvailable => IsInfiltrationRun;
+
+        public bool IsSavePointFormSwitchVisible()
+        {
+            if (IsInfiltrationRun)
+            {
+                return false;
+            }
+
+            return HasSavePointFormSwitchAreaTags();
+        }
+
+        public bool CanToggleSavePointForm(out string failReason)
+        {
+            failReason = null;
+            if (IsInfiltrationRun)
+            {
+                failReason = "infiltration";
+                return false;
+            }
+
+            if (!HasSavePointFormSwitchAreaTags())
+            {
+                failReason = "area_not_supported";
+                return false;
+            }
+
+            var cfg = AreaManager?.cacheMapOverlayCfg;
+            if (cfg == null)
+            {
+                failReason = "no_area";
+                return false;
+            }
+
+            bool wantHuman = !GameSession.PlayerHumanMode;
+            if (wantHuman)
+            {
+                if (!cfg.IsCivilArea)
+                {
+                    failReason = "not_civil";
+                    return false;
+                }
+            }
+            else if (!cfg.IsDangerArea)
+            {
+                failReason = "not_danger";
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool TryToggleSavePointForm(out string failReason)
+        {
+            if (!CanToggleSavePointForm(out failReason))
+            {
+                return false;
+            }
+
+            ForcePlayerHumanMode(!GameSession.PlayerHumanMode, refreshDespitePendingSwitch: true);
+            return true;
+        }
+
+        bool HasSavePointFormSwitchAreaTags()
+        {
+            var cfg = AreaManager?.cacheMapOverlayCfg;
+            if (cfg == null)
+            {
+                return false;
+            }
+
+            return cfg.IsCivilArea || cfg.IsDangerArea;
+        }
+
         private float _peaceModeTimer = 0;
 
         private void TickPeaceMode()

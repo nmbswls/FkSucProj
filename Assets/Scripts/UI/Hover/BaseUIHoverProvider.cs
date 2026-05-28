@@ -61,6 +61,9 @@ namespace My.UI
             return InnerParams;
         }
 
-
+        void OnDisable()
+        {
+            UIHoverManager.Instance?.NotifyProviderDisabled(this);
+        }
     }
 }

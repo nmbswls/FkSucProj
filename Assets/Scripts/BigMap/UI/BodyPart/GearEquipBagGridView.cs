@@ -21,6 +21,7 @@ namespace My.UI.BodyPart
 
         readonly List<AnyContainerItemCell> _cells = new();
         GearEquipBagCellClickPolicy _clickPolicy;
+        RectTransform _contentRect;
 
         public void Refresh(
             PlayerEquipmentManager equipment,
@@ -35,7 +36,7 @@ namespace My.UI.BodyPart
             }
 
             _clickPolicy ??= new GearEquipBagCellClickPolicy();
-            _clickPolicy.Configure(equipment, () => part, onEquipChanged);
+            _clickPolicy.Configure(equipment, () => part, onEquipChanged, null);
 
             var list = equipment.ListMainBagCandidates(part);
             bool any = false;
@@ -50,10 +51,89 @@ namespace My.UI.BodyPart
                 var cell = SpawnCell();
                 cell.Bind(stack, flatIdx, EContainerType.Inventory, 0, null, style);
                 cell.SetItemCellInteractions(_clickPolicy, null, null);
+                cell.SetVisualHidden(false);
             }
 
             SetEmptyHintVisible(!any);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(gridContent as RectTransform);
+            RebuildLayout();
+        }
+
+        public void ConfigureEquipAnim(GearEquipTransferAnimView transferAnim, Func<EBodyPart> getPart, Action onFinished)
+        {
+            _clickPolicy ??= new GearEquipBagCellClickPolicy();
+            _clickPolicy.SetTransferAnim(transferAnim, getPart, onFinished);
+        }
+
+        public bool TryFindCellIcon(long itemInstanceId, string itemId, out RectTransform iconRect)
+        {
+            iconRect = null;
+            for (int i = 0; i < _cells.Count; i++)
+            {
+                var cell = _cells[i];
+                var stack = cell?.GetBoundStack();
+                if (stack == null || stack.IsEmpty)
+                {
+                    continue;
+                }
+
+                if (itemInstanceId != 0 && stack.ItemInstanceId != itemInstanceId)
+                {
+                    continue;
+                }
+
+                if (itemInstanceId == 0 && !string.IsNullOrEmpty(itemId) && stack.ItemID != itemId)
+                {
+                    continue;
+                }
+
+                if (cell.TryGetIconRect(out iconRect))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool TryFindCellIconByItemId(string itemId, out RectTransform iconRect)
+        {
+            return TryFindCellIcon(0, itemId, out iconRect);
+        }
+
+        public bool TryGetCandidatesAreaCenter(out RectTransform iconRect)
+        {
+            iconRect = null;
+            _contentRect ??= gridContent as RectTransform;
+            if (_contentRect == null)
+            {
+                return false;
+            }
+
+            iconRect = _contentRect;
+            return true;
+        }
+
+        public void SetIconVisible(RectTransform iconRect, bool visible)
+        {
+            if (iconRect == null)
+            {
+                return;
+            }
+
+            var cell = iconRect.GetComponentInParent<AnyContainerItemCell>();
+            if (cell != null)
+            {
+                cell.SetVisualHidden(!visible);
+                return;
+            }
+
+            var cg = iconRect.GetComponent<CanvasGroup>();
+            if (cg == null)
+            {
+                cg = iconRect.gameObject.AddComponent<CanvasGroup>();
+            }
+
+            cg.alpha = visible ? 1f : 0f;
         }
 
         AnyContainerItemCell SpawnCell()
@@ -69,6 +149,15 @@ namespace My.UI.BodyPart
             if (emptyHint != null)
             {
                 emptyHint.gameObject.SetActive(visible);
+            }
+        }
+
+        void RebuildLayout()
+        {
+            _contentRect ??= gridContent as RectTransform;
+            if (_contentRect != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_contentRect);
             }
         }
 
@@ -106,15 +195,29 @@ namespace My.UI.BodyPart
             PlayerEquipmentManager _equipment;
             Func<EBodyPart> _getPart;
             Action _onChanged;
+            GearEquipTransferAnimView _transferAnim;
+            Action _onAnimFinished;
 
             public void Configure(
                 PlayerEquipmentManager equipment,
                 Func<EBodyPart> getPart,
-                Action onChanged)
+                Action onChanged,
+                GearEquipTransferAnimView transferAnim)
             {
                 _equipment = equipment;
                 _getPart = getPart;
                 _onChanged = onChanged;
+                _transferAnim = transferAnim;
+            }
+
+            public void SetTransferAnim(
+                GearEquipTransferAnimView transferAnim,
+                Func<EBodyPart> getPart,
+                Action onAnimFinished)
+            {
+                _transferAnim = transferAnim;
+                _getPart = getPart;
+                _onAnimFinished = onAnimFinished;
             }
 
             public void OnItemCellClick(ItemCellBase cell, PointerEventData eventData)
@@ -124,8 +227,20 @@ namespace My.UI.BodyPart
                     return;
                 }
 
+                if (_transferAnim != null && _transferAnim.IsBusy)
+                {
+                    return;
+                }
+
                 var part = _getPart();
                 if (!_equipment.CanEquipFromMainBag(part, cell.Index, out _))
+                {
+                    return;
+                }
+
+                if (_transferAnim != null
+                    && cell is AnyContainerItemCell bagCell
+                    && _transferAnim.TryPlayEquip(_equipment, part, cell.Index, bagCell, _onAnimFinished))
                 {
                     return;
                 }

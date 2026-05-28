@@ -20,6 +20,12 @@ namespace My.UI.BodyPart
         [SerializeField] Button clickButton;
 
         ItemIdHoverProvider _itemHover;
+        CanvasGroup _canvasGroup;
+        string _boundItemId;
+
+        public RectTransform IconRect => iconImage != null ? iconImage.rectTransform : transform as RectTransform;
+
+        public string GetItemId() => _boundItemId;
 
         void Awake()
         {
@@ -28,10 +34,32 @@ namespace My.UI.BodyPart
             {
                 _itemHover = gameObject.AddComponent<ItemIdHoverProvider>();
             }
+
+            _canvasGroup = GetComponent<CanvasGroup>();
+            if (_canvasGroup == null)
+            {
+                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+            }
+        }
+
+        public void SetVisualHidden(bool hidden)
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = hidden ? 0f : 1f;
+                _canvasGroup.blocksRaycasts = !hidden;
+            }
+
+            if (clickButton != null && hidden)
+            {
+                clickButton.interactable = false;
+            }
         }
 
         public void BindEquipped(string itemId, int cost, string displayName, UnityAction onUnequip)
         {
+            _boundItemId = itemId;
+            SetVisualHidden(false);
             _itemHover?.SetItem(itemId, 1);
 
             if (nameText != null)
@@ -67,6 +95,8 @@ namespace My.UI.BodyPart
 
         public void BindEmpty()
         {
+            _boundItemId = null;
+            SetVisualHidden(false);
             _itemHover?.ClearItem();
 
             if (nameText != null)

@@ -14,6 +14,10 @@ namespace My.UI
         [SerializeField] Button closeButton;
         [SerializeField] TMP_Text statusText;
 
+        [Header("Form Switch")]
+        [SerializeField] Button switchButton;
+        [SerializeField] TMP_Text switchStateText;
+
         [Header("Vault")]
         [SerializeField] GameObject vaultSectionRoot;
         [SerializeField] TMP_Text carriedCountText;
@@ -35,6 +39,7 @@ namespace My.UI
             }
 
             BindListeners();
+            RefreshSwitchUi();
             RefreshVaultUi();
             if (statusText != null)
             {
@@ -81,15 +86,84 @@ namespace My.UI
                 closeButton.onClick.AddListener(ClosePanel);
             }
 
+            if (switchButton != null)
+            {
+                switchButton.onClick.AddListener(OnSwitchClick);
+            }
+
             if (depositButton != null)
             {
                 depositButton.onClick.AddListener(OnDepositClick);
             }
         }
 
+        void RefreshSwitchUi()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            bool showSwitch = glm != null && glm.IsSavePointFormSwitchVisible();
+            if (switchButton != null)
+            {
+                switchButton.gameObject.SetActive(showSwitch);
+            }
+
+            if (!showSwitch)
+            {
+                return;
+            }
+
+            if (switchStateText != null)
+            {
+                switchStateText.text = glm.PlayerHumanMode ? "人类" : "真身";
+            }
+
+            if (switchButton != null)
+            {
+                switchButton.interactable = glm.CanToggleSavePointForm(out _);
+            }
+        }
+
+        void OnSwitchClick()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null)
+            {
+                return;
+            }
+
+            if (!glm.TryToggleSavePointForm(out var failReason))
+            {
+                if (statusText != null)
+                {
+                    statusText.text = failReason switch
+                    {
+                        "not_civil" => "当前区域无法切换为人类形态。",
+                        "not_danger" => "当前区域无法切换为真身形态。",
+                        "area_not_supported" => "当前区域不支持形态切换。",
+                        _ => "无法切换形态。",
+                    };
+                }
+
+                RefreshSwitchUi();
+                return;
+            }
+
+            RefreshSwitchUi();
+        }
+
         void RefreshVaultUi()
         {
             var glm = MainGameManager.Instance?.gameLogicManager;
+            bool showVault = glm != null && glm.IsSavePointVaultAvailable;
+            if (vaultSectionRoot != null)
+            {
+                vaultSectionRoot.SetActive(showVault);
+            }
+
+            if (!showVault)
+            {
+                return;
+            }
+
             if (glm == null)
             {
                 if (depositButton != null)

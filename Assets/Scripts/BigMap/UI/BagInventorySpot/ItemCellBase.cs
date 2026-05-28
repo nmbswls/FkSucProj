@@ -54,6 +54,35 @@ namespace My.UI
 
         public ItemStack GetBoundStack() => boundStack;
 
+        CanvasGroup _visualGroup;
+
+        public bool TryGetIconRect(out RectTransform iconRect)
+        {
+            iconRect = icon != null ? icon.rectTransform : null;
+            return iconRect != null;
+        }
+
+        public void SetVisualHidden(bool hidden)
+        {
+            EnsureVisualGroup();
+            _visualGroup.alpha = hidden ? 0f : 1f;
+            _visualGroup.blocksRaycasts = !hidden;
+        }
+
+        void EnsureVisualGroup()
+        {
+            if (_visualGroup != null)
+            {
+                return;
+            }
+
+            _visualGroup = GetComponent<CanvasGroup>();
+            if (_visualGroup == null)
+            {
+                _visualGroup = gameObject.AddComponent<CanvasGroup>();
+            }
+        }
+
         protected virtual void Awake()
         {
             _hoverProvider = GetComponent<ItemCellHoverProvider>();

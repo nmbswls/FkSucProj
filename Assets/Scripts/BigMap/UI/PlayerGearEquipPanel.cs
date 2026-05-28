@@ -28,6 +28,7 @@ namespace My.UI
         [SerializeField] GearEquipBagGridView bagGrid;
 
         [SerializeField] BodyPartFocusMarkView focusPartMark;
+        [SerializeField] GearEquipTransferAnimView transferAnim;
 
         Transform _root;
         readonly List<PartPropInfoRowView> _localRows = new();
@@ -103,6 +104,22 @@ namespace My.UI
         void BindRefs()
         {
             _root = transform.Find("BuiltRoot");
+            EnsureTransferAnim();
+        }
+
+        void EnsureTransferAnim()
+        {
+            if (transferAnim == null)
+            {
+                transferAnim = GetComponent<GearEquipTransferAnimView>();
+            }
+
+            if (transferAnim == null)
+            {
+                transferAnim = gameObject.AddComponent<GearEquipTransferAnimView>();
+            }
+
+            transferAnim.Configure(equippedBar, bagGrid);
         }
 
         void WireHotspots()
@@ -163,6 +180,7 @@ namespace My.UI
             _eq.EnsureAllPartsBudget();
             RefreshHotspots();
             RefreshDetail();
+            RefreshFocusMark();
         }
 
         void RefreshHotspots()
@@ -184,8 +202,6 @@ namespace My.UI
                 hotspot.SetLocked(!selectable);
                 hotspot.SetSelected(selectable && hotspot.PartId == _selectedPart);
             }
-
-            RefreshFocusMark();
         }
 
         void RefreshFocusMark()
@@ -250,9 +266,40 @@ namespace My.UI
             }
 
             equipNotchBar?.Refresh(used, cap);
-            equippedBar?.Refresh(_eq, _selectedPart, RefreshAll);
+            equippedBar?.Refresh(_eq, _selectedPart, OnUnequipRequested);
             BuildLocalStats(state);
-            bagGrid?.Refresh(_eq, _selectedPart, RefreshAll);
+            bagGrid?.Refresh(_eq, _selectedPart, null);
+            bagGrid?.ConfigureEquipAnim(transferAnim, () => _selectedPart, RefreshAllAfterTransfer);
+        }
+
+        void OnUnequipRequested(int equippedIndex)
+        {
+            if (_eq == null || _selectedPart == EBodyPart.None)
+            {
+                return;
+            }
+
+            EnsureTransferAnim();
+            if (transferAnim != null && transferAnim.IsBusy)
+            {
+                return;
+            }
+
+            if (transferAnim != null
+                && transferAnim.TryPlayUnequip(_eq, _selectedPart, equippedIndex, RefreshAllAfterTransfer))
+            {
+                return;
+            }
+
+            if (_eq.TryUnequip(_selectedPart, equippedIndex, out _))
+            {
+                RefreshAllAfterTransfer();
+            }
+        }
+
+        void RefreshAllAfterTransfer()
+        {
+            RefreshAll();
         }
 
         void BuildLocalStats(BodyPartRuntimeState state)

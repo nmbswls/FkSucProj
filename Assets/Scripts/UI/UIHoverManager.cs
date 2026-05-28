@@ -64,6 +64,8 @@ namespace My.UI
 
     public class UIHoverManager : MonoBehaviour
     {
+        public static UIHoverManager Instance { get; private set; }
+
         // 必需引用
         //public TooltipController tooltip;
         public GraphicRaycaster raycaster;          // Canvas 的 GraphicRaycaster
@@ -80,6 +82,7 @@ namespace My.UI
 
         private IHoverInfoProvider currHoverOne;
         private IHoverInfoProvider? prevHoverOne;
+        private EHoverTipType? _activeTipType;
 
         public List<UIHoverTipDesc> HoverDescList = new();
 
@@ -95,7 +98,16 @@ namespace My.UI
 
         void Awake()
         {
+            Instance = this;
             if (!mainCamera) mainCamera = Camera.main;
+        }
+
+        void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         private void Start()
@@ -115,6 +127,8 @@ namespace My.UI
 
         void Update()
         {
+            ValidateHoverState();
+
             Vector2 mouse = UnityEngine.Input.mousePosition;
 
             if (updateOnlyOnMouseMove && mouse == _lastMouse) return;
@@ -255,10 +269,65 @@ namespace My.UI
                 {
                     RequestHideTip(tipInfo);
                 }
-
+                else if (_activeTipType.HasValue)
+                {
+                    RequestHideTip(new HoverTipParams { TipType = _activeTipType.Value });
+                }
             }
-            prevHoverOne = null;
 
+            prevHoverOne = null;
+        }
+
+        public void NotifyProviderDisabled(IHoverInfoProvider provider)
+        {
+            if (provider == null)
+            {
+                return;
+            }
+
+            if (prevHoverOne == provider)
+            {
+                OnLeaveHover();
+            }
+        }
+
+        void ValidateHoverState()
+        {
+            if (prevHoverOne == null)
+            {
+                return;
+            }
+
+            if (IsHoverProviderInvalid(prevHoverOne))
+            {
+                OnLeaveHover();
+            }
+        }
+
+        static bool IsHoverProviderInvalid(IHoverInfoProvider provider)
+        {
+            if (provider == null)
+            {
+                return true;
+            }
+
+            if (provider is UnityEngine.Object unityObj && unityObj == null)
+            {
+                return true;
+            }
+
+            if (provider.GetSimpleTipInfo() == null)
+            {
+                return true;
+            }
+
+            var range = provider.GetHoverUIRange();
+            if (range == null || !range.gameObject.activeInHierarchy)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private int showRequestVersion;
@@ -384,7 +453,12 @@ namespace My.UI
 
                 if (visible)
                 {
+                    _activeTipType = tipParams.TipType;
                     hoverTip.TipPanel.OnHoverTipUpdate(tipParams, provider);
+                }
+                else if (_activeTipType == tipParams.TipType)
+                {
+                    _activeTipType = null;
                 }
             }
         }
