@@ -1,5 +1,6 @@
 using My;
 using My.Player;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -55,6 +56,12 @@ namespace My.UI
 
         [SerializeField]
         float _weaponSlotSpacing = 5f;
+
+        [SerializeField]
+        GameObject _disableHint;
+
+        [SerializeField]
+        TextMeshProUGUI _disableHintText;
 
         QuickSlotItemCell[] _consumableSlots = new QuickSlotItemCell[HumanQuickBarDefs.ConsumableSlotCount];
         QuickSlotItemCell[] _weaponSlots = new QuickSlotItemCell[HumanQuickBarDefs.WeaponSlotCount];
@@ -203,45 +210,69 @@ namespace My.UI
                 return;
             }
 
-            bool showContent = ShouldShowBarContent(lgm);
-            SetBarContentVisible(showContent);
-
-            if (!showContent)
-            {
-                return;
-            }
-
             lgm.playerDataManager?.HumanQuickBar?.PruneInvalidSlots();
             EnsureSlots();
             RefreshSlotBindings();
+            RefreshDisableHint(lgm);
             OverworldHUDPanel.Instance?.SkilBar?.Refresh();
         }
 
-        bool ShouldShowBarContent(GameLogicManager lgm)
+        void RefreshDisableHint(GameLogicManager lgm)
         {
+            EnsureDisableHintRefs();
+            bool showHint = !lgm.IsHumanQuickBarAvailable() && !IsBagQuickBarEditingActive(lgm);
+            if (_disableHint != null)
+            {
+                _disableHint.SetActive(showHint);
+            }
+        }
+
+        bool IsBagQuickBarEditingActive(GameLogicManager lgm)
+        {
+            if (lgm == null || lgm.IsHumanQuickBarAvailable())
+            {
+                return false;
+            }
+
             if (_bagCompanionMode || s_bagCompanionShowPending)
             {
                 return true;
             }
 
-            return lgm.IsHumanQuickBarAvailable();
+            var ui = UIManager.Instance;
+            return ui != null && ui.IsPanelVisible("PlayerBag");
         }
 
-        void SetBarContentVisible(bool visible)
+        void EnsureDisableHintRefs()
         {
-            if (_consumableWheelParent != null)
+            if (_disableHint == null)
             {
-                _consumableWheelParent.gameObject.SetActive(visible);
+                var tr = transform.Find("DisableHint");
+                if (tr != null)
+                {
+                    _disableHint = tr.gameObject;
+                }
             }
 
-            if (_weaponColumnParent != null)
+            if (_disableHint == null)
             {
-                _weaponColumnParent.gameObject.SetActive(visible);
+                return;
             }
 
-            if (_centerSkillView != null)
+            if (_disableHintText == null)
             {
-                _centerSkillView.gameObject.SetActive(visible);
+                _disableHintText = _disableHint.GetComponentInChildren<TextMeshProUGUI>(true);
+            }
+
+            var hintRt = _disableHint.transform as RectTransform;
+            if (hintRt != null && _contentRoot != null)
+            {
+                hintRt.SetParent(_contentRoot, false);
+                hintRt.anchorMin = Vector2.zero;
+                hintRt.anchorMax = Vector2.one;
+                hintRt.offsetMin = Vector2.zero;
+                hintRt.offsetMax = Vector2.zero;
+                hintRt.SetAsLastSibling();
             }
         }
 

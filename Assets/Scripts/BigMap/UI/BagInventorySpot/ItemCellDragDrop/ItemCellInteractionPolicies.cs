@@ -251,7 +251,13 @@ namespace My.UI
                 return;
             }
 
-            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            var lgm = MainGameManager.Instance?.gameLogicManager;
+            if (lgm == null || !lgm.IsHumanQuickBarAvailable())
+            {
+                return;
+            }
+
+            var qb = lgm.playerDataManager?.HumanQuickBar;
             if (qb == null)
             {
                 return;
@@ -349,7 +355,13 @@ namespace My.UI
                 return;
             }
 
-            var qb = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.HumanQuickBar;
+            var lgm = MainGameManager.Instance?.gameLogicManager;
+            if (lgm == null || !lgm.IsHumanQuickBarAvailable())
+            {
+                return;
+            }
+
+            var qb = lgm.playerDataManager?.HumanQuickBar;
             if (qb == null)
             {
                 return;

@@ -139,6 +139,7 @@ namespace My.UI.Bag
         public override void Hide()
         {
             PlayerHumanItemBarPanel.HideCompanionForBagIfNeeded();
+            PlayerHumanItemBarPanel.RefreshFromGame();
 
             base.Hide();
         }
