@@ -113,7 +113,7 @@ namespace My
             var srcItem = srcContainer.GetItemByIdx(srcIdx);
             if (srcItem == null || srcItem.Count <= 0)
             {
-                Debug.LogError($"ItemUtils MoveOrMergeItem {srcIdx} {dstIdx}");
+                Debug.LogError($"ItemUtils MoveOrMergeItem {srcIdx} {dstIdx} c:{srcItem?.Count ?? -1}");
                 return false;
             }
 

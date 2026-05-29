@@ -303,7 +303,7 @@ namespace My.Map.Scene
             segentGridIndex.QueryRay(origin, dir, maxDist, results);
         }
 
-        // 添加一批段，返回其全局索引列表（供 AOI 记录）
+        // sourceId 通常为 chunk 坐标字符串；FOV 仅使用静态烘焙 segment，不含 AOI presentation
         public void AddSegments(string sourceId, IEnumerable<Segment2D> inputs)
         {
             if (!sourceMap.TryGetValue(sourceId, out var indices))
@@ -314,16 +314,14 @@ namespace My.Map.Scene
 
             foreach (var seg in inputs)
             {
-                // 确保 bounds 有效
                 if (seg.bounds.size.x == 0f && seg.bounds.size.y == 0f)
                 {
                     seg.RecomputeBounds();
                 }
-                segentGridIndex.AddSegment(seg);
-                indices.Add(seg.segmentId);
-            }
 
-            Debug.Log("AddSegments now seg count:" + segentGridIndex.Count);
+                int idx = segentGridIndex.AddSegment(seg);
+                indices.Add(idx);
+            }
         }
 
         // 按来源整批移除
@@ -332,8 +330,6 @@ namespace My.Map.Scene
             if (!sourceMap.TryGetValue(sourceId, out var indices)) return;
             RemoveSegments(indices);
             sourceMap.Remove(sourceId);
-
-            Debug.Log("RemoveSource now seg count:" + segentGridIndex.Count);
         }
 
 

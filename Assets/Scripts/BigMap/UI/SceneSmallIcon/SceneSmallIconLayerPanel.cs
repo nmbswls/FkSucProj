@@ -91,6 +91,8 @@ namespace My.UI
         readonly Dictionary<long, SceneUnitHpBarItem> _activeHpBars = new Dictionary<long, SceneUnitHpBarItem>();
         readonly Queue<SceneUnitHpBarItem> _hpBarPool = new Queue<SceneUnitHpBarItem>();
 
+        bool _bindingsSuspended;
+
         public void Awake()
         {
             InteractHintPrefab.gameObject.SetActive(false);
@@ -101,6 +103,78 @@ namespace My.UI
 
             TopCanvas = GetComponentInParent<Canvas>();
             _mainCam = Camera.main;
+        }
+
+        void OnEnable()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null)
+            {
+                glm.EventOnHardAreaClearStarting += OnHardAreaClearStarting;
+            }
+        }
+
+        void OnDisable()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null)
+            {
+                glm.EventOnHardAreaClearStarting -= OnHardAreaClearStarting;
+            }
+        }
+
+        void OnHardAreaClearStarting()
+        {
+            ClearAllSceneSmallIcons();
+            _bindingsSuspended = true;
+        }
+
+        public void ClearAllSceneSmallIcons()
+        {
+            foreach (var key in sceneInteractHintDicts.Keys.ToList())
+            {
+                RecycleInteractHintUI(key);
+            }
+
+            foreach (var key in _activeEvilAlerts.Keys.ToList())
+            {
+                RecycleEvilAlertUI(key);
+            }
+
+            foreach (var key in _activeNpcHStat.Keys.ToList())
+            {
+                RecycleNpcHStatUI(key);
+            }
+
+            foreach (var key in _activeBuffHeadHints.Keys.ToList())
+            {
+                RecycleBuffHeadHintUI(key);
+            }
+
+            foreach (var key in _activeHpBars.Keys.ToList())
+            {
+                RecycleHpBarUI(key);
+            }
+
+            _hpBarTracks.Clear();
+            _buffHeadHintSeenThisFrame.Clear();
+            DebugIconsShower?.Clear();
+            MapSpeechBubbleManager.Instance?.ForceClearAll();
+        }
+
+        public override void Show()
+        {
+            base.Show();
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.IsInSecretBaseContext())
+            {
+                ClearAllSceneSmallIcons();
+                _bindingsSuspended = true;
+                return;
+            }
+
+            _bindingsSuspended = false;
         }
 
         public void Update()
@@ -145,6 +219,28 @@ namespace My.UI
                 }
             }
 
+            foreach (var key in sceneInteractHintDicts.Keys.ToList())
+            {
+                if (key is not UnityEngine.Object obj || obj == null)
+                {
+                    RecycleInteractHintUI(key);
+                }
+            }
+
+            _lowFreqCleanCaches.Clear();
+            foreach (var kv in _activeNpcHStat)
+            {
+                if (_activeNpcHStat[kv.Key].bindingNpc == null)
+                {
+                    _lowFreqCleanCaches.Add(kv.Key);
+                }
+            }
+
+            foreach (var oneId in _lowFreqCleanCaches)
+            {
+                RecycleNpcHStatUI(oneId);
+            }
+
             _lowFreqCleanCaches.Clear();
             foreach (var kv in _activeBuffHeadHints)
             {
@@ -183,6 +279,15 @@ namespace My.UI
 
         protected void UpdateSceneSmallIconBind()
         {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (_bindingsSuspended
+                || glm == null
+                || glm.IsInSecretBaseContext()
+                || glm.playerLogicEntity == null)
+            {
+                return;
+            }
+
             // 缓存屏幕尺寸和 10% 的防抖缓冲
             _screenWidth = Screen.width;
             _screenHeight = Screen.height;
@@ -872,31 +977,16 @@ namespace My.UI
 
         public override void Hide()
         {
+            ClearAllSceneSmallIcons();
+            _bindingsSuspended = true;
             base.Hide();
+        }
 
-            foreach(var key in sceneInteractHintDicts.Keys.ToList())
-            {
-                RecycleInteractHintUI(key);
-            }
-            foreach (var key in _activeEvilAlerts.Keys.ToList())
-            {
-                RecycleEvilAlertUI(key);
-            }
-            foreach (var key in _activeNpcHStat.Keys.ToList())
-            {
-                RecycleNpcHStatUI(key);
-            }
-            foreach (var key in _activeBuffHeadHints.Keys.ToList())
-            {
-                RecycleBuffHeadHintUI(key);
-            }
-            foreach (var key in _activeHpBars.Keys.ToList())
-            {
-                RecycleHpBarUI(key);
-            }
-            _hpBarTracks.Clear();
-
-            DebugIconsShower.Clear();
+        public override void Teardown()
+        {
+            ClearAllSceneSmallIcons();
+            _bindingsSuspended = true;
+            base.Teardown();
         }
     }
 

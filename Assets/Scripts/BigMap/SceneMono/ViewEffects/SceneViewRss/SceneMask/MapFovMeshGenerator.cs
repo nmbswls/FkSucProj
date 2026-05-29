@@ -50,7 +50,7 @@ namespace My.Map.Scene
 
         [Header("Sampling")]
         public float epsilonAngle = 0.0005f; // ε角度微偏移
-        public int uniformSamples = 64;      // FOV 内的均匀采样数量（用于补空域）
+        public int uniformSamples = 4;       // 兜底均匀采样（0=仅顶点驱动）
         public bool includeVertexDirections = true;
 
         [Header("Index")]
@@ -58,8 +58,10 @@ namespace My.Map.Scene
 
         private Mesh mesh;
         private HashSet<int> candidateSet = new HashSet<int>();
+        private readonly List<int> circleCandidates = new List<int>();
         private List<Vector2> points = new List<Vector2>();
         private List<float> angles = new List<float>();
+        private readonly List<float> dirAngles = new List<float>();
 
 
         public ObstacleSegmentProvider segmentProvider;
@@ -68,7 +70,7 @@ namespace My.Map.Scene
         public float orientationDegrees = 0f; // 主角朝向(世界角度)
         private Vector2? lastPosUpdateVal = null;
         private float? lastAngleUpdateVal = null;
-        public float angleUpdateInterval = 5f;
+        public float angleUpdateInterval = 1f;
         public float posUpdateInterval = 0.01f;
 
         public GameObject CircleFovShape;
@@ -166,6 +168,8 @@ namespace My.Map.Scene
             if (needUpdate)
             {
                 ComputeAndRender();
+                lastAngleUpdateVal = currQuantiedAngle;
+                lastPosUpdateVal = currQuantiedPos;
             }
 
             if(MainGameManager.Instance.playerScenePresenter != null && CircleFovShape != null)
@@ -180,70 +184,61 @@ namespace My.Map.Scene
             if (segmentProvider == null) return;
 
             Vector2 P = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
-            
+
             float fov = Mathf.Max(1f, fovDegrees) * Mathf.Deg2Rad;
-
-            //orientationDegrees = Mathf.Repeat(orientationDegrees, 360f);
-            orientationDegrees = (int)(orientationDegrees / 2) * 2;
-
             float theta = orientationDegrees * Mathf.Deg2Rad;
             float left = theta - fov * 0.5f;
             float right = theta + fov * 0.5f;
 
-            // 收集方向
-            var dirs = new List<float>(uniformSamples + 64);
-            dirs.Add(left);
-            dirs.Add(right);
-
-            // 均匀采样
-            for (int i = 1; i < uniformSamples - 1; i++)
+            circleCandidates.Clear();
+            candidateSet.Clear();
+            segmentProvider.QueryCircle(P, viewRadius, candidateSet);
+            foreach (int idx in candidateSet)
             {
-                float a = Mathf.Lerp(left, right, i / (float)(uniformSamples - 1));
-                dirs.Add(a);
+                circleCandidates.Add(idx);
             }
 
-            // 相关顶点方向
+            dirAngles.Clear();
+            dirAngles.Add(left);
+            dirAngles.Add(right);
+
+            if (uniformSamples > 2)
+            {
+                for (int i = 1; i < uniformSamples - 1; i++)
+                {
+                    float a = Mathf.Lerp(left, right, i / (float)(uniformSamples - 1));
+                    dirAngles.Add(a);
+                }
+            }
+
             if (includeVertexDirections)
             {
-                candidateSet.Clear();
-                segmentProvider.QueryCircle(P, viewRadius, candidateSet); // 仅圈内候选
-                foreach (int idx in candidateSet)
+                float radiusSq = viewRadius * viewRadius;
+                for (int i = 0; i < circleCandidates.Count; i++)
                 {
-                    var seg = segmentProvider.GetSegment(idx);
-                    AddVertexIfInFov(P, left, right, seg.a, dirs);
-                    AddVertexIfInFov(P, left, right, seg.b, dirs);
+                    var seg = segmentProvider.GetSegment(circleCandidates[i]);
+                    AddVertexIfInFov(P, left, right, radiusSq, seg.a, dirAngles);
+                    AddVertexIfInFov(P, left, right, radiusSq, seg.b, dirAngles);
                 }
-
-                //foreach (var seg in segmentProvider.segments)
-                //{
-                //    AddVertexIfInFov(P, left, right, seg.a, dirs);
-                //    AddVertexIfInFov(P, left, right, seg.b, dirs);
-                //}
             }
 
-            // 去重并排序
-            //dirs.Sort();
-            SortUnwrapped(dirs);
+            SortUnwrapped(dirAngles);
+            CompactAngles(dirAngles, epsilonAngle * 0.5f);
 
-            CompactAngles(dirs, epsilonAngle * 0.5f);
-
-            // 对每个方向做 ε 微偏移与射线测试
             points.Clear();
             angles.Clear();
 
-            foreach (var a in dirs)
+            foreach (var a in dirAngles)
             {
-                SampleDirection(P, a, ref points, ref angles);
-                SampleDirection(P, a - epsilonAngle, ref points, ref angles);
-                SampleDirection(P, a + epsilonAngle, ref points, ref angles);
+                SampleDirectionFromCandidates(P, a, ref points, ref angles);
+                SampleDirectionFromCandidates(P, a - epsilonAngle, ref points, ref angles);
+                SampleDirectionFromCandidates(P, a + epsilonAngle, ref points, ref angles);
             }
 
-            // 角度排序（相对于 P）
             var idxs = new int[points.Count];
             for (int i = 0; i < idxs.Length; i++) idxs[i] = i;
             Array.Sort(idxs, (i, j) => angles[i].CompareTo(angles[j]));
 
-            // 构建三角扇 Mesh
             BuildTriangleFanMesh(P, points, idxs);
         }
 
@@ -264,12 +259,15 @@ namespace My.Map.Scene
         }
 
 
-        void AddVertexIfInFov(Vector2 P, float left, float right, Vector2 v, List<float> dirs)
+        void AddVertexIfInFov(Vector2 P, float left, float right, float radiusSq, Vector2 v, List<float> dirs)
         {
             Vector2 d = v - P;
-            if (d.sqrMagnitude < 1e-8f) return;
+            if (d.sqrMagnitude < 1e-8f || d.sqrMagnitude > radiusSq + 1e-4f)
+            {
+                return;
+            }
+
             float a = Geo2D.AngleOf(d);
-            // 处理角度在 [left, right]，考虑跨越 -PI/PI 的情况
             if (AngleInInterval(a, left, right))
             {
                 dirs.Add(a);
@@ -318,19 +316,19 @@ namespace My.Map.Scene
             angles.AddRange(res);
         }
 
-        void SampleDirection(Vector2 P, float angle, ref List<Vector2> pts, ref List<float> angs)
+        void SampleDirectionFromCandidates(Vector2 P, float angle, ref List<Vector2> pts, ref List<float> angs)
         {
             Vector2 dir = Geo2D.DirFromAngle(angle).normalized;
             Vector2 bestHit = P + dir * viewRadius;
             float bestT = viewRadius;
 
-            // 候选边索引
-            segmentProvider.QueryRay(P, dir, viewRadius, candidateSet);
-
-            foreach (int idx in candidateSet)
+            for (int i = 0; i < circleCandidates.Count; i++)
             {
-                var seg = segmentProvider.GetSegment(idx);
-                if (!RayBoundsPossible(P, dir, seg.bounds, viewRadius)) continue;
+                var seg = segmentProvider.GetSegment(circleCandidates[i]);
+                if (!RayBoundsPossible(P, dir, seg.bounds, viewRadius))
+                {
+                    continue;
+                }
 
                 if (Geo2D.RaySegmentIntersection(P, dir, seg.a, seg.b, out var hit, out var t))
                 {

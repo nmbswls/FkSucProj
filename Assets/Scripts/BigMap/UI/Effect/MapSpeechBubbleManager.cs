@@ -80,6 +80,22 @@ namespace My.UI
             }
         }
 
+        public void ForceClearAll()
+        {
+            foreach (var channel in activeChannels.Values)
+            {
+                channel.ForceStop();
+            }
+
+            activeChannels.Clear();
+            deadChannelIds.Clear();
+
+            foreach (var bubble in bubblePool)
+            {
+                bubble?.Hide();
+            }
+        }
+
 
         // ================== 池化底层逻辑 ==================
 
@@ -142,6 +158,12 @@ namespace My.UI
                     }
                 }
                 queue.Enqueue(new Cmd { text = text, duration = duration, priority = priority, extraInterval = extraInterval });
+            }
+
+            public void ForceStop()
+            {
+                queue.Clear();
+                CleanUp();
             }
 
             // 返回 true 表示频道空闲可以移除了
