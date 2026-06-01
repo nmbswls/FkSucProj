@@ -2,7 +2,6 @@ using My;
 using My.Player;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace My.UI
 {
@@ -12,11 +11,6 @@ namespace My.UI
 
         const string WeaponSlotPrefix = "WeaponQuickSlot_";
         const string ConsumableSlotPrefix = "ConsumableQuickSlot_";
-        const string ConsumableWheelName = "ConsumableWheel";
-        const string WeaponColumnName = "WeaponColumn";
-        const string ConsumableTemplateName = "ConsumableQuickSlotTemplate";
-        const string LegacyConsumableTemplateName = "ItemQuickSlotTemplate";
-        const string WeaponTemplateName = "WeaponQuickSlotTemplate";
 
         public static PlayerHumanItemBarPanel Instance
         {
@@ -40,10 +34,10 @@ namespace My.UI
         ItemBarCenterSkillView _centerSkillView;
 
         [SerializeField]
-        QuickSlotItemCell _consumableSlotTemplate;
+        ConsumableQuickSlotCell _consumableSlotTemplate;
 
         [SerializeField]
-        QuickSlotItemCell _weaponSlotTemplate;
+        WeaponQuickSlotCell _weaponSlotTemplate;
 
         [SerializeField]
         float _wheelRadius = 72f;
@@ -63,8 +57,8 @@ namespace My.UI
         [SerializeField]
         TextMeshProUGUI _disableHintText;
 
-        QuickSlotItemCell[] _consumableSlots = new QuickSlotItemCell[HumanQuickBarDefs.ConsumableSlotCount];
-        QuickSlotItemCell[] _weaponSlots = new QuickSlotItemCell[HumanQuickBarDefs.WeaponSlotCount];
+        WeaponQuickSlotCell[] _weaponSlots = new WeaponQuickSlotCell[HumanQuickBarDefs.WeaponSlotCount];
+        ConsumableQuickSlotCell[] _consumableSlots = new ConsumableQuickSlotCell[HumanQuickBarDefs.ConsumableSlotCount];
 
         bool _barInitialized;
         bool _slotsBuilt;
@@ -81,19 +75,6 @@ namespace My.UI
             }
 
             layer = UILayer.HUD;
-
-            if (canvasGroup == null)
-            {
-                canvasGroup = GetComponent<CanvasGroup>();
-            }
-
-            if (_contentRoot == null)
-            {
-                _contentRoot = transform as RectTransform;
-            }
-
-            CleanupUnusedPrefabChildren();
-            EnsureHierarchyRefs();
         }
 
         public static void TryShow()
@@ -181,13 +162,6 @@ namespace My.UI
             return ui != null && ui.IsPanelVisible(SecretBaseHudPanel.PanelIdConst);
         }
 
-        public void EnsureQuickItemBarReady()
-        {
-            InitializeBarIfNeeded();
-            EnsureSlots();
-            RefreshSlotBindings();
-        }
-
         public override void Setup(object data = null)
         {
             InitializeBarIfNeeded();
@@ -219,12 +193,13 @@ namespace My.UI
 
         void RefreshDisableHint(GameLogicManager lgm)
         {
-            EnsureDisableHintRefs();
-            bool showHint = !lgm.IsHumanQuickBarAvailable() && !IsBagQuickBarEditingActive(lgm);
-            if (_disableHint != null)
+            if (_disableHint == null)
             {
-                _disableHint.SetActive(showHint);
+                return;
             }
+
+            bool showHint = !lgm.IsHumanQuickBarAvailable() && !IsBagQuickBarEditingActive(lgm);
+            _disableHint.SetActive(showHint);
         }
 
         bool IsBagQuickBarEditingActive(GameLogicManager lgm)
@@ -243,70 +218,12 @@ namespace My.UI
             return ui != null && ui.IsPanelVisible("PlayerBag");
         }
 
-        void EnsureDisableHintRefs()
-        {
-            if (_disableHint == null)
-            {
-                var tr = transform.Find("DisableHint");
-                if (tr != null)
-                {
-                    _disableHint = tr.gameObject;
-                }
-            }
-
-            if (_disableHint == null)
-            {
-                return;
-            }
-
-            if (_disableHintText == null)
-            {
-                _disableHintText = _disableHint.GetComponentInChildren<TextMeshProUGUI>(true);
-            }
-
-            var hintRt = _disableHint.transform as RectTransform;
-            if (hintRt != null && _contentRoot != null)
-            {
-                hintRt.SetParent(_contentRoot, false);
-                hintRt.anchorMin = Vector2.zero;
-                hintRt.anchorMax = Vector2.one;
-                hintRt.offsetMin = Vector2.zero;
-                hintRt.offsetMax = Vector2.zero;
-                hintRt.SetAsLastSibling();
-            }
-        }
-
-        void CleanupUnusedPrefabChildren()
-        {
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                var ch = transform.GetChild(i);
-                var name = ch.name;
-                if (name == "GridSlots"
-                    || name == "DetailAnchorPos"
-                    || name.StartsWith("ItemQuickSlotTemplate (", System.StringComparison.Ordinal)
-                    || name == "WeaponQuickSlot_1")
-                {
-                    if (Application.isPlaying)
-                    {
-                        Destroy(ch.gameObject);
-                    }
-                    else
-                    {
-                        DestroyImmediate(ch.gameObject);
-                    }
-                }
-            }
-        }
-
         void InitializeBarIfNeeded()
         {
             if (_barInitialized)
             {
                 return;
             }
-
-            EnsureHierarchyRefs();
 
             if (_consumableSlotTemplate == null || _weaponSlotTemplate == null
                 || _weaponColumnParent == null || _consumableWheelParent == null)
@@ -315,68 +232,9 @@ namespace My.UI
                 return;
             }
 
-            PrepareTemplate(_consumableSlotTemplate);
-            PrepareTemplate(_weaponSlotTemplate);
+            _consumableSlotTemplate.gameObject.SetActive(false);
+            _weaponSlotTemplate.gameObject.SetActive(false);
             _barInitialized = true;
-        }
-
-        void EnsureHierarchyRefs()
-        {
-            if (_consumableWheelParent == null)
-            {
-                _consumableWheelParent = transform.Find(ConsumableWheelName) as RectTransform;
-            }
-
-            if (_weaponColumnParent == null)
-            {
-                _weaponColumnParent = transform.Find(WeaponColumnName) as RectTransform;
-            }
-
-            if (_consumableSlotTemplate == null)
-            {
-                _consumableSlotTemplate = FindTemplateCell(ConsumableTemplateName)
-                    ?? FindTemplateCell(LegacyConsumableTemplateName);
-            }
-
-            if (_weaponSlotTemplate == null)
-            {
-                _weaponSlotTemplate = FindTemplateCell(WeaponTemplateName);
-            }
-
-            if (_centerSkillView == null)
-            {
-                var centerTr = transform.Find("CenterSkillSlot") ?? transform.Find("Round2");
-                if (centerTr != null)
-                {
-                    _centerSkillView = centerTr.GetComponent<ItemBarCenterSkillView>();
-                    if (_centerSkillView == null)
-                    {
-                        _centerSkillView = centerTr.gameObject.AddComponent<ItemBarCenterSkillView>();
-                    }
-                }
-            }
-        }
-
-        QuickSlotItemCell FindTemplateCell(string name)
-        {
-            var tr = transform.Find(name);
-            return tr != null ? tr.GetComponent<QuickSlotItemCell>() : null;
-        }
-
-        static void PrepareTemplate(QuickSlotItemCell template)
-        {
-            if (template == null)
-            {
-                return;
-            }
-
-            EnsureRootRaycastTarget(template.gameObject);
-            foreach (var btn in template.GetComponentsInChildren<Button>(true))
-            {
-                btn.enabled = false;
-            }
-
-            template.gameObject.SetActive(false);
         }
 
         void EnsureSlots()
@@ -415,11 +273,6 @@ namespace My.UI
                 rt.pivot = new Vector2(0.5f, 0.5f);
                 rt.sizeDelta = _weaponSlotSize;
                 rt.anchoredPosition = new Vector2(0f, startY - i * step);
-
-                cell.SetItemCellInteractions(
-                    ItemCellInteractions.WeaponQuickSlot,
-                    ItemCellInteractions.WeaponQuickSlot,
-                    ItemCellInteractions.WeaponQuickSlot);
             }
         }
 
@@ -442,41 +295,16 @@ namespace My.UI
                 rt.pivot = new Vector2(0.5f, 0.5f);
                 rt.sizeDelta = _consumableSlotSize;
                 rt.anchoredPosition = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)) * _wheelRadius;
-
-                cell.SetItemCellInteractions(
-                    ItemCellInteractions.ConsumableQuickSlot,
-                    ItemCellInteractions.ConsumableQuickSlot,
-                    ItemCellInteractions.ConsumableQuickSlot);
             }
         }
 
-        static QuickSlotItemCell SpawnSlot(
-            QuickSlotItemCell template,
-            RectTransform parent,
-            string slotName,
-            int layer)
+        static T SpawnSlot<T>(T template, RectTransform parent, string slotName, int layer) where T : Component
         {
-            var go = Instantiate(template.gameObject, parent);
+            var go = Object.Instantiate(template.gameObject, parent);
             go.name = slotName;
             go.SetActive(true);
             SetLayerRecursively(go, layer);
-            var cell = go.GetComponent<QuickSlotItemCell>();
-            EnsureCellDropRaycast(cell);
-            return cell;
-        }
-
-        static void EnsureCellDropRaycast(QuickSlotItemCell cell)
-        {
-            if (cell == null)
-            {
-                return;
-            }
-
-            EnsureRootRaycastTarget(cell.gameObject);
-            if (cell.bg != null)
-            {
-                cell.bg.raycastTarget = true;
-            }
+            return go.GetComponent<T>();
         }
 
         static void ClearSlotInstances(RectTransform parent, string prefix)
@@ -488,26 +316,14 @@ namespace My.UI
                 {
                     if (Application.isPlaying)
                     {
-                        Destroy(ch.gameObject);
+                        Object.Destroy(ch.gameObject);
                     }
                     else
                     {
-                        DestroyImmediate(ch.gameObject);
+                        Object.DestroyImmediate(ch.gameObject);
                     }
                 }
             }
-        }
-
-        static void EnsureRootRaycastTarget(GameObject root)
-        {
-            var img = root.GetComponent<Image>();
-            if (img == null)
-            {
-                img = root.AddComponent<Image>();
-                img.color = new Color(1f, 1f, 1f, 0.02f);
-            }
-
-            img.raycastTarget = true;
         }
 
         static void SetLayerRecursively(GameObject go, int layer)
@@ -536,12 +352,17 @@ namespace My.UI
 
             for (int w = 0; w < HumanQuickBarDefs.WeaponSlotCount; w++)
             {
-                _weaponSlots[w]?.BindWeaponSlot(w, qb.ActiveWeaponIndex == w);
+                _weaponSlots[w]?.Bind(w, qb.ActiveWeaponIndex == w);
             }
 
             for (int c = 0; c < HumanQuickBarDefs.ConsumableSlotCount; c++)
             {
-                _consumableSlots[c]?.BindConsumableSlot(c, qb.ActiveConsumableIndex == c);
+                _consumableSlots[c]?.Bind(c, qb.ActiveConsumableIndex == c);
+            }
+
+            if (_centerSkillView == null)
+            {
+                return;
             }
 
             if (glm != null && glm.IsInSecretBaseContext())
@@ -552,9 +373,8 @@ namespace My.UI
             {
                 _centerSkillView.gameObject.SetActive(true);
                 var pdm = glm.playerDataManager;
-                _centerSkillView?.Refresh(qb.ResolveLeftClickSkillId(), pdm != null && pdm.HasLmbOverride);
+                _centerSkillView.Refresh(qb.ResolveLeftClickSkillId(), pdm != null && pdm.HasLmbOverride);
             }
-            
         }
     }
 }

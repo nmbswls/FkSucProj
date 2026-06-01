@@ -343,7 +343,7 @@ namespace My.UI
                                 }
                                 else if (complete)
                                 {
-                                    Debug.Log("Enchant failed: " + fail);
+                                    Debug.Log("Enchant failed: ");
                                 }
                             });
                     }
