@@ -96,6 +96,8 @@ namespace My.Map.View
                 Debug.LogError("RefreshData");
             }
 
+            CheckPlayerCanCounter();
+
             RefreshUI();
         }
 
@@ -117,9 +119,6 @@ namespace My.Map.View
             isCounterSuccess = false;
 
             CounterExtraShow = 0;
-
-            
-            CheckPlayerCanCounter();
         }
 
         /// <summary>
@@ -129,7 +128,11 @@ namespace My.Map.View
         {
             var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
             var srcEntity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(SrcEntityId);
-
+            if(srcEntity == null)
+            {
+                Debug.LogError($"ERRRRRRR {SrcEntityId} null");
+                return;
+            }
 
             var hPowerPlayer = player.GetAttr(AttrIdConsts.HPower);
             var hPowerSrc = srcEntity.GetAttr(AttrIdConsts.HPower);
