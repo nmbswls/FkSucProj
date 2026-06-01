@@ -36,7 +36,7 @@ TagManager:
   - AlertArea
   - 
   - LiquidMask
-  - 
+  - MistMask
   - FOV Layer
   m_SortingLayers:
   - name: Default

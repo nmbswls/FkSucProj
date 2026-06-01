@@ -1898,7 +1898,33 @@ namespace My.Map.Entity
                 offsetOffset = UnityEngine.Random.insideUnitCircle * offsetRange;
             }
 
-            ctx.Env.GroundOverManager.AddElementCircle(ctx.TriggerPos.Value + offsetOffset, realCfg.Range, realCfg.ElementType, realCfg.Duration);
+            ctx.Env.GroundLiquidManager.AddElementCircle(ctx.TriggerPos.Value + offsetOffset, realCfg.Range, realCfg.ElementType, realCfg.Duration);
+        }
+    }
+
+    public class AbilityEffectExecutor4AddMist : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectAddMistCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4AddMist err");
+                return;
+            }
+
+            var offsetOffset = Vector2.zero;
+            if (realCfg.OffsetRange > 0)
+            {
+                float offsetRange = realCfg.OffsetRange < 0.5f ? 0.5f : realCfg.OffsetRange;
+                offsetOffset = UnityEngine.Random.insideUnitCircle * offsetRange;
+            }
+
+            ctx.Env.GroundMistManager.AddElementCircle(
+                ctx.TriggerPos.Value + offsetOffset,
+                realCfg.Range,
+                realCfg.ElementType,
+                realCfg.Duration);
         }
     }
 

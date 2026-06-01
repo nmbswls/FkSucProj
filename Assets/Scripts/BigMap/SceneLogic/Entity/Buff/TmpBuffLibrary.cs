@@ -136,7 +136,7 @@ namespace My.Map.Entity
                                 
                                  new MapFightEffectAddLiquidCfg()
                                 {
-                                    ElementType = EGroundElementType.Milk,
+                                    ElementType = EGroundLiquidType.Milk,
                                     Range = 1.5f,
                                     Duration = 10,
                                 },
@@ -1210,7 +1210,7 @@ namespace My.Map.Entity
                     },
                 };
 
-                // 移动粉雾区效（TbMapAreaEffect player_pink_mist_trail）；数值可再调
+                // 粉雾地面格由 GroundMistManager 维护；player_pink_mist buff 由 TickGroundMistOverlay 施加
                 _library["player_pink_mist"] = new BuffDefinition()
                 {
                     BuffId = "player_pink_mist",

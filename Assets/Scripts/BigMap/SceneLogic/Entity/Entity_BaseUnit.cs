@@ -1497,7 +1497,8 @@ namespace My.Map
             return false;
         }
 
-        private HashSet<EGroundElementType> currLiquids = new();
+        private HashSet<EGroundLiquidType> currLiquids = new();
+        private HashSet<EGroundMistType> currMists = new();
 
         protected void TickOnGroundOverlay()
         {
@@ -1506,54 +1507,88 @@ namespace My.Map
                 return;
             }
 
-            // 假设单位碰撞半径是 0.5
-            var liquids = LogicManager.GroundOverManager.CheckAllLiquidsUnderUnit(this.Pos, 0.3f);
+            TickGroundLiquidOverlay();
+            TickGroundMistOverlay();
+        }
 
-            foreach(var liquid in currLiquids)
+        void TickGroundLiquidOverlay()
+        {
+            var liquids = LogicManager.GroundLiquidManager.CheckAllLiquidsUnderUnit(this.Pos, 0.3f);
+
+            foreach (var liquid in currLiquids)
             {
-                // 移除
-                if(!liquids.Contains(liquid))
+                if (!liquids.Contains(liquid))
                 {
-                    switch(liquid)
+                    switch (liquid)
                     {
-                        case EGroundElementType.GcLiquid:
-                            {
-                                LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_gc_liquid");
-                            }
+                        case EGroundLiquidType.GcLiquid:
+                            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_gc_liquid");
                             break;
-                        case EGroundElementType.Milk:
-                            {
-                                LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_milk_liquid");
-                            }
+                        case EGroundLiquidType.Milk:
+                            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_milk_liquid");
                             break;
-                             
                     }
                 }
             }
 
-            foreach(var liquid2 in liquids)
+            foreach (var liquid in liquids)
             {
-                // 增加
-                if (!currLiquids.Contains(liquid2))
+                if (!currLiquids.Contains(liquid))
                 {
-                    switch (liquid2)
+                    switch (liquid)
                     {
-                        case EGroundElementType.GcLiquid:
-                            {
-                                LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_gc_liquid");
-                            }
+                        case EGroundLiquidType.GcLiquid:
+                            LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_gc_liquid");
                             break;
-                        case EGroundElementType.Milk:
-                            {
-                                LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_milk_liquid");
-                            }
+                        case EGroundLiquidType.Milk:
+                            LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_milk_liquid");
                             break;
                     }
                 }
             }
 
             currLiquids.Clear();
-            currLiquids.AddRange(liquids);
+            foreach (var liquid in liquids)
+            {
+                currLiquids.Add(liquid);
+            }
+        }
+
+        void TickGroundMistOverlay()
+        {
+            var mists = LogicManager.GroundMistManager.CheckAllMistsUnderUnit(this.Pos, 0.3f);
+
+            foreach (var mist in currMists)
+            {
+                if (!mists.Contains(mist))
+                {
+                    switch (mist)
+                    {
+                        case EGroundMistType.PinkMist:
+                            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "player_pink_mist");
+                            break;
+                    }
+                }
+            }
+
+            foreach (var mist in mists)
+            {
+                if (!currMists.Contains(mist))
+                {
+                    switch (mist)
+                    {
+                        case EGroundMistType.PinkMist:
+                            LogicManager.globalBuffManager.AddBuff(this.Id, "player_pink_mist");
+                            break;
+                    }
+                }
+            }
+
+            currMists.Clear();
+            foreach (var mist in mists)
+            {
+                currMists.Add(mist);
+            }
         }
     }
 

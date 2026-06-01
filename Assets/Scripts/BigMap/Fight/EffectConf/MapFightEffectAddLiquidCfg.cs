@@ -11,7 +11,7 @@ namespace My.Map.Entity
     [Serializable]
     public class MapFightEffectAddLiquidCfg : MapFightEffectCfg
     {
-        public EGroundElementType ElementType = EGroundElementType.None;
+        public EGroundLiquidType ElementType = EGroundLiquidType.None;
         public float Range = 1.2f;
         public float Duration = 5.0f;
 

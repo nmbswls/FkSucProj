@@ -142,7 +142,8 @@ namespace My
 
         public SceneAOIManager AOIManager;
 
-        public SceneGroundLiquidStrampManager StrampManager1;
+        public SceneGroundLiquidStrampManager LiquidStrampManager;
+        public SceneGroundMistStrampManager MistStrampManager;
 
 
         private void Awake()
@@ -253,7 +254,8 @@ namespace My
 
             
 
-            StrampManager1.RegisterEvents();
+            LiquidStrampManager.RegisterEvents();
+            MistStrampManager?.RegisterEvents();
 
 
             gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>

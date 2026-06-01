@@ -559,44 +559,21 @@ namespace My.Map.Unit
 
         private void UpdateAttractByMist()
         {
-            // 寻找附近的entity
-            const string mistCfg = "player_pink_mist_trail";
-            var candidates = _brain.NpcEntity.LogicManager.FindEntityInRange(_brain.NpcEntity.Pos, 3f);
-
-            AreaEffectLogicEntity lastestOne = null;
-
-            foreach (var candidate in candidates)
+            const float searchRadius = 3f;
+            var mistManager = _brain.NpcEntity.LogicManager.GroundMistManager;
+            if (mistManager.TryFindNearestActivePosition(_brain.NpcEntity.Pos, searchRadius, out var mistPos))
             {
-                if(candidate is not AreaEffectLogicEntity aeEntity)
-                {
-                    continue;
-                }
-
-                if(aeEntity.CfgId != mistCfg)
-                {
-                    continue;
-                }
-
-                if(lastestOne == null || aeEntity.LifeTime >= lastestOne.LifeTime)
-                {
-                    lastestOne = aeEntity;
-                }
+                _brain.NpcEntity.TryMoveTo(mistPos, moveSpeedRate: 0.5f);
+                return;
             }
-            
-            if (lastestOne == null)
+
+            var f = _brain.NpcEntity.CurrentFocus;
+            if (f != null)
             {
-                var f = _brain.NpcEntity.CurrentFocus;
-                if (f != null)
-                {
-                    _brain.SuspiciousPos = new Vector2(f.Position.x, f.Position.y);
-                }
+                _brain.SuspiciousPos = new Vector2(f.Position.x, f.Position.y);
+            }
 
-                _brain.ChangeState(_brain.StateSearch);
-            }
-            else
-            {
-                _brain.NpcEntity.TryMoveTo(lastestOne.Pos, moveSpeedRate: 0.5f);
-            }
+            _brain.ChangeState(_brain.StateSearch);
         }
 
 

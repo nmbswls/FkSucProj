@@ -44,7 +44,7 @@ namespace My.Map
 
         public bool IsZhaZhiMode => CheckHasState(AttrIdConsts.PlayerZhaZhiMode);
 
-        // 沿路径投放 player_pink_mist_trail 的上一采样点
+        // 沿路径铺设粉雾地面格（参数仍读 TbMapAreaEffect player_pink_mist_trail）
         Vector2 _pinkMistLastTrailPos;
         bool _pinkMistTrailPosInited;
 
@@ -948,7 +948,7 @@ namespace My.Map
         const float PinkMistTrailMinSpacing = 0.45f;
         const float PinkMistTrailTeleportResetSqr = 25f;
 
-        // 移动超过间距时在脚下创建粉雾区效（与 TbMapAreaEffect / Prefab 管线一致）
+        // 移动超过间距时在脚下铺设粉雾地面格
         void TickPlayerPinkMistTrail()
         {
             if (MarkDestroyed || !IsActive)
@@ -962,7 +962,7 @@ namespace My.Map
                 return;
             }
 
-            if(DesireLevel == 0)
+            if (DesireLevel == 0)
             {
                 return;
             }
@@ -997,16 +997,8 @@ namespace My.Map
             _pinkMistLastTrailPos = Pos;
 
             float life = row.DefaultLifetime > 0f ? row.DefaultLifetime : 8f;
-            var rec = new LogicEntityRecord
-            {
-                Id = GameLogicManager.LogicEntityIdInst++,
-                EntityType = EEntityType.AreaEffect,
-                CfgId = PinkMistTrailCfgId,
-                LifeTime = life,
-                Position = Pos,
-                FactionId = FactionId,
-            };
-            LogicManager.AddNewEntityRecord(rec);
+            float radius = row.ShapeRadius > 0f ? row.ShapeRadius : 0.9f;
+            LogicManager.GroundMistManager.AddElementCircle(Pos, radius, EGroundMistType.PinkMist, life);
         }
 
         /// <summary>
@@ -1027,7 +1019,7 @@ namespace My.Map
             //gcLiquidEntity.LifeTime = 20.0f;
             //gcLiquidEntity.Position = this.Pos;
             //gcLiquidEntity.FactionId = this.FactionId;
-            LogicManager.GroundOverManager.AddElementCircle(this.Pos, 1.0f, EGroundElementType.GcLiquid, 20f);
+            LogicManager.GroundLiquidManager.AddElementCircle(this.Pos, 1.0f, EGroundLiquidType.GcLiquid, 20f);
 
             //LogicManager.AddNewEntityRecord(gcLiquidEntity);
 

@@ -3623,7 +3623,7 @@ namespace My.Map.Entity
 
             var liquidEffect1 = new MapFightEffectAddLiquidCfg()
             {
-                ElementType = EGroundElementType.Milk,
+                ElementType = EGroundLiquidType.Milk,
                 Range = 1.5f,
                 Duration = 10,
 
@@ -3633,7 +3633,7 @@ namespace My.Map.Entity
 
             var liquidEffect2 = new MapFightEffectAddLiquidCfg()
             {
-                ElementType = EGroundElementType.Milk,
+                ElementType = EGroundLiquidType.Milk,
                 Range = 1.5f,
                 Duration = 10,
 
@@ -3642,7 +3642,7 @@ namespace My.Map.Entity
 
             var liquidEffect3 = new MapFightEffectAddLiquidCfg()
             {
-                ElementType = EGroundElementType.Milk,
+                ElementType = EGroundLiquidType.Milk,
                 Range = 1.5f,
                 Duration = 10,
 

@@ -92,7 +92,8 @@ namespace My
         public MapLogicEventBus LogicEventBus;
 
         public GameLogicAreaManager AreaManager;
-        public LogicGroundOverlayManager GroundOverManager;
+        public LogicGroundLiquidManager GroundLiquidManager;
+        public LogicGroundMistManager GroundMistManager;
 
         public RumorIntelMapSpawn RumorIntelSpawn;
         public MapMicroPlotManager MapMicroPlot;
@@ -124,7 +125,8 @@ namespace My
 
             });
 
-            GroundOverManager = new(this);
+            GroundLiquidManager = new(this);
+            GroundMistManager = new(this);
             RumorIntelSpawn = new RumorIntelMapSpawn(this);
             MapMicroPlot = new MapMicroPlotManager(this);
 
@@ -299,7 +301,8 @@ namespace My
                 pendingNewEntities.Clear();
             }
 
-            GroundOverManager?.Tick();
+            GroundLiquidManager?.Tick();
+            GroundMistManager?.Tick();
 
             AreaManager.Tick(dt);
 
