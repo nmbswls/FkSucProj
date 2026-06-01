@@ -1,3 +1,4 @@
+using My;
 using My.Player.Bag;
 
 namespace My.UI
@@ -14,7 +15,7 @@ namespace My.UI
             SetIndexAndContainer(slotIndex, EContainerType.QuickBarWeapon, 0);
             SetOnChanged(null);
             BindQuickSlotDisplay(GetWeaponBinding(slotIndex));
-            RefreshCellStyle(selected ? EStyleType.Selected : EStyleType.Normal);
+            RefreshQuickSlotStyle(selected);
         }
     }
 }

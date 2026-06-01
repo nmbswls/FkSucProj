@@ -19,6 +19,9 @@ namespace My.Player
         public int ActiveWeaponIndex { get; private set; } = -1;
         public int ActiveConsumableIndex { get; private set; }
 
+        const float ConsumableCycleCooldownSeconds = 0.12f;
+        float _lastConsumableCycleUnscaledTime = float.NegativeInfinity;
+
         public PlayerHumanQuickBarSystem(PlayerSystemManager player)
         {
             _player = player;
@@ -317,10 +320,18 @@ namespace My.Player
                 return;
             }
 
+            float now = Time.unscaledTime;
+            if (now - _lastConsumableCycleUnscaledTime < ConsumableCycleCooldownSeconds)
+            {
+                return;
+            }
+
+            _lastConsumableCycleUnscaledTime = now;
+
             int start = ActiveConsumableIndex;
             for (int step = 0; step < ConsumableSlots.Length; step++)
             {
-                int next = ActiveConsumableIndex + (delta > 0 ? 1 : -1);
+                int next = ActiveConsumableIndex + (delta > 0 ? -1 : 1);
                 if (next < 0)
                 {
                     next = ConsumableSlots.Length - 1;
@@ -340,7 +351,7 @@ namespace My.Player
 
             if (ActiveConsumableIndex == start && ConsumableSlots.Length > 1)
             {
-                int next = ActiveConsumableIndex + (delta > 0 ? 1 : -1);
+                int next = ActiveConsumableIndex + (delta > 0 ? -1 : 1);
                 if (next < 0)
                 {
                     next = ConsumableSlots.Length - 1;
@@ -352,6 +363,8 @@ namespace My.Player
 
                 ActiveConsumableIndex = next;
             }
+
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         public string GetActiveWeaponSkillId()

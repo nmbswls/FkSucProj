@@ -5,11 +5,28 @@ using My.Player;
 using My.Player.Bag;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace My.UI
 {
     public abstract class QuickSlotCellBase : ItemCellBase
     {
+        static readonly Color SelectedFrameColor = new Color(1f, 0.92f, 0.45f, 1f);
+        static readonly Color NormalFrameColor = new Color(0.82f, 0.82f, 0.82f, 1f);
+
+        [SerializeField]
+        protected Image selectionFrame;
+
+        protected void RefreshQuickSlotStyle(bool selected)
+        {
+            RefreshCellStyle(selected ? EStyleType.Selected : EStyleType.Normal);
+
+            if (selectionFrame != null)
+            {
+                selectionFrame.color = selected ? SelectedFrameColor : NormalFrameColor;
+            }
+        }
+
         protected void BindQuickSlotDisplay(QuickSlotBinding binding)
         {
             var inv = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.InventorySystem;

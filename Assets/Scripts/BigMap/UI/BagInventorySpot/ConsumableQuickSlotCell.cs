@@ -1,5 +1,6 @@
 using My;
 using My.Player;
+using My.Player.Bag;
 using UnityEngine;
 
 namespace My.UI
@@ -18,7 +19,7 @@ namespace My.UI
 
             var binding = GetConsumableBinding(slotIndex);
             BindQuickSlotDisplay(binding);
-            RefreshCellStyle(selected ? EStyleType.Selected : EStyleType.Normal);
+            RefreshQuickSlotStyle(selected);
             RefreshEnchantRing(binding);
         }
 

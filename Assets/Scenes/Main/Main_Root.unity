@@ -2943,6 +2943,7 @@ MonoBehaviour:
     IsDangerArea: 0
     HuntingTarget: 0
     HuntingUnlockConds: []
+    ProceduralDefId: 
   currentRoot: {fileID: 0}
   SegmentProvider: {fileID: 1193154578}
 --- !u!114 &1193154578
@@ -3055,10 +3056,8 @@ MonoBehaviour:
   exitGraceSeconds: 0.3
   presentationFactorySource: {fileID: 927579794}
   assetProviderSource: {fileID: 748439004}
+  mapChunkManager: {fileID: 0}
   dynamicCellSize: 16
-  chunkEnterDelay: 0.05
-  chunkExitDelay: 0.15
-  chunkMinStay: 0.3
 --- !u!1 &1226254763
 GameObject:
   m_ObjectHideFlags: 0

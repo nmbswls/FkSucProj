@@ -1045,7 +1045,6 @@ namespace My.UI
             }
 
             lgm.playerDataManager.HumanQuickBar.CycleConsumableSelection(deltaY > 0f ? 1 : -1);
-            PlayerHumanItemBarPanel.RefreshFromGame();
             return true;
         }
 
