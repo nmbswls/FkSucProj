@@ -764,14 +764,11 @@ namespace My.UI
 
             if (keyName == EInputKey.MouseLeft.ToString())
             {
-                var lgm = MainGameManager.Instance.gameLogicManager;
-                if (lgm != null && lgm.IsHumanQuickBarAvailable())
+                var pdm = MainGameManager.Instance.gameLogicManager.playerDataManager;
+                var leftClick = pdm?.HumanQuickBar?.ResolveLeftClickSkillId();
+                if (!string.IsNullOrEmpty(leftClick))
                 {
-                    var leftClick = lgm.playerDataManager?.HumanQuickBar?.ResolveLeftClickSkillId();
-                    if (!string.IsNullOrEmpty(leftClick))
-                    {
-                        return leftClick;
-                    }
+                    return leftClick;
                 }
 
                 skillSLotIdx = 0;
@@ -852,7 +849,7 @@ namespace My.UI
             {
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(
                     skillId, castVec: null, target: null, castOverrides: castOverrides);
-                onConfirm?.Invoke(true);
+                NotifySkillUseConfirmed(skillId, true, onConfirm);
                 return;
             }
 
@@ -860,7 +857,7 @@ namespace My.UI
             if(mainAbilityCfg == null)
             {
                 Debug.LogError($"skill not found main ability:{skillConf.MainAbilityId}");
-                onConfirm?.Invoke(false);
+                NotifySkillUseConfirmed(skillId, false, onConfirm);
                 return;
             }
 
@@ -879,7 +876,7 @@ namespace My.UI
             {
                 MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(
                     skillId, castVec: null, target: null, inputVec: dir, castOverrides: castOverrides);
-                onConfirm?.Invoke(true);
+                NotifySkillUseConfirmed(skillId, true, onConfirm);
                 return;
             }
             else if(mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.ToFace)
@@ -891,11 +888,33 @@ namespace My.UI
                     target: null,
                     inputVec: dir,
                     castOverrides: castOverrides);
-                onConfirm?.Invoke(true);
+                NotifySkillUseConfirmed(skillId, true, onConfirm);
                 return;
             }
 
-            EnterSkillPreviewMode(skillId);
+            EnterSkillPreviewMode(skillId, (ret) => NotifySkillUseConfirmed(skillId, ret, onConfirm));
+        }
+
+        void NotifySkillUseConfirmed(string skillId, bool success, Action<bool> onConfirm)
+        {
+            if (success)
+            {
+                TryConsumeLmbOverride(skillId);
+            }
+
+            onConfirm?.Invoke(success);
+        }
+
+        static void TryConsumeLmbOverride(string skillId)
+        {
+            var pdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (pdm == null || !pdm.ConsumeLmbOverrideIfMatch(skillId))
+            {
+                return;
+            }
+
+            PlayerHumanItemBarPanel.RefreshFromGame();
+            Instance?.SkilBar?.Refresh();
         }
 
         static Dictionary<string, string> ResolveHumanWeaponCastOverrides(string skillId)
@@ -957,8 +976,21 @@ namespace My.UI
             if (itemUseCfg.UseType == cfg.demo.EItemUseType.UseSkill)
             {
                 var skillId = itemUseCfg.S1;
+                bool usedEnchant = false;
+                if (pdm.ItemEnchant != null && pdm.ItemEnchant.TryGetRemapSkill(itemId, out var enchantSkill))
+                {
+                    skillId = enchantSkill;
+                    usedEnchant = true;
+                }
+
                 OnClickUseSkill(skillId, (ret) =>
                 {
+                    if (ret && usedEnchant)
+                    {
+                        pdm.ItemEnchant?.ConsumeEnchant(itemId);
+                        PlayerHumanItemBarPanel.RefreshFromGame();
+                    }
+
                     if (ret && itemUseCfg.CostOnUse)
                     {
                         inv.CostQuickSlotBinding(binding, 1);

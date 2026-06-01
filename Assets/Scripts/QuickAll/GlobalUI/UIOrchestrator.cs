@@ -214,6 +214,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = DayPeriodSettlementPanel.PanelId,
+                resourcePath = "UI/Prefabs/DayPeriodSettlementPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = PauseCloseupHTangleWindow.ID,
                 resourcePath = "UI/Prefabs/PauseCloseupHTangleWindow",
                 defaultLayer = UILayer.Popup,

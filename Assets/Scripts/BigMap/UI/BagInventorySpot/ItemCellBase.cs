@@ -19,6 +19,7 @@ namespace My.UI
         public Image maskOverlay;
         public Image lockOverlay;
         public Image addOverlay;
+        public Image enchantRingOverlay;
         public TextMeshProUGUI debugNameStr;
 
         public int Index { get; protected set; }

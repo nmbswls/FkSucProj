@@ -11,6 +11,40 @@ namespace My.UI
 {
     public class QuickSlotItemCell : ItemCellBase
     {
+        protected override void Awake()
+        {
+            base.Awake();
+            EnsureEnchantRingRef();
+        }
+
+        void EnsureEnchantRingRef()
+        {
+            if (enchantRingOverlay != null)
+            {
+                return;
+            }
+
+            var tr = transform.Find("EnchantRing");
+            if (tr == null)
+            {
+                var go = new GameObject("EnchantRing", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                tr = go.transform;
+                tr.SetParent(transform, false);
+                tr.SetAsLastSibling();
+                var rt = tr as RectTransform;
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = Vector2.one;
+                rt.offsetMin = new Vector2(-4f, -4f);
+                rt.offsetMax = new Vector2(4f, 4f);
+                var img = go.GetComponent<Image>();
+                img.color = new Color(1f, 0.45f, 0.75f, 0.9f);
+                img.raycastTarget = false;
+                go.SetActive(false);
+            }
+
+            enchantRingOverlay = tr.GetComponent<Image>();
+        }
+
         public void BindWeaponSlot(int slotIndex, bool selected)
         {
             SetItemCellInteractions(
@@ -22,6 +56,7 @@ namespace My.UI
             SetOnChanged(null);
             BindQuickSlot(GetWeaponBinding(slotIndex));
             RefreshCellStyle(selected ? ItemCellBase.EStyleType.Selected : ItemCellBase.EStyleType.Normal);
+            RefreshEnchantRing(QuickSlotBinding.Empty, false);
         }
 
         public void BindConsumableSlot(int slotIndex, bool selected)
@@ -35,6 +70,8 @@ namespace My.UI
             SetOnChanged(null);
             BindQuickSlot(GetConsumableBinding(slotIndex));
             RefreshCellStyle(selected ? ItemCellBase.EStyleType.Selected : ItemCellBase.EStyleType.Normal);
+            var binding = GetConsumableBinding(slotIndex);
+            RefreshEnchantRing(binding, true);
         }
 
         static QuickSlotBinding GetWeaponBinding(int slotIndex)
@@ -82,6 +119,7 @@ namespace My.UI
                     maskOverlay.gameObject.SetActive(false);
                 }
 
+                RefreshEnchantRing(binding, ContainerType == EContainerType.QuickBarConsumable);
                 return;
             }
 
@@ -133,6 +171,26 @@ namespace My.UI
             {
                 maskOverlay.gameObject.SetActive(!available);
             }
+
+            RefreshEnchantRing(binding, ContainerType == EContainerType.QuickBarConsumable);
+        }
+
+        void RefreshEnchantRing(QuickSlotBinding binding, bool allowEnchantVisual)
+        {
+            EnsureEnchantRingRef();
+            if (enchantRingOverlay == null)
+            {
+                return;
+            }
+
+            bool show = false;
+            if (allowEnchantVisual && !binding.IsEmpty)
+            {
+                var enchant = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.ItemEnchant;
+                show = enchant != null && enchant.IsEnchanted(binding.ItemId);
+            }
+
+            enchantRingOverlay.gameObject.SetActive(show);
         }
     }
 }

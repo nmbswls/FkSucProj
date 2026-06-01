@@ -46,6 +46,9 @@ namespace My.Config
             NextDayPeriod,
             MarkCharacterValue, // 标记人物变量
 
+            // Param3 = skillId；一次性消失请配合 ChangeSelfStatus / SetLocalSwitch
+            GrantLmbSkillOverride,
+
             EGMemberChangeState = 100,
             EGMemberActivate = 101,
         }

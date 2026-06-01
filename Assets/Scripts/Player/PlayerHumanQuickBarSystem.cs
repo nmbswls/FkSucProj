@@ -96,6 +96,8 @@ namespace My.Player
                     ConsumableSlots[i] = QuickSlotBinding.Empty;
                 }
             }
+
+            _player.ItemEnchant?.PruneByInventory();
         }
 
         public bool TryAssignWeaponSlot(int slotIndex, string itemId, long itemInstanceId, out string failReason)
@@ -372,6 +374,11 @@ namespace My.Player
 
         public string ResolveLeftClickSkillId()
         {
+            if (_player.HasLmbOverride)
+            {
+                return _player.GetLmbOverrideSkillId();
+            }
+
             if (_player.IsUsingFaQingSkillBar())
             {
                 return null;

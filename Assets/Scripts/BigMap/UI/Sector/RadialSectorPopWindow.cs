@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using My.Map;
 using My.Input;
+using My.Player;
 using TMPro;
 
 namespace My.UI
@@ -21,6 +22,7 @@ namespace My.UI
             UseSkill,
             ChangeHuman,
             RepairItem,
+            EnchantItem,
         }
 
 
@@ -85,6 +87,8 @@ namespace My.UI
             builds.Add(new RadialItem() { RadialFunc = ERadialFunc.UseSkill, SkillId = "fix_clothes", Interactable = true });
 
             builds.Add(new RadialItem() { RadialFunc = ERadialFunc.RepairItem, Interactable = true });
+
+            builds.Add(new RadialItem() { RadialFunc = ERadialFunc.EnchantItem, Interactable = true });
 
             builds.Add(new RadialItem() { RadialFunc = ERadialFunc.ChangeHuman, Interactable = true });
         }
@@ -217,9 +221,11 @@ namespace My.UI
             int idx = AngleToIndex(-angle + 90);
             Highlight(idx);
 
-            if(idx < builds.Count)
+            if(idx < builds.Count && builds[idx] != null)
             {
-                chosenAbilityLabel.text = builds[idx].SkillId;
+                chosenAbilityLabel.text = builds[idx].RadialFunc == ERadialFunc.UseSkill
+                    ? builds[idx].SkillId
+                    : builds[idx].RadialFunc.ToString();
             }
             else
             {
@@ -270,17 +276,17 @@ namespace My.UI
                         var itemId = MainGameManager.Instance.gameLogicManager.playerDataManager.HumanQuickBar.GetActiveConsumableItemId();
                         if(string.IsNullOrEmpty(itemId))
                         {
-                            Debug.Log("当前无修复道具" + itemId);
+                            Debug.Log("No repair consumable selected: " + itemId);
                             break;
                         }
 
                         int needJingYuan = 50;
                         if(!MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.CheckHaveItem("jingyuan", needJingYuan))
                         {
-                            Debug.Log("当前不够" + itemId);
+                            Debug.Log("Not enough jingyuan for repair: " + itemId);
                             break;
                         }
-                        Debug.Log("修复道具" + itemId);
+                        Debug.Log("Repair item: " + itemId);
                         
                         MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility("player_supply_item", overrideParams: new Dictionary<string, string>()
                         {
@@ -298,6 +304,48 @@ namespace My.UI
                             }
                         });
 
+                    }
+                    break;
+                case ERadialFunc.EnchantItem:
+                    {
+                        var pdm = MainGameManager.Instance.gameLogicManager.playerDataManager;
+                        var binding = pdm.HumanQuickBar.GetActiveConsumableBinding();
+                        if (binding.IsEmpty
+                            || pdm.InventorySystem == null
+                            || !pdm.InventorySystem.CheckQuickSlotBindingAvailable(binding))
+                        {
+                            Debug.Log("Enchant rejected: no valid consumable selected");
+                            break;
+                        }
+
+                        if (!PlayerItemEnchantSystem.CanEnchantItemId(binding.ItemId))
+                        {
+                            Debug.Log("Enchant rejected: item not enchantable " + binding.ItemId);
+                            break;
+                        }
+
+                        var itemId = binding.ItemId;
+                        MainGameManager.Instance.gameLogicManager.playerLogicEntity.abilityController.TryUseAbility(
+                            "player_enchant_item",
+                            overrideParams: new Dictionary<string, string>()
+                            {
+                                ["InteractTime"] = "2.0",
+                            },
+                            phaseOverrideAnims: new Dictionary<string, string>()
+                            {
+                                ["Interacting"] = "repair"
+                            },
+                            onAbilityEnd: (complete) =>
+                            {
+                                if (complete && pdm.ItemEnchant.TryEnchant(itemId, out var fail))
+                                {
+                                    PlayerHumanItemBarPanel.RefreshFromGame();
+                                }
+                                else if (complete)
+                                {
+                                    Debug.Log("Enchant failed: " + fail);
+                                }
+                            });
                     }
                     break;
             }

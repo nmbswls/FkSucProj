@@ -575,6 +575,20 @@ namespace My.Map
                         }
                         break;
 
+                    case LogicInteractOutput.EOutputType.GrantLmbSkillOverride:
+                        {
+                            if (string.IsNullOrEmpty(output.Param3))
+                            {
+                                Debug.LogWarning("GrantLmbSkillOverride: Param3 skillId is empty");
+                                break;
+                            }
+
+                            Owner.LogicManager.playerDataManager.GrantLmbOverride(output.Param3);
+                            My.UI.OverworldHUDPanel.Instance?.SkilBar?.Refresh();
+                            My.UI.PlayerHumanItemBarPanel.RefreshFromGame();
+                        }
+                        break;
+
                     case LogicInteractOutput.EOutputType.MarkCharacterValue:
                         {
                             string charKey = output.Param3;

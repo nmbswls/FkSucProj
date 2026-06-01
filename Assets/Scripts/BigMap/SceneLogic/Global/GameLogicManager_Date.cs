@@ -4,6 +4,7 @@ using My.Map;
 using System.Collections.Generic;
 using UnityEngine;
 using My.Player;
+using My.UI;
 
 namespace My
 {
@@ -30,6 +31,7 @@ namespace My
         {
             public long AddFallenAmount = 0;
             public long FromFallenAmount = 0;
+            public long DesireShardAdded = 0;
         }
         public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
 
@@ -52,6 +54,62 @@ namespace My
             }
 
             //EventOnNextDayPeriod?.Invoke();
+        }
+
+        public void RequestAdvanceDayPeriod()
+        {
+            if (UIManager.Instance == null)
+            {
+                NextDayPeriod();
+                ApplySceneMaskForCurrentPeriod();
+                return;
+            }
+
+            bool crossingDay = DayPeriod == EDayPeriod.Night;
+            OneDayBalanceInfo balanceInfo = null;
+            void CaptureBalance(OneDayBalanceInfo info) => balanceInfo = info;
+
+            UIManager.Instance.DoFadeInAndOut(0.25f, 0.25f, () =>
+            {
+                if (crossingDay)
+                {
+                    EventOnOneDayBalance += CaptureBalance;
+                }
+
+                try
+                {
+                    NextDayPeriod();
+                }
+                finally
+                {
+                    if (crossingDay)
+                    {
+                        EventOnOneDayBalance -= CaptureBalance;
+                    }
+                }
+
+                ApplySceneMaskForCurrentPeriod();
+            }, null, () =>
+            {
+                if (crossingDay && balanceInfo != null)
+                {
+                    DayPeriodSettlementPanel.Show(balanceInfo);
+                }
+
+                SecretBaseHudPanel.Instance?.RefreshUI();
+            });
+        }
+
+        void ApplySceneMaskForCurrentPeriod()
+        {
+            if (DayPeriod == EDayPeriod.Night)
+            {
+                SceneMaskPanel.Instance?.ShowHunting();
+            }
+            else
+            {
+                SceneMaskPanel.Instance?.ShowDayTime();
+            }
         }
 
         public void NextDayPeriod()
@@ -82,7 +140,7 @@ namespace My
         {
             OneDayBalanceInfo balanceInfo = new OneDayBalanceInfo();
             //
-            Debug.Log("结算");
+            Debug.Log("Settlement day balance");
             //
 
             // 计算每日自然上涨沉沦人数
@@ -100,6 +158,7 @@ namespace My
 
             // 结算每日固定欲望碎片
             long addYuWang = (long)(Math.Pow(playerDataManager.TotalFallPeopleAmount, 0.5f));
+            balanceInfo.DesireShardAdded = addYuWang;
 
             if(addYuWang > 0)
             {

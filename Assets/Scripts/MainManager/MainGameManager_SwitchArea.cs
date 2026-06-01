@@ -193,6 +193,9 @@ namespace My
             playerScenePresenter = null;
             ClearMapVcamBinding();
 
+            gameLogicManager?.playerDataManager?.ItemEnchant?.ClearAll();
+            gameLogicManager?.playerDataManager?.ClearLmbOverride();
+
             sceneDropManager.ClearAllDrop();
         }
 

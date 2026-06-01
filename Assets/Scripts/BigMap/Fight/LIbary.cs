@@ -207,6 +207,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreateEnchantItemAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateFixClothesAbility();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -1754,6 +1759,32 @@ namespace My.Map.Entity
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
             spec.Id = "player_supply_item";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Hit,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "2"
+                },
+            };
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateEnchantItemAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_enchant_item";
             spec.TypeTag = AbilityTypeTag.Utility;
 
             var mainPhase = new MapAbilityPhase()

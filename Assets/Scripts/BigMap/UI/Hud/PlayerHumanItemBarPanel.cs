@@ -551,7 +551,8 @@ namespace My.UI
             else
             {
                 _centerSkillView.gameObject.SetActive(true);
-                _centerSkillView?.Refresh(qb.ResolveLeftClickSkillId());
+                var pdm = glm.playerDataManager;
+                _centerSkillView?.Refresh(qb.ResolveLeftClickSkillId(), pdm != null && pdm.HasLmbOverride);
             }
             
         }

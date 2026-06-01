@@ -53,6 +53,8 @@ namespace My.Player
 
         public PlayerHumanQuickBarSystem HumanQuickBar { get; private set; }
 
+        public PlayerItemEnchantSystem ItemEnchant { get; private set; }
+
         public PlayerRuneSystem RuneSystem { get; private set; }
 
         public PlayerBodyPartSystem BodyPartSystem { get; private set; }
@@ -73,6 +75,34 @@ namespace My.Player
         public Dictionary<string, bool> GlobalSwitchMap = new();
 
         public PlayerMagicClothesManager MagicClothes { get; private set; }
+
+        // 一次性拾取：临时覆盖左键技能（不存档，切图清空）
+        string _lmbOverrideSkillId;
+
+        public bool HasLmbOverride => !string.IsNullOrEmpty(_lmbOverrideSkillId);
+
+        public string GetLmbOverrideSkillId() => _lmbOverrideSkillId;
+
+        public void GrantLmbOverride(string skillId)
+        {
+            _lmbOverrideSkillId = string.IsNullOrEmpty(skillId) ? null : skillId;
+        }
+
+        public void ClearLmbOverride()
+        {
+            _lmbOverrideSkillId = null;
+        }
+
+        public bool ConsumeLmbOverrideIfMatch(string usedSkillId)
+        {
+            if (string.IsNullOrEmpty(_lmbOverrideSkillId) || usedSkillId != _lmbOverrideSkillId)
+            {
+                return false;
+            }
+
+            _lmbOverrideSkillId = null;
+            return true;
+        }
 
         public string[] HumanSkillSlots = new string[8];
         public string[] FaQingSkillSlots = new string[8];
@@ -107,6 +137,7 @@ namespace My.Player
             InventorySystem = new();
             SkillSystem = new PlayerSkillSystem();
             HumanQuickBar = new PlayerHumanQuickBarSystem(this);
+            ItemEnchant = new PlayerItemEnchantSystem(this);
             RuneSystem = new PlayerRuneSystem(this);
             BodyPartSystem = new PlayerBodyPartSystem(this);
 
@@ -172,6 +203,7 @@ namespace My.Player
             InventorySystem.InitSystem(logicManager, savingData);
             SkillSystem.InitSystem(logicManager, savingData);
             HumanQuickBar.InitSystem(logicManager, savingData);
+            ItemEnchant.InitSystem(logicManager, savingData);
             RuneSystem.InitSystem(logicManager, savingData);
             MagicClothes.LoadFromSave(savingData?.PlayerData);
 
@@ -200,6 +232,7 @@ namespace My.Player
             yield return InventorySystem;
             yield return SkillSystem;
             yield return HumanQuickBar;
+            yield return ItemEnchant;
             yield return RuneSystem;
             yield return RumorIntel;
         }
