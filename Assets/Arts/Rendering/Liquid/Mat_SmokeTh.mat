@@ -60,7 +60,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
-    - _FogColor: {r: 1, g: 0.5235849, b: 0.95748675, a: 1}
+    - _FogColor: {r: 1, g: 0.52358484, b: 0.9574867, a: 0.2}
     - _OilColor: {r: 0.09999997, g: 0.09999997, b: 0.09999997, a: 1}
     - _PoisonColor: {r: 0.9915211, g: 1, b: 0.75, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}

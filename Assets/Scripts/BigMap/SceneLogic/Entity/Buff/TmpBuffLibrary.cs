@@ -1,4 +1,5 @@
 
+using My.Map;
 using System.Collections.Generic;
 
 namespace My.Map.Entity
@@ -1106,6 +1107,21 @@ namespace My.Map.Entity
                     ModifierAttrs = new()
                     {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Basic_MoveSpeed, ModifierValue = -5000 },
+                    },
+                };
+
+                _library["player_mini_gc_debuff"] = new BuffDefinition()
+                {
+                    BuffId = "player_mini_gc_debuff",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = PlayerGamePlayRule.MiniGcSlowDuration,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.Basic_MoveSpeed,
+                            ModifierValue = PlayerGamePlayRule.MiniGcMoveSpeedPenalty,
+                        },
                     },
                 };
 

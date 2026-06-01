@@ -34,6 +34,9 @@ namespace My.Map
         public bool IsQueenMode;
         public bool IsPendingGc; // 是否等待触发gc
 
+        bool _miniGcLowArmed = true;
+        bool _miniGcHighArmed = true;
+
 
         public bool IsFaQing = false; // 是否发情中
         public float LastFaQingTimer; // 进入发情时间
@@ -369,10 +372,13 @@ namespace My.Map
 
                 case AttrIdConsts.PlayerPleasure:
                     {
-                        if(IsPendingGc)
+                        if (IsPendingGc)
                         {
                             break;
                         }
+
+                        HandlePlayerPleasureMiniGc(before, after);
+
                         var gcThreshold = attributeStore.GetAttr(AttrIdConsts.PlayerGcThreshold);
                         if (before < gcThreshold && after >= gcThreshold)
                         {
@@ -1001,6 +1007,69 @@ namespace My.Map
             LogicManager.GroundMistManager.AddElementCircle(Pos, radius, EGroundMistType.PinkMist, life);
         }
 
+        void HandlePlayerPleasureMiniGc(long before, long after)
+        {
+            UpdateMiniGcRearm(after);
+
+            if (after <= before)
+            {
+                return;
+            }
+
+            if (_miniGcLowArmed
+                && PlayerGamePlayRule.CrossedMiniGcThreshold(before, after, PlayerGamePlayRule.MiniGcThresholdLow))
+            {
+                _miniGcLowArmed = false;
+                TriggerMiniGc();
+            }
+
+            if (_miniGcHighArmed
+                && PlayerGamePlayRule.CrossedMiniGcThreshold(before, after, PlayerGamePlayRule.MiniGcThresholdHigh))
+            {
+                _miniGcHighArmed = false;
+                TriggerMiniGc();
+            }
+        }
+
+        void UpdateMiniGcRearm(long pleasure)
+        {
+            if (!_miniGcLowArmed
+                && PlayerGamePlayRule.ShouldRearmMiniGcThreshold(pleasure, PlayerGamePlayRule.MiniGcThresholdLow))
+            {
+                _miniGcLowArmed = true;
+            }
+
+            if (!_miniGcHighArmed
+                && PlayerGamePlayRule.ShouldRearmMiniGcThreshold(pleasure, PlayerGamePlayRule.MiniGcThresholdHigh))
+            {
+                _miniGcHighArmed = true;
+            }
+        }
+
+        void TriggerMiniGc()
+        {
+            TryInterrupt(new InterruptRequest
+            {
+                source = EInterruptSource.Stun,
+                priority = 80,
+            });
+
+            LogicManager.globalBuffManager.RequestAddBuff(
+                Id,
+                "force_stun",
+                overrideDuration: PlayerGamePlayRule.MiniGcStunDuration);
+            LogicManager.globalBuffManager.RequestAddBuff(
+                Id,
+                "player_mini_gc_debuff",
+                overrideDuration: PlayerGamePlayRule.MiniGcSlowDuration);
+
+            LogicManager.GroundLiquidManager.AddElementCircle(
+                Pos,
+                PlayerGamePlayRule.MiniGcLiquidRadius,
+                EGroundLiquidType.GcLiquid,
+                PlayerGamePlayRule.MiniGcLiquidDuration);
+        }
+
         /// <summary>
         /// 检查高潮状态
         /// </summary>
@@ -1034,6 +1103,8 @@ namespace My.Map
             }
             
             ForceSetResource(AttrIdConsts.PlayerPleasure, 0);
+            _miniGcLowArmed = true;
+            _miniGcHighArmed = true;
 
             // 尝试结束发情
             if(IsFaQing)

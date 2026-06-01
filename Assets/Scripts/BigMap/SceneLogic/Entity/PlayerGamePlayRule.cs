@@ -29,6 +29,28 @@ namespace My.Map
         public const float PhysicalFormPenalty = 0.00003f;
         public const float FailTempEnmity = 42f;
 
+        // 玩家 Pleasure 小型高潮（资源刻度 100_000 = 100%）
+        public const long MiniGcPleasureScale = 100_000;
+        public const long MiniGcThresholdLow = 33_000;
+        public const long MiniGcThresholdHigh = 66_000;
+        // 回落超过该差值后才重新允许同一档位触发（防 33%/66% 附近振荡重复触发）
+        public const long MiniGcOscillationGap = 3_000;
+        public const float MiniGcStunDuration = 0.55f;
+        public const float MiniGcSlowDuration = 2.5f;
+        public const int MiniGcMoveSpeedPenalty = -4500;
+        public const float MiniGcLiquidRadius = 0.55f;
+        public const float MiniGcLiquidDuration = 12f;
+
+        public static bool ShouldRearmMiniGcThreshold(long pleasure, long threshold)
+        {
+            return pleasure < threshold - MiniGcOscillationGap;
+        }
+
+        public static bool CrossedMiniGcThreshold(long before, long after, long threshold)
+        {
+            return before < threshold && after >= threshold;
+        }
+
         //sui'ji hou'qu
         public static int RandomGetOneHAct(string filterType, int desireLevel)
         {
