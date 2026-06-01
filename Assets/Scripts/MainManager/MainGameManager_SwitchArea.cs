@@ -197,6 +197,11 @@ namespace My
             gameLogicManager?.playerDataManager?.ClearLmbOverride();
 
             sceneDropManager.ClearAllDrop();
+
+            gameLogicManager?.GroundLiquidManager?.ClearAll();
+            gameLogicManager?.GroundMistManager?.ClearAll();
+            LiquidStrampManager?.ClearAllStamps();
+            MistStrampManager?.ClearAllStamps();
         }
 
         private async Task AsyncHandleStepLoading(SwitchAreaIntent intent)

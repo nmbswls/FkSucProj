@@ -254,7 +254,7 @@ namespace My
 
             
 
-            LiquidStrampManager.RegisterEvents();
+            LiquidStrampManager?.RegisterEvents();
             MistStrampManager?.RegisterEvents();
 
 
