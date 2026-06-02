@@ -1,4 +1,5 @@
 using Config.Map;
+using Map.Entity;
 using My.Map.Entity;
 using My.Map.View;
 using UnityEngine;

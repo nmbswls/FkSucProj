@@ -26,7 +26,6 @@ namespace My.Player
         {
             return !string.IsNullOrEmpty(itemId)
                    && ItemCatalog.IsQuickBarConsumable(itemId)
-                   && !ItemCatalog.IsQuickBarWeapon(itemId)
                    && SkillRemap.ContainsKey(itemId);
         }
 
@@ -65,12 +64,6 @@ namespace My.Player
             if (string.IsNullOrEmpty(itemId))
             {
                 failReason = "empty_item";
-                return false;
-            }
-
-            if (ItemCatalog.IsQuickBarWeapon(itemId))
-            {
-                failReason = "weapon_not_allowed";
                 return false;
             }
 

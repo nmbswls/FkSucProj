@@ -276,10 +276,14 @@ namespace My
 
         public void AddElementCircle(Vector2 worldCenter, float radius, TEnum type, float duration)
         {
+            // 圆心对齐格心，与 stamp 落点同一套网格相位，避免半格偏移导致占格形状畸变
+            Vector2Int centerGrid = WorldToGrid(worldCenter);
+            Vector2 circleCenter = GridToWorld(centerGrid);
+
             float sqrRadius = radius * radius;
 
-            Vector2Int minGrid = WorldToGrid(new Vector3(worldCenter.x - radius, worldCenter.y - radius, 0));
-            Vector2Int maxGrid = WorldToGrid(new Vector3(worldCenter.x + radius, worldCenter.y + radius, 0));
+            Vector2Int minGrid = WorldToGrid(new Vector2(circleCenter.x - radius, circleCenter.y - radius));
+            Vector2Int maxGrid = WorldToGrid(new Vector2(circleCenter.x + radius, circleCenter.y + radius));
 
             minGrid.x -= 1;
             minGrid.y -= 1;
@@ -293,8 +297,8 @@ namespace My
                     Vector2Int currentGridPos = new Vector2Int(x, y);
                     Vector3 cellWorldPos = GridToWorld(currentGridPos);
 
-                    float dx = cellWorldPos.x - worldCenter.x;
-                    float dy = cellWorldPos.y - worldCenter.y;
+                    float dx = cellWorldPos.x - circleCenter.x;
+                    float dy = cellWorldPos.y - circleCenter.y;
                     if ((dx * dx + dy * dy) <= sqrRadius)
                     {
                         AddElement(currentGridPos, type, duration);
