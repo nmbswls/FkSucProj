@@ -124,10 +124,11 @@ public class MapSceneEffectManager : MonoBehaviour
         ctx.BindingUnit = bindingUnitId;
 
         var ctrl = newGo.GetComponent<MapSceneEffectCtrl>();
-        if(ctrl != null)
+        if (ctrl != null)
         {
             ctx.EffectCtrl = ctrl;
-            ctx.EffectCtrl.Show();
+            ctrl.BindFromManager(ctx);
+            ctrl.Show();
         }
 
         if (duration <= 0)
@@ -151,6 +152,17 @@ public class MapSceneEffectManager : MonoBehaviour
     {
         var findIt = ctxs.Find((item) => item.UniqId == id);
         return findIt;
+    }
+
+    public void SetEffectProgress(int effectId, float progress01)
+    {
+        var ctx = FindSceneEffect(effectId);
+        if (ctx?.EffectCtrl == null)
+        {
+            return;
+        }
+
+        ctx.EffectCtrl.SetProgress01(progress01);
     }
 
     public void ForceDestroy(int id)

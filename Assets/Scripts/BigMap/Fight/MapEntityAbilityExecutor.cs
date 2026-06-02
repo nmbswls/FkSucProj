@@ -148,6 +148,7 @@ namespace My.Map.Entity
             public List<long> phaseHitWindows = new();
             public List<int> phaseBindEffectIds = new();
             public int PhaseIntentEffectId = 0;
+            public bool PhaseIntentIsProgressEffect;
 
             public string? openClickkkType;
             public float? openClickkkDuration;
@@ -615,7 +616,16 @@ namespace My.Map.Entity
             }
             
 
-            if (phase.ShowRangePreview)
+            ctx.PhaseIntentIsProgressEffect = false;
+            if (!string.IsNullOrEmpty(phase.ProgressSceneEffect))
+            {
+                ctx.PhaseIntentEffectId = EntityOwner.viewer.ShowProgressSceneEffect(
+                    phase.ProgressSceneEffect,
+                    EntityOwner.Pos,
+                    EntityOwner.Id);
+                ctx.PhaseIntentIsProgressEffect = ctx.PhaseIntentEffectId != 0;
+            }
+            else if (phase.ShowRangePreview)
             {
                 var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(phase.PreviewIntent.ShapeInfo,  EntityOwner.Pos, EntityOwner.FinalLook, phaseDur, phase.PreviewIntent.FaceOffset);
                 ctx.PhaseIntentEffectId = eId;
@@ -770,6 +780,7 @@ namespace My.Map.Entity
             {
                 EntityOwner.LogicManager.viewer.DestroySceneFxEffect(ctx.PhaseIntentEffectId);
                 ctx.PhaseIntentEffectId = 0;
+                ctx.PhaseIntentIsProgressEffect = false;
             }
 
             if (!isInterrupt)
@@ -820,6 +831,14 @@ namespace My.Map.Entity
             return ctx;
         }
 
+
+        float ResolveProgressSceneEffect01(AbilityRunningContext ctx, MapAbilityPhase phase)
+        {
+            float denom = phase.ProgressEffectNormalizeDuration > 0f
+                ? phase.ProgressEffectNormalizeDuration
+                : Mathf.Max(ctx.PhaseDuration, 1e-4f);
+            return Mathf.Clamp01(ctx.PhaseElapsed / denom);
+        }
 
         private void TickIntern(float dt)
         {
@@ -882,9 +901,18 @@ namespace My.Map.Entity
             var phase = ctx.AbilityConfig.Phases[ctx.PhaseIndex];
             if(phase != null) 
             {
-                if(ctx.PhaseIntentEffectId != 0)
+                if (ctx.PhaseIntentEffectId != 0)
                 {
-                    EntityOwner.LogicManager.viewer.UpdateRangeWarnEffect(ctx.PhaseIntentEffectId, EntityOwner.Pos, EntityOwner.FinalLook);
+                    if (ctx.PhaseIntentIsProgressEffect)
+                    {
+                        EntityOwner.viewer.UpdateSceneEffectProgress(
+                            ctx.PhaseIntentEffectId,
+                            ResolveProgressSceneEffect01(ctx, phase));
+                    }
+                    else
+                    {
+                        EntityOwner.LogicManager.viewer.UpdateRangeWarnEffect(ctx.PhaseIntentEffectId, EntityOwner.Pos, EntityOwner.FinalLook);
+                    }
                 }
             }
 

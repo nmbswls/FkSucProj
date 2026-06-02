@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1869316778466143189}
+  - component: {fileID: 7821045592837461921}
+  - component: {fileID: 7821045592837461922}
   m_Layer: 19
   m_Name: player_shield
   m_TagString: Untagged
@@ -32,6 +34,59 @@ Transform:
   - {fileID: 6740210979956341259}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7821045592837461921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2888944403890385009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98bb4a571138f9a4ea3139af92c4585f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AnimancerComp: {fileID: 0}
+  ShowClip: {fileID: 0}
+  unitBindOffset: {x: 0, y: 0.555}
+--- !u!114 &7821045592837461922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2888944403890385009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2e3d4c5a6b7c8d9e0f1a2b3c4d5e6f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particleSystems: []
+  simulationSpeedByProgress:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.5
+      inSlope: 0
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 2.5
+      inSlope: 2
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  stages: []
 --- !u!1 &3285597820358646453
 GameObject:
   m_ObjectHideFlags: 0

@@ -2773,6 +2773,8 @@ namespace My.Map.Entity
                 },
 
                 AnimTag = "queen_attack_heavy_xuli",
+                ProgressSceneEffect = "Skill/player_shield",
+                ProgressEffectNormalizeDuration = 5f,
             });
 
             var mainPhase = new MapAbilityPhase()
@@ -2922,6 +2924,8 @@ namespace My.Map.Entity
                 PhaseBuff = new() { "jian_su_self" },
                 ImmuneKnock = true,
                 AnimTag = "",
+                ProgressSceneEffect = "Skill/force_dash_xuli",
+                ProgressEffectNormalizeDuration = 3f,
 
                 DurationValue = new()
                 {

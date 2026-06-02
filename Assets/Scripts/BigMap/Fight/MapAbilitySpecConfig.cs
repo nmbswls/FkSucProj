@@ -127,6 +127,11 @@ namespace My.Map.Entity
         public bool ShowRangePreview = false;
         public MapPreviewIntent PreviewIntent = new();
 
+        // 进度驱动身上光效：Resources/SceneEffect/{name}，prefab 需 MapSceneEffectCtrl + SceneEffectProgressPresentation
+        public string ProgressSceneEffect;
+        // 进度归一化满档时间；<=0 时用 PhaseDuration（Holding 长阶段请单独配置，如 3）
+        public float ProgressEffectNormalizeDuration;
+
         public string UsePhaseHitAsTarget; // 特殊属性 如果非空 则进入当前phase时 使用特定phase的击中目标当作新技能target
 
         [Header("阶段开始吸附（垫步/拉向目标）")]

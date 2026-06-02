@@ -639,6 +639,16 @@ namespace My
             SceneRangeWarnManager.UpdateSceneWarnRangeRect(eId, pos, dir);
         }
 
+        public int ShowProgressSceneEffect(string effectName, Vector2 pos, long bindingUnitId)
+        {
+            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(pos, -1f, effectName, bindingUnitId);
+            return fxCtx != null ? fxCtx.UniqId : 0;
+        }
+
+        public void UpdateSceneEffectProgress(int effectId, float progress01)
+        {
+            MapSceneEffectManager.Instance.SetEffectProgress(effectId, progress01);
+        }
 
         public void DestroySceneFxEffect(int effectId)
         {

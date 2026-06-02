@@ -173,6 +173,10 @@ public interface ISceneAbilityViewer
 
     void UpdateRangeWarnEffect(int eId, Vector2 pos, Vector2 dir);
 
+    int ShowProgressSceneEffect(string effectName, Vector2 pos, long bindingUnitId);
+
+    void UpdateSceneEffectProgress(int effectId, float progress01);
+
     void DestroySceneFxEffect(int effe);
 
     void DoPlayerSpecialMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onCompelete = null);
