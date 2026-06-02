@@ -42,10 +42,10 @@ MonoBehaviour:
         MemberId: 0
         StaticName: 
         DynamicEntityVariable: 
-      - OutputType: 16
+      - OutputType: 15
         Param1: 2000
         Param2: 0
-        Param3: 
+        Param3: grow
         Param4: 
         DelayTime: 0
         TargetType: 0
@@ -112,8 +112,8 @@ MonoBehaviour:
     NeedSelfFlag: []
     ToStatus: 1
     ChangeView:
-      ChangingDuration: 0
-      ChangingAnimName: 
+      ChangingDuration: 2
+      ChangingAnimName: grow
       ChangingEffect: 
   PoisonSettings:
     Enable: 0

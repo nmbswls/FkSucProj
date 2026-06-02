@@ -24,8 +24,8 @@ namespace My.Map.Scene
 
         public event Action<bool> EventOnInteractStateChanged;
 
-        private bool IsSwitching = false;  // 不合理
-        private float switchingTimer = 0;
+        protected bool IsSwitching = false;
+        protected float switchingTimer = 0;
 
         public bool InteractFocused { get; set; }
         public bool IsInteractDetail { get; set; }
@@ -184,7 +184,7 @@ namespace My.Map.Scene
             
         }
 
-        public void OnStatusChanged(StateChangeView changeView)
+        public virtual void OnStatusChanged(StateChangeView changeView)
         {
             //MainGameManager.Instance.interactSystem.UpdateInteractRangeObjs
             var status = RealLogic.GetCurrentStatusInfo();

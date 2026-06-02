@@ -647,7 +647,8 @@ namespace My.Map
                             _pendingParam1 = 0;
 
                             var animName = output.Param3;
-                            //Owner.DoAnimation(animName);
+                            var durationSec = output.Param1 * 0.001f;
+                            (Owner as LogicEntityInteractPoint)?.NotifySelfAnim(animName, durationSec);
                         }
                         break;
 

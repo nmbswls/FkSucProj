@@ -31,6 +31,12 @@ namespace My.Map.Entity
         public EntityInteractComp InteractComp;
 
         public event Action<StateChangeView> EventOnStatusChange;
+        public event Action<string, float> EventOnSelfAnim;
+
+        public void NotifySelfAnim(string animName, float durationSec)
+        {
+            EventOnSelfAnim?.Invoke(animName, durationSec);
+        }
 
 
         public LogicEntityInteractPoint(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
