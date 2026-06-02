@@ -67,7 +67,7 @@ namespace My.Map.Scene
             return RealLogic.TryTriggerInteract(selectionId);
         }
 
-        public List<SceneInteractSelection> GetInteractSelections()
+        public virtual List<SceneInteractSelection> GetInteractSelections()
         {
             var ret = new List<SceneInteractSelection>();
             if (IsSwitching) return ret;
@@ -113,7 +113,7 @@ namespace My.Map.Scene
             return ret;
         }
 
-        public bool CanInteractEnable()
+        public virtual bool CanInteractEnable()
         {
             if (IsSwitching) return false;
 

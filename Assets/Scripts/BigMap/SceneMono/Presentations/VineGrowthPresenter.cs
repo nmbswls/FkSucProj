@@ -2,6 +2,7 @@ using Config.Map;
 using Map.Entity;
 using My.Map.Entity;
 using My.Map.View;
+using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using static Config.Map.MapInteractPointConfig;
@@ -39,6 +40,26 @@ namespace My.Map.Scene
             base.Unbind();
         }
 
+        public override bool CanInteractEnable()
+        {
+            if (_growPlaying)
+            {
+                return false;
+            }
+
+            return base.CanInteractEnable();
+        }
+
+        public override List<SceneInteractSelection> GetInteractSelections()
+        {
+            if (_growPlaying)
+            {
+                return new List<SceneInteractSelection>();
+            }
+
+            return base.GetInteractSelections();
+        }
+
         void OnSelfAnim(string animName, float durationSec)
         {
             if (_growPlaying || animName != GrowAnimName)
@@ -52,6 +73,7 @@ namespace My.Map.Scene
         public override void OnStatusChanged(StateChangeView changeView)
         {
             base.OnStatusChanged(changeView);
+            IsSwitching = false;
 
             if (_growPlaying)
             {
@@ -75,8 +97,6 @@ namespace My.Map.Scene
             }
 
             _growPlaying = true;
-            IsSwitching = true;
-            switchingTimer = duration;
 
             if (seedVisual != null)
             {
@@ -90,7 +110,7 @@ namespace My.Map.Scene
         {
             _growPlaying = false;
             UpdateTopAnchor();
-            ApplyStatusSnapshot(1);
+            ApplyStatusSnapshot(RealLogic.CurrStatusId);
         }
 
         void ApplyGrowLengthFromLogic()
@@ -145,27 +165,6 @@ namespace My.Map.Scene
             else
             {
                 lineView.SetHidden();
-            }
-        }
-
-        public override void Tick(float dt)
-        {
-            base.Tick(dt);
-
-            if (!IsSwitching)
-            {
-                return;
-            }
-
-            switchingTimer -= dt;
-            if (switchingTimer <= 0f)
-            {
-                IsSwitching = false;
-            }
-
-            if (!_growPlaying)
-            {
-                MainGameManager.Instance.ShowFakeFxEffect("switching", transform.position);
             }
         }
     }
