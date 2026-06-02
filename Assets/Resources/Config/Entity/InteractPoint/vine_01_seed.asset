@@ -32,10 +32,10 @@ MonoBehaviour:
       CheckCommonCond: []
       CheckInteractCond: []
       Outputs:
-      - OutputType: 13
-        Param1: 0
+      - OutputType: 15
+        Param1: 2000
         Param2: 0
-        Param3: vine_area01_grown
+        Param3: grow
         Param4: 
         Param5: 0
         Param6: 0
@@ -44,10 +44,10 @@ MonoBehaviour:
         MemberId: 0
         StaticName: 
         DynamicEntityVariable: 
-      - OutputType: 15
-        Param1: 2000
+      - OutputType: 13
+        Param1: 0
         Param2: 0
-        Param3: grow
+        Param3: vine_area01_grown
         Param4: 
         Param5: 0
         Param6: 0

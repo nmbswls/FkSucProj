@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using My.Map.Ground;
 using My.MapExport;
 using UnityEngine;
@@ -9,6 +8,7 @@ public class WorldAreaRoot : MonoBehaviour
 {
     public Grid Grid;
 
+    // 由 MapLogicHeightConfig.GroundLayerNames 装配，勿在 Inspector 手拖全量 Tilemap。
     public Tilemap[] TileGrounds;
     public Tilemap TileHole;
 
@@ -65,12 +65,15 @@ public class WorldAreaRoot : MonoBehaviour
         _walkGridInstance.transform.localScale = Vector3.one;
 
         Grid = _walkGridInstance.GetComponent<Grid>();
-        var tilemaps = _walkGridInstance.GetComponentsInChildren<Tilemap>(true);
-        TileHole = tilemaps.FirstOrDefault(t => t.name == "Hole");
-        TileGrounds = tilemaps.Where(t => t != TileHole).ToArray();
-        DisableTilemapRenderers(tilemaps);
+        ResolveTileHoleFromGrid();
+        ApplyTileGroundsFromLogicHeightConfig();
 
-        Debug.Log($"[WorldAreaRoot] Walk grid bound: {resourceKey}, layers={TileGrounds.Length}");
+        var allTilemaps = _walkGridInstance.GetComponentsInChildren<Tilemap>(true);
+        DisableTilemapRenderers(allTilemaps);
+
+        Debug.Log(
+            $"[WorldAreaRoot] Walk grid bound: {resourceKey}, groundLayers={TileGrounds?.Length ?? 0} " +
+            $"(from LogicHeightConfig)");
     }
 
     public void ClearWalkGrid()
@@ -90,6 +93,77 @@ public class WorldAreaRoot : MonoBehaviour
         _walkGridInstance = null;
     }
 
+    // 按 LogicHeightConfig.GroundLayerNames 从 Grid 下解析地面 Tilemap（仅地面层）。
+    public bool ApplyTileGroundsFromLogicHeightConfig()
+    {
+        if (LogicHeightConfig == null)
+        {
+            Debug.LogWarning("[WorldAreaRoot] LogicHeightConfig is missing, cannot assemble ground layers.");
+            return false;
+        }
+
+        if (LogicHeightConfig.GroundLayerNames == null || LogicHeightConfig.GroundLayerNames.Length == 0)
+        {
+            Debug.LogWarning("[WorldAreaRoot] LogicHeightConfig.GroundLayerNames is empty.");
+            return false;
+        }
+
+        EnsureGridReference();
+        if (Grid == null)
+        {
+            Debug.LogWarning("[WorldAreaRoot] Grid not found, cannot assemble ground layers.");
+            return false;
+        }
+
+        ResolveTileHoleFromGrid();
+        TileGrounds = CollectGroundTilemaps(Grid, TileHole, LogicHeightConfig);
+        if (TileGrounds == null || TileGrounds.Length == 0)
+        {
+            Debug.LogWarning("[WorldAreaRoot] No ground tilemaps matched GroundLayerNames.");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static Tilemap[] CollectGroundTilemaps(Grid grid, Tilemap tileHole, MapLogicHeightConfig config)
+    {
+        if (grid == null || config?.GroundLayerNames == null || config.GroundLayerNames.Length == 0)
+        {
+            return null;
+        }
+
+        var result = new List<Tilemap>();
+        foreach (var layerName in config.GroundLayerNames)
+        {
+            if (string.IsNullOrEmpty(layerName))
+            {
+                continue;
+            }
+
+            if (tileHole != null && tileHole.name == layerName)
+            {
+                continue;
+            }
+
+            var found = FindTilemapUnderGrid(grid, layerName);
+            if (found == null)
+            {
+                Debug.LogWarning($"[WorldAreaRoot] Ground layer not found under Grid: {layerName}");
+                continue;
+            }
+
+            if (found == tileHole)
+            {
+                continue;
+            }
+
+            result.Add(found);
+        }
+
+        return result.Count > 0 ? result.ToArray() : null;
+    }
+
     public bool IsWorldPosWalkableOnTileGrounds(Vector3 worldPos)
     {
         return IsWorldPosWalkable(worldPos, TileGrounds, TileHole);
@@ -102,6 +176,7 @@ public class WorldAreaRoot : MonoBehaviour
             return;
         }
 
+        TryBindLogicHeightConfigFromDatabase(root, chunkDb);
         root.BindWalkGrid(chunkDb.WalkGridKey);
     }
 
@@ -188,56 +263,84 @@ public class WorldAreaRoot : MonoBehaviour
         return false;
     }
 
-    // 参与 LogicY 采样的 Tilemap。
-    // Config.GroundLayerNames 留空 → 使用 WalkGrid 下全部 TileGrounds（除 Hole）。
     public Tilemap[] ResolveGroundSamplingTilemaps()
     {
-        if (LogicHeightConfig?.GroundLayerNames == null || LogicHeightConfig.GroundLayerNames.Length == 0)
+        if (TileGrounds != null && TileGrounds.Length > 0)
         {
             return TileGrounds;
         }
 
-        var result = new List<Tilemap>();
-        foreach (var layerName in LogicHeightConfig.GroundLayerNames)
+        if (LogicHeightConfig != null)
         {
-            if (string.IsNullOrEmpty(layerName))
-            {
-                continue;
-            }
+            ApplyTileGroundsFromLogicHeightConfig();
+        }
 
-            var found = FindTilemapByName(layerName);
-            if (found != null)
+        return TileGrounds;
+    }
+
+    void EnsureGridReference()
+    {
+        if (Grid != null)
+        {
+            return;
+        }
+
+        if (_walkGridInstance != null)
+        {
+            Grid = _walkGridInstance.GetComponent<Grid>();
+            if (Grid != null)
             {
-                result.Add(found);
+                return;
             }
         }
 
-        return result.Count > 0 ? result.ToArray() : TileGrounds;
+        Grid = GetComponentInChildren<Grid>(true);
+        if (Grid != null)
+        {
+            return;
+        }
+
+        if (StaticPrefabRoot == null)
+        {
+            return;
+        }
+
+        var gridRoot = StaticPrefabRoot.Find("GridRoot");
+        if (gridRoot != null)
+        {
+            Grid = gridRoot.GetComponent<Grid>();
+        }
     }
 
-    Tilemap FindTilemapByName(string layerName)
+    void ResolveTileHoleFromGrid()
     {
-        if (TileGrounds == null)
+        if (TileHole != null || Grid == null)
+        {
+            return;
+        }
+
+        foreach (var tm in Grid.GetComponentsInChildren<Tilemap>(true))
+        {
+            if (tm != null && tm.name == "Hole")
+            {
+                TileHole = tm;
+                return;
+            }
+        }
+    }
+
+    static Tilemap FindTilemapUnderGrid(Grid grid, string layerName)
+    {
+        if (grid == null || string.IsNullOrEmpty(layerName))
         {
             return null;
         }
 
-        foreach (var tm in TileGrounds)
+        foreach (var tm in grid.GetComponentsInChildren<Tilemap>(true))
         {
             if (tm != null && tm.name == layerName)
             {
                 return tm;
-            }
-        }
-
-        if (Grid != null)
-        {
-            foreach (var tm in Grid.GetComponentsInChildren<Tilemap>(true))
-            {
-                if (tm != null && tm.name == layerName)
-                {
-                    return tm;
-                }
             }
         }
 

@@ -60,14 +60,19 @@ public static class MapChunkEditorSceneSetup
                 return false;
             }
 
+            runtimeArea.ApplyTileGroundsFromLogicHeightConfig();
+
             var clone = Object.Instantiate(runtimeArea.Grid.gameObject);
             clone.name = "GridRoot";
             clone.transform.SetParent(staticRoot, false);
 
-            var layerNames = runtimeArea.TileGrounds
-                .Where(t => t != null)
-                .Select(t => t.name)
-                .ToHashSet();
+            var layerNames = runtimeArea.LogicHeightConfig?.GroundLayerNames != null &&
+                             runtimeArea.LogicHeightConfig.GroundLayerNames.Length > 0
+                ? runtimeArea.LogicHeightConfig.GroundLayerNames.ToHashSet()
+                : runtimeArea.TileGrounds
+                    .Where(t => t != null)
+                    .Select(t => t.name)
+                    .ToHashSet();
             var tilemaps = clone.GetComponentsInChildren<Tilemap>(true)
                 .Where(t => layerNames.Count == 0 || layerNames.Contains(t.name))
                 .ToArray();

@@ -84,6 +84,15 @@ public static class MapChunkEditorTilemapResolver{
         }
 
         var worldArea = editorRoot.GetComponent<WorldAreaRoot>();
+        if (worldArea != null && worldArea.LogicHeightConfig != null)
+        {
+            if (worldArea.ApplyTileGroundsFromLogicHeightConfig())
+            {
+                tileGrounds = worldArea.TileGrounds;
+                return tileGrounds != null && tileGrounds.Length > 0;
+            }
+        }
+
         if (worldArea != null && worldArea.TileGrounds != null && worldArea.TileGrounds.Length > 0)
         {
             tileGrounds = worldArea.TileGrounds;
@@ -96,19 +105,40 @@ public static class MapChunkEditorTilemapResolver{
         }
 
         var gridRoot = editorRoot.StaticPrefabRoot.Find("GridRoot");
+        Grid grid = null;
         if (gridRoot != null)
         {
-            tileGrounds = gridRoot.GetComponentsInChildren<Tilemap>(true);
-            return tileGrounds.Length > 0;
+            grid = gridRoot.GetComponent<Grid>();
+        }
+        else
+        {
+            grid = editorRoot.StaticPrefabRoot.GetComponentInChildren<Grid>(true);
         }
 
-        var grid = editorRoot.StaticPrefabRoot.GetComponentInChildren<Grid>(true);
         if (grid == null)
         {
             return false;
         }
 
-        tileGrounds = grid.GetComponentsInChildren<Tilemap>(true);
+        Tilemap tileHole = null;
+        foreach (var tm in grid.GetComponentsInChildren<Tilemap>(true))
+        {
+            if (tm != null && tm.name == "Hole")
+            {
+                tileHole = tm;
+                break;
+            }
+        }
+
+        if (worldArea?.LogicHeightConfig != null)
+        {
+            tileGrounds = WorldAreaRoot.CollectGroundTilemaps(grid, tileHole, worldArea.LogicHeightConfig);
+            return tileGrounds != null && tileGrounds.Length > 0;
+        }
+
+        tileGrounds = grid.GetComponentsInChildren<Tilemap>(true)
+            .Where(t => t != null && t != tileHole)
+            .ToArray();
         return tileGrounds.Length > 0;
     }
 

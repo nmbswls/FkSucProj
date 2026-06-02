@@ -15,8 +15,8 @@ namespace My.Map.Ground
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Ground Layer Names：填 GridRoot prefab 里 Tilemap 节点名（如 Ground、Building_01_Ground）。\n" +
-                "留空则运行时采样 WalkGrid 下全部 Walk 层。",
+                "Ground Layer Names：填 GridRoot/WalkGridRoot 下地面 Tilemap 节点名（如 Ground、Building_01_Ground）。\n" +
+                "WorldAreaRoot 通过此列表装配 TileGrounds；留空则无法自动装配。",
                 MessageType.Info);
 
             var config = (MapLogicHeightConfig)target;

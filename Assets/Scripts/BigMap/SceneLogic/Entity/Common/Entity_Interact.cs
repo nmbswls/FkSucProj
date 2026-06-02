@@ -65,10 +65,10 @@ namespace My.Map
             this.interactInfos.Clear();
             this.interactInfos.AddRange(interactInfos);
 
-            if(_isInteracting)
+            // 交互 Output 链内的 ChangeSelfStatus 会同步刷新选项；勿在此 DoInteractEnd，由 HandleInteractOutputs 正常收尾。
+            if (_isInteracting)
             {
-                Debug.LogError("RefreshInteractInfo when interacting.");
-                DoInteractEnd();
+                return;
             }
         }
 
