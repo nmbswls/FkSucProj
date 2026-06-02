@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using My;
+using My.Map;
 using My.Map.Entity;
 using UnityEngine;
 using UnityEngine.AI;
@@ -103,6 +104,11 @@ namespace My.Map.Scene
                 };
                 CharacterController.SyncPos = (pos) =>
                 {
+                    if (UnitEntity == null)
+                    {
+                        return;
+                    }
+
                     UnitEntity.SetPosition(pos);
                 };
                 
@@ -128,12 +134,21 @@ namespace My.Map.Scene
 
             if (navAgent != null)
             {
-                navAgent.nextPosition = rb.position;
+                navAgent.nextPosition = transform.position;
             }
-            // 同步位置
+
             if (UnitEntity != null)
             {
-                UnitEntity.SetPosition(MainGameManager.Instance.GetLogicPosFromWorldPos(transform.position));
+                if (rb != null)
+                {
+                    UnitEntity.SetPosition(rb.position);
+                }
+                else
+                {
+                    UnitEntity.SetPosition(MapLogicPosition.WorldToLogicPos(transform.position, UnitEntity.LogicY));
+                }
+
+                SyncRootTransformFromLogic();
             }
 
             //UpdateTargettedMoveState();
@@ -749,7 +764,7 @@ namespace My.Map.Scene
                 return false;
             }
 
-            logicPos = MainGameManager.Instance.GetLogicPosFromWorldPos(t.position);
+            logicPos = MainGameManager.Instance.GetLogicPosFromWorldPos(t.position, UnitEntity.LogicY);
             return true;
         }
 

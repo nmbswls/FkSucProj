@@ -338,24 +338,30 @@ namespace My
 
         public Vector3 GetWorldPosFromLogicPos(Vector2 pos)
         {
-            return pos;
+            return MapLogicPosition.LogicToWorld(pos, 0f);
+        }
+
+        public Vector3 GetWorldPosFromLogicPos(Vector2 pos, float logicY)
+        {
+            return MapLogicPosition.LogicToWorld(pos, logicY);
+        }
+
+        public Vector3 GetWorldPosFromLogicPos(ILogicEntity entity)
+        {
+            return MapLogicPosition.LogicToWorld(entity);
         }
 
         /// <summary>
         /// todo 需要根据房间裁剪等方式 转换为逻辑坐标 空间可能是重叠的
         /// </summary>
-        /// <param name="worldPos"></param>
-        /// <returns></returns>
         public Vector2 GetLogicPosFromWorldPos(Vector3 worldPos)
         {
-            // 先检查是否映射在子区域中
-            // 
+            return MapLogicPosition.WorldToLogicPos(worldPos, 0f);
+        }
 
-
-            // 根据结果 返回区域加逻辑坐标
-
-
-            return new Vector2(worldPos.x, worldPos.y);
+        public Vector2 GetLogicPosFromWorldPos(Vector3 worldPos, float logicY)
+        {
+            return MapLogicPosition.WorldToLogicPos(worldPos, logicY);
         }
 
 

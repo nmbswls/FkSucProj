@@ -19,6 +19,9 @@ namespace My.MapExport
         // Editor 导出的完整可走 Tilemap（Resources 路径，不含扩展名）
         public string WalkGridKey;
 
+        // Editor 导出的 LogicHeight 配置 Resources 路径（不含扩展名，可选）
+        public string LogicHeightConfigKey;
+
         public List<MapChunkExportItem> Chunks = new List<MapChunkExportItem>();
 
         [NonSerialized] Dictionary<(int x, int y), MapChunkExportItem> _lookup;

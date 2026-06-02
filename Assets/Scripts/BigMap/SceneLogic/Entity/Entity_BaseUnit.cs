@@ -15,6 +15,7 @@ using My.Player;
 using Unity.VisualScripting;
 using static My.UI.FishingMiniGamePanel;
 using static UnityEngine.RuleTile.TilingRuleOutput;
+using My.Map.Ground;
 
 
 namespace My.Map
@@ -170,6 +171,8 @@ namespace My.Map
             }
 
             HitWindowRegistry = new(this);
+
+            ResolveLogicYAtPosition(LogicYSetReason.Script);
         }
 
         protected override void OnTick(float dt)
@@ -221,6 +224,8 @@ namespace My.Map
             }
 
             UpdateUnitOffsetZ();
+
+            TickLogicHeight(dt);
         }
 
 

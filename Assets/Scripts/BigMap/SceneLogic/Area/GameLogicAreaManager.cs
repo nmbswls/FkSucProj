@@ -1037,6 +1037,7 @@ namespace My.Map.Logic
             }
 
             WorldAreaRoot.TryBindWalkGridFromDatabase(root, cacheChunkDatabase);
+            WorldAreaRoot.TryBindLogicHeightConfigFromDatabase(root, cacheChunkDatabase);
         }
 
     }

@@ -186,7 +186,7 @@ namespace My.Map.Scene
             if (rb != null)
                 rb.position = world;
             transform.position = new Vector3(world.x, world.y, transform.position.z);
-            PlayerEntity.SetPosition(MainGameManager.Instance.GetLogicPosFromWorldPos(world));
+            PlayerEntity.SetPosition(MainGameManager.Instance.GetLogicPosFromWorldPos(world, PlayerEntity.LogicY));
         }
 
         private void StartForbidSlide(float duration)

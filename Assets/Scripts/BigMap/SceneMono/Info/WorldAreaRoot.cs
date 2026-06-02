@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using My.Map.Ground;
 using My.MapExport;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -9,6 +11,9 @@ public class WorldAreaRoot : MonoBehaviour
 
     public Tilemap[] TileGrounds;
     public Tilemap TileHole;
+
+    [Header("Logic Height")]
+    public MapLogicHeightConfig LogicHeightConfig;
 
     public Transform PlayerBornPos;
 
@@ -100,6 +105,29 @@ public class WorldAreaRoot : MonoBehaviour
         root.BindWalkGrid(chunkDb.WalkGridKey);
     }
 
+    public static void TryBindLogicHeightConfigFromDatabase(WorldAreaRoot root, MapChunkDatabase chunkDb)
+    {
+        if (root == null || chunkDb == null || string.IsNullOrEmpty(chunkDb.LogicHeightConfigKey))
+        {
+            return;
+        }
+
+        if (root.LogicHeightConfig != null)
+        {
+            return;
+        }
+
+        var config = Resources.Load<MapLogicHeightConfig>(chunkDb.LogicHeightConfigKey);
+        if (config != null)
+        {
+            root.LogicHeightConfig = config;
+        }
+        else
+        {
+            Debug.LogWarning($"[WorldAreaRoot] LogicHeightConfig not found: Resources/{chunkDb.LogicHeightConfigKey}");
+        }
+    }
+
     static void DisableTilemapRenderers(Tilemap[] tilemaps)
     {
         if (tilemaps == null)
@@ -158,5 +186,71 @@ public class WorldAreaRoot : MonoBehaviour
         }
 
         return false;
+    }
+
+    // 参与 LogicY 采样的 Tilemap；Config 未配时回退全部 Walk 层
+    public Tilemap[] ResolveGroundSamplingTilemaps()
+    {
+        if (LogicHeightConfig?.GroundLayers == null || LogicHeightConfig.GroundLayers.Length == 0)
+        {
+            return TileGrounds;
+        }
+
+        var result = new List<Tilemap>();
+        foreach (var entry in LogicHeightConfig.GroundLayers)
+        {
+            if (entry == null)
+            {
+                continue;
+            }
+
+            if (entry.LayerReference != null)
+            {
+                result.Add(entry.LayerReference);
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(entry.LayerName))
+            {
+                continue;
+            }
+
+            var found = FindTilemapByName(entry.LayerName);
+            if (found != null)
+            {
+                result.Add(found);
+            }
+        }
+
+        return result.Count > 0 ? result.ToArray() : TileGrounds;
+    }
+
+    Tilemap FindTilemapByName(string layerName)
+    {
+        if (TileGrounds == null)
+        {
+            return null;
+        }
+
+        foreach (var tm in TileGrounds)
+        {
+            if (tm != null && tm.name == layerName)
+            {
+                return tm;
+            }
+        }
+
+        if (Grid != null)
+        {
+            foreach (var tm in Grid.GetComponentsInChildren<Tilemap>(true))
+            {
+                if (tm != null && tm.name == layerName)
+                {
+                    return tm;
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -114,7 +114,7 @@ namespace My
 
             // 初始状态可能需要主动拉取或由逻辑层在 Bind 后立即推送
 
-            transform.localPosition = MainGameManager.Instance.GetWorldPosFromLogicPos(_logic.Pos);
+            transform.localPosition = MapLogicPosition.LogicToWorld(_logic);
 
             RegisterEvents();
 
@@ -181,7 +181,7 @@ namespace My
 
         public virtual void OnEntityMove(long entityId, Vector2 oldPos, Vector2 newPos)
         {
-            transform.position = newPos;
+            transform.position = MapLogicPosition.LogicToWorld(_logic);
             SceneAOIManager.Instance.MoveEntity(_logic, oldPos, newPos);
         }
 

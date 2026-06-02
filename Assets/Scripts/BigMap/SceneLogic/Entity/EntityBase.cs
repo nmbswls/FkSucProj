@@ -1,6 +1,7 @@
 using Config;
 using Map.Logic.Events;
 using My.Map.Entity;
+using My.Map.Ground;
 using My.Map.Logic;
 using System;
 using System.Collections;
@@ -102,6 +103,8 @@ namespace My.Map
         bool IsActive { get; set; }
         Vector2 Pos { get; }
 
+        float LogicY { get; }
+
         float OffsetZ { get; }
 
 
@@ -172,6 +175,10 @@ namespace My.Map
         
         public Vector2 Pos { get; protected set; } = Vector2.zero;
 
+        public float LogicY { get; protected set; }
+
+        public int ActiveGroundLevel { get; protected set; } = -1;
+
         public float OffsetZ { get; protected set; }
 
         public ISceneAbilityViewer? viewer; // ?��?�表?��?�???
@@ -241,6 +248,7 @@ namespace My.Map
             this.Id = instId;
             this.CfgId = cfgId;
             this.Pos = orgPos;
+            this.LogicY = bindingRecord.LogicY;
             this.BelongRoomId = bindingRecord.BelongRoomId;
             this.FactionId = bindingRecord.FactionId;
 
@@ -288,10 +296,24 @@ namespace My.Map
 
         public void TeleportTo(Vector2 pos)
         {
-            // ??�?
             var posNow = this.Pos;
             SetPosition(pos);
+            OnAfterPositionTeleport();
             EventOnEntityMove?.Invoke(this.Id, posNow, pos);
+        }
+
+        protected virtual void OnAfterPositionTeleport()
+        {
+        }
+
+        public void SetLogicY(float y, LogicYSetReason reason, float maxDeltaPerSec = 0f, float dt = 0f)
+        {
+            if (reason == LogicYSetReason.Probe && maxDeltaPerSec > 0f && dt > 0f)
+            {
+                y = Mathf.MoveTowards(LogicY, y, maxDeltaPerSec * dt);
+            }
+
+            LogicY = y;
         }
 
 
@@ -527,6 +549,7 @@ namespace My.Map
             //input.Id = this.Id;
             //input.EntityType = this.en
             input.Position = this.Pos;
+            input.LogicY = LogicY;
 
             if(MarkDestroyed)
             {
