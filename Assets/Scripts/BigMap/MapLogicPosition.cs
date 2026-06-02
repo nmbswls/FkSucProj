@@ -2,12 +2,11 @@ using UnityEngine;
 
 namespace My.Map
 {
-    // Pos：Tilemap 平面坐标 (x,y)，移动 / AOI / 物理均在此平面。
-    // LogicY：逻辑高度（层叠、支撑面、后续跳跃落地），不参与根节点 world 坐标。
+    // Pos：Tilemap 平面坐标 (x,y)，移动 / AOI / 物理 / 表现根节点均只用 Pos。
+    // LogicY：逻辑高度（层叠、支撑面），仅用于战斗高度判定与存档，不参与 world 坐标。
     public static class MapLogicPosition
     {
-        // 根节点世界坐标 = 平面 Pos（LogicY 仅逻辑侧使用）
-        public static Vector3 LogicToWorld(Vector2 pos, float logicY)
+        public static Vector3 LogicToWorld(Vector2 pos)
         {
             return new Vector3(pos.x, pos.y, 0f);
         }
@@ -19,21 +18,15 @@ namespace My.Map
                 return Vector3.zero;
             }
 
-            return LogicToWorld(entity.Pos, entity.LogicY);
+            return LogicToWorld(entity.Pos);
         }
 
-        public static Vector2 WorldToLogicPos(Vector3 world, float logicY)
+        public static Vector2 WorldToLogicPos(Vector3 world)
         {
             return new Vector2(world.x, world.y);
         }
 
-        public static void WorldToLogic(Vector3 world, float currentLogicY, out Vector2 pos, out float outLogicY)
-        {
-            pos = WorldToLogicPos(world, currentLogicY);
-            outLogicY = currentLogicY;
-        }
-
-        // 命中 / 排序等：LogicY + Buff OffsetZ
+        // 命中高度：LogicY + Buff OffsetZ
         public static float GetEffectiveLogicY(ILogicEntity entity)
         {
             if (entity == null)
@@ -42,6 +35,17 @@ namespace My.Map
             }
 
             return entity.LogicY + entity.OffsetZ;
+        }
+
+        // 攻击判定点高度（逻辑高度 + 身体/武器带宽）
+        public static float ResolveAttackHitHeight(ILogicEntity attacker, float bodyBand = 0.3f)
+        {
+            if (attacker == null)
+            {
+                return bodyBand;
+            }
+
+            return GetEffectiveLogicY(attacker) + bodyBand;
         }
     }
 }

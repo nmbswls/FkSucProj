@@ -78,13 +78,16 @@ namespace My.Map
             stealthInfo.hidePointId = hidePointId;
 
             // get units
-            var list = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 8.0f, new EntityFilterParam()
-            {
-                CampFilterType = ECampFilterType.NotSelf,
-                SelfCampId = FactionId,
-
-                FilterParamLists = new() {  EEntityType.Npc }
-            });
+            var list = LogicManager.visionSenser.OverlapCircleAllEntity(
+                Pos,
+                8.0f,
+                new EntityFilterParam()
+                {
+                    CampFilterType = ECampFilterType.NotSelf,
+                    SelfCampId = FactionId,
+                    FilterParamLists = new() { EEntityType.Npc },
+                },
+                MapLogicPosition.ResolveAttackHitHeight(this));
 
             foreach (var e in list)
             {

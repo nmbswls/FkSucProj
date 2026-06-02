@@ -4,7 +4,7 @@ namespace My.Map.Scene
 {
     public abstract partial class SceneUnitPresenter
     {
-        // 逻辑层 Pos 驱动根节点；LogicY 不参与 world 坐标
+        // 逻辑 Pos 与 rb 不一致时（如 Teleport）才回写，避免每帧与物理抢写
         void SyncRootTransformFromLogic()
         {
             if (UnitEntity == null)
@@ -12,15 +12,15 @@ namespace My.Map.Scene
                 return;
             }
 
-            var world = MapLogicPosition.LogicToWorld(UnitEntity.Pos, UnitEntity.LogicY);
+            var world = MapLogicPosition.LogicToWorld(UnitEntity.Pos);
             if (rb != null)
             {
-                if ((rb.position - (Vector2)world).sqrMagnitude > 1e-8f)
+                if ((rb.position - (Vector2)world).sqrMagnitude > 1e-6f)
                 {
                     rb.MovePosition(world);
                 }
             }
-            else if ((transform.position - world).sqrMagnitude > 1e-8f)
+            else if ((transform.position - world).sqrMagnitude > 1e-6f)
             {
                 transform.position = world;
             }

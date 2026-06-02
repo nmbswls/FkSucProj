@@ -546,7 +546,8 @@ namespace My
             };
 
             Vector2 hitDir = Forward;
-            float atkHeight = _z;
+            float baseHeight = MapLogicPosition.GetEffectiveLogicY(Owner.bindingProjInfo.ownerEntity);
+            float atkHeight = baseHeight + _z;
 
             foreach (var ent in glm.visionSenser.OverlapCircleAllEntity(_pos, hitR, filter, atkHeight))
             {

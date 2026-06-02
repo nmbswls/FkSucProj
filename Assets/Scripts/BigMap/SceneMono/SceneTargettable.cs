@@ -1,4 +1,4 @@
-
+using My.Map;
 using UnityEngine;
 
 namespace My
@@ -35,22 +35,27 @@ namespace My
         /// <returns></returns>
         public bool CheckHitHeightValid(float atkHeight, float tolerance = 0.2f)
         {
-            var zOffset = BelongPresenter.GetLogicEntity().OffsetZ;
+            var entity = BelongPresenter?.GetLogicEntity();
+            if (entity == null || Collider == null)
+            {
+                return false;
+            }
+
+            float logicHeight = MapLogicPosition.GetEffectiveLogicY(entity);
 
             float heightMax = Collider.bounds.max.y - Collider.transform.position.y;
             float heightMin = Collider.bounds.min.y - Collider.transform.position.y;
 
-            if(atkHeight - tolerance >  heightMax + zOffset)
+            if (atkHeight - tolerance > heightMax + logicHeight)
             {
                 return false;
             }
 
-            if (atkHeight + tolerance < heightMin + zOffset)
+            if (atkHeight + tolerance < heightMin + logicHeight)
             {
                 return false;
             }
 
-            // zOffset
             return true;
         }
     }

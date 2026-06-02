@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using My.Map;
 using My.Map.Unit;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.PackageManager;
@@ -98,11 +99,15 @@ namespace My.Map.Unit
             _nextAllySenseTime = LogicTime.time + AllySenseInterval;
 
 
-            var allies = _unit.LogicManager.visionSenser.OverlapCircleAllEntity(_unit.Pos, AllySenseRadius, new EntityFilterParam()
-            {
-                CampFilterType = ECampFilterType.OnlySelf,
-                SelfCampId = _unit.FactionId,
-            });
+            var allies = _unit.LogicManager.visionSenser.OverlapCircleAllEntity(
+                _unit.Pos,
+                AllySenseRadius,
+                new EntityFilterParam()
+                {
+                    CampFilterType = ECampFilterType.OnlySelf,
+                    SelfCampId = _unit.FactionId,
+                },
+                MapLogicPosition.ResolveAttackHitHeight(_unit));
 
             //foreach (var ally in allies)
             //{

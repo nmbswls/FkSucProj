@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Config;
 using My.Config;
+using My.Map;
 using My.Map.Entity;
 using My.Map.Fight;
 using My.Map.Logic;
@@ -452,7 +453,11 @@ namespace My.Map
                         FilterParamLists = new() { EEntityType.Npc },
                     };
 
-                    var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, abilityConf.AttractRange, filterParam);
+                    var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(
+                        Pos,
+                        abilityConf.AttractRange,
+                        filterParam,
+                        MapLogicPosition.ResolveAttackHitHeight(this));
 
                     foreach (var surround in surrounds)
                     {
@@ -1250,12 +1255,16 @@ namespace My.Map
             var desireCfg = CfgMgr.Cfgs.TbPlayerDesireLevel.Get(DesireLevel);
             float auraRange = desireCfg.AuraMaxRange;
             // 
-            var candidates = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 3.0f, new EntityFilterParam()
-            {
-                FilterParamLists = new() { EEntityType.Npc },
-                CampFilterType = ECampFilterType.NotSelf,
-                SelfCampId = EFactionId.Player,
-            });
+            var candidates = LogicManager.visionSenser.OverlapCircleAllEntity(
+                Pos,
+                3.0f,
+                new EntityFilterParam()
+                {
+                    FilterParamLists = new() { EEntityType.Npc },
+                    CampFilterType = ECampFilterType.NotSelf,
+                    SelfCampId = EFactionId.Player,
+                },
+                MapLogicPosition.ResolveAttackHitHeight(this));
 
             foreach (var candidate in candidates)
             {

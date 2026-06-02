@@ -338,12 +338,7 @@ namespace My
 
         public Vector3 GetWorldPosFromLogicPos(Vector2 pos)
         {
-            return MapLogicPosition.LogicToWorld(pos, 0f);
-        }
-
-        public Vector3 GetWorldPosFromLogicPos(Vector2 pos, float logicY)
-        {
-            return MapLogicPosition.LogicToWorld(pos, logicY);
+            return MapLogicPosition.LogicToWorld(pos);
         }
 
         public Vector3 GetWorldPosFromLogicPos(ILogicEntity entity)
@@ -356,12 +351,7 @@ namespace My
         /// </summary>
         public Vector2 GetLogicPosFromWorldPos(Vector3 worldPos)
         {
-            return MapLogicPosition.WorldToLogicPos(worldPos, 0f);
-        }
-
-        public Vector2 GetLogicPosFromWorldPos(Vector3 worldPos, float logicY)
-        {
-            return MapLogicPosition.WorldToLogicPos(worldPos, logicY);
+            return MapLogicPosition.WorldToLogicPos(worldPos);
         }
 
 

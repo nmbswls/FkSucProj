@@ -356,7 +356,11 @@ namespace My.Map.Entity
                 {
                     FilterParamLists = new() { EEntityType.Npc },
                 };
-                var iterList = ctx.Env.visionSenser.OverlapCircleAllEntity(casterUnit.Pos, 3.5f, filterParam);
+                var iterList = ctx.Env.visionSenser.OverlapCircleAllEntity(
+                    casterUnit.Pos,
+                    3.5f,
+                    filterParam,
+                    MapLogicPosition.ResolveAttackHitHeight(casterUnit));
                 List<BaseUnitLogicEntity> units = new();
                 foreach (var it in iterList) 
                 {
@@ -875,6 +879,9 @@ namespace My.Map.Entity
             }
 
             List<ILogicEntity> candidates = null;
+
+            var srcEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false);
+            float hitHeight = MapLogicPosition.ResolveAttackHitHeight(srcEntity);
             
             Vector2 hitBoxDir = Vector2.right; // 碰撞盒方向 影响判定区域计算
             Vector2 realCenter = ctx.TriggerPos.Value; // 碰撞中心 影响判定区计算
@@ -902,7 +909,6 @@ namespace My.Map.Entity
                         }
                         else if(realCfg.CenterPosType == 2)
                         {
-                            var srcEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false);
                             if (srcEntity != null && srcEntity is BaseUnitLogicEntity unitEntity)
                             {
                                 realCenter = unitEntity.Pos;
@@ -931,7 +937,7 @@ namespace My.Map.Entity
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
 
-                var iterList = ctx.Env.visionSenser.OverlapBoxAllEntity(checkOrigin, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter, hitHeight:0.3f);
+                var iterList = ctx.Env.visionSenser.OverlapBoxAllEntity(checkOrigin, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter, hitHeight: hitHeight);
                 candidates = iterList.ToList();
                 DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, checkOrigin, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: hitBoxDir);
             }
@@ -941,7 +947,7 @@ namespace My.Map.Entity
                 filter.CampFilterType = realCfg.CampFilterType;
                 filter.SelfCampId = ctx.SourceInfo.SrcFactionId;
 
-                var iterList = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter, hitHeight: 0.3f);
+                var iterList = ctx.Env.visionSenser.OverlapBoxAllEntity(realCenter, hitBoxDir, new Vector2(realCfg.Width, realCfg.Length), filter, hitHeight: hitHeight);
                 candidates = iterList.ToList();
                 DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Rect, realCenter, new Vector2(realCfg.Width, realCfg.Length), Color.red, 1f, dir: hitBoxDir);
             }
@@ -953,14 +959,13 @@ namespace My.Map.Entity
 
                 if(realCfg.CenterOffset != 0 && ctx.CtxType == EFightCtxType.Ability)
                 {
-                    var srcEntity = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false);
                     if(srcEntity != null && srcEntity is BaseUnitLogicEntity unitEntity)
                     {
                         realCenter += unitEntity.FinalLook.normalized * realCfg.CenterOffset;
                     }
                 }
 
-                var iterList = ctx.Env.visionSenser.OverlapCircleAllEntity(realCenter, realCfg.Radius, filter);
+                var iterList = ctx.Env.visionSenser.OverlapCircleAllEntity(realCenter, realCfg.Radius, filter, hitHeight);
                 candidates = iterList.ToList();
 
                 DebugHitBoxIndicator.Draw(DebugHitBoxIndicator.Shape.Circle, realCenter, new Vector2(realCfg.Radius, realCfg.Radius), Color.red, 1f);

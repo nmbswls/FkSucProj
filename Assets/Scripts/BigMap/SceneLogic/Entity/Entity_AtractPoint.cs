@@ -66,7 +66,11 @@ namespace My.Map
                     FilterParamLists = new() { EEntityType.Npc },
                 };
 
-                var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(Pos, 5.0f, filterParam);
+                var surrounds = LogicManager.visionSenser.OverlapCircleAllEntity(
+                    Pos,
+                    5.0f,
+                    filterParam,
+                    MapLogicPosition.ResolveAttackHitHeight(this));
 
                 foreach (var surround in surrounds)
                 {

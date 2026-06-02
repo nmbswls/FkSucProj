@@ -140,26 +140,26 @@ namespace My.Map.Ground
             logicY = 0f;
             t = 0f;
 
-            float fromY = slope.SouthLogicY;
-            float toY = slope.NorthLogicY;
-            if (toY <= fromY + 1e-5f)
+            float southLogicY = slope.SouthLogicY;
+            float northLogicY = slope.NorthLogicY;
+            if (northLogicY <= southLogicY + 1e-5f)
             {
                 return false;
             }
 
-            var grid = layer.layoutGrid;
-            var cellSize = grid != null ? grid.cellSize : Vector3.one;
-            var cellMinWorld = layer.CellToWorld(cell);
-            float cellMinY = cellMinWorld.y;
-            float cellHeight = Mathf.Abs(cellSize.y * layer.transform.lossyScale.y);
-            if (cellHeight <= 1e-5f)
+            // 格内南缘(minY) → 北缘(maxY)，按 Pos.y 在 world 范围内插值 LogicY
+            float cellMinY = layer.CellToWorld(cell).y;
+            float cellMaxY = layer.CellToWorld(cell + new Vector3Int(0, 1, 0)).y;
+            float cellSpanY = cellMaxY - cellMinY;
+            if (Mathf.Abs(cellSpanY) <= 1e-5f)
             {
-                logicY = fromY;
+                logicY = southLogicY;
                 return true;
             }
 
-            t = Mathf.Clamp01((pos.y - cellMinY) / cellHeight);
-            logicY = Mathf.Lerp(fromY, toY, t);
+            // 北高南低：南缘 t=0 → SouthLogicY，北缘 t=1 → NorthLogicY
+            t = Mathf.Clamp01((pos.y - cellMinY) / cellSpanY);
+            logicY = Mathf.Lerp(southLogicY, northLogicY, t);
             return true;
         }
 

@@ -16,54 +16,54 @@ MonoBehaviour:
   - Tile: {fileID: 11400000, guid: f5c5d7f90abccca4eac7203fa89657d8, type: 2}
     LogicY: 0
   - Tile: {fileID: 11400000, guid: 7e179f18ef5163048a78d46237d084b9, type: 2}
-    LogicY: 1
-  - Tile: {fileID: 11400000, guid: 027954f3a31a5ff40991099214b049d3, type: 2}
     LogicY: 3
+  - Tile: {fileID: 11400000, guid: 027954f3a31a5ff40991099214b049d3, type: 2}
+    LogicY: 6
   - Tile: {fileID: 11400000, guid: 6840446e52b46f8419485530a1f82e44, type: 2}
-    LogicY: 4
+    LogicY: 9
   SlopeTiles:
   - Tile: {fileID: 11400000, guid: 651dabe3da34d434d8cd768b4f8033ed, type: 2}
     SouthLogicY: 0
     NorthLogicY: 1
   - Tile: {fileID: 11400000, guid: 4c2c5930d7cf67f438717f850b9deb4d, type: 2}
-    SouthLogicY: 0
-    NorthLogicY: 1
+    SouthLogicY: 1
+    NorthLogicY: 2
   - Tile: {fileID: 11400000, guid: 8f6c4ab7f3fafe144b49a6b358d30015, type: 2}
-    SouthLogicY: 0
-    NorthLogicY: 1
+    SouthLogicY: 2
+    NorthLogicY: 3
   - Tile: {fileID: 11400000, guid: 663100adc7c65ae468f82dd3bfae4210, type: 2}
-    SouthLogicY: 0
-    NorthLogicY: 1
+    SouthLogicY: 3
+    NorthLogicY: 4
   - Tile: {fileID: 11400000, guid: 21c10206cca3d1a4e9eacfec6956860d, type: 2}
-    SouthLogicY: 0
-    NorthLogicY: 1
+    SouthLogicY: 4
+    NorthLogicY: 5
   - Tile: {fileID: 11400000, guid: 60b04ec2ed51c1445802b8c079b0a6f6, type: 2}
-    SouthLogicY: 0
-    NorthLogicY: 1
+    SouthLogicY: 5
+    NorthLogicY: 6
   - Tile: {fileID: 11400000, guid: a7429e6ff8f5ed846859eb481ebfa59b, type: 2}
-    SouthLogicY: 0
-    NorthLogicY: 1
+    SouthLogicY: 6
+    NorthLogicY: 7
   - Tile: {fileID: 11400000, guid: 5985c35d7f70bea4ea03981f98fffc60, type: 2}
-    SouthLogicY: 1
-    NorthLogicY: 2
+    SouthLogicY: 7
+    NorthLogicY: 8
   - Tile: {fileID: 11400000, guid: 6d9c8bae0d0b2b54fb34f5cdfd908379, type: 2}
-    SouthLogicY: 1
-    NorthLogicY: 2
+    SouthLogicY: 8
+    NorthLogicY: 9
   - Tile: {fileID: 11400000, guid: eabc9d154a278664896ec2f7f2d749da, type: 2}
-    SouthLogicY: 1
-    NorthLogicY: 2
+    SouthLogicY: 9
+    NorthLogicY: 10
   - Tile: {fileID: 11400000, guid: bcaebb068306bd74aa4e65c862bea061, type: 2}
-    SouthLogicY: 1
-    NorthLogicY: 2
+    SouthLogicY: 10
+    NorthLogicY: 11
   - Tile: {fileID: 11400000, guid: e039291ce7063fa4ab336f2e87322886, type: 2}
-    SouthLogicY: 1
-    NorthLogicY: 2
+    SouthLogicY: 11
+    NorthLogicY: 12
   - Tile: {fileID: 11400000, guid: c41ed4b516b5eca46b4d948dfb4794b3, type: 2}
-    SouthLogicY: 1
-    NorthLogicY: 2
+    SouthLogicY: 12
+    NorthLogicY: 13
   - Tile: {fileID: 11400000, guid: 8153f2a780150c948b2c0d32f388fcb6, type: 2}
-    SouthLogicY: 1
-    NorthLogicY: 2
+    SouthLogicY: 13
+    NorthLogicY: 14
   GroundLayerNames:
   - Ground
   - Building_01_Ground
