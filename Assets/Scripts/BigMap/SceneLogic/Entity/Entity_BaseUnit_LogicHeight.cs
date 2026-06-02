@@ -73,7 +73,8 @@ namespace My.Map
                 return;
             }
 
-            float maxDelta = reason == LogicYSetReason.Teleport || reason == LogicYSetReason.JumpDown
+            // Probe：LogicY 随脚下地形即时解析，不参与平面移动
+            float maxDelta = reason == LogicYSetReason.Teleport || reason == LogicYSetReason.JumpDown || reason == LogicYSetReason.Probe
                 ? 0f
                 : config.MaxLogicYDeltaPerSec;
 

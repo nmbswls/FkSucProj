@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using My.Map;
-using My.Map.Entity;
 using My.Map.Scene;
 using TMPro;
 using UnityEngine;
@@ -10,36 +8,36 @@ using UnityEngine;
 public class QuickDebugShow : MonoBehaviour
 {
     public Canvas TopCanvas;
-    // Start is called before the first frame update
-    void Start()
-    {
-        TopCanvas = GetComponentInParent<Canvas>();
-    }
 
     public GameObject HpValPrefab;
+
     public class HpBarStruct
     {
         public GameObject Go;
         public TextMeshProUGUI Val;
         public SceneUnitPresenter bindingUnit;
     }
-    
+
     public Dictionary<long, HpBarStruct> hpBars = new Dictionary<long, HpBarStruct>();
 
+    [SerializeField]
+    float logicHeightScreenOffsetY = 24f;
+
+    void Start()
+    {
+        TopCanvas = GetComponentInParent<Canvas>();
+    }
 
     public void Clear()
     {
-        foreach(var k in hpBars.Keys.ToList())
+        foreach (var k in hpBars.Keys.ToList())
         {
-            var go = hpBars[k].Go;
-            GameObject.Destroy(go);
+            GameObject.Destroy(hpBars[k].Go);
         }
 
         hpBars.Clear();
     }
 
-
-    // Update is called once per frame
     public void Update()
     {
         foreach (var k in hpBars.Keys.ToList())
@@ -51,67 +49,22 @@ public class QuickDebugShow : MonoBehaviour
                 continue;
             }
 
-            if(hpBars[k].bindingUnit.UnitEntity.abilityController.CurrentCtx != null)
-            {
-                var ctx = hpBars[k].bindingUnit.UnitEntity.abilityController.CurrentCtx;
-                var phase = ctx.AbilityConfig.Phases[ctx.PhaseIndex];
-                if(phase.HoldingPhase)
-                {
-                    hpBars[k].Val.text = (ctx.PhaseElapsed) + "";
-                }
-            }
+            var entity = hpBars[k].bindingUnit.UnitEntity;
+            hpBars[k].Val.text = entity.LogicY.ToString("F2");
 
-            //hpBars[k].Val.text = ((int)(hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.HP) * 0.001f)).ToString();
-            //hpBars[k].Val.text += ";";
-            //hpBars[k].Val.text += ((int)(hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.UnitHVal) * 0.001f)).ToString();
-            //hpBars[k].Val.text += ";";
-            //hpBars[k].Val.text += ((int)(hpBars[k].bindingUnit.UnitEntity.GetAttr(AttrIdConsts.UnitHShield) * 0.001f)).ToString();
-            ////var attracted = hpBars[k].bindingUnit.UnitEntity.CheckAttractState();
-            ////if(attracted)
-            ////{
-            ////    hpBars[k].Val.text += " a";
-            ////}
+            var anchor = hpBars[k].bindingUnit.PivotHeader != null
+                ? hpBars[k].bindingUnit.PivotHeader.position
+                : hpBars[k].bindingUnit.GetWorldPosition();
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(anchor);
 
-            //if (hpBars[k].bindingUnit.UnitEntity.CheckHasBuff("evil_shock"))
-            //{
-            //    hpBars[k].Val.text += " shock";
-            //}
-            //else
-            //{
-            //    //if (hpBars[k].bindingUnit.UnitEntity.CombatState == My.Map.NpcCombatStateComp.ECombatState.InCombat)
-            //    //{
-            //    //    hpBars[k].Val.text += " b";
-            //    //}
-            //    //else if (hpBars[k].bindingUnit.UnitEntity.CombatState == My.Map.NpcCombatStateComp.ECombatState.CombatRecover)
-            //    //{
-            //    //    hpBars[k].Val.text += " r";
-            //    //}
-            //}
-
-
-            //try
-            //{
-            //    var seePlayer = hpBars[k].bindingUnit.UnitEntity.IsTargetVisible(MainGameManager.Instance.playerScenePresenter.PlayerEntity.Id);
-            //    if (seePlayer)
-            //    {
-            //        hpBars[k].Val.text += " s";
-            //    }
-            //}
-            //catch { }
-
-            var worldPos = hpBars[k].bindingUnit.GetWorldPosition();
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-
-            Vector2 uiLocalPos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 transform.parent as RectTransform,
                 screenPos,
                 TopCanvas.worldCamera,
-                out uiLocalPos
+                out Vector2 uiLocalPos
             );
 
-            //someUiElement.anchoredPosition = uiLocalPos;
-
+            uiLocalPos += Vector2.up * logicHeightScreenOffsetY;
             hpBars[k].Go.transform.localPosition = uiLocalPos;
         }
 
@@ -121,20 +74,24 @@ public class QuickDebugShow : MonoBehaviour
             {
                 continue;
             }
-            if (unitPresent.UnitEntity.Type != My.Map.EEntityType.Player)
+
+            if (unitPresent.UnitEntity.Type != EEntityType.Player)
             {
                 continue;
             }
 
             if (!hpBars.ContainsKey(p.Id))
             {
-                HpBarStruct newStruct = new();
-                newStruct.Go = GameObject.Instantiate(HpValPrefab, transform);
+                var newStruct = new HpBarStruct
+                {
+                    Go = GameObject.Instantiate(HpValPrefab, transform),
+                    bindingUnit = unitPresent,
+                };
                 newStruct.Go.SetActive(true);
                 newStruct.Val = newStruct.Go.GetComponentInChildren<TextMeshProUGUI>();
-                newStruct.bindingUnit = unitPresent;
                 hpBars[p.Id] = newStruct;
             }
         }
     }
 }
+

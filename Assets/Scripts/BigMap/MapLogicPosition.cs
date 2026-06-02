@@ -2,13 +2,14 @@ using UnityEngine;
 
 namespace My.Map
 {
-    // Pos：Tilemap 平面坐标 (x,y)，与移动/AOI 一致。
-    // LogicY：层高度附加值；根节点 world.y = Pos.y + LogicY（LogicY=0 时与改前一致）。
+    // Pos：Tilemap 平面坐标 (x,y)，移动 / AOI / 物理均在此平面。
+    // LogicY：逻辑高度（层叠、支撑面、后续跳跃落地），不参与根节点 world 坐标。
     public static class MapLogicPosition
     {
+        // 根节点世界坐标 = 平面 Pos（LogicY 仅逻辑侧使用）
         public static Vector3 LogicToWorld(Vector2 pos, float logicY)
         {
-            return new Vector3(pos.x, pos.y + logicY, 0f);
+            return new Vector3(pos.x, pos.y, 0f);
         }
 
         public static Vector3 LogicToWorld(ILogicEntity entity)
@@ -23,12 +24,7 @@ namespace My.Map
 
         public static Vector2 WorldToLogicPos(Vector3 world, float logicY)
         {
-            return new Vector2(world.x, world.y - logicY);
-        }
-
-        public static float WorldToLogicY(float logicY)
-        {
-            return logicY;
+            return new Vector2(world.x, world.y);
         }
 
         public static void WorldToLogic(Vector3 world, float currentLogicY, out Vector2 pos, out float outLogicY)
@@ -37,7 +33,7 @@ namespace My.Map
             outLogicY = currentLogicY;
         }
 
-        // 命中高度：LogicY + Buff OffsetZ
+        // 命中 / 排序等：LogicY + Buff OffsetZ
         public static float GetEffectiveLogicY(ILogicEntity entity)
         {
             if (entity == null)

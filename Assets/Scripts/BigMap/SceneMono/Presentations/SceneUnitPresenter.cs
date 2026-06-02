@@ -145,7 +145,7 @@ namespace My.Map.Scene
                 }
                 else
                 {
-                    UnitEntity.SetPosition(MapLogicPosition.WorldToLogicPos(transform.position, UnitEntity.LogicY));
+                    UnitEntity.SetPosition(new Vector2(transform.position.x, transform.position.y));
                 }
 
                 SyncRootTransformFromLogic();
@@ -764,7 +764,7 @@ namespace My.Map.Scene
                 return false;
             }
 
-            logicPos = MainGameManager.Instance.GetLogicPosFromWorldPos(t.position, UnitEntity.LogicY);
+            logicPos = MainGameManager.Instance.GetLogicPosFromWorldPos(t.position);
             return true;
         }
 
