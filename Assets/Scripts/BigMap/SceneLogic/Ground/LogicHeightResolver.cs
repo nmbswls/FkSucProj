@@ -8,7 +8,8 @@ namespace My.Map.Ground
         public Vector2 Pos;
         public float CurrentLogicY;
         public float MaxDownSearch;
-        public int PreferredGroundLevel;
+        // 上一帧支撑面高度，用于同高重叠消歧（M2）
+        public float PreferredSupportLogicY;
         public bool IsFlying;
     }
 
@@ -16,7 +17,6 @@ namespace My.Map.Ground
     {
         public bool Found;
         public float LogicY;
-        public int GroundLevel;
         public bool IsSlope;
         public float SlopeT;
     }
@@ -26,7 +26,7 @@ namespace My.Map.Ground
         LogicHeightProbeResult Probe(in LogicHeightProbeInput input, MapLogicHeightConfig config, Tilemap[] groundLayers);
     }
 
-    // v1：北高南低 Slope 格内 lerp；向下探测完整版见 ProbeDownwardFromLogicY 注释（M2）。
+    // 北高南低 Slope：SouthLogicY → NorthLogicY 格内 lerp
     public class LogicHeightResolver : ILogicHeightResolver
     {
         public static readonly LogicHeightResolver Instance = new();
@@ -44,7 +44,6 @@ namespace My.Map.Ground
             config.BuildRuntimeLookup(out var groundLookup, out var slopeLookup);
 
             float bestLogicY = float.MinValue;
-            int bestLevel = -1;
             bool bestIsSlope = false;
             float bestSlopeT = 0f;
             bool found = false;
@@ -65,7 +64,7 @@ namespace My.Map.Ground
 
                 if (slopeLookup.TryGetValue(tile, out var slopeDef))
                 {
-                    if (!TryEvaluateNorthHighSlope(layer, cell, input.Pos, slopeDef, config, out float slopeY, out float t))
+                    if (!TryEvaluateNorthHighSlope(layer, cell, input.Pos, slopeDef, out float slopeY, out float t))
                     {
                         continue;
                     }
@@ -79,7 +78,6 @@ namespace My.Map.Ground
                     {
                         found = true;
                         bestLogicY = slopeY;
-                        bestLevel = slopeDef.FromLevel;
                         bestIsSlope = true;
                         bestSlopeT = t;
                     }
@@ -87,12 +85,11 @@ namespace My.Map.Ground
                     continue;
                 }
 
-                if (!groundLookup.TryGetValue(tile, out int groundLevel))
+                if (!groundLookup.TryGetValue(tile, out float groundY))
                 {
                     continue;
                 }
 
-                float groundY = config.GetLevelHeight(groundLevel);
                 if (groundY > input.CurrentLogicY + SupportEpsilon)
                 {
                     continue;
@@ -102,7 +99,6 @@ namespace My.Map.Ground
                 {
                     found = true;
                     bestLogicY = groundY;
-                    bestLevel = groundLevel;
                     bestIsSlope = false;
                     bestSlopeT = 0f;
                 }
@@ -115,7 +111,6 @@ namespace My.Map.Ground
 
             result.Found = true;
             result.LogicY = bestLogicY;
-            result.GroundLevel = bestLevel;
             result.IsSlope = bestIsSlope;
             result.SlopeT = bestSlopeT;
             return result;
@@ -134,26 +129,23 @@ namespace My.Map.Ground
             return tile != null;
         }
 
-        // 北高南低：南缘 Hn，北缘 Hn+1
         static bool TryEvaluateNorthHighSlope(
             Tilemap layer,
             Vector3Int cell,
             Vector2 pos,
             MapLogicHeightConfig.SlopeTileEntry slope,
-            MapLogicHeightConfig config,
             out float logicY,
             out float t)
         {
             logicY = 0f;
             t = 0f;
 
-            if (slope.ToLevel != slope.FromLevel + 1)
+            float fromY = slope.SouthLogicY;
+            float toY = slope.NorthLogicY;
+            if (toY <= fromY + 1e-5f)
             {
                 return false;
             }
-
-            float fromY = config.GetLevelHeight(slope.FromLevel);
-            float toY = config.GetLevelHeight(slope.ToLevel);
 
             var grid = layer.layoutGrid;
             var cellSize = grid != null ? grid.cellSize : Vector3.one;
@@ -172,13 +164,9 @@ namespace My.Map.Ground
         }
 
         /*
-         * M2: ProbeDownwardFromLogicY 完整算法
-         * 1. 在 Pos 处遍历 GroundLayers 采样 Ground / Slope tile
-         * 2. Ground -> candidateLogicY = GetLevelHeight(level)
-         * 3. Slope（北高南低）-> EvaluateNorthHighSlope
-         * 4. 过滤 candidateLogicY <= CurrentLogicY + epsilon
-         * 5. 取 candidateLogicY 最大者；同高 PreferredGroundLevel 优先
-         * 6. 非 Teleport/JumpDown：MoveTowards 限速
+         * M2: ProbeDownwardFromLogicY
+         * 过滤 candidateLogicY <= CurrentLogicY + epsilon，取最大支撑面；
+         * 同高时 PreferredSupportLogicY 优先。
          */
     }
 }

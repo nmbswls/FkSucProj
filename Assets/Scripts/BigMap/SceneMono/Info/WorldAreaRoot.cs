@@ -188,34 +188,24 @@ public class WorldAreaRoot : MonoBehaviour
         return false;
     }
 
-    // 参与 LogicY 采样的 Tilemap；Config 未配时回退全部 Walk 层
+    // 参与 LogicY 采样的 Tilemap。
+    // Config.GroundLayerNames 留空 → 使用 WalkGrid 下全部 TileGrounds（除 Hole）。
     public Tilemap[] ResolveGroundSamplingTilemaps()
     {
-        if (LogicHeightConfig?.GroundLayers == null || LogicHeightConfig.GroundLayers.Length == 0)
+        if (LogicHeightConfig?.GroundLayerNames == null || LogicHeightConfig.GroundLayerNames.Length == 0)
         {
             return TileGrounds;
         }
 
         var result = new List<Tilemap>();
-        foreach (var entry in LogicHeightConfig.GroundLayers)
+        foreach (var layerName in LogicHeightConfig.GroundLayerNames)
         {
-            if (entry == null)
+            if (string.IsNullOrEmpty(layerName))
             {
                 continue;
             }
 
-            if (entry.LayerReference != null)
-            {
-                result.Add(entry.LayerReference);
-                continue;
-            }
-
-            if (string.IsNullOrEmpty(entry.LayerName))
-            {
-                continue;
-            }
-
-            var found = FindTilemapByName(entry.LayerName);
+            var found = FindTilemapByName(layerName);
             if (found != null)
             {
                 result.Add(found);

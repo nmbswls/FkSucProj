@@ -177,7 +177,8 @@ namespace My.Map
 
         public float LogicY { get; protected set; }
 
-        public int ActiveGroundLevel { get; protected set; } = -1;
+        // 上一帧解析到的支撑面 LogicY，供重叠消歧（M2）
+        public float ActiveSupportLogicY { get; protected set; }
 
         public float OffsetZ { get; protected set; }
 

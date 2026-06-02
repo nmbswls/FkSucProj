@@ -63,7 +63,7 @@ namespace My.Map
                 Pos = Pos,
                 CurrentLogicY = LogicY,
                 MaxDownSearch = config.ProbeDownMaxDistance,
-                PreferredGroundLevel = ActiveGroundLevel,
+                PreferredSupportLogicY = ActiveSupportLogicY,
                 IsFlying = MotorSystem != null && MotorSystem.IgnoreGround,
             };
 
@@ -78,7 +78,7 @@ namespace My.Map
                 : config.MaxLogicYDeltaPerSec;
 
             SetLogicY(result.LogicY, reason, maxDelta, dt);
-            ActiveGroundLevel = result.GroundLevel;
+            ActiveSupportLogicY = result.LogicY;
         }
     }
 }

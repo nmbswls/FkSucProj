@@ -9,71 +9,39 @@ namespace My.Map.Ground
     public class MapLogicHeightConfig : ScriptableObject
     {
         [Serializable]
-        public class GroundLevelHeightEntry
-        {
-            public int Level;
-            public float LogicY;
-        }
-
-        [Serializable]
         public class GroundTileEntry
         {
             public TileBase Tile;
-            public int GroundLevel;
+            // 平地站立高度（离散平台）
+            public float LogicY;
         }
 
         [Serializable]
         public class SlopeTileEntry
         {
             public TileBase Tile;
-            public int FromLevel;
-            public int ToLevel;
+            // 北高南低：南缘（低）→ 北缘（高），格内 lerp
+            public float SouthLogicY;
+            public float NorthLogicY;
         }
 
-        [Serializable]
-        public class GroundLayerEntry
-        {
-            public Tilemap LayerReference;
-            public string LayerName;
-        }
-
-        [Header("Level Heights (0-3)")]
-        public GroundLevelHeightEntry[] LevelHeights = new GroundLevelHeightEntry[4];
-
-        [Header("Ground Tiles")]
+        [Header("Ground Tiles (flat, discrete LogicY)")]
         public GroundTileEntry[] GroundTiles;
 
-        [Header("Slope Tiles (North high, South low)")]
+        [Header("Slope Tiles (north high / south low, continuous within cell)")]
         public SlopeTileEntry[] SlopeTiles;
 
-        [Header("Ground Tilemap Layers")]
-        public GroundLayerEntry[] GroundLayers;
+        // 与 GridRoot/WalkGridRoot 下 Tilemap 的 GameObject 名一致；留空则采样全部 Walk 层
+        [Header("Ground Tilemap Layer Names")]
+        public string[] GroundLayerNames;
 
         [Header("Resolver")]
         public float MaxLogicYDeltaPerSec = 20f;
         public float ProbeDownMaxDistance = 8f;
 
-        public float GetLevelHeight(int level)
+        public bool TryGetGroundLogicY(TileBase tile, out float logicY)
         {
-            if (LevelHeights == null)
-            {
-                return 0f;
-            }
-
-            foreach (var entry in LevelHeights)
-            {
-                if (entry != null && entry.Level == level)
-                {
-                    return entry.LogicY;
-                }
-            }
-
-            return 0f;
-        }
-
-        public bool TryGetGroundLevel(TileBase tile, out int level)
-        {
-            level = -1;
+            logicY = 0f;
             if (tile == null || GroundTiles == null)
             {
                 return false;
@@ -83,7 +51,7 @@ namespace My.Map.Ground
             {
                 if (entry != null && entry.Tile == tile)
                 {
-                    level = entry.GroundLevel;
+                    logicY = entry.LogicY;
                     return true;
                 }
             }
@@ -112,10 +80,10 @@ namespace My.Map.Ground
         }
 
         public void BuildRuntimeLookup(
-            out Dictionary<TileBase, int> groundLookup,
+            out Dictionary<TileBase, float> groundLookup,
             out Dictionary<TileBase, SlopeTileEntry> slopeLookup)
         {
-            groundLookup = new Dictionary<TileBase, int>();
+            groundLookup = new Dictionary<TileBase, float>();
             slopeLookup = new Dictionary<TileBase, SlopeTileEntry>();
 
             if (GroundTiles != null)
@@ -127,7 +95,7 @@ namespace My.Map.Ground
                         continue;
                     }
 
-                    groundLookup[entry.Tile] = entry.GroundLevel;
+                    groundLookup[entry.Tile] = entry.LogicY;
                 }
             }
 
