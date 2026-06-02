@@ -724,6 +724,11 @@ namespace My.Player
                 return false;
             }
 
+            if (!TryConsumeLearnConds(entry.LearnConds, out reason))
+            {
+                return false;
+            }
+
             if (!TryAddSkillLearnedSkill(entry.SkillId, entry.SkillLevel > 0 ? entry.SkillLevel : 1))
             {
                 reason = "add_failed";
@@ -731,6 +736,39 @@ namespace My.Player
             }
 
             reason = null;
+            return true;
+        }
+
+        // 学习时扣除 learn_conds 中的 OwnItem 消耗（条件已在 CanLearn 中校验过）
+        bool TryConsumeLearnConds(System.Collections.Generic.IReadOnlyList<cfg.demo.CommonCheckCond> conds, out string reason)
+        {
+            reason = null;
+            if (conds == null || conds.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (var cond in conds)
+            {
+                if (cond == null || cond.Type != cfg.demo.ECommonCheckType.OwnItem)
+                {
+                    continue;
+                }
+
+                string itemId = cond.Param5;
+                long count = cond.Param1;
+                if (string.IsNullOrEmpty(itemId) || count <= 0)
+                {
+                    continue;
+                }
+
+                if (CostItem(itemId, count) < count)
+                {
+                    reason = "cost_fail";
+                    return false;
+                }
+            }
+
             return true;
         }
 

@@ -140,14 +140,7 @@ namespace My.UI.SkillLoadout
                 return;
             }
 
-            if (_skillDropBehavior != null)
-            {
-                _skillDropBehavior.OnEndDragFromPool();
-            }
-            else
-            {
-                SkillDragSession.End();
-            }
+            SkillDragSession.EndDrag(eventData);
         }
     }
 }

@@ -30,5 +30,23 @@
     "learn_conds": [],
     "skill_id": "player_naishou_to_jianshang",
     "skill_level": 1
+  },
+  {
+    "entry_id": 5,
+    "school_id": 2,
+    "display_name": "Summon ally turret",
+    "learn_conds": [
+      {
+        "type": 4,
+        "param1": 1,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "gold",
+        "param6": "0"
+      }
+    ],
+    "skill_id": "player_summon_ally_turret",
+    "skill_level": 1
   }
 ]

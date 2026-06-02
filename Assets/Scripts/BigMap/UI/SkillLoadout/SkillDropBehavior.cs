@@ -10,8 +10,6 @@ namespace My.UI.SkillLoadout
 
         void OnDragFromPool(Vector2 screenPos);
 
-        void OnEndDragFromPool();
-
         bool TryDropOnSlot(SkillLoadoutPanel panel, PlayerSkillSystem sys, SkillLoadoutSlotKind slotKind,
             int slotIndex, string skillId, out string failReason);
     }
@@ -23,9 +21,6 @@ namespace My.UI.SkillLoadout
 
         public void OnDragFromPool(Vector2 screenPos) =>
             SkillDragSession.FollowScreenPoint(screenPos);
-
-        public void OnEndDragFromPool() =>
-            SkillDragSession.End();
 
         public bool TryDropOnSlot(SkillLoadoutPanel panel, PlayerSkillSystem sys, SkillLoadoutSlotKind slotKind,
             int slotIndex, string skillId, out string failReason)

@@ -1,16 +1,22 @@
+using System.Collections.Generic;
 using My.Map.Entity;
+using My.Player;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace My.UI.SkillLoadout
 {
+    // 拖拽会话：OnDrop 优先提交；OnEndDrag 仅在未提交时射线回退，避免重复装配。
     public static class SkillDragSession
     {
         static GameObject _ghostRoot;
         static Image _ghostIcon;
         static TextMeshProUGUI _ghostLabel;
         static Canvas _rootCanvas;
+
+        static bool _dropCommitted;
 
         public static string DraggingSkillId { get; private set; }
 
@@ -25,7 +31,9 @@ namespace My.UI.SkillLoadout
             _ghostLabel = ghostLabel;
             _rootCanvas = canvas;
             if (_ghostRoot != null)
+            {
                 _ghostRoot.SetActive(false);
+            }
         }
 
         public static void SetCanvas(Canvas canvas) => _rootCanvas = canvas;
@@ -33,8 +41,11 @@ namespace My.UI.SkillLoadout
         public static void Begin(string skillId, ISkillDropBehavior dropBehavior)
         {
             if (string.IsNullOrEmpty(skillId))
+            {
                 return;
+            }
 
+            _dropCommitted = false;
             DraggingSkillId = skillId;
             ActiveDropBehavior = dropBehavior;
 
@@ -42,7 +53,9 @@ namespace My.UI.SkillLoadout
             {
                 _ghostRoot.SetActive(true);
                 if (_ghostLabel != null)
+                {
                     _ghostLabel.text = skillId;
+                }
 
                 if (_ghostIcon != null)
                 {
@@ -64,7 +77,10 @@ namespace My.UI.SkillLoadout
 
         public static void FollowScreenPoint(Vector2 screenPos)
         {
-            if (_ghostRoot == null || _rootCanvas == null) return;
+            if (_ghostRoot == null || _rootCanvas == null)
+            {
+                return;
+            }
 
             var canvasRect = _rootCanvas.transform as RectTransform;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -76,12 +92,113 @@ namespace My.UI.SkillLoadout
             _ghostRoot.transform.localPosition = local;
         }
 
-        public static void End()
+        // 拖拽源 OnEndDrag：未由 OnDrop 处理时，在指针下尝试一次落点。
+        public static void EndDrag(PointerEventData eventData)
+        {
+            if (!IsDragging)
+            {
+                return;
+            }
+
+            if (!_dropCommitted && eventData != null)
+            {
+                TryCommitDropAtScreen(eventData.position);
+            }
+
+            Clear();
+        }
+
+        public static void End() => Clear();
+
+        // 由 SkillSlotDropZone.OnDrop 调用；同一次拖拽只会进入一次。
+        public static bool TryCommitDropToZone(SkillSlotDropZone zone)
+        {
+            if (!IsDragging || _dropCommitted || zone == null || zone.view == null)
+            {
+                return false;
+            }
+
+            var panel = SkillLoadoutPanel.Current;
+            if (panel == null)
+            {
+                return false;
+            }
+
+            if (zone.mode == SkillSlotDropMode.Fixed)
+            {
+                return false;
+            }
+
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (mgr?.SkillSystem == null)
+            {
+                return false;
+            }
+
+            var skillId = DraggingSkillId;
+            var sys = mgr.SkillSystem;
+            var behavior = ActiveDropBehavior;
+            if (behavior == null)
+            {
+                Debug.Log("Skill drop rejected: no_drop_behavior");
+                return false;
+            }
+
+            if (!behavior.TryDropOnSlot(panel, sys, zone.view.slotKind, zone.view.SlotIndex, skillId, out var fail))
+            {
+                if (!string.IsNullOrEmpty(fail))
+                {
+                    Debug.Log("Skill drop rejected: " + fail);
+                }
+
+                return false;
+            }
+
+            _dropCommitted = true;
+            panel.ApplyLoadoutToEntity();
+            panel.RefreshAll();
+            return true;
+        }
+
+        static void TryCommitDropAtScreen(Vector2 screenPos)
+        {
+            var eventSystem = EventSystem.current;
+            if (eventSystem == null)
+            {
+                return;
+            }
+
+            var pointerData = new PointerEventData(eventSystem)
+            {
+                position = screenPos,
+            };
+            var results = new List<RaycastResult>();
+            eventSystem.RaycastAll(pointerData, results);
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                var zone = results[i].gameObject.GetComponentInParent<SkillSlotDropZone>();
+                if (zone == null)
+                {
+                    continue;
+                }
+
+                if (TryCommitDropToZone(zone) || _dropCommitted)
+                {
+                    return;
+                }
+            }
+        }
+
+        static void Clear()
         {
             DraggingSkillId = null;
             ActiveDropBehavior = null;
+            _dropCommitted = false;
             if (_ghostRoot != null)
+            {
                 _ghostRoot.SetActive(false);
+            }
         }
     }
 }
