@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8355201329116710151}
   - component: {fileID: 8878027109537262389}
   m_Layer: 15
-  m_Name: vine_growth_top
+  m_Name: vine_top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

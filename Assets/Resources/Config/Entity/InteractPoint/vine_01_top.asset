@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
-  m_Name: vine_growth_01_top
+  m_Name: vine_01_top
   m_EditorClassIdentifier: 
-  CfgId: vine_growth_01_top
+  CfgId: vine_01_top
   ShowName: "\u8513\u8514"
-  PrefabName: vine_growth_top
+  PrefabName: vine_top
   NameOffset: 0.8
   IsAlwaysActive: 0
   ShowOnWorldMap: 0
   WorldMapMarkerLabel: 
   MainStatusInfo:
     StatusId: 0
-    Desp: "\u9876\u90e8\u6500\u79fb"
+    Desp: "\u9876\u90E8\u6500\u79FB"
     InteractInfos:
     - InteractId: 1
-      Label: "\u6cbf\u8513\u8514\u722c\u4e0b"
-      UnLabel: "\u6cbf\u8513\u8514\u722c\u4e0b"
+      Label: "\u6CBF\u8513\u8514\u722C\u4E0B"
+      UnLabel: "\u6CBF\u8513\u8514\u722C\u4E0B"
       HideWhenFail: 1
       NeedDist: 0.5
       Passive: 0
@@ -44,6 +44,8 @@ MonoBehaviour:
         Param2: 0
         Param3: vine_area01_base
         Param4: 
+        Param5: 0
+        Param6: 0
         DelayTime: 0
         TargetType: 0
         MemberId: 0
@@ -57,9 +59,10 @@ MonoBehaviour:
   StateChangeRules: []
   PoisonSettings:
     Enable: 0
+    ApplyPoisonConds: []
     NpcTriggerBuffId: 
     BaitDurationSeconds: 30
     ReapplyCooldownSeconds: 20
-    ApplyPoisonLabel: "\u4e0b\u6bd2"
+    ApplyPoisonLabel: "\u4E0B\u6BD2"
     NpcFloatText: ...
     NpcApproachStopDistance: 0.4

@@ -676,15 +676,32 @@ public class StaticItemExporterWindow : EditorWindow
         HashSet<string> uniqNames = new();
         foreach (var dynamicGen in dynamicGenerator)
         {
-            var refreshInfo = dynamicGen.RefreshInfo;
+            var refreshInfo = DynamicEntityRefreshInfoExportUtil.CloneForExport(dynamicGen.RefreshInfo);
+            if (refreshInfo == null)
+            {
+                Debug.LogWarning($"[MapExport] Skip dynamic generator with empty RefreshInfo: {dynamicGen.gameObject.name}");
+                continue;
+            }
+
             if(!string.IsNullOrEmpty(refreshInfo.UniqName) && uniqNames.Contains(refreshInfo.UniqName))
             {
                 Debug.LogError($"duplicate key {refreshInfo.UniqName} in {dynamicGen.gameObject.name}");
                 continue;
             }
             refreshInfo.StaticId = staticIdCounter++;
-            refreshInfo.InitInfo.Position = dynamicGen.transform.position;
-            //refreshInfo.InitInfo.FaceDir = dynamicGen.transform.position;
+            if (refreshInfo.InitInfo != null)
+            {
+                refreshInfo.InitInfo.Position = dynamicGen.transform.position;
+            }
+
+            if (refreshInfo.InitInfo is EntityInitInfo4InteractPoint initInfo4Ip &&
+                initInfo4Ip.Variables != null &&
+                initInfo4Ip.Variables.keys.Count > 0)
+            {
+                Debug.Log(
+                    $"[MapExport] {dynamicGen.gameObject.name} export Variables: " +
+                    $"{initInfo4Ip.Variables.keys.Count} entries");
+            }
 
             uniqNames.Add(refreshInfo.UniqName);
             asset.EntityRefreshInfo.Add(refreshInfo);

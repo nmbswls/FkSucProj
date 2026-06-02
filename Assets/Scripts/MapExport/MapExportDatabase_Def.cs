@@ -200,6 +200,11 @@ namespace My.MapExport
         public override EEntityType EntityType => EEntityType.InteractPoint;
 
         public SerializableDict<string, string> Variables = new();
+
+        public void CopyVariablesTo(Dictionary<string, string> target, bool clearFirst = true)
+        {
+            Variables?.CopyTo(target, clearFirst);
+        }
     }
 
     [Serializable]

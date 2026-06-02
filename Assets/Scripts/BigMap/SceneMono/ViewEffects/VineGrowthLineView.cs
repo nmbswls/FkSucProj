@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace My.Map.View
 {
-    // 藤蔓 LineRenderer 纯表现：路径采样与生长 Tween，不依赖逻辑层。
+    // 藤蔓 LineRenderer 纯表现：从 seedAnchor 沿 up 方向生长固定长度。
     public class VineGrowthLineView : MonoBehaviour
     {
         [SerializeField] LineRenderer line;
         [SerializeField] Transform seedAnchor;
-        [SerializeField] Transform targetAnchor;
-        [SerializeField] Transform[] pathAnchors;
         [SerializeField] int segmentCount = 16;
         [SerializeField] float lineWidth = 0.12f;
+        [SerializeField] float defaultGrowLength = 1.23f;
 
         Tween _growTween;
         Vector3[] _pointBuffer;
+        float _growLengthWorld;
 
         void Awake()
         {
@@ -29,12 +29,26 @@ namespace My.Map.View
                 line.useWorldSpace = false;
                 line.widthMultiplier = lineWidth;
             }
+
+            _growLengthWorld = Mathf.Max(0.01f, defaultGrowLength);
+        }
+
+        public float GrowLengthWorld => _growLengthWorld;
+
+        public void Configure(float growLengthWorld)
+        {
+            _growLengthWorld = Mathf.Max(0.01f, growLengthWorld);
+        }
+
+        public Vector3 GetTopWorldPosition()
+        {
+            return EvaluatePathWorld(1f);
         }
 
         public void SetProgress(float t)
         {
             t = Mathf.Clamp01(t);
-            if (line == null || seedAnchor == null || targetAnchor == null)
+            if (line == null || seedAnchor == null)
             {
                 return;
             }
@@ -117,36 +131,9 @@ namespace My.Map.View
         Vector3 EvaluatePathWorld(float pathT)
         {
             pathT = Mathf.Clamp01(pathT);
-            var a = seedAnchor.position;
-            var b = targetAnchor.position;
-
-            if (pathAnchors == null || pathAnchors.Length == 0)
-            {
-                return Vector3.Lerp(a, b, pathT);
-            }
-
-            if (pathAnchors.Length == 1)
-            {
-                return QuadraticBezier(a, pathAnchors[0].position, b, pathT);
-            }
-
-            var c1 = pathAnchors[0].position;
-            var c2 = pathAnchors[pathAnchors.Length - 1].position;
-            return CubicBezier(a, c1, c2, b, pathT);
-        }
-
-        static Vector3 QuadraticBezier(Vector3 p0, Vector3 p1, Vector3 p2, float t)
-        {
-            float u = 1f - t;
-            return u * u * p0 + 2f * u * t * p1 + t * t * p2;
-        }
-
-        static Vector3 CubicBezier(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
-        {
-            float u = 1f - t;
-            float u2 = u * u;
-            float t2 = t * t;
-            return u2 * u * p0 + 3f * u2 * t * p1 + 3f * u * t2 * p2 + t2 * t * p3;
+            var origin = seedAnchor.position;
+            var direction = seedAnchor.up.sqrMagnitude > 0.0001f ? seedAnchor.up.normalized : Vector3.up;
+            return origin + direction * (_growLengthWorld * pathT);
         }
     }
 }

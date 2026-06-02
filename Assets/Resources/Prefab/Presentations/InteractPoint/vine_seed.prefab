@@ -152,10 +152,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   line: {fileID: 910001003}
   seedAnchor: {fileID: 1312913037898224815}
-  targetAnchor: {fileID: 1722418268486631673}
-  pathAnchors: []
   segmentCount: 16
   lineWidth: 0.12
+  defaultGrowLength: 1.23
 --- !u!1 &1620229924692926848
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,7 +168,7 @@ GameObject:
   - component: {fileID: 8355201329116710151}
   - component: {fileID: 8878027109537262389}
   m_Layer: 15
-  m_Name: vine_growth_seed
+  m_Name: vine_seed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -217,6 +216,7 @@ MonoBehaviour:
   AutoTriggerArea: {fileID: 0}
   lineView: {fileID: 910001004}
   seedVisual: {fileID: 6287151784329516367}
+  topAnchor: {fileID: 1722418268486631673}
   climbTrigger: {fileID: 7919653863320476081}
 --- !u!210 &8355201329116710151
 SortingGroup:

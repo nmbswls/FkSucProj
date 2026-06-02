@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
-  m_Name: vine_growth_01
+  m_Name: vine_01_seed
   m_EditorClassIdentifier: 
-  CfgId: vine_growth_01
+  CfgId: vine_01_seed
   ShowName: "\u8513\u8514"
-  PrefabName: vine_growth_seed
+  PrefabName: vine_seed
   NameOffset: 0.8
   IsAlwaysActive: 0
   ShowOnWorldMap: 0
   WorldMapMarkerLabel: 
   MainStatusInfo:
     StatusId: 0
-    Desp: "\u672a\u751f\u957f"
+    Desp: "\u672A\u751F\u957F"
     InteractInfos:
     - InteractId: 1
-      Label: "\u50ac\u52a8\u8513\u8514\u751f\u957f"
-      UnLabel: "\u50ac\u52a8\u8513\u8514\u751f\u957f"
+      Label: "\u50AC\u52A8\u8513\u8514\u751F\u957F"
+      UnLabel: "\u50AC\u52A8\u8513\u8514\u751F\u957F"
       HideWhenFail: 0
       NeedDist: 0.5
       Passive: 0
@@ -37,6 +37,8 @@ MonoBehaviour:
         Param2: 0
         Param3: vine_area01_grown
         Param4: 
+        Param5: 0
+        Param6: 0
         DelayTime: 0
         TargetType: 0
         MemberId: 0
@@ -47,6 +49,8 @@ MonoBehaviour:
         Param2: 0
         Param3: grow
         Param4: 
+        Param5: 0
+        Param6: 0
         DelayTime: 0
         TargetType: 0
         MemberId: 0
@@ -57,6 +61,8 @@ MonoBehaviour:
         Param2: 0
         Param3: 
         Param4: 
+        Param5: 0
+        Param6: 0
         DelayTime: 0
         TargetType: 0
         MemberId: 0
@@ -67,11 +73,11 @@ MonoBehaviour:
     AutoTrigger: 0
   ExtraStatusInfos:
   - StatusId: 1
-    Desp: "\u5df2\u751f\u957f"
+    Desp: "\u5DF2\u751F\u957F"
     InteractInfos:
     - InteractId: 2
-      Label: "\u6cbf\u8513\u8514\u6500\u722c"
-      UnLabel: "\u6cbf\u8513\u8514\u6500\u722c"
+      Label: "\u6CBF\u8513\u8514\u6500\u722C"
+      UnLabel: "\u6CBF\u8513\u8514\u6500\u722C"
       HideWhenFail: 1
       NeedDist: 0.5
       Passive: 0
@@ -90,6 +96,8 @@ MonoBehaviour:
         Param2: 0
         Param3: vine_area01_top
         Param4: 
+        Param5: 0
+        Param6: 0
         DelayTime: 0
         TargetType: 0
         MemberId: 0
@@ -99,27 +107,13 @@ MonoBehaviour:
     AutoTriggerCollide: 0
     AutoTrigger: 0
   InitState: 0
-  StateChangeRules:
-  - FromStatus: 0
-    CommonConds:
-    - Type: 2
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: vine_area01_grown
-      Param6: 
-    NeedSelfFlag: []
-    ToStatus: 1
-    ChangeView:
-      ChangingDuration: 2
-      ChangingAnimName: grow
-      ChangingEffect: 
+  StateChangeRules: []
   PoisonSettings:
     Enable: 0
+    ApplyPoisonConds: []
     NpcTriggerBuffId: 
     BaitDurationSeconds: 30
     ReapplyCooldownSeconds: 20
-    ApplyPoisonLabel: "\u4e0b\u6bd2"
+    ApplyPoisonLabel: "\u4E0B\u6BD2"
     NpcFloatText: ...
     NpcApproachStopDistance: 0.4

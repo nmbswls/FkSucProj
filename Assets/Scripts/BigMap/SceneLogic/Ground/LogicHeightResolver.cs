@@ -69,11 +69,7 @@ namespace My.Map.Ground
                         continue;
                     }
 
-                    if (slopeY > input.CurrentLogicY + SupportEpsilon)
-                    {
-                        continue;
-                    }
-
+                    // Slope：格内连续高度，按 Pos 直接取支撑面，不做「高于 CurrentLogicY 则拒绝」
                     if (!found || slopeY > bestLogicY)
                     {
                         found = true;
@@ -90,6 +86,7 @@ namespace My.Map.Ground
                     continue;
                 }
 
+                // 平地：不可无跳跃踩上更高平台（M2 向下探测语义）
                 if (groundY > input.CurrentLogicY + SupportEpsilon)
                 {
                     continue;

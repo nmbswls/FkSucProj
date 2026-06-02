@@ -461,12 +461,9 @@ namespace My.Map.Logic
                         var realRecord = new LogicEntityRecord4InteractPoint();
                         realRecord.Status = 0;
 
-                        var initInfo4IP = (EntityInitInfo4InteractPoint) initInfo;
-                        for(int i=0;i<initInfo4IP.Variables.keys.Count;i++)
-                        {
-                            realRecord.DynamicVariables.Add(initInfo4IP.Variables.keys[i], initInfo4IP.Variables.values[i]);
-                        }
-                        
+                        var initInfo4IP = (EntityInitInfo4InteractPoint)initInfo;
+                        initInfo4IP.CopyVariablesTo(realRecord.DynamicVariables);
+
                         record = realRecord;
                         break;
                     }
@@ -481,10 +478,7 @@ namespace My.Map.Logic
                         var egRecord = new LogicEntityRecord4EventGroup();
                         var cfg = MapEventGroupCfgLoader.Get(initInfo.CfgId);
                         var initInfo4IP = (EntityInitInfo4InteractPoint)initInfo;
-                        for (int i = 0; i < initInfo4IP.Variables.keys.Count; i++)
-                        {
-                            egRecord.DynamicVariables.Add(initInfo4IP.Variables.keys[i], initInfo4IP.Variables.values[i]);
-                        }
+                        initInfo4IP.CopyVariablesTo(egRecord.DynamicVariables);
                         record = egRecord;
                     }
                     break;

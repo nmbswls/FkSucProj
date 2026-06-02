@@ -2,6 +2,7 @@ using Config.Map;
 using Map.Entity;
 using My.Map.Entity;
 using My.Map.View;
+using System.Globalization;
 using UnityEngine;
 using static Config.Map.MapInteractPointConfig;
 
@@ -13,6 +14,7 @@ namespace My.Map.Scene
 
         [SerializeField] VineGrowthLineView lineView;
         [SerializeField] GameObject seedVisual;
+        [SerializeField] Transform topAnchor;
         [SerializeField] Collider2D climbTrigger;
 
         bool _growPlaying;
@@ -21,6 +23,7 @@ namespace My.Map.Scene
         {
             base.Bind(logic);
             RealLogic.EventOnSelfAnim += OnSelfAnim;
+            ApplyGrowLengthFromLogic();
             ApplyStatusSnapshot(RealLogic.CurrStatusId);
         }
 
@@ -86,7 +89,34 @@ namespace My.Map.Scene
         void OnGrowComplete()
         {
             _growPlaying = false;
+            UpdateTopAnchor();
             ApplyStatusSnapshot(1);
+        }
+
+        void ApplyGrowLengthFromLogic()
+        {
+            float length = VineGrowthDefs.DefaultGrowLength;
+            if (RealLogic != null)
+            {
+                var raw = RealLogic.GetRuntimeVariable(VineGrowthDefs.GrowLengthKey);
+                if (float.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsed) && parsed > 0f)
+                {
+                    length = parsed;
+                }
+            }
+
+            lineView?.Configure(length);
+            UpdateTopAnchor();
+        }
+
+        void UpdateTopAnchor()
+        {
+            if (topAnchor == null || lineView == null)
+            {
+                return;
+            }
+
+            topAnchor.position = lineView.GetTopWorldPosition();
         }
 
         void ApplyStatusSnapshot(int statusId)
@@ -109,6 +139,7 @@ namespace My.Map.Scene
 
             if (grown)
             {
+                UpdateTopAnchor();
                 lineView.SetInstantFull();
             }
             else
