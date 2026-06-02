@@ -6,6 +6,8 @@ namespace My.Map
 {
     public abstract partial class BaseUnitLogicEntity
     {
+        const float PosChangeEpsilonSq = 1e-10f;
+
         // M2+：高台跳跃落地，v1 空实现
         public virtual bool CanJumpDownToLowerLevel(out int targetLevel, out float targetLogicY)
         {
@@ -18,29 +20,44 @@ namespace My.Map
         {
         }
 
-        protected override void OnAfterPositionTeleport()
+        public override void SetPosition(Vector2 pos)
         {
-            ResolveLogicYAtPosition(LogicYSetReason.Teleport);
+            bool posChanged = (pos - Pos).sqrMagnitude > PosChangeEpsilonSq;
+            base.SetPosition(pos);
+            if (posChanged)
+            {
+                TryResolveLogicYOnPositionChanged();
+            }
         }
 
-        void TickLogicHeight(float dt)
+        bool CanResolveLogicYFromGround()
         {
             if (!IsMovable() || IsDead || MarkDestroyed)
             {
-                return;
+                return false;
             }
 
             if (CheckHasState(AttrIdConsts.Ghost))
             {
-                return;
+                return false;
             }
 
             if (MotorSystem != null && MotorSystem.IgnoreGround)
             {
+                return false;
+            }
+
+            return true;
+        }
+
+        void TryResolveLogicYOnPositionChanged()
+        {
+            if (!CanResolveLogicYFromGround())
+            {
                 return;
             }
 
-            ResolveLogicYAtPosition(LogicYSetReason.Probe, dt);
+            ResolveLogicYAtPosition(LogicYSetReason.Probe);
         }
 
         void ResolveLogicYAtPosition(LogicYSetReason reason, float dt = 0f)
@@ -73,7 +90,6 @@ namespace My.Map
                 return;
             }
 
-            // Probe：LogicY 随脚下地形即时解析，不参与平面移动
             float maxDelta = reason == LogicYSetReason.Teleport || reason == LogicYSetReason.JumpDown || reason == LogicYSetReason.Probe
                 ? 0f
                 : config.MaxLogicYDeltaPerSec;

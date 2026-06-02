@@ -224,8 +224,6 @@ namespace My.Map
             }
 
             UpdateUnitOffsetZ();
-
-            TickLogicHeight(dt);
         }
 
 

@@ -578,7 +578,7 @@ namespace My.Map
         {
         }
 
-        public void SetPosition(Vector2 pos)
+        public virtual void SetPosition(Vector2 pos)
         {
             this.Pos = pos;
             // 位置�??��?��?�? AOI
