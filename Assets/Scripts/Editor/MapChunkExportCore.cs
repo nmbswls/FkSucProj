@@ -287,9 +287,43 @@ public static class MapChunkExportCore
             return false;
         }
 
+        var clone = Object.Instantiate(gridRoot.gameObject);
+        clone.name = gridRoot.gameObject.name;
+        clone.transform.SetPositionAndRotation(gridRoot.position, gridRoot.rotation);
+        clone.transform.localScale = gridRoot.localScale;
+
+        float thickness = editorRoot != null ? editorRoot.GridRootCollisionThickness : 0.3f;
+        thickness = Mathf.Max(0.01f, thickness);
+        string layerName = editorRoot != null ? editorRoot.GridRootCollisionLayer : "Wall";
+        int physicsLayer = string.IsNullOrEmpty(layerName) ? -1 : LayerMask.NameToLayer(layerName);
+        if (physicsLayer < 0)
+        {
+            Debug.LogWarning($"[MapChunkExport] GridRoot 3D collision layer '{layerName}' not found, using tilemap layer.");
+        }
+
+        var collisionResult = TilemapCollision3DGenerator.GenerateUnderGridRoot(
+            clone.transform,
+            thickness,
+            physicsLayer);
+
         string prefabPath = $"{rootFolder}/Prefabs/GridRoot.prefab";
-        PrefabUtility.SaveAsPrefabAsset(gridRoot.gameObject, prefabPath);
+        PrefabUtility.SaveAsPrefabAsset(clone, prefabPath);
+        Object.DestroyImmediate(clone);
         AssetDatabase.ImportAsset(prefabPath);
+
+        if (collisionResult.BoxColliderCount > 0)
+        {
+            Debug.Log(
+                $"[MapChunkExport] GridRoot 3D collision: {collisionResult.TilemapLayerCount} tilemap layer(s), " +
+                $"{collisionResult.BoxColliderCount} merged box(es), thickness={thickness}.");
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[MapChunkExport] GridRoot exported without 3D collision boxes. " +
+                "Ensure tilemap layers have enabled TilemapCollider2D and tiles with collider type.");
+        }
+
         return true;
     }
 

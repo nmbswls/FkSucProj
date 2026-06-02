@@ -16,6 +16,10 @@ public class MapChunkEditorRoot : MonoBehaviour
 
     public Transform StaticPrefabRoot;
 
+    [Header("GridRoot 3D Collision Export")]
+    public float GridRootCollisionThickness = 0.3f;
+    public string GridRootCollisionLayer = "Wall";
+
     public int SlicePixelSize => MapChunkUtility.ComputeSlicePixelSize(ChunkWorldSize, TexturePPU);
 
     public Vector2Int SourceTextureSize
