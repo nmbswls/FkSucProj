@@ -227,6 +227,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreatePlayerSummonAllyTurretAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateDebugApplyFearBuffAbility();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -1952,6 +1957,40 @@ namespace My.Map.Entity
             return spec;
         }
 
+        private static MapAbilitySpecConfig CreatePlayerSummonAllyTurretAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_summon_ally_turret";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 6.0f;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.3"
+                },
+            };
+
+            var effect = new MapAbilityEffectSpawnEntityCfg()
+            {
+                EntityType = EEntityType.Npc,
+                CfgId = "ally_turret_01",
+                LifeTime = 60.0f,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
 
         private static MapAbilitySpecConfig CreatePlayerTraceBullet1Ability()
         {
@@ -3065,7 +3104,7 @@ namespace My.Map.Entity
                 {
                     CheckType = MapAbilityEffectIfBranchCfg.ECheckType.BodyVsWin,
                     Param5 = 10000,
-                    Param6 = 4000, // 防守方弱势
+                    Param6 = 15000, // 防守方弱势
                     FalseBranchEffects = new()
                     {
                         new MapAbilityEffectCostResourceCfg()
@@ -3074,7 +3113,10 @@ namespace My.Map.Entity
                             ResourceId = AttrIdConsts.PlayerClothes,
                             CostValue = -10_000,
                         },
-
+                        new MapFightEffectEasyEffect()
+                        {
+                            EffectText = "没倒",
+                        },
                         new MapFightEffectInterruptCaster()
                         {
 

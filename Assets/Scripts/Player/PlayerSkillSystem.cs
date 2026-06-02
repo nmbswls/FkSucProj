@@ -64,6 +64,7 @@ namespace My.Player
             "queen_shoot",
             "fix_clothes",
             "spawn_attract",
+            "player_summon_ally_turret",
             "fight_effect_place_stun_trap",
             "queen_pull_all",
             "player_mortar_acquire_01",

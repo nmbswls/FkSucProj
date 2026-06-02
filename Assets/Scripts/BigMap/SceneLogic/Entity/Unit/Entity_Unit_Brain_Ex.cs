@@ -354,6 +354,9 @@ namespace My.Map.Unit
 
         public override bool CanEnterCombat => true;
 
+
+        private float _lastIdleGuardTimer = 0;
+
         public AIStateIdle(AIBrainV2 brain) : base(brain)
         {
         }
@@ -400,11 +403,22 @@ namespace My.Map.Unit
             // 检查是否需要进入通缉状态（与 wanted_level_info 星级一致）
             if(_brain.Config.IsGuard)
             {
-                if (_brain.LogicManager.WantedManager.GetWantedStarLevel() >= 1
-                    && _brain.NpcEntity.IsTargetWitnessed(_brain.LogicManager.playerLogicEntity.Id))
+                int wantedLevel = _brain.LogicManager.WantedManager.GetWantedStarLevel();
+                if (_brain.NpcEntity.IsTargetWitnessed(_brain.LogicManager.playerLogicEntity.Id))
                 {
-                    _brain.ChangeState(_brain.StateChaseWanted);
-                    return;
+                    if(wantedLevel >= 2)
+                    {
+                        _brain.ChangeState(_brain.StateChaseWanted);
+                        return;
+                    }
+                    else if(wantedLevel > 0)
+                    {
+                        if(LogicTime.time - _lastIdleGuardTimer > 8.0f)
+                        {
+                            _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "老实点.", 3.0f);
+                            _lastIdleGuardTimer = LogicTime.time;
+                        }
+                    }
                 }
             }
             
@@ -830,8 +844,9 @@ namespace My.Map.Unit
 
             TickCastSkill();
 
-            // 没有技能需要释放时 进行走位
-            if (intentSkillCfgOrigin == null)
+            // 没有技能需要释放时 进行走位（站桩友军不移动）
+            if (intentSkillCfgOrigin == null
+                && _brain.NpcEntity.MoveBehaveInfo.MoveBehaveMode != UnitMoveBehaveInfo.EMoveBehaveType.NoMove)
             {
                 var diff = _brain.NpcEntity.Pos - _currentTarget.Pos;
                 var distToTarget = diff.magnitude;

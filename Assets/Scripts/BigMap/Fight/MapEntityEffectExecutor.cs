@@ -1617,6 +1617,21 @@ namespace My.Map.Entity
                 record.FactionId = srcUnit.FactionId;
             }
 
+            if (record is LogicEntityRecord4Npc npcRec)
+            {
+                var npcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(realCfg.CfgId);
+                if (npcCfg != null)
+                {
+                    var cfgFaction = (EFactionId)npcCfg.FactionId;
+                    if (cfgFaction != EFactionId.None)
+                    {
+                        record.FactionId = cfgFaction;
+                    }
+                }
+
+                npcRec.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
+            }
+
             ctx.Env.AddNewEntityRecord(record);
         }
     }

@@ -19,7 +19,6 @@ namespace My
         // 各罪类通道的最大值（缩放后），与 TbWantedLevelInfo.need_val * WantedValScale 比较
         public int CurrentWantedVal => GetEffectiveWantedScaled();
 
-        
 
         public int GetEffectiveWantedScaled()
         {

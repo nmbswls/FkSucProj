@@ -10458,9 +10458,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Grid: {fileID: 1824115761}
-  TileGrounds:
-  - {fileID: 1900067646}
-  - {fileID: 129215605}
+  TileGrounds: []
   TileHole: {fileID: 0}
   LogicHeightConfig: {fileID: 11400000, guid: bc5f0846ee561794695110eee834586f, type: 2}
   PlayerBornPos: {fileID: 422780440}

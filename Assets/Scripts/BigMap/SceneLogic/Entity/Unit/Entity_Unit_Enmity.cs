@@ -326,14 +326,28 @@ namespace My.Map.Unit
         /// </summary>
         /// <param name="factionId"></param>
         /// <returns></returns>
+        static bool IsAllyHostileFaction(EFactionId factionId)
+        {
+            return factionId == EFactionId.Beast
+                || factionId == EFactionId.HSprite
+                || factionId == EFactionId.Bandit;
+        }
+
         public bool CheckIsEmnityFaction(EFactionId factionId)
         {
-            // 配置化
-            if(UnitEntity.FactionId == EFactionId.HSprite && factionId == EFactionId.Player)
+            if (UnitEntity.FactionId == EFactionId.HSprite && factionId == EFactionId.Player)
             {
                 return true;
             }
             if (UnitEntity.FactionId == EFactionId.Beast && factionId == EFactionId.Player)
+            {
+                return true;
+            }
+            if (UnitEntity.FactionId == EFactionId.Ally && IsAllyHostileFaction(factionId))
+            {
+                return true;
+            }
+            if (factionId == EFactionId.Ally && IsAllyHostileFaction(UnitEntity.FactionId))
             {
                 return true;
             }

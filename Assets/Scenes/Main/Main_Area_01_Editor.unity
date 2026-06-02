@@ -7795,10 +7795,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 271352874}
     m_Modifications:
-    - target: {fileID: 2756269073090838342, guid: 2ef55a3bb29d37e4ea3faaf005456ae3, type: 3}
-      propertyPath: m_Positions.Array.data[1].y
-      value: 4.23
-      objectReference: {fileID: 0}
     - target: {fileID: 4433768923702568582, guid: 2ef55a3bb29d37e4ea3faaf005456ae3, type: 3}
       propertyPath: m_Name
       value: vine_001

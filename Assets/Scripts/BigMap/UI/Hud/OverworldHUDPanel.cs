@@ -33,6 +33,41 @@ namespace My.UI
         }
     }
 
+    public class OverworldWantedIndicator : MonoBehaviour
+    {
+        public TextMeshProUGUI WantedValText;
+        public Transform MarkContainer;
+        public List<GameObject> WantedMarkList = new();
+
+        public void BindView()
+        {
+            WantedValText = transform.Find("TxtLevel").GetComponent<TextMeshProUGUI>();
+
+            MarkContainer = transform.Find("Marks");
+            WantedMarkList.Clear();
+            for (int i = 0; i < MarkContainer.childCount; i++)
+            {
+                WantedMarkList.Add(MarkContainer.GetChild(i).gameObject);
+            }
+        }
+
+        public void RefreshView()
+        {
+            var wantedLevel = MainGameManager.Instance.gameLogicManager.WantedManager.GetWantedStarLevel();
+            WantedValText.text = wantedLevel.ToString();
+
+            for(int i=0;i< wantedLevel;i++)
+            {
+                WantedMarkList[i].gameObject.SetActive(true);
+            }
+
+            for(int i = wantedLevel; i< WantedMarkList.Count;i++)
+            {
+                WantedMarkList[i].gameObject.SetActive(false);
+            }
+        }
+    }
+
     public class OverworldHudEstrusIndicator : MonoBehaviour
     {
         public ParticleSystem MainPs;
@@ -203,7 +238,7 @@ namespace My.UI
 
         public Image PleasureBar;
 
-        public TextMeshProUGUI TextWantedLevel;
+        public OverworldWantedIndicator WantedIndicator;
 
         private LogicEntityBase _buffEventsPlayer;
 
@@ -279,6 +314,13 @@ namespace My.UI
                 PeriodIndicator.PeriodText = PeriodIndicator.transform.Find("PeriodText").GetComponent<TextMeshProUGUI>();
             }
 
+            var wantedObj = transform.Find("WantedView");
+            if (wantedObj != null)
+            {
+                WantedIndicator = wantedObj.AddComponent<OverworldWantedIndicator>();
+                WantedIndicator.BindView();
+            }
+            
             var estrusObj = transform.Find("EstrusIndicator");
             if (estrusObj != null)
             {
@@ -402,17 +444,19 @@ namespace My.UI
                 }
             }
 
-
-            if (!MainGameManager.Instance.gameLogicManager.PlayerHumanMode && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapOverlayCfg.IsDangerArea)
+            if(WantedIndicator != null)
             {
-                var wantedLevel = MainGameManager.Instance.gameLogicManager.WantedManager.GetWantedStarLevel();
-                TextWantedLevel.gameObject.SetActive(true);
-                TextWantedLevel.text = "通缉" + wantedLevel;
+                if (MainGameManager.Instance.gameLogicManager.GameSession.IsInfiltrationRun && MainGameManager.Instance.gameLogicManager.AreaManager.cacheMapOverlayCfg.IsCivilArea)
+                {
+                    WantedIndicator.gameObject.SetActive(true);
+                    WantedIndicator.RefreshView();
+                }
+                else
+                {
+                    WantedIndicator.gameObject.SetActive(false);
+                }
             }
-            else
-            {
-                TextWantedLevel.gameObject.SetActive(false);
-            }
+            
 
             if (HudMode == EHudMode.PreviewSkill)
             {
