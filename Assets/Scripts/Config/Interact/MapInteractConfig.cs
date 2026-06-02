@@ -49,6 +49,9 @@ namespace My.Config
             // Param3 = skillId；一次性消失请配合 ChangeSelfStatus / SetLocalSwitch
             GrantLmbSkillOverride,
 
+            // Param1=(int)EFactionId；Param2=1 保持战斗状态；TargetType=StaticName，StaticName=刷新点 uniq 名
+            ChangeUnitFaction,
+
             EGMemberChangeState = 100,
             EGMemberActivate = 101,
         }

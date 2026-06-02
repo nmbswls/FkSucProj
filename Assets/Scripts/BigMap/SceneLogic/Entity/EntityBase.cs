@@ -551,6 +551,7 @@ namespace My.Map
             //input.EntityType = this.en
             input.Position = this.Pos;
             input.LogicY = LogicY;
+            input.FactionId = FactionId;
 
             if(MarkDestroyed)
             {

@@ -5,7 +5,6 @@ using My.Map.Entity;
 using My.UI;
 using UnityEngine;
 using static My.GameLogicManager;
-using static UnityEditor.Rendering.CameraUI;
 
 namespace My.Map
 {
@@ -279,6 +278,25 @@ namespace My.Map
                     }
             }
             return 0;
+        }
+
+        bool TryResolveUnitByStaticName(string staticName, out BaseUnitLogicEntity unit)
+        {
+            unit = null;
+            if (string.IsNullOrEmpty(staticName))
+            {
+                return false;
+            }
+
+            var staticId = Owner.LogicManager.AreaManager.GetStaticIdByUniqName(staticName);
+            Owner.LogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var refreshRuntime);
+            if (refreshRuntime == null || refreshRuntime.EntityInstId == 0)
+            {
+                return false;
+            }
+
+            unit = Owner.LogicManager.GetLogicEntity(refreshRuntime.EntityInstId, false) as BaseUnitLogicEntity;
+            return unit != null && unit is not PlayerLogicEntity;
         }
 
         bool TryResolveNamedPoint(string paramName, out Vector2 logicPos)
@@ -586,6 +604,37 @@ namespace My.Map
                             Owner.LogicManager.playerDataManager.GrantLmbOverride(output.Param3);
                             My.UI.OverworldHUDPanel.Instance?.SkilBar?.Refresh();
                             My.UI.PlayerHumanItemBarPanel.RefreshFromGame();
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.ChangeUnitFaction:
+                        {
+                            if (output.TargetType != LogicInteractOutput.ETargetType.StaticName)
+                            {
+                                Debug.LogWarning("ChangeUnitFaction: TargetType must be StaticName");
+                                errOccur = true;
+                                break;
+                            }
+
+                            if (!TryResolveUnitByStaticName(output.StaticName, out var unit))
+                            {
+                                Debug.LogWarning($"ChangeUnitFaction: no unit at StaticName '{output.StaticName}'");
+                                errOccur = true;
+                                break;
+                            }
+
+                            var newFaction = (EFactionId)output.Param1;
+                            if (newFaction == EFactionId.None)
+                            {
+                                Debug.LogWarning("ChangeUnitFaction: Param1 faction is None");
+                                errOccur = true;
+                                break;
+                            }
+
+                            // Param2==1 时不强制脱战；默认脱战并清仇恨
+                            bool leaveCombat = output.Param2 != 1;
+                            unit.ApplyRuntimeFactionChange(newFaction, leaveCombat);
+                            Debug.Log($"ChangeUnitFaction: entity {unit.Id} faction -> {newFaction}");
                         }
                         break;
 

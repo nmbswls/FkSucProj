@@ -857,6 +857,32 @@ namespace My.Map
             return false;
         }
 
+        // 运行时改阵营（交互策反等）；同步 Record 并清理仇恨/脱战
+        public void ApplyRuntimeFactionChange(EFactionId newFaction, bool leaveCombat = true)
+        {
+            FactionId = newFaction;
+            if (BindingRecord != null)
+            {
+                BindingRecord.FactionId = newFaction;
+            }
+
+            AggroSystem?.ClearTarget(0f);
+
+            if (!leaveCombat)
+            {
+                return;
+            }
+
+            if (this is NpcUnitLogicEntity npc && npc.AIBrain != null)
+            {
+                var brain = npc.AIBrain;
+                if (brain.CurrentState == brain.StateCombat || brain.CurrentState == brain.StateFlee)
+                {
+                    brain.ChangeState(brain.StateIdle);
+                }
+            }
+        }
+
         #endregion
 
 
