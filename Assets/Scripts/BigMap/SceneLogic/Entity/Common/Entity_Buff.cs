@@ -676,6 +676,13 @@ namespace My.Map.Entity
         public void RequestAddBuff(long entityId, string buffId, int layer = 1, float overrideDuration = -1, long? casterId = null, long? srcBuffId = null)
         {
             buffId = BuffCastRemap.ResolveBuffId(logicManager, casterId, buffId);
+            if (buffId == "unit_knockfly"
+                && logicManager.AreaManager.GetLogicEntiy(entityId, false) is IEntityAttributeOwner target
+                && !target.CheckHasState(AttrIdConsts.UnitStagger))
+            {
+                buffId = "unit_stagger";
+            }
+
             _addRequests.Add((entityId, buffId, layer, overrideDuration, casterId, srcBuffId));
         }
 

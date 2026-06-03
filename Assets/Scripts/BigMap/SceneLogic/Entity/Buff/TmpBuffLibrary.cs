@@ -750,6 +750,21 @@ namespace My.Map.Entity
                     HeadHintPriority = 100,
                 };
 
+                _library["unit_stagger"] = new BuffDefinition()
+                {
+                    BuffId = "unit_stagger",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.UnitStagger, ModifierValue = 1 },
+                    },
+                    DefaultDuration = 1.2f,
+                    Icon = "fallback",
+                    HeadHintPriority = 88,
+                    IsHidden = true,
+                };
+
                 _library["unit_knockfly"] = new BuffDefinition()
                 {
                     BuffId = "unit_knockfly",
