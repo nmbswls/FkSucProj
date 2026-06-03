@@ -1,4 +1,3 @@
-using My;
 using My.Map;
 using System.Collections.Generic;
 
@@ -751,35 +750,21 @@ namespace My.Map.Entity
                     HeadHintPriority = 100,
                 };
 
-                _library[PhysicalCcStateRemap.HRelayBuffKnockdown] = new BuffDefinition()
+                _library["unit_knockfly"] = new BuffDefinition()
                 {
-                    BuffId = PhysicalCcStateRemap.HRelayBuffKnockdown,
+                    BuffId = "unit_knockfly",
                     LayerOverrideType = EBuffLayerOverrideType.Replace,
                     MaxStackLayer = 1,
                     ModifierAttrs = new()
                     {
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.UnitKnockfly, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
-                    },
-                    DefaultDuration = PhysicalCcStateRemap.HRelayBuffDurationSec,
-                    Icon = "force_stun",
-                    HeadHintPriority = 85,
-                };
-
-                _library[PhysicalCcStateRemap.HRelayBuffKnockfly] = new BuffDefinition()
-                {
-                    BuffId = PhysicalCcStateRemap.HRelayBuffKnockfly,
-                    LayerOverrideType = EBuffLayerOverrideType.Replace,
-                    MaxStackLayer = 1,
-                    ModifierAttrs = new()
-                    {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
-                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
                     },
-                    DefaultDuration = PhysicalCcStateRemap.HRelayBuffDurationSec,
+                    DefaultDuration = 1.2f,
                     Icon = "fallback",
                     HeadHintPriority = 90,
-                    IsHidden = true,
                 };
 
                 _library["not_fight_target"] = new BuffDefinition()

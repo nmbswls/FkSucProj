@@ -987,15 +987,6 @@ namespace My.Map
             // 4.3 死亡判断窗口：仅在含伤害时检查
             switch (attrId)
             {
-                case AttrIdConsts.UnitKnockDown:
-                case AttrIdConsts.PlayerKnockDown:
-                    {
-                        if (after >= PhysicalCcStateRemap.KnockdownThreshold)
-                        {
-                            PhysicalCcStateRemap.TriggerKnockdownThreshold(this, attrId);
-                        }
-                    }
-                    break;
                 case AttrIdConsts.HP:
                     {
                         if (intent.isEnmity)
@@ -1292,20 +1283,6 @@ namespace My.Map
 
             switch (attrId)
             {
-                case AttrIdConsts.UnitStagger:
-                    {
-                        if (isOn
-                            && PhysicalCcStateRemap.TryResolveHRelayBuff(Id, out var relayBuffId, out var ccKind)
-                            && !string.IsNullOrEmpty(relayBuffId))
-                        {
-                            LogicManager.globalBuffManager.RequestAddBuff(
-                                Id,
-                                relayBuffId,
-                                overrideDuration: PhysicalCcStateRemap.HRelayBuffDurationSec);
-                            Debug.Log($"[PhysicalCcRemap] relay_buff entity={Id} kind={ccKind} buff={relayBuffId}");
-                        }
-                    }
-                    break;
                 case AttrIdConsts.Stun:
                 case AttrIdConsts.ForbidSkillOp:
                     {

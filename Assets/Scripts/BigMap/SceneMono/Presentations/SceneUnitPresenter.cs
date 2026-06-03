@@ -137,18 +137,13 @@ namespace My.Map.Scene
                 navAgent.nextPosition = transform.position;
             }
 
-            if (UnitEntity != null)
+            // 有 SimpleCharacterController 时由 FixedUpdate SyncPos 写回逻辑位，避免每帧重复 SetPosition / LogicY 探测
+            if (UnitEntity != null && CharacterController == null)
             {
-                if (rb != null)
-                {
-                    UnitEntity.SetPosition(rb.position);
-                }
-                else
-                {
-                    UnitEntity.SetPosition(new Vector2(transform.position.x, transform.position.y));
-                }
-
-                SyncRootTransformFromLogic();
+                var pos = rb != null
+                    ? rb.position
+                    : new Vector2(transform.position.x, transform.position.y);
+                UnitEntity.SetPosition(pos);
             }
 
             //UpdateTargettedMoveState();

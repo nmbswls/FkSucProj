@@ -53,6 +53,7 @@ namespace My.Map
                 case AttrIdConsts.Charmed:
                 case AttrIdConsts.ImmuneJianSu:
                 case AttrIdConsts.NpcFcked:
+                case AttrIdConsts.UnitKnockfly:
                 case AttrIdConsts.UnitStagger:
                 case AttrIdConsts.DesireMistAffected:
                     return EAttrType.State;
@@ -348,12 +349,6 @@ namespace My.Map
         /// <param name="m"></param>
         public Modifier AddModifier(ModSourceKey source, string attrId, long val)
         {
-            if (AttrUtils.GetAttrType(attrId) == EAttrType.State && val > 0 && Owner != null
-                && PhysicalCcStateRemap.TryRemapIncomingState(Owner.Id, Owner, attrId, val, out var mappedAttrId))
-            {
-                attrId = mappedAttrId;
-            }
-
             var m = new Modifier()
             {
                 instId = ++ModifierIdCounter,
@@ -570,11 +565,6 @@ namespace My.Map
             if (Owner is LogicEntityBase logicOwner && srcEntityId != null)
             {
                 flags = PlayerOutgoingFightRule.AugmentOutgoingDamageFlags(logicOwner.LogicManager, srcEntityId, flags);
-            }
-
-            if (PhysicalCcStateRemap.TryConsumeKnockdownResource(Owner, resourceId, delta))
-            {
-                return;
             }
 
             r.pendingDelta.Add(new ResourceDeltaIntent()

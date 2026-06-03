@@ -39,6 +39,10 @@ namespace My.Map.Ground
         public float MaxLogicYDeltaPerSec = 20f;
         public float ProbeDownMaxDistance = 8f;
 
+        Dictionary<TileBase, float> _cachedGroundLookup;
+        Dictionary<TileBase, SlopeTileEntry> _cachedSlopeLookup;
+        bool _lookupDirty = true;
+
         public bool TryGetGroundLogicY(TileBase tile, out float logicY)
         {
             logicY = 0f;
@@ -79,12 +83,42 @@ namespace My.Map.Ground
             return false;
         }
 
-        public void BuildRuntimeLookup(
+        void OnEnable()
+        {
+            InvalidateRuntimeLookup();
+        }
+
+#if UNITY_EDITOR
+        void OnValidate()
+        {
+            InvalidateRuntimeLookup();
+        }
+#endif
+
+        public void InvalidateRuntimeLookup()
+        {
+            _lookupDirty = true;
+        }
+
+        public void GetRuntimeLookup(
             out Dictionary<TileBase, float> groundLookup,
             out Dictionary<TileBase, SlopeTileEntry> slopeLookup)
         {
-            groundLookup = new Dictionary<TileBase, float>();
-            slopeLookup = new Dictionary<TileBase, SlopeTileEntry>();
+            if (_lookupDirty || _cachedGroundLookup == null || _cachedSlopeLookup == null)
+            {
+                RebuildRuntimeLookupCache();
+            }
+
+            groundLookup = _cachedGroundLookup;
+            slopeLookup = _cachedSlopeLookup;
+        }
+
+        void RebuildRuntimeLookupCache()
+        {
+            _cachedGroundLookup ??= new Dictionary<TileBase, float>();
+            _cachedSlopeLookup ??= new Dictionary<TileBase, SlopeTileEntry>();
+            _cachedGroundLookup.Clear();
+            _cachedSlopeLookup.Clear();
 
             if (GroundTiles != null)
             {
@@ -95,7 +129,7 @@ namespace My.Map.Ground
                         continue;
                     }
 
-                    groundLookup[entry.Tile] = entry.LogicY;
+                    _cachedGroundLookup[entry.Tile] = entry.LogicY;
                 }
             }
 
@@ -108,9 +142,11 @@ namespace My.Map.Ground
                         continue;
                     }
 
-                    slopeLookup[entry.Tile] = entry;
+                    _cachedSlopeLookup[entry.Tile] = entry;
                 }
             }
+
+            _lookupDirty = false;
         }
     }
 }

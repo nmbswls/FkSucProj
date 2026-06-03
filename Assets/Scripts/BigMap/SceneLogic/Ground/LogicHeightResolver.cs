@@ -41,7 +41,7 @@ namespace My.Map.Ground
                 return result;
             }
 
-            config.BuildRuntimeLookup(out var groundLookup, out var slopeLookup);
+            config.GetRuntimeLookup(out var groundLookup, out var slopeLookup);
 
             float bestLogicY = float.MinValue;
             bool bestIsSlope = false;

@@ -7,6 +7,12 @@ namespace My.Map
     public abstract partial class BaseUnitLogicEntity
     {
         const float PosChangeEpsilonSq = 1e-10f;
+        // 移动中 LogicY 探测最小位移（坡面格内仍需周期性更新）
+        const float LogicYProbeMoveThreshold = 0.05f;
+        const float LogicYProbeMoveThresholdSq = LogicYProbeMoveThreshold * LogicYProbeMoveThreshold;
+
+        Vector2 _lastLogicYProbePos;
+        bool _logicYProbePosInitialized;
 
         // M2+：高台跳跃落地，v1 空实现
         public virtual bool CanJumpDownToLowerLevel(out int targetLevel, out float targetLogicY)
@@ -30,6 +36,13 @@ namespace My.Map
             }
         }
 
+        protected override void OnAfterPositionTeleport()
+        {
+            ResolveLogicYAtPosition(LogicYSetReason.Teleport);
+            _lastLogicYProbePos = Pos;
+            _logicYProbePosInitialized = true;
+        }
+
         bool CanResolveLogicYFromGround()
         {
             if (!IsMovable() || IsDead || MarkDestroyed)
@@ -50,6 +63,16 @@ namespace My.Map
             return true;
         }
 
+        bool ShouldProbeLogicYThisMove()
+        {
+            if (!_logicYProbePosInitialized)
+            {
+                return true;
+            }
+
+            return (Pos - _lastLogicYProbePos).sqrMagnitude >= LogicYProbeMoveThresholdSq;
+        }
+
         void TryResolveLogicYOnPositionChanged()
         {
             if (!CanResolveLogicYFromGround())
@@ -57,6 +80,13 @@ namespace My.Map
                 return;
             }
 
+            if (!ShouldProbeLogicYThisMove())
+            {
+                return;
+            }
+
+            _lastLogicYProbePos = Pos;
+            _logicYProbePosInitialized = true;
             ResolveLogicYAtPosition(LogicYSetReason.Probe);
         }
 
@@ -96,6 +126,14 @@ namespace My.Map
 
             SetLogicY(result.LogicY, reason, maxDelta, dt);
             ActiveSupportLogicY = result.LogicY;
+
+            if (reason == LogicYSetReason.Script
+                || reason == LogicYSetReason.Teleport
+                || reason == LogicYSetReason.JumpDown)
+            {
+                _lastLogicYProbePos = Pos;
+                _logicYProbePosInitialized = true;
+            }
         }
     }
 }

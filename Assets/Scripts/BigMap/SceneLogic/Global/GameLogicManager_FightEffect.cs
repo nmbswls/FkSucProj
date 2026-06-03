@@ -1,7 +1,7 @@
 
 using System;
-using My.Map.Entity;
 using My.Map;
+using My.Map.Entity;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -287,7 +287,6 @@ namespace My
                             executor = new AbilityEffectExecutor4EnqueueDetachedSkill();
                         }
                         break;
-                        
 
 
                 }
@@ -408,7 +407,5 @@ namespace My
                 return strVal;
             }
         }
-
-        
     }
 }
