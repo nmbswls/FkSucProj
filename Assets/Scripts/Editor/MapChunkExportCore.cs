@@ -292,36 +292,44 @@ public static class MapChunkExportCore
         clone.transform.SetPositionAndRotation(gridRoot.position, gridRoot.rotation);
         clone.transform.localScale = gridRoot.localScale;
 
-        float thickness = editorRoot != null ? editorRoot.GridRootCollisionThickness : 0.3f;
-        thickness = Mathf.Max(0.01f, thickness);
-        string layerName = editorRoot != null ? editorRoot.GridRootCollisionLayer : "Wall";
-        int physicsLayer = string.IsNullOrEmpty(layerName) ? -1 : LayerMask.NameToLayer(layerName);
-        if (physicsLayer < 0)
+        bool export3dCollision = editorRoot != null && editorRoot.ExportGridRoot3DCollision;
+        if (export3dCollision)
         {
-            Debug.LogWarning($"[MapChunkExport] GridRoot 3D collision layer '{layerName}' not found, using tilemap layer.");
-        }
+            float thickness = Mathf.Max(0.01f, editorRoot.GridRootCollisionThickness);
+            string layerName = editorRoot.GridRootCollisionLayer;
+            int physicsLayer = string.IsNullOrEmpty(layerName) ? -1 : LayerMask.NameToLayer(layerName);
+            if (physicsLayer < 0)
+            {
+                Debug.LogWarning($"[MapChunkExport] GridRoot 3D collision layer '{layerName}' not found, using tilemap layer.");
+            }
 
-        var collisionResult = TilemapCollision3DGenerator.GenerateUnderGridRoot(
-            clone.transform,
-            thickness,
-            physicsLayer);
+            var collisionResult = TilemapCollision3DGenerator.GenerateUnderGridRoot(
+                clone.transform,
+                thickness,
+                physicsLayer);
+
+            if (collisionResult.BoxColliderCount > 0)
+            {
+                Debug.Log(
+                    $"[MapChunkExport] GridRoot 3D collision: {collisionResult.TilemapLayerCount} tilemap layer(s), " +
+                    $"{collisionResult.BoxColliderCount} merged box(es), thickness={thickness}.");
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "[MapChunkExport] GridRoot 3D collision enabled but no boxes generated. " +
+                    "Ensure tilemap layers have enabled TilemapCollider2D and tiles with collider type.");
+            }
+        }
 
         string prefabPath = $"{rootFolder}/Prefabs/GridRoot.prefab";
         PrefabUtility.SaveAsPrefabAsset(clone, prefabPath);
         Object.DestroyImmediate(clone);
         AssetDatabase.ImportAsset(prefabPath);
 
-        if (collisionResult.BoxColliderCount > 0)
+        if (!export3dCollision)
         {
-            Debug.Log(
-                $"[MapChunkExport] GridRoot 3D collision: {collisionResult.TilemapLayerCount} tilemap layer(s), " +
-                $"{collisionResult.BoxColliderCount} merged box(es), thickness={thickness}.");
-        }
-        else
-        {
-            Debug.LogWarning(
-                "[MapChunkExport] GridRoot exported without 3D collision boxes. " +
-                "Ensure tilemap layers have enabled TilemapCollider2D and tiles with collider type.");
+            Debug.Log("[MapChunkExport] GridRoot exported without 3D collision (ExportGridRoot3DCollision is off).");
         }
 
         return true;

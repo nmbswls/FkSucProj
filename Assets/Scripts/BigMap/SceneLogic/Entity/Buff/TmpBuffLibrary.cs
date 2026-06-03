@@ -1,4 +1,4 @@
-
+using My;
 using My.Map;
 using System.Collections.Generic;
 
@@ -749,6 +749,37 @@ namespace My.Map.Entity
 
                     Icon = "force_stun",
                     HeadHintPriority = 100,
+                };
+
+                _library[PhysicalCcStateRemap.HRelayBuffKnockdown] = new BuffDefinition()
+                {
+                    BuffId = PhysicalCcStateRemap.HRelayBuffKnockdown,
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                    },
+                    DefaultDuration = PhysicalCcStateRemap.HRelayBuffDurationSec,
+                    Icon = "force_stun",
+                    HeadHintPriority = 85,
+                };
+
+                _library[PhysicalCcStateRemap.HRelayBuffKnockfly] = new BuffDefinition()
+                {
+                    BuffId = PhysicalCcStateRemap.HRelayBuffKnockfly,
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                    },
+                    DefaultDuration = PhysicalCcStateRemap.HRelayBuffDurationSec,
+                    Icon = "fallback",
+                    HeadHintPriority = 90,
+                    IsHidden = true,
                 };
 
                 _library["not_fight_target"] = new BuffDefinition()

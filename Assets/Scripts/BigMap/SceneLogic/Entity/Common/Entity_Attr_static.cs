@@ -111,6 +111,8 @@ namespace My.Map.Entity
         public const string ImmuneSteerInput = "ImmuneSteerInput";
         public const string ImmuneJianSu = "ImmuneJianSu";
         public const string NpcFcked = "NpcFcked"; // 特殊状态
+        // 物理异常踉跄：受击侧优先于击倒/击飞硬直状态
+        public const string UnitStagger = "UnitStagger";
         public const string DesireMistAffected = "DesireMistAffected";
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";

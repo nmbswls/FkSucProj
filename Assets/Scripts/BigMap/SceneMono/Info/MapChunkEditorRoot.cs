@@ -17,6 +17,8 @@ public class MapChunkEditorRoot : MonoBehaviour
     public Transform StaticPrefabRoot;
 
     [Header("GridRoot 3D Collision Export")]
+    [Tooltip("关闭时仅导出 GridRoot 结构（Tilemap 等），不烘焙 3D BoxCollider。合并与性能完善前建议保持关闭。")]
+    public bool ExportGridRoot3DCollision = false;
     public float GridRootCollisionThickness = 0.3f;
     public string GridRootCollisionLayer = "Wall";
 

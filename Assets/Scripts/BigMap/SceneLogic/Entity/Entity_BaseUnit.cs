@@ -16,6 +16,7 @@ using Unity.VisualScripting;
 using static My.UI.FishingMiniGamePanel;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using My.Map.Ground;
+using My;
 
 
 namespace My.Map
@@ -987,13 +988,11 @@ namespace My.Map
             switch (attrId)
             {
                 case AttrIdConsts.UnitKnockDown:
+                case AttrIdConsts.PlayerKnockDown:
                     {
-                        // 
-                        if(after >= 100_000)
+                        if (after >= PhysicalCcStateRemap.KnockdownThreshold)
                         {
-                            attributeStore.SetResource(AttrIdConsts.UnitKnockDown, 0);
-                            Debug.Log("UnitKnockDown max cause stun");
-                            LogicManager.globalBuffManager.RequestAddBuff(this.Id, "simple_knock_down");
+                            PhysicalCcStateRemap.TriggerKnockdownThreshold(this, attrId);
                         }
                     }
                     break;
@@ -1293,6 +1292,20 @@ namespace My.Map
 
             switch (attrId)
             {
+                case AttrIdConsts.UnitStagger:
+                    {
+                        if (isOn
+                            && PhysicalCcStateRemap.TryResolveHRelayBuff(Id, out var relayBuffId, out var ccKind)
+                            && !string.IsNullOrEmpty(relayBuffId))
+                        {
+                            LogicManager.globalBuffManager.RequestAddBuff(
+                                Id,
+                                relayBuffId,
+                                overrideDuration: PhysicalCcStateRemap.HRelayBuffDurationSec);
+                            Debug.Log($"[PhysicalCcRemap] relay_buff entity={Id} kind={ccKind} buff={relayBuffId}");
+                        }
+                    }
+                    break;
                 case AttrIdConsts.Stun:
                 case AttrIdConsts.ForbidSkillOp:
                     {

@@ -150,6 +150,12 @@ public class MapChunkExporterWindow : EditorWindow
         exportBackgroundChunks = EditorGUILayout.Toggle("Background (bg_*)", exportBackgroundChunks);
         exportTilemapChunks = EditorGUILayout.Toggle("Walk Grid Chunks (tm_*)", exportTilemapChunks);
         exportWalkGridPrefab = EditorGUILayout.Toggle("Walk Grid Prefab (GridRoot)", exportWalkGridPrefab);
+        if (chunkEditor != null && exportWalkGridPrefab)
+        {
+            chunkEditor.ExportGridRoot3DCollision = EditorGUILayout.Toggle(
+                "  GridRoot 3D Collision (slow)",
+                chunkEditor.ExportGridRoot3DCollision);
+        }
 
         EditorGUILayout.Space();
         if (GUILayout.Button("Sync From MapChunkEditorRoot"))
