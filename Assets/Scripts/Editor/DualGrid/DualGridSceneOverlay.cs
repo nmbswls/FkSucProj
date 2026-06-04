@@ -34,29 +34,32 @@ namespace My.Map.DualGrid.Editor
 
             var world = HandleUtility.GUIPointToWorldRay(e.mousePosition).origin;
             world.z = 0;
-            var logicCell = map.DataTilemap.WorldToCell(world);
-            var viewCell = logicCell;
 
-            var logicCenter = map.DataTilemap.GetCellCenterWorld(logicCell);
-            var grid = map.ResolveGrid();
-            var cellSize = grid != null ? grid.cellSize : Vector3.one;
+            var dataCell = map.WorldToDataCell(world);
+            var viewCell = map.ViewTilemap != null ? map.WorldToViewCell(world) : dataCell;
 
+            var logicCenter = map.DataTilemap.GetCellCenterWorld(dataCell);
             var viewCenter = map.ViewTilemap != null
                 ? map.ViewTilemap.GetCellCenterWorld(viewCell)
-                : logicCenter + DualGridCore.GetViewLocalOffset(cellSize);
+                : logicCenter;
 
             Handles.color = new Color(0.2f, 0.9f, 0.3f, 0.9f);
+            var grid = map.ResolveGrid();
+            var cellSize = grid != null ? grid.cellSize : Vector3.one;
             Handles.DrawWireCube(logicCenter, cellSize);
 
             Handles.color = new Color(0.9f, 0.7f, 0.2f, 0.9f);
             var viewSize = cellSize * 0.35f;
             Handles.DrawWireCube(viewCenter, new Vector3(viewSize.x, viewSize.y, 0.01f));
 
-            var label = $"Logic {logicCell}\nView {viewCell}";
-            if (map.BrushRegistry != null
-                && map.BrushRegistry.TryResolveViewCorner(map.DataTilemap, viewCell, out byte tid, out int mask))
+            var label = $"Data {dataCell} | View {viewCell}";
+            if (map.TryResolveViewCorner(viewCell, out byte tid, out int mask))
             {
-                label += $"\nShow T{tid} mask {mask}";
+                label += $"\nResolve(view) T{tid} mask {mask}";
+            }
+            else if (map.TryResolveAtDataCell(dataCell, out tid, out mask))
+            {
+                label += $"\nResolve(data) T{tid} mask {mask}";
             }
 
             Handles.Label(logicCenter, label);

@@ -64,6 +64,12 @@ namespace My.Map.DualGrid
                 return true;
             }
 
+            if (registryBrush is Tile registryTile && paintedBrush is Tile paintedTile
+                && registryTile.sprite != null && registryTile.sprite == paintedTile.sprite)
+            {
+                return true;
+            }
+
 #if UNITY_EDITOR
             string a = UnityEditor.AssetDatabase.GetAssetPath(registryBrush);
             string b = UnityEditor.AssetDatabase.GetAssetPath(paintedBrush);
@@ -95,14 +101,19 @@ namespace My.Map.DualGrid
             return null;
         }
 
-        public bool TryResolveViewCorner(Tilemap data, Vector3Int viewCell, out byte terrainId, out int mask)
+        // dataTilemap：必须是 DualTileMap/Data，不能传 View Tilemap
+        // viewCell：View 层格子坐标（在 Data 某格落笔后，会刷新 viewCell 及 +1 偏移的共 4 个 View 格）
+        public bool TryResolveViewCorner(Tilemap dataTilemap, Vector3Int viewCell, out byte terrainId, out int mask)
         {
             terrainId = 0;
             mask = 0;
-            if (data == null || Terrains == null)
+            if (dataTilemap == null || Terrains == null || Terrains.Length == 0)
             {
                 return false;
             }
+
+            int bestMask = 0;
+            byte bestTerrain = 0;
 
             for (int i = 0; i < Terrains.Length; i++)
             {
@@ -112,16 +123,27 @@ namespace My.Map.DualGrid
                     continue;
                 }
 
-                int m = DualGridCore.ComputeCornerMask(data, this, viewCell, style.TerrainId);
-                if (m != 0)
+                if (FindPalette(style.TerrainId) == null)
                 {
-                    terrainId = style.TerrainId;
-                    mask = m;
-                    return true;
+                    continue;
+                }
+
+                int m = DualGridCore.ComputeCornerMask(dataTilemap, this, viewCell, style.TerrainId);
+                if (m != 0 && m > bestMask)
+                {
+                    bestMask = m;
+                    bestTerrain = style.TerrainId;
                 }
             }
 
-            return false;
+            if (bestMask == 0)
+            {
+                return false;
+            }
+
+            terrainId = bestTerrain;
+            mask = bestMask;
+            return true;
         }
     }
 }

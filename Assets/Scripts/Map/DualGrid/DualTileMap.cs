@@ -1,27 +1,32 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace My.Map.DualGrid
 {
+    [ExecuteInEditMode]
     [DisallowMultipleComponent]
     public class DualTileMap : MonoBehaviour
     {
+        const string DefaultViewTilePath = "Assets/Arts/DualTile/DualGridViewTile.asset";
+
         public Grid Grid;
         public Tilemap DataTilemap;
         public DualGridBrushRegistry BrushRegistry;
         public Tilemap ViewTilemap;
+        public DualGridViewTile ViewTile;
         public bool AutoRefreshInEditor = true;
-        public bool HideDataRenderer = true;
-        public int ViewSortingOrder = 1;
+        public int ViewSortingOrder = 10;
 
         static readonly Vector3Int[] CellBuffer = new Vector3Int[4];
         Tilemap _subscribedData;
-        DualGridViewTile _viewTile;
+        bool _refreshing;
 
         void Reset()
         {
             DataTilemap ??= transform.Find("Data")?.GetComponent<Tilemap>();
             ViewTilemap ??= transform.Find("View")?.GetComponent<Tilemap>();
+            EnsureViewTileAsset();
         }
 
         public Grid ResolveGrid()
@@ -46,59 +51,76 @@ namespace My.Map.DualGrid
 
         void OnEnable()
         {
-            EnsureViewTile();
+            EnsureViewTileAsset();
             ApplyRendererSettings();
             SubscribeDataChanges();
             EnsureViewOffset();
-            RefreshAll();
+            SyncViewTilemapSettings();
+            if (AutoRefreshInEditor || Application.isPlaying)
+            {
+                RefreshAll();
+            }
         }
 
         void OnDisable() => UnsubscribeDataChanges();
 
         void OnValidate()
         {
-            EnsureViewTile();
             ApplyRendererSettings();
             EnsureViewOffset();
-#if UNITY_EDITOR
-            if (!Application.isPlaying && AutoRefreshInEditor)
+            SyncViewTilemapSettings();
+        }
+
+        void EnsureViewTileAsset()
+        {
+            if (ViewTile != null)
             {
-                RefreshAll();
+                return;
             }
+
+#if UNITY_EDITOR
+            ViewTile = UnityEditor.AssetDatabase.LoadAssetAtPath<DualGridViewTile>(DefaultViewTilePath);
 #endif
         }
 
-        void EnsureViewTile()
+        public void ApplyRendererSettings()
         {
-            if (_viewTile == null)
+            if (ViewTilemap == null)
             {
-                _viewTile = ScriptableObject.CreateInstance<DualGridViewTile>();
+                return;
             }
 
-            _viewTile.Owner = this;
-        }
+            var viewRenderer = ViewTilemap.GetComponent<TilemapRenderer>();
+            if (viewRenderer == null)
+            {
+                return;
+            }
 
-        void ApplyRendererSettings()
-        {
+            viewRenderer.enabled = true;
             if (DataTilemap != null)
             {
                 var dataRenderer = DataTilemap.GetComponent<TilemapRenderer>();
                 if (dataRenderer != null)
                 {
-                    dataRenderer.enabled = !HideDataRenderer;
-                    dataRenderer.sortingOrder = 0;
+                    viewRenderer.sortingLayerID = dataRenderer.sortingLayerID;
+                    viewRenderer.sortingOrder = dataRenderer.sortingOrder + ViewSortingOrder;
                 }
+            }
+            else
+            {
+                viewRenderer.sortingOrder += ViewSortingOrder;
+            }
+        }
+
+        void SyncViewTilemapSettings()
+        {
+            if (DataTilemap == null || ViewTilemap == null)
+            {
+                return;
             }
 
-            if (ViewTilemap != null)
-            {
-                var viewRenderer = ViewTilemap.GetComponent<TilemapRenderer>();
-                if (viewRenderer != null)
-                {
-                    viewRenderer.enabled = true;
-                    viewRenderer.sortingOrder = ViewSortingOrder;
-                }
-            }
+            ViewTilemap.tileAnchor = DataTilemap.tileAnchor;
+            ViewTilemap.orientation = DataTilemap.orientation;
         }
 
         public bool IsConfigured(out string error)
@@ -121,6 +143,12 @@ namespace My.Map.DualGrid
                 return false;
             }
 
+            if (ViewTile == null)
+            {
+                error = "View Tile 未指定（Assets/Arts/DualTile/DualGridViewTile.asset）";
+                return false;
+            }
+
             if (BrushRegistry.Terrains == null || BrushRegistry.Terrains.Length == 0)
             {
                 error = "Brush Registry / Terrains 为空";
@@ -131,6 +159,33 @@ namespace My.Map.DualGrid
             return true;
         }
 
+        public bool TryResolveViewCorner(Vector3Int viewCell, out byte terrainId, out int mask)
+        {
+            terrainId = 0;
+            mask = 0;
+            if (DataTilemap == null || BrushRegistry == null)
+            {
+                return false;
+            }
+
+            return BrushRegistry.TryResolveViewCorner(DataTilemap, viewCell, out terrainId, out mask);
+        }
+
+        public bool TryResolveAtDataCell(Vector3Int dataCell, out byte terrainId, out int mask)
+        {
+            return TryResolveViewCorner(dataCell, out terrainId, out mask);
+        }
+
+        public Vector3Int WorldToViewCell(Vector3 world)
+        {
+            return ViewTilemap != null ? ViewTilemap.WorldToCell(world) : Vector3Int.zero;
+        }
+
+        public Vector3Int WorldToDataCell(Vector3 world)
+        {
+            return DataTilemap != null ? DataTilemap.WorldToCell(world) : Vector3Int.zero;
+        }
+
         public bool TryGetViewSprite(Vector3Int viewCell, out Sprite sprite)
         {
             sprite = null;
@@ -139,7 +194,7 @@ namespace My.Map.DualGrid
                 return false;
             }
 
-            if (!BrushRegistry.TryResolveViewCorner(DataTilemap, viewCell, out byte terrainId, out int mask))
+            if (!TryResolveViewCorner(viewCell, out byte terrainId, out int mask))
             {
                 return false;
             }
@@ -198,40 +253,45 @@ namespace My.Map.DualGrid
 
         void OnDataTileChanged(Tilemap tilemap, Tilemap.SyncTile[] changes)
         {
-            if (tilemap != DataTilemap || changes == null)
+            if (_refreshing || !AutoRefreshInEditor && !Application.isPlaying)
+            {
+                return;
+            }
+
+            if (tilemap != DataTilemap || changes == null || ViewTilemap == null || ViewTile == null)
             {
                 return;
             }
 
             for (int i = 0; i < changes.Length; i++)
             {
-                RefreshAroundLogicCell(changes[i].position);
+                RefreshAroundDataCell(changes[i].position);
             }
 
             ViewTilemap.RefreshAllTiles();
         }
 
-        public void RefreshAroundLogicCell(Vector3Int logicCell)
+        public void RefreshAroundDataCell(Vector3Int dataCell)
         {
-            DualGridCore.GetViewCornersAroundLogicCell(logicCell, CellBuffer);
+            DualGridCore.GetViewCornersAroundDataCell(dataCell, CellBuffer);
             for (int i = 0; i < 4; i++)
             {
                 RefreshViewCell(CellBuffer[i]);
             }
         }
 
+        public void RefreshAroundLogicCell(Vector3Int logicCell) => RefreshAroundDataCell(logicCell);
+
         public void RefreshViewCell(Vector3Int viewCell)
         {
-            if (ViewTilemap == null || BrushRegistry == null)
+            if (ViewTilemap == null || ViewTile == null || BrushRegistry == null)
             {
                 return;
             }
 
-            EnsureViewTile();
-
-            if (BrushRegistry.TryResolveViewCorner(DataTilemap, viewCell, out _, out _))
+            if (TryResolveViewCorner(viewCell, out _, out _))
             {
-                ViewTilemap.SetTile(viewCell, _viewTile);
+                ViewTilemap.SetTile(viewCell, ViewTile);
             }
             else
             {
@@ -243,89 +303,118 @@ namespace My.Map.DualGrid
 
         public void RefreshAll()
         {
-            if (DataTilemap == null || ViewTilemap == null || BrushRegistry == null)
+            if (_refreshing || DataTilemap == null || ViewTilemap == null || BrushRegistry == null || ViewTile == null)
             {
                 return;
             }
 
-            EnsureViewTile();
+            _refreshing = true;
+            try
+            {
+                RefreshAllInternal();
+            }
+            finally
+            {
+                _refreshing = false;
+            }
+        }
+
+        void RefreshAllInternal()
+        {
+            ApplyRendererSettings();
             DataTilemap.CompressBounds();
 
-            var b = DataTilemap.cellBounds;
-            if (b.size.x <= 0 || b.size.y <= 0)
-            {
-                ViewTilemap.ClearAllTiles();
-                return;
-            }
+            var bounds = DataTilemap.cellBounds;
+            var touched = new HashSet<Vector3Int>();
 
-            for (int x = b.min.x; x < b.max.x; x++)
+            if (bounds.size.x > 0 && bounds.size.y > 0)
             {
-                for (int y = b.min.y; y < b.max.y; y++)
+                foreach (var pos in bounds.allPositionsWithin)
                 {
-                    var logicCell = new Vector3Int(x, y, b.min.z);
-                    if (DataTilemap.GetTile(logicCell) == null)
+                    if (DataTilemap.GetTile(pos) == null)
                     {
                         continue;
                     }
 
-                    DualGridCore.GetViewCornersAroundLogicCell(logicCell, CellBuffer);
+                    DualGridCore.GetViewCornersAroundDataCell(pos, CellBuffer);
                     for (int i = 0; i < 4; i++)
                     {
-                        RefreshViewCell(CellBuffer[i]);
+                        touched.Add(CellBuffer[i]);
                     }
                 }
+            }
+
+            var viewBounds = ViewTilemap.cellBounds;
+            if (viewBounds.size.x > 0 && viewBounds.size.y > 0)
+            {
+                foreach (var pos in viewBounds.allPositionsWithin)
+                {
+                    if (!touched.Contains(pos) && ViewTilemap.GetTile(pos) != null)
+                    {
+                        ViewTilemap.SetTile(pos, null);
+                    }
+                }
+            }
+
+            foreach (var viewCell in touched)
+            {
+                RefreshViewCell(viewCell);
             }
 
             ViewTilemap.RefreshAllTiles();
             ViewTilemap.CompressBounds();
         }
 
-        public void RefreshBounds(BoundsInt logicBounds)
+        public int CountDataTiles()
         {
-            var min = logicBounds.min;
-            var max = logicBounds.max;
-            for (int x = min.x; x < max.x; x++)
+            if (DataTilemap == null)
             {
-                for (int y = min.y; y < max.y; y++)
+                return 0;
+            }
+
+            DataTilemap.CompressBounds();
+            var b = DataTilemap.cellBounds;
+            if (b.size.x <= 0 || b.size.y <= 0)
+            {
+                return 0;
+            }
+
+            int count = 0;
+            foreach (var pos in b.allPositionsWithin)
+            {
+                if (DataTilemap.GetTile(pos) != null)
                 {
-                    RefreshAroundLogicCell(new Vector3Int(x, y, min.z));
+                    count++;
                 }
             }
 
-            ViewTilemap.RefreshAllTiles();
+            return count;
         }
 
-        public Vector3Int WorldToLogicCell(Vector3 world)
+        public int CountViewTiles()
         {
-            return DataTilemap != null ? DataTilemap.WorldToCell(world) : Vector3Int.zero;
-        }
-
-        public Vector3Int WorldToViewCell(Vector3 world)
-        {
-            return ViewTilemap != null ? ViewTilemap.WorldToCell(world) : WorldToLogicCell(world);
-        }
-
-        sealed class DualGridViewTile : TileBase
-        {
-            public DualTileMap Owner;
-
-            public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
+            if (ViewTilemap == null)
             {
-                tileData.sprite = null;
-                tileData.transform = Matrix4x4.identity;
-                tileData.color = Color.white;
-                tileData.flags = TileFlags.LockColor;
-                tileData.colliderType = Tile.ColliderType.None;
-
-                if (Owner == null || !Owner.TryGetViewSprite(position, out var sprite))
-                {
-                    return;
-                }
-
-                tileData.sprite = sprite;
+                return 0;
             }
 
-            public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go) => true;
+            ViewTilemap.CompressBounds();
+            var b = ViewTilemap.cellBounds;
+            if (b.size.x <= 0 || b.size.y <= 0)
+            {
+                return 0;
+            }
+
+            int count = 0;
+            foreach (var pos in b.allPositionsWithin)
+            {
+                if (ViewTilemap.GetTile(pos) != null)
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
     }
 }

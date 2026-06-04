@@ -17,7 +17,7 @@ Data 普通 Tile
 - `ViewTilemap`
 - 可选 `Grid`、`AutoRefreshInEditor`
 
-无需 Display Tile、无需 DualGridTile 资产；View 由组件内部运行时瓦片按格取 Palette 贴图。
+View 使用工程内 `DualGridViewTile` 资产铺格，`GetTileData` 按 mask 从 Palette 取 Sprite（编辑器可正常显示）。
 
 ## 资源
 

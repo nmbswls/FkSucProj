@@ -15,7 +15,7 @@ MonoBehaviour:
   TerrainId: 1
   Corners:
   - Variants:
-    - {fileID: 0}
+    - {fileID: -1725124159, guid: 3c8a0a5d15fe7fe489f64985f40554c0, type: 3}
   - Variants:
     - {fileID: -2082787338, guid: 3c8a0a5d15fe7fe489f64985f40554c0, type: 3}
   - Variants:

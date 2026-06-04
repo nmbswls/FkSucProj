@@ -16,7 +16,7 @@ MonoBehaviour:
   - TerrainId: 1
     Palette: {fileID: 11400000, guid: bfec1e9b64bb3a14f9079c05ba23f0df, type: 2}
   Brushes:
-  - Brush: {fileID: 11400000, guid: 4b93f8e0412db1647b95fe9797b53d9d, type: 2}
+  - Brush: {fileID: 11400000, guid: 46e2ab5e129c4e8478d296d9a5c07fba, type: 2}
     TerrainId: 1
   - Brush: {fileID: 11400000, guid: 8b10f8a7eec849749aa0028e7a3a8e41, type: 2}
     TerrainId: 2
