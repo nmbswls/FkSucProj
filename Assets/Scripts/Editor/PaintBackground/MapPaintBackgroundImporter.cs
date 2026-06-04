@@ -97,6 +97,8 @@ public static class MapPaintBackgroundImporter
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
+        MapPaintBackgroundPreview.TryAutoSync(root, mapName);
+
         return new ImportResult
         {
             Success = true,
@@ -158,6 +160,8 @@ public static class MapPaintBackgroundImporter
         EditorUtility.SetDirty(manifest);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+
+        MapPaintBackgroundPreview.TryAutoSync(root, mapName);
 
         return new ImportResult
         {
@@ -242,6 +246,8 @@ public static class MapPaintBackgroundImporter
             EditorUtility.SetDirty(manifest);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
+            MapPaintBackgroundPreview.TryAutoSync(root, mapName);
 
             return new ImportResult
             {

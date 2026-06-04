@@ -29,6 +29,12 @@ public class MapChunkEditorRoot : MonoBehaviour
     [Range(0f, 0.49f)]
     public float PaintContextExpandRatio = 0.25f;
 
+    [Tooltip("Editor 场景内显示 Paint 背景预览（PaintBackgroundPreview 节点）。")]
+    public bool PaintPreviewEnabled = true;
+
+    [Tooltip("Generate / Import 完成后自动刷新场景预览。")]
+    public bool PaintAutoRefreshPreview = true;
+
     public float EffectivePaintExportPpu => PaintExportPPU > 0f ? PaintExportPPU : TexturePPU;
 
     public int PaintSlicePixelSize => MapChunkUtility.ComputeSlicePixelSize(ChunkWorldSize, EffectivePaintExportPpu);

@@ -28,6 +28,16 @@ public class MapChunkEditorRootEditor : Editor
                 EditorUtility.SetDirty(root);
             }
 
+            if (GUILayout.Button("Refresh Scene Preview"))
+            {
+                var mapName = string.IsNullOrEmpty(root.SceneName) ? root.gameObject.scene.name : root.SceneName;
+                var result = MapPaintBackgroundPreview.SyncToScene(root, mapName);
+                if (!result.Success)
+                {
+                    EditorUtility.DisplayDialog("Paint Preview", result.Message, "OK");
+                }
+            }
+
             if (GUILayout.Button("Open Paint Window"))
             {
                 EditorApplication.ExecuteMenuItem("Window/Map Paint Background");

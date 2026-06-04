@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using My.Map.Logic;
 using My.MapExport;
 using UnityEditor;
@@ -141,6 +139,7 @@ public class MapPaintBackgroundWindow : EditorWindow
         }
 
         DrawChunkList(root);
+        DrawPreviewSection(root);
 
         using (new EditorGUI.DisabledScope(!_selectedChunk.HasValue))
         {
@@ -293,6 +292,87 @@ public class MapPaintBackgroundWindow : EditorWindow
         }
 
         DrawOutputPathsHelp(mapName);
+        DrawPreviewSection(root);
+    }
+
+    void DrawPreviewSection(MapChunkEditorRoot root)
+    {
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Scene Preview", EditorStyles.boldLabel);
+
+        EditorGUI.BeginChangeCheck();
+        root.PaintPreviewEnabled = EditorGUILayout.Toggle("Show In Scene", root.PaintPreviewEnabled);
+        root.PaintAutoRefreshPreview = EditorGUILayout.Toggle("Auto Refresh After Import/Generate", root.PaintAutoRefreshPreview);
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorUtility.SetDirty(root);
+            if (root.PaintPreviewEnabled)
+            {
+                MapPaintBackgroundPreview.TryAutoSync(root, mapName);
+            }
+            else
+            {
+                var previewRoot = root.transform.Find(MapPaintBackgroundPreview.PreviewRootName);
+                if (previewRoot != null)
+                {
+                    previewRoot.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button("Refresh Scene Preview"))
+            {
+                var result = MapPaintBackgroundPreview.SyncToScene(root, mapName);
+                if (!result.Success)
+                {
+                    EditorUtility.DisplayDialog("Paint Preview", result.Message, "OK");
+                }
+                else
+                {
+                    Debug.Log("[MapPaintPreview] " + result.Message);
+                }
+            }
+
+            if (GUILayout.Button("Clear Scene Preview"))
+            {
+                var result = MapPaintBackgroundPreview.ClearPreview(root);
+                Debug.Log("[MapPaintPreview] " + result.Message);
+            }
+        }
+
+        EditorGUILayout.HelpBox(
+            $"在 AreaRoot 下创建 {MapPaintBackgroundPreview.PreviewRootName}，" +
+            "按 chunk 网格实例化 bg_* prefab，与运行时摆放方式一致。",
+            MessageType.Info);
+
+        DrawSelectedChunkThumbnail(root);
+    }
+
+    void DrawSelectedChunkThumbnail(MapChunkEditorRoot root)
+    {
+        if (!_selectedChunk.HasValue)
+        {
+            return;
+        }
+
+        var manifest = AssetDatabase.LoadAssetAtPath<MapPaintManifest>(MapPaintBackgroundShared.GetManifestPath(mapName));
+        var tex = MapPaintBackgroundPreview.LoadPreviewTexture(mapName, _selectedChunk.Value, manifest);
+        EditorGUILayout.LabelField($"Selected Thumbnail ({_selectedChunk.Value.X}, {_selectedChunk.Value.Y})", EditorStyles.boldLabel);
+        if (tex == null)
+        {
+            EditorGUILayout.LabelField("(no chunk / painted / bg texture yet)", EditorStyles.miniLabel);
+            return;
+        }
+
+        const float maxSize = 140f;
+        float aspect = tex.width / (float)Mathf.Max(1, tex.height);
+        float w = aspect >= 1f ? maxSize : maxSize * aspect;
+        float h = aspect >= 1f ? maxSize / aspect : maxSize;
+        var rect = GUILayoutUtility.GetRect(w, h, GUILayout.ExpandWidth(false));
+        EditorGUI.DrawPreviewTexture(rect, tex, null, ScaleMode.ScaleToFit);
+        EditorGUILayout.LabelField($"{tex.width} x {tex.height} px", EditorStyles.miniLabel);
     }
 
     static void DrawOutputPathsHelp(string mapName)
@@ -411,7 +491,7 @@ public class MapPaintBackgroundWindow : EditorWindow
         }
 
         Debug.Log("[MapPaintImport] " + result.Message);
-        EditorUtility.DisplayDialog("Paint Import", result.Message, "OK");
+        Repaint();
     }
 
     void SyncFromScene()
