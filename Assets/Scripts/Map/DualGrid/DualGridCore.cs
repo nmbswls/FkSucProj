@@ -3,12 +3,10 @@ using UnityEngine.Tilemaps;
 
 namespace My.Map.DualGrid
 {
-    // View 角点 viewCell 对应 Data 四格（Tilemap y 向上）：
-    //   bit0 = viewCell           右上
-    //   bit1 = viewCell - (1,0)   左上
-    //   bit2 = viewCell - (0,1)   右下
-    //   bit3 = viewCell - (1,1)   左下
-    // Data 格 dataCell 落笔后刷新的 View 角点：dataCell + (0,0),(1,0),(0,1),(1,1)
+    // View 层 localPosition = +0.5 cell（与 Data 同 Grid、Tilemap 以格心为锚）时：
+    // 索引 viewCell 的砖画在四格交点，对应 Data 块 viewCell + (1,1) - offset[i]
+    // 落笔 dataCell 后刷新四角 View：dataCell - offset[i]
+    // offset: (0,0)=bit3, (1,0)=bit2, (0,1)=bit1, (1,1)=bit0（bit 与格点见 Palette 示意图）
     public static class DualGridCore
     {
         public const int CornerMaskCount = 16;
@@ -21,7 +19,23 @@ namespace My.Map.DualGrid
             new Vector3Int(1, 1, 0),
         };
 
+        // 落笔后除 4 个角点 View 外，再刷新外圈一圈（否则外缘 mask 不更新、会残留旧图）
+        public static readonly Vector3Int[] ViewHaloOffsets =
+        {
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(-1, 0, 0),
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(0, -1, 0),
+            new Vector3Int(1, 1, 0),
+            new Vector3Int(-1, 1, 0),
+            new Vector3Int(1, -1, 0),
+            new Vector3Int(-1, -1, 0),
+        };
+
         static readonly Vector3Int[] CellScratch = new Vector3Int[4];
+
+        // 旧实现用 viewCell - offset，等价于 View 层 -0.5 cell；与 +0.5 视觉差 (1,1) 格
+        static readonly Vector3Int ViewCellToDataOrigin = new Vector3Int(1, 1, 0);
 
         public static Vector3 GetViewLocalOffset(Vector3 cellSize)
         {
@@ -32,7 +46,7 @@ namespace My.Map.DualGrid
         {
             for (int i = 0; i < 4; i++)
             {
-                buffer[i] = dataCell + CornerOffsets[i];
+                buffer[i] = dataCell - CornerOffsets[i];
             }
         }
 
@@ -40,7 +54,21 @@ namespace My.Map.DualGrid
         {
             for (int i = 0; i < 4; i++)
             {
-                buffer[i] = viewCell - CornerOffsets[i];
+                buffer[i] = viewCell + ViewCellToDataOrigin - CornerOffsets[i];
+            }
+        }
+
+        public static void CollectViewsToRefreshAroundDataCell(Vector3Int dataCell, System.Collections.Generic.HashSet<Vector3Int> output)
+        {
+            GetViewCornersAroundDataCell(dataCell, CellScratch);
+            for (int i = 0; i < 4; i++)
+            {
+                var corner = CellScratch[i];
+                output.Add(corner);
+                for (int h = 0; h < ViewHaloOffsets.Length; h++)
+                {
+                    output.Add(corner + ViewHaloOffsets[h]);
+                }
             }
         }
 

@@ -101,8 +101,6 @@ namespace My.Map.DualGrid
             return null;
         }
 
-        // dataTilemap：必须是 DualTileMap/Data，不能传 View Tilemap
-        // viewCell：View 层格子坐标（在 Data 某格落笔后，会刷新 viewCell 及 +1 偏移的共 4 个 View 格）
         public bool TryResolveViewCorner(Tilemap dataTilemap, Vector3Int viewCell, out byte terrainId, out int mask)
         {
             terrainId = 0;
@@ -112,8 +110,8 @@ namespace My.Map.DualGrid
                 return false;
             }
 
-            int bestMask = 0;
             byte bestTerrain = 0;
+            int bestMask = 0;
 
             for (int i = 0; i < Terrains.Length; i++)
             {
@@ -123,27 +121,46 @@ namespace My.Map.DualGrid
                     continue;
                 }
 
-                if (FindPalette(style.TerrainId) == null)
-                {
-                    continue;
-                }
-
                 int m = DualGridCore.ComputeCornerMask(dataTilemap, this, viewCell, style.TerrainId);
-                if (m != 0 && m > bestMask)
+                if (m > bestMask)
                 {
                     bestMask = m;
                     bestTerrain = style.TerrainId;
                 }
             }
 
-            if (bestMask == 0)
+            if (bestMask != 0)
             {
-                return false;
+                terrainId = bestTerrain;
+                mask = bestMask;
+                return true;
             }
 
-            terrainId = bestTerrain;
-            mask = bestMask;
-            return true;
+            // mask=0：四格都无该地形；仅当 Palette 槽 0 有图时才铺 View（槽 0 应放空/透明方图，不要放草皮）
+            for (int i = 0; i < Terrains.Length; i++)
+            {
+                var style = Terrains[i];
+                if (style == null || style.TerrainId == 0 || style.Palette == null)
+                {
+                    continue;
+                }
+
+                int m = DualGridCore.ComputeCornerMask(dataTilemap, this, viewCell, style.TerrainId);
+                if (m != 0)
+                {
+                    continue;
+                }
+
+                var palette = FindPalette(style.TerrainId);
+                if (palette != null && palette.GetSprite(0, DualGridCore.StableHash(viewCell)) != null)
+                {
+                    terrainId = style.TerrainId;
+                    mask = 0;
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

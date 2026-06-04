@@ -50,37 +50,33 @@ namespace My.Map.DualGrid
             var slot = Corners[mask];
             if (slot?.Variants == null || slot.Variants.Length == 0)
             {
-                if (mask != 0)
-                {
-                    return GetSprite(0, randomSeed);
-                }
-
                 return null;
             }
 
+            Sprite pick = null;
             int validCount = 0;
             for (int i = 0; i < slot.Variants.Length; i++)
             {
-                if (slot.Variants[i] != null)
+                if (slot.Variants[i] == null)
                 {
-                    validCount++;
+                    continue;
+                }
+
+                validCount++;
+                if (pick == null)
+                {
+                    pick = slot.Variants[i];
                 }
             }
 
             if (validCount == 0)
             {
-                return mask != 0 ? GetSprite(0, randomSeed) : null;
+                return null;
             }
 
             if (validCount == 1)
             {
-                for (int i = 0; i < slot.Variants.Length; i++)
-                {
-                    if (slot.Variants[i] != null)
-                    {
-                        return slot.Variants[i];
-                    }
-                }
+                return pick;
             }
 
             int idx = Mathf.Abs(randomSeed) % validCount;
@@ -99,7 +95,7 @@ namespace My.Map.DualGrid
                 idx--;
             }
 
-            return null;
+            return pick;
         }
     }
 }

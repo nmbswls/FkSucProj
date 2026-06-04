@@ -273,10 +273,11 @@ namespace My.Map.DualGrid
 
         public void RefreshAroundDataCell(Vector3Int dataCell)
         {
-            DualGridCore.GetViewCornersAroundDataCell(dataCell, CellBuffer);
-            for (int i = 0; i < 4; i++)
+            var cells = new HashSet<Vector3Int>();
+            DualGridCore.CollectViewsToRefreshAroundDataCell(dataCell, cells);
+            foreach (var viewCell in cells)
             {
-                RefreshViewCell(CellBuffer[i]);
+                RefreshViewCell(viewCell);
             }
         }
 
@@ -336,11 +337,7 @@ namespace My.Map.DualGrid
                         continue;
                     }
 
-                    DualGridCore.GetViewCornersAroundDataCell(pos, CellBuffer);
-                    for (int i = 0; i < 4; i++)
-                    {
-                        touched.Add(CellBuffer[i]);
-                    }
+                    DualGridCore.CollectViewsToRefreshAroundDataCell(pos, touched);
                 }
             }
 
