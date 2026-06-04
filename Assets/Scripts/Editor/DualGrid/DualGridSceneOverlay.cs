@@ -1,7 +1,9 @@
 #if UNITY_EDITOR
+using My.Map.CliffDepth;
 using My.Map.DualGrid;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace My.Map.DualGrid.Editor
 {
@@ -62,7 +64,61 @@ namespace My.Map.DualGrid.Editor
                 label += $"\nResolve(data) T{tid} mask {mask}";
             }
 
+            if (TryFindCliffAtWorld(grid, world, out var cliff, out var cliffCell, out var cliffTilemap))
+            {
+                var cliffCenter = cliffTilemap.GetCellCenterWorld(cliffCell);
+                Handles.color = new Color(0.4f, 0.75f, 1f, 0.95f);
+                Handles.DrawWireCube(cliffCenter, cellSize * 0.92f);
+
+                label += $"\nCliff Depth {cliff.Depth}";
+                if (!string.IsNullOrEmpty(cliff.Terrain))
+                {
+                    label += $" | Terrain {cliff.Terrain}";
+                }
+
+                label += $"\nCliffCell {cliffCell} [{cliffTilemap.name}]";
+            }
+
             Handles.Label(logicCenter, label);
+        }
+
+        static bool TryFindCliffAtWorld(
+            Grid grid,
+            Vector3 world,
+            out CliffDepthRuleTile cliff,
+            out Vector3Int cell,
+            out Tilemap tilemap)
+        {
+            cliff = null;
+            cell = default;
+            tilemap = null;
+            if (grid == null)
+            {
+                return false;
+            }
+
+            var tilemaps = grid.GetComponentsInChildren<Tilemap>();
+            for (int i = 0; i < tilemaps.Length; i++)
+            {
+                var tm = tilemaps[i];
+                if (tm == null)
+                {
+                    continue;
+                }
+
+                var c = tm.WorldToCell(world);
+                if (!CliffDepthRuleTile.TryResolve(tm.GetTile(c), out var resolved))
+                {
+                    continue;
+                }
+
+                cliff = resolved;
+                cell = c;
+                tilemap = tm;
+                return true;
+            }
+
+            return false;
         }
     }
 }
