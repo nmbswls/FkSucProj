@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69776dd88b4a7c94593ae02b435cb00c, type: 3}
   m_Name: DualGridBrushRegistry
   m_EditorClassIdentifier: 
-  Entries:
+  Terrains:
+  - TerrainId: 1
+    Palette: {fileID: 11400000, guid: bfec1e9b64bb3a14f9079c05ba23f0df, type: 2}
+  Brushes:
   - Brush: {fileID: 11400000, guid: 4b93f8e0412db1647b95fe9797b53d9d, type: 2}
     TerrainId: 1
   - Brush: {fileID: 11400000, guid: 8b10f8a7eec849749aa0028e7a3a8e41, type: 2}

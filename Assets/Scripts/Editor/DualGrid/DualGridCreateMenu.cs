@@ -15,9 +15,6 @@ namespace My.Map.DualGrid.Editor
         [MenuItem(AssetMenuRoot + "Palette", false, 2)]
         static void CreatePalette() => CreateAsset<DualGridTilePalette>("DualGridTilePalette");
 
-        [MenuItem(AssetMenuRoot + "Display Tile", false, 3)]
-        static void CreateDisplayTile() => CreateAsset<DualGridTile>("DualGridTile");
-
         [MenuItem("GameObject/2D Object/Dual Tile Map", false, 10)]
         static void CreateDualTileMap(MenuCommand command)
         {

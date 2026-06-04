@@ -11611,15 +11611,39 @@ Tilemap:
   m_Enabled: 1
   m_Tiles: {}
   m_AnimatedTiles: {}
-  m_TileAssetArray: []
-  m_TileSpriteArray: []
-  m_TileMatrixArray: []
-  m_TileColorArray: []
+  m_TileAssetArray:
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  m_TileSpriteArray:
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  m_TileMatrixArray:
+  - m_RefCount: 0
+    m_Data:
+      e00: -7.0882016e-12
+      e01: 0
+      e02: 5.13392e-37
+      e03: 2.98156e-19
+      e10: 4.5908e-41
+      e11: 0
+      e12: 1.54e-43
+      e13: 5.34e-43
+      e20: -6.099519e+36
+      e21: 7.2301246e+17
+      e22: -4.848263e-28
+      e23: -0.15813065
+      e30: 4.5904e-41
+      e31: 5.4e-43
+      e32: 5.34e-43
+      e33: 5.34e-43
+  m_TileColorArray:
+  - m_RefCount: 0
+    m_Data: {r: NaN, g: NaN, b: NaN, a: NaN}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Origin: {x: 0, y: 0, z: 0}
-  m_Size: {x: 0, y: 0, z: 1}
+  m_Origin: {x: 0, y: -8, z: 0}
+  m_Size: {x: 27, y: 8, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -13138,12 +13162,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Grid: {fileID: 1824115761}
   DataTilemap: {fileID: 1331569061}
-  BrushRegistry: {fileID: 0}
-  ViewLayers:
-  - TerrainId: 0
-    ViewTilemap: {fileID: 277656232}
-    DisplayTile: {fileID: 0}
-    Palette: {fileID: 0}
+  BrushRegistry: {fileID: 11400000, guid: 860e6fb68dff6eb4d95dca04d8da6faf, type: 2}
+  ViewTilemap: {fileID: 277656232}
   AutoRefreshInEditor: 1
 --- !u!114 &1749170624
 MonoBehaviour:

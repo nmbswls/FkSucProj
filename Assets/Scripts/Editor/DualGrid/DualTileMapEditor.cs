@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System;
 using My.Map.DualGrid;
 using UnityEditor;
 using UnityEngine;
@@ -10,20 +11,34 @@ namespace My.Map.DualGrid.Editor
     public class DualTileMapEditor : UnityEditor.Editor
     {
         Vector3Int _probeLogicCell;
-        Vector3Int _probeViewCell;
         bool _useLogicProbe = true;
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            DrawDefaultInspector();
 
             var map = (DualTileMap)target;
+
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Grid"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("DataTilemap"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("BrushRegistry"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("ViewTilemap"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("AutoRefreshInEditor"));
+
+            EditorGUILayout.Space(4);
+            EditorGUILayout.HelpBox(
+                "只在 Brush Registry 配笔刷与 Palette。\n" +
+                "画 Data，View 自动拼贴；无需 Display Tile 资产。",
+                MessageType.Info);
+
             if (map.ResolveGrid() == null)
             {
-                EditorGUILayout.HelpBox(
-                    "未找到 Grid：请在父物体上添加 Grid，或在本组件 Grid 字段手动指定。",
-                    MessageType.Warning);
+                EditorGUILayout.HelpBox("未找到 Grid。", MessageType.Warning);
+            }
+
+            if (!map.IsConfigured(out var error))
+            {
+                EditorGUILayout.HelpBox(error, MessageType.Warning);
             }
 
             EditorGUILayout.Space(8);
@@ -49,25 +64,20 @@ namespace My.Map.DualGrid.Editor
             }
             if (GUILayout.Button("Focus View"))
             {
-                var view = map.ViewLayers != null && map.ViewLayers.Length > 0
-                    ? map.ViewLayers[0].ViewTilemap
-                    : null;
-                FocusTilemap(view);
+                FocusTilemap(map.ViewTilemap);
             }
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.Space(6);
-            EditorGUILayout.LabelField("Coordinate Probe", EditorStyles.boldLabel);
-            _useLogicProbe = EditorGUILayout.Toggle("Probe Logic Cell", _useLogicProbe);
-            if (_useLogicProbe)
+            if (map.BrushRegistry != null && map.DataTilemap != null)
             {
-                _probeLogicCell = EditorGUILayout.Vector3IntField("Logic Cell", _probeLogicCell);
-                DrawLogicProbe(map, _probeLogicCell);
-            }
-            else
-            {
-                _probeViewCell = EditorGUILayout.Vector3IntField("View Cell", _probeViewCell);
-                DrawViewProbe(map, _probeViewCell);
+                EditorGUILayout.Space(6);
+                EditorGUILayout.LabelField("Coordinate Probe", EditorStyles.boldLabel);
+                _useLogicProbe = EditorGUILayout.Toggle("Probe Logic Cell", _useLogicProbe);
+                if (_useLogicProbe)
+                {
+                    _probeLogicCell = EditorGUILayout.Vector3IntField("Logic Cell", _probeLogicCell);
+                    DrawProbe(map, _probeLogicCell);
+                }
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -75,38 +85,20 @@ namespace My.Map.DualGrid.Editor
 
         public static void CreateHierarchy(DualTileMap map)
         {
-            Undo.RegisterFullObjectHierarchyUndo(map.gameObject, "Create Dual Grid Hierarchy");
-
+            Undo.RegisterFullObjectHierarchyUndo(map.gameObject, "Create Dual Tile Map Hierarchy");
             map.Grid = map.ResolveGrid();
 
             var dataGo = GetOrCreateChild(map.transform, "Data");
-            var dataTm = GetOrCreateTilemap(dataGo);
+            map.DataTilemap = GetOrCreateTilemap(dataGo);
 
             var viewGo = GetOrCreateChild(map.transform, "View");
-            var viewTm = GetOrCreateTilemap(viewGo);
-
-            map.DataTilemap = dataTm;
-
-            if (map.ViewLayers == null || map.ViewLayers.Length == 0)
-            {
-                map.ViewLayers = new[]
-                {
-                    new DualTileMap.ViewLayer
-                    {
-                        ViewTilemap = viewTm,
-                    },
-                };
-            }
-            else
-            {
-                map.ViewLayers[0].ViewTilemap = viewTm;
-            }
+            map.ViewTilemap = GetOrCreateTilemap(viewGo);
 
             map.EnsureViewOffset();
             EditorUtility.SetDirty(map);
         }
 
-        static GameObject GetOrCreateChild(Transform parent, string name)
+        public static GameObject GetOrCreateChild(Transform parent, string name)
         {
             var t = parent.Find(name);
             if (t != null)
@@ -120,7 +112,7 @@ namespace My.Map.DualGrid.Editor
             return go;
         }
 
-        static Tilemap GetOrCreateTilemap(GameObject go)
+        public static Tilemap GetOrCreateTilemap(GameObject go)
         {
             var tm = go.GetComponent<Tilemap>();
             if (tm == null)
@@ -136,7 +128,7 @@ namespace My.Map.DualGrid.Editor
             return tm;
         }
 
-        static void FocusTilemap(Tilemap tilemap)
+        public static void FocusTilemap(Tilemap tilemap)
         {
             if (tilemap == null)
             {
@@ -147,65 +139,45 @@ namespace My.Map.DualGrid.Editor
             SceneView.FrameLastActiveSceneView();
         }
 
-        static void DrawLogicProbe(DualTileMap map, Vector3Int logicCell)
+        static void DrawProbe(DualTileMap map, Vector3Int viewCell)
         {
-            if (map.DataTilemap == null)
-            {
-                return;
-            }
-
-            var viewCell = logicCell;
+            var reg = map.BrushRegistry;
             EditorGUILayout.LabelField($"View corner: {viewCell}", EditorStyles.miniLabel);
 
-            if (map.BrushRegistry == null || map.ViewLayers == null)
+            if (reg.TryResolveViewCorner(map.DataTilemap, viewCell, out byte win, out int winMask))
+            {
+                EditorGUILayout.LabelField(
+                    $"显示 T{win} mask={winMask} ({ToBinary(winMask)})",
+                    EditorStyles.miniLabel);
+            }
+
+            if (reg.Terrains == null)
             {
                 return;
             }
 
-            for (int i = 0; i < map.ViewLayers.Length; i++)
+            for (int i = 0; i < reg.Terrains.Length; i++)
             {
-                var layer = map.ViewLayers[i];
-                if (layer?.Palette == null)
+                var style = reg.Terrains[i];
+                if (style == null || style.TerrainId == 0)
                 {
                     continue;
                 }
 
-                byte tid = layer.Palette.TerrainId;
-                int mask = DualGridCore.ComputeCornerMask(map.DataTilemap, map.BrushRegistry, viewCell, tid);
-                EditorGUILayout.LabelField($"Layer {i} TerrainId={tid} mask={mask} ({ToBinary(mask)})", EditorStyles.miniLabel);
-            }
-        }
-
-        static void DrawViewProbe(DualTileMap map, Vector3Int viewCell)
-        {
-            var buffer = new Vector3Int[4];
-            DualGridCore.GetLogicCellsForViewCorner(viewCell, buffer);
-            EditorGUILayout.LabelField(
-                $"Logic cells: {buffer[0]}, {buffer[1]}, {buffer[2]}, {buffer[3]}",
-                EditorStyles.miniLabel);
-
-            if (map.DataTilemap == null || map.BrushRegistry == null || map.ViewLayers == null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < map.ViewLayers.Length; i++)
-            {
-                var layer = map.ViewLayers[i];
-                if (layer?.Palette == null)
-                {
-                    continue;
-                }
-
-                byte tid = layer.Palette.TerrainId;
-                int mask = DualGridCore.ComputeCornerMask(map.DataTilemap, map.BrushRegistry, viewCell, tid);
-                EditorGUILayout.LabelField($"Layer {i} TerrainId={tid} mask={mask} ({ToBinary(mask)})", EditorStyles.miniLabel);
+                int mask = DualGridCore.ComputeCornerMask(
+                    map.DataTilemap,
+                    reg,
+                    viewCell,
+                    style.TerrainId);
+                EditorGUILayout.LabelField(
+                    $"T{style.TerrainId} mask={mask} ({ToBinary(mask)})",
+                    EditorStyles.miniLabel);
             }
         }
 
         static string ToBinary(int mask)
         {
-            return System.Convert.ToString(mask, 2).PadLeft(4, '0');
+            return Convert.ToString(mask, 2).PadLeft(4, '0');
         }
     }
 }

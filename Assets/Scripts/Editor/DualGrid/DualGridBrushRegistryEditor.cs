@@ -12,9 +12,12 @@ namespace My.Map.DualGrid.Editor
         {
             serializedObject.Update();
             EditorGUILayout.HelpBox(
-                "Data 层用普通 Tile 绘制；在此登记笔刷 Tile 与 TerrainId 的对应关系。",
+                "Terrains：TerrainId + Palette（16 态显示），顺序为 View 角点优先级。\n" +
+                "Brushes：Data 上画的普通 Tile → TerrainId。",
                 MessageType.Info);
-            DrawDefaultInspector();
+
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Terrains"), true);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Brushes"), true);
             serializedObject.ApplyModifiedProperties();
         }
     }

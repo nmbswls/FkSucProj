@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 namespace My.Map.DualGrid
@@ -8,48 +6,24 @@ namespace My.Map.DualGrid
     [DisallowMultipleComponent]
     public class DualTileMap : MonoBehaviour
     {
-        [Serializable]
-        public class ViewLayer
-        {
-            public byte TerrainId;
-            public Tilemap ViewTilemap;
-            public DualGridTile DisplayTile;
-            public DualGridTilePalette Palette;
-
-            public byte ResolveTerrainId()
-            {
-                if (TerrainId != 0)
-                {
-                    return TerrainId;
-                }
-
-                if (Palette != null)
-                {
-                    return Palette.TerrainId;
-                }
-
-                return DisplayTile != null && DisplayTile.Palette != null
-                    ? DisplayTile.Palette.TerrainId
-                    : (byte)0;
-            }
-        }
-
         public Grid Grid;
         public Tilemap DataTilemap;
-        [FormerlySerializedAs("TerrainRegistry")]
         public DualGridBrushRegistry BrushRegistry;
-        public ViewLayer[] ViewLayers = Array.Empty<ViewLayer>();
+        public Tilemap ViewTilemap;
         public bool AutoRefreshInEditor = true;
+        public bool HideDataRenderer = true;
+        public int ViewSortingOrder = 1;
 
         static readonly Vector3Int[] CellBuffer = new Vector3Int[4];
         Tilemap _subscribedData;
+        DualGridViewTile _viewTile;
 
         void Reset()
         {
             DataTilemap ??= transform.Find("Data")?.GetComponent<Tilemap>();
+            ViewTilemap ??= transform.Find("View")?.GetComponent<Tilemap>();
         }
 
-        // 优先父级 Grid；Inspector 手动赋值可覆盖
         public Grid ResolveGrid()
         {
             if (Grid != null)
@@ -72,14 +46,19 @@ namespace My.Map.DualGrid
 
         void OnEnable()
         {
+            EnsureViewTile();
+            ApplyRendererSettings();
             SubscribeDataChanges();
             EnsureViewOffset();
+            RefreshAll();
         }
 
         void OnDisable() => UnsubscribeDataChanges();
 
         void OnValidate()
         {
+            EnsureViewTile();
+            ApplyRendererSettings();
             EnsureViewOffset();
 #if UNITY_EDITOR
             if (!Application.isPlaying && AutoRefreshInEditor)
@@ -89,27 +68,105 @@ namespace My.Map.DualGrid
 #endif
         }
 
+        void EnsureViewTile()
+        {
+            if (_viewTile == null)
+            {
+                _viewTile = ScriptableObject.CreateInstance<DualGridViewTile>();
+            }
+
+            _viewTile.Owner = this;
+        }
+
+        void ApplyRendererSettings()
+        {
+            if (DataTilemap != null)
+            {
+                var dataRenderer = DataTilemap.GetComponent<TilemapRenderer>();
+                if (dataRenderer != null)
+                {
+                    dataRenderer.enabled = !HideDataRenderer;
+                    dataRenderer.sortingOrder = 0;
+                }
+            }
+
+            if (ViewTilemap != null)
+            {
+                var viewRenderer = ViewTilemap.GetComponent<TilemapRenderer>();
+                if (viewRenderer != null)
+                {
+                    viewRenderer.enabled = true;
+                    viewRenderer.sortingOrder = ViewSortingOrder;
+                }
+            }
+        }
+
+        public bool IsConfigured(out string error)
+        {
+            if (DataTilemap == null)
+            {
+                error = "Data Tilemap 未指定";
+                return false;
+            }
+
+            if (BrushRegistry == null)
+            {
+                error = "Brush Registry 未指定";
+                return false;
+            }
+
+            if (ViewTilemap == null)
+            {
+                error = "View Tilemap 未指定";
+                return false;
+            }
+
+            if (BrushRegistry.Terrains == null || BrushRegistry.Terrains.Length == 0)
+            {
+                error = "Brush Registry / Terrains 为空";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        public bool TryGetViewSprite(Vector3Int viewCell, out Sprite sprite)
+        {
+            sprite = null;
+            if (DataTilemap == null || BrushRegistry == null)
+            {
+                return false;
+            }
+
+            if (!BrushRegistry.TryResolveViewCorner(DataTilemap, viewCell, out byte terrainId, out int mask))
+            {
+                return false;
+            }
+
+            var palette = BrushRegistry.FindPalette(terrainId);
+            if (palette == null)
+            {
+                return false;
+            }
+
+            sprite = palette.GetSprite(mask, DualGridCore.StableHash(viewCell));
+            return sprite != null;
+        }
+
         public void EnsureViewOffset()
         {
             var grid = ResolveGrid();
-            if (grid == null || ViewLayers == null)
+            if (grid == null || ViewTilemap == null)
             {
                 return;
             }
 
             var offset = DualGridCore.GetViewLocalOffset(grid.cellSize);
-            foreach (var layer in ViewLayers)
+            var t = ViewTilemap.transform;
+            if (t.parent == transform || t.IsChildOf(transform))
             {
-                if (layer?.ViewTilemap == null)
-                {
-                    continue;
-                }
-
-                var t = layer.ViewTilemap.transform;
-                if (t.parent == transform || t.IsChildOf(transform))
-                {
-                    t.localPosition = offset;
-                }
+                t.localPosition = offset;
             }
         }
 
@@ -150,6 +207,8 @@ namespace My.Map.DualGrid
             {
                 RefreshAroundLogicCell(changes[i].position);
             }
+
+            ViewTilemap.RefreshAllTiles();
         }
 
         public void RefreshAroundLogicCell(Vector3Int logicCell)
@@ -163,40 +222,39 @@ namespace My.Map.DualGrid
 
         public void RefreshViewCell(Vector3Int viewCell)
         {
-            if (DataTilemap == null || BrushRegistry == null || ViewLayers == null)
+            if (ViewTilemap == null || BrushRegistry == null)
             {
                 return;
             }
 
-            foreach (var layer in ViewLayers)
-            {
-                RefreshViewCell(layer, viewCell);
-            }
-        }
+            EnsureViewTile();
 
-        void RefreshViewCell(ViewLayer layer, Vector3Int viewCell)
-        {
-            if (layer?.ViewTilemap == null || layer.DisplayTile == null)
+            if (BrushRegistry.TryResolveViewCorner(DataTilemap, viewCell, out _, out _))
             {
-                return;
+                ViewTilemap.SetTile(viewCell, _viewTile);
+            }
+            else
+            {
+                ViewTilemap.SetTile(viewCell, null);
             }
 
-            byte terrainId = layer.ResolveTerrainId();
-            int mask = DualGridCore.ComputeCornerMask(DataTilemap, BrushRegistry, viewCell, terrainId);
-            layer.ViewTilemap.SetTile(viewCell, mask != 0 ? layer.DisplayTile : null);
-            layer.ViewTilemap.RefreshTile(viewCell);
+            ViewTilemap.RefreshTile(viewCell);
         }
 
         public void RefreshAll()
         {
-            if (DataTilemap == null)
+            if (DataTilemap == null || ViewTilemap == null || BrushRegistry == null)
             {
                 return;
             }
 
+            EnsureViewTile();
+            DataTilemap.CompressBounds();
+
             var b = DataTilemap.cellBounds;
             if (b.size.x <= 0 || b.size.y <= 0)
             {
+                ViewTilemap.ClearAllTiles();
                 return;
             }
 
@@ -204,9 +262,22 @@ namespace My.Map.DualGrid
             {
                 for (int y = b.min.y; y < b.max.y; y++)
                 {
-                    RefreshViewCell(new Vector3Int(x, y, b.min.z));
+                    var logicCell = new Vector3Int(x, y, b.min.z);
+                    if (DataTilemap.GetTile(logicCell) == null)
+                    {
+                        continue;
+                    }
+
+                    DualGridCore.GetViewCornersAroundLogicCell(logicCell, CellBuffer);
+                    for (int i = 0; i < 4; i++)
+                    {
+                        RefreshViewCell(CellBuffer[i]);
+                    }
                 }
             }
+
+            ViewTilemap.RefreshAllTiles();
+            ViewTilemap.CompressBounds();
         }
 
         public void RefreshBounds(BoundsInt logicBounds)
@@ -217,9 +288,11 @@ namespace My.Map.DualGrid
             {
                 for (int y = min.y; y < max.y; y++)
                 {
-                    RefreshViewCell(new Vector3Int(x, y, min.z));
+                    RefreshAroundLogicCell(new Vector3Int(x, y, min.z));
                 }
             }
+
+            ViewTilemap.RefreshAllTiles();
         }
 
         public Vector3Int WorldToLogicCell(Vector3 world)
@@ -229,8 +302,30 @@ namespace My.Map.DualGrid
 
         public Vector3Int WorldToViewCell(Vector3 world)
         {
-            var view = ViewLayers != null && ViewLayers.Length > 0 ? ViewLayers[0].ViewTilemap : null;
-            return view != null ? view.WorldToCell(world) : WorldToLogicCell(world);
+            return ViewTilemap != null ? ViewTilemap.WorldToCell(world) : WorldToLogicCell(world);
+        }
+
+        sealed class DualGridViewTile : TileBase
+        {
+            public DualTileMap Owner;
+
+            public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
+            {
+                tileData.sprite = null;
+                tileData.transform = Matrix4x4.identity;
+                tileData.color = Color.white;
+                tileData.flags = TileFlags.LockColor;
+                tileData.colliderType = Tile.ColliderType.None;
+
+                if (Owner == null || !Owner.TryGetViewSprite(position, out var sprite))
+                {
+                    return;
+                }
+
+                tileData.sprite = sprite;
+            }
+
+            public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go) => true;
         }
     }
 }

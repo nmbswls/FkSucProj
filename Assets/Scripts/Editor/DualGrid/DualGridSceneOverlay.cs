@@ -2,7 +2,6 @@
 using My.Map.DualGrid;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace My.Map.DualGrid.Editor
 {
@@ -20,10 +19,7 @@ namespace My.Map.DualGrid.Editor
                 ? Selection.activeGameObject.GetComponentInParent<DualTileMap>()
                 : null;
 
-            if (map == null)
-            {
-                map = Object.FindObjectOfType<DualTileMap>();
-            }
+            map ??= Object.FindObjectOfType<DualTileMap>();
 
             if (map == null || map.DataTilemap == null)
             {
@@ -42,14 +38,11 @@ namespace My.Map.DualGrid.Editor
             var viewCell = logicCell;
 
             var logicCenter = map.DataTilemap.GetCellCenterWorld(logicCell);
-            var viewTm = map.ViewLayers != null && map.ViewLayers.Length > 0
-                ? map.ViewLayers[0].ViewTilemap
-                : null;
             var grid = map.ResolveGrid();
             var cellSize = grid != null ? grid.cellSize : Vector3.one;
 
-            var viewCenter = viewTm != null
-                ? viewTm.GetCellCenterWorld(viewCell)
+            var viewCenter = map.ViewTilemap != null
+                ? map.ViewTilemap.GetCellCenterWorld(viewCell)
                 : logicCenter + DualGridCore.GetViewLocalOffset(cellSize);
 
             Handles.color = new Color(0.2f, 0.9f, 0.3f, 0.9f);
@@ -59,7 +52,14 @@ namespace My.Map.DualGrid.Editor
             var viewSize = cellSize * 0.35f;
             Handles.DrawWireCube(viewCenter, new Vector3(viewSize.x, viewSize.y, 0.01f));
 
-            Handles.Label(logicCenter, $"Logic {logicCell}\nView {viewCell}");
+            var label = $"Logic {logicCell}\nView {viewCell}";
+            if (map.BrushRegistry != null
+                && map.BrushRegistry.TryResolveViewCorner(map.DataTilemap, viewCell, out byte tid, out int mask))
+            {
+                label += $"\nShow T{tid} mask {mask}";
+            }
+
+            Handles.Label(logicCenter, label);
         }
     }
 }
