@@ -98,7 +98,7 @@ public static class MapChunkExportCore
         database.SourceTextureHeight = texSize.y;
         database.Chunks = new List<MapChunkExportItem>();
 
-        var chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap, null);
+        var chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap, null, editorRoot);
         int bgCount = 0;
         int tmCount = 0;
 
@@ -107,7 +107,7 @@ public static class MapChunkExportCore
         {
             EnsureFolder($"{rootFolder}/BakedTiles");
             bakedVisualLayers = MapChunkVisualBaker.Bake(editorRoot, $"{rootFolder}/BakedTiles", tileGrounds);
-            chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap, bakedVisualLayers);
+            chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap, bakedVisualLayers, editorRoot);
         }
 
         foreach (var coord in chunkCoords.OrderBy(c => c.Y).ThenBy(c => c.X))
@@ -250,13 +250,23 @@ public static class MapChunkExportCore
         Vector2 origin,
         bool includeTexture,
         bool includeTilemap,
-        List<MapChunkVisualBaker.BakedLayer> bakedVisualLayers)
+        List<MapChunkVisualBaker.BakedLayer> bakedVisualLayers,
+        MapChunkEditorRoot editorRoot = null)
     {
         var coords = new HashSet<ChunkCoord>();
 
         if (includeTexture && texSize.x > 0 && texSize.y > 0 && slicePx > 0)
         {
             MapChunkUtility.IterateChunkCoordsForTexture(texSize, slicePx, c => coords.Add(c));
+        }
+
+        if (editorRoot != null && editorRoot.PaintWorldRect.width > 0f && editorRoot.PaintWorldRect.height > 0f)
+        {
+            MapChunkUtility.CollectChunkCoordsForWorldRect(
+                editorRoot.PaintWorldRect,
+                editorRoot.ChunkOrigin,
+                editorRoot.ChunkWorldSize,
+                coords);
         }
 
         if (includeTilemap && tileGrounds != null)
@@ -412,6 +422,8 @@ public static class MapChunkExportCore
 
         AssetDatabase.CreateFolder(parent, name);
     }
+
+    public static void EnsureFolderPublic(string path) => EnsureFolder(path);
 
     static string ExportBackgroundSprite(
         Texture2D src,

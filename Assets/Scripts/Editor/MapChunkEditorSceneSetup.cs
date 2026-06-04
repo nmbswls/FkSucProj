@@ -182,6 +182,16 @@ public class MapChunkExporterWindow : EditorWindow
         }
 
         EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Painted Background", EditorStyles.boldLabel);
+        EditorGUILayout.HelpBox(
+            "手绘背景 AI 工作流：在 Map Paint Background 窗口配置 PaintWorldRect、Generate Atlas、Import 回稿。",
+            MessageType.Info);
+        if (GUILayout.Button("Open Map Paint Background Window"))
+        {
+            EditorApplication.ExecuteMenuItem("Window/Map Paint Background");
+        }
+
+        EditorGUILayout.Space();
         if (GUILayout.Button("Export Map"))
         {
             Export();

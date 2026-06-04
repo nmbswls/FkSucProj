@@ -1,0 +1,158 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54e38a9c16d6b49458b0990e16b02853, type: 3}
+  m_Name: manifest
+  m_EditorClassIdentifier: 
+  SceneName: Main_Area_01
+  PaintWorldRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 96
+    height: 96
+  ChunkOrigin: {x: 0, y: 0}
+  ChunkWorldSize: 32
+  TexturePPU: 16
+  PaintExportPPU: 16
+  SlicePixelSize: 512
+  AtlasWidth: 1536
+  AtlasHeight: 1536
+  MaskColor: {r: 1, g: 0, b: 1, a: 1}
+  ExportRevision: 5
+  OutlineSyncedRevision: 2
+  ContextExpandRatio: 0.25
+  Chunks:
+  - X: 0
+    Y: 0
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.14872742
+  - X: 1
+    Y: 0
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.93515396
+  - X: 2
+    Y: 0
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.34277344
+  - X: 3
+    Y: 0
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 4
+    Y: 0
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 0
+    Y: 1
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.06640625
+  - X: 1
+    Y: 1
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.15722656
+  - X: 2
+    Y: 1
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.013671875
+  - X: 3
+    Y: 1
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 4
+    Y: 1
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 0
+    Y: 2
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.0009765625
+  - X: 1
+    Y: 2
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.029296875
+  - X: 2
+    Y: 2
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 3
+    Y: 2
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 4
+    Y: 2
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 0
+    Y: 3
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 1
+    Y: 3
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 2
+    Y: 3
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.017578125
+  - X: 3
+    Y: 3
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0.080078125
+  - X: 4
+    Y: 3
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 0
+    Y: 4
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 1
+    Y: 4
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 2
+    Y: 4
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 3
+    Y: 4
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0
+  - X: 4
+    Y: 4
+    Source: 0
+    ResetOnExport: 0
+    TileCoverageRatio: 0

@@ -75,6 +75,57 @@ namespace My.MapExport
                 }
             }
         }
+
+        public static void IterateChunkCoordsForWorldRect(Rect worldRect, Vector2 chunkOrigin, float chunkWorldSize,
+            System.Action<ChunkCoord> visit)
+        {
+            if (worldRect.width <= 0f || worldRect.height <= 0f || chunkWorldSize <= 0f || visit == null)
+            {
+                return;
+            }
+
+            var minCoord = WorldToChunk(new Vector2(worldRect.xMin, worldRect.yMin), chunkOrigin, chunkWorldSize);
+            var maxCoord = WorldToChunk(
+                new Vector2(worldRect.xMax - 1e-4f, worldRect.yMax - 1e-4f),
+                chunkOrigin,
+                chunkWorldSize);
+
+            for (int cy = minCoord.Y; cy <= maxCoord.Y; cy++)
+            {
+                for (int cx = minCoord.X; cx <= maxCoord.X; cx++)
+                {
+                    visit(new ChunkCoord(cx, cy));
+                }
+            }
+        }
+
+        public static Rect SnapWorldRectToChunkGrid(Rect rect, Vector2 chunkOrigin, float chunkWorldSize)
+        {
+            if (rect.width <= 0f || rect.height <= 0f || chunkWorldSize <= 0f)
+            {
+                return rect;
+            }
+
+            var minCoord = WorldToChunk(new Vector2(rect.xMin, rect.yMin), chunkOrigin, chunkWorldSize);
+            var maxCoord = WorldToChunk(
+                new Vector2(rect.xMax - 1e-4f, rect.yMax - 1e-4f),
+                chunkOrigin,
+                chunkWorldSize);
+            var min = ChunkWorldMin(minCoord, chunkOrigin, chunkWorldSize);
+            var maxCorner = ChunkWorldMin(new ChunkCoord(maxCoord.X + 1, maxCoord.Y + 1), chunkOrigin, chunkWorldSize);
+            return Rect.MinMaxRect(min.x, min.y, maxCorner.x, maxCorner.y);
+        }
+
+        public static void CollectChunkCoordsForWorldRect(Rect worldRect, Vector2 chunkOrigin, float chunkWorldSize,
+            HashSet<ChunkCoord> output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            IterateChunkCoordsForWorldRect(worldRect, chunkOrigin, chunkWorldSize, coord => output.Add(coord));
+        }
     }
 
     // 从 Collider2D 提取 FOV 用 Segment2D，仅 Editor Static Item 烘焙使用

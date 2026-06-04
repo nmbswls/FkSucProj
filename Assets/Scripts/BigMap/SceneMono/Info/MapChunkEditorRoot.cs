@@ -16,6 +16,23 @@ public class MapChunkEditorRoot : MonoBehaviour
 
     public Transform StaticPrefabRoot;
 
+    [Header("Painted Background")]
+    public Rect PaintWorldRect;
+    public Color PaintMaskColor = new Color(1f, 0f, 1f, 1f);
+    public float PaintExportPPU;
+    public LayerMask PaintCaptureLayerMask = ~0;
+    public float PaintCaptureCameraZ = -10f;
+    public string LastPaintManifestKey;
+    public int BackgroundSortingOrder;
+
+    [Tooltip("单 chunk 导出给 AI 时，四边外扩比例（相对 slice 边长）。Import 时用同比例裁回中心。")]
+    [Range(0f, 0.49f)]
+    public float PaintContextExpandRatio = 0.25f;
+
+    public float EffectivePaintExportPpu => PaintExportPPU > 0f ? PaintExportPPU : TexturePPU;
+
+    public int PaintSlicePixelSize => MapChunkUtility.ComputeSlicePixelSize(ChunkWorldSize, EffectivePaintExportPpu);
+
     [Header("GridRoot 3D Collision Export")]
     [Tooltip("关闭时仅导出 GridRoot 结构（Tilemap 等），不烘焙 3D BoxCollider。合并与性能完善前建议保持关闭。")]
     public bool ExportGridRoot3DCollision = false;
@@ -92,13 +109,37 @@ public class MapChunkEditorRoot : MonoBehaviour
         int rows = Mathf.Max(1, Mathf.CeilToInt(size.y / (float)slicePx));
 
         Gizmos.color = new Color(0.2f, 0.9f, 0.4f, 0.85f);
-        for (int cy = 0; cy < rows; cy++)
+        if (PaintWorldRect.width > 0f && PaintWorldRect.height > 0f)
         {
-            for (int cx = 0; cx < cols; cx++)
+            var paintRect = PaintWorldRect;
+            int paintCols = Mathf.Max(1, Mathf.CeilToInt(paintRect.width / ChunkWorldSize));
+            int paintRows = Mathf.Max(1, Mathf.CeilToInt(paintRect.height / ChunkWorldSize));
+            var minCoord = MapChunkUtility.WorldToChunk(new Vector2(paintRect.xMin, paintRect.yMin), ChunkOrigin, ChunkWorldSize);
+            for (int cy = 0; cy < paintRows; cy++)
             {
-                var min = MapChunkUtility.ChunkWorldMin(new My.Map.Logic.ChunkCoord(cx, cy), ChunkOrigin, ChunkWorldSize);
-                var center = min + new Vector3(ChunkWorldSize * 0.5f, ChunkWorldSize * 0.5f, 0f);
-                Gizmos.DrawWireCube(center, new Vector3(ChunkWorldSize, ChunkWorldSize, 0.05f));
+                for (int cx = 0; cx < paintCols; cx++)
+                {
+                    var coord = new My.Map.Logic.ChunkCoord(minCoord.X + cx, minCoord.Y + cy);
+                    var min = MapChunkUtility.ChunkWorldMin(coord, ChunkOrigin, ChunkWorldSize);
+                    var center = min + new Vector3(ChunkWorldSize * 0.5f, ChunkWorldSize * 0.5f, 0f);
+                    Gizmos.DrawWireCube(center, new Vector3(ChunkWorldSize, ChunkWorldSize, 0.05f));
+                }
+            }
+
+            Gizmos.color = new Color(0.9f, 0.5f, 1f, 0.35f);
+            var rectCenter = new Vector3(paintRect.center.x, paintRect.center.y, 0f);
+            Gizmos.DrawWireCube(rectCenter, new Vector3(paintRect.width, paintRect.height, 0.02f));
+        }
+        else
+        {
+            for (int cy = 0; cy < rows; cy++)
+            {
+                for (int cx = 0; cx < cols; cx++)
+                {
+                    var min = MapChunkUtility.ChunkWorldMin(new My.Map.Logic.ChunkCoord(cx, cy), ChunkOrigin, ChunkWorldSize);
+                    var center = min + new Vector3(ChunkWorldSize * 0.5f, ChunkWorldSize * 0.5f, 0f);
+                    Gizmos.DrawWireCube(center, new Vector3(ChunkWorldSize, ChunkWorldSize, 0.05f));
+                }
             }
         }
     }
