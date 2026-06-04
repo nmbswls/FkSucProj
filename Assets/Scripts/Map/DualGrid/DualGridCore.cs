@@ -4,9 +4,8 @@ using UnityEngine.Tilemaps;
 namespace My.Map.DualGrid
 {
     // View 层 localPosition = +0.5 cell（与 Data 同 Grid、Tilemap 以格心为锚）时：
-    // 索引 viewCell 的砖画在四格交点，对应 Data 块 viewCell + (1,1) - offset[i]
-    // 落笔 dataCell 后刷新四角 View：dataCell - offset[i]
-    // offset: (0,0)=bit3, (1,0)=bit2, (0,1)=bit1, (1,1)=bit0（bit 与格点见 Palette 示意图）
+    // 落笔 dataCell 后刷新四角 View：dataCell - CornerOffsets[i]
+    // mask 采样见 DataCellsAroundView + PaletteBitForDataCell（与 Palette 示意图一致）
     public static class DualGridCore
     {
         public const int CornerMaskCount = 16;
@@ -34,8 +33,20 @@ namespace My.Map.DualGrid
 
         static readonly Vector3Int[] CellScratch = new Vector3Int[4];
 
-        // 旧实现用 viewCell - offset，等价于 View 层 -0.5 cell；与 +0.5 视觉差 (1,1) 格
-        static readonly Vector3Int ViewCellToDataOrigin = new Vector3Int(1, 1, 0);
+        // 四格相对 viewCell（顺序：东北、西北、东南、西南）
+        static readonly Vector3Int[] DataCellsAroundView =
+        {
+            new Vector3Int(1, 1, 0),
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(0, 0, 0),
+        };
+
+        // Palette 示意上排为 bit0/1、下排为 bit2/3；与格点 Y 对齐（避免上下边沿对调）
+        static readonly int[] PaletteBitForDataCell =
+        {
+            2, 3, 0, 1,
+        };
 
         public static Vector3 GetViewLocalOffset(Vector3 cellSize)
         {
@@ -54,7 +65,7 @@ namespace My.Map.DualGrid
         {
             for (int i = 0; i < 4; i++)
             {
-                buffer[i] = viewCell + ViewCellToDataOrigin - CornerOffsets[i];
+                buffer[i] = viewCell + DataCellsAroundView[i];
             }
         }
 
@@ -91,15 +102,14 @@ namespace My.Map.DualGrid
                 return 0;
             }
 
-            GetDataCellsForViewCorner(viewCell, CellScratch);
-
             int mask = 0;
             for (int i = 0; i < 4; i++)
             {
-                var brush = data.GetTile(CellScratch[i]);
+                var dataCell = viewCell + DataCellsAroundView[i];
+                var brush = data.GetTile(dataCell);
                 if (brush != null && registry.TryGetTerrainId(brush, out var id) && id == terrainId)
                 {
-                    mask |= 1 << i;
+                    mask |= 1 << PaletteBitForDataCell[i];
                 }
             }
 

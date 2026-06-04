@@ -171,8 +171,7 @@ namespace My.Map.DualGrid.Editor
             }
         }
 
-        // 与 DualGridCore 一致（View local +0.5）：bit3=view bit2=view+(1,0) bit1=view+(0,1) bit0=view+(1,1)
-        // GUI 上排 = Tilemap y 较大
+        // 与 DualGridCore.PaletteBitForDataCell 一致；GUI 上排 = bit0/1（Tilemap +Y 侧）
         static Rect GetBitCellRect(Rect grid, int bit)
         {
             int col = bit == 0 || bit == 2 ? 1 : 0;

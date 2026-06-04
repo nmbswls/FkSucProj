@@ -21,8 +21,7 @@ MonoBehaviour:
   - Variants:
     - {fileID: -284066226, guid: 3c8a0a5d15fe7fe489f64985f40554c0, type: 3}
   - Variants:
-    - {fileID: 187978793, guid: 3c8a0a5d15fe7fe489f64985f40554c0, type: 3}
-    - {fileID: -1876969095, guid: 3c8a0a5d15fe7fe489f64985f40554c0, type: 3}
+    - {fileID: -178788699, guid: 3c8a0a5d15fe7fe489f64985f40554c0, type: 3}
   - Variants:
     - {fileID: -854109947, guid: 3c8a0a5d15fe7fe489f64985f40554c0, type: 3}
   - Variants:
