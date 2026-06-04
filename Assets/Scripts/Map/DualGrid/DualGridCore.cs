@@ -3,10 +3,9 @@ using UnityEngine.Tilemaps;
 
 namespace My.Map.DualGrid
 {
-    // View 层 localPosition = +0.5 cell（与 Data 同 Grid、Tilemap 以格心为锚）时：
-    // 索引 viewCell 的砖画在四格交点，对应 Data 块 viewCell + (1,1) - offset[i]
-    // 落笔 dataCell 后刷新四角 View：dataCell - offset[i]
-    // offset: (0,0)=bit3, (1,0)=bit2, (0,1)=bit1, (1,1)=bit0（bit 与格点见 Palette 示意图）
+    // View 层 localPosition = +0.5 cell（与 Data 同 Grid、Tilemap 以格心为锚）：
+    // 读 Data：viewCell + (1,1) - CornerOffsets[i] → bit i 与 Palette 示意图一致
+    // 落笔 dataCell 后刷新 View：dataCell - CornerOffsets[i]
     public static class DualGridCore
     {
         public const int CornerMaskCount = 16;
@@ -19,7 +18,7 @@ namespace My.Map.DualGrid
             new Vector3Int(1, 1, 0),
         };
 
-        // 落笔后除 4 个角点 View 外，再刷新外圈一圈（否则外缘 mask 不更新、会残留旧图）
+        // 外缘 View 需多刷一圈邻格，否则邻 chunk / 边界 mask 不更新
         public static readonly Vector3Int[] ViewHaloOffsets =
         {
             new Vector3Int(1, 0, 0),
@@ -34,7 +33,6 @@ namespace My.Map.DualGrid
 
         static readonly Vector3Int[] CellScratch = new Vector3Int[4];
 
-        // 旧实现用 viewCell - offset，等价于 View 层 -0.5 cell；与 +0.5 视觉差 (1,1) 格
         static readonly Vector3Int ViewCellToDataOrigin = new Vector3Int(1, 1, 0);
 
         public static Vector3 GetViewLocalOffset(Vector3 cellSize)

@@ -136,30 +136,6 @@ namespace My.Map.DualGrid
                 return true;
             }
 
-            // mask=0：四格都无该地形；仅当 Palette 槽 0 有图时才铺 View（槽 0 应放空/透明方图，不要放草皮）
-            for (int i = 0; i < Terrains.Length; i++)
-            {
-                var style = Terrains[i];
-                if (style == null || style.TerrainId == 0 || style.Palette == null)
-                {
-                    continue;
-                }
-
-                int m = DualGridCore.ComputeCornerMask(dataTilemap, this, viewCell, style.TerrainId);
-                if (m != 0)
-                {
-                    continue;
-                }
-
-                var palette = FindPalette(style.TerrainId);
-                if (palette != null && palette.GetSprite(0, DualGridCore.StableHash(viewCell)) != null)
-                {
-                    terrainId = style.TerrainId;
-                    mask = 0;
-                    return true;
-                }
-            }
-
             return false;
         }
     }
