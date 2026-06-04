@@ -27,7 +27,8 @@ public static class MapChunkExportCore
         Vector2 chunkOrigin,
         bool exportBackground,
         bool exportTilemap,
-        bool exportGridRootPrefab)
+        bool exportGridRootPrefab,
+        bool bakeVisualLayers = true)
     {
         if (editorRoot == null)
         {
@@ -97,9 +98,17 @@ public static class MapChunkExportCore
         database.SourceTextureHeight = texSize.y;
         database.Chunks = new List<MapChunkExportItem>();
 
-        var chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap);
+        var chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap, null);
         int bgCount = 0;
         int tmCount = 0;
+
+        List<MapChunkVisualBaker.BakedLayer> bakedVisualLayers = null;
+        if (exportTilemap && bakeVisualLayers)
+        {
+            EnsureFolder($"{rootFolder}/BakedTiles");
+            bakedVisualLayers = MapChunkVisualBaker.Bake(editorRoot, $"{rootFolder}/BakedTiles", tileGrounds);
+            chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap, bakedVisualLayers);
+        }
 
         foreach (var coord in chunkCoords.OrderBy(c => c.Y).ThenBy(c => c.X))
         {
@@ -128,7 +137,7 @@ public static class MapChunkExportCore
 
             if (exportTilemap)
             {
-                string tmPrefabPath = ExportTilemapChunk(coord, chunkSize, origin, tileGrounds, rootFolder);
+                string tmPrefabPath = ExportTilemapChunk(coord, chunkSize, origin, tileGrounds, bakedVisualLayers, rootFolder);
                 if (!string.IsNullOrEmpty(tmPrefabPath))
                 {
                     item.TilemapKey = $"MapChunk/{mapName}/Prefabs/tm_{coord.X}_{coord.Y}";
@@ -184,7 +193,7 @@ public static class MapChunkExportCore
         return new ExportResult
         {
             Success = true,
-            Message = BuildSuccessMessage(dbPath, bgCount, tmCount, gridRootExported, exportBackground, exportTilemap, exportGridRootPrefab),
+            Message = BuildSuccessMessage(dbPath, bgCount, tmCount, gridRootExported, exportBackground, exportTilemap, exportGridRootPrefab, bakeVisualLayers),
             Database = database,
             BackgroundChunkCount = bgCount,
             TilemapChunkCount = tmCount,
@@ -207,7 +216,8 @@ public static class MapChunkExportCore
         bool gridRootExported,
         bool exportBackground,
         bool exportTilemap,
-        bool exportGridRootPrefab)
+        bool exportGridRootPrefab,
+        bool bakeVisualLayers)
     {
         var parts = new List<string> { $"database -> {dbPath}" };
         if (exportBackground)
@@ -218,6 +228,10 @@ public static class MapChunkExportCore
         if (exportTilemap)
         {
             parts.Add($"tilemap(grid) chunks: {tmCount}");
+            if (bakeVisualLayers)
+            {
+                parts.Add("visual bake: on");
+            }
         }
 
         if (exportGridRootPrefab)
@@ -235,7 +249,8 @@ public static class MapChunkExportCore
         float chunkSize,
         Vector2 origin,
         bool includeTexture,
-        bool includeTilemap)
+        bool includeTilemap,
+        List<MapChunkVisualBaker.BakedLayer> bakedVisualLayers)
     {
         var coords = new HashSet<ChunkCoord>();
 
@@ -262,6 +277,23 @@ public static class MapChunkExportCore
                     }
 
                     var world = source.GetCellCenterWorld(pos);
+                    coords.Add(MapChunkUtility.WorldToChunk(world, origin, chunkSize));
+                }
+            }
+        }
+
+        if (bakedVisualLayers != null)
+        {
+            foreach (var layer in bakedVisualLayers)
+            {
+                if (layer?.SourceTilemap == null)
+                {
+                    continue;
+                }
+
+                foreach (var pair in layer.Cells)
+                {
+                    var world = layer.SourceTilemap.GetCellCenterWorld(pair.Key);
                     coords.Add(MapChunkUtility.WorldToChunk(world, origin, chunkSize));
                 }
             }
@@ -476,7 +508,13 @@ public static class MapChunkExportCore
         return prefabPath;
     }
 
-    static string ExportTilemapChunk(ChunkCoord coord, float chunkSize, Vector2 origin, Tilemap[] tileGrounds, string rootFolder)
+    static string ExportTilemapChunk(
+        ChunkCoord coord,
+        float chunkSize,
+        Vector2 origin,
+        Tilemap[] tileGrounds,
+        List<MapChunkVisualBaker.BakedLayer> bakedVisualLayers,
+        string rootFolder)
     {
         var chunkMin = MapChunkUtility.ChunkWorldMin(coord, origin, chunkSize);
         var chunkMax = chunkMin + new Vector3(chunkSize, chunkSize, 0f);
@@ -491,37 +529,18 @@ public static class MapChunkExportCore
                 continue;
             }
 
-            var layerGo = new GameObject(source.name);
-            layerGo.transform.SetParent(go.transform, false);
-            var tilemap = layerGo.AddComponent<Tilemap>();
-            var renderer = layerGo.AddComponent<TilemapRenderer>();
-            renderer.sortingOrder = source.GetComponent<TilemapRenderer>()?.sortingOrder ?? 0;
-
-            foreach (var pos in source.cellBounds.allPositionsWithin)
+            if (TryExportLogicLayer(source, go.transform, chunkMin, chunkMax, ref hasTile))
             {
-                var tile = source.GetTile(pos);
-                if (tile == null)
-                {
-                    continue;
-                }
-
-                var world = source.GetCellCenterWorld(pos);
-                if (world.x < chunkMin.x || world.x >= chunkMax.x || world.y < chunkMin.y || world.y >= chunkMax.y)
-                {
-                    continue;
-                }
-
-                var localCell = new Vector3Int(
-                    Mathf.FloorToInt(world.x - chunkMin.x),
-                    Mathf.FloorToInt(world.y - chunkMin.y),
-                    0);
-                tilemap.SetTile(localCell, tile);
-                hasTile = true;
             }
+        }
 
-            if (!HasAnyTile(tilemap))
+        if (bakedVisualLayers != null)
+        {
+            foreach (var baked in bakedVisualLayers)
             {
-                Object.DestroyImmediate(layerGo);
+                if (TryExportBakedVisualLayer(baked, go.transform, chunkMin, chunkMax, ref hasTile))
+                {
+                }
             }
         }
 
@@ -537,16 +556,95 @@ public static class MapChunkExportCore
         return prefabPath;
     }
 
-    static bool HasAnyTile(Tilemap tilemap)
+    static bool TryExportLogicLayer(Tilemap source, Transform chunkRoot, Vector3 chunkMin, Vector3 chunkMax, ref bool hasTile)
     {
-        foreach (var pos in tilemap.cellBounds.allPositionsWithin)
+        var layerGo = new GameObject(source.name);
+        layerGo.transform.SetParent(chunkRoot, false);
+        layerGo.transform.localPosition = source.transform.position - chunkMin;
+
+        var tilemap = layerGo.AddComponent<Tilemap>();
+        tilemap.tileAnchor = source.tileAnchor;
+        tilemap.orientation = source.orientation;
+        var renderer = layerGo.AddComponent<TilemapRenderer>();
+        renderer.sortingOrder = source.GetComponent<TilemapRenderer>()?.sortingOrder ?? 0;
+
+        bool layerHasTile = false;
+        foreach (var pos in source.cellBounds.allPositionsWithin)
         {
-            if (tilemap.GetTile(pos) != null)
+            var tile = source.GetTile(pos);
+            if (tile == null)
             {
-                return true;
+                continue;
             }
+
+            var world = source.GetCellCenterWorld(pos);
+            if (world.x < chunkMin.x || world.x >= chunkMax.x || world.y < chunkMin.y || world.y >= chunkMax.y)
+            {
+                continue;
+            }
+
+            tilemap.SetTile(pos, tile);
+            layerHasTile = true;
         }
 
-        return false;
+        if (!layerHasTile)
+        {
+            Object.DestroyImmediate(layerGo);
+            return false;
+        }
+
+        hasTile = true;
+        return true;
+    }
+
+    static bool TryExportBakedVisualLayer(
+        MapChunkVisualBaker.BakedLayer baked,
+        Transform chunkRoot,
+        Vector3 chunkMin,
+        Vector3 chunkMax,
+        ref bool hasTile)
+    {
+        if (baked?.SourceTilemap == null || baked.Cells.Count == 0)
+        {
+            return false;
+        }
+
+        var source = baked.SourceTilemap;
+        var layerGo = new GameObject(baked.Name);
+        layerGo.transform.SetParent(chunkRoot, false);
+        layerGo.transform.localPosition = source.transform.position - chunkMin;
+
+        var tilemap = layerGo.AddComponent<Tilemap>();
+        tilemap.tileAnchor = source.tileAnchor;
+        tilemap.orientation = source.orientation;
+        var renderer = layerGo.AddComponent<TilemapRenderer>();
+        renderer.sortingOrder = baked.SortingOrder;
+
+        bool layerHasTile = false;
+        foreach (var pair in baked.Cells)
+        {
+            var world = source.GetCellCenterWorld(pair.Key);
+            if (world.x < chunkMin.x || world.x >= chunkMax.x || world.y < chunkMin.y || world.y >= chunkMax.y)
+            {
+                continue;
+            }
+
+            tilemap.SetTile(pair.Key, pair.Value.TileAsset);
+            if (pair.Value.Transform != Matrix4x4.identity)
+            {
+                tilemap.SetTransformMatrix(pair.Key, pair.Value.Transform);
+            }
+
+            layerHasTile = true;
+        }
+
+        if (!layerHasTile)
+        {
+            Object.DestroyImmediate(layerGo);
+            return false;
+        }
+
+        hasTile = true;
+        return true;
     }
 }

@@ -102,6 +102,7 @@ public class MapChunkExporterWindow : EditorWindow
     [SerializeField] private int backgroundSortingOrder;
     [SerializeField] private bool exportBackgroundChunks = true;
     [SerializeField] private bool exportTilemapChunks = true;
+    [SerializeField] private bool exportVisualBake = true;
     [SerializeField] private bool exportWalkGridPrefab = true;
 
     [MenuItem("Window/Map Chunk Exporter")]
@@ -149,6 +150,10 @@ public class MapChunkExporterWindow : EditorWindow
 
         exportBackgroundChunks = EditorGUILayout.Toggle("Background (bg_*)", exportBackgroundChunks);
         exportTilemapChunks = EditorGUILayout.Toggle("Walk Grid Chunks (tm_*)", exportTilemapChunks);
+        using (new EditorGUI.DisabledScope(!exportTilemapChunks))
+        {
+            exportVisualBake = EditorGUILayout.Toggle("  Bake Visual Layers", exportVisualBake);
+        }
         exportWalkGridPrefab = EditorGUILayout.Toggle("Walk Grid Prefab (GridRoot)", exportWalkGridPrefab);
         if (chunkEditor != null && exportWalkGridPrefab)
         {
@@ -166,6 +171,14 @@ public class MapChunkExporterWindow : EditorWindow
         if (chunkEditor != null && !MapChunkEditorTilemapResolver.HasTilemapSource(chunkEditor))
         {
             EditorGUILayout.HelpBox("未找到可走 Tilemap：请在 WorldAreaRoot.TileGrounds 或 StaticRoot/GridRoot 下配置。", MessageType.Warning);
+        }
+
+        if (exportTilemapChunks && exportVisualBake)
+        {
+            EditorGUILayout.HelpBox(
+                "Visual Bake：DualGrid View / Cliff 等 RuleTile 在导出前 bake 成静态 Tile，" +
+                "写入 tm_* 的 Baked_* 层；逻辑层仍保留原始 Tile 引用。",
+                MessageType.Info);
         }
 
         EditorGUILayout.Space();
@@ -213,7 +226,8 @@ public class MapChunkExporterWindow : EditorWindow
             chunkOrigin,
             exportBackgroundChunks,
             exportTilemapChunks,
-            exportWalkGridPrefab);
+            exportWalkGridPrefab,
+            exportVisualBake);
 
         if (!result.Success)
         {
