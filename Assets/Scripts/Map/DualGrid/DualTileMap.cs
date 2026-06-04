@@ -16,7 +16,6 @@ namespace My.Map.DualGrid
         public Tilemap ViewTilemap;
         [HideInInspector] public DualGridViewTile ViewTile;
         public bool AutoRefreshInEditor = true;
-        [HideInInspector] public int ViewSortingOrder = 10;
 
         static readonly Vector3Int[] CellBuffer = new Vector3Int[4];
         Tilemap _subscribedData;
@@ -97,19 +96,6 @@ namespace My.Map.DualGrid
             }
 
             viewRenderer.enabled = true;
-            if (DataTilemap != null)
-            {
-                var dataRenderer = DataTilemap.GetComponent<TilemapRenderer>();
-                if (dataRenderer != null)
-                {
-                    viewRenderer.sortingLayerID = dataRenderer.sortingLayerID;
-                    viewRenderer.sortingOrder = dataRenderer.sortingOrder + ViewSortingOrder;
-                }
-            }
-            else
-            {
-                viewRenderer.sortingOrder += ViewSortingOrder;
-            }
         }
 
         void SyncViewTilemapSettings()
