@@ -1,7 +1,5 @@
 #if UNITY_EDITOR
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using My.Map.Logic;
 using My.MapExport;
 using UnityEditor;
@@ -15,162 +13,7 @@ public static class MapPaintBackgroundImporter
         public string Message;
     }
 
-    public static ImportResult ImportPaintedAtlas(
-        MapChunkEditorRoot root,
-        string mapName,
-        Texture2D paintedAtlas,
-        FilterMode resampleFilter = FilterMode.Bilinear)
-    {
-        if (root == null)
-        {
-            return Fail("MapChunkEditorRoot is missing.");
-        }
-
-        if (paintedAtlas == null)
-        {
-            return Fail("Painted atlas texture is missing.");
-        }
-
-        string manifestPath = MapPaintBackgroundShared.GetManifestPath(mapName);
-        var manifest = AssetDatabase.LoadAssetAtPath<MapPaintManifest>(manifestPath);
-        if (manifest == null)
-        {
-            return Fail("Paint manifest not found. Generate Paint Atlas first.");
-        }
-
-        if (manifest.AtlasWidth <= 0 || manifest.AtlasHeight <= 0 || manifest.SlicePixelSize <= 0)
-        {
-            return Fail("Manifest atlas size is invalid.");
-        }
-
-        if (paintedAtlas.width != manifest.AtlasWidth || paintedAtlas.height != manifest.AtlasHeight)
-        {
-            return Fail(
-                $"Atlas size mismatch: expected {manifest.AtlasWidth}x{manifest.AtlasHeight}, " +
-                $"got {paintedAtlas.width}x{paintedAtlas.height}.");
-        }
-
-        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
-        BackupCurrentRevision(mapName, manifest.ExportRevision);
-
-        var layout = ComputeLayoutFromManifest(manifest, root.PaintWorldRect);
-        string rootFolder = MapPaintBackgroundShared.GetMapRootFolder(mapName);
-        int imported = 0;
-
-        var readable = EnsureReadable(paintedAtlas);
-        try
-        {
-            foreach (var coord in layout.ChunkCoords)
-            {
-                int col = coord.X - layout.MinCoord.X;
-                int row = coord.Y - layout.MinCoord.Y;
-                int x = col * manifest.SlicePixelSize;
-                int y = row * manifest.SlicePixelSize;
-
-                var chunkTex = new Texture2D(manifest.SlicePixelSize, manifest.SlicePixelSize, TextureFormat.RGBA32, false);
-                chunkTex.SetPixels(readable.GetPixels(x, y, manifest.SlicePixelSize, manifest.SlicePixelSize));
-                chunkTex.Apply();
-
-                string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
-                MapPaintBackgroundShared.WritePng(chunkTex, paintedPath);
-                AssetDatabase.ImportAsset(paintedPath);
-                Object.DestroyImmediate(chunkTex);
-
-                var info = manifest.GetOrCreateChunk(coord);
-                info.Source = ChunkPaintSource.UserPainted;
-                info.ResetOnExport = false;
-
-                UpdateBackgroundFromPainted(root, mapName, coord, paintedPath, resampleFilter, rootFolder);
-                imported++;
-            }
-        }
-        finally
-        {
-            if (!ReferenceEquals(readable, paintedAtlas))
-            {
-                Object.DestroyImmediate(readable);
-            }
-        }
-
-        manifest.ExportRevision++;
-        EditorUtility.SetDirty(manifest);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-
-        MapPaintBackgroundPreview.TryAutoSync(root, mapName);
-
-        return new ImportResult
-        {
-            Success = true,
-            Message = $"Imported painted atlas into {imported} chunk(s).",
-        };
-    }
-
-    public static ImportResult ImportSingleChunk(
-        MapChunkEditorRoot root,
-        string mapName,
-        ChunkCoord coord,
-        Texture2D paintedChunk,
-        FilterMode resampleFilter = FilterMode.Bilinear)
-    {
-        if (root == null)
-        {
-            return Fail("MapChunkEditorRoot is missing.");
-        }
-
-        if (paintedChunk == null)
-        {
-            return Fail("Painted chunk texture is missing.");
-        }
-
-        string manifestPath = MapPaintBackgroundShared.GetManifestPath(mapName);
-        var manifest = AssetDatabase.LoadAssetAtPath<MapPaintManifest>(manifestPath);
-        if (manifest == null)
-        {
-            return Fail("Paint manifest not found. Generate Paint Atlas first.");
-        }
-
-        if (manifest.SlicePixelSize <= 0)
-        {
-            return Fail("Manifest slice size is invalid.");
-        }
-
-        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
-        BackupSingleChunk(mapName, manifest.ExportRevision, coord);
-
-        var chunkTex = MapPaintBackgroundShared.ResampleTexture(
-            paintedChunk,
-            manifest.SlicePixelSize,
-            manifest.SlicePixelSize,
-            resampleFilter);
-
-        string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
-        MapPaintBackgroundShared.WritePng(chunkTex, paintedPath);
-        Object.DestroyImmediate(chunkTex);
-        AssetDatabase.ImportAsset(paintedPath);
-
-        var info = manifest.GetOrCreateChunk(coord);
-        info.Source = ChunkPaintSource.UserPainted;
-        info.ResetOnExport = false;
-
-        string rootFolder = MapPaintBackgroundShared.GetMapRootFolder(mapName);
-        UpdateBackgroundFromPainted(root, mapName, coord, paintedPath, resampleFilter, rootFolder);
-
-        manifest.ExportRevision++;
-        EditorUtility.SetDirty(manifest);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-
-        MapPaintBackgroundPreview.TryAutoSync(root, mapName);
-
-        return new ImportResult
-        {
-            Success = true,
-            Message = $"Imported painted chunk ({coord.X}, {coord.Y}).",
-        };
-    }
-
-    public static ImportResult ImportSingleChunkWithContext(
+    public static ImportResult ImportChunkForAi(
         MapChunkEditorRoot root,
         string mapName,
         ChunkCoord coord,
@@ -184,14 +27,14 @@ public static class MapPaintBackgroundImporter
 
         if (contextChunk == null)
         {
-            return Fail("Context chunk texture is missing.");
+            return Fail("Import texture is missing.");
         }
 
         string manifestPath = MapPaintBackgroundShared.GetManifestPath(mapName);
         var manifest = AssetDatabase.LoadAssetAtPath<MapPaintManifest>(manifestPath);
         if (manifest == null)
         {
-            return Fail("Paint manifest not found. Generate Paint Atlas or export single chunk first.");
+            return Fail("Paint manifest not found. Export chunk for AI first.");
         }
 
         if (manifest.SlicePixelSize <= 0)
@@ -199,17 +42,14 @@ public static class MapPaintBackgroundImporter
             return Fail("Manifest slice size is invalid.");
         }
 
-        float expandRatio = root.PaintContextExpandRatio;
-        if (manifest.ContextExpandRatio > 0f)
-        {
-            expandRatio = manifest.ContextExpandRatio;
-        }
-
+        float expandRatio = manifest.ContextExpandRatio > 0f
+            ? manifest.ContextExpandRatio
+            : root.PaintContextExpandRatio;
         int expected = MapPaintBackgroundContext.ComputeContextSize(manifest.SlicePixelSize, expandRatio);
         if (contextChunk.width != expected || contextChunk.height != expected)
         {
             return Fail(
-                $"Context size mismatch: expected {expected}x{expected} " +
+                $"Import size mismatch: expected {expected}x{expected} " +
                 $"(slice {manifest.SlicePixelSize}, expand {expandRatio:P0}), " +
                 $"got {contextChunk.width}x{contextChunk.height}.");
         }
@@ -228,7 +68,7 @@ public static class MapPaintBackgroundImporter
                 resampleFilter);
             if (cropped == null)
             {
-                return Fail("Failed to crop center from context image.");
+                return Fail("Failed to crop center from import image.");
             }
 
             string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
@@ -252,9 +92,7 @@ public static class MapPaintBackgroundImporter
             return new ImportResult
             {
                 Success = true,
-                Message =
-                    $"Imported chunk ({coord.X}, {coord.Y}) from context image; " +
-                    $"cropped center {manifest.SlicePixelSize}px (removed {expandRatio:P0} margin).",
+                Message = $"Imported chunk ({coord.X}, {coord.Y}); cropped to {manifest.SlicePixelSize}px.",
             };
         }
         finally
@@ -272,32 +110,6 @@ public static class MapPaintBackgroundImporter
     }
 
     static ImportResult Fail(string message) => new ImportResult { Success = false, Message = message };
-
-    struct AtlasLayout
-    {
-        public ChunkCoord MinCoord;
-        public List<ChunkCoord> ChunkCoords;
-    }
-
-    static AtlasLayout ComputeLayoutFromManifest(MapPaintManifest manifest, Rect paintRect)
-    {
-        var minCoord = MapChunkUtility.WorldToChunk(new Vector2(paintRect.xMin, paintRect.yMin), manifest.ChunkOrigin, manifest.ChunkWorldSize);
-        var maxCoord = MapChunkUtility.WorldToChunk(
-            new Vector2(paintRect.xMax - 1e-4f, paintRect.yMax - 1e-4f),
-            manifest.ChunkOrigin,
-            manifest.ChunkWorldSize);
-
-        var coords = new List<ChunkCoord>();
-        for (int cy = minCoord.Y; cy <= maxCoord.Y; cy++)
-        {
-            for (int cx = minCoord.X; cx <= maxCoord.X; cx++)
-            {
-                coords.Add(new ChunkCoord(cx, cy));
-            }
-        }
-
-        return new AtlasLayout { MinCoord = minCoord, ChunkCoords = coords };
-    }
 
     static Texture2D EnsureReadable(Texture2D source)
     {
@@ -354,30 +166,6 @@ public static class MapPaintBackgroundImporter
         {
             MapPaintBackgroundShared.SaveBackgroundPrefab(coord, spritePath, rootFolder, root.BackgroundSortingOrder);
             AssetDatabase.ImportAsset(spritePath);
-        }
-    }
-
-    static void BackupCurrentRevision(string mapName, int revision)
-    {
-        string backupFolder = MapPaintBackgroundShared.GetBackupFolder(mapName, revision);
-        MapChunkExportCore.EnsureFolderPublic(backupFolder);
-
-        string atlasPath = MapPaintBackgroundShared.GetAtlasPath(mapName);
-        if (File.Exists(atlasPath))
-        {
-            File.Copy(atlasPath, $"{backupFolder}/{MapPaintBackgroundShared.AtlasFileName}", true);
-        }
-
-        string chunksFolder = MapPaintBackgroundShared.GetChunksFolder(mapName);
-        if (!Directory.Exists(chunksFolder))
-        {
-            return;
-        }
-
-        foreach (var file in Directory.GetFiles(chunksFolder, "painted_*.png"))
-        {
-            var name = Path.GetFileName(file);
-            File.Copy(file, $"{backupFolder}/{name}", true);
         }
     }
 

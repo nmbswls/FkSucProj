@@ -12,12 +12,9 @@ public static class MapPaintBackgroundShared
     public const string PaintExportFolderName = "PaintExport";
     public const string ChunksFolderName = "chunks";
     public const string ExportAiFolderName = "export_ai";
-    public const string AtlasFileName = "atlas_for_ai.png";
     public const string ManifestFileName = "manifest.asset";
 
-    // PaintExport/chunks/chunk_{x}_{y}.png   — AI 参考模板（Camera 拍摄 + Magenta 留白）
-    // PaintExport/chunks/painted_{x}_{y}.png — 用户/AI 回稿（Import 写入，不覆盖 chunk_*）
-    // PaintExport/export_ai/chunk_{x}_{y}_for_ai.png — 单块外扩后给 AI 的 PNG（Import 时需裁切）
+    // chunks/chunk_* — 模板；chunks/painted_* — 回稿；export_ai/chunk_*_for_ai — 给 AI 的外扩图
 
     public static string GetMapRootFolder(string mapName) => $"Assets/Resources/MapChunk/{mapName}";
 
@@ -38,9 +35,6 @@ public static class MapPaintBackgroundShared
 
     public static string GetChunkForAiPath(string mapName, ChunkCoord coord) =>
         $"{GetExportAiFolder(mapName)}/chunk_{coord.X}_{coord.Y}_for_ai.png";
-
-    public static string GetAtlasPath(string mapName) =>
-        $"{GetPaintExportFolder(mapName)}/{AtlasFileName}";
 
     public static string GetManifestPath(string mapName) =>
         $"{GetPaintExportFolder(mapName)}/{ManifestFileName}";
@@ -174,6 +168,23 @@ public static class MapPaintBackgroundShared
         PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
         Object.DestroyImmediate(go);
         return prefabPath;
+    }
+
+    public static void ConfigureCaptureTextureImporter(string texturePath)
+    {
+        var importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+        if (importer == null)
+        {
+            return;
+        }
+
+        importer.textureType = TextureImporterType.Default;
+        importer.sRGBTexture = true;
+        importer.alphaIsTransparency = true;
+        importer.filterMode = FilterMode.Point;
+        importer.mipmapEnabled = false;
+        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.SaveAndReimport();
     }
 
     public static void ConfigureBackgroundSpriteImporter(string spritePath, float ppu)

@@ -15,7 +15,7 @@ MonoBehaviour:
   AreaId: Main_Area_01
   SceneName: Main_Area_01
   ChunkWorldSize: 32
-  TexturePPU: 24
+  TexturePPU: 16
   ChunkOrigin: {x: 0, y: 0}
   SourceTextureWidth: 2560
   SourceTextureHeight: 3328

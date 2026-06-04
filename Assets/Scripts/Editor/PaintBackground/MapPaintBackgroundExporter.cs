@@ -16,170 +16,6 @@ public static class MapPaintBackgroundExporter
         public MapPaintManifest Manifest;
     }
 
-    public static ExportResult GenerateAtlas(MapChunkEditorRoot root, string mapName, FilterMode resampleFilter = FilterMode.Bilinear)
-    {
-        if (root == null)
-        {
-            return Fail("MapChunkEditorRoot is missing.");
-        }
-
-        if (string.IsNullOrWhiteSpace(mapName))
-        {
-            return Fail("Map name is empty.");
-        }
-
-        if (root.PaintWorldRect.width <= 0f || root.PaintWorldRect.height <= 0f)
-        {
-            return Fail("PaintWorldRect is not configured.");
-        }
-
-        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
-        var manifest = LoadOrCreateManifest(root, mapName);
-
-        float paintPpu = root.EffectivePaintExportPpu;
-        int slicePx = MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, paintPpu);
-        var layout = ComputeAtlasLayout(root.PaintWorldRect, root.ChunkOrigin, root.ChunkWorldSize, slicePx);
-
-        var atlas = new Texture2D(layout.AtlasWidth, layout.AtlasHeight, TextureFormat.RGBA32, false);
-        var clear = new Color[layout.AtlasWidth * layout.AtlasHeight];
-        for (int i = 0; i < clear.Length; i++)
-        {
-            clear[i] = root.PaintMaskColor;
-        }
-
-        atlas.SetPixels(clear);
-
-        int rasterizedCount = 0;
-        int reusedCount = 0;
-        string rootFolder = MapPaintBackgroundShared.GetMapRootFolder(mapName);
-
-        try
-        {
-            foreach (var coord in layout.ChunkCoords.OrderBy(c => c.Y).ThenBy(c => c.X))
-            {
-                var info = manifest.GetOrCreateChunk(coord);
-                bool templateCaptured = UpdateChunkTemplate(
-                    root,
-                    mapName,
-                    manifest,
-                    info,
-                    coord,
-                    paintPpu,
-                    forceCapture: false);
-
-                if (templateCaptured)
-                {
-                    rasterizedCount++;
-                }
-                else
-                {
-                    reusedCount++;
-                }
-
-                var chunkTex = LoadAtlasChunkTexture(mapName, info, coord, slicePx, resampleFilter);
-                if (chunkTex == null)
-                {
-                    continue;
-                }
-
-                CopyToAtlas(atlas, chunkTex, layout, coord, slicePx);
-                Object.DestroyImmediate(chunkTex);
-
-                UpdateBackgroundForChunk(root, mapName, coord, info, paintPpu, rootFolder, slicePx, resampleFilter);
-
-                if (info.ResetOnExport)
-                {
-                    info.ResetOnExport = false;
-                }
-            }
-
-            atlas.Apply();
-            MapPaintBackgroundShared.WritePng(atlas, MapPaintBackgroundShared.GetAtlasPath(mapName));
-
-            manifest.ExportRevision++;
-            manifest.PaintWorldRect = root.PaintWorldRect;
-            manifest.ChunkOrigin = root.ChunkOrigin;
-            manifest.ChunkWorldSize = root.ChunkWorldSize;
-            manifest.TexturePPU = root.TexturePPU;
-            manifest.PaintExportPPU = paintPpu;
-            manifest.SlicePixelSize = slicePx;
-            manifest.AtlasWidth = layout.AtlasWidth;
-            manifest.AtlasHeight = layout.AtlasHeight;
-            manifest.MaskColor = root.PaintMaskColor;
-            manifest.ContextExpandRatio = root.PaintContextExpandRatio;
-            manifest.InvalidateLookup();
-
-            EditorUtility.SetDirty(manifest);
-            root.LastPaintManifestKey = $"MapChunk/{mapName}/PaintExport/{MapPaintBackgroundShared.ManifestFileName}";
-            EditorUtility.SetDirty(root);
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            MapPaintBackgroundPreview.TryAutoSync(root, mapName);
-
-            return new ExportResult
-            {
-                Success = true,
-                Message = $"Paint atlas generated: {layout.ChunkCoords.Count} chunk(s), rasterized {rasterizedCount}, reused {reusedCount}.",
-                Manifest = manifest,
-            };
-        }
-        finally
-        {
-            Object.DestroyImmediate(atlas);
-        }
-    }
-
-    public static ExportResult SyncOutline(
-        MapChunkEditorRoot root,
-        string mapName,
-        IEnumerable<ChunkCoord> targets,
-        bool allChunks,
-        FilterMode resampleFilter = FilterMode.Bilinear)
-    {
-        if (root == null)
-        {
-            return Fail("MapChunkEditorRoot is missing.");
-        }
-
-        if (root.PaintWorldRect.width <= 0f || root.PaintWorldRect.height <= 0f)
-        {
-            return Fail("PaintWorldRect is not configured.");
-        }
-
-        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
-        var manifest = LoadOrCreateManifest(root, mapName);
-        float paintPpu = root.EffectivePaintExportPpu;
-        var targetSet = BuildTargetSet(root, targets, allChunks);
-        int synced = 0;
-
-        foreach (var coord in targetSet)
-        {
-            var info = manifest.GetOrCreateChunk(coord);
-            UpdateChunkTemplate(
-                root,
-                mapName,
-                manifest,
-                info,
-                coord,
-                paintPpu,
-                forceCapture: true);
-            synced++;
-        }
-
-        manifest.OutlineSyncedRevision = manifest.ExportRevision;
-        EditorUtility.SetDirty(manifest);
-        AssetDatabase.SaveAssets();
-
-        return new ExportResult
-        {
-            Success = true,
-            Message = $"Synced outline for {synced} chunk(s).",
-            Manifest = manifest,
-        };
-    }
-
     public static ExportResult ExportSingleChunkForAi(
         MapChunkEditorRoot root,
         string mapName,
@@ -204,11 +40,8 @@ public static class MapPaintBackgroundExporter
             : MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, paintPpu);
 
         var info = manifest.GetOrCreateChunk(coord);
-        UpdateChunkTemplate(root, mapName, manifest, info, coord, paintPpu, forceCapture: info.ResetOnExport);
-        if (info.ResetOnExport)
-        {
-            info.ResetOnExport = false;
-        }
+
+        UpdateChunkTemplate(root, mapName, manifest, info, coord, paintPpu, forceCapture: false);
 
         float expandRatio = root.PaintContextExpandRatio;
         Texture2D forAi = null;
@@ -227,12 +60,9 @@ public static class MapPaintBackgroundExporter
             MapPaintBackgroundShared.WritePng(forAi, outputPath);
             AssetDatabase.ImportAsset(outputPath);
 
-            manifest.SlicePixelSize = slicePx;
-            manifest.PaintExportPPU = paintPpu;
-            manifest.ContextExpandRatio = expandRatio;
-            manifest.ExportRevision++;
-            EditorUtility.SetDirty(manifest);
+            SaveManifestState(root, manifest, mapName, slicePx, paintPpu, expandRatio);
             AssetDatabase.SaveAssets();
+            MapPaintBackgroundPreview.TryAutoSync(root, mapName);
 
             int contextSize = MapPaintBackgroundContext.ComputeContextSize(slicePx, expandRatio);
             int margin = MapPaintBackgroundContext.ComputeMarginPx(slicePx, expandRatio);
@@ -241,7 +71,7 @@ public static class MapPaintBackgroundExporter
                 Success = true,
                 Message =
                     $"Exported chunk ({coord.X},{coord.Y}) for AI: {contextSize}x{contextSize}px " +
-                    $"(center {slicePx}px + margin {margin}px). Neighbors prefer painted_*.",
+                    $"(center {slicePx}px + margin {margin}px).",
                 Manifest = manifest,
             };
         }
@@ -254,78 +84,57 @@ public static class MapPaintBackgroundExporter
         }
     }
 
-    public static ExportResult ClearPainted(
-        MapChunkEditorRoot root,
-        string mapName,
-        IEnumerable<ChunkCoord> targets,
-        bool allChunks)
+    public static ExportResult ClearUserPainted(MapChunkEditorRoot root, string mapName, ChunkCoord coord)
     {
         if (root == null)
         {
             return Fail("MapChunkEditorRoot is missing.");
         }
 
-        if (!EditorUtility.DisplayDialog(
-                "Clear Painted",
-                "Delete painted chunk PNGs and revert bg_* to chunk templates?",
-                "Clear",
-                "Cancel"))
-        {
-            return Fail("Cancelled.");
-        }
-
         MapPaintBackgroundShared.EnsurePaintFolders(mapName);
         var manifest = LoadOrCreateManifest(root, mapName);
-        var targetSet = BuildTargetSet(root, targets, allChunks);
-        string rootFolder = MapPaintBackgroundShared.GetMapRootFolder(mapName);
-        float ppu = root.TexturePPU > 0f ? root.TexturePPU : root.EffectivePaintExportPpu;
-        int cleared = 0;
-
-        foreach (var coord in targetSet)
+        var info = manifest.GetOrCreateChunk(coord);
+        string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
+        if (!File.Exists(paintedPath) && info.Source != ChunkPaintSource.UserPainted)
         {
-            var info = manifest.GetOrCreateChunk(coord);
-            string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
-            if (File.Exists(paintedPath))
-            {
-                AssetDatabase.DeleteAsset(paintedPath);
-            }
-
-            info.Source = ChunkPaintSource.Generated;
-            info.ResetOnExport = false;
-
-            var templatePath = MapPaintBackgroundShared.GetChunkTemplatePath(mapName, coord);
-            var templateTex = MapPaintBackgroundShared.LoadTextureFromAssetPath(templatePath);
-            if (templateTex != null)
-            {
-                int bgSlice = MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, ppu);
-                var bgTex = MapPaintBackgroundShared.ResampleTexture(templateTex, bgSlice, bgSlice, FilterMode.Bilinear);
-                Object.DestroyImmediate(templateTex);
-                string spritePath = MapPaintBackgroundShared.SaveBackgroundSprite(bgTex, coord, ppu, rootFolder);
-                Object.DestroyImmediate(bgTex);
-                if (!string.IsNullOrEmpty(spritePath))
-                {
-                    MapPaintBackgroundShared.SaveBackgroundPrefab(
-                        coord,
-                        spritePath,
-                        rootFolder,
-                        root.BackgroundSortingOrder);
-                    AssetDatabase.ImportAsset(spritePath);
-                }
-            }
-
-            cleared++;
+            return Fail($"Chunk ({coord.X},{coord.Y}) has no user painted data.");
         }
 
-        EditorUtility.SetDirty(manifest);
+        RevertChunkToGenerated(root, mapName, manifest, info, coord);
         AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-
         MapPaintBackgroundPreview.TryAutoSync(root, mapName);
 
         return new ExportResult
         {
             Success = true,
-            Message = $"Cleared painted data for {cleared} chunk(s).",
+            Message = $"Cleared user painted for chunk ({coord.X},{coord.Y}).",
+            Manifest = manifest,
+        };
+    }
+
+    public static ExportResult RecaptureChunkTemplate(MapChunkEditorRoot root, string mapName, ChunkCoord coord)
+    {
+        if (root == null)
+        {
+            return Fail("MapChunkEditorRoot is missing.");
+        }
+
+        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
+        var manifest = LoadOrCreateManifest(root, mapName);
+        float paintPpu = root.EffectivePaintExportPpu;
+        var info = manifest.GetOrCreateChunk(coord);
+        if (!UpdateChunkTemplate(root, mapName, manifest, info, coord, paintPpu, forceCapture: true))
+        {
+            return Fail($"Failed to re-capture template for chunk ({coord.X},{coord.Y}).");
+        }
+
+        EditorUtility.SetDirty(manifest);
+        AssetDatabase.SaveAssets();
+
+        return new ExportResult
+        {
+            Success = true,
+            Message = $"Re-captured scene template for chunk ({coord.X},{coord.Y}).",
             Manifest = manifest,
         };
     }
@@ -395,6 +204,30 @@ public static class MapPaintBackgroundExporter
 
     static ExportResult Fail(string message) => new ExportResult { Success = false, Message = message };
 
+    static void SaveManifestState(
+        MapChunkEditorRoot root,
+        MapPaintManifest manifest,
+        string mapName,
+        int slicePx,
+        float paintPpu,
+        float expandRatio)
+    {
+        manifest.ExportRevision++;
+        manifest.PaintWorldRect = root.PaintWorldRect;
+        manifest.ChunkOrigin = root.ChunkOrigin;
+        manifest.ChunkWorldSize = root.ChunkWorldSize;
+        manifest.TexturePPU = root.TexturePPU;
+        manifest.PaintExportPPU = paintPpu;
+        manifest.SlicePixelSize = slicePx;
+        manifest.MaskColor = root.PaintMaskColor;
+        manifest.ContextExpandRatio = expandRatio;
+        manifest.InvalidateLookup();
+
+        EditorUtility.SetDirty(manifest);
+        root.LastPaintManifestKey = $"MapChunk/{mapName}/PaintExport/{MapPaintBackgroundShared.ManifestFileName}";
+        EditorUtility.SetDirty(root);
+    }
+
     static MapPaintManifest LoadOrCreateManifest(MapChunkEditorRoot root, string mapName)
     {
         string path = MapPaintBackgroundShared.GetManifestPath(mapName);
@@ -415,64 +248,42 @@ public static class MapPaintBackgroundExporter
         return manifest;
     }
 
-    struct AtlasLayout
+    static void RevertChunkToGenerated(
+        MapChunkEditorRoot root,
+        string mapName,
+        MapPaintManifest manifest,
+        MapPaintChunkInfo info,
+        ChunkCoord coord)
     {
-        public ChunkCoord MinCoord;
-        public int Cols;
-        public int Rows;
-        public int AtlasWidth;
-        public int AtlasHeight;
-        public List<ChunkCoord> ChunkCoords;
-    }
-
-    static AtlasLayout ComputeAtlasLayout(Rect paintRect, Vector2 origin, float chunkSize, int slicePx)
-    {
-        var minCoord = MapChunkUtility.WorldToChunk(new Vector2(paintRect.xMin, paintRect.yMin), origin, chunkSize);
-        var maxCoord = MapChunkUtility.WorldToChunk(
-            new Vector2(paintRect.xMax - 1e-4f, paintRect.yMax - 1e-4f),
-            origin,
-            chunkSize);
-
-        int cols = maxCoord.X - minCoord.X + 1;
-        int rows = maxCoord.Y - minCoord.Y + 1;
-        var coords = new List<ChunkCoord>();
-        for (int cy = minCoord.Y; cy <= maxCoord.Y; cy++)
+        string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
+        if (File.Exists(paintedPath))
         {
-            for (int cx = minCoord.X; cx <= maxCoord.X; cx++)
-            {
-                coords.Add(new ChunkCoord(cx, cy));
-            }
+            AssetDatabase.DeleteAsset(paintedPath);
         }
 
-        return new AtlasLayout
-        {
-            MinCoord = minCoord,
-            Cols = cols,
-            Rows = rows,
-            AtlasWidth = cols * slicePx,
-            AtlasHeight = rows * slicePx,
-            ChunkCoords = coords,
-        };
-    }
+        info.Source = ChunkPaintSource.Generated;
 
-    static HashSet<ChunkCoord> BuildTargetSet(MapChunkEditorRoot root, IEnumerable<ChunkCoord> targets, bool allChunks)
-    {
-        var set = new HashSet<ChunkCoord>();
-        if (allChunks)
+        string rootFolder = MapPaintBackgroundShared.GetMapRootFolder(mapName);
+        float ppu = root.TexturePPU > 0f ? root.TexturePPU : root.EffectivePaintExportPpu;
+        string templatePath = MapPaintBackgroundShared.GetChunkTemplatePath(mapName, coord);
+        var templateTex = MapPaintBackgroundShared.LoadTextureFromAssetPath(templatePath);
+        if (templateTex == null)
         {
-            MapPaintBackgroundShared.CollectPaintRectCoords(root, set);
-            return set;
+            return;
         }
 
-        if (targets != null)
+        int bgSlice = MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, ppu);
+        var bgTex = MapPaintBackgroundShared.ResampleTexture(templateTex, bgSlice, bgSlice, FilterMode.Bilinear);
+        Object.DestroyImmediate(templateTex);
+        string spritePath = MapPaintBackgroundShared.SaveBackgroundSprite(bgTex, coord, ppu, rootFolder);
+        Object.DestroyImmediate(bgTex);
+        if (!string.IsNullOrEmpty(spritePath))
         {
-            foreach (var coord in targets)
-            {
-                set.Add(coord);
-            }
+            MapPaintBackgroundShared.SaveBackgroundPrefab(coord, spritePath, rootFolder, root.BackgroundSortingOrder);
+            AssetDatabase.ImportAsset(spritePath);
         }
 
-        return set;
+        EditorUtility.SetDirty(manifest);
     }
 
     static bool UpdateChunkTemplate(
@@ -485,8 +296,7 @@ public static class MapPaintBackgroundExporter
         bool forceCapture)
     {
         string templatePath = MapPaintBackgroundShared.GetChunkTemplatePath(mapName, coord);
-        bool shouldCapture = forceCapture || info.ResetOnExport || !File.Exists(templatePath);
-        if (!shouldCapture)
+        if (!forceCapture && File.Exists(templatePath))
         {
             return false;
         }
@@ -505,98 +315,9 @@ public static class MapPaintBackgroundExporter
         info.TileCoverageRatio = coverage;
         MapPaintBackgroundShared.WritePng(tex, templatePath);
         AssetDatabase.ImportAsset(templatePath);
+        MapPaintBackgroundShared.ConfigureCaptureTextureImporter(templatePath);
         Object.DestroyImmediate(tex);
-
-        if (forceCapture || info.ResetOnExport)
-        {
-            manifest.OutlineSyncedRevision = manifest.ExportRevision;
-        }
-
         return true;
-    }
-
-    static Texture2D LoadAtlasChunkTexture(
-        string mapName,
-        MapPaintChunkInfo info,
-        ChunkCoord coord,
-        int slicePx,
-        FilterMode resampleFilter)
-    {
-        string templatePath = MapPaintBackgroundShared.GetChunkTemplatePath(mapName, coord);
-        string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
-
-        if (info.Source == ChunkPaintSource.UserPainted && File.Exists(paintedPath))
-        {
-            var painted = MapPaintBackgroundShared.LoadTextureFromAssetPath(paintedPath);
-            return EnsureSize(painted, slicePx, resampleFilter);
-        }
-
-        var existing = MapPaintBackgroundShared.LoadTextureFromAssetPath(templatePath);
-        return EnsureSize(existing, slicePx, resampleFilter);
-    }
-
-    static Texture2D EnsureSize(Texture2D tex, int slicePx, FilterMode filter)
-    {
-        if (tex == null)
-        {
-            return null;
-        }
-
-        if (tex.width == slicePx && tex.height == slicePx)
-        {
-            return tex;
-        }
-
-        var resampled = MapPaintBackgroundShared.ResampleTexture(tex, slicePx, slicePx, filter);
-        Object.DestroyImmediate(tex);
-        return resampled;
-    }
-
-    static void CopyToAtlas(Texture2D atlas, Texture2D chunkTex, AtlasLayout layout, ChunkCoord coord, int slicePx)
-    {
-        int col = coord.X - layout.MinCoord.X;
-        int row = coord.Y - layout.MinCoord.Y;
-        int dstX = col * slicePx;
-        int dstY = row * slicePx;
-        atlas.SetPixels(dstX, dstY, slicePx, slicePx, chunkTex.GetPixels());
-    }
-
-    static void UpdateBackgroundForChunk(
-        MapChunkEditorRoot root,
-        string mapName,
-        ChunkCoord coord,
-        MapPaintChunkInfo info,
-        float paintPpu,
-        string rootFolder,
-        int slicePx,
-        FilterMode resampleFilter)
-    {
-        float bgPpu = root.TexturePPU > 0f ? root.TexturePPU : paintPpu;
-        int bgSlice = MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, bgPpu);
-
-        string sourcePath = info.Source == ChunkPaintSource.UserPainted &&
-                            File.Exists(MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord))
-            ? MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord)
-            : MapPaintBackgroundShared.GetChunkTemplatePath(mapName, coord);
-
-        var src = MapPaintBackgroundShared.LoadTextureFromAssetPath(sourcePath);
-        if (src == null)
-        {
-            return;
-        }
-
-        var bgTex = MapPaintBackgroundShared.ResampleTexture(src, bgSlice, bgSlice, resampleFilter);
-        Object.DestroyImmediate(src);
-
-        string spritePath = MapPaintBackgroundShared.SaveBackgroundSprite(bgTex, coord, bgPpu, rootFolder);
-        Object.DestroyImmediate(bgTex);
-        if (string.IsNullOrEmpty(spritePath))
-        {
-            return;
-        }
-
-        MapPaintBackgroundShared.SaveBackgroundPrefab(coord, spritePath, rootFolder, root.BackgroundSortingOrder);
-        AssetDatabase.ImportAsset(spritePath);
     }
 }
 #endif

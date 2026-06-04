@@ -45,7 +45,11 @@ public static class MapPaintBackgroundCapture
         cam.allowMSAA = false;
         cam.allowHDR = false;
 
-        var rt = RenderTexture.GetTemporary(slicePx, slicePx, 24, RenderTextureFormat.ARGB32);
+        // Linear 项目需 sRGB RT，否则 ReadPixels 得到线性值写入 PNG 会与 Scene 观感不一致
+        var readWrite = QualitySettings.activeColorSpace == ColorSpace.Linear
+            ? RenderTextureReadWrite.sRGB
+            : RenderTextureReadWrite.Linear;
+        var rt = RenderTexture.GetTemporary(slicePx, slicePx, 24, RenderTextureFormat.ARGB32, readWrite);
         rt.filterMode = FilterMode.Point;
         rt.antiAliasing = 1;
 
