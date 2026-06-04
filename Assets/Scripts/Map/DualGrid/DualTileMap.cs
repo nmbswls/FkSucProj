@@ -10,13 +10,13 @@ namespace My.Map.DualGrid
     {
         const string DefaultViewTilePath = "Assets/Arts/DualTile/DualGridViewTile.asset";
 
-        public Grid Grid;
+        [HideInInspector] public Grid Grid;
         public Tilemap DataTilemap;
         public DualGridBrushRegistry BrushRegistry;
         public Tilemap ViewTilemap;
-        public DualGridViewTile ViewTile;
+        [HideInInspector] public DualGridViewTile ViewTile;
         public bool AutoRefreshInEditor = true;
-        public int ViewSortingOrder = 10;
+        [HideInInspector] public int ViewSortingOrder = 10;
 
         static readonly Vector3Int[] CellBuffer = new Vector3Int[4];
         Tilemap _subscribedData;

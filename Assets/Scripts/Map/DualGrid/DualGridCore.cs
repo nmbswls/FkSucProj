@@ -3,11 +3,11 @@ using UnityEngine.Tilemaps;
 
 namespace My.Map.DualGrid
 {
-    // View 角点 viewCell 对应 Data 四格（与常见 dual-grid 一致）：
-    //   data[0] = viewCell - (0,0)   左下 bit0
-    //   data[1] = viewCell - (1,0)   右下 bit1
-    //   data[2] = viewCell - (0,1)   左上 bit2
-    //   data[3] = viewCell - (1,1)   右上 bit3
+    // View 角点 viewCell 对应 Data 四格（Tilemap y 向上）：
+    //   bit0 = viewCell           右上
+    //   bit1 = viewCell - (1,0)   左上
+    //   bit2 = viewCell - (0,1)   右下
+    //   bit3 = viewCell - (1,1)   左下
     // Data 格 dataCell 落笔后刷新的 View 角点：dataCell + (0,0),(1,0),(0,1),(1,1)
     public static class DualGridCore
     {
@@ -77,29 +77,6 @@ namespace My.Map.DualGrid
 
             return mask;
         }
-
-#if UNITY_EDITOR
-        // 调试：看 4 格各自 GetTile 结果（data 必须是 Data Tilemap）
-        public static string FormatCornerSample(Tilemap data, Vector3Int viewCell)
-        {
-            if (data == null)
-            {
-                return "data tilemap is null";
-            }
-
-            GetDataCellsForViewCorner(viewCell, CellScratch);
-            var sb = new System.Text.StringBuilder();
-            sb.Append($"View{viewCell} reads Data: ");
-            for (int i = 0; i < 4; i++)
-            {
-                var c = CellScratch[i];
-                var t = data.GetTile(c);
-                sb.Append($"[{i}]{c}={(t != null ? t.name : "null")} ");
-            }
-
-            return sb.ToString();
-        }
-#endif
 
         public static void GetLogicCellsForViewCorner(Vector3Int viewCell, Vector3Int[] buffer)
         {

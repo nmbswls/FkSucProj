@@ -38,7 +38,7 @@ namespace My.Map.DualGrid.Editor
 
             EditorGUILayout.Space(8);
             EditorGUILayout.LabelField("Corner Slots (mask 0 → 15)", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("竖排；绿点 = 该 mask 四角 Data 是否有地形", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("竖排；绿点 = 该角有 Data 地形", EditorStyles.miniLabel);
 
             for (int mask = 0; mask < DualGridTilePalette.SlotCount; mask++)
             {
@@ -80,7 +80,7 @@ namespace My.Map.DualGrid.Editor
             var style = EditorStyles.miniLabel;
             GUI.Label(new Rect(textX, textY, boxRect.width - (textX - boxRect.x) - pad, 16f),
                 "View 角点落在四格交点（黄 +）", style);
-            GUI.Label(new Rect(textX, textY + 18f, 200f, 16f), "0 左下 · 1 右下 · 2 左上 · 3 右上", style);
+            GUI.Label(new Rect(textX, textY + 18f, 220f, 16f), "上排 1左 0右 · 下排 3左 2右（对应 Data 四格）", style);
             GUI.Label(new Rect(textX, textY + 36f, 280f, 16f), "槽位按 mask 0–15 自上而下排列", style);
             GUI.Label(new Rect(textX, textY + 54f, 280f, 16f), "每槽 Variants：多张图时按格子坐标确定性随机", style);
 
@@ -171,10 +171,12 @@ namespace My.Map.DualGrid.Editor
             }
         }
 
+        // 与 DualGridCore 一致：bit0=(vx,vy) bit1=(vx-1,vy) bit2=(vx,vy-1) bit3=(vx-1,vy-1)
+        // GUI 上排 = Tilemap y 较大，左列 = x 较小
         static Rect GetBitCellRect(Rect grid, int bit)
         {
-            int col = bit == 0 || bit == 2 ? 0 : 1;
-            int row = bit >= 2 ? 0 : 1;
+            int col = bit == 0 || bit == 2 ? 1 : 0;
+            int row = bit == 0 || bit == 1 ? 0 : 1;
             float x = grid.x + col * (DotCell + DotGap);
             float y = grid.y + row * (DotCell + DotGap);
             return new Rect(x, y, DotCell, DotCell);
