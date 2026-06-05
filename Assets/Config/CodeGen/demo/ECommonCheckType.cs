@@ -19,6 +19,7 @@ namespace cfg.demo
         OwnItem = 4,
         TaskStep = 5,
         AlwaysFail = 6,
+        FuncOpen = 7,
     }
 
 } 

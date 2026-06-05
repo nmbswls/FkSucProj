@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b978c74e1f81d58429ecf6c994bf084f, type: 3}
+  m_Name: HighGrassPalette
+  m_EditorClassIdentifier: 
+  TerrainId: 1
+  Corners:
+  - Variants:
+    - {fileID: 0}
+  - Variants:
+    - {fileID: -152613469, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -1289888376, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -901670037, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -1646875355, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -1305735211, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -301897259, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -1609824033, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: 1642588224, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: 624567319, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: 881189223, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: 431637103, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -1786884395, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: 44341319, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -1283958299, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}
+  - Variants:
+    - {fileID: -1131596456, guid: 21d16cd2b69705844a65ae7983a02b26, type: 3}

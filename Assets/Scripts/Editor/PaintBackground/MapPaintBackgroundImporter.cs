@@ -77,7 +77,6 @@ public static class MapPaintBackgroundImporter
 
             var info = manifest.GetOrCreateChunk(coord);
             info.Source = ChunkPaintSource.UserPainted;
-            info.ResetOnExport = false;
 
             string rootFolder = MapPaintBackgroundShared.GetMapRootFolder(mapName);
             UpdateBackgroundFromPainted(root, mapName, coord, paintedPath, resampleFilter, rootFolder);

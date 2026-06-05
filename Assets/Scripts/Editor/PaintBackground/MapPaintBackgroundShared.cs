@@ -36,6 +36,9 @@ public static class MapPaintBackgroundShared
     public static string GetChunkForAiPath(string mapName, ChunkCoord coord) =>
         $"{GetExportAiFolder(mapName)}/chunk_{coord.X}_{coord.Y}_for_ai.png";
 
+    public static string GetChunkPaintedRefPath(string mapName, ChunkCoord coord) =>
+        $"{GetExportAiFolder(mapName)}/chunk_{coord.X}_{coord.Y}_painted_ref.png";
+
     public static string GetManifestPath(string mapName) =>
         $"{GetPaintExportFolder(mapName)}/{ManifestFileName}";
 

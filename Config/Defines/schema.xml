@@ -63,6 +63,7 @@
         <var name="OwnItem" value="4"/>
 		<var name="TaskStep" value="5"/>
 		<var name="AlwaysFail" value="6"/>
+		<var name="FuncOpen" value="7"/>
     </enum>
 
     <!-- 2. 定义复杂结构 Bean (列表中的元素结构) -->

@@ -27,15 +27,15 @@ MonoBehaviour:
   AtlasWidth: 1536
   AtlasHeight: 1536
   MaskColor: {r: 1, g: 0, b: 1, a: 1}
-  ExportRevision: 6
+  ExportRevision: 8
   OutlineSyncedRevision: 2
   ContextExpandRatio: 0.25
   Chunks:
   - X: 0
     Y: 0
-    Source: 1
+    Source: 0
     ResetOnExport: 0
-    TileCoverageRatio: 0.14872742
+    TileCoverageRatio: 0.14091492
   - X: 1
     Y: 0
     Source: 0

@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b978c74e1f81d58429ecf6c994bf084f, type: 3}
+  m_Name: AutumnPalette
+  m_EditorClassIdentifier: 
+  TerrainId: 2
+  Corners:
+  - Variants:
+    - {fileID: 0}
+  - Variants:
+    - {fileID: -116256167, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 1518650645, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: -1803031503, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 671598526, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: -274346639, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 1509740428, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: -1657302167, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: -1491995746, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 624043372, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 1349192460, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 1346196260, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 1156572361, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: -530880402, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 1800670712, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}
+  - Variants:
+    - {fileID: 864533118, guid: 505179506f07cb747af3c9f22e0fd88f, type: 3}

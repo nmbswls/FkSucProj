@@ -30,7 +30,8 @@ public static class MapPaintBackgroundContext
         int slicePx,
         float expandRatio,
         Color maskColor,
-        FilterMode filter)
+        FilterMode filter,
+        Texture2D centerChunkOverride = null)
     {
         int margin = ComputeMarginPx(slicePx, expandRatio);
         int total = slicePx + margin * 2;
@@ -42,7 +43,16 @@ public static class MapPaintBackgroundContext
             for (int dx = -chunkRadius; dx <= chunkRadius; dx++)
             {
                 var coord = new ChunkCoord(center.X + dx, center.Y + dy);
-                var chunkTex = LoadChunkReference(mapName, manifest, coord, slicePx, filter);
+                Texture2D chunkTex;
+                if (dx == 0 && dy == 0 && centerChunkOverride != null)
+                {
+                    chunkTex = EnsureSize(MapPaintBackgroundShared.DuplicateTexture(centerChunkOverride), slicePx, filter);
+                }
+                else
+                {
+                    chunkTex = LoadChunkReference(mapName, manifest, coord, slicePx, filter);
+                }
+
                 if (chunkTex == null)
                 {
                     continue;

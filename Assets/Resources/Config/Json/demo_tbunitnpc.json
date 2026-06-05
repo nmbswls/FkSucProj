@@ -617,36 +617,5 @@
     "vision_fov_deg": -1,
     "mind_tag": "",
     "fallback_drop_id": 0
-  },
-  {
-    "id": "ally_turret_01",
-    "name": "友方炮台",
-    "desc": "",
-    "prefab_name": "default_guard_01",
-    "attr_template_id": 10000,
-    "emnity_cfg_id": "default_monster",
-    "faction_id": 2,
-    "move_style": 1,
-    "ai_brain_id": "default",
-    "skill_list": [
-      "default_range_attack"
-    ],
-    "is_peace": false,
-    "no_aggro": false,
-    "peace_dialog_id": "",
-    "defeat_drop_id": 0,
-    "desire_density_type": 0,
-    "not_target": false,
-    "always_h_mode": false,
-    "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5,
-    "no_unsensored": false,
-    "desire_crystal_random_attachable": false,
-    "no_real_jing": false,
-    "vision_cone_kind": 0,
-    "vision_range": 8,
-    "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0
   }
 ]

@@ -106,10 +106,9 @@ public class MapPaintBackgroundWindow : EditorWindow
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Workflow", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
-            "1. 选中 chunk → Export For AI\n" +
-            "2. 编辑 export_ai/chunk_*_for_ai.png\n" +
-            "3. Import Chunk → 场景预览自动刷新\n" +
-            "Clear：立即删除该块回稿并恢复为模板。",
+            "Ready → Export → Import → Done\n" +
+            "改 tile 后 Mark Stale；Stale+Painted 会导出 for_ai + painted_ref 两张图\n" +
+            "对齐场景后 Re-capture（自动 Clear Stale）",
             MessageType.Info);
 
         using (new EditorGUI.DisabledScope(!_selectedChunk.HasValue))
@@ -238,18 +237,34 @@ public class MapPaintBackgroundWindow : EditorWindow
         foreach (var coord in coords.OrderBy(c => c.Y).ThenBy(c => c.X))
         {
             var info = manifest?.GetChunk(coord.X, coord.Y);
-            var source = info != null ? info.Source.ToString() : "New";
+            var state = MapPaintChunkState.Resolve(mapName, info, coord);
+            var label = MapPaintChunkState.GetLabel(state);
             bool selected = _selectedChunk.HasValue && _selectedChunk.Value.X == coord.X && _selectedChunk.Value.Y == coord.Y;
+            bool isStale = info != null && info.TemplateStale;
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Toggle(selected, $"{coord.X},{coord.Y} [{source}]", EditorStyles.miniButton))
+                if (GUILayout.Toggle(selected, $"{coord.X},{coord.Y} [{label}]", EditorStyles.miniButton))
                 {
                     _selectedChunk = coord;
                 }
 
-                bool hasPainted = info != null && info.Source == ChunkPaintSource.UserPainted
-                    || File.Exists(MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord));
+                if (isStale)
+                {
+                    if (GUILayout.Button("Clear Stale", EditorStyles.miniButton, GUILayout.Width(68f)))
+                    {
+                        SetChunkStale(root, coord, false);
+                    }
+                }
+                else
+                {
+                    if (GUILayout.Button("Mark Stale", EditorStyles.miniButton, GUILayout.Width(68f)))
+                    {
+                        SetChunkStale(root, coord, true);
+                    }
+                }
+
+                bool hasPainted = MapPaintChunkState.HasPainted(mapName, info, coord);
                 using (new EditorGUI.DisabledScope(!hasPainted))
                 {
                     if (GUILayout.Button("Clear", EditorStyles.miniButton, GUILayout.Width(44f)))
@@ -263,6 +278,13 @@ public class MapPaintBackgroundWindow : EditorWindow
         }
 
         EditorGUILayout.EndScrollView();
+    }
+
+    void SetChunkStale(MapChunkEditorRoot root, ChunkCoord coord, bool stale)
+    {
+        var result = MapPaintBackgroundExporter.SetTemplateStale(root, mapName, coord, stale);
+        LogResult(result.Success, result.Message);
+        Repaint();
     }
 
     void PingSelectedExport()

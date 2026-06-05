@@ -40,10 +40,25 @@ public static class MapPaintBackgroundExporter
             : MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, paintPpu);
 
         var info = manifest.GetOrCreateChunk(coord);
+        bool hasPainted = MapPaintChunkState.HasPainted(mapName, info, coord);
+
+        if (info.TemplateStale && !hasPainted)
+        {
+            return Fail($"Chunk ({coord.X},{coord.Y}) is stale. Re-capture template before export.");
+        }
+
+        float expandRatio = root.PaintContextExpandRatio;
+        int contextSize = MapPaintBackgroundContext.ComputeContextSize(slicePx, expandRatio);
+        int margin = MapPaintBackgroundContext.ComputeMarginPx(slicePx, expandRatio);
+
+        if (info.TemplateStale && hasPainted)
+        {
+            return ExportStalePaintedChunkForAi(
+                root, mapName, manifest, coord, slicePx, paintPpu, expandRatio, contextSize, margin, resampleFilter);
+        }
 
         UpdateChunkTemplate(root, mapName, manifest, info, coord, paintPpu, forceCapture: false);
 
-        float expandRatio = root.PaintContextExpandRatio;
         Texture2D forAi = null;
         try
         {
@@ -64,8 +79,6 @@ public static class MapPaintBackgroundExporter
             AssetDatabase.SaveAssets();
             MapPaintBackgroundPreview.TryAutoSync(root, mapName);
 
-            int contextSize = MapPaintBackgroundContext.ComputeContextSize(slicePx, expandRatio);
-            int margin = MapPaintBackgroundContext.ComputeMarginPx(slicePx, expandRatio);
             return new ExportResult
             {
                 Success = true,
@@ -82,6 +95,125 @@ public static class MapPaintBackgroundExporter
                 Object.DestroyImmediate(forAi);
             }
         }
+    }
+
+    public static ExportResult SetTemplateStale(
+        MapChunkEditorRoot root,
+        string mapName,
+        ChunkCoord coord,
+        bool stale)
+    {
+        if (root == null)
+        {
+            return Fail("MapChunkEditorRoot is missing.");
+        }
+
+        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
+        var manifest = LoadOrCreateManifest(root, mapName);
+        var info = manifest.GetOrCreateChunk(coord);
+        info.TemplateStale = stale;
+        EditorUtility.SetDirty(manifest);
+        AssetDatabase.SaveAssets();
+
+        string action = stale ? "Marked stale" : "Cleared stale";
+        return new ExportResult
+        {
+            Success = true,
+            Message = $"{action} for chunk ({coord.X},{coord.Y}).",
+            Manifest = manifest,
+        };
+    }
+
+    static ExportResult ExportStalePaintedChunkForAi(
+        MapChunkEditorRoot root,
+        string mapName,
+        MapPaintManifest manifest,
+        ChunkCoord coord,
+        int slicePx,
+        float paintPpu,
+        float expandRatio,
+        int contextSize,
+        int margin,
+        FilterMode resampleFilter)
+    {
+        Texture2D freshCenter = null;
+        Texture2D forAi = null;
+        Texture2D paintedRef = null;
+        try
+        {
+            freshCenter = CaptureFreshTemplate(root, coord, paintPpu);
+            if (freshCenter == null)
+            {
+                return Fail($"Failed to capture fresh template for chunk ({coord.X},{coord.Y}).");
+            }
+
+            forAi = MapPaintBackgroundContext.BuildChunkForAi(
+                mapName,
+                manifest,
+                coord,
+                slicePx,
+                expandRatio,
+                root.PaintMaskColor,
+                resampleFilter,
+                freshCenter);
+
+            paintedRef = MapPaintBackgroundContext.BuildChunkForAi(
+                mapName,
+                manifest,
+                coord,
+                slicePx,
+                expandRatio,
+                root.PaintMaskColor,
+                resampleFilter);
+
+            string forAiPath = MapPaintBackgroundShared.GetChunkForAiPath(mapName, coord);
+            string paintedRefPath = MapPaintBackgroundShared.GetChunkPaintedRefPath(mapName, coord);
+            MapPaintBackgroundShared.WritePng(forAi, forAiPath);
+            MapPaintBackgroundShared.WritePng(paintedRef, paintedRefPath);
+            AssetDatabase.ImportAsset(forAiPath);
+            AssetDatabase.ImportAsset(paintedRefPath);
+
+            SaveManifestState(root, manifest, mapName, slicePx, paintPpu, expandRatio);
+            AssetDatabase.SaveAssets();
+            MapPaintBackgroundPreview.TryAutoSync(root, mapName);
+
+            return new ExportResult
+            {
+                Success = true,
+                Message =
+                    $"Exported stale chunk ({coord.X},{coord.Y}): " +
+                    $"{contextSize}x{contextSize}px for_ai (fresh template) + painted_ref (old painted). " +
+                    "Give both to AI; import the merged result, then Re-capture.",
+                Manifest = manifest,
+            };
+        }
+        finally
+        {
+            if (freshCenter != null)
+            {
+                Object.DestroyImmediate(freshCenter);
+            }
+
+            if (forAi != null)
+            {
+                Object.DestroyImmediate(forAi);
+            }
+
+            if (paintedRef != null)
+            {
+                Object.DestroyImmediate(paintedRef);
+            }
+        }
+    }
+
+    static Texture2D CaptureFreshTemplate(MapChunkEditorRoot root, ChunkCoord coord, float paintPpu)
+    {
+        return MapPaintBackgroundCapture.CaptureChunk(
+            root,
+            coord,
+            paintPpu,
+            root.PaintMaskColor,
+            out _);
     }
 
     public static ExportResult ClearUserPainted(MapChunkEditorRoot root, string mapName, ChunkCoord coord)
@@ -128,6 +260,7 @@ public static class MapPaintBackgroundExporter
             return Fail($"Failed to re-capture template for chunk ({coord.X},{coord.Y}).");
         }
 
+        info.TemplateStale = false;
         EditorUtility.SetDirty(manifest);
         AssetDatabase.SaveAssets();
 

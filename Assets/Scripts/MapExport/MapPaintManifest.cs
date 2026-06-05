@@ -17,7 +17,7 @@ namespace My.MapExport
         public int X;
         public int Y;
         public ChunkPaintSource Source;
-        public bool ResetOnExport;
+        public bool TemplateStale;
         public float TileCoverageRatio;
 
         public ChunkCoord Coord => new ChunkCoord(X, Y);
@@ -33,12 +33,9 @@ namespace My.MapExport
         public float TexturePPU = 32f;
         public float PaintExportPPU = 32f;
         public int SlicePixelSize;
-        public int AtlasWidth;
-        public int AtlasHeight;
         public Color MaskColor = Color.magenta;
 
         public int ExportRevision;
-        public int OutlineSyncedRevision;
 
         public float ContextExpandRatio;
 

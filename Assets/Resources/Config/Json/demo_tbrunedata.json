@@ -12,6 +12,18 @@
     "sort_order": 10
   },
   {
+    "rune_id": "harvest_green",
+    "rune_type": 1,
+    "equip_slot": 0,
+    "passive_skill_id": "",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "丰饶",
+    "desc": "获得植物亲和能力",
+    "sort_order": 10
+  },
+  {
     "rune_id": "rune_core_naishou",
     "rune_type": 2,
     "equip_slot": 1,
