@@ -51,14 +51,15 @@ public static class MapChunkExportCore
             return Fail("GridRoot/Tilemap not found under StaticPrefabRoot. Create or import Grid before tilemap export.");
         }
 
-        editorRoot.ChunkWorldSize = chunkWorldSize;
         editorRoot.ChunkOrigin = chunkOrigin;
         EditorUtility.SetDirty(editorRoot);
 
         var texSize = editorRoot.SourceTextureSize;
-        int slicePx = editorRoot.SlicePixelSize;
-        float chunkSize = editorRoot.ChunkWorldSize;
-        float ppu = editorRoot.TexturePPU;
+        int slicePx = editorRoot.SourceTexture != null
+            ? MapChunkUtility.ComputeSlicePixelSize(chunkWorldSize, MapChunkEditorSettings.GetOrCreate().TexturePPU)
+            : 0;
+        float chunkSize = chunkWorldSize;
+        float ppu = MapChunkEditorSettings.GetOrCreate().TexturePPU;
         var origin = editorRoot.ChunkOrigin;
 
         Texture2D fullSourceTexture = null;
@@ -264,19 +265,18 @@ public static class MapChunkExportCore
         MapChunkEditorRoot editorRoot = null)
     {
         var coords = new HashSet<ChunkCoord>();
+        bool hasPlayRect = editorRoot != null &&
+                           editorRoot.PaintWorldRect.width > 0f &&
+                           editorRoot.PaintWorldRect.height > 0f;
+        Rect playRect = hasPlayRect ? editorRoot.PaintWorldRect : default;
 
-        if (includeTexture && texSize.x > 0 && texSize.y > 0 && slicePx > 0)
+        if (hasPlayRect)
+        {
+            MapChunkUtility.CollectChunkCoordsForWorldRect(playRect, origin, chunkSize, coords);
+        }
+        else if (includeTexture && texSize.x > 0 && texSize.y > 0 && slicePx > 0)
         {
             MapChunkUtility.IterateChunkCoordsForTexture(texSize, slicePx, c => coords.Add(c));
-        }
-
-        if (editorRoot != null && editorRoot.PaintWorldRect.width > 0f && editorRoot.PaintWorldRect.height > 0f)
-        {
-            MapChunkUtility.CollectChunkCoordsForWorldRect(
-                editorRoot.PaintWorldRect,
-                editorRoot.ChunkOrigin,
-                editorRoot.ChunkWorldSize,
-                coords);
         }
 
         if (includeTilemap && tileGrounds != null)
@@ -297,7 +297,14 @@ public static class MapChunkExportCore
                     }
 
                     var world = source.GetCellCenterWorld(pos);
-                    coords.Add(MapChunkUtility.WorldToChunk(world, origin, chunkSize));
+                    var coord = MapChunkUtility.WorldToChunk(world, origin, chunkSize);
+                    if (hasPlayRect &&
+                        !MapChunkUtility.IsChunkInsideWorldRect(coord, playRect, origin, chunkSize))
+                    {
+                        continue;
+                    }
+
+                    coords.Add(coord);
                 }
             }
         }
@@ -314,9 +321,21 @@ public static class MapChunkExportCore
                 foreach (var pair in layer.Cells)
                 {
                     var world = layer.SourceTilemap.GetCellCenterWorld(pair.Key);
-                    coords.Add(MapChunkUtility.WorldToChunk(world, origin, chunkSize));
+                    var coord = MapChunkUtility.WorldToChunk(world, origin, chunkSize);
+                    if (hasPlayRect &&
+                        !MapChunkUtility.IsChunkInsideWorldRect(coord, playRect, origin, chunkSize))
+                    {
+                        continue;
+                    }
+
+                    coords.Add(coord);
                 }
             }
+        }
+
+        if (hasPlayRect)
+        {
+            coords.RemoveWhere(c => !MapChunkUtility.IsChunkInsideWorldRect(c, playRect, origin, chunkSize));
         }
 
         return coords;
@@ -344,11 +363,12 @@ public static class MapChunkExportCore
         clone.transform.SetPositionAndRotation(gridRoot.position, gridRoot.rotation);
         clone.transform.localScale = gridRoot.localScale;
 
-        bool export3dCollision = editorRoot != null && editorRoot.ExportGridRoot3DCollision;
+        bool export3dCollision = MapChunkEditorSettings.GetOrCreate().ExportGridRoot3DCollision;
         if (export3dCollision)
         {
-            float thickness = Mathf.Max(0.01f, editorRoot.GridRootCollisionThickness);
-            string layerName = editorRoot.GridRootCollisionLayer;
+            var editorSettings = MapChunkEditorSettings.GetOrCreate();
+            float thickness = Mathf.Max(0.01f, editorSettings.GridRootCollisionThickness);
+            string layerName = editorSettings.GridRootCollisionLayer;
             int physicsLayer = string.IsNullOrEmpty(layerName) ? -1 : LayerMask.NameToLayer(layerName);
             if (physicsLayer < 0)
             {

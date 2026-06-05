@@ -29,6 +29,62 @@ namespace My.MapExport
                 0f);
         }
 
+        public static Rect ChunkWorldRect(ChunkCoord coord, Vector2 chunkOrigin, float chunkWorldSize)
+        {
+            var min = ChunkWorldMin(coord, chunkOrigin, chunkWorldSize);
+            return Rect.MinMaxRect(min.x, min.y, min.x + chunkWorldSize, min.y + chunkWorldSize);
+        }
+
+        // chunk 完全落在 worldRect 内（用于逻辑范围 / PaintWorldRect 裁剪）
+        public static bool IsChunkInsideWorldRect(
+            ChunkCoord coord,
+            Rect worldRect,
+            Vector2 chunkOrigin,
+            float chunkWorldSize)
+        {
+            if (worldRect.width <= 0f || worldRect.height <= 0f || chunkWorldSize <= 0f)
+            {
+                return true;
+            }
+
+            var chunkRect = ChunkWorldRect(coord, chunkOrigin, chunkWorldSize);
+            return chunkRect.xMin >= worldRect.xMin - 1e-4f &&
+                   chunkRect.yMin >= worldRect.yMin - 1e-4f &&
+                   chunkRect.xMax <= worldRect.xMax + 1e-4f &&
+                   chunkRect.yMax <= worldRect.yMax + 1e-4f;
+        }
+
+        public static Vector3 ClampOrthographicCenter(Rect worldRect, float orthoHalfHeight, float aspect, Vector3 center)
+        {
+            if (worldRect.width <= 0f || worldRect.height <= 0f || orthoHalfHeight <= 0f)
+            {
+                return center;
+            }
+
+            float halfW = orthoHalfHeight * Mathf.Max(aspect, 1e-4f);
+            float halfH = orthoHalfHeight;
+
+            if (worldRect.width <= halfW * 2f)
+            {
+                center.x = worldRect.center.x;
+            }
+            else
+            {
+                center.x = Mathf.Clamp(center.x, worldRect.xMin + halfW, worldRect.xMax - halfW);
+            }
+
+            if (worldRect.height <= halfH * 2f)
+            {
+                center.y = worldRect.center.y;
+            }
+            else
+            {
+                center.y = Mathf.Clamp(center.y, worldRect.yMin + halfH, worldRect.yMax - halfH);
+            }
+
+            return center;
+        }
+
         public static int ComputeSlicePixelSize(float chunkWorldSize, float texturePpu)
         {
             return Mathf.Max(1, Mathf.RoundToInt(chunkWorldSize * texturePpu));

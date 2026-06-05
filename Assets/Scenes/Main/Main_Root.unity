@@ -2028,6 +2028,7 @@ MonoBehaviour:
   CameraCtrl: {fileID: 961739754}
   MainMapVCam: {fileID: 945414997}
   CineBrain: {fileID: 0}
+  MapCameraBoundsExtension: {fileID: 945414999}
   dialoguePlayer: {fileID: 771406920}
   AOIManager: {fileID: 1209709318}
   LiquidStrampManager: {fileID: 1885830509}
@@ -2262,6 +2263,7 @@ GameObject:
   - component: {fileID: 945414996}
   - component: {fileID: 945414997}
   - component: {fileID: 945414998}
+  - component: {fileID: 945414999}
   m_Layer: 0
   m_Name: Virtual Camera
   m_TagString: Untagged
@@ -2347,6 +2349,18 @@ MonoBehaviour:
     m_FrequencyGain: 1
     m_Duration: 1
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
+--- !u!114 &945414999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945414995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 269aed73f6c320144a55405323f4bee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &961739749
 GameObject:
   m_ObjectHideFlags: 0

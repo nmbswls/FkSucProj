@@ -22,9 +22,10 @@ public static class MapPaintBackgroundCapture
             return null;
         }
 
+        var settings = MapChunkEditorSettings.GetOrCreate();
         int slicePx = MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, ppu);
         var chunkMin = MapChunkUtility.ChunkWorldMin(coord, root.ChunkOrigin, root.ChunkWorldSize);
-        var center = chunkMin + new Vector3(root.ChunkWorldSize * 0.5f, root.ChunkWorldSize * 0.5f, root.PaintCaptureCameraZ);
+        var center = chunkMin + new Vector3(root.ChunkWorldSize * 0.5f, root.ChunkWorldSize * 0.5f, settings.PaintCaptureCameraZ);
 
         var camGo = new GameObject("MapPaintCaptureCamera")
         {
@@ -38,9 +39,9 @@ public static class MapPaintBackgroundCapture
         cam.transform.rotation = Quaternion.identity;
         cam.clearFlags = CameraClearFlags.SolidColor;
         cam.backgroundColor = clearColor;
-        cam.cullingMask = root.PaintCaptureLayerMask;
+        cam.cullingMask = settings.PaintCaptureLayerMask;
         cam.nearClipPlane = 0.01f;
-        cam.farClipPlane = Mathf.Abs(root.PaintCaptureCameraZ) + root.ChunkWorldSize + 50f;
+        cam.farClipPlane = Mathf.Abs(settings.PaintCaptureCameraZ) + root.ChunkWorldSize + 50f;
         cam.enabled = false;
         cam.allowMSAA = false;
         cam.allowHDR = false;
@@ -87,7 +88,7 @@ public static class MapPaintBackgroundCapture
             return default;
         }
 
-        int layerMask = root.PaintCaptureLayerMask.value;
+        int layerMask = MapChunkEditorSettings.GetOrCreate().PaintCaptureLayerMask.value;
         var scene = root.gameObject.scene;
         if (!scene.IsValid())
         {

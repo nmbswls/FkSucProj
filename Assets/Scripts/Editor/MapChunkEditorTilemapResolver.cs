@@ -35,7 +35,7 @@ public static class MapChunkEditorUtility
             return;
         }
 
-        chunkCellSize = editor.ChunkWorldSize;
+        chunkCellSize = MapChunkEditorSettings.GetOrCreate().EffectiveChunkWorldSize;
         chunkOrigin = editor.ChunkOrigin;
     }
 
@@ -46,8 +46,10 @@ public static class MapChunkEditorUtility
             return;
         }
 
-        editor.ChunkWorldSize = chunkCellSize;
+        var settings = MapChunkEditorSettings.GetOrCreate();
+        settings.ChunkWorldSize = chunkCellSize;
         editor.ChunkOrigin = chunkOrigin;
+        EditorUtility.SetDirty(settings);
         EditorUtility.SetDirty(editor);
     }
 

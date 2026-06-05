@@ -34,7 +34,8 @@ public static class MapPaintBackgroundExporter
 
         MapPaintBackgroundShared.EnsurePaintFolders(mapName);
         var manifest = LoadOrCreateManifest(root, mapName);
-        float paintPpu = root.EffectivePaintExportPpu;
+        var settings = MapChunkEditorSettings.GetOrCreate();
+        float paintPpu = settings.EffectivePaintExportPpu;
         int slicePx = manifest.SlicePixelSize > 0
             ? manifest.SlicePixelSize
             : MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, paintPpu);
@@ -47,7 +48,7 @@ public static class MapPaintBackgroundExporter
             return Fail($"Chunk ({coord.X},{coord.Y}) is stale. Re-capture template before export.");
         }
 
-        float expandRatio = root.PaintContextExpandRatio;
+        float expandRatio = MapChunkEditorSettings.GetOrCreate().PaintContextExpandRatio;
         int contextSize = MapPaintBackgroundContext.ComputeContextSize(slicePx, expandRatio);
         int margin = MapPaintBackgroundContext.ComputeMarginPx(slicePx, expandRatio);
 
@@ -68,7 +69,7 @@ public static class MapPaintBackgroundExporter
                 coord,
                 slicePx,
                 expandRatio,
-                root.PaintMaskColor,
+                MapChunkEditorSettings.GetOrCreate().PaintMaskColor,
                 resampleFilter);
 
             string outputPath = MapPaintBackgroundShared.GetChunkForAiPath(mapName, coord);
@@ -153,7 +154,7 @@ public static class MapPaintBackgroundExporter
                 coord,
                 slicePx,
                 expandRatio,
-                root.PaintMaskColor,
+                MapChunkEditorSettings.GetOrCreate().PaintMaskColor,
                 resampleFilter,
                 freshCenter);
 
@@ -163,7 +164,7 @@ public static class MapPaintBackgroundExporter
                 coord,
                 slicePx,
                 expandRatio,
-                root.PaintMaskColor,
+                MapChunkEditorSettings.GetOrCreate().PaintMaskColor,
                 resampleFilter);
 
             string forAiPath = MapPaintBackgroundShared.GetChunkForAiPath(mapName, coord);
@@ -212,7 +213,7 @@ public static class MapPaintBackgroundExporter
             root,
             coord,
             paintPpu,
-            root.PaintMaskColor,
+            MapChunkEditorSettings.GetOrCreate().PaintMaskColor,
             out _);
     }
 
@@ -253,7 +254,8 @@ public static class MapPaintBackgroundExporter
 
         MapPaintBackgroundShared.EnsurePaintFolders(mapName);
         var manifest = LoadOrCreateManifest(root, mapName);
-        float paintPpu = root.EffectivePaintExportPpu;
+        var settings = MapChunkEditorSettings.GetOrCreate();
+        float paintPpu = settings.EffectivePaintExportPpu;
         var info = manifest.GetOrCreateChunk(coord);
         if (!UpdateChunkTemplate(root, mapName, manifest, info, coord, paintPpu, forceCapture: true))
         {
@@ -295,15 +297,30 @@ public static class MapPaintBackgroundExporter
             AssetDatabase.CreateAsset(database, dbPath);
         }
 
+        var settings = MapChunkEditorSettings.GetOrCreate();
         database.ChunkWorldSize = root.ChunkWorldSize;
-        database.TexturePPU = root.TexturePPU;
+        database.TexturePPU = settings.TexturePPU;
         database.ChunkOrigin = root.ChunkOrigin;
-        database.SourceTextureWidth = Mathf.Max(database.SourceTextureWidth, root.PaintSlicePixelSize);
-        database.SourceTextureHeight = Mathf.Max(database.SourceTextureHeight, root.PaintSlicePixelSize);
+        database.SourceTextureWidth = Mathf.Max(database.SourceTextureWidth, settings.PaintSlicePixelSize);
+        database.SourceTextureHeight = Mathf.Max(database.SourceTextureHeight, settings.PaintSlicePixelSize);
+
+        database.LogicWorldRect = root.PaintWorldRect;
 
         var paintCoords = new HashSet<ChunkCoord>();
         MapPaintBackgroundShared.CollectPaintRectCoords(root, paintCoords);
         var lookup = database.Chunks?.ToDictionary(c => (c.X, c.Y), c => c) ?? new Dictionary<(int, int), MapChunkExportItem>();
+
+        // 移除逻辑范围外的历史 chunk 条目
+        if (database.Chunks != null && database.Chunks.Count > 0)
+        {
+            database.Chunks.RemoveAll(c =>
+                c != null && !MapChunkUtility.IsChunkInsideWorldRect(
+                    new ChunkCoord(c.X, c.Y),
+                    root.PaintWorldRect,
+                    root.ChunkOrigin,
+                    root.ChunkWorldSize));
+            lookup = database.Chunks.ToDictionary(c => (c.X, c.Y), c => c);
+        }
 
         foreach (var coord in paintCoords)
         {
@@ -345,14 +362,15 @@ public static class MapPaintBackgroundExporter
         float paintPpu,
         float expandRatio)
     {
+        var settings = MapChunkEditorSettings.GetOrCreate();
         manifest.ExportRevision++;
         manifest.PaintWorldRect = root.PaintWorldRect;
         manifest.ChunkOrigin = root.ChunkOrigin;
         manifest.ChunkWorldSize = root.ChunkWorldSize;
-        manifest.TexturePPU = root.TexturePPU;
+        manifest.TexturePPU = settings.TexturePPU;
         manifest.PaintExportPPU = paintPpu;
         manifest.SlicePixelSize = slicePx;
-        manifest.MaskColor = root.PaintMaskColor;
+        manifest.MaskColor = settings.PaintMaskColor;
         manifest.ContextExpandRatio = expandRatio;
         manifest.InvalidateLookup();
 
@@ -370,13 +388,14 @@ public static class MapPaintBackgroundExporter
             return manifest;
         }
 
+        var settings = MapChunkEditorSettings.GetOrCreate();
         manifest = ScriptableObject.CreateInstance<MapPaintManifest>();
         manifest.SceneName = mapName;
         manifest.ChunkWorldSize = root.ChunkWorldSize;
         manifest.ChunkOrigin = root.ChunkOrigin;
-        manifest.TexturePPU = root.TexturePPU;
-        manifest.PaintExportPPU = root.EffectivePaintExportPpu;
-        manifest.MaskColor = root.PaintMaskColor;
+        manifest.TexturePPU = settings.TexturePPU;
+        manifest.PaintExportPPU = settings.EffectivePaintExportPpu;
+        manifest.MaskColor = settings.PaintMaskColor;
         AssetDatabase.CreateAsset(manifest, path);
         return manifest;
     }
@@ -397,7 +416,8 @@ public static class MapPaintBackgroundExporter
         info.Source = ChunkPaintSource.Generated;
 
         string rootFolder = MapPaintBackgroundShared.GetMapRootFolder(mapName);
-        float ppu = root.TexturePPU > 0f ? root.TexturePPU : root.EffectivePaintExportPpu;
+        var settings = MapChunkEditorSettings.GetOrCreate();
+        float ppu = settings.TexturePPU > 0f ? settings.TexturePPU : settings.EffectivePaintExportPpu;
         string templatePath = MapPaintBackgroundShared.GetChunkTemplatePath(mapName, coord);
         var templateTex = MapPaintBackgroundShared.LoadTextureFromAssetPath(templatePath);
         if (templateTex == null)
@@ -412,7 +432,7 @@ public static class MapPaintBackgroundExporter
         Object.DestroyImmediate(bgTex);
         if (!string.IsNullOrEmpty(spritePath))
         {
-            MapPaintBackgroundShared.SaveBackgroundPrefab(coord, spritePath, rootFolder, root.BackgroundSortingOrder);
+            MapPaintBackgroundShared.SaveBackgroundPrefab(coord, spritePath, rootFolder, settings.BackgroundSortingOrder);
             AssetDatabase.ImportAsset(spritePath);
         }
 
@@ -438,7 +458,7 @@ public static class MapPaintBackgroundExporter
             root,
             coord,
             paintPpu,
-            root.PaintMaskColor,
+            MapChunkEditorSettings.GetOrCreate().PaintMaskColor,
             out var coverage);
         if (tex == null)
         {

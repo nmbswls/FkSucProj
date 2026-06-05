@@ -1,4 +1,5 @@
 using System.Linq;
+using My.MapExport;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -99,7 +100,6 @@ public class MapChunkExporterWindow : EditorWindow
     [SerializeField] private string mapName = "Main_Area_01";
     [SerializeField] private float chunkCellSize = 32f;
     [SerializeField] private Vector2 chunkOrigin;
-    [SerializeField] private int backgroundSortingOrder;
     [SerializeField] private bool exportBackgroundChunks = true;
     [SerializeField] private bool exportTilemapChunks = true;
     [SerializeField] private bool exportVisualBake = true;
@@ -130,12 +130,13 @@ public class MapChunkExporterWindow : EditorWindow
         }
         else
         {
+            var settings = MapChunkEditorSettings.GetOrCreate();
             EditorGUILayout.LabelField("Source Texture",
                 chunkEditor.SourceTexture != null ? chunkEditor.SourceTexture.name : "(none)");
             EditorGUILayout.LabelField("Source Pixel Size", chunkEditor.SourceTextureSize.ToString());
             EditorGUILayout.LabelField("Imported Asset Size", chunkEditor.ImportedTextureSize.ToString());
-            EditorGUILayout.LabelField("Texture PPU", chunkEditor.TexturePPU.ToString());
-            EditorGUILayout.LabelField("Slice Pixel Size", chunkEditor.SlicePixelSize.ToString());
+            EditorGUILayout.LabelField("Texture PPU", settings.TexturePPU.ToString());
+            EditorGUILayout.LabelField("Slice Pixel Size", settings.SlicePixelSize.ToString());
             EditorGUILayout.LabelField("Grid Status",
                 MapChunkEditorTilemapResolver.HasTilemapSource(chunkEditor) ? "Ready" : "Missing");
         }
@@ -146,8 +147,8 @@ public class MapChunkExporterWindow : EditorWindow
         mapName = EditorGUILayout.TextField("Scene Name (Variant)", mapName);
         chunkCellSize = EditorGUILayout.FloatField("Chunk Cell Size", chunkCellSize);
         chunkOrigin = EditorGUILayout.Vector2Field("Chunk Origin", chunkOrigin);
-        backgroundSortingOrder = EditorGUILayout.IntField("Background Sorting Order", backgroundSortingOrder);
 
+        var editorSettings = MapChunkEditorSettings.GetOrCreate();
         exportBackgroundChunks = EditorGUILayout.Toggle("Background (bg_*)", exportBackgroundChunks);
         exportTilemapChunks = EditorGUILayout.Toggle("Walk Grid Chunks (tm_*)", exportTilemapChunks);
         using (new EditorGUI.DisabledScope(!exportTilemapChunks))
@@ -155,11 +156,16 @@ public class MapChunkExporterWindow : EditorWindow
             exportVisualBake = EditorGUILayout.Toggle("  Bake Visual Layers", exportVisualBake);
         }
         exportWalkGridPrefab = EditorGUILayout.Toggle("Walk Grid Prefab (GridRoot)", exportWalkGridPrefab);
-        if (chunkEditor != null && exportWalkGridPrefab)
+        if (exportWalkGridPrefab)
         {
-            chunkEditor.ExportGridRoot3DCollision = EditorGUILayout.Toggle(
+            EditorGUI.BeginChangeCheck();
+            editorSettings.ExportGridRoot3DCollision = EditorGUILayout.Toggle(
                 "  GridRoot 3D Collision (slow)",
-                chunkEditor.ExportGridRoot3DCollision);
+                editorSettings.ExportGridRoot3DCollision);
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(editorSettings);
+            }
         }
 
         EditorGUILayout.Space();
@@ -231,7 +237,7 @@ public class MapChunkExporterWindow : EditorWindow
         var result = MapChunkExportCore.Export(
             chunkEditor,
             mapName,
-            backgroundSortingOrder,
+            MapChunkEditorSettings.GetOrCreate().BackgroundSortingOrder,
             chunkCellSize,
             chunkOrigin,
             exportBackgroundChunks,

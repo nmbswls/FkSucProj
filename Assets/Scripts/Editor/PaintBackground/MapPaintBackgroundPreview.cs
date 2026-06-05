@@ -31,10 +31,11 @@ public static class MapPaintBackgroundPreview
             return Fail("PaintWorldRect is not configured.");
         }
 
+        var settings = MapChunkEditorSettings.GetOrCreate();
         var previewRoot = GetOrCreatePreviewRoot(root);
-        previewRoot.gameObject.SetActive(root.PaintPreviewEnabled);
+        previewRoot.gameObject.SetActive(settings.PaintPreviewEnabled);
 
-        if (!root.PaintPreviewEnabled)
+        if (!settings.PaintPreviewEnabled)
         {
             return new SyncResult
             {
@@ -95,7 +96,7 @@ public static class MapPaintBackgroundPreview
             var sr = instance.GetComponent<SpriteRenderer>();
             if (sr != null)
             {
-                sr.sortingOrder = root.BackgroundSortingOrder;
+                sr.sortingOrder = MapChunkEditorSettings.GetOrCreate().BackgroundSortingOrder;
             }
 
             synced++;
@@ -142,7 +143,7 @@ public static class MapPaintBackgroundPreview
 
     public static void TryAutoSync(MapChunkEditorRoot root, string mapName)
     {
-        if (root == null || !root.PaintAutoRefreshPreview)
+        if (root == null || !MapChunkEditorSettings.GetOrCreate().PaintAutoRefreshPreview)
         {
             return;
         }

@@ -66,17 +66,12 @@ public class MapPaintBackgroundWindow : EditorWindow
 
     void DrawSettings(MapChunkEditorRoot root)
     {
+        var settings = MapChunkEditorSettings.GetOrCreate();
+
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Capture", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Map", EditorStyles.boldLabel);
         EditorGUI.BeginChangeCheck();
         root.PaintWorldRect = EditorGUILayout.RectField("Paint World Rect", root.PaintWorldRect);
-        root.PaintMaskColor = EditorGUILayout.ColorField("Mask Color", root.PaintMaskColor);
-        root.PaintCaptureLayerMask = LayerMaskField("Capture Layers", root.PaintCaptureLayerMask);
-        root.PaintCaptureCameraZ = EditorGUILayout.FloatField("Camera Z", root.PaintCaptureCameraZ);
-        root.PaintExportPPU = EditorGUILayout.FloatField("Export PPU (0=TexturePPU)", root.PaintExportPPU);
-        root.TexturePPU = EditorGUILayout.FloatField("Runtime PPU", root.TexturePPU);
-        root.BackgroundSortingOrder = EditorGUILayout.IntField("Background Sort Order", root.BackgroundSortingOrder);
-        root.PaintContextExpandRatio = EditorGUILayout.Slider("Context Expand", root.PaintContextExpandRatio, 0f, 0.49f);
         if (EditorGUI.EndChangeCheck())
         {
             EditorUtility.SetDirty(root);
@@ -98,7 +93,28 @@ public class MapPaintBackgroundWindow : EditorWindow
             }
         }
 
-        EditorGUILayout.LabelField("Slice Px", root.PaintSlicePixelSize.ToString());
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Global Settings", EditorStyles.boldLabel);
+        EditorGUI.BeginChangeCheck();
+        settings.ChunkWorldSize = EditorGUILayout.FloatField("Chunk World Size", settings.ChunkWorldSize);
+        settings.TexturePPU = EditorGUILayout.FloatField("Runtime PPU", settings.TexturePPU);
+        settings.PaintExportPPU = EditorGUILayout.FloatField("Export PPU (0=Runtime)", settings.PaintExportPPU);
+        settings.PaintMaskColor = EditorGUILayout.ColorField("Mask Color", settings.PaintMaskColor);
+        settings.PaintCaptureLayerMask = LayerMaskField("Capture Layers", settings.PaintCaptureLayerMask);
+        settings.PaintCaptureCameraZ = EditorGUILayout.FloatField("Camera Z", settings.PaintCaptureCameraZ);
+        settings.BackgroundSortingOrder = EditorGUILayout.IntField("Background Sort Order", settings.BackgroundSortingOrder);
+        settings.PaintContextExpandRatio = EditorGUILayout.Slider("Context Expand", settings.PaintContextExpandRatio, 0f, 0.49f);
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorUtility.SetDirty(settings);
+        }
+
+        EditorGUILayout.LabelField("Paint Slice Px", settings.PaintSlicePixelSize.ToString());
+        if (GUILayout.Button("Select Global Settings Asset"))
+        {
+            Selection.activeObject = settings;
+            EditorGUIUtility.PingObject(settings);
+        }
     }
 
     void DrawWorkflow(MapChunkEditorRoot root)
@@ -166,16 +182,18 @@ public class MapPaintBackgroundWindow : EditorWindow
 
     void DrawPreviewSection(MapChunkEditorRoot root)
     {
+        var settings = MapChunkEditorSettings.GetOrCreate();
+
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Scene Preview", EditorStyles.boldLabel);
 
         EditorGUI.BeginChangeCheck();
-        root.PaintPreviewEnabled = EditorGUILayout.Toggle("Show In Scene", root.PaintPreviewEnabled);
-        root.PaintAutoRefreshPreview = EditorGUILayout.Toggle("Auto Refresh", root.PaintAutoRefreshPreview);
+        settings.PaintPreviewEnabled = EditorGUILayout.Toggle("Show In Scene", settings.PaintPreviewEnabled);
+        settings.PaintAutoRefreshPreview = EditorGUILayout.Toggle("Auto Refresh", settings.PaintAutoRefreshPreview);
         if (EditorGUI.EndChangeCheck())
         {
-            EditorUtility.SetDirty(root);
-            if (root.PaintPreviewEnabled)
+            EditorUtility.SetDirty(settings);
+            if (settings.PaintPreviewEnabled)
             {
                 MapPaintBackgroundPreview.TryAutoSync(root, mapName);
             }

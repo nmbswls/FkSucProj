@@ -59,6 +59,17 @@ namespace My.MapExport
             return ComputeBoundsFromChunks(Chunks, ChunkOrigin, ChunkWorldSize);
         }
 
+        public bool IsChunkInLogicBounds(ChunkCoord coord)
+        {
+            var rect = ResolveLogicWorldRect();
+            if (rect.width <= 0f || rect.height <= 0f)
+            {
+                return true;
+            }
+
+            return MapChunkUtility.IsChunkInsideWorldRect(coord, rect, ChunkOrigin, ChunkWorldSize);
+        }
+
         public static Rect ComputeBoundsFromChunks(
             List<MapChunkExportItem> chunks,
             Vector2 chunkOrigin,

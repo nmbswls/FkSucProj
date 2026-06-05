@@ -44,7 +44,7 @@ public static class MapPaintBackgroundImporter
 
         float expandRatio = manifest.ContextExpandRatio > 0f
             ? manifest.ContextExpandRatio
-            : root.PaintContextExpandRatio;
+            : MapChunkEditorSettings.GetOrCreate().PaintContextExpandRatio;
         int expected = MapPaintBackgroundContext.ComputeContextSize(manifest.SlicePixelSize, expandRatio);
         if (contextChunk.width != expected || contextChunk.height != expected)
         {
@@ -149,7 +149,8 @@ public static class MapPaintBackgroundImporter
         FilterMode resampleFilter,
         string rootFolder)
     {
-        float bgPpu = root.TexturePPU > 0f ? root.TexturePPU : root.EffectivePaintExportPpu;
+        var settings = MapChunkEditorSettings.GetOrCreate();
+        float bgPpu = settings.TexturePPU > 0f ? settings.TexturePPU : settings.EffectivePaintExportPpu;
         int bgSlice = MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, bgPpu);
         var src = MapPaintBackgroundShared.LoadTextureFromAssetPath(paintedPath);
         if (src == null)
@@ -163,7 +164,7 @@ public static class MapPaintBackgroundImporter
         Object.DestroyImmediate(bgTex);
         if (!string.IsNullOrEmpty(spritePath))
         {
-            MapPaintBackgroundShared.SaveBackgroundPrefab(coord, spritePath, rootFolder, root.BackgroundSortingOrder);
+            MapPaintBackgroundShared.SaveBackgroundPrefab(coord, spritePath, rootFolder, settings.BackgroundSortingOrder);
             AssetDatabase.ImportAsset(spritePath);
         }
     }

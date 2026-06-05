@@ -64,11 +64,22 @@ public static class MapPaintBackgroundShared
             return;
         }
 
+        if (root.PaintWorldRect.width <= 0f || root.PaintWorldRect.height <= 0f)
+        {
+            return;
+        }
+
         MapChunkUtility.CollectChunkCoordsForWorldRect(
             root.PaintWorldRect,
             root.ChunkOrigin,
             root.ChunkWorldSize,
             output);
+
+        output.RemoveWhere(c => !MapChunkUtility.IsChunkInsideWorldRect(
+            c,
+            root.PaintWorldRect,
+            root.ChunkOrigin,
+            root.ChunkWorldSize));
     }
 
     public static Texture2D LoadTextureFromAssetPath(string assetPath)

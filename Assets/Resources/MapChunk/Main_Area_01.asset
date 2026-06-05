@@ -182,3 +182,9 @@ MonoBehaviour:
     Y: 6
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_4_6
     TilemapKey: 
+  LogicWorldRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 96
+    height: 96

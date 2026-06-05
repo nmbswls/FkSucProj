@@ -81,6 +81,17 @@ public class MapChunkManager : MonoBehaviour
 
     Vector2 ChunkOrigin => ChunkDb != null ? ChunkDb.ChunkOrigin : Vector2.zero;
 
+    bool IsChunkInLogicBounds(ChunkCoord coord)
+    {
+        var db = ChunkDb;
+        if (db == null)
+        {
+            return true;
+        }
+
+        return db.IsChunkInLogicBounds(coord);
+    }
+
     public void Initialize(IAssetProvider asset, IAssetProviderAsync assetAsync, Func<bool> canRefreshNow)
     {
         _asset = asset;
@@ -95,6 +106,11 @@ public class MapChunkManager : MonoBehaviour
 
         foreach (var c in _ringScratch)
         {
+            if (!IsChunkInLogicBounds(c))
+            {
+                continue;
+            }
+
             if (!_chunks.TryGetValue(c, out var rec))
             {
                 rec = new ChunkRecord(c);
@@ -107,7 +123,7 @@ public class MapChunkManager : MonoBehaviour
         var keys = new List<ChunkCoord>(_chunks.Keys);
         foreach (var c in keys)
         {
-            if (!_ringScratch.Contains(c))
+            if (!_ringScratch.Contains(c) || !IsChunkInLogicBounds(c))
             {
                 _chunks[c].desiredVisible = false;
             }

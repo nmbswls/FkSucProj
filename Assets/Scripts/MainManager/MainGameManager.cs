@@ -14,9 +14,11 @@ using My.Map.Encounter;
 using My.Map.Entity;
 using My.Map.Entity.AI;
 using My.Map.Fight;
+using My.Map.Hunting;
 using My.Map.Logic;
 using My.Map.Scene;
-using My.Map.Hunting;
+using My.Dungeon;
+using My.MapExport;
 using My.Map.View;
 using My.Map.SmallGame.Zha;
 using My.MiniGame;
@@ -97,25 +99,131 @@ namespace My
         public CameraFollow CameraCtrl;
         public CinemachineVirtualCamera MainMapVCam;
         public CinemachineBrain CineBrain;
+        public MapCameraBoundsExtension MapCameraBoundsExtension;
 
-        MapCameraBoundsController _mapCameraBoundsController;
+        MapCameraBoundsController _mapCameraBounds;
 
         public void ClearMapCameraBounds()
         {
-            _mapCameraBoundsController?.Clear();
+            _mapCameraBounds?.Clear();
         }
 
         public void ApplyMapCameraBounds()
         {
-            if (_mapCameraBoundsController == null)
+            if (_mapCameraBounds == null || !_mapCameraBounds.IsReady)
             {
                 return;
             }
 
             var overlay = gameLogicManager?.AreaManager?.cacheMapOverlayCfg;
-            var chunkDb = gameLogicManager?.AreaManager?.cacheChunkDatabase;
+            if (overlay == null || overlay.IsSecretBase)
+            {
+                _mapCameraBounds.Clear();
+                return;
+            }
+
+            if (TryResolveMapCameraBounds(out var rect))
+            {
+                _mapCameraBounds.Apply(rect);
+            }
+            else
+            {
+                _mapCameraBounds.Clear();
+            }
+        }
+
+        void ResolveMapCameraBoundsExtension()
+        {
+            if (MapCameraBoundsExtension != null)
+            {
+                return;
+            }
+
+            if (MainMapVCam != null)
+            {
+                MapCameraBoundsExtension = MainMapVCam.GetComponent<MapCameraBoundsExtension>();
+            }
+
+            if (MapCameraBoundsExtension == null)
+            {
+                Debug.LogError(
+                    "[MainGameManager] MapCameraBoundsExtension must be attached to MainMapVCam in the scene.");
+            }
+            else
+            {
+                var legacyConfiner = MainMapVCam.GetComponent<CinemachineConfiner2D>();
+                if (legacyConfiner != null)
+                {
+                    legacyConfiner.enabled = false;
+                }
+            }
+        }
+
+        bool TryResolveMapCameraBounds(out Rect rect)
+        {
+            rect = default;
+
             var worldRoot = WorldAreaManager != null ? WorldAreaManager.currentRoot : null;
-            _mapCameraBoundsController.ApplyForCurrentMap(overlay, worldRoot, chunkDb);
+            var chunkDb = gameLogicManager?.AreaManager?.cacheChunkDatabase;
+            var overlay = gameLogicManager?.AreaManager?.cacheMapOverlayCfg;
+
+            if (worldRoot != null && worldRoot.HasLogicWorldRectOverride)
+            {
+                rect = worldRoot.LogicWorldRectOverride;
+                return true;
+            }
+
+            if (chunkDb != null)
+            {
+                rect = chunkDb.ResolveLogicWorldRect();
+                if (rect.width > 0f && rect.height > 0f)
+                {
+                    return true;
+                }
+            }
+
+            if (overlay != null && DungeonPresentation.IsProceduralOverlay(overlay))
+            {
+                return TryResolveDungeonCameraBounds(overlay.Id, worldRoot, out rect);
+            }
+
+            return false;
+        }
+
+        static bool TryResolveDungeonCameraBounds(string overlayId, WorldAreaRoot worldRoot, out Rect rect)
+        {
+            rect = default;
+
+            var result = DungeonSession.GetLastResult(overlayId);
+            var grid = worldRoot != null ? worldRoot.Grid : null;
+            if (result?.WalkableCells == null || result.WalkableCells.Count == 0 || grid == null)
+            {
+                return false;
+            }
+
+            int minX = int.MaxValue;
+            int minY = int.MaxValue;
+            int maxX = int.MinValue;
+            int maxY = int.MinValue;
+            foreach (var cell in result.WalkableCells)
+            {
+                minX = Mathf.Min(minX, cell.x);
+                minY = Mathf.Min(minY, cell.y);
+                maxX = Mathf.Max(maxX, cell.x);
+                maxY = Mathf.Max(maxY, cell.y);
+            }
+
+            if (minX == int.MaxValue)
+            {
+                return false;
+            }
+
+            var cellSize = grid.cellSize;
+            var halfCell = new Vector3(cellSize.x * 0.5f, cellSize.y * 0.5f, 0f);
+            var sw = grid.GetCellCenterWorld(new Vector3Int(minX, minY, 0)) - halfCell;
+            var ne = grid.GetCellCenterWorld(new Vector3Int(maxX, maxY, 0)) + halfCell;
+            rect = Rect.MinMaxRect(sw.x, sw.y, ne.x, ne.y);
+            return rect.width > 0f && rect.height > 0f;
         }
 
         // 大地图玩家表现就绪后绑定 vcam.Follow（据点内不绑定）
@@ -186,13 +294,8 @@ namespace My
                 huntingModeManager = gameObject.AddComponent<HuntingModeManager>();
             }
 
-            _mapCameraBoundsController = GetComponent<MapCameraBoundsController>();
-            if (_mapCameraBoundsController == null)
-            {
-                _mapCameraBoundsController = gameObject.AddComponent<MapCameraBoundsController>();
-            }
-
-            _mapCameraBoundsController.Bind(MainMapVCam);
+            ResolveMapCameraBoundsExtension();
+            _mapCameraBounds = new MapCameraBoundsController(MapCameraBoundsExtension);
 
             NavProvider = new();
 

@@ -11,10 +11,21 @@ public class MapChunkEditorRootEditor : Editor
         DrawDefaultInspector();
 
         var root = (MapChunkEditorRoot)target;
+        var settings = MapChunkEditorSettings.GetOrCreate();
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Global Settings", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Chunk World Size", settings.EffectiveChunkWorldSize.ToString());
+        EditorGUILayout.LabelField("Paint Slice Px", settings.PaintSlicePixelSize.ToString());
+        EditorGUILayout.LabelField("Effective Paint PPU", settings.EffectivePaintExportPpu.ToString());
+        if (GUILayout.Button("Open Map Chunk Editor Settings"))
+        {
+            Selection.activeObject = settings;
+            EditorGUIUtility.PingObject(settings);
+        }
+
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Paint Background", EditorStyles.boldLabel);
-        EditorGUILayout.LabelField("Paint Slice Px", root.PaintSlicePixelSize.ToString());
-        EditorGUILayout.LabelField("Effective Paint PPU", root.EffectivePaintExportPpu.ToString());
 
         using (new EditorGUILayout.HorizontalScope())
         {
