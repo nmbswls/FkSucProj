@@ -24,135 +24,132 @@ MonoBehaviour:
   TexturePPU: 16
   PaintExportPPU: 16
   SlicePixelSize: 512
-  AtlasWidth: 1536
-  AtlasHeight: 1536
   MaskColor: {r: 1, g: 0, b: 1, a: 1}
-  ExportRevision: 8
-  OutlineSyncedRevision: 2
+  ExportRevision: 12
   ContextExpandRatio: 0.25
   Chunks:
   - X: 0
     Y: 0
-    Source: 0
-    ResetOnExport: 0
-    TileCoverageRatio: 0.14091492
+    Source: 1
+    TemplateStale: 0
+    TileCoverageRatio: 0.2833748
   - X: 1
     Y: 0
     Source: 0
-    ResetOnExport: 0
-    TileCoverageRatio: 0.93515396
+    TemplateStale: 1
+    TileCoverageRatio: 0.9941406
   - X: 2
     Y: 0
     Source: 0
-    ResetOnExport: 0
-    TileCoverageRatio: 0.34277344
+    TemplateStale: 0
+    TileCoverageRatio: 0.5682144
   - X: 3
     Y: 0
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 4
     Y: 0
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 0
     Y: 1
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0.06640625
   - X: 1
     Y: 1
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0.15722656
   - X: 2
     Y: 1
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0.013671875
   - X: 3
     Y: 1
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 4
     Y: 1
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 0
     Y: 2
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0.0009765625
   - X: 1
     Y: 2
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0.029296875
   - X: 2
     Y: 2
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 3
     Y: 2
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 4
     Y: 2
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 0
     Y: 3
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 1
     Y: 3
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 2
     Y: 3
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0.017578125
   - X: 3
     Y: 3
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0.080078125
   - X: 4
     Y: 3
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 0
     Y: 4
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 1
     Y: 4
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 2
     Y: 4
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 3
     Y: 4
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0
   - X: 4
     Y: 4
     Source: 0
-    ResetOnExport: 0
+    TemplateStale: 0
     TileCoverageRatio: 0

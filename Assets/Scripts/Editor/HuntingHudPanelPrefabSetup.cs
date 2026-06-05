@@ -44,6 +44,13 @@ public static class HuntingHudPanelPrefabSetup
         SetRectCenter(detailGo, 220f, 100f);
         var detailView = detailGo.AddComponent<HuntingNpcDetailView>();
 
+        var radialGo = CreateChild(root.transform, "HuntingNpcActionRadial");
+        SetRectCenter(radialGo, 260f, 260f);
+        var actionRadial = radialGo.AddComponent<HuntingNpcActionRadialMenu>();
+        actionRadial.MenuRoot = radialGo.GetComponent<RectTransform>();
+        actionRadial.SectorContainer = actionRadial.MenuRoot;
+        radialGo.SetActive(false);
+
         var panelGo = CreateChild(detailGo.transform, "DetailPanel");
         StretchFull(panelGo.GetComponent<RectTransform>());
         AddImage(panelGo, new Color(0.08f, 0.08f, 0.1f, 0.85f));
@@ -75,7 +82,7 @@ public static class HuntingHudPanelPrefabSetup
         }
 
         WireDetailView(detailView, detailGo.GetComponent<RectTransform>(), nameText, sjBar, willText, executeRt);
-        WirePanel(panel, root.GetComponent<CanvasGroup>(), detailView, markersComp, markersGo.GetComponent<RectTransform>());
+        WirePanel(panel, root.GetComponent<CanvasGroup>(), detailView, actionRadial, markersComp, markersGo.GetComponent<RectTransform>());
 
         detailGo.SetActive(false);
 
@@ -123,6 +130,7 @@ public static class HuntingHudPanelPrefabSetup
         HuntingHudPanel panel,
         CanvasGroup canvasGroup,
         HuntingNpcDetailView detailView,
+        HuntingNpcActionRadialMenu actionRadial,
         DesireCrystalHuntingHudMarkers markers,
         RectTransform markersParent)
     {
@@ -134,6 +142,7 @@ public static class HuntingHudPanelPrefabSetup
         so.FindProperty("panelId").stringValue = HuntingHudPanel.PanelIdConst;
         so.FindProperty("canvasGroup").objectReferenceValue = canvasGroup;
         so.FindProperty("npcDetail").objectReferenceValue = detailView;
+        so.FindProperty("actionRadial").objectReferenceValue = actionRadial;
         so.FindProperty("crystalMarkers").objectReferenceValue = markers;
         so.ApplyModifiedPropertiesWithoutUndo();
     }

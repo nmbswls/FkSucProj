@@ -9,6 +9,7 @@ using My.Map.Entity;
 using My.Map.Fight;
 using My.Map.Logic;
 using My.MapExport;
+using My.Player;
 using My.Player.Bag;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -317,6 +318,44 @@ namespace My.Map.Entity
             else
             {
                 playerEntity.IsQueenMode = false;
+            }
+        }
+    }
+
+    public class AbilityFightExecutor4NpcDirectControl : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectNpcDirectControlCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityFightExecutor4NpcDirectControl cfg error");
+                return;
+            }
+
+            var glm = ctx.Env;
+            if (realCfg.InEnter)
+            {
+                var npc = glm.GetLogicEntity(ctx.TargetId) as NpcUnitLogicEntity;
+                if (npc == null)
+                {
+                    Debug.LogError("AbilityFightExecutor4NpcDirectControl target npc missing");
+                    return;
+                }
+
+                int playerId = glm.LocalPlayerId;
+                string skillId = string.IsNullOrEmpty(ctx.SourceInfo.SrcAbilityId)
+                    ? "h_mode_control"
+                    : ctx.SourceInfo.SrcAbilityId;
+
+                if (!glm.NpcDirectControl.TryEnter(glm, npc, playerId, skillId))
+                {
+                    Debug.LogWarning("AbilityFightExecutor4NpcDirectControl TryEnter failed");
+                }
+            }
+            else
+            {
+                glm.NpcDirectControl.Exit();
             }
         }
     }

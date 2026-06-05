@@ -398,6 +398,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreatePlayerHModeControl();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateNpcHModeSJ();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -4716,6 +4721,58 @@ namespace My.Map.Entity
 
             spec.Phases.Add(mainPhase);
 
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreatePlayerHModeControl()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "h_mode_control";
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CastType = ECastType.LockTarget;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Controlling",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+                PhaseBuff = new() { "super_armor", "phase_move" },
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.6"
+                },
+            };
+
+            {
+                var addStunEffect = new MapAbilityEffectAddBuffCfg()
+                {
+                    BuffId = "force_stun",
+                    Duration = 0.6f,
+                    Layer = 1,
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addStunEffect, Kind = PhaseEventKind.OnEnter });
+            }
+
+            {
+                var closeToEffect = new MapFightEffectSpecialMoveToCfg()
+                {
+                    Duration = 0.25f,
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = closeToEffect, Kind = PhaseEventKind.OnEnter });
+            }
+
+            {
+                var enterControlEffect = new MapFightEffectNpcDirectControlCfg()
+                {
+                    InEnter = true,
+                };
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = enterControlEffect, Kind = PhaseEventKind.OnExit });
+            }
+
+            spec.Phases.Add(mainPhase);
             return spec;
         }
     

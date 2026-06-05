@@ -1612,6 +1612,7 @@ namespace My.Map.Entity
                 case MapFightEffectResourcePercentDamageCfg:
                 case MapAbilityEffectCastSkillCfg:
                 case MapFightEffectQueueModeCfg:
+                case MapFightEffectNpcDirectControlCfg:
                 case MapFightEffectBroadcastAttractCfg:
                 case MapFightEffectTriggerAlert:
                 case MapFightEffectCauseNoise:

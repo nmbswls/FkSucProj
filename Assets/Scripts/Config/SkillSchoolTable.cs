@@ -92,7 +92,7 @@ namespace My.Config
                         {
                             "queen_attack", "queen_attack_heavy", "queen_dash", "queen_shoot",
                             "queen_pull_all", "queen_dash_down", "queen_counter",
-                            "player_enter_queen", "player_quit_queen", "h_mode_execute",
+                            "player_enter_queen", "player_quit_queen", "h_mode_execute", "h_mode_control",
                         },
                     },
                     new()

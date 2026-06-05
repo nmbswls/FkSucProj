@@ -22,10 +22,22 @@ MonoBehaviour:
   WalkGridKey: MapChunk/Main_Area_01/Prefabs/GridRoot
   LogicHeightConfigKey: 
   Chunks:
+  - X: -1
+    Y: -1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_-1_-1
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_-1_-1
+  - X: 0
+    Y: -1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_-1
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_0_-1
   - X: 1
     Y: -1
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_-1
     TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_1_-1
+  - X: 2
+    Y: -1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_-1
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_2_-1
   - X: -1
     Y: 0
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_-1_0
@@ -46,6 +58,10 @@ MonoBehaviour:
     Y: 0
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_0
     TilemapKey: 
+  - X: 4
+    Y: 0
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_4_0
+    TilemapKey: 
   - X: 0
     Y: 1
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_1
@@ -62,14 +78,18 @@ MonoBehaviour:
     Y: 1
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_1
     TilemapKey: 
+  - X: 4
+    Y: 1
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_4_1
+    TilemapKey: 
   - X: 0
     Y: 2
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_2
-    TilemapKey: 
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_0_2
   - X: 1
     Y: 2
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_2
-    TilemapKey: 
+    TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_1_2
   - X: 2
     Y: 2
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_2
@@ -77,6 +97,10 @@ MonoBehaviour:
   - X: 3
     Y: 2
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_2
+    TilemapKey: 
+  - X: 4
+    Y: 2
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_4_2
     TilemapKey: 
   - X: 0
     Y: 3
@@ -94,6 +118,10 @@ MonoBehaviour:
     Y: 3
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_3
     TilemapKey: MapChunk/Main_Area_01/Prefabs/tm_3_3
+  - X: 4
+    Y: 3
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_4_3
+    TilemapKey: 
   - X: 0
     Y: 4
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_4
@@ -109,4 +137,48 @@ MonoBehaviour:
   - X: 3
     Y: 4
     BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_4
+    TilemapKey: 
+  - X: 4
+    Y: 4
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_4_4
+    TilemapKey: 
+  - X: 0
+    Y: 5
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_5
+    TilemapKey: 
+  - X: 1
+    Y: 5
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_5
+    TilemapKey: 
+  - X: 2
+    Y: 5
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_5
+    TilemapKey: 
+  - X: 3
+    Y: 5
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_5
+    TilemapKey: 
+  - X: 4
+    Y: 5
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_4_5
+    TilemapKey: 
+  - X: 0
+    Y: 6
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_0_6
+    TilemapKey: 
+  - X: 1
+    Y: 6
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_1_6
+    TilemapKey: 
+  - X: 2
+    Y: 6
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_2_6
+    TilemapKey: 
+  - X: 3
+    Y: 6
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_3_6
+    TilemapKey: 
+  - X: 4
+    Y: 6
+    BackgroundKey: MapChunk/Main_Area_01/Prefabs/bg_4_6
     TilemapKey: 

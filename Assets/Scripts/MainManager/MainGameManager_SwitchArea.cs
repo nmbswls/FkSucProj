@@ -21,6 +21,7 @@ namespace My
         private void OnHardAreaClearStarting()
         {
             ClearMapVcamBinding();
+            ClearMapCameraBounds();
             _ambientSpiritVisuals?.Shutdown();
 
             if (_localRoomTeleportFadeCo != null)
@@ -192,6 +193,7 @@ namespace My
             // 取消关联
             playerScenePresenter = null;
             ClearMapVcamBinding();
+            ClearMapCameraBounds();
 
             gameLogicManager?.playerDataManager?.ItemEnchant?.ClearAll();
             gameLogicManager?.playerDataManager?.ClearLmbOverride();
@@ -268,6 +270,7 @@ namespace My
                 || !WorldAreaManager.Instance.cacheAreaOverlayInfo.IsSecretBase)
             {
                 EnsureOpenWorldVcamFollow();
+                ApplyMapCameraBounds();
             }
         }
 
@@ -280,6 +283,7 @@ namespace My
             }
 
             EnsureOpenWorldVcamFollow();
+            ApplyMapCameraBounds();
             Initialized = true;
         }
 

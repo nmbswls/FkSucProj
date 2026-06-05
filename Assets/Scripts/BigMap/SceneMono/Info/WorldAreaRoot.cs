@@ -22,7 +22,14 @@ public class WorldAreaRoot : MonoBehaviour
     public Transform BackgroundChunkRoot;
     public Transform TilemapChunkRoot;
 
+    [Header("Camera Bounds")]
+    [Tooltip("留空则使用 MapChunkDatabase.LogicWorldRect（或由 Chunks 推算）")]
+    public Rect LogicWorldRectOverride;
+
     GameObject _walkGridInstance;
+
+    public bool HasLogicWorldRectOverride =>
+        LogicWorldRectOverride.width > 0f && LogicWorldRectOverride.height > 0f;
 
     public bool HasWalkTileGrounds => TileGrounds != null && TileGrounds.Length > 0;
 

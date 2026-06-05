@@ -162,6 +162,15 @@ public static class MapChunkExportCore
             }
         }
 
+        if (editorRoot.PaintWorldRect.width > 0f && editorRoot.PaintWorldRect.height > 0f)
+        {
+            database.LogicWorldRect = editorRoot.PaintWorldRect;
+        }
+        else
+        {
+            database.LogicWorldRect = MapChunkDatabase.ComputeBoundsFromChunks(database.Chunks, origin, chunkSize);
+        }
+
         string dbPath = $"Assets/Resources/MapChunk/{mapName}.asset";
         var existing = AssetDatabase.LoadAssetAtPath<MapChunkDatabase>(dbPath);
         if (existing != null)
@@ -178,6 +187,7 @@ public static class MapChunkExportCore
                 existing.WalkGridKey = database.WalkGridKey;
             }
             existing.Chunks = database.Chunks;
+            existing.LogicWorldRect = database.LogicWorldRect;
             existing.InvalidateLookup();
             EditorUtility.SetDirty(existing);
             database = existing;

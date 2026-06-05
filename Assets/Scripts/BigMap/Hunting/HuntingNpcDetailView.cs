@@ -31,7 +31,7 @@ namespace My.Map.Hunting
             }
         }
 
-        public void SetTarget(SceneNpcPresenter npc, bool canExecute)
+        public void SetTarget(SceneNpcPresenter npc, bool canExecute, bool canControl)
         {
             _target = npc;
             if (DetailRoot != null)
@@ -55,14 +55,15 @@ namespace My.Map.Hunting
 
             RefreshStats(npc);
 
+            bool showHint = canExecute || canControl;
             if (ExecuteHintRoot != null)
             {
-                ExecuteHintRoot.gameObject.SetActive(canExecute);
+                ExecuteHintRoot.gameObject.SetActive(showHint);
             }
 
-            if (ExecuteHintText != null && canExecute)
+            if (ExecuteHintText != null && showHint)
             {
-                ExecuteHintText.text = "点击处决";
+                ExecuteHintText.text = "点击选择行动";
             }
 
             RefreshLayout();

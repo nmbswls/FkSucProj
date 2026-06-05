@@ -71,6 +71,7 @@ namespace My.Player
             "player_quit_queen",
             "queen_dash_down",
             "h_mode_execute",
+            "h_mode_control",
             "queen_counter",
             "queen_desire_charm_01",
             "player_small_staggering",

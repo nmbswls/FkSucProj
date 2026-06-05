@@ -24,7 +24,12 @@ namespace My.MapExport
 
         public List<MapChunkExportItem> Chunks = new List<MapChunkExportItem>();
 
+        // 地图逻辑活动范围（世界坐标）；留空则运行时由 Chunks 推算
+        public Rect LogicWorldRect;
+
         [NonSerialized] Dictionary<(int x, int y), MapChunkExportItem> _lookup;
+
+        public bool HasLogicWorldRect => LogicWorldRect.width > 0f && LogicWorldRect.height > 0f;
 
         public int SlicePixelSize => MapChunkUtility.ComputeSlicePixelSize(ChunkWorldSize, TexturePPU);
 
@@ -43,6 +48,57 @@ namespace My.MapExport
         public bool HasChunkContent => Chunks != null && Chunks.Count > 0;
 
         public bool HasWalkGrid => !string.IsNullOrEmpty(WalkGridKey);
+
+        public Rect ResolveLogicWorldRect()
+        {
+            if (HasLogicWorldRect)
+            {
+                return LogicWorldRect;
+            }
+
+            return ComputeBoundsFromChunks(Chunks, ChunkOrigin, ChunkWorldSize);
+        }
+
+        public static Rect ComputeBoundsFromChunks(
+            List<MapChunkExportItem> chunks,
+            Vector2 chunkOrigin,
+            float chunkWorldSize)
+        {
+            if (chunks == null || chunks.Count == 0 || chunkWorldSize <= 0f)
+            {
+                return default;
+            }
+
+            int minX = int.MaxValue;
+            int minY = int.MaxValue;
+            int maxX = int.MinValue;
+            int maxY = int.MinValue;
+            for (int i = 0; i < chunks.Count; i++)
+            {
+                var chunk = chunks[i];
+                if (chunk == null)
+                {
+                    continue;
+                }
+
+                minX = Math.Min(minX, chunk.X);
+                minY = Math.Min(minY, chunk.Y);
+                maxX = Math.Max(maxX, chunk.X);
+                maxY = Math.Max(maxY, chunk.Y);
+            }
+
+            if (minX == int.MaxValue)
+            {
+                return default;
+            }
+
+            var min = MapChunkUtility.ChunkWorldMin(new ChunkCoord(minX, minY), chunkOrigin, chunkWorldSize);
+            var maxCorner = MapChunkUtility.ChunkWorldMin(
+                new ChunkCoord(maxX + 1, maxY + 1),
+                chunkOrigin,
+                chunkWorldSize);
+            return Rect.MinMaxRect(min.x, min.y, maxCorner.x, maxCorner.y);
+        }
 
         public void BuildLookup()
         {

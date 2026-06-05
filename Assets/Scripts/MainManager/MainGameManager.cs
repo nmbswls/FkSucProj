@@ -98,6 +98,26 @@ namespace My
         public CinemachineVirtualCamera MainMapVCam;
         public CinemachineBrain CineBrain;
 
+        MapCameraBoundsController _mapCameraBoundsController;
+
+        public void ClearMapCameraBounds()
+        {
+            _mapCameraBoundsController?.Clear();
+        }
+
+        public void ApplyMapCameraBounds()
+        {
+            if (_mapCameraBoundsController == null)
+            {
+                return;
+            }
+
+            var overlay = gameLogicManager?.AreaManager?.cacheMapOverlayCfg;
+            var chunkDb = gameLogicManager?.AreaManager?.cacheChunkDatabase;
+            var worldRoot = WorldAreaManager != null ? WorldAreaManager.currentRoot : null;
+            _mapCameraBoundsController.ApplyForCurrentMap(overlay, worldRoot, chunkDb);
+        }
+
         // 大地图玩家表现就绪后绑定 vcam.Follow（据点内不绑定）
         public void ClearMapVcamBinding()
         {
@@ -165,6 +185,14 @@ namespace My
             {
                 huntingModeManager = gameObject.AddComponent<HuntingModeManager>();
             }
+
+            _mapCameraBoundsController = GetComponent<MapCameraBoundsController>();
+            if (_mapCameraBoundsController == null)
+            {
+                _mapCameraBoundsController = gameObject.AddComponent<MapCameraBoundsController>();
+            }
+
+            _mapCameraBoundsController.Bind(MainMapVCam);
 
             NavProvider = new();
 

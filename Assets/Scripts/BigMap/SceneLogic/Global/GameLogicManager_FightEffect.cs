@@ -87,6 +87,11 @@ namespace My
                             executor = new AbilityFightExecutor4QueueMode();
                         }
                         break;
+                    case MapFightEffectNpcDirectControlCfg:
+                        {
+                            executor = new AbilityFightExecutor4NpcDirectControl();
+                        }
+                        break;
                     case MapFightEffectOverrideTargetCfg:
                         {
                             executor = new AbilityFightExecutor4OverrideTarget();

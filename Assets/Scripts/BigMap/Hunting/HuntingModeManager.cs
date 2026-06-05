@@ -7,7 +7,7 @@ using UnityEngine;
 namespace My.Map.Hunting
 {
     /// <summary>
-    /// 狩猎模式：按住 Ctrl 维持，松开退出；鼠标悬浮 NPC 详情与处决。
+    /// 狩猎模式：按住 Ctrl 维持，松开退出；鼠标悬浮 NPC 详情与行动轮盘。
     /// </summary>
     public class HuntingModeManager : MonoBehaviour
     {
@@ -106,6 +106,7 @@ namespace My.Map.Hunting
             ApplyHunterVisuals(true);
             _hoverNpc = null;
             GetDetailView()?.Clear();
+            GetActionRadial()?.Close();
         }
 
         public void Exit()
@@ -131,6 +132,7 @@ namespace My.Map.Hunting
             ApplyHunterVisuals(false);
             _hoverNpc = null;
             GetDetailView()?.Clear();
+            GetActionRadial()?.Close();
         }
 
         private void ApplyHunterVisuals(bool on)
@@ -170,14 +172,9 @@ namespace My.Map.Hunting
             return true;
         }
 
-        public static bool CanExecuteTarget(SceneNpcPresenter npc, float maxDistanceFromPlayer = ExecuteMaxDistance)
+        public static bool IsWithinActionDistance(SceneNpcPresenter npc, float maxDistanceFromPlayer = ExecuteMaxDistance)
         {
-            if (!IsValidHoverNpc(npc))
-            {
-                return false;
-            }
-
-            if (!npc.NpcEntity.CheckCanExecute())
+            if (npc == null)
             {
                 return false;
             }
@@ -192,6 +189,66 @@ namespace My.Map.Hunting
             return dist <= maxDistanceFromPlayer;
         }
 
+        public static bool CanExecuteTarget(SceneNpcPresenter npc, float maxDistanceFromPlayer = ExecuteMaxDistance)
+        {
+            if (!IsValidHoverNpc(npc))
+            {
+                return false;
+            }
+
+            if (!IsWithinActionDistance(npc, maxDistanceFromPlayer))
+            {
+                return false;
+            }
+
+            if (!npc.NpcEntity.CheckCanExecute())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool CanControlTarget(SceneNpcPresenter npc, float maxDistanceFromPlayer = ExecuteMaxDistance)
+        {
+            if (!IsValidHoverNpc(npc))
+            {
+                return false;
+            }
+
+            if (!IsWithinActionDistance(npc, maxDistanceFromPlayer))
+            {
+                return false;
+            }
+
+            return npc.NpcEntity.CanAcceptDirectControl(My.Player.GamePlayerIds.Local);
+        }
+
+        public bool TryOpenActionMenu()
+        {
+            if (!Active || _hoverNpc == null)
+            {
+                return false;
+            }
+
+            if (!IsValidHoverNpc(_hoverNpc))
+            {
+                return false;
+            }
+
+            var radial = GetActionRadial();
+            if (radial == null)
+            {
+                return false;
+            }
+
+            radial.Show(
+                _hoverNpc,
+                CanExecuteTarget(_hoverNpc),
+                CanControlTarget(_hoverNpc));
+            return true;
+        }
+
         public bool TryExecuteHoveredTarget()
         {
             if (!Active || _hoverNpc == null)
@@ -199,7 +256,12 @@ namespace My.Map.Hunting
                 return false;
             }
 
-            if (!CanExecuteTarget(_hoverNpc))
+            return TryExecuteTarget(_hoverNpc);
+        }
+
+        public bool TryExecuteTarget(SceneNpcPresenter target)
+        {
+            if (!CanExecuteTarget(target))
             {
                 return false;
             }
@@ -210,7 +272,27 @@ namespace My.Map.Hunting
                 return false;
             }
 
-            player.ablilityManager.UseSkill("h_mode_execute", target: _hoverNpc.NpcEntity);
+            player.ablilityManager.UseSkill("h_mode_execute", target: target.NpcEntity);
+
+            _blockReenterUntilHViewRelease = true;
+            ForceExitInternal();
+            return true;
+        }
+
+        public bool TryControlTarget(SceneNpcPresenter target)
+        {
+            if (!CanControlTarget(target))
+            {
+                return false;
+            }
+
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (player == null)
+            {
+                return false;
+            }
+
+            player.ablilityManager.UseSkill("h_mode_control", target: target.NpcEntity);
 
             _blockReenterUntilHViewRelease = true;
             ForceExitInternal();
@@ -226,6 +308,7 @@ namespace My.Map.Hunting
                 if (_hoverNpc != null)
                 {
                     view?.RefreshLayout();
+                    GetActionRadial()?.RefreshLayoutIfOpen();
                 }
                 else
                 {
@@ -236,6 +319,8 @@ namespace My.Map.Hunting
             }
 
             _hoverNpc = next;
+            GetActionRadial()?.Close();
+
             var detailView = GetDetailView();
             if (_hoverNpc == null)
             {
@@ -243,7 +328,9 @@ namespace My.Map.Hunting
             }
             else
             {
-                detailView?.SetTarget(_hoverNpc, CanExecuteTarget(_hoverNpc));
+                bool canExecute = CanExecuteTarget(_hoverNpc);
+                bool canControl = CanControlTarget(_hoverNpc);
+                detailView?.SetTarget(_hoverNpc, canExecute, canControl);
             }
         }
 
@@ -295,6 +382,13 @@ namespace My.Map.Hunting
         {
             return HuntingHudPanel.Instance != null
                 ? HuntingHudPanel.Instance.NpcDetail
+                : null;
+        }
+
+        private HuntingNpcActionRadialMenu GetActionRadial()
+        {
+            return HuntingHudPanel.Instance != null
+                ? HuntingHudPanel.Instance.ActionRadial
                 : null;
         }
     }

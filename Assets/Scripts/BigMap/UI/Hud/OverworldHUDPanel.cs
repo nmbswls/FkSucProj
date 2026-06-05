@@ -463,11 +463,6 @@ namespace My.UI
                 overworldSkillPreviewUI.TickPreviewState();
             }
 
-            if (My.Map.Scene.PlayerNpcCarryService.IsCarrying && UnityEngine.Input.GetKeyDown(KeyCode.X))
-            {
-                My.Map.Scene.PlayerNpcCarryService.TryPutDownCarriedBody();
-            }
-
             AlertValText.text = MainGameManager.Instance.gameLogicManager.AreaManager.AreaAlertValue.ToString();
 
             var tempVal = MainGameManager.Instance.gameLogicManager.AreaManager.GetTempAlertValue();

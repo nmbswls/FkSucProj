@@ -419,7 +419,10 @@ namespace My.Map
 
                 TickPlayerMist();
 
-                AIBrain?.Tick(dt);
+                if (!AiBrainSuspended)
+                {
+                    AIBrain?.Tick(dt);
+                }
 
                 TickHRelateProperties();
 

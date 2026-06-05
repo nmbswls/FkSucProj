@@ -296,6 +296,7 @@ namespace My.Input
 
             actions.OverworldMap.Confirm.performed += OnConfirm;
             actions.OverworldMap.Cancel.performed += OnCancel;
+            actions.OverworldMap.SceneCancel.performed += OnSceneCancel;
 
             actions.OverworldMap.Scroll.performed += OnMouseScroll;
 
@@ -349,6 +350,7 @@ namespace My.Input
 
             actions.OverworldMap.Confirm.performed -= OnConfirm;
             actions.OverworldMap.Cancel.performed -= OnCancel;
+            actions.OverworldMap.SceneCancel.performed -= OnSceneCancel;
 
             actions.OverworldMap.Scroll.performed -= OnMouseScroll;
 
@@ -550,6 +552,17 @@ namespace My.Input
             }
         }
 
+        // 场景内取消操作（X 键），与 Esc UI Cancel 分离
+        public void OnSceneCancel(InputAction.CallbackContext ctx)
+        {
+            if (GlobalLock || !ctx.performed)
+            {
+                return;
+            }
+
+            SceneOperationCancelRouter.TryCancelOperation();
+        }
+
 
 
         public void OnHotKey1(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Num1.ToString());
@@ -634,6 +647,12 @@ namespace My.Input
 
             if (ctx.performed)
             {
+                var glm = MainGameManager.Instance?.gameLogicManager;
+                if (glm != null && glm.NpcDirectControl.Active)
+                {
+                    return;
+                }
+
                 if (uiRouter == null || !uiRouter.DispatchHotkey(keyName))
                 {
                     OnSceneKeyPress(keyName);
@@ -706,6 +725,12 @@ namespace My.Input
 
         private void OnSceneKeyPress(string keyName)
         {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm != null && glm.NpcDirectControl.Active)
+            {
+                return;
+            }
+
             if(keyName == EInputKey.Space.ToString())
             {
                 //if (MainGameManager.Instance.playerScenePresenter != null)
@@ -820,6 +845,24 @@ namespace My.Input
             while (false);
 
             var playerEntity = MainGameManager.Instance.playerScenePresenter.PlayerEntity;
+            var glm = MainGameManager.Instance.gameLogicManager;
+
+            if (glm.NpcDirectControl.Active)
+            {
+                playerEntity.FreeMoveInput = Vector2.zero;
+                var controlledNpc = glm.NpcDirectControl.GetControlledNpc(glm);
+                if (controlledNpc != null && doMove)
+                {
+                    controlledNpc.FreeMoveInput = Vector2.ClampMagnitude(dir, 1f);
+                }
+                else if (controlledNpc != null)
+                {
+                    controlledNpc.FreeMoveInput = Vector2.zero;
+                }
+
+                return;
+            }
+
             if (playerEntity.HasSimulatedMoveInput)
             {
                 playerEntity.FreeMoveInput = Vector2.zero;
@@ -847,6 +890,26 @@ namespace My.Input
 
             if (player.ForbidPhase != PlayerScenePresenter.EForbidPhase.Idle)
             {
+                return;
+            }
+
+            var glm = MainGameManager.Instance.gameLogicManager;
+            if (glm != null && glm.NpcDirectControl.Active)
+            {
+                var controlledNpc = glm.NpcDirectControl.GetControlledNpc(glm);
+                if (controlledNpc == null || LogicTime.paused)
+                {
+                    return;
+                }
+
+                Vector2 npcScreenPos = Camera.main.WorldToScreenPoint(controlledNpc.Pos);
+                var castDir = (LastPos - npcScreenPos).normalized;
+                if ((npcScreenPos - LastPos).magnitude < 1e-1)
+                {
+                    return;
+                }
+
+                controlledNpc.ForceSetFaceTarget(castDir, true);
                 return;
             }
 
@@ -885,9 +948,17 @@ namespace My.Input
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
+            var huntingRadial = My.UI.HuntingHudPanel.Instance?.ActionRadial;
+            if (huntingRadial != null && huntingRadial.IsOpen)
+            {
+                if (huntingRadial.TryHandleClick(LastPos))
+                {
+                    return;
+                }
+            }
 
             var hunting = My.Map.Hunting.HuntingModeManager.Instance;
-            if (hunting != null && hunting.Active && hunting.TryExecuteHoveredTarget())
+            if (hunting != null && hunting.Active && hunting.TryOpenActionMenu())
             {
                 return;
             }

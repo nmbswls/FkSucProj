@@ -66,6 +66,7 @@ namespace My
         /// </summary>
         public PlayerGameSession GameSession { get; set; } = new();
 
+        public NpcDirectControlSession NpcDirectControl { get; } = new();
 
         public PlayerLogicEntity playerLogicEntity { get; set; }
 
