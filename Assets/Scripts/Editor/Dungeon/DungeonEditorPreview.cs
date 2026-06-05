@@ -30,22 +30,6 @@ namespace My.Dungeon.Editor
             SceneView.duringSceneGui += OnSceneGui;
         }
 
-        [MenuItem("Tools/Dungeon/Preview Generation (seed=12345)")]
-        public static void PreviewGenerationMenu()
-        {
-            if (TryShow("test_cave", 12345, out var summary))
-            {
-                EditorUtility.DisplayDialog(
-                    "Dungeon Preview",
-                    summary + "\n\n已打开测试场景并在 Scene 视图显示布局。",
-                    "OK");
-            }
-            else
-            {
-                EditorUtility.DisplayDialog("Dungeon Preview Failed", summary, "OK");
-            }
-        }
-
         public static bool TryShow(string dungeonId, int seed, out string summary)
         {
             summary = string.Empty;

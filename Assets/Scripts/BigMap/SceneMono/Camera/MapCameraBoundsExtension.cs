@@ -3,6 +3,7 @@ using My.MapExport;
 using UnityEngine;
 
 // 在 Cinemachine 管线内裁剪相机，使玩家走到地图边缘时相机不再跟随越界（场景预挂在 MainMapVCam 上）
+[DisallowMultipleComponent]
 public class MapCameraBoundsExtension : CinemachineExtension
 {
     internal Rect Bounds;

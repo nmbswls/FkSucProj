@@ -36,6 +36,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 
 namespace My
@@ -99,7 +100,8 @@ namespace My
         public CameraFollow CameraCtrl;
         public CinemachineVirtualCamera MainMapVCam;
         public CinemachineBrain CineBrain;
-        public MapCameraBoundsExtension MapCameraBoundsExtension;
+        [FormerlySerializedAs("MapCameraBoundsExtension")]
+        [SerializeField] MapCameraBoundsExtension mapBoundsExtension;
 
         MapCameraBoundsController _mapCameraBounds;
 
@@ -134,28 +136,47 @@ namespace My
 
         void ResolveMapCameraBoundsExtension()
         {
-            if (MapCameraBoundsExtension != null)
+            if (mapBoundsExtension != null)
             {
                 return;
             }
 
             if (MainMapVCam != null)
             {
-                MapCameraBoundsExtension = MainMapVCam.GetComponent<MapCameraBoundsExtension>();
+                mapBoundsExtension = MainMapVCam.GetComponent<MapCameraBoundsExtension>()
+                    ?? MainMapVCam.GetComponentInChildren<MapCameraBoundsExtension>(true);
             }
 
-            if (MapCameraBoundsExtension == null)
+            if (mapBoundsExtension == null)
             {
-                Debug.LogError(
-                    "[MainGameManager] MapCameraBoundsExtension must be attached to MainMapVCam in the scene.");
+                mapBoundsExtension = FindObjectOfType<MapCameraBoundsExtension>(true);
             }
-            else
+
+            if (mapBoundsExtension == null)
             {
-                var legacyConfiner = MainMapVCam.GetComponent<CinemachineConfiner2D>();
-                if (legacyConfiner != null)
+                if (MainMapVCam == null)
                 {
-                    legacyConfiner.enabled = false;
+                    Debug.LogError("[MainGameManager] MainMapVCam is not assigned on GameMain.");
                 }
+                else
+                {
+                    Debug.LogError(
+                        "[MainGameManager] MapCameraBoundsExtension must be attached to MainMapVCam in Main_Root.");
+                }
+
+                return;
+            }
+
+            if (MainMapVCam != null && mapBoundsExtension.gameObject != MainMapVCam.gameObject)
+            {
+                Debug.LogWarning(
+                    "[MainGameManager] MapCameraBoundsExtension should be on the same GameObject as MainMapVCam.");
+            }
+
+            var legacyConfiner = mapBoundsExtension.GetComponent<CinemachineConfiner2D>();
+            if (legacyConfiner != null)
+            {
+                legacyConfiner.enabled = false;
             }
         }
 
@@ -295,7 +316,7 @@ namespace My
             }
 
             ResolveMapCameraBoundsExtension();
-            _mapCameraBounds = new MapCameraBoundsController(MapCameraBoundsExtension);
+            _mapCameraBounds = new MapCameraBoundsController(mapBoundsExtension);
 
             NavProvider = new();
 
