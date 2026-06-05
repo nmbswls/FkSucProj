@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using cfg.demo;
 using Map.Logic.Events;
+using My;
 using My.Config;
 using My.Map.Entity;
 using My.Map.Logic;
@@ -262,6 +263,16 @@ namespace My.Player
 
             HumanQuickBar.WriteToSave(data.PlayerData);
             RuneSystem?.WriteToSave(data.PlayerData);
+
+            data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
+            data.PlayerData.FuncOpenList.Clear();
+            if (FuncOpenSystem?.FuncOpenSet != null)
+            {
+                foreach (var f in FuncOpenSystem.FuncOpenSet)
+                {
+                    data.PlayerData.FuncOpenList.Add(f);
+                }
+            }
         }
 
         public bool CheckHasParam(string id)

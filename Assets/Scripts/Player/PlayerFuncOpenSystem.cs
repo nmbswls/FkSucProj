@@ -24,14 +24,17 @@ namespace My
 
         public HashSet<EFuncOpenType> FuncOpenSet { get; private set; } = new();
 
+        public bool IsFuncOpen(EFuncOpenType type) =>
+            type != EFuncOpenType.Invalid && FuncOpenSet.Contains(type);
+
         private Dictionary<string, int> _dialogTriggerCounter = new();
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             this.LogicManager = ctx;
 
-            if(savingData != null)
+            if(savingData?.PlayerData?.FuncOpenList != null)
             {
-                foreach (var f in savingData.FuncOpenList)
+                foreach (var f in savingData.PlayerData.FuncOpenList)
                 {
                     FuncOpenSet.Add(f);
                 }

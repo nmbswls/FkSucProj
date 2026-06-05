@@ -8,6 +8,7 @@ using My.Map;
 using My.Map.Entity;
 using My.Map.Scene;
 using My.MiniGame;
+using My.Player;
 using My.UI;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
@@ -25,7 +26,7 @@ public interface ISceneInteractable
 
     bool CanInteractEnable();
 
-    bool TriggerInteract(int selectionId);
+    bool TriggerInteract(int selectionId, int playerId);
 
     Vector3 GetHintAnchorPosition();
 
@@ -220,7 +221,7 @@ public class SceneInteractSystem
             if (interactable.IsAutoInteract())
             {
                 Debug.Log("trigger auto interact.");
-                interactable.TriggerInteract(1);
+                interactable.TriggerInteract(1, GamePlayerIds.Local);
                 continue;
             }
 

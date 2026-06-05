@@ -1,6 +1,7 @@
 using Config.Map;
 using Map.Entity;
 using My.Map.Entity;
+using My.Player;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -57,14 +58,14 @@ namespace My.Map.Scene
         }
 
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             if (selectionId == InteractPointPoisonDefs.ApplyPoisonSelectId)
             {
                 return RealLogic.TryPlayerApplyPoison();
             }
 
-            return RealLogic.TryTriggerInteract(selectionId);
+            return RealLogic.TryTriggerInteract(selectionId, playerId);
         }
 
         public virtual List<SceneInteractSelection> GetInteractSelections()
@@ -97,7 +98,7 @@ namespace My.Map.Scene
                 {
                     continue;
                 }
-                bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
+                bool canInt = RealLogic.CheckTriggerInteract(i.InteractId, GamePlayerIds.Local);
                 
                 if(canInt)
                 {
@@ -138,7 +139,7 @@ namespace My.Map.Scene
                     continue;
                 }
 
-                bool canInt = RealLogic.CheckTriggerInteract(i.InteractId);
+                bool canInt = RealLogic.CheckTriggerInteract(i.InteractId, GamePlayerIds.Local);
                 if(canInt)
                 {
                     enableOne += 1;

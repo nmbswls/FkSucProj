@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using My;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Logic;
@@ -107,6 +108,9 @@ namespace My.Saving
 
         public List<string> OwnedRuneIds = new();
         public List<RuneEquipPersist> EquippedRunes = new();
+
+        // 本地玩家功能解锁（原 SaveData 根级 FuncOpenList 已迁入）
+        public List<EFuncOpenType> FuncOpenList = new();
     }
 
     [Serializable]
@@ -398,6 +402,12 @@ namespace My.Saving
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.PlayerData.OwnedRuneIds ??= new List<string>();
             data.PlayerData.EquippedRunes ??= new List<RuneEquipPersist>();
+            data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
+            if (data.PlayerData.FuncOpenList.Count == 0 && data.FuncOpenList != null && data.FuncOpenList.Count > 0)
+            {
+                data.PlayerData.FuncOpenList.AddRange(data.FuncOpenList);
+            }
+
             data.MainInventorySlots ??= new List<MainBagSlotPersist>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
             data.PlayerBuffs ??= new List<BuffPersistData>();

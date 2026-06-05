@@ -12,7 +12,7 @@ namespace My.Map.Scene
 
         List<SceneInteractSelection> GetSubInteractSelections(int subIdx);
 
-        bool SubTriggerInteract(int subIdx, int selectionId);
+        bool SubTriggerInteract(int subIdx, int selectionId, int playerId);
     }
 
 
@@ -56,9 +56,9 @@ namespace My.Map.Scene
             return Owner.GetSubInteractSelections(HandleIdx);
         }
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
-            return Owner.SubTriggerInteract(HandleIdx, selectionId);
+            return Owner.SubTriggerInteract(HandleIdx, selectionId, playerId);
         }
 
         public bool IsAutoInteract()

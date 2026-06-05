@@ -65,7 +65,7 @@ namespace My.Map.Scene
             base.Tick(dt);
         }
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             //GatherPointEntity.DoGather();
 

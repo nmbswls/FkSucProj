@@ -379,7 +379,7 @@ namespace My.Map
             return true;
         }
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             StartInteraction();
             return true;

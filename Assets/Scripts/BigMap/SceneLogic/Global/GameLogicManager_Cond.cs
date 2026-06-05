@@ -1,56 +1,16 @@
 
 using System;
 using cfg.demo;
+using My.Player;
 using UnityEngine;
 
 namespace My
 
 {
-    ///// <summary>
-    ///// 所有条件归一化
-    ///// </summary>
-    //public enum ECommonCheckType
-    //{
-    //    None,
-    //    TaskFinish,
-    //    CheckVariable,
-    //    HasPlacement,
-
-    //    OwnItem, // p5 itemid p1 count
-    //}
-
-
-    //[Serializable]
-    //public class CommonCheckCond
-    //{
-    //    public cfg.demo.ECommonCheckType Type;
-    //    public long Param1;
-    //    public long Param2;
-    //    public long Param3;
-    //    public long Param4;
-    //    public string Param5;
-    //    public string Param6;
-
-    //    public static CommonCheckCond ConverFromCfg(cfg.demo.CommonCheckCond cfgCond)
-    //    {
-    //        CommonCheckCond ret = new CommonCheckCond();
-    //        ret.Type = cfgCond.Type;
-    //        ret.Param1 = cfgCond.Param1;
-    //        ret.Param2 = cfgCond.Param2;
-    //        ret.Param3 = cfgCond.Param3;
-    //        ret.Param4 = cfgCond.Param4;
-    //        ret.Param5 = cfgCond.Param5;
-    //        ret.Param6 = cfgCond.Param6;
-    //        return ret;
-    //    }
-    //}
-
-
-
     public partial class GameLogicManager
     {
         // 列表内条件全部满足才为 true；空列表视为满足
-        public bool CheckCommonCondsAll(System.Collections.Generic.IReadOnlyList<CommonCheckCond> conds)
+        public bool CheckCommonCondsAll(System.Collections.Generic.IReadOnlyList<CommonCheckCond> conds, int playerId = GamePlayerIds.Local)
         {
             if (conds == null || conds.Count == 0)
             {
@@ -59,7 +19,7 @@ namespace My
 
             for (int i = 0; i < conds.Count; i++)
             {
-                if (!CheckCommonCond(conds[i]))
+                if (!CheckCommonCond(conds[i], playerId))
                 {
                     return false;
                 }
@@ -68,20 +28,20 @@ namespace My
             return true;
         }
 
-        public bool CheckCommonCond(CommonCheckCond cond)
+        public bool CheckCommonCond(CommonCheckCond cond, int playerId = GamePlayerIds.Local)
         {
+            var playerSystem = GetPlayerSystem(playerId);
+
             switch(cond.Type)
             {
                 case cfg.demo.ECommonCheckType.None:
                     {
                         return true;
                     }
-                    break;
                 case cfg.demo.ECommonCheckType.AlwaysFail:
                     {
                         return false;
                     }
-                    break;
                 case cfg.demo.ECommonCheckType.CheckVariable:
                     {
                         bool checkHas = false;
@@ -89,11 +49,11 @@ namespace My
                         {
                             checkHas = true;
                         }
-                        if(checkHas && playerDataManager != null && playerDataManager.CheckHasParam(cond.Param5))
+                        if(checkHas && playerSystem != null && playerSystem.CheckHasParam(cond.Param5))
                         {
                             return true;
                         }
-                        if (!checkHas && playerDataManager != null && !playerDataManager.CheckHasParam(cond.Param5))
+                        if (!checkHas && playerSystem != null && !playerSystem.CheckHasParam(cond.Param5))
                         {
                             return true;
                         }
@@ -104,7 +64,7 @@ namespace My
                         string itemId = cond.Param5;
                         long itemCnt = cond.Param1;
 
-                        if(playerDataManager.CheckHaveItem(itemId, itemCnt))
+                        if(playerSystem != null && playerSystem.CheckHaveItem(itemId, itemCnt))
                         {
                             return true;
                         }
@@ -114,7 +74,7 @@ namespace My
                 case cfg.demo.ECommonCheckType.TaskFinish:
                     {
                         int questId = (int)cond.Param1;
-                        if (playerDataManager.QuestSystem.CheckQuestFinish(questId))
+                        if (playerSystem != null && playerSystem.QuestSystem.CheckQuestFinish(questId))
                         {
                             return true;
                         }
@@ -124,7 +84,12 @@ namespace My
                     {
                         int questId = (int)cond.Param1;
                         string stepId = cond.Param5;
-                        var quest = playerDataManager.QuestSystem.GetQuest(questId);
+                        if (playerSystem == null)
+                        {
+                            return false;
+                        }
+
+                        var quest = playerSystem.QuestSystem.GetQuest(questId);
                         if(quest == null)
                         {
                             return false;
@@ -136,8 +101,20 @@ namespace My
 
                         return true;
                     }
-                    break;
+                case cfg.demo.ECommonCheckType.FuncOpen:
+                    {
+                        if (playerSystem?.FuncOpenSystem == null)
+                        {
+                            return false;
+                        }
 
+                        if (!Enum.IsDefined(typeof(EFuncOpenType), (int)cond.Param1))
+                        {
+                            return false;
+                        }
+
+                        return playerSystem.FuncOpenSystem.IsFuncOpen((EFuncOpenType)cond.Param1);
+                    }
             }
             return false;
         }

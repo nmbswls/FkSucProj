@@ -61,7 +61,7 @@ namespace My.Map.Scene
             return ret;
         }
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             if (selectionId != 1 || !FishEntity.CanFishNow())
             {

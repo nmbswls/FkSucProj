@@ -10,6 +10,7 @@ using static My.GameLogicManager;
 using System.Linq;
 using System.Security.Principal;
 using My.Map.Entity;
+using My.Player;
 using static UnityEditor.Rendering.CameraUI;
 using Unity.VisualScripting;
 
@@ -272,7 +273,7 @@ namespace My.Map
 
                 int interactId = (int)state.TriggerCfg.Param2;
 
-                var success = InteractComp.TryTriggerInteract(interactId);
+                var success = InteractComp.TryTriggerInteract(interactId, GamePlayerIds.Local);
                 if(!success)
                 {
                     continue;
@@ -321,7 +322,7 @@ namespace My.Map
                 }
 
                 int interactId = (int)state.TriggerCfg.Param2;
-                bool success = InteractComp.TryTriggerInteract(interactId);
+                bool success = InteractComp.TryTriggerInteract(interactId, GamePlayerIds.Local);
                 if(!success)
                 {
                     Debug.LogError("change state trigger can not be blocked");
@@ -444,7 +445,7 @@ namespace My.Map
                 }
 
                 int interactId = (int)state.TriggerCfg.Param1;
-                bool success = InteractComp.TryTriggerInteract(interactId);
+                bool success = InteractComp.TryTriggerInteract(interactId, GamePlayerIds.Local);
                 if (!success)
                 {
                     Debug.LogError("change state trigger can not be blocked");

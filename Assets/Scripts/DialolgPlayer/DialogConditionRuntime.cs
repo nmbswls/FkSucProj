@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using cfg.demo;
 using My.Map;
 using My.Map.Logic;
+using My.Player;
 using SimpleJSON;
 using UnityEngine;
 
@@ -74,7 +75,7 @@ namespace My.Dialog
                 list.Add(ToCfgCond(s));
             }
 
-            return glm.CheckCommonCondsAll(list);
+            return glm.CheckCommonCondsAll(list, GamePlayerIds.Local);
         }
 
         private static CommonCheckCond ToCfgCond(SerializableCommonCheckCond s)

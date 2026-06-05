@@ -49,7 +49,7 @@ namespace My.Map.Scene
         /// 触发交互
         /// </summary>
         /// <param name="triggerIdx"></param>
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             // 只有一个触发点
             if (selectionId == 1)

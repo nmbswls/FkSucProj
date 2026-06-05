@@ -3,6 +3,7 @@ using DG.Tweening;
 using My.Input;
 using My.Map;
 using My.Map.Scene;
+using My.Player;
 using SuperScrollView;
 using System.Collections;
 using System.Collections.Generic;
@@ -554,7 +555,7 @@ namespace My.UI
                     var allSecletions = currFocusInteractable.GetInteractSelections();
                     if(allSecletions.Count > 0)
                     {
-                        currFocusInteractable.TriggerInteract(allSecletions.First().SelectId);
+                        currFocusInteractable.TriggerInteract(allSecletions.First().SelectId, GamePlayerIds.Local);
                     }
                     else
                     {
@@ -568,7 +569,7 @@ namespace My.UI
                 ChooseInteractMenu.ItemOnClick(idx);
 
                 int selectId = (int)ChooseInteractMenu.data[idx].SelectId;
-                var closed = currFocusInteractable.TriggerInteract(selectId);
+                var closed = currFocusInteractable.TriggerInteract(selectId, GamePlayerIds.Local);
 
                 if (closed)
                 {

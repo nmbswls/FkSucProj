@@ -92,7 +92,7 @@ namespace My.Map.Scene
             return ret;
         }
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             Debug.Log("TriggerInteract: pick drop");
             MainGameManager.Instance.gameLogicManager.globalDropCollection.PickDrop(DropData.Id);

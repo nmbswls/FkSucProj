@@ -331,7 +331,7 @@ namespace My.Map.Scene
             return false;
         }
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             if (selectionId == 1)
             {

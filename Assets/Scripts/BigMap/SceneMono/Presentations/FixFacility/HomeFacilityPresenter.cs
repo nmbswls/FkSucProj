@@ -172,7 +172,7 @@ namespace My
             return ret;
         }
 
-        public bool SubTriggerInteract(int subIdx, int selectionId)
+        public bool SubTriggerInteract(int subIdx, int selectionId, int playerId)
         {
             MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"我是{FacilityEntity.InnerFacilityRef.Id}。", 1f);
             _interactCdTimer[subIdx] = LogicTime.time;

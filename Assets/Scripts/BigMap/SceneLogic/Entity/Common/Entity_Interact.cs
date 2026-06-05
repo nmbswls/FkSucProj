@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using My.Config;
 using My.Map.Entity;
+using My.Player;
 using My.UI;
 using UnityEngine;
 using static My.GameLogicManager;
@@ -14,9 +15,9 @@ namespace My.Map
 
         List<MapInteractInfo> InteractInfos { get; }
 
-        bool TryTriggerInteract(int interactId);
+        bool TryTriggerInteract(int interactId, int playerId);
 
-        bool CheckTriggerInteract(int interactId);
+        bool CheckTriggerInteract(int interactId, int playerId);
 
         bool IsInteracting { get; }
     }
@@ -53,6 +54,7 @@ namespace My.Map
         private int _currOutputIdx = 0;
         private MapInteractInfo? _currInteract = null;
         private float _pendingParam1 = 0;
+        private int _interactingPlayerId = GamePlayerIds.Local;
 
         public EntityInteractComp(IEntityInteractable owner)
         {
@@ -136,7 +138,7 @@ namespace My.Map
 
 
         
-        public bool CheckTriggerInteract(int interactId)
+        public bool CheckTriggerInteract(int interactId, int playerId)
         {
             var interactItem = interactInfos.Find((item) => item.InteractId == interactId);
             if (interactItem == null)
@@ -144,10 +146,18 @@ namespace My.Map
                 return false;
             }
 
+            var logicManager = Owner.LogicManager;
+            var playerSystem = logicManager?.GetPlayerSystem(playerId);
+            var playerEntity = logicManager?.GetPlayerEntity(playerId);
+            if (logicManager == null || playerSystem == null || playerEntity == null)
+            {
+                return false;
+            }
+
             var passed = true;
             foreach(var oneCond in interactItem.CheckCommonCond)
             {
-                if (!Owner.LogicManager.CheckCommonCond(oneCond))
+                if (!logicManager.CheckCommonCond(oneCond, playerId))
                 {
                     passed = false;
                     break;
@@ -162,7 +172,7 @@ namespace My.Map
                 {
                     case InteractCheckCond.ECheckType.NotHide:
                         {
-                            if (Owner.LogicManager.playerLogicEntity.IsInStealth())
+                            if (playerEntity.IsInStealth())
                             {
                                 passed = false;
                             }
@@ -174,9 +184,9 @@ namespace My.Map
                             string switchName = oneCond.Param3;
                             string characterKey = oneCond.Param4;
                             bool has;
-                            if (!string.IsNullOrEmpty(characterKey) && Owner.LogicManager?.playerDataManager != null)
+                            if (!string.IsNullOrEmpty(characterKey))
                             {
-                                has = Owner.LogicManager.playerDataManager.NamedNpcHasLocalSwitch(characterKey, switchName);
+                                has = playerSystem.NamedNpcHasLocalSwitch(characterKey, switchName);
                             }
                             else
                             {
@@ -195,9 +205,9 @@ namespace My.Map
                             string switchName = oneCond.Param3;
                             string characterKey = oneCond.Param4;
                             bool has;
-                            if (!string.IsNullOrEmpty(characterKey) && Owner.LogicManager?.playerDataManager != null)
+                            if (!string.IsNullOrEmpty(characterKey))
                             {
-                                has = Owner.LogicManager.playerDataManager.NamedNpcHasLocalSwitch(characterKey, switchName);
+                                has = playerSystem.NamedNpcHasLocalSwitch(characterKey, switchName);
                             }
                             else
                             {
@@ -212,7 +222,7 @@ namespace My.Map
                         break;
                     case InteractCheckCond.ECheckType.PlayerNotRetreating:
                         {
-                            if (Owner.LogicManager.playerLogicEntity.IsRetreating)
+                            if (playerEntity.IsRetreating)
                             {
                                 passed = false;
                             }
@@ -334,9 +344,9 @@ namespace My.Map
             Owner.LogicManager.HandleLogicFightEffect(new MapAbilityEffectTeleportToCfg() { PendingTime = delaySec }, ctx);
         }
 
-        public bool TryTriggerInteract(int interactId)
+        public bool TryTriggerInteract(int interactId, int playerId)
         {
-            if(!CheckTriggerInteract(interactId))
+            if(!CheckTriggerInteract(interactId, playerId))
             {
                 return false;
             }
@@ -347,6 +357,7 @@ namespace My.Map
                 return false;
             }
 
+            _interactingPlayerId = playerId;
             _isInteracting = true;
             _currOutputIdx = 0;
             _currInteract = interactItem;
@@ -355,6 +366,12 @@ namespace My.Map
 
             return true;
         }
+
+        PlayerSystemManager GetInteractingPlayerSystem() =>
+            Owner.LogicManager?.GetPlayerSystem(_interactingPlayerId);
+
+        PlayerLogicEntity GetInteractingPlayerEntity() =>
+            Owner.LogicManager?.GetPlayerEntity(_interactingPlayerId);
 
         private void HandleInteractOutputs()
         {
@@ -443,7 +460,12 @@ namespace My.Map
                         break;
                     case LogicInteractOutput.EOutputType.SpecialMoveTo:
                         {
-                            var player = Owner.LogicManager.playerLogicEntity;
+                            var player = GetInteractingPlayerEntity();
+                            if (player == null)
+                            {
+                                errOccur = true;
+                                break;
+                            }
 
                             if (!TryResolveNamedPoint(output.Param3, out var targetPos))
                             {
@@ -461,7 +483,7 @@ namespace My.Map
 
                     case LogicInteractOutput.EOutputType.PresentationMoveTo:
                         {
-                            var player = Owner.LogicManager.playerLogicEntity;
+                            var player = GetInteractingPlayerEntity();
                             if (player == null)
                             {
                                 errOccur = true;
@@ -498,13 +520,19 @@ namespace My.Map
                                 break;
                             }
 
-                            Owner.LogicManager.playerDataManager?.SetVariable(switchName);
+                            GetInteractingPlayerSystem()?.SetVariable(switchName);
                         }
                         break;
 
                     case LogicInteractOutput.EOutputType.StartStealth:
                         {
-                            var player = Owner.LogicManager.playerLogicEntity;
+                            var player = GetInteractingPlayerEntity();
+                            if (player == null)
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
                             player.StartStealth(Owner.Id, Owner.Pos);
                         }
                         break;
@@ -512,14 +540,14 @@ namespace My.Map
                         {
                             string itemId = output.Param3;
                             long count = output.Param1;
-                            Owner.LogicManager.playerDataManager.CostItem(itemId, count);
+                            GetInteractingPlayerSystem()?.CostItem(itemId, count);
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.GiveItems:
                         {
                             string itemId = output.Param3;
                             long count = output.Param1;
-                            Owner.LogicManager.playerDataManager.GiveItemToPlayer(itemId, count);
+                            GetInteractingPlayerSystem()?.GiveItemToPlayer(itemId, count);
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.SetLocalSwitch:
@@ -529,7 +557,7 @@ namespace My.Map
                             string characterKey = output.Param4;
                             if (!string.IsNullOrEmpty(characterKey))
                             {
-                                Owner.LogicManager.playerDataManager?.SetNamedNpcLocalSwitch(characterKey, switchName, true);
+                                GetInteractingPlayerSystem()?.SetNamedNpcLocalSwitch(characterKey, switchName, true);
                             }
                             else
                             {
@@ -543,7 +571,7 @@ namespace My.Map
                             string characterKey = output.Param4;
                             if (!string.IsNullOrEmpty(characterKey))
                             {
-                                Owner.LogicManager.playerDataManager?.SetNamedNpcLocalSwitch(characterKey, switchName, false);
+                                GetInteractingPlayerSystem()?.SetNamedNpcLocalSwitch(characterKey, switchName, false);
                             }
                             else
                             {
@@ -559,7 +587,7 @@ namespace My.Map
                         break;
                     case Config.LogicInteractOutput.EOutputType.StartRetreat:
                         {
-                            Owner.LogicManager.playerLogicEntity.TryStartRetreating();
+                            GetInteractingPlayerEntity()?.TryStartRetreating();
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.TriggerSpawner:
@@ -601,7 +629,7 @@ namespace My.Map
                                 break;
                             }
 
-                            Owner.LogicManager.playerDataManager.GrantLmbOverride(output.Param3);
+                            GetInteractingPlayerSystem()?.GrantLmbOverride(output.Param3);
                             My.UI.OverworldHUDPanel.Instance?.SkilBar?.Refresh();
                             My.UI.PlayerHumanItemBarPanel.RefreshFromGame();
                         }

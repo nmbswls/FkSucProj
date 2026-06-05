@@ -182,7 +182,7 @@ namespace My.Map.Scene
             return true;
         }
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             if (RepairPointEntity.Cfg.AutoRepair)
             {

@@ -59,7 +59,7 @@ namespace My.Map.Scene
             return glm != null && glm.CanInteractSavePoint;
         }
 
-        public bool TriggerInteract(int selectionId)
+        public bool TriggerInteract(int selectionId, int playerId)
         {
             if (selectionId != 1 || SaveEntity == null)
             {

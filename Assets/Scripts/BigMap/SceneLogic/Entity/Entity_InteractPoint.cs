@@ -159,14 +159,14 @@ namespace My.Map.Entity
 
         public List<MapInteractInfo> InteractInfos { get { return InteractComp.InteractInfos; } }
 
-        public bool TryTriggerInteract(int interactId)
+        public bool TryTriggerInteract(int interactId, int playerId)
         {
-            return InteractComp.TryTriggerInteract(interactId);
+            return InteractComp.TryTriggerInteract(interactId, playerId);
         }
 
-        public bool CheckTriggerInteract(int interactId)
+        public bool CheckTriggerInteract(int interactId, int playerId)
         {
-            return InteractComp.CheckTriggerInteract(interactId);
+            return InteractComp.CheckTriggerInteract(interactId, playerId);
         }
 
 
