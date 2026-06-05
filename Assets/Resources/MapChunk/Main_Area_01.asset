@@ -17,8 +17,8 @@ MonoBehaviour:
   ChunkWorldSize: 32
   TexturePPU: 16
   ChunkOrigin: {x: 0, y: 0}
-  SourceTextureWidth: 2560
-  SourceTextureHeight: 3328
+  SourceTextureWidth: 1536
+  SourceTextureHeight: 1536
   WalkGridKey: MapChunk/Main_Area_01/Prefabs/GridRoot
   LogicHeightConfigKey: 
   Chunks:
