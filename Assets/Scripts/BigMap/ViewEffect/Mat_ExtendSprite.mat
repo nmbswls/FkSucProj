@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mat_ExtendSprite
-  m_Shader: {fileID: -6465566751694194690, guid: d0f8594808dc7dd45b557e16f8df60c9, type: 3}
+  m_Shader: {fileID: 4800000, guid: 7c4e9a2b1f8d4563e9a0b1c2d3e4f5a6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []

@@ -467,7 +467,7 @@ public static class MapChunkExportCore
         tilemap.tileAnchor = source.tileAnchor;
         tilemap.orientation = source.orientation;
         var renderer = layerGo.AddComponent<TilemapRenderer>();
-        renderer.sortingOrder = source.GetComponent<TilemapRenderer>()?.sortingOrder ?? 0;
+        CopyTilemapRenderer(source.GetComponent<TilemapRenderer>(), renderer);
 
         bool layerHasTile = false;
         foreach (var pos in source.cellBounds.allPositionsWithin)
@@ -519,7 +519,7 @@ public static class MapChunkExportCore
         tilemap.tileAnchor = source.tileAnchor;
         tilemap.orientation = source.orientation;
         var renderer = layerGo.AddComponent<TilemapRenderer>();
-        renderer.sortingOrder = baked.SortingOrder;
+        CopyTilemapRenderer(source.GetComponent<TilemapRenderer>(), renderer, baked.SortingOrder);
 
         bool layerHasTile = false;
         foreach (var pair in baked.Cells)
@@ -547,5 +547,22 @@ public static class MapChunkExportCore
 
         hasTile = true;
         return true;
+    }
+
+    static void CopyTilemapRenderer(TilemapRenderer source, TilemapRenderer dst, int? sortingOrder = null)
+    {
+        if (source == null)
+        {
+            if (sortingOrder.HasValue)
+            {
+                dst.sortingOrder = sortingOrder.Value;
+            }
+
+            return;
+        }
+
+        dst.sortingOrder = sortingOrder ?? source.sortingOrder;
+        dst.sortingLayerID = source.sortingLayerID;
+        dst.mode = source.mode;
     }
 }

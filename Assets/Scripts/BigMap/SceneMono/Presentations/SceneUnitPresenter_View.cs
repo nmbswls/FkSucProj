@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using Animancer;
 using My.Map;
+using My.Map.Ground;
 using UnityEngine;
 using static MapSceneEffectManager;
 
@@ -240,6 +241,66 @@ namespace My.Map.Scene
             _pendingOffsetZ = Mathf.Lerp(_pendingOffsetZ, targetOffsetZ, 3f * LogicTime.deltaTime);
 
             this.AgentView.transform.localPosition = new(this.AgentView.transform.localPosition.x, _pendingOffsetZ, 0);
+        }
+
+        [Header("Tall Grass Cover")]
+        [Range(0f, 1f)] public float tallGrassWaistRatio = 0.42f;
+        [Min(0.01f)] public float tallGrassBlendTime = 0.12f;
+
+        static readonly int CoverStrengthId = Shader.PropertyToID("_CoverStrength");
+        static readonly int CoverClipLocalYId = Shader.PropertyToID("_CoverClipLocalY");
+        static readonly int CoverLocalMinYId = Shader.PropertyToID("_CoverLocalMinY");
+
+        MaterialPropertyBlock _coverMpb;
+        SpriteRenderer[] _coverRenderers;
+        float _coverDisplayStrength;
+
+        void InitTallGrassCover()
+        {
+            _coverMpb = new MaterialPropertyBlock();
+            if (AgentView != null)
+            {
+                _coverRenderers = AgentView.GetComponentsInChildren<SpriteRenderer>(true);
+            }
+        }
+
+        void TickTallGrassCover()
+        {
+            if (_coverRenderers == null || _coverRenderers.Length == 0)
+            {
+                return;
+            }
+
+            float target = TallGrassQuery.SampleCoverStrength(transform.position);
+            float step = tallGrassBlendTime > 0f ? LogicTime.deltaTime / tallGrassBlendTime : 1f;
+            _coverDisplayStrength = Mathf.MoveTowards(_coverDisplayStrength, target, step);
+            ApplyTallGrassCover(_coverDisplayStrength);
+        }
+
+        void ApplyTallGrassCover(float strength)
+        {
+            for (int i = 0; i < _coverRenderers.Length; i++)
+            {
+                var sr = _coverRenderers[i];
+                if (sr == null || sr.sharedMaterial == null || !sr.sharedMaterial.HasProperty(CoverStrengthId))
+                {
+                    continue;
+                }
+
+                sr.GetPropertyBlock(_coverMpb);
+                if (strength <= 0.001f || sr.sprite == null)
+                {
+                    _coverMpb.SetFloat(CoverStrengthId, 0f);
+                    sr.SetPropertyBlock(_coverMpb);
+                    continue;
+                }
+
+                var b = sr.sprite.bounds;
+                _coverMpb.SetFloat(CoverStrengthId, strength);
+                _coverMpb.SetFloat(CoverClipLocalYId, b.min.y + tallGrassWaistRatio * b.size.y);
+                _coverMpb.SetFloat(CoverLocalMinYId, b.min.y);
+                sr.SetPropertyBlock(_coverMpb);
+            }
         }
 
         public SpriteWhiteFlasher MainFlasher;

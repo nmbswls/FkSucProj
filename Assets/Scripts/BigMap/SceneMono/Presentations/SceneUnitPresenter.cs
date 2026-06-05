@@ -124,9 +124,20 @@ namespace My.Map.Scene
             InitAnimComps();
 
             CreateRootForwardHinter();
+
+            InitTallGrassCover();
         }
 
-        private float _tickMoveStateTimer;
+        protected override void LateUpdate()
+        {
+            base.LateUpdate();
+            if (UnitEntity != null)
+            {
+                //transform.position = MainGameManager.Instance.GetWorldPosFromLogicPos(UnitEntity.Pos);
+            }
+
+            TickTallGrassCover();
+        }
 
         public override void Tick(float dt)
         {
@@ -372,18 +383,6 @@ namespace My.Map.Scene
 
             return UnitEntity.GetCurrSpeed();
         }
-
-        protected override void LateUpdate()
-        {
-            // 同步位置
-            if (UnitEntity != null)
-            {
-                //transform.position = MainGameManager.Instance.GetWorldPosFromLogicPos(UnitEntity.Pos);
-            }
-
-
-        }
-
 
         public float maxTurnSpeedDegPerSec = 720f; // 可选最大角速度限制
         public float smoothTime = 0.12f;           // 越小越跟手

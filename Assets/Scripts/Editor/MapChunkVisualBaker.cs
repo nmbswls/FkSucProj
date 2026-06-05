@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using My.Map.DualGrid;
+using My.Map.Ground;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -71,6 +72,11 @@ public static class MapChunkVisualBaker
             }
 
             if (IsDualGridViewLayer(tm))
+            {
+                continue;
+            }
+
+            if (tm.name == TallGrassQuery.MaskLayerName)
             {
                 continue;
             }

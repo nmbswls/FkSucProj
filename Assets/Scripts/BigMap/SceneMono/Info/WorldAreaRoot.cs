@@ -11,6 +11,7 @@ public class WorldAreaRoot : MonoBehaviour
     // 由 MapLogicHeightConfig.GroundLayerNames 装配，勿在 Inspector 手拖全量 Tilemap。
     public Tilemap[] TileGrounds;
     public Tilemap TileHole;
+    public Tilemap TallGrassMask;
 
     [Header("Logic Height")]
     public MapLogicHeightConfig LogicHeightConfig;
@@ -48,6 +49,8 @@ public class WorldAreaRoot : MonoBehaviour
             go.transform.SetParent(transform, false);
             TilemapChunkRoot = go.transform;
         }
+
+        ResolveTallGrassMaskFromGrid();
     }
 
     public void BindWalkGrid(string resourceKey)
@@ -74,10 +77,11 @@ public class WorldAreaRoot : MonoBehaviour
         Grid = _walkGridInstance.GetComponent<Grid>();
         ResolveTileHoleFromGrid();
         ApplyTileGroundsFromLogicHeightConfig();
+        ResolveTallGrassMaskFromGrid();
 
         Debug.Log(
             $"[WorldAreaRoot] Walk grid bound: {resourceKey}, groundLayers={TileGrounds?.Length ?? 0} " +
-            $"(from LogicHeightConfig)");
+            $"(from LogicHeightConfig), tallGrassMask={(TallGrassMask != null ? "yes" : "no")}");
     }
 
     public void ClearWalkGrid()
@@ -95,6 +99,35 @@ public class WorldAreaRoot : MonoBehaviour
         }
 
         _walkGridInstance = null;
+        TallGrassMask = null;
+        TallGrassQuery.Clear();
+    }
+
+    public void ResolveTallGrassMaskFromGrid()
+    {
+        TallGrassMask = null;
+        EnsureGridReference();
+        if (Grid == null)
+        {
+            TallGrassQuery.Clear();
+            return;
+        }
+
+        TallGrassMask = FindTilemapUnderGrid(Grid, TallGrassQuery.MaskLayerName);
+        if (TallGrassMask != null)
+        {
+            var renderer = TallGrassMask.GetComponent<TilemapRenderer>();
+            if (renderer != null)
+            {
+                renderer.enabled = false;
+            }
+
+            TallGrassQuery.Bind(TallGrassMask);
+        }
+        else
+        {
+            TallGrassQuery.Clear();
+        }
     }
 
     // 按 LogicHeightConfig.GroundLayerNames 从 Grid 下解析地面 Tilemap（仅地面层）。
