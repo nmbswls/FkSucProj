@@ -75,9 +75,6 @@ public class WorldAreaRoot : MonoBehaviour
         ResolveTileHoleFromGrid();
         ApplyTileGroundsFromLogicHeightConfig();
 
-        var allTilemaps = _walkGridInstance.GetComponentsInChildren<Tilemap>(true);
-        DisableTilemapRenderers(allTilemaps);
-
         Debug.Log(
             $"[WorldAreaRoot] Walk grid bound: {resourceKey}, groundLayers={TileGrounds?.Length ?? 0} " +
             $"(from LogicHeightConfig)");
@@ -207,28 +204,6 @@ public class WorldAreaRoot : MonoBehaviour
         else
         {
             Debug.LogWarning($"[WorldAreaRoot] LogicHeightConfig not found: Resources/{chunkDb.LogicHeightConfigKey}");
-        }
-    }
-
-    static void DisableTilemapRenderers(Tilemap[] tilemaps)
-    {
-        if (tilemaps == null)
-        {
-            return;
-        }
-
-        foreach (var tilemap in tilemaps)
-        {
-            if (tilemap == null)
-            {
-                continue;
-            }
-
-            var renderer = tilemap.GetComponent<TilemapRenderer>();
-            if (renderer != null)
-            {
-                renderer.enabled = false;
-            }
         }
     }
 

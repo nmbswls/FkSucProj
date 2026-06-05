@@ -648,7 +648,7 @@ public class MapChunkManager : MonoBehaviour
             }
         }
 
-        if (!string.IsNullOrEmpty(item.TilemapKey) && (db == null || !db.HasWalkGrid))
+        if (!string.IsNullOrEmpty(item.TilemapKey))
         {
             try
             {

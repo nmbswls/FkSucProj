@@ -12,7 +12,6 @@ public class MapPaintBackgroundWindow : EditorWindow
 {
     [SerializeField] GameObject areaRoot;
     [SerializeField] string mapName = "Main_Area_01";
-    [SerializeField] Texture2D importChunkTexture;
     [SerializeField] Vector2 chunkListScroll;
     [SerializeField] FilterMode resampleFilter = FilterMode.Bilinear;
 
@@ -122,9 +121,7 @@ public class MapPaintBackgroundWindow : EditorWindow
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Workflow", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
-            "Ready → Export → Import → Done\n" +
-            "改 tile 后 Mark Stale；Stale+Painted 会导出 for_ai + painted_ref 两张图\n" +
-            "对齐场景后 Re-capture（自动 Clear Stale）",
+            "Export For AI → 外部编辑 → Import Painted PNG（写入 painted 目录）→ Sync（裁剪并打包 bg + Database）",
             MessageType.Info);
 
         using (new EditorGUI.DisabledScope(!_selectedChunk.HasValue))
@@ -151,25 +148,37 @@ public class MapPaintBackgroundWindow : EditorWindow
             }
         }
 
-        importChunkTexture = (Texture2D)EditorGUILayout.ObjectField("Import PNG", importChunkTexture, typeof(Texture2D), false);
-        using (new EditorGUI.DisabledScope(!_selectedChunk.HasValue || importChunkTexture == null))
+        using (new EditorGUI.DisabledScope(!_selectedChunk.HasValue))
         {
-            if (GUILayout.Button("Import Chunk", GUILayout.Height(28f)))
+            if (GUILayout.Button("Import Painted PNG...", GUILayout.Height(28f)))
             {
-                var result = MapPaintBackgroundImporter.ImportChunkForAi(
-                    root, mapName, _selectedChunk.Value, importChunkTexture, resampleFilter);
+                var result = MapPaintBackgroundImporter.ImportPaintedPngFromFile(
+                    root, mapName, _selectedChunk.Value);
                 LogImportResult(result);
             }
         }
 
         using (new EditorGUILayout.HorizontalScope())
         {
-            if (GUILayout.Button("Apply To Database"))
+            if (GUILayout.Button("Sync All (Pack + Database)", GUILayout.Height(28f)))
             {
-                var result = MapPaintBackgroundExporter.ApplyToDatabase(root, mapName);
+                var result = MapPaintBackgroundExporter.SyncPaintRectToDatabase(root, mapName, resampleFilter);
                 LogResult(result.Success, result.Message);
             }
 
+            using (new EditorGUI.DisabledScope(!_selectedChunk.HasValue))
+            {
+                if (GUILayout.Button("Sync Selected"))
+                {
+                    var result = MapPaintBackgroundExporter.SyncChunkToDatabase(
+                        root, mapName, _selectedChunk.Value, resampleFilter);
+                    LogResult(result.Success, result.Message);
+                }
+            }
+        }
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
             using (new EditorGUI.DisabledScope(!_selectedChunk.HasValue))
             {
                 if (GUILayout.Button("Ping Export File"))

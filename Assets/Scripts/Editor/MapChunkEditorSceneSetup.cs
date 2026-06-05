@@ -100,7 +100,6 @@ public class MapChunkExporterWindow : EditorWindow
     [SerializeField] private string mapName = "Main_Area_01";
     [SerializeField] private float chunkCellSize = 32f;
     [SerializeField] private Vector2 chunkOrigin;
-    [SerializeField] private bool exportBackgroundChunks = true;
     [SerializeField] private bool exportTilemapChunks = true;
     [SerializeField] private bool exportVisualBake = true;
     [SerializeField] private bool exportWalkGridPrefab = true;
@@ -131,10 +130,7 @@ public class MapChunkExporterWindow : EditorWindow
         else
         {
             var settings = MapChunkEditorSettings.GetOrCreate();
-            EditorGUILayout.LabelField("Source Texture",
-                chunkEditor.SourceTexture != null ? chunkEditor.SourceTexture.name : "(none)");
-            EditorGUILayout.LabelField("Source Pixel Size", chunkEditor.SourceTextureSize.ToString());
-            EditorGUILayout.LabelField("Imported Asset Size", chunkEditor.ImportedTextureSize.ToString());
+            EditorGUILayout.LabelField("Paint World Rect", chunkEditor.PaintWorldRect.ToString());
             EditorGUILayout.LabelField("Texture PPU", settings.TexturePPU.ToString());
             EditorGUILayout.LabelField("Slice Pixel Size", settings.SlicePixelSize.ToString());
             EditorGUILayout.LabelField("Grid Status",
@@ -149,7 +145,6 @@ public class MapChunkExporterWindow : EditorWindow
         chunkOrigin = EditorGUILayout.Vector2Field("Chunk Origin", chunkOrigin);
 
         var editorSettings = MapChunkEditorSettings.GetOrCreate();
-        exportBackgroundChunks = EditorGUILayout.Toggle("Background (bg_*)", exportBackgroundChunks);
         exportTilemapChunks = EditorGUILayout.Toggle("Walk Grid Chunks (tm_*)", exportTilemapChunks);
         using (new EditorGUI.DisabledScope(!exportTilemapChunks))
         {
@@ -182,15 +177,14 @@ public class MapChunkExporterWindow : EditorWindow
         if (exportTilemapChunks && exportVisualBake)
         {
             EditorGUILayout.HelpBox(
-                "Visual Bake：DualGrid View / Cliff 等 RuleTile 在导出前 bake 成静态 Tile，" +
-                "写入 tm_* 的 Baked_* 层；逻辑层仍保留原始 Tile 引用。",
+                "WalkGrid 导出完整 Grid（保留各层 TilemapRenderer 开关）；tm_* 仅含 Visual Bake 装饰层并按 chunk 流式加载。",
                 MessageType.Info);
         }
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Painted Background", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
-            "手绘背景 AI 工作流：在 Map Paint Background 窗口配置 PaintWorldRect、Generate Atlas、Import 回稿。",
+            "背景在 Map Paint Background 窗口：Import Painted PNG → Sync（裁剪打包）。",
             MessageType.Info);
         if (GUILayout.Button("Open Map Paint Background Window"))
         {
@@ -224,7 +218,7 @@ public class MapChunkExporterWindow : EditorWindow
             return;
         }
 
-        if (!exportBackgroundChunks && !exportTilemapChunks && !exportWalkGridPrefab)
+        if (!exportTilemapChunks && !exportWalkGridPrefab)
         {
             EditorUtility.DisplayDialog("Map Chunk Export", "Select at least one export target.", "OK");
             return;
@@ -237,10 +231,8 @@ public class MapChunkExporterWindow : EditorWindow
         var result = MapChunkExportCore.Export(
             chunkEditor,
             mapName,
-            MapChunkEditorSettings.GetOrCreate().BackgroundSortingOrder,
             chunkCellSize,
             chunkOrigin,
-            exportBackgroundChunks,
             exportTilemapChunks,
             exportWalkGridPrefab,
             exportVisualBake);

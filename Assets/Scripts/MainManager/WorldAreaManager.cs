@@ -254,6 +254,7 @@ public class WorldAreaManager : MonoBehaviour
             ? SceneAOIManager.Instance.MapChunkManager
             : null;
         var chunkDb = MainGameManager.Instance?.gameLogicManager?.AreaManager?.cacheChunkDatabase;
+        // 无 WalkGrid 时，可走判定回退到已加载的 tm_* chunk
         if (chunkManager != null && chunkDb != null && chunkDb.HasChunkContent && !chunkDb.HasWalkGrid)
         {
             return chunkManager.IsWorldPosWalkable(worldPos);

@@ -89,7 +89,16 @@ public static class MapPaintBackgroundShared
             return null;
         }
 
-        var bytes = File.ReadAllBytes(assetPath);
+        return LoadTextureFromBytes(File.ReadAllBytes(assetPath));
+    }
+
+    public static Texture2D LoadTextureFromBytes(byte[] bytes)
+    {
+        if (bytes == null || bytes.Length == 0)
+        {
+            return null;
+        }
+
         var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
         if (!tex.LoadImage(bytes))
         {
@@ -200,6 +209,109 @@ public static class MapPaintBackgroundShared
         importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.SaveAndReimport();
     }
+
+    // painted/template → 裁剪（如需）→ 写入 bg sprite/prefab
+    public static bool PackRuntimeBackgroundFromPainted(
+        MapChunkEditorRoot root,
+        string mapName,
+        ChunkCoord coord,
+        MapPaintManifest manifest,
+        FilterMode resampleFilter = FilterMode.Bilinear)
+    {
+        if (root == null)
+        {
+            return false;
+        }
+
+        string sourcePath = GetPaintedChunkPath(mapName, coord);
+        if (!File.Exists(sourcePath))
+        {
+            sourcePath = GetChunkTemplatePath(mapName, coord);
+        }
+
+        if (!File.Exists(sourcePath))
+        {
+            return false;
+        }
+
+        var settings = MapChunkEditorSettings.GetOrCreate();
+        float bgPpu = settings.TexturePPU > 0f ? settings.TexturePPU : settings.EffectivePaintExportPpu;
+        int slicePx = manifest != null && manifest.SlicePixelSize > 0
+            ? manifest.SlicePixelSize
+            : MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, bgPpu);
+        float expandRatio = manifest != null && manifest.ContextExpandRatio > 0f
+            ? manifest.ContextExpandRatio
+            : settings.PaintContextExpandRatio;
+        int contextSize = MapPaintBackgroundContext.ComputeContextSize(slicePx, expandRatio);
+        int bgSlice = MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, bgPpu);
+        string rootFolder = GetMapRootFolder(mapName);
+
+        var src = LoadTextureFromAssetPath(sourcePath);
+        if (src == null)
+        {
+            return false;
+        }
+
+        Texture2D sliceTex = null;
+        Texture2D bgTex = null;
+        try
+        {
+            if (src.width == contextSize && src.height == contextSize && contextSize != slicePx)
+            {
+                sliceTex = MapPaintBackgroundContext.CropCenterFromContext(
+                    src, slicePx, expandRatio, resampleFilter);
+            }
+            else if (src.width == slicePx && src.height == slicePx)
+            {
+                sliceTex = DuplicateTexture(src);
+            }
+            else
+            {
+                sliceTex = ResampleTexture(src, slicePx, slicePx, resampleFilter);
+            }
+
+            if (sliceTex == null)
+            {
+                return false;
+            }
+
+            bgTex = ResampleTexture(sliceTex, bgSlice, bgSlice, resampleFilter);
+            if (bgTex == null)
+            {
+                return false;
+            }
+
+            string spritePath = SaveBackgroundSprite(bgTex, coord, bgPpu, rootFolder);
+            if (string.IsNullOrEmpty(spritePath))
+            {
+                return false;
+            }
+
+            SaveBackgroundPrefab(coord, spritePath, rootFolder, settings.BackgroundSortingOrder);
+            AssetDatabase.ImportAsset(spritePath);
+            return true;
+        }
+        finally
+        {
+            if (src != null)
+            {
+                Object.DestroyImmediate(src);
+            }
+
+            if (sliceTex != null)
+            {
+                Object.DestroyImmediate(sliceTex);
+            }
+
+            if (bgTex != null)
+            {
+                Object.DestroyImmediate(bgTex);
+            }
+        }
+    }
+
+    public static string BuildRuntimeBackgroundKey(string mapName, ChunkCoord coord) =>
+        $"MapChunk/{mapName}/Prefabs/bg_{coord.X}_{coord.Y}";
 
     public static void ConfigureBackgroundSpriteImporter(string spritePath, float ppu)
     {

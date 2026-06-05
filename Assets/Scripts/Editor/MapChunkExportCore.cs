@@ -22,10 +22,8 @@ public static class MapChunkExportCore
     public static ExportResult Export(
         MapChunkEditorRoot editorRoot,
         string mapName,
-        int backgroundSortingOrder,
         float chunkWorldSize,
         Vector2 chunkOrigin,
-        bool exportBackground,
         bool exportTilemap,
         bool exportGridRootPrefab,
         bool bakeVisualLayers = true)
@@ -40,11 +38,6 @@ public static class MapChunkExportCore
             return Fail("Map name is empty.");
         }
 
-        if (exportBackground && editorRoot.SourceTexture == null)
-        {
-            return Fail("Assign SourceTexture on MapChunkEditorRoot for background export.");
-        }
-
         MapChunkEditorTilemapResolver.TryResolveTileGrounds(editorRoot, out var tileGrounds);
         if (exportTilemap && (tileGrounds == null || tileGrounds.Length == 0))
         {
@@ -54,40 +47,20 @@ public static class MapChunkExportCore
         editorRoot.ChunkOrigin = chunkOrigin;
         EditorUtility.SetDirty(editorRoot);
 
-        var texSize = editorRoot.SourceTextureSize;
-        int slicePx = editorRoot.SourceTexture != null
-            ? MapChunkUtility.ComputeSlicePixelSize(chunkWorldSize, MapChunkEditorSettings.GetOrCreate().TexturePPU)
-            : 0;
+        int slicePx = MapChunkUtility.ComputeSlicePixelSize(chunkWorldSize, MapChunkEditorSettings.GetOrCreate().TexturePPU);
         float chunkSize = chunkWorldSize;
         float ppu = MapChunkEditorSettings.GetOrCreate().TexturePPU;
         var origin = editorRoot.ChunkOrigin;
 
-        Texture2D fullSourceTexture = null;
-        try
-        {
-            fullSourceTexture = LoadFullSourceTexture(editorRoot.SourceTexture);
-            if (fullSourceTexture != null && exportBackground)
-            {
-                texSize = new Vector2Int(fullSourceTexture.width, fullSourceTexture.height);
-                var imported = editorRoot.ImportedTextureSize;
-                if (imported.x != texSize.x || imported.y != texSize.y)
-                {
-                    Debug.LogWarning(
-                        $"[MapChunkExport] Source texture {texSize.x}x{texSize.y}px, " +
-                        $"imported asset {imported.x}x{imported.y}px (maxTextureSize). Export uses source file size.");
-                }
-            }
-            else if (exportBackground && fullSourceTexture == null)
-            {
-                Debug.LogWarning("[MapChunkExport] Failed to load source file; fallback to imported texture size.");
-            }
-
-            string rootFolder = $"Assets/Resources/MapChunk/{mapName}";
+        string rootFolder = $"Assets/Resources/MapChunk/{mapName}";
         EnsureFolder("Assets/Resources");
         EnsureFolder("Assets/Resources/MapChunk");
         EnsureFolder(rootFolder);
         EnsureFolder($"{rootFolder}/Sprites");
         EnsureFolder($"{rootFolder}/Prefabs");
+
+        var existingDb = AssetDatabase.LoadAssetAtPath<MapChunkDatabase>($"Assets/Resources/MapChunk/{mapName}.asset");
+        existingDb?.BuildLookup();
 
         var database = ScriptableObject.CreateInstance<MapChunkDatabase>();
         database.AreaId = mapName;
@@ -95,12 +68,11 @@ public static class MapChunkExportCore
         database.ChunkWorldSize = chunkSize;
         database.TexturePPU = ppu;
         database.ChunkOrigin = origin;
-        database.SourceTextureWidth = texSize.x;
-        database.SourceTextureHeight = texSize.y;
+        database.SourceTextureWidth = ComputePaintAtlasWidth(editorRoot, slicePx);
+        database.SourceTextureHeight = ComputePaintAtlasHeight(editorRoot, slicePx);
         database.Chunks = new List<MapChunkExportItem>();
 
-        var chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap, null, editorRoot);
-        int bgCount = 0;
+        var chunkCoords = CollectAllChunkCoords(tileGrounds, chunkSize, origin, exportTilemap, null, editorRoot);
         int tmCount = 0;
 
         List<MapChunkVisualBaker.BakedLayer> bakedVisualLayers = null;
@@ -108,7 +80,7 @@ public static class MapChunkExportCore
         {
             EnsureFolder($"{rootFolder}/BakedTiles");
             bakedVisualLayers = MapChunkVisualBaker.Bake(editorRoot, $"{rootFolder}/BakedTiles", tileGrounds);
-            chunkCoords = CollectAllChunkCoords(texSize, slicePx, tileGrounds, chunkSize, origin, exportBackground, exportTilemap, bakedVisualLayers, editorRoot);
+            chunkCoords = CollectAllChunkCoords(tileGrounds, chunkSize, origin, exportTilemap, bakedVisualLayers, editorRoot);
         }
 
         foreach (var coord in chunkCoords.OrderBy(c => c.Y).ThenBy(c => c.X))
@@ -119,26 +91,22 @@ public static class MapChunkExportCore
                 Y = coord.Y
             };
 
-            if (exportBackground && editorRoot.SourceTexture != null)
+            var existingItem = existingDb?.GetChunkItem(coord);
+            if (existingItem != null)
             {
-                var crop = MapChunkUtility.TextureCropRect(coord, slicePx, texSize);
-                if (crop.width > 0f && crop.height > 0f)
-                {
-                    var sourceForCrop = fullSourceTexture != null ? fullSourceTexture : editorRoot.SourceTexture;
-                    string bgSpritePath = ExportBackgroundSprite(sourceForCrop, coord, crop, slicePx, ppu, rootFolder);
-                    if (!string.IsNullOrEmpty(bgSpritePath))
-                    {
-                        string bgPrefabPath = CreateBackgroundPrefab(coord, bgSpritePath, rootFolder, backgroundSortingOrder);
-                        item.BackgroundKey = $"MapChunk/{mapName}/Prefabs/bg_{coord.X}_{coord.Y}";
-                        AssetDatabase.ImportAsset(bgPrefabPath);
-                        bgCount++;
-                    }
-                }
+                item.BackgroundKey = existingItem.BackgroundKey;
             }
 
             if (exportTilemap)
             {
-                string tmPrefabPath = ExportTilemapChunk(coord, chunkSize, origin, tileGrounds, bakedVisualLayers, rootFolder);
+                string tmPrefabPath = ExportTilemapChunk(
+                    coord,
+                    chunkSize,
+                    origin,
+                    tileGrounds,
+                    bakedVisualLayers,
+                    rootFolder,
+                    includeLogicLayers: !exportGridRootPrefab);
                 if (!string.IsNullOrEmpty(tmPrefabPath))
                 {
                     item.TilemapKey = $"MapChunk/{mapName}/Prefabs/tm_{coord.X}_{coord.Y}";
@@ -161,6 +129,14 @@ public static class MapChunkExportCore
             {
                 database.WalkGridKey = $"MapChunk/{mapName}/Prefabs/GridRoot";
             }
+            else if (existingDb != null && !string.IsNullOrEmpty(existingDb.WalkGridKey))
+            {
+                database.WalkGridKey = existingDb.WalkGridKey;
+            }
+        }
+        else if (existingDb != null)
+        {
+            database.WalkGridKey = existingDb.WalkGridKey;
         }
 
         if (editorRoot.PaintWorldRect.width > 0f && editorRoot.PaintWorldRect.height > 0f)
@@ -173,25 +149,25 @@ public static class MapChunkExportCore
         }
 
         string dbPath = $"Assets/Resources/MapChunk/{mapName}.asset";
-        var existing = AssetDatabase.LoadAssetAtPath<MapChunkDatabase>(dbPath);
-        if (existing != null)
+        if (existingDb != null)
         {
-            existing.AreaId = database.AreaId;
-            existing.SceneName = database.SceneName;
-            existing.ChunkWorldSize = database.ChunkWorldSize;
-            existing.TexturePPU = database.TexturePPU;
-            existing.ChunkOrigin = database.ChunkOrigin;
-            existing.SourceTextureWidth = database.SourceTextureWidth;
-            existing.SourceTextureHeight = database.SourceTextureHeight;
+            existingDb.AreaId = database.AreaId;
+            existingDb.SceneName = database.SceneName;
+            existingDb.ChunkWorldSize = database.ChunkWorldSize;
+            existingDb.TexturePPU = database.TexturePPU;
+            existingDb.ChunkOrigin = database.ChunkOrigin;
+            existingDb.SourceTextureWidth = database.SourceTextureWidth;
+            existingDb.SourceTextureHeight = database.SourceTextureHeight;
             if (exportGridRootPrefab && gridRootExported)
             {
-                existing.WalkGridKey = database.WalkGridKey;
+                existingDb.WalkGridKey = database.WalkGridKey;
             }
-            existing.Chunks = database.Chunks;
-            existing.LogicWorldRect = database.LogicWorldRect;
-            existing.InvalidateLookup();
-            EditorUtility.SetDirty(existing);
-            database = existing;
+
+            existingDb.Chunks = database.Chunks;
+            existingDb.LogicWorldRect = database.LogicWorldRect;
+            existingDb.InvalidateLookup();
+            EditorUtility.SetDirty(existingDb);
+            database = existingDb;
         }
         else
         {
@@ -204,38 +180,45 @@ public static class MapChunkExportCore
         return new ExportResult
         {
             Success = true,
-            Message = BuildSuccessMessage(dbPath, bgCount, tmCount, gridRootExported, exportBackground, exportTilemap, exportGridRootPrefab, bakeVisualLayers),
+            Message = BuildSuccessMessage(dbPath, tmCount, gridRootExported, exportTilemap, exportGridRootPrefab, bakeVisualLayers),
             Database = database,
-            BackgroundChunkCount = bgCount,
+            BackgroundChunkCount = 0,
             TilemapChunkCount = tmCount,
             GridRootPrefabExported = gridRootExported
         };
-        }
-        finally
+    }
+
+    static int ComputePaintAtlasWidth(MapChunkEditorRoot editorRoot, int slicePx)
+    {
+        if (editorRoot == null || slicePx <= 0 || editorRoot.PaintWorldRect.width <= 0f)
         {
-            if (fullSourceTexture != null)
-            {
-                Object.DestroyImmediate(fullSourceTexture);
-            }
+            return 0;
         }
+
+        int cols = Mathf.Max(1, Mathf.CeilToInt(editorRoot.PaintWorldRect.width / editorRoot.ChunkWorldSize));
+        return cols * slicePx;
+    }
+
+    static int ComputePaintAtlasHeight(MapChunkEditorRoot editorRoot, int slicePx)
+    {
+        if (editorRoot == null || slicePx <= 0 || editorRoot.PaintWorldRect.height <= 0f)
+        {
+            return 0;
+        }
+
+        int rows = Mathf.Max(1, Mathf.CeilToInt(editorRoot.PaintWorldRect.height / editorRoot.ChunkWorldSize));
+        return rows * slicePx;
     }
 
     static string BuildSuccessMessage(
         string dbPath,
-        int bgCount,
         int tmCount,
         bool gridRootExported,
-        bool exportBackground,
         bool exportTilemap,
         bool exportGridRootPrefab,
         bool bakeVisualLayers)
     {
         var parts = new List<string> { $"database -> {dbPath}" };
-        if (exportBackground)
-        {
-            parts.Add($"background chunks: {bgCount}");
-        }
-
         if (exportTilemap)
         {
             parts.Add($"tilemap(grid) chunks: {tmCount}");
@@ -250,16 +233,14 @@ public static class MapChunkExportCore
             parts.Add(gridRootExported ? "GridRoot prefab: yes" : "GridRoot prefab: skipped (not found)");
         }
 
+        parts.Add("background: use Map Paint Background -> Sync");
         return string.Join(", ", parts);
     }
 
     static HashSet<ChunkCoord> CollectAllChunkCoords(
-        Vector2Int texSize,
-        int slicePx,
         Tilemap[] tileGrounds,
         float chunkSize,
         Vector2 origin,
-        bool includeTexture,
         bool includeTilemap,
         List<MapChunkVisualBaker.BakedLayer> bakedVisualLayers,
         MapChunkEditorRoot editorRoot = null)
@@ -274,11 +255,6 @@ public static class MapChunkExportCore
         {
             MapChunkUtility.CollectChunkCoordsForWorldRect(playRect, origin, chunkSize, coords);
         }
-        else if (includeTexture && texSize.x > 0 && texSize.y > 0 && slicePx > 0)
-        {
-            MapChunkUtility.IterateChunkCoordsForTexture(texSize, slicePx, c => coords.Add(c));
-        }
-
         if (includeTilemap && tileGrounds != null)
         {
             foreach (var source in tileGrounds)
@@ -412,30 +388,6 @@ public static class MapChunkExportCore
         return new ExportResult { Success = false, Message = message };
     }
 
-    static Texture2D LoadFullSourceTexture(Texture2D asset)
-    {
-        if (asset == null)
-        {
-            return null;
-        }
-
-        var path = AssetDatabase.GetAssetPath(asset);
-        if (string.IsNullOrEmpty(path) || !File.Exists(path))
-        {
-            return null;
-        }
-
-        var bytes = File.ReadAllBytes(path);
-        var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-        if (!tex.LoadImage(bytes))
-        {
-            Object.DestroyImmediate(tex);
-            return null;
-        }
-
-        return tex;
-    }
-
     static void EnsureFolder(string path)
     {
         if (AssetDatabase.IsValidFolder(path))
@@ -455,108 +407,14 @@ public static class MapChunkExportCore
 
     public static void EnsureFolderPublic(string path) => EnsureFolder(path);
 
-    static string ExportBackgroundSprite(
-        Texture2D src,
-        ChunkCoord coord,
-        Rect crop,
-        int slicePx,
-        float ppu,
-        string rootFolder)
-    {
-        var padded = ExtractPaddedRegion(src, crop, slicePx);
-        if (padded == null)
-        {
-            return null;
-        }
-
-        string spritePath = $"{rootFolder}/Sprites/bg_{coord.X}_{coord.Y}.png";
-        File.WriteAllBytes(spritePath, padded.EncodeToPNG());
-        Object.DestroyImmediate(padded);
-        AssetDatabase.ImportAsset(spritePath);
-
-        var importer = AssetImporter.GetAtPath(spritePath) as TextureImporter;
-        if (importer != null)
-        {
-            importer.textureType = TextureImporterType.Sprite;
-            importer.spriteImportMode = SpriteImportMode.Single;
-            importer.spritePixelsPerUnit = ppu;
-            importer.filterMode = FilterMode.Bilinear;
-            importer.mipmapEnabled = false;
-            importer.alphaIsTransparency = true;
-
-            var settings = new TextureImporterSettings();
-            importer.ReadTextureSettings(settings);
-            settings.spriteAlignment = (int)SpriteAlignment.BottomLeft;
-            settings.spritePivot = Vector2.zero;
-            importer.SetTextureSettings(settings);
-            importer.SaveAndReimport();
-        }
-
-        return spritePath;
-    }
-
-    static Texture2D ExtractPaddedRegion(Texture2D src, Rect crop, int slicePx)
-    {
-        var full = RenderTexture.GetTemporary(src.width, src.height, 0, RenderTextureFormat.ARGB32);
-        Graphics.Blit(src, full);
-        var prev = RenderTexture.active;
-        RenderTexture.active = full;
-
-        var padded = new Texture2D(slicePx, slicePx, TextureFormat.RGBA32, false);
-        var clear = new Color[slicePx * slicePx];
-        for (int i = 0; i < clear.Length; i++)
-        {
-            clear[i] = Color.clear;
-        }
-
-        padded.SetPixels(clear);
-
-        int w = Mathf.RoundToInt(crop.width);
-        int h = Mathf.RoundToInt(crop.height);
-        if (w > 0 && h > 0)
-        {
-            var piece = new Texture2D(w, h, TextureFormat.RGBA32, false);
-            piece.ReadPixels(new Rect(crop.x, crop.y, w, h), 0, 0);
-            piece.Apply();
-            padded.SetPixels(0, 0, w, h, piece.GetPixels());
-            Object.DestroyImmediate(piece);
-        }
-
-        padded.Apply();
-        RenderTexture.active = prev;
-        RenderTexture.ReleaseTemporary(full);
-        return padded;
-    }
-
-    static string CreateBackgroundPrefab(ChunkCoord coord, string spriteAssetPath, string rootFolder, int sortingOrder)
-    {
-        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spriteAssetPath);
-        if (sprite == null)
-        {
-            return null;
-        }
-
-        var go = new GameObject($"bg_{coord.X}_{coord.Y}");
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = sprite;
-        sr.sortingOrder = sortingOrder;
-        // prefab 原点 = chunk 左下角；补偿 pivot 不在左下角时的偏移
-        var boundsMin = sprite.bounds.min;
-        go.transform.localPosition = new Vector3(-boundsMin.x, -boundsMin.y, 0f);
-
-        string prefabPath = $"{rootFolder}/Prefabs/bg_{coord.X}_{coord.Y}.prefab";
-        PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
-        Object.DestroyImmediate(go);
-        return prefabPath;
-    }
-
     static string ExportTilemapChunk(
         ChunkCoord coord,
         float chunkSize,
         Vector2 origin,
         Tilemap[] tileGrounds,
         List<MapChunkVisualBaker.BakedLayer> bakedVisualLayers,
-        string rootFolder)
+        string rootFolder,
+        bool includeLogicLayers)
     {
         var chunkMin = MapChunkUtility.ChunkWorldMin(coord, origin, chunkSize);
         var chunkMax = chunkMin + new Vector3(chunkSize, chunkSize, 0f);
@@ -564,15 +422,16 @@ public static class MapChunkExportCore
         var go = new GameObject($"tm_{coord.X}_{coord.Y}");
         bool hasTile = false;
 
-        foreach (var source in tileGrounds)
+        if (includeLogicLayers && tileGrounds != null)
         {
-            if (source == null)
+            foreach (var source in tileGrounds)
             {
-                continue;
-            }
+                if (source == null)
+                {
+                    continue;
+                }
 
-            if (TryExportLogicLayer(source, go.transform, chunkMin, chunkMax, ref hasTile))
-            {
+                TryExportLogicLayer(source, go.transform, chunkMin, chunkMax, ref hasTile);
             }
         }
 

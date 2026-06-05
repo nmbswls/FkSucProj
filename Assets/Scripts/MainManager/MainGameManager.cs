@@ -1014,16 +1014,38 @@ namespace My
 
     public class UnityNavProvider : INavProvider
     {
+        static bool IsValidNavPoint(Vector3 point)
+        {
+            return float.IsFinite(point.x) && float.IsFinite(point.y) && float.IsFinite(point.z);
+        }
 
         public bool TryBuildPath(Vector3 start, Vector3 destination, out NavPath path)
         {
+            path = default;
+            if (!IsValidNavPoint(start) || !IsValidNavPoint(destination))
+            {
+                return false;
+            }
+
             NavMeshPath nmPath = new NavMeshPath();
 
             int walkable = NavMesh.GetAreaFromName("Walkable");
-            int mask = 1 << walkable; // 或组合多个区域
+            int mask = 1 << walkable;
 
-            var ret1 = NavMesh.SamplePosition(start, out var h1, 2f, mask);
-            var ret2 = NavMesh.SamplePosition(destination, out var h2, 2f, mask);
+            if (!NavMesh.SamplePosition(start, out var h1, 2f, mask))
+            {
+                return false;
+            }
+
+            if (!NavMesh.SamplePosition(destination, out var h2, 2f, mask))
+            {
+                return false;
+            }
+
+            if (!IsValidNavPoint(h1.position) || !IsValidNavPoint(h2.position))
+            {
+                return false;
+            }
 
             bool ok = NavMesh.CalculatePath(h1.position, h2.position, mask, nmPath);
             path = new NavPath
@@ -1035,6 +1057,7 @@ namespace My
             {
                 path.Waypoints[i] = nmPath.corners[i];
             }
+
             return ok && nmPath.corners.Length > 0;
         }
 

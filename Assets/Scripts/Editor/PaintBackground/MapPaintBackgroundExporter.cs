@@ -276,6 +276,15 @@ public static class MapPaintBackgroundExporter
 
     public static ExportResult ApplyToDatabase(MapChunkEditorRoot root, string mapName)
     {
+        return SyncPaintRectToDatabase(root, mapName);
+    }
+
+    public static ExportResult SyncChunkToDatabase(
+        MapChunkEditorRoot root,
+        string mapName,
+        ChunkCoord coord,
+        FilterMode resampleFilter = FilterMode.Bilinear)
+    {
         if (root == null)
         {
             return Fail("MapChunkEditorRoot is missing.");
@@ -286,31 +295,74 @@ public static class MapPaintBackgroundExporter
             return Fail("PaintWorldRect is not configured.");
         }
 
-        string dbPath = $"Assets/Resources/MapChunk/{mapName}.asset";
-        var database = AssetDatabase.LoadAssetAtPath<MapChunkDatabase>(dbPath);
-        if (database == null)
+        if (!MapChunkUtility.IsChunkInsideWorldRect(coord, root.PaintWorldRect, root.ChunkOrigin, root.ChunkWorldSize))
         {
-            database = ScriptableObject.CreateInstance<MapChunkDatabase>();
-            database.AreaId = mapName;
-            database.SceneName = mapName;
-            database.Chunks = new List<MapChunkExportItem>();
-            AssetDatabase.CreateAsset(database, dbPath);
+            return Fail($"Chunk ({coord.X},{coord.Y}) is outside PaintWorldRect.");
         }
 
+        string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
+        if (!File.Exists(paintedPath))
+        {
+            return Fail($"Painted PNG missing: {paintedPath}");
+        }
+
+        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
+        var manifest = LoadOrCreateManifest(root, mapName);
+        if (!MapPaintBackgroundShared.PackRuntimeBackgroundFromPainted(
+                root, mapName, coord, manifest, resampleFilter))
+        {
+            return Fail($"Failed to pack runtime background for chunk ({coord.X},{coord.Y}).");
+        }
+
+        var database = LoadOrCreateDatabase(root, mapName);
+        var item = FindOrCreateChunkItem(database, coord);
+        item.BackgroundKey = MapPaintBackgroundShared.BuildRuntimeBackgroundKey(mapName, coord);
+        database.ChunkWorldSize = root.ChunkWorldSize;
+        database.TexturePPU = MapChunkEditorSettings.GetOrCreate().TexturePPU;
+        database.ChunkOrigin = root.ChunkOrigin;
+        database.LogicWorldRect = root.PaintWorldRect;
+        database.InvalidateLookup();
+        EditorUtility.SetDirty(database);
+        AssetDatabase.SaveAssets();
+
+        MapPaintBackgroundPreview.TryAutoSync(root, mapName);
+
+        return new ExportResult
+        {
+            Success = true,
+            Message = $"Packed and synced chunk ({coord.X},{coord.Y}) to MapChunkDatabase.",
+            Manifest = manifest,
+        };
+    }
+
+    public static ExportResult SyncPaintRectToDatabase(
+        MapChunkEditorRoot root,
+        string mapName,
+        FilterMode resampleFilter = FilterMode.Bilinear)
+    {
+        if (root == null)
+        {
+            return Fail("MapChunkEditorRoot is missing.");
+        }
+
+        if (root.PaintWorldRect.width <= 0f || root.PaintWorldRect.height <= 0f)
+        {
+            return Fail("PaintWorldRect is not configured.");
+        }
+
+        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
+        var manifest = LoadOrCreateManifest(root, mapName);
+        var database = LoadOrCreateDatabase(root, mapName);
         var settings = MapChunkEditorSettings.GetOrCreate();
         database.ChunkWorldSize = root.ChunkWorldSize;
         database.TexturePPU = settings.TexturePPU;
         database.ChunkOrigin = root.ChunkOrigin;
-        database.SourceTextureWidth = Mathf.Max(database.SourceTextureWidth, settings.PaintSlicePixelSize);
-        database.SourceTextureHeight = Mathf.Max(database.SourceTextureHeight, settings.PaintSlicePixelSize);
-
         database.LogicWorldRect = root.PaintWorldRect;
 
         var paintCoords = new HashSet<ChunkCoord>();
         MapPaintBackgroundShared.CollectPaintRectCoords(root, paintCoords);
         var lookup = database.Chunks?.ToDictionary(c => (c.X, c.Y), c => c) ?? new Dictionary<(int, int), MapChunkExportItem>();
 
-        // 移除逻辑范围外的历史 chunk 条目
         if (database.Chunks != null && database.Chunks.Count > 0)
         {
             database.Chunks.RemoveAll(c =>
@@ -322,11 +374,21 @@ public static class MapPaintBackgroundExporter
             lookup = database.Chunks.ToDictionary(c => (c.X, c.Y), c => c);
         }
 
+        int packed = 0;
+        int skipped = 0;
         foreach (var coord in paintCoords)
         {
-            string prefabPath = $"{MapPaintBackgroundShared.GetMapRootFolder(mapName)}/Prefabs/bg_{coord.X}_{coord.Y}.prefab";
-            if (!File.Exists(prefabPath))
+            string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
+            if (!File.Exists(paintedPath))
             {
+                skipped++;
+                continue;
+            }
+
+            if (!MapPaintBackgroundShared.PackRuntimeBackgroundFromPainted(
+                    root, mapName, coord, manifest, resampleFilter))
+            {
+                skipped++;
                 continue;
             }
 
@@ -337,19 +399,58 @@ public static class MapPaintBackgroundExporter
                 lookup[(coord.X, coord.Y)] = item;
             }
 
-            item.BackgroundKey = $"MapChunk/{mapName}/Prefabs/bg_{coord.X}_{coord.Y}";
+            item.BackgroundKey = MapPaintBackgroundShared.BuildRuntimeBackgroundKey(mapName, coord);
+            packed++;
         }
 
         database.InvalidateLookup();
         EditorUtility.SetDirty(database);
         AssetDatabase.SaveAssets();
+        MapPaintBackgroundPreview.TryAutoSync(root, mapName);
 
         return new ExportResult
         {
             Success = true,
-            Message = $"Updated MapChunkDatabase with {paintCoords.Count} paint rect chunk(s).",
-            Manifest = null,
+            Message = $"Packed and synced {packed} chunk(s) to MapChunkDatabase ({skipped} skipped, no painted PNG).",
+            Manifest = manifest,
         };
+    }
+
+    static MapChunkDatabase LoadOrCreateDatabase(MapChunkEditorRoot root, string mapName)
+    {
+        string dbPath = $"Assets/Resources/MapChunk/{mapName}.asset";
+        var database = AssetDatabase.LoadAssetAtPath<MapChunkDatabase>(dbPath);
+        if (database != null)
+        {
+            if (database.Chunks == null)
+            {
+                database.Chunks = new List<MapChunkExportItem>();
+            }
+
+            return database;
+        }
+
+        database = ScriptableObject.CreateInstance<MapChunkDatabase>();
+        database.AreaId = mapName;
+        database.SceneName = mapName;
+        database.Chunks = new List<MapChunkExportItem>();
+        AssetDatabase.CreateAsset(database, dbPath);
+        return database;
+    }
+
+    static MapChunkExportItem FindOrCreateChunkItem(MapChunkDatabase database, ChunkCoord coord)
+    {
+        database.BuildLookup();
+        var existing = database.GetChunkItem(coord);
+        if (existing != null)
+        {
+            return existing;
+        }
+
+        var item = new MapChunkExportItem { X = coord.X, Y = coord.Y };
+        database.Chunks.Add(item);
+        database.InvalidateLookup();
+        return item;
     }
 
     static ExportResult Fail(string message) => new ExportResult { Success = false, Message = message };
@@ -414,28 +515,6 @@ public static class MapPaintBackgroundExporter
         }
 
         info.Source = ChunkPaintSource.Generated;
-
-        string rootFolder = MapPaintBackgroundShared.GetMapRootFolder(mapName);
-        var settings = MapChunkEditorSettings.GetOrCreate();
-        float ppu = settings.TexturePPU > 0f ? settings.TexturePPU : settings.EffectivePaintExportPpu;
-        string templatePath = MapPaintBackgroundShared.GetChunkTemplatePath(mapName, coord);
-        var templateTex = MapPaintBackgroundShared.LoadTextureFromAssetPath(templatePath);
-        if (templateTex == null)
-        {
-            return;
-        }
-
-        int bgSlice = MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, ppu);
-        var bgTex = MapPaintBackgroundShared.ResampleTexture(templateTex, bgSlice, bgSlice, FilterMode.Bilinear);
-        Object.DestroyImmediate(templateTex);
-        string spritePath = MapPaintBackgroundShared.SaveBackgroundSprite(bgTex, coord, ppu, rootFolder);
-        Object.DestroyImmediate(bgTex);
-        if (!string.IsNullOrEmpty(spritePath))
-        {
-            MapPaintBackgroundShared.SaveBackgroundPrefab(coord, spritePath, rootFolder, settings.BackgroundSortingOrder);
-            AssetDatabase.ImportAsset(spritePath);
-        }
-
         EditorUtility.SetDirty(manifest);
     }
 
