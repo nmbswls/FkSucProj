@@ -20,29 +20,66 @@ namespace My.Map.Scene
                 duration = 0.5f;
             }
 
+            BeginPresentationMove();
+            _presentationMoveTween = transform
+                .DOMove(targetWorldPos, duration)
+                .SetEase(Ease.Linear)
+                .OnComplete(() => FinishPresentationMove(onReach))
+                .SetLink(gameObject);
+        }
+
+        public void PlayVineClimbMove(
+            Vector3 apexWorldPos,
+            Vector3 landWorldPos,
+            float climbDuration,
+            float pauseDuration,
+            float jumpDuration,
+            Action onComplete)
+        {
+            CancelPresentationMove();
+
+            climbDuration = Mathf.Max(0.01f, climbDuration);
+            pauseDuration = Mathf.Max(0f, pauseDuration);
+            jumpDuration = Mathf.Max(0.01f, jumpDuration);
+
+            BeginPresentationMove();
+
+            float jumpPower = Mathf.Max(0.15f, Mathf.Abs(landWorldPos.y - apexWorldPos.y));
+            var seq = DOTween.Sequence();
+            seq.Append(transform.DOMove(apexWorldPos, climbDuration).SetEase(Ease.OutQuad));
+            if (pauseDuration > 0f)
+            {
+                seq.AppendInterval(pauseDuration);
+            }
+
+            seq.Append(transform.DOJump(landWorldPos, jumpPower, 1, jumpDuration).SetEase(Ease.InOutQuad));
+            seq.OnComplete(() => FinishPresentationMove(onComplete));
+            seq.SetLink(gameObject);
+            _presentationMoveTween = seq;
+        }
+
+        void BeginPresentationMove()
+        {
             _presentationMoveActive = true;
             CharacterController?.ResetSmoothedMoveVelocity();
 
-            bool controllerWasEnabled = CharacterController != null && CharacterController.enabled;
             if (CharacterController != null)
             {
                 CharacterController.enabled = false;
             }
+        }
 
-            _presentationMoveTween = transform
-                .DOMove(targetWorldPos, duration)
-                .SetEase(Ease.Linear)
-                .OnComplete(() =>
-                {
-                    _presentationMoveActive = false;
-                    if (CharacterController != null)
-                    {
-                        CharacterController.enabled = controllerWasEnabled;
-                    }
+        void FinishPresentationMove(Action onReach)
+        {
+            _presentationMoveActive = false;
+            _presentationMoveTween = null;
 
-                    onReach?.Invoke();
-                })
-                .SetLink(gameObject);
+            if (CharacterController != null)
+            {
+                CharacterController.enabled = true;
+            }
+
+            onReach?.Invoke();
         }
 
         public void CancelPresentationMove()

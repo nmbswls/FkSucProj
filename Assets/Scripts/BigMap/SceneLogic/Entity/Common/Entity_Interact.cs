@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using My.Config;
 using My.Map.Entity;
+using My.Map.Scene;
 using My.Player;
 using My.UI;
 using UnityEngine;
@@ -55,6 +56,7 @@ namespace My.Map
         private MapInteractInfo? _currInteract = null;
         private float _pendingParam1 = 0;
         private int _interactingPlayerId = GamePlayerIds.Local;
+        private bool _vineClimbPresentationDone;
 
         public EntityInteractComp(IEntityInteractable owner)
         {
@@ -110,6 +112,15 @@ namespace My.Map
                             if (_pendingParam1 > _currInteract.Outputs[_currOutputIdx].Param1 * 0.001f)
                             {
                                 pendingFinish = true;
+                            }
+                        }
+                        break;
+                    case LogicInteractOutput.EOutputType.VineClimbTo:
+                        {
+                            pendingFinish = _vineClimbPresentationDone;
+                            if (pendingFinish)
+                            {
+                                _vineClimbPresentationDone = false;
                             }
                         }
                         break;
@@ -333,6 +344,26 @@ namespace My.Map
             return true;
         }
 
+        bool TryResolveVineApexLogicPos(string param4, out Vector2 logicPos)
+        {
+            logicPos = default;
+            if (!string.IsNullOrEmpty(param4) && TryResolveNamedPoint(param4, out logicPos))
+            {
+                return true;
+            }
+
+            var pres = SceneAOIManager.Instance?.GetActivePresentation(Owner.Id);
+            if (pres is VineGrowthPresenter vinePresenter
+                && vinePresenter.TryGetApexWorldPosition(out var worldPos))
+            {
+                logicPos = new Vector2(worldPos.x, worldPos.y);
+                return true;
+            }
+
+            Debug.Log("[EntityInteract] VineClimbTo failed to resolve apex.");
+            return false;
+        }
+
         void ApplyPendingTeleportTo(long playerId, Vector2 targetPos, float delaySec)
         {
             LogicFightEffectContext ctx = new LogicFightEffectContext(Owner.LogicManager, EFightCtxType.None, new EffectSourceInfo()
@@ -508,6 +539,59 @@ namespace My.Map
                             Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: delay);
                             Owner.LogicManager.viewer.DoPlayerPresentationMove(targetPos, player.Pos, delay, () => { });
                             ApplyPendingTeleportTo(player.Id, targetPos, delay);
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.VineClimbTo:
+                        {
+                            var player = GetInteractingPlayerEntity();
+                            if (player == null)
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            if (!TryResolveNamedPoint(output.Param3, out var landPos))
+                            {
+                                Debug.Log("vine climb landing point not found");
+                                errOccur = true;
+                                break;
+                            }
+
+                            if (!TryResolveVineApexLogicPos(output.Param4, out var apexPos))
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            float climbSec = output.Param1 * 0.001f;
+                            if (climbSec <= 0f)
+                            {
+                                climbSec = 0.8f;
+                            }
+
+                            float pauseSec = output.Param2 * 0.001f;
+                            float jumpSec = output.Param5 * 0.001f;
+                            if (jumpSec <= 0f)
+                            {
+                                jumpSec = 0.35f;
+                            }
+
+                            float totalSec = climbSec + pauseSec + jumpSec;
+                            _vineClimbPresentationDone = false;
+                            pending = true;
+
+                            MainGameManager.Instance?.interactSystem?.SetInteractPause(totalSec);
+                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: totalSec);
+                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: totalSec);
+                            ApplyPendingTeleportTo(player.Id, landPos, totalSec);
+                            Owner.LogicManager.viewer.DoPlayerVineClimbMove(
+                                apexPos,
+                                landPos,
+                                climbSec,
+                                pauseSec,
+                                jumpSec,
+                                () => { _vineClimbPresentationDone = true; });
                         }
                         break;
 

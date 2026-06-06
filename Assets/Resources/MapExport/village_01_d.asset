@@ -1232,6 +1232,16 @@ MonoBehaviour:
     Position: {x: 25.83, y: 11.91, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
+  - Name: vine_area01_landing
+    PointType: 0
+    Position: {x: 25.83, y: 11.91, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: vine_area01_base
+    PointType: 0
+    Position: {x: 25.76, y: 6.9399986, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
   - Name: guard_entry_01
     PointType: 3
     Position: {x: 45.4, y: 46.63, z: 0}

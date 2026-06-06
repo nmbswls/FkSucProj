@@ -706,7 +706,7 @@ namespace My.Map
             var hunger = GetAttr(AttrIdConsts.PlayerHunger);
             if (hunger <= 0)
             {
-                ApplyResourceChange(AttrIdConsts.HP, -500, false, EDmgFlag.None, null);
+                ApplyResourceChange(AttrIdConsts.HP, -500, false, EDmgFlag.Loss, null);
                 LogicManager.viewer.ShowFakeFxEffect("饿", this.Pos);
             }
             else if(hunger >= 90000)
@@ -1863,15 +1863,18 @@ namespace My.Map
         {
             base.OnDamageBeforeFinalReduce(dmg, intent);
 
-            // 获取原始h系数
-            var hParam = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HImpulse_Pipeline) ?? 0;
+            if(!intent.deltaFlags.HasFlag(EDmgFlag.Loss))
+            {
+                // 获取原始h系数
+                var hParam = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HImpulse_Pipeline) ?? 0;
 
-            // 根据伤害计算h冲击力
-            long hImpulse = DamagePipeline.CalculateDmgBonusedHImpulse(hParam, dmg, GetUnitLevel());
+                // 根据伤害计算h冲击力
+                long hImpulse = DamagePipeline.CalculateDmgBonusedHImpulse(hParam, dmg, GetUnitLevel());
 
-            Debug.Log("OnDamageBeforeFinalReduce dmg impulse h " + hImpulse + " dmg " + dmg);
+                Debug.Log("OnDamageBeforeFinalReduce dmg impulse h " + hImpulse + " dmg " + dmg);
 
-            ApplyHImpulseDirectly(hImpulse, intent);
+                ApplyHImpulseDirectly(hImpulse, intent);
+            }
         }
 
         /// <summary>

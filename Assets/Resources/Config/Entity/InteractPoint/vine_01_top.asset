@@ -39,12 +39,12 @@ MonoBehaviour:
         Param6: 
       CheckInteractCond: []
       Outputs:
-      - OutputType: 9
-        Param1: 1200
-        Param2: 0
+      - OutputType: 50
+        Param1: 800
+        Param2: 300
         Param3: vine_area01_base
-        Param4: 
-        Param5: 0
+        Param4: vine_area01_bottom
+        Param5: 350
         Param6: 0
         DelayTime: 0
         TargetType: 0

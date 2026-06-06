@@ -3,9 +3,8 @@ using My.Map.Hunting;
 using UnityEngine;
 
 namespace My.UI
-{    /// <summary>
-    /// 狩猎模式专用 HUD：悬浮 NPC 详情、欲望结晶标记等。
-    /// </summary>
+{
+    // 狩猎模式专用 HUD：悬浮 NPC 详情、行动轮盘、欲望结晶标记等。
     public class HuntingHudPanel : PanelBase
     {
         public const string PanelIdConst = "HuntingHudPanel";
@@ -21,9 +20,7 @@ namespace My.UI
 
         public bool IsHunterMode { get; private set; }
 
-        /// <summary>
-        /// 猎杀模式切换时广播，供结晶标记等订阅。
-        /// </summary>
+        // 猎杀模式切换时广播，供结晶标记等订阅。
         public static event Action<bool> HunterModeChanged;
 
         [SerializeField]
@@ -50,6 +47,7 @@ namespace My.UI
             if (on)
             {
                 npcDetail?.Clear();
+                actionRadial?.Close();
             }
 
             HunterModeChanged?.Invoke(on);
@@ -57,34 +55,13 @@ namespace My.UI
 
         public override void Show()
         {
-            EnsureActionRadial();
             base.Show();
             HunterModeChanged?.Invoke(IsHunterMode);
         }
 
-        void EnsureActionRadial()
-        {
-            if (actionRadial != null)
-            {
-                return;
-            }
-
-            var radialGo = new GameObject("HuntingNpcActionRadial", typeof(RectTransform));
-            radialGo.transform.SetParent(transform, false);
-            var rt = radialGo.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0.5f, 0.5f);
-            rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(260f, 260f);
-            rt.anchoredPosition = Vector2.zero;
-
-            actionRadial = radialGo.AddComponent<HuntingNpcActionRadialMenu>();
-            actionRadial.MenuRoot = rt;
-            actionRadial.SectorContainer = rt;
-            radialGo.SetActive(false);
-        }
-
         public override void Hide()
         {
+            actionRadial?.Close();
             HuntingModeManager.Instance?.Exit();
             base.Hide();
         }

@@ -541,9 +541,20 @@ namespace My.Map.Scene
 
         public override void OnEntityMove(long entityId, Vector2 oldPos, Vector2 newPos)
         {
+            if (IsPresentationMoveActive)
+            {
+                var worldPos = MapLogicPosition.LogicToWorld(newPos);
+                if ((transform.position - worldPos).sqrMagnitude > 0.0001f)
+                {
+                    transform.position = worldPos;
+                }
+
+                return;
+            }
+
             base.OnEntityMove(entityId, oldPos, newPos);
 
-            if((oldPos - newPos).sqrMagnitude > 5)
+            if ((oldPos - newPos).sqrMagnitude > 5)
             {
                 MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
             }

@@ -1345,16 +1345,22 @@ namespace My.Map
 
                 OnDamageBeforeFinalReduce(dmg, intent);
 
-
-                var fix_dr = GetAttr(AttrIdConsts.Final_Fix_DR_All);
-                var fixDrVal = Math.Min(fix_dr, dmg);
-                dmg -= fixDrVal;
-
-                foreach (var b in BuffContainer.Values)
+                long fixDrVal = 0;
+                if (!intent.deltaFlags.HasFlag(EDmgFlag.Loss))
                 {
-                    b.DoBuffTrigger(ETriggerType.FinalDmgReduced, (int)fixDrVal);
+                    var fix_dr = GetAttr(AttrIdConsts.Final_Fix_DR_All);
+                    fixDrVal = Math.Min(fix_dr, dmg);
+                    dmg -= fixDrVal;
                 }
-
+                    
+                if(fixDrVal > 0)
+                {
+                    foreach (var b in BuffContainer.Values)
+                    {
+                        b.DoBuffTrigger(ETriggerType.FinalDmgReduced, (int)fixDrVal);
+                    }
+                }
+                
                 if (dmg <= 0)
                 {
                     dmg = 0;

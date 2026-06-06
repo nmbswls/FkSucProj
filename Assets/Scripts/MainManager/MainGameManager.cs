@@ -834,6 +834,31 @@ namespace My
             playerScenePresenter.PlayPresentationMove(targetWorld, duration, onReach);
         }
 
+        public void DoPlayerVineClimbMove(
+            Vector2 apexLogicPos,
+            Vector2 landLogicPos,
+            float climbDuration,
+            float pauseDuration,
+            float jumpDuration,
+            Action onComplete = null)
+        {
+            if (playerScenePresenter == null)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            var apexWorld = GetWorldPosFromLogicPos(apexLogicPos);
+            var landWorld = GetWorldPosFromLogicPos(landLogicPos);
+            playerScenePresenter.PlayVineClimbMove(
+                apexWorld,
+                landWorld,
+                climbDuration,
+                pauseDuration,
+                jumpDuration,
+                onComplete);
+        }
+
         /// <summary>
         /// 等待击败战斗
         /// </summary>

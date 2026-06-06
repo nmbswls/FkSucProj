@@ -163,6 +163,24 @@ namespace My.Map.Scene
             topAnchor.position = lineView.GetTopWorldPosition();
         }
 
+        public bool TryGetApexWorldPosition(out Vector3 worldPos)
+        {
+            if (topAnchor != null)
+            {
+                worldPos = topAnchor.position;
+                return true;
+            }
+
+            if (lineView != null)
+            {
+                worldPos = lineView.GetTopWorldPosition();
+                return true;
+            }
+
+            worldPos = default;
+            return false;
+        }
+
         bool IsLogicGrown(int statusId) => statusId != 0;
 
         bool ShouldShowVine(int statusId) => IsLogicGrown(statusId) || _visualGrown || _growPlaying;

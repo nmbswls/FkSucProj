@@ -183,6 +183,14 @@ public interface ISceneAbilityViewer
 
     void DoPlayerPresentationMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onReach = null);
 
+    void DoPlayerVineClimbMove(
+        Vector2 apexLogicPos,
+        Vector2 landLogicPos,
+        float climbDuration,
+        float pauseDuration,
+        float jumpDuration,
+        Action onComplete = null);
+
     void ShowKaiYouCloseupWindow(long srcEntityId, string showName, float duration);
 
     void ShowHTangleCloseupWindow(long srcEntityId);

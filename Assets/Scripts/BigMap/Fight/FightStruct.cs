@@ -54,6 +54,8 @@ namespace My.Map.Fight
             Xixue = 1 << 4,
 
             Nonlethal = 1 << 5,
+
+            Loss = 1 << 6,
         }
 
         public enum EInterruptSource
