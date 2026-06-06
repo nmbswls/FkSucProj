@@ -28,6 +28,7 @@ namespace My.Map.Cliff
         {
             public int X;
             public int SouthEdgeY;
+            public int TopAnchorY;
             public CliffSpanRole Span;
             public CliffDepthJunction DepthJunction;
             public CliffCornerShape Corner;
@@ -209,9 +210,6 @@ namespace My.Map.Cliff
             var segments = GroupSouthEdgeSegments(southEdge);
             LogSouthEdgeSegments(segments);
 
-            int rowCount = ResolveRowCount(height);
-            Debug.Log($"[CliffEdgeGenerator] Row count = {rowCount} (Height={height}), cliff Y from southEdgeY+1 downward.");
-
             if (segments.Count == 0)
             {
                 return 0;
@@ -243,12 +241,12 @@ namespace My.Map.Cliff
                 foreach (var col in segment)
                 {
                     var attrs = ClassifyColumn(view, col, segment, southEdge);
-                    int rowCount = ResolveRowCount(height);
+                    int rowCount = ResolveRowCount(height, attrs.SouthEdgeY, attrs.TopAnchorY);
                     for (int r = 0; r < rowCount; r++)
                     {
                         yield return new CliffPlacement
                         {
-                            CliffCell = CliffDualGridMapping.ResolveCliffCell(col.X, attrs.SouthEdgeY, r, col.Z),
+                            CliffCell = CliffDualGridMapping.ResolveCliffCell(col.X, attrs.TopAnchorY, r, col.Z),
                             ViewSouthEdgeCell = new Vector3Int(col.X, attrs.SouthEdgeY, col.Z),
                             IsEdgeRow = r == 0,
                             Attrs = attrs,
@@ -391,10 +389,22 @@ namespace My.Map.Cliff
                 ? CliffCornerShape.None
                 : ResolveConvexCorner(view, col, hasSegLeft, hasSegRight, leftCliffWall, rightCliffWall);
 
+            int topAnchorY = col.Y;
+            if (segLeft)
+            {
+                topAnchorY = Mathf.Max(topAnchorY, left.Y);
+            }
+
+            if (segRight)
+            {
+                topAnchorY = Mathf.Max(topAnchorY, right.Y);
+            }
+
             return new ColumnAttrs
             {
                 X = col.X,
                 SouthEdgeY = col.Y,
+                TopAnchorY = topAnchorY,
                 Span = span,
                 DepthJunction = depth,
                 Corner = corner,
@@ -428,8 +438,11 @@ namespace My.Map.Cliff
             return CliffCornerShape.None;
         }
 
-        // 首行在 southEdgeY+1，共 Height+2 行（补顶 + 南缘行 + Height 体）
-        static int ResolveRowCount(int height) => height + 2;
+        // 顶行在 TopAnchorY（本格与左右邻接 Y 的最大值），共 Height + 1 + (TopAnchorY - SouthEdgeY) 行
+        static int ResolveRowCount(int height, int southEdgeY, int topAnchorY)
+        {
+            return height + 1 + (topAnchorY - southEdgeY);
+        }
 
         static int PlaceColumn(
             Tilemap cliff,
@@ -438,11 +451,11 @@ namespace My.Map.Cliff
             ColumnAttrs attrs,
             int height)
         {
-            int rowCount = ResolveRowCount(height);
+            int rowCount = ResolveRowCount(height, attrs.SouthEdgeY, attrs.TopAnchorY);
             int placed = 0;
             for (int r = 0; r < rowCount; r++)
             {
-                var cliffCell = CliffDualGridMapping.ResolveCliffCell(cliffX, attrs.SouthEdgeY, r, 0);
+                var cliffCell = CliffDualGridMapping.ResolveCliffCell(cliffX, attrs.TopAnchorY, r, 0);
                 var span = ResolvePlacementSpan(r, attrs);
                 var depthJunction = attrs.DepthJunction;
                 var corner = r == 0 ? attrs.Corner : CliffCornerShape.None;
@@ -456,7 +469,7 @@ namespace My.Map.Cliff
                 if (tile == null)
                 {
                     Debug.LogWarning(
-                        $"[CliffEdgeGenerator] Missing tile at cliff ({cliffX},{attrs.SouthEdgeY + 1 - r}), "
+                        $"[CliffEdgeGenerator] Missing tile at cliff ({cliffX},{attrs.TopAnchorY - r}), "
                         + $"key={key.Row}/{key.Span}/depth={key.DepthJunction}");
                     continue;
                 }
