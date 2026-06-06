@@ -18,8 +18,8 @@ MonoBehaviour:
   Body_RightEnd: {fileID: 11400000, guid: f04c8cf758aade043a78278d6623f678, type: 2}
   Body_DepthJunctionLeft: {fileID: 11400000, guid: 51131d04d6480fd409d7bdcb92994146, type: 2}
   Body_DepthJunctionRight: {fileID: 11400000, guid: bf79a16747cc7b142b969551751a6a44, type: 2}
-  Body_ConvexLeft: {fileID: 11400000, guid: 249825ffa4f6b7e4b86d02fdccdcfba0, type: 2}
-  Body_ConvexRight: {fileID: 11400000, guid: 0bb5df2ba5b7a2c4684d40c88e53595b, type: 2}
+  Body_ConvexLeft: {fileID: 0}
+  Body_ConvexRight: {fileID: 0}
   Bottom_Mid: {fileID: 11400000, guid: ef9b7122c887f884e86c8317a465e1f3, type: 2}
   Bottom_LeftEnd: {fileID: 11400000, guid: 16d48349bedcebd49829b16686f2e3e7, type: 2}
   Bottom_RightEnd: {fileID: 11400000, guid: 1ec7a2b71a68cf643a59b9be1f21efa5, type: 2}

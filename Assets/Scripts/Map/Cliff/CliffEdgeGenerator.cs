@@ -11,9 +11,11 @@ namespace My.Map.Cliff
         // View 格：有砖且正下方无砖
         public static bool IsSouthEdgeCell(Tilemap view, Vector3Int cell)
         {
+            var thisCell = view.GetTile(cell);
+            var downCell = view.GetTile(cell + Vector3Int.down);
             return view != null
-                && view.GetTile(cell) != null
-                && view.GetTile(cell + Vector3Int.down) == null;
+                && thisCell != null
+                && downCell == null;
         }
 
         public struct CliffPlacement
@@ -167,6 +169,59 @@ namespace My.Map.Cliff
             return false;
         }
 
+        // 分段后：左端 x-1、右端 x+1，View 有砖则把该格并入南缘（贴岩壁延长 1 格）
+        static void ExtendSegmentEndsAtCliffView(Tilemap view, HashSet<Vector3Int> southEdge)
+        {
+            if (view == null || southEdge == null || southEdge.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var segment in GroupSouthEdgeSegments(southEdge))
+            {
+                if (segment.Count == 0)
+                {
+                    continue;
+                }
+
+                int minX = segment[0].X;
+                int maxX = segment[0].X;
+                for (int i = 1; i < segment.Count; i++)
+                {
+                    if (segment[i].X < minX)
+                    {
+                        minX = segment[i].X;
+                    }
+
+                    if (segment[i].X > maxX)
+                    {
+                        maxX = segment[i].X;
+                    }
+                }
+
+                foreach (var col in segment)
+                {
+                    if (col.X == minX)
+                    {
+                        var left = new Vector3Int(col.X - 1, col.Y, col.Z);
+                        if (view.GetTile(left) != null)
+                        {
+                            southEdge.Add(left);
+                        }
+                    }
+
+                    if (col.X == maxX)
+                    {
+                        var right = new Vector3Int(col.X + 1, col.Y, col.Z);
+                        if (view.GetTile(right) != null)
+                        {
+                            southEdge.Add(right);
+                        }
+                    }
+                }
+            }
+        }
+
         public static void LogSouthEdgeSegments(IReadOnlyList<List<SouthEdgeColumn>> segments)
         {
             if (segments == null || segments.Count == 0)
@@ -207,6 +262,7 @@ namespace My.Map.Cliff
             }
 
             var southEdge = CollectSouthEdgeCells(view);
+            ExtendSegmentEndsAtCliffView(view, southEdge);
             var segments = GroupSouthEdgeSegments(southEdge);
             LogSouthEdgeSegments(segments);
 
@@ -236,6 +292,7 @@ namespace My.Map.Cliff
             }
 
             var southEdge = CollectSouthEdgeCells(view);
+            ExtendSegmentEndsAtCliffView(view, southEdge);
             foreach (var segment in GroupSouthEdgeSegments(southEdge))
             {
                 foreach (var col in segment)
@@ -269,6 +326,7 @@ namespace My.Map.Cliff
             return CliffDualGridMapping.ResolveViewSouthEdgeWorld(view, placement.ViewSouthEdgeCell);
         }
 
+        // 邻接由 GroupSouthEdgeSegments 分段时已确定；此处只在本段 x±1 列取代表格，不再筛 |Δy|
         static bool TryGetSegmentNeighbor(
             IReadOnlyList<SouthEdgeColumn> segment,
             SouthEdgeColumn col,
@@ -281,17 +339,12 @@ namespace My.Map.Cliff
 
             foreach (var c in segment)
             {
-                if (c.X != nx)
+                if (c.X != nx || c.Z != col.Z)
                 {
                     continue;
                 }
 
                 int dy = Mathf.Abs(c.Y - col.Y);
-                if (dy > 1)
-                {
-                    continue;
-                }
-
                 if (dy < bestDy)
                 {
                     bestDy = dy;
