@@ -1,4 +1,5 @@
 using Config;
+using HighlightPlus;
 using Map.Logic.Events;
 using My.Map.Entity;
 using My.Map.Ground;
@@ -495,6 +496,7 @@ namespace My.Map
         {
 
         }
+        protected float _lowFreqStateTimer;
 
         protected virtual void OnTick(float dt)
         {
@@ -506,7 +508,23 @@ namespace My.Map
             TickLifeTime(dt);
 
             MotorSystem?.Tick(dt);
+
+            if (LogicTime.time > _lowFreqStateTimer + 1.0f)
+            {
+                _lowFreqStateTimer += 1.0f;
+
+                TickStateLowFreq();
+            }
         }
+
+        /// <summary>
+        /// 低频进行player相关逻辑
+        /// </summary>
+        protected virtual void TickStateLowFreq()
+        {
+            TickOnGroundOverlay();
+        }
+
 
         public void ForceCommitAttribute()
         {
@@ -644,7 +662,110 @@ namespace My.Map
         public event Action<BuffInstance> EventOnBuffRegister;
         public event Action<long> EventOnBuffUnregister;
 
-        
+
+        #region 地面检查
+
+        protected HashSet<EGroundLiquidType> currLiquids = new();
+        protected HashSet<EGroundMistType> currMists = new();
+
+        protected virtual bool CanTickGroundOverlay()
+        {
+            return false;
+        }
+
+        protected void TickOnGroundOverlay()
+        {
+            if(!CanTickGroundOverlay())
+            {
+                return;
+            }
+
+            TickGroundLiquidOverlay();
+            TickGroundMistOverlay();
+        }
+
+        void TickGroundLiquidOverlay()
+        {
+            var liquids = LogicManager.GroundLiquidManager.CheckAllLiquidsUnderUnit(this.Pos, 0.3f);
+
+            bool changed = false;
+            foreach (var liquid in currLiquids)
+            {
+                if (!liquids.Contains(liquid))
+                {
+                    changed = true;
+                    OnLiquidAdd(liquid);
+                }
+            }
+
+            foreach (var liquid in liquids)
+            {
+                if (!currLiquids.Contains(liquid))
+                {
+                    changed = true;
+                    OnLiquidRemove(liquid);
+                }
+            }
+
+            if (changed)
+            {
+                currLiquids.Clear();
+                foreach (var liquid in liquids)
+                {
+                    currLiquids.Add(liquid);
+                }
+            }
+        }
+
+        void TickGroundMistOverlay()
+        {
+            var mists = LogicManager.GroundMistManager.CheckAllMistsUnderUnit(this.Pos, 0.3f);
+
+            foreach (var mist in currMists)
+            {
+                if (!mists.Contains(mist))
+                {
+                    OnMistAdd(mist);
+                    
+                }
+            }
+
+            foreach (var mist in mists)
+            {
+                if (!currMists.Contains(mist))
+                {
+                    OnMistRemove(mist);
+                    
+                }
+            }
+
+            currMists.Clear();
+            foreach (var mist in mists)
+            {
+                currMists.Add(mist);
+            }
+        }
+
+        protected virtual void OnLiquidAdd(EGroundLiquidType liquidType)
+        {
+            
+        }
+
+        protected virtual void OnLiquidRemove(EGroundLiquidType liquidType)
+        {
+            
+        }
+
+        protected virtual void OnMistAdd(EGroundMistType mistType)
+        {
+        }
+
+        protected virtual void OnMistRemove(EGroundMistType mistType)
+        {
+            
+        }
+
+        #endregion
     }
 
 }

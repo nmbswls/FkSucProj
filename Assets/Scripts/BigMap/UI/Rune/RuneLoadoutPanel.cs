@@ -15,11 +15,7 @@ namespace My.UI.Rune
     {
         public const string Pid = "RuneLoadoutPanel";
 
-        const float OwnedAreaTopAnchor = 0.28f;
-        const float MainAreaBottomAnchor = 0.02f;
-
         [SerializeField] Transform builtRoot;
-        [SerializeField] RectTransform slotArea;
         [SerializeField] RectTransform slotGrid;
         [SerializeField] TextMeshProUGUI detailTitle;
         [SerializeField] TextMeshProUGUI detailBody;
@@ -27,8 +23,6 @@ namespace My.UI.Rune
         [SerializeField] RectTransform ownedGrid;
         [SerializeField] RuneOwnedCell ownedCellTemplate;
         [SerializeField] TextMeshProUGUI ownedHint;
-        [SerializeField] Button closeButton;
-        [SerializeField] Button blockerButton;
         [SerializeField] RuneDragDropController dragController;
 
         IPlayerProgressionHubHost _progressionHubHost;
@@ -82,17 +76,6 @@ namespace My.UI.Rune
             {
                 return;
             }
-
-            if (blockerButton != null)
-            {
-                blockerButton.gameObject.SetActive(false);
-            }
-
-            if (closeButton != null)
-            {
-                closeButton.onClick.RemoveAllListeners();
-                closeButton.onClick.AddListener(CloseSelfOrHub);
-            }
         }
 
         public void CloseSelfOrHub()
@@ -126,7 +109,6 @@ namespace My.UI.Rune
             }
 
             ApplyHostedChromeIfNeeded();
-            ApplyMainAreaLayout();
             RefreshAll();
         }
 
@@ -153,8 +135,7 @@ namespace My.UI.Rune
             EnsureSlotViews();
             if (_slotViews.Count == 0)
             {
-                Debug.LogError("[RunePanel] Prefab SlotGrid has no RuneSlotView with RuneSlotBinder.");
-                return false;
+                Debug.LogWarning("[RunePanel] SlotGrid has no RuneSlotView. Place RuneSlot prefabs in editor.");
             }
 
             if (ownedGrid == null || ownedCellTemplate == null)
@@ -235,7 +216,6 @@ namespace My.UI.Rune
             }
 
             _selectedSlot = FindSelectedSlotView();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(slotGrid);
         }
 
         public static bool IsEquipSlotUnlocked(PlayerRuneSystem runeSystem, ERuneEquipSlot slot)
@@ -281,19 +261,6 @@ namespace My.UI.Rune
             return null;
         }
 
-        void ApplyMainAreaLayout()
-        {
-            bool ownedVisible = ownedArea != null && ownedArea.gameObject.activeSelf;
-            if (slotArea == null)
-            {
-                return;
-            }
-
-            var min = slotArea.anchorMin;
-            min.y = ownedVisible ? OwnedAreaTopAnchor : MainAreaBottomAnchor;
-            slotArea.anchorMin = min;
-        }
-
         public void OnSlotClicked(RuneSlotView slot)
         {
             if (slot == null || slot.Binder == null)
@@ -321,7 +288,6 @@ namespace My.UI.Rune
                 }
             }
 
-            ApplyMainAreaLayout();
             RefreshAll();
         }
 

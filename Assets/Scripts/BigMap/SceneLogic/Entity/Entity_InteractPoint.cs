@@ -338,6 +338,27 @@ namespace My.Map.Entity
             realRecord.PoisonBaitEndTime = _poisonBaitEndTime;
             realRecord.PoisonCdEndTime = _poisonCdEndTime;
         }
+
+
+        protected override void OnLiquidAdd(EGroundLiquidType liquidType)
+        {
+            switch (liquidType)
+            {
+                case EGroundLiquidType.GcLiquid:
+                    break;
+                
+            }
+        }
+
+        protected override void OnLiquidRemove(EGroundLiquidType liquidType)
+        {
+            switch (liquidType)
+            {
+                case EGroundLiquidType.GcLiquid:
+                    break;
+                
+            }
+        }
     }
 
 

@@ -17,6 +17,7 @@ using static My.UI.FishingMiniGamePanel;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using My.Map.Ground;
 using My;
+using HighlightPlus;
 
 
 namespace My.Map
@@ -121,7 +122,6 @@ namespace My.Map
         // id, 来源实体, 实际 applied 的 HP 变化量（finalDelta，负数为扣血）
         public event Action<long, long?, long> EventOnHpChanged;
 
-        protected float _lowFreqStateTimer;
 
         protected float externalDecay = 30f;          // 外力自然衰减（每秒）
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -228,21 +228,15 @@ namespace My.Map
         }
 
 
-        /// <summary>
-        /// 低频进行player相关逻辑
-        /// </summary>
-        private void TickStateLowFreq()
+        
+
+        protected override bool CanTickGroundOverlay()
         {
-            if (LogicTime.time < _lowFreqStateTimer + 1.0f)
+            if (MarkNoLogic || IsDead || MarkUnsensored)
             {
-                return;
+                return false;
             }
-
-            _lowFreqStateTimer += 1.0f;
-
-            TickResourceChange(1.0f);
-
-            TickOnGroundOverlay();
+            return true;
         }
 
         protected virtual void TickResourceChange(float interval)
@@ -1516,99 +1510,59 @@ namespace My.Map
             return false;
         }
 
-        private HashSet<EGroundLiquidType> currLiquids = new();
-        private HashSet<EGroundMistType> currMists = new();
 
-        protected void TickOnGroundOverlay()
+        protected override void TickStateLowFreq()
         {
-            if (MarkNoLogic || IsDead || MarkUnsensored)
-            {
-                return;
-            }
-
-            TickGroundLiquidOverlay();
-            TickGroundMistOverlay();
+            base.TickStateLowFreq();
+            TickResourceChange(1.0f);
         }
 
-        void TickGroundLiquidOverlay()
+        protected override void OnLiquidAdd(EGroundLiquidType liquidType)
         {
-            var liquids = LogicManager.GroundLiquidManager.CheckAllLiquidsUnderUnit(this.Pos, 0.3f);
-
-            foreach (var liquid in currLiquids)
+            switch (liquidType)
             {
-                if (!liquids.Contains(liquid))
-                {
-                    switch (liquid)
-                    {
-                        case EGroundLiquidType.GcLiquid:
-                            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_gc_liquid");
-                            break;
-                        case EGroundLiquidType.Milk:
-                            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_milk_liquid");
-                            break;
-                    }
-                }
-            }
-
-            foreach (var liquid in liquids)
-            {
-                if (!currLiquids.Contains(liquid))
-                {
-                    switch (liquid)
-                    {
-                        case EGroundLiquidType.GcLiquid:
-                            LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_gc_liquid");
-                            break;
-                        case EGroundLiquidType.Milk:
-                            LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_milk_liquid");
-                            break;
-                    }
-                }
-            }
-
-            currLiquids.Clear();
-            foreach (var liquid in liquids)
-            {
-                currLiquids.Add(liquid);
+                case EGroundLiquidType.GcLiquid:
+                    LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_gc_liquid");
+                    break;
+                case EGroundLiquidType.Milk:
+                    LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "b_ground_milk_liquid");
+                    break;
             }
         }
 
-        void TickGroundMistOverlay()
+        protected override void OnLiquidRemove(EGroundLiquidType liquidType)
         {
-            var mists = LogicManager.GroundMistManager.CheckAllMistsUnderUnit(this.Pos, 0.3f);
-
-            foreach (var mist in currMists)
+            switch (liquidType)
             {
-                if (!mists.Contains(mist))
-                {
-                    switch (mist)
-                    {
-                        case EGroundMistType.PinkMist:
-                            LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "player_pink_mist");
-                            break;
-                    }
-                }
-            }
-
-            foreach (var mist in mists)
-            {
-                if (!currMists.Contains(mist))
-                {
-                    switch (mist)
-                    {
-                        case EGroundMistType.PinkMist:
-                            LogicManager.globalBuffManager.AddBuff(this.Id, "player_pink_mist");
-                            break;
-                    }
-                }
-            }
-
-            currMists.Clear();
-            foreach (var mist in mists)
-            {
-                currMists.Add(mist);
+                case EGroundLiquidType.GcLiquid:
+                    LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_gc_liquid");
+                    break;
+                case EGroundLiquidType.Milk:
+                    LogicManager.globalBuffManager.AddBuff(this.Id, "b_ground_milk_liquid");
+                    break;
             }
         }
+
+        protected override void OnMistAdd(EGroundMistType mistType)
+        {
+            switch (mistType)
+            {
+                case EGroundMistType.PinkMist:
+                    LogicManager.globalBuffManager.RemoveAllBuffById(this.Id, "player_pink_mist");
+                    break;
+            }
+        }
+
+        protected override void OnMistRemove(EGroundMistType mistType)
+        {
+            switch (mistType)
+            {
+                case EGroundMistType.PinkMist:
+                    LogicManager.globalBuffManager.AddBuff(this.Id, "player_pink_mist");
+                    break;
+            }
+        }
+
     }
 
 
