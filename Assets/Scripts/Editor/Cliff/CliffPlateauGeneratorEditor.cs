@@ -44,8 +44,7 @@ namespace My.Map.Cliff.Editor
             if (Gen.IsDualGridPlateau)
             {
                 EditorGUILayout.HelpBox(
-                    "Dual Grid: paint on Data child; Cliff uses +0.5 offset (same as View).\n" +
-                    "Use DualTileMap → Create Hierarchy if Data/View are missing.",
+                    "Dual Grid: Data(0,0) 画台地；View 检测南缘；Cliff/View +0.5 同格落砖。",
                     MessageType.Info);
             }
             else
@@ -60,7 +59,7 @@ namespace My.Map.Cliff.Editor
             EditorGUILayout.LabelField("Layers", EditorStyles.boldLabel);
             using (new EditorGUI.DisabledScope(true))
             {
-                EditorGUILayout.ObjectField("Source Tilemap", Gen.SourceTilemap, typeof(Tilemap), true);
+                EditorGUILayout.ObjectField("Source (View)", Gen.SourceTilemap, typeof(Tilemap), true);
                 EditorGUILayout.ObjectField("Cliff Tilemap", Gen.CliffTilemap, typeof(Tilemap), true);
             }
 
@@ -80,7 +79,7 @@ namespace My.Map.Cliff.Editor
             {
                 if (Gen.IsDualGridPlateau)
                 {
-                    EditorGUILayout.HelpBox("DualTileMap.DataTilemap is not assigned. Click Create Hierarchy on DualTileMap.", MessageType.Warning);
+                    EditorGUILayout.HelpBox("DualTileMap View/Data tilemap is not assigned. Click Create Hierarchy on DualTileMap.", MessageType.Warning);
                 }
                 else
                 {
@@ -217,8 +216,8 @@ namespace My.Map.Cliff.Editor
             set.Bottom_Mid = LoadTile("ground_grasss_81");
             set.Bottom_LeftEnd = LoadTile("ground_grasss_80");
             set.Bottom_RightEnd = LoadTile("ground_grasss_26");
-            set.Bottom_DepthJunctionLeft = LoadTile("ground_grasss_59");
-            set.Bottom_DepthJunctionRight = LoadTile("ground_grasss_60");
+            set.Bottom_DepthJunctionLeft = LoadTile("ground_grasss_68");
+            set.Bottom_DepthJunctionRight = LoadTile("ground_grasss_69");
 
             AssetDatabase.CreateAsset(set, path);
             AssetDatabase.SaveAssets();

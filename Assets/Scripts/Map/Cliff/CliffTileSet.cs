@@ -28,9 +28,9 @@ namespace My.Map.Cliff
         public TileBase Bottom_Mid;
         public TileBase Bottom_LeftEnd;
         public TileBase Bottom_RightEnd;
-        [Tooltip("ground_grasss_59")]
+        [Tooltip("深度交界列倒数第二行（ground_grasss_68）")]
         public TileBase Bottom_DepthJunctionLeft;
-        [Tooltip("ground_grasss_60")]
+        [Tooltip("深度交界列倒数第二行（ground_grasss_69）")]
         public TileBase Bottom_DepthJunctionRight;
 
         public TileBase GetTile(CliffVariantKey key)
@@ -126,21 +126,12 @@ namespace My.Map.Cliff
             };
         }
 
-        // Body 左/右交界与 Bottom 59/60 交叉配对（与 GridRoot 手铺一致：Body84 列 → 接地 60）
         TileBase ResolveBottomDepthJunction(CliffDepthJunction depthJunction)
         {
             return depthJunction switch
             {
-                CliffDepthJunction.Left => Bottom_DepthJunctionRight != null
-                    ? Bottom_DepthJunctionRight
-                    : Bottom_RightEnd != null
-                        ? Bottom_RightEnd
-                        : Body_DepthJunctionLeft,
-                CliffDepthJunction.Right => Bottom_DepthJunctionLeft != null
-                    ? Bottom_DepthJunctionLeft
-                    : Bottom_LeftEnd != null
-                        ? Bottom_LeftEnd
-                        : Body_DepthJunctionRight,
+                CliffDepthJunction.Left => Bottom_DepthJunctionLeft,
+                CliffDepthJunction.Right => Bottom_DepthJunctionRight,
                 _ => null,
             };
         }

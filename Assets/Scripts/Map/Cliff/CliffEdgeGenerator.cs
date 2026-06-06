@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -7,91 +8,529 @@ namespace My.Map.Cliff
 {
     public static class CliffEdgeGenerator
     {
-        // 南边缘：Data 有砖且正下方（-Y）无砖
-        public static bool IsSouthEdgeCell(Tilemap source, Vector3Int platformCell)
+        // View 格：有砖且正下方无砖
+        public static bool IsSouthEdgeCell(Tilemap view, Vector3Int cell)
         {
-            if (source == null || !IsFilled(source, platformCell))
-            {
-                return false;
-            }
-
-            return !IsFilled(source, platformCell + Vector3Int.down);
-        }
-
-        public static HashSet<Vector3Int> CollectSouthEdgeCells(Tilemap source)
-        {
-            return BuildSouthEdgeSet(source);
+            return view != null
+                && view.GetTile(cell) != null
+                && view.GetTile(cell + Vector3Int.down) == null;
         }
 
         public struct CliffPlacement
         {
             public Vector3Int CliffCell;
-            public Vector3Int DataSouthEdgeCell;
-            public bool HasDataSouthEdgeCell;
+            public Vector3Int ViewSouthEdgeCell;
             public bool IsEdgeRow;
-            public bool IsWestCapColumn;
-            public EdgeInfo Edge;
+            public ColumnAttrs Attrs;
         }
 
-        public struct EdgeInfo
+        public struct ColumnAttrs
         {
-            public Vector3Int PlatformCell;
+            public int X;
+            public int SouthEdgeY;
             public CliffSpanRole Span;
-            public CliffCornerShape Corner;
             public CliffDepthJunction DepthJunction;
+            public CliffCornerShape Corner;
+            public bool LeftOpen;
+            public bool RightOpen;
+            public bool LeftCliffWall;
+            public bool RightCliffWall;
         }
 
-        struct SouthEdgeSegment
+        public struct SouthEdgeColumn
         {
-            public int XLeft;
-            public int XRight;
+            public int X;
             public int Y;
             public int Z;
         }
 
-        public static List<EdgeInfo> CollectSouthEdges(Tilemap source)
+        public static HashSet<Vector3Int> CollectSouthEdgeCells(Tilemap view)
         {
-            var southEdge = BuildSouthEdgeSet(source);
-            var edges = new List<EdgeInfo>();
-            foreach (var cell in southEdge)
+            var set = new HashSet<Vector3Int>();
+            if (view == null)
             {
-                var depthJunction = ResolveDepthJunction(cell, source, southEdge);
-                edges.Add(new EdgeInfo
-                {
-                    PlatformCell = cell,
-                    Span = ResolveDataSouthEdgeSpan(cell, southEdge),
-                    Corner = depthJunction != CliffDepthJunction.None
-                        ? CliffCornerShape.None
-                        : ResolveConvexCorner(cell, source, southEdge),
-                    DepthJunction = depthJunction,
-                });
+                return set;
             }
 
-            return edges;
+            view.CompressBounds();
+            foreach (var cell in view.cellBounds.allPositionsWithin)
+            {
+                if (IsSouthEdgeCell(view, cell))
+                {
+                    set.Add(cell);
+                }
+            }
+
+            return set;
         }
 
-        public static CliffVariantKey ResolveVariant(
+        // 水平 |dx|=1,|dy|<=1；同列岩壁 |dx|=0,|dy|=1
+        public static List<List<SouthEdgeColumn>> GroupSouthEdgeSegments(HashSet<Vector3Int> southEdge)
+        {
+            var segments = new List<List<SouthEdgeColumn>>();
+            if (southEdge == null || southEdge.Count == 0)
+            {
+                return segments;
+            }
+
+            var visited = new HashSet<Vector3Int>();
+            foreach (var start in southEdge.OrderBy(c => c.x).ThenBy(c => c.y))
+            {
+                if (!visited.Add(start))
+                {
+                    continue;
+                }
+
+                var segment = new List<SouthEdgeColumn>();
+                var queue = new Queue<Vector3Int>();
+                queue.Enqueue(start);
+
+                while (queue.Count > 0)
+                {
+                    var cell = queue.Dequeue();
+                    segment.Add(new SouthEdgeColumn { X = cell.x, Y = cell.y, Z = cell.z });
+
+                    foreach (var next in EnumerateSegmentNeighbors(cell, southEdge))
+                    {
+                        if (visited.Add(next))
+                        {
+                            queue.Enqueue(next);
+                        }
+                    }
+                }
+
+                segment.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
+                segments.Add(segment);
+            }
+
+            segments.Sort((a, b) =>
+            {
+                int cmp = a[0].X.CompareTo(b[0].X);
+                return cmp != 0 ? cmp : a[0].Y.CompareTo(b[0].Y);
+            });
+
+            return segments;
+        }
+
+        static IEnumerable<Vector3Int> EnumerateSegmentNeighbors(Vector3Int cell, HashSet<Vector3Int> southEdge)
+        {
+            for (int dy = -1; dy <= 1; dy += 2)
+            {
+                var vertical = new Vector3Int(cell.x, cell.y + dy, cell.z);
+                if (southEdge.Contains(vertical))
+                {
+                    yield return vertical;
+                }
+            }
+
+            for (int dx = -1; dx <= 1; dx += 2)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    if (dy == 0)
+                    {
+                        var n = new Vector3Int(cell.x + dx, cell.y, cell.z);
+                        if (southEdge.Contains(n))
+                        {
+                            yield return n;
+                        }
+
+                        continue;
+                    }
+
+                    var nd = new Vector3Int(cell.x + dx, cell.y + dy, cell.z);
+                    if (southEdge.Contains(nd))
+                    {
+                        yield return nd;
+                    }
+                }
+            }
+        }
+
+        // 同列多格南缘 = 岩壁立面
+        static bool IsCliffWallColumn(HashSet<Vector3Int> southEdge, int x, int z)
+        {
+            int count = 0;
+            foreach (var c in southEdge)
+            {
+                if (c.x == x && c.z == z)
+                {
+                    count++;
+                    if (count > 1)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static void LogSouthEdgeSegments(IReadOnlyList<List<SouthEdgeColumn>> segments)
+        {
+            if (segments == null || segments.Count == 0)
+            {
+                Debug.Log("[CliffEdgeGenerator] South edge segments: (empty)");
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.Append("[CliffEdgeGenerator] South edge segments: ").Append(segments.Count);
+            for (int i = 0; i < segments.Count; i++)
+            {
+                sb.Append("\n  seg").Append(i).Append(": ");
+                foreach (var col in segments[i])
+                {
+                    sb.Append('(').Append(col.X).Append(',').Append(col.Y).Append(") ");
+                }
+            }
+
+            Debug.Log(sb.ToString());
+        }
+
+        public static int Generate(
+            Tilemap view,
+            Tilemap cliff,
+            CliffTileSet tileSet,
+            int height,
+            bool clearBeforeGenerate)
+        {
+            if (view == null || cliff == null || tileSet == null || height < 1)
+            {
+                return 0;
+            }
+
+            if (clearBeforeGenerate)
+            {
+                cliff.ClearAllTiles();
+            }
+
+            var southEdge = CollectSouthEdgeCells(view);
+            var segments = GroupSouthEdgeSegments(southEdge);
+            LogSouthEdgeSegments(segments);
+
+            int rowCount = ResolveRowCount(height);
+            Debug.Log($"[CliffEdgeGenerator] Row count = {rowCount} (Height={height}), cliff Y from southEdgeY+1 downward.");
+
+            if (segments.Count == 0)
+            {
+                return 0;
+            }
+
+            int placed = 0;
+            foreach (var segment in segments)
+            {
+                foreach (var col in segment)
+                {
+                    var attrs = ClassifyColumn(view, col, segment, southEdge);
+                    if (attrs.RightOpen)
+                    {
+                        Debug.Log(
+                            $"[CliffEdgeGenerator] RightEnd at ({col.X},{col.Y}) span={attrs.Span}");
+                    }
+
+                    placed += PlaceColumn(cliff, tileSet, col.X, attrs, height);
+                }
+            }
+
+            return placed;
+        }
+
+        public static IEnumerable<CliffPlacement> EnumerateCliffPlacements(Tilemap view, int height)
+        {
+            if (view == null || height < 1)
+            {
+                yield break;
+            }
+
+            var southEdge = CollectSouthEdgeCells(view);
+            foreach (var segment in GroupSouthEdgeSegments(southEdge))
+            {
+                foreach (var col in segment)
+                {
+                    var attrs = ClassifyColumn(view, col, segment, southEdge);
+                    int rowCount = ResolveRowCount(height);
+                    for (int r = 0; r < rowCount; r++)
+                    {
+                        yield return new CliffPlacement
+                        {
+                            CliffCell = CliffDualGridMapping.ResolveCliffCell(col.X, attrs.SouthEdgeY, r, col.Z),
+                            ViewSouthEdgeCell = new Vector3Int(col.X, attrs.SouthEdgeY, col.Z),
+                            IsEdgeRow = r == 0,
+                            Attrs = attrs,
+                        };
+                    }
+                }
+            }
+        }
+
+        public static Vector3 ResolveGizmoCliffNorthEdgeWorld(
+            Tilemap cliff,
+            CliffPlacement placement,
+            Vector3 cellSize)
+        {
+            return CliffDualGridMapping.ResolveCliffNorthEdgeWorld(cliff, placement.CliffCell, cellSize);
+        }
+
+        public static Vector3 ResolveGizmoViewSouthEdgeWorld(Tilemap view, CliffPlacement placement)
+        {
+            return CliffDualGridMapping.ResolveViewSouthEdgeWorld(view, placement.ViewSouthEdgeCell);
+        }
+
+        static bool TryGetSegmentNeighbor(
+            IReadOnlyList<SouthEdgeColumn> segment,
+            SouthEdgeColumn col,
+            int dx,
+            out SouthEdgeColumn neighbor)
+        {
+            int nx = col.X + dx;
+            SouthEdgeColumn? best = null;
+            int bestDy = int.MaxValue;
+
+            foreach (var c in segment)
+            {
+                if (c.X != nx)
+                {
+                    continue;
+                }
+
+                int dy = Mathf.Abs(c.Y - col.Y);
+                if (dy > 1)
+                {
+                    continue;
+                }
+
+                if (dy < bestDy)
+                {
+                    bestDy = dy;
+                    best = c;
+                }
+            }
+
+            if (best.HasValue)
+            {
+                neighbor = best.Value;
+                return true;
+            }
+
+            neighbor = default;
+            return false;
+        }
+
+        static bool HasWestEdgeContinuation(IReadOnlyList<SouthEdgeColumn> segment, SouthEdgeColumn col)
+        {
+            int px = col.X - 1;
+            foreach (var c in segment)
+            {
+                if (c.X != px)
+                {
+                    continue;
+                }
+
+                // 同 y 西接，或西高一级台阶 (x-1, y+1)
+                if (c.Y == col.Y || c.Y == col.Y + 1)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        static bool HasEastEdgeContinuation(IReadOnlyList<SouthEdgeColumn> segment, SouthEdgeColumn col)
+        {
+            int nx = col.X + 1;
+            foreach (var c in segment)
+            {
+                if (c.X != nx)
+                {
+                    continue;
+                }
+
+                // 同 y 东接，或东高一级台阶 (x+1, y+1)
+                if (c.Y == col.Y || c.Y == col.Y + 1)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        static ColumnAttrs ClassifyColumn(
+            Tilemap view,
+            SouthEdgeColumn col,
+            IReadOnlyList<SouthEdgeColumn> segment,
+            HashSet<Vector3Int> southEdge)
+        {
+            bool hasWestContinue = HasWestEdgeContinuation(segment, col);
+            bool hasEastContinue = HasEastEdgeContinuation(segment, col);
+            bool segLeft = hasWestContinue && TryGetSegmentNeighbor(segment, col, -1, out var left);
+            bool segRight = hasEastContinue && TryGetSegmentNeighbor(segment, col, 1, out var right);
+
+            bool leftCliffWall = IsCliffWallColumn(southEdge, col.X - 1, col.Z);
+            bool rightCliffWall = IsCliffWallColumn(southEdge, col.X + 1, col.Z);
+
+            // 硬边：该侧南缘消失（无同 y / 台阶延续），且该侧不是岩壁列
+            bool leftOpen = !hasWestContinue && !leftCliffWall;
+            bool rightOpen = !hasEastContinue && !rightCliffWall;
+
+            CliffSpanRole span;
+            if (leftOpen && rightOpen)
+            {
+                span = CliffSpanRole.Single;
+            }
+            else if (leftOpen)
+            {
+                span = CliffSpanRole.LeftEnd;
+            }
+            else if (rightOpen)
+            {
+                span = CliffSpanRole.RightEnd;
+            }
+            else
+            {
+                span = CliffSpanRole.Mid;
+            }
+
+            CliffDepthJunction depth = CliffDepthJunction.None;
+            if (segLeft && segRight)
+            {
+                int leftY = left.Y;
+                int rightY = right.Y;
+                if (leftY > col.Y && rightY > col.Y)
+                {
+                    Debug.LogError(
+                        $"[CliffEdgeGenerator] Invalid south edge at ({col.X},{col.Y}): "
+                        + $"leftY={leftY}, rightY={rightY}.");
+                }
+                else if (leftY > col.Y)
+                {
+                    depth = CliffDepthJunction.Left;
+                }
+                else if (rightY > col.Y)
+                {
+                    depth = CliffDepthJunction.Right;
+                }
+            }
+
+            CliffCornerShape corner = depth != CliffDepthJunction.None
+                ? CliffCornerShape.None
+                : ResolveConvexCorner(view, col, hasWestContinue, hasEastContinue, leftCliffWall, rightCliffWall);
+
+            return new ColumnAttrs
+            {
+                X = col.X,
+                SouthEdgeY = col.Y,
+                Span = span,
+                DepthJunction = depth,
+                Corner = corner,
+                LeftOpen = leftOpen,
+                RightOpen = rightOpen,
+                LeftCliffWall = leftCliffWall,
+                RightCliffWall = rightCliffWall,
+            };
+        }
+
+        static CliffCornerShape ResolveConvexCorner(
+            Tilemap view,
+            SouthEdgeColumn col,
+            bool hasWestContinue,
+            bool hasEastContinue,
+            bool leftCliffWall,
+            bool rightCliffWall)
+        {
+            bool filled(int dx, int dy) => view.GetTile(new Vector3Int(col.X + dx, col.Y + dy, col.Z)) != null;
+
+            if (!filled(-1, -1) && (hasWestContinue || leftCliffWall))
+            {
+                return CliffCornerShape.ConvexLeft;
+            }
+
+            if (!filled(1, -1) && (hasEastContinue || rightCliffWall))
+            {
+                return CliffCornerShape.ConvexRight;
+            }
+
+            return CliffCornerShape.None;
+        }
+
+        // 首行在 southEdgeY+1，共 Height+2 行（补顶 + 南缘行 + Height 体）
+        static int ResolveRowCount(int height) => height + 2;
+
+        static int PlaceColumn(
+            Tilemap cliff,
+            CliffTileSet tileSet,
+            int cliffX,
+            ColumnAttrs attrs,
+            int height)
+        {
+            int rowCount = ResolveRowCount(height);
+            int placed = 0;
+            for (int r = 0; r < rowCount; r++)
+            {
+                var cliffCell = CliffDualGridMapping.ResolveCliffCell(cliffX, attrs.SouthEdgeY, r, 0);
+                var span = ResolvePlacementSpan(r, attrs);
+                var depthJunction = attrs.DepthJunction;
+                var corner = r == 0 ? attrs.Corner : CliffCornerShape.None;
+                if (depthJunction != CliffDepthJunction.None)
+                {
+                    corner = CliffCornerShape.None;
+                }
+
+                var key = ResolveVariant(r, rowCount, span, corner, depthJunction);
+                var tile = tileSet.GetTile(key);
+                if (tile == null)
+                {
+                    Debug.LogWarning(
+                        $"[CliffEdgeGenerator] Missing tile at cliff ({cliffX},{attrs.SouthEdgeY + 1 - r}), "
+                        + $"key={key.Row}/{key.Span}/depth={key.DepthJunction}");
+                    continue;
+                }
+
+                cliff.SetTile(cliffCell, tile);
+                placed++;
+            }
+
+            return placed;
+        }
+
+        static CliffSpanRole ResolvePlacementSpan(int rowIndex, ColumnAttrs attrs)
+        {
+            var span = attrs.Span;
+            if (rowIndex == 0 && span == CliffSpanRole.Mid)
+            {
+                return CliffSpanRole.Single;
+            }
+
+            return span;
+        }
+
+        static CliffVariantKey ResolveVariant(
             int rowIndex,
             int height,
             CliffSpanRole span,
             CliffCornerShape corner,
             CliffDepthJunction depthJunction)
         {
-            if (height <= 0)
-            {
-                return new CliffVariantKey(CliffRowRole.Body, CliffSpanRole.Mid, CliffCornerShape.None);
-            }
-
             if (depthJunction != CliffDepthJunction.None)
             {
-                // 深度交界砖与 Span 无关，避免 RightEnd 参与回退查表
-                span = CliffSpanRole.Mid;
-                if (height == 1 || rowIndex < height - 1)
+                if (rowIndex == height - 1)
                 {
-                    return new CliffVariantKey(CliffRowRole.Body, span, CliffCornerShape.None, depthJunction);
+                    var bottomSpan = depthJunction == CliffDepthJunction.Left
+                        ? CliffSpanRole.LeftEnd
+                        : CliffSpanRole.RightEnd;
+                    return new CliffVariantKey(CliffRowRole.Bottom, bottomSpan, CliffCornerShape.None);
                 }
 
-                return new CliffVariantKey(CliffRowRole.Bottom, span, CliffCornerShape.None, depthJunction);
+                if (height >= 2 && rowIndex == height - 2)
+                {
+                    return new CliffVariantKey(
+                        CliffRowRole.Bottom, CliffSpanRole.Mid, CliffCornerShape.None, depthJunction);
+                }
+
+                return new CliffVariantKey(
+                    CliffRowRole.Body, CliffSpanRole.Mid, CliffCornerShape.None, depthJunction);
             }
 
             if (height == 1)
@@ -110,402 +549,6 @@ namespace My.Map.Cliff
             }
 
             return new CliffVariantKey(CliffRowRole.Body, span, CliffCornerShape.None);
-        }
-
-        public static int Generate(
-            Tilemap source,
-            Tilemap cliff,
-            CliffTileSet tileSet,
-            int height,
-            bool clearBeforeGenerate,
-            bool dualGridPlateau = false)
-        {
-            if (source == null || cliff == null || tileSet == null || height < 1)
-            {
-                return 0;
-            }
-
-            if (clearBeforeGenerate)
-            {
-                cliff.ClearAllTiles();
-            }
-
-            var southEdge = BuildSouthEdgeSet(source);
-            var edgeInfoMap = BuildEdgeInfoMap(source, southEdge);
-            var segments = GroupSouthEdgeSegments(southEdge);
-            int placed = 0;
-
-            foreach (var segment in segments)
-            {
-                var range = CliffDualGridMapping.ResolveColumnRange(
-                    segment.XLeft, segment.XRight, segment.Y, segment.Z, dualGridPlateau);
-                edgeInfoMap.TryGetValue(
-                    new Vector3Int(segment.XLeft, segment.Y, segment.Z),
-                    out EdgeInfo segmentHeadEdge);
-
-                for (int cliffX = range.CliffXLeft; cliffX <= range.CliffXRight; cliffX++)
-                {
-                    if (!TryResolveColumnContext(cliffX, range, edgeInfoMap, out bool isWestCap, out EdgeInfo edge))
-                    {
-                        continue;
-                    }
-
-                    for (int r = 0; r < height; r++)
-                    {
-                        var cliffCell = CliffDualGridMapping.ResolveCliffCell(cliffX, segment.Y, r, segment.Z);
-                        var span = ResolvePlacementSpan(r, cliffX, range.CliffXLeft, range.CliffXRight);
-                        var depthJunction = ResolvePlacementDepthJunction(cliffX, range, edgeInfoMap);
-                        var corner = ResolvePlacementCorner(
-                            r, cliffX, isWestCap, dualGridPlateau, segment.XLeft, edge, segmentHeadEdge);
-                        if (depthJunction != CliffDepthJunction.None)
-                        {
-                            corner = CliffCornerShape.None;
-                        }
-                        var key = ResolveVariant(r, height, span, corner, depthJunction);
-                        var tile = tileSet.GetTile(key);
-                        if (tile == null)
-                        {
-                            continue;
-                        }
-
-                        cliff.SetTile(cliffCell, tile);
-                        placed++;
-                    }
-                }
-            }
-
-            return placed;
-        }
-
-        public static IEnumerable<CliffPlacement> EnumerateCliffPlacements(
-            Tilemap source,
-            bool dualGridPlateau,
-            int height)
-        {
-            if (source == null || height < 1)
-            {
-                yield break;
-            }
-
-            var southEdge = BuildSouthEdgeSet(source);
-            var edgeInfoMap = BuildEdgeInfoMap(source, southEdge);
-            foreach (var segment in GroupSouthEdgeSegments(southEdge))
-            {
-                var range = CliffDualGridMapping.ResolveColumnRange(
-                    segment.XLeft, segment.XRight, segment.Y, segment.Z, dualGridPlateau);
-
-                for (int cliffX = range.CliffXLeft; cliffX <= range.CliffXRight; cliffX++)
-                {
-                    if (!TryResolveColumnContext(cliffX, range, edgeInfoMap, out bool isWestCap, out EdgeInfo edge))
-                    {
-                        continue;
-                    }
-
-                    bool hasDataCell = CliffDualGridMapping.TryResolveDataSouthEdgeCell(
-                        cliffX, segment.XLeft, segment.Y, segment.Z, dualGridPlateau, out var dataCell);
-                    var depthJunction = ResolvePlacementDepthJunction(cliffX, range, edgeInfoMap);
-
-                    for (int r = 0; r < height; r++)
-                    {
-                        yield return new CliffPlacement
-                        {
-                            CliffCell = CliffDualGridMapping.ResolveCliffCell(cliffX, segment.Y, r, segment.Z),
-                            DataSouthEdgeCell = dataCell,
-                            HasDataSouthEdgeCell = hasDataCell,
-                            IsEdgeRow = r == 0,
-                            IsWestCapColumn = isWestCap,
-                            Edge = new EdgeInfo
-                            {
-                                PlatformCell = hasDataCell ? dataCell : new Vector3Int(cliffX, segment.Y, segment.Z),
-                                Span = edge.Span,
-                                Corner = edge.Corner,
-                                DepthJunction = depthJunction,
-                            },
-                        };
-                    }
-                }
-            }
-        }
-
-        public static Vector3 ResolveGizmoCliffNorthEdgeWorld(
-            Tilemap cliff,
-            CliffPlacement placement,
-            Vector3 cellSize)
-        {
-            return CliffDualGridMapping.ResolveCliffNorthEdgeWorld(cliff, placement.CliffCell, cellSize);
-        }
-
-        public static Vector3 ResolveGizmoDataSouthEdgeWorld(Tilemap data, CliffPlacement placement)
-        {
-            if (!placement.HasDataSouthEdgeCell)
-            {
-                return Vector3.zero;
-            }
-
-            return CliffDualGridMapping.ResolveDataSouthEdgeWorld(data, placement.DataSouthEdgeCell);
-        }
-
-        static bool TryResolveColumnContext(
-            int cliffX,
-            CliffDualGridMapping.CliffColumnRange range,
-            Dictionary<Vector3Int, EdgeInfo> edgeInfoMap,
-            out bool isWestCap,
-            out EdgeInfo edge)
-        {
-            isWestCap = CliffDualGridMapping.IsWestCapColumn(cliffX, range.DataXLeft, range.DualGrid);
-            if (isWestCap)
-            {
-                edge = new EdgeInfo
-                {
-                    PlatformCell = new Vector3Int(cliffX, range.DataSouthEdgeY, range.Z),
-                    Span = CliffSpanRole.Mid,
-                    Corner = CliffCornerShape.None,
-                    DepthJunction = CliffDepthJunction.None,
-                };
-                return true;
-            }
-
-            var dataCell = new Vector3Int(cliffX, range.DataSouthEdgeY, range.Z);
-            return edgeInfoMap.TryGetValue(dataCell, out edge);
-        }
-
-        // 首行：中间列 Single 衔接草缘；段左右端列仍用 LeftEnd/RightEnd
-        static CliffSpanRole ResolvePlacementSpan(
-            int rowIndex,
-            int cliffX,
-            int cliffXLeft,
-            int cliffXRight)
-        {
-            if (rowIndex == 0)
-            {
-                var edgeSpan = ResolveCliffSpan(cliffX, cliffXLeft, cliffXRight);
-                return edgeSpan == CliffSpanRole.Mid ? CliffSpanRole.Single : edgeSpan;
-            }
-
-            return ResolveCliffSpan(cliffX, cliffXLeft, cliffXRight);
-        }
-
-        static CliffSpanRole ResolveCliffSpan(int cliffX, int cliffXLeft, int cliffXRight)
-        {
-            if (cliffXLeft == cliffXRight)
-            {
-                return CliffSpanRole.Single;
-            }
-
-            if (cliffX == cliffXLeft)
-            {
-                return CliffSpanRole.LeftEnd;
-            }
-
-            if (cliffX == cliffXRight)
-            {
-                return CliffSpanRole.RightEnd;
-            }
-
-            return CliffSpanRole.Mid;
-        }
-
-        // Dual 西扩列承接段首 Data 格的 ConvexLeft；该角不再画在 Data 列
-        static CliffCornerShape ResolvePlacementCorner(
-            int rowIndex,
-            int cliffX,
-            bool isWestCap,
-            bool dualGridPlateau,
-            int dataXLeft,
-            EdgeInfo edge,
-            EdgeInfo segmentHeadEdge)
-        {
-            if (rowIndex != 0)
-            {
-                return CliffCornerShape.None;
-            }
-
-            if (isWestCap)
-            {
-                return segmentHeadEdge.Corner == CliffCornerShape.ConvexLeft
-                    ? CliffCornerShape.ConvexLeft
-                    : CliffCornerShape.None;
-            }
-
-            if (dualGridPlateau
-                && cliffX == dataXLeft
-                && edge.Corner == CliffCornerShape.ConvexLeft)
-            {
-                return CliffCornerShape.None;
-            }
-
-            return edge.Corner;
-        }
-
-        // Dual：Data 左交界 → 西侧 View 列 (dataX-1)；Data 右交界 → dataX 列
-        static CliffDepthJunction ResolvePlacementDepthJunction(
-            int cliffX,
-            CliffDualGridMapping.CliffColumnRange range,
-            Dictionary<Vector3Int, EdgeInfo> edgeInfoMap)
-        {
-            if (range.DualGrid)
-            {
-                var leftSource = new Vector3Int(cliffX + 1, range.DataSouthEdgeY, range.Z);
-                if (edgeInfoMap.TryGetValue(leftSource, out EdgeInfo leftEdge)
-                    && leftEdge.DepthJunction == CliffDepthJunction.Left)
-                {
-                    return CliffDepthJunction.Left;
-                }
-
-                var rightSource = new Vector3Int(cliffX, range.DataSouthEdgeY, range.Z);
-                if (edgeInfoMap.TryGetValue(rightSource, out EdgeInfo rightEdge)
-                    && rightEdge.DepthJunction == CliffDepthJunction.Right)
-                {
-                    return CliffDepthJunction.Right;
-                }
-
-                return CliffDepthJunction.None;
-            }
-
-            var dataCell = new Vector3Int(cliffX, range.DataSouthEdgeY, range.Z);
-            return edgeInfoMap.TryGetValue(dataCell, out EdgeInfo edge)
-                ? edge.DepthJunction
-                : CliffDepthJunction.None;
-        }
-
-        static Dictionary<Vector3Int, EdgeInfo> BuildEdgeInfoMap(Tilemap source, HashSet<Vector3Int> southEdge)
-        {
-            var map = new Dictionary<Vector3Int, EdgeInfo>();
-            foreach (var cell in southEdge)
-            {
-                var depthJunction = ResolveDepthJunction(cell, source, southEdge);
-                map[cell] = new EdgeInfo
-                {
-                    PlatformCell = cell,
-                    Span = ResolveDataSouthEdgeSpan(cell, southEdge),
-                    Corner = depthJunction != CliffDepthJunction.None
-                        ? CliffCornerShape.None
-                        : ResolveConvexCorner(cell, source, southEdge),
-                    DepthJunction = depthJunction,
-                };
-            }
-
-            return map;
-        }
-
-        static List<SouthEdgeSegment> GroupSouthEdgeSegments(HashSet<Vector3Int> southEdge)
-        {
-            var segments = new List<SouthEdgeSegment>();
-            var byRow = southEdge
-                .GroupBy(c => (c.y, c.z))
-                .OrderBy(g => g.Key.y)
-                .ThenBy(g => g.Key.z);
-
-            foreach (var rowGroup in byRow)
-            {
-                var sorted = rowGroup.OrderBy(c => c.x).ToList();
-                int i = 0;
-                while (i < sorted.Count)
-                {
-                    int xLeft = sorted[i].x;
-                    int xRight = xLeft;
-                    int y = sorted[i].y;
-                    int z = sorted[i].z;
-                    i++;
-                    while (i < sorted.Count && sorted[i].x == xRight + 1 && sorted[i].y == y)
-                    {
-                        xRight = sorted[i].x;
-                        i++;
-                    }
-
-                    segments.Add(new SouthEdgeSegment { XLeft = xLeft, XRight = xRight, Y = y, Z = z });
-                }
-            }
-
-            return segments;
-        }
-
-        static HashSet<Vector3Int> BuildSouthEdgeSet(Tilemap source)
-        {
-            var southEdge = new HashSet<Vector3Int>();
-            if (source == null)
-            {
-                return southEdge;
-            }
-
-            foreach (var cell in source.cellBounds.allPositionsWithin)
-            {
-                if (IsSouthEdgeCell(source, cell))
-                {
-                    southEdge.Add(cell);
-                }
-            }
-
-            return southEdge;
-        }
-
-        static bool IsFilled(Tilemap source, Vector3Int cell) => source.GetTile(cell) != null;
-
-        static CliffSpanRole ResolveDataSouthEdgeSpan(Vector3Int cell, HashSet<Vector3Int> southEdge)
-        {
-            bool left = southEdge.Contains(cell + Vector3Int.left);
-            bool right = southEdge.Contains(cell + Vector3Int.right);
-
-            if (!left && !right)
-            {
-                return CliffSpanRole.Single;
-            }
-
-            if (!left && right)
-            {
-                return CliffSpanRole.LeftEnd;
-            }
-
-            if (left && !right)
-            {
-                return CliffSpanRole.RightEnd;
-            }
-
-            return CliffSpanRole.Mid;
-        }
-
-        static CliffDepthJunction ResolveDepthJunction(
-            Vector3Int cell,
-            Tilemap source,
-            HashSet<Vector3Int> southEdge)
-        {
-            bool filled(int dx, int dy) => IsFilled(source, cell + new Vector3Int(dx, dy, 0));
-            bool edge(int dx, int dy) => southEdge.Contains(cell + new Vector3Int(dx, dy, 0));
-
-            // Left：西侧 (x-1,y) 更高台地（非南缘），且 (x-1,y-1) 有砖
-            if (filled(-1, 0) && !edge(-1, 0) && filled(-1, -1))
-            {
-                return CliffDepthJunction.Left;
-            }
-
-            // Right：东侧 (x+1,y) 更高台地（非南缘），且 (x+1,y-1) 有砖
-            if (filled(1, 0) && !edge(1, 0) && filled(1, -1))
-            {
-                return CliffDepthJunction.Right;
-            }
-
-            return CliffDepthJunction.None;
-        }
-
-        static CliffCornerShape ResolveConvexCorner(
-            Vector3Int cell,
-            Tilemap source,
-            HashSet<Vector3Int> southEdge)
-        {
-            bool filled(int dx, int dy) => IsFilled(source, cell + new Vector3Int(dx, dy, 0));
-            bool edge(int dx, int dy) => southEdge.Contains(cell + new Vector3Int(dx, dy, 0));
-
-            if (!filled(-1, -1) && edge(-1, 0))
-            {
-                return CliffCornerShape.ConvexLeft;
-            }
-
-            if (!filled(1, -1) && edge(1, 0))
-            {
-                return CliffCornerShape.ConvexRight;
-            }
-
-            return CliffCornerShape.None;
         }
     }
 }
