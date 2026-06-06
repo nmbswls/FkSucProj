@@ -15,7 +15,11 @@ namespace My.UI.Rune
     {
         public const string Pid = "RuneLoadoutPanel";
 
+        const float OwnedAreaTopAnchor = 0.28f;
+        const float MainAreaBottomAnchor = 0.02f;
+
         [SerializeField] Transform builtRoot;
+        [SerializeField] RectTransform slotArea;
         [SerializeField] RectTransform slotGrid;
         [SerializeField] TextMeshProUGUI detailTitle;
         [SerializeField] TextMeshProUGUI detailBody;
@@ -23,7 +27,6 @@ namespace My.UI.Rune
         [SerializeField] RectTransform ownedGrid;
         [SerializeField] RuneOwnedCell ownedCellTemplate;
         [SerializeField] TextMeshProUGUI ownedHint;
-        [SerializeField] RuneSlotView slotPrefab;
         [SerializeField] Button closeButton;
         [SerializeField] Button blockerButton;
         [SerializeField] RuneDragDropController dragController;
@@ -37,6 +40,7 @@ namespace My.UI.Rune
         ERuneEquipSlot _selectedEquipSlot = ERuneEquipSlot.None;
         string _selectedFixedRuneId;
         string _selectedOwnedRuneId;
+        bool _slotViewsCached;
 
         void Awake()
         {
@@ -122,6 +126,7 @@ namespace My.UI.Rune
             }
 
             ApplyHostedChromeIfNeeded();
+            ApplyMainAreaLayout();
             RefreshAll();
         }
 
@@ -145,9 +150,10 @@ namespace My.UI.Rune
                 return false;
             }
 
-            if (slotPrefab == null)
+            EnsureSlotViews();
+            if (_slotViews.Count == 0)
             {
-                Debug.LogError("[RunePanel] Prefab missing slotPrefab.");
+                Debug.LogError("[RunePanel] Prefab SlotGrid has no RuneSlotView with RuneSlotBinder.");
                 return false;
             }
 
@@ -172,6 +178,35 @@ namespace My.UI.Rune
             return true;
         }
 
+        void EnsureSlotViews()
+        {
+            if (_slotViewsCached)
+            {
+                return;
+            }
+
+            _slotViews.Clear();
+            if (slotGrid == null)
+            {
+                return;
+            }
+
+            var views = slotGrid.GetComponentsInChildren<RuneSlotView>(true);
+            for (int i = 0; i < views.Length; i++)
+            {
+                var view = views[i];
+                if (view.GetComponent<RuneSlotBinder>() == null)
+                {
+                    continue;
+                }
+
+                view.BindPanel(this);
+                _slotViews.Add(view);
+            }
+
+            _slotViewsCached = true;
+        }
+
         public void RefreshAll()
         {
             RefreshSlots();
@@ -181,47 +216,29 @@ namespace My.UI.Rune
 
         void RefreshSlots()
         {
+            EnsureSlotViews();
             var runeSystem = GetRuneSystem();
             if (runeSystem == null)
             {
                 return;
             }
 
-            ClearSlotViews();
-            foreach (var def in RuneCatalog.GetPermanentCatalog())
+            for (int i = 0; i < _slotViews.Count; i++)
             {
-                var slot = CreateSlotView();
+                var slot = _slotViews[i];
                 if (slot == null)
                 {
                     continue;
                 }
 
-                bool unlocked = runeSystem.OwnsRune(def.RuneId);
-                slot.BindPanel(this);
-                slot.RefreshFixed(def.RuneId, unlocked, _selectedFixedRuneId == def.RuneId);
-                _slotViews.Add(slot);
-            }
-
-            foreach (var equipSlot in RuneCatalog.EquipSlots)
-            {
-                var slot = CreateSlotView();
-                if (slot == null)
-                {
-                    continue;
-                }
-
-                bool slotUnlocked = IsEquipSlotUnlocked(runeSystem, equipSlot);
-                string equippedId = runeSystem.GetEquipped(equipSlot);
-                slot.BindPanel(this);
-                slot.RefreshEquippable(equipSlot, slotUnlocked, equippedId, _selectedEquipSlot == equipSlot);
-                _slotViews.Add(slot);
+                slot.Refresh(runeSystem, IsSlotSelected(slot));
             }
 
             _selectedSlot = FindSelectedSlotView();
             LayoutRebuilder.ForceRebuildLayoutImmediate(slotGrid);
         }
 
-        static bool IsEquipSlotUnlocked(PlayerRuneSystem runeSystem, ERuneEquipSlot slot)
+        public static bool IsEquipSlotUnlocked(PlayerRuneSystem runeSystem, ERuneEquipSlot slot)
         {
             foreach (var def in runeSystem.GetOwnedByType(ERuneType.Equippable))
             {
@@ -234,51 +251,47 @@ namespace My.UI.Rune
             return false;
         }
 
-        RuneSlotView CreateSlotView()
+        bool IsSlotSelected(RuneSlotView slot)
         {
-            var view = Instantiate(slotPrefab, slotGrid, false);
-            view.gameObject.SetActive(true);
-            return view;
-        }
-
-        void ClearSlotViews()
-        {
-            foreach (var slot in _slotViews)
+            if (slot?.Binder == null)
             {
-                if (slot != null)
-                {
-                    Destroy(slot.gameObject);
-                }
+                return false;
             }
 
-            _slotViews.Clear();
+            if (slot.Binder.SlotKind == RuneSlotKind.Fixed)
+            {
+                return !string.IsNullOrEmpty(_selectedFixedRuneId)
+                       && slot.Binder.FixedRuneId == _selectedFixedRuneId;
+            }
+
+            return _selectedEquipSlot != ERuneEquipSlot.None
+                   && slot.Binder.EquipSlot == _selectedEquipSlot;
         }
 
         RuneSlotView FindSelectedSlotView()
         {
             foreach (var slot in _slotViews)
             {
-                if (slot?.Binder == null)
-                {
-                    continue;
-                }
-
-                if (slot.Binder.SlotKind == RuneSlotKind.Fixed
-                    && !string.IsNullOrEmpty(_selectedFixedRuneId)
-                    && slot.Binder.FixedRuneId == _selectedFixedRuneId)
-                {
-                    return slot;
-                }
-
-                if (slot.Binder.SlotKind == RuneSlotKind.Equippable
-                    && _selectedEquipSlot != ERuneEquipSlot.None
-                    && slot.Binder.EquipSlot == _selectedEquipSlot)
+                if (IsSlotSelected(slot))
                 {
                     return slot;
                 }
             }
 
             return null;
+        }
+
+        void ApplyMainAreaLayout()
+        {
+            bool ownedVisible = ownedArea != null && ownedArea.gameObject.activeSelf;
+            if (slotArea == null)
+            {
+                return;
+            }
+
+            var min = slotArea.anchorMin;
+            min.y = ownedVisible ? OwnedAreaTopAnchor : MainAreaBottomAnchor;
+            slotArea.anchorMin = min;
         }
 
         public void OnSlotClicked(RuneSlotView slot)
@@ -308,6 +321,7 @@ namespace My.UI.Rune
                 }
             }
 
+            ApplyMainAreaLayout();
             RefreshAll();
         }
 

@@ -1,5 +1,6 @@
 using cfg.demo;
 using My.Config;
+using My.Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -49,14 +50,31 @@ namespace My.UI.Rune
             _panel = panel;
         }
 
-        public void RefreshFixed(string runeId, bool unlocked, bool selected)
+        public void Refresh(PlayerRuneSystem runeSystem, bool selected)
         {
-            _binder.ConfigureFixed(runeId);
+            if (_binder == null || runeSystem == null)
+            {
+                return;
+            }
+
             _selected = selected;
+            if (_binder.SlotKind == RuneSlotKind.Fixed)
+            {
+                RefreshFixedFromBinder(runeSystem);
+                return;
+            }
+
+            RefreshEquippableFromBinder(runeSystem);
+        }
+
+        void RefreshFixedFromBinder(PlayerRuneSystem runeSystem)
+        {
+            string runeId = _binder.FixedRuneId;
+            bool unlocked = !string.IsNullOrEmpty(runeId) && runeSystem.OwnsRune(runeId);
             _displayRuneId = unlocked ? runeId : string.Empty;
             _state = unlocked ? RuneSlotVisualState.Unlocked : RuneSlotVisualState.Locked;
             _infoProvider.SetFixedSlot(runeId, unlocked);
-            ApplyCommonVisual(unlocked ? RuneCatalog.GetOrDefault(runeId) : null, selected, showAdd: false);
+            ApplyCommonVisual(unlocked ? RuneCatalog.GetOrDefault(runeId) : null, _selected, showAdd: false);
             if (SlotLabel != null)
             {
                 SlotLabel.text = "常驻";
@@ -68,10 +86,11 @@ namespace My.UI.Rune
             }
         }
 
-        public void RefreshEquippable(ERuneEquipSlot slot, bool slotUnlocked, string equippedRuneId, bool selected)
+        void RefreshEquippableFromBinder(PlayerRuneSystem runeSystem)
         {
-            _binder.ConfigureEquippable(slot);
-            _selected = selected;
+            var slot = _binder.EquipSlot;
+            bool slotUnlocked = RunePanel.IsEquipSlotUnlocked(runeSystem, slot);
+            string equippedRuneId = runeSystem.GetEquipped(slot);
             _displayRuneId = equippedRuneId;
             if (!slotUnlocked)
             {
@@ -88,7 +107,7 @@ namespace My.UI.Rune
 
             _infoProvider.SetEquippableSlot(slot, equippedRuneId, slotUnlocked);
             var def = RuneCatalog.GetOrDefault(equippedRuneId);
-            ApplyCommonVisual(def, selected, showAdd: slotUnlocked && string.IsNullOrEmpty(equippedRuneId));
+            ApplyCommonVisual(def, _selected, showAdd: slotUnlocked && string.IsNullOrEmpty(equippedRuneId));
             if (SlotLabel != null)
             {
                 SlotLabel.text = RuneCatalog.GetSlotDisplayName(slot);
