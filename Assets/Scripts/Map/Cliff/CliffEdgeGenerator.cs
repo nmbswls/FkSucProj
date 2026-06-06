@@ -223,12 +223,6 @@ namespace My.Map.Cliff
                 foreach (var col in segment)
                 {
                     var attrs = ClassifyColumn(view, col, segment, southEdge);
-                    if (attrs.RightOpen)
-                    {
-                        Debug.Log(
-                            $"[CliffEdgeGenerator] RightEnd at ({col.X},{col.Y}) span={attrs.Span}");
-                    }
-
                     placed += PlaceColumn(cliff, tileSet, col.X, attrs, height);
                 }
             }
@@ -317,38 +311,11 @@ namespace My.Map.Cliff
             return false;
         }
 
-        static bool HasWestEdgeContinuation(IReadOnlyList<SouthEdgeColumn> segment, SouthEdgeColumn col)
+        static bool SegmentHasColumnAtX(IReadOnlyList<SouthEdgeColumn> segment, int x)
         {
-            int px = col.X - 1;
             foreach (var c in segment)
             {
-                if (c.X != px)
-                {
-                    continue;
-                }
-
-                // 同 y 西接，或西高一级台阶 (x-1, y+1)
-                if (c.Y == col.Y || c.Y == col.Y + 1)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        static bool HasEastEdgeContinuation(IReadOnlyList<SouthEdgeColumn> segment, SouthEdgeColumn col)
-        {
-            int nx = col.X + 1;
-            foreach (var c in segment)
-            {
-                if (c.X != nx)
-                {
-                    continue;
-                }
-
-                // 同 y 东接，或东高一级台阶 (x+1, y+1)
-                if (c.Y == col.Y || c.Y == col.Y + 1)
+                if (c.X == x)
                 {
                     return true;
                 }
@@ -363,17 +330,23 @@ namespace My.Map.Cliff
             IReadOnlyList<SouthEdgeColumn> segment,
             HashSet<Vector3Int> southEdge)
         {
-            bool hasWestContinue = HasWestEdgeContinuation(segment, col);
-            bool hasEastContinue = HasEastEdgeContinuation(segment, col);
-            bool segLeft = hasWestContinue && TryGetSegmentNeighbor(segment, col, -1, out var left);
-            bool segRight = hasEastContinue && TryGetSegmentNeighbor(segment, col, 1, out var right);
+            int leftX = col.X - 1;
+            int rightX = col.X + 1;
 
-            bool leftCliffWall = IsCliffWallColumn(southEdge, col.X - 1, col.Z);
-            bool rightCliffWall = IsCliffWallColumn(southEdge, col.X + 1, col.Z);
+            bool hasSegLeft = SegmentHasColumnAtX(segment, leftX);
+            bool hasSegRight = SegmentHasColumnAtX(segment, rightX);
 
-            // 硬边：该侧南缘消失（无同 y / 台阶延续），且该侧不是岩壁列
-            bool leftOpen = !hasWestContinue && !leftCliffWall;
-            bool rightOpen = !hasEastContinue && !rightCliffWall;
+            SouthEdgeColumn left = default;
+            SouthEdgeColumn right = default;
+            bool segLeft = hasSegLeft && TryGetSegmentNeighbor(segment, col, -1, out left);
+            bool segRight = hasSegRight && TryGetSegmentNeighbor(segment, col, 1, out right);
+
+            bool leftCliffWall = IsCliffWallColumn(southEdge, leftX, col.Z);
+            bool rightCliffWall = IsCliffWallColumn(southEdge, rightX, col.Z);
+
+            // 硬边：本段该侧 x 列不再延伸，且该侧不是岩壁列（左右同一规则）
+            bool leftOpen = !hasSegLeft && !leftCliffWall;
+            bool rightOpen = !hasSegRight && !rightCliffWall;
 
             CliffSpanRole span;
             if (leftOpen && rightOpen)
@@ -416,7 +389,7 @@ namespace My.Map.Cliff
 
             CliffCornerShape corner = depth != CliffDepthJunction.None
                 ? CliffCornerShape.None
-                : ResolveConvexCorner(view, col, hasWestContinue, hasEastContinue, leftCliffWall, rightCliffWall);
+                : ResolveConvexCorner(view, col, hasSegLeft, hasSegRight, leftCliffWall, rightCliffWall);
 
             return new ColumnAttrs
             {
@@ -435,19 +408,19 @@ namespace My.Map.Cliff
         static CliffCornerShape ResolveConvexCorner(
             Tilemap view,
             SouthEdgeColumn col,
-            bool hasWestContinue,
-            bool hasEastContinue,
+            bool hasSegLeft,
+            bool hasSegRight,
             bool leftCliffWall,
             bool rightCliffWall)
         {
             bool filled(int dx, int dy) => view.GetTile(new Vector3Int(col.X + dx, col.Y + dy, col.Z)) != null;
 
-            if (!filled(-1, -1) && (hasWestContinue || leftCliffWall))
+            if (!filled(-1, -1) && (hasSegLeft || leftCliffWall))
             {
                 return CliffCornerShape.ConvexLeft;
             }
 
-            if (!filled(1, -1) && (hasEastContinue || rightCliffWall))
+            if (!filled(1, -1) && (hasSegRight || rightCliffWall))
             {
                 return CliffCornerShape.ConvexRight;
             }
