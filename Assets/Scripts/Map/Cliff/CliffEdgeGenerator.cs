@@ -31,6 +31,7 @@ namespace My.Map.Cliff
             public int X;
             public int SouthEdgeY;
             public int TopAnchorY;
+            public int DepthDelta;
             public CliffSpanRole Span;
             public CliffDepthJunction DepthJunction;
             public CliffCornerShape Corner;
@@ -421,6 +422,7 @@ namespace My.Map.Cliff
             }
 
             CliffDepthJunction depth = CliffDepthJunction.None;
+            int depthDelta = 0;
             if (segLeft && segRight)
             {
                 int leftY = left.Y;
@@ -434,10 +436,12 @@ namespace My.Map.Cliff
                 else if (leftY > col.Y)
                 {
                     depth = CliffDepthJunction.Left;
+                    depthDelta = leftY - col.Y;
                 }
                 else if (rightY > col.Y)
                 {
                     depth = CliffDepthJunction.Right;
+                    depthDelta = rightY - col.Y;
                 }
             }
 
@@ -461,6 +465,7 @@ namespace My.Map.Cliff
                 X = col.X,
                 SouthEdgeY = col.Y,
                 TopAnchorY = topAnchorY,
+                DepthDelta = depthDelta,
                 Span = span,
                 DepthJunction = depth,
                 Corner = corner,
@@ -527,7 +532,7 @@ namespace My.Map.Cliff
                     corner = CliffCornerShape.None;
                 }
 
-                var key = ResolveVariant(r, rowCount, span, corner, depthJunction);
+                var key = ResolveVariant(r, rowCount, span, corner, depthJunction, attrs.DepthDelta);
                 var tile = tileSet.GetTile(key);
                 if (tile == null)
                 {
@@ -558,37 +563,49 @@ namespace My.Map.Cliff
 
         static CliffVariantKey ResolveVariant(
             int rowIndex,
-            int height,
+            int rowCount,
             CliffSpanRole span,
             CliffCornerShape corner,
-            CliffDepthJunction depthJunction)
+            CliffDepthJunction depthJunction,
+            int depthDelta)
         {
             if (depthJunction != CliffDepthJunction.None)
             {
-                if (rowIndex == height - 1)
+                int delta = Mathf.Max(1, depthDelta);
+                int junctionRow = rowCount - 1 - delta;
+                var depthSideSpan = depthJunction == CliffDepthJunction.Left
+                    ? CliffSpanRole.LeftEnd
+                    : CliffSpanRole.RightEnd;
+
+                // 最底行：接地角
+                if (rowIndex == rowCount - 1)
                 {
-                    var bottomSpan = depthJunction == CliffDepthJunction.Left
-                        ? CliffSpanRole.LeftEnd
-                        : CliffSpanRole.RightEnd;
-                    return new CliffVariantKey(CliffRowRole.Bottom, bottomSpan, CliffCornerShape.None);
+                    return new CliffVariantKey(CliffRowRole.Bottom, depthSideSpan, CliffCornerShape.None);
                 }
 
-                if (height >= 2 && rowIndex == height - 2)
+                // 深度交界行：随左右高度差上移（差1→倒数第二，差2→倒数第三…）
+                if (rowIndex == junctionRow)
                 {
                     return new CliffVariantKey(
                         CliffRowRole.Bottom, CliffSpanRole.Mid, CliffCornerShape.None, depthJunction);
+                }
+
+                // 交界与角点之间：岩壁端
+                if (rowIndex > junctionRow && rowIndex < rowCount - 1)
+                {
+                    return new CliffVariantKey(CliffRowRole.Body, depthSideSpan, CliffCornerShape.None);
                 }
 
                 return new CliffVariantKey(
                     CliffRowRole.Body, CliffSpanRole.Mid, CliffCornerShape.None, depthJunction);
             }
 
-            if (height == 1)
+            if (rowCount == 1)
             {
                 return new CliffVariantKey(CliffRowRole.Body, span, corner);
             }
 
-            if (rowIndex == height - 1)
+            if (rowIndex == rowCount - 1)
             {
                 return new CliffVariantKey(CliffRowRole.Bottom, span, CliffCornerShape.None);
             }
