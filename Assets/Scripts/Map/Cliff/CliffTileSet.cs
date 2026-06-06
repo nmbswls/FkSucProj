@@ -15,9 +15,9 @@ namespace My.Map.Cliff
         public TileBase Body_RightEnd;
 
         [Header("Body — 深度交界（内凹，整列使用）")]
-        [Tooltip("南缘格左侧有更高台地（向内凹陷）时，该列所有 Body/Bottom 行优先使用")]
+        [Tooltip("南缘格西侧有更高台地时，整列 Body 使用")]
         public TileBase Body_DepthJunctionLeft;
-        [Tooltip("南缘格右侧有更高台地（向内凹陷）时，该列所有 Body/Bottom 行优先使用")]
+        [Tooltip("南缘格东侧有更高台地时，整列 Body 使用")]
         public TileBase Body_DepthJunctionRight;
 
         [Header("Body — 外凸角（仅首行崖体）")]
@@ -28,40 +28,22 @@ namespace My.Map.Cliff
         public TileBase Bottom_Mid;
         public TileBase Bottom_LeftEnd;
         public TileBase Bottom_RightEnd;
-        [Tooltip("接地左深度交界砖（ground_grasss_59）")]
+        [Tooltip("ground_grasss_59")]
         public TileBase Bottom_DepthJunctionLeft;
-        [Tooltip("接地右深度交界砖（ground_grasss_60）")]
+        [Tooltip("ground_grasss_60")]
         public TileBase Bottom_DepthJunctionRight;
 
         public TileBase GetTile(CliffVariantKey key)
         {
+            if (key.DepthJunction != CliffDepthJunction.None)
+            {
+                return ResolveDepthJunctionTile(key) ?? Body_Mid ?? DefaultTile;
+            }
+
             var direct = GetDirect(key);
             if (direct != null)
             {
                 return direct;
-            }
-
-            if (key.DepthJunction != CliffDepthJunction.None && key.Row == CliffRowRole.Body)
-            {
-                var bodyJunction = key.DepthJunction switch
-                {
-                    CliffDepthJunction.Left => Body_DepthJunctionLeft,
-                    CliffDepthJunction.Right => Body_DepthJunctionRight,
-                    _ => null,
-                };
-                if (bodyJunction != null)
-                {
-                    return bodyJunction;
-                }
-            }
-
-            if (key.DepthJunction != CliffDepthJunction.None && key.Row == CliffRowRole.Bottom)
-            {
-                var bottomJunction = ResolveBottomDepthJunction(key.DepthJunction);
-                if (bottomJunction != null)
-                {
-                    return bottomJunction;
-                }
             }
 
             if (key.Row == CliffRowRole.Bottom)
@@ -90,21 +72,26 @@ namespace My.Map.Cliff
             return DefaultTile;
         }
 
+        TileBase ResolveDepthJunctionTile(CliffVariantKey key)
+        {
+            if (key.Row == CliffRowRole.Bottom)
+            {
+                return ResolveBottomDepthJunction(key.DepthJunction);
+            }
+
+            return key.DepthJunction switch
+            {
+                CliffDepthJunction.Left => Body_DepthJunctionLeft,
+                CliffDepthJunction.Right => Body_DepthJunctionRight,
+                _ => null,
+            };
+        }
+
         TileBase GetDirect(CliffVariantKey key)
         {
             if (key.DepthJunction != CliffDepthJunction.None)
             {
-                if (key.Row == CliffRowRole.Bottom)
-                {
-                    return ResolveBottomDepthJunction(key.DepthJunction);
-                }
-
-                return key.DepthJunction switch
-                {
-                    CliffDepthJunction.Left => Body_DepthJunctionLeft,
-                    CliffDepthJunction.Right => Body_DepthJunctionRight,
-                    _ => null,
-                };
+                return ResolveDepthJunctionTile(key);
             }
 
             if (key.Row == CliffRowRole.Bottom)
@@ -139,17 +126,21 @@ namespace My.Map.Cliff
             };
         }
 
-        // 有专用 Bottom 深度交界砖时与 Body 同侧；未配时回退对侧 Span（GridRoot：Body 84 列 → Bottom 26）
+        // Body 左/右交界与 Bottom 59/60 交叉配对（与 GridRoot 手铺一致：Body84 列 → 接地 60）
         TileBase ResolveBottomDepthJunction(CliffDepthJunction depthJunction)
         {
             return depthJunction switch
             {
-                CliffDepthJunction.Left => Bottom_DepthJunctionLeft != null
-                    ? Bottom_DepthJunctionLeft
-                    : Bottom_RightEnd,
-                CliffDepthJunction.Right => Bottom_DepthJunctionRight != null
+                CliffDepthJunction.Left => Bottom_DepthJunctionRight != null
                     ? Bottom_DepthJunctionRight
-                    : Bottom_LeftEnd,
+                    : Bottom_RightEnd != null
+                        ? Bottom_RightEnd
+                        : Body_DepthJunctionLeft,
+                CliffDepthJunction.Right => Bottom_DepthJunctionLeft != null
+                    ? Bottom_DepthJunctionLeft
+                    : Bottom_LeftEnd != null
+                        ? Bottom_LeftEnd
+                        : Body_DepthJunctionRight,
                 _ => null,
             };
         }

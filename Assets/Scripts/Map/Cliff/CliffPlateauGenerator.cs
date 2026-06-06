@@ -250,49 +250,32 @@ namespace My.Map.Cliff
 
 
         public void SyncDualGridOffset()
-
         {
-
             EnsureCliffChild();
 
             var cliff = CliffTilemap;
-
             var source = SourceTilemap;
-
             if (cliff == null)
-
             {
-
                 return;
-
             }
-
-
 
             bool shouldOffset = UseDualGridOffset;
-
             if (AutoDualGridOffset && IsDualGridPlateau)
-
             {
-
                 shouldOffset = true;
-
                 UseDualGridOffset = true;
-
             }
 
-
-
             var grid = cliff.layoutGrid ?? source?.layoutGrid ?? ResolveDual()?.ResolveGrid();
-
             var cellSize = grid != null ? grid.cellSize : Vector3.one;
 
-            cliff.transform.localPosition = shouldOffset
+            if (source != null)
+            {
+                CliffDualGridMapping.SyncCliffTilemapSettings(source, cliff);
+            }
 
-                ? DualGridCore.GetViewLocalOffset(cellSize)
-
-                : Vector3.zero;
-
+            cliff.transform.localPosition = CliffDualGridMapping.GetCliffLocalOffset(cellSize, shouldOffset);
         }
 
 
@@ -375,6 +358,11 @@ namespace My.Map.Cliff
 
             SyncDualGridOffset();
 
+            if (IsDualGridPlateau && !UseDualGridOffset)
+            {
+                Debug.LogWarning("[CliffPlateauGenerator] Dual Grid plateau requires +0.5 cliff offset.");
+            }
+
             int placed = CliffEdgeGenerator.Generate(
 
                 source, cliff, TileSet, Height, ClearBeforeGenerate, IsDualGridPlateau);
@@ -402,17 +390,13 @@ namespace My.Map.Cliff
 
 
         void OnValidate()
-
         {
-
             if (Height < 1)
-
             {
-
                 Height = 1;
-
             }
 
+            SyncDualGridOffset();
         }
 
 
@@ -440,12 +424,25 @@ namespace My.Map.Cliff
             var cellSize = grid.cellSize;
             var cliffBoxSize = cellSize * 0.75f;
             var edgeBoxSize = cellSize * 0.92f;
+            var dataBoxSize = cellSize * 0.55f;
             var drawnTopRowCliff = new HashSet<Vector3Int>();
+            var drawnDataSouthEdge = new HashSet<Vector3Int>();
 
             foreach (var placement in CliffEdgeGenerator.EnumerateCliffPlacements(source, IsDualGridPlateau, Height))
             {
                 Gizmos.color = new Color(1f, 0.92f, 0.2f, 0.9f);
                 Gizmos.DrawWireCube(cliff.GetCellCenterWorld(placement.CliffCell), cliffBoxSize);
+
+                if (IsDualGridPlateau && placement.HasDataSouthEdgeCell && placement.IsEdgeRow)
+                {
+                    if (drawnDataSouthEdge.Add(placement.DataSouthEdgeCell))
+                    {
+                        Gizmos.color = new Color(0.55f, 0.85f, 1f, 0.85f);
+                        Gizmos.DrawWireCube(
+                            CliffEdgeGenerator.ResolveGizmoDataSouthEdgeWorld(source, placement),
+                            dataBoxSize);
+                    }
+                }
 
                 if (!placement.IsEdgeRow || !drawnTopRowCliff.Add(placement.CliffCell))
                 {
@@ -453,7 +450,7 @@ namespace My.Map.Cliff
                 }
 
                 Gizmos.color = ResolveEdgeGizmoColor(placement);
-                var edgeWorld = CliffEdgeGenerator.ResolveGizmoEdgeWorld(cliff, placement, cellSize);
+                var edgeWorld = CliffEdgeGenerator.ResolveGizmoCliffNorthEdgeWorld(cliff, placement, cellSize);
                 Gizmos.DrawWireCube(edgeWorld, edgeBoxSize);
             }
         }
