@@ -1,8 +1,7 @@
-
 using System;
+using cfg.demo;
 using My.Map;
 using UnityEngine;
-using static My.PlayerFuncOpenSystem;
 
 namespace My.Quest
 {
@@ -17,6 +16,12 @@ namespace My.Quest
         ItemChange,
 
         OpenFunc,
+    }
+
+    // 符文获得
+    public struct PlayerRuneGrantedEvent
+    {
+        public string RuneId;
     }
 
     // 功能解锁

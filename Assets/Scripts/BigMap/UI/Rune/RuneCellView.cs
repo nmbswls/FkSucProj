@@ -1,70 +1,51 @@
 using cfg.demo;
-using My.Config;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace My.UI.Rune
 {
-    public sealed class RuneCellView : MonoBehaviour
+    // 兼容旧 prefab 字段名，逻辑由 RuneOwnedCell 承担
+    public sealed class RuneCellView : RuneOwnedCell
     {
-        public Image IconImage;
-        public TextMeshProUGUI NameText;
+        public Image IconImage
+        {
+            get => icon;
+            set => icon = value;
+        }
+
+        public TextMeshProUGUI NameText
+        {
+            get => nameText;
+            set => nameText = value;
+        }
+
         public TextMeshProUGUI DescText;
         public Image EquippedMark;
         public Button ClickButton;
 
-        RuneData _def;
-        System.Action<RuneData> _onClick;
-
-        public RuneData BoundDef => _def;
-
-        public void Bind(RuneData def, bool isEquipped, System.Action<RuneData> onClick)
+        void Awake()
         {
-            _def = def;
-            _onClick = onClick;
-
-            if (NameText != null)
+            base.Awake();
+            if (icon == null)
             {
-                NameText.text = def?.Name ?? string.Empty;
+                icon = IconImage;
             }
 
-            if (DescText != null)
+            if (nameText == null)
             {
-                DescText.text = def?.Desc ?? string.Empty;
+                nameText = NameText;
             }
 
-            if (IconImage != null)
+            if (equippedMark == null)
             {
-                Sprite sprite = null;
-                if (def != null && !string.IsNullOrEmpty(def.Icon))
-                {
-                    sprite = SimpleResManager.Load<Sprite>(def.Icon);
-                }
-
-                IconImage.sprite = sprite;
-                IconImage.enabled = sprite != null;
-            }
-
-            if (EquippedMark != null)
-            {
-                EquippedMark.gameObject.SetActive(isEquipped);
-            }
-
-            if (ClickButton != null)
-            {
-                ClickButton.onClick.RemoveAllListeners();
-                ClickButton.onClick.AddListener(OnClick);
-                ClickButton.interactable = def != null && def.RuneType == ERuneType.Equippable;
+                equippedMark = EquippedMark;
             }
         }
 
-        void OnClick()
+        public new void Bind(RuneData def, bool isEquipped, System.Action<RuneData> onClick)
         {
-            if (_def != null)
-            {
-                _onClick?.Invoke(_def);
-            }
+            base.Bind(null, def, isEquipped, false, 0);
         }
     }
 }

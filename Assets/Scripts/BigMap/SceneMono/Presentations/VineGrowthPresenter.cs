@@ -19,11 +19,17 @@ namespace My.Map.Scene
         [SerializeField] Collider2D climbTrigger;
 
         bool _growPlaying;
+        bool _visualGrown;
 
         public override void Bind(ILogicEntity logic)
         {
             base.Bind(logic);
             RealLogic.EventOnSelfAnim += OnSelfAnim;
+            if (lineView != null)
+            {
+                lineView.ProgressChanged += OnVineProgressChanged;
+            }
+
             ApplyGrowLengthFromLogic();
             ApplyStatusSnapshot(RealLogic.CurrStatusId);
         }
@@ -35,7 +41,13 @@ namespace My.Map.Scene
                 RealLogic.EventOnSelfAnim -= OnSelfAnim;
             }
 
+            if (lineView != null)
+            {
+                lineView.ProgressChanged -= OnVineProgressChanged;
+            }
+
             _growPlaying = false;
+            _visualGrown = false;
             lineView?.KillActiveTween();
             base.Unbind();
         }
@@ -75,14 +87,19 @@ namespace My.Map.Scene
             base.OnStatusChanged(changeView);
             IsSwitching = false;
 
-            if (_growPlaying)
-            {
-                return;
-            }
-
             if (changeView != null && changeView.ChangingAnimName == GrowAnimName && changeView.ChangingDuration > 0f)
             {
                 PlayGrowSequence(changeView.ChangingDuration);
+                return;
+            }
+
+            if (_growPlaying)
+            {
+                if (IsLogicGrown(RealLogic.CurrStatusId))
+                {
+                    ApplyInteractionState(RealLogic.CurrStatusId);
+                }
+
                 return;
             }
 
@@ -97,20 +114,27 @@ namespace My.Map.Scene
             }
 
             _growPlaying = true;
-
-            if (seedVisual != null)
-            {
-                seedVisual.SetActive(true);
-            }
-
+            _visualGrown = false;
             lineView.PlayGrow(duration, OnGrowComplete);
         }
 
         void OnGrowComplete()
         {
             _growPlaying = false;
+            _visualGrown = true;
+            lineView?.SetInstantFull();
             UpdateTopAnchor();
-            ApplyStatusSnapshot(RealLogic.CurrStatusId);
+
+            int statusId = RealLogic != null ? RealLogic.CurrStatusId : 0;
+            ApplyInteractionState(statusId != 0 ? statusId : 1);
+        }
+
+        void OnVineProgressChanged()
+        {
+            if (_growPlaying || _visualGrown || ShouldShowVine(RealLogic != null ? RealLogic.CurrStatusId : 0))
+            {
+                UpdateTopAnchor();
+            }
         }
 
         void ApplyGrowLengthFromLogic()
@@ -139,10 +163,43 @@ namespace My.Map.Scene
             topAnchor.position = lineView.GetTopWorldPosition();
         }
 
+        bool IsLogicGrown(int statusId) => statusId != 0;
+
+        bool ShouldShowVine(int statusId) => IsLogicGrown(statusId) || _visualGrown || _growPlaying;
+
         void ApplyStatusSnapshot(int statusId)
         {
-            bool grown = statusId != 0;
-            if (seedVisual != null)
+            if (IsLogicGrown(statusId))
+            {
+                _visualGrown = true;
+            }
+
+            bool showVine = ShouldShowVine(statusId);
+            ApplyInteractionState(statusId);
+
+            if (lineView == null)
+            {
+                return;
+            }
+
+            if (showVine)
+            {
+                lineView.SetInstantFull();
+                UpdateTopAnchor();
+            }
+            else if (!_growPlaying)
+            {
+                _visualGrown = false;
+                lineView.SetHidden();
+            }
+        }
+
+        void ApplyInteractionState(int statusId)
+        {
+            bool grown = IsLogicGrown(statusId) || _visualGrown;
+
+            // seedVisual 若指向包含 vine_line 的 view，不能整体隐藏，否则藤蔓和攀爬点一起消失
+            if (seedVisual != null && !ContainsLineView(seedVisual))
             {
                 seedVisual.SetActive(!grown);
             }
@@ -151,21 +208,11 @@ namespace My.Map.Scene
             {
                 climbTrigger.enabled = grown;
             }
+        }
 
-            if (lineView == null)
-            {
-                return;
-            }
-
-            if (grown)
-            {
-                UpdateTopAnchor();
-                lineView.SetInstantFull();
-            }
-            else
-            {
-                lineView.SetHidden();
-            }
+        bool ContainsLineView(GameObject root)
+        {
+            return lineView != null && lineView.transform.IsChildOf(root.transform);
         }
     }
 }

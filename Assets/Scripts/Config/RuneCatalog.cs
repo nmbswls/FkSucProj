@@ -36,6 +36,20 @@ namespace My.Config
                 .ToList();
         }
 
+        public static IReadOnlyList<RuneData> GetPermanentCatalog()
+        {
+            if (CfgMgr.Cfgs == null)
+            {
+                return System.Array.Empty<RuneData>();
+            }
+
+            return CfgMgr.Cfgs.TbRuneData.DataList
+                .Where(x => x.RuneType == ERuneType.Permanent)
+                .OrderBy(x => x.SortOrder)
+                .ThenBy(x => x.RuneId)
+                .ToList();
+        }
+
         public static string GetSlotDisplayName(ERuneEquipSlot slot)
         {
             return slot switch

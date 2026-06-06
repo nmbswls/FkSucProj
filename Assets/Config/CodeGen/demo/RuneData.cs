@@ -23,7 +23,7 @@ public sealed partial class RuneData : Luban.BeanBase
         { if(!_buf["equip_slot"].IsNumber) { throw new SerializationException(); }  EquipSlot = (demo.ERuneEquipSlot)_buf["equip_slot"].AsInt; }
         { if(!_buf["passive_skill_id"].IsString) { throw new SerializationException(); }  PassiveSkillId = _buf["passive_skill_id"]; }
         { if(!_buf["func_unlock_key"].IsString) { throw new SerializationException(); }  FuncUnlockKey = _buf["func_unlock_key"]; }
-        { if(!_buf["func_open_type"].IsNumber) { throw new SerializationException(); }  FuncOpenType = _buf["func_open_type"]; }
+        { if(!_buf["func_open_type"].IsNumber) { throw new SerializationException(); }  FuncOpenType = (demo.EFuncOpenType)_buf["func_open_type"].AsInt; }
         { if(!_buf["icon"].IsString) { throw new SerializationException(); }  Icon = _buf["icon"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
@@ -40,7 +40,7 @@ public sealed partial class RuneData : Luban.BeanBase
     public demo.ERuneEquipSlot EquipSlot;
     public string PassiveSkillId;
     public string FuncUnlockKey;
-    public int FuncOpenType;
+    public demo.EFuncOpenType FuncOpenType;
     public string Icon;
     public string Name;
     public string Desc;

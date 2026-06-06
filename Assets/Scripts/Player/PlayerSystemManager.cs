@@ -642,7 +642,13 @@ namespace My.Player
 
         public bool TryGrantRune(string runeId)
         {
-            if (RuneSystem == null || !RuneSystem.TryGrantRune(runeId, out _))
+            return TryGrantRune(runeId, out _);
+        }
+
+        public bool TryGrantRune(string runeId, out string failReason)
+        {
+            failReason = null;
+            if (RuneSystem == null || !RuneSystem.TryGrantRune(runeId, out failReason))
             {
                 return false;
             }

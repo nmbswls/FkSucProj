@@ -244,7 +244,7 @@ public class ConsoleGM : MonoBehaviour
                 PlayerProgressionHubPanel.ToggleRunes();
             });
 
-        Register("grant_rune", "获得符文",
+        Register("grant_rune", "获得指定符文 grant_rune <rune_id>",
             new[] { new CmdParam("runeId", "string，rune_id") },
             args =>
             {
@@ -261,13 +261,13 @@ public class ConsoleGM : MonoBehaviour
                     return;
                 }
 
-                if (pdm.TryGrantRune(args[0]))
+                if (pdm.TryGrantRune(args[0], out var reason))
                 {
                     Log($"Granted rune: {args[0]}");
                 }
                 else
                 {
-                    LogError($"Failed to grant rune: {args[0]}");
+                    LogError($"Failed to grant rune: {args[0]} ({reason ?? "unknown"})");
                 }
             });
 

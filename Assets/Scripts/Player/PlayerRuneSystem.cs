@@ -1,10 +1,11 @@
+using cfg.demo;
+using My.Map.Logic;
+using My.Quest;
+using My.Saving;
 using System;
 using System.Collections.Generic;
-using cfg.demo;
 using My;
 using My.Config;
-using My.Map.Logic;
-using My.Saving;
 
 namespace My.Player
 {
@@ -113,6 +114,7 @@ namespace My.Player
                 ApplyPermanentEffects(def);
             }
 
+            PlayerEventBus.Publish(new PlayerRuneGrantedEvent { RuneId = runeId });
             return true;
         }
 
@@ -231,9 +233,9 @@ namespace My.Player
                 _owner.SetVariable(def.FuncUnlockKey);
             }
 
-            if (def.FuncOpenType > 0 && Enum.IsDefined(typeof(EFuncOpenType), def.FuncOpenType))
+            if (def.FuncOpenType != EFuncOpenType.Invalid)
             {
-                _owner.FuncOpenSystem.FuncOpenSet.Add((EFuncOpenType)def.FuncOpenType);
+                _owner.FuncOpenSystem?.TryOpenFunc(def.FuncOpenType);
             }
         }
     }

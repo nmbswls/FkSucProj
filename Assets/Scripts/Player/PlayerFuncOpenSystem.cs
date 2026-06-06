@@ -1,23 +1,10 @@
-
-
-using My.Player;
+using cfg.demo;
 using My.Quest;
 using My.Saving;
 using System.Collections.Generic;
 
-namespace My
+namespace My.Player
 {
-    public enum EFuncOpenType
-    {
-        Invalid,
-        Hunger,
-        Desire,
-        Clothes,
-        Expose,
-
-        Skills = 10,
-    }
-
     public class PlayerFuncOpenSystem : IPlayerSystem
     {
         protected GameLogicManager LogicManager { get; private set; }
@@ -27,12 +14,23 @@ namespace My
         public bool IsFuncOpen(EFuncOpenType type) =>
             type != EFuncOpenType.Invalid && FuncOpenSet.Contains(type);
 
-        private Dictionary<string, int> _dialogTriggerCounter = new();
+        public bool TryOpenFunc(EFuncOpenType type)
+        {
+            if (type == EFuncOpenType.Invalid || FuncOpenSet.Contains(type))
+            {
+                return false;
+            }
+
+            FuncOpenSet.Add(type);
+            PlayerEventBus.Publish(new PlayerFuncUnlockEvent { OpenType = type });
+            return true;
+        }
+
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
-            this.LogicManager = ctx;
+            LogicManager = ctx;
 
-            if(savingData?.PlayerData?.FuncOpenList != null)
+            if (savingData?.PlayerData?.FuncOpenList != null)
             {
                 foreach (var f in savingData.PlayerData.FuncOpenList)
                 {
@@ -47,16 +45,11 @@ namespace My
 
         public void Tick(float dt)
         {
-
-            if(!FuncOpenSet.Contains(EFuncOpenType.Hunger))
+            if (!FuncOpenSet.Contains(EFuncOpenType.Hunger))
             {
-                if(LogicManager.playerDataManager.QuestSystem.CheckQuestFinish(101))
+                if (LogicManager.playerDataManager.QuestSystem.CheckQuestFinish(101))
                 {
-                    FuncOpenSet.Add(EFuncOpenType.Hunger);
-
-                    var e = new PlayerFuncUnlockEvent();
-                    e.OpenType = EFuncOpenType.Hunger;
-                    PlayerEventBus.Publish(e);
+                    TryOpenFunc(EFuncOpenType.Hunger);
                 }
             }
 
@@ -64,11 +57,7 @@ namespace My
             {
                 if (LogicManager.playerDataManager.QuestSystem.CheckQuestFinish(101))
                 {
-                    FuncOpenSet.Add(EFuncOpenType.Desire);
-
-                    var e = new PlayerFuncUnlockEvent();
-                    e.OpenType = EFuncOpenType.Desire;
-                    PlayerEventBus.Publish(e);
+                    TryOpenFunc(EFuncOpenType.Desire);
                 }
             }
 
@@ -76,18 +65,9 @@ namespace My
             {
                 if (LogicManager.playerDataManager.QuestSystem.CheckQuestFinish(101))
                 {
-                    FuncOpenSet.Add(EFuncOpenType.Clothes);
-
-                    var e = new PlayerFuncUnlockEvent();
-                    e.OpenType = EFuncOpenType.Clothes;
-                    PlayerEventBus.Publish(e);
+                    TryOpenFunc(EFuncOpenType.Clothes);
                 }
             }
-
         }
     }
-
-
 }
-
-

@@ -16,9 +16,8 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using cfg.demo;
 using static My.GameLogicManager;
-using static My.PlayerFuncOpenSystem;
-
 
 namespace My.UI
 {

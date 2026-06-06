@@ -621,6 +621,24 @@ namespace My.Map
                         }
                         break;
 
+                    case LogicInteractOutput.EOutputType.GrantRune:
+                        {
+                            if (string.IsNullOrEmpty(output.Param3))
+                            {
+                                Debug.LogWarning("GrantRune: Param3 rune_id is empty");
+                                errOccur = true;
+                                break;
+                            }
+
+                            var playerSystem = GetInteractingPlayerSystem();
+                            if (playerSystem == null || !playerSystem.TryGrantRune(output.Param3))
+                            {
+                                Debug.LogWarning($"GrantRune failed: {output.Param3}");
+                                errOccur = true;
+                            }
+                        }
+                        break;
+
                     case LogicInteractOutput.EOutputType.GrantLmbSkillOverride:
                         {
                             if (string.IsNullOrEmpty(output.Param3))
