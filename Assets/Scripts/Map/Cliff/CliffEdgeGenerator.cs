@@ -67,8 +67,8 @@ namespace My.Map.Cliff
             return set;
         }
 
-        // 水平 |dx|=1,|dy|<=1；同列岩壁 |dx|=0,|dy|=1
-        public static List<List<SouthEdgeColumn>> GroupSouthEdgeSegments(HashSet<Vector3Int> southEdge)
+        // 水平 |dx|=1,|dy|<=height；同列岩壁 |dx|=0,|dy|=1
+        public static List<List<SouthEdgeColumn>> GroupSouthEdgeSegments(HashSet<Vector3Int> southEdge, int height)
         {
             var segments = new List<List<SouthEdgeColumn>>();
             if (southEdge == null || southEdge.Count == 0)
@@ -76,6 +76,7 @@ namespace My.Map.Cliff
                 return segments;
             }
 
+            int maxHorizontalDy = Mathf.Max(1, height);
             var visited = new HashSet<Vector3Int>();
             foreach (var start in southEdge.OrderBy(c => c.x).ThenBy(c => c.y))
             {
@@ -93,7 +94,7 @@ namespace My.Map.Cliff
                     var cell = queue.Dequeue();
                     segment.Add(new SouthEdgeColumn { X = cell.x, Y = cell.y, Z = cell.z });
 
-                    foreach (var next in EnumerateSegmentNeighbors(cell, southEdge))
+                    foreach (var next in EnumerateSegmentNeighbors(cell, southEdge, maxHorizontalDy))
                     {
                         if (visited.Add(next))
                         {
@@ -115,7 +116,10 @@ namespace My.Map.Cliff
             return segments;
         }
 
-        static IEnumerable<Vector3Int> EnumerateSegmentNeighbors(Vector3Int cell, HashSet<Vector3Int> southEdge)
+        static IEnumerable<Vector3Int> EnumerateSegmentNeighbors(
+            Vector3Int cell,
+            HashSet<Vector3Int> southEdge,
+            int maxHorizontalDy)
         {
             for (int dy = -1; dy <= 1; dy += 2)
             {
@@ -128,23 +132,12 @@ namespace My.Map.Cliff
 
             for (int dx = -1; dx <= 1; dx += 2)
             {
-                for (int dy = -1; dy <= 1; dy++)
+                for (int dy = -maxHorizontalDy; dy <= maxHorizontalDy; dy++)
                 {
-                    if (dy == 0)
+                    var n = new Vector3Int(cell.x + dx, cell.y + dy, cell.z);
+                    if (southEdge.Contains(n))
                     {
-                        var n = new Vector3Int(cell.x + dx, cell.y, cell.z);
-                        if (southEdge.Contains(n))
-                        {
-                            yield return n;
-                        }
-
-                        continue;
-                    }
-
-                    var nd = new Vector3Int(cell.x + dx, cell.y + dy, cell.z);
-                    if (southEdge.Contains(nd))
-                    {
-                        yield return nd;
+                        yield return n;
                     }
                 }
             }
@@ -170,14 +163,14 @@ namespace My.Map.Cliff
         }
 
         // 分段后：左端 x-1、右端 x+1，View 有砖则把该格并入南缘（贴岩壁延长 1 格）
-        static void ExtendSegmentEndsAtCliffView(Tilemap view, HashSet<Vector3Int> southEdge)
+        static void ExtendSegmentEndsAtCliffView(Tilemap view, HashSet<Vector3Int> southEdge, int height)
         {
             if (view == null || southEdge == null || southEdge.Count == 0)
             {
                 return;
             }
 
-            foreach (var segment in GroupSouthEdgeSegments(southEdge))
+            foreach (var segment in GroupSouthEdgeSegments(southEdge, height))
             {
                 if (segment.Count == 0)
                 {
@@ -262,8 +255,8 @@ namespace My.Map.Cliff
             }
 
             var southEdge = CollectSouthEdgeCells(view);
-            ExtendSegmentEndsAtCliffView(view, southEdge);
-            var segments = GroupSouthEdgeSegments(southEdge);
+            ExtendSegmentEndsAtCliffView(view, southEdge, height);
+            var segments = GroupSouthEdgeSegments(southEdge, height);
             LogSouthEdgeSegments(segments);
 
             if (segments.Count == 0)
@@ -272,12 +265,13 @@ namespace My.Map.Cliff
             }
 
             int placed = 0;
+            var ownerSouthEdgeY = new Dictionary<Vector3Int, int>();
             foreach (var segment in segments)
             {
                 foreach (var col in segment)
                 {
                     var attrs = ClassifyColumn(view, col, segment, southEdge);
-                    placed += PlaceColumn(cliff, tileSet, col.X, attrs, height);
+                    placed += PlaceColumn(cliff, tileSet, col.X, attrs, height, ownerSouthEdgeY);
                 }
             }
 
@@ -292,8 +286,9 @@ namespace My.Map.Cliff
             }
 
             var southEdge = CollectSouthEdgeCells(view);
-            ExtendSegmentEndsAtCliffView(view, southEdge);
-            foreach (var segment in GroupSouthEdgeSegments(southEdge))
+            ExtendSegmentEndsAtCliffView(view, southEdge, height);
+            var ownerSouthEdgeY = new Dictionary<Vector3Int, int>();
+            foreach (var segment in GroupSouthEdgeSegments(southEdge, height))
             {
                 foreach (var col in segment)
                 {
@@ -301,9 +296,17 @@ namespace My.Map.Cliff
                     int rowCount = ResolveRowCount(height, attrs.SouthEdgeY, attrs.TopAnchorY);
                     for (int r = 0; r < rowCount; r++)
                     {
+                        var cliffCell = CliffDualGridMapping.ResolveCliffCell(col.X, attrs.TopAnchorY, r, col.Z);
+                        if (ownerSouthEdgeY.TryGetValue(cliffCell, out int existing)
+                            && existing > attrs.SouthEdgeY)
+                        {
+                            continue;
+                        }
+
+                        ownerSouthEdgeY[cliffCell] = attrs.SouthEdgeY;
                         yield return new CliffPlacement
                         {
-                            CliffCell = CliffDualGridMapping.ResolveCliffCell(col.X, attrs.TopAnchorY, r, col.Z),
+                            CliffCell = cliffCell,
                             ViewSouthEdgeCell = new Vector3Int(col.X, attrs.SouthEdgeY, col.Z),
                             IsEdgeRow = r == 0,
                             Attrs = attrs,
@@ -396,7 +399,7 @@ namespace My.Map.Cliff
             bool rightCliffWall = IsCliffWallColumn(southEdge, rightX, col.Z);
 
             // 硬边：本段该侧 x 列不再延伸，且该侧不是岩壁列（左右同一规则）
-            bool leftOpen = !hasSegLeft && !leftCliffWall;
+            bool leftOpen = !hasSegLeft && !leftCliffWall && view.GetTile(new Vector3Int(leftX, col.Y, col.Z)) == null;
             bool rightOpen = !hasSegRight && !rightCliffWall;
 
             CliffSpanRole span;
@@ -502,13 +505,20 @@ namespace My.Map.Cliff
             CliffTileSet tileSet,
             int cliffX,
             ColumnAttrs attrs,
-            int height)
+            int height,
+            Dictionary<Vector3Int, int> ownerSouthEdgeY)
         {
             int rowCount = ResolveRowCount(height, attrs.SouthEdgeY, attrs.TopAnchorY);
             int placed = 0;
             for (int r = 0; r < rowCount; r++)
             {
                 var cliffCell = CliffDualGridMapping.ResolveCliffCell(cliffX, attrs.TopAnchorY, r, 0);
+                if (ownerSouthEdgeY.TryGetValue(cliffCell, out int existing)
+                    && existing > attrs.SouthEdgeY)
+                {
+                    continue;
+                }
+
                 var span = ResolvePlacementSpan(r, attrs);
                 var depthJunction = attrs.DepthJunction;
                 var corner = r == 0 ? attrs.Corner : CliffCornerShape.None;
@@ -527,6 +537,7 @@ namespace My.Map.Cliff
                     continue;
                 }
 
+                ownerSouthEdgeY[cliffCell] = attrs.SouthEdgeY;
                 cliff.SetTile(cliffCell, tile);
                 placed++;
             }
