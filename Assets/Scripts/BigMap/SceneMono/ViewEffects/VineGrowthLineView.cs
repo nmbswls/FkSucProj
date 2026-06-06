@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace My.Map.View
 {
-    // 竖直藤蔓：base 底边固定 (0,0)；head/body 顶边锚定，随生长上移；body Tiled 向下拉长。
+    // 配置 VineGrowLength = 从 vine_line 原点 (y=0) 到顶端的总高度（世界单位）。
+    // base 为底部装饰不参与高度预算；body 自 y=0 向上 Tiled 生长；head 接在 body 顶边。
     public class VineGrowthLineView : MonoBehaviour
     {
         [SerializeField] Transform seedAnchor;
@@ -57,8 +58,19 @@ namespace My.Map.View
 
         public Vector3 GetTopWorldPosition()
         {
-            float topLocalY = EvaluateTopLocalY(_currentProgress);
-            return transform.TransformPoint(new Vector3(0f, topLocalY, 0f));
+            if (tipRenderer != null && tipRenderer.enabled)
+            {
+                var bounds = tipRenderer.bounds;
+                return new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+            }
+
+            if (bodyRenderer != null && bodyRenderer.enabled)
+            {
+                var bounds = bodyRenderer.bounds;
+                return new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+            }
+
+            return transform.TransformPoint(new Vector3(0f, EvaluateTargetLocalTopY(_currentProgress), 0f));
         }
 
         public void SetProgress(float t)
@@ -115,24 +127,23 @@ namespace My.Map.View
                 return;
             }
 
-            float totalLocalH = WorldToLocalLength(_growLengthWorld * _currentProgress);
-            float baseLocalH = GetFullLocalHeight(baseMaskRenderer);
-            float tipLocalH = GetFullLocalHeight(tipRenderer);
-            float bodyLocalH = Mathf.Max(0f, totalLocalH - baseLocalH - tipLocalH);
+            float targetLocalTopY = EvaluateTargetLocalTopY(_currentProgress);
+            float tipLocalH = GetSegmentLocalHeight(tipRenderer);
+            float baseLocalH = GetSegmentLocalHeight(baseMaskRenderer);
 
-            // 从上往下排：head 顶 = totalLocalH，body 顶边接 head 底边并 Tiled 向下长，base 底边固定 0
-            float topY = totalLocalH;
+            // 总高度 = body + head；未长到能容纳 head 前只伸 body
+            bool showTip = tipLocalH <= 0.001f || targetLocalTopY >= tipLocalH - 0.001f;
+            float bodyLocalH = showTip
+                ? Mathf.Max(0f, targetLocalTopY - tipLocalH)
+                : targetLocalTopY;
 
-            if (tipRenderer != null && tipLocalH > 0f)
+            if (baseMaskRenderer != null && baseLocalH > 0f)
             {
-                bool showTip = totalLocalH > baseLocalH + 0.001f;
-                SetRendererEnabled(tipRenderer, showTip);
-                if (showTip)
-                {
-                    LayoutFromTop(tipRenderer, topY, tipLocalH, tiled: false);
-                    topY -= tipLocalH;
-                }
+                SetRendererEnabled(baseMaskRenderer, true);
+                LayoutFromBottom(baseMaskRenderer, 0f);
             }
+
+            float stackTopY = 0f;
 
             if (bodyRenderer != null)
             {
@@ -140,26 +151,30 @@ namespace My.Map.View
                 SetRendererEnabled(bodyRenderer, showBody);
                 if (showBody)
                 {
-                    LayoutFromTop(bodyRenderer, topY, bodyLocalH, tiled: true);
+                    SetTiledHeight(bodyRenderer, bodyLocalH);
+                    stackTopY = GetRendererLocalTopY(bodyRenderer);
                 }
             }
 
-            if (baseMaskRenderer != null && baseLocalH > 0f)
+            if (tipRenderer != null && tipLocalH > 0f)
             {
-                SetRendererEnabled(baseMaskRenderer, true);
-                LayoutFromBottom(baseMaskRenderer, 0f, baseLocalH);
+                SetRendererEnabled(tipRenderer, showTip);
+                if (showTip)
+                {
+                    LayoutFromBottom(tipRenderer, stackTopY);
+                }
             }
 
             ProgressChanged?.Invoke();
         }
 
-        float EvaluateTopLocalY(float progress)
+        float EvaluateTargetLocalTopY(float progress)
         {
             progress = Mathf.Clamp01(progress);
-            return Mathf.Max(0f, WorldToLocalLength(_growLengthWorld * progress));
+            return Mathf.Max(0f, WorldLengthToLocalY(_growLengthWorld * progress));
         }
 
-        float WorldToLocalLength(float worldLength)
+        float WorldLengthToLocalY(float worldLength)
         {
             return worldLength / Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.y));
         }
@@ -172,47 +187,43 @@ namespace My.Map.View
             }
         }
 
-        static float GetFullLocalHeight(SpriteRenderer renderer)
+        static float GetSegmentLocalHeight(SpriteRenderer renderer)
         {
             if (renderer == null || renderer.sprite == null)
             {
                 return 0f;
             }
 
-            if (renderer.drawMode == SpriteDrawMode.Tiled)
-            {
-                return renderer.size.y * Mathf.Abs(renderer.transform.localScale.y);
-            }
-
             return renderer.sprite.bounds.size.y * Mathf.Abs(renderer.transform.localScale.y);
         }
 
-        // 顶边锚定在 topY，Tiled 增大 size.y 向下方延伸，localPosition.y 随 topY 上移
-        static void LayoutFromTop(SpriteRenderer renderer, float topY, float localHeight, bool tiled)
+        float GetRendererLocalTopY(SpriteRenderer renderer)
         {
-            var tr = renderer.transform;
-            var sprite = renderer.sprite;
-            if (sprite == null)
+            if (renderer == null || !renderer.enabled)
             {
-                return;
+                return 0f;
             }
 
-            float scaleY = tr.localScale.y;
-            if (tiled)
-            {
-                renderer.drawMode = SpriteDrawMode.Tiled;
-                var size = renderer.size;
-                size.y = localHeight / Mathf.Max(0.0001f, Mathf.Abs(scaleY));
-                renderer.size = size;
-            }
-
-            // 贴图上缘 = localPosition.y + bounds.max.y * scaleY
-            tr.localPosition = new Vector3(0f, topY - sprite.bounds.max.y * scaleY, 0f);
-            tr.localRotation = Quaternion.identity;
+            var bounds = renderer.bounds;
+            var localTop = transform.InverseTransformPoint(new Vector3(bounds.center.x, bounds.max.y, bounds.center.z));
+            return localTop.y;
         }
 
-        // 底边锚定在 bottomY（base 始终贴地）
-        static void LayoutFromBottom(SpriteRenderer renderer, float bottomY, float localHeight)
+        static void SetTiledHeight(SpriteRenderer renderer, float localHeight)
+        {
+            if (renderer == null || renderer.sprite == null)
+            {
+                return;
+            }
+
+            renderer.drawMode = SpriteDrawMode.Tiled;
+            float scaleY = renderer.transform.localScale.y;
+            var size = renderer.size;
+            size.y = localHeight / Mathf.Max(0.0001f, Mathf.Abs(scaleY));
+            renderer.size = size;
+        }
+
+        static void LayoutFromBottom(SpriteRenderer renderer, float bottomY)
         {
             var tr = renderer.transform;
             var sprite = renderer.sprite;
@@ -222,7 +233,7 @@ namespace My.Map.View
             }
 
             float scaleY = tr.localScale.y;
-            tr.localPosition = new Vector3(0f, bottomY - sprite.bounds.min.y * scaleY, 0f);
+            tr.localPosition = new Vector3(tr.localPosition.x, bottomY - sprite.bounds.min.y * scaleY, tr.localPosition.z);
             tr.localRotation = Quaternion.identity;
         }
     }

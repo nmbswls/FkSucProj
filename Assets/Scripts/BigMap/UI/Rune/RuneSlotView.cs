@@ -36,16 +36,7 @@ namespace My.UI.Rune
         void Awake()
         {
             _binder = GetComponent<RuneSlotBinder>();
-            if (_binder == null)
-            {
-                _binder = gameObject.AddComponent<RuneSlotBinder>();
-            }
-
             _infoProvider = GetComponent<RuneInfoProvider>();
-            if (_infoProvider == null)
-            {
-                _infoProvider = gameObject.AddComponent<RuneInfoProvider>();
-            }
 
             if (ClickButton != null)
             {

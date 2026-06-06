@@ -1,19 +1,18 @@
 using My.Config;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace My.UI.Rune
 {
-    // 模仿 ItemDragDropController，由 RunePanel 挂载并驱动
+    // 模仿 ItemDragDropController，拖拽幽灵由 prefab 配置
     public sealed class RuneDragDropController : MonoBehaviour
     {
         public static RuneDragDropController Instance { get; private set; }
 
-        public RectTransform DragGhostRoot;
-        public Image DragGhostImage;
-        public Canvas TopCanvas;
+        [SerializeField] RectTransform dragGhostRoot;
+        [SerializeField] Image dragGhostImage;
+        [SerializeField] Canvas topCanvas;
 
         public RuneDragPayload Payload { get; private set; }
         public bool IsDragging { get; private set; }
@@ -38,30 +37,16 @@ namespace My.UI.Rune
 
         void Awake()
         {
-            EnsureDragGhost();
-            if (TopCanvas == null)
+            if (dragGhostRoot != null)
             {
-                TopCanvas = GetComponentInParent<Canvas>();
-            }
-        }
-
-        void EnsureDragGhost()
-        {
-            if (DragGhostRoot != null)
-            {
-                DragGhostRoot.gameObject.SetActive(false);
-                ConfigureGhostRaycast(DragGhostRoot.gameObject);
-                return;
+                dragGhostRoot.gameObject.SetActive(false);
+                ConfigureGhostRaycast(dragGhostRoot.gameObject);
             }
 
-            var go = new GameObject("RuneDragGhost", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
-            DragGhostRoot = go.GetComponent<RectTransform>();
-            DragGhostRoot.SetParent(transform, false);
-            DragGhostRoot.sizeDelta = new Vector2(72f, 72f);
-            DragGhostImage = go.GetComponent<Image>();
-            DragGhostImage.raycastTarget = false;
-            DragGhostRoot.gameObject.SetActive(false);
-            ConfigureGhostRaycast(go);
+            if (topCanvas == null)
+            {
+                topCanvas = GetComponentInParent<Canvas>();
+            }
         }
 
         static void ConfigureGhostRaycast(GameObject ghostRoot)
@@ -69,7 +54,7 @@ namespace My.UI.Rune
             var cg = ghostRoot.GetComponent<CanvasGroup>();
             if (cg == null)
             {
-                cg = ghostRoot.AddComponent<CanvasGroup>();
+                return;
             }
 
             cg.blocksRaycasts = false;
@@ -83,12 +68,17 @@ namespace My.UI.Rune
                 return false;
             }
 
+            if (dragGhostRoot == null)
+            {
+                Debug.LogError("[RuneDragDropController] dragGhostRoot is not assigned.");
+                return false;
+            }
+
             Payload = payload;
             IsDragging = true;
             _dropHandledThisDrag = false;
             _lastDragScreenPos = UnityEngine.Input.mousePosition;
-            EnsureDragGhost();
-            DragGhostRoot.gameObject.SetActive(true);
+            dragGhostRoot.gameObject.SetActive(true);
             ApplyDragGhostIcon(payload.RuneId);
             UpdateDrag(_lastDragScreenPos);
             return true;
@@ -96,7 +86,7 @@ namespace My.UI.Rune
 
         void ApplyDragGhostIcon(string runeId)
         {
-            if (DragGhostImage == null)
+            if (dragGhostImage == null)
             {
                 return;
             }
@@ -108,8 +98,8 @@ namespace My.UI.Rune
                 sprite = SimpleResManager.Load<Sprite>(def.Icon);
             }
 
-            DragGhostImage.sprite = sprite;
-            DragGhostImage.enabled = sprite != null;
+            dragGhostImage.sprite = sprite;
+            dragGhostImage.enabled = sprite != null;
         }
 
         public void MarkDropHandled()
@@ -119,19 +109,19 @@ namespace My.UI.Rune
 
         public void UpdateDrag(Vector2 screenPos)
         {
-            if (!IsDragging || DragGhostRoot == null || TopCanvas == null)
+            if (!IsDragging || dragGhostRoot == null || topCanvas == null)
             {
                 return;
             }
 
             _lastDragScreenPos = screenPos;
-            var canvasRect = TopCanvas.GetComponent<RectTransform>();
+            var canvasRect = topCanvas.GetComponent<RectTransform>();
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvasRect,
                 screenPos,
-                TopCanvas.worldCamera,
+                topCanvas.worldCamera,
                 out Vector2 localOnCanvas);
-            DragGhostRoot.localPosition = localOnCanvas;
+            dragGhostRoot.localPosition = localOnCanvas;
         }
 
         public void EndDrag(Vector2? screenPos = null)
@@ -144,9 +134,9 @@ namespace My.UI.Rune
             IsDragging = false;
             _dropHandledThisDrag = false;
             Payload = null;
-            if (DragGhostRoot != null)
+            if (dragGhostRoot != null)
             {
-                DragGhostRoot.gameObject.SetActive(false);
+                dragGhostRoot.gameObject.SetActive(false);
             }
         }
 

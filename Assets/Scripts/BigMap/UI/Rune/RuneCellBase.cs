@@ -30,6 +30,7 @@ namespace My.UI.Rune
         public Image lockOverlay;
         public Image addOverlay;
         public Image equippedMark;
+        public Image maskOverlay;
         public TextMeshProUGUI nameText;
 
         protected string boundRuneId;
@@ -58,10 +59,6 @@ namespace My.UI.Rune
         protected virtual void Awake()
         {
             hoverProvider = GetComponent<RuneInfoProvider>();
-            if (hoverProvider == null)
-            {
-                hoverProvider = gameObject.AddComponent<RuneInfoProvider>();
-            }
         }
 
         public void SetRuneCellInteractions(

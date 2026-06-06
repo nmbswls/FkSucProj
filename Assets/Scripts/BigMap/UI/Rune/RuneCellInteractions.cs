@@ -15,7 +15,7 @@ namespace My.UI.Rune
     {
         public void OnRuneCellClick(RuneCellBase cell, PointerEventData eventData)
         {
-            if (cell is RuneOwnedCell ownedCell)
+            if (cell is RuneOwnedCell ownedCell && ownedCell.CanEquipToSelectedSlot)
             {
                 ownedCell.Panel?.TryEquipOwnedRune(ownedCell.BoundDef);
             }
@@ -24,6 +24,11 @@ namespace My.UI.Rune
         public bool TryBeginDrag(RuneCellBase cell, PointerEventData eventData)
         {
             if (string.IsNullOrEmpty(cell.BoundRuneId))
+            {
+                return false;
+            }
+
+            if (cell is RuneOwnedCell ownedCell && !ownedCell.CanEquipToSelectedSlot)
             {
                 return false;
             }
@@ -68,39 +73,6 @@ namespace My.UI.Rune
                     ownedCell.Panel?.RefreshAll();
                 }
             }
-        }
-    }
-
-    public sealed class RuneEquipSlotDragSourcePolicy : IRuneCellDragSourceBehaviour
-    {
-        readonly ERuneEquipSlot _slot;
-        readonly RunePanel _panel;
-
-        public RuneEquipSlotDragSourcePolicy(ERuneEquipSlot slot, RunePanel panel)
-        {
-            _slot = slot;
-            _panel = panel;
-        }
-
-        public bool TryBeginDrag(RuneCellBase cell, PointerEventData eventData)
-        {
-            if (string.IsNullOrEmpty(cell.BoundRuneId))
-            {
-                return false;
-            }
-
-            var ctrl = RuneDragDropController.Instance;
-            if (ctrl == null)
-            {
-                return false;
-            }
-
-            return ctrl.BeginDrag(new RuneDragPayload
-            {
-                RuneId = cell.BoundRuneId,
-                SourceType = RuneDragSourceType.EquipSlot,
-                SourceEquipSlot = _slot,
-            });
         }
     }
 }

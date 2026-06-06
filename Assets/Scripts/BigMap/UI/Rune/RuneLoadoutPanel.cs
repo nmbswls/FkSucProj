@@ -14,21 +14,20 @@ namespace My.UI.Rune
     public class RunePanel : PanelBase, IInputConsumer, IPlayerProgressionHubPage
     {
         public const string Pid = "RuneLoadoutPanel";
-        const string SlotPrefabPath = "UI/Prefabs/PlayerProgressionHubPanelSub/RuneSlot";
 
-        Transform _builtRoot;
-        RectTransform _slotGrid;
-        RectTransform _detailArea;
-        TextMeshProUGUI _detailTitle;
-        TextMeshProUGUI _detailBody;
-        RectTransform _ownedArea;
-        RectTransform _ownedGrid;
-        RuneOwnedCell _ownedCellTemplate;
-        TextMeshProUGUI _ownedHint;
-        RuneDragDropController _dragController;
+        [SerializeField] Transform builtRoot;
+        [SerializeField] RectTransform slotGrid;
+        [SerializeField] TextMeshProUGUI detailTitle;
+        [SerializeField] TextMeshProUGUI detailBody;
+        [SerializeField] RectTransform ownedArea;
+        [SerializeField] RectTransform ownedGrid;
+        [SerializeField] RuneOwnedCell ownedCellTemplate;
+        [SerializeField] TextMeshProUGUI ownedHint;
+        [SerializeField] RuneSlotView slotPrefab;
+        [SerializeField] Button closeButton;
+        [SerializeField] Button blockerButton;
+        [SerializeField] RuneDragDropController dragController;
 
-        GameObject _slotPrefab;
-        RuneSlotView _slotTemplate;
         IPlayerProgressionHubHost _progressionHubHost;
 
         readonly List<RuneSlotView> _slotViews = new();
@@ -46,10 +45,9 @@ namespace My.UI.Rune
                 panelId = Pid;
             }
 
-            _dragController = GetComponent<RuneDragDropController>();
-            if (_dragController == null)
+            if (dragController == null)
             {
-                _dragController = gameObject.AddComponent<RuneDragDropController>();
+                dragController = GetComponent<RuneDragDropController>();
             }
         }
 
@@ -76,23 +74,20 @@ namespace My.UI.Rune
 
         void ApplyHostedChromeIfNeeded()
         {
-            if (_progressionHubHost == null || _builtRoot == null)
+            if (_progressionHubHost == null)
             {
                 return;
             }
 
-            var blocker = _builtRoot.Find("BlockerButton");
-            if (blocker != null)
+            if (blockerButton != null)
             {
-                blocker.gameObject.SetActive(false);
+                blockerButton.gameObject.SetActive(false);
             }
 
-            var closeTr = _builtRoot.Find("Window/Header/CloseBtn");
-            var closeBtn = closeTr != null ? closeTr.GetComponent<Button>() : null;
-            if (closeBtn != null)
+            if (closeButton != null)
             {
-                closeBtn.onClick.RemoveAllListeners();
-                closeBtn.onClick.AddListener(CloseSelfOrHub);
+                closeButton.onClick.RemoveAllListeners();
+                closeButton.onClick.AddListener(CloseSelfOrHub);
             }
         }
 
@@ -111,15 +106,22 @@ namespace My.UI.Rune
         {
             base.Setup(data);
 
-            if (transform.Find("BuiltRoot") == null)
+            if (!ValidatePrefabBindings())
             {
-                Debug.LogError("[RunePanel] Prefab missing BuiltRoot.");
                 return;
             }
 
-            BindBuiltReferencesIfNeeded();
+            if (ownedCellTemplate != null)
+            {
+                ownedCellTemplate.gameObject.SetActive(false);
+            }
+
+            if (ownedArea != null)
+            {
+                ownedArea.gameObject.SetActive(false);
+            }
+
             ApplyHostedChromeIfNeeded();
-            HideLegacyTabUi();
             RefreshAll();
         }
 
@@ -129,218 +131,45 @@ namespace My.UI.Rune
             RefreshAll();
         }
 
-        void BindBuiltReferencesIfNeeded()
+        bool ValidatePrefabBindings()
         {
-            if (_builtRoot != null)
+            if (builtRoot == null)
             {
-                return;
+                Debug.LogError("[RunePanel] Prefab missing builtRoot.");
+                return false;
             }
 
-            var root = transform.Find("BuiltRoot");
-            if (root == null)
+            if (slotGrid == null)
             {
-                return;
+                Debug.LogError("[RunePanel] Prefab missing slotGrid.");
+                return false;
             }
 
-            _builtRoot = root;
-            var window = root.Find("Window");
-            EnsureLayout(window);
-            _ownedGrid = window != null ? window.Find("OwnedArea/OwnedScroll/Viewport/OwnedGrid") as RectTransform : null;
-            _ownedHint = window != null ? window.Find("OwnedArea/EmptyHint")?.GetComponent<TextMeshProUGUI>() : null;
-            _ownedCellTemplate = _ownedGrid != null ? _ownedGrid.Find("RuneCell_Template")?.GetComponent<RuneOwnedCell>() : null;
-
-            WireOwnedCellTemplateFromLegacy();
-            if (_ownedCellTemplate != null)
+            if (slotPrefab == null)
             {
-                _ownedCellTemplate.gameObject.SetActive(false);
+                Debug.LogError("[RunePanel] Prefab missing slotPrefab.");
+                return false;
             }
 
-            _slotPrefab = Resources.Load<GameObject>(SlotPrefabPath);
-            if (_slotPrefab == null)
+            if (ownedGrid == null || ownedCellTemplate == null)
             {
-                _slotTemplate = window != null ? window.Find("RuneSlot_Template")?.GetComponent<RuneSlotView>() : null;
-            }
-        }
-
-        void WireOwnedCellTemplateFromLegacy()
-        {
-            if (_ownedCellTemplate != null || _ownedGrid == null)
-            {
-                return;
+                Debug.LogError("[RunePanel] Prefab missing ownedGrid or ownedCellTemplate.");
+                return false;
             }
 
-            var legacy = _ownedGrid.Find("RuneCell_Template");
-            if (legacy == null)
+            if (detailTitle == null || detailBody == null)
             {
-                return;
+                Debug.LogError("[RunePanel] Prefab missing detailTitle or detailBody.");
+                return false;
             }
 
-            var owned = legacy.GetComponent<RuneOwnedCell>();
-            if (owned == null)
+            if (dragController == null)
             {
-                owned = legacy.GetComponent<RuneCellView>();
+                Debug.LogError("[RunePanel] Prefab missing dragController.");
+                return false;
             }
 
-            if (owned == null)
-            {
-                owned = legacy.gameObject.AddComponent<RuneOwnedCell>();
-            }
-
-            var legacyView = legacy.GetComponent<RuneCellView>();
-            if (legacyView != null)
-            {
-                owned.bg = owned.bg != null ? owned.bg : legacy.Find("Bg")?.GetComponent<Image>();
-                owned.icon = owned.icon != null ? owned.icon : legacyView.IconImage;
-                owned.nameText = owned.nameText != null ? owned.nameText : legacyView.NameText;
-                owned.equippedMark = owned.equippedMark != null ? owned.equippedMark : legacyView.EquippedMark;
-            }
-            else
-            {
-                owned.bg = owned.bg != null ? owned.bg : legacy.Find("Bg")?.GetComponent<Image>();
-                owned.icon = owned.icon != null ? owned.icon : legacy.Find("Icon")?.GetComponent<Image>();
-                owned.nameText = owned.nameText != null ? owned.nameText : legacy.Find("Name")?.GetComponent<TextMeshProUGUI>();
-                owned.equippedMark = owned.equippedMark != null ? owned.equippedMark : legacy.Find("EquippedMark")?.GetComponent<Image>();
-            }
-
-            _ownedCellTemplate = owned;
-        }
-
-        void EnsureLayout(Transform window)
-        {
-            if (window == null)
-            {
-                return;
-            }
-
-            var tabBar = window.Find("TabBar");
-            if (tabBar != null)
-            {
-                tabBar.gameObject.SetActive(false);
-            }
-
-            _detailArea = window.Find("DetailArea") as RectTransform;
-            if (_detailArea == null)
-            {
-                var detailGo = new GameObject("DetailArea", typeof(RectTransform));
-                _detailArea = detailGo.GetComponent<RectTransform>();
-                _detailArea.SetParent(window, false);
-                _detailArea.anchorMin = new Vector2(0.68f, 0.12f);
-                _detailArea.anchorMax = new Vector2(0.98f, 0.88f);
-                _detailArea.offsetMin = Vector2.zero;
-                _detailArea.offsetMax = Vector2.zero;
-
-                var titleGo = new GameObject("Title", typeof(RectTransform), typeof(TextMeshProUGUI));
-                titleGo.transform.SetParent(_detailArea, false);
-                _detailTitle = titleGo.GetComponent<TextMeshProUGUI>();
-                _detailTitle.fontSize = 22;
-                _detailTitle.alignment = TextAlignmentOptions.TopLeft;
-                var titleRect = titleGo.GetComponent<RectTransform>();
-                titleRect.anchorMin = new Vector2(0f, 1f);
-                titleRect.anchorMax = new Vector2(1f, 1f);
-                titleRect.pivot = new Vector2(0.5f, 1f);
-                titleRect.sizeDelta = new Vector2(0f, 36f);
-                titleRect.anchoredPosition = Vector2.zero;
-
-                var bodyGo = new GameObject("Body", typeof(RectTransform), typeof(TextMeshProUGUI));
-                bodyGo.transform.SetParent(_detailArea, false);
-                _detailBody = bodyGo.GetComponent<TextMeshProUGUI>();
-                _detailBody.fontSize = 16;
-                _detailBody.alignment = TextAlignmentOptions.TopLeft;
-                var bodyRect = bodyGo.GetComponent<RectTransform>();
-                bodyRect.anchorMin = new Vector2(0f, 0f);
-                bodyRect.anchorMax = new Vector2(1f, 1f);
-                bodyRect.offsetMin = new Vector2(0f, 0f);
-                bodyRect.offsetMax = new Vector2(0f, -44f);
-            }
-            else
-            {
-                _detailTitle = _detailArea.Find("Title")?.GetComponent<TextMeshProUGUI>();
-                _detailBody = _detailArea.Find("Body")?.GetComponent<TextMeshProUGUI>();
-            }
-
-            _slotGrid = window.Find("SlotArea/Viewport/Content/SlotGrid") as RectTransform;
-            if (_slotGrid == null)
-            {
-                var slotAreaGo = new GameObject("SlotArea", typeof(RectTransform), typeof(ScrollRect), typeof(Image));
-                var slotArea = slotAreaGo.GetComponent<RectTransform>();
-                slotArea.SetParent(window, false);
-                slotArea.anchorMin = new Vector2(0.02f, 0.12f);
-                slotArea.anchorMax = new Vector2(0.66f, 0.88f);
-                slotArea.offsetMin = Vector2.zero;
-                slotArea.offsetMax = Vector2.zero;
-
-                var viewportGo = new GameObject("Viewport", typeof(RectTransform), typeof(Mask), typeof(Image));
-                var viewport = viewportGo.GetComponent<RectTransform>();
-                viewport.SetParent(slotArea, false);
-                viewport.anchorMin = Vector2.zero;
-                viewport.anchorMax = Vector2.one;
-                viewport.offsetMin = Vector2.zero;
-                viewport.offsetMax = Vector2.zero;
-                viewportGo.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.01f);
-
-                var contentGo = new GameObject("Content", typeof(RectTransform));
-                var content = contentGo.GetComponent<RectTransform>();
-                content.SetParent(viewport, false);
-                content.anchorMin = new Vector2(0f, 1f);
-                content.anchorMax = new Vector2(1f, 1f);
-                content.pivot = new Vector2(0.5f, 1f);
-                content.anchoredPosition = Vector2.zero;
-                content.sizeDelta = new Vector2(0f, 0f);
-
-                var gridGo = new GameObject("SlotGrid", typeof(RectTransform), typeof(GridLayoutGroup));
-                _slotGrid = gridGo.GetComponent<RectTransform>();
-                _slotGrid.SetParent(content, false);
-                _slotGrid.anchorMin = new Vector2(0f, 1f);
-                _slotGrid.anchorMax = new Vector2(1f, 1f);
-                _slotGrid.pivot = new Vector2(0.5f, 1f);
-                _slotGrid.anchoredPosition = Vector2.zero;
-                _slotGrid.sizeDelta = new Vector2(0f, 0f);
-
-                var layout = gridGo.GetComponent<GridLayoutGroup>();
-                layout.cellSize = new Vector2(120f, 140f);
-                layout.spacing = new Vector2(12f, 12f);
-                layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-                layout.constraintCount = 4;
-                layout.childAlignment = TextAnchor.UpperCenter;
-
-                var scroll = slotAreaGo.GetComponent<ScrollRect>();
-                scroll.viewport = viewport;
-                scroll.content = content;
-                scroll.horizontal = false;
-                scroll.vertical = true;
-            }
-
-            _ownedArea = window.Find("OwnedArea") as RectTransform;
-            if (_ownedArea != null)
-            {
-                _ownedArea.gameObject.SetActive(false);
-            }
-        }
-
-        void HideLegacyTabUi()
-        {
-            if (_builtRoot == null)
-            {
-                return;
-            }
-
-            var window = _builtRoot.Find("Window");
-            if (window == null)
-            {
-                return;
-            }
-
-            var permanent = window.Find("PermanentArea");
-            if (permanent != null)
-            {
-                permanent.gameObject.SetActive(false);
-            }
-
-            var equip = window.Find("EquipArea");
-            if (equip != null)
-            {
-                equip.gameObject.SetActive(false);
-            }
+            return true;
         }
 
         public void RefreshAll()
@@ -352,11 +181,6 @@ namespace My.UI.Rune
 
         void RefreshSlots()
         {
-            if (_slotGrid == null)
-            {
-                return;
-            }
-
             var runeSystem = GetRuneSystem();
             if (runeSystem == null)
             {
@@ -394,8 +218,7 @@ namespace My.UI.Rune
             }
 
             _selectedSlot = FindSelectedSlotView();
-
-            LayoutRebuilder.ForceRebuildLayoutImmediate(_slotGrid);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(slotGrid);
         }
 
         static bool IsEquipSlotUnlocked(PlayerRuneSystem runeSystem, ERuneEquipSlot slot)
@@ -413,73 +236,9 @@ namespace My.UI.Rune
 
         RuneSlotView CreateSlotView()
         {
-            GameObject go;
-            if (_slotPrefab != null)
-            {
-                go = Instantiate(_slotPrefab, _slotGrid, false);
-            }
-            else if (_slotTemplate != null)
-            {
-                go = Instantiate(_slotTemplate.gameObject, _slotGrid, false);
-            }
-            else
-            {
-                go = BuildRuntimeSlot(_slotGrid);
-            }
-
-            go.SetActive(true);
-            var view = go.GetComponent<RuneSlotView>();
-            if (view == null)
-            {
-                view = go.AddComponent<RuneSlotView>();
-            }
-
+            var view = Instantiate(slotPrefab, slotGrid, false);
+            view.gameObject.SetActive(true);
             return view;
-        }
-
-        static GameObject BuildRuntimeSlot(Transform parent)
-        {
-            var go = new GameObject("RuneSlot", typeof(RectTransform), typeof(Image), typeof(RuneSlotBinder), typeof(RuneInfoProvider), typeof(RuneSlotView), typeof(Button));
-            go.transform.SetParent(parent, false);
-            var rect = go.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(120f, 140f);
-
-            var bg = go.GetComponent<Image>();
-            bg.color = new Color(0.14f, 0.12f, 0.20f, 1f);
-
-            var view = go.GetComponent<RuneSlotView>();
-            view.Bg = bg;
-            view.ClickButton = go.GetComponent<Button>();
-
-            var labelGo = new GameObject("SlotLabel", typeof(RectTransform), typeof(TextMeshProUGUI));
-            labelGo.transform.SetParent(go.transform, false);
-            view.SlotLabel = labelGo.GetComponent<TextMeshProUGUI>();
-            var labelRect = labelGo.GetComponent<RectTransform>();
-            labelRect.anchorMin = new Vector2(0f, 1f);
-            labelRect.anchorMax = new Vector2(1f, 1f);
-            labelRect.pivot = new Vector2(0.5f, 1f);
-            labelRect.sizeDelta = new Vector2(0f, 22f);
-            labelRect.anchoredPosition = new Vector2(0f, -4f);
-
-            var iconGo = new GameObject("Icon", typeof(RectTransform), typeof(Image));
-            iconGo.transform.SetParent(go.transform, false);
-            view.Icon = iconGo.GetComponent<Image>();
-            var iconRect = iconGo.GetComponent<RectTransform>();
-            iconRect.anchorMin = new Vector2(0.5f, 0.5f);
-            iconRect.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRect.sizeDelta = new Vector2(72f, 72f);
-
-            var nameGo = new GameObject("Name", typeof(RectTransform), typeof(TextMeshProUGUI));
-            nameGo.transform.SetParent(go.transform, false);
-            view.NameText = nameGo.GetComponent<TextMeshProUGUI>();
-            var nameRect = nameGo.GetComponent<RectTransform>();
-            nameRect.anchorMin = new Vector2(0f, 0f);
-            nameRect.anchorMax = new Vector2(1f, 0f);
-            nameRect.pivot = new Vector2(0.5f, 0f);
-            nameRect.sizeDelta = new Vector2(0f, 28f);
-            nameRect.anchoredPosition = new Vector2(0f, 8f);
-
-            return go;
         }
 
         void ClearSlotViews()
@@ -534,18 +293,18 @@ namespace My.UI.Rune
             {
                 _selectedEquipSlot = slot.Binder.EquipSlot;
                 _selectedFixedRuneId = null;
-                if (_ownedArea != null)
+                if (ownedArea != null)
                 {
-                    _ownedArea.gameObject.SetActive(slot.State != RuneSlotVisualState.Locked);
+                    ownedArea.gameObject.SetActive(slot.State != RuneSlotVisualState.Locked);
                 }
             }
             else
             {
                 _selectedEquipSlot = ERuneEquipSlot.None;
                 _selectedFixedRuneId = slot.Binder.FixedRuneId;
-                if (_ownedArea != null)
+                if (ownedArea != null)
                 {
-                    _ownedArea.gameObject.SetActive(false);
+                    ownedArea.gameObject.SetActive(false);
                 }
             }
 
@@ -554,21 +313,16 @@ namespace My.UI.Rune
 
         void RefreshDetailPanel()
         {
-            if (_detailArea == null)
-            {
-                return;
-            }
-
             if (_selectedSlot == null || _selectedSlot.Binder == null)
             {
-                if (_detailTitle != null)
+                if (detailTitle != null)
                 {
-                    _detailTitle.text = string.Empty;
+                    detailTitle.text = string.Empty;
                 }
 
-                if (_detailBody != null)
+                if (detailBody != null)
                 {
-                    _detailBody.text = "点击槽位查看符文详情。";
+                    detailBody.text = "点击槽位查看符文详情。";
                 }
 
                 return;
@@ -580,44 +334,39 @@ namespace My.UI.Rune
                 return;
             }
 
-            if (_detailTitle != null)
+            if (detailTitle != null)
             {
-                _detailTitle.text = provider.GetDisplayName();
+                detailTitle.text = provider.GetDisplayName();
             }
 
-            if (_detailBody != null)
+            if (detailBody != null)
             {
                 if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Fixed
                     && _selectedSlot.State == RuneSlotVisualState.Locked)
                 {
-                    _detailBody.text = "该常驻符文尚未解锁。";
+                    detailBody.text = "该常驻符文尚未解锁。";
                 }
                 else if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Equippable
                          && _selectedSlot.State == RuneSlotVisualState.Locked)
                 {
-                    _detailBody.text = "尚未获得可用于该槽位的符文。";
+                    detailBody.text = "尚未获得可用于该槽位的符文。";
                 }
                 else if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Equippable
                          && _selectedSlot.State == RuneSlotVisualState.Empty)
                 {
-                    _detailBody.text = string.IsNullOrEmpty(provider.GetDetailText())
+                    detailBody.text = string.IsNullOrEmpty(provider.GetDetailText())
                         ? "从下方列表选择或拖拽符文进行装配。"
                         : provider.GetDetailText();
                 }
                 else
                 {
-                    _detailBody.text = provider.GetDetailText();
+                    detailBody.text = provider.GetDetailText();
                 }
             }
         }
 
         void RefreshOwnedGrid()
         {
-            if (_ownedGrid == null || _ownedCellTemplate == null)
-            {
-                return;
-            }
-
             if (_selectedEquipSlot == ERuneEquipSlot.None)
             {
                 ClearOwnedCells();
@@ -631,37 +380,32 @@ namespace My.UI.Rune
             }
 
             var owned = runeSystem.GetOwnedByType(ERuneType.Equippable)
-                .Where(x => x.EquipSlot == _selectedEquipSlot)
                 .OrderBy(x => x.SortOrder)
                 .ThenBy(x => x.RuneId)
                 .ToList();
 
             ClearOwnedCells();
-            string equippedId = runeSystem.GetEquipped(_selectedEquipSlot);
             for (int i = 0; i < owned.Count; i++)
             {
                 var def = owned[i];
-                var go = Instantiate(_ownedCellTemplate.gameObject, _ownedGrid, false);
-                go.SetActive(true);
-                var cell = go.GetComponent<RuneOwnedCell>();
-                if (cell == null)
-                {
-                    cell = go.AddComponent<RuneOwnedCell>();
-                }
+                var cell = Instantiate(ownedCellTemplate, ownedGrid, false);
+                cell.gameObject.SetActive(true);
 
+                bool canEquip = def.EquipSlot == _selectedEquipSlot;
+                string equippedId = runeSystem.GetEquipped(def.EquipSlot);
                 bool isEquipped = equippedId == def.RuneId;
                 bool selected = _selectedOwnedRuneId == def.RuneId;
-                cell.Bind(this, def, isEquipped, selected, i);
+                cell.Bind(this, def, isEquipped, selected, i, canEquip);
                 _ownedCells.Add(cell);
             }
 
-            if (_ownedHint != null)
+            if (ownedHint != null)
             {
-                _ownedHint.gameObject.SetActive(owned.Count == 0);
-                _ownedHint.text = owned.Count == 0 ? "暂无该槽位可用符文" : string.Empty;
+                ownedHint.gameObject.SetActive(owned.Count == 0);
+                ownedHint.text = owned.Count == 0 ? "暂无已拥有的装配符文" : string.Empty;
             }
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(_ownedGrid);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(ownedGrid);
         }
 
         void ClearOwnedCells()
@@ -680,6 +424,11 @@ namespace My.UI.Rune
         public void TryEquipOwnedRune(RuneData def)
         {
             if (def == null || _selectedEquipSlot == ERuneEquipSlot.None)
+            {
+                return;
+            }
+
+            if (def.EquipSlot != _selectedEquipSlot)
             {
                 return;
             }
@@ -727,10 +476,5 @@ namespace My.UI.Rune
         public bool OnHoldStart(string holdKey) => false;
         public bool OnHoldUpdate(string holdKey) => false;
         public bool OnHoldingEnd(string holdKey) => false;
-    }
-
-    // prefab / 旧引用兼容
-    public class RuneLoadoutPanel : RunePanel
-    {
     }
 }
