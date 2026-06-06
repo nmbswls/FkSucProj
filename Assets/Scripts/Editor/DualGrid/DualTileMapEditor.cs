@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using My.Map.Cliff;
 using My.Map.DualGrid;
 using UnityEditor;
 using UnityEngine;
@@ -56,6 +57,15 @@ namespace My.Map.DualGrid.Editor
             map.ViewTilemap = GetOrCreateTilemap(viewGo);
 
             map.EnsureViewOffset();
+
+            var cliffGen = map.GetComponent<CliffPlateauGenerator>();
+            if (cliffGen != null)
+            {
+                cliffGen.EnsureCliffChild();
+                cliffGen.SyncDualGridOffset();
+                EditorUtility.SetDirty(cliffGen);
+            }
+
             EditorUtility.SetDirty(map);
         }
 

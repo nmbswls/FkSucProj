@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b9f2a314c658790e3f60718293d012, type: 3}
+  m_Name: Basic01CliffTileSet
+  m_EditorClassIdentifier: 
+  DefaultTile: {fileID: 11400000, guid: 1e2e1338faa9c214ab4345556e42e442, type: 2}
+  Body_Mid: {fileID: 11400000, guid: 1e2e1338faa9c214ab4345556e42e442, type: 2}
+  Body_LeftEnd: {fileID: 11400000, guid: 3344643b80e43b240b97a96aef82f2aa, type: 2}
+  Body_RightEnd: {fileID: 11400000, guid: bf79a16747cc7b142b969551751a6a44, type: 2}
+  Body_DepthJunctionLeft: {fileID: 11400000, guid: 16d48349bedcebd49829b16686f2e3e7, type: 2}
+  Body_DepthJunctionRight: {fileID: 11400000, guid: 1ec7a2b71a68cf643a59b9be1f21efa5, type: 2}
+  Body_ConvexLeft: {fileID: 11400000, guid: ef9b7122c887f884e86c8317a465e1f3, type: 2}
+  Body_ConvexRight: {fileID: 11400000, guid: 0ad70aeae83d41343a49f345e2bf24d9, type: 2}
+  Bottom_Mid: {fileID: 11400000, guid: d7e96e3be7a389c48a546ecc6452f95e, type: 2}
+  Bottom_LeftEnd: {fileID: 11400000, guid: a59ee7b856322af4a9a7a81e983fcc11, type: 2}
+  Bottom_RightEnd: {fileID: 11400000, guid: a413650a89e0da049a05f20cd7d09339, type: 2}
+  Bottom_DepthJunctionLeft: {fileID: 11400000, guid: dad2bba2b7ef66a488323b21b206975e, type: 2}
+  Bottom_DepthJunctionRight: {fileID: 11400000, guid: 65e90bc27b1df6f4b8c9d1ecebf87df4, type: 2}
