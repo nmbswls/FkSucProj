@@ -32,6 +32,7 @@ namespace My.UI
         protected SceneRangeWarnCtrl PreviewRect;
 
         protected GameObject PreviewCastRange;
+        PreviewCastRangeView _previewCastRangeView;
 
         protected Action<bool> cbOnConfirm;
 
@@ -49,6 +50,7 @@ namespace My.UI
             {
                 var go = GameObject.Instantiate(PreviewCastRangePrefab, MainGameManager.Instance.SceneEffectLayer); ;
                 PreviewCastRange = go;
+                _previewCastRangeView = go.GetComponent<PreviewCastRangeView>();
             }
         }
 
@@ -82,7 +84,7 @@ namespace My.UI
                 if(mainAbilityCfg.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
-                    PreviewCastRange.transform.localScale = Vector3.one * mainAbilityCfg.Range1;
+                    _previewCastRangeView?.SetRadius(mainAbilityCfg.Range1);
                 }
                 PreviewCircle.gameObject.SetActive(true);
                 PreviewCircle.transform.localScale = Vector3.one * 0.1f;
@@ -92,7 +94,7 @@ namespace My.UI
                 if (mainAbilityCfg.Range1 > 1e-1)
                 {
                     PreviewCastRange.SetActive(true);
-                    PreviewCastRange.transform.localScale = Vector3.one * mainAbilityCfg.Range1;
+                    _previewCastRangeView?.SetRadius(mainAbilityCfg.Range1);
                 }
                 
                 PreviewCircle.gameObject.SetActive(true);

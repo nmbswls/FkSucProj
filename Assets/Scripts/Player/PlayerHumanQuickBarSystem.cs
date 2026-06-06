@@ -328,10 +328,10 @@ namespace My.Player
 
             _lastConsumableCycleUnscaledTime = now;
 
-            int start = ActiveConsumableIndex;
+            int dir = delta > 0 ? 1 : -1;
             for (int step = 0; step < ConsumableSlots.Length; step++)
             {
-                int next = ActiveConsumableIndex + (delta > 0 ? -1 : 1);
+                int next = ActiveConsumableIndex + dir;
                 if (next < 0)
                 {
                     next = ConsumableSlots.Length - 1;
@@ -342,26 +342,10 @@ namespace My.Player
                 }
 
                 ActiveConsumableIndex = next;
-                if (!ConsumableSlots[ActiveConsumableIndex].IsEmpty
-                    || step == ConsumableSlots.Length - 1)
+                if (!ConsumableSlots[ActiveConsumableIndex].IsEmpty)
                 {
                     break;
                 }
-            }
-
-            if (ActiveConsumableIndex == start && ConsumableSlots.Length > 1)
-            {
-                int next = ActiveConsumableIndex + (delta > 0 ? -1 : 1);
-                if (next < 0)
-                {
-                    next = ConsumableSlots.Length - 1;
-                }
-                else if (next >= ConsumableSlots.Length)
-                {
-                    next = 0;
-                }
-
-                ActiveConsumableIndex = next;
             }
 
             PlayerHumanItemBarPanel.RefreshFromGame();
