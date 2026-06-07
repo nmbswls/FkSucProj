@@ -541,20 +541,26 @@ namespace My.Map.Scene
 
         public override void OnEntityMove(long entityId, Vector2 oldPos, Vector2 newPos)
         {
+            var targetWorldPos = MapLogicPosition.LogicToWorld(newPos);
+            bool visualAlreadyAtTarget = (transform.position - targetWorldPos).sqrMagnitude < 0.25f;
+
             if (IsPresentationMoveActive)
             {
-                var worldPos = MapLogicPosition.LogicToWorld(newPos);
-                if ((transform.position - worldPos).sqrMagnitude > 0.0001f)
+                if (!visualAlreadyAtTarget)
                 {
-                    transform.position = worldPos;
+                    transform.position = targetWorldPos;
                 }
 
                 return;
             }
 
-            base.OnEntityMove(entityId, oldPos, newPos);
+            if (!visualAlreadyAtTarget)
+            {
+                base.OnEntityMove(entityId, oldPos, newPos);
+            }
 
-            if ((oldPos - newPos).sqrMagnitude > 5)
+            // 表现层已到位时逻辑 TeleportTo 不应触发 Cinemachine 硬切
+            if ((oldPos - newPos).sqrMagnitude > 5 && !visualAlreadyAtTarget)
             {
                 MainGameManager.Instance.MainMapVCam.PreviousStateIsValid = false;
             }

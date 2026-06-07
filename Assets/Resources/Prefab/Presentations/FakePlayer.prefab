@@ -1738,6 +1738,8 @@ MonoBehaviour:
   BindEffectRoot: {fileID: 4203489501796133219}
   MainAgentAnimator: {fileID: 6428733477164974139}
   AnimHolder: {fileID: 4275466162928593809}
+  tallGrassWaistRatio: 0.42
+  tallGrassBlendTime: 0.12
   MainFlasher: {fileID: 765004380595138668}
   MoveTrailSpawner: {fileID: 513470045793456111}
   NoiseEmitter: {fileID: 0}
@@ -1803,7 +1805,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.0049888114}
-  m_Size: {x: 0.23, y: 0.1}
+  m_Size: {x: 0.4, y: 0.2}
   m_Direction: 1
 --- !u!1 &3654103865470724178
 GameObject:
@@ -2157,6 +2159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsShown: 0
+  KeepVisibleWhenIdle: 0
   WeaponName: 
   weaponAnim: {fileID: 0}
   weaponAnimancer: {fileID: 4343448589452285408}
@@ -2170,6 +2173,11 @@ MonoBehaviour:
     spriteVisual: {fileID: 0}
     NeedFlipObjs: []
     angleOffset: 0
+  UseCodeSwing: 0
+  SwingStartAngle: 0
+  SwingEndAngle: 0
+  SwingTopToBottom: 1
+  HitCollider: {fileID: 0}
   posLerpSpeed: 15
   radiusX: 0.2
   radiusY: 0.2
@@ -2361,6 +2369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsShown: 0
+  KeepVisibleWhenIdle: 0
   WeaponName: 
   weaponAnim: {fileID: 4123034153916361304}
   weaponAnimancer: {fileID: 0}
@@ -2374,6 +2383,11 @@ MonoBehaviour:
     spriteVisual: {fileID: 6420445353585651546}
     NeedFlipObjs: []
     angleOffset: 0
+  UseCodeSwing: 0
+  SwingStartAngle: 0
+  SwingEndAngle: 0
+  SwingTopToBottom: 1
+  HitCollider: {fileID: 0}
   posLerpSpeed: 15
   radiusX: -0.3
   radiusY: 0.2
@@ -2978,6 +2992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsShown: 0
+  KeepVisibleWhenIdle: 0
   WeaponName: 
   weaponAnim: {fileID: 0}
   weaponAnimancer: {fileID: 6761832074393046267}
@@ -2996,6 +3011,11 @@ MonoBehaviour:
     - {fileID: 8308015543660762187}
     - {fileID: 7655222459300442932}
     angleOffset: -20
+  UseCodeSwing: 0
+  SwingStartAngle: 0
+  SwingEndAngle: 0
+  SwingTopToBottom: 1
+  HitCollider: {fileID: 0}
   posLerpSpeed: 15
   radiusX: 0.2
   radiusY: 0.4
@@ -3196,6 +3216,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsShown: 0
+  KeepVisibleWhenIdle: 0
   WeaponName: 
   weaponAnim: {fileID: 0}
   weaponAnimancer: {fileID: 5235518471927996731}
@@ -3213,6 +3234,11 @@ MonoBehaviour:
     - {fileID: 3651138183278868063}
     - {fileID: 8710123236051786632}
     angleOffset: 0
+  UseCodeSwing: 0
+  SwingStartAngle: 0
+  SwingEndAngle: 0
+  SwingTopToBottom: 1
+  HitCollider: {fileID: 0}
   posLerpSpeed: 15
   radiusX: 0
   radiusY: 0
@@ -3535,6 +3561,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsShown: 0
+  KeepVisibleWhenIdle: 0
   WeaponName: 
   weaponAnim: {fileID: 0}
   weaponAnimancer: {fileID: 0}
@@ -3544,6 +3571,11 @@ MonoBehaviour:
   slashEffects: []
   WeaponViewLength: 0
   weaponParts: []
+  UseCodeSwing: 0
+  SwingStartAngle: 0
+  SwingEndAngle: 0
+  SwingTopToBottom: 1
+  HitCollider: {fileID: 0}
   posLerpSpeed: 15
   radiusX: 0.2
   radiusY: 0.4
@@ -4006,6 +4038,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsShown: 0
+  KeepVisibleWhenIdle: 0
   WeaponName: 
   weaponAnim: {fileID: 3537036015044502644}
   weaponAnimancer: {fileID: 0}
@@ -4015,6 +4048,11 @@ MonoBehaviour:
   slashEffects: []
   WeaponViewLength: 0
   weaponParts: []
+  UseCodeSwing: 0
+  SwingStartAngle: 0
+  SwingEndAngle: 0
+  SwingTopToBottom: 1
+  HitCollider: {fileID: 0}
   posLerpSpeed: 15
   radiusX: 0.2
   radiusY: 0.4
@@ -5029,6 +5067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsShown: 0
+  KeepVisibleWhenIdle: 0
   WeaponName: 
   weaponAnim: {fileID: 4123034153916361304}
   weaponAnimancer: {fileID: 0}
@@ -5046,6 +5085,11 @@ MonoBehaviour:
     spriteVisual: {fileID: 6420445353585651546}
     NeedFlipObjs: []
     angleOffset: 0
+  UseCodeSwing: 0
+  SwingStartAngle: 0
+  SwingEndAngle: 0
+  SwingTopToBottom: 1
+  HitCollider: {fileID: 0}
   posLerpSpeed: 15
   radiusX: 0.2
   radiusY: 0.4

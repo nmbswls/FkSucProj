@@ -71,6 +71,9 @@ namespace My.Map.Scene
 
         void FinishPresentationMove(Action onReach)
         {
+            // 先回调（藤蔓攀爬在此同步 TeleportTo），仍保持 presentation 保护相机
+            onReach?.Invoke();
+
             _presentationMoveActive = false;
             _presentationMoveTween = null;
 
@@ -78,8 +81,6 @@ namespace My.Map.Scene
             {
                 CharacterController.enabled = true;
             }
-
-            onReach?.Invoke();
         }
 
         public void CancelPresentationMove()

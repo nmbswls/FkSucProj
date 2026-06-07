@@ -44,6 +44,15 @@ namespace My.Map
 
     public class EntityInteractComp : IWithInteract
     {
+        private enum InteractPendingMode
+        {
+            None,
+            Timer,
+            ExternalNotify
+        }
+
+        private const float ExternalNotifyFallbackMarginSec = 0.5f;
+
         public IEntityInteractable Owner;
 
         private List<MapInteractInfo> interactInfos = new();
@@ -54,9 +63,12 @@ namespace My.Map
 
         private int _currOutputIdx = 0;
         private MapInteractInfo? _currInteract = null;
-        private float _pendingParam1 = 0;
         private int _interactingPlayerId = GamePlayerIds.Local;
-        private bool _vineClimbPresentationDone;
+
+        private InteractPendingMode _pendingMode = InteractPendingMode.None;
+        private float _pendingElapsed;
+        private float _pendingTimeoutSec;
+        private bool _pendingNotified;
 
         public EntityInteractComp(IEntityInteractable owner)
         {
@@ -82,69 +94,75 @@ namespace My.Map
         /// <param name="dt"></param>
         public void TickInteract(float dt)
         {
-            if(_isInteracting)
+            if (!_isInteracting)
             {
-                if(_currOutputIdx >= _currInteract.Outputs.Count)
-                {
-                    DoInteractEnd();
-                    return;
-                }
-
-
-
-                bool pendingFinish = false;
-                switch (_currInteract.Outputs[_currOutputIdx].OutputType)
-                {
-                    case LogicInteractOutput.EOutputType.Wait:
-                        {
-                            _pendingParam1 += dt;
-
-                            if (_pendingParam1 > _currInteract.Outputs[_currOutputIdx].Param1 * 0.001f)
-                            {
-                                pendingFinish = true;
-                            }
-                        }
-                        break;
-                    case LogicInteractOutput.EOutputType.SelfAnim:
-                        {
-                            _pendingParam1 += dt;
-
-                            if (_pendingParam1 > _currInteract.Outputs[_currOutputIdx].Param1 * 0.001f)
-                            {
-                                pendingFinish = true;
-                            }
-                        }
-                        break;
-                    case LogicInteractOutput.EOutputType.VineClimbTo:
-                        {
-                            pendingFinish = _vineClimbPresentationDone;
-                            if (pendingFinish)
-                            {
-                                _vineClimbPresentationDone = false;
-                            }
-                        }
-                        break;
-                    default:
-                        {
-                            pendingFinish = true;
-                            break;
-                        }
-                }
-
-                if (pendingFinish)
-                {
-                    _currOutputIdx += 1;
-                    _pendingParam1 = 0;
-
-                    HandleInteractOutputs();
-                }
+                return;
             }
-            // 处理
 
-            if(!_isInteracting)
+            if (_currOutputIdx >= _currInteract.Outputs.Count)
             {
-
+                DoInteractEnd();
+                return;
             }
+
+            if (_pendingMode == InteractPendingMode.None)
+            {
+                return;
+            }
+
+            if (TickInteractPending(dt))
+            {
+                _currOutputIdx += 1;
+                HandleInteractOutputs();
+            }
+        }
+
+        private void BeginInteractPending(InteractPendingMode mode, float timeoutSec)
+        {
+            _pendingMode = mode;
+            _pendingElapsed = 0f;
+            _pendingTimeoutSec = timeoutSec;
+            _pendingNotified = false;
+        }
+
+        private void NotifyInteractPendingComplete()
+        {
+            if (_pendingMode == InteractPendingMode.ExternalNotify)
+            {
+                _pendingNotified = true;
+            }
+        }
+
+        private bool TickInteractPending(float dt)
+        {
+            if (_pendingMode == InteractPendingMode.None)
+            {
+                return true;
+            }
+
+            _pendingElapsed += dt;
+            bool finished = _pendingMode switch
+            {
+                InteractPendingMode.Timer => _pendingElapsed >= _pendingTimeoutSec,
+                InteractPendingMode.ExternalNotify =>
+                    _pendingNotified || _pendingElapsed >= _pendingTimeoutSec,
+                _ => true
+            };
+
+            if (finished)
+            {
+                ResetInteractPending();
+            }
+
+            return finished;
+        }
+
+        private void ResetInteractPending()
+        {
+            _pendingMode = InteractPendingMode.None;
+            _pendingElapsed = 0f;
+            _pendingTimeoutSec = 0f;
+            _pendingNotified = false;
         }
 
 
@@ -542,59 +560,6 @@ namespace My.Map
                         }
                         break;
 
-                    case LogicInteractOutput.EOutputType.VineClimbTo:
-                        {
-                            var player = GetInteractingPlayerEntity();
-                            if (player == null)
-                            {
-                                errOccur = true;
-                                break;
-                            }
-
-                            if (!TryResolveNamedPoint(output.Param3, out var landPos))
-                            {
-                                Debug.Log("vine climb landing point not found");
-                                errOccur = true;
-                                break;
-                            }
-
-                            if (!TryResolveVineApexLogicPos(output.Param4, out var apexPos))
-                            {
-                                errOccur = true;
-                                break;
-                            }
-
-                            float climbSec = output.Param1 * 0.001f;
-                            if (climbSec <= 0f)
-                            {
-                                climbSec = 0.8f;
-                            }
-
-                            float pauseSec = output.Param2 * 0.001f;
-                            float jumpSec = output.Param5 * 0.001f;
-                            if (jumpSec <= 0f)
-                            {
-                                jumpSec = 0.35f;
-                            }
-
-                            float totalSec = climbSec + pauseSec + jumpSec;
-                            _vineClimbPresentationDone = false;
-                            pending = true;
-
-                            MainGameManager.Instance?.interactSystem?.SetInteractPause(totalSec);
-                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: totalSec);
-                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: totalSec);
-                            ApplyPendingTeleportTo(player.Id, landPos, totalSec);
-                            Owner.LogicManager.viewer.DoPlayerVineClimbMove(
-                                apexPos,
-                                landPos,
-                                climbSec,
-                                pauseSec,
-                                jumpSec,
-                                () => { _vineClimbPresentationDone = true; });
-                        }
-                        break;
-
                     case LogicInteractOutput.EOutputType.SetGlobalSwitch:
                         {
                             string switchName = output.Param3;
@@ -816,18 +781,75 @@ namespace My.Map
 
                     case LogicInteractOutput.EOutputType.Wait:
                         {
+                            BeginInteractPending(InteractPendingMode.Timer, output.Param1 * 0.001f);
                             pending = true;
-                            _pendingParam1 = 0;
                         }
                         break;
                     case LogicInteractOutput.EOutputType.SelfAnim:
                         {
+                            var durationSec = output.Param1 * 0.001f;
+                            BeginInteractPending(InteractPendingMode.Timer, durationSec);
                             pending = true;
-                            _pendingParam1 = 0;
 
                             var animName = output.Param3;
-                            var durationSec = output.Param1 * 0.001f;
                             (Owner as LogicEntityInteractPoint)?.NotifySelfAnim(animName, durationSec);
+                        }
+                        break;
+                    case LogicInteractOutput.EOutputType.VineClimbTo:
+                        {
+                            var player = GetInteractingPlayerEntity();
+                            if (player == null)
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            if (!TryResolveNamedPoint(output.Param3, out var landPos))
+                            {
+                                Debug.Log("vine climb landing point not found");
+                                errOccur = true;
+                                break;
+                            }
+
+                            if (!TryResolveVineApexLogicPos(output.Param4, out var apexPos))
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            float climbSec = output.Param1 * 0.001f;
+                            if (climbSec <= 0f)
+                            {
+                                climbSec = 0.8f;
+                            }
+
+                            float pauseSec = output.Param2 * 0.001f;
+                            float jumpSec = output.Param5 * 0.001f;
+                            if (jumpSec <= 0f)
+                            {
+                                jumpSec = 0.35f;
+                            }
+
+                            float totalSec = climbSec + pauseSec + jumpSec;
+                            BeginInteractPending(
+                                InteractPendingMode.ExternalNotify,
+                                totalSec + ExternalNotifyFallbackMarginSec);
+                            pending = true;
+
+                            MainGameManager.Instance?.interactSystem?.SetInteractPause(totalSec);
+                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: totalSec);
+                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: totalSec);
+                            Owner.LogicManager.viewer.DoPlayerVineClimbMove(
+                                apexPos,
+                                landPos,
+                                climbSec,
+                                pauseSec,
+                                jumpSec,
+                                () =>
+                                {
+                                    ApplyPendingTeleportTo(player.Id, landPos, 0f);
+                                    NotifyInteractPendingComplete();
+                                });
                         }
                         break;
 
@@ -863,7 +885,7 @@ namespace My.Map
             _currOutputIdx = 0;
             _currInteract = null;
 
-            _pendingParam1 = 0;
+            ResetInteractPending();
         }
     }
 

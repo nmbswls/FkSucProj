@@ -946,7 +946,13 @@ namespace My.Input
             }
 
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
+            {
+                var huntingRadialOpen = My.UI.HuntingHudPanel.Instance?.ActionRadial;
+                if (huntingRadialOpen == null || !huntingRadialOpen.IsOpen)
+                {
+                    return;
+                }
+            }
 
             var huntingRadial = My.UI.HuntingHudPanel.Instance?.ActionRadial;
             if (huntingRadial != null && huntingRadial.IsOpen)

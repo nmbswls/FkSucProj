@@ -15,25 +15,23 @@ namespace My.Map.Hunting
             Control,
         }
 
-        [System.Serializable]
-        public class ActionSlotData
+        struct ActionSlotData
         {
             public EActionSlot Slot;
             public string Label;
-            public bool Interactable = true;
+            public bool Interactable;
         }
 
         public RectTransform MenuRoot;
-        public RectTransform SectorContainer;
-        public RadialSectorItem SectorPrefab;
+        public Button ExecuteButton;
+        public RectTransform OptionsContainer;
+        public Button OptionButtonTemplate;
 
-        public float Radius = 120f;
-        public float InnerRadius = 36f;
-        public Color ColorNormal = new Color(0.15f, 0.12f, 0.18f, 0.92f);
-        public Color ColorHighlight = new Color(0.85f, 0.55f, 0.15f, 0.98f);
+        public float OptionRadius = 90f;
+        public float OptionStartAngleDeg = 90f;
+        public float OptionAngleStepDeg = 60f;
 
-        readonly List<RadialSectorItem> _sectors = new();
-        readonly List<ActionSlotData> _slots = new();
+        readonly List<Button> _optionButtons = new();
         SceneNpcPresenter _target;
         Camera _uiCam;
 
@@ -46,58 +44,53 @@ namespace My.Map.Hunting
                 MenuRoot = transform as RectTransform;
             }
 
-            if (SectorContainer == null && MenuRoot != null)
-            {
-                SectorContainer = MenuRoot;
-            }
-
-            EnsureSectorPrefab();
-            if (SectorPrefab != null)
-            {
-                SectorPrefab.gameObject.SetActive(false);
-            }
-
             var canvas = GetComponentInParent<Canvas>();
             if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
             {
                 _uiCam = canvas.worldCamera;
             }
 
+            if (OptionButtonTemplate != null)
+            {
+                OptionButtonTemplate.gameObject.SetActive(false);
+            }
+
+            if (ExecuteButton != null)
+            {
+                ExecuteButton.onClick.AddListener(OnExecuteClicked);
+            }
+
             SetOpen(false);
         }
 
-        void EnsureSectorPrefab()
+        void OnDestroy()
         {
-            if (SectorPrefab != null)
+            if (ExecuteButton != null)
             {
-                return;
-            }
-
-            var menu = Resources.Load<MapPlayerRadialMenu>("UI/Prefabs/MapPlayerRadialMenu");
-            if (menu != null)
-            {
-                SectorPrefab = menu.sectorPrefab;
+                ExecuteButton.onClick.RemoveListener(OnExecuteClicked);
             }
         }
 
         public void Show(SceneNpcPresenter target, bool canExecute, bool canControl)
         {
             _target = target;
-            _slots.Clear();
-            _slots.Add(new ActionSlotData
-            {
-                Slot = EActionSlot.Execute,
-                Label = "处决",
-                Interactable = canExecute,
-            });
-            _slots.Add(new ActionSlotData
-            {
-                Slot = EActionSlot.Control,
-                Label = "操控",
-                Interactable = canControl,
-            });
 
-            RebuildSectors();
+            if (ExecuteButton != null)
+            {
+                ExecuteButton.interactable = canExecute;
+            }
+
+            var options = new List<ActionSlotData>
+            {
+                new ActionSlotData
+                {
+                    Slot = EActionSlot.Control,
+                    Label = "操控",
+                    Interactable = canControl,
+                },
+            };
+
+            RebuildOptions(options);
             RefreshLayout();
             SetOpen(true);
         }
@@ -106,109 +99,115 @@ namespace My.Map.Hunting
         {
             _target = null;
             SetOpen(false);
-            ClearSectors();
+            ClearOptions();
         }
 
+        // 轮盘打开时由输入层调用：点击菜单外区域则关闭并消耗本次点击。
         public bool TryHandleClick(Vector2 screenPos)
         {
-            if (!IsOpen || SectorContainer == null)
+            if (!IsOpen)
             {
                 return false;
             }
 
-            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    SectorContainer, screenPos, _uiCam, out Vector2 local))
+            if (IsPointerOverMenu(screenPos))
             {
-                Close();
                 return true;
-            }
-
-            float dist = local.magnitude;
-            if (dist < InnerRadius || dist > Radius * 1.15f)
-            {
-                Close();
-                return true;
-            }
-
-            int idx = AngleToIndex(Mathf.Atan2(local.y, local.x) * Mathf.Rad2Deg);
-            if (idx < 0 || idx >= _slots.Count)
-            {
-                Close();
-                return true;
-            }
-
-            var slot = _slots[idx];
-            if (!slot.Interactable)
-            {
-                Close();
-                return true;
-            }
-
-            var manager = HuntingModeManager.Instance;
-            if (manager == null || _target == null)
-            {
-                Close();
-                return true;
-            }
-
-            switch (slot.Slot)
-            {
-                case EActionSlot.Execute:
-                    manager.TryExecuteTarget(_target);
-                    break;
-                case EActionSlot.Control:
-                    manager.TryControlTarget(_target);
-                    break;
             }
 
             Close();
             return true;
         }
 
-        void RebuildSectors()
+        public void RefreshLayoutIfOpen()
         {
-            ClearSectors();
-            if (SectorPrefab == null || SectorContainer == null)
+            if (IsOpen)
+            {
+                RefreshLayout();
+            }
+        }
+
+        void OnExecuteClicked()
+        {
+            if (_target == null || ExecuteButton == null || !ExecuteButton.interactable)
             {
                 return;
             }
 
-            int count = _slots.Count;
-            float step = 360f / count;
-            float fillAmount = step / 360f;
+            var manager = HuntingModeManager.Instance;
+            if (manager == null)
+            {
+                return;
+            }
+
+            if (manager.TryExecuteTarget(_target))
+            {
+                Close();
+            }
+        }
+
+        void OnOptionClicked(EActionSlot slot)
+        {
+            var manager = HuntingModeManager.Instance;
+            if (manager == null || _target == null)
+            {
+                return;
+            }
+
+            bool handled = slot switch
+            {
+                EActionSlot.Control => manager.TryControlTarget(_target),
+                _ => false,
+            };
+
+            if (handled)
+            {
+                Close();
+            }
+        }
+
+        void RebuildOptions(List<ActionSlotData> options)
+        {
+            ClearOptions();
+            if (OptionButtonTemplate == null || OptionsContainer == null)
+            {
+                return;
+            }
+
+            int count = options.Count;
+            float step = count <= 1 ? 0f : OptionAngleStepDeg;
 
             for (int i = 0; i < count; i++)
             {
-                var slot = _slots[i];
-                var inst = Instantiate(SectorPrefab, SectorContainer);
-                inst.gameObject.SetActive(true);
-                inst.index = i;
+                var slot = options[i];
+                var btn = Instantiate(OptionButtonTemplate, OptionsContainer);
+                btn.gameObject.SetActive(true);
+                btn.interactable = slot.Interactable;
 
-                var radialItem = new MapPlayerRadialMenu.RadialItem
+                var label = btn.GetComponentInChildren<TextMeshProUGUI>();
+                if (label != null)
                 {
-                    RadialFunc = MapPlayerRadialMenu.ERadialFunc.UseSkill,
-                    SkillId = slot.Label,
-                    Interactable = slot.Interactable,
-                };
-                inst.SetData(radialItem, ColorNormal, fillAmount);
-
-                float startAngle = 0f - i * step;
-                inst.SectRoot.localRotation = Quaternion.Euler(0f, 0f, startAngle + step / 2f - 1f);
-
-                if (inst.label != null)
-                {
-                    inst.label.text = slot.Label;
+                    label.text = slot.Label;
                 }
 
-                if (inst.InfoRoot != null)
-                {
-                    float midAngleRad = Mathf.Deg2Rad * (startAngle + 90f);
-                    Vector2 dir = new Vector2(Mathf.Cos(midAngleRad), Mathf.Sin(midAngleRad));
-                    inst.InfoRoot.anchoredPosition = dir * ((Radius + InnerRadius) * 0.5f);
-                }
+                PlaceOptionButton(btn.transform as RectTransform, i, step);
 
-                _sectors.Add(inst);
+                var captured = slot.Slot;
+                btn.onClick.AddListener(() => OnOptionClicked(captured));
+                _optionButtons.Add(btn);
             }
+        }
+
+        void PlaceOptionButton(RectTransform rt, int index, float angleStepDeg)
+        {
+            if (rt == null)
+            {
+                return;
+            }
+
+            float angleDeg = OptionStartAngleDeg - index * angleStepDeg;
+            float rad = angleDeg * Mathf.Deg2Rad;
+            rt.anchoredPosition = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * OptionRadius;
         }
 
         void RefreshLayout()
@@ -243,24 +242,30 @@ namespace My.Map.Hunting
             MenuRoot.localPosition = positionParent.InverseTransformPoint(worldOnCanvas);
         }
 
-        public void RefreshLayoutIfOpen()
+        bool IsPointerOverMenu(Vector2 screenPos)
         {
-            if (IsOpen)
+            if (ExecuteButton != null
+                && RectTransformUtility.RectangleContainsScreenPoint(
+                    ExecuteButton.transform as RectTransform, screenPos, _uiCam))
             {
-                RefreshLayout();
-            }
-        }
-
-        int AngleToIndex(float angleDeg)
-        {
-            int count = _slots.Count;
-            if (count == 0)
-            {
-                return -1;
+                return true;
             }
 
-            float step = 360f / count;
-            return Mathf.RoundToInt(Mathf.Repeat((-angleDeg + 90f) / step, count)) % count;
+            foreach (var btn in _optionButtons)
+            {
+                if (btn == null)
+                {
+                    continue;
+                }
+
+                if (RectTransformUtility.RectangleContainsScreenPoint(
+                        btn.transform as RectTransform, screenPos, _uiCam))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         void SetOpen(bool open)
@@ -270,19 +275,25 @@ namespace My.Map.Hunting
             {
                 MenuRoot.gameObject.SetActive(open);
             }
+
+            if (ExecuteButton != null)
+            {
+                ExecuteButton.gameObject.SetActive(true);
+            }
         }
 
-        void ClearSectors()
+        void ClearOptions()
         {
-            foreach (var sector in _sectors)
+            foreach (var btn in _optionButtons)
             {
-                if (sector != null)
+                if (btn != null)
                 {
-                    Destroy(sector.gameObject);
+                    btn.onClick.RemoveAllListeners();
+                    Destroy(btn.gameObject);
                 }
             }
 
-            _sectors.Clear();
+            _optionButtons.Clear();
         }
     }
 }
