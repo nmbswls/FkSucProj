@@ -1,6 +1,7 @@
 using Config;
 using Config.Map;
 using Map.Logic.Events;
+using My;
 using My.Config;
 using My.Map;
 using My.Map.Logic;
@@ -25,6 +26,15 @@ namespace My.Map.Entity
 
         float _poisonBaitEndTime;
         float _poisonCdEndTime;
+
+        float _revealUntilTime;
+
+        public bool IsDormantHidden { get; private set; }
+
+        public bool IsLogicInteractAvailable =>
+            !IsDormantHidden || LogicTime.time < _revealUntilTime;
+
+        public event Action EventOnDormantRevealChanged;
 
         public MapInteractPointConfig cacheCfg;
 
@@ -93,6 +103,62 @@ namespace My.Map.Entity
             }
 
             CheckStatusCondition();
+            ApplyInitialDormantState();
+        }
+
+        bool DormantRevealEnabled() =>
+            cacheCfg != null && cacheCfg.DormantRevealSettings != null && cacheCfg.DormantRevealSettings.Enable;
+
+        InteractPointDormantRevealSettings DormantSettings => cacheCfg?.DormantRevealSettings;
+
+        void ApplyInitialDormantState()
+        {
+            if (DormantRevealEnabled())
+            {
+                IsDormantHidden = true;
+                _revealUntilTime = 0f;
+                return;
+            }
+
+            IsDormantHidden = false;
+            _revealUntilTime = 0f;
+        }
+
+        void TryRevealByGcLiquid()
+        {
+            if (!DormantRevealEnabled() || !IsDormantHidden)
+            {
+                return;
+            }
+
+            var settings = DormantSettings;
+            float duration = settings != null ? settings.RevealDurationSeconds : 8f;
+            if (duration <= 0f)
+            {
+                duration = 8f;
+            }
+
+            _revealUntilTime = LogicTime.time + duration;
+            EventOnDormantRevealChanged?.Invoke();
+        }
+
+        void TickDormantReveal()
+        {
+            if (!DormantRevealEnabled() || !IsDormantHidden)
+            {
+                return;
+            }
+
+            if (_revealUntilTime <= 0f)
+            {
+                return;
+            }
+
+            if (LogicTime.time >= _revealUntilTime)
+            {
+                _revealUntilTime = 0f;
+                EventOnDormantRevealChanged?.Invoke();
+            }
         }
 
         public string GetRuntimeVariable(string paramName)
@@ -189,6 +255,12 @@ namespace My.Map.Entity
             InteractComp?.TickInteract(dt);
 
             TickPoisonBait(dt);
+            TickDormantReveal();
+        }
+
+        protected override bool CanTickGroundOverlay()
+        {
+            return DormantRevealEnabled();
         }
 
         private float _lowFreqCheckStatusTimer = 0;
@@ -340,23 +412,11 @@ namespace My.Map.Entity
         }
 
 
-        protected override void OnLiquidAdd(EGroundLiquidType liquidType)
-        {
-            switch (liquidType)
-            {
-                case EGroundLiquidType.GcLiquid:
-                    break;
-                
-            }
-        }
-
         protected override void OnLiquidRemove(EGroundLiquidType liquidType)
         {
-            switch (liquidType)
+            if (liquidType == EGroundLiquidType.GcLiquid)
             {
-                case EGroundLiquidType.GcLiquid:
-                    break;
-                
+                TryRevealByGcLiquid();
             }
         }
     }

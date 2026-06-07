@@ -1659,16 +1659,29 @@ namespace My.Map.Entity
             if (record is LogicEntityRecord4Npc npcRec)
             {
                 var npcCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(realCfg.CfgId);
-                if (npcCfg != null)
+                if (npcCfg == null)
                 {
-                    var cfgFaction = (EFactionId)npcCfg.FactionId;
-                    if (cfgFaction != EFactionId.None)
-                    {
-                        record.FactionId = cfgFaction;
-                    }
+                    Debug.LogError($"AbilityEffectExecutor4SpawnEntity unknown npc cfg: {realCfg.CfgId}");
+                    return;
                 }
 
-                npcRec.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
+                var cfgFaction = (EFactionId)npcCfg.FactionId;
+                if (cfgFaction != EFactionId.None)
+                {
+                    record.FactionId = cfgFaction;
+                }
+
+                npcRec.EnmityConfId = npcCfg.EmnityCfgId;
+                npcRec.IsPeace = npcCfg.IsPeace;
+
+                if (realCfg.Param1 != 0)
+                {
+                    npcRec.MoveBehaveType = (UnitMoveBehaveInfo.EMoveBehaveType)realCfg.Param1;
+                }
+                else
+                {
+                    npcRec.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.Hunting;
+                }
             }
 
             ctx.Env.AddNewEntityRecord(record);

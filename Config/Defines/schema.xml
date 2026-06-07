@@ -245,6 +245,8 @@
         <var name="Clothes" value="3"/>
         <var name="Expose" value="4"/>
         <var name="Skills" value="10"/>
+		<var name="Map" value="11"/>
+		<var name="Travel" value="12"/>
     </enum>
 	
 	<enum name="EDesireDensityType">

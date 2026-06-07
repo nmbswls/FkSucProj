@@ -75,6 +75,22 @@ namespace Config.Map
 
         [Header("Poison bait (optional)")]
         public InteractPointPoisonSettings PoisonSettings = new();
+
+        [Header("Dormant / GcLiquid reveal (optional)")]
+        public InteractPointDormantRevealSettings DormantRevealSettings = new();
+    }
+
+    [Serializable]
+    public class InteractPointDormantRevealSettings
+    {
+        [Tooltip("开启后初始逻辑隐身且不可交互，被 GcLiquid 触及后短暂显形")]
+        public bool Enable;
+
+        [Tooltip("GcLiquid 触发的显形持续时间（秒）")]
+        public float RevealDurationSeconds = 8f;
+
+        [Tooltip("与 GroundOverlay 液体检测半径一致")]
+        public float GcLiquidCheckRadius = 0.3f;
     }
 
     [Serializable]

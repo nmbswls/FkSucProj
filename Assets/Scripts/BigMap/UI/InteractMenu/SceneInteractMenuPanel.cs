@@ -634,11 +634,11 @@ namespace My.UI
                 return false;
             }
 
-            if (currFocusInteractable == null)
+            // 仅多选项详情菜单打开时消费滚轮；靠近可交互物时的焦点提示不应拦截快捷栏切换
+            if (!IsDetailMenuShown || currFocusInteractable == null)
             {
                 return false;
             }
-
 
             if (Mathf.Abs(deltaY) > 0.01f)
             {
@@ -648,7 +648,7 @@ namespace My.UI
                 }
                 else
                 {
-                    ChooseInteractMenu.MoveCursor(1);  // 上滚：索引减
+                    ChooseInteractMenu.MoveCursor(1);  // 下滚：索引增
                 }
             }
             return true;

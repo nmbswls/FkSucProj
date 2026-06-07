@@ -29,8 +29,10 @@ namespace My.Map.Scene
         }
 
         public void PlayVineClimbMove(
-            Vector3 apexWorldPos,
+            Vector3 entryWorldPos,
+            Vector3 endWorldPos,
             Vector3 landWorldPos,
+            float entryDuration,
             float climbDuration,
             float pauseDuration,
             float jumpDuration,
@@ -38,15 +40,17 @@ namespace My.Map.Scene
         {
             CancelPresentationMove();
 
+            entryDuration = Mathf.Max(0.01f, entryDuration);
             climbDuration = Mathf.Max(0.01f, climbDuration);
             pauseDuration = Mathf.Max(0f, pauseDuration);
             jumpDuration = Mathf.Max(0.01f, jumpDuration);
 
             BeginPresentationMove();
 
-            float jumpPower = Mathf.Max(0.15f, Mathf.Abs(landWorldPos.y - apexWorldPos.y));
+            float jumpPower = Mathf.Max(0.15f, Mathf.Abs(landWorldPos.y - endWorldPos.y));
             var seq = DOTween.Sequence();
-            seq.Append(transform.DOMove(apexWorldPos, climbDuration).SetEase(Ease.OutQuad));
+            seq.Append(transform.DOMove(entryWorldPos, entryDuration).SetEase(Ease.OutQuad));
+            seq.Append(transform.DOMove(endWorldPos, climbDuration).SetEase(Ease.Linear));
             if (pauseDuration > 0f)
             {
                 seq.AppendInterval(pauseDuration);

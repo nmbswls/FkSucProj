@@ -19,6 +19,8 @@ namespace cfg.demo
         Clothes = 3,
         Expose = 4,
         Skills = 10,
+        Map = 11,
+        Travel = 12,
     }
 
 } 

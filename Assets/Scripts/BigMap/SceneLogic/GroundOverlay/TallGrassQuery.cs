@@ -1,41 +1,57 @@
+using My;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace My.Map.Ground
 {
     public static class TallGrassQuery
     {
+        // Editor WalkGrid 烘焙仍可能引用该 Tilemap 名；运行时不再读取。
         public const string MaskLayerName = "TallGrassMask";
 
-        static Tilemap _mask;
+        static readonly Collider2D[] Hits = new Collider2D[8];
+        static int _zoneMask = -1;
 
-        public static void Bind(Tilemap mask) => _mask = mask;
+        static int ZoneMask
+        {
+            get
+            {
+                if (_zoneMask < 0)
+                {
+                    _zoneMask = LayerMask.GetMask("Zone");
+                }
 
-        public static void Clear() => _mask = null;
+                return _zoneMask;
+            }
+        }
 
         public static float SampleCoverStrength(Vector2 worldPos)
         {
-            if (_mask == null)
+            if (ZoneMask == 0)
             {
                 return 0f;
             }
 
-            var p = new Vector3(worldPos.x, worldPos.y, 0f);
-            var cell = _mask.WorldToCell(p);
-            var bl = _mask.CellToWorld(cell);
-            var tr = _mask.CellToWorld(cell + Vector3Int.one);
-            float tx = tr.x > bl.x ? Mathf.Clamp01(Mathf.InverseLerp(bl.x, tr.x, p.x)) : 0f;
-            float ty = tr.y > bl.y ? Mathf.Clamp01(Mathf.InverseLerp(bl.y, tr.y, p.y)) : 0f;
+            int count = Physics2D.OverlapPointNonAlloc(worldPos, Hits, ZoneMask);
+            float best = 0f;
 
-            float s00 = CellHasMask(cell);
-            float s10 = CellHasMask(cell + Vector3Int.right);
-            float s01 = CellHasMask(cell + Vector3Int.up);
-            float s11 = CellHasMask(cell + Vector3Int.one);
+            for (int i = 0; i < count; i++)
+            {
+                var hit = Hits[i];
+                if (hit == null)
+                {
+                    continue;
+                }
 
-            return Mathf.Lerp(Mathf.Lerp(s00, s10, tx), Mathf.Lerp(s01, s11, tx), ty);
+                var zone = hit.GetComponentInParent<ZoneInfoProvider>();
+                if (zone == null || !zone.HasTallGrass)
+                {
+                    continue;
+                }
+
+                best = Mathf.Max(best, zone.TallGrassCoverStrength);
+            }
+
+            return best;
         }
-
-        static float CellHasMask(Vector3Int cell) =>
-            _mask.GetTile(cell) != null ? 1f : 0f;
     }
 }

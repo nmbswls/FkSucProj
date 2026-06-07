@@ -511,7 +511,7 @@ namespace My.Map
 
             if (LogicTime.time > _lowFreqStateTimer + 1.0f)
             {
-                _lowFreqStateTimer += 1.0f;
+                _lowFreqStateTimer = LogicTime.time + 1.0f;
 
                 TickStateLowFreq();
             }

@@ -362,10 +362,23 @@ namespace My.Map
             return true;
         }
 
-        bool TryResolveVineApexLogicPos(string param4, out Vector2 logicPos)
+        bool TryResolveInteractEntryLogicPos(out Vector2 logicPos)
+        {
+            var pres = SceneAOIManager.Instance?.GetActivePresentation(Owner.Id);
+            if (pres is InteractPointPresenter pointPres)
+            {
+                logicPos = MapLogicPosition.WorldToLogicPos(pointPres.GetHintAnchorPosition());
+                return true;
+            }
+
+            logicPos = Owner.Pos;
+            return true;
+        }
+
+        bool TryResolveVineEndLogicPos(string param3, out Vector2 logicPos)
         {
             logicPos = default;
-            if (!string.IsNullOrEmpty(param4) && TryResolveNamedPoint(param4, out logicPos))
+            if (!string.IsNullOrEmpty(param3) && TryResolveNamedPoint(param3, out logicPos))
             {
                 return true;
             }
@@ -374,11 +387,11 @@ namespace My.Map
             if (pres is VineGrowthPresenter vinePresenter
                 && vinePresenter.TryGetApexWorldPosition(out var worldPos))
             {
-                logicPos = new Vector2(worldPos.x, worldPos.y);
+                logicPos = MapLogicPosition.WorldToLogicPos(worldPos);
                 return true;
             }
 
-            Debug.Log("[EntityInteract] VineClimbTo failed to resolve apex.");
+            Debug.Log("[EntityInteract] VineClimbTo failed to resolve vine end point.");
             return false;
         }
 
@@ -804,17 +817,29 @@ namespace My.Map
                                 break;
                             }
 
-                            if (!TryResolveNamedPoint(output.Param3, out var landPos))
+                            if (!TryResolveInteractEntryLogicPos(out var entryPos))
                             {
-                                Debug.Log("vine climb landing point not found");
                                 errOccur = true;
                                 break;
                             }
 
-                            if (!TryResolveVineApexLogicPos(output.Param4, out var apexPos))
+                            if (!TryResolveVineEndLogicPos(output.Param3, out var endPos))
                             {
                                 errOccur = true;
                                 break;
+                            }
+
+                            if (!TryResolveNamedPoint(output.Param4, out var landPos))
+                            {
+                                Debug.Log($"vine climb land point not found: {output.Param4}");
+                                errOccur = true;
+                                break;
+                            }
+
+                            float entrySec = output.Param6 * 0.001f;
+                            if (entrySec <= 0f)
+                            {
+                                entrySec = 0.35f;
                             }
 
                             float climbSec = output.Param1 * 0.001f;
@@ -830,7 +855,7 @@ namespace My.Map
                                 jumpSec = 0.35f;
                             }
 
-                            float totalSec = climbSec + pauseSec + jumpSec;
+                            float totalSec = entrySec + climbSec + pauseSec + jumpSec;
                             BeginInteractPending(
                                 InteractPendingMode.ExternalNotify,
                                 totalSec + ExternalNotifyFallbackMarginSec);
@@ -840,8 +865,10 @@ namespace My.Map
                             Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: totalSec);
                             Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: totalSec);
                             Owner.LogicManager.viewer.DoPlayerVineClimbMove(
-                                apexPos,
+                                entryPos,
+                                endPos,
                                 landPos,
+                                entrySec,
                                 climbSec,
                                 pauseSec,
                                 jumpSec,

@@ -107,6 +107,7 @@ namespace My.Saving
         public List<BodyPartPersist> BodyParts = new();
 
         public List<string> OwnedRuneIds = new();
+        public List<string> UnlockedRuneUpgradeIds = new();
         public List<RuneEquipPersist> EquippedRunes = new();
 
         // 本地玩家功能解锁（原 SaveData 根级 FuncOpenList 已迁入）
@@ -401,6 +402,7 @@ namespace My.Saving
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.PlayerData.OwnedRuneIds ??= new List<string>();
+            data.PlayerData.UnlockedRuneUpgradeIds ??= new List<string>();
             data.PlayerData.EquippedRunes ??= new List<RuneEquipPersist>();
             data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
             if (data.PlayerData.FuncOpenList.Count == 0 && data.FuncOpenList != null && data.FuncOpenList.Count > 0)

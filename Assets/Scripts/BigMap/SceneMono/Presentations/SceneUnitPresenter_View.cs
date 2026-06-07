@@ -243,6 +243,7 @@ namespace My.Map.Scene
             this.AgentView.transform.localPosition = new(this.AgentView.transform.localPosition.x, _pendingOffsetZ, 0);
         }
 
+        // 遮罩数据源：Zone 层 TallGrass Trigger（ZoneInfoProvider），见 TallGrassQuery。
         [Header("Tall Grass Cover")]
         [Range(0f, 1f)] public float tallGrassWaistRatio = 0.42f;
         [Min(0.01f)] public float tallGrassBlendTime = 0.12f;
@@ -254,10 +255,18 @@ namespace My.Map.Scene
         MaterialPropertyBlock _coverMpb;
         SpriteRenderer[] _coverRenderers;
         float _coverDisplayStrength;
+        float _coverTargetStrength;
+        Vector2 _lastCoverSamplePos;
+        bool _coverSampleValid;
+
+        const float CoverSamplePosEpsilonSqr = 0.0004f;
 
         void InitTallGrassCover()
         {
             _coverMpb = new MaterialPropertyBlock();
+            _coverDisplayStrength = 0f;
+            _coverTargetStrength = 0f;
+            _coverSampleValid = false;
             if (AgentView != null)
             {
                 _coverRenderers = AgentView.GetComponentsInChildren<SpriteRenderer>(true);
@@ -271,9 +280,32 @@ namespace My.Map.Scene
                 return;
             }
 
-            float target = TallGrassQuery.SampleCoverStrength(transform.position);
+            Vector2 pos = transform.position;
+            bool posChanged = !_coverSampleValid
+                || (pos - _lastCoverSamplePos).sqrMagnitude > CoverSamplePosEpsilonSqr;
+
+            if (!posChanged && Mathf.Approximately(_coverDisplayStrength, _coverTargetStrength))
+            {
+                return;
+            }
+
+            if (posChanged)
+            {
+                _lastCoverSamplePos = pos;
+                _coverSampleValid = true;
+                _coverTargetStrength = TallGrassQuery.SampleCoverStrength(pos);
+            }
+
+            float prevDisplayStrength = _coverDisplayStrength;
             float step = tallGrassBlendTime > 0f ? LogicTime.deltaTime / tallGrassBlendTime : 1f;
-            _coverDisplayStrength = Mathf.MoveTowards(_coverDisplayStrength, target, step);
+            _coverDisplayStrength = Mathf.MoveTowards(_coverDisplayStrength, _coverTargetStrength, step);
+
+            if (Mathf.Approximately(_coverDisplayStrength, prevDisplayStrength)
+                && Mathf.Approximately(_coverDisplayStrength, _coverTargetStrength))
+            {
+                return;
+            }
+
             ApplyTallGrassCover(_coverDisplayStrength);
         }
 

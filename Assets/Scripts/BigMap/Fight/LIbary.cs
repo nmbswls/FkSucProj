@@ -1987,7 +1987,7 @@ namespace My.Map.Entity
             var effect = new MapAbilityEffectSpawnEntityCfg()
             {
                 EntityType = EEntityType.Npc,
-                CfgId = "ally_turret_01",
+                CfgId = "summon_ally_turret_01",
                 LifeTime = 60.0f,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });

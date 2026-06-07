@@ -634,7 +634,7 @@ namespace My.Map
 
             _lowFreqStateTimer += 1.0f;
 
-            TickResourceChange(1.0f);
+            //TickResourceChange(1.0f);
 
             TickApplyAuraHVal();
 

@@ -21,6 +21,10 @@ namespace My.Map.DualGrid.Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("ViewTilemap"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("AutoRefreshInEditor"));
 
+            EditorGUILayout.LabelField(
+                "Scene 调试网格：Map → Dual Grid → Toggle Scene Overlay（默认关）",
+                EditorStyles.miniLabel);
+
             if (!map.IsConfigured(out var error))
             {
                 EditorGUILayout.HelpBox(error, MessageType.Warning);

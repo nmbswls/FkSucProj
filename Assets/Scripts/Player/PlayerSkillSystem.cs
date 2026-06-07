@@ -82,6 +82,7 @@ namespace My.Player
             "player_ziwei",
             "player_push_surround",
             "player_trace_bullet_01",
+            "player_summon_ally_turret",
 
             "player_naishou_to_jianshang",
 

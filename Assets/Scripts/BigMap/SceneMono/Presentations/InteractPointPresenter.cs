@@ -73,6 +73,11 @@ namespace My.Map.Scene
             var ret = new List<SceneInteractSelection>();
             if (IsSwitching) return ret;
 
+            if (!RealLogic.IsLogicInteractAvailable)
+            {
+                return ret;
+            }
+
             if(RealLogic.IsInteracting)
             {
                 return ret;
@@ -116,6 +121,11 @@ namespace My.Map.Scene
 
         public virtual bool CanInteractEnable()
         {
+            if (!RealLogic.IsLogicInteractAvailable)
+            {
+                return false;
+            }
+
             if (IsSwitching) return false;
 
             if (RealLogic.IsInteracting)
@@ -164,8 +174,31 @@ namespace My.Map.Scene
             base.Bind(logic);
 
             RealLogic.EventOnStatusChange += OnStatusChanged;
+            RealLogic.EventOnDormantRevealChanged += OnDormantRevealChanged;
+            ApplyDormantVisual();
 
             //RealLogic.EventOnAnimLayerUpdate += OnEventAnimLayerUpdate;
+        }
+
+        void OnDormantRevealChanged()
+        {
+            ApplyDormantVisual();
+        }
+
+        void ApplyDormantVisual()
+        {
+            if (RealLogic == null)
+            {
+                return;
+            }
+
+            bool visible = RealLogic.IsLogicInteractAvailable;
+            SetFadeAlpha(visible ? 1f : 0f);
+
+            if (MainViewRt != null && (_mainSpriteArr == null || _mainSpriteArr.Length == 0))
+            {
+                MainViewRt.gameObject.SetActive(visible);
+            }
         }
 
         public override void Unbind()
@@ -173,6 +206,7 @@ namespace My.Map.Scene
             if(RealLogic != null)
             {
                 RealLogic.EventOnStatusChange -= OnStatusChanged;
+                RealLogic.EventOnDormantRevealChanged -= OnDormantRevealChanged;
                 //RealLogic.EventOnAnimLayerUpdate -= OnEventAnimLayerUpdate;
             }
 

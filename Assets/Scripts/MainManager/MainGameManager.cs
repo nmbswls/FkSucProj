@@ -835,8 +835,10 @@ namespace My
         }
 
         public void DoPlayerVineClimbMove(
-            Vector2 apexLogicPos,
+            Vector2 entryLogicPos,
+            Vector2 endLogicPos,
             Vector2 landLogicPos,
+            float entryDuration,
             float climbDuration,
             float pauseDuration,
             float jumpDuration,
@@ -848,11 +850,14 @@ namespace My
                 return;
             }
 
-            var apexWorld = GetWorldPosFromLogicPos(apexLogicPos);
+            var entryWorld = GetWorldPosFromLogicPos(entryLogicPos);
+            var endWorld = GetWorldPosFromLogicPos(endLogicPos);
             var landWorld = GetWorldPosFromLogicPos(landLogicPos);
             playerScenePresenter.PlayVineClimbMove(
-                apexWorld,
+                entryWorld,
+                endWorld,
                 landWorld,
+                entryDuration,
                 climbDuration,
                 pauseDuration,
                 jumpDuration,

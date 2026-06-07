@@ -16,6 +16,9 @@ MonoBehaviour:
   ShowName: "\u704C\u6728"
   PrefabName: 
   NameOffset: -1
+  IsAlwaysActive: 0
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel: 
   MainStatusInfo:
     StatusId: 0
     Desp: 
@@ -39,13 +42,29 @@ MonoBehaviour:
         Param2: 0
         Param3: 
         Param4: 
+        Param5: 0
+        Param6: 0
         DelayTime: 0
         TargetType: 0
         MemberId: 0
         StaticName: 
         DynamicEntityVariable: 
     HasBlock: 1
+    AutoTriggerCollide: 0
     AutoTrigger: 0
   ExtraStatusInfos: []
   InitState: 0
   StateChangeRules: []
+  PoisonSettings:
+    Enable: 0
+    ApplyPoisonConds: []
+    NpcTriggerBuffId: 
+    BaitDurationSeconds: 30
+    ReapplyCooldownSeconds: 20
+    ApplyPoisonLabel: "\u4E0B\u6BD2"
+    NpcFloatText: ...
+    NpcApproachStopDistance: 0.4
+  DormantRevealSettings:
+    Enable: 0
+    RevealDurationSeconds: 8
+    GcLiquidCheckRadius: 0.3

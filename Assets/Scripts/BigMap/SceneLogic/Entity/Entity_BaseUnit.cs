@@ -180,7 +180,6 @@ namespace My.Map
         {
             base.OnTick(dt);
 
-            TickStateLowFreq();
             // 计时、条件检查、冷却等
 
             if (!MarkNoLogic && !IsDead && !MarkUnsensored)

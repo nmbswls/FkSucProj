@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
+  m_Name: memory_point
+  m_EditorClassIdentifier: 
+  CfgId: memory_point
+  ShowName: "\u8BB0\u5FC6\u70B9"
+  PrefabName: memory_point
+  NameOffset: 0
+  IsAlwaysActive: 0
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel: 
+  MainStatusInfo:
+    StatusId: 0
+    Desp: "\u54C8\u54C8"
+    InteractInfos:
+    - InteractId: 0
+      Label: "\u6536\u96C6"
+      UnLabel: "\u6536\u96C6"
+      HideWhenFail: 0
+      NeedDist: 0
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 3
+        Param1: 0
+        Param2: 0
+        Param3: 
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+      - OutputType: 13
+        Param1: 0
+        Param2: 0
+        Param3: v1_memory_point_g
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+    HasBlock: 1
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  ExtraStatusInfos:
+  - StatusId: 1
+    Desp: 
+    InteractInfos: []
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  InitState: 0
+  StateChangeRules:
+  - FromStatus: 0
+    CommonConds:
+    - Type: 2
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: v1_memory_point_g
+      Param6: 
+    NeedSelfFlag: []
+    ToStatus: 1
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName: 
+      ChangingEffect: 
+  PoisonSettings:
+    Enable: 0
+    ApplyPoisonConds: []
+    NpcTriggerBuffId: 
+    BaitDurationSeconds: 30
+    ReapplyCooldownSeconds: 20
+    ApplyPoisonLabel: "\u4E0B\u6BD2"
+    NpcFloatText: ...
+    NpcApproachStopDistance: 0.4
+  DormantRevealSettings:
+    Enable: 1
+    RevealDurationSeconds: 15
+    GcLiquidCheckRadius: 0.3

@@ -428,6 +428,17 @@ namespace My.UI
                 return;
             }
 
+            // 休眠交互点（Dormant）未显形时不可交互，也不显示屏幕 InteractHint
+            if (presenter is InteractPointPresenter pointPresenter
+                && !pointPresenter.RealLogic.IsLogicInteractAvailable)
+            {
+                if (sceneInteractHintDicts.ContainsKey(interactblePresenter))
+                {
+                    RecycleInteractHintUI(interactblePresenter);
+                }
+                return;
+            }
+
             bool hasActiveUI = sceneInteractHintDicts.ContainsKey(interactblePresenter);
             Vector3 worldPos = Vector3.zero;
             bool isVisible = false;

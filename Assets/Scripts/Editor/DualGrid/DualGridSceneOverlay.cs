@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using My.Map.CliffDepth;
 using My.Map.DualGrid;
 using UnityEditor;
@@ -10,26 +11,76 @@ namespace My.Map.DualGrid.Editor
     [InitializeOnLoad]
     static class DualGridSceneOverlay
     {
+        const string PrefsKey = "DualGrid.SceneOverlayEnabled";
+
+        static readonly Dictionary<int, Tilemap[]> GridTilemapCache = new Dictionary<int, Tilemap[]>();
+
+        public static bool OverlayEnabled
+        {
+            get => EditorPrefs.GetBool(PrefsKey, false);
+            set
+            {
+                EditorPrefs.SetBool(PrefsKey, value);
+                SceneView.RepaintAll();
+            }
+        }
+
         static DualGridSceneOverlay()
         {
             SceneView.duringSceneGui += OnSceneGUI;
+            EditorApplication.hierarchyChanged += InvalidateTilemapCache;
+        }
+
+        [MenuItem("Map/Dual Grid/Toggle Scene Overlay", false, 200)]
+        static void ToggleOverlay()
+        {
+            OverlayEnabled = !OverlayEnabled;
+            Menu.SetChecked("Map/Dual Grid/Toggle Scene Overlay", OverlayEnabled);
+        }
+
+        [MenuItem("Map/Dual Grid/Toggle Scene Overlay", true)]
+        static bool ToggleOverlayValidate()
+        {
+            Menu.SetChecked("Map/Dual Grid/Toggle Scene Overlay", OverlayEnabled);
+            return true;
+        }
+
+        static void InvalidateTilemapCache()
+        {
+            GridTilemapCache.Clear();
         }
 
         static void OnSceneGUI(SceneView view)
         {
-            var map = Selection.activeGameObject != null
-                ? Selection.activeGameObject.GetComponentInParent<DualTileMap>()
-                : null;
+            if (!OverlayEnabled)
+            {
+                return;
+            }
 
-            map ??= Object.FindObjectOfType<DualTileMap>();
+            if (Selection.activeGameObject == null)
+            {
+                return;
+            }
 
+            var map = Selection.activeGameObject.GetComponentInParent<DualTileMap>();
             if (map == null || map.DataTilemap == null)
             {
                 return;
             }
 
             var e = Event.current;
-            if (e == null || e.type != EventType.MouseMove && e.type != EventType.Repaint)
+            if (e == null)
+            {
+                return;
+            }
+
+            if (e.type == EventType.MouseMove)
+            {
+                view.Repaint();
+                return;
+            }
+
+            if (e.type != EventType.Repaint)
             {
                 return;
             }
@@ -97,7 +148,7 @@ namespace My.Map.DualGrid.Editor
                 return false;
             }
 
-            var tilemaps = grid.GetComponentsInChildren<Tilemap>();
+            var tilemaps = GetGridTilemaps(grid);
             for (int i = 0; i < tilemaps.Length; i++)
             {
                 var tm = tilemaps[i];
@@ -119,6 +170,18 @@ namespace My.Map.DualGrid.Editor
             }
 
             return false;
+        }
+
+        static Tilemap[] GetGridTilemaps(Grid grid)
+        {
+            int id = grid.GetInstanceID();
+            if (!GridTilemapCache.TryGetValue(id, out var tilemaps) || tilemaps == null)
+            {
+                tilemaps = grid.GetComponentsInChildren<Tilemap>();
+                GridTilemapCache[id] = tilemaps;
+            }
+
+            return tilemaps;
         }
     }
 }

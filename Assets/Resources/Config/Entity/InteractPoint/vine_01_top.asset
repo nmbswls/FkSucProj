@@ -42,7 +42,7 @@ MonoBehaviour:
       - OutputType: 50
         Param1: 800
         Param2: 300
-        Param3: vine_area01_base
+        Param3: vine_area01_bottom
         Param4: vine_area01_bottom
         Param5: 350
         Param6: 0

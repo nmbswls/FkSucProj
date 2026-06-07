@@ -94,8 +94,8 @@ MonoBehaviour:
       - OutputType: 50
         Param1: 800
         Param2: 300
-        Param3: vine_area01_landing
-        Param4: 
+        Param3: vine_area01_top
+        Param4: vine_area01_top
         Param5: 350
         Param6: 0
         DelayTime: 0

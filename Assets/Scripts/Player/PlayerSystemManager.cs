@@ -150,10 +150,15 @@ namespace My.Player
             
             HumanSkillSlots[2] = "queen_dash";
 
-            HumanSkillSlots[3] = "player_small_staggering";
+            HumanSkillSlots[3] = "player_summon_ally_turret";
+            //HumanSkillSlots[3] = "player_small_staggering";
             HumanSkillSlots[4] = "player_dark_dance";
             HumanSkillSlots[5] = "player_push_surround";
             HumanSkillSlots[6] = "player_trace_bullet_01";
+
+
+
+
 
             FaQingSkillSlots[0] = "player_fq_normal_ziwei";
             FaQingSkillSlots[2] = "player_fq_dash_assult";
@@ -649,6 +654,23 @@ namespace My.Player
         {
             failReason = null;
             if (RuneSystem == null || !RuneSystem.TryGrantRune(runeId, out failReason))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryUnlockRuneUpgrade(string upgradeId)
+        {
+            return TryUnlockRuneUpgrade(upgradeId, out _);
+        }
+
+        public bool TryUnlockRuneUpgrade(string upgradeId, out string failReason)
+        {
+            failReason = null;
+            if (RuneSystem == null || !RuneSystem.TryUnlockUpgrade(upgradeId, out failReason))
             {
                 return false;
             }

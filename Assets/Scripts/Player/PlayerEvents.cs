@@ -24,6 +24,13 @@ namespace My.Quest
         public string RuneId;
     }
 
+    // 符文升级项解锁
+    public struct PlayerRuneUpgradeUnlockedEvent
+    {
+        public string UpgradeId;
+        public string BaseRuneId;
+    }
+
     // 功能解锁
     public struct PlayerFuncUnlockEvent
     {

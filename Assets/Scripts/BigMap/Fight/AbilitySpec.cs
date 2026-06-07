@@ -184,8 +184,10 @@ public interface ISceneAbilityViewer
     void DoPlayerPresentationMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onReach = null);
 
     void DoPlayerVineClimbMove(
-        Vector2 apexLogicPos,
+        Vector2 entryLogicPos,
+        Vector2 endLogicPos,
         Vector2 landLogicPos,
+        float entryDuration,
         float climbDuration,
         float pauseDuration,
         float jumpDuration,

@@ -55,7 +55,7 @@ namespace My.Config
             // Param1=(int)EFactionId；Param2=1 保持战斗状态；TargetType=StaticName，StaticName=刷新点 uniq 名
             ChangeUnitFaction,
 
-            // Param1=爬升ms Param2=停顿ms Param3=landing named point Param4=apex named point(空则读 VineGrowth topAnchor) Param5=跳跃ms
+            // Param1=沿藤移动ms Param2=停顿ms Param3=藤蔓结束点 Param4=落点 Param5=跳跃ms Param6=移到交互点ms(0则默认350)
             VineClimbTo = 50,
 
             EGMemberChangeState = 100,

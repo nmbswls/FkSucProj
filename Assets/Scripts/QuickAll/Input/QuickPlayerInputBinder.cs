@@ -1011,7 +1011,25 @@ namespace My.Input
 
         public void OnSceneMouseScroll(float deltaY)
         {
+            if (Mathf.Abs(deltaY) < 0.01f)
+            {
+                return;
+            }
 
+            var hud = OverworldHUDPanel.Instance;
+            if (hud == null || hud.HudMode != OverworldHUDPanel.EHudMode.Normal)
+            {
+                return;
+            }
+
+            var lgm = MainGameManager.Instance?.gameLogicManager;
+            if (lgm == null || !lgm.IsHumanQuickBarAvailable())
+            {
+                return;
+            }
+
+            lgm.playerDataManager.HumanQuickBar.CycleConsumableSelection(deltaY > 0f ? 1 : -1);
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
 

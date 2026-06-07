@@ -1,0 +1,99 @@
+[
+  {
+    "upgrade_id": "lamp_a_map",
+    "base_rune_id": "common_lamp",
+    "branch_id": "A",
+    "prerequisite_upgrade_ids": [],
+    "passive_skill_id": "",
+    "func_unlock_key": "unlock_world_map",
+    "func_open_type": 11,
+    "icon": "",
+    "name": "灯·A·地图",
+    "desc": "解锁世界地图功能",
+    "sort_order": 100
+  },
+  {
+    "upgrade_id": "lamp_a_sense",
+    "base_rune_id": "common_lamp",
+    "branch_id": "A",
+    "prerequisite_upgrade_ids": [
+      "lamp_a_map"
+    ],
+    "passive_skill_id": "",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "灯·A·感知",
+    "desc": "依赖地图分支的二级升级",
+    "sort_order": 101
+  },
+  {
+    "upgrade_id": "lamp_b_travel",
+    "base_rune_id": "common_lamp",
+    "branch_id": "B",
+    "prerequisite_upgrade_ids": [],
+    "passive_skill_id": "",
+    "func_unlock_key": "",
+    "func_open_type": 12,
+    "icon": "",
+    "name": "灯·B·旅行",
+    "desc": "解锁旅行相关功能",
+    "sort_order": 110
+  },
+  {
+    "upgrade_id": "lamp_b_fast",
+    "base_rune_id": "common_lamp",
+    "branch_id": "B",
+    "prerequisite_upgrade_ids": [
+      "lamp_b_travel"
+    ],
+    "passive_skill_id": "",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "灯·B·疾行",
+    "desc": "旅行分支二级升级",
+    "sort_order": 111
+  },
+  {
+    "upgrade_id": "lamp_c_harvest",
+    "base_rune_id": "common_lamp",
+    "branch_id": "C",
+    "prerequisite_upgrade_ids": [],
+    "passive_skill_id": "player_harvest_green",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "灯·C·丰饶",
+    "desc": "获得植物亲和被动",
+    "sort_order": 120
+  },
+  {
+    "upgrade_id": "harvest_green_basic",
+    "base_rune_id": "harvest_green",
+    "branch_id": "",
+    "prerequisite_upgrade_ids": [],
+    "passive_skill_id": "player_harvest_green",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "丰饶·基础",
+    "desc": "强化植物亲和",
+    "sort_order": 200
+  },
+  {
+    "upgrade_id": "harvest_green_plus",
+    "base_rune_id": "harvest_green",
+    "branch_id": "",
+    "prerequisite_upgrade_ids": [
+      "harvest_green_basic"
+    ],
+    "passive_skill_id": "",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "name": "丰饶·进阶",
+    "desc": "需先解锁基础",
+    "sort_order": 201
+  }
+]

@@ -617,5 +617,36 @@
     "vision_fov_deg": -1,
     "mind_tag": "",
     "fallback_drop_id": 0
+  },
+  {
+    "id": "ally_turret_01",
+    "name": "炮台",
+    "desc": "",
+    "prefab_name": "ally_turret",
+    "attr_template_id": 10000,
+    "emnity_cfg_id": "default_npc",
+    "faction_id": 0,
+    "move_style": 1,
+    "ai_brain_id": "default",
+    "skill_list": [
+      "default_normal_attack"
+    ],
+    "is_peace": false,
+    "no_aggro": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 1,
+    "desire_density_type": 1,
+    "not_target": false,
+    "always_h_mode": true,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": true,
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "fallback_drop_id": 0
   }
 ]

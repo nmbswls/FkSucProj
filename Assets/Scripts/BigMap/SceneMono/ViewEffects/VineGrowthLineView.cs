@@ -120,9 +120,19 @@ namespace My.Map.View
 
             if (_currentProgress <= 0.0001f)
             {
-                SetRendererEnabled(baseMaskRenderer, false);
                 SetRendererEnabled(bodyRenderer, false);
                 SetRendererEnabled(tipRenderer, false);
+
+                if (baseMaskRenderer != null && GetSegmentLocalHeight(baseMaskRenderer) > 0f)
+                {
+                    SetRendererEnabled(baseMaskRenderer, true);
+                    LayoutFromBottom(baseMaskRenderer, 0f);
+                }
+                else
+                {
+                    SetRendererEnabled(baseMaskRenderer, false);
+                }
+
                 ProgressChanged?.Invoke();
                 return;
             }

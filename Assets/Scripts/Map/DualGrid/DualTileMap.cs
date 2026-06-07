@@ -18,8 +18,15 @@ namespace My.Map.DualGrid
         public bool AutoRefreshInEditor = true;
 
         static readonly Vector3Int[] CellBuffer = new Vector3Int[4];
+        readonly HashSet<Vector3Int> _dirtyViewCells = new HashSet<Vector3Int>();
+        readonly HashSet<Vector3Int> _refreshAllScratch = new HashSet<Vector3Int>();
+
         Tilemap _subscribedData;
         bool _refreshing;
+
+#if UNITY_EDITOR
+        bool _editorFlushScheduled;
+#endif
 
         void Reset()
         {
@@ -55,19 +62,43 @@ namespace My.Map.DualGrid
             SubscribeDataChanges();
             EnsureViewOffset();
             SyncViewTilemapSettings();
+            RegisterViewTilemapOwner();
             if (AutoRefreshInEditor || Application.isPlaying)
             {
                 RefreshAll();
             }
         }
 
-        void OnDisable() => UnsubscribeDataChanges();
+        void OnDisable()
+        {
+            UnsubscribeDataChanges();
+            UnregisterViewTilemapOwner();
+#if UNITY_EDITOR
+            CancelEditorFlush();
+#endif
+        }
 
         void OnValidate()
         {
             ApplyRendererSettings();
             EnsureViewOffset();
             SyncViewTilemapSettings();
+        }
+
+        void RegisterViewTilemapOwner()
+        {
+            if (ViewTilemap != null)
+            {
+                DualGridViewTile.RegisterOwner(ViewTilemap, this);
+            }
+        }
+
+        void UnregisterViewTilemapOwner()
+        {
+            if (ViewTilemap != null)
+            {
+                DualGridViewTile.UnregisterOwner(ViewTilemap);
+            }
         }
 
         void EnsureViewTileAsset()
@@ -249,27 +280,94 @@ namespace My.Map.DualGrid
                 return;
             }
 
+            QueueDataCellChanges(changes);
+
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                ScheduleEditorFlush();
+                return;
+            }
+#endif
+            FlushDirtyViewCells();
+        }
+
+        void QueueDataCellChanges(Tilemap.SyncTile[] changes)
+        {
             for (int i = 0; i < changes.Length; i++)
             {
-                RefreshAroundDataCell(changes[i].position);
+                DualGridCore.CollectViewsToRefreshAroundDataCell(changes[i].position, _dirtyViewCells);
+            }
+        }
+
+#if UNITY_EDITOR
+        void ScheduleEditorFlush()
+        {
+            if (_editorFlushScheduled)
+            {
+                return;
             }
 
-            ViewTilemap.RefreshAllTiles();
+            _editorFlushScheduled = true;
+            UnityEditor.EditorApplication.delayCall += EditorFlushDirtyViewCells;
+        }
+
+        void CancelEditorFlush()
+        {
+            if (!_editorFlushScheduled)
+            {
+                return;
+            }
+
+            UnityEditor.EditorApplication.delayCall -= EditorFlushDirtyViewCells;
+            _editorFlushScheduled = false;
+            _dirtyViewCells.Clear();
+        }
+
+        void EditorFlushDirtyViewCells()
+        {
+            _editorFlushScheduled = false;
+            if (this == null || !isActiveAndEnabled)
+            {
+                _dirtyViewCells.Clear();
+                return;
+            }
+
+            FlushDirtyViewCells();
+        }
+#endif
+
+        void FlushDirtyViewCells()
+        {
+            if (_dirtyViewCells.Count == 0 || ViewTilemap == null || ViewTile == null || BrushRegistry == null)
+            {
+                _dirtyViewCells.Clear();
+                return;
+            }
+
+            foreach (var viewCell in _dirtyViewCells)
+            {
+                ApplyViewCell(viewCell);
+            }
+
+            foreach (var viewCell in _dirtyViewCells)
+            {
+                ViewTilemap.RefreshTile(viewCell);
+            }
+
+            _dirtyViewCells.Clear();
         }
 
         public void RefreshAroundDataCell(Vector3Int dataCell)
         {
-            var cells = new HashSet<Vector3Int>();
-            DualGridCore.CollectViewsToRefreshAroundDataCell(dataCell, cells);
-            foreach (var viewCell in cells)
-            {
-                RefreshViewCell(viewCell);
-            }
+            _dirtyViewCells.Clear();
+            DualGridCore.CollectViewsToRefreshAroundDataCell(dataCell, _dirtyViewCells);
+            FlushDirtyViewCells();
         }
 
         public void RefreshAroundLogicCell(Vector3Int logicCell) => RefreshAroundDataCell(logicCell);
 
-        public void RefreshViewCell(Vector3Int viewCell)
+        void ApplyViewCell(Vector3Int viewCell)
         {
             if (ViewTilemap == null || ViewTile == null || BrushRegistry == null)
             {
@@ -284,8 +382,12 @@ namespace My.Map.DualGrid
             {
                 ViewTilemap.SetTile(viewCell, null);
             }
+        }
 
-            ViewTilemap.RefreshTile(viewCell);
+        public void RefreshViewCell(Vector3Int viewCell)
+        {
+            ApplyViewCell(viewCell);
+            ViewTilemap?.RefreshTile(viewCell);
         }
 
         public void RefreshAll()
@@ -312,7 +414,7 @@ namespace My.Map.DualGrid
             DataTilemap.CompressBounds();
 
             var bounds = DataTilemap.cellBounds;
-            var touched = new HashSet<Vector3Int>();
+            _refreshAllScratch.Clear();
 
             if (bounds.size.x > 0 && bounds.size.y > 0)
             {
@@ -323,7 +425,7 @@ namespace My.Map.DualGrid
                         continue;
                     }
 
-                    DualGridCore.CollectViewsToRefreshAroundDataCell(pos, touched);
+                    DualGridCore.CollectViewsToRefreshAroundDataCell(pos, _refreshAllScratch);
                 }
             }
 
@@ -332,20 +434,25 @@ namespace My.Map.DualGrid
             {
                 foreach (var pos in viewBounds.allPositionsWithin)
                 {
-                    if (!touched.Contains(pos) && ViewTilemap.GetTile(pos) != null)
+                    if (!_refreshAllScratch.Contains(pos) && ViewTilemap.GetTile(pos) != null)
                     {
                         ViewTilemap.SetTile(pos, null);
                     }
                 }
             }
 
-            foreach (var viewCell in touched)
+            foreach (var viewCell in _refreshAllScratch)
             {
-                RefreshViewCell(viewCell);
+                ApplyViewCell(viewCell);
             }
 
-            ViewTilemap.RefreshAllTiles();
+            foreach (var viewCell in _refreshAllScratch)
+            {
+                ViewTilemap.RefreshTile(viewCell);
+            }
+
             ViewTilemap.CompressBounds();
+            _refreshAllScratch.Clear();
         }
 
         public int CountDataTiles()
