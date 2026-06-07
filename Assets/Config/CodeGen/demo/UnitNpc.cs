@@ -26,6 +26,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["emnity_cfg_id"].IsString) { throw new SerializationException(); }  EmnityCfgId = _buf["emnity_cfg_id"]; }
         { if(!_buf["faction_id"].IsNumber) { throw new SerializationException(); }  FactionId = _buf["faction_id"]; }
         { if(!_buf["move_style"].IsNumber) { throw new SerializationException(); }  MoveStyle = _buf["move_style"]; }
+        { if(!_buf["idle_move_behave"].IsNumber) { throw new SerializationException(); }  IdleMoveBehave = (demo.EUnitIdleMoveBehave)_buf["idle_move_behave"].AsInt; }
         { if(!_buf["ai_brain_id"].IsString) { throw new SerializationException(); }  AiBrainId = _buf["ai_brain_id"]; }
         { var __json0 = _buf["skill_list"]; if(!__json0.IsArray) { throw new SerializationException(); } SkillList = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  SkillList.Add(__v0); }   }
         { if(!_buf["is_peace"].IsBoolean) { throw new SerializationException(); }  IsPeace = _buf["is_peace"]; }
@@ -84,6 +85,10 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// 移动类型<br/>NoMove,<br/>Normal,<br/>Fly,<br/>Ghost,<br/>
     /// </summary>
     public int MoveStyle;
+    /// <summary>
+    /// NoMove
+    /// </summary>
+    public demo.EUnitIdleMoveBehave IdleMoveBehave;
     /// <summary>
     /// ai配置id
     /// </summary>
@@ -176,6 +181,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "emnityCfgId:" + EmnityCfgId + ","
         + "factionId:" + FactionId + ","
         + "moveStyle:" + MoveStyle + ","
+        + "idleMoveBehave:" + IdleMoveBehave + ","
         + "aiBrainId:" + AiBrainId + ","
         + "skillList:" + Luban.StringUtil.CollectionToString(SkillList) + ","
         + "isPeace:" + IsPeace + ","

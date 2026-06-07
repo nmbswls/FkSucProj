@@ -1673,15 +1673,10 @@ namespace My.Map.Entity
 
                 npcRec.EnmityConfId = npcCfg.EmnityCfgId;
                 npcRec.IsPeace = npcCfg.IsPeace;
-
-                if (realCfg.Param1 != 0)
-                {
-                    npcRec.MoveBehaveType = (UnitMoveBehaveInfo.EMoveBehaveType)realCfg.Param1;
-                }
-                else
-                {
-                    npcRec.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.Hunting;
-                }
+                // Param1 非 0：技能显式覆盖；否则用配表 idle_move_behave（与 EMoveBehaveType 数值一致）
+                npcRec.MoveBehaveType = realCfg.Param1 != 0
+                    ? (UnitMoveBehaveInfo.EMoveBehaveType)realCfg.Param1
+                    : (UnitMoveBehaveInfo.EMoveBehaveType)npcCfg.IdleMoveBehave;
             }
 
             ctx.Env.AddNewEntityRecord(record);

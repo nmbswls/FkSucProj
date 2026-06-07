@@ -258,6 +258,7 @@ namespace My.Map
                 LogicManager.globalBuffManager.RequestAddBuff(this.Id, "not_fight_target");
             }
 
+            // move_style：马达/贴地方式（0/3 等 → IgnoreGround）；AI 移动看 MoveBehaveType / 配表 idle_move_behave
             if(NpcConfig.MoveStyle != 1)
             {
                 MotorSystem.IgnoreGround = true;

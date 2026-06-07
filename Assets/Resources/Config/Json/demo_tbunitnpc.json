@@ -8,6 +8,7 @@
     "emnity_cfg_id": "default_npc",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [
       "default_normal_attack"
@@ -39,6 +40,7 @@
     "emnity_cfg_id": "default_npc",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [
       "default_normal_attack"
@@ -70,6 +72,7 @@
     "emnity_cfg_id": "default_npc",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [
       "default_normal_attack"
@@ -101,6 +104,7 @@
     "emnity_cfg_id": "",
     "faction_id": 0,
     "move_style": 0,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [],
     "is_peace": true,
@@ -130,6 +134,7 @@
     "emnity_cfg_id": "default_npc",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "",
     "skill_list": [],
     "is_peace": true,
@@ -159,6 +164,7 @@
     "emnity_cfg_id": "default_monster",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [
       "default_normal_attack"
@@ -190,6 +196,7 @@
     "emnity_cfg_id": "default_monster",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [
       "chongzhuang_slime"
@@ -221,6 +228,7 @@
     "emnity_cfg_id": "default_npc",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [],
     "is_peace": true,
@@ -250,6 +258,7 @@
     "emnity_cfg_id": "default_npc",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [],
     "is_peace": true,
@@ -279,6 +288,7 @@
     "emnity_cfg_id": "default_guard",
     "faction_id": 0,
     "move_style": 1,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [],
     "is_peace": true,
@@ -308,6 +318,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -340,6 +351,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -372,6 +384,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -404,6 +417,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -436,6 +450,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -468,6 +483,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -500,6 +516,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -532,6 +549,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -564,6 +582,7 @@
     "emnity_cfg_id": "h_spirit",
     "faction_id": 6,
     "move_style": 3,
+    "idle_move_behave": 0,
     "ai_brain_id": "h_spirit",
     "skill_list": [
       "default_h_attack",
@@ -596,6 +615,7 @@
     "emnity_cfg_id": "no_battle",
     "faction_id": 0,
     "move_style": 0,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [
       "watcher_armor"
@@ -619,14 +639,15 @@
     "fallback_drop_id": 0
   },
   {
-    "id": "ally_turret_01",
+    "id": "summon_ally_turret_01",
     "name": "炮台",
     "desc": "",
     "prefab_name": "ally_turret",
     "attr_template_id": 10000,
     "emnity_cfg_id": "default_npc",
     "faction_id": 0,
-    "move_style": 1,
+    "move_style": 0,
+    "idle_move_behave": 0,
     "ai_brain_id": "default",
     "skill_list": [
       "default_normal_attack"

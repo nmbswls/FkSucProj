@@ -153,7 +153,9 @@ namespace My.Player
             HumanSkillSlots[3] = "player_summon_ally_turret";
             //HumanSkillSlots[3] = "player_small_staggering";
             HumanSkillSlots[4] = "player_dark_dance";
-            HumanSkillSlots[5] = "player_push_surround";
+            //HumanSkillSlots[5] = "player_push_surround";
+            HumanSkillSlots[5] = "player_summon_ally_turret";
+
             HumanSkillSlots[6] = "player_trace_bullet_01";
 
 

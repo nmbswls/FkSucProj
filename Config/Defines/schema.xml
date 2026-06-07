@@ -255,4 +255,14 @@
         <var name="Elite" value="2"/>
         <var name="Boss" value="3"/>
     </enum>
+
+    <!-- 与 My.Map.UnitMoveBehaveInfo.EMoveBehaveType 数值一致；仅动态召唤等未指定 MoveMode 时使用 -->
+    <enum name="EUnitIdleMoveBehave">
+        <var name="NoMove" value="0"/>
+        <var name="Patrol" value="1"/>
+        <var name="MovePath" value="2"/>
+        <var name="Hunting" value="3"/>
+        <var name="InPatrolGroup" value="4"/>
+        <var name="MoveToThenDespawn" value="5"/>
+    </enum>
 </module>

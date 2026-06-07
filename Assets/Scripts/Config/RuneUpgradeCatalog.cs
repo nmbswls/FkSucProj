@@ -20,27 +20,20 @@ namespace My.Config
         public string LockReason;
     }
 
-    // 符文升级项配置索引（demo_tbruneupgradeinfo.json）
+    // 符文升级项索引；RebuildCaches 由 CfgMgr.InitializeCfgs 调用
     public static class RuneUpgradeCatalog
     {
-        static Dictionary<string, RuneUpgradeInfo> _byId;
-        static Dictionary<string, List<RuneUpgradeInfo>> _byBaseRuneId;
-        static bool _built;
+        static Dictionary<string, RuneUpgradeInfo> _byId = new(StringComparer.Ordinal);
+        static Dictionary<string, List<RuneUpgradeInfo>> _byBaseRuneId = new(StringComparer.Ordinal);
 
-        static void EnsureBuilt()
+        public static void RebuildCaches()
         {
-            if (_built)
-            {
-                return;
-            }
-
             _byId = new Dictionary<string, RuneUpgradeInfo>(StringComparer.Ordinal);
             _byBaseRuneId = new Dictionary<string, List<RuneUpgradeInfo>>(StringComparer.Ordinal);
 
             var table = CfgMgr.Cfgs?.TbRuneUpgradeInfo;
             if (table?.DataList == null)
             {
-                _built = true;
                 return;
             }
 
@@ -71,16 +64,6 @@ namespace My.Config
             {
                 list.Sort(CompareUpgradeOrder);
             }
-
-            _built = true;
-        }
-
-        public static void Rebuild()
-        {
-            _built = false;
-            _byId = null;
-            _byBaseRuneId = null;
-            EnsureBuilt();
         }
 
         static int CompareUpgradeOrder(RuneUpgradeInfo a, RuneUpgradeInfo b)
@@ -101,7 +84,6 @@ namespace My.Config
                 return null;
             }
 
-            EnsureBuilt();
             return _byId.TryGetValue(upgradeId, out var row) ? row : null;
         }
 
@@ -112,7 +94,6 @@ namespace My.Config
                 return Array.Empty<RuneUpgradeInfo>();
             }
 
-            EnsureBuilt();
             if (_byBaseRuneId.TryGetValue(baseRuneId, out var list))
             {
                 return list;
