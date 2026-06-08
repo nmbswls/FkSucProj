@@ -350,9 +350,9 @@ namespace My.Map.Unit
         private IIdlePolicy _idlePolicy;
 
         public override string StateName => "Idle";
-        public override bool CanBeAttract => true;
+        public override bool CanBeAttract => !_brain.Config.IsFixedTurret;
 
-        public override bool CanEnterCombat => true;
+        public override bool CanEnterCombat => !_brain.Config.IsFixedTurret;
 
 
         private float _lastIdleGuardTimer = 0;
@@ -424,6 +424,11 @@ namespace My.Map.Unit
             
             // 3. 执行闲置策略
             _idlePolicy.OnTick(_brain, Time.deltaTime);
+
+            if (_brain.Config.IsFixedTurret && FixedTurretController.TryFire(_brain))
+            {
+                return;
+            }
         }
 
         public override void OnExit()
@@ -1002,8 +1007,10 @@ namespace My.Map.Unit
                         case MapAbilitySpecConfig.ECastType.LockTarget:
 
                             {
-                                // 无目标类型的技能 盯紧目标点
-                                _brain.NpcEntity.RegisterGaze("Combat", targetId, target.Pos, EGazePriority.CastSkill, 0.5f);
+                                if (!_brain.NpcEntity.CheckHasState(AttrIdConsts.LockFace))
+                                {
+                                    _brain.NpcEntity.RegisterGaze("Combat", targetId, target.Pos, EGazePriority.CastSkill, 0.5f);
+                                }
 
                                 var diff = target.Pos - _brain.NpcEntity.Pos;
                                 if (diff.magnitude < 0.05f)
@@ -1012,15 +1019,14 @@ namespace My.Map.Unit
                                     break;
                                 }
 
-                                var angle = Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook);
-                                if(angle < 5 
-                                    && diff.magnitude < intentAbilityCfgCurrent.DesiredUseDistance)
+                                var maxDist = SkillCastConstraintUtil.GetDesiredUseDistance(intentSkillCfgOrigin, intentAbilityCfgCurrent);
+                                if (IsFacingForSkillCast(target.Pos, maxDist))
                                 {
                                     canCast = true;
                                     break;
                                 }
 
-                                if (diff.magnitude > intentAbilityCfgCurrent.DesiredUseDistance)
+                                if (diff.magnitude > maxDist)
                                 {
                                     _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, 0.5f, 1.2f);
                                 }
@@ -1030,8 +1036,11 @@ namespace My.Map.Unit
                         case MapAbilitySpecConfig.ECastType.Point:
                         case MapAbilitySpecConfig.ECastType.Directional:
                             {
-                                // 无目标类型的技能 盯紧目标点
-                                _brain.NpcEntity.RegisterGaze("Combat", 0, target.Pos, EGazePriority.CastSkill, 0.5f);
+                                if (!_brain.NpcEntity.CheckHasState(AttrIdConsts.LockFace))
+                                {
+                                    _brain.NpcEntity.RegisterGaze("Combat", 0, target.Pos, EGazePriority.CastSkill, 0.5f);
+                                }
+
                                 var diff = target.Pos - _brain.NpcEntity.Pos;
                                 if (diff.magnitude < 0.05f)
                                 {
@@ -1039,15 +1048,14 @@ namespace My.Map.Unit
                                     break;
                                 }
 
-                                var angle = Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook);
-                                if (angle < 5
-                                    && diff.magnitude < intentAbilityCfgCurrent.Range1)
+                                var maxDist = SkillCastConstraintUtil.GetDesiredUseDistance(intentSkillCfgOrigin, intentAbilityCfgCurrent);
+                                if (IsFacingForSkillCast(target.Pos, maxDist))
                                 {
                                     canCast = true;
                                     break;
                                 }
 
-                                if (diff.magnitude > intentAbilityCfgCurrent.Range1)
+                                if (diff.magnitude > maxDist)
                                 {
                                     _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, 0.5f, 1.2f);
                                 }
@@ -1064,18 +1072,19 @@ namespace My.Map.Unit
                                     canCast = true;
                                     break;
                                 }
-                                // 无目标类型的技能 盯紧目标点
-                                _brain.NpcEntity.RegisterGaze("Combat", 0, adjustedCastVec, EGazePriority.CastSkill, 0.5f);
+                                if (!_brain.NpcEntity.CheckHasState(AttrIdConsts.LockFace))
+                                {
+                                    _brain.NpcEntity.RegisterGaze("Combat", 0, adjustedCastVec, EGazePriority.CastSkill, 0.5f);
+                                }
 
-                                var angle = Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook);
-                                if (angle < 5
-                                    && diff.magnitude < intentAbilityCfgCurrent.Range1)
+                                var maxDist = SkillCastConstraintUtil.GetDesiredUseDistance(intentSkillCfgOrigin, intentAbilityCfgCurrent);
+                                if (IsFacingForSkillCast(adjustedCastVec, maxDist))
                                 {
                                     canCast = true;
                                     break;
                                 }
 
-                                if (diff.magnitude > intentAbilityCfgCurrent.Range1)
+                                if (diff.magnitude > maxDist)
                                 {
                                     _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, 0.5f, 1.2f);
                                 }
@@ -1097,6 +1106,23 @@ namespace My.Map.Unit
                     return;
                 }
             }
+        }
+
+        bool IsFacingForSkillCast(Vector2 aimPoint, float maxDistance)
+        {
+            var diff = aimPoint - _brain.NpcEntity.Pos;
+            if (diff.magnitude < 0.05f)
+            {
+                return true;
+            }
+
+            if (diff.magnitude > maxDistance)
+            {
+                return false;
+            }
+
+            float halfAngle = SkillCastConstraintUtil.GetDesiredUseAngle(intentSkillCfgOrigin, intentAbilityCfgCurrent) * 0.5f;
+            return Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook) <= halfAngle;
         }
 
         private void HandleTargetLost()
@@ -1511,6 +1537,77 @@ namespace My.Map.Unit
             }
 
             return _brain.LogicManager.GetLogicEntity(tid, false) as LogicEntityInteractPoint;
+        }
+    }
+
+    // 固定炮塔：扇区检测后直接施法，不进入 Combat / Gaze
+    public static class FixedTurretController
+    {
+        public static bool TryFire(AIBrainV2 brain)
+        {
+            var npc = brain?.NpcEntity;
+            if (npc == null || npc.IsDead || npc.MarkDestroyed)
+            {
+                return false;
+            }
+
+            if (!npc.abilityController.IsActionable())
+            {
+                return false;
+            }
+
+            var player = brain.LogicManager.playerLogicEntity;
+            if (player == null || player.IsDead || player.MarkDestroyed)
+            {
+                return false;
+            }
+
+            if (!TryPickReadySkill(npc, out var skillId, out var skillCfg, out var ability))
+            {
+                return false;
+            }
+
+            float halfAngle = SkillCastConstraintUtil.GetDesiredUseAngle(skillCfg, ability) * 0.5f;
+            float maxRange = SkillCastConstraintUtil.GetDesiredUseDistance(skillCfg, ability);
+            if (!SkillCastConstraintUtil.IsInFrontSector(npc.Pos, npc.CurrentLook, player.Pos, halfAngle, maxRange))
+            {
+                return false;
+            }
+
+            return npc.ablilityManager.UseSkill(skillId, castVec: player.Pos, target: player);
+        }
+
+        static bool TryPickReadySkill(
+            NpcUnitLogicEntity npc,
+            out string skillId,
+            out EntitySkillData skillCfg,
+            out MapAbilitySpecConfig ability)
+        {
+            skillId = null;
+            skillCfg = null;
+            ability = null;
+
+            var ready = npc.ablilityManager.GetAllReadySkills();
+            if (ready == null || ready.Count == 0)
+            {
+                return false;
+            }
+
+            ready.Sort((a, b) =>
+            {
+                if (a.cacheConfig.Priority != b.cacheConfig.Priority)
+                {
+                    return b.cacheConfig.Priority.CompareTo(a.cacheConfig.Priority);
+                }
+
+                return a.lastUseTime.CompareTo(b.lastUseTime);
+            });
+
+            var pick = ready[0];
+            skillId = pick.SkillName;
+            skillCfg = pick.cacheConfig;
+            ability = AbilityLibrary.GetAbilityConfig(skillCfg.MainAbilityId);
+            return ability != null && npc.ablilityManager.IsSkillReady(skillId);
         }
     }
 }

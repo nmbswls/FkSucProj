@@ -541,6 +541,10 @@ namespace My.Map.Logic
                 record.Position = initInfo.Position;
                 record.BelongRoomId = initInfo.BindRoomId;
                 record.FactionId = initInfo.OrgFactionId;
+                if (initInfo.FaceDir.sqrMagnitude > 1e-8f)
+                {
+                    record.FaceDir = initInfo.FaceDir.normalized;
+                }
             }
             return record;
         }

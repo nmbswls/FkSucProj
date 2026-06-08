@@ -255,6 +255,21 @@ namespace My.Map
         /// </summary>
         private void ApplyGazeRotation(bool force = false, bool snapToDefault = false)
         {
+            if (CheckHasState(AttrIdConsts.LockFace))
+            {
+                _targetLookDir = _defaultFaceDir.sqrMagnitude > 1e-8f ? _defaultFaceDir.normalized : Vector2.right;
+                if (force || snapToDefault)
+                {
+                    _currentLook = _targetLookDir;
+                }
+                else
+                {
+                    _currentLook = Vector2.Lerp(_currentLook, _targetLookDir, LogicTime.deltaTime * GetFaceTurnSpeed());
+                }
+
+                return;
+            }
+
             if (_activeRequest != null)
             {
                 _targetLookDir = (_activeRequest.TargetPos - this.Pos);

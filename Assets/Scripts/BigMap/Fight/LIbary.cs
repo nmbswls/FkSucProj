@@ -197,6 +197,10 @@ namespace My.Map.Entity
                     _abilityDict[ab.Id] = ab;
                 }
                 {
+                    var ab = CreateCannonMortarShotAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
                     var ab = CreateDefaultEnemyQinfan();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -1672,6 +1676,97 @@ namespace My.Map.Entity
                 },
             });
 
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateCannonMortarShotAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "cannon_mortar_shot_01";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 14f;
+            spec.DesiredUseAngle = 60f;
+            spec.DesiredUseDistance = 12f;
+            spec.TargetSelectPolicy = ETargetSelectPolicy.PrimaryTarget;
+
+            var prePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.65"
+                },
+            };
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+
+            var spawnBullet = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = "cannon_shell_01",
+                MotionData = new ParabolaMotionData()
+                {
+                    horizontalSpeed = 11f,
+                    arcHeight = 4f,
+                    gravity = 26f,
+                    hitRadius = 0.5f,
+                },
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+                isHoming = true,
+                homingSelectPolicy = ETargetSelectPolicy.CastPoint,
+                lifeTime = 10f,
+                showRangeWarn = true,
+                BulletShape = new Shape()
+                {
+                    Type = EShapeType.Circle,
+                    Radius = 1.2f,
+                },
+                TriggerOnCollide = true,
+                TriggerOnLifeEnd = true,
+                BulletHitResult = new HitResult()
+                {
+                    OnHitEffects = new List<MapFightEffectCfg>
+                    {
+                        new MapAbilityEffectHitBoxCfg()
+                        {
+                            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                            Radius = 1.2f,
+                            CampFilterType = ECampFilterType.NotSelf,
+                            HitResult = new HitResult()
+                            {
+                                OnHitEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId = AttrIdConsts.HP,
+                                        AddValue = 25_000,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = spawnBullet, Kind = PhaseEventKind.OnExit });
+            spec.Phases.Add(prePhase);
+            spec.Phases.Add(mainPhase);
             return spec;
         }
 

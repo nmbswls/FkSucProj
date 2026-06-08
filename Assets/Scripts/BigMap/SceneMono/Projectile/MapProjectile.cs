@@ -135,20 +135,42 @@ namespace My
 
         private void SetupBodyAndShadow()
         {
-            // 清理旧的
-            //foreach (Transform child in transform) Destroy(child.gameObject);
+            if (ViewRoot == null)
+                ViewRoot = transform.Find("view") ?? transform;
 
             _body = ViewRoot.Find("body");
+            if (_body == null)
+            {
+                for (int i = 0; i < ViewRoot.childCount; i++)
+                {
+                    var child = ViewRoot.GetChild(i);
+                    if (IsShadowNode(child.name))
+                        continue;
+                    if (bindingProjInfo.pData.showRangeWarn && child.name == "Circle")
+                    {
+                        child.gameObject.SetActive(false);
+                        continue;
+                    }
+                    if (child.GetComponentInChildren<SpriteRenderer>() != null)
+                    {
+                        _body = child;
+                        break;
+                    }
+                }
+            }
 
-            //// Body
-            //if (bindingProjInfo.data.bodyPrefab != null)
-            //    _body = Instantiate(bindingProjInfo.data.bodyPrefab, transform).transform;
-            //else
-            //    _body = transform;
+            _shadow = ViewRoot.Find("shadow") ?? ViewRoot.Find("Showdow");
+            if (_shadow == null)
+            {
+                _shadow = transform.Find("shadow") ?? transform.Find("Showdow");
+            }
+            _shadowSR = _shadow != null ? _shadow.GetComponentInChildren<SpriteRenderer>() : null;
+        }
 
-            // Shadow 先不创建；仅抛物会要求
-            _shadow = null;
-            _shadowSR = null;
+        private static bool IsShadowNode(string name)
+        {
+            return name.Equals("shadow", System.StringComparison.OrdinalIgnoreCase)
+                || name.Equals("Showdow", System.StringComparison.OrdinalIgnoreCase);
         }
 
         // 供抛物Motion调用：配置视觉元素
@@ -180,17 +202,19 @@ namespace My
             Vector2 bodyPos = new Vector2(groundPos.x, groundPos.y + z * md.lift);
             //if (_body != null) _body.position = bodyPos;
 
-            if (_body != null) 
+            if (_body != null)
                 _body.localPosition = new Vector3(0, z * md.lift, 0);
 
-            //// 朝向
-            //if (bindingProjInfo.pData.rotateBodyToVelocity && _body != null && forward.sqrMagnitude > 0.0001f)
-            //    _body.right = forward;
+            if (bindingProjInfo.pData.rotateBodyToVelocity && _body != null && forward.sqrMagnitude > 0.0001f)
+                _body.right = forward;
 
             // shadow 在地面
             if (_shadow != null)
             {
-                _shadow.position = groundPos;
+                if (_shadow.parent == ViewRoot)
+                    _shadow.localPosition = Vector3.zero;
+                else
+                    _shadow.position = groundPos;
                 float zAbs = Mathf.Max(0f, z);
                 float t = Mathf.Clamp01(zAbs / 5f);
                 float scale = Mathf.Lerp(1f, 0.5f, t);

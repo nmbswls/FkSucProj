@@ -1127,5 +1127,26 @@
     "buffer_cache_time": 0,
     "ability_extra": [],
     "cast_conditions": []
+  },
+  {
+    "skill_id": "cannon_shoot_01",
+    "main_ability_id": "cannon_mortar_shot_01",
+    "desc": "",
+    "is_passive": false,
+    "passive_buff_ids": [],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": false,
+    "is_derived": false,
+    "cool_down": 5,
+    "stack_count": 0,
+    "icon_path": "",
+    "priority": 10,
+    "desired_use_angle": 60,
+    "desired_use_distance": 12,
+    "buffer_cache_time": 0,
+    "ability_extra": [],
+    "cast_conditions": []
   }
 ]

@@ -30,6 +30,7 @@ namespace My.Map.Unit
         public string SpecialAnimTag4;
 
         public bool IsGuard;
+        public bool IsFixedTurret;
     }
 
     public static class AIBrainParamsConfigLoader
@@ -64,6 +65,13 @@ namespace My.Map.Unit
                     config.ChaseRange = 999;
 
                     _configs["h_spirit"] = config;
+                }
+
+                {
+                    var config = new AIBrainConfig();
+                    config.IsFixedTurret = true;
+                    config.ChaseRange = 1f;
+                    _configs["fixed_turret"] = config;
                 }
             }
 

@@ -264,11 +264,26 @@ namespace My.Map
                 MotorSystem.IgnoreGround = true;
             }
 
-            //InteractComp = new(this);
+            ApplySpawnFaceDir();
+            if (NpcConfig.LockInitialFace)
+            {
+                LogicManager.globalBuffManager.RequestAddBuff(Id, "lock_face");
+            }
 
             //InteractComp.RefreshInteractInfo();
             //InteractComp.RefreshInteractInfo(NpcConfig.InteractList);
 
+        }
+
+        void ApplySpawnFaceDir()
+        {
+            var faceDir = BindingRecord != null ? BindingRecord.FaceDir : Vector2.right;
+            if (faceDir.sqrMagnitude <= 1e-8f)
+            {
+                return;
+            }
+
+            ForceSetFaceTarget(faceDir.normalized, true);
         }
 
         protected override void RegisterSpecAttrs()
