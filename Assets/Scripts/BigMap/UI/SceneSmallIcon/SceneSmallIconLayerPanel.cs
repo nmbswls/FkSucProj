@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Hunting;
 using My.Map.Scene;
 using TMPro;
 using UnityEditorInternal.VersionControl;
@@ -636,7 +637,34 @@ namespace My.UI
             uiLocalPos += Vector2.up * 10f;
             uiItem.transform.localPosition = uiLocalPos;
 
+            uiItem.SetFocusScale(GetNpcHStatFocusScale(uiItem.bindingNpc));
             uiItem.UpdateView();
+        }
+
+        float GetNpcHStatFocusScale(SceneNpcPresenter npcPresenter)
+        {
+            if (npcPresenter == null)
+            {
+                return 1f;
+            }
+
+            var hunt = HuntingModeManager.Instance;
+            if (hunt == null || !hunt.Active)
+            {
+                return 1f;
+            }
+
+            if (hunt.PinnedNpc != null && hunt.PinnedNpc.Id == npcPresenter.Id)
+            {
+                return 1.4f;
+            }
+
+            if (hunt.HoverNpc != null && hunt.HoverNpc.Id == npcPresenter.Id)
+            {
+                return 1.25f;
+            }
+
+            return 1f;
         }
 
         #endregion

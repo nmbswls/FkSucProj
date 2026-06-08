@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using cfg.demo;
+using DG.Tweening;
 using My;
 using My.Config;
 using My.Player;
@@ -15,8 +16,15 @@ namespace My.UI.Rune
     {
         public const string Pid = "RuneLoadoutPanel";
 
-        [SerializeField] Transform builtRoot;
+        const float DetailSlideDuration = 0.22f;
+        const float OwnedSlideDuration = 0.28f;
+        const float DetailSlideOffsetX = 72f;
+        const float OwnedHiddenExtraOffset = 24f;
+
         [SerializeField] RectTransform slotGrid;
+        [SerializeField] RectTransform detailArea;
+        [SerializeField] Button detailCloseButton;
+        [SerializeField] Button detailBackdrop;
         [SerializeField] TextMeshProUGUI detailTitle;
         [SerializeField] TextMeshProUGUI detailBody;
         [SerializeField] TextMeshProUGUI runeDescText;
@@ -38,6 +46,15 @@ namespace My.UI.Rune
         string _selectedFixedRuneId;
         string _selectedOwnedRuneId;
         bool _slotViewsCached;
+        bool _detailVisible;
+        bool _ownedAreaVisible;
+
+        Vector2 _detailShownAnchoredPos;
+        Vector2 _ownedAreaShownAnchoredPos;
+        Vector2 _ownedAreaHiddenAnchoredPos;
+
+        Tweener _detailTween;
+        Tweener _ownedAreaTween;
 
         void Awake()
         {
@@ -51,6 +68,8 @@ namespace My.UI.Rune
                 dragController = GetComponent<RuneDragDropController>();
             }
 
+            WireDetailChrome();
+            CacheLayoutAnchors();
         }
 
         void OnEnable()
@@ -63,6 +82,7 @@ namespace My.UI.Rune
         {
             PlayerEventBus.Unsubscribe<PlayerRuneGrantedEvent>(OnRuneGranted);
             PlayerEventBus.Unsubscribe<PlayerRuneUpgradeUnlockedEvent>(OnRuneUpgradeUnlocked);
+            KillPanelTweens();
         }
 
         void OnRuneGranted(PlayerRuneGrantedEvent e)
@@ -78,15 +98,6 @@ namespace My.UI.Rune
         public void SetProgressionHubHost(IPlayerProgressionHubHost host)
         {
             _progressionHubHost = host;
-            ApplyHostedChromeIfNeeded();
-        }
-
-        void ApplyHostedChromeIfNeeded()
-        {
-            if (_progressionHubHost == null)
-            {
-                return;
-            }
         }
 
         public void CloseSelfOrHub()
@@ -116,10 +127,11 @@ namespace My.UI.Rune
 
             if (ownedArea != null)
             {
-                ownedArea.gameObject.SetActive(false);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ownedArea);
             }
 
-            ApplyHostedChromeIfNeeded();
+            CacheLayoutAnchors();
+            InitializePanelVisualState();
             RefreshAll();
         }
 
@@ -129,14 +141,70 @@ namespace My.UI.Rune
             RefreshAll();
         }
 
-        bool ValidatePrefabBindings()
+        void WireDetailChrome()
         {
-            if (builtRoot == null)
+            if (detailCloseButton != null)
             {
-                Debug.LogError("[RunePanel] Prefab missing builtRoot.");
-                return false;
+                detailCloseButton.onClick.RemoveAllListeners();
+                detailCloseButton.onClick.AddListener(DismissDetail);
             }
 
+            if (detailBackdrop != null)
+            {
+                detailBackdrop.onClick.RemoveAllListeners();
+                detailBackdrop.onClick.AddListener(DismissDetail);
+            }
+        }
+
+        void CacheLayoutAnchors()
+        {
+            if (detailArea != null)
+            {
+                _detailShownAnchoredPos = detailArea.anchoredPosition;
+            }
+
+            if (ownedArea != null)
+            {
+                _ownedAreaShownAnchoredPos = ownedArea.anchoredPosition;
+                float height = ownedArea.rect.height;
+                if (height <= 1f)
+                {
+                    height = 156f;
+                }
+
+                _ownedAreaHiddenAnchoredPos = _ownedAreaShownAnchoredPos
+                    + new Vector2(0f, -(height + OwnedHiddenExtraOffset));
+            }
+        }
+
+        void InitializePanelVisualState()
+        {
+            KillPanelTweens();
+            _detailVisible = false;
+            _ownedAreaVisible = false;
+
+            if (detailBackdrop != null)
+            {
+                detailBackdrop.gameObject.SetActive(false);
+            }
+
+            if (detailArea != null)
+            {
+                detailArea.gameObject.SetActive(false);
+                detailArea.anchoredPosition = _detailShownAnchoredPos;
+            }
+
+            if (ownedArea != null)
+            {
+                ownedArea.gameObject.SetActive(true);
+                ownedArea.anchoredPosition = _ownedAreaHiddenAnchoredPos;
+            }
+
+            ClearSelectionState();
+        }
+
+        bool ValidatePrefabBindings()
+        {
             if (slotGrid == null)
             {
                 Debug.LogError("[RunePanel] Prefab missing slotGrid.");
@@ -147,6 +215,12 @@ namespace My.UI.Rune
             if (_slotViews.Count == 0)
             {
                 Debug.LogWarning("[RunePanel] SlotGrid has no RuneSlotView. Place RuneSlot prefabs in editor.");
+            }
+
+            if (detailArea == null)
+            {
+                Debug.LogError("[RunePanel] Prefab missing detailArea.");
+                return false;
             }
 
             if (ownedGrid == null || ownedCellTemplate == null)
@@ -220,8 +294,15 @@ namespace My.UI.Rune
         public void RefreshAll()
         {
             RefreshSlots();
-            RefreshOwnedGrid();
-            RefreshDetailPanel();
+            if (_detailVisible)
+            {
+                RefreshOwnedGrid();
+                RefreshDetailPanel();
+            }
+            else
+            {
+                ClearOwnedCells();
+            }
         }
 
         void RefreshSlots()
@@ -244,7 +325,10 @@ namespace My.UI.Rune
                 slot.Refresh(runeSystem, IsSlotSelected(slot));
             }
 
-            _selectedSlot = FindSelectedSlotView();
+            if (_detailVisible)
+            {
+                _selectedSlot = FindSelectedSlotView();
+            }
         }
 
         public static bool IsEquipSlotUnlocked(PlayerRuneSystem runeSystem, ERuneEquipSlot slot)
@@ -262,7 +346,7 @@ namespace My.UI.Rune
 
         bool IsSlotSelected(RuneSlotView slot)
         {
-            if (slot?.Binder == null)
+            if (!_detailVisible || slot?.Binder == null)
             {
                 return false;
             }
@@ -290,6 +374,21 @@ namespace My.UI.Rune
             return null;
         }
 
+        RuneSlotView FindSlotViewForEquipSlot(ERuneEquipSlot slot)
+        {
+            foreach (var view in _slotViews)
+            {
+                if (view?.Binder != null
+                    && view.Binder.SlotKind == RuneSlotKind.Equippable
+                    && view.Binder.EquipSlot == slot)
+                {
+                    return view;
+                }
+            }
+
+            return null;
+        }
+
         public void OnSlotClicked(RuneSlotView slot)
         {
             if (slot == null || slot.Binder == null)
@@ -297,41 +396,217 @@ namespace My.UI.Rune
                 return;
             }
 
+            OpenDetail(slot);
+        }
+
+        void OpenDetail(RuneSlotView slot)
+        {
+            bool wasVisible = _detailVisible;
             _selectedSlot = slot;
             if (slot.Binder.SlotKind == RuneSlotKind.Equippable)
             {
                 _selectedEquipSlot = slot.Binder.EquipSlot;
                 _selectedFixedRuneId = null;
-                if (ownedArea != null)
-                {
-                    ownedArea.gameObject.SetActive(slot.State != RuneSlotVisualState.Locked);
-                }
             }
             else
             {
                 _selectedEquipSlot = ERuneEquipSlot.None;
                 _selectedFixedRuneId = slot.Binder.FixedRuneId;
-                if (ownedArea != null)
-                {
-                    ownedArea.gameObject.SetActive(false);
-                }
             }
 
-            RefreshAll();
+            _detailVisible = true;
+            RefreshSlots();
+            RefreshDetailPanel();
+
+            if (detailBackdrop != null)
+            {
+                detailBackdrop.gameObject.SetActive(true);
+            }
+
+            if (!wasVisible)
+            {
+                PlayDetailShow();
+            }
+
+            if (ShouldShowOwnedArea(slot))
+            {
+                if (_ownedAreaVisible)
+                {
+                    RefreshOwnedGrid();
+                }
+                else
+                {
+                    PlayOwnedAreaShow();
+                }
+            }
+            else
+            {
+                PlayOwnedAreaHide();
+            }
+        }
+
+        void DismissDetail()
+        {
+            if (!_detailVisible)
+            {
+                return;
+            }
+
+            _detailVisible = false;
+            PlayOwnedAreaHide();
+            PlayDetailHide();
+            ClearSelectionState();
+            RefreshSlots();
+            ClearOwnedCells();
+            layoutHost?.Hide();
+            upgradeDetail?.Clear();
+        }
+
+        bool ShouldShowOwnedArea(RuneSlotView slot)
+        {
+            return slot != null
+                   && slot.Binder != null
+                   && slot.Binder.SlotKind == RuneSlotKind.Equippable
+                   && slot.State != RuneSlotVisualState.Locked;
+        }
+
+        bool ShouldShowOwnedArea()
+        {
+            return _detailVisible && ShouldShowOwnedArea(_selectedSlot);
+        }
+
+        void PlayDetailShow()
+        {
+            if (detailArea == null)
+            {
+                return;
+            }
+
+            KillDetailTween();
+            detailArea.gameObject.SetActive(true);
+            detailArea.anchoredPosition = _detailShownAnchoredPos + new Vector2(DetailSlideOffsetX, 0f);
+            _detailTween = detailArea
+                .DOAnchorPos(_detailShownAnchoredPos, DetailSlideDuration)
+                .SetEase(Ease.OutCubic)
+                .SetUpdate(true);
+        }
+
+        void PlayDetailHide()
+        {
+            if (detailBackdrop != null)
+            {
+                detailBackdrop.gameObject.SetActive(false);
+            }
+
+            if (detailArea == null)
+            {
+                return;
+            }
+
+            KillDetailTween();
+            var target = _detailShownAnchoredPos + new Vector2(DetailSlideOffsetX, 0f);
+            _detailTween = detailArea
+                .DOAnchorPos(target, DetailSlideDuration)
+                .SetEase(Ease.InCubic)
+                .SetUpdate(true)
+                .OnComplete(() =>
+                {
+                    if (detailArea != null)
+                    {
+                        detailArea.gameObject.SetActive(false);
+                        detailArea.anchoredPosition = _detailShownAnchoredPos;
+                    }
+                });
+        }
+
+        void PlayOwnedAreaShow()
+        {
+            if (ownedArea == null || _ownedAreaVisible)
+            {
+                RefreshOwnedGrid();
+                return;
+            }
+
+            _ownedAreaVisible = true;
+            ownedArea.gameObject.SetActive(true);
+            KillOwnedAreaTween();
+            ownedArea.anchoredPosition = _ownedAreaHiddenAnchoredPos;
+            _ownedAreaTween = ownedArea
+                .DOAnchorPos(_ownedAreaShownAnchoredPos, OwnedSlideDuration)
+                .SetEase(Ease.OutCubic)
+                .SetUpdate(true)
+                .OnComplete(RefreshOwnedGrid);
+            RefreshOwnedGrid();
+        }
+
+        void PlayOwnedAreaHide()
+        {
+            if (ownedArea == null || !_ownedAreaVisible)
+            {
+                if (ownedArea != null)
+                {
+                    ownedArea.anchoredPosition = _ownedAreaHiddenAnchoredPos;
+                }
+
+                _ownedAreaVisible = false;
+                return;
+            }
+
+            _ownedAreaVisible = false;
+            KillOwnedAreaTween();
+            _ownedAreaTween = ownedArea
+                .DOAnchorPos(_ownedAreaHiddenAnchoredPos, OwnedSlideDuration)
+                .SetEase(Ease.InCubic)
+                .SetUpdate(true);
+        }
+
+        void KillPanelTweens()
+        {
+            KillDetailTween();
+            KillOwnedAreaTween();
+        }
+
+        void KillDetailTween()
+        {
+            if (_detailTween != null && _detailTween.IsActive())
+            {
+                _detailTween.Kill();
+            }
+
+            _detailTween = null;
+            detailArea?.DOKill();
+        }
+
+        void KillOwnedAreaTween()
+        {
+            if (_ownedAreaTween != null && _ownedAreaTween.IsActive())
+            {
+                _ownedAreaTween.Kill();
+            }
+
+            _ownedAreaTween = null;
+            ownedArea?.DOKill();
+        }
+
+        void ClearSelectionState()
+        {
+            _selectedSlot = null;
+            _selectedEquipSlot = ERuneEquipSlot.None;
+            _selectedFixedRuneId = null;
+            _selectedOwnedRuneId = null;
         }
 
         void RefreshDetailPanel()
         {
-            if (_selectedSlot == null || _selectedSlot.Binder == null)
+            if (!_detailVisible || _selectedSlot == null || _selectedSlot.Binder == null)
             {
-                ClearDetailPanel("点击槽位查看符文详情。");
                 return;
             }
 
             var provider = _selectedSlot.GetComponent<RuneInfoProvider>();
             if (provider == null)
             {
-                ClearDetailPanel(string.Empty);
+                ShowDetailPlaceholder(string.Empty);
                 return;
             }
 
@@ -343,21 +618,21 @@ namespace My.UI.Rune
             if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Fixed
                 && _selectedSlot.State == RuneSlotVisualState.Locked)
             {
-                ClearDetailPanel("该常驻符文尚未解锁。");
+                ShowDetailPlaceholder("该常驻符文尚未解锁。");
                 return;
             }
 
             if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Equippable
                 && _selectedSlot.State == RuneSlotVisualState.Locked)
             {
-                ClearDetailPanel("尚未获得可用于该槽位的符文。");
+                ShowDetailPlaceholder("槽位锁定：尚未获得可用于该槽位的符文。");
                 return;
             }
 
             if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Equippable
                 && _selectedSlot.State == RuneSlotVisualState.Empty)
             {
-                ClearDetailPanel("从下方列表选择或拖拽符文进行装配。");
+                ShowDetailPlaceholder("请装配符文。");
                 return;
             }
 
@@ -366,7 +641,7 @@ namespace My.UI.Rune
             var runeSystem = GetRuneSystem();
             if (runeDef == null || runeSystem == null || !runeSystem.OwnsRune(runeId))
             {
-                ClearDetailPanel(provider.GetDetailText());
+                ShowDetailPlaceholder(provider.GetDetailText());
                 return;
             }
 
@@ -399,13 +674,8 @@ namespace My.UI.Rune
             }
         }
 
-        void ClearDetailPanel(string message)
+        void ShowDetailPlaceholder(string message)
         {
-            if (detailTitle != null)
-            {
-                detailTitle.text = string.Empty;
-            }
-
             if (runeDescText != null)
             {
                 runeDescText.text = string.Empty;
@@ -453,7 +723,7 @@ namespace My.UI.Rune
 
         void RefreshOwnedGrid()
         {
-            if (_selectedEquipSlot == ERuneEquipSlot.None)
+            if (!ShouldShowOwnedArea())
             {
                 ClearOwnedCells();
                 return;
@@ -540,10 +810,19 @@ namespace My.UI.Rune
                 return;
             }
 
-            if (pdm.TryEquipRune(slot, runeId))
+            if (!pdm.TryEquipRune(slot, runeId))
             {
-                controller?.MarkDropHandled();
-                _selectedEquipSlot = slot;
+                return;
+            }
+
+            controller?.MarkDropHandled();
+            var slotView = FindSlotViewForEquipSlot(slot);
+            if (slotView != null)
+            {
+                OpenDetail(slotView);
+            }
+            else
+            {
                 RefreshAll();
             }
         }
@@ -552,7 +831,6 @@ namespace My.UI.Rune
         {
             return MainGameManager.Instance?.gameLogicManager?.playerDataManager?.RuneSystem;
         }
-
 
         public bool OnConfirm() => false;
         public bool OnCancel() => false;

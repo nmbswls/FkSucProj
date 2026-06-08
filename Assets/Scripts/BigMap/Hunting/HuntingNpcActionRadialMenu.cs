@@ -37,7 +37,39 @@ namespace My.Map.Hunting
 
         public bool IsOpen { get; private set; }
 
+#if UNITY_EDITOR
+        [SerializeField, HideInInspector]
+        bool _editorPreviewActive;
+
+        public bool IsEditorPreviewActive => _editorPreviewActive;
+#endif
+
         void Awake()
+        {
+            EnsureSetup();
+
+            if (Application.isPlaying)
+            {
+                if (ExecuteButton != null)
+                {
+                    ExecuteButton.onClick.AddListener(OnExecuteClicked);
+                }
+
+                SetOpen(false);
+            }
+#if UNITY_EDITOR
+            else if (_editorPreviewActive)
+            {
+                RefreshEditorPreviewLayout();
+            }
+            else
+            {
+                SetOpen(false);
+            }
+#endif
+        }
+
+        void EnsureSetup()
         {
             if (MenuRoot == null)
             {
@@ -54,13 +86,6 @@ namespace My.Map.Hunting
             {
                 OptionButtonTemplate.gameObject.SetActive(false);
             }
-
-            if (ExecuteButton != null)
-            {
-                ExecuteButton.onClick.AddListener(OnExecuteClicked);
-            }
-
-            SetOpen(false);
         }
 
         void OnDestroy()
@@ -80,7 +105,82 @@ namespace My.Map.Hunting
                 ExecuteButton.interactable = canExecute;
             }
 
-            var options = new List<ActionSlotData>
+            RebuildOptions(BuildDefaultOptions(canControl));
+            RefreshLayout();
+            SetOpen(true);
+        }
+
+        public void Close()
+        {
+            _target = null;
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                _editorPreviewActive = false;
+            }
+#endif
+            SetOpen(false);
+            ClearOptions();
+        }
+
+#if UNITY_EDITOR
+        // 编辑器内预览假菜单，便于调整 OptionRadius 等布局参数。
+        public void ShowEditorPreview(bool canExecute = true, bool canControl = true)
+        {
+            _editorPreviewActive = true;
+            EnsureSetup();
+            _target = null;
+
+            if (ExecuteButton != null)
+            {
+                ExecuteButton.interactable = canExecute;
+            }
+
+            RebuildOptions(BuildDefaultOptions(canControl));
+            RefreshEditorPreviewLayout();
+            SetOpen(true);
+
+            if (!Application.isPlaying)
+            {
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+        }
+
+        public void HideEditorPreview()
+        {
+            _editorPreviewActive = false;
+            Close();
+        }
+
+        public void RefreshEditorPreviewLayout()
+        {
+            if (!_editorPreviewActive || MenuRoot == null)
+            {
+                return;
+            }
+
+            MenuRoot.localPosition = Vector3.zero;
+            RepositionAllOptionButtons();
+        }
+
+        void RepositionAllOptionButtons()
+        {
+            int count = _optionButtons.Count;
+            float step = count <= 1 ? 0f : OptionAngleStepDeg;
+            for (int i = 0; i < count; i++)
+            {
+                var btn = _optionButtons[i];
+                if (btn != null)
+                {
+                    PlaceOptionButton(btn.transform as RectTransform, i, step);
+                }
+            }
+        }
+#endif
+
+        static List<ActionSlotData> BuildDefaultOptions(bool canControl)
+        {
+            return new List<ActionSlotData>
             {
                 new ActionSlotData
                 {
@@ -89,17 +189,6 @@ namespace My.Map.Hunting
                     Interactable = canControl,
                 },
             };
-
-            RebuildOptions(options);
-            RefreshLayout();
-            SetOpen(true);
-        }
-
-        public void Close()
-        {
-            _target = null;
-            SetOpen(false);
-            ClearOptions();
         }
 
         // 轮盘打开时由输入层调用：点击菜单外区域则关闭并消耗本次点击。
@@ -110,13 +199,52 @@ namespace My.Map.Hunting
                 return false;
             }
 
-            if (IsPointerOverMenu(screenPos))
+            if (ContainsScreenPoint(screenPos))
             {
                 return true;
             }
 
-            Close();
+            HuntingModeManager.Instance?.ClearPinnedTarget();
             return true;
+        }
+
+        public bool ContainsScreenPoint(Vector2 screenPos, float paddingPx = 10f)
+        {
+            if (!IsOpen)
+            {
+                return false;
+            }
+
+            var pad = Vector4.one * paddingPx;
+
+            if (MenuRoot != null
+                && RectTransformUtility.RectangleContainsScreenPoint(MenuRoot, screenPos, _uiCam, pad))
+            {
+                return true;
+            }
+
+            if (ExecuteButton != null
+                && RectTransformUtility.RectangleContainsScreenPoint(
+                    ExecuteButton.transform as RectTransform, screenPos, _uiCam, pad))
+            {
+                return true;
+            }
+
+            foreach (var btn in _optionButtons)
+            {
+                if (btn == null)
+                {
+                    continue;
+                }
+
+                if (RectTransformUtility.RectangleContainsScreenPoint(
+                        btn.transform as RectTransform, screenPos, _uiCam, pad))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void RefreshLayoutIfOpen()
@@ -242,32 +370,6 @@ namespace My.Map.Hunting
             MenuRoot.localPosition = positionParent.InverseTransformPoint(worldOnCanvas);
         }
 
-        bool IsPointerOverMenu(Vector2 screenPos)
-        {
-            if (ExecuteButton != null
-                && RectTransformUtility.RectangleContainsScreenPoint(
-                    ExecuteButton.transform as RectTransform, screenPos, _uiCam))
-            {
-                return true;
-            }
-
-            foreach (var btn in _optionButtons)
-            {
-                if (btn == null)
-                {
-                    continue;
-                }
-
-                if (RectTransformUtility.RectangleContainsScreenPoint(
-                        btn.transform as RectTransform, screenPos, _uiCam))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         void SetOpen(bool open)
         {
             IsOpen = open;
@@ -288,12 +390,31 @@ namespace My.Map.Hunting
             {
                 if (btn != null)
                 {
-                    btn.onClick.RemoveAllListeners();
-                    Destroy(btn.gameObject);
+                    if (Application.isPlaying)
+                    {
+                        btn.onClick.RemoveAllListeners();
+                        Destroy(btn.gameObject);
+                    }
+#if UNITY_EDITOR
+                    else
+                    {
+                        DestroyImmediate(btn.gameObject);
+                    }
+#endif
                 }
             }
 
             _optionButtons.Clear();
         }
+
+#if UNITY_EDITOR
+        void OnValidate()
+        {
+            if (!Application.isPlaying && _editorPreviewActive)
+            {
+                RefreshEditorPreviewLayout();
+            }
+        }
+#endif
     }
 }

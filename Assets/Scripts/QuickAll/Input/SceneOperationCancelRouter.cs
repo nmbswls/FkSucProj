@@ -29,10 +29,10 @@ namespace My.Input
                 return true;
             }
 
-            var huntingRadial = HuntingHudPanel.Instance?.ActionRadial;
-            if (huntingRadial != null && huntingRadial.IsOpen)
+            var hunting = HuntingModeManager.Instance;
+            if (hunting != null && hunting.Active && hunting.HasPinnedTarget)
             {
-                huntingRadial.Close();
+                hunting.ClearPinnedTarget();
                 return true;
             }
 

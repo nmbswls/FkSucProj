@@ -7,26 +7,35 @@ using UnityEngine;
 namespace My.Map.Hunting
 {
     /// <summary>
-    /// 狩猎模式：按住 Ctrl 维持，松开退出；鼠标悬浮 NPC 详情与行动轮盘。
+    /// 狩猎模式：按住 Ctrl 维持，松开退出；hover 预览与 pin 锁定分轨。
     /// </summary>
     public class HuntingModeManager : MonoBehaviour
     {
         public const float HuntTimeScale = 0.1f;
         public const float ExecuteMaxDistance = 3f;
 
+        const string HuntHoverReason = "HuntHover";
+        const string HuntPinnedReason = "HuntPinned";
+
         public static HuntingModeManager Instance { get; private set; }
+
+        [SerializeField]
+        float pickRadiusPx = 64f;
 
         public bool Active { get; private set; }
 
         public SceneNpcPresenter HoverNpc => _hoverNpc;
 
-        private SceneNpcPresenter _hoverNpc;
-        private bool _blockReenterUntilHViewRelease;
-        private float _timeScaleBeforeHunt = 1f;
-        private Collider2D[] _rayHits = new Collider2D[8];
-        private int _mapTargetLayer = -1;
+        public SceneNpcPresenter PinnedNpc => _pinnedNpc;
 
-        private void Awake()
+        public bool HasPinnedTarget => _pinnedNpc != null;
+
+        SceneNpcPresenter _hoverNpc;
+        SceneNpcPresenter _pinnedNpc;
+        bool _blockReenterUntilHViewRelease;
+        float _timeScaleBeforeHunt = 1f;
+
+        void Awake()
         {
             if (Instance != null && Instance != this)
             {
@@ -35,10 +44,9 @@ namespace My.Map.Hunting
             }
 
             Instance = this;
-            _mapTargetLayer = LayerMask.NameToLayer("MapTarget");
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
             if (Instance == this)
             {
@@ -51,7 +59,7 @@ namespace My.Map.Hunting
             }
         }
 
-        private void Update()
+        void Update()
         {
             if (!Active)
             {
@@ -104,9 +112,7 @@ namespace My.Map.Hunting
             LogicTime.timeScale = HuntTimeScale;
 
             ApplyHunterVisuals(true);
-            _hoverNpc = null;
-            GetDetailView()?.Clear();
-            GetActionRadial()?.Close();
+            ClearAllTargets();
         }
 
         public void Exit()
@@ -124,27 +130,124 @@ namespace My.Map.Hunting
             _blockReenterUntilHViewRelease = false;
         }
 
-        private void ForceExitInternal()
+        public void ClearPinnedTarget()
         {
-            Active = false;
-            LogicTime.timeScale = _timeScaleBeforeHunt > 0f ? _timeScaleBeforeHunt : 1f;
-
-            ApplyHunterVisuals(false);
-            _hoverNpc = null;
-            GetDetailView()?.Clear();
-            GetActionRadial()?.Close();
-        }
-
-        private void ApplyHunterVisuals(bool on)
-        {
-            HuntingHudPanel.Instance?.SetHunterModeState(on);
-
-            if (SceneVolumnManager.Instance != null)
+            if (_pinnedNpc == null)
             {
-                SceneVolumnManager.Instance.EnterHuntingMode(on);
+                GetActionRadial()?.Close();
+                return;
             }
 
-            URPFeatureController.Instance?.SetHuntingDistortionEffect(on);
+            SetNpcHighlight(_pinnedNpc, false, HuntPinnedReason);
+            _pinnedNpc = null;
+            GetActionRadial()?.Close();
+            RefreshDetailAfterPinChange();
+        }
+
+        public bool TryToggleActionMenu()
+        {
+            if (!Active)
+            {
+                return false;
+            }
+
+            var radial = GetActionRadial();
+            if (radial != null && radial.IsOpen && _pinnedNpc != null)
+            {
+                var picked = PickNpcUnderCursor();
+                if (picked != null && picked == _pinnedNpc)
+                {
+                    ClearPinnedTarget();
+                    return true;
+                }
+
+                return false;
+            }
+
+            var target = PickNpcUnderCursor();
+            if (target == null)
+            {
+                if (HasPinnedTarget)
+                {
+                    ClearPinnedTarget();
+                    return true;
+                }
+
+                return false;
+            }
+
+            if (!IsValidHoverNpc(target))
+            {
+                return false;
+            }
+
+            if (radial == null)
+            {
+                return false;
+            }
+
+            PinTarget(target);
+            radial.Show(
+                _pinnedNpc,
+                CanExecuteTarget(_pinnedNpc),
+                CanControlTarget(_pinnedNpc));
+            return true;
+        }
+
+        public bool TryExecuteHoveredTarget()
+        {
+            if (!Active)
+            {
+                return false;
+            }
+
+            var target = _pinnedNpc != null ? _pinnedNpc : _hoverNpc;
+            if (target == null)
+            {
+                return false;
+            }
+
+            return TryExecuteTarget(target);
+        }
+
+        public bool TryExecuteTarget(SceneNpcPresenter target)
+        {
+            if (!CanExecuteTarget(target))
+            {
+                return false;
+            }
+
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (player == null)
+            {
+                return false;
+            }
+
+            player.ablilityManager.UseSkill("h_mode_execute", target: target.NpcEntity);
+
+            _blockReenterUntilHViewRelease = true;
+            ForceExitInternal();
+            return true;
+        }
+
+        public bool TryControlTarget(SceneNpcPresenter target)
+        {
+            if (!CanControlTarget(target))
+            {
+                return false;
+            }
+
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (player == null)
+            {
+                return false;
+            }
+
+            player.ablilityManager.UseSkill("h_mode_control", target: target.NpcEntity);
+
+            _blockReenterUntilHViewRelease = true;
+            ForceExitInternal();
+            return true;
         }
 
         public static bool IsValidHoverNpc(SceneNpcPresenter npc)
@@ -224,102 +327,95 @@ namespace My.Map.Hunting
             return npc.NpcEntity.CanAcceptDirectControl(My.Player.GamePlayerIds.Local);
         }
 
-        public bool TryOpenActionMenu()
+        void ForceExitInternal()
         {
-            if (!Active || _hoverNpc == null)
+            Active = false;
+            LogicTime.timeScale = _timeScaleBeforeHunt > 0f ? _timeScaleBeforeHunt : 1f;
+
+            ApplyHunterVisuals(false);
+            ClearAllTargets();
+        }
+
+        void ClearAllTargets()
+        {
+            ClearHoverHighlight();
+            if (_pinnedNpc != null)
             {
-                return false;
+                SetNpcHighlight(_pinnedNpc, false, HuntPinnedReason);
+                _pinnedNpc = null;
             }
 
-            if (!IsValidHoverNpc(_hoverNpc))
+            _hoverNpc = null;
+            GetDetailView()?.Clear();
+            GetActionRadial()?.Close();
+        }
+
+        void PinTarget(SceneNpcPresenter npc)
+        {
+            if (_pinnedNpc == npc)
             {
-                return false;
+                return;
             }
 
+            if (_pinnedNpc != null)
+            {
+                SetNpcHighlight(_pinnedNpc, false, HuntPinnedReason);
+            }
+
+            ClearHoverHighlight();
+            _hoverNpc = null;
+            _pinnedNpc = npc;
+            SetNpcHighlight(_pinnedNpc, true, HuntPinnedReason);
+
+            var detailView = GetDetailView();
+            if (detailView != null)
+            {
+                detailView.SetTarget(
+                    _pinnedNpc,
+                    HuntingNpcDetailView.EDetailMode.Pinned,
+                    CanExecuteTarget(_pinnedNpc),
+                    CanControlTarget(_pinnedNpc));
+            }
+        }
+
+        void TickHoverTarget()
+        {
             var radial = GetActionRadial();
-            if (radial == null)
+            bool menuOpen = radial != null && radial.IsOpen;
+
+            if (_pinnedNpc != null && menuOpen)
             {
-                return false;
+                RefreshPinnedPresentation();
+                return;
             }
 
-            radial.Show(
-                _hoverNpc,
-                CanExecuteTarget(_hoverNpc),
-                CanControlTarget(_hoverNpc));
-            return true;
-        }
-
-        public bool TryExecuteHoveredTarget()
-        {
-            if (!Active || _hoverNpc == null)
+            if (IsHuntingOperateUiBlockingHover(GetCursorScreenPos()))
             {
-                return false;
-            }
-
-            return TryExecuteTarget(_hoverNpc);
-        }
-
-        public bool TryExecuteTarget(SceneNpcPresenter target)
-        {
-            if (!CanExecuteTarget(target))
-            {
-                return false;
-            }
-
-            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
-            if (player == null)
-            {
-                return false;
-            }
-
-            player.ablilityManager.UseSkill("h_mode_execute", target: target.NpcEntity);
-
-            _blockReenterUntilHViewRelease = true;
-            ForceExitInternal();
-            return true;
-        }
-
-        public bool TryControlTarget(SceneNpcPresenter target)
-        {
-            if (!CanControlTarget(target))
-            {
-                return false;
-            }
-
-            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
-            if (player == null)
-            {
-                return false;
-            }
-
-            player.ablilityManager.UseSkill("h_mode_control", target: target.NpcEntity);
-
-            _blockReenterUntilHViewRelease = true;
-            ForceExitInternal();
-            return true;
-        }
-
-        private void TickHoverTarget()
-        {
-            var next = RaycastNpcUnderMouse();
-            if (next == _hoverNpc)
-            {
-                var view = GetDetailView();
                 if (_hoverNpc != null)
                 {
+                    var view = GetDetailView();
                     view?.RefreshLayout();
-                    GetActionRadial()?.RefreshLayoutIfOpen();
                 }
-                else
+
+                radial?.RefreshLayoutIfOpen();
+                return;
+            }
+
+            var next = PickNpcUnderCursor();
+            if (next == _hoverNpc)
+            {
+                if (_hoverNpc != null)
                 {
-                    view?.Clear();
+                    GetDetailView()?.RefreshLayout();
+                    radial?.RefreshLayoutIfOpen();
                 }
 
                 return;
             }
 
+            var prev = _hoverNpc;
             _hoverNpc = next;
-            GetActionRadial()?.Close();
+            ApplyHoverHighlight(prev, _hoverNpc);
 
             var detailView = GetDetailView();
             if (_hoverNpc == null)
@@ -328,49 +424,153 @@ namespace My.Map.Hunting
             }
             else
             {
-                bool canExecute = CanExecuteTarget(_hoverNpc);
-                bool canControl = CanControlTarget(_hoverNpc);
-                detailView?.SetTarget(_hoverNpc, canExecute, canControl);
+                detailView?.SetTarget(
+                    _hoverNpc,
+                    HuntingNpcDetailView.EDetailMode.Preview,
+                    CanExecuteTarget(_hoverNpc),
+                    CanControlTarget(_hoverNpc));
             }
         }
 
-        private SceneNpcPresenter RaycastNpcUnderMouse()
+        void RefreshPinnedPresentation()
+        {
+            if (_pinnedNpc == null || !IsValidHoverNpc(_pinnedNpc))
+            {
+                ClearPinnedTarget();
+                return;
+            }
+
+            var detailView = GetDetailView();
+            detailView?.SetTarget(
+                _pinnedNpc,
+                HuntingNpcDetailView.EDetailMode.Pinned,
+                CanExecuteTarget(_pinnedNpc),
+                CanControlTarget(_pinnedNpc));
+            detailView?.RefreshLayout();
+            GetActionRadial()?.RefreshLayoutIfOpen();
+        }
+
+        void RefreshDetailAfterPinChange()
+        {
+            var detailView = GetDetailView();
+            if (_hoverNpc != null)
+            {
+                detailView?.SetTarget(
+                    _hoverNpc,
+                    HuntingNpcDetailView.EDetailMode.Preview,
+                    CanExecuteTarget(_hoverNpc),
+                    CanControlTarget(_hoverNpc));
+            }
+            else
+            {
+                detailView?.Clear();
+            }
+        }
+
+        void ApplyHoverHighlight(SceneNpcPresenter prev, SceneNpcPresenter next)
+        {
+            if (prev != null && prev != _pinnedNpc)
+            {
+                SetNpcHighlight(prev, false, HuntHoverReason);
+            }
+
+            if (next != null && next != _pinnedNpc)
+            {
+                SetNpcHighlight(next, true, HuntHoverReason);
+            }
+        }
+
+        void ClearHoverHighlight()
+        {
+            if (_hoverNpc != null && _hoverNpc != _pinnedNpc)
+            {
+                SetNpcHighlight(_hoverNpc, false, HuntHoverReason);
+            }
+        }
+
+        static void SetNpcHighlight(SceneNpcPresenter npc, bool on, string reason)
+        {
+            npc?.highlightCtrl?.SetHighlightStatus(on, reason);
+        }
+
+        bool IsHuntingOperateUiBlockingHover(Vector2 screenPos)
+        {
+            var radial = GetActionRadial();
+            if (radial != null && radial.IsOpen && radial.ContainsScreenPoint(screenPos))
+            {
+                return true;
+            }
+
+            var detail = GetDetailView();
+            if (detail != null && detail.IsPinnedVisible && detail.ContainsScreenPoint(screenPos))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        Vector2 GetCursorScreenPos()
         {
             var binder = MainGameManager.Instance?.inputBinder;
-            var cam = Camera.main;
-            if (binder == null || cam == null || _mapTargetLayer < 0)
+            return binder != null ? binder.LastPos : (Vector2)UnityEngine.Input.mousePosition;
+        }
+
+        SceneNpcPresenter PickNpcUnderCursor()
+        {
+            if (IsHuntingOperateUiBlockingHover(GetCursorScreenPos()))
             {
                 return null;
             }
 
-            var playerPresenter = MainGameManager.Instance.playerScenePresenter;
-            float z = playerPresenter != null ? playerPresenter.transform.position.z : 0f;
-            Vector3 screen = binder.LastPos;
-            screen.z = Mathf.Abs(cam.transform.position.z - z);
-            Vector2 world = cam.ScreenToWorldPoint(screen);
-
-            int count = Physics2D.OverlapPointNonAlloc(world, _rayHits, 1 << _mapTargetLayer);
-            SceneNpcPresenter best = null;
-            float bestDist = float.MaxValue;
-
-            for (int i = 0; i < count; i++)
+            var binder = MainGameManager.Instance?.inputBinder;
+            var cam = Camera.main;
+            var aoi = SceneAOIManager.Instance;
+            if (binder == null || cam == null || aoi == null)
             {
-                var col = _rayHits[i];
-                if (col == null)
+                return null;
+            }
+
+            Vector2 mouseScreen = binder.LastPos;
+            SceneNpcPresenter best = null;
+            float bestScreenDist = float.MaxValue;
+            float bestWorldDist = float.MaxValue;
+
+            foreach (var presentation in aoi.GetAllActivePresentation())
+            {
+                if (presentation is not SceneNpcPresenter npc)
                 {
                     continue;
                 }
 
-                var npc = col.GetComponentInParent<SceneNpcPresenter>();
                 if (!IsValidHoverNpc(npc))
                 {
                     continue;
                 }
 
-                float d = Vector2.SqrMagnitude((Vector2)col.transform.position - world);
-                if (d < bestDist)
+                Vector3 anchor = npc.GetHintAnchorPosition();
+                Vector3 screenPos3 = cam.WorldToScreenPoint(anchor);
+                if (screenPos3.z <= 0f)
                 {
-                    bestDist = d;
+                    continue;
+                }
+
+                var screenPos = new Vector2(screenPos3.x, screenPos3.y);
+                float screenDist = Vector2.Distance(screenPos, mouseScreen);
+                if (screenDist > pickRadiusPx)
+                {
+                    continue;
+                }
+
+                float worldDist = Vector2.Distance(
+                    new Vector2(anchor.x, anchor.y),
+                    cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, screenPos3.z)));
+
+                if (screenDist < bestScreenDist
+                    || (Mathf.Approximately(screenDist, bestScreenDist) && worldDist < bestWorldDist))
+                {
+                    bestScreenDist = screenDist;
+                    bestWorldDist = worldDist;
                     best = npc;
                 }
             }
@@ -378,14 +578,26 @@ namespace My.Map.Hunting
             return best;
         }
 
-        private HuntingNpcDetailView GetDetailView()
+        void ApplyHunterVisuals(bool on)
+        {
+            HuntingHudPanel.Instance?.SetHunterModeState(on);
+
+            if (SceneVolumnManager.Instance != null)
+            {
+                SceneVolumnManager.Instance.EnterHuntingMode(on);
+            }
+
+            URPFeatureController.Instance?.SetHuntingDistortionEffect(on);
+        }
+
+        HuntingNpcDetailView GetDetailView()
         {
             return HuntingHudPanel.Instance != null
                 ? HuntingHudPanel.Instance.NpcDetail
                 : null;
         }
 
-        private HuntingNpcActionRadialMenu GetActionRadial()
+        HuntingNpcActionRadialMenu GetActionRadial()
         {
             return HuntingHudPanel.Instance != null
                 ? HuntingHudPanel.Instance.ActionRadial

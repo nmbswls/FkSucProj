@@ -964,7 +964,7 @@ namespace My.Input
             }
 
             var hunting = My.Map.Hunting.HuntingModeManager.Instance;
-            if (hunting != null && hunting.Active && hunting.TryOpenActionMenu())
+            if (hunting != null && hunting.Active && hunting.TryToggleActionMenu())
             {
                 return;
             }

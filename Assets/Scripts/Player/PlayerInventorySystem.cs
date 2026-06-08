@@ -710,6 +710,17 @@ namespace My.Player.Bag
                 return amount;
             }
 
+            PlayerBag targetBag = null;
+            if (itemConf.ItemType == EItemType.MindFacet)
+            {
+                targetBag = GetBagById((int)EPlayerBagId.Mind);
+            }
+            else
+            {
+                targetBag = GetBagById(0);
+            }
+
+            
             if (itemConf.IsAutoUse)
             {
                 var useRow = ItemCatalog.GetPrimaryUse(itemId);
@@ -720,12 +731,7 @@ namespace My.Player.Bag
 
                 return amount;
             }
-
-            var bag = GetBagById(0);
-            if (bag == null)
-            {
-                return 0;
-            }
+            
 
             if (ItemCatalog.IsInstanceType(itemConf.ItemType))
             {
@@ -745,7 +751,7 @@ namespace My.Player.Bag
                         break;
                     }
 
-                    if (!bag.TryPlaceStackWithoutMerge(stack))
+                    if (!targetBag.TryPlaceStackWithoutMerge(stack))
                     {
                         break;
                     }
@@ -761,7 +767,7 @@ namespace My.Player.Bag
                 return total;
             }
 
-            var put = bag.TryGiveItem(itemId, amount);
+            var put = targetBag.TryGiveItem(itemId, amount);
 
             EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, put);
 
@@ -838,6 +844,11 @@ namespace My.Player.Bag
             {
                 return MainBag;
             }
+            if(bagId == (int)EPlayerBagId.Mind)
+            {
+                return MindFacetBag;
+            }
+
             if (bagId == (int)EPlayerBagId.Storage)
             {
                 return WarehouseBag;

@@ -13,6 +13,19 @@ namespace My.Map.Entity
             {
                 _library = new();
 
+                _library["b_lamp_extra_vision"] = new BuffDefinition()
+                {
+                    BuffId = "b_lamp_extra_vision",
+
+                    Desc = "灯的视野",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new() { new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.UnitVisionRangeMul, ModifierValue = 2000 } },
+                    DefaultDuration = -1,
+
+                    Icon = "b_lamp_extra_vision",
+                };
+                
+
                 _library["player_expose_charm"] = new BuffDefinition()
                 {
                     BuffId = "player_expose_charm",

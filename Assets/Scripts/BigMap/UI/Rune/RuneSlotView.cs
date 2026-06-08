@@ -155,7 +155,7 @@ namespace My.UI.Rune
             Sprite sprite = null;
             if (def != null && !string.IsNullOrEmpty(def.Icon))
             {
-                sprite = SimpleResManager.Load<Sprite>(def.Icon);
+                sprite = SimpleResManager.Load<Sprite>($"Sprites/Runne/{def.Icon}");
             }
 
             if (Icon != null)
