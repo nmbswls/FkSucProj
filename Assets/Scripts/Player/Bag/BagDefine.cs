@@ -622,8 +622,8 @@ namespace My.Player
         Default,
         Secret = 1,
         Pet = 2,
-
-        Mind,
+        Mind = 3,
+        Important = 4,
         Storage = 100,
     }
 }

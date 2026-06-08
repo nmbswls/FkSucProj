@@ -1,43 +1,21 @@
 using Cinemachine;
-using DamageNumbersPro;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
-using Map.Scene.UI;
-using My;
-using My.Config;
-using My.Dialog;
-using My.Encounter;
-using My.Input;
 using My.Map;
-using My.Map.Encounter;
 using My.Map.Entity;
-using My.Map.Entity.AI;
-using My.Map.Fight;
 using My.Map.Hunting;
 using My.Map.Logic;
+using My.Input;
 using My.Map.Scene;
-using My.Dungeon;
-using My.MapExport;
-using My.Map.View;
-using My.Map.SmallGame.Zha;
-using My.MiniGame;
-using My.Player.Bag;
 using My.Saving;
 using My.UI;
-using Newtonsoft.Json;
-using SuperScrollView;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-
 
 namespace My
 {
@@ -59,10 +37,9 @@ namespace My
         [Header("层")]
         public Transform SceneEffectLayer;
 
-        // 后场氛围影怪专用父节点（可为空，运行时自动挂在 MainGameManager 下创建）
         public Transform AmbientSpiritLayer;
 
-        private AmbientSpiritVisualManager _ambientSpiritVisuals;
+        AmbientSpiritVisualManager _ambientSpiritVisuals;
 
         public PlayerScenePresenter playerScenePresenter { get; set; }
 
@@ -73,7 +50,6 @@ namespace My
         public DefaultSceneVisionSenser2D VisionSenser2D;
 
         public WorldAreaManager WorldAreaManager;
-
 
         public MapSceneFadeAlphaManager SceneFadeManager;
 
@@ -88,7 +64,6 @@ namespace My
 
         public MapSceneDropManager sceneDropManager;
 
-
         public MapFovMeshGenerator FovGenerator;
 
         public LogicTimeManager TimerManager;
@@ -100,190 +75,6 @@ namespace My
         public CameraFollow CameraCtrl;
         public CinemachineVirtualCamera MainMapVCam;
         public CinemachineBrain CineBrain;
-        [FormerlySerializedAs("MapCameraBoundsExtension")]
-        [SerializeField] MapCameraBoundsExtension mapBoundsExtension;
-
-        MapCameraBoundsController _mapCameraBounds;
-
-        public void ClearMapCameraBounds()
-        {
-            _mapCameraBounds?.Clear();
-        }
-
-        public void ApplyMapCameraBounds()
-        {
-            if (_mapCameraBounds == null || !_mapCameraBounds.IsReady)
-            {
-                return;
-            }
-
-            var overlay = gameLogicManager?.AreaManager?.cacheMapOverlayCfg;
-            if (overlay == null || overlay.IsSecretBase)
-            {
-                _mapCameraBounds.Clear();
-                return;
-            }
-
-            if (TryResolveMapCameraBounds(out var rect))
-            {
-                _mapCameraBounds.Apply(rect);
-            }
-            else
-            {
-                _mapCameraBounds.Clear();
-            }
-        }
-
-        void ResolveMapCameraBoundsExtension()
-        {
-            if (mapBoundsExtension != null)
-            {
-                return;
-            }
-
-            if (MainMapVCam != null)
-            {
-                mapBoundsExtension = MainMapVCam.GetComponent<MapCameraBoundsExtension>()
-                    ?? MainMapVCam.GetComponentInChildren<MapCameraBoundsExtension>(true);
-            }
-
-            if (mapBoundsExtension == null)
-            {
-                mapBoundsExtension = FindObjectOfType<MapCameraBoundsExtension>(true);
-            }
-
-            if (mapBoundsExtension == null)
-            {
-                if (MainMapVCam == null)
-                {
-                    Debug.LogError("[MainGameManager] MainMapVCam is not assigned on GameMain.");
-                }
-                else
-                {
-                    Debug.LogError(
-                        "[MainGameManager] MapCameraBoundsExtension must be attached to MainMapVCam in Main_Root.");
-                }
-
-                return;
-            }
-
-            if (MainMapVCam != null && mapBoundsExtension.gameObject != MainMapVCam.gameObject)
-            {
-                Debug.LogWarning(
-                    "[MainGameManager] MapCameraBoundsExtension should be on the same GameObject as MainMapVCam.");
-            }
-
-            var legacyConfiner = mapBoundsExtension.GetComponent<CinemachineConfiner2D>();
-            if (legacyConfiner != null)
-            {
-                legacyConfiner.enabled = false;
-            }
-        }
-
-        bool TryResolveMapCameraBounds(out Rect rect)
-        {
-            rect = default;
-
-            var worldRoot = WorldAreaManager != null ? WorldAreaManager.currentRoot : null;
-            var chunkDb = gameLogicManager?.AreaManager?.cacheChunkDatabase;
-            var overlay = gameLogicManager?.AreaManager?.cacheMapOverlayCfg;
-
-            if (worldRoot != null && worldRoot.HasLogicWorldRectOverride)
-            {
-                rect = worldRoot.LogicWorldRectOverride;
-                return true;
-            }
-
-            if (chunkDb != null)
-            {
-                rect = chunkDb.ResolveLogicWorldRect();
-                if (rect.width > 0f && rect.height > 0f)
-                {
-                    return true;
-                }
-            }
-
-            if (overlay != null && DungeonPresentation.IsProceduralOverlay(overlay))
-            {
-                return TryResolveDungeonCameraBounds(overlay.Id, worldRoot, out rect);
-            }
-
-            return false;
-        }
-
-        static bool TryResolveDungeonCameraBounds(string overlayId, WorldAreaRoot worldRoot, out Rect rect)
-        {
-            rect = default;
-
-            var result = DungeonSession.GetLastResult(overlayId);
-            var grid = worldRoot != null ? worldRoot.Grid : null;
-            if (result?.WalkableCells == null || result.WalkableCells.Count == 0 || grid == null)
-            {
-                return false;
-            }
-
-            int minX = int.MaxValue;
-            int minY = int.MaxValue;
-            int maxX = int.MinValue;
-            int maxY = int.MinValue;
-            foreach (var cell in result.WalkableCells)
-            {
-                minX = Mathf.Min(minX, cell.x);
-                minY = Mathf.Min(minY, cell.y);
-                maxX = Mathf.Max(maxX, cell.x);
-                maxY = Mathf.Max(maxY, cell.y);
-            }
-
-            if (minX == int.MaxValue)
-            {
-                return false;
-            }
-
-            var cellSize = grid.cellSize;
-            var halfCell = new Vector3(cellSize.x * 0.5f, cellSize.y * 0.5f, 0f);
-            var sw = grid.GetCellCenterWorld(new Vector3Int(minX, minY, 0)) - halfCell;
-            var ne = grid.GetCellCenterWorld(new Vector3Int(maxX, maxY, 0)) + halfCell;
-            rect = Rect.MinMaxRect(sw.x, sw.y, ne.x, ne.y);
-            return rect.width > 0f && rect.height > 0f;
-        }
-
-        // 大地图玩家表现就绪后绑定 vcam.Follow（据点内不绑定）
-        public void ClearMapVcamBinding()
-        {
-            if (MainMapVCam == null)
-            {
-                return;
-            }
-
-            MainMapVCam.Follow = null;
-            MainMapVCam.LookAt = null;
-            MainMapVCam.PreviousStateIsValid = false;
-        }
-
-        public void EnsureOpenWorldVcamFollow()
-        {
-            var overlay = gameLogicManager?.AreaManager?.cacheMapOverlayCfg;
-            if (overlay != null && overlay.IsSecretBase)
-            {
-                return;
-            }
-
-            if (playerScenePresenter == null || MainMapVCam == null)
-            {
-                return;
-            }
-
-            var follow = playerScenePresenter.ViewPoint != null
-                ? playerScenePresenter.ViewPoint
-                : playerScenePresenter.transform;
-
-            if (MainMapVCam.Follow != follow)
-            {
-                MainMapVCam.Follow = follow;
-                MainMapVCam.LookAt = null;
-                MainMapVCam.PreviousStateIsValid = false;
-            }
-        }
 
         public UnityNavProvider NavProvider;
 
@@ -295,8 +86,9 @@ namespace My
         public SceneGroundLiquidChunkFieldManager LiquidChunkFieldManager;
         public SceneGroundMistStrampManager MistStrampManager;
 
+        public Transform DynamicRoot;
 
-        private void Awake()
+        void Awake()
         {
             Instance = this;
 
@@ -316,8 +108,7 @@ namespace My
                 huntingModeManager = gameObject.AddComponent<HuntingModeManager>();
             }
 
-            ResolveMapCameraBoundsExtension();
-            _mapCameraBounds = new MapCameraBoundsController(mapBoundsExtension);
+            InitCameraSystems();
 
             NavProvider = new();
 
@@ -331,11 +122,9 @@ namespace My
 
             EnsureAmbientSpiritLayer();
             _ambientSpiritVisuals = new AmbientSpiritVisualManager(gameLogicManager, AmbientSpiritLayer);
-
-            //Cursor.lockState = CursorLockMode.Confined;
         }
 
-        private void EnsureAmbientSpiritLayer()
+        void EnsureAmbientSpiritLayer()
         {
             if (AmbientSpiritLayer != null)
             {
@@ -348,7 +137,7 @@ namespace My
             AmbientSpiritLayer = go.transform;
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
             if (gameLogicManager != null)
             {
@@ -358,9 +147,10 @@ namespace My
             }
 
             OnHardAreaClearStarting();
+            EndCameraOverrideImmediate();
         }
 
-        public async Task<bool> InitStartGame(string startParams, Action? onComplete, GameStartSaveSource saveSource)
+        public async Task<bool> InitStartGame(string startParams, Action onComplete, GameStartSaveSource saveSource)
         {
             if (gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
             {
@@ -407,7 +197,6 @@ namespace My
             LiquidChunkFieldManager?.RegisterEvents();
             MistStrampManager?.RegisterEvents();
 
-
             gameLogicManager.projectileHolder.EventOnLogicProjectileSpawn += (pInfo) =>
             {
                 MapProjectileManager.Instance.Spawn(pInfo);
@@ -427,13 +216,10 @@ namespace My
             return true;
         }
 
-
-
         void Update()
         {
-            if(gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
+            if (gameLogicManager.MainStage != GameLogicManager.EMainGameStage.UnInitialized)
             {
-                var a = Time.deltaTime;
                 gameLogicManager.Tick(LogicTime.deltaTime);
                 _ambientSpiritVisuals?.Tick(LogicTime.deltaTime);
             }
@@ -443,23 +229,13 @@ namespace My
                 interactSystem.Tick(Time.deltaTime);
             }
 
+            TryRefreshCameraShowStatus();
 
-
-            //if (playerScenePresenter == null || !playerScenePresenter.IsInBusyZone)
-            //{
-            //    RumorTextSpawner.IsActive = false;
-            //}
-            //else
-            //{
-            //    RumorTextSpawner.IsActive = true;
-            //}
             RumorTextSpawner.IsActive = false;
-
-            
 
             if (playerScenePresenter != null)
             {
-                var glm = MainGameManager.Instance.gameLogicManager;
+                var glm = Instance.gameLogicManager;
                 var mapCfg = glm?.AreaManager?.cacheMapOverlayCfg;
                 if (glm != null && mapCfg != null && mapCfg.IsCivilArea
                     && !glm.PlayerHumanMode
@@ -476,15 +252,15 @@ namespace My
             }
         }
 
-
-
-
         public bool IsMouseOnUIOrBlock()
         {
-            if (EventSystem.current.IsPointerOverGameObject()) return true;
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return true;
+            }
+
             return false;
         }
-
 
         public Vector3 GetWorldPosFromLogicPos(Vector2 pos)
         {
@@ -496,16 +272,10 @@ namespace My
             return MapLogicPosition.LogicToWorld(entity);
         }
 
-        /// <summary>
-        /// todo 需要根据房间裁剪等方式 转换为逻辑坐标 空间可能是重叠的
-        /// </summary>
         public Vector2 GetLogicPosFromWorldPos(Vector3 worldPos)
         {
             return MapLogicPosition.WorldToLogicPos(worldPos);
         }
-
-
-        
 
         public void OnLogicEntitySpawned(ILogicEntity entity)
         {
@@ -516,8 +286,6 @@ namespace My
         {
             SceneAOIManager.Instance.UnregisterEntity(entity);
         }
-
-        public Transform DynamicRoot;
 
         public Transform GetDynamicRoot()
         {
@@ -530,515 +298,11 @@ namespace My
             return areaRoot != null ? areaRoot.StaticPrefabRoot : null;
         }
 
-        /// <summary>
-        /// 显示进度条
-        /// </summary>
-        /// <param name="hintText"></param>
-        /// <param name="progressTime"></param>
-        public long ShowBottomProgress(string hintText, float progressTime)
-        {
-            return OverworldHUDPanel.Instance?.ShowBottomProgress(hintText, progressTime) ?? 0;
-        }
-
-        public void TryCancelButtomProgress(long showId)
-        {
-            OverworldHUDPanel.Instance?.TryCancelProgressComplete(showId);
-        }
-
-        public void ShowFakeFxEffect(string hintText, Vector2 logicPos)
-        {
-            var worldPos = MainGameManager.Instance.GetWorldPosFromLogicPos(logicPos);
-            FakeHintTextManager.ShowWorld(hintText, worldPos);
-        }
-
-        public void ShowSceneFxEffect(string effectName, Vector2 pos, Vector2 dir)
-        {
-            var worldPos = MainGameManager.Instance.GetWorldPosFromLogicPos(pos);
-
-            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(worldPos, 1, effectName, null, dir: dir);
-            if (fxCtx == null)
-            {
-                Debug.LogError("ShowSceneFxEffect faaa " + effectName);
-                return;
-            }
-        }
-
-
-        public void ShowNoiseEffect(float intensity, Vector2 logicPos)
-        {
-            var worldPos = GetWorldPosFromLogicPos(logicPos);
-
-            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(worldPos, 1, "ChamEffect", null);
-            if (fxCtx == null)
-            {
-                return;
-            }
-
-            var ring = fxCtx.EffectGo.GetComponent<MapNoiseRing>();
-            //ring.transform.position = worldPos;
-            ring.gameObject.SetActive(true);
-            ring.Play(Mathf.Clamp01(intensity), worldPos);
-            //ring.autoDestroy = false;
-        }
-
-        public void ShowClickkkWindow(string windowType, Vector2 showPos, float duration)
-        {
-            ShowClickkkUI.Instance.OpenClickkkHint(windowType, showPos, duration);
-        }
-
-        public void CloseClickkkWindow(string windowType, bool isInterrupt)
-        {
-            ShowClickkkUI.Instance.CloseClickkkWindow(windowType, isInterrupt);
-        }
-
-        public void ShowHTangleCloseupWindow(long srcEntityId)
-        {
-            PauseCloseupHTangleWindow.Show(srcEntityId);
-        }
-
-        public void ShowKaiYouCloseupWindow(long srcEntityId, string showName, float duration)
-        {
-            PauseCloseupKaiYouWindow.Show(srcEntityId, showName, duration);
-        }
-
-        public void ShowGcCloseupWindow(string showName, float duration)
-        {
-            PauseCloseupWindow.Show(showName, duration);
-        }
-
-
-        public void DoDeepZhaquSmallGame(long targetUnitId, object extraParam)
-        {
-            LogicTime.ReleasePause("deep");
-
-            var retPanel = UIManager.Instance.ShowPanel("DeepZhaQuMiniGame") as DeepZhaQuMiniGamePanel;
-            if (retPanel != null)
-            {
-                retPanel.InitializeGame(targetUnitId, 0.2f, 4f);
-            }
-        }
-
-        public void OnSmallGameFinish(long targetUnitId, bool success, object resultInfo)
-        {
-            LogicTime.ReleasePause("deep");
-            if (success)
-            {
-                Debug.Log("OnSmallGameFinish " + targetUnitId + " success.");
-
-                var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(targetUnitId);
-                if (entity != null && entity is BaseUnitLogicEntity unitEntity)
-                {
-                    unitEntity.ApplyResourceChange(AttrIdConsts.DeepZhaChance, -1, true, FightStruct.EDmgFlag.None, null);
-                    gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(0.3f, 0.3f), true, unitEntity.Pos);
-                    gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.3f, 0.1f), true, unitEntity.Pos);
-                    gameLogicManager.globalDropCollection.CreateDrop("jinghua", 3, unitEntity.Pos + new Vector2(-0.1f, 0.6f), true, unitEntity.Pos);
-
-                    if (UnityEngine.Random.Range(0, 10000) < 2000)
-                    {
-                        Debug.Log("OnSmallGameFinish deep zha create dig.");
-                        gameLogicManager.AreaManager.CreateOneDig(entity.Pos, "dig_01", 100);
-                    }
-                }
-            }
-            else
-            {
-
-            }
-
-            UIManager.Instance.HidePanel("DeepZhaQuMiniGame");
-        }
-
-        private bool isSwitchingEncounter = false;
-
-        public void EnterEncounter(int battleId, string battleReason, bool isDefeatMode = false)
-        {
-            if (isSwitchingEncounter)
-            {
-                return;
-            }
-
-            isSwitchingEncounter = false;
-
-            _ = InnerEnterEncounter(battleId, battleReason, isDefeatMode).ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
-                }
-            }, TaskScheduler.FromCurrentSynchronizationContext()); ;
-        }
-
-        public void QuitEncounter()
-        {
-            if (isSwitchingEncounter)
-            {
-                return;
-            }
-
-
-            isSwitchingEncounter = true;
-            _ = InnerQuitEncounter().ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
-                }
-                isSwitchingEncounter = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext()); ;
-        }
-
-        /// <summary>
-        /// 尝试返回秘密据点
-        /// </summary>
-        public void QuitToSecretBase()
-        {
-            if (isSwitchingEncounter)
-            {
-                return;
-            }
-
-            isSwitchingEncounter = true;
-            _ = InnerQuitEncounterAfterAbandon().ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
-                }
-                isSwitchingEncounter = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-        }
-
-
-        protected async Task InnerEnterEncounter(int battleId, string battleReason, bool isDefeatMode = false)
-        {
-            UIManager.Instance.ShowLoading("good");
-
-            LogicTime.RequestPause("encounter");
-
-            await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
-
-            EncounterBattleService.BattleContext ctx = new();
-
-
-            ctx.BattleId = battleId;
-            ctx.BattleReason = battleReason;
-            ctx.IsDefeatMode = isDefeatMode;
-
-            await EncounterBattleLoader.LoadBattleAsync(ctx);
-            UIManager.Instance.FadeHideBlack(1.5f);
-
-            UIManager.Instance.HideLoading();
-        }
-
-        protected async Task InnerQuitEncounter()
-        {
-            UIManager.Instance.ShowLoading("good");
-
-
-            await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
-
-            await EncounterBattleLoader.UnloadBattleAsync();
-
-            LogicTime.ReleasePause("encounter");
-
-            UIManager.Instance.HideLoading();
-
-            gameLogicManager.OnBattleEnd(EncounterBattleService.Instance.LastResult);
-        }
-
-        protected async Task InnerQuitEncounterAfterAbandon()
-        {
-            UIManager.Instance.ShowLoading("good");
-
-            await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
-
-            await EncounterBattleLoader.UnloadBattleAsync();
-
-            LogicTime.ReleasePause("encounter");
-
-            UIManager.Instance.HideLoading();
-
-            gameLogicManager.AbandonToSecretBase();
-        }
-
-        public int ShowRangeWarnEffect(FightStruct.Shape shape, Vector2 centerPos, Vector2 dir, float duration, Vector2 offset)
-        {
-            switch (shape.Type)
-            {
-                case FightStruct.EShapeType.Circle:
-                    {
-                        return SceneRangeWarnManager.ShowSceneWarnRangeCircle(centerPos, dir, shape.Radius, duration, offset);
-                    }
-                    break;
-                case FightStruct.EShapeType.Square:
-                    {
-                        return SceneRangeWarnManager.ShowSceneWarnRangeRect(centerPos, dir, shape.Width, shape.Length, duration, offset);
-                    }
-                    break;
-            }
-            return 0;
-        }
-
-
-        public void UpdateRangeWarnEffect(int eId, Vector2 pos, Vector2 dir)
-        {
-            SceneRangeWarnManager.UpdateSceneWarnRangeRect(eId, pos, dir);
-        }
-
-        public int ShowProgressSceneEffect(string effectName, Vector2 pos, long bindingUnitId)
-        {
-            var fxCtx = MapSceneEffectManager.Instance.ShowSceneEffect(pos, -1f, effectName, bindingUnitId);
-            return fxCtx != null ? fxCtx.UniqId : 0;
-        }
-
-        public void UpdateSceneEffectProgress(int effectId, float progress01)
-        {
-            MapSceneEffectManager.Instance.SetEffectProgress(effectId, progress01);
-        }
-
-        public void DestroySceneFxEffect(int effectId)
-        {
-            MapSceneEffectManager.Instance.ForceDestroy(effectId);
-        }
-
-
-        /// <summary>
-        /// 特殊移动
-        /// </summary>
-        /// <param name="targetPos"></param>
-        /// <param name="fromPos"></param>
-        /// <param name="duration"></param>
-        public void DoPlayerSpecialMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onCompelete = null)
-        {
-            if (playerScenePresenter != null)
-            {
-                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(fromPos, duration + 1f, "PlayerSpecialMove", null);
-
-                var effectGo = ctx.EffectGo.GetComponent<PlayerGhostMoveFxCtrl>();
-                effectGo.playerSR = playerScenePresenter.transform.Find("view").Find("agent").GetComponentInChildren<SpriteRenderer>();
-                effectGo.PlayMoveFx(playerScenePresenter.transform, targetPos, () => { onCompelete?.Invoke(); }, () => { });
-            }
-        }
-
-        public void DoPlayerPresentationMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onReach = null)
-        {
-            if (playerScenePresenter == null)
-            {
-                onReach?.Invoke();
-                return;
-            }
-
-            var targetWorld = GetWorldPosFromLogicPos(targetPos);
-            playerScenePresenter.PlayPresentationMove(targetWorld, duration, onReach);
-        }
-
-        public void DoPlayerVineClimbMove(
-            Vector2 entryLogicPos,
-            Vector2 endLogicPos,
-            Vector2 landLogicPos,
-            float entryDuration,
-            float climbDuration,
-            float pauseDuration,
-            float jumpDuration,
-            Action onComplete = null)
-        {
-            if (playerScenePresenter == null)
-            {
-                onComplete?.Invoke();
-                return;
-            }
-
-            var entryWorld = GetWorldPosFromLogicPos(entryLogicPos);
-            var endWorld = GetWorldPosFromLogicPos(endLogicPos);
-            var landWorld = GetWorldPosFromLogicPos(landLogicPos);
-            playerScenePresenter.PlayVineClimbMove(
-                entryWorld,
-                endWorld,
-                landWorld,
-                entryDuration,
-                climbDuration,
-                pauseDuration,
-                jumpDuration,
-                onComplete);
-        }
-
-        /// <summary>
-        /// 等待击败战斗
-        /// </summary>
-        public void WaitingIntoDefeatedBattle()
-        {
-            _ = AsyncPrepareDefeatedBattle().ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
-                }
-                isSwitchingEncounter = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext()); ;
-        }
-
-        protected async Task AsyncPrepareDefeatedBattle()
-        {
-            await Task.Delay(5000);
-
-            PlayDialog("defeated_01");
-        }
-
-        // --- 保存流程：主线程采集，字段与 SaveData 注释一致 ---
-        SaveData BuildRuntimeSaveSnapshot()
-        {
-            var data = new SaveData();
-            data.Meta.SaveTime = System.DateTime.Now.ToString("o");
-            data.Meta.Version = Application.version;
-
-            // 占位：待与真实养成/战斗数值对接
-            // data.PlayerData.Level = ...
-
-            if (gameLogicManager?.AreaManager != null &&
-                !string.IsNullOrEmpty(gameLogicManager.AreaManager.AreaOverlayId))
-            {
-                data.CurrentMapId = gameLogicManager.AreaManager.AreaOverlayId;
-            }
-
-            if (gameLogicManager?.playerLogicEntity != null)
-            {
-                data.CurrentPos = gameLogicManager.playerLogicEntity.Pos;
-            }
-
-            gameLogicManager?.AppendRuntimePersistenceToSaveData(data);
-
-            SaveData.EnsureHydrated(data);
-
-            return data;
-        }
-
-        public async Task OnSaveClicked()
-        {
-            if (SaveSystem.IsBusy) return;
-
-            SaveData dataToSave = BuildRuntimeSaveSnapshot();
-            await SaveSystem.SaveAsync(SaveSystem.DefaultSaveFileName, dataToSave);
-
-            Debug.Log("UI: save flow finished");
-        }
-
-
-
-        public bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, System.Action onDialogEnd = null)
-        {
-
-            var dialogMetaInfo = CfgMgr.Cfgs.TbDialogMetaInfo.Get(dialogId);
-            if (dialogMetaInfo == null)
-            {
-                Debug.LogError($"PlayDialog dialog not found {dialogId}.");
-                return false;
-            }
-
-            var dialogAsset = Resources.Load<TextAsset>($"Dialogue/output/{dialogMetaInfo.JsonDataName}");
-            if (dialogAsset == null)
-            {
-                Debug.LogError("PlayerDialog not found dialog " + dialogId + "asset " + dialogMetaInfo.JsonDataName);
-                return false;
-            }
-
-            var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            };
-
-            var dialogData = JsonConvert.DeserializeObject<DialogueData>(dialogAsset.text, settings);
-
-            var dialogPanel = UIManager.Instance.ShowPanel("DialoguePanel") as DialogueUI;
-
-            var runtime = new DialogueRuntime
-            {
-                ui = dialogPanel,
-                driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
-                JumpTo = label => dialoguePlayer.JumpToStep(label),
-                SrcEntityId = srcEntityId,
-            };
-
-            dialoguePlayer.ui = dialogPanel;
-            dialoguePlayer.PlayFromData(dialogMetaInfo, dialogData, runtime, () =>
-            {
-                LogicTime.ClearPauseSource("Dialog");
-                UIManager.Instance.HidePanel("DialoguePanel");
-                onDialogEnd?.Invoke();
-            });
-
-            if (pause)
-            {
-                LogicTime.RequestPause("Dialog");
-            }
-
-            if (srcEntityId != null)
-            {
-                var entity = gameLogicManager.GetLogicEntity(srcEntityId.Value);
-                if (entity != null && entity is BaseUnitLogicEntity unitEntity)
-                {
-                    //unitEntity.RegisterGaze("Dialog", gameLogicManager.playerLogicEntity.Id, Vector2.zero, BaseUnitLogicEntity.EGazePriority.Interact);
-                }
-            }
-
-            return true;
-        }
-
-        public void StartLoot(ILootableObj lootObj)
-        {
-            UIOrchestrator.Instance.TryEnterLootDetailMode(lootObj);
-        }
-
-        public void StartHitStop(float duration)
-        {
-            HitStopManager.Instance.TriggerHitStop(duration);
-
-            VcamInpulseSource.GenerateImpulse(0.06f);
-        }
-
-        public void ShowMapSpeachBubble(long entityId, string content, float duration, int priority = 1, float extraInteval = 0)
-        {
-            var pres = SceneAOIManager.Instance.GetActivePresentation(entityId);
-            if (pres == null) return;
-            MapSpeechBubbleManager.Instance.Say(pres, content, duration, priority);
-        }
-
-        public bool TryGetThrowGrappleLogicPos(long targetEntityId, string socketPath, out Vector2 logicPos)
-        {
-            logicPos = default;
-            var pres = SceneAOIManager.Instance?.GetActivePresentation(targetEntityId);
-            if (pres is not SceneUnitPresenter sup)
-            {
-                return false;
-            }
-
-            return sup.TryGetThrowGrappleLogicPos(socketPath, out logicPos);
-        }
-
-        /// <summary>
-        /// 显示跳字
-        /// </summary>
-        /// <param name="worldPos"></param>
-        /// <param name="content"></param>
-        /// <param name="bindTrans"></param>
-        public void ShowDamageNumber(Vector2 worldPos, string content, Transform? bindTrans = null)
-        {
-            var dmgResource = SimpleResManager.Load<DamageNumber>($"SceneEffect/JumpText/Damage_01");
-            if (bindTrans == null)
-            {
-                dmgResource.Spawn(worldPos, content);
-            }
-            else
-            {
-                dmgResource.Spawn(worldPos, content, bindTrans);
-            }
-        }
-
-        private void HandleNextDayPeriod()
+        void HandleNextDayPeriod()
         {
             SecretBaseHudPanel.Instance?.RefreshUI();
         }
     }
-
 
     public class UnityNavProvider : INavProvider
     {
@@ -1091,17 +355,11 @@ namespace My
 
         public bool TryGetFollowPoint(ILogicEntity target, float predictionSeconds, Vector2 offset, out Vector3 followPoint)
         {
-            // 由上层维护一个查找表：EntityId => Transform
             if (target == null)
             {
                 followPoint = default;
                 return false;
             }
-
-
-
-            // 简单预测：目标位置 + 速度 * 预测时间（需上层提供速度）
-            //var v = EntityLocator.FindVelocity(targetId);
 
             Vector2 v = Vector2.zero;
 
@@ -1116,7 +374,6 @@ namespace My
 
         public bool Linecast(Vector3 from, Vector3 to, out Vector3 hitPoint)
         {
-            // 可用NavMesh.Raycast 或 Physics.Raycast
             NavMeshHit hit;
             bool hitNav = NavMesh.Raycast(from, to, out hit, NavMesh.AllAreas);
             hitPoint = hit.position;
@@ -1130,19 +387,18 @@ namespace My
             {
                 return pos;
             }
+
             return null;
         }
     }
-
 }
 
 public enum ECampFilterType
-{ 
+{
     All,
     NotSelf,
     OnlySelf,
 }
-
 
 public struct EntityFilterParam
 {
@@ -1159,7 +415,6 @@ public struct EntityFilterParam
 
 public interface IVisionSenser2D
 {
-
     bool CanUnitSee(long selfEId, long targetEId);
     bool SimpleCanSee(Vector2 selftPos, Vector2 selfFace, Vector2 targetPos, float range, float fov);
 
@@ -1173,5 +428,3 @@ public interface IVisionSenser2D
 
     void OverlapCheckDynamicObs(Vector2 orgPos, float radius, List<(Vector2, Vector2)> retList);
 }
-
-

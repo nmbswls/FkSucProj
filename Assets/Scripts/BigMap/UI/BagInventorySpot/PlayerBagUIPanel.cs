@@ -37,6 +37,10 @@ namespace My.UI.Bag
         public int Columns = 5;
         public string ItemPrefabName = "ItemCellPrefab";
 
+        // 主背包页签（与普通背包平级，切换后复用同一格子区域）
+        public Transform MainBagTabsRoot;
+        public EPlayerBagId CurrMainBagId = EPlayerBagId.Default;
+
         /// <summary>
         /// 特殊背包面板根节点
         /// </summary>
@@ -49,6 +53,15 @@ namespace My.UI.Bag
 
         public Button CloseButton;
 
+        public class InnerMainBagTabItem
+        {
+            public RectTransform Root;
+            public Button Btn;
+            public Image SelectHint;
+            public TextMeshProUGUI Label;
+            public EPlayerBagId BagId;
+        }
+
         public class InnerSpeBagItem
         {
             public RectTransform Root;
@@ -57,6 +70,21 @@ namespace My.UI.Bag
             public TextMeshProUGUI StackCount;
         }
 
+        static readonly EPlayerBagId[] MainBagTabOrder =
+        {
+            EPlayerBagId.Default,
+            EPlayerBagId.Mind,
+            EPlayerBagId.Important,
+        };
+
+        static readonly string[] MainBagTabLabels =
+        {
+            "背包",
+            "精神",
+            "珍贵",
+        };
+
+        public List<InnerMainBagTabItem> MainBagTabs = new();
         public List<InnerSpeBagItem> SpeBagItems = new();
 
         public PlayerInventorySystem BindingInventory { get { return MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem; } }
@@ -69,6 +97,8 @@ namespace My.UI.Bag
             SpeGridView.InitGridView(0, OnSpeGetItemByIndex);
 
             GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
+
+            BindMainBagTabs();
 
             if(CloseButton != null)
             {
@@ -125,11 +155,63 @@ namespace My.UI.Bag
             //gameObject.SetActive(false);
         }
 
+        void BindMainBagTabs()
+        {
+            MainBagTabs.Clear();
+            if (MainBagTabsRoot == null)
+            {
+                var mainBag = transform.Find("MainBag/MainBagTabs");
+                if (mainBag != null)
+                {
+                    MainBagTabsRoot = mainBag;
+                }
+            }
+
+            if (MainBagTabsRoot == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < MainBagTabsRoot.childCount && i < MainBagTabOrder.Length; i++)
+            {
+                var childOne = MainBagTabsRoot.GetChild(i);
+                var bagId = MainBagTabOrder[i];
+                var item = new InnerMainBagTabItem
+                {
+                    Root = childOne.GetComponent<RectTransform>(),
+                    BagId = bagId,
+                };
+
+                var btn = childOne.GetComponentInChildren<Button>();
+                item.Btn = btn;
+                if (btn != null)
+                {
+                    btn.onClick.RemoveAllListeners();
+                    btn.onClick.AddListener(() => SwitchMainBagTab(bagId));
+                }
+
+                var selectTr = childOne.Find("Select");
+                item.SelectHint = selectTr != null ? selectTr.GetComponent<Image>() : null;
+                if (item.SelectHint != null)
+                {
+                    item.SelectHint.gameObject.SetActive(false);
+                }
+
+                item.Label = childOne.GetComponentInChildren<TextMeshProUGUI>();
+                if (item.Label != null && i < MainBagTabLabels.Length)
+                {
+                    item.Label.text = MainBagTabLabels[i];
+                }
+
+                MainBagTabs.Add(item);
+            }
+        }
+
         public override void Show()
         {
             base.Show();
 
-            InitilaizeView();
+            SwitchMainBagTab(EPlayerBagId.Default, force: true);
             CloseSpeBag();
 
             PlayerHumanItemBarPanel.ShowCompanionForBagIfNeeded();
@@ -146,8 +228,48 @@ namespace My.UI.Bag
 
         public void InitilaizeView()
         {
-            var mainBag = BindingInventory.GetBagById(0);
-            GridView.SetListItemCount(mainBag.BasicCapacity + Math.Max(mainBag.MaxExtraCapacity, mainBag.ExtraSlots.Count));
+            GridView.SetListItemCount(GetMainBagGridItemCount(CurrMainBagId));
+        }
+
+        int GetMainBagGridItemCount(EPlayerBagId bagId)
+        {
+            var bag = BindingInventory.GetBagById((int)bagId);
+            if (bag == null)
+            {
+                return 0;
+            }
+
+            return bag.BasicCapacity + Math.Max(bag.MaxExtraCapacity, bag.ExtraSlots.Count);
+        }
+
+        EContainerType ResolveContainerTypeForBag(EPlayerBagId bagId)
+        {
+            if (bagId == EPlayerBagId.Default)
+            {
+                return EContainerType.Inventory;
+            }
+
+            return EContainerType.SpecialInventory;
+        }
+
+        void SwitchMainBagTab(EPlayerBagId bagId, bool force = false)
+        {
+            if (!force && bagId == CurrMainBagId)
+            {
+                return;
+            }
+
+            CurrMainBagId = bagId;
+            foreach (var tab in MainBagTabs)
+            {
+                if (tab.SelectHint != null)
+                {
+                    tab.SelectHint.gameObject.SetActive(tab.BagId == bagId);
+                }
+            }
+
+            InitilaizeView();
+            GridView.RefreshAllShownItem();
         }
 
         public void RefreshContent()
@@ -171,8 +293,7 @@ namespace My.UI.Bag
         /// </summary>
         private void OnInventoryAllChanged()
         {
-            var mainBag = BindingInventory.GetBagById(0);
-            GridView.SetListItemCount(mainBag.BasicCapacity + Math.Max(mainBag.MaxExtraCapacity, mainBag.ExtraSlots.Count));
+            GridView.SetListItemCount(GetMainBagGridItemCount(CurrMainBagId));
             GridView.RefreshAllShownItem();
 
             if (CurrExpandBagId != 0)
@@ -200,19 +321,27 @@ namespace My.UI.Bag
             var item = grid.NewListViewItem(ItemPrefabName);
             var cell = item.GetComponent<AnyContainerItemCell>();
 
-            var mainBag = BindingInventory.GetBagById(0);
+            var mainBag = BindingInventory.GetBagById((int)CurrMainBagId);
+            if (mainBag == null)
+            {
+                cell.ClearEmpty();
+                return item;
+            }
+
+            var containerType = ResolveContainerTypeForBag(CurrMainBagId);
+            int bagId = (int)CurrMainBagId;
 
             if (itemIndex < mainBag.BasicCapacity)
             {
                 var stack = mainBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, EContainerType.Inventory, 0, null);
+                cell.Bind(stack, itemIndex, containerType, bagId, null);
             }
             else if (itemIndex < mainBag.BasicCapacity + mainBag.ExtraSlots.Count)
             {
                 var stack = mainBag.GetItemByIdx(itemIndex);
                 item.gameObject.SetActive(true);
-                cell.Bind(stack, itemIndex, EContainerType.Inventory, 0, null, ItemCellBase.EStyleType.Red);
+                cell.Bind(stack, itemIndex, containerType, bagId, null, ItemCellBase.EStyleType.Red);
             }
             else
             {

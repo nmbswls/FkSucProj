@@ -361,8 +361,31 @@ namespace My.Map.DualGrid
         public void RefreshAroundDataCell(Vector3Int dataCell)
         {
             _dirtyViewCells.Clear();
-            DualGridCore.CollectViewsToRefreshAroundDataCell(dataCell, _dirtyViewCells);
+            QueueDataCellForRefresh(dataCell);
             FlushDirtyViewCells();
+        }
+
+#if UNITY_EDITOR
+        // 编辑器画笔拖拽时 Unity 不触发 tilemapTileChanged，由 DualGridLivePaintRefresh 调用。
+        public void QueueEditorLiveDataCells(IEnumerable<Vector3Int> dataCells)
+        {
+            if (!AutoRefreshInEditor || Application.isPlaying || dataCells == null)
+            {
+                return;
+            }
+
+            foreach (var dataCell in dataCells)
+            {
+                QueueDataCellForRefresh(dataCell);
+            }
+
+            FlushDirtyViewCells();
+        }
+#endif
+
+        void QueueDataCellForRefresh(Vector3Int dataCell)
+        {
+            DualGridCore.CollectViewsToRefreshAroundDataCell(dataCell, _dirtyViewCells);
         }
 
         public void RefreshAroundLogicCell(Vector3Int logicCell) => RefreshAroundDataCell(logicCell);

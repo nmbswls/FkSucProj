@@ -61,7 +61,10 @@ namespace My.Player.Bag
             this.LogicManager = ctx;
 
             MainBag.InitBag(0, 60, 0, layout: EBagStorageLayout.Grid);
-            MindFacetBag.InitBag(EPlayerBagId.Mind, 99999, 0);
+            MindFacetBag.InitBag(EPlayerBagId.Mind, 30, 0, EBagStorageLayout.Compact);
+
+            ImportantItemBag = new PlayerBag();
+            ImportantItemBag.InitBag(EPlayerBagId.Important, 8, 0, EBagStorageLayout.Compact);
 
             int storageSlots = 100;
             WarehouseBag.InitBag(EPlayerBagId.Storage, storageSlots, 0);
@@ -847,6 +850,10 @@ namespace My.Player.Bag
             if(bagId == (int)EPlayerBagId.Mind)
             {
                 return MindFacetBag;
+            }
+            if (bagId == (int)EPlayerBagId.Important)
+            {
+                return ImportantItemBag;
             }
 
             if (bagId == (int)EPlayerBagId.Storage)
