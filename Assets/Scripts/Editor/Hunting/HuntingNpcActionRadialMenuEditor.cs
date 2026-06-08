@@ -92,7 +92,11 @@ namespace My.Map.Hunting.Editor
             }
             EditorGUILayout.EndHorizontal();
 
-            if (menu.IsEditorPreviewActive)
+            if (!menu.CanShowEditorPreview(out string missingReason))
+            {
+                EditorGUILayout.HelpBox(missingReason, MessageType.Warning);
+            }
+            else if (menu.IsEditorPreviewActive)
             {
                 EditorGUILayout.HelpBox("预览中：MenuRoot 置于本地原点，可在父节点下拖动整体位置对照布局。", MessageType.None);
             }
@@ -103,6 +107,12 @@ namespace My.Map.Hunting.Editor
             if (preset == EPreviewPreset.Hidden)
             {
                 menu.HideEditorPreview();
+                return;
+            }
+
+            if (!menu.CanShowEditorPreview(out string reason))
+            {
+                Debug.LogWarning($"HuntingNpcActionRadialMenu preview failed: {reason}", menu);
                 return;
             }
 
