@@ -28,6 +28,7 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
         { if(!_buf["icon"].IsString) { throw new SerializationException(); }  Icon = _buf["icon"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
+        { if(!_buf["layout_slot"].IsNumber) { throw new SerializationException(); }  LayoutSlot = _buf["layout_slot"]; }
         { if(!_buf["sort_order"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["sort_order"]; }
     }
 
@@ -46,6 +47,7 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
     public string Icon;
     public string Name;
     public string Desc;
+    public int LayoutSlot;
     public int SortOrder;
    
     public const int __ID__ = 1357224741;
@@ -68,6 +70,7 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
         + "icon:" + Icon + ","
         + "name:" + Name + ","
         + "desc:" + Desc + ","
+        + "layoutSlot:" + LayoutSlot + ","
         + "sortOrder:" + SortOrder + ","
         + "}";
     }

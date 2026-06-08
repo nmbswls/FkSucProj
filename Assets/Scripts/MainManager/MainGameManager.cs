@@ -292,6 +292,7 @@ namespace My
         public SceneAOIManager AOIManager;
 
         public SceneGroundLiquidStrampManager LiquidStrampManager;
+        public SceneGroundLiquidChunkFieldManager LiquidChunkFieldManager;
         public SceneGroundMistStrampManager MistStrampManager;
 
 
@@ -403,10 +404,7 @@ namespace My
             sceneDropManager.OnGameInit();
             UIOrchestrator.Instance.InitGameLogicEventListener();
 
-
-            
-
-            LiquidStrampManager?.RegisterEvents();
+            LiquidChunkFieldManager?.RegisterEvents();
             MistStrampManager?.RegisterEvents();
 
 

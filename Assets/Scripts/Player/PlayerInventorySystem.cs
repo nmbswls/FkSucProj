@@ -30,6 +30,9 @@ namespace My.Player.Bag
         protected GameLogicManager LogicManager { get; private set; }
 
         public PlayerBag MainBag;
+        public PlayerBag MindFacetBag; // 精神相关背包
+
+
         public PlayerBag WarehouseBag;
         public Dictionary<EPlayerBagId, PlayerBag> SpeBags = new Dictionary<EPlayerBagId, PlayerBag>();
 
@@ -49,14 +52,16 @@ namespace My.Player.Bag
         {
             MainBag = new PlayerBag();
             WarehouseBag = new PlayerBag();
-            
+
+            MindFacetBag = new PlayerBag();
         }
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             this.LogicManager = ctx;
 
-            MainBag.InitBag(0, 60, 0);
+            MainBag.InitBag(0, 60, 0, layout: EBagStorageLayout.Grid);
+            MindFacetBag.InitBag(EPlayerBagId.Mind, 99999, 0);
 
             int storageSlots = 100;
             WarehouseBag.InitBag(EPlayerBagId.Storage, storageSlots, 0);

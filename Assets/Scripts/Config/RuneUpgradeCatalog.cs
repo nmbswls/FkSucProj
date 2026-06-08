@@ -139,6 +139,35 @@ namespace My.Config
                 .ToList();
         }
 
+        public static bool IsInitialUpgrade(RuneUpgradeInfo def)
+        {
+            if (def == null || string.IsNullOrEmpty(def.BaseRuneId))
+            {
+                return false;
+            }
+
+            var rune = RuneCatalog.GetOrDefault(def.BaseRuneId);
+            return rune != null && rune.InitialUpgradeId == def.UpgradeId;
+        }
+
+        public static RuneUpgradeInfo GetUpgradeByLayoutSlot(string baseRuneId, int layoutSlot)
+        {
+            if (string.IsNullOrEmpty(baseRuneId) || layoutSlot <= 0)
+            {
+                return null;
+            }
+
+            foreach (var def in GetUpgradesForRune(baseRuneId))
+            {
+                if (def != null && def.LayoutSlot == layoutSlot)
+                {
+                    return def;
+                }
+            }
+
+            return null;
+        }
+
         public static bool ArePrerequisitesMet(
             RuneUpgradeInfo def,
             Func<string, bool> isUpgradeUnlocked)

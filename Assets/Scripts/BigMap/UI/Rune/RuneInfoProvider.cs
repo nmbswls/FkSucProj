@@ -92,22 +92,32 @@ namespace My.UI.Rune
                 lines.AppendLine($"槽位: {RuneCatalog.GetSlotDisplayName(def.EquipSlot)}");
             }
 
-            if (!string.IsNullOrEmpty(def.PassiveSkillId))
-            {
-                lines.AppendLine($"被动: {def.PassiveSkillId}");
-            }
-
-            if (!string.IsNullOrEmpty(def.FuncUnlockKey))
-            {
-                lines.AppendLine($"解锁: {def.FuncUnlockKey}");
-            }
-
-            if (def.FuncOpenType != EFuncOpenType.Invalid)
-            {
-                lines.AppendLine($"功能: {def.FuncOpenType}");
-            }
+            AppendUpgradeDetail(lines, RuneUpgradeCatalog.GetOrDefault(def.InitialUpgradeId));
 
             return lines.ToString().TrimEnd();
+        }
+
+        static void AppendUpgradeDetail(System.Text.StringBuilder lines, RuneUpgradeInfo upgrade)
+        {
+            if (upgrade == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(upgrade.PassiveSkillId))
+            {
+                lines.AppendLine($"被动: {upgrade.PassiveSkillId}");
+            }
+
+            if (!string.IsNullOrEmpty(upgrade.FuncUnlockKey))
+            {
+                lines.AppendLine($"解锁: {upgrade.FuncUnlockKey}");
+            }
+
+            if (upgrade.FuncOpenType != EFuncOpenType.Invalid)
+            {
+                lines.AppendLine($"功能: {upgrade.FuncOpenType}");
+            }
         }
 
         public Sprite GetIconSprite()

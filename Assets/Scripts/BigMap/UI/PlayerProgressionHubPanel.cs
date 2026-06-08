@@ -61,7 +61,7 @@ namespace My.UI
         TalentTreePanel _talent;
         PlayerGearEquipPanel _gear;
         GlobalWorldPanel _world;
-        RunePanel _rune;
+        RuneLoadoutPanel _rune;
 
         static readonly Color TabSelectedColor = new Color(0.38f, 0.55f, 0.72f, 1f);
         static readonly Color TabNormalColor = new Color(0.22f, 0.24f, 0.3f, 1f);
@@ -116,7 +116,7 @@ namespace My.UI
 
         public GlobalWorldPanel WorldPage => _world;
 
-        public RunePanel RunePage => _rune;
+        public RuneLoadoutPanel RunePage => _rune;
 
         public static void ToggleTab(ProgressionHubTab tab)
         {

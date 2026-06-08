@@ -94,6 +94,7 @@ namespace My
 
         public GameLogicAreaManager AreaManager;
         public LogicGroundLiquidManager GroundLiquidManager;
+        public LogicGroundLiquidFieldManager GroundLiquidFieldManager;
         public LogicGroundMistManager GroundMistManager;
 
         public RumorIntelMapSpawn RumorIntelSpawn;
@@ -127,6 +128,8 @@ namespace My
             });
 
             GroundLiquidManager = new(this);
+            GroundLiquidFieldManager = new(this);
+            GroundLiquidManager.BindFieldManager(GroundLiquidFieldManager);
             GroundMistManager = new(this);
             RumorIntelSpawn = new RumorIntelMapSpawn(this);
             MapMicroPlot = new MapMicroPlotManager(this);
@@ -303,6 +306,7 @@ namespace My
             }
 
             GroundLiquidManager?.Tick();
+            GroundLiquidFieldManager?.Tick();
             GroundMistManager?.Tick();
 
             AreaManager.Tick(dt);

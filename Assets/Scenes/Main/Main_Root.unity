@@ -2032,6 +2032,7 @@ MonoBehaviour:
   dialoguePlayer: {fileID: 771406920}
   AOIManager: {fileID: 1209709318}
   LiquidStrampManager: {fileID: 1885830509}
+  LiquidChunkFieldManager: {fileID: 1885830512}
   MistStrampManager: {fileID: 1885830511}
   DynamicRoot: {fileID: 63059760}
 --- !u!4 &885418544
@@ -9305,6 +9306,7 @@ GameObject:
   - component: {fileID: 1885830510}
   - component: {fileID: 1885830509}
   - component: {fileID: 1885830511}
+  - component: {fileID: 1885830512}
   m_Layer: 0
   m_Name: SceneGroundStrampManager
   m_TagString: Untagged
@@ -9359,6 +9361,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stampPrefab: {fileID: 306825993}
   mistLayerContainer: {fileID: 1740837343}
+--- !u!114 &1885830512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885830508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b2c3d4e5f6789012345678abcdef04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  liquidLayerContainer: {fileID: 488250848}
 --- !u!1 &1888856809
 GameObject:
   m_ObjectHideFlags: 0

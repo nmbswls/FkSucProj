@@ -66,7 +66,7 @@ namespace My.Player
                 }
             }
 
-            ApplyAllPermanentEffects();
+            EnsureAllInitialUpgradesUnlocked();
             ApplyAllUnlockedUpgradeEffects();
         }
 
@@ -132,9 +132,9 @@ namespace My.Player
             }
 
             _owned.Add(runeId);
-            if (def.RuneType == ERuneType.Permanent)
+            if (EnsureInitialUpgradeUnlocked(runeId))
             {
-                ApplyPermanentEffects(def);
+                ApplyUpgradeEffects(RuneUpgradeCatalog.GetOrDefault(def.InitialUpgradeId));
             }
 
             PlayerEventBus.Publish(new PlayerRuneGrantedEvent { RuneId = runeId });
@@ -201,7 +201,8 @@ namespace My.Player
                 return ERuneUpgradeNodeState.Locked;
             }
 
-            if (_unlockedUpgrades.Contains(upgradeId))
+            if (_unlockedUpgrades.Contains(upgradeId)
+                || (RuneUpgradeCatalog.IsInitialUpgrade(def) && _owned.Contains(def.BaseRuneId)))
             {
                 return ERuneUpgradeNodeState.Unlocked;
             }
@@ -214,48 +215,7 @@ namespace My.Player
             return ERuneUpgradeNodeState.Locked;
         }
 
-        public RuneUpgradeTreeView BuildUpgradeTreeView(string baseRuneId)
-        {
-            var view = new RuneUpgradeTreeView
-            {
-                BaseRuneId = baseRuneId,
-                BaseRune = RuneCatalog.GetOrDefault(baseRuneId),
-            };
-
-            if (string.IsNullOrEmpty(baseRuneId))
-            {
-                return view;
-            }
-
-            foreach (var branchId in RuneUpgradeCatalog.GetBranchIdsForRune(baseRuneId))
-            {
-                var branch = new RuneUpgradeBranchView { BranchId = branchId };
-                foreach (var def in RuneUpgradeCatalog.GetUpgradesInBranch(baseRuneId, branchId))
-                {
-                    branch.Nodes.Add(BuildNodeView(def));
-                }
-
-                view.Branches.Add(branch);
-            }
-
-            foreach (var def in RuneUpgradeCatalog.GetUpgradesInBranch(baseRuneId, null))
-            {
-                view.RootUpgrades.Add(BuildNodeView(def));
-            }
-
-            return view;
-        }
-
-        RuneUpgradeNodeView BuildNodeView(RuneUpgradeInfo def)
-        {
-            var state = GetUpgradeNodeState(def.UpgradeId, out var lockReason);
-            return new RuneUpgradeNodeView
-            {
-                Def = def,
-                State = state,
-                LockReason = lockReason,
-            };
-        }
+        
 
         public bool TryEquip(ERuneEquipSlot slot, string runeId, out string failReason)
         {
@@ -324,15 +284,11 @@ namespace My.Player
             }
         }
 
-        public void ApplyAllPermanentEffects()
+        public void EnsureAllInitialUpgradesUnlocked()
         {
             foreach (var id in _owned)
             {
-                var def = RuneCatalog.GetOrDefault(id);
-                if (def != null && def.RuneType == ERuneType.Permanent)
-                {
-                    ApplyPermanentEffects(def);
-                }
+                EnsureInitialUpgradeUnlocked(id);
             }
         }
 
@@ -389,12 +345,6 @@ namespace My.Player
 
         void CollectPassiveForRune(string runeId, HashSet<string> applied, List<string> output)
         {
-            var def = RuneCatalog.GetOrDefault(runeId);
-            if (def != null && !string.IsNullOrEmpty(def.PassiveSkillId))
-            {
-                TryAppendPassive(def.PassiveSkillId, applied, output);
-            }
-
             foreach (var upgrade in RuneUpgradeCatalog.GetUpgradesForRune(runeId))
             {
                 if (!_unlockedUpgrades.Contains(upgrade.UpgradeId))
@@ -424,22 +374,26 @@ namespace My.Player
             output.Add(skillId);
         }
 
-        void ApplyPermanentEffects(RuneData def)
+        bool EnsureInitialUpgradeUnlocked(string runeId)
         {
-            if (def == null || _owner == null)
+            var runeDef = RuneCatalog.GetOrDefault(runeId);
+            if (runeDef == null || string.IsNullOrEmpty(runeDef.InitialUpgradeId))
             {
-                return;
+                return false;
             }
 
-            if (!string.IsNullOrEmpty(def.FuncUnlockKey))
+            if (_unlockedUpgrades.Contains(runeDef.InitialUpgradeId))
             {
-                _owner.SetVariable(def.FuncUnlockKey);
+                return false;
             }
 
-            if (def.FuncOpenType != EFuncOpenType.Invalid)
+            if (RuneUpgradeCatalog.GetOrDefault(runeDef.InitialUpgradeId) == null)
             {
-                _owner.FuncOpenSystem?.TryOpenFunc(def.FuncOpenType);
+                return false;
             }
+
+            _unlockedUpgrades.Add(runeDef.InitialUpgradeId);
+            return true;
         }
 
         void ApplyUpgradeEffects(RuneUpgradeInfo def)

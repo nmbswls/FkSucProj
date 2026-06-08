@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 namespace My.Map.Ground
 {
     [CustomEditor(typeof(MapLogicHeightConfig))]
-    public class MapLogicHeightConfigEditor : Editor
+    public class MapLogicHeightConfigEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

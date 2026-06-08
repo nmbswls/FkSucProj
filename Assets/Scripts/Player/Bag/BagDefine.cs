@@ -27,11 +27,6 @@ namespace My.Player
 
         public EBagStorageLayout StorageLayout { get; private set; }
 
-        public static EBagStorageLayout ResolveStorageLayout(EPlayerBagId bagId)
-        {
-            return (int)bagId == 0 ? EBagStorageLayout.Grid : EBagStorageLayout.Compact;
-        }
-
         public static EContainerType ResolveStackContainerType(EPlayerBagId bagId)
         {
             switch (bagId)
@@ -196,13 +191,13 @@ namespace My.Player
         /// </summary>
         /// <param name="capacity"></param>
         /// <param name="extraCapacity"></param>
-        public void InitBag(EPlayerBagId bagId, int capacity, int extraCapacity)
+        public void InitBag(EPlayerBagId bagId, int capacity, int extraCapacity, EBagStorageLayout layout = EBagStorageLayout.Compact)
         {
             this.BagId = bagId;
             StackContainerType = ResolveStackContainerType(bagId);
             this.BasicCapacity = capacity;
             this.MaxExtraCapacity = extraCapacity;
-            StorageLayout = ResolveStorageLayout(bagId);
+            StorageLayout = layout;
 
             NormalSlots.Clear();
             ExtraSlots.Clear();
@@ -627,6 +622,8 @@ namespace My.Player
         Default,
         Secret = 1,
         Pet = 2,
+
+        Mind,
         Storage = 100,
     }
 }

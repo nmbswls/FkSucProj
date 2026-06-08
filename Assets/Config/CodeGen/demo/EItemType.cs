@@ -21,6 +21,7 @@ namespace cfg.demo
         Gift = 5,
         HumanWeapon = 6,
         PartGear = 7,
+        MindFacet = 10,
     }
 
 } 

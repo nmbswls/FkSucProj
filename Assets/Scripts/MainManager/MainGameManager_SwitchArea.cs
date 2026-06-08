@@ -201,8 +201,10 @@ namespace My
             sceneDropManager.ClearAllDrop();
 
             gameLogicManager?.GroundLiquidManager?.ClearAll();
+            gameLogicManager?.GroundLiquidFieldManager?.ClearAll();
             gameLogicManager?.GroundMistManager?.ClearAll();
             LiquidStrampManager?.ClearAllStamps();
+            LiquidChunkFieldManager?.ClearAllChunks();
             MistStrampManager?.ClearAllStamps();
         }
 

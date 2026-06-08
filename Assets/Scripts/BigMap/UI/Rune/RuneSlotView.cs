@@ -21,7 +21,7 @@ namespace My.UI.Rune
 
         RuneSlotBinder _binder;
         RuneInfoProvider _infoProvider;
-        RunePanel _panel;
+        RuneLoadoutPanel _panel;
         RuneSlotVisualState _state;
         string _displayRuneId;
         bool _selected;
@@ -45,7 +45,7 @@ namespace My.UI.Rune
             }
         }
 
-        public void BindPanel(RunePanel panel)
+        public void BindPanel(RuneLoadoutPanel panel)
         {
             _panel = panel;
         }
@@ -89,7 +89,7 @@ namespace My.UI.Rune
         void RefreshEquippableFromBinder(PlayerRuneSystem runeSystem)
         {
             var slot = _binder.EquipSlot;
-            bool slotUnlocked = RunePanel.IsEquipSlotUnlocked(runeSystem, slot);
+            bool slotUnlocked = RuneLoadoutPanel.IsEquipSlotUnlocked(runeSystem, slot);
             string equippedRuneId = runeSystem.GetEquipped(slot);
             _displayRuneId = equippedRuneId;
             if (!slotUnlocked)

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace My.UI.Rune
 {
-    public class RunePanel : PanelBase, IInputConsumer, IPlayerProgressionHubPage
+    public class RuneLoadoutPanel : PanelBase, IInputConsumer, IPlayerProgressionHubPage
     {
         public const string Pid = "RuneLoadoutPanel";
 
@@ -19,6 +19,9 @@ namespace My.UI.Rune
         [SerializeField] RectTransform slotGrid;
         [SerializeField] TextMeshProUGUI detailTitle;
         [SerializeField] TextMeshProUGUI detailBody;
+        [SerializeField] TextMeshProUGUI runeDescText;
+        [SerializeField] RuneUpgradeLayoutHost layoutHost;
+        [SerializeField] RuneUpgradeDetailSection upgradeDetail;
         [SerializeField] RectTransform ownedArea;
         [SerializeField] RectTransform ownedGrid;
         [SerializeField] RuneOwnedCell ownedCellTemplate;
@@ -47,19 +50,31 @@ namespace My.UI.Rune
             {
                 dragController = GetComponent<RuneDragDropController>();
             }
+
+            if (upgradeDetail != null)
+            {
+                upgradeDetail.SetHostPanel(this);
+            }
         }
 
         void OnEnable()
         {
             PlayerEventBus.Subscribe<PlayerRuneGrantedEvent>(OnRuneGranted);
+            PlayerEventBus.Subscribe<PlayerRuneUpgradeUnlockedEvent>(OnRuneUpgradeUnlocked);
         }
 
         void OnDisable()
         {
             PlayerEventBus.Unsubscribe<PlayerRuneGrantedEvent>(OnRuneGranted);
+            PlayerEventBus.Unsubscribe<PlayerRuneUpgradeUnlockedEvent>(OnRuneUpgradeUnlocked);
         }
 
         void OnRuneGranted(PlayerRuneGrantedEvent e)
+        {
+            RefreshAll();
+        }
+
+        void OnRuneUpgradeUnlocked(PlayerRuneUpgradeUnlockedEvent e)
         {
             RefreshAll();
         }
@@ -108,6 +123,11 @@ namespace My.UI.Rune
                 ownedArea.gameObject.SetActive(false);
             }
 
+            if (upgradeDetail != null)
+            {
+                upgradeDetail.SetHostPanel(this);
+            }
+
             ApplyHostedChromeIfNeeded();
             RefreshAll();
         }
@@ -144,9 +164,27 @@ namespace My.UI.Rune
                 return false;
             }
 
-            if (detailTitle == null || detailBody == null)
+            if (detailTitle == null)
             {
-                Debug.LogError("[RunePanel] Prefab missing detailTitle or detailBody.");
+                Debug.LogError("[RunePanel] Prefab missing detailTitle.");
+                return false;
+            }
+
+            if (runeDescText == null)
+            {
+                Debug.LogError("[RunePanel] Prefab missing runeDescText.");
+                return false;
+            }
+
+            if (layoutHost == null)
+            {
+                Debug.LogError("[RunePanel] Prefab missing layoutHost.");
+                return false;
+            }
+
+            if (upgradeDetail == null)
+            {
+                Debug.LogError("[RunePanel] Prefab missing upgradeDetail.");
                 return false;
             }
 
@@ -295,22 +333,14 @@ namespace My.UI.Rune
         {
             if (_selectedSlot == null || _selectedSlot.Binder == null)
             {
-                if (detailTitle != null)
-                {
-                    detailTitle.text = string.Empty;
-                }
-
-                if (detailBody != null)
-                {
-                    detailBody.text = "点击槽位查看符文详情。";
-                }
-
+                ClearDetailPanel("点击槽位查看符文详情。");
                 return;
             }
 
             var provider = _selectedSlot.GetComponent<RuneInfoProvider>();
             if (provider == null)
             {
+                ClearDetailPanel(string.Empty);
                 return;
             }
 
@@ -319,29 +349,114 @@ namespace My.UI.Rune
                 detailTitle.text = provider.GetDisplayName();
             }
 
+            if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Fixed
+                && _selectedSlot.State == RuneSlotVisualState.Locked)
+            {
+                ClearDetailPanel("该常驻符文尚未解锁。");
+                return;
+            }
+
+            if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Equippable
+                && _selectedSlot.State == RuneSlotVisualState.Locked)
+            {
+                ClearDetailPanel("尚未获得可用于该槽位的符文。");
+                return;
+            }
+
+            if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Equippable
+                && _selectedSlot.State == RuneSlotVisualState.Empty)
+            {
+                ClearDetailPanel("从下方列表选择或拖拽符文进行装配。");
+                return;
+            }
+
+            string runeId = ResolveEffectiveRuneId();
+            var runeDef = RuneCatalog.GetOrDefault(runeId);
+            var runeSystem = GetRuneSystem();
+            if (runeDef == null || runeSystem == null || !runeSystem.OwnsRune(runeId))
+            {
+                ClearDetailPanel(provider.GetDetailText());
+                return;
+            }
+
+            if (runeDescText != null)
+            {
+                runeDescText.text = runeDef.Desc ?? string.Empty;
+            }
+
             if (detailBody != null)
             {
-                if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Fixed
-                    && _selectedSlot.State == RuneSlotVisualState.Locked)
+                detailBody.gameObject.SetActive(false);
+            }
+
+            if (layoutHost != null)
+            {
+                layoutHost.ShowForRune(runeId, runeSystem, OnUpgradeSelected);
+            }
+
+            string selectedUpgradeId = layoutHost != null ? layoutHost.SelectedUpgradeId : null;
+            if (upgradeDetail != null)
+            {
+                if (!string.IsNullOrEmpty(selectedUpgradeId))
                 {
-                    detailBody.text = "该常驻符文尚未解锁。";
-                }
-                else if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Equippable
-                         && _selectedSlot.State == RuneSlotVisualState.Locked)
-                {
-                    detailBody.text = "尚未获得可用于该槽位的符文。";
-                }
-                else if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Equippable
-                         && _selectedSlot.State == RuneSlotVisualState.Empty)
-                {
-                    detailBody.text = string.IsNullOrEmpty(provider.GetDetailText())
-                        ? "从下方列表选择或拖拽符文进行装配。"
-                        : provider.GetDetailText();
+                    upgradeDetail.ShowUpgrade(selectedUpgradeId, runeSystem);
                 }
                 else
                 {
-                    detailBody.text = provider.GetDetailText();
+                    upgradeDetail.Clear();
                 }
+            }
+        }
+
+        void ClearDetailPanel(string message)
+        {
+            if (detailTitle != null)
+            {
+                detailTitle.text = string.Empty;
+            }
+
+            if (runeDescText != null)
+            {
+                runeDescText.text = string.Empty;
+            }
+
+            if (detailBody != null)
+            {
+                detailBody.gameObject.SetActive(true);
+                detailBody.text = message ?? string.Empty;
+            }
+
+            layoutHost?.Hide();
+            upgradeDetail?.Clear();
+        }
+
+        string ResolveEffectiveRuneId()
+        {
+            if (_selectedSlot?.Binder == null)
+            {
+                return null;
+            }
+
+            if (_selectedSlot.Binder.SlotKind == RuneSlotKind.Fixed)
+            {
+                return _selectedSlot.Binder.FixedRuneId;
+            }
+
+            var runeSystem = GetRuneSystem();
+            if (runeSystem == null)
+            {
+                return null;
+            }
+
+            return runeSystem.GetEquipped(_selectedSlot.Binder.EquipSlot);
+        }
+
+        void OnUpgradeSelected(string upgradeId)
+        {
+            var runeSystem = GetRuneSystem();
+            if (upgradeDetail != null && runeSystem != null)
+            {
+                upgradeDetail.ShowUpgrade(upgradeId, runeSystem);
             }
         }
 
@@ -445,6 +560,52 @@ namespace My.UI.Rune
         static PlayerRuneSystem GetRuneSystem()
         {
             return MainGameManager.Instance?.gameLogicManager?.playerDataManager?.RuneSystem;
+        }
+
+
+        public RuneUpgradeTreeView BuildUpgradeTreeView(string baseRuneId)
+        {
+            var view = new RuneUpgradeTreeView
+            {
+                BaseRuneId = baseRuneId,
+                BaseRune = RuneCatalog.GetOrDefault(baseRuneId),
+            };
+
+            if (string.IsNullOrEmpty(baseRuneId))
+            {
+                return view;
+            }
+
+            foreach (var branchId in RuneUpgradeCatalog.GetBranchIdsForRune(baseRuneId))
+            {
+                var branch = new RuneUpgradeBranchView { BranchId = branchId };
+                foreach (var def in RuneUpgradeCatalog.GetUpgradesInBranch(baseRuneId, branchId))
+                {
+                    branch.Nodes.Add(BuildNodeView(def));
+                }
+
+                view.Branches.Add(branch);
+            }
+
+            foreach (var def in RuneUpgradeCatalog.GetUpgradesInBranch(baseRuneId, null))
+            {
+                view.RootUpgrades.Add(BuildNodeView(def));
+            }
+
+            return view;
+        }
+
+        RuneUpgradeNodeView BuildNodeView(RuneUpgradeInfo def)
+        {
+            var runeSystem = MainGameManager.Instance.gameLogicManager.playerDataManager.RuneSystem;
+            var state = runeSystem.GetUpgradeNodeState(def.UpgradeId, out var lockReason);
+
+            return new RuneUpgradeNodeView
+            {
+                Def = def,
+                State = state,
+                LockReason = lockReason,
+            };
         }
 
         public bool OnConfirm() => false;

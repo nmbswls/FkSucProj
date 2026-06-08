@@ -7,14 +7,14 @@ namespace My.UI.Rune
     public class RuneOwnedCell : RuneCellBase
     {
         RuneData _def;
-        RunePanel _panel;
+        RuneLoadoutPanel _panel;
         bool _canEquipToSelectedSlot;
 
         public RuneData BoundDef => _def;
-        public RunePanel Panel => _panel;
+        public RuneLoadoutPanel Panel => _panel;
         public bool CanEquipToSelectedSlot => _canEquipToSelectedSlot;
 
-        public void Bind(RunePanel panel, RuneData def, bool isEquipped, bool selected, int index, bool canEquipToSelectedSlot)
+        public void Bind(RuneLoadoutPanel panel, RuneData def, bool isEquipped, bool selected, int index, bool canEquipToSelectedSlot)
         {
             _panel = panel;
             _def = def;

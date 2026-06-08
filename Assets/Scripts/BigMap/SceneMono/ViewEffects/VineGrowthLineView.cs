@@ -5,7 +5,7 @@ using UnityEngine;
 namespace My.Map.View
 {
     // 配置 VineGrowLength = 从 vine_line 原点 (y=0) 到顶端的总高度（世界单位）。
-    // base 为底部装饰不参与高度预算；body 自 y=0 向上 Tiled 生长；head 接在 body 顶边。
+    // base 为底部装饰不参与高度预算；body 自 y=0 向上生长，Tiled 顶边锚定、向下拉长；head 接在 body 顶边。
     public class VineGrowthLineView : MonoBehaviour
     {
         [SerializeField] Transform seedAnchor;
@@ -162,6 +162,8 @@ namespace My.Map.View
                 if (showBody)
                 {
                     SetTiledHeight(bodyRenderer, bodyLocalH);
+                    // 顶边钉在当前生长高度，增高时只向下延伸（底边最终落在 y=0）
+                    LayoutFromTop(bodyRenderer, transform, bodyLocalH);
                     stackTopY = GetRendererLocalTopY(bodyRenderer);
                 }
             }
@@ -244,6 +246,23 @@ namespace My.Map.View
 
             float scaleY = tr.localScale.y;
             tr.localPosition = new Vector3(tr.localPosition.x, bottomY - sprite.bounds.min.y * scaleY, tr.localPosition.z);
+            tr.localRotation = Quaternion.identity;
+        }
+
+        // Tiled 改 size 后顶边不会自动锚定，需位移补偿
+        static void LayoutFromTop(SpriteRenderer renderer, Transform anchorSpace, float topLocalY)
+        {
+            if (renderer == null || renderer.sprite == null || anchorSpace == null)
+            {
+                return;
+            }
+
+            var bounds = renderer.bounds;
+            var edgeLocal = anchorSpace.InverseTransformPoint(new Vector3(bounds.center.x, bounds.max.y, bounds.center.z));
+            float deltaY = topLocalY - edgeLocal.y;
+
+            var tr = renderer.transform;
+            tr.localPosition = new Vector3(tr.localPosition.x, tr.localPosition.y + deltaY, tr.localPosition.z);
             tr.localRotation = Quaternion.identity;
         }
     }

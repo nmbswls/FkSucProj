@@ -404,6 +404,8 @@ namespace My
             EGroundLiquidType.Milk,
         };
 
+        LogicGroundLiquidFieldManager _fieldManager;
+
         protected override EGroundLiquidType[] ActiveTypes => s_activeTypes;
         protected override EGroundLiquidType NoneType => EGroundLiquidType.None;
 
@@ -411,9 +413,30 @@ namespace My
         {
         }
 
+        internal void BindFieldManager(LogicGroundLiquidFieldManager fieldManager)
+        {
+            _fieldManager = fieldManager;
+        }
+
+        public new void AddElementCircle(Vector2 worldCenter, float radius, EGroundLiquidType type, float duration)
+        {
+            _fieldManager?.AddElementCircle(worldCenter, radius, type, duration);
+        }
+
         public HashSet<EGroundLiquidType> CheckAllLiquidsUnderUnit(Vector3 unitPos, float unitRadius)
         {
+            if (_fieldManager != null)
+            {
+                return _fieldManager.CheckAllLiquidsUnderUnit(unitPos, unitRadius);
+            }
+
             return CheckAllUnderUnit(unitPos, unitRadius);
+        }
+
+        public new void ClearAll()
+        {
+            _fieldManager?.ClearAll();
+            base.ClearAll();
         }
     }
 

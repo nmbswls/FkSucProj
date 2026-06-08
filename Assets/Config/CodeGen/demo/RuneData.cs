@@ -21,9 +21,8 @@ public sealed partial class RuneData : Luban.BeanBase
         { if(!_buf["rune_id"].IsString) { throw new SerializationException(); }  RuneId = _buf["rune_id"]; }
         { if(!_buf["rune_type"].IsNumber) { throw new SerializationException(); }  RuneType = (demo.ERuneType)_buf["rune_type"].AsInt; }
         { if(!_buf["equip_slot"].IsNumber) { throw new SerializationException(); }  EquipSlot = (demo.ERuneEquipSlot)_buf["equip_slot"].AsInt; }
-        { if(!_buf["passive_skill_id"].IsString) { throw new SerializationException(); }  PassiveSkillId = _buf["passive_skill_id"]; }
-        { if(!_buf["func_unlock_key"].IsString) { throw new SerializationException(); }  FuncUnlockKey = _buf["func_unlock_key"]; }
-        { if(!_buf["func_open_type"].IsNumber) { throw new SerializationException(); }  FuncOpenType = (demo.EFuncOpenType)_buf["func_open_type"].AsInt; }
+        { if(!_buf["initial_upgrade_id"].IsString) { throw new SerializationException(); }  InitialUpgradeId = _buf["initial_upgrade_id"]; }
+        { if(!_buf["layout_template_id"].IsString) { throw new SerializationException(); }  LayoutTemplateId = _buf["layout_template_id"]; }
         { if(!_buf["icon"].IsString) { throw new SerializationException(); }  Icon = _buf["icon"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
@@ -38,9 +37,8 @@ public sealed partial class RuneData : Luban.BeanBase
     public string RuneId;
     public demo.ERuneType RuneType;
     public demo.ERuneEquipSlot EquipSlot;
-    public string PassiveSkillId;
-    public string FuncUnlockKey;
-    public demo.EFuncOpenType FuncOpenType;
+    public string InitialUpgradeId;
+    public string LayoutTemplateId;
     public string Icon;
     public string Name;
     public string Desc;
@@ -59,9 +57,8 @@ public sealed partial class RuneData : Luban.BeanBase
         + "runeId:" + RuneId + ","
         + "runeType:" + RuneType + ","
         + "equipSlot:" + EquipSlot + ","
-        + "passiveSkillId:" + PassiveSkillId + ","
-        + "funcUnlockKey:" + FuncUnlockKey + ","
-        + "funcOpenType:" + FuncOpenType + ","
+        + "initialUpgradeId:" + InitialUpgradeId + ","
+        + "layoutTemplateId:" + LayoutTemplateId + ","
         + "icon:" + Icon + ","
         + "name:" + Name + ","
         + "desc:" + Desc + ","
