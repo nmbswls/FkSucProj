@@ -197,7 +197,7 @@ namespace My.UI.Rune
                 return null;
             }
 
-            var state = _runeSystem.GetUpgradeNodeState(upgradeId, out var lockReason);
+            var state = _runeSystem.GetUpgradeNodeState(upgradeId);
             if (RuneUpgradeCatalog.IsInitialUpgrade(def) && _runeSystem.OwnsRune(def.BaseRuneId))
             {
                 state = ERuneUpgradeNodeState.Unlocked;
@@ -207,7 +207,6 @@ namespace My.UI.Rune
             {
                 Def = def,
                 State = state,
-                LockReason = lockReason,
             };
         }
 

@@ -51,10 +51,6 @@ namespace My.UI.Rune
                 dragController = GetComponent<RuneDragDropController>();
             }
 
-            if (upgradeDetail != null)
-            {
-                upgradeDetail.SetHostPanel(this);
-            }
         }
 
         void OnEnable()
@@ -121,11 +117,6 @@ namespace My.UI.Rune
             if (ownedArea != null)
             {
                 ownedArea.gameObject.SetActive(false);
-            }
-
-            if (upgradeDetail != null)
-            {
-                upgradeDetail.SetHostPanel(this);
             }
 
             ApplyHostedChromeIfNeeded();
@@ -562,51 +553,6 @@ namespace My.UI.Rune
             return MainGameManager.Instance?.gameLogicManager?.playerDataManager?.RuneSystem;
         }
 
-
-        public RuneUpgradeTreeView BuildUpgradeTreeView(string baseRuneId)
-        {
-            var view = new RuneUpgradeTreeView
-            {
-                BaseRuneId = baseRuneId,
-                BaseRune = RuneCatalog.GetOrDefault(baseRuneId),
-            };
-
-            if (string.IsNullOrEmpty(baseRuneId))
-            {
-                return view;
-            }
-
-            foreach (var branchId in RuneUpgradeCatalog.GetBranchIdsForRune(baseRuneId))
-            {
-                var branch = new RuneUpgradeBranchView { BranchId = branchId };
-                foreach (var def in RuneUpgradeCatalog.GetUpgradesInBranch(baseRuneId, branchId))
-                {
-                    branch.Nodes.Add(BuildNodeView(def));
-                }
-
-                view.Branches.Add(branch);
-            }
-
-            foreach (var def in RuneUpgradeCatalog.GetUpgradesInBranch(baseRuneId, null))
-            {
-                view.RootUpgrades.Add(BuildNodeView(def));
-            }
-
-            return view;
-        }
-
-        RuneUpgradeNodeView BuildNodeView(RuneUpgradeInfo def)
-        {
-            var runeSystem = MainGameManager.Instance.gameLogicManager.playerDataManager.RuneSystem;
-            var state = runeSystem.GetUpgradeNodeState(def.UpgradeId, out var lockReason);
-
-            return new RuneUpgradeNodeView
-            {
-                Def = def,
-                State = state,
-                LockReason = lockReason,
-            };
-        }
 
         public bool OnConfirm() => false;
         public bool OnCancel() => false;

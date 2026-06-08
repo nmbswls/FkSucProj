@@ -677,6 +677,23 @@ namespace My
                         }
                     }
                     break;
+                case EItemUseType.UnlockRuneUpgrade:
+                    {
+                        var upgradeId = useRow.S1;
+                        if (string.IsNullOrEmpty(upgradeId))
+                        {
+                            Debug.LogWarning("HandleUseItem UnlockRuneUpgrade: empty upgrade_id.");
+                            break;
+                        }
+
+                        if (cnt > 1)
+                        {
+                            Debug.LogWarning($"HandleUseItem UnlockRuneUpgrade: only one upgrade per use, cnt={cnt}.");
+                        }
+
+                        playerDataManager.TryUnlockRuneUpgrade(upgradeId);
+                    }
+                    break;
             }
 
             return false;

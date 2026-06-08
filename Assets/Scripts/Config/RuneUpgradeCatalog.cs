@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using cfg.demo;
 
 namespace My.Config
@@ -17,7 +16,6 @@ namespace My.Config
     {
         public RuneUpgradeInfo Def;
         public ERuneUpgradeNodeState State;
-        public string LockReason;
     }
 
     // 符文升级项索引；RebuildCaches 由 CfgMgr.InitializeCfgs 调用
@@ -100,43 +98,6 @@ namespace My.Config
             }
 
             return Array.Empty<RuneUpgradeInfo>();
-        }
-
-        public static IReadOnlyList<string> GetBranchIdsForRune(string baseRuneId)
-        {
-            var upgrades = GetUpgradesForRune(baseRuneId);
-            if (upgrades.Count == 0)
-            {
-                return Array.Empty<string>();
-            }
-
-            var branches = new List<string>();
-            var seen = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var u in upgrades)
-            {
-                if (string.IsNullOrEmpty(u.BranchId) || !seen.Add(u.BranchId))
-                {
-                    continue;
-                }
-
-                branches.Add(u.BranchId);
-            }
-
-            return branches;
-        }
-
-        public static IReadOnlyList<RuneUpgradeInfo> GetUpgradesInBranch(string baseRuneId, string branchId)
-        {
-            if (string.IsNullOrEmpty(branchId))
-            {
-                return GetUpgradesForRune(baseRuneId)
-                    .Where(x => string.IsNullOrEmpty(x.BranchId))
-                    .ToList();
-            }
-
-            return GetUpgradesForRune(baseRuneId)
-                .Where(x => x.BranchId == branchId)
-                .ToList();
         }
 
         public static bool IsInitialUpgrade(RuneUpgradeInfo def)

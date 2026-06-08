@@ -261,13 +261,13 @@ public class ConsoleGM : MonoBehaviour
                     return;
                 }
 
-                if (pdm.TryGrantRune(args[0], out var reason))
+                if (pdm.TryGrantRune(args[0]))
                 {
                     Log($"Granted rune: {args[0]}");
                 }
                 else
                 {
-                    LogError($"Failed to grant rune: {args[0]} ({reason ?? "unknown"})");
+                    LogError($"Failed to grant rune: {args[0]}");
                 }
             });
 

@@ -649,13 +649,7 @@ namespace My.Player
 
         public bool TryGrantRune(string runeId)
         {
-            return TryGrantRune(runeId, out _);
-        }
-
-        public bool TryGrantRune(string runeId, out string failReason)
-        {
-            failReason = null;
-            if (RuneSystem == null || !RuneSystem.TryGrantRune(runeId, out failReason))
+            if (RuneSystem == null || !RuneSystem.TryGrantRune(runeId))
             {
                 return false;
             }
@@ -666,13 +660,7 @@ namespace My.Player
 
         public bool TryUnlockRuneUpgrade(string upgradeId)
         {
-            return TryUnlockRuneUpgrade(upgradeId, out _);
-        }
-
-        public bool TryUnlockRuneUpgrade(string upgradeId, out string failReason)
-        {
-            failReason = null;
-            if (RuneSystem == null || !RuneSystem.TryUnlockUpgrade(upgradeId, out failReason))
+            if (RuneSystem == null || !RuneSystem.TryUnlockUpgrade(upgradeId))
             {
                 return false;
             }
@@ -683,7 +671,7 @@ namespace My.Player
 
         public bool TryEquipRune(cfg.demo.ERuneEquipSlot slot, string runeId)
         {
-            if (RuneSystem == null || !RuneSystem.TryEquip(slot, runeId, out _))
+            if (RuneSystem == null || !RuneSystem.TryEquip(slot, runeId))
             {
                 return false;
             }
@@ -694,7 +682,7 @@ namespace My.Player
 
         public bool TryUnequipRune(cfg.demo.ERuneEquipSlot slot)
         {
-            if (RuneSystem == null || !RuneSystem.TryUnequip(slot, out _))
+            if (RuneSystem == null || !RuneSystem.TryUnequip(slot))
             {
                 return false;
             }

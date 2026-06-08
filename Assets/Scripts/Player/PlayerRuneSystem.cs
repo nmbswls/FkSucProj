@@ -6,11 +6,14 @@ using System;
 using System.Collections.Generic;
 using My;
 using My.Config;
+using UnityEngine;
 
 namespace My.Player
 {
     public class PlayerRuneSystem : IPlayerSystem
     {
+        const string LogTag = "[PlayerRuneSystem]";
+
         readonly PlayerSystemManager _owner;
         readonly HashSet<string> _owned = new(StringComparer.Ordinal);
         readonly HashSet<string> _unlockedUpgrades = new(StringComparer.Ordinal);
@@ -115,19 +118,18 @@ namespace My.Player
             return !string.IsNullOrEmpty(upgradeId) && _unlockedUpgrades.Contains(upgradeId);
         }
 
-        public bool TryGrantRune(string runeId, out string failReason)
+        public bool TryGrantRune(string runeId)
         {
-            failReason = null;
             var def = RuneCatalog.GetOrDefault(runeId);
             if (def == null)
             {
-                failReason = "invalid_rune";
+                Debug.LogWarning($"{LogTag} Grant rune failed: invalid rune '{runeId}'.");
                 return false;
             }
 
             if (_owned.Contains(runeId))
             {
-                failReason = "already_owned";
+                Debug.LogWarning($"{LogTag} Grant rune failed: already owned '{runeId}'.");
                 return false;
             }
 
@@ -141,40 +143,14 @@ namespace My.Player
             return true;
         }
 
-        public bool CanUnlockUpgrade(string upgradeId, out string failReason)
+        public bool CanUnlockUpgrade(string upgradeId)
         {
-            failReason = null;
-            var def = RuneUpgradeCatalog.GetOrDefault(upgradeId);
-            if (def == null)
-            {
-                failReason = "invalid_upgrade";
-                return false;
-            }
-
-            if (_unlockedUpgrades.Contains(upgradeId))
-            {
-                failReason = "already_unlocked";
-                return false;
-            }
-
-            if (!_owned.Contains(def.BaseRuneId))
-            {
-                failReason = "base_rune_not_owned";
-                return false;
-            }
-
-            if (!RuneUpgradeCatalog.ArePrerequisitesMet(def, HasUpgrade))
-            {
-                failReason = "prerequisite_missing";
-                return false;
-            }
-
-            return true;
+            return ValidateUnlockUpgrade(upgradeId, logOnFail: false);
         }
 
-        public bool TryUnlockUpgrade(string upgradeId, out string failReason)
+        public bool TryUnlockUpgrade(string upgradeId)
         {
-            if (!CanUnlockUpgrade(upgradeId, out failReason))
+            if (!ValidateUnlockUpgrade(upgradeId, logOnFail: true))
             {
                 return false;
             }
@@ -191,13 +167,11 @@ namespace My.Player
             return true;
         }
 
-        public ERuneUpgradeNodeState GetUpgradeNodeState(string upgradeId, out string lockReason)
+        public ERuneUpgradeNodeState GetUpgradeNodeState(string upgradeId)
         {
-            lockReason = null;
             var def = RuneUpgradeCatalog.GetOrDefault(upgradeId);
             if (def == null)
             {
-                lockReason = "invalid_upgrade";
                 return ERuneUpgradeNodeState.Locked;
             }
 
@@ -207,7 +181,7 @@ namespace My.Player
                 return ERuneUpgradeNodeState.Unlocked;
             }
 
-            if (CanUnlockUpgrade(upgradeId, out lockReason))
+            if (ValidateUnlockUpgrade(upgradeId, logOnFail: false))
             {
                 return ERuneUpgradeNodeState.Available;
             }
@@ -215,33 +189,30 @@ namespace My.Player
             return ERuneUpgradeNodeState.Locked;
         }
 
-        
-
-        public bool TryEquip(ERuneEquipSlot slot, string runeId, out string failReason)
+        public bool TryEquip(ERuneEquipSlot slot, string runeId)
         {
-            failReason = null;
             if (slot == ERuneEquipSlot.None)
             {
-                failReason = "invalid_slot";
+                Debug.LogWarning($"{LogTag} Equip rune failed: invalid slot.");
                 return false;
             }
 
             var def = RuneCatalog.GetOrDefault(runeId);
             if (def == null || def.RuneType != ERuneType.Equippable)
             {
-                failReason = "invalid_rune";
+                Debug.LogWarning($"{LogTag} Equip rune failed: invalid equippable rune '{runeId}'.");
                 return false;
             }
 
             if (!_owned.Contains(runeId))
             {
-                failReason = "not_owned";
+                Debug.LogWarning($"{LogTag} Equip rune failed: not owned '{runeId}'.");
                 return false;
             }
 
             if (def.EquipSlot != slot)
             {
-                failReason = "slot_mismatch";
+                Debug.LogWarning($"{LogTag} Equip rune failed: slot mismatch rune='{runeId}' slot={slot}.");
                 return false;
             }
 
@@ -249,18 +220,17 @@ namespace My.Player
             return true;
         }
 
-        public bool TryUnequip(ERuneEquipSlot slot, out string failReason)
+        public bool TryUnequip(ERuneEquipSlot slot)
         {
-            failReason = null;
             if (slot == ERuneEquipSlot.None)
             {
-                failReason = "invalid_slot";
+                Debug.LogWarning($"{LogTag} Unequip rune failed: invalid slot.");
                 return false;
             }
 
             if (!_equipped.Remove(slot))
             {
-                failReason = "empty_slot";
+                Debug.LogWarning($"{LogTag} Unequip rune failed: empty slot {slot}.");
                 return false;
             }
 
@@ -314,6 +284,52 @@ namespace My.Player
         public void CollectEquippedPassiveSkillIds(HashSet<string> applied, List<string> output)
         {
             CollectPassiveSkillIds(applied, output);
+        }
+
+        bool ValidateUnlockUpgrade(string upgradeId, bool logOnFail)
+        {
+            var def = RuneUpgradeCatalog.GetOrDefault(upgradeId);
+            if (def == null)
+            {
+                if (logOnFail)
+                {
+                    Debug.LogWarning($"{LogTag} Unlock upgrade failed: invalid upgrade '{upgradeId}'.");
+                }
+
+                return false;
+            }
+
+            if (_unlockedUpgrades.Contains(upgradeId))
+            {
+                if (logOnFail)
+                {
+                    Debug.LogWarning($"{LogTag} Unlock upgrade failed: already unlocked '{upgradeId}'.");
+                }
+
+                return false;
+            }
+
+            if (!_owned.Contains(def.BaseRuneId))
+            {
+                if (logOnFail)
+                {
+                    Debug.LogWarning($"{LogTag} Unlock upgrade failed: base rune not owned '{def.BaseRuneId}' for '{upgradeId}'.");
+                }
+
+                return false;
+            }
+
+            if (!RuneUpgradeCatalog.ArePrerequisitesMet(def, HasUpgrade))
+            {
+                if (logOnFail)
+                {
+                    Debug.LogWarning($"{LogTag} Unlock upgrade failed: prerequisite missing for '{upgradeId}'.");
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         void CollectPassiveFromEquippedRunes(HashSet<string> applied, List<string> output)

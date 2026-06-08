@@ -17,6 +17,7 @@ namespace cfg.demo
         AddHunger = 1,
         GiveDrop = 2,
         UseSkill = 3,
+        UnlockRuneUpgrade = 4,
     }
 
 } 
