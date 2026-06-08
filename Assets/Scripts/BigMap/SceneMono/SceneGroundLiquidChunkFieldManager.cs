@@ -7,6 +7,13 @@ namespace My
     {
         const string LiquidMaskLayerName = "LiquidMask";
 
+        static readonly (int dx, int dy, float weight)[] SoftKernel =
+        {
+            (0, 0, 1f),
+            (-1, 0, 0.55f), (1, 0, 0.55f), (0, -1, 0.55f), (0, 1, 0.55f),
+            (-1, -1, 0.3f), (1, -1, 0.3f), (-1, 1, 0.3f), (1, 1, 0.3f),
+        };
+
         [Header("Liquid Field Chunks")]
         public Transform liquidLayerContainer;
 
@@ -101,10 +108,10 @@ namespace My
             view.Root.SetActive(true);
             view.Root.name = $"LiquidFieldChunk_{chunkCoord.x}_{chunkCoord.y}";
 
-            float haloWorld = LiquidFieldConstants.ChunkHaloTexels * LiquidFieldConstants.SubCellWorldSize;
+            int coreSize = LiquidFieldConstants.ChunkTexSize;
+            int halo = LiquidFieldConstants.ChunkHaloTexels;
             Vector2 chunkMin = LogicGroundLiquidFieldManager.ChunkWorldMin(chunkCoord);
-            float worldSize = LiquidFieldConstants.ChunkWorldSize + haloWorld * 2f;
-            float ppu = LiquidFieldConstants.ChunkTexSizeWithHalo / worldSize;
+            float ppu = coreSize / LiquidFieldConstants.ChunkWorldSize;
 
             view.Texture.Reinitialize(LiquidFieldConstants.ChunkTexSizeWithHalo, LiquidFieldConstants.ChunkTexSizeWithHalo);
             view.Texture.filterMode = FilterMode.Bilinear;
@@ -115,9 +122,10 @@ namespace My
                 Destroy(view.Sprite);
             }
 
+            // 仅渲染核心区域，halo 留在纹理中供双线性采样，避免相邻 chunk 几何重叠导致 z-fighting
             view.Sprite = Sprite.Create(
                 view.Texture,
-                new Rect(0f, 0f, LiquidFieldConstants.ChunkTexSizeWithHalo, LiquidFieldConstants.ChunkTexSizeWithHalo),
+                new Rect(halo, halo, coreSize, coreSize),
                 new Vector2(0.5f, 0.5f),
                 ppu);
             view.Renderer.sprite = view.Sprite;
@@ -186,7 +194,7 @@ namespace My
                         var type = (EGroundLiquidType)chunk.Types[idx];
                         int px = tx + halo;
                         int py = ty + halo;
-                        _pixelScratch[py * texSize + px] = BuildMaskPixel(intensity, type);
+                        StampMaskPixel(_pixelScratch, texSize, px, py, intensity, type);
                     }
                 }
             }
@@ -249,7 +257,7 @@ namespace My
                 var type = (EGroundLiquidType)neighbor.Types[nIdx];
                 int px = stx + halo;
                 int py = sty + halo;
-                pixels[py * texSize + px] = BuildMaskPixel(intensity, type);
+                WriteMaskPixel(pixels, py * texSize + px, intensity, type);
             }
         }
 
@@ -281,20 +289,59 @@ namespace My
                 return;
             }
 
-            pixels[py * texSize + px] = BuildMaskPixel(intensity, type);
+            WriteMaskPixel(pixels, py * texSize + px, intensity, type);
         }
 
-        static Color32 BuildMaskPixel(byte intensity, EGroundLiquidType type)
+        static void StampMaskPixel(Color32[] pixels, int texSize, int cx, int cy, byte intensity, EGroundLiquidType type)
         {
+            if (intensity == 0 || type == EGroundLiquidType.None)
+            {
+                return;
+            }
+
+            for (int k = 0; k < SoftKernel.Length; k++)
+            {
+                var (dx, dy, weight) = SoftKernel[k];
+                int px = cx + dx;
+                int py = cy + dy;
+                if (px < 0 || py < 0 || px >= texSize || py >= texSize)
+                {
+                    continue;
+                }
+
+                byte weighted = (byte)Mathf.Min(255, Mathf.RoundToInt(intensity * weight));
+                WriteMaskPixel(pixels, py * texSize + px, weighted, type);
+            }
+        }
+
+        static void WriteMaskPixel(Color32[] pixels, int index, byte intensity, EGroundLiquidType type)
+        {
+            if (intensity == 0 || type == EGroundLiquidType.None)
+            {
+                return;
+            }
+
+            var pixel = pixels[index];
             switch (type)
             {
                 case EGroundLiquidType.GcLiquid:
-                    return new Color32(intensity, 0, 0, 255);
+                    if (intensity > pixel.r)
+                    {
+                        pixel.r = intensity;
+                    }
+                    break;
                 case EGroundLiquidType.Milk:
-                    return new Color32(0, intensity, 0, 255);
+                    if (intensity > pixel.g)
+                    {
+                        pixel.g = intensity;
+                    }
+                    break;
                 default:
-                    return new Color32(0, 0, 0, 0);
+                    return;
             }
+
+            pixel.a = 255;
+            pixels[index] = pixel;
         }
 
         void RecycleChunkView(ChunkView view)

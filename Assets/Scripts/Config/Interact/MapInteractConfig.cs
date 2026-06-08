@@ -58,6 +58,10 @@ namespace My.Config
             // Param1=沿藤移动ms Param2=停顿ms Param3=藤蔓结束点 Param4=落点 Param5=跳跃ms Param6=移到交互点ms(0则默认350)
             VineClimbTo = 50,
 
+            // Param1=持续ms Param2=可视半径(0=默认28) Param3=命名点(空则用 Target 位置)
+            // TargetType=StaticName 时 Pin 远端交互点 Presenter
+            ShowCameraOverride = 60,
+
             EGMemberChangeState = 100,
             EGMemberActivate = 101,
         }

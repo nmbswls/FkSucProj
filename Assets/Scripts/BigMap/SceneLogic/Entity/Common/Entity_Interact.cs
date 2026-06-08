@@ -880,6 +880,58 @@ namespace My.Map
                         }
                         break;
 
+                    case LogicInteractOutput.EOutputType.ShowCameraOverride:
+                        {
+                            Vector2 focusPos;
+                            if (!TryResolveNamedPoint(output.Param3, out focusPos))
+                            {
+                                var focusTargetId = GetInteractTarget(output);
+                                if (focusTargetId != 0)
+                                {
+                                    var focusEntity = Owner.LogicManager.GetLogicEntity(focusTargetId, false);
+                                    if (focusEntity == null)
+                                    {
+                                        Debug.LogWarning("ShowCameraOverride: focus target not found");
+                                        errOccur = true;
+                                        break;
+                                    }
+
+                                    focusPos = focusEntity.Pos;
+                                }
+                                else
+                                {
+                                    focusPos = Owner.Pos;
+                                }
+                            }
+
+                            long pinId = 0;
+                            if (output.TargetType == LogicInteractOutput.ETargetType.StaticName)
+                            {
+                                pinId = GetInteractTarget(output);
+                            }
+
+                            float durationSec = output.Param1 * 0.001f;
+                            if (durationSec <= 0f)
+                            {
+                                durationSec = MainGameManager.DefaultCameraOverrideDuration;
+                            }
+
+                            float visualRadius = output.Param2 > 0
+                                ? output.Param2
+                                : MainGameManager.DefaultCameraOverrideVisualRadius;
+
+                            MainGameManager.Instance?.ShowCameraOverrideFix(
+                                focusPos,
+                                durationSec,
+                                pinId,
+                                visualRadius,
+                                blockInput: true);
+
+                            BeginInteractPending(InteractPendingMode.Timer, durationSec);
+                            pending = true;
+                        }
+                        break;
+
                     #endregion
 
 

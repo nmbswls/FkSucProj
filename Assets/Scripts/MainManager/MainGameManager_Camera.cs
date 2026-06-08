@@ -234,31 +234,20 @@ namespace My
         {
             ResolveMapCameraBoundsExtension();
             _mapCameraBounds = new MapCameraBoundsController(mapBoundsExtension);
-            EnsureOverrideVCam();
+            InitOverrideVCamState();
         }
 
-        void EnsureOverrideVCam()
+        void InitOverrideVCamState()
         {
-            if (OverrideVCam != null)
+            if (OverrideVCam == null)
             {
-                OverrideVCam.Priority = 0;
-                OverrideVCam.Follow = null;
-                OverrideVCam.LookAt = null;
+                Debug.LogError("[MainGameManager] OverrideVCam is not assigned on GameMain in Main_Root.");
                 return;
             }
 
-            if (MainMapVCam == null)
-            {
-                return;
-            }
-
-            var go = new GameObject("OverrideVCam");
-            go.transform.SetParent(MainMapVCam.transform.parent, false);
-            OverrideVCam = go.AddComponent<CinemachineVirtualCamera>();
             OverrideVCam.Priority = 0;
             OverrideVCam.Follow = null;
             OverrideVCam.LookAt = null;
-            OverrideVCam.m_Lens = MainMapVCam.m_Lens;
         }
 
         public void ShowCameraOverrideFix(
@@ -371,9 +360,9 @@ namespace My
 
         void ActivateOverrideVcam(Vector2 logicPos)
         {
-            EnsureOverrideVCam();
             if (OverrideVCam == null)
             {
+                Debug.LogError("[MainGameManager] ActivateOverrideVcam failed: OverrideVCam not assigned.");
                 return;
             }
 
