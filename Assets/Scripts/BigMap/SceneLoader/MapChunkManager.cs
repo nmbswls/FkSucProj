@@ -101,15 +101,36 @@ public class MapChunkManager : MonoBehaviour
 
     public void RefreshChunks(Vector3 playerPos, int chunkRing)
     {
-        var center = WorldToChunk(playerPos);
-        MapChunkUtility.CollectChunkRing(center, chunkRing, _ringScratch);
+        RefreshChunksUnion(new[] { playerPos }, chunkRing);
+    }
 
-        foreach (var c in _ringScratch)
+    public void RefreshChunksUnion(IReadOnlyList<Vector3> centers, int chunkRing)
+    {
+        if (centers == null || centers.Count == 0)
+        {
+            return;
+        }
+
+        var unionRing = new HashSet<ChunkCoord>();
+        for (int i = 0; i < centers.Count; i++)
+        {
+            var center = WorldToChunk(centers[i]);
+            MapChunkUtility.CollectChunkRing(center, chunkRing, _ringScratch);
+            foreach (var c in _ringScratch)
+            {
+                unionRing.Add(c);
+            }
+        }
+
+        _ringScratch.Clear();
+        foreach (var c in unionRing)
         {
             if (!IsChunkInLogicBounds(c))
             {
                 continue;
             }
+
+            _ringScratch.Add(c);
 
             if (!_chunks.TryGetValue(c, out var rec))
             {
@@ -146,6 +167,12 @@ public class MapChunkManager : MonoBehaviour
         {
             _lastRefreshChunkTime = LogicTime.time;
         }
+    }
+
+    public bool IsWorldPosChunkLoaded(Vector3 worldPos)
+    {
+        var coord = WorldToChunk(worldPos);
+        return _chunks.TryGetValue(coord, out var rec) && rec.loadState == LoadState.Loaded;
     }
 
     public void RequestVisibleChunkRefresh()

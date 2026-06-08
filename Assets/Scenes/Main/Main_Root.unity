@@ -2028,13 +2028,16 @@ MonoBehaviour:
   CameraCtrl: {fileID: 961739754}
   MainMapVCam: {fileID: 945414997}
   CineBrain: {fileID: 0}
-  mapBoundsExtension: {fileID: 945414999}
   dialoguePlayer: {fileID: 771406920}
   AOIManager: {fileID: 1209709318}
   LiquidStrampManager: {fileID: 1885830509}
   LiquidChunkFieldManager: {fileID: 1885830512}
   MistStrampManager: {fileID: 1885830511}
   DynamicRoot: {fileID: 63059760}
+  mapBoundsExtension: {fileID: 945414999}
+  OverrideVCam: {fileID: 0}
+  overrideVcamWorldOffset: {x: 0, y: 0, z: 0}
+  overrideVcamPriority: 20
 --- !u!4 &885418544
 Transform:
   m_ObjectHideFlags: 0

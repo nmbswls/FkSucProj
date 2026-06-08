@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
+using My.Map.View;
 
 namespace My
 {

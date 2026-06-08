@@ -85,6 +85,25 @@ public class SceneAOIManager : MonoBehaviour
 
     private readonly Dictionary<long, AOIEntry> _aoiStates = new(); // id -> entry
 
+    struct VisualFocusSession
+    {
+        public Vector2 Pos;
+        public float Radius;
+        public float UntilTime;
+    }
+
+    struct AoiCenter
+    {
+        public Vector2 Pos;
+        public float InnerRadius;
+        public float OuterRadius;
+    }
+
+    readonly List<VisualFocusSession> _visualFocuses = new();
+    readonly HashSet<long> _pinnedPresentationIds = new();
+    readonly List<AoiCenter> _aoiCenterScratch = new(4);
+    readonly List<Vector3> _chunkCenterScratch = new(4);
+
     public void InitMapArea(string mapName)
     {
     }
@@ -210,12 +229,154 @@ public class SceneAOIManager : MonoBehaviour
         if (MainGameManager.Instance.gameLogicManager.playerLogicEntity == null) return;
         if (string.IsNullOrEmpty(MapName)) return;
 
-        // 1) 动态实体 AOI 刷新（网格桶 + 半径范围）
-        RefreshDynamicAOI(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, LogicTime.deltaTime);
+        var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
+        BuildAoiCenters(playerPos, _aoiCenterScratch);
 
-        // 2) 静态 Chunk AOI 刷新（九宫格/环）
-        mapChunkManager?.RefreshChunks(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, chunkRing);
+        RefreshDynamicAOI(_aoiCenterScratch, LogicTime.deltaTime);
+
+        _chunkCenterScratch.Clear();
+        _chunkCenterScratch.Add(playerPos);
+        for (int i = 0; i < _visualFocuses.Count; i++)
+        {
+            _chunkCenterScratch.Add(_visualFocuses[i].Pos);
+        }
+
+        mapChunkManager?.RefreshChunksUnion(_chunkCenterScratch, chunkRing);
         mapChunkManager?.ProcessPendingVisibleChunkRefresh();
+    }
+
+    void BuildAoiCenters(Vector2 playerPos, List<AoiCenter> centers)
+    {
+        centers.Clear();
+        float innerR = aoiRadius;
+        float outerR = aoiRadius + Mathf.Max(0f, radiusHysteresis);
+        centers.Add(new AoiCenter
+        {
+            Pos = playerPos,
+            InnerRadius = innerR,
+            OuterRadius = outerR,
+        });
+
+        float now = LogicTime.time;
+        for (int i = 0; i < _visualFocuses.Count; i++)
+        {
+            var focus = _visualFocuses[i];
+            if (now > focus.UntilTime)
+            {
+                continue;
+            }
+
+            float focusInner = Mathf.Max(0.1f, focus.Radius);
+            float focusOuter = focusInner + Mathf.Max(0f, radiusHysteresis);
+            centers.Add(new AoiCenter
+            {
+                Pos = focus.Pos,
+                InnerRadius = focusInner,
+                OuterRadius = focusOuter,
+            });
+        }
+    }
+
+    public void AddVisualFocus(Vector2 logicPos, float radius, float untilTime)
+    {
+        _visualFocuses.Add(new VisualFocusSession
+        {
+            Pos = logicPos,
+            Radius = radius,
+            UntilTime = untilTime,
+        });
+    }
+
+    public void RemoveVisualFocus(Vector2 logicPos)
+    {
+        for (int i = _visualFocuses.Count - 1; i >= 0; i--)
+        {
+            if ((_visualFocuses[i].Pos - logicPos).sqrMagnitude < 0.01f)
+            {
+                _visualFocuses.RemoveAt(i);
+            }
+        }
+    }
+
+    public void RemoveExpiredVisualFocuses(float now)
+    {
+        for (int i = _visualFocuses.Count - 1; i >= 0; i--)
+        {
+            if (now > _visualFocuses[i].UntilTime)
+            {
+                _visualFocuses.RemoveAt(i);
+            }
+        }
+    }
+
+    public void ClearAllVisualFocusAndPins()
+    {
+        _visualFocuses.Clear();
+        _pinnedPresentationIds.Clear();
+    }
+
+    public void PinPresentation(long entityId)
+    {
+        if (entityId != 0)
+        {
+            _pinnedPresentationIds.Add(entityId);
+        }
+    }
+
+    public void UnpinPresentation(long entityId)
+    {
+        _pinnedPresentationIds.Remove(entityId);
+    }
+
+    public bool IsFocusAreaReady(Vector2 logicPos, long pinEntityId)
+    {
+        if (mapChunkManager != null)
+        {
+            var worldPos = MainGameManager.Instance.GetWorldPosFromLogicPos(logicPos);
+            if (!mapChunkManager.IsWorldPosChunkLoaded(worldPos))
+            {
+                return false;
+            }
+        }
+
+        if (pinEntityId != 0 && GetActivePresentation(pinEntityId) == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void PrewarmTickAtFocusOnce(Vector2 focusPos, float dt)
+    {
+        if (!CanRefreshStaticChunksNow())
+        {
+            return;
+        }
+
+        BuildAoiCenters(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos, _aoiCenterScratch);
+        RefreshDynamicAOI(_aoiCenterScratch, dt, noEnterGrace: true);
+
+        _chunkCenterScratch.Clear();
+        _chunkCenterScratch.Add(MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos);
+        _chunkCenterScratch.Add(focusPos);
+        mapChunkManager?.RefreshChunksUnion(_chunkCenterScratch, chunkRing);
+        mapChunkManager?.ProcessPendingVisibleChunkRefresh();
+    }
+
+    public void TickPinnedPresentation(long entityId, float dt)
+    {
+        if (!_pinnedPresentationIds.Contains(entityId))
+        {
+            return;
+        }
+
+        if (!_aoiStates.TryGetValue(entityId, out var entry) || entry.entity == null)
+        {
+            return;
+        }
+
+        EnsurePinnedPresentationVisible(entry, dt);
     }
 
     // ===== 动态实体接口 =====
@@ -319,27 +480,36 @@ public class SceneAOIManager : MonoBehaviour
         // 逻辑层可自行触发状态事件；可选：若已在AOI，Presenter位置会通过事件或下一帧刷新
     }
 
-    private void RefreshDynamicAOI(Vector3 playerPos, float dt, bool noEnterGrace = false)
+    private void RefreshDynamicAOI(List<AoiCenter> centers, float dt, bool noEnterGrace = false)
     {
-        Vector2 center = playerPos;
-        float innerR = aoiRadius;
-        float outerR = aoiRadius + Mathf.Max(0f, radiusHysteresis);
-        float innerR2 = innerR * innerR;
-        float outerR2 = outerR * outerR;
-
-        // 候选集合（按外圈方形包围）
-        var min = center - new Vector2(outerR, outerR);
-        var max = center + new Vector2(outerR, outerR);
-        var cMin = ToDynamicCell(min);
-        var cMax = ToDynamicCell(max);
+        if (centers == null || centers.Count == 0)
+        {
+            return;
+        }
 
         var candidate = new HashSet<ILogicEntity>();
-        for (int cx = cMin.Item1; cx <= cMax.Item1; cx++)
-            for (int cy = cMin.Item2; cy <= cMax.Item2; cy++)
+        for (int ci = 0; ci < centers.Count; ci++)
+        {
+            var center = centers[ci];
+            var min = center.Pos - new Vector2(center.OuterRadius, center.OuterRadius);
+            var max = center.Pos + new Vector2(center.OuterRadius, center.OuterRadius);
+            var cMin = ToDynamicCell(min);
+            var cMax = ToDynamicCell(max);
+
+            for (int cx = cMin.Item1; cx <= cMax.Item1; cx++)
             {
-                if (_buckets.TryGetValue((cx, cy), out var set))
-                    foreach (var e in set) candidate.Add(e);
+                for (int cy = cMin.Item2; cy <= cMax.Item2; cy++)
+                {
+                    if (_buckets.TryGetValue((cx, cy), out var set))
+                    {
+                        foreach (var e in set)
+                        {
+                            candidate.Add(e);
+                        }
+                    }
+                }
             }
+        }
 
         var visited = new HashSet<long>();
 
@@ -356,18 +526,37 @@ public class SceneAOIManager : MonoBehaviour
                     exitTimer = 0f,
                     lastInsideInner = false,
                     lastInsideOuter = false,
-                    creating = false,              // === 新增 ===
-                    canceledDuringCreate = false, // === 新增 ===
-                    pres = null                   // === 新增 ===
+                    creating = false,
+                    canceledDuringCreate = false,
+                    pres = null
                 };
                 _aoiStates[e.Id] = entry;
             }
 
             Vector2 pos = ExtractPosition(e);
-            float d2 = (pos - center).sqrMagnitude;
+            bool insideInner = false;
+            bool insideOuter = false;
+            bool isPinned = _pinnedPresentationIds.Contains(e.Id);
+            for (int ci = 0; ci < centers.Count; ci++)
+            {
+                var center = centers[ci];
+                float d2 = (pos - center.Pos).sqrMagnitude;
+                if (d2 <= center.InnerRadius * center.InnerRadius)
+                {
+                    insideInner = true;
+                }
 
-            bool insideInner = d2 <= innerR2; // 进入判定
-            bool insideOuter = d2 <= outerR2; // 离开迟滞判定
+                if (d2 <= center.OuterRadius * center.OuterRadius)
+                {
+                    insideOuter = true;
+                }
+            }
+
+            if (isPinned)
+            {
+                insideInner = true;
+                insideOuter = true;
+            }
 
             if (!entry.isShown)
             {
@@ -441,27 +630,79 @@ public class SceneAOIManager : MonoBehaviour
             entry.lastInsideOuter = insideOuter;
         }
 
-        // 未访问到的实体：视为处于外圈之外，若正在显示则推进离开计时
+        foreach (var pinId in _pinnedPresentationIds)
+        {
+            visited.Add(pinId);
+            if (_aoiStates.TryGetValue(pinId, out var pinnedEntry))
+            {
+                EnsurePinnedPresentationVisible(pinnedEntry, dt, noEnterGrace);
+            }
+        }
+
         var keys = new List<long>(_aoiStates.Keys);
         foreach (var id in keys)
         {
-            if (visited.Contains(id)) continue;
+            if (visited.Contains(id))
+            {
+                continue;
+            }
+
+            if (_pinnedPresentationIds.Contains(id))
+            {
+                continue;
+            }
+
             var entry = _aoiStates[id];
             if (entry.isShown)
             {
                 entry.exitTimer += dt;
                 if (entry.exitTimer >= exitGraceSeconds)
                 {
-                    // === 修改: 离开处理（含创建期取消） ===
                     entry.isShown = false;
                     entry.enterTimer = 0f;
                     if (entry.pres != null)
+                    {
                         HideAndRecyclePresentation(entry);
+                    }
                     else if (entry.creating)
+                    {
                         entry.canceledDuringCreate = true;
-                    // === 修改结束 ===
+                    }
                 }
             }
+        }
+    }
+
+    void EnsurePinnedPresentationVisible(AOIEntry entry, float dt, bool noEnterGrace = false)
+    {
+        if (entry == null || entry.entity == null || entry.entity.MarkDestroyed)
+        {
+            return;
+        }
+
+        entry.exitTimer = 0f;
+        if (entry.isShown)
+        {
+            return;
+        }
+
+        entry.enterTimer += dt;
+        if (!noEnterGrace && entry.enterTimer < enterGraceSeconds)
+        {
+            return;
+        }
+
+        entry.isShown = true;
+        entry.enterTimer = 0f;
+        if (entry.pres != null)
+        {
+            ShowPresentation(entry);
+        }
+        else if (!entry.creating)
+        {
+            entry.creating = true;
+            entry.canceledDuringCreate = false;
+            _ = SpawnPresentationAsync(entry);
         }
     }
 
@@ -641,7 +882,8 @@ public class SceneAOIManager : MonoBehaviour
         }
 
         var pos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
-        RefreshDynamicAOI(pos, dt, noEnterGrace: true);
+        BuildAoiCenters(pos, _aoiCenterScratch);
+        RefreshDynamicAOI(_aoiCenterScratch, dt, noEnterGrace: true);
         mapChunkManager?.RefreshChunks(pos, chunkRing);
         mapChunkManager?.ProcessPendingVisibleChunkRefresh();
     }

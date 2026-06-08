@@ -20,6 +20,7 @@ namespace My
 
         private void OnHardAreaClearStarting()
         {
+            EndCameraOverrideImmediate();
             ClearMapVcamBinding();
             ClearMapCameraBounds();
             _ambientSpiritVisuals?.Shutdown();
