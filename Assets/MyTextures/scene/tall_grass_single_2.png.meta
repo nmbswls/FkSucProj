@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 058d354ca5288ad48bc1e547c2a5eea4
+guid: d65c8fbc05e3886429e0f3f55bb0ddc9
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,169 +97,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tall_grass_single_0
+      name: tall_grass_single_2_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 74
-        width: 49
+        x: 10
+        y: 4
+        width: 48
         height: 72
       alignment: 9
-      pivot: {x: 0.5, y: 0.013302379}
+      pivot: {x: 0.47718605, y: 0.009499974}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fc16f22d16d28624b81f586cded441fb
-      internalID: 587169744
+      spriteID: 880374e165c4c084388a66d8ec1e193d
+      internalID: -1683227473
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tall_grass_single_1
+      name: tall_grass_single_2_1
       rect:
         serializedVersion: 2
         x: 69
-        y: 73
+        y: 0
         width: 48
-        height: 77
+        height: 80
       alignment: 9
-      pivot: {x: 0.7053258, y: 0.030684335}
+      pivot: {x: 0.69962233, y: 0.06539416}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 30aca79cbd80ce641965deb664977a4f
-      internalID: -630796289
+      spriteID: df94eaa42940ca64194ba99672e918e6
+      internalID: 1943953121
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tall_grass_single_2
+      name: tall_grass_single_2_2
       rect:
         serializedVersion: 2
         x: 126
-        y: 74
-        width: 56
+        y: 4
+        width: 70
         height: 70
       alignment: 9
-      pivot: {x: 0.8079886, y: 0.022862462}
+      pivot: {x: 0.63297296, y: 0.0072186743}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 30179fa687e78cb458f872ef2a1f58f0
-      internalID: 387341820
+      spriteID: 8da2f6f400d6647449b449ef212240c6
+      internalID: -1321288050
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tall_grass_single_3
+      name: tall_grass_single_2_3
       rect:
         serializedVersion: 2
-        x: 189
-        y: 74
-        width: 54
-        height: 70
+        x: 205
+        y: 0
+        width: 48
+        height: 80
       alignment: 9
-      pivot: {x: 0.829535, y: 0.030684335}
+      pivot: {x: 0.32889557, y: 0.06197207}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b7f225d8aea776e4dbb210f51a41b200
-      internalID: -415725347
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: tall_grass_single_4
-      rect:
-        serializedVersion: 2
-        x: 7
-        y: 1
-        width: 51
-        height: 68
-      alignment: 9
-      pivot: {x: 0.51073605, y: 0.032984897}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bc8616e66b6f41b41aae91880d1c7f95
-      internalID: 1061205732
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: tall_grass_single_5
-      rect:
-        serializedVersion: 2
-        x: 76
-        y: 2
-        width: 45
-        height: 70
-      alignment: 9
-      pivot: {x: 0.44524655, y: 0.03459534}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 651972f23bf7f60408e8a8a8ed26f04c
-      internalID: -412559061
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: tall_grass_single_6
-      rect:
-        serializedVersion: 2
-        x: 141
-        y: 2
-        width: 53
-        height: 64
-      alignment: 9
-      pivot: {x: 0.32437566, y: 0.029462263}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b995fccb75afb6541a7a60b325244bab
-      internalID: 8109543
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: tall_grass_single_7
-      rect:
-        serializedVersion: 2
-        x: 202
-        y: 2
-        width: 49
-        height: 65
-      alignment: 9
-      pivot: {x: 0.3379744, y: 0.015642215}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 78767858122b44b49a937492e3847753
-      internalID: 1264601697
+      spriteID: 2c0981e51f5284a459722a161c498114
+      internalID: -1485460173
       vertices: []
       indices: 
       edges: []
@@ -275,14 +191,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      tall_grass_single_0: 587169744
-      tall_grass_single_1: -630796289
-      tall_grass_single_2: 387341820
-      tall_grass_single_3: -415725347
-      tall_grass_single_4: 1061205732
-      tall_grass_single_5: -412559061
-      tall_grass_single_6: 8109543
-      tall_grass_single_7: 1264601697
+      tall_grass_single_2_0: -1683227473
+      tall_grass_single_2_1: 1943953121
+      tall_grass_single_2_2: -1321288050
+      tall_grass_single_2_3: -1485460173
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
