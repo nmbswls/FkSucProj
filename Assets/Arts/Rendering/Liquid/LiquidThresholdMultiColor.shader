@@ -11,8 +11,8 @@ Shader "Custom/LiquidThresholdMultiColor"
         _SmoothRange ("Edge Smoothness", Range(0.001, 0.2)) = 0.05
         _NoiseTiling ("Noise Tiling", Float) = 2.5
         _FlowSpeed ("Flow Speed", Vector) = (0.04, 0.02, 0, 0)
-        _DetailStrength ("Detail Strength", Range(0, 1)) = 0.35
-        _ShimmerStrength ("Shimmer Strength", Range(0, 1)) = 0.2
+        _DetailStrength ("Ripple Strength", Range(0, 1)) = 0.65
+        _ShimmerStrength ("Ripple Brightness", Range(0, 1)) = 0.55
         _EdgeFoamStrength ("Edge Foam", Range(0, 1)) = 0.25
         _OverallAlpha ("Overall Alpha", Range(0, 1)) = 0.85
     }
@@ -76,6 +76,51 @@ Shader "Custom/LiquidThresholdMultiColor"
                 return saturate(waterAlpha + poisonAlpha + oilAlpha);
             }
 
+            float Hash21(float2 p)
+            {
+                p = frac(p * float2(123.34, 456.21));
+                p += dot(p, p + 45.32);
+                return frac(p.x * p.y);
+            }
+
+            float ValueNoise(float2 p)
+            {
+                float2 i = floor(p);
+                float2 f = frac(p);
+                float2 u = f * f * (3.0 - 2.0 * f);
+                float a = Hash21(i);
+                float b = Hash21(i + float2(1.0, 0.0));
+                float c = Hash21(i + float2(0.0, 1.0));
+                float d = Hash21(i + float2(1.0, 1.0));
+                return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
+            }
+
+            float SampleTexNoise(float2 uv)
+            {
+                return tex2D(_NoiseTex, uv).r;
+            }
+
+            // 程序化噪声为主（不依赖贴图），贴图仅作细节叠加
+            float SampleWhiteRippleMask(float2 worldXY, float time)
+            {
+                float scale = max(_NoiseTiling, 0.1) * 0.22;
+                float2 flow = _FlowSpeed.xy * time;
+                float2 p = worldXY * scale + flow;
+
+                float n1 = ValueNoise(p);
+                float n2 = ValueNoise(p * 1.63 + float2(1.9, 0.7) + flow * 0.35);
+                float n3 = ValueNoise(p * 0.81 - float2(0.6, 2.4) - flow * 0.2);
+
+                float tex = SampleTexNoise(p * 0.55 + float2(3.7, 1.2));
+                n1 = lerp(n1, tex, 0.35);
+
+                float ridge = saturate(1.0 - abs(n1 - n2) * 2.8);
+                float crest = smoothstep(0.42, 0.88, n1);
+                float fine = smoothstep(0.5, 0.92, n3);
+
+                return saturate(ridge * 0.55 + crest * 0.45 + fine * 0.25);
+            }
+
             fixed4 frag(v2f i) : SV_Target
             {
                 float waterAlpha;
@@ -92,15 +137,12 @@ Shader "Custom/LiquidThresholdMultiColor"
                                   _PoisonColor.rgb * poisonAlpha +
                                   _OilColor.rgb * oilAlpha) / sumAlpha;
 
-                float time = _Time.y;
-                float2 flowUV = i.worldXY * _NoiseTiling + _FlowSpeed.xy * time;
-                float2 shimmerUV = i.worldXY * (_NoiseTiling * 1.7) - _FlowSpeed.xy * time * 0.6;
+                float rippleMask = SampleWhiteRippleMask(i.worldXY, _Time.y);
+                fixed3 white = fixed3(1, 1, 1);
 
-                float noiseA = tex2D(_NoiseTex, flowUV).r;
-                float noiseB = tex2D(_NoiseTex, shimmerUV * float2(1.1, 0.9)).g;
-                float detail = lerp(1.0, 0.82 + noiseA * 0.36, _DetailStrength);
-                fixed3 finalRGB = baseRGB * detail;
-                finalRGB += (noiseB - 0.5) * _ShimmerStrength * totalAlpha;
+                // 粉色底 + 叠加白色波纹（比 lerp 更容易看见）
+                float rippleAdd = rippleMask * (_DetailStrength * 0.5 + _ShimmerStrength * 0.4);
+                fixed3 finalRGB = saturate(baseRGB + white * rippleAdd);
 
                 float edgeWater;
                 float edgePoison;
@@ -111,7 +153,7 @@ Shader "Custom/LiquidThresholdMultiColor"
                     edgePoison,
                     edgeOil);
                 float edgeFoam = saturate((totalAlpha - edgeSample) * 12.0) * _EdgeFoamStrength;
-                finalRGB = lerp(finalRGB, fixed3(1, 1, 1), edgeFoam * 0.5);
+                finalRGB = lerp(finalRGB, white, edgeFoam * 0.4);
 
                 return fixed4(finalRGB, totalAlpha * _OverallAlpha);
             }

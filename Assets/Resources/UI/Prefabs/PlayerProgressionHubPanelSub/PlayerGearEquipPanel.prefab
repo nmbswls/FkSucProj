@@ -80,7 +80,7 @@ MonoBehaviour:
   bagGrid: {fileID: 2270853433774267828}
   focusPartMark: {fileID: 9178533167575193473}
   transferAnim: {fileID: 0}
-  partProgressLine: {fileID: 0}
+  partProgressLine: {fileID: 8607792322663922238}
 --- !u!1 &5490286918329543
 GameObject:
   m_ObjectHideFlags: 0

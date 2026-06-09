@@ -6,6 +6,7 @@ namespace My
     public class SceneGroundLiquidChunkFieldManager : MonoBehaviour
     {
         static readonly int LiquidTexId = Shader.PropertyToID("_LiquidTex");
+        static readonly int NoiseTexId = Shader.PropertyToID("_NoiseTex");
 
         static readonly (int dx, int dy, float weight)[] SoftKernel =
         {
@@ -158,6 +159,11 @@ namespace My
             Material mat = liquidChunkMaterial != null ? new Material(liquidChunkMaterial) : null;
             if (mat != null)
             {
+                if (liquidChunkMaterial.HasProperty(NoiseTexId))
+                {
+                    mat.SetTexture(NoiseTexId, liquidChunkMaterial.GetTexture(NoiseTexId));
+                }
+
                 renderer.material = mat;
             }
 

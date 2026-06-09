@@ -64,7 +64,7 @@ public static class MapOverlayExportCore
         var overlays = MapExporterConfigReader.GetOverlaysForVariantScene(mapVariantSceneName);
         if (overlays.Count == 0)
         {
-            var legacy = ScanOverlay(areaRoot, null, chunkSize, chunkOrigin);
+            var legacy = ScanOverlay(areaRoot, null, chunkSize, chunkOrigin, "legacy");
             summary.Overlays.Add(new OverlayScanResult
             {
                 OverlayId = "(legacy)",
@@ -76,7 +76,7 @@ public static class MapOverlayExportCore
 
         foreach (var overlay in overlays)
         {
-            var data = ScanOverlay(areaRoot, overlay.Id, chunkSize, chunkOrigin);
+            var data = ScanOverlay(areaRoot, overlay.Id, chunkSize, chunkOrigin, overlay.MapDataName);
             summary.Overlays.Add(new OverlayScanResult
             {
                 OverlayId = overlay.Id,
@@ -109,7 +109,7 @@ public static class MapOverlayExportCore
             : MapChunkEditorSettings.GetOrCreate().EffectiveChunkWorldSize;
         var chunkOrigin = chunkEditor != null ? chunkEditor.ChunkOrigin : Vector2.zero;
 
-        var overlayData = ScanOverlay(areaRoot, overlayId, chunkSize, chunkOrigin);
+        var overlayData = ScanOverlay(areaRoot, overlayId, chunkSize, chunkOrigin, mapDataName);
         var shared = ScanSharedVariantData(areaRoot, chunkSize, chunkOrigin);
 
         var fishingError = ValidateFishingSpots(overlayData.DynamicGenerators);
@@ -193,13 +193,25 @@ public static class MapOverlayExportCore
         return data;
     }
 
-    static ScanData ScanOverlay(GameObject areaRoot, string overlayId, float chunkSize, Vector2 chunkOrigin)
+    static ScanData ScanOverlay(
+        GameObject areaRoot,
+        string overlayId,
+        float chunkSize,
+        Vector2 chunkOrigin,
+        string mapDataName)
     {
         var data = NewScanData();
         int nextItemId = 100;
         foreach (var root in ResolveStaticScanRoots(areaRoot.transform, overlayId))
         {
-            ScanStaticPrefabs(root, chunkSize, chunkOrigin, data.ChunkBuckets, ref nextItemId);
+            if (root.name == MapVariantSceneHierarchy.DecorateFolderName)
+            {
+                ScanDecorateStatics(root, mapDataName, chunkSize, chunkOrigin, data.ChunkBuckets, ref nextItemId);
+            }
+            else
+            {
+                ScanProviderStatics(root, chunkSize, chunkOrigin, data.ChunkBuckets, ref nextItemId);
+            }
         }
 
         foreach (var root in ResolveDynamicScanRoots(areaRoot.transform, overlayId))
@@ -280,7 +292,78 @@ public static class MapOverlayExportCore
         }
     }
 
-    static void ScanStaticPrefabs(
+    // Decorate：导出所有激活物体（prefab 实例 / 场景叶子节点），按 chunk 切分
+    static void ScanDecorateStatics(
+        Transform decorateRoot,
+        string mapDataName,
+        float chunkSize,
+        Vector2 chunkOrigin,
+        Dictionary<(int x, int y), List<StaticPrefabItem>> buckets,
+        ref int nextItemId)
+    {
+        if (decorateRoot == null)
+        {
+            return;
+        }
+
+        var stack = new Stack<Transform>();
+        for (int i = 0; i < decorateRoot.childCount; i++)
+        {
+            stack.Push(decorateRoot.GetChild(i));
+        }
+
+        while (stack.Count > 0)
+        {
+            var t = stack.Pop();
+            if (!t.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+
+            if (ShouldSkipStaticScanNode(t))
+            {
+                PushChildren(stack, t);
+                continue;
+            }
+
+            var instanceRoot = PrefabUtility.GetOutermostPrefabInstanceRoot(t.gameObject);
+            bool isPrefabInstanceRoot = instanceRoot != null && instanceRoot.transform == t;
+            var provider = t.GetComponent<MapScenePrefabProvider>();
+            if (isPrefabInstanceRoot || provider != null)
+            {
+                if (TryResolveStaticPrefabKey(t.gameObject, out var key) ||
+                    TryBakeDecorateSceneObject(t.gameObject, mapDataName, out key))
+                {
+                    AddStaticPrefabItem(t, key, provider, chunkSize, chunkOrigin, buckets, ref nextItemId);
+                }
+                else
+                {
+                    Debug.LogWarning($"[MapExport] Decorate object '{GetTransformPath(t)}' skipped: cannot resolve prefab key.");
+                }
+
+                continue;
+            }
+
+            if (t.childCount == 0)
+            {
+                if (TryBakeDecorateSceneObject(t.gameObject, mapDataName, out var bakedKey))
+                {
+                    AddStaticPrefabItem(t, bakedKey, null, chunkSize, chunkOrigin, buckets, ref nextItemId);
+                }
+                else
+                {
+                    Debug.LogWarning($"[MapExport] Decorate object '{GetTransformPath(t)}' skipped: bake failed.");
+                }
+
+                continue;
+            }
+
+            PushChildren(stack, t);
+        }
+    }
+
+    // Trigger / DynamicRoot：仅导出带 MapScenePrefabProvider 的节点
+    static void ScanProviderStatics(
         Transform root,
         float chunkSize,
         Vector2 chunkOrigin,
@@ -302,43 +385,188 @@ public static class MapOverlayExportCore
                 continue;
             }
 
-            if (t.name == MapVariantSceneHierarchy.GridRootName)
+            if (ShouldSkipStaticScanNode(t))
             {
+                PushChildren(stack, t);
                 continue;
             }
 
-            if (MapVariantSceneHierarchy.IsVariantInfrastructureFolder(t.name))
+            var provider = t.GetComponent<MapScenePrefabProvider>();
+            if (provider != null)
             {
-                continue;
-            }
-
-            var prefabProvider = t.GetComponent<MapScenePrefabProvider>();
-            if (prefabProvider != null)
-            {
-                var ck = WorldToChunk(prefabProvider.transform.position, chunkSize, chunkOrigin);
-                if (!buckets.TryGetValue(ck, out var list))
+                if (string.IsNullOrWhiteSpace(provider.Key))
                 {
-                    list = new List<StaticPrefabItem>();
-                    buckets[ck] = list;
+                    Debug.LogWarning($"[MapExport] MapScenePrefabProvider on '{GetTransformPath(t)}' has empty Key.");
+                }
+                else
+                {
+                    AddStaticPrefabItem(t, provider.Key.Trim(), provider, chunkSize, chunkOrigin, buckets, ref nextItemId);
                 }
 
-                list.Add(new StaticPrefabItem
-                {
-                    ItemId = ++nextItemId,
-                    Key = prefabProvider.Key,
-                    Position = prefabProvider.transform.position,
-                    Rotation = prefabProvider.transform.rotation,
-                    Scale = prefabProvider.transform.localScale,
-                    AppearCond = prefabProvider.AppearCond,
-                });
                 continue;
             }
 
-            for (int i = 0; i < t.childCount; i++)
-            {
-                stack.Push(t.GetChild(i));
-            }
+            PushChildren(stack, t);
         }
+    }
+
+    static void AddStaticPrefabItem(
+        Transform t,
+        string key,
+        MapScenePrefabProvider provider,
+        float chunkSize,
+        Vector2 chunkOrigin,
+        Dictionary<(int x, int y), List<StaticPrefabItem>> buckets,
+        ref int nextItemId)
+    {
+        var ck = WorldToChunk(t.position, chunkSize, chunkOrigin);
+        if (!buckets.TryGetValue(ck, out var list))
+        {
+            list = new List<StaticPrefabItem>();
+            buckets[ck] = list;
+        }
+
+        list.Add(new StaticPrefabItem
+        {
+            ItemId = ++nextItemId,
+            Key = key,
+            Position = t.position,
+            Rotation = t.rotation,
+            Scale = t.localScale,
+            AppearCond = provider != null ? provider.AppearCond : null,
+        });
+    }
+
+    static bool TryResolveStaticPrefabKey(GameObject go, out string key)
+    {
+        key = null;
+        if (go == null)
+        {
+            return false;
+        }
+
+        var provider = go.GetComponent<MapScenePrefabProvider>();
+        if (provider != null && !string.IsNullOrWhiteSpace(provider.Key))
+        {
+            key = provider.Key.Trim();
+            return true;
+        }
+
+        var instanceRoot = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
+        if (instanceRoot == null || instanceRoot != go)
+        {
+            return false;
+        }
+
+        var assetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(go);
+        return TryConvertPrefabAssetPathToKey(assetPath, out key);
+    }
+
+    static bool TryConvertPrefabAssetPathToKey(string assetPath, out string key)
+    {
+        key = null;
+        if (string.IsNullOrEmpty(assetPath))
+        {
+            return false;
+        }
+
+        const string prefix = "Assets/Resources/Prefab/";
+        if (!assetPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
+            !assetPath.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        key = assetPath.Substring(prefix.Length, assetPath.Length - prefix.Length - ".prefab".Length);
+        return !string.IsNullOrEmpty(key);
+    }
+
+    static bool TryBakeDecorateSceneObject(GameObject source, string mapDataName, out string key)
+    {
+        key = null;
+        if (source == null || string.IsNullOrWhiteSpace(mapDataName))
+        {
+            return false;
+        }
+
+        string safeMapName = MakeSafeAssetName(mapDataName);
+        string relKey = $"MapSceneBake/{safeMapName}/{BuildDecorateBakeFileName(source.transform)}";
+        string folder = "Assets/Resources/Prefab/MapSceneBake/" + safeMapName;
+        EnsureFolder("Assets/Resources");
+        EnsureFolder("Assets/Resources/Prefab");
+        EnsureFolder("Assets/Resources/Prefab/MapSceneBake");
+        EnsureFolder(folder);
+
+        string assetPath = $"Assets/Resources/Prefab/{relKey}.prefab";
+        var clone = UnityEngine.Object.Instantiate(source);
+        clone.name = source.name;
+        clone.transform.SetPositionAndRotation(source.transform.position, source.transform.rotation);
+        clone.transform.localScale = source.transform.localScale;
+        PrefabUtility.SaveAsPrefabAsset(clone, assetPath);
+        UnityEngine.Object.DestroyImmediate(clone);
+        AssetDatabase.ImportAsset(assetPath);
+
+        key = relKey;
+        return true;
+    }
+
+    static string BuildDecorateBakeFileName(Transform t)
+    {
+        string path = GetTransformPath(t).Replace("/", "_");
+        string safe = MakeSafeAssetName(path);
+        if (safe.Length <= 80)
+        {
+            return safe;
+        }
+
+        return safe.Substring(0, 40) + "_" + path.GetHashCode().ToString("x8");
+    }
+
+    static string MakeSafeAssetName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return "unnamed";
+        }
+
+        foreach (var c in Path.GetInvalidFileNameChars())
+        {
+            name = name.Replace(c, '_');
+        }
+
+        return name;
+    }
+
+    static bool ShouldSkipStaticScanNode(Transform t)
+    {
+        return t.name == MapVariantSceneHierarchy.GridRootName ||
+               MapVariantSceneHierarchy.IsVariantInfrastructureFolder(t.name);
+    }
+
+    static void PushChildren(Stack<Transform> stack, Transform parent)
+    {
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            stack.Push(parent.GetChild(i));
+        }
+    }
+
+    static string GetTransformPath(Transform t)
+    {
+        if (t == null)
+        {
+            return string.Empty;
+        }
+
+        var names = new Stack<string>();
+        var cur = t;
+        while (cur != null)
+        {
+            names.Push(cur.name);
+            cur = cur.parent;
+        }
+
+        return string.Join("/", names);
     }
 
     static void ScanDynamicEntities(Transform root, List<DynamicEntityExportGenerator> generators)

@@ -147,6 +147,7 @@ namespace My.UI.BodyPart
             {
                 var view = Instantiate(OneSegTemplate, LineRoot);
                 var comp = view.GetOrAddComponent<BodyPartProgressSeg>();
+                comp.Bind();
                 view.gameObject.SetActive(true);
                 _segLines.Add(comp);
             }
