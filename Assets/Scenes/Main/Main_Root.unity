@@ -3055,6 +3055,8 @@ MonoBehaviour:
     TipPanelName: ItemTip
   - TipType: 4
     TipPanelName: TalentTip
+  - TipType: 5
+    TipPanelName: BodyPartProgressTip
 --- !u!1 &1248278157
 GameObject:
   m_ObjectHideFlags: 0

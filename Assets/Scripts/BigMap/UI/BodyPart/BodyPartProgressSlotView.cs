@@ -5,49 +5,36 @@ using UnityEngine.UI;
 
 namespace My.UI.BodyPart
 {
-    // OneSlot：一段连线 + 一个里程碑节点
+    // OneSlot：一段连线 + 一个里程碑节点（悬停显示详情）
     public sealed class BodyPartProgressSlotView : MonoBehaviour
     {
         static readonly Color LitSlotColor = new Color(0.88f, 0.74f, 0.32f, 1f);
         static readonly Color LockedSlotColor = new Color(0.32f, 0.3f, 0.4f, 0.75f);
         static readonly Color LitLineColor = new Color(0.88f, 0.74f, 0.32f, 1f);
         static readonly Color LockedLineColor = new Color(0.23529412f, 0.23529412f, 0.23529412f, 1f);
-        static readonly Color SelectedSlotColor = new Color(0.55f, 0.42f, 0.78f, 1f);
 
         [SerializeField] GameObject lineRoot;
         [SerializeField] Image lineTrackImage;
         [SerializeField] Image lineFillImage;
-        [SerializeField] Button clickButton;
         [SerializeField] Image slotImage;
         [SerializeField] GameObject litRoot;
         [SerializeField] GameObject lockedRoot;
         [SerializeField] TextMeshProUGUI levelText;
 
-        int _milestoneId;
         bool _unlocked;
-        bool _selected;
-        System.Action<int> _onSelected;
-
-        public int MilestoneId => _milestoneId;
 
         public void Bind(
             BodyPartProgressInfo cfg,
             int segmentStartLevel,
             int currentLevel,
-            bool hideLine,
-            bool selected,
-            System.Action<int> onSelected)
+            bool hideLine)
         {
-            _milestoneId = cfg != null ? cfg.Id : 0;
-            _onSelected = onSelected;
-
             if (levelText != null)
             {
                 levelText.text = cfg != null ? cfg.Level.ToString() : string.Empty;
             }
 
             _unlocked = cfg != null && currentLevel >= cfg.Level;
-            _selected = selected;
             if (litRoot != null)
             {
                 litRoot.SetActive(_unlocked);
@@ -79,17 +66,7 @@ namespace My.UI.BodyPart
                 lineTrackImage.color = segmentFill >= 1f ? LitLineColor : LockedLineColor;
             }
 
-            if (clickButton != null)
-            {
-                clickButton.onClick.RemoveAllListeners();
-                clickButton.onClick.AddListener(OnClicked);
-            }
-        }
-
-        public void SetSelected(bool selected)
-        {
-            _selected = selected;
-            ApplySlotVisual();
+            EnsureHoverProvider(cfg, currentLevel);
         }
 
         void ApplySlotVisual()
@@ -99,9 +76,23 @@ namespace My.UI.BodyPart
                 return;
             }
 
-            slotImage.color = _selected
-                ? SelectedSlotColor
-                : (_unlocked ? LitSlotColor : LockedSlotColor);
+            slotImage.color = _unlocked ? LitSlotColor : LockedSlotColor;
+        }
+
+        void EnsureHoverProvider(BodyPartProgressInfo cfg, int currentLevel)
+        {
+            var hover = GetComponent<BodyPartProgressHoverProvider>();
+            if (hover == null)
+            {
+                hover = gameObject.AddComponent<BodyPartProgressHoverProvider>();
+            }
+
+            hover.Configure(cfg, currentLevel);
+
+            if (slotImage != null)
+            {
+                slotImage.raycastTarget = true;
+            }
         }
 
         static float ComputeSegmentFill(int startLevel, int endLevel, int currentLevel)
@@ -122,14 +113,6 @@ namespace My.UI.BodyPart
             }
 
             return Mathf.Clamp01((currentLevel - startLevel) / (float)(endLevel - startLevel));
-        }
-
-        void OnClicked()
-        {
-            if (_milestoneId > 0)
-            {
-                _onSelected?.Invoke(_milestoneId);
-            }
         }
     }
 }

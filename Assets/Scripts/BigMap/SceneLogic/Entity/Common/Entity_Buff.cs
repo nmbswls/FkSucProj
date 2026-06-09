@@ -27,6 +27,7 @@ namespace My.Map.Entity
         FinalDmgReduced, // 累计最终减伤
         NearCaster, // 接近施法者（由 NearCasterWatch Duration 主动触发）
 
+
         PlayerHVoice = 100,
     }
 
