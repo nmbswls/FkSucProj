@@ -378,13 +378,6 @@ public static class MapPaintBackgroundExporter
         int skipped = 0;
         foreach (var coord in paintCoords)
         {
-            string paintedPath = MapPaintBackgroundShared.GetPaintedChunkPath(mapName, coord);
-            if (!File.Exists(paintedPath))
-            {
-                skipped++;
-                continue;
-            }
-
             if (!MapPaintBackgroundShared.PackRuntimeBackgroundFromPainted(
                     root, mapName, coord, manifest, resampleFilter))
             {
@@ -411,9 +404,63 @@ public static class MapPaintBackgroundExporter
         return new ExportResult
         {
             Success = true,
-            Message = $"Packed and synced {packed} chunk(s) to MapChunkDatabase ({skipped} skipped, no painted PNG).",
+            Message = $"Packed and synced {packed} chunk(s) to MapChunkDatabase ({skipped} skipped, no painted/template PNG).",
             Manifest = manifest,
         };
+    }
+
+    // Variant 导出：按 painted 管线打包 PaintWorldRect 内所有 chunk 背景（优先 painted，回退 template）
+    public static int PackPaintRectBackgroundsForExport(
+        MapChunkEditorRoot root,
+        string mapName,
+        MapChunkDatabase database,
+        FilterMode resampleFilter = FilterMode.Bilinear)
+    {
+        if (root == null || database == null)
+        {
+            return 0;
+        }
+
+        if (root.PaintWorldRect.width <= 0f || root.PaintWorldRect.height <= 0f)
+        {
+            return 0;
+        }
+
+        MapPaintBackgroundShared.EnsurePaintFolders(mapName);
+        var manifest = LoadOrCreateManifest(root, mapName);
+        var settings = MapChunkEditorSettings.GetOrCreate();
+        float paintPpu = settings.EffectivePaintExportPpu;
+        int slicePx = manifest.SlicePixelSize > 0
+            ? manifest.SlicePixelSize
+            : MapChunkUtility.ComputeSlicePixelSize(root.ChunkWorldSize, paintPpu);
+        float expandRatio = settings.PaintContextExpandRatio;
+
+        var paintCoords = new HashSet<ChunkCoord>();
+        MapPaintBackgroundShared.CollectPaintRectCoords(root, paintCoords);
+
+        int packed = 0;
+        foreach (var coord in paintCoords)
+        {
+            var info = manifest.GetOrCreateChunk(coord);
+            UpdateChunkTemplate(root, mapName, manifest, info, coord, paintPpu, forceCapture: false);
+            if (!MapPaintBackgroundShared.PackRuntimeBackgroundFromPainted(
+                    root, mapName, coord, manifest, resampleFilter))
+            {
+                continue;
+            }
+
+            var item = FindOrCreateChunkItem(database, coord);
+            item.BackgroundKey = MapPaintBackgroundShared.BuildRuntimeBackgroundKey(mapName, coord);
+            packed++;
+        }
+
+        if (packed > 0)
+        {
+            SaveManifestState(root, manifest, mapName, slicePx, paintPpu, expandRatio);
+            database.InvalidateLookup();
+        }
+
+        return packed;
     }
 
     static MapChunkDatabase LoadOrCreateDatabase(MapChunkEditorRoot root, string mapName)

@@ -175,6 +175,30 @@ public class MapChunkManager : MonoBehaviour
         return _chunks.TryGetValue(coord, out var rec) && rec.loadState == LoadState.Loaded;
     }
 
+    // 可见范围内仍有未完成的静态 chunk 加载/卸载
+    public bool HasPendingVisibleLoads()
+    {
+        if (_concurrentLoading > 0)
+        {
+            return true;
+        }
+
+        foreach (var rec in _chunks.Values)
+        {
+            if (!rec.desiredVisible)
+            {
+                continue;
+            }
+
+            if (rec.loadState != LoadState.Loaded)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void RequestVisibleChunkRefresh()
     {
         _pendingVisibleChunkRefresh = true;
@@ -261,7 +285,7 @@ public class MapChunkManager : MonoBehaviour
                 GameObject go = null;
                 try
                 {
-                    go = _asset.Instantiate("Prefab/" + item.Key);
+                    go = _asset.Instantiate(ResolveStaticPrefabResourceKey(item.Key));
                 }
                 catch (Exception ex)
                 {
@@ -364,6 +388,21 @@ public class MapChunkManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    static string ResolveStaticPrefabResourceKey(string key)
+    {
+        if (string.IsNullOrEmpty(key))
+        {
+            return null;
+        }
+
+        if (key.StartsWith("MapChunk/", StringComparison.Ordinal))
+        {
+            return key;
+        }
+
+        return "Prefab/" + key;
     }
 
     IEnumerable<StaticPrefabItem> GetChunkStaticPrefabs(ChunkCoord c)
@@ -713,7 +752,7 @@ public class MapChunkManager : MonoBehaviour
             GameObject go = null;
             try
             {
-                go = await _assetAsync.InstantiateAsync("Prefab/" + it.Key);
+                go = await _assetAsync.InstantiateAsync(ResolveStaticPrefabResourceKey(it.Key));
             }
             catch (Exception ex)
             {

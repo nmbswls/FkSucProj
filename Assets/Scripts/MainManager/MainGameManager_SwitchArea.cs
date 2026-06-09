@@ -263,10 +263,33 @@ namespace My
             await UIOrchestrator.Instance.SetStateAsync(UIAppState.Overworld, null);
 
 
-            // 等待初始所有物体加载完成
-            while (!AOIManager.CheckNoLoading())
+            // 等待动态 AOI 与静态 chunk 全部加载完成（黑屏期间主动推进，不依赖 Initialized）
+            const float stepDt = 1f / 60f;
+            const int lifecyclePumpsPerYield = 32;
+            const float wallSeconds = 30f;
+            float waitStart = Time.realtimeSinceStartup;
+
+            while (true)
             {
-                await Task.Delay(100);
+                if (Time.realtimeSinceStartup - waitStart > wallSeconds)
+                {
+                    Debug.LogWarning("Area switch loading wait timed out (AOI/chunks still pending)");
+                    break;
+                }
+
+                if (gameLogicManager?.AreaManager != null)
+                {
+                    gameLogicManager.AreaManager.AdvanceLifecycleForTeleportPrewarm(stepDt, lifecyclePumpsPerYield);
+                }
+
+                AOIManager?.PrewarmTickAtPlayerOnce(stepDt);
+
+                if (AOIManager != null && AOIManager.CheckNoLoading())
+                {
+                    break;
+                }
+
+                await Task.Delay(16);
             }
 
             if (WorldAreaManager.Instance.cacheAreaOverlayInfo == null

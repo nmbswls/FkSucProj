@@ -64,7 +64,7 @@ public static class MapOverlayExportCore
         var overlays = MapExporterConfigReader.GetOverlaysForVariantScene(mapVariantSceneName);
         if (overlays.Count == 0)
         {
-            var legacy = ScanOverlay(areaRoot, null, chunkSize, chunkOrigin, "legacy");
+            var legacy = ScanOverlay(areaRoot, null, chunkSize, chunkOrigin, "legacy", mapVariantSceneName);
             summary.Overlays.Add(new OverlayScanResult
             {
                 OverlayId = "(legacy)",
@@ -76,7 +76,7 @@ public static class MapOverlayExportCore
 
         foreach (var overlay in overlays)
         {
-            var data = ScanOverlay(areaRoot, overlay.Id, chunkSize, chunkOrigin, overlay.MapDataName);
+            var data = ScanOverlay(areaRoot, overlay.Id, chunkSize, chunkOrigin, overlay.MapDataName, mapVariantSceneName);
             summary.Overlays.Add(new OverlayScanResult
             {
                 OverlayId = overlay.Id,
@@ -109,7 +109,8 @@ public static class MapOverlayExportCore
             : MapChunkEditorSettings.GetOrCreate().EffectiveChunkWorldSize;
         var chunkOrigin = chunkEditor != null ? chunkEditor.ChunkOrigin : Vector2.zero;
 
-        var overlayData = ScanOverlay(areaRoot, overlayId, chunkSize, chunkOrigin, mapDataName);
+        var variantKey = ResolveVariantKey(chunkEditor, null);
+        var overlayData = ScanOverlay(areaRoot, overlayId, chunkSize, chunkOrigin, mapDataName, variantKey);
         var shared = ScanSharedVariantData(areaRoot, chunkSize, chunkOrigin);
 
         var fishingError = ValidateFishingSpots(overlayData.DynamicGenerators);
@@ -193,12 +194,29 @@ public static class MapOverlayExportCore
         return data;
     }
 
+    static string ResolveVariantKey(MapChunkEditorRoot chunkEditor, string mapVariantSceneName)
+    {
+        if (chunkEditor != null && !string.IsNullOrWhiteSpace(chunkEditor.MapVariantSceneName))
+        {
+            return chunkEditor.MapVariantSceneName.Trim();
+        }
+
+        var resolved = MapChunkEditorUtility.ResolveMapChunkKey(chunkEditor);
+        if (!string.IsNullOrWhiteSpace(resolved))
+        {
+            return resolved;
+        }
+
+        return string.IsNullOrWhiteSpace(mapVariantSceneName) ? null : mapVariantSceneName.Trim();
+    }
+
     static ScanData ScanOverlay(
         GameObject areaRoot,
         string overlayId,
         float chunkSize,
         Vector2 chunkOrigin,
-        string mapDataName)
+        string mapDataName,
+        string variantKey)
     {
         var data = NewScanData();
         int nextItemId = 100;
@@ -206,7 +224,7 @@ public static class MapOverlayExportCore
         {
             if (root.name == MapVariantSceneHierarchy.DecorateFolderName)
             {
-                ScanDecorateStatics(root, mapDataName, chunkSize, chunkOrigin, data.ChunkBuckets, ref nextItemId);
+                ScanDecorateStatics(root, variantKey, mapDataName, chunkSize, chunkOrigin, data.ChunkBuckets, ref nextItemId);
             }
             else
             {
@@ -295,6 +313,7 @@ public static class MapOverlayExportCore
     // Decorate：导出所有激活物体（prefab 实例 / 场景叶子节点），按 chunk 切分
     static void ScanDecorateStatics(
         Transform decorateRoot,
+        string variantKey,
         string mapDataName,
         float chunkSize,
         Vector2 chunkOrigin,
@@ -332,7 +351,7 @@ public static class MapOverlayExportCore
             if (isPrefabInstanceRoot || provider != null)
             {
                 if (TryResolveStaticPrefabKey(t.gameObject, out var key) ||
-                    TryBakeDecorateSceneObject(t.gameObject, mapDataName, out key))
+                    TryBakeDecorateSceneObject(t.gameObject, variantKey, mapDataName, out key))
                 {
                     AddStaticPrefabItem(t, key, provider, chunkSize, chunkOrigin, buckets, ref nextItemId);
                 }
@@ -346,7 +365,7 @@ public static class MapOverlayExportCore
 
             if (t.childCount == 0)
             {
-                if (TryBakeDecorateSceneObject(t.gameObject, mapDataName, out var bakedKey))
+                if (TryBakeDecorateSceneObject(t.gameObject, variantKey, mapDataName, out var bakedKey))
                 {
                     AddStaticPrefabItem(t, bakedKey, null, chunkSize, chunkOrigin, buckets, ref nextItemId);
                 }
@@ -481,7 +500,7 @@ public static class MapOverlayExportCore
         return !string.IsNullOrEmpty(key);
     }
 
-    static bool TryBakeDecorateSceneObject(GameObject source, string mapDataName, out string key)
+    static bool TryBakeDecorateSceneObject(GameObject source, string variantKey, string mapDataName, out string key)
     {
         key = null;
         if (source == null || string.IsNullOrWhiteSpace(mapDataName))
@@ -489,15 +508,23 @@ public static class MapOverlayExportCore
             return false;
         }
 
+        if (string.IsNullOrWhiteSpace(variantKey))
+        {
+            Debug.LogWarning("[MapExport] Scene bake skipped: variant key is empty.");
+            return false;
+        }
+
+        string safeVariant = MakeSafeAssetName(variantKey);
         string safeMapName = MakeSafeAssetName(mapDataName);
-        string relKey = $"MapSceneBake/{safeMapName}/{BuildDecorateBakeFileName(source.transform)}";
-        string folder = "Assets/Resources/Prefab/MapSceneBake/" + safeMapName;
+        string relKey = $"MapChunk/{safeVariant}/SceneBake/{safeMapName}/{BuildDecorateBakeFileName(source.transform)}";
+        string folder = $"Assets/Resources/MapChunk/{safeVariant}/SceneBake/{safeMapName}";
         EnsureFolder("Assets/Resources");
-        EnsureFolder("Assets/Resources/Prefab");
-        EnsureFolder("Assets/Resources/Prefab/MapSceneBake");
+        EnsureFolder("Assets/Resources/MapChunk");
+        EnsureFolder($"Assets/Resources/MapChunk/{safeVariant}");
+        EnsureFolder($"Assets/Resources/MapChunk/{safeVariant}/SceneBake");
         EnsureFolder(folder);
 
-        string assetPath = $"Assets/Resources/Prefab/{relKey}.prefab";
+        string assetPath = $"{folder}/{BuildDecorateBakeFileName(source.transform)}.prefab";
         var clone = UnityEngine.Object.Instantiate(source);
         clone.name = source.name;
         clone.transform.SetPositionAndRotation(source.transform.position, source.transform.rotation);

@@ -41,7 +41,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
         m_Texture: {fileID: 2800000, guid: bf0886b059c15f74a8b5818ddf0deb1f, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 0.5, y: 0.5}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
         m_Texture: {fileID: 0}
@@ -49,18 +49,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DetailStrength: 0.72
-    - _EdgeFoamStrength: 0.28
+    - _DetailStrength: 4.18
+    - _EdgeFoamStrength: 0.932
     - _EnableExternalAlpha: 0
-    - _NoiseTiling: 2.2
-    - _OverallAlpha: 0.85
-    - _ShimmerStrength: 0.62
-    - _SmoothRange: 0.05
+    - _NoiseTiling: 1.04
+    - _OverallAlpha: 0.92
+    - _ShimmerStrength: 0.4
+    - _SmoothRange: 0.08
     - _Threshold: 0.19607843
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
-    - _FlowSpeed: {r: 0.05, g: 0.03, b: 0, a: 0}
+    - _FlowSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _OilColor: {r: 0.09999997, g: 0.09999997, b: 0.09999997, a: 1}
     - _PoisonColor: {r: 0.9915211, g: 1, b: 0.75, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}

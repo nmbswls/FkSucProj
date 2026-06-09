@@ -89,12 +89,6 @@ public static class MapChunkExportCore
                 Y = coord.Y
             };
 
-            var existingItem = existingDb?.GetChunkItem(coord);
-            if (existingItem != null)
-            {
-                item.BackgroundKey = existingItem.BackgroundKey;
-            }
-
             if (exportTilemap)
             {
                 string tmPrefabPath = ExportTilemapChunk(
@@ -113,11 +107,13 @@ public static class MapChunkExportCore
                 }
             }
 
-            if (!string.IsNullOrEmpty(item.BackgroundKey) || !string.IsNullOrEmpty(item.TilemapKey))
+            if (!string.IsNullOrEmpty(item.TilemapKey))
             {
                 database.Chunks.Add(item);
             }
         }
+
+        int bgCount = MapPaintBackgroundExporter.PackPaintRectBackgroundsForExport(editorRoot, mapName, database);
 
         bool gridRootExported = false;
         if (exportGridRootPrefab)
@@ -187,9 +183,9 @@ public static class MapChunkExportCore
         return new ExportResult
         {
             Success = true,
-            Message = BuildSuccessMessage(dbPath, tmCount, gridRootExported),
+            Message = BuildSuccessMessage(dbPath, tmCount, bgCount, gridRootExported),
             Database = database,
-            BackgroundChunkCount = 0,
+            BackgroundChunkCount = bgCount,
             TilemapChunkCount = tmCount,
             GridRootPrefabExported = gridRootExported
         };
@@ -217,15 +213,15 @@ public static class MapChunkExportCore
         return rows * slicePx;
     }
 
-    static string BuildSuccessMessage(string dbPath, int tmCount, bool gridRootExported)
+    static string BuildSuccessMessage(string dbPath, int tmCount, int bgCount, bool gridRootExported)
     {
         var parts = new List<string>
         {
             $"database -> {dbPath}",
             $"tilemap chunks: {tmCount}",
+            $"background chunks: {bgCount} (painted pipeline)",
             "visual bake: on",
             gridRootExported ? "GridRoot prefab: yes" : "GridRoot prefab: skipped (not found)",
-            "background: use Map Paint Background -> Sync",
         };
         return string.Join(", ", parts);
     }

@@ -447,6 +447,11 @@ public class SceneAOIManager : MonoBehaviour
             }
         }
 
+        if (mapChunkManager != null && mapChunkManager.HasPendingVisibleLoads())
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -842,7 +847,11 @@ public class SceneAOIManager : MonoBehaviour
 
         if (!MainGameManager.Instance.Initialized)
         {
-            return "MainGameManager not initialized";
+            var stage = MainGameManager.Instance.gameLogicManager?.MainStage;
+            if (stage != GameLogicManager.EMainGameStage.SwitchingMap)
+            {
+                return "MainGameManager not initialized";
+            }
         }
 
         if (WorldAreaManager.Instance == null)
