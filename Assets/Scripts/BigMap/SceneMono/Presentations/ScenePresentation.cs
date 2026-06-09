@@ -98,14 +98,15 @@ namespace My
             Tick(LogicTime.deltaTime);
         }
 
-        private void SyncAnimancerSpeed()
+        protected virtual void SyncAnimancerSpeed()
         {
-            if (_Animancer == null || _Animancer.Animator == null)
+            if (_Animancer == null)
             {
                 return;
             }
 
-            _Animancer.Animator.speed = LogicTime.paused ? 0f : LogicTime.timeScale;
+            _Animancer.InitializePlayable();
+            _Animancer.Playable.Speed = LogicTime.paused ? 0f : LogicTime.timeScale;
         }
 
         public virtual void Bind(ILogicEntity logic)

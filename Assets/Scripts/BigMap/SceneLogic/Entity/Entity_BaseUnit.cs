@@ -92,6 +92,8 @@ namespace My.Map
             get;
         }
 
+        public BuffDamageTriggerContext LastBuffDamageTriggerContext;
+
         public virtual bool CanUnsensored()
         {
             return true;
@@ -1344,6 +1346,14 @@ namespace My.Map
 
                 OnDamageBeforeFinalReduce(dmg, intent);
 
+                long weiyiDrVal = 0;
+                if (!intent.deltaFlags.HasFlag(EDmgFlag.Loss))
+                {
+                    var weiyi_dr = GetAttr(AttrIdConsts.Weiyi_JianShang);
+                    weiyiDrVal = Math.Min(weiyi_dr, dmg);
+                    dmg -= weiyiDrVal;
+                }
+
                 long fixDrVal = 0;
                 if (!intent.deltaFlags.HasFlag(EDmgFlag.Loss))
                 {
@@ -1358,6 +1368,28 @@ namespace My.Map
                     {
                         b.DoBuffTrigger(ETriggerType.FinalDmgReduced, (int)fixDrVal);
                     }
+                }
+
+                if (weiyiDrVal > 0 || dmg > 0)
+                {
+                    LastBuffDamageTriggerContext = new BuffDamageTriggerContext
+                    {
+                        WeiyiDrVal = weiyiDrVal,
+                        HpDamageVal = dmg,
+                    };
+
+                    long takenVal = weiyiDrVal + dmg;
+                    if (takenVal > int.MaxValue)
+                    {
+                        takenVal = int.MaxValue;
+                    }
+
+                    foreach (var b in BuffContainer.Values)
+                    {
+                        b.DoBuffTrigger(ETriggerType.OnDamageTaken, (int)takenVal);
+                    }
+
+                    LastBuffDamageTriggerContext = default;
                 }
                 
                 if (dmg <= 0)

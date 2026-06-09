@@ -22,6 +22,19 @@ namespace My.Map.Scene
         private bool _locomotionVisualMove;
 
         private float _pendingOffsetZ = 0;
+
+        protected override void SyncAnimancerSpeed()
+        {
+            base.SyncAnimancerSpeed();
+            if (MainAgentAnimator == null || MainAgentAnimator == _Animancer)
+            {
+                return;
+            }
+
+            MainAgentAnimator.InitializePlayable();
+            MainAgentAnimator.Playable.Speed = LogicTime.paused ? 0f : LogicTime.timeScale;
+        }
+
         private void InitAnimComps()
         {
             if(AnimHolder != null)

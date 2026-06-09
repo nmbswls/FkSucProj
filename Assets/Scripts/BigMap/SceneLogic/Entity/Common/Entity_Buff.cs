@@ -23,6 +23,7 @@ namespace My.Map.Entity
         Tick,
         OnSkillUsed,
         OnHit,
+        OnDamageTaken, // 受到伤害（伤害管道广播，含威仪减伤抵扣与最终 HP 伤害）
         OnDie,
         FinalDmgReduced, // 累计最终减伤
         NearCaster, // 接近施法者（由 NearCasterWatch Duration 主动触发）
@@ -46,6 +47,9 @@ namespace My.Map.Entity
         public List<MapFightEffectCfg> OutputFightEffects;
 
         public bool RemoveOnTrigger;
+
+        // 触发成功后使自身减对应层数（与 RemoveOnTrigger 独立）
+        public int SubtractLayerOnTrigger;
 
         public int NeedCount = 1;
         public float TriggerInterval = 0;
@@ -113,6 +117,16 @@ namespace My.Map.Entity
         // RelativeExposeLevel: ParamStr1=目标属性, ParamFloat1=线性每级加成,
         // ParamStr2=非线性映射(如 "0:100,1:200"), CommonFlag1=暴露真身时是否生效
         RelativeExposeLevel,
+
+        // OutOfCombatWatch: ParamFloat1=脱战计时间隔(秒)，到时触发 Tick（恢复等由 TriggerList 配置）
+        OutOfCombatWatch,
+    }
+
+    // 伤害管道触发 OnDamageTaken 时的上下文
+    public struct BuffDamageTriggerContext
+    {
+        public long WeiyiDrVal;
+        public long HpDamageVal;
     }
 
     public enum EBuffMoveSteerMode
@@ -225,6 +239,8 @@ namespace My.Map.Entity
                     return new BuffDurationSteerInputInstance(eff);
                 case EBuffDurationType.NearCasterWatch:
                     return new BuffDurationNearCasterWatchInstance(eff);
+                case EBuffDurationType.OutOfCombatWatch:
+                    return new BuffDurationOutOfCombatWatchInstance(eff);
                 default:
                     return null;
             }
@@ -359,6 +375,12 @@ namespace My.Map.Entity
         public string Icon = "fallback";
         public EBuffLayerOverrideType LayerOverrideType;
         public int MaxStackLayer;
+
+        // 非空时作为叠层软上限，与 MaxStackLayer 硬顶取 Min
+        public string MaxStackSourceAttr;
+
+        public bool SupportsEffectToggle;
+
         public EBuffLayerStackMode LayerStackMode = EBuffLayerStackMode.Classic;
 
         public EBuffTurnOverrideType TurnOverrideType;
@@ -430,6 +452,29 @@ namespace My.Map.Entity
             }
 
             return false;
+        }
+
+        public static int ResolveEffectiveMaxStackLayer(BuffDefinition def, IEntityAttributeOwner owner)
+        {
+            if (def == null)
+            {
+                return int.MaxValue;
+            }
+
+            int hardCap = def.MaxStackLayer > 0 ? def.MaxStackLayer : int.MaxValue;
+            if (string.IsNullOrEmpty(def.MaxStackSourceAttr) || owner == null)
+            {
+                return hardCap;
+            }
+
+            long attrVal = owner.GetAttr(def.MaxStackSourceAttr);
+            if (attrVal <= 0)
+            {
+                return hardCap;
+            }
+
+            int softCap = attrVal > int.MaxValue ? int.MaxValue : (int)attrVal;
+            return Math.Min(hardCap, softCap);
         }
     }
 
@@ -914,9 +959,9 @@ namespace My.Map.Entity
                         }
                     case EBuffLayerOverrideType.AddLayer:
                         {
-                            int maxLayer = buffDef.MaxStackLayer;
+                            int maxLayer = BuffDefinition.ResolveEffectiveMaxStackLayer(buffDef, target);
                             existing.Layer += layer;
-                            if(maxLayer > 0)
+                            if (maxLayer > 0 && maxLayer < int.MaxValue)
                             {
                                 existing.Layer = Math.Min(maxLayer, existing.Layer);
                             }
@@ -985,7 +1030,14 @@ namespace My.Map.Entity
 
             if (needCreate)
             {
-                existing = new BuffInstance(target, ++BuffInstIdCounter, buffId, layer, lifeTIme: duration, casterId:casterId, srcBuffId:srcBuffId);
+                int createLayer = layer;
+                int createMaxLayer = BuffDefinition.ResolveEffectiveMaxStackLayer(buffDef, target);
+                if (createMaxLayer > 0 && createMaxLayer < int.MaxValue && createLayer > createMaxLayer)
+                {
+                    createLayer = createMaxLayer;
+                }
+
+                existing = new BuffInstance(target, ++BuffInstIdCounter, buffId, createLayer, lifeTIme: duration, casterId:casterId, srcBuffId:srcBuffId);
                 BuffPotencyUtil.TryCommitPotency(existing, logicManager, casterId, out _);
                 existing.OnBuffAddOrUpdate(true);
 
@@ -1126,6 +1178,8 @@ namespace My.Map.Entity
 
         public float? tickIntervalSec; // null 表示非周期
 
+        public bool EffectsEnabled { get; private set; } = true;
+
         public bool UsesIndependentStack => Def != null && Def.LayerStackMode == EBuffLayerStackMode.IndependentStack;
 
         private List<Modifier?> registeredModifiers;
@@ -1207,15 +1261,32 @@ namespace My.Map.Entity
             }
         }
 
+        public int GetEffectiveMaxStackLayer()
+        {
+            return BuffDefinition.ResolveEffectiveMaxStackLayer(Def, BuffOwner);
+        }
+
         public int GetModifierScaleLayer()
         {
             int n = Layer;
-            if (Def.LayerStackMode == EBuffLayerStackMode.IndependentStack && Def.MaxStackLayer > 0)
+            int effectiveMax = GetEffectiveMaxStackLayer();
+            if (effectiveMax > 0 && effectiveMax < int.MaxValue)
             {
-                return Math.Min(n, Def.MaxStackLayer);
+                n = Math.Min(n, effectiveMax);
             }
 
             return n;
+        }
+
+        public void SetEffectsEnabled(bool enabled)
+        {
+            if (EffectsEnabled == enabled)
+            {
+                return;
+            }
+
+            EffectsEnabled = enabled;
+            OnBuffAddOrUpdate(false);
         }
 
         public List<BuffLayerPersistEntry> ExportStackLayersForPersist()
@@ -1424,7 +1495,7 @@ namespace My.Map.Entity
         /// </summary>
         public void OnBuffAddOrUpdate(bool isAdd)
         {
-            int modLayer = GetModifierScaleLayer();
+            int modLayer = EffectsEnabled ? GetModifierScaleLayer() : 0;
             if (registeredModifiers == null)
             {
                 registeredModifiers = new();
@@ -1454,9 +1525,12 @@ namespace My.Map.Entity
                 leOwner.NotifyAnimLayerRefreshIfAnimOverrideBuff(Def);
             }
 
-            foreach (var logic in _durationLogics)
+            if (EffectsEnabled)
             {
-                logic?.OnBuffInfoChanged(this);
+                foreach (var logic in _durationLogics)
+                {
+                    logic?.OnBuffInfoChanged(this);
+                }
             }
 
             if (isAdd && Def.FlushWitnessOnApply && BuffOwner is BaseUnitLogicEntity unit)
@@ -1493,6 +1567,13 @@ namespace My.Map.Entity
                 return;
             }
 
+            if (layer <= 0)
+            {
+                _classicLayer = 0;
+                MarkedForRemove = true;
+                return;
+            }
+
             _classicLayer = layer;
             OnBuffAddOrUpdate(false);
         }
@@ -1506,7 +1587,13 @@ namespace My.Map.Entity
         public void Tick(float dt)
         {
             TickIndependentStack(dt);
-            if (triggerRuntimes != null)
+
+            if (!EffectsEnabled)
+            {
+                return;
+            }
+
+            if (triggerRuntimes != null && !HasOutOfCombatWatchDuration())
             {
                 foreach (var triggerInfo in triggerRuntimes)
                 {
@@ -1549,9 +1636,40 @@ namespace My.Map.Entity
             }
         }
 
+        public bool HasOutOfCombatWatchDuration()
+        {
+            foreach (var eff in Def.ResolveDurationEffects())
+            {
+                if (eff != null && eff.DurationType == EBuffDurationType.OutOfCombatWatch)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool HasModifierAttr(string attrId)
+        {
+            if (Def?.ModifierAttrs == null || string.IsNullOrEmpty(attrId))
+            {
+                return false;
+            }
+
+            foreach (var mod in Def.ModifierAttrs)
+            {
+                if (mod.ModifierAttrId == attrId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void DoBuffTrigger(ETriggerType triggerType, int val = 1)
         {
-            if (triggerRuntimes == null)
+            if (!EffectsEnabled || triggerRuntimes == null)
             {
                 return;
             }
@@ -1568,6 +1686,17 @@ namespace My.Map.Entity
                     case ETriggerType.OnHit:
                         {
 
+                        }
+                        break;
+                    case ETriggerType.OnDamageTaken:
+                        {
+                            if (t.config.SubtractLayerOnTrigger > 0
+                                && HasModifierAttr(AttrIdConsts.Weiyi_JianShang)
+                                && BuffOwner is BaseUnitLogicEntity unit
+                                && unit.LastBuffDamageTriggerContext.WeiyiDrVal <= 0)
+                            {
+                                continue;
+                            }
                         }
                         break;
                 }
@@ -1593,6 +1722,19 @@ namespace My.Map.Entity
                     foreach (var fightEffect in t.config.OutputFightEffects)
                     {
                         HandleBuffTriggerEffect(fightEffect, triggerType);
+                    }
+                }
+
+                if (t.config.SubtractLayerOnTrigger > 0)
+                {
+                    int newLayer = Layer - t.config.SubtractLayerOnTrigger;
+                    if (newLayer <= 0)
+                    {
+                        MarkedForRemove = true;
+                    }
+                    else
+                    {
+                        SetBuffLayerDirect(newLayer);
                     }
                 }
 
@@ -1628,6 +1770,7 @@ namespace My.Map.Entity
                 case MapFightEffectEasyEffect:
                 case MapFightEffectCreateAreaEffectCfg:
                 case MapAbilityEffectHitBoxCfg:
+                case MapAbilityEffectAddBuffCfg:
                 case MapFightEffectShowEffect:
                 case MapFightEffectShowCloseupWindowCfg:
                     {

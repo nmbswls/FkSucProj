@@ -1,14 +1,36 @@
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace My.UI.BodyPart
 {
 
     public class BodyPartProgressSeg : MonoBehaviour
     {
+        public Image Line;
 
+        static readonly Color LitLineColor = new Color(0.88f, 0.74f, 0.32f, 1f);
+        static readonly Color LockedLineColor = new Color(0.23529412f, 0.23529412f, 0.23529412f, 1f);
+
+        public void Bind()
+        {
+            Line = GetComponentInChildren<Image>();
+        }
+
+        public void ShowActive(bool active)
+        {
+            if(active)
+            {
+                Line.color = LitLineColor;
+            }
+            else
+            {
+                Line.color = LockedLineColor;
+            }
+        }
     }
 
     // 部位养成里程碑进度线：SlotRow 下按 OneSlot 横向拼装
@@ -21,7 +43,7 @@ namespace My.UI.BodyPart
         readonly List<BodyPartProgressInfo> _milestones = new();
 
         public Transform LineRoot;
-        [SerializeField]  BodyPartProgressSeg OneSegTemplate;
+        [SerializeField]  GameObject OneSegTemplate;
         readonly List<BodyPartProgressSeg> _segLines = new();
 
         EBodyPart _boundPart = EBodyPart.None;
@@ -42,6 +64,7 @@ namespace My.UI.BodyPart
             _currentLevel = Mathf.Max(0, currentLevel);
             BuildMilestones(partId);
             EnsureSlotCount(_milestones.Count);
+            EnsureSegCount(_milestones.Count - 1);
 
             for (int i = 0; i < _slots.Count; i++)
             {
@@ -61,6 +84,24 @@ namespace My.UI.BodyPart
                 int segmentStart = i > 0 ? _milestones[i - 1].Level : 0;
                 slot.gameObject.SetActive(true);
                 slot.Bind(cfg, segmentStart, _currentLevel, hideLine: false);
+            }
+
+            for (int i = 0; i < _segLines.Count; i++)
+            {
+                var seg = _segLines[i];
+                if (seg == null)
+                {
+                    continue;
+                }
+
+                if (i >= _milestones.Count - 1)
+                {
+                    seg.ShowActive(false);
+                }
+                else
+                {
+                    seg.ShowActive(true);
+                }
             }
         }
 
@@ -99,6 +140,24 @@ namespace My.UI.BodyPart
                 slotTemplate.gameObject.SetActive(false);
             }
         }
+
+        void EnsureSegCount(int count)
+        {
+            while (_segLines.Count < count)
+            {
+                var view = Instantiate(OneSegTemplate, LineRoot);
+                var comp = view.GetOrAddComponent<BodyPartProgressSeg>();
+                view.gameObject.SetActive(true);
+                _segLines.Add(comp);
+            }
+
+            if (OneSegTemplate != null)
+            {
+                OneSegTemplate.gameObject.SetActive(false);
+            }
+        }
+
+
 
         void OnDestroy()
         {

@@ -1511,6 +1511,69 @@ namespace My.Map.Entity
 
                     IsHidden = true,
                 };
+
+                // 威仪本体：层数资源 + 每层威仪减伤；受击抵扣时消层。恢复类效果由独立 efx buff 通过 AddBuff 叠加层数。
+                _library["player_weiyi"] = new BuffDefinition()
+                {
+                    BuffId = "player_weiyi",
+                    Desc = "威仪",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    MaxStackLayer = 5,
+                    DefaultDuration = -1,
+                    SupportsEffectToggle = true,
+                    Icon = "fallback",
+
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Weiyi_JianShang, ModifierValue = 99999999 },
+                    },
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.OnDamageTaken,
+                            NeedCount = 1,
+                            SubtractLayerOnTrigger = 1,
+                        },
+                    },
+                };
+
+                // 脱战恢复威仪（符文等挂载的载体 buff，向 player_weiyi 加层）
+                _library["efx_weiyi_regen_ooc"] = new BuffDefinition()
+                {
+                    BuffId = "efx_weiyi_regen_ooc",
+                    Desc = "脱战恢复威仪",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddBuffCfg()
+                                {
+                                    BuffId = "player_weiyi",
+                                    Layer = 1,
+                                },
+                            },
+                        },
+                    },
+
+                    DurationEffects = new()
+                    {
+                        new BuffDurationEffet()
+                        {
+                            DurationType = EBuffDurationType.OutOfCombatWatch,
+                            ParamFloat1 = 3f,
+                        },
+                    },
+                };
             }
 
 

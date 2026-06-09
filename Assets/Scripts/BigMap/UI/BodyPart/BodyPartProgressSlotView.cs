@@ -10,12 +10,8 @@ namespace My.UI.BodyPart
     {
         static readonly Color LitSlotColor = new Color(0.88f, 0.74f, 0.32f, 1f);
         static readonly Color LockedSlotColor = new Color(0.32f, 0.3f, 0.4f, 0.75f);
-        static readonly Color LitLineColor = new Color(0.88f, 0.74f, 0.32f, 1f);
-        static readonly Color LockedLineColor = new Color(0.23529412f, 0.23529412f, 0.23529412f, 1f);
+        
 
-        [SerializeField] GameObject lineRoot;
-        [SerializeField] Image lineTrackImage;
-        [SerializeField] Image lineFillImage;
         [SerializeField] Image slotImage;
         [SerializeField] GameObject litRoot;
         [SerializeField] GameObject lockedRoot;
@@ -47,24 +43,11 @@ namespace My.UI.BodyPart
 
             ApplySlotVisual();
 
-            if (lineRoot != null)
-            {
-                lineRoot.SetActive(!hideLine);
-            }
 
             float segmentFill = cfg != null
                 ? ComputeSegmentFill(segmentStartLevel, cfg.Level, currentLevel)
                 : 0f;
 
-            if (lineFillImage != null)
-            {
-                lineFillImage.fillAmount = segmentFill;
-                lineFillImage.color = segmentFill > 0f ? LitLineColor : LockedLineColor;
-            }
-            else if (lineTrackImage != null)
-            {
-                lineTrackImage.color = segmentFill >= 1f ? LitLineColor : LockedLineColor;
-            }
 
             EnsureHoverProvider(cfg, currentLevel);
         }

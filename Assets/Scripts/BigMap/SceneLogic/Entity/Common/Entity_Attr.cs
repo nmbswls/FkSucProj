@@ -76,6 +76,7 @@ namespace My.Map
                 case AttrIdConsts.NPCSJProgress_GainRate:
                 case AttrIdConsts.PlayerCharm:
                 case AttrIdConsts.Final_Fix_DR_All:
+                case AttrIdConsts.Weiyi_JianShang:
                 case AttrIdConsts.Final_HImpulse_Reduce_Fix:
 
 

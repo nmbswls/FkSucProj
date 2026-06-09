@@ -221,7 +221,7 @@ namespace My.Map
         {
             get
             {
-                return false;
+                return LogicManager != null && !LogicManager.GameSession.IsPeaceful;
             }
         }
 

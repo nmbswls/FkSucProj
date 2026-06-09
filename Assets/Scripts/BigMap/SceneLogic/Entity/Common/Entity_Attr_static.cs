@@ -29,6 +29,7 @@ namespace My.Map.Entity
         public const string Arm_Extra_1 = "Arm_Extra_1"; // 来自肉体耐受的护甲 绿字护甲的一部分
 
         public const string Final_Fix_DR_All = "Final_Fix_DR_All"; // 白字最终减伤
+        public const string Weiyi_JianShang = "Weiyi_JianShang"; // 威仪减伤，按层叠加
         public const string Final_HImpulse_Reduce_Fix = "Final_HImpulse_Reduce_Fix"; // h冲击力最终减少
 
         public const string PhysicalResist = "PhysicalResist"; // 肉体耐受 目前只有玩家应用
