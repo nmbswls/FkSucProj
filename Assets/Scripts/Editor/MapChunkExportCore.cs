@@ -257,7 +257,7 @@ public static class MapChunkExportCore
                     continue;
                 }
 
-                foreach (var pos in GetUsedTilePositions(source))
+                foreach (var pos in EnumerateOccupiedCells(source))
                 {
                     var world = source.GetCellCenterWorld(pos);
                     var coord = MapChunkUtility.WorldToChunk(world, origin, chunkSize);
@@ -361,18 +361,26 @@ public static class MapChunkExportCore
         return true;
     }
 
-    static IEnumerable<Vector3Int> GetUsedTilePositions(Tilemap tilemap)
+    // 只读遍历已放置 tile，不调用 CompressBounds（避免弄脏 Editor 场景）
+    public static IEnumerable<Vector3Int> EnumerateOccupiedCells(Tilemap tilemap)
     {
         if (tilemap == null)
         {
             yield break;
         }
 
-        var used = new List<Vector3Int>();
-        tilemap.GetUsedTiles(used);
-        for (int i = 0; i < used.Count; i++)
+        var bounds = tilemap.cellBounds;
+        if (bounds.size.x <= 0 || bounds.size.y <= 0)
         {
-            yield return used[i];
+            yield break;
+        }
+
+        foreach (var pos in bounds.allPositionsWithin)
+        {
+            if (tilemap.GetTile(pos) != null)
+            {
+                yield return pos;
+            }
         }
     }
 

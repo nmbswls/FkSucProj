@@ -109,11 +109,9 @@ public static class MapChunkVisualBaker
         var source = dual.ViewTilemap;
         var layer = CreateLayer(source, $"Baked_{source.name}");
         var viewCells = new HashSet<Vector3Int>();
-        var dataCells = new List<Vector3Int>();
-        dual.DataTilemap.GetUsedTiles(dataCells);
-        for (int i = 0; i < dataCells.Count; i++)
+        foreach (var dataPos in MapChunkExportCore.EnumerateOccupiedCells(dual.DataTilemap))
         {
-            DualGridCore.CollectViewsToRefreshAroundDataCell(dataCells[i], viewCells);
+            DualGridCore.CollectViewsToRefreshAroundDataCell(dataPos, viewCells);
         }
 
         foreach (var pos in viewCells)
@@ -148,17 +146,9 @@ public static class MapChunkVisualBaker
         string bakedTileFolder,
         Dictionary<Sprite, Tile> tileCache)
     {
-        var used = new List<Vector3Int>();
-        source.GetUsedTiles(used);
-        if (used.Count == 0)
-        {
-            return;
-        }
-
         var layer = CreateLayer(source, $"Baked_{source.name}");
-        for (int i = 0; i < used.Count; i++)
+        foreach (var pos in MapChunkExportCore.EnumerateOccupiedCells(source))
         {
-            var pos = used[i];
             var baseTile = source.GetTile(pos);
             if (baseTile == null)
             {
