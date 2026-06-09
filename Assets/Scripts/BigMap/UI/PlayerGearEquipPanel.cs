@@ -30,7 +30,7 @@ namespace My.UI
         [SerializeField] BodyPartFocusMarkView focusPartMark;
         [SerializeField] GearEquipTransferAnimView transferAnim;
 
-        [SerializeField] BodyPartProgressLineView partProgressLine;
+        [SerializeField] BodyPartProgressView partProgressLine;
 
         Transform _root;
         readonly List<PartPropInfoRowView> _localRows = new();

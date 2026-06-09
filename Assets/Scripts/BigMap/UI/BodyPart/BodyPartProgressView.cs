@@ -5,14 +5,24 @@ using UnityEngine;
 
 namespace My.UI.BodyPart
 {
+
+    public class BodyPartProgressSeg : MonoBehaviour
+    {
+
+    }
+
     // 部位养成里程碑进度线：SlotRow 下按 OneSlot 横向拼装
-    public sealed class BodyPartProgressLineView : MonoBehaviour
+    public sealed class BodyPartProgressView : MonoBehaviour
     {
         [SerializeField] Transform slotRoot;
         [SerializeField] BodyPartProgressSlotView slotTemplate;
 
         readonly List<BodyPartProgressSlotView> _slots = new();
         readonly List<BodyPartProgressInfo> _milestones = new();
+
+        public Transform LineRoot;
+        [SerializeField]  BodyPartProgressSeg OneSegTemplate;
+        readonly List<BodyPartProgressSeg> _segLines = new();
 
         EBodyPart _boundPart = EBodyPart.None;
         int _currentLevel;
